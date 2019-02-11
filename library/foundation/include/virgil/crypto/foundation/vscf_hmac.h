@@ -98,20 +98,20 @@ vscf_hmac_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hmac_impl(vscf_hmac_t *hmac);
+vscf_hmac_impl(vscf_hmac_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_hmac_init(vscf_hmac_t *hmac);
+vscf_hmac_init(vscf_hmac_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_hmac_init()'.
 //
 VSCF_PUBLIC void
-vscf_hmac_cleanup(vscf_hmac_t *hmac);
+vscf_hmac_cleanup(vscf_hmac_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -125,7 +125,7 @@ vscf_hmac_new(void);
 //  This is a reverse action of the function 'vscf_hmac_new()'.
 //
 VSCF_PUBLIC void
-vscf_hmac_delete(vscf_hmac_t *hmac);
+vscf_hmac_delete(vscf_hmac_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -133,88 +133,88 @@ vscf_hmac_delete(vscf_hmac_t *hmac);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_hmac_destroy(vscf_hmac_t **hmac_ref);
+vscf_hmac_destroy(vscf_hmac_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_hmac_t *
-vscf_hmac_shallow_copy(vscf_hmac_t *hmac);
+vscf_hmac_shallow_copy(vscf_hmac_t *self);
 
 //
 //  Setup dependency to the interface 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_hmac_use_hash(vscf_hmac_t *hmac, vscf_impl_t *hash);
+vscf_hmac_use_hash(vscf_hmac_t *self, vscf_impl_t *hash);
 
 //
 //  Setup dependency to the interface 'hash' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_hmac_take_hash(vscf_hmac_t *hmac, vscf_impl_t *hash);
+vscf_hmac_take_hash(vscf_hmac_t *self, vscf_impl_t *hash);
 
 //
 //  Release dependency to the interface 'hash'.
 //
 VSCF_PUBLIC void
-vscf_hmac_release_hash(vscf_hmac_t *hmac);
+vscf_hmac_release_hash(vscf_hmac_t *self);
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_hmac_alg_id(const vscf_hmac_t *hmac);
+vscf_hmac_alg_id(const vscf_hmac_t *self);
 
 //
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hmac_produce_alg_info(const vscf_hmac_t *hmac);
+vscf_hmac_produce_alg_info(const vscf_hmac_t *self);
 
 //
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_hmac_restore_alg_info(vscf_hmac_t *hmac, const vscf_impl_t *alg_info);
+vscf_hmac_restore_alg_info(vscf_hmac_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Size of the digest (mac output) in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_hmac_digest_len(vscf_hmac_t *hmac);
+vscf_hmac_digest_len(vscf_hmac_t *self);
 
 //
 //  Calculate MAC over given data.
 //
 VSCF_PUBLIC void
-vscf_hmac_mac(vscf_hmac_t *hmac, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac);
+vscf_hmac_mac(vscf_hmac_t *self, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac);
 
 //
 //  Start a new MAC.
 //
 VSCF_PUBLIC void
-vscf_hmac_start(vscf_hmac_t *hmac, vsc_data_t key);
+vscf_hmac_start(vscf_hmac_t *self, vsc_data_t key);
 
 //
 //  Add given data to the MAC.
 //
 VSCF_PUBLIC void
-vscf_hmac_update(vscf_hmac_t *hmac, vsc_data_t data);
+vscf_hmac_update(vscf_hmac_t *self, vsc_data_t data);
 
 //
 //  Accomplish MAC and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_hmac_finish(vscf_hmac_t *hmac, vsc_buffer_t *mac);
+vscf_hmac_finish(vscf_hmac_t *self, vsc_buffer_t *mac);
 
 //
 //  Prepare to authenticate a new message with the same key
 //  as the previous MAC operation.
 //
 VSCF_PUBLIC void
-vscf_hmac_reset(vscf_hmac_t *hmac);
+vscf_hmac_reset(vscf_hmac_t *self);
 
 
 // --------------------------------------------------------------------------

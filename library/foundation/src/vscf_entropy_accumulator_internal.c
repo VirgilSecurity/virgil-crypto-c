@@ -132,16 +132,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_entropy_accumulator_init(vscf_entropy_accumulator_t *entropy_accumulator) {
+vscf_entropy_accumulator_init(vscf_entropy_accumulator_t *self) {
 
-    VSCF_ASSERT_PTR(entropy_accumulator);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(entropy_accumulator, sizeof(vscf_entropy_accumulator_t));
+    vscf_zeroize(self, sizeof(vscf_entropy_accumulator_t));
 
-    entropy_accumulator->info = &info;
-    entropy_accumulator->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_entropy_accumulator_init_ctx(entropy_accumulator);
+    vscf_entropy_accumulator_init_ctx(self);
 }
 
 //
@@ -149,23 +149,23 @@ vscf_entropy_accumulator_init(vscf_entropy_accumulator_t *entropy_accumulator) {
 //  This is a reverse action of the function 'vscf_entropy_accumulator_init()'.
 //
 VSCF_PUBLIC void
-vscf_entropy_accumulator_cleanup(vscf_entropy_accumulator_t *entropy_accumulator) {
+vscf_entropy_accumulator_cleanup(vscf_entropy_accumulator_t *self) {
 
-    if (entropy_accumulator == NULL || entropy_accumulator->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (entropy_accumulator->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--entropy_accumulator->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_entropy_accumulator_cleanup_ctx(entropy_accumulator);
+    vscf_entropy_accumulator_cleanup_ctx(self);
 
-    vscf_zeroize(entropy_accumulator, sizeof(vscf_entropy_accumulator_t));
+    vscf_zeroize(self, sizeof(vscf_entropy_accumulator_t));
 }
 
 //
@@ -175,12 +175,12 @@ vscf_entropy_accumulator_cleanup(vscf_entropy_accumulator_t *entropy_accumulator
 VSCF_PUBLIC vscf_entropy_accumulator_t *
 vscf_entropy_accumulator_new(void) {
 
-    vscf_entropy_accumulator_t *entropy_accumulator = (vscf_entropy_accumulator_t *) vscf_alloc(sizeof (vscf_entropy_accumulator_t));
-    VSCF_ASSERT_ALLOC(entropy_accumulator);
+    vscf_entropy_accumulator_t *self = (vscf_entropy_accumulator_t *) vscf_alloc(sizeof (vscf_entropy_accumulator_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_entropy_accumulator_init(entropy_accumulator);
+    vscf_entropy_accumulator_init(self);
 
-    return entropy_accumulator;
+    return self;
 }
 
 //
@@ -188,12 +188,12 @@ vscf_entropy_accumulator_new(void) {
 //  This is a reverse action of the function 'vscf_entropy_accumulator_new()'.
 //
 VSCF_PUBLIC void
-vscf_entropy_accumulator_delete(vscf_entropy_accumulator_t *entropy_accumulator) {
+vscf_entropy_accumulator_delete(vscf_entropy_accumulator_t *self) {
 
-    vscf_entropy_accumulator_cleanup(entropy_accumulator);
+    vscf_entropy_accumulator_cleanup(self);
 
-    if (entropy_accumulator && (entropy_accumulator->refcnt == 0)) {
-        vscf_dealloc(entropy_accumulator);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -203,14 +203,14 @@ vscf_entropy_accumulator_delete(vscf_entropy_accumulator_t *entropy_accumulator)
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_entropy_accumulator_destroy(vscf_entropy_accumulator_t **entropy_accumulator_ref) {
+vscf_entropy_accumulator_destroy(vscf_entropy_accumulator_t **self_ref) {
 
-    VSCF_ASSERT_PTR(entropy_accumulator_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_entropy_accumulator_t *entropy_accumulator = *entropy_accumulator_ref;
-    *entropy_accumulator_ref = NULL;
+    vscf_entropy_accumulator_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_entropy_accumulator_delete(entropy_accumulator);
+    vscf_entropy_accumulator_delete(self);
 }
 
 //
@@ -218,10 +218,10 @@ vscf_entropy_accumulator_destroy(vscf_entropy_accumulator_t **entropy_accumulato
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_entropy_accumulator_t *
-vscf_entropy_accumulator_shallow_copy(vscf_entropy_accumulator_t *entropy_accumulator) {
+vscf_entropy_accumulator_shallow_copy(vscf_entropy_accumulator_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_entropy_accumulator_t *)vscf_impl_shallow_copy((vscf_impl_t *)entropy_accumulator);
+    return (vscf_entropy_accumulator_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -237,10 +237,10 @@ vscf_entropy_accumulator_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_entropy_accumulator_impl(vscf_entropy_accumulator_t *entropy_accumulator) {
+vscf_entropy_accumulator_impl(vscf_entropy_accumulator_t *self) {
 
-    VSCF_ASSERT_PTR(entropy_accumulator);
-    return (vscf_impl_t *)(entropy_accumulator);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *

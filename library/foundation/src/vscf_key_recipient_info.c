@@ -71,7 +71,7 @@
 //  Note, that context is already zeroed.
 //
 static void
-vscf_key_recipient_info_init_ctx(vscf_key_recipient_info_t *key_recipient_info);
+vscf_key_recipient_info_init_ctx(vscf_key_recipient_info_t *self);
 
 //
 //  Release all inner resources.
@@ -79,7 +79,7 @@ vscf_key_recipient_info_init_ctx(vscf_key_recipient_info_t *key_recipient_info);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscf_key_recipient_info_cleanup_ctx(vscf_key_recipient_info_t *key_recipient_info);
+vscf_key_recipient_info_cleanup_ctx(vscf_key_recipient_info_t *self);
 
 //
 //  Return size of 'vscf_key_recipient_info_t'.
@@ -94,35 +94,35 @@ vscf_key_recipient_info_ctx_size(void) {
 //  Perform initialization of pre-allocated context.
 //
 VSCF_PUBLIC void
-vscf_key_recipient_info_init(vscf_key_recipient_info_t *key_recipient_info) {
+vscf_key_recipient_info_init(vscf_key_recipient_info_t *self) {
 
-    VSCF_ASSERT_PTR(key_recipient_info);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(key_recipient_info, sizeof(vscf_key_recipient_info_t));
+    vscf_zeroize(self, sizeof(vscf_key_recipient_info_t));
 
-    key_recipient_info->refcnt = 1;
+    self->refcnt = 1;
 
-    vscf_key_recipient_info_init_ctx(key_recipient_info);
+    vscf_key_recipient_info_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCF_PUBLIC void
-vscf_key_recipient_info_cleanup(vscf_key_recipient_info_t *key_recipient_info) {
+vscf_key_recipient_info_cleanup(vscf_key_recipient_info_t *self) {
 
-    if (key_recipient_info == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    if (key_recipient_info->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--key_recipient_info->refcnt == 0) {
-        vscf_key_recipient_info_cleanup_ctx(key_recipient_info);
+    if (--self->refcnt == 0) {
+        vscf_key_recipient_info_cleanup_ctx(self);
 
-        vscf_zeroize(key_recipient_info, sizeof(vscf_key_recipient_info_t));
+        vscf_zeroize(self, sizeof(vscf_key_recipient_info_t));
     }
 }
 
@@ -132,14 +132,14 @@ vscf_key_recipient_info_cleanup(vscf_key_recipient_info_t *key_recipient_info) {
 VSCF_PUBLIC vscf_key_recipient_info_t *
 vscf_key_recipient_info_new(void) {
 
-    vscf_key_recipient_info_t *key_recipient_info = (vscf_key_recipient_info_t *) vscf_alloc(sizeof (vscf_key_recipient_info_t));
-    VSCF_ASSERT_ALLOC(key_recipient_info);
+    vscf_key_recipient_info_t *self = (vscf_key_recipient_info_t *) vscf_alloc(sizeof (vscf_key_recipient_info_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_key_recipient_info_init(key_recipient_info);
+    vscf_key_recipient_info_init(self);
 
-    key_recipient_info->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vscf_dealloc;
 
-    return key_recipient_info;
+    return self;
 }
 
 //
@@ -147,18 +147,18 @@ vscf_key_recipient_info_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCF_PUBLIC void
-vscf_key_recipient_info_delete(vscf_key_recipient_info_t *key_recipient_info) {
+vscf_key_recipient_info_delete(vscf_key_recipient_info_t *self) {
 
-    if (key_recipient_info == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    vscf_dealloc_fn self_dealloc_cb = key_recipient_info->self_dealloc_cb;
+    vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscf_key_recipient_info_cleanup(key_recipient_info);
+    vscf_key_recipient_info_cleanup(self);
 
-    if (key_recipient_info->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(key_recipient_info);
+    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(self);
     }
 }
 
@@ -167,27 +167,27 @@ vscf_key_recipient_info_delete(vscf_key_recipient_info_t *key_recipient_info) {
 //  This is a reverse action of the function 'vscf_key_recipient_info_new ()'.
 //
 VSCF_PUBLIC void
-vscf_key_recipient_info_destroy(vscf_key_recipient_info_t **key_recipient_info_ref) {
+vscf_key_recipient_info_destroy(vscf_key_recipient_info_t **self_ref) {
 
-    VSCF_ASSERT_PTR(key_recipient_info_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_key_recipient_info_t *key_recipient_info = *key_recipient_info_ref;
-    *key_recipient_info_ref = NULL;
+    vscf_key_recipient_info_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_key_recipient_info_delete(key_recipient_info);
+    vscf_key_recipient_info_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCF_PUBLIC vscf_key_recipient_info_t *
-vscf_key_recipient_info_shallow_copy(vscf_key_recipient_info_t *key_recipient_info) {
+vscf_key_recipient_info_shallow_copy(vscf_key_recipient_info_t *self) {
 
-    VSCF_ASSERT_PTR(key_recipient_info);
+    VSCF_ASSERT_PTR(self);
 
-    ++key_recipient_info->refcnt;
+    ++self->refcnt;
 
-    return key_recipient_info;
+    return self;
 }
 
 
@@ -204,9 +204,9 @@ vscf_key_recipient_info_shallow_copy(vscf_key_recipient_info_t *key_recipient_in
 //  Note, that context is already zeroed.
 //
 static void
-vscf_key_recipient_info_init_ctx(vscf_key_recipient_info_t *key_recipient_info) {
+vscf_key_recipient_info_init_ctx(vscf_key_recipient_info_t *self) {
 
-    VSCF_ASSERT_PTR(key_recipient_info);
+    VSCF_ASSERT_PTR(self);
 }
 
 //
@@ -215,13 +215,13 @@ vscf_key_recipient_info_init_ctx(vscf_key_recipient_info_t *key_recipient_info) 
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscf_key_recipient_info_cleanup_ctx(vscf_key_recipient_info_t *key_recipient_info) {
+vscf_key_recipient_info_cleanup_ctx(vscf_key_recipient_info_t *self) {
 
-    VSCF_ASSERT_PTR(key_recipient_info);
+    VSCF_ASSERT_PTR(self);
 
-    vsc_buffer_destroy(&key_recipient_info->recipient_id);
-    vscf_impl_destroy(&key_recipient_info->key_encryption_algorithm);
-    vsc_buffer_destroy(&key_recipient_info->encrypted_key);
+    vsc_buffer_destroy(&self->recipient_id);
+    vscf_impl_destroy(&self->key_encryption_algorithm);
+    vsc_buffer_destroy(&self->encrypted_key);
 }
 
 //
@@ -237,25 +237,25 @@ vscf_key_recipient_info_new_with_members(
     vscf_impl_t *key_encryption_algorithm = *key_encryption_algorithm_ref;
     *key_encryption_algorithm_ref = NULL;
 
-    vscf_key_recipient_info_t *key_recipient_info = vscf_key_recipient_info_new();
+    vscf_key_recipient_info_t *self = vscf_key_recipient_info_new();
 
-    key_recipient_info->recipient_id = vsc_buffer_new_with_data(recipient_id);
-    key_recipient_info->key_encryption_algorithm = key_encryption_algorithm;
-    key_recipient_info->encrypted_key = vsc_buffer_new_with_data(encrypted_key);
+    self->recipient_id = vsc_buffer_new_with_data(recipient_id);
+    self->key_encryption_algorithm = key_encryption_algorithm;
+    self->encrypted_key = vsc_buffer_new_with_data(encrypted_key);
 
-    return key_recipient_info;
+    return self;
 }
 
 //
 //  Return recipient identifier.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_key_recipient_info_recipient_id(const vscf_key_recipient_info_t *key_recipient_info) {
+vscf_key_recipient_info_recipient_id(const vscf_key_recipient_info_t *self) {
 
-    VSCF_ASSERT_PTR(key_recipient_info);
-    VSCF_ASSERT(vsc_buffer_is_valid(key_recipient_info->recipient_id));
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_buffer_is_valid(self->recipient_id));
 
-    return vsc_buffer_data(key_recipient_info->recipient_id);
+    return vsc_buffer_data(self->recipient_id);
 }
 
 //
@@ -263,22 +263,22 @@ vscf_key_recipient_info_recipient_id(const vscf_key_recipient_info_t *key_recipi
 //  a data encryption key.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_key_recipient_info_key_encryption_algorithm(const vscf_key_recipient_info_t *key_recipient_info) {
+vscf_key_recipient_info_key_encryption_algorithm(const vscf_key_recipient_info_t *self) {
 
-    VSCF_ASSERT_PTR(key_recipient_info);
-    VSCF_ASSERT_PTR(key_recipient_info->key_encryption_algorithm);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->key_encryption_algorithm);
 
-    return key_recipient_info->key_encryption_algorithm;
+    return self->key_encryption_algorithm;
 }
 
 //
 //  Return an encrypted data encryption key.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_key_recipient_info_encrypted_key(const vscf_key_recipient_info_t *key_recipient_info) {
+vscf_key_recipient_info_encrypted_key(const vscf_key_recipient_info_t *self) {
 
-    VSCF_ASSERT_PTR(key_recipient_info);
-    VSCF_ASSERT(vsc_buffer_is_valid(key_recipient_info->encrypted_key));
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_buffer_is_valid(self->encrypted_key));
 
-    return vsc_buffer_data(key_recipient_info->encrypted_key);
+    return vsc_buffer_data(self->encrypted_key);
 }

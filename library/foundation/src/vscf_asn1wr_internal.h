@@ -78,7 +78,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_asn1wr_init_ctx(vscf_asn1wr_t *asn1wr);
+vscf_asn1wr_init_ctx(vscf_asn1wr_t *self);
 
 //
 //  Release resources of the implementation specific context.
@@ -86,7 +86,7 @@ vscf_asn1wr_init_ctx(vscf_asn1wr_t *asn1wr);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_asn1wr_cleanup_ctx(vscf_asn1wr_t *asn1wr);
+vscf_asn1wr_cleanup_ctx(vscf_asn1wr_t *self);
 
 
 // --------------------------------------------------------------------------

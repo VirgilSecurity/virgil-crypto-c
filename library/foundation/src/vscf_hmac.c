@@ -85,9 +85,9 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_hmac_init_ctx(vscf_hmac_t *hmac) {
+vscf_hmac_init_ctx(vscf_hmac_t *self) {
 
-    VSCF_ASSERT_PTR(hmac);
+    VSCF_ASSERT_PTR(self);
 }
 
 //
@@ -96,20 +96,20 @@ vscf_hmac_init_ctx(vscf_hmac_t *hmac) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_hmac_cleanup_ctx(vscf_hmac_t *hmac) {
+vscf_hmac_cleanup_ctx(vscf_hmac_t *self) {
 
-    VSCF_ASSERT_PTR(hmac);
+    VSCF_ASSERT_PTR(self);
 
-    vsc_buffer_destroy(&hmac->ipad);
+    vsc_buffer_destroy(&self->ipad);
 }
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_hmac_alg_id(const vscf_hmac_t *hmac) {
+vscf_hmac_alg_id(const vscf_hmac_t *self) {
 
-    VSCF_ASSERT_PTR(hmac);
+    VSCF_ASSERT_PTR(self);
 
     return vscf_alg_id_HMAC;
 }
@@ -118,12 +118,12 @@ vscf_hmac_alg_id(const vscf_hmac_t *hmac) {
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hmac_produce_alg_info(const vscf_hmac_t *hmac) {
+vscf_hmac_produce_alg_info(const vscf_hmac_t *self) {
 
-    VSCF_ASSERT_PTR(hmac);
-    VSCF_ASSERT_PTR(hmac->hash);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->hash);
 
-    vscf_impl_t *hash_alg_info = vscf_alg_produce_alg_info(hmac->hash);
+    vscf_impl_t *hash_alg_info = vscf_alg_produce_alg_info(self->hash);
     vscf_impl_t *hmac_alg_info =
             vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(vscf_alg_id_HMAC, &hash_alg_info));
 
@@ -134,17 +134,17 @@ vscf_hmac_produce_alg_info(const vscf_hmac_t *hmac) {
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_hmac_restore_alg_info(vscf_hmac_t *hmac, const vscf_impl_t *alg_info) {
+vscf_hmac_restore_alg_info(vscf_hmac_t *self, const vscf_impl_t *alg_info) {
 
-    VSCF_ASSERT_PTR(hmac);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
     VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_HMAC);
 
     const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
     vscf_impl_t *hash = vscf_alg_factory_create_hash_alg(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info));
-    vscf_hmac_release_hash(hmac);
-    vscf_hmac_take_hash(hmac, hash);
+    vscf_hmac_release_hash(self);
+    vscf_hmac_take_hash(self, hash);
 
     return vscf_SUCCESS;
 }
@@ -153,44 +153,44 @@ vscf_hmac_restore_alg_info(vscf_hmac_t *hmac, const vscf_impl_t *alg_info) {
 //  Size of the digest (mac output) in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_hmac_digest_len(vscf_hmac_t *hmac) {
+vscf_hmac_digest_len(vscf_hmac_t *self) {
 
-    VSCF_ASSERT_PTR(hmac);
-    VSCF_ASSERT_PTR(hmac->hash);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->hash);
 
-    return vscf_hash_digest_len(vscf_hash_api(hmac->hash));
+    return vscf_hash_digest_len(vscf_hash_api(self->hash));
 }
 
 //
 //  Calculate MAC over given data.
 //
 VSCF_PUBLIC void
-vscf_hmac_mac(vscf_hmac_t *hmac, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac) {
+vscf_hmac_mac(vscf_hmac_t *self, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac) {
 
-    VSCF_ASSERT_PTR(hmac);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(key));
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(mac);
     VSCF_ASSERT(vsc_buffer_is_valid(mac));
-    VSCF_ASSERT(vsc_buffer_unused_len(mac) >= vscf_hmac_digest_len(hmac));
+    VSCF_ASSERT(vsc_buffer_unused_len(mac) >= vscf_hmac_digest_len(self));
 
-    vscf_hmac_start(hmac, key);
-    vscf_hmac_update(hmac, data);
-    vscf_hmac_finish(hmac, mac);
+    vscf_hmac_start(self, key);
+    vscf_hmac_update(self, data);
+    vscf_hmac_finish(self, mac);
 }
 
 //
 //  Start a new MAC.
 //
 VSCF_PUBLIC void
-vscf_hmac_start(vscf_hmac_t *hmac, vsc_data_t key) {
+vscf_hmac_start(vscf_hmac_t *self, vsc_data_t key) {
 
-    VSCF_ASSERT_PTR(hmac);
-    VSCF_ASSERT_PTR(hmac->hash);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->hash);
     VSCF_ASSERT(vsc_data_is_valid(key));
 
-    size_t digest_len = vscf_hash_digest_len(vscf_hash_api(hmac->hash));
-    size_t block_len = vscf_hash_block_len(vscf_hash_api(hmac->hash));
+    size_t digest_len = vscf_hash_digest_len(vscf_hash_api(self->hash));
+    size_t block_len = vscf_hash_block_len(vscf_hash_api(self->hash));
     VSCF_ASSERT_SAFE(digest_len <= block_len);
 
     //  Pre-process key.
@@ -199,25 +199,25 @@ vscf_hmac_start(vscf_hmac_t *hmac, vsc_data_t key) {
     if (key.len > block_len) {
         key_digest = vsc_buffer_new_with_capacity(digest_len);
         vsc_buffer_make_secure(key_digest);
-        vscf_hash_start(hmac->hash);
-        vscf_hash_update(hmac->hash, key);
-        vscf_hash_finish(hmac->hash, key_digest);
+        vscf_hash_start(self->hash);
+        vscf_hash_update(self->hash, key);
+        vscf_hash_finish(self->hash, key_digest);
         key = vsc_buffer_data(key_digest);
     }
 
     //  Reset ipad buffer.
-    if (NULL == hmac->ipad || vsc_buffer_len(hmac->ipad) != block_len) {
-        vsc_buffer_delete(hmac->ipad);
-        hmac->ipad = vsc_buffer_new_with_capacity(block_len);
-        vsc_buffer_make_secure(hmac->ipad);
+    if (NULL == self->ipad || vsc_buffer_len(self->ipad) != block_len) {
+        vsc_buffer_delete(self->ipad);
+        self->ipad = vsc_buffer_new_with_capacity(block_len);
+        vsc_buffer_make_secure(self->ipad);
     }
-    vsc_buffer_reset(hmac->ipad);
+    vsc_buffer_reset(self->ipad);
 
     //  Derive ipad string.
-    byte *ipad = vsc_buffer_begin(hmac->ipad);
-    size_t ipad_len = vsc_buffer_capacity(hmac->ipad);
+    byte *ipad = vsc_buffer_begin(self->ipad);
+    size_t ipad_len = vsc_buffer_capacity(self->ipad);
     VSCF_ASSERT_SAFE(ipad_len >= key.len);
-    vsc_buffer_inc_used(hmac->ipad, ipad_len);
+    vsc_buffer_inc_used(self->ipad, ipad_len);
 
     for (size_t i = 0; i < key.len; ++i) {
         ipad[i] = key.bytes[i] ^ 0x36;
@@ -226,8 +226,8 @@ vscf_hmac_start(vscf_hmac_t *hmac, vsc_data_t key) {
     memset(ipad + key.len, 0x36, ipad_len - key.len);
 
     //  Start hashing.
-    vscf_hash_start(hmac->hash);
-    vscf_hash_update(hmac->hash, vsc_buffer_data(hmac->ipad));
+    vscf_hash_start(self->hash);
+    vscf_hash_update(self->hash, vsc_buffer_data(self->ipad));
 
     //  Cleanup.
     vsc_buffer_destroy(&key_digest);
@@ -237,36 +237,36 @@ vscf_hmac_start(vscf_hmac_t *hmac, vsc_data_t key) {
 //  Add given data to the MAC.
 //
 VSCF_PUBLIC void
-vscf_hmac_update(vscf_hmac_t *hmac, vsc_data_t data) {
+vscf_hmac_update(vscf_hmac_t *self, vsc_data_t data) {
 
-    VSCF_ASSERT_PTR(hmac);
-    VSCF_ASSERT_PTR(hmac->hash);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->hash);
 
-    vscf_hash_update(hmac->hash, data);
+    vscf_hash_update(self->hash, data);
 }
 
 //
 //  Accomplish MAC and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_hmac_finish(vscf_hmac_t *hmac, vsc_buffer_t *mac) {
+vscf_hmac_finish(vscf_hmac_t *self, vsc_buffer_t *mac) {
 
-    VSCF_ASSERT_PTR(hmac);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(mac);
     VSCF_ASSERT(vsc_buffer_is_valid(mac));
-    VSCF_ASSERT(vsc_buffer_unused_len(mac) >= vscf_hmac_digest_len(hmac));
+    VSCF_ASSERT(vsc_buffer_unused_len(mac) >= vscf_hmac_digest_len(self));
 
-    VSCF_ASSERT_PTR(hmac->hash);
-    VSCF_ASSERT_PTR(hmac->ipad);
-    VSCF_ASSERT(vsc_buffer_is_valid(hmac->ipad));
+    VSCF_ASSERT_PTR(self->hash);
+    VSCF_ASSERT_PTR(self->ipad);
+    VSCF_ASSERT(vsc_buffer_is_valid(self->ipad));
 
     //  Derive opad.
-    size_t opad_len = vscf_hash_block_len(vscf_hash_api(hmac->hash));
+    size_t opad_len = vscf_hash_block_len(vscf_hash_api(self->hash));
     byte *opad = vscf_alloc(opad_len);
     VSCF_ASSERT_ALLOC(opad);
 
-    byte *ipad = vsc_buffer_begin(hmac->ipad);
-    size_t ipad_len = vsc_buffer_len(hmac->ipad);
+    byte *ipad = vsc_buffer_begin(self->ipad);
+    size_t ipad_len = vsc_buffer_len(self->ipad);
     VSCF_ASSERT_SAFE(ipad_len == opad_len);
 
     for (size_t i = 0; i < opad_len; ++i) {
@@ -274,15 +274,15 @@ vscf_hmac_finish(vscf_hmac_t *hmac, vsc_buffer_t *mac) {
     }
 
     //  Store temporary digest.
-    size_t digest_len = vscf_hash_digest_len(vscf_hash_api(hmac->hash));
-    vscf_hash_finish(hmac->hash, mac);
+    size_t digest_len = vscf_hash_digest_len(vscf_hash_api(self->hash));
+    vscf_hash_finish(self->hash, mac);
     vsc_buffer_dec_used(mac, digest_len);
 
     //  Get resulting digest.
-    vscf_hash_start(hmac->hash);
-    vscf_hash_update(hmac->hash, vsc_data(opad, opad_len));
-    vscf_hash_update(hmac->hash, vsc_data(vsc_buffer_unused_bytes(mac), digest_len));
-    vscf_hash_finish(hmac->hash, mac);
+    vscf_hash_start(self->hash);
+    vscf_hash_update(self->hash, vsc_data(opad, opad_len));
+    vscf_hash_update(self->hash, vsc_data(vsc_buffer_unused_bytes(mac), digest_len));
+    vscf_hash_finish(self->hash, mac);
 
     vscf_dealloc(opad);
 }
@@ -292,13 +292,13 @@ vscf_hmac_finish(vscf_hmac_t *hmac, vsc_buffer_t *mac) {
 //  as the previous MAC operation.
 //
 VSCF_PUBLIC void
-vscf_hmac_reset(vscf_hmac_t *hmac) {
+vscf_hmac_reset(vscf_hmac_t *self) {
 
-    VSCF_ASSERT_PTR(hmac);
-    VSCF_ASSERT_PTR(hmac->ipad);
-    VSCF_ASSERT(vsc_buffer_is_valid(hmac->ipad));
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->ipad);
+    VSCF_ASSERT(vsc_buffer_is_valid(self->ipad));
 
     //  Start hashing.
-    vscf_hash_start(hmac->hash);
-    vscf_hash_update(hmac->hash, vsc_buffer_data(hmac->ipad));
+    vscf_hash_start(self->hash);
+    vscf_hash_update(self->hash, vsc_buffer_data(self->ipad));
 }

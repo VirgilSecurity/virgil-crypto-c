@@ -88,9 +88,9 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_ed25519_private_key_init_ctx(vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_init_ctx(vscf_ed25519_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
 }
 
 //
@@ -99,19 +99,19 @@ vscf_ed25519_private_key_init_ctx(vscf_ed25519_private_key_t *ed25519_private_ke
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_ed25519_private_key_cleanup_ctx(vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_cleanup_ctx(vscf_ed25519_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
-    vscf_erase(ed25519_private_key->secret_key, ED25519_KEY_LEN);
+    VSCF_ASSERT_PTR(self);
+    vscf_erase(self->secret_key, ED25519_KEY_LEN);
 }
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_ed25519_private_key_alg_id(const vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_alg_id(const vscf_ed25519_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
     return vscf_alg_id_ED25519;
 }
 
@@ -119,9 +119,9 @@ vscf_ed25519_private_key_alg_id(const vscf_ed25519_private_key_t *ed25519_privat
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ed25519_private_key_produce_alg_info(const vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_produce_alg_info(const vscf_ed25519_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
     return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ED25519));
 }
 
@@ -129,10 +129,9 @@ vscf_ed25519_private_key_produce_alg_info(const vscf_ed25519_private_key_t *ed25
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_restore_alg_info(
-        vscf_ed25519_private_key_t *ed25519_private_key, const vscf_impl_t *alg_info) {
+vscf_ed25519_private_key_restore_alg_info(vscf_ed25519_private_key_t *self, const vscf_impl_t *alg_info) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
     VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_ED25519);
 
@@ -143,9 +142,9 @@ vscf_ed25519_private_key_restore_alg_info(
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_private_key_key_len(const vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_key_len(const vscf_ed25519_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
     return ED25519_KEY_LEN;
 }
 
@@ -153,9 +152,9 @@ vscf_ed25519_private_key_key_len(const vscf_ed25519_private_key_t *ed25519_priva
 //  Length of the key in bits.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_private_key_key_bitlen(const vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_key_bitlen(const vscf_ed25519_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
     return (8 * ED25519_KEY_LEN);
 }
 
@@ -164,14 +163,14 @@ vscf_ed25519_private_key_key_bitlen(const vscf_ed25519_private_key_t *ed25519_pr
 //  Note, this operation can be slow.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_generate_key(vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_generate_key(vscf_ed25519_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
-    VSCF_ASSERT_PTR(ed25519_private_key->random);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
     vsc_buffer_t *generated = vsc_buffer_new();
     VSCF_ASSERT_PTR(generated);
-    vsc_buffer_use(generated, ed25519_private_key->secret_key, ED25519_KEY_LEN);
-    if (vscf_SUCCESS != vscf_random(ed25519_private_key->random, ED25519_KEY_LEN, generated)) {
+    vsc_buffer_use(generated, self->secret_key, ED25519_KEY_LEN);
+    if (vscf_SUCCESS != vscf_random(self->random, ED25519_KEY_LEN, generated)) {
         vsc_buffer_destroy(&generated);
         return vscf_error_KEY_GENERATION_FAILED;
     }
@@ -183,16 +182,15 @@ vscf_ed25519_private_key_generate_key(vscf_ed25519_private_key_t *ed25519_privat
 //  Sign data given private key.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_sign(
-        vscf_ed25519_private_key_t *ed25519_private_key, vsc_data_t data, vsc_buffer_t *signature) {
+vscf_ed25519_private_key_sign(vscf_ed25519_private_key_t *self, vsc_data_t data, vsc_buffer_t *signature) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_buffer_is_valid(signature));
     VSCF_ASSERT(ED25519_SIG_LEN == vsc_buffer_capacity(signature));
     VSCF_ASSERT_PTR(data.bytes);
-    int ret = ed25519_sign(vsc_buffer_unused_bytes(signature), ed25519_private_key->secret_key, data.bytes, data.len);
+    int ret = ed25519_sign(vsc_buffer_unused_bytes(signature), self->secret_key, data.bytes, data.len);
     VSCF_ASSERT(ret == 0);
-    vsc_buffer_inc_used(signature, vscf_ed25519_private_key_signature_len(ed25519_private_key));
+    vsc_buffer_inc_used(signature, vscf_ed25519_private_key_signature_len(self));
     return vscf_SUCCESS;
 }
 
@@ -200,9 +198,9 @@ vscf_ed25519_private_key_sign(
 //  Return length in bytes required to hold signature.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_private_key_signature_len(vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_signature_len(vscf_ed25519_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
     return ED25519_SIG_LEN;
 }
 
@@ -210,12 +208,12 @@ vscf_ed25519_private_key_signature_len(vscf_ed25519_private_key_t *ed25519_priva
 //  Extract public part of the key.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ed25519_private_key_extract_public_key(const vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_extract_public_key(const vscf_ed25519_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
 
     vscf_ed25519_public_key_t *ed25519_public_key = vscf_ed25519_public_key_new();
-    int ret = ed25519_get_pubkey(ed25519_public_key->public_key, ed25519_private_key->secret_key);
+    int ret = ed25519_get_pubkey(ed25519_public_key->public_key, self->secret_key);
     VSCF_ASSERT(ret == 0);
 
     return vscf_ed25519_public_key_impl(ed25519_public_key);
@@ -229,17 +227,17 @@ vscf_ed25519_private_key_extract_public_key(const vscf_ed25519_private_key_t *ed
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_export_private_key(const vscf_ed25519_private_key_t *ed25519_private_key, vsc_buffer_t *out) {
+vscf_ed25519_private_key_export_private_key(const vscf_ed25519_private_key_t *self, vsc_buffer_t *out) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_ed25519_private_key_exported_private_key_len(ed25519_private_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_ed25519_private_key_exported_private_key_len(self));
 
     vscf_asn1wr_t asn1wr;
     vscf_asn1wr_init(&asn1wr);
     vscf_asn1wr_reset(&asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
-    size_t len = vscf_asn1wr_write_octet_str(&asn1wr, vsc_data(ed25519_private_key->secret_key, ED25519_KEY_LEN));
+    size_t len = vscf_asn1wr_write_octet_str(&asn1wr, vsc_data(self->secret_key, ED25519_KEY_LEN));
     vsc_buffer_inc_used(out, len);
 
     if (!vsc_buffer_is_reverse(out)) {
@@ -255,9 +253,9 @@ vscf_ed25519_private_key_export_private_key(const vscf_ed25519_private_key_t *ed
 //  Return length in bytes required to hold exported private key.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_private_key_exported_private_key_len(const vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_exported_private_key_len(const vscf_ed25519_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
 
     //
     //  https://tools.ietf.org/rfc/rfc8410.txt
@@ -275,9 +273,9 @@ vscf_ed25519_private_key_exported_private_key_len(const vscf_ed25519_private_key
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_import_private_key(vscf_ed25519_private_key_t *ed25519_private_key, vsc_data_t data) {
+vscf_ed25519_private_key_import_private_key(vscf_ed25519_private_key_t *self, vsc_data_t data) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(data));
 
     vscf_asn1rd_t asn1rd;
@@ -292,7 +290,7 @@ vscf_ed25519_private_key_import_private_key(vscf_ed25519_private_key_t *ed25519_
         return vscf_error_BAD_ED25519_PRIVATE_KEY;
     }
 
-    memcpy(ed25519_private_key->secret_key, key.bytes, ED25519_KEY_LEN);
+    memcpy(self->secret_key, key.bytes, ED25519_KEY_LEN);
 
     return vscf_SUCCESS;
 }
@@ -303,9 +301,9 @@ vscf_ed25519_private_key_import_private_key(vscf_ed25519_private_key_t *ed25519_
 //
 VSCF_PUBLIC vscf_error_t
 vscf_ed25519_private_key_compute_shared_key(
-        vscf_ed25519_private_key_t *ed25519_private_key, const vscf_impl_t *public_key, vsc_buffer_t *shared_key) {
+        vscf_ed25519_private_key_t *self, const vscf_impl_t *public_key, vsc_buffer_t *shared_key) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT_PTR(vsc_buffer_is_valid(shared_key));
 
@@ -313,7 +311,7 @@ vscf_ed25519_private_key_compute_shared_key(
     byte *ptr = vsc_buffer_unused_bytes(shared_key);
     size_t available = vsc_buffer_unused_len(shared_key);
     VSCF_ASSERT_PTR(available >= ED25519_KEY_LEN);
-    int ret = curve25519_key_exchange(ptr, ed25519_public_key->public_key, ed25519_private_key->secret_key);
+    int ret = curve25519_key_exchange(ptr, ed25519_public_key->public_key, self->secret_key);
     if (!ret) {
         vscf_ed25519_public_key_delete(ed25519_public_key);
         return vscf_SUCCESS;
@@ -326,8 +324,8 @@ vscf_ed25519_private_key_compute_shared_key(
 //  Return number of bytes required to hold shared key.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_private_key_shared_key_len(vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_shared_key_len(vscf_ed25519_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
     return ED25519_KEY_LEN;
 }

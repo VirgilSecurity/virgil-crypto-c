@@ -216,16 +216,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_init(vscf_asn1rd_t *asn1rd) {
+vscf_asn1rd_init(vscf_asn1rd_t *self) {
 
-    VSCF_ASSERT_PTR(asn1rd);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(asn1rd, sizeof(vscf_asn1rd_t));
+    vscf_zeroize(self, sizeof(vscf_asn1rd_t));
 
-    asn1rd->info = &info;
-    asn1rd->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_asn1rd_init_ctx(asn1rd);
+    vscf_asn1rd_init_ctx(self);
 }
 
 //
@@ -233,23 +233,23 @@ vscf_asn1rd_init(vscf_asn1rd_t *asn1rd) {
 //  This is a reverse action of the function 'vscf_asn1rd_init()'.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_cleanup(vscf_asn1rd_t *asn1rd) {
+vscf_asn1rd_cleanup(vscf_asn1rd_t *self) {
 
-    if (asn1rd == NULL || asn1rd->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (asn1rd->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--asn1rd->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_asn1rd_cleanup_ctx(asn1rd);
+    vscf_asn1rd_cleanup_ctx(self);
 
-    vscf_zeroize(asn1rd, sizeof(vscf_asn1rd_t));
+    vscf_zeroize(self, sizeof(vscf_asn1rd_t));
 }
 
 //
@@ -259,12 +259,12 @@ vscf_asn1rd_cleanup(vscf_asn1rd_t *asn1rd) {
 VSCF_PUBLIC vscf_asn1rd_t *
 vscf_asn1rd_new(void) {
 
-    vscf_asn1rd_t *asn1rd = (vscf_asn1rd_t *) vscf_alloc(sizeof (vscf_asn1rd_t));
-    VSCF_ASSERT_ALLOC(asn1rd);
+    vscf_asn1rd_t *self = (vscf_asn1rd_t *) vscf_alloc(sizeof (vscf_asn1rd_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_asn1rd_init(asn1rd);
+    vscf_asn1rd_init(self);
 
-    return asn1rd;
+    return self;
 }
 
 //
@@ -272,12 +272,12 @@ vscf_asn1rd_new(void) {
 //  This is a reverse action of the function 'vscf_asn1rd_new()'.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_delete(vscf_asn1rd_t *asn1rd) {
+vscf_asn1rd_delete(vscf_asn1rd_t *self) {
 
-    vscf_asn1rd_cleanup(asn1rd);
+    vscf_asn1rd_cleanup(self);
 
-    if (asn1rd && (asn1rd->refcnt == 0)) {
-        vscf_dealloc(asn1rd);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -287,14 +287,14 @@ vscf_asn1rd_delete(vscf_asn1rd_t *asn1rd) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_destroy(vscf_asn1rd_t **asn1rd_ref) {
+vscf_asn1rd_destroy(vscf_asn1rd_t **self_ref) {
 
-    VSCF_ASSERT_PTR(asn1rd_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_asn1rd_t *asn1rd = *asn1rd_ref;
-    *asn1rd_ref = NULL;
+    vscf_asn1rd_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_asn1rd_delete(asn1rd);
+    vscf_asn1rd_delete(self);
 }
 
 //
@@ -302,10 +302,10 @@ vscf_asn1rd_destroy(vscf_asn1rd_t **asn1rd_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_asn1rd_t *
-vscf_asn1rd_shallow_copy(vscf_asn1rd_t *asn1rd) {
+vscf_asn1rd_shallow_copy(vscf_asn1rd_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_asn1rd_t *)vscf_impl_shallow_copy((vscf_impl_t *)asn1rd);
+    return (vscf_asn1rd_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -321,10 +321,10 @@ vscf_asn1rd_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_asn1rd_impl(vscf_asn1rd_t *asn1rd) {
+vscf_asn1rd_impl(vscf_asn1rd_t *self) {
 
-    VSCF_ASSERT_PTR(asn1rd);
-    return (vscf_impl_t *)(asn1rd);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *

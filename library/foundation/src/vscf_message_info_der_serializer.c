@@ -79,8 +79,7 @@
 // --------------------------------------------------------------------------
 
 static size_t
-vscf_message_info_der_serializer_serialized_custom_params_len(
-        const vscf_message_info_der_serializer_t *message_info_der_serializer,
+vscf_message_info_der_serializer_serialized_custom_params_len(const vscf_message_info_der_serializer_t *self,
         const vscf_message_info_t *message_info);
 
 //
@@ -100,12 +99,11 @@ vscf_message_info_der_serializer_serialized_custom_params_len(
 //  }
 //
 static size_t
-vscf_message_info_der_serializer_serialize_custom_params(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, const vscf_message_info_t *message_info);
+vscf_message_info_der_serializer_serialize_custom_params(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_t *message_info);
 
 static size_t
-vscf_message_info_der_serializer_serialized_key_recipient_info_len(
-        const vscf_message_info_der_serializer_t *message_info_der_serializer,
+vscf_message_info_der_serializer_serialized_key_recipient_info_len(const vscf_message_info_der_serializer_t *self,
         const vscf_key_recipient_info_t *key_recipient_info);
 
 //
@@ -124,13 +122,11 @@ vscf_message_info_der_serializer_serialized_key_recipient_info_len(
 //  EncryptedKey ::= OCTET STRING
 //
 static size_t
-vscf_message_info_der_serializer_serialize_key_recipient_info(
-        vscf_message_info_der_serializer_t *message_info_der_serializer,
+vscf_message_info_der_serializer_serialize_key_recipient_info(vscf_message_info_der_serializer_t *self,
         const vscf_key_recipient_info_t *key_recipient_info);
 
 static size_t
-vscf_message_info_der_serializer_serialized_password_recipient_info_len(
-        const vscf_message_info_der_serializer_t *message_info_der_serializer,
+vscf_message_info_der_serializer_serialized_password_recipient_info_len(const vscf_message_info_der_serializer_t *self,
         const vscf_password_recipient_info_t *password_recipient_info);
 
 //
@@ -143,13 +139,11 @@ vscf_message_info_der_serializer_serialized_password_recipient_info_len(
 //  }
 //
 static size_t
-vscf_message_info_der_serializer_serialize_password_recipient_info(
-        vscf_message_info_der_serializer_t *message_info_der_serializer,
+vscf_message_info_der_serializer_serialize_password_recipient_info(vscf_message_info_der_serializer_t *self,
         const vscf_password_recipient_info_t *password_recipient_info);
 
 static size_t
-vscf_message_info_der_serializer_serialized_recipient_infos_len(
-        const vscf_message_info_der_serializer_t *message_info_der_serializer,
+vscf_message_info_der_serializer_serialized_recipient_infos_len(const vscf_message_info_der_serializer_t *self,
         const vscf_message_info_t *message_info);
 
 //
@@ -164,12 +158,11 @@ vscf_message_info_der_serializer_serialized_recipient_infos_len(
 //  }
 //
 static size_t
-vscf_message_info_der_serializer_serialize_recipient_infos(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, const vscf_message_info_t *message_info);
+vscf_message_info_der_serializer_serialize_recipient_infos(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_t *message_info);
 
 static size_t
-vscf_message_info_der_serializer_serialized_encrypted_content_info_len(
-        const vscf_message_info_der_serializer_t *message_info_der_serializer,
+vscf_message_info_der_serializer_serialized_encrypted_content_info_len(const vscf_message_info_der_serializer_t *self,
         const vscf_message_info_t *message_info);
 
 //
@@ -184,12 +177,11 @@ vscf_message_info_der_serializer_serialized_encrypted_content_info_len(
 //  EncryptedContent ::= OCTET STRING
 //
 static size_t
-vscf_message_info_der_serializer_serialize_encrypted_content_info(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, const vscf_message_info_t *message_info);
+vscf_message_info_der_serializer_serialize_encrypted_content_info(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_t *message_info);
 
 static size_t
-vscf_message_info_der_serializer_serialized_enveloped_data_len(
-        const vscf_message_info_der_serializer_t *message_info_der_serializer,
+vscf_message_info_der_serializer_serialized_enveloped_data_len(const vscf_message_info_der_serializer_t *self,
         const vscf_message_info_t *message_info);
 
 //
@@ -204,12 +196,11 @@ vscf_message_info_der_serializer_serialized_enveloped_data_len(
 //  CMSVersion ::= INTEGER { v0(0), v1(1), v2(2), v3(3), v4(4), v5(5) }
 //
 static size_t
-vscf_message_info_der_serializer_serialize_enveloped_data(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, const vscf_message_info_t *message_info);
+vscf_message_info_der_serializer_serialize_enveloped_data(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_t *message_info);
 
 static size_t
-vscf_message_info_der_serializer_serialized_cms_content_info_len(
-        const vscf_message_info_der_serializer_t *message_info_der_serializer,
+vscf_message_info_der_serializer_serialized_cms_content_info_len(const vscf_message_info_der_serializer_t *self,
         const vscf_message_info_t *message_info);
 
 //
@@ -221,8 +212,8 @@ vscf_message_info_der_serializer_serialized_cms_content_info_len(
 //  ContentType ::= OBJECT IDENTIFIER
 //
 static size_t
-vscf_message_info_der_serializer_serialize_cms_content_info(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, const vscf_message_info_t *message_info);
+vscf_message_info_der_serializer_serialize_cms_content_info(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_t *message_info);
 
 //
 //  VirgilCustomParams ::= SET SIZE (1..MAX) OF KeyValue
@@ -241,9 +232,8 @@ vscf_message_info_der_serializer_serialize_cms_content_info(
 //  }
 //
 static void
-vscf_message_info_der_serializer_deserialize_custom_params(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, vscf_message_info_t *message_info,
-        vscf_error_ctx_t *error);
+vscf_message_info_der_serializer_deserialize_custom_params(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_ctx_t *error);
 
 //
 //  KeyTransRecipientInfo ::= SEQUENCE {
@@ -261,9 +251,8 @@ vscf_message_info_der_serializer_deserialize_custom_params(
 //  EncryptedKey ::= OCTET STRING
 //
 static void
-vscf_message_info_der_serializer_deserialize_key_recipient_info(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, vscf_message_info_t *message_info,
-        vscf_error_ctx_t *error);
+vscf_message_info_der_serializer_deserialize_key_recipient_info(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_ctx_t *error);
 
 //
 //  PasswordRecipientInfo ::= SEQUENCE {
@@ -275,9 +264,8 @@ vscf_message_info_der_serializer_deserialize_key_recipient_info(
 //  }
 //
 static void
-vscf_message_info_der_serializer_deserialize_password_recipient_info(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, vscf_message_info_t *message_info,
-        vscf_error_ctx_t *error);
+vscf_message_info_der_serializer_deserialize_password_recipient_info(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_ctx_t *error);
 
 //
 //  RecipientInfos ::= SET SIZE (1..MAX) OF RecipientInfo
@@ -291,9 +279,8 @@ vscf_message_info_der_serializer_deserialize_password_recipient_info(
 //  }
 //
 static void
-vscf_message_info_der_serializer_deserialize_recipient_infos(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, vscf_message_info_t *message_info,
-        vscf_error_ctx_t *error);
+vscf_message_info_der_serializer_deserialize_recipient_infos(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_ctx_t *error);
 
 //
 //  EncryptedContentInfo ::= SEQUENCE {
@@ -307,9 +294,8 @@ vscf_message_info_der_serializer_deserialize_recipient_infos(
 //  EncryptedContent ::= OCTET STRING
 //
 static void
-vscf_message_info_der_serializer_deserialize_encrypted_content_info(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, vscf_message_info_t *message_info,
-        vscf_error_ctx_t *error);
+vscf_message_info_der_serializer_deserialize_encrypted_content_info(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_ctx_t *error);
 
 //
 //  EnvelopedData ::= SEQUENCE {
@@ -323,9 +309,8 @@ vscf_message_info_der_serializer_deserialize_encrypted_content_info(
 //  CMSVersion ::= INTEGER { v0(0), v1(1), v2(2), v3(3), v4(4), v5(5) }
 //
 static void
-vscf_message_info_der_serializer_deserialize_enveloped_data(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, vscf_message_info_t *message_info,
-        vscf_error_ctx_t *error);
+vscf_message_info_der_serializer_deserialize_enveloped_data(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_ctx_t *error);
 
 //
 //  ContentInfo ::= SEQUENCE {
@@ -336,9 +321,8 @@ vscf_message_info_der_serializer_deserialize_enveloped_data(
 //  ContentType ::= OBJECT IDENTIFIER
 //
 static void
-vscf_message_info_der_serializer_deserialize_cms_content_info(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, vscf_message_info_t *message_info,
-        vscf_error_ctx_t *error);
+vscf_message_info_der_serializer_deserialize_cms_content_info(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_ctx_t *error);
 
 
 // --------------------------------------------------------------------------
@@ -354,12 +338,12 @@ vscf_message_info_der_serializer_deserialize_cms_content_info(
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_message_info_der_serializer_init_ctx(vscf_message_info_der_serializer_t *message_info_der_serializer) {
+vscf_message_info_der_serializer_init_ctx(vscf_message_info_der_serializer_t *self) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
 
-    message_info_der_serializer->alg_info_serializer = vscf_alg_info_der_serializer_new();
-    message_info_der_serializer->alg_info_deserializer = vscf_alg_info_der_deserializer_new();
+    self->alg_info_serializer = vscf_alg_info_der_serializer_new();
+    self->alg_info_deserializer = vscf_alg_info_der_deserializer_new();
 }
 
 //
@@ -368,25 +352,23 @@ vscf_message_info_der_serializer_init_ctx(vscf_message_info_der_serializer_t *me
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_message_info_der_serializer_cleanup_ctx(vscf_message_info_der_serializer_t *message_info_der_serializer) {
+vscf_message_info_der_serializer_cleanup_ctx(vscf_message_info_der_serializer_t *self) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_alg_info_der_serializer_destroy(&message_info_der_serializer->alg_info_serializer);
-    vscf_alg_info_der_deserializer_destroy(&message_info_der_serializer->alg_info_deserializer);
+    vscf_alg_info_der_serializer_destroy(&self->alg_info_serializer);
+    vscf_alg_info_der_deserializer_destroy(&self->alg_info_deserializer);
 }
 
 //
 //  This method is called when interface 'asn1 reader' was setup.
 //
 VSCF_PRIVATE vscf_error_t
-vscf_message_info_der_serializer_did_setup_asn1_reader(
-        vscf_message_info_der_serializer_t *message_info_der_serializer) {
+vscf_message_info_der_serializer_did_setup_asn1_reader(vscf_message_info_der_serializer_t *self) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_alg_info_der_deserializer_use_asn1_reader(
-            message_info_der_serializer->alg_info_deserializer, message_info_der_serializer->asn1_reader);
+    vscf_alg_info_der_deserializer_use_asn1_reader(self->alg_info_deserializer, self->asn1_reader);
 
     return vscf_SUCCESS;
 }
@@ -395,25 +377,22 @@ vscf_message_info_der_serializer_did_setup_asn1_reader(
 //  This method is called when interface 'asn1 reader' was released.
 //
 VSCF_PRIVATE void
-vscf_message_info_der_serializer_did_release_asn1_reader(
-        vscf_message_info_der_serializer_t *message_info_der_serializer) {
+vscf_message_info_der_serializer_did_release_asn1_reader(vscf_message_info_der_serializer_t *self) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_alg_info_der_deserializer_release_asn1_reader(message_info_der_serializer->alg_info_deserializer);
+    vscf_alg_info_der_deserializer_release_asn1_reader(self->alg_info_deserializer);
 }
 
 //
 //  This method is called when interface 'asn1 writer' was setup.
 //
 VSCF_PRIVATE vscf_error_t
-vscf_message_info_der_serializer_did_setup_asn1_writer(
-        vscf_message_info_der_serializer_t *message_info_der_serializer) {
+vscf_message_info_der_serializer_did_setup_asn1_writer(vscf_message_info_der_serializer_t *self) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_alg_info_der_serializer_use_asn1_writer(
-            message_info_der_serializer->alg_info_serializer, message_info_der_serializer->asn1_writer);
+    vscf_alg_info_der_serializer_use_asn1_writer(self->alg_info_serializer, self->asn1_writer);
 
     return vscf_SUCCESS;
 }
@@ -422,20 +401,18 @@ vscf_message_info_der_serializer_did_setup_asn1_writer(
 //  This method is called when interface 'asn1 writer' was released.
 //
 VSCF_PRIVATE void
-vscf_message_info_der_serializer_did_release_asn1_writer(
-        vscf_message_info_der_serializer_t *message_info_der_serializer) {
+vscf_message_info_der_serializer_did_release_asn1_writer(vscf_message_info_der_serializer_t *self) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_alg_info_der_serializer_release_asn1_writer(message_info_der_serializer->alg_info_serializer);
+    vscf_alg_info_der_serializer_release_asn1_writer(self->alg_info_serializer);
 }
 
 static size_t
 vscf_message_info_der_serializer_serialized_custom_params_len(
-        const vscf_message_info_der_serializer_t *message_info_der_serializer,
-        const vscf_message_info_t *message_info) {
+        const vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
     //  TODO: This is STUB. Implement me.
@@ -461,9 +438,9 @@ vscf_message_info_der_serializer_serialized_custom_params_len(
 //
 static size_t
 vscf_message_info_der_serializer_serialize_custom_params(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, const vscf_message_info_t *message_info) {
+        vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
     //  TODO: This is STUB. Implement me.
@@ -473,10 +450,9 @@ vscf_message_info_der_serializer_serialize_custom_params(
 
 static size_t
 vscf_message_info_der_serializer_serialized_key_recipient_info_len(
-        const vscf_message_info_der_serializer_t *message_info_der_serializer,
-        const vscf_key_recipient_info_t *key_recipient_info) {
+        const vscf_message_info_der_serializer_t *self, const vscf_key_recipient_info_t *key_recipient_info) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(key_recipient_info);
 
     size_t len = 1 + 1 + 3 +       //  KeyTransRecipientInfo ::= SEQUENCE {
@@ -505,10 +481,9 @@ vscf_message_info_der_serializer_serialized_key_recipient_info_len(
 //
 static size_t
 vscf_message_info_der_serializer_serialize_key_recipient_info(
-        vscf_message_info_der_serializer_t *message_info_der_serializer,
-        const vscf_key_recipient_info_t *key_recipient_info) {
+        vscf_message_info_der_serializer_t *self, const vscf_key_recipient_info_t *key_recipient_info) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(key_recipient_info);
 
     size_t key_recipient_info_len = 0;
@@ -517,45 +492,43 @@ vscf_message_info_der_serializer_serialize_key_recipient_info(
     //  Write: encryptedKey.
     //
     key_recipient_info_len += vscf_asn1_writer_write_octet_str(
-            message_info_der_serializer->asn1_writer, vscf_key_recipient_info_encrypted_key(key_recipient_info));
+            self->asn1_writer, vscf_key_recipient_info_encrypted_key(key_recipient_info));
 
     //
     //  Write: keyEncryptionAlgorithm.
     //
     const vscf_impl_t *key_encryption_alg_info = vscf_key_recipient_info_key_encryption_algorithm(key_recipient_info);
-    key_recipient_info_len += vscf_alg_info_der_serializer_serialize_inplace(
-            message_info_der_serializer->alg_info_serializer, key_encryption_alg_info);
+    key_recipient_info_len +=
+            vscf_alg_info_der_serializer_serialize_inplace(self->alg_info_serializer, key_encryption_alg_info);
 
     //
     //  Write: rid.
     //
     size_t rid_len = 0;
     rid_len += vscf_asn1_writer_write_octet_str(
-            message_info_der_serializer->asn1_writer, vscf_key_recipient_info_recipient_id(key_recipient_info));
-    rid_len += vscf_asn1_writer_write_context_tag(message_info_der_serializer->asn1_writer, 0, rid_len);
+            self->asn1_writer, vscf_key_recipient_info_recipient_id(key_recipient_info));
+    rid_len += vscf_asn1_writer_write_context_tag(self->asn1_writer, 0, rid_len);
 
     key_recipient_info_len += rid_len;
 
     //
     //  Write: version {2}
     //
-    key_recipient_info_len += vscf_asn1_writer_write_int(message_info_der_serializer->asn1_writer, 2);
+    key_recipient_info_len += vscf_asn1_writer_write_int(self->asn1_writer, 2);
 
     //
     //  Write: KeyTransRecipientInfo
     //
-    key_recipient_info_len +=
-            vscf_asn1_writer_write_sequence(message_info_der_serializer->asn1_writer, key_recipient_info_len);
+    key_recipient_info_len += vscf_asn1_writer_write_sequence(self->asn1_writer, key_recipient_info_len);
 
     return key_recipient_info_len;
 }
 
 static size_t
 vscf_message_info_der_serializer_serialized_password_recipient_info_len(
-        const vscf_message_info_der_serializer_t *message_info_der_serializer,
-        const vscf_password_recipient_info_t *password_recipient_info) {
+        const vscf_message_info_der_serializer_t *self, const vscf_password_recipient_info_t *password_recipient_info) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(password_recipient_info);
 
     size_t len = 1 + 2 +       //  PasswordRecipientInfo ::= SEQUENCE {
@@ -578,10 +551,9 @@ vscf_message_info_der_serializer_serialized_password_recipient_info_len(
 //
 static size_t
 vscf_message_info_der_serializer_serialize_password_recipient_info(
-        vscf_message_info_der_serializer_t *message_info_der_serializer,
-        const vscf_password_recipient_info_t *password_recipient_info) {
+        vscf_message_info_der_serializer_t *self, const vscf_password_recipient_info_t *password_recipient_info) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(password_recipient_info);
 
     size_t password_recipient_info_len = 0;
@@ -589,37 +561,35 @@ vscf_message_info_der_serializer_serialize_password_recipient_info(
     //
     //  Write: encryptedKey.
     //
-    password_recipient_info_len += vscf_asn1_writer_write_octet_str(message_info_der_serializer->asn1_writer,
-            vscf_password_recipient_info_encrypted_key(password_recipient_info));
+    password_recipient_info_len += vscf_asn1_writer_write_octet_str(
+            self->asn1_writer, vscf_password_recipient_info_encrypted_key(password_recipient_info));
 
     //
     //  Write: keyEncryptionAlgorithm.
     //
     const vscf_impl_t *key_encryption_alg_info =
             vscf_password_recipient_info_key_encryption_algorithm(password_recipient_info);
-    password_recipient_info_len += vscf_alg_info_der_serializer_serialize_inplace(
-            message_info_der_serializer->alg_info_serializer, key_encryption_alg_info);
+    password_recipient_info_len +=
+            vscf_alg_info_der_serializer_serialize_inplace(self->alg_info_serializer, key_encryption_alg_info);
 
     //
     //  Write: version {0}
     //
-    password_recipient_info_len += vscf_asn1_writer_write_int(message_info_der_serializer->asn1_writer, 0);
+    password_recipient_info_len += vscf_asn1_writer_write_int(self->asn1_writer, 0);
 
     //
     //  Write: KeyTransRecipientInfo
     //
-    password_recipient_info_len +=
-            vscf_asn1_writer_write_sequence(message_info_der_serializer->asn1_writer, password_recipient_info_len);
+    password_recipient_info_len += vscf_asn1_writer_write_sequence(self->asn1_writer, password_recipient_info_len);
 
     return password_recipient_info_len;
 }
 
 static size_t
 vscf_message_info_der_serializer_serialized_recipient_infos_len(
-        const vscf_message_info_der_serializer_t *message_info_der_serializer,
-        const vscf_message_info_t *message_info) {
+        const vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
     size_t len = 1 + 1 + 8; //  RecipientInfos ::= SET SIZE (1..MAX) OF RecipientInfo
@@ -632,7 +602,7 @@ vscf_message_info_der_serializer_serialized_recipient_infos_len(
         const vscf_key_recipient_info_t *info = vscf_key_recipient_info_list_item(list);
 
 
-        len += vscf_message_info_der_serializer_serialized_key_recipient_info_len(message_info_der_serializer, info);
+        len += vscf_message_info_der_serializer_serialized_key_recipient_info_len(self, info);
     }
 
     // pwri [3] PasswordRecipientInfo,
@@ -643,8 +613,7 @@ vscf_message_info_der_serializer_serialized_recipient_infos_len(
         const vscf_password_recipient_info_t *info = vscf_password_recipient_info_list_item(list);
 
         len += 1 + 3;
-        len += vscf_message_info_der_serializer_serialized_password_recipient_info_len(
-                message_info_der_serializer, info);
+        len += vscf_message_info_der_serializer_serialized_password_recipient_info_len(self, info);
     }
 
     return len;
@@ -663,7 +632,7 @@ vscf_message_info_der_serializer_serialized_recipient_infos_len(
 //
 static size_t
 vscf_message_info_der_serializer_serialize_recipient_infos(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, const vscf_message_info_t *message_info) {
+        vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
 
     //  RecipientInfos ::= SET SIZE (1..MAX) OF RecipientInfo
     //
@@ -675,7 +644,7 @@ vscf_message_info_der_serializer_serialize_recipient_infos(
     //      ori [4] OtherRecipientInfo -- not supported
     //  }
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
     size_t recipient_infos_len = 0;
@@ -686,8 +655,7 @@ vscf_message_info_der_serializer_serialize_recipient_infos(
 
         const vscf_key_recipient_info_t *info = vscf_key_recipient_info_list_item(list);
 
-        size_t info_len =
-                vscf_message_info_der_serializer_serialize_key_recipient_info(message_info_der_serializer, info);
+        size_t info_len = vscf_message_info_der_serializer_serialize_key_recipient_info(self, info);
 
         recipient_infos_len += info_len;
     }
@@ -700,25 +668,23 @@ vscf_message_info_der_serializer_serialize_recipient_infos(
 
         size_t info_len = 0;
 
-        info_len +=
-                vscf_message_info_der_serializer_serialize_password_recipient_info(message_info_der_serializer, info);
+        info_len += vscf_message_info_der_serializer_serialize_password_recipient_info(self, info);
 
-        info_len += vscf_asn1_writer_write_context_tag(message_info_der_serializer->asn1_writer, 3, info_len);
+        info_len += vscf_asn1_writer_write_context_tag(self->asn1_writer, 3, info_len);
 
         recipient_infos_len += info_len;
     }
 
-    recipient_infos_len += vscf_asn1_writer_write_set(message_info_der_serializer->asn1_writer, recipient_infos_len);
+    recipient_infos_len += vscf_asn1_writer_write_set(self->asn1_writer, recipient_infos_len);
 
     return recipient_infos_len;
 }
 
 static size_t
 vscf_message_info_der_serializer_serialized_encrypted_content_info_len(
-        const vscf_message_info_der_serializer_t *message_info_der_serializer,
-        const vscf_message_info_t *message_info) {
+        const vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
     size_t len = 1 + 1 +      //  EncryptedContentInfo ::= SEQUENCE {
@@ -742,7 +708,7 @@ vscf_message_info_der_serializer_serialized_encrypted_content_info_len(
 //
 static size_t
 vscf_message_info_der_serializer_serialize_encrypted_content_info(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, const vscf_message_info_t *message_info) {
+        vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
 
     //  EncryptedContentInfo ::= SEQUENCE {
     //      contentType ContentType, -- always PKCS#7 'data' OID
@@ -754,7 +720,7 @@ vscf_message_info_der_serializer_serialize_encrypted_content_info(
     //  ContentEncryptionAlgorithmIdentifier ::= AlgorithmIdentifier
     //  EncryptedContent ::= OCTET STRING
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
     size_t encrypted_content_info_len = 0;
@@ -763,37 +729,33 @@ vscf_message_info_der_serializer_serialize_encrypted_content_info(
     //  Write: contentEncryptionAlgorithm.
     //
     const vscf_impl_t *content_encryption_alg_info = vscf_message_info_data_encryption_alg_info(message_info);
-    encrypted_content_info_len += vscf_alg_info_der_serializer_serialize_inplace(
-            message_info_der_serializer->alg_info_serializer, content_encryption_alg_info);
+    encrypted_content_info_len +=
+            vscf_alg_info_der_serializer_serialize_inplace(self->alg_info_serializer, content_encryption_alg_info);
 
     //
     //  Write: contentType.
     //
-    encrypted_content_info_len += vscf_asn1_writer_write_oid(
-            message_info_der_serializer->asn1_writer, vscf_oid_from_id(vscf_oid_id_CMS_DATA));
+    encrypted_content_info_len += vscf_asn1_writer_write_oid(self->asn1_writer, vscf_oid_from_id(vscf_oid_id_CMS_DATA));
 
     //
     //  Write: EncryptedContentInfo.
     //
-    encrypted_content_info_len +=
-            vscf_asn1_writer_write_sequence(message_info_der_serializer->asn1_writer, encrypted_content_info_len);
+    encrypted_content_info_len += vscf_asn1_writer_write_sequence(self->asn1_writer, encrypted_content_info_len);
 
     return encrypted_content_info_len;
 }
 
 static size_t
 vscf_message_info_der_serializer_serialized_enveloped_data_len(
-        const vscf_message_info_der_serializer_t *message_info_der_serializer,
-        const vscf_message_info_t *message_info) {
+        const vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
-    size_t recipient_infos_len =
-            vscf_message_info_der_serializer_serialized_recipient_infos_len(message_info_der_serializer, message_info);
+    size_t recipient_infos_len = vscf_message_info_der_serializer_serialized_recipient_infos_len(self, message_info);
 
-    size_t encrypted_content_info_len = vscf_message_info_der_serializer_serialized_encrypted_content_info_len(
-            message_info_der_serializer, message_info);
+    size_t encrypted_content_info_len =
+            vscf_message_info_der_serializer_serialized_encrypted_content_info_len(self, message_info);
 
     size_t len = 1 + 1 + 8 +                  //  EnvelopedData ::= SEQUENCE {
                  1 + 1 + 1 +                  //      version CMSVersion,
@@ -818,7 +780,7 @@ vscf_message_info_der_serializer_serialized_enveloped_data_len(
 //
 static size_t
 vscf_message_info_der_serializer_serialize_enveloped_data(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, const vscf_message_info_t *message_info) {
+        vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
 
     //  EnvelopedData ::= SEQUENCE {
     //      version CMSVersion,
@@ -830,7 +792,7 @@ vscf_message_info_der_serializer_serialize_enveloped_data(
     //
     //  CMSVersion ::= INTEGER { v0(0), v1(1), v2(2), v3(3), v4(4), v5(5) }
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
 
@@ -848,29 +810,25 @@ vscf_message_info_der_serializer_serialize_enveloped_data(
     //
     size_t enveloped_data_len = 0;
 
-    enveloped_data_len += vscf_message_info_der_serializer_serialize_encrypted_content_info(
-            message_info_der_serializer, message_info);
+    enveloped_data_len += vscf_message_info_der_serializer_serialize_encrypted_content_info(self, message_info);
 
-    enveloped_data_len +=
-            vscf_message_info_der_serializer_serialize_recipient_infos(message_info_der_serializer, message_info);
+    enveloped_data_len += vscf_message_info_der_serializer_serialize_recipient_infos(self, message_info);
 
-    enveloped_data_len += vscf_asn1_writer_write_int(message_info_der_serializer->asn1_writer, enveloped_data_version);
+    enveloped_data_len += vscf_asn1_writer_write_int(self->asn1_writer, enveloped_data_version);
 
-    enveloped_data_len += vscf_asn1_writer_write_sequence(message_info_der_serializer->asn1_writer, enveloped_data_len);
+    enveloped_data_len += vscf_asn1_writer_write_sequence(self->asn1_writer, enveloped_data_len);
 
     return enveloped_data_len;
 }
 
 static size_t
 vscf_message_info_der_serializer_serialized_cms_content_info_len(
-        const vscf_message_info_der_serializer_t *message_info_der_serializer,
-        const vscf_message_info_t *message_info) {
+        const vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
-    size_t enveloped_data_len =
-            vscf_message_info_der_serializer_serialized_enveloped_data_len(message_info_der_serializer, message_info);
+    size_t enveloped_data_len = vscf_message_info_der_serializer_serialized_enveloped_data_len(self, message_info);
 
     size_t len = 1 + 1 + 8 +         //  ContentInfo ::= SEQUENCE {
                  1 + 1 + 9 +         //      contentType ContentType,
@@ -889,7 +847,7 @@ vscf_message_info_der_serializer_serialized_cms_content_info_len(
 //
 static size_t
 vscf_message_info_der_serializer_serialize_cms_content_info(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, const vscf_message_info_t *message_info) {
+        vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
 
     //  ContentInfo ::= SEQUENCE {
     //      contentType ContentType,
@@ -898,20 +856,17 @@ vscf_message_info_der_serializer_serialize_cms_content_info(
     //
     //  ContentType ::= OBJECT IDENTIFIER
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
     size_t content_info_len = 0;
-    content_info_len +=
-            vscf_message_info_der_serializer_serialize_enveloped_data(message_info_der_serializer, message_info);
+    content_info_len += vscf_message_info_der_serializer_serialize_enveloped_data(self, message_info);
 
-    content_info_len +=
-            vscf_asn1_writer_write_context_tag(message_info_der_serializer->asn1_writer, 0, content_info_len);
+    content_info_len += vscf_asn1_writer_write_context_tag(self->asn1_writer, 0, content_info_len);
 
-    content_info_len += vscf_asn1_writer_write_oid(
-            message_info_der_serializer->asn1_writer, vscf_oid_from_id(vscf_oid_id_CMS_ENVELOPED_DATA));
+    content_info_len += vscf_asn1_writer_write_oid(self->asn1_writer, vscf_oid_from_id(vscf_oid_id_CMS_ENVELOPED_DATA));
 
-    content_info_len += vscf_asn1_writer_write_sequence(message_info_der_serializer->asn1_writer, content_info_len);
+    content_info_len += vscf_asn1_writer_write_sequence(self->asn1_writer, content_info_len);
 
     return content_info_len;
 }
@@ -934,12 +889,11 @@ vscf_message_info_der_serializer_serialize_cms_content_info(
 //
 static void
 vscf_message_info_der_serializer_deserialize_custom_params(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, vscf_message_info_t *message_info,
-        vscf_error_ctx_t *error) {
+        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_ctx_t *error) {
 
     //  TODO: This is STUB. Implement me.
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
     VSCF_UNUSED(error);
 }
@@ -961,16 +915,15 @@ vscf_message_info_der_serializer_deserialize_custom_params(
 //
 static void
 vscf_message_info_der_serializer_deserialize_key_recipient_info(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, vscf_message_info_t *message_info,
-        vscf_error_ctx_t *error) {
+        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_ctx_t *error) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
-    vscf_asn1_reader_read_sequence(message_info_der_serializer->asn1_reader);
-    const int version = vscf_asn1_reader_read_int(message_info_der_serializer->asn1_reader);
+    vscf_asn1_reader_read_sequence(self->asn1_reader);
+    const int version = vscf_asn1_reader_read_int(self->asn1_reader);
 
-    if (vscf_asn1_reader_error(message_info_der_serializer->asn1_reader) != vscf_SUCCESS) {
+    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
         return;
     }
 
@@ -979,23 +932,23 @@ vscf_message_info_der_serializer_deserialize_key_recipient_info(
         return;
     }
 
-    const size_t rid_len = vscf_asn1_reader_read_context_tag(message_info_der_serializer->asn1_reader, 0);
+    const size_t rid_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 0);
 
     if (rid_len == 0) {
         VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_ASN1);
         return;
     }
 
-    vsc_data_t rid = vscf_asn1_reader_read_octet_str(message_info_der_serializer->asn1_reader);
-    vscf_impl_t *key_encryption_alg_info = vscf_alg_info_der_deserializer_deserialize_inplace(
-            message_info_der_serializer->alg_info_deserializer, error);
-    vsc_data_t encrypted_key = vscf_asn1_reader_read_octet_str(message_info_der_serializer->asn1_reader);
+    vsc_data_t rid = vscf_asn1_reader_read_octet_str(self->asn1_reader);
+    vscf_impl_t *key_encryption_alg_info =
+            vscf_alg_info_der_deserializer_deserialize_inplace(self->alg_info_deserializer, error);
+    vsc_data_t encrypted_key = vscf_asn1_reader_read_octet_str(self->asn1_reader);
 
     if (key_encryption_alg_info == NULL) {
         return;
     }
 
-    if (vscf_asn1_reader_error(message_info_der_serializer->asn1_reader) != vscf_SUCCESS) {
+    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
         vscf_impl_destroy(&key_encryption_alg_info);
         return;
     }
@@ -1017,16 +970,15 @@ vscf_message_info_der_serializer_deserialize_key_recipient_info(
 //
 static void
 vscf_message_info_der_serializer_deserialize_password_recipient_info(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, vscf_message_info_t *message_info,
-        vscf_error_ctx_t *error) {
+        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_ctx_t *error) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
-    vscf_asn1_reader_read_sequence(message_info_der_serializer->asn1_reader);
-    const int version = vscf_asn1_reader_read_int(message_info_der_serializer->asn1_reader);
+    vscf_asn1_reader_read_sequence(self->asn1_reader);
+    const int version = vscf_asn1_reader_read_int(self->asn1_reader);
 
-    if (vscf_asn1_reader_error(message_info_der_serializer->asn1_reader) != vscf_SUCCESS) {
+    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
         return;
     }
 
@@ -1035,21 +987,21 @@ vscf_message_info_der_serializer_deserialize_password_recipient_info(
         return;
     }
 
-    const size_t kdf_len = vscf_asn1_reader_read_context_tag(message_info_der_serializer->asn1_reader, 0);
+    const size_t kdf_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 0);
     if (kdf_len > 0) {
         //  Read: KeyDerivationAlgorithmIdentifier OPTIONAL.
-        (void)vscf_asn1_reader_read_data(message_info_der_serializer->asn1_reader, kdf_len);
+        (void)vscf_asn1_reader_read_data(self->asn1_reader, kdf_len);
     }
 
-    vscf_impl_t *key_encryption_alg_info = vscf_alg_info_der_deserializer_deserialize_inplace(
-            message_info_der_serializer->alg_info_deserializer, error);
-    vsc_data_t encrypted_key = vscf_asn1_reader_read_octet_str(message_info_der_serializer->asn1_reader);
+    vscf_impl_t *key_encryption_alg_info =
+            vscf_alg_info_der_deserializer_deserialize_inplace(self->alg_info_deserializer, error);
+    vsc_data_t encrypted_key = vscf_asn1_reader_read_octet_str(self->asn1_reader);
 
     if (key_encryption_alg_info == NULL) {
         return;
     }
 
-    if (vscf_asn1_reader_error(message_info_der_serializer->asn1_reader) != vscf_SUCCESS) {
+    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
         vscf_impl_destroy(&key_encryption_alg_info);
         return;
     }
@@ -1073,20 +1025,19 @@ vscf_message_info_der_serializer_deserialize_password_recipient_info(
 //
 static void
 vscf_message_info_der_serializer_deserialize_recipient_infos(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, vscf_message_info_t *message_info,
-        vscf_error_ctx_t *error) {
+        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_ctx_t *error) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
-    size_t recipient_infos_len = vscf_asn1_reader_read_set(message_info_der_serializer->asn1_reader);
+    size_t recipient_infos_len = vscf_asn1_reader_read_set(self->asn1_reader);
     if (recipient_infos_len == 0) {
         return;
     }
 
     while (recipient_infos_len != 0) {
-        const size_t recipient_len = vscf_asn1_reader_get_data_len(message_info_der_serializer->asn1_reader);
-        const size_t pwri_len = vscf_asn1_reader_read_context_tag(message_info_der_serializer->asn1_reader, 3);
+        const size_t recipient_len = vscf_asn1_reader_get_data_len(self->asn1_reader);
+        const size_t pwri_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 3);
 
         if (recipient_infos_len >= recipient_len) {
             recipient_infos_len -= recipient_len;
@@ -1099,17 +1050,15 @@ vscf_message_info_der_serializer_deserialize_recipient_infos(
             //
             //  Read: PasswordRecipientInfo.
             //
-            vscf_message_info_der_serializer_deserialize_password_recipient_info(
-                    message_info_der_serializer, message_info, error);
+            vscf_message_info_der_serializer_deserialize_password_recipient_info(self, message_info, error);
         } else {
             //
             //  Read: KeyTransRecipientInfo.
             //
-            vscf_message_info_der_serializer_deserialize_key_recipient_info(
-                    message_info_der_serializer, message_info, error);
+            vscf_message_info_der_serializer_deserialize_key_recipient_info(self, message_info, error);
         }
 
-        if (vscf_asn1_reader_error(message_info_der_serializer->asn1_reader) != vscf_SUCCESS) {
+        if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
             return;
         }
     }
@@ -1128,25 +1077,24 @@ vscf_message_info_der_serializer_deserialize_recipient_infos(
 //
 static void
 vscf_message_info_der_serializer_deserialize_encrypted_content_info(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, vscf_message_info_t *message_info,
-        vscf_error_ctx_t *error) {
+        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_ctx_t *error) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
-    vscf_asn1_reader_read_sequence(message_info_der_serializer->asn1_reader);
-    vsc_data_t content_type_oid = vscf_asn1_reader_read_oid(message_info_der_serializer->asn1_reader);
+    vscf_asn1_reader_read_sequence(self->asn1_reader);
+    vsc_data_t content_type_oid = vscf_asn1_reader_read_oid(self->asn1_reader);
 
-    if (vscf_asn1_reader_error(message_info_der_serializer->asn1_reader) != vscf_SUCCESS) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_asn1_reader_error(message_info_der_serializer->asn1_reader));
+    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_asn1_reader_error(self->asn1_reader));
         return;
     }
 
     const vscf_oid_id_t content_type = vscf_oid_to_id(content_type_oid);
     VSCF_ASSERT(content_type == vscf_oid_id_CMS_DATA);
 
-    vscf_impl_t *content_encryption_algorithm = vscf_alg_info_der_deserializer_deserialize_inplace(
-            message_info_der_serializer->alg_info_deserializer, error);
+    vscf_impl_t *content_encryption_algorithm =
+            vscf_alg_info_der_deserializer_deserialize_inplace(self->alg_info_deserializer, error);
 
 
     if (content_encryption_algorithm == NULL) {
@@ -1169,28 +1117,26 @@ vscf_message_info_der_serializer_deserialize_encrypted_content_info(
 //
 static void
 vscf_message_info_der_serializer_deserialize_enveloped_data(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, vscf_message_info_t *message_info,
-        vscf_error_ctx_t *error) {
+        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_ctx_t *error) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
-    vscf_asn1_reader_read_sequence(message_info_der_serializer->asn1_reader);
+    vscf_asn1_reader_read_sequence(self->asn1_reader);
 
     //
     //  Check version range.
     //
-    const int version = vscf_asn1_reader_read_int(message_info_der_serializer->asn1_reader);
+    const int version = vscf_asn1_reader_read_int(self->asn1_reader);
 
-    if (vscf_asn1_reader_error(message_info_der_serializer->asn1_reader) != vscf_SUCCESS ||
-            (version != 2 && version != 3)) {
+    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS || (version != 2 && version != 3)) {
         VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_ASN1);
         return;
     }
 
-    vscf_message_info_der_serializer_deserialize_recipient_infos(message_info_der_serializer, message_info, error);
-    if (vscf_asn1_reader_error(message_info_der_serializer->asn1_reader) != vscf_SUCCESS) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_asn1_reader_error(message_info_der_serializer->asn1_reader));
+    vscf_message_info_der_serializer_deserialize_recipient_infos(self, message_info, error);
+    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_asn1_reader_error(self->asn1_reader));
         return;
     }
 
@@ -1211,8 +1157,7 @@ vscf_message_info_der_serializer_deserialize_enveloped_data(
     //
     //  Read: encryptedContentInfo.
     //
-    vscf_message_info_der_serializer_deserialize_encrypted_content_info(
-            message_info_der_serializer, message_info, error);
+    vscf_message_info_der_serializer_deserialize_encrypted_content_info(self, message_info, error);
 }
 
 //
@@ -1225,48 +1170,45 @@ vscf_message_info_der_serializer_deserialize_enveloped_data(
 //
 static void
 vscf_message_info_der_serializer_deserialize_cms_content_info(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, vscf_message_info_t *message_info,
-        vscf_error_ctx_t *error) {
+        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_ctx_t *error) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
-    VSCF_ASSERT_PTR(message_info_der_serializer->asn1_reader);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->asn1_reader);
     VSCF_ASSERT_PTR(message_info);
 
-    vscf_asn1_reader_read_sequence(message_info_der_serializer->asn1_reader);
+    vscf_asn1_reader_read_sequence(self->asn1_reader);
 
-    vsc_data_t content_type_oid = vscf_asn1_reader_read_oid(message_info_der_serializer->asn1_reader);
-    if (vscf_asn1_reader_error(message_info_der_serializer->asn1_reader) != vscf_SUCCESS) {
+    vsc_data_t content_type_oid = vscf_asn1_reader_read_oid(self->asn1_reader);
+    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
         return;
     }
 
     const vscf_oid_id_t content_type = vscf_oid_to_id(content_type_oid);
     VSCF_ASSERT(content_type == vscf_oid_id_CMS_ENVELOPED_DATA);
 
-    const size_t content_tag_len = vscf_asn1_reader_read_context_tag(message_info_der_serializer->asn1_reader, 0);
-    if (vscf_asn1_reader_error(message_info_der_serializer->asn1_reader) != vscf_SUCCESS || content_tag_len == 0) {
+    const size_t content_tag_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 0);
+    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS || content_tag_len == 0) {
         VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_ASN1);
         return;
     }
 
-    vscf_message_info_der_serializer_deserialize_enveloped_data(message_info_der_serializer, message_info, error);
+    vscf_message_info_der_serializer_deserialize_enveloped_data(self, message_info, error);
 }
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer_t *message_info_der_serializer) {
+vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer_t *self) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
 
-    if (NULL == message_info_der_serializer->asn1_reader) {
-        vscf_message_info_der_serializer_take_asn1_reader(
-                message_info_der_serializer, vscf_asn1rd_impl(vscf_asn1rd_new()));
+    if (NULL == self->asn1_reader) {
+        vscf_message_info_der_serializer_take_asn1_reader(self, vscf_asn1rd_impl(vscf_asn1rd_new()));
     }
 
-    if (NULL == message_info_der_serializer->asn1_writer) {
-        vscf_message_info_der_serializer_take_asn1_writer(
-                message_info_der_serializer, vscf_asn1wr_impl(vscf_asn1wr_new()));
+    if (NULL == self->asn1_writer) {
+        vscf_message_info_der_serializer_take_asn1_writer(self, vscf_asn1wr_impl(vscf_asn1wr_new()));
     }
 
     return vscf_SUCCESS;
@@ -1277,16 +1219,14 @@ vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer
 //
 VSCF_PUBLIC size_t
 vscf_message_info_der_serializer_serialized_len(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, const vscf_message_info_t *message_info) {
+        vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
-    size_t cms_content_info_len =
-            vscf_message_info_der_serializer_serialized_cms_content_info_len(message_info_der_serializer, message_info);
+    size_t cms_content_info_len = vscf_message_info_der_serializer_serialized_cms_content_info_len(self, message_info);
 
-    size_t custom_params_len =
-            vscf_message_info_der_serializer_serialized_custom_params_len(message_info_der_serializer, message_info);
+    size_t custom_params_len = vscf_message_info_der_serializer_serialized_custom_params_len(self, message_info);
 
     size_t len = 1 + 1 + 8 +            //  VirgilMessageInfo ::= SEQUENCE {
                  1 + 1 + 1 +            //      version ::= INTEGER { v0(0) },
@@ -1300,8 +1240,8 @@ vscf_message_info_der_serializer_serialized_len(
 //  Serialize class "message info".
 //
 VSCF_PUBLIC void
-vscf_message_info_der_serializer_serialize(vscf_message_info_der_serializer_t *message_info_der_serializer,
-        const vscf_message_info_t *message_info, vsc_buffer_t *out) {
+vscf_message_info_der_serializer_serialize(
+        vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info, vsc_buffer_t *out) {
 
     //  VirgilMessageInfo ::= SEQUENCE {
     //      version ::= INTEGER { v0(0) },
@@ -1309,32 +1249,28 @@ vscf_message_info_der_serializer_serialize(vscf_message_info_der_serializer_t *m
     //      customParams [0] IMPLICIT VirgilCustomParams OPTIONAL
     //  }
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT_PTR(vsc_buffer_is_valid(out));
-    VSCF_ASSERT_PTR(message_info_der_serializer->asn1_writer);
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >=
-                vscf_message_info_der_serializer_serialized_len(message_info_der_serializer, message_info));
+    VSCF_ASSERT_PTR(self->asn1_writer);
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_message_info_der_serializer_serialized_len(self, message_info));
 
     bool stored_out_mode = vsc_buffer_is_reverse(out);
     vsc_buffer_switch_reverse_mode(out, true);
-    vscf_asn1_writer_reset(
-            message_info_der_serializer->asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
+    vscf_asn1_writer_reset(self->asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
     size_t message_info_len = 0;
-    message_info_len +=
-            vscf_message_info_der_serializer_serialize_custom_params(message_info_der_serializer, message_info);
+    message_info_len += vscf_message_info_der_serializer_serialize_custom_params(self, message_info);
 
-    message_info_len +=
-            vscf_message_info_der_serializer_serialize_cms_content_info(message_info_der_serializer, message_info);
+    message_info_len += vscf_message_info_der_serializer_serialize_cms_content_info(self, message_info);
 
-    message_info_len += vscf_asn1_writer_write_int(message_info_der_serializer->asn1_writer, 0);
+    message_info_len += vscf_asn1_writer_write_int(self->asn1_writer, 0);
 
-    message_info_len += vscf_asn1_writer_write_sequence(message_info_der_serializer->asn1_writer, message_info_len);
+    message_info_len += vscf_asn1_writer_write_sequence(self->asn1_writer, message_info_len);
 
     vsc_buffer_inc_used(out, message_info_len);
-    vscf_asn1_writer_release(message_info_der_serializer->asn1_writer);
+    vscf_asn1_writer_release(self->asn1_writer);
 
     vsc_buffer_switch_reverse_mode(out, stored_out_mode);
 }
@@ -1344,7 +1280,7 @@ vscf_message_info_der_serializer_serialize(vscf_message_info_der_serializer_t *m
 //
 VSCF_PUBLIC vscf_message_info_t *
 vscf_message_info_der_serializer_deserialize(
-        vscf_message_info_der_serializer_t *message_info_der_serializer, vsc_data_t data, vscf_error_ctx_t *error) {
+        vscf_message_info_der_serializer_t *self, vsc_data_t data, vscf_error_ctx_t *error) {
 
     //  VirgilMessageInfo ::= SEQUENCE {
     //      version ::= INTEGER { v0(0) },
@@ -1352,8 +1288,8 @@ vscf_message_info_der_serializer_deserialize(
     //      customParams [0] IMPLICIT VirgilCustomParams OPTIONAL
     //  }
 
-    VSCF_ASSERT_PTR(message_info_der_serializer);
-    VSCF_ASSERT_PTR(message_info_der_serializer->asn1_reader);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->asn1_reader);
     VSCF_ASSERT(vsc_data_is_valid(data));
 
     vscf_error_ctx_t error_ctx;
@@ -1361,21 +1297,20 @@ vscf_message_info_der_serializer_deserialize(
 
     vscf_message_info_t *message_info = vscf_message_info_new();
 
-    vscf_asn1_reader_reset(message_info_der_serializer->asn1_reader, data);
-    vscf_asn1_reader_read_sequence(message_info_der_serializer->asn1_reader);
-    const int version = vscf_asn1_reader_read_int(message_info_der_serializer->asn1_reader);
+    vscf_asn1_reader_reset(self->asn1_reader, data);
+    vscf_asn1_reader_read_sequence(self->asn1_reader);
+    const int version = vscf_asn1_reader_read_int(self->asn1_reader);
 
-    if (vscf_asn1_reader_error(message_info_der_serializer->asn1_reader) != vscf_SUCCESS || version != 0) {
+    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS || version != 0) {
         VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_ASN1);
         goto error;
     }
 
-    vscf_message_info_der_serializer_deserialize_cms_content_info(
-            message_info_der_serializer, message_info, &error_ctx);
-    vscf_message_info_der_serializer_deserialize_custom_params(message_info_der_serializer, message_info, &error_ctx);
+    vscf_message_info_der_serializer_deserialize_cms_content_info(self, message_info, &error_ctx);
+    vscf_message_info_der_serializer_deserialize_custom_params(self, message_info, &error_ctx);
 
-    if (vscf_asn1_reader_error(message_info_der_serializer->asn1_reader) != vscf_SUCCESS) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_asn1_reader_error(message_info_der_serializer->asn1_reader));
+    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_asn1_reader_error(self->asn1_reader));
         goto error;
     }
 

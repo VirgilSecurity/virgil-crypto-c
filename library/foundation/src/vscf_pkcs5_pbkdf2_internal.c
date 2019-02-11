@@ -180,16 +180,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_init(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
+vscf_pkcs5_pbkdf2_init(vscf_pkcs5_pbkdf2_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(pkcs5_pbkdf2, sizeof(vscf_pkcs5_pbkdf2_t));
+    vscf_zeroize(self, sizeof(vscf_pkcs5_pbkdf2_t));
 
-    pkcs5_pbkdf2->info = &info;
-    pkcs5_pbkdf2->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_pkcs5_pbkdf2_init_ctx(pkcs5_pbkdf2);
+    vscf_pkcs5_pbkdf2_init_ctx(self);
 }
 
 //
@@ -197,25 +197,25 @@ vscf_pkcs5_pbkdf2_init(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
 //  This is a reverse action of the function 'vscf_pkcs5_pbkdf2_init()'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_cleanup(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
+vscf_pkcs5_pbkdf2_cleanup(vscf_pkcs5_pbkdf2_t *self) {
 
-    if (pkcs5_pbkdf2 == NULL || pkcs5_pbkdf2->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (pkcs5_pbkdf2->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--pkcs5_pbkdf2->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_pkcs5_pbkdf2_release_hmac(pkcs5_pbkdf2);
+    vscf_pkcs5_pbkdf2_release_hmac(self);
 
-    vscf_pkcs5_pbkdf2_cleanup_ctx(pkcs5_pbkdf2);
+    vscf_pkcs5_pbkdf2_cleanup_ctx(self);
 
-    vscf_zeroize(pkcs5_pbkdf2, sizeof(vscf_pkcs5_pbkdf2_t));
+    vscf_zeroize(self, sizeof(vscf_pkcs5_pbkdf2_t));
 }
 
 //
@@ -225,12 +225,12 @@ vscf_pkcs5_pbkdf2_cleanup(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
 VSCF_PUBLIC vscf_pkcs5_pbkdf2_t *
 vscf_pkcs5_pbkdf2_new(void) {
 
-    vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2 = (vscf_pkcs5_pbkdf2_t *) vscf_alloc(sizeof (vscf_pkcs5_pbkdf2_t));
-    VSCF_ASSERT_ALLOC(pkcs5_pbkdf2);
+    vscf_pkcs5_pbkdf2_t *self = (vscf_pkcs5_pbkdf2_t *) vscf_alloc(sizeof (vscf_pkcs5_pbkdf2_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_pkcs5_pbkdf2_init(pkcs5_pbkdf2);
+    vscf_pkcs5_pbkdf2_init(self);
 
-    return pkcs5_pbkdf2;
+    return self;
 }
 
 //
@@ -238,12 +238,12 @@ vscf_pkcs5_pbkdf2_new(void) {
 //  This is a reverse action of the function 'vscf_pkcs5_pbkdf2_new()'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_delete(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
+vscf_pkcs5_pbkdf2_delete(vscf_pkcs5_pbkdf2_t *self) {
 
-    vscf_pkcs5_pbkdf2_cleanup(pkcs5_pbkdf2);
+    vscf_pkcs5_pbkdf2_cleanup(self);
 
-    if (pkcs5_pbkdf2 && (pkcs5_pbkdf2->refcnt == 0)) {
-        vscf_dealloc(pkcs5_pbkdf2);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -253,14 +253,14 @@ vscf_pkcs5_pbkdf2_delete(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_destroy(vscf_pkcs5_pbkdf2_t **pkcs5_pbkdf2_ref) {
+vscf_pkcs5_pbkdf2_destroy(vscf_pkcs5_pbkdf2_t **self_ref) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2 = *pkcs5_pbkdf2_ref;
-    *pkcs5_pbkdf2_ref = NULL;
+    vscf_pkcs5_pbkdf2_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_pkcs5_pbkdf2_delete(pkcs5_pbkdf2);
+    vscf_pkcs5_pbkdf2_delete(self);
 }
 
 //
@@ -268,10 +268,10 @@ vscf_pkcs5_pbkdf2_destroy(vscf_pkcs5_pbkdf2_t **pkcs5_pbkdf2_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_pkcs5_pbkdf2_t *
-vscf_pkcs5_pbkdf2_shallow_copy(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
+vscf_pkcs5_pbkdf2_shallow_copy(vscf_pkcs5_pbkdf2_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_pkcs5_pbkdf2_t *)vscf_impl_shallow_copy((vscf_impl_t *)pkcs5_pbkdf2);
+    return (vscf_pkcs5_pbkdf2_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -287,25 +287,25 @@ vscf_pkcs5_pbkdf2_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_pkcs5_pbkdf2_impl(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
+vscf_pkcs5_pbkdf2_impl(vscf_pkcs5_pbkdf2_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2);
-    return (vscf_impl_t *)(pkcs5_pbkdf2);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 //
 //  Setup dependency to the interface 'mac' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_use_hmac(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vscf_impl_t *hmac) {
+vscf_pkcs5_pbkdf2_use_hmac(vscf_pkcs5_pbkdf2_t *self, vscf_impl_t *hmac) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hmac);
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2->hmac == NULL);
+    VSCF_ASSERT_PTR(self->hmac == NULL);
 
     VSCF_ASSERT(vscf_mac_is_implemented(hmac));
 
-    pkcs5_pbkdf2->hmac = vscf_impl_shallow_copy(hmac);
+    self->hmac = vscf_impl_shallow_copy(hmac);
 }
 
 //
@@ -313,26 +313,26 @@ vscf_pkcs5_pbkdf2_use_hmac(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vscf_impl_t *hmac)
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_take_hmac(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vscf_impl_t *hmac) {
+vscf_pkcs5_pbkdf2_take_hmac(vscf_pkcs5_pbkdf2_t *self, vscf_impl_t *hmac) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hmac);
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2->hmac == NULL);
+    VSCF_ASSERT_PTR(self->hmac == NULL);
 
     VSCF_ASSERT(vscf_mac_is_implemented(hmac));
 
-    pkcs5_pbkdf2->hmac = hmac;
+    self->hmac = hmac;
 }
 
 //
 //  Release dependency to the interface 'mac'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_release_hmac(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
+vscf_pkcs5_pbkdf2_release_hmac(vscf_pkcs5_pbkdf2_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&pkcs5_pbkdf2->hmac);
+    vscf_impl_destroy(&self->hmac);
 }
 
 static const vscf_api_t *

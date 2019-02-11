@@ -78,7 +78,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_pkcs5_pbkdf2_init_ctx(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
+vscf_pkcs5_pbkdf2_init_ctx(vscf_pkcs5_pbkdf2_t *self);
 
 //
 //  Release resources of the implementation specific context.
@@ -86,7 +86,7 @@ vscf_pkcs5_pbkdf2_init_ctx(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_pkcs5_pbkdf2_cleanup_ctx(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
+vscf_pkcs5_pbkdf2_cleanup_ctx(vscf_pkcs5_pbkdf2_t *self);
 
 
 // --------------------------------------------------------------------------

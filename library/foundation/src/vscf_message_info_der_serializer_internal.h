@@ -78,7 +78,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_message_info_der_serializer_init_ctx(vscf_message_info_der_serializer_t *message_info_der_serializer);
+vscf_message_info_der_serializer_init_ctx(vscf_message_info_der_serializer_t *self);
 
 //
 //  Release resources of the implementation specific context.
@@ -86,7 +86,7 @@ vscf_message_info_der_serializer_init_ctx(vscf_message_info_der_serializer_t *me
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_message_info_der_serializer_cleanup_ctx(vscf_message_info_der_serializer_t *message_info_der_serializer);
+vscf_message_info_der_serializer_cleanup_ctx(vscf_message_info_der_serializer_t *self);
 
 
 // --------------------------------------------------------------------------
