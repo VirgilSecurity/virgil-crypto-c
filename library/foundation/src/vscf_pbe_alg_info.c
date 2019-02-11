@@ -80,11 +80,11 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_pbe_alg_info_init_ctx(vscf_pbe_alg_info_t *pbe_alg_info) {
+vscf_pbe_alg_info_init_ctx(vscf_pbe_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(pbe_alg_info);
+    VSCF_ASSERT_PTR(self);
 
-    pbe_alg_info->alg_id = vscf_alg_id_NONE;
+    self->alg_id = vscf_alg_id_NONE;
 }
 
 //
@@ -93,13 +93,13 @@ vscf_pbe_alg_info_init_ctx(vscf_pbe_alg_info_t *pbe_alg_info) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_pbe_alg_info_cleanup_ctx(vscf_pbe_alg_info_t *pbe_alg_info) {
+vscf_pbe_alg_info_cleanup_ctx(vscf_pbe_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(pbe_alg_info);
+    VSCF_ASSERT_PTR(self);
 
-    pbe_alg_info->alg_id = vscf_alg_id_NONE;
-    vscf_impl_destroy(&pbe_alg_info->kdf_alg_info);
-    vscf_impl_destroy(&pbe_alg_info->cipher_alg_info);
+    self->alg_id = vscf_alg_id_NONE;
+    vscf_impl_destroy(&self->kdf_alg_info);
+    vscf_impl_destroy(&self->cipher_alg_info);
 }
 
 //
@@ -116,50 +116,50 @@ vscf_pbe_alg_info_new_with_members(
     VSCF_ASSERT_PTR(cipher_alg_info_ref);
     VSCF_ASSERT_PTR(*cipher_alg_info_ref);
 
-    vscf_pbe_alg_info_t *pbe_alg_info = vscf_pbe_alg_info_new();
+    vscf_pbe_alg_info_t *self = vscf_pbe_alg_info_new();
 
-    pbe_alg_info->alg_id = alg_id;
+    self->alg_id = alg_id;
 
-    pbe_alg_info->kdf_alg_info = *kdf_alg_info_ref;
+    self->kdf_alg_info = *kdf_alg_info_ref;
     *kdf_alg_info_ref = NULL;
 
-    pbe_alg_info->cipher_alg_info = *cipher_alg_info_ref;
+    self->cipher_alg_info = *cipher_alg_info_ref;
     *cipher_alg_info_ref = NULL;
 
-    return pbe_alg_info;
+    return self;
 }
 
 //
 //  Return KDF algorithm information.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_pbe_alg_info_kdf_alg_info(const vscf_pbe_alg_info_t *pbe_alg_info) {
+vscf_pbe_alg_info_kdf_alg_info(const vscf_pbe_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(pbe_alg_info);
-    VSCF_ASSERT_PTR(pbe_alg_info->kdf_alg_info);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->kdf_alg_info);
 
-    return pbe_alg_info->kdf_alg_info;
+    return self->kdf_alg_info;
 }
 
 //
 //  Return cipher algorithm information.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_pbe_alg_info_cipher_alg_info(const vscf_pbe_alg_info_t *pbe_alg_info) {
+vscf_pbe_alg_info_cipher_alg_info(const vscf_pbe_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(pbe_alg_info);
-    VSCF_ASSERT_PTR(pbe_alg_info->cipher_alg_info);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->cipher_alg_info);
 
-    return pbe_alg_info->cipher_alg_info;
+    return self->cipher_alg_info;
 }
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_pbe_alg_info_alg_id(const vscf_pbe_alg_info_t *pbe_alg_info) {
+vscf_pbe_alg_info_alg_id(const vscf_pbe_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(pbe_alg_info);
+    VSCF_ASSERT_PTR(self);
 
-    return pbe_alg_info->alg_id;
+    return self->alg_id;
 }

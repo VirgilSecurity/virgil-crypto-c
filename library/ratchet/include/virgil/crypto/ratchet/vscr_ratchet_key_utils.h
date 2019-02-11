@@ -98,13 +98,13 @@ vscr_ratchet_key_utils_ctx_size(void);
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_key_utils_init(vscr_ratchet_key_utils_t *ratchet_key_utils);
+vscr_ratchet_key_utils_init(vscr_ratchet_key_utils_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_key_utils_cleanup(vscr_ratchet_key_utils_t *ratchet_key_utils);
+vscr_ratchet_key_utils_cleanup(vscr_ratchet_key_utils_t *self);
 
 //
 //  Allocate context and perform it's initialization.
@@ -117,34 +117,34 @@ vscr_ratchet_key_utils_new(void);
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_key_utils_delete(vscr_ratchet_key_utils_t *ratchet_key_utils);
+vscr_ratchet_key_utils_delete(vscr_ratchet_key_utils_t *self);
 
 //
 //  Delete given context and nullifies reference.
 //  This is a reverse action of the function 'vscr_ratchet_key_utils_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_key_utils_destroy(vscr_ratchet_key_utils_t **ratchet_key_utils_ref);
+vscr_ratchet_key_utils_destroy(vscr_ratchet_key_utils_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_key_utils_t *
-vscr_ratchet_key_utils_shallow_copy(vscr_ratchet_key_utils_t *ratchet_key_utils);
+vscr_ratchet_key_utils_shallow_copy(vscr_ratchet_key_utils_t *self);
 
 //
 //  Computes 8 bytes key pair id from public key
 //
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_key_utils_compute_public_key_id(vscr_ratchet_key_utils_t *ratchet_key_utils, vsc_data_t public_key,
+vscr_ratchet_key_utils_compute_public_key_id(vscr_ratchet_key_utils_t *self, vsc_data_t public_key,
         vsc_buffer_t *key_id);
 
 VSCR_PUBLIC vsc_buffer_t *
-vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *ratchet_key_utils, vsc_data_t data,
+vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self, vsc_data_t data,
         vscr_error_ctx_t *err_ctx);
 
 VSCR_PUBLIC vsc_buffer_t *
-vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *ratchet_key_utils, vsc_data_t data,
+vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *self, vsc_data_t data,
         vscr_error_ctx_t *err_ctx);
 
 

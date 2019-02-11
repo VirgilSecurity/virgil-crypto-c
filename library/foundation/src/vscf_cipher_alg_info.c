@@ -80,9 +80,9 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_cipher_alg_info_init_ctx(vscf_cipher_alg_info_t *cipher_alg_info) {
+vscf_cipher_alg_info_init_ctx(vscf_cipher_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(cipher_alg_info);
+    VSCF_ASSERT_PTR(self);
 }
 
 //
@@ -91,10 +91,10 @@ vscf_cipher_alg_info_init_ctx(vscf_cipher_alg_info_t *cipher_alg_info) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_cipher_alg_info_cleanup_ctx(vscf_cipher_alg_info_t *cipher_alg_info) {
+vscf_cipher_alg_info_cleanup_ctx(vscf_cipher_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(cipher_alg_info);
-    vsc_buffer_destroy(&cipher_alg_info->nonce);
+    VSCF_ASSERT_PTR(self);
+    vsc_buffer_destroy(&self->nonce);
 }
 
 //
@@ -107,33 +107,33 @@ vscf_cipher_alg_info_new_with_members(vscf_alg_id_t alg_id, vsc_data_t nonce) {
     VSCF_ASSERT(vsc_data_is_valid(nonce));
     VSCF_ASSERT(nonce.len > 0);
 
-    vscf_cipher_alg_info_t *cipher_alg_info = vscf_cipher_alg_info_new();
+    vscf_cipher_alg_info_t *self = vscf_cipher_alg_info_new();
 
-    cipher_alg_info->alg_id = alg_id;
-    cipher_alg_info->nonce = vsc_buffer_new_with_data(nonce);
+    self->alg_id = alg_id;
+    self->nonce = vsc_buffer_new_with_data(nonce);
 
-    return cipher_alg_info;
+    return self;
 }
 
 //
 //  Return IV.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_cipher_alg_info_nonce(const vscf_cipher_alg_info_t *cipher_alg_info) {
+vscf_cipher_alg_info_nonce(const vscf_cipher_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(cipher_alg_info);
-    VSCF_ASSERT_PTR(cipher_alg_info->nonce);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->nonce);
 
-    return vsc_buffer_data(cipher_alg_info->nonce);
+    return vsc_buffer_data(self->nonce);
 }
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_cipher_alg_info_alg_id(const vscf_cipher_alg_info_t *cipher_alg_info) {
+vscf_cipher_alg_info_alg_id(const vscf_cipher_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(cipher_alg_info);
+    VSCF_ASSERT_PTR(self);
 
-    return cipher_alg_info->alg_id;
+    return self->alg_id;
 }

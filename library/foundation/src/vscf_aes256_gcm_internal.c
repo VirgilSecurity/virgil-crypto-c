@@ -347,16 +347,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_aes256_gcm_init(vscf_aes256_gcm_t *aes256_gcm) {
+vscf_aes256_gcm_init(vscf_aes256_gcm_t *self) {
 
-    VSCF_ASSERT_PTR(aes256_gcm);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(aes256_gcm, sizeof(vscf_aes256_gcm_t));
+    vscf_zeroize(self, sizeof(vscf_aes256_gcm_t));
 
-    aes256_gcm->info = &info;
-    aes256_gcm->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_aes256_gcm_init_ctx(aes256_gcm);
+    vscf_aes256_gcm_init_ctx(self);
 }
 
 //
@@ -364,23 +364,23 @@ vscf_aes256_gcm_init(vscf_aes256_gcm_t *aes256_gcm) {
 //  This is a reverse action of the function 'vscf_aes256_gcm_init()'.
 //
 VSCF_PUBLIC void
-vscf_aes256_gcm_cleanup(vscf_aes256_gcm_t *aes256_gcm) {
+vscf_aes256_gcm_cleanup(vscf_aes256_gcm_t *self) {
 
-    if (aes256_gcm == NULL || aes256_gcm->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (aes256_gcm->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--aes256_gcm->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_aes256_gcm_cleanup_ctx(aes256_gcm);
+    vscf_aes256_gcm_cleanup_ctx(self);
 
-    vscf_zeroize(aes256_gcm, sizeof(vscf_aes256_gcm_t));
+    vscf_zeroize(self, sizeof(vscf_aes256_gcm_t));
 }
 
 //
@@ -390,12 +390,12 @@ vscf_aes256_gcm_cleanup(vscf_aes256_gcm_t *aes256_gcm) {
 VSCF_PUBLIC vscf_aes256_gcm_t *
 vscf_aes256_gcm_new(void) {
 
-    vscf_aes256_gcm_t *aes256_gcm = (vscf_aes256_gcm_t *) vscf_alloc(sizeof (vscf_aes256_gcm_t));
-    VSCF_ASSERT_ALLOC(aes256_gcm);
+    vscf_aes256_gcm_t *self = (vscf_aes256_gcm_t *) vscf_alloc(sizeof (vscf_aes256_gcm_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_aes256_gcm_init(aes256_gcm);
+    vscf_aes256_gcm_init(self);
 
-    return aes256_gcm;
+    return self;
 }
 
 //
@@ -403,12 +403,12 @@ vscf_aes256_gcm_new(void) {
 //  This is a reverse action of the function 'vscf_aes256_gcm_new()'.
 //
 VSCF_PUBLIC void
-vscf_aes256_gcm_delete(vscf_aes256_gcm_t *aes256_gcm) {
+vscf_aes256_gcm_delete(vscf_aes256_gcm_t *self) {
 
-    vscf_aes256_gcm_cleanup(aes256_gcm);
+    vscf_aes256_gcm_cleanup(self);
 
-    if (aes256_gcm && (aes256_gcm->refcnt == 0)) {
-        vscf_dealloc(aes256_gcm);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -418,14 +418,14 @@ vscf_aes256_gcm_delete(vscf_aes256_gcm_t *aes256_gcm) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_aes256_gcm_destroy(vscf_aes256_gcm_t **aes256_gcm_ref) {
+vscf_aes256_gcm_destroy(vscf_aes256_gcm_t **self_ref) {
 
-    VSCF_ASSERT_PTR(aes256_gcm_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_aes256_gcm_t *aes256_gcm = *aes256_gcm_ref;
-    *aes256_gcm_ref = NULL;
+    vscf_aes256_gcm_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_aes256_gcm_delete(aes256_gcm);
+    vscf_aes256_gcm_delete(self);
 }
 
 //
@@ -433,10 +433,10 @@ vscf_aes256_gcm_destroy(vscf_aes256_gcm_t **aes256_gcm_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_aes256_gcm_t *
-vscf_aes256_gcm_shallow_copy(vscf_aes256_gcm_t *aes256_gcm) {
+vscf_aes256_gcm_shallow_copy(vscf_aes256_gcm_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_aes256_gcm_t *)vscf_impl_shallow_copy((vscf_impl_t *)aes256_gcm);
+    return (vscf_aes256_gcm_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -479,10 +479,10 @@ vscf_aes256_gcm_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_aes256_gcm_impl(vscf_aes256_gcm_t *aes256_gcm) {
+vscf_aes256_gcm_impl(vscf_aes256_gcm_t *self) {
 
-    VSCF_ASSERT_PTR(aes256_gcm);
-    return (vscf_impl_t *)(aes256_gcm);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *

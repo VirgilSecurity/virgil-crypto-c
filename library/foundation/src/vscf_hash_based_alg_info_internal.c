@@ -111,16 +111,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_hash_based_alg_info_init(vscf_hash_based_alg_info_t *hash_based_alg_info) {
+vscf_hash_based_alg_info_init(vscf_hash_based_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(hash_based_alg_info);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(hash_based_alg_info, sizeof(vscf_hash_based_alg_info_t));
+    vscf_zeroize(self, sizeof(vscf_hash_based_alg_info_t));
 
-    hash_based_alg_info->info = &info;
-    hash_based_alg_info->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_hash_based_alg_info_init_ctx(hash_based_alg_info);
+    vscf_hash_based_alg_info_init_ctx(self);
 }
 
 //
@@ -128,23 +128,23 @@ vscf_hash_based_alg_info_init(vscf_hash_based_alg_info_t *hash_based_alg_info) {
 //  This is a reverse action of the function 'vscf_hash_based_alg_info_init()'.
 //
 VSCF_PUBLIC void
-vscf_hash_based_alg_info_cleanup(vscf_hash_based_alg_info_t *hash_based_alg_info) {
+vscf_hash_based_alg_info_cleanup(vscf_hash_based_alg_info_t *self) {
 
-    if (hash_based_alg_info == NULL || hash_based_alg_info->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (hash_based_alg_info->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--hash_based_alg_info->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_hash_based_alg_info_cleanup_ctx(hash_based_alg_info);
+    vscf_hash_based_alg_info_cleanup_ctx(self);
 
-    vscf_zeroize(hash_based_alg_info, sizeof(vscf_hash_based_alg_info_t));
+    vscf_zeroize(self, sizeof(vscf_hash_based_alg_info_t));
 }
 
 //
@@ -154,12 +154,12 @@ vscf_hash_based_alg_info_cleanup(vscf_hash_based_alg_info_t *hash_based_alg_info
 VSCF_PUBLIC vscf_hash_based_alg_info_t *
 vscf_hash_based_alg_info_new(void) {
 
-    vscf_hash_based_alg_info_t *hash_based_alg_info = (vscf_hash_based_alg_info_t *) vscf_alloc(sizeof (vscf_hash_based_alg_info_t));
-    VSCF_ASSERT_ALLOC(hash_based_alg_info);
+    vscf_hash_based_alg_info_t *self = (vscf_hash_based_alg_info_t *) vscf_alloc(sizeof (vscf_hash_based_alg_info_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_hash_based_alg_info_init(hash_based_alg_info);
+    vscf_hash_based_alg_info_init(self);
 
-    return hash_based_alg_info;
+    return self;
 }
 
 //
@@ -167,12 +167,12 @@ vscf_hash_based_alg_info_new(void) {
 //  This is a reverse action of the function 'vscf_hash_based_alg_info_new()'.
 //
 VSCF_PUBLIC void
-vscf_hash_based_alg_info_delete(vscf_hash_based_alg_info_t *hash_based_alg_info) {
+vscf_hash_based_alg_info_delete(vscf_hash_based_alg_info_t *self) {
 
-    vscf_hash_based_alg_info_cleanup(hash_based_alg_info);
+    vscf_hash_based_alg_info_cleanup(self);
 
-    if (hash_based_alg_info && (hash_based_alg_info->refcnt == 0)) {
-        vscf_dealloc(hash_based_alg_info);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -182,14 +182,14 @@ vscf_hash_based_alg_info_delete(vscf_hash_based_alg_info_t *hash_based_alg_info)
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_hash_based_alg_info_destroy(vscf_hash_based_alg_info_t **hash_based_alg_info_ref) {
+vscf_hash_based_alg_info_destroy(vscf_hash_based_alg_info_t **self_ref) {
 
-    VSCF_ASSERT_PTR(hash_based_alg_info_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_hash_based_alg_info_t *hash_based_alg_info = *hash_based_alg_info_ref;
-    *hash_based_alg_info_ref = NULL;
+    vscf_hash_based_alg_info_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_hash_based_alg_info_delete(hash_based_alg_info);
+    vscf_hash_based_alg_info_delete(self);
 }
 
 //
@@ -197,10 +197,10 @@ vscf_hash_based_alg_info_destroy(vscf_hash_based_alg_info_t **hash_based_alg_inf
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_hash_based_alg_info_t *
-vscf_hash_based_alg_info_shallow_copy(vscf_hash_based_alg_info_t *hash_based_alg_info) {
+vscf_hash_based_alg_info_shallow_copy(vscf_hash_based_alg_info_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_hash_based_alg_info_t *)vscf_impl_shallow_copy((vscf_impl_t *)hash_based_alg_info);
+    return (vscf_hash_based_alg_info_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -216,10 +216,10 @@ vscf_hash_based_alg_info_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_t *hash_based_alg_info) {
+vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(hash_based_alg_info);
-    return (vscf_impl_t *)(hash_based_alg_info);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *

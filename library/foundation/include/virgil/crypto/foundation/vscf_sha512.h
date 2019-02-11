@@ -112,20 +112,20 @@ vscf_sha512_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_sha512_impl(vscf_sha512_t *sha512);
+vscf_sha512_impl(vscf_sha512_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_sha512_init(vscf_sha512_t *sha512);
+vscf_sha512_init(vscf_sha512_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_sha512_init()'.
 //
 VSCF_PUBLIC void
-vscf_sha512_cleanup(vscf_sha512_t *sha512);
+vscf_sha512_cleanup(vscf_sha512_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -139,7 +139,7 @@ vscf_sha512_new(void);
 //  This is a reverse action of the function 'vscf_sha512_new()'.
 //
 VSCF_PUBLIC void
-vscf_sha512_delete(vscf_sha512_t *sha512);
+vscf_sha512_delete(vscf_sha512_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -147,32 +147,32 @@ vscf_sha512_delete(vscf_sha512_t *sha512);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha512_destroy(vscf_sha512_t **sha512_ref);
+vscf_sha512_destroy(vscf_sha512_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_sha512_t *
-vscf_sha512_shallow_copy(vscf_sha512_t *sha512);
+vscf_sha512_shallow_copy(vscf_sha512_t *self);
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_sha512_alg_id(const vscf_sha512_t *sha512);
+vscf_sha512_alg_id(const vscf_sha512_t *self);
 
 //
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_sha512_produce_alg_info(const vscf_sha512_t *sha512);
+vscf_sha512_produce_alg_info(const vscf_sha512_t *self);
 
 //
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_sha512_restore_alg_info(vscf_sha512_t *sha512, const vscf_impl_t *alg_info);
+vscf_sha512_restore_alg_info(vscf_sha512_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Calculate hash over given data.
@@ -184,19 +184,19 @@ vscf_sha512_hash(vsc_data_t data, vsc_buffer_t *digest);
 //  Start a new hashing.
 //
 VSCF_PUBLIC void
-vscf_sha512_start(vscf_sha512_t *sha512);
+vscf_sha512_start(vscf_sha512_t *self);
 
 //
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_sha512_update(vscf_sha512_t *sha512, vsc_data_t data);
+vscf_sha512_update(vscf_sha512_t *self, vsc_data_t data);
 
 //
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_sha512_finish(vscf_sha512_t *sha512, vsc_buffer_t *digest);
+vscf_sha512_finish(vscf_sha512_t *self, vsc_buffer_t *digest);
 
 
 // --------------------------------------------------------------------------

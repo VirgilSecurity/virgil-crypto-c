@@ -98,20 +98,20 @@ vscf_kdf1_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_kdf1_impl(vscf_kdf1_t *kdf1);
+vscf_kdf1_impl(vscf_kdf1_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_kdf1_init(vscf_kdf1_t *kdf1);
+vscf_kdf1_init(vscf_kdf1_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_kdf1_init()'.
 //
 VSCF_PUBLIC void
-vscf_kdf1_cleanup(vscf_kdf1_t *kdf1);
+vscf_kdf1_cleanup(vscf_kdf1_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -125,7 +125,7 @@ vscf_kdf1_new(void);
 //  This is a reverse action of the function 'vscf_kdf1_new()'.
 //
 VSCF_PUBLIC void
-vscf_kdf1_delete(vscf_kdf1_t *kdf1);
+vscf_kdf1_delete(vscf_kdf1_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -133,57 +133,57 @@ vscf_kdf1_delete(vscf_kdf1_t *kdf1);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_kdf1_destroy(vscf_kdf1_t **kdf1_ref);
+vscf_kdf1_destroy(vscf_kdf1_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_kdf1_t *
-vscf_kdf1_shallow_copy(vscf_kdf1_t *kdf1);
+vscf_kdf1_shallow_copy(vscf_kdf1_t *self);
 
 //
 //  Setup dependency to the interface 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_kdf1_use_hash(vscf_kdf1_t *kdf1, vscf_impl_t *hash);
+vscf_kdf1_use_hash(vscf_kdf1_t *self, vscf_impl_t *hash);
 
 //
 //  Setup dependency to the interface 'hash' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_kdf1_take_hash(vscf_kdf1_t *kdf1, vscf_impl_t *hash);
+vscf_kdf1_take_hash(vscf_kdf1_t *self, vscf_impl_t *hash);
 
 //
 //  Release dependency to the interface 'hash'.
 //
 VSCF_PUBLIC void
-vscf_kdf1_release_hash(vscf_kdf1_t *kdf1);
+vscf_kdf1_release_hash(vscf_kdf1_t *self);
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_kdf1_alg_id(const vscf_kdf1_t *kdf1);
+vscf_kdf1_alg_id(const vscf_kdf1_t *self);
 
 //
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_kdf1_produce_alg_info(const vscf_kdf1_t *kdf1);
+vscf_kdf1_produce_alg_info(const vscf_kdf1_t *self);
 
 //
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_kdf1_restore_alg_info(vscf_kdf1_t *kdf1, const vscf_impl_t *alg_info);
+vscf_kdf1_restore_alg_info(vscf_kdf1_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Derive key of the requested length from the given data.
 //
 VSCF_PUBLIC void
-vscf_kdf1_derive(vscf_kdf1_t *kdf1, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
+vscf_kdf1_derive(vscf_kdf1_t *self, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
 
 
 // --------------------------------------------------------------------------

@@ -98,20 +98,20 @@ vscf_pkcs5_pbkdf2_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_pkcs5_pbkdf2_impl(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
+vscf_pkcs5_pbkdf2_impl(vscf_pkcs5_pbkdf2_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_init(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
+vscf_pkcs5_pbkdf2_init(vscf_pkcs5_pbkdf2_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_pkcs5_pbkdf2_init()'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_cleanup(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
+vscf_pkcs5_pbkdf2_cleanup(vscf_pkcs5_pbkdf2_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -125,7 +125,7 @@ vscf_pkcs5_pbkdf2_new(void);
 //  This is a reverse action of the function 'vscf_pkcs5_pbkdf2_new()'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_delete(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
+vscf_pkcs5_pbkdf2_delete(vscf_pkcs5_pbkdf2_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -133,76 +133,76 @@ vscf_pkcs5_pbkdf2_delete(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_destroy(vscf_pkcs5_pbkdf2_t **pkcs5_pbkdf2_ref);
+vscf_pkcs5_pbkdf2_destroy(vscf_pkcs5_pbkdf2_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_pkcs5_pbkdf2_t *
-vscf_pkcs5_pbkdf2_shallow_copy(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
+vscf_pkcs5_pbkdf2_shallow_copy(vscf_pkcs5_pbkdf2_t *self);
 
 //
 //  Setup dependency to the interface 'mac' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_use_hmac(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vscf_impl_t *hmac);
+vscf_pkcs5_pbkdf2_use_hmac(vscf_pkcs5_pbkdf2_t *self, vscf_impl_t *hmac);
 
 //
 //  Setup dependency to the interface 'mac' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_take_hmac(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vscf_impl_t *hmac);
+vscf_pkcs5_pbkdf2_take_hmac(vscf_pkcs5_pbkdf2_t *self, vscf_impl_t *hmac);
 
 //
 //  Release dependency to the interface 'mac'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_release_hmac(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
+vscf_pkcs5_pbkdf2_release_hmac(vscf_pkcs5_pbkdf2_t *self);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_pkcs5_pbkdf2_setup_defaults(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
+vscf_pkcs5_pbkdf2_setup_defaults(vscf_pkcs5_pbkdf2_t *self);
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_pkcs5_pbkdf2_alg_id(const vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
+vscf_pkcs5_pbkdf2_alg_id(const vscf_pkcs5_pbkdf2_t *self);
 
 //
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_pkcs5_pbkdf2_produce_alg_info(const vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
+vscf_pkcs5_pbkdf2_produce_alg_info(const vscf_pkcs5_pbkdf2_t *self);
 
 //
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_pkcs5_pbkdf2_restore_alg_info(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, const vscf_impl_t *alg_info);
+vscf_pkcs5_pbkdf2_restore_alg_info(vscf_pkcs5_pbkdf2_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Derive key of the requested length from the given data.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_derive(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
+vscf_pkcs5_pbkdf2_derive(vscf_pkcs5_pbkdf2_t *self, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
 
 //
 //  Prepare algorithm to derive new key.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_reset(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vsc_data_t salt, size_t iteration_count);
+vscf_pkcs5_pbkdf2_reset(vscf_pkcs5_pbkdf2_t *self, vsc_data_t salt, size_t iteration_count);
 
 //
 //  Setup application specific information (optional).
 //  Can be empty.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_set_info(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vsc_data_t info);
+vscf_pkcs5_pbkdf2_set_info(vscf_pkcs5_pbkdf2_t *self, vsc_data_t info);
 
 
 // --------------------------------------------------------------------------

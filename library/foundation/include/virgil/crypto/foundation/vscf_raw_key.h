@@ -96,13 +96,13 @@ vscf_raw_key_ctx_size(void);
 //  Perform initialization of pre-allocated context.
 //
 VSCF_PUBLIC void
-vscf_raw_key_init(vscf_raw_key_t *raw_key);
+vscf_raw_key_init(vscf_raw_key_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCF_PUBLIC void
-vscf_raw_key_cleanup(vscf_raw_key_t *raw_key);
+vscf_raw_key_cleanup(vscf_raw_key_t *self);
 
 //
 //  Allocate context and perform it's initialization.
@@ -128,32 +128,32 @@ vscf_raw_key_new_with_buffer(vscf_alg_id_t alg_id, vsc_buffer_t *buffer);
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCF_PUBLIC void
-vscf_raw_key_delete(vscf_raw_key_t *raw_key);
+vscf_raw_key_delete(vscf_raw_key_t *self);
 
 //
 //  Delete given context and nullifies reference.
 //  This is a reverse action of the function 'vscf_raw_key_new ()'.
 //
 VSCF_PUBLIC void
-vscf_raw_key_destroy(vscf_raw_key_t **raw_key_ref);
+vscf_raw_key_destroy(vscf_raw_key_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_raw_key_shallow_copy(vscf_raw_key_t *raw_key);
+vscf_raw_key_shallow_copy(vscf_raw_key_t *self);
 
 //
 //  Returns asymmetric algorithm type that raw key belongs to.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_raw_key_alg_id(vscf_raw_key_t *raw_key);
+vscf_raw_key_alg_id(vscf_raw_key_t *self);
 
 //
 //  Return raw key data.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_raw_key_data(vscf_raw_key_t *raw_key);
+vscf_raw_key_data(vscf_raw_key_t *self);
 
 
 // --------------------------------------------------------------------------

@@ -89,7 +89,7 @@ struct vscr_ratchet_cipher_t {
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_cipher_init_ctx(vscr_ratchet_cipher_t *ratchet_cipher);
+vscr_ratchet_cipher_init_ctx(vscr_ratchet_cipher_t *self);
 
 //
 //  Release all inner resources.
@@ -97,10 +97,10 @@ vscr_ratchet_cipher_init_ctx(vscr_ratchet_cipher_t *ratchet_cipher);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_cipher_cleanup_ctx(vscr_ratchet_cipher_t *ratchet_cipher);
+vscr_ratchet_cipher_cleanup_ctx(vscr_ratchet_cipher_t *self);
 
 static void
-vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *ratchet_cipher, vsc_data_t key);
+vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, vsc_data_t key);
 
 //
 //  Return size of 'vscr_ratchet_cipher_t'.
@@ -115,37 +115,37 @@ vscr_ratchet_cipher_ctx_size(void) {
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_init(vscr_ratchet_cipher_t *ratchet_cipher) {
+vscr_ratchet_cipher_init(vscr_ratchet_cipher_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_cipher);
+    VSCR_ASSERT_PTR(self);
 
-    vscr_zeroize(ratchet_cipher, sizeof(vscr_ratchet_cipher_t));
+    vscr_zeroize(self, sizeof(vscr_ratchet_cipher_t));
 
-    ratchet_cipher->refcnt = 1;
+    self->refcnt = 1;
 
-    vscr_ratchet_cipher_init_ctx(ratchet_cipher);
+    vscr_ratchet_cipher_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_cleanup(vscr_ratchet_cipher_t *ratchet_cipher) {
+vscr_ratchet_cipher_cleanup(vscr_ratchet_cipher_t *self) {
 
-    if (ratchet_cipher == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    if (ratchet_cipher->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--ratchet_cipher->refcnt == 0) {
-        vscr_ratchet_cipher_cleanup_ctx(ratchet_cipher);
+    if (--self->refcnt == 0) {
+        vscr_ratchet_cipher_cleanup_ctx(self);
 
-        vscr_ratchet_cipher_release_aes256_gcm(ratchet_cipher);
+        vscr_ratchet_cipher_release_aes256_gcm(self);
 
-        vscr_zeroize(ratchet_cipher, sizeof(vscr_ratchet_cipher_t));
+        vscr_zeroize(self, sizeof(vscr_ratchet_cipher_t));
     }
 }
 
@@ -155,14 +155,14 @@ vscr_ratchet_cipher_cleanup(vscr_ratchet_cipher_t *ratchet_cipher) {
 VSCR_PUBLIC vscr_ratchet_cipher_t *
 vscr_ratchet_cipher_new(void) {
 
-    vscr_ratchet_cipher_t *ratchet_cipher = (vscr_ratchet_cipher_t *) vscr_alloc(sizeof (vscr_ratchet_cipher_t));
-    VSCR_ASSERT_ALLOC(ratchet_cipher);
+    vscr_ratchet_cipher_t *self = (vscr_ratchet_cipher_t *) vscr_alloc(sizeof (vscr_ratchet_cipher_t));
+    VSCR_ASSERT_ALLOC(self);
 
-    vscr_ratchet_cipher_init(ratchet_cipher);
+    vscr_ratchet_cipher_init(self);
 
-    ratchet_cipher->self_dealloc_cb = vscr_dealloc;
+    self->self_dealloc_cb = vscr_dealloc;
 
-    return ratchet_cipher;
+    return self;
 }
 
 //
@@ -170,18 +170,18 @@ vscr_ratchet_cipher_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_delete(vscr_ratchet_cipher_t *ratchet_cipher) {
+vscr_ratchet_cipher_delete(vscr_ratchet_cipher_t *self) {
 
-    if (ratchet_cipher == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    vscr_dealloc_fn self_dealloc_cb = ratchet_cipher->self_dealloc_cb;
+    vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscr_ratchet_cipher_cleanup(ratchet_cipher);
+    vscr_ratchet_cipher_cleanup(self);
 
-    if (ratchet_cipher->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(ratchet_cipher);
+    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(self);
     }
 }
 
@@ -190,40 +190,40 @@ vscr_ratchet_cipher_delete(vscr_ratchet_cipher_t *ratchet_cipher) {
 //  This is a reverse action of the function 'vscr_ratchet_cipher_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_destroy(vscr_ratchet_cipher_t **ratchet_cipher_ref) {
+vscr_ratchet_cipher_destroy(vscr_ratchet_cipher_t **self_ref) {
 
-    VSCR_ASSERT_PTR(ratchet_cipher_ref);
+    VSCR_ASSERT_PTR(self_ref);
 
-    vscr_ratchet_cipher_t *ratchet_cipher = *ratchet_cipher_ref;
-    *ratchet_cipher_ref = NULL;
+    vscr_ratchet_cipher_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscr_ratchet_cipher_delete(ratchet_cipher);
+    vscr_ratchet_cipher_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_cipher_t *
-vscr_ratchet_cipher_shallow_copy(vscr_ratchet_cipher_t *ratchet_cipher) {
+vscr_ratchet_cipher_shallow_copy(vscr_ratchet_cipher_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_cipher);
+    VSCR_ASSERT_PTR(self);
 
-    ++ratchet_cipher->refcnt;
+    ++self->refcnt;
 
-    return ratchet_cipher;
+    return self;
 }
 
 //
 //  Setup dependency to the implementation 'aes256 gcm' with shared ownership.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_use_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher, vscf_aes256_gcm_t *aes256_gcm) {
+vscr_ratchet_cipher_use_aes256_gcm(vscr_ratchet_cipher_t *self, vscf_aes256_gcm_t *aes256_gcm) {
 
-    VSCR_ASSERT_PTR(ratchet_cipher);
+    VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(aes256_gcm);
-    VSCR_ASSERT_PTR(ratchet_cipher->aes256_gcm == NULL);
+    VSCR_ASSERT_PTR(self->aes256_gcm == NULL);
 
-    ratchet_cipher->aes256_gcm = vscf_aes256_gcm_shallow_copy(aes256_gcm);
+    self->aes256_gcm = vscf_aes256_gcm_shallow_copy(aes256_gcm);
 }
 
 //
@@ -231,24 +231,24 @@ vscr_ratchet_cipher_use_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher, vscf_a
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_take_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher, vscf_aes256_gcm_t *aes256_gcm) {
+vscr_ratchet_cipher_take_aes256_gcm(vscr_ratchet_cipher_t *self, vscf_aes256_gcm_t *aes256_gcm) {
 
-    VSCR_ASSERT_PTR(ratchet_cipher);
+    VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(aes256_gcm);
-    VSCR_ASSERT_PTR(ratchet_cipher->aes256_gcm == NULL);
+    VSCR_ASSERT_PTR(self->aes256_gcm == NULL);
 
-    ratchet_cipher->aes256_gcm = aes256_gcm;
+    self->aes256_gcm = aes256_gcm;
 }
 
 //
 //  Release dependency to the implementation 'aes256 gcm'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_release_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher) {
+vscr_ratchet_cipher_release_aes256_gcm(vscr_ratchet_cipher_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_cipher);
+    VSCR_ASSERT_PTR(self);
 
-    vscf_aes256_gcm_destroy(&ratchet_cipher->aes256_gcm);
+    vscf_aes256_gcm_destroy(&self->aes256_gcm);
 }
 
 
@@ -265,11 +265,11 @@ vscr_ratchet_cipher_release_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher) {
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_cipher_init_ctx(vscr_ratchet_cipher_t *ratchet_cipher) {
+vscr_ratchet_cipher_init_ctx(vscr_ratchet_cipher_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_cipher);
+    VSCR_ASSERT_PTR(self);
 
-    vscr_ratchet_cipher_take_aes256_gcm(ratchet_cipher, vscf_aes256_gcm_new());
+    vscr_ratchet_cipher_take_aes256_gcm(self, vscf_aes256_gcm_new());
 }
 
 //
@@ -278,28 +278,28 @@ vscr_ratchet_cipher_init_ctx(vscr_ratchet_cipher_t *ratchet_cipher) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_cipher_cleanup_ctx(vscr_ratchet_cipher_t *ratchet_cipher) {
+vscr_ratchet_cipher_cleanup_ctx(vscr_ratchet_cipher_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_cipher);
+    VSCR_ASSERT_PTR(self);
 }
 
 VSCR_PUBLIC size_t
-vscr_ratchet_cipher_encrypt_len(vscr_ratchet_cipher_t *ratchet_cipher, size_t plain_text_len) {
+vscr_ratchet_cipher_encrypt_len(vscr_ratchet_cipher_t *self, size_t plain_text_len) {
 
-    return vscf_aes256_gcm_encrypted_len(ratchet_cipher->aes256_gcm, plain_text_len);
+    return vscf_aes256_gcm_encrypted_len(self->aes256_gcm, plain_text_len);
 }
 
 VSCR_PUBLIC size_t
-vscr_ratchet_cipher_decrypt_len(vscr_ratchet_cipher_t *ratchet_cipher, size_t cipher_text_len) {
+vscr_ratchet_cipher_decrypt_len(vscr_ratchet_cipher_t *self, size_t cipher_text_len) {
 
-    return vscf_aes256_gcm_decrypted_len(ratchet_cipher->aes256_gcm, cipher_text_len);
+    return vscf_aes256_gcm_decrypted_len(self->aes256_gcm, cipher_text_len);
 }
 
 static void
-vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *ratchet_cipher, vsc_data_t key) {
+vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, vsc_data_t key) {
 
-    VSCR_ASSERT_PTR(ratchet_cipher);
-    VSCR_ASSERT_PTR(ratchet_cipher->aes256_gcm);
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(self->aes256_gcm);
 
     vscf_hkdf_t *hkdf = vscf_hkdf_new();
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
@@ -315,25 +315,24 @@ vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *ratchet_cipher, vsc_data
 
     vscf_hkdf_destroy(&hkdf);
 
-    vscf_aes256_gcm_set_key(ratchet_cipher->aes256_gcm, vsc_data(derived_secret, vscf_aes256_gcm_KEY_LEN));
+    vscf_aes256_gcm_set_key(self->aes256_gcm, vsc_data(derived_secret, vscf_aes256_gcm_KEY_LEN));
     vscf_aes256_gcm_set_nonce(
-            ratchet_cipher->aes256_gcm, vsc_data(derived_secret + vscf_aes256_gcm_KEY_LEN, vscf_aes256_gcm_NONCE_LEN));
+            self->aes256_gcm, vsc_data(derived_secret + vscf_aes256_gcm_KEY_LEN, vscf_aes256_gcm_NONCE_LEN));
 
     vsc_buffer_delete(&buffer);
     vscr_zeroize(derived_secret, sizeof(derived_secret));
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_cipher_encrypt(
-        vscr_ratchet_cipher_t *ratchet_cipher, vsc_data_t key, vsc_data_t plain_text, vsc_buffer_t *buffer) {
+vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t plain_text, vsc_buffer_t *buffer) {
 
-    VSCR_ASSERT_PTR(ratchet_cipher);
+    VSCR_ASSERT_PTR(self);
 
-    VSCR_ASSERT(vsc_buffer_unused_len(buffer) >= vscr_ratchet_cipher_encrypt_len(ratchet_cipher, plain_text.len));
+    VSCR_ASSERT(vsc_buffer_unused_len(buffer) >= vscr_ratchet_cipher_encrypt_len(self, plain_text.len));
 
-    vscr_ratchet_cipher_setup_cipher(ratchet_cipher, key);
+    vscr_ratchet_cipher_setup_cipher(self, key);
 
-    vscf_error_t result = vscf_aes256_gcm_encrypt(ratchet_cipher->aes256_gcm, plain_text, buffer);
+    vscf_error_t result = vscf_aes256_gcm_encrypt(self->aes256_gcm, plain_text, buffer);
 
     if (result != vscf_SUCCESS) {
         return vscr_error_AES;
@@ -343,16 +342,15 @@ vscr_ratchet_cipher_encrypt(
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_cipher_decrypt(
-        vscr_ratchet_cipher_t *ratchet_cipher, vsc_data_t key, vsc_data_t cipher_text, vsc_buffer_t *buffer) {
+vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t cipher_text, vsc_buffer_t *buffer) {
 
-    VSCR_UNUSED(ratchet_cipher);
+    VSCR_UNUSED(self);
 
-    VSCR_ASSERT(vsc_buffer_unused_len(buffer) >= vscr_ratchet_cipher_decrypt_len(ratchet_cipher, cipher_text.len));
+    VSCR_ASSERT(vsc_buffer_unused_len(buffer) >= vscr_ratchet_cipher_decrypt_len(self, cipher_text.len));
 
-    vscr_ratchet_cipher_setup_cipher(ratchet_cipher, key);
+    vscr_ratchet_cipher_setup_cipher(self, key);
 
-    vscf_error_t result = vscf_aes256_gcm_decrypt(ratchet_cipher->aes256_gcm, cipher_text, buffer);
+    vscf_error_t result = vscf_aes256_gcm_decrypt(self->aes256_gcm, cipher_text, buffer);
 
     if (result != vscf_SUCCESS) {
         return vscr_error_AES;
