@@ -513,4 +513,24 @@ function js_generate_js_source_files(source, wrapper)
   endfor
 endfunction
 
+function js_generate_index_js_file(source, wrapper)
+  my.indent_levels = js_create_indent_levels()
+  output my.wrapper.index_js_file_path
+    if count(my.source.js_module) > 0
+      js_out("module.exports = Object.assign(", my.indent_levels.first)
+      js_out("{},", my.indent_levels.second)
+      for my.source.js_module
+        my.require = "require('./$(js_module.js_source_file:no)')"
+        if !last()
+          my.require += ","
+        endif
+        js_out(my.require, my.indent_levels.second)
+      endfor
+      js_out(");", my.indent_levels.first)
+    else
+      js_out("module.exports = {};", my.indent_levels.first)
+    endif
+  close
+endfunction
+
 .endtemplate

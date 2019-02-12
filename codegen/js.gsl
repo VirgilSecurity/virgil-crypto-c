@@ -233,6 +233,9 @@ function js_resolve(project, wrapper)
   my.wrapper.root_dir = cat_path("../wrappers/$(my.wrapper.lang:no)", "crypto")
   my.wrapper.source_dir = cat_path(my.wrapper.root_dir, "src")
   my.wrapper.project_source_dir = cat_path(my.wrapper.source_dir, my.wrapper.name)
+
+  my.wrapper.index_js_file = "index.js"
+  my.wrapper.index_js_file_path = cat_path(my.wrapper.project_source_dir, my.wrapper.index_js_file)
 endfunction
 
 function js_generate_project(source, wrapper)
@@ -247,6 +250,7 @@ function js_generate_sources(source, wrapper)
   js_generate_cpp_header_files(my.source, my.wrapper)
   js_generate_cpp_source_files(my.source, my.wrapper)
   js_generate_js_source_files(my.source, my.wrapper)
+  js_generate_index_js_file(my.source, my.wrapper)
 endfunction
 
 .endtemplate
