@@ -143,10 +143,22 @@ endfunction
 # C++ - Source
 # --------------------------------------------------------------------------------------------------
 
+function js_cpp_cast_cpp_call_argument(cpp_call_argument)
+  if cpp_call_argument.cast = "data_length"
+    return "$(cpp_call_argument.name:no).len"
+  else
+    echo_fatal("Unknown 'cpp_call_argument.cast'", my)
+  endif
+endfunction
+
 function js_cpp_format_cpp_call_arguments(cpp_call_arguments_parent)
   my.arguments = ""
   for my.cpp_call_arguments_parent.cpp_call_argument
-    my.arguments += cpp_call_argument.name
+    if defined(cpp_call_argument.cast)
+      my.arguments += js_cpp_cast_cpp_call_argument(cpp_call_argument)
+    else
+      my.arguments += cpp_call_argument.name
+    endif
     if !last()
       my.arguments += ", "
     endif

@@ -85,6 +85,9 @@ endfunction
 function js_create_cpp_call_argument_from_proxy(cpp_size, proxy)
   new cpp_call_argument to my.cpp_size
     cpp_call_argument.name = "$(proxy.argument:c)"
+    if defined(my.proxy.cast)
+      cpp_call_argument.cast = my.proxy.cast
+    endif
   endnew
 endfunction
 
