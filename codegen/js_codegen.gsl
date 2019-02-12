@@ -33,6 +33,7 @@ function js_create_indent_levels(indent_level)
   my.indent_levels = XML.new()
   my.indent_levels.first = my.custom_indent_level
   my.indent_levels.second = my.custom_indent_level + 1
+  my.indent_levels.third = my.custom_indent_level + 2
   return my.indent_levels
 endfunction
 
@@ -242,9 +243,22 @@ function js_cpp_create_init(cpp_class, indent_level)
   js_out("}", my.indent_levels.first)
 endfunction
 
+function js_cpp_create_new(cpp_class, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("void $(my.cpp_class.name:no)::New(const Nan::FunctionCallbackInfo<v8::Value>& $(js_cpp_callback_info_name())) {", my.indent_levels.first)
+  js_out("if ($(js_cpp_callback_info_name()).IsConstructCall()) {", my.indent_levels.second)
+  js_out("$(my.cpp_class.name:no)* $(my.cpp_class.c_name:no) = new $(my.cpp_class.name:no)();", my.indent_levels.third)
+  js_out("$(my.cpp_class.c_name:no)->Wrap($(js_cpp_callback_info_name()).This());", my.indent_levels.third)
+  js_out("$(js_cpp_callback_info_name()).GetReturnValue().Set($(js_cpp_callback_info_name()).This());", my.indent_levels.third)
+  js_out("} else {", my.indent_levels.second)
+  js_out("Nan::ThrowTypeError(\"Class constructor cannot be invoked without 'new'\");", my.indent_levels.third)
+  js_out("}", my.indent_levels.second)
+  js_out("}", my.indent_levels.first)
+endfunction
+
 function js_cpp_create_unwrap_class(cpp_class, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("$(my.cpp_class.name:no)* $(js_cpp_class_instance_name(my.cpp_class)) = Nan::ObjectWrap::Unwrap<$(my.cpp_class.name:no)>(info.Holder());", my.indent_levels.first)
+  js_out("$(my.cpp_class.name:no)* $(js_cpp_class_instance_name(my.cpp_class)) = Nan::ObjectWrap::Unwrap<$(my.cpp_class.name:no)>($(js_cpp_callback_info_name()).Holder());", my.indent_levels.first)
 endfunction
 
 function js_cpp_create_cpp_js_size_t_argument(cpp_js_argument, index, indent_level)
@@ -360,12 +374,12 @@ function js_cpp_create_method_return_multiple(cpp_method, indent_level)
   for my.cpp_method.cpp_js_return
     js_out("result->Set(Nan::New<v8::String>(\"$(cpp_js_return.binding_name:no)\").ToLocalChecked(), $(js_cpp_create_method_return_value(cpp_js_return)));", my.indent_levels.first)
   endfor
-  js_out("info.GetReturnValue().Set(scope.Escape(result));", my.indent_levels.first)
+  js_out("$(js_cpp_callback_info_name()).GetReturnValue().Set(scope.Escape(result));", my.indent_levels.first)
 endfunction
 
 function js_cpp_create_method_return_one(cpp_method, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("info.GetReturnValue().Set($(js_cpp_create_method_return_value(my.cpp_method->cpp_js_return)));", my.indent_levels.first)
+  js_out("$(js_cpp_callback_info_name()).GetReturnValue().Set($(js_cpp_create_method_return_value(my.cpp_method->cpp_js_return)));", my.indent_levels.first)
 endfunction
 
 function js_cpp_create_method_return(cpp_method, indent_level)
@@ -416,6 +430,7 @@ endfunction
 function js_cpp_create_class(cpp_class, wrapper, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   js_cpp_create_init(my.cpp_class, my.indent_levels.first)
+  js_cpp_create_new(my.cpp_class, my.indent_levels.first)
   js_cpp_create_methods(my.cpp_class, my.wrapper, my.indent_levels.first)
   js_cpp_create_constructor(my.cpp_class, my.wrapper, my.indent_levels.first)
   js_cpp_create_destructor(my.cpp_class, my.wrapper, my.indent_levels.first)
