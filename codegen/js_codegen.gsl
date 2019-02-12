@@ -3,7 +3,7 @@
 gsl from "common.gsl"
 
 # --------------------------------------------------------------------------------------------------
-# JavaScript - General
+# JavaScript - Helpers
 # --------------------------------------------------------------------------------------------------
 
 function js_binding_class_name(class)
@@ -19,7 +19,7 @@ function js_binding_method_name(method)
 endfunction
 
 # --------------------------------------------------------------------------------------------------
-# C++ - General
+# C++ - Helpers
 # --------------------------------------------------------------------------------------------------
 
 function js_cpp_argument_is_buffer(source_argument)
@@ -211,9 +211,9 @@ endfunction
 
 function js_cpp_create_cpp_size(cpp_size, cpp_class, wrapper)
   if my.cpp_size.type = "constant"
-    out("size_t $(my.cpp_size.name:no) = $(my.wrapper.prefix:no)_$(my.cpp_size.class:no)_$(my.cpp_size.constant:no);")
+    out("size_t $(my.cpp_size.name:no) = $(my.cpp_size.constant:no);")
   elsif my.cpp_size.type = "method"
-    out("size_t $(my.cpp_size.name:no) = $(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.cpp_size.method:no)($(js_cpp_format_cpp_call_arguments_with_context(my.cpp_size, my.cpp_class, my.wrapper)));")
+    out("size_t $(my.cpp_size.name:no) = $(my.cpp_size.method:no)($(js_cpp_format_cpp_call_arguments_with_context(my.cpp_size, my.cpp_class, my.wrapper)));")
   else
     echo_fatal("Unknown 'cpp_size.type'", my)
   endif
@@ -255,7 +255,7 @@ function js_cpp_create_method_call(cpp_method, cpp_class, wrapper)
       my.assignment = "$(my.cpp_method->cpp_method_return.name:no) = "
     endif
   endif
-  out("$(my.assignment)$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.cpp_method.c_name:no)($(js_cpp_format_cpp_call_arguments_with_context(my.cpp_method, my.cpp_class, my.wrapper)));")
+  out("$(my.assignment)$(my.cpp_method.c_name:no)($(js_cpp_format_cpp_call_arguments_with_context(my.cpp_method, my.cpp_class, my.wrapper)));")
 endfunction
 
 function js_cpp_create_cpp_js_return_buffer_destroy(cpp_js_return)
