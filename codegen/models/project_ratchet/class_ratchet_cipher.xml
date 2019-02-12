@@ -6,6 +6,8 @@
 
     <dependency name="aes256 gcm" impl="aes256 gcm" project="foundation"/>
 
+    <constant name="key len" value="32"/>
+
     <method name="encrypt len">
         <argument name="plain text len" type="size"/>
 
