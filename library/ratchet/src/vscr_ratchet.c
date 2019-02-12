@@ -97,7 +97,7 @@ struct vscr_ratchet_t {
     //
     vscf_impl_t *rng;
     //
-    //  Dependency to the class 'self cipher'.
+    //  Dependency to the class 'ratchet cipher'.
     //
     vscr_ratchet_cipher_t *cipher;
 
@@ -1043,26 +1043,26 @@ vscr_ratchet_serialize(vscr_ratchet_t *self, Ratchet *ratchet_pb) {
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_deserialize(Ratchet *ratchet_pb, vscr_ratchet_t *self) {
+vscr_ratchet_deserialize(Ratchet *ratchet_pb, vscr_ratchet_t *ratchet) {
 
-    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(ratchet_pb);
 
     if (ratchet_pb->has_sender_chain) {
-        self->sender_chain = vscr_ratchet_sender_chain_new();
-        vscr_ratchet_sender_chain_deserialize(&ratchet_pb->sender_chain, self->sender_chain);
+        ratchet->sender_chain = vscr_ratchet_sender_chain_new();
+        vscr_ratchet_sender_chain_deserialize(&ratchet_pb->sender_chain, ratchet->sender_chain);
     }
 
-    self->prev_sender_chain_count = ratchet_pb->prev_sender_chain_count;
+    ratchet->prev_sender_chain_count = ratchet_pb->prev_sender_chain_count;
 
-    memcpy(self->root_key, ratchet_pb->root_key, sizeof(self->root_key));
+    memcpy(ratchet->root_key, ratchet_pb->root_key, sizeof(ratchet->root_key));
 
     for (pb_size_t i = ratchet_pb->receiver_chains_count; i > 0; i--) {
         vscr_ratchet_receiver_chain_t *receiver_chain = vscr_ratchet_receiver_chain_new();
 
         vscr_ratchet_receiver_chain_deserialize(&ratchet_pb->receiver_chains[i - 1], receiver_chain);
 
-        vscr_ratchet_add_receiver_chain(self, receiver_chain);
+        vscr_ratchet_add_receiver_chain(ratchet, receiver_chain);
 
         vscr_ratchet_receiver_chain_destroy(&receiver_chain);
     }
@@ -1072,7 +1072,7 @@ vscr_ratchet_deserialize(Ratchet *ratchet_pb, vscr_ratchet_t *self) {
 
         vscr_ratchet_skipped_message_key_deserialize(&ratchet_pb->skipped_message_keys[i - 1], skipped_message_key);
 
-        vscr_ratchet_add_skipped_message_key(self, skipped_message_key);
+        vscr_ratchet_add_skipped_message_key(ratchet, skipped_message_key);
 
         vscr_ratchet_skipped_message_key_destroy(&skipped_message_key);
     }

@@ -40,9 +40,11 @@ add_library(test_data_ratchet "")
 target_sources(test_data_ratchet
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_session.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_cipher.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_session.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_cipher.c"
         )
 
 target_include_directories(test_data_ratchet
