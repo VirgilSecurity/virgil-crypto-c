@@ -78,6 +78,10 @@ function js_cpp_context_destructor_name(cpp_class, wrapper)
   return "$(js_cpp_context_name(my.cpp_class, my.wrapper))_destroy"
 endfunction
 
+function js_cpp_constructor_function_name()
+  return "New"
+endfunction
+
 function js_cpp_callback_info_name()
   return "info"
 endfunction
@@ -148,7 +152,7 @@ endfunction
 
 function js_cpp_header_create_new(indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("static void New(const Nan::FunctionCallbackInfo<v8::Value>& $(js_cpp_callback_info_name()));", my.indent_levels.first)
+  js_out("static void $(js_cpp_constructor_function_name())(const Nan::FunctionCallbackInfo<v8::Value>& $(js_cpp_callback_info_name()));", my.indent_levels.first)
 endfunction
 
 function js_cpp_header_create_method(cpp_method, indent_level)
@@ -232,7 +236,7 @@ function js_cpp_create_init(cpp_class, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   js_out("void $(my.cpp_class.name:no)::Init(v8::Local<v8::Object> exports) {", my.indent_levels.first)
   js_out("Nan::HandleScope scope;", my.indent_levels.second)
-  js_out("v8::Local<v8::FunctionTemplate> function_template = Nan::New<v8::FunctionTemplate>($(my.cpp_class.name:no)::New);", my.indent_levels.second)
+  js_out("v8::Local<v8::FunctionTemplate> function_template = Nan::New<v8::FunctionTemplate>($(my.cpp_class.name:no)::$(js_cpp_constructor_function_name()));", my.indent_levels.second)
   js_out("function_template->SetClassName(Nan::New(\"$(my.cpp_class.binding_name:no)\").ToLocalChecked());", my.indent_levels.second)
   js_out("function_template->InstanceTemplate()->SetInternalFieldCount(1);", my.indent_levels.second)
   for my.cpp_class.cpp_method
@@ -245,7 +249,7 @@ endfunction
 
 function js_cpp_create_new(cpp_class, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("void $(my.cpp_class.name:no)::New(const Nan::FunctionCallbackInfo<v8::Value>& $(js_cpp_callback_info_name())) {", my.indent_levels.first)
+  js_out("void $(my.cpp_class.name:no)::$(js_cpp_constructor_function_name())(const Nan::FunctionCallbackInfo<v8::Value>& $(js_cpp_callback_info_name())) {", my.indent_levels.first)
   js_out("if ($(js_cpp_callback_info_name()).IsConstructCall()) {", my.indent_levels.second)
   js_out("$(my.cpp_class.name:no)* $(my.cpp_class.c_name:no) = new $(my.cpp_class.name:no)();", my.indent_levels.third)
   js_out("$(my.cpp_class.c_name:no)->Wrap($(js_cpp_callback_info_name()).This());", my.indent_levels.third)
