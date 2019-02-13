@@ -200,7 +200,7 @@ test__encrypt_decrypt__randomly_skipped_messages__decrypt_should_succeed(void) {
 
     initialize(&session_alice, &session_bob, true, false);
 
-    encrypt_decrypt__100_plain_texts_random_order_with_producers(session_alice, session_bob, false);
+    encrypt_decrypt__100_plain_texts_random_order_with_producers(&session_alice, &session_bob, false);
 
     vscr_ratchet_session_destroy(&session_alice);
     vscr_ratchet_session_destroy(&session_bob);
