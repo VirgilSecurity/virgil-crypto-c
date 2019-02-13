@@ -42,7 +42,7 @@ void generate_random_data(vsc_buffer_t **buffer);
 void generate_PKCS8_keypair(vsc_buffer_t **priv, vsc_buffer_t **pub);
 void initialize(vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool enable_one_time, bool should_restore);
 void encrypt_decrypt__100_plain_texts_random_order(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *session_bob);
-void encrypt_decrypt__100_plain_texts_random_order_with_producers(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *session_bob, bool should_restore);
+void encrypt_decrypt__100_plain_texts_random_order_with_producers(vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool should_restore);
 void restore_session(vscr_ratchet_session_t **session);
 
 #endif //VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H

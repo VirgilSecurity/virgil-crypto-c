@@ -67,7 +67,7 @@ test__serialization__randomly_skipped_messages__should_work_after_restore(void) 
 
     initialize(&session_alice, &session_bob, true, true);
 
-    encrypt_decrypt__100_plain_texts_random_order_with_producers(session_alice, session_bob, true);
+    encrypt_decrypt__100_plain_texts_random_order_with_producers(&session_alice, &session_bob, true);
 
     vscr_ratchet_session_destroy(&session_alice);
     vscr_ratchet_session_destroy(&session_bob);

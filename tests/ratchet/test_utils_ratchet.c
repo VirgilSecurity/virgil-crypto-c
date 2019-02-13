@@ -244,13 +244,13 @@ encrypt_decrypt__100_plain_texts_random_order(
 
 void
 encrypt_decrypt__100_plain_texts_random_order_with_producers(
-        vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *session_bob, bool should_restore) {
+        vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool should_restore) {
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
     vscf_ctr_drbg_setup_defaults(rng);
 
     unreliable_msg_producer_t producer_alice, producer_bob;
-    init_producer(&producer_alice, &session_alice, 0.2, 0.3);
-    init_producer(&producer_bob, &session_bob, 0.2, 0.3);
+    init_producer(&producer_alice, session_alice, 0.2, 0.3);
+    init_producer(&producer_bob, session_bob, 0.2, 0.3);
 
     for (int i = 0; i < 100; i++) {
         byte dice_rnd;
@@ -261,7 +261,7 @@ encrypt_decrypt__100_plain_texts_random_order_with_producers(
 
         vsc_buffer_destroy(&fake_buffer);
 
-        vscr_ratchet_session_t *receiver;
+        vscr_ratchet_session_t **receiver;
         unreliable_msg_producer_t *producer;
 
         // Alice sends msg
@@ -281,9 +281,9 @@ encrypt_decrypt__100_plain_texts_random_order_with_producers(
         vscr_error_ctx_t error_ctx;
         vscr_error_ctx_reset(&error_ctx);
 
-        size_t len = vscr_ratchet_session_decrypt_len(receiver, ratchet_message);
+        size_t len = vscr_ratchet_session_decrypt_len(*receiver, ratchet_message);
         vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(len);
-        vscr_error_t result = vscr_ratchet_session_decrypt(receiver, ratchet_message, plain_text);
+        vscr_error_t result = vscr_ratchet_session_decrypt(*receiver, ratchet_message, plain_text);
         TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
         TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(text), plain_text);
@@ -293,8 +293,7 @@ encrypt_decrypt__100_plain_texts_random_order_with_producers(
         vscr_ratchet_message_destroy(&ratchet_message);
 
         if (should_restore) {
-            restore_session(&session_alice);
-            restore_session(&session_bob);
+            restore_session(receiver);
         }
     }
 
