@@ -457,15 +457,32 @@ function js_format_arguments(js_arguments_parent)
 endfunction
 
 function js_create_require_binding(js_class, wrapper, indent_level)
+  if count(my.js_class.js_method) > 0
+    my.indent_levels = js_create_indent_levels(my.indent_level)
+    js_out("const { $(my.js_class.binding_name:no) } = require('bindings')('$(my.wrapper.name)');", my.indent_levels.first)
+  endif
+endfunction
+
+function js_create_constant(js_constant, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("const { $(my.js_class.binding_name:no) } = require('bindings')('$(my.wrapper.name)');", my.indent_levels.first)
+  js_out("static get $(my.js_constant.name:no)() {", my.indent_levels.first)
+  js_out("return $(my.js_constant.value:no);", my.indent_levels.second)
+  js_out("}", my.indent_levels.first)
+endfunction
+
+function js_create_constants(js_class, indent_level)
+  for my.js_class.js_constant
+    js_create_constant(js_constant, my.indent_level)
+  endfor
 endfunction
 
 function js_create_constructor(js_class, indent_level)
-  my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("constructor() {", my.indent_levels.first)
-  js_out("$(js_binding_reference()) = new $(my.js_class.binding_name:no)();", my.indent_levels.second)
-  js_out("}", my.indent_levels.first)
+  if count(my.js_class.js_method) > 0
+    my.indent_levels = js_create_indent_levels(my.indent_level)
+    js_out("constructor() {", my.indent_levels.first)
+    js_out("$(js_binding_reference()) = new $(my.js_class.binding_name:no)();", my.indent_levels.second)
+    js_out("}", my.indent_levels.first)
+  endif
 endfunction
 
 function js_create_method(js_method, indent_level)
@@ -475,13 +492,18 @@ function js_create_method(js_method, indent_level)
   js_out("}", my.indent_levels.first)
 endfunction
 
+function js_create_methods(js_class, indent_level)
+  for my.js_class.js_method
+    js_create_method(js_method, my.indent_level)
+  endfor
+endfunction
+
 function js_create_class(js_class, wrapper, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   js_out("class $(my.js_class.name:no) {", my.indent_levels.first)
+  js_create_constants(my.js_class, my.indent_levels.second)
   js_create_constructor(my.js_class, my.indent_levels.second)
-  for my.js_class.js_method
-    js_create_method(js_method, my.indent_levels.second)
-  endfor
+  js_create_methods(my.js_class, my.indent_levels.second)
   js_out("}", my.indent_levels.first)
 endfunction
 
@@ -495,7 +517,7 @@ endfunction
 # --------------------------------------------------------------------------------------------------
 
 function js_generate_cpp_header_files(source, wrapper)
-  for my.source.js_module
+  for my.source.js_module where defined(js_module.cpp_header_file_path)
     output js_module.cpp_header_file_path
       js_cpp_header_create_ifndef(js_module.cpp_header_guard)
       js_cpp_header_create_define(js_module.cpp_header_guard)
@@ -510,7 +532,7 @@ function js_generate_cpp_header_files(source, wrapper)
 endfunction
 
 function js_generate_cpp_source_files(source, wrapper)
-  for my.source.js_module
+  for my.source.js_module where defined(js_module.cpp_source_file_path)
     output js_module.cpp_source_file_path
       js_cpp_create_module_include_header(js_module)
       for js_module.cpp_class

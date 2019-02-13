@@ -7,6 +7,19 @@ gsl from "js_codegen.gsl"
 # JavaScript - Structures
 # --------------------------------------------------------------------------------------------------
 
+function js_create_js_constant_structure(js_class, source_constant)
+  new js_constant to my.js_class
+    js_constant.name = "$(my.source_constant.name:Camel)"
+    js_constant.value = my.source_constant.value
+  endnew
+endfunction
+
+function js_create_constant_structures(js_class, source)
+  for my.source.constant
+    js_create_js_constant_structure(my.js_class, constant)
+  endfor
+endfunction
+
 function js_create_argument_structure(js_method, source_argument)
   new js_argument to my.js_method
     js_argument.name = "$(my.source_argument.name:Camel)"
@@ -33,6 +46,7 @@ function js_create_js_class_structure(js_module, source)
   new js_class to my.js_module
     js_class.name = "$(my.source.name:Pascal)"
     js_class.binding_name = js_binding_class_name(js_class)
+    js_create_constant_structures(js_class, my.source)
     js_create_method_structures(js_class, my.source)
   endnew
 endfunction
@@ -197,7 +211,7 @@ endfunction
 
 function js_create_class_module(source, destination, wrapper, meta)
   echo_info("js_create_class_module", my)
-  if my.source.context = "internal"
+  if my.source.scope = "public"
     new js_module to my.destination
       js_module.name = my.source.name
 
@@ -205,12 +219,14 @@ function js_create_class_module(source, destination, wrapper, meta)
       js_module.js_source_file_path = cat_path(my.wrapper.project_source_dir, js_module.js_source_file)
       js_create_js_class_structure(js_module, my.source)
 
-      js_module.cpp_header_file = "$(my.source.name:c).h"
-      js_module.cpp_header_file_path = cat_path(my.wrapper.project_source_dir, js_module.cpp_header_file)
-      js_module.cpp_header_guard = "$(my.source.name:c,upper)_H"
-      js_module.cpp_source_file = "$(my.source.name:c).cc"
-      js_module.cpp_source_file_path = cat_path(my.wrapper.project_source_dir, js_module.cpp_source_file)
-      js_create_cpp_class_structure(js_module, my.source, my.wrapper)
+      if count(my.source.method) > 0
+        js_module.cpp_header_file = "$(my.source.name:c).h"
+        js_module.cpp_header_file_path = cat_path(my.wrapper.project_source_dir, js_module.cpp_header_file)
+        js_module.cpp_header_guard = "$(my.source.name:c,upper)_H"
+        js_module.cpp_source_file = "$(my.source.name:c).cc"
+        js_module.cpp_source_file_path = cat_path(my.wrapper.project_source_dir, js_module.cpp_source_file)
+        js_create_cpp_class_structure(js_module, my.source, my.wrapper)
+      endif
     endnew
   endif
 endfunction
