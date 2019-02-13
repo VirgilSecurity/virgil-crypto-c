@@ -32,18 +32,22 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H
-#define VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H
+#ifndef VIRGIL_CRYPTO_TEST_DATA_RATCHET_X3DH_H
+#define VIRGIL_CRYPTO_TEST_DATA_RATCHET_X3DH_H
 
-#include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/ratchet/vscr_ratchet_session.h>
+#include "vsc_data.h"
 
-void generate_random_data(vsc_buffer_t **buffer);
-void generate_PKCS8_keypair(vsc_buffer_t **priv, vsc_buffer_t **pub);
-void generate_raw_keypair(vsc_buffer_t **priv, vsc_buffer_t **pub);
-void initialize(vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool enable_one_time, bool should_restore);
-void encrypt_decrypt__100_plain_texts_random_order(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *session_bob);
-void encrypt_decrypt__100_plain_texts_random_order_with_producers(vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool should_restore);
-void restore_session(vscr_ratchet_session_t **session);
+extern const vsc_data_t test_data_ratchet_x3dh_sender_identity_private_key;
+extern const vsc_data_t test_data_ratchet_x3dh_sender_identity_public_key;
+extern const vsc_data_t test_data_ratchet_x3dh_sender_ephemeral_private_key;
+extern const vsc_data_t test_data_ratchet_x3dh_sender_ephemeral_public_key;
+extern const vsc_data_t test_data_ratchet_x3dh_receiver_identity_private_key;
+extern const vsc_data_t test_data_ratchet_x3dh_receiver_identity_public_key;
+extern const vsc_data_t test_data_ratchet_x3dh_receiver_long_term_private_key;
+extern const vsc_data_t test_data_ratchet_x3dh_receiver_long_term_public_key;
+extern const vsc_data_t test_data_ratchet_x3dh_receiver_one_time_private_key;
+extern const vsc_data_t test_data_ratchet_x3dh_receiver_one_time_public_key;
+extern const vsc_data_t test_data_ratchet_x3dh_shared_secret;
+extern const vsc_data_t test_data_ratchet_x3dh_shared_secret_weak;
 
-#endif //VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H
+#endif //VIRGIL_CRYPTO_TEST_DATA_RATCHET_X3DH_H

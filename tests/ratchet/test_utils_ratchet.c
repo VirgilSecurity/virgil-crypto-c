@@ -106,6 +106,23 @@ generate_PKCS8_keypair(vsc_buffer_t **priv, vsc_buffer_t **pub) {
 }
 
 void
+generate_raw_keypair(vsc_buffer_t **priv, vsc_buffer_t **pub) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    vscf_ctr_drbg_setup_defaults(rng);
+
+    *priv = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
+
+    TEST_ASSERT_EQUAL(vscf_SUCCESS, vscf_ctr_drbg_random(rng, ED25519_KEY_LEN, *priv));
+
+    *pub = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
+
+    TEST_ASSERT_EQUAL(0, curve25519_get_pubkey(vsc_buffer_unused_bytes(*pub), vsc_buffer_bytes(*priv)));
+    vsc_buffer_inc_used(*pub, ED25519_KEY_LEN);
+
+    vscf_ctr_drbg_destroy(&rng);
+}
+
+void
 initialize(vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool enable_one_time,
         bool should_restore) {
     vscr_ratchet_session_setup_defaults(*session_alice);
