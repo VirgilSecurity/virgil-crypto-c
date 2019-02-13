@@ -35,9 +35,10 @@
 #include <virgil/crypto/ratchet/vscr_memory.h>
 #include "unreliable_msg_producer.h"
 #include "unity.h"
+#include "test_utils_ratchet.h"
 
 void
-init_producer(unreliable_msg_producer_t *producer, vscr_ratchet_session_t *session, float lost_rate,
+init_producer(unreliable_msg_producer_t *producer, vscr_ratchet_session_t **session, float lost_rate,
         float out_of_order_rate) {
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
     vscf_ctr_drbg_setup_defaults(rng);
@@ -71,7 +72,8 @@ deinit_producer(unreliable_msg_producer_t *producer) {
 }
 
 void
-produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr_ratchet_message_t **msg) {
+produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr_ratchet_message_t **msg,
+        bool should_restore) {
     out_of_order_msg_node_t **node = &producer->skipped_msgs_list;
 
     while (*node) {
@@ -104,31 +106,23 @@ produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr
 
     if (message_lost) {
         producer->produced_count++;
-        produce_msg(producer, plain_text, msg);
+        produce_msg(producer, plain_text, msg, should_restore);
 
         return;
     }
 
-    byte rnd_plain_text_len;
-    fake_buffer = vsc_buffer_new();
-    vsc_buffer_use(fake_buffer, &rnd_plain_text_len, sizeof(rnd_plain_text_len));
-    vscf_ctr_drbg_random(producer->rng, sizeof(rnd_plain_text_len), fake_buffer);
-    vsc_buffer_destroy(&fake_buffer);
-
-    // Prevent rnd_plain_text_len == 0
-    if (rnd_plain_text_len == 0)
-        rnd_plain_text_len = 1;
-
-    vsc_buffer_t *plain_text_local = vsc_buffer_new_with_capacity(rnd_plain_text_len);
-
-    vscf_ctr_drbg_random(producer->rng, rnd_plain_text_len, plain_text_local);
+    vsc_buffer_t *plain_text_local = NULL;
+    generate_random_data(&plain_text_local);
 
     vscr_error_ctx_t error_ctx;
     vscr_error_ctx_reset(&error_ctx);
 
     vscr_ratchet_message_t *ratchet_message =
-            vscr_ratchet_session_encrypt(producer->session, vsc_buffer_data(plain_text_local), &error_ctx);
+            vscr_ratchet_session_encrypt(*producer->session, vsc_buffer_data(plain_text_local), &error_ctx);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+
+    if (should_restore)
+        restore_session(producer->session);
 
     byte late_level;
     vsc_buffer_destroy(&fake_buffer);
@@ -183,7 +177,7 @@ produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr
         node->msg->cipher_text = ratchet_message;
         node->msg->plain_text = plain_text_local;
 
-        produce_msg(producer, plain_text, msg);
+        produce_msg(producer, plain_text, msg, should_restore);
     } else {
         *msg = ratchet_message;
         *plain_text = plain_text_local;

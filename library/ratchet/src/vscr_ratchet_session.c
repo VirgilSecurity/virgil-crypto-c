@@ -701,6 +701,7 @@ vscr_ratchet_session_receiver_has_one_time_public_key(vscr_ratchet_session_t *se
 VSCR_PUBLIC vscr_ratchet_message_t *
 vscr_ratchet_session_encrypt(vscr_ratchet_session_t *self, vsc_data_t plain_text, vscr_error_ctx_t *err_ctx) {
 
+    VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->rng);
     VSCR_ASSERT_PTR(self->ratchet);
 
@@ -771,7 +772,8 @@ err:
 VSCR_PUBLIC size_t
 vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *self, const vscr_ratchet_message_t *message) {
 
-    VSCR_UNUSED(self);
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(self->ratchet);
     VSCR_ASSERT_PTR(message);
 
     size_t cipher_text_len = 0;
@@ -794,6 +796,7 @@ VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_decrypt(
         vscr_ratchet_session_t *self, const vscr_ratchet_message_t *message, vsc_buffer_t *plain_text) {
 
+    VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->rng);
     VSCR_ASSERT_PTR(self->ratchet);
 

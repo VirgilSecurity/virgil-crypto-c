@@ -82,6 +82,13 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Public integral constants.
+//
+enum {
+    vscr_ratchet_cipher_KEY_LEN = 32
+};
+
+//
 //  Handle 'ratchet cipher' context.
 //
 typedef struct vscr_ratchet_cipher_t vscr_ratchet_cipher_t;
