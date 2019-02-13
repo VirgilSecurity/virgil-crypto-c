@@ -184,7 +184,7 @@ VSCR_PUBLIC vscr_error_t
 vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const RegularMessage *message);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret, vsc_data_t ratchet_private_key);
+vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_encrypt_len(vscr_ratchet_t *self, size_t plain_text_len);

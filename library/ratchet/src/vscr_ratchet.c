@@ -51,10 +51,10 @@
 #include "vscr_ratchet_chain_key.h"
 #include "vscr_ratchet_message_defs.h"
 #include "vscr_ratchet_message_key.h"
+#include "vscr_ratchet_sender_chain.h"
 #include "vscr_ratchet_receiver_chain_list_node.h"
 #include "vscr_ratchet_receiver_chain.h"
 #include "vscr_ratchet_skipped_message_key.h"
-#include "vscr_ratchet_sender_chain.h"
 #include "vscr_ratchet_skipped_message_key_list_node.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
@@ -67,6 +67,7 @@
 
 // clang-format on
 //  @end
+
 
 // clang-format off
 
@@ -159,6 +160,9 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet
 
 static vscr_error_t
 vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const RegularMessage *message, vsc_buffer_t *buffer);
+
+static vscr_error_t
+vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self, vscr_ratchet_sender_chain_t *sender_chain);
 
 static vscr_ratchet_receiver_chain_list_node_t *
 vscr_ratchet_find_receiver_chain(vscr_ratchet_t *self, const RegularMessage *message);
@@ -651,12 +655,13 @@ vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const Regul
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret, vsc_data_t ratchet_private_key) {
+vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(ratchet_private_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
     VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN || shared_secret.len == 4 * ED25519_DH_LEN);
     VSCR_ASSERT(!self->sender_chain);
+
+    vscr_error_t status = vscr_SUCCESS;
 
     vscf_hkdf_t *hkdf = vscf_hkdf_new();
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
@@ -674,18 +679,19 @@ vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret, vsc_data_t
     memcpy(self->root_key, derived_secret, vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH);
 
     vscr_ratchet_sender_chain_t *sender_chain = vscr_ratchet_sender_chain_new();
-    self->sender_chain = sender_chain;
-    memcpy(sender_chain->private_key, ratchet_private_key.bytes, ratchet_private_key.len);
+
+    status = vscr_ratchet_generate_sender_chain_keypair(self, sender_chain);
+
+    if (status != vscr_SUCCESS) {
+        vscr_ratchet_sender_chain_destroy(&sender_chain);
+        return status;
+    }
+
     sender_chain->chain_key.index = 0;
     memcpy(sender_chain->chain_key.key, derived_secret + vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH,
             vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH);
 
-    vscr_error_t status = vscr_SUCCESS;
-    int curve_status = curve25519_get_pubkey(sender_chain->public_key, ratchet_private_key.bytes);
-    if (curve_status != 0) {
-        vscr_ratchet_sender_chain_destroy(&self->sender_chain);
-        status = vscr_error_CURVE25519;
-    }
+    self->sender_chain = sender_chain;
 
     vscr_zeroize(derived_secret, sizeof(derived_secret));
     vsc_buffer_delete(&buffer);
@@ -711,25 +717,11 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
     if (!self->sender_chain) {
         vscr_ratchet_sender_chain_t *sender_chain = vscr_ratchet_sender_chain_new();
 
-        vsc_buffer_t ratchet_private_key;
-        vsc_buffer_init(&ratchet_private_key);
-        vsc_buffer_use(&ratchet_private_key, sender_chain->private_key, sizeof(sender_chain->private_key));
+        result = vscr_ratchet_generate_sender_chain_keypair(self, sender_chain);
 
-        vscf_error_t f_status =
-                vscf_random(self->rng, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH, &ratchet_private_key);
-        vsc_buffer_delete(&ratchet_private_key);
-
-        if (f_status != vscf_SUCCESS) {
+        if (result != vscr_SUCCESS) {
             vscr_ratchet_sender_chain_destroy(&sender_chain);
-            return vscr_error_RNG_FAILED;
-        }
-
-        self->sender_chain = sender_chain;
-
-        int curve_status = curve25519_get_pubkey(sender_chain->public_key, sender_chain->private_key);
-
-        if (curve_status != 0) {
-            return vscr_error_CURVE25519;
+            return result;
         }
 
         result = vscr_ratchet_create_chain_key(self,
@@ -874,6 +866,35 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
 
 err:
     return result;
+}
+
+static vscr_error_t
+vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self, vscr_ratchet_sender_chain_t *sender_chain) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(self->rng);
+    VSCR_ASSERT_PTR(sender_chain);
+
+    vsc_buffer_t ratchet_private_key;
+    vsc_buffer_init(&ratchet_private_key);
+    vsc_buffer_use(&ratchet_private_key, sender_chain->private_key, sizeof(sender_chain->private_key));
+
+    vscf_error_t f_status = vscf_random(self->rng, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH, &ratchet_private_key);
+    vsc_buffer_delete(&ratchet_private_key);
+
+    if (f_status != vscf_SUCCESS) {
+        return vscr_error_RNG_FAILED;
+    }
+
+    self->sender_chain = sender_chain;
+
+    int curve_status = curve25519_get_pubkey(sender_chain->public_key, sender_chain->private_key);
+
+    if (curve_status != 0) {
+        return vscr_error_CURVE25519;
+    }
+
+    return vscr_SUCCESS;
 }
 
 static vscr_ratchet_receiver_chain_list_node_t *

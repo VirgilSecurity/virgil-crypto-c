@@ -50,6 +50,7 @@ option(VSCR_RATCHET_COMMON "Enable class 'ratchet common'." ON)
 option(VSCR_RATCHET_COMMON_HIDDEN "Enable class 'ratchet common hidden'." ON)
 option(VSCR_RATCHET_KEY_UTILS "Enable class 'ratchet key utils'." ON)
 option(VSCR_ERROR_CTX "Enable class 'error ctx'." ON)
+option(VSCR_RATCHET_X3DH "Enable class 'ratchet x3dh'." ON)
 option(VSCR_RATCHET_MESSAGE "Enable class 'ratchet message'." ON)
 option(VSCR_RATCHET_CIPHER "Enable class 'ratchet cipher'." ON)
 option(VSCR_RATCHET_CHAIN_KEY "Enable class 'ratchet chain key'." ON)
@@ -67,6 +68,7 @@ mark_as_advanced(
         VSCR_RATCHET_COMMON_HIDDEN
         VSCR_RATCHET_KEY_UTILS
         VSCR_ERROR_CTX
+        VSCR_RATCHET_X3DH
         VSCR_RATCHET_MESSAGE
         VSCR_RATCHET_CIPHER
         VSCR_RATCHET_CHAIN_KEY
@@ -292,6 +294,15 @@ if(VSCR_RATCHET_SESSION AND NOT VSCR_RATCHET_COMMON_HIDDEN)
     message("--")
     message("Feature VSCR_RATCHET_SESSION depends on the feature:")
     message("     VSCR_RATCHET_COMMON_HIDDEN - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_SESSION AND NOT VSCR_RATCHET_X3DH)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_SESSION depends on the feature:")
+    message("     VSCR_RATCHET_X3DH - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

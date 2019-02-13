@@ -131,6 +131,7 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_RATCHET_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_session.h>"
             "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_skipped_message_key.h>"
             "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_skipped_message_key_list_node.h>"
+            "$<$<BOOL:${VSCR_RATCHET_X3DH}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_x3dh.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_error.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_msg_type.h"
 
@@ -153,6 +154,7 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_RATCHET_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_session.c>"
             "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_skipped_message_key.c>"
             "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_skipped_message_key_list_node.c>"
+            "$<$<BOOL:${VSCR_RATCHET_X3DH}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_x3dh.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_error.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_msg_type.c"
         )
