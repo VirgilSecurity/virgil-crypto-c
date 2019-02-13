@@ -74,6 +74,21 @@ vscr_ratchet_x3dh_compute_initiator_x3dh_secret(vsc_data_t sender_identity_priva
         vsc_data_t receiver_long_term_public_key, vsc_data_t receiver_one_time_public_key,
         vsc_buffer_t *shared_secret) {
 
+    VSCR_ASSERT(sender_identity_private_key.len == ED25519_KEY_LEN);
+    VSCR_ASSERT(sender_ephemeral_private_key.len == ED25519_KEY_LEN);
+    VSCR_ASSERT(receiver_identity_public_key.len == ED25519_KEY_LEN);
+    VSCR_ASSERT(receiver_long_term_public_key.len == ED25519_KEY_LEN);
+
+    size_t shared_secret_count = 4;
+
+    if (receiver_one_time_public_key.len == 0) {
+        shared_secret_count = 3;
+    } else {
+        VSCR_ASSERT(receiver_one_time_public_key.len == ED25519_KEY_LEN);
+    }
+
+    VSCR_ASSERT(vsc_buffer_capacity(shared_secret) >= shared_secret_count * ED25519_DH_LEN);
+
     vscr_error_t status = vscr_SUCCESS;
 
     int curve_status = 0;
@@ -124,6 +139,21 @@ vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_data_t sender_identity_publi
         vsc_data_t sender_ephemeral_public_key, vsc_data_t receiver_identity_private_key,
         vsc_data_t receiver_long_term_private_key, vsc_data_t receiver_one_time_private_key,
         vsc_buffer_t *shared_secret) {
+
+    VSCR_ASSERT(sender_identity_public_key.len == ED25519_KEY_LEN);
+    VSCR_ASSERT(sender_ephemeral_public_key.len == ED25519_KEY_LEN);
+    VSCR_ASSERT(receiver_identity_private_key.len == ED25519_KEY_LEN);
+    VSCR_ASSERT(receiver_long_term_private_key.len == ED25519_KEY_LEN);
+
+    size_t shared_secret_count = 4;
+
+    if (receiver_one_time_private_key.len == 0) {
+        shared_secret_count = 3;
+    } else {
+        VSCR_ASSERT(receiver_one_time_private_key.len == ED25519_KEY_LEN);
+    }
+
+    VSCR_ASSERT(vsc_buffer_capacity(shared_secret) >= shared_secret_count * ED25519_DH_LEN);
 
     vscr_error_t status = vscr_SUCCESS;
 
