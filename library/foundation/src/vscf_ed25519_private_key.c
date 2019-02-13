@@ -60,6 +60,7 @@
 #include "vscf_asn1wr.h"
 #include "vscf_asn1rd_defs.h"
 #include "vscf_asn1wr_defs.h"
+#include "vscf_ctr_drbg.h"
 #include "vscf_random.h"
 #include "vscf_ed25519_private_key_defs.h"
 #include "vscf_ed25519_private_key_internal.h"
@@ -103,6 +104,23 @@ vscf_ed25519_private_key_cleanup_ctx(vscf_ed25519_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
     vscf_erase(self->secret_key, ED25519_KEY_LEN);
+}
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_ed25519_private_key_setup_defaults(vscf_ed25519_private_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        vscf_ctr_drbg_setup_defaults(random);
+        self->random = vscf_ctr_drbg_impl(random);
+    }
+
+    return vscf_SUCCESS;
 }
 
 //

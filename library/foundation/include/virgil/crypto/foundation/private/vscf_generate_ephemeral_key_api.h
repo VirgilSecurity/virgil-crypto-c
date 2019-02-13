@@ -47,21 +47,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'ed25519 public key' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
+//  Interface 'generate ephemeral key' API.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ED25519_PUBLIC_KEY_DEFS_H_INCLUDED
-#define VSCF_ED25519_PUBLIC_KEY_DEFS_H_INCLUDED
+#ifndef VSCF_GENERATE_EPHEMERAL_KEY_API_H_INCLUDED
+#define VSCF_GENERATE_EPHEMERAL_KEY_API_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_ed25519_public_key.h"
+#include "vscf_api.h"
 #include "vscf_impl.h"
-
-#include <ed25519/ed25519.h>
+#include "vscf_error_ctx.h"
 
 // clang-format on
 //  @end
@@ -79,29 +74,24 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Callback. Generate ephemeral private key of the same type.
 //
-struct vscf_ed25519_public_key_t {
+typedef vscf_impl_t * (*vscf_generate_ephemeral_key_api_generate_ephemeral_key_fn)(vscf_impl_t *impl,
+        vscf_error_ctx_t *error);
+
+//
+//  Contains API requirements of the interface 'generate ephemeral key'.
+//
+struct vscf_generate_ephemeral_key_api_t {
     //
-    //  Compile-time known information about this implementation.
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'generate_ephemeral_key' MUST be equal to the 'vscf_api_tag_GENERATE_EPHEMERAL_KEY'.
     //
-    const vscf_impl_info_t *info;
+    vscf_api_tag_t api_tag;
     //
-    //  Reference counter.
+    //  Generate ephemeral private key of the same type.
     //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-    //
-    //  Implementation specific context.
-    //
-    byte public_key[ED25519_KEY_LEN];
-    //
-    //  Implementation specific context.
-    //
-    byte signature[ED25519_KEY_LEN];
+    vscf_generate_ephemeral_key_api_generate_ephemeral_key_fn generate_ephemeral_key_cb;
 };
 
 
@@ -118,5 +108,5 @@ struct vscf_ed25519_public_key_t {
 
 
 //  @footer
-#endif // VSCF_ED25519_PUBLIC_KEY_DEFS_H_INCLUDED
+#endif // VSCF_GENERATE_EPHEMERAL_KEY_API_H_INCLUDED
 //  @end

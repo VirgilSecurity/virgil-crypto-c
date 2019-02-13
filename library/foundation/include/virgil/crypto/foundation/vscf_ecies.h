@@ -47,17 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'ed25519 public key' implementation.
+//  This module contains 'ecies' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ED25519_PUBLIC_KEY_H_INCLUDED
-#define VSCF_ED25519_PUBLIC_KEY_H_INCLUDED
+#ifndef VSCF_ECIES_H_INCLUDED
+#define VSCF_ECIES_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error_ctx.h"
 #include "vscf_impl.h"
 #include "vscf_error.h"
-#include "vscf_alg_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -85,170 +83,197 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
-//
-enum {
-    //
-    //  Defines whether a public key can be imported or not.
-    //
-    vscf_ed25519_public_key_CAN_IMPORT_PUBLIC_KEY = true,
-    //
-    //  Define whether a public key can be exported or not.
-    //
-    vscf_ed25519_public_key_CAN_EXPORT_PUBLIC_KEY = true
-};
-
-//
 //  Handles implementation details.
 //
-typedef struct vscf_ed25519_public_key_t vscf_ed25519_public_key_t;
+typedef struct vscf_ecies_t vscf_ecies_t;
 
 //
-//  Return size of 'vscf_ed25519_public_key_t' type.
+//  Return size of 'vscf_ecies_t' type.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_public_key_impl_size(void);
+vscf_ecies_impl_size(void);
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ed25519_public_key_impl(vscf_ed25519_public_key_t *self);
+vscf_ecies_impl(vscf_ecies_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_ed25519_public_key_init(vscf_ed25519_public_key_t *self);
+vscf_ecies_init(vscf_ecies_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_ed25519_public_key_init()'.
+//  This is a reverse action of the function 'vscf_ecies_init()'.
 //
 VSCF_PUBLIC void
-vscf_ed25519_public_key_cleanup(vscf_ed25519_public_key_t *self);
+vscf_ecies_cleanup(vscf_ecies_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_ed25519_public_key_t *
-vscf_ed25519_public_key_new(void);
+VSCF_PUBLIC vscf_ecies_t *
+vscf_ecies_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_ed25519_public_key_new()'.
+//  This is a reverse action of the function 'vscf_ecies_new()'.
 //
 VSCF_PUBLIC void
-vscf_ed25519_public_key_delete(vscf_ed25519_public_key_t *self);
+vscf_ecies_delete(vscf_ecies_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_ed25519_public_key_new()'.
+//  This is a reverse action of the function 'vscf_ecies_new()'.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_ed25519_public_key_destroy(vscf_ed25519_public_key_t **self_ref);
+vscf_ecies_destroy(vscf_ecies_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_ed25519_public_key_t *
-vscf_ed25519_public_key_shallow_copy(vscf_ed25519_public_key_t *self);
+VSCF_PUBLIC vscf_ecies_t *
+vscf_ecies_shallow_copy(vscf_ecies_t *self);
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_ed25519_public_key_use_random(vscf_ed25519_public_key_t *self, vscf_impl_t *random);
+vscf_ecies_use_random(vscf_ecies_t *self, vscf_impl_t *random);
 
 //
 //  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_ed25519_public_key_take_random(vscf_ed25519_public_key_t *self, vscf_impl_t *random);
+vscf_ecies_take_random(vscf_ecies_t *self, vscf_impl_t *random);
 
 //
 //  Release dependency to the interface 'random'.
 //
 VSCF_PUBLIC void
-vscf_ed25519_public_key_release_random(vscf_ed25519_public_key_t *self);
+vscf_ecies_release_random(vscf_ecies_t *self);
+
+//
+//  Setup dependency to the interface 'cipher' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ecies_use_cipher(vscf_ecies_t *self, vscf_impl_t *cipher);
+
+//
+//  Setup dependency to the interface 'cipher' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ecies_take_cipher(vscf_ecies_t *self, vscf_impl_t *cipher);
+
+//
+//  Release dependency to the interface 'cipher'.
+//
+VSCF_PUBLIC void
+vscf_ecies_release_cipher(vscf_ecies_t *self);
+
+//
+//  Setup dependency to the interface 'mac' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ecies_use_mac(vscf_ecies_t *self, vscf_impl_t *mac);
+
+//
+//  Setup dependency to the interface 'mac' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ecies_take_mac(vscf_ecies_t *self, vscf_impl_t *mac);
+
+//
+//  Release dependency to the interface 'mac'.
+//
+VSCF_PUBLIC void
+vscf_ecies_release_mac(vscf_ecies_t *self);
+
+//
+//  Setup dependency to the interface 'kdf' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ecies_use_kdf(vscf_ecies_t *self, vscf_impl_t *kdf);
+
+//
+//  Setup dependency to the interface 'kdf' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ecies_take_kdf(vscf_ecies_t *self, vscf_impl_t *kdf);
+
+//
+//  Release dependency to the interface 'kdf'.
+//
+VSCF_PUBLIC void
+vscf_ecies_release_kdf(vscf_ecies_t *self);
+
+//
+//  Set public key that is used for data encryption.
+//
+//  If ephemeral key is not defined, then Public Key, must be conformed
+//  to the interface "generate ephemeral key".
+//
+//  In turn, Ephemeral Key must be conformed to the interface
+//  "compute shared key".
+//
+VSCF_PUBLIC void
+vscf_ecies_set_encryption_key(vscf_ecies_t *self, vscf_impl_t *public_key);
+
+//
+//  Set private key that used for data decryption.
+//
+//  Private Key must be conformed to the interface "compute shared key".
+//
+VSCF_PUBLIC void
+vscf_ecies_set_decyption_key(vscf_ecies_t *self, vscf_impl_t *private_key);
+
+//
+//  Set private key that used for data decryption.
+//
+//  Ephemeral Key must be conformed to the interface "compute shared key".
+//
+VSCF_PUBLIC void
+vscf_ecies_set_ephemeral_key(vscf_ecies_t *self, vscf_impl_t *ephemeral_key);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_public_key_setup_defaults(vscf_ed25519_public_key_t *self);
+vscf_ecies_setup_defaults(vscf_ecies_t *self);
 
 //
-//  Provide algorithm identificator.
-//
-VSCF_PUBLIC vscf_alg_id_t
-vscf_ed25519_public_key_alg_id(const vscf_ed25519_public_key_t *self);
-
-//
-//  Produce object with algorithm information and configuration parameters.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_ed25519_public_key_produce_alg_info(const vscf_ed25519_public_key_t *self);
-
-//
-//  Restore algorithm configuration from the given object.
+//  Encrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_public_key_restore_alg_info(vscf_ed25519_public_key_t *self, const vscf_impl_t *alg_info);
+vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out);
 
 //
-//  Length of the key in bytes.
+//  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_public_key_key_len(const vscf_ed25519_public_key_t *self);
+vscf_ecies_encrypted_len(vscf_ecies_t *self, size_t data_len);
 
 //
-//  Length of the key in bits.
-//
-VSCF_PUBLIC size_t
-vscf_ed25519_public_key_key_bitlen(const vscf_ed25519_public_key_t *self);
-
-//
-//  Verify data with given public key and signature.
-//
-VSCF_PUBLIC bool
-vscf_ed25519_public_key_verify(vscf_ed25519_public_key_t *self, vsc_data_t data, vsc_data_t signature);
-
-//
-//  Export public key in the binary format.
-//
-//  Binary format must be defined in the key specification.
-//  For instance, RSA public key must be exported in format defined in
-//  RFC 3447 Appendix A.1.1.
+//  Decrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_public_key_export_public_key(const vscf_ed25519_public_key_t *self, vsc_buffer_t *out);
+vscf_ecies_decrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out);
 
 //
-//  Return length in bytes required to hold exported public key.
+//  Calculate required buffer length to hold the decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_public_key_exported_public_key_len(const vscf_ed25519_public_key_t *self);
-
-//
-//  Import public key from the binary format.
-//
-//  Binary format must be defined in the key specification.
-//  For instance, RSA public key must be imported from the format defined in
-//  RFC 3447 Appendix A.1.1.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_t *self, vsc_data_t data);
-
-//
-//  Generate ephemeral private key of the same type.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_ed25519_public_key_generate_ephemeral_key(vscf_ed25519_public_key_t *self, vscf_error_ctx_t *error);
+vscf_ecies_decrypted_len(vscf_ecies_t *self, size_t data_len);
 
 
 // --------------------------------------------------------------------------
@@ -264,5 +289,5 @@ vscf_ed25519_public_key_generate_ephemeral_key(vscf_ed25519_public_key_t *self, 
 
 
 //  @footer
-#endif // VSCF_ED25519_PUBLIC_KEY_H_INCLUDED
+#endif // VSCF_ECIES_H_INCLUDED
 //  @end

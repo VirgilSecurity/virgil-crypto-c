@@ -86,6 +86,7 @@
     <interface name="sign"/>
     <interface name="verify"/>
     <interface name="generate key"/>
+    <interface name="generate ephemeral key"/>
     <interface name="compute shared key"/>
     <interface name="key serializer"/>
     <interface name="key deserializer"/>
@@ -114,6 +115,7 @@
     <class name="password recipient info"/>
     <class name="password recipient info list"/>
     <class name="alg factory"/>
+    <class name="ecies envelope"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>
@@ -121,6 +123,7 @@
     <implementor name="virgil"/>
     <implementor name="virgil pkcs8"/>
     <implementor name="ed25519"/>
+    <implementor name="virgil ecies"/>
 
     <implementor name="alg info"/>
     <implementor name="alg info der"/>

@@ -55,8 +55,8 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_alg_id.h"
 #include "vscf_error.h"
+#include "vscf_alg_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -237,6 +237,12 @@ vscf_rsa_private_key_release_asn1wr(vscf_rsa_private_key_t *self);
 //
 VSCF_PUBLIC void
 vscf_rsa_private_key_set_keygen_params(vscf_rsa_private_key_t *self, size_t bitlen, size_t exponent);
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_rsa_private_key_setup_defaults(vscf_rsa_private_key_t *self);
 
 //
 //  Provide algorithm identificator.

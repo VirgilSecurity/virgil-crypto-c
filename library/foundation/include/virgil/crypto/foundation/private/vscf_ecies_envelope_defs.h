@@ -47,21 +47,23 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'ed25519 public key' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
+//  Class 'ecies envelope' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ED25519_PUBLIC_KEY_DEFS_H_INCLUDED
-#define VSCF_ED25519_PUBLIC_KEY_DEFS_H_INCLUDED
+#ifndef VSCF_ECIES_ENVELOPE_DEFS_H_INCLUDED
+#define VSCF_ECIES_ENVELOPE_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_ed25519_public_key.h"
 #include "vscf_impl.h"
+#include "vscf_alg_info_der_serializer.h"
 
-#include <ed25519/ed25519.h>
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -79,29 +81,31 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Handle 'ecies envelope' context.
 //
-struct vscf_ed25519_public_key_t {
+struct vscf_ecies_envelope_t {
     //
-    //  Compile-time known information about this implementation.
+    //  Function do deallocate self context.
     //
-    const vscf_impl_info_t *info;
+    vscf_dealloc_fn self_dealloc_cb;
     //
     //  Reference counter.
     //
     size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-    //
-    //  Implementation specific context.
-    //
-    byte public_key[ED25519_KEY_LEN];
-    //
-    //  Implementation specific context.
-    //
-    byte signature[ED25519_KEY_LEN];
+
+    vscf_impl_t *originator;
+
+    vscf_impl_t *kdf;
+
+    vscf_impl_t *mac;
+
+    vsc_buffer_t *mac_digest;
+
+    vscf_impl_t *cipher;
+
+    vsc_buffer_t *encrypted_content;
+
+    vscf_alg_info_der_serializer_t *alg_info_der_serializer;
 };
 
 
@@ -118,5 +122,5 @@ struct vscf_ed25519_public_key_t {
 
 
 //  @footer
-#endif // VSCF_ED25519_PUBLIC_KEY_DEFS_H_INCLUDED
+#endif // VSCF_ECIES_ENVELOPE_DEFS_H_INCLUDED
 //  @end

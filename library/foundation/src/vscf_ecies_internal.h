@@ -47,21 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'ed25519 public key' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ED25519_PUBLIC_KEY_DEFS_H_INCLUDED
-#define VSCF_ED25519_PUBLIC_KEY_DEFS_H_INCLUDED
+#ifndef VSCF_ECIES_INTERNAL_H_INCLUDED
+#define VSCF_ECIES_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_ed25519_public_key.h"
-#include "vscf_impl.h"
-
-#include <ed25519/ed25519.h>
+#include "vscf_ecies.h"
 
 // clang-format on
 //  @end
@@ -79,30 +73,20 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_ecies_init() is called.
+//  Note, that context is already zeroed.
 //
-struct vscf_ed25519_public_key_t {
-    //
-    //  Compile-time known information about this implementation.
-    //
-    const vscf_impl_info_t *info;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-    //
-    //  Implementation specific context.
-    //
-    byte public_key[ED25519_KEY_LEN];
-    //
-    //  Implementation specific context.
-    //
-    byte signature[ED25519_KEY_LEN];
-};
+VSCF_PRIVATE void
+vscf_ecies_init_ctx(vscf_ecies_t *self);
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_ecies_cleanup_ctx(vscf_ecies_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -118,5 +102,5 @@ struct vscf_ed25519_public_key_t {
 
 
 //  @footer
-#endif // VSCF_ED25519_PUBLIC_KEY_DEFS_H_INCLUDED
+#endif // VSCF_ECIES_INTERNAL_H_INCLUDED
 //  @end

@@ -61,6 +61,8 @@
 #include "vscf_alg.h"
 #include "vscf_alg_info.h"
 #include "vscf_simple_alg_info.h"
+#include "vscf_rsa_private_key.h"
+#include "vscf_ctr_drbg.h"
 #include "vscf_hash.h"
 #include "vscf_random.h"
 #include "vscf_asn1_reader.h"
@@ -77,6 +79,12 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Return public key exponent.
+//
+static size_t
+vscf_rsa_public_key_key_exponent(vscf_rsa_public_key_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -110,6 +118,49 @@ vscf_rsa_public_key_cleanup_ctx(vscf_rsa_public_key_t *self) {
     VSCF_ASSERT_PTR(self);
 
     mbedtls_rsa_free(&self->rsa_ctx);
+}
+
+//
+//  Return public key exponent.
+//
+static size_t
+vscf_rsa_public_key_key_exponent(vscf_rsa_public_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->asn1wr);
+    VSCF_ASSERT_PTR(self->asn1rd);
+
+    vscf_error_ctx_t error;
+    vscf_error_ctx_reset(&error);
+
+    byte exponent_asn1[10] = {0x00};
+    vscf_asn1_writer_reset(self->asn1wr, exponent_asn1, sizeof(exponent_asn1));
+    vscf_mbedtls_bignum_write_asn1(self->asn1wr, &self->rsa_ctx.E, &error);
+    VSCF_ASSERT(vscf_asn1_writer_error(self->asn1wr) == vscf_SUCCESS);
+    VSCF_ASSERT(error.error == vscf_SUCCESS);
+
+    vscf_asn1_reader_reset(self->asn1rd, vsc_data(exponent_asn1, sizeof(exponent_asn1)));
+    const size_t exponent = vscf_asn1_reader_read_uint(self->asn1rd);
+    VSCF_ASSERT(vscf_asn1_reader_error(self->asn1rd) == vscf_SUCCESS);
+
+    return exponent;
+}
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_rsa_public_key_setup_defaults(vscf_rsa_public_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        vscf_ctr_drbg_setup_defaults(random);
+        self->random = vscf_ctr_drbg_impl(random);
+    }
+
+    return vscf_SUCCESS;
 }
 
 //
@@ -270,28 +321,25 @@ vscf_rsa_public_key_export_public_key(const vscf_rsa_public_key_t *self, vsc_buf
     VSCF_ASSERT_PTR(self->asn1wr);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT_PTR(vsc_buffer_is_valid(out));
-
     VSCF_ASSERT(mbedtls_rsa_check_pubkey(&self->rsa_ctx) == 0);
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_rsa_public_key_exported_public_key_len(self));
 
-    vscf_impl_t *asn1wr = self->asn1wr;
-    const mbedtls_rsa_context *rsa = &self->rsa_ctx;
+    vscf_asn1_writer_reset(self->asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
     vscf_error_ctx_t error;
     vscf_error_ctx_reset(&error);
 
-    vscf_asn1_writer_reset(asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
+    size_t len = 0;
 
-    vscf_asn1_writer_write_sequence(asn1wr, vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->E, &error) +
-                                                    vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->N, &error));
+    len += vscf_mbedtls_bignum_write_asn1(self->asn1wr, &self->rsa_ctx.E, &error);
+    len += vscf_mbedtls_bignum_write_asn1(self->asn1wr, &self->rsa_ctx.N, &error);
+    len += vscf_asn1_writer_write_sequence(self->asn1wr, len);
 
-    vscf_error_ctx_update(&error, vscf_asn1_writer_error(asn1wr));
+    VSCF_ASSERT(vscf_asn1_writer_error(self->asn1wr) == vscf_SUCCESS);
+    VSCF_ASSERT(error.error == vscf_SUCCESS);
 
-    if (vscf_error_ctx_error(&error) != vscf_SUCCESS) {
-        return vscf_error_SMALL_BUFFER;
-    }
-
-    size_t writtenBytes = vscf_asn1_writer_finish(asn1wr);
-    vsc_buffer_inc_used(out, writtenBytes);
+    vscf_asn1_writer_finish(self->asn1wr);
+    vsc_buffer_inc_used(out, len);
 
     return vscf_SUCCESS;
 }
@@ -353,4 +401,30 @@ vscf_rsa_public_key_import_public_key(vscf_rsa_public_key_t *self, vsc_data_t da
     }
 
     return vscf_SUCCESS;
+}
+
+//
+//  Generate ephemeral private key of the same type.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_rsa_public_key_generate_ephemeral_key(vscf_rsa_public_key_t *self, vscf_error_ctx_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
+
+    vscf_rsa_private_key_t *private_key = vscf_rsa_private_key_new();
+    vscf_rsa_private_key_use_random(private_key, self->random);
+
+    const size_t bitlen = vscf_rsa_public_key_key_bitlen(self);
+    const size_t exponent = vscf_rsa_public_key_key_exponent(self);
+
+    vscf_rsa_private_key_set_keygen_params(private_key, bitlen, exponent);
+    vscf_error_t status = vscf_rsa_private_key_generate_key(private_key);
+    if (status != vscf_SUCCESS) {
+        vscf_rsa_private_key_destroy(&private_key);
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, status);
+        return NULL;
+    }
+
+    return vscf_rsa_private_key_impl(private_key);
 }

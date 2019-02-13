@@ -6,6 +6,7 @@
         <require library="mbedtls" feature="BIGNUM C"/>
         <require library="mbedtls" feature="PKCS1 V21"/>
 
+        <require header="mbedtls/rsa.h" scope="context"/>
         <require enum="asn1 tag"/>
         <require class="mbedtls bignum asn1 writer"/>
         <require class="mbedtls bignum asn1 reader"/>
@@ -14,8 +15,9 @@
         <require interface="alg"/>
         <require interface="alg info"/>
         <require class="simple alg info"/>
+        <require impl="rsa private key"/>
+        <require impl="ctr drbg"/>
 
-        <require header="mbedtls/rsa.h" scope="context"/>
         <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" is_reference="0"/>
 
         <dependency name="hash" interface="hash"/>
@@ -23,6 +25,7 @@
         <dependency name="asn1rd" interface="asn1 reader"/>
         <dependency name="asn1wr" interface="asn1 writer"/>
 
+        <interface name="defaults"/>
         <interface name="alg"/>
         <interface name="key"/>
         <interface name="encrypt"/>
@@ -31,6 +34,13 @@
             <constant name="can import public key" value="true"/>
             <constant name="can export public key" value="true"/>
         </interface>
+        <interface name="generate ephemeral key"/>
+
+        <method name="key exponent">
+            Return public key exponent.
+
+            <return type="size"/>
+        </method>
     </implementation>
 
 
@@ -39,6 +49,8 @@
         <require library="mbedtls" feature="BIGNUM C"/>
         <require library="mbedtls" feature="PKCS1 V21"/>
 
+        <require header="mbedtls/bignum.h"/>
+        <require header="mbedtls/rsa.h" scope="context"/>
         <require enum="asn1 tag"/>
         <require class="mbedtls bignum asn1 writer"/>
         <require class="mbedtls bignum asn1 reader"/>
@@ -48,9 +60,7 @@
         <require interface="alg"/>
         <require interface="alg info"/>
         <require class="simple alg info"/>
-
-        <require header="mbedtls/bignum.h"/>
-        <require header="mbedtls/rsa.h" scope="context"/>
+        <require impl="ctr drbg"/>
 
         <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" is_reference="0"/>
         <property name="gen bitlen" type="size"/>
@@ -61,13 +71,7 @@
         <dependency name="asn1rd" interface="asn1 reader"/>
         <dependency name="asn1wr" interface="asn1 writer"/>
 
-        <method name="set keygen params" visibility="public" declaration="public">
-            Setup parameters that is used during key generation.
-
-            <argument name="bitlen" type="size"/>
-            <argument name="exponent" type="size"/>
-        </method>
-
+        <interface name="defaults"/>
         <interface name="alg"/>
         <interface name="key"/>
         <interface name="generate key"/>
@@ -77,5 +81,12 @@
             <constant name="can import private key" value="true"/>
             <constant name="can export private key" value="true"/>
         </interface>
+
+        <method name="set keygen params" visibility="public" declaration="public">
+            Setup parameters that is used during key generation.
+
+            <argument name="bitlen" type="size"/>
+            <argument name="exponent" type="size"/>
+        </method>
     </implementation>
 </implementor>
