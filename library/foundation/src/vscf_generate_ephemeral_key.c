@@ -37,6 +37,14 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Provide interface to compute shared key for 2 asymmetric keys.
+//
+//  Assume that this interface is implemented on the private key.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,32 +52,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Types of the 'ed25519 public key' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_ED25519_PUBLIC_KEY_DEFS_H_INCLUDED
-#define VSCF_ED25519_PUBLIC_KEY_DEFS_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_ed25519_public_key.h"
-#include "vscf_impl.h"
-
-#include <ed25519/ed25519.h>
+#include "vscf_generate_ephemeral_key.h"
+#include "vscf_assert.h"
+#include "vscf_generate_ephemeral_key_api.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -79,44 +67,55 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Generate ephemeral private key of the same type.
 //
-struct vscf_ed25519_public_key_t {
-    //
-    //  Compile-time known information about this implementation.
-    //
-    const vscf_impl_info_t *info;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-    //
-    //  Implementation specific context.
-    //
-    byte public_key[ED25519_KEY_LEN];
-    //
-    //  Implementation specific context.
-    //
-    byte signature[ED25519_KEY_LEN];
-};
+VSCF_PUBLIC vscf_impl_t *
+vscf_generate_ephemeral_key(vscf_impl_t *impl, vscf_error_ctx_t *error) {
+
+    const vscf_generate_ephemeral_key_api_t *generate_ephemeral_key_api = vscf_generate_ephemeral_key_api(impl);
+    VSCF_ASSERT_PTR (generate_ephemeral_key_api);
+
+    VSCF_ASSERT_PTR (generate_ephemeral_key_api->generate_ephemeral_key_cb);
+    return generate_ephemeral_key_api->generate_ephemeral_key_cb (impl, error);
+}
+
+//
+//  Return generate ephemeral key API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_generate_ephemeral_key_api_t *
+vscf_generate_ephemeral_key_api(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_GENERATE_EPHEMERAL_KEY);
+    return (const vscf_generate_ephemeral_key_api_t *) api;
+}
+
+//
+//  Check if given object implements interface 'generate ephemeral key'.
+//
+VSCF_PUBLIC bool
+vscf_generate_ephemeral_key_is_implemented(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api(impl, vscf_api_tag_GENERATE_EPHEMERAL_KEY) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_generate_ephemeral_key_api_tag(const vscf_generate_ephemeral_key_api_t *generate_ephemeral_key_api) {
+
+    VSCF_ASSERT_PTR (generate_ephemeral_key_api);
+
+    return generate_ephemeral_key_api->api_tag;
+}
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_ED25519_PUBLIC_KEY_DEFS_H_INCLUDED
 //  @end

@@ -1,0 +1,178 @@
+<class name="ecies envelope" scope="internal">
+     Provides function to process ECIES envelope ASN.1 structure:
+
+         ECIES-Envelope-Schema DEFINITIONS EXPLICIT TAGS ::=
+         BEGIN
+
+            IMPORTS
+
+              -- Imports from RFC 5280, Appendix A.1
+                 AlgorithmIdentifier
+                     FROM PKIX1Explicit88
+                         { iso(1) identified-organization(3) dod(6)
+                           internet(1) security(5) mechanisms(5) pkix(7)
+                           mod(0) pkix1-explicit(18) }
+
+              -- Imports from ISO/IEC 18033-2, Appendix B
+                 KeyDerivationFunction
+                     FROM AlgorithmObjectIdentifiers
+                         { iso(1) standard(0) encryption-algorithms(18033) part(2)
+                           asn1-module(0) algorithm-object-identifiers(0) };
+
+
+             ECIES-Envelope ::= SEQUENCE {
+                 version          INTEGER { v0(0) },
+                 originator       OriginatorPublicKey,
+                 kdf              KeyDerivationFunction,
+                 hmac             DigestInfo,
+                 encryptedContent EncryptedContentInfo
+             }
+
+             OriginatorPublicKey ::= SEQUENCE {
+                 algorithm AlgorithmIdentifier,
+                 publicKey BIT STRING
+             }
+
+             DigestInfo ::= SEQUENCE {
+                 digestAlgorithm    DigestAlgorithmIdentifier,
+                 digest             Digest
+             }
+
+             DigestAlgorithmIdentifier ::= AlgorithmIdentifier
+
+             Digest ::= OCTET STRING
+
+             EncryptedContentInfo ::= SEQUENCE {
+                 contentEncryptionAlgorithm ContentEncryptionAlgorithmIdentifier,
+                 encryptedContent EncryptedContent
+             }
+
+             ContentEncryptionAlgorithmIdentifier :: = AlgorithmIdentifier
+
+             EncryptedContent ::= OCTET STRING
+         END
+
+    <property name="originator" interface="public key"/>
+    <property name="kdf" interface="alg info"/>
+    <property name="mac" interface="alg info"/>
+    <property name="mac digest" class="buffer"/>
+    <property name="cipher" interface="alg info"/>
+    <property name="encrypted content" class="buffer"/>
+    <property name="alg info der serializer" impl="alg info der serializer"/>
+
+    <method name="set originator">
+        Set "originator".
+
+        <argument name="originator" interface="public key" access="readwrite"/>
+    </method>
+
+    <method name="set kdf">
+        Set "kdf" algorithm information.
+
+        <argument name="kdf" interface="alg info" access="readwrite"/>
+    </method>
+
+    <method name="set mac">
+        Set "mac" algorithm information.
+
+        <argument name="mac" interface="alg info" access="readwrite"/>
+    </method>
+
+    <method name="set mac digest">
+        Set "mac" digest.
+        <argument name="mac digest" class="buffer" access="readwrite"/>
+    </method>
+
+    <method name="set cipher">
+        Set "cipher" algorithm information.
+
+        <argument name="cipher" interface="alg info" access="readwrite"/>
+    </method>
+
+    <method name="set encrypted content">
+        Set "encrypted content".
+        <argument name="encrypted content" class="buffer" access="readwrite"/>
+    </method>
+
+    <method name="get originator">
+        Return "originator".
+
+        <return interface="public key"/>
+    </method>
+
+    <method name="get kdf">
+        Return "kdf".
+
+        <return interface="alg info"/>
+    </method>
+
+    <method name="get mac">
+        Return "mac".
+
+        <return interface="alg info"/>
+    </method>
+
+    <method name="get mac digest">
+        Return "mac digest".
+
+        <return class="buffer"/>
+    </method>
+
+    <method name="get cipher">
+        Return "cipher".
+
+        <return interface="alg info"/>
+    </method>
+
+    <method name="get encrypted content">
+        Return "encrypted content".
+
+        <return class="buffer"/>
+    </method>
+
+    <method name="packed len">
+        Return buffer length required to hold packed ECIES-Envelope.
+
+        <return type="size"/>
+    </method>
+
+    <method name="pack">
+        Pack properties to the ASN.1 structure.
+
+        ECIES-Envelope ::= SEQUENCE {
+            version          INTEGER { v0(0) },
+            originator       OriginatorPublicKey,
+            kdf              KeyDerivationFunction,
+            hmac             DigestInfo,
+            encryptedContent EncryptedContentInfo }
+
+        OriginatorPublicKey ::= SEQUENCE {
+            algorithm AlgorithmIdentifier,
+            publicKey BIT STRING }
+
+        DigestInfo ::= SEQUENCE {
+            digestAlgorithm    DigestAlgorithmIdentifier,
+            digest             Digest }
+
+        DigestAlgorithmIdentifier ::= AlgorithmIdentifier
+        Digest ::= OCTET STRING
+
+        EncryptedContentInfo ::= SEQUENCE {
+            contentEncryptionAlgorithm ContentEncryptionAlgorithmIdentifier,
+            encryptedContent EncryptedContent }
+
+        ContentEncryptionAlgorithmIdentifier :: = AlgorithmIdentifier
+        EncryptedContent ::= OCTET STRING
+
+        <argument name="out" class="buffer">
+            <length method="packed len"/>
+        </argument>
+    </method>
+
+    <method name="unpack">
+        Unpack ECIES-Envelope ASN.1 structure.
+        Unpacked data can be accessed thru getters.
+
+        <return enum="error"/>
+    </method>
+</class>

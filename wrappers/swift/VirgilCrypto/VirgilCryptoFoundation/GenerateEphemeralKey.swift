@@ -37,63 +37,36 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-/// Handle information about password-based encryption algorithm.
-@objc(VSCFPbeAlgInfo) public class PbeAlgInfo: NSObject, AlgInfo {
+/// Provide interface to compute shared key for 2 asymmetric keys.
+///
+/// Assume that this interface is implemented on the private key.
+@objc(VSCFGenerateEphemeralKey) public protocol GenerateEphemeralKey : CContext {
+
+    /// Generate ephemeral private key of the same type.
+    @objc func generateEphemeralKey(error: ErrorCtx) -> PrivateKey
+}
+
+/// Implement interface methods
+@objc(VSCFGenerateEphemeralKeyProxy) internal class GenerateEphemeralKeyProxy: NSObject, GenerateEphemeralKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
-    /// Create underlying C context.
-    public override init() {
-        self.c_ctx = vscf_pbe_alg_info_new()
-        super.init()
-    }
-
-    /// Acquire C context.
-    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    public init(take c_ctx: OpaquePointer) {
+    /// Take C context that implements this interface
+    public init(c_ctx: OpaquePointer) {
         self.c_ctx = c_ctx
         super.init()
     }
 
-    /// Acquire retained C context.
-    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscf_pbe_alg_info_shallow_copy(c_ctx)
-        super.init()
-    }
-
-    /// Create algorithm info with identificator, KDF algorithm info and
-    /// cipher alg info.
-    public init(algId: AlgId, kdfAlgInfo: AlgInfo, cipherAlgInfo: AlgInfo) {
-        let proxyResult = vscf_pbe_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), &kdfAlgInfo.c_ctx, &cipherAlgInfo.c_ctx)
-
-        self.c_ctx = proxyResult!
-    }
-
     /// Release underlying C context.
     deinit {
-        vscf_pbe_alg_info_delete(self.c_ctx)
+        vscf_impl_delete(self.c_ctx)
     }
 
-    /// Return KDF algorithm information.
-    @objc public func kdfAlgInfo() -> AlgInfo {
-        let proxyResult = vscf_pbe_alg_info_kdf_alg_info(self.c_ctx)
+    /// Generate ephemeral private key of the same type.
+    @objc public func generateEphemeralKey(error: ErrorCtx) -> PrivateKey {
+        let proxyResult = vscf_generate_ephemeral_key(self.c_ctx, error.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
-    }
-
-    /// Return cipher algorithm information.
-    @objc public func cipherAlgInfo() -> AlgInfo {
-        let proxyResult = vscf_pbe_alg_info_cipher_alg_info(self.c_ctx)
-
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
-    }
-
-    /// Provide algorithm identificator.
-    @objc public func algId() -> AlgId {
-        let proxyResult = vscf_pbe_alg_info_alg_id(self.c_ctx)
-
-        return AlgId.init(fromC: proxyResult)
+        return PrivateKeyProxy.init(c_ctx: proxyResult!)
     }
 }

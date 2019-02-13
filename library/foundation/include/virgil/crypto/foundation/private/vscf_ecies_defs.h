@@ -47,21 +47,19 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'ed25519 public key' implementation.
+//  Types of the 'ecies' implementation.
 //  This types SHOULD NOT be used directly.
 //  The only purpose of including this module is to place implementation
 //  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ED25519_PUBLIC_KEY_DEFS_H_INCLUDED
-#define VSCF_ED25519_PUBLIC_KEY_DEFS_H_INCLUDED
+#ifndef VSCF_ECIES_DEFS_H_INCLUDED
+#define VSCF_ECIES_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
-#include "vscf_ed25519_public_key.h"
+#include "vscf_ecies.h"
 #include "vscf_impl.h"
-
-#include <ed25519/ed25519.h>
 
 // clang-format on
 //  @end
@@ -81,7 +79,7 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-struct vscf_ed25519_public_key_t {
+struct vscf_ecies_t {
     //
     //  Compile-time known information about this implementation.
     //
@@ -95,13 +93,29 @@ struct vscf_ed25519_public_key_t {
     //
     vscf_impl_t *random;
     //
+    //  Dependency to the interface 'cipher'.
+    //
+    vscf_impl_t *cipher;
+    //
+    //  Dependency to the interface 'mac'.
+    //
+    vscf_impl_t *mac;
+    //
+    //  Dependency to the interface 'kdf'.
+    //
+    vscf_impl_t *kdf;
+    //
     //  Implementation specific context.
     //
-    byte public_key[ED25519_KEY_LEN];
+    vscf_impl_t *public_key;
     //
     //  Implementation specific context.
     //
-    byte signature[ED25519_KEY_LEN];
+    vscf_impl_t *private_key;
+    //
+    //  Implementation specific context.
+    //
+    vscf_impl_t *ephemeral_key;
 };
 
 
@@ -118,5 +132,5 @@ struct vscf_ed25519_public_key_t {
 
 
 //  @footer
-#endif // VSCF_ED25519_PUBLIC_KEY_DEFS_H_INCLUDED
+#endif // VSCF_ECIES_DEFS_H_INCLUDED
 //  @end
