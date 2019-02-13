@@ -132,6 +132,10 @@ initialize(vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **sess
             vscr_ratchet_session_initiate(*session_alice, vsc_buffer_data(alice_priv), vsc_buffer_data(bob_pub),
                     vsc_buffer_data(bob_lt_pub), enable_one_time ? vsc_buffer_data(bob_ot_pub) : vsc_data_empty()));
 
+    TEST_ASSERT((*session_alice)->is_initiator);
+    TEST_ASSERT(!(*session_alice)->received_first_response);
+    TEST_ASSERT((*session_alice)->receiver_has_one_time_public_key == enable_one_time);
+
     if (should_restore) {
         restore_session(session_alice);
     }
@@ -147,6 +151,7 @@ initialize(vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **sess
             vscr_ratchet_session_encrypt(*session_alice, vsc_buffer_data(text), &error_ctx);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
     TEST_ASSERT((vscr_ratchet_message_get_one_time_public_key(ratchet_message).len == 0) == !enable_one_time);
+    TEST_ASSERT_EQUAL(vscr_msg_type_PREKEY, vscr_ratchet_message_get_type(ratchet_message));
 
     if (should_restore) {
         restore_session(session_alice);
@@ -156,6 +161,10 @@ initialize(vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **sess
             vscr_SUCCESS, vscr_ratchet_session_respond(*session_bob, vsc_buffer_data(alice_pub),
                                   vsc_buffer_data(bob_priv), vsc_buffer_data(bob_lt_priv),
                                   enable_one_time ? vsc_buffer_data(bob_ot_priv) : vsc_data_empty(), ratchet_message));
+
+    TEST_ASSERT(!(*session_bob)->is_initiator);
+    TEST_ASSERT(!(*session_bob)->received_first_response);
+    TEST_ASSERT((*session_bob)->receiver_has_one_time_public_key == enable_one_time);
 
     if (should_restore) {
         restore_session(session_bob);
@@ -197,6 +206,8 @@ encrypt_decrypt__100_plain_texts_random_order(
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
     vscf_ctr_drbg_setup_defaults(rng);
 
+    bool sent_first_response = false;
+
     for (int i = 0; i < 100; i++) {
         byte dice_rnd;
         vsc_buffer_t *fake_buffer = vsc_buffer_new();
@@ -226,6 +237,8 @@ encrypt_decrypt__100_plain_texts_random_order(
         vscr_ratchet_message_t *ratchet_message =
                 vscr_ratchet_session_encrypt(sender, vsc_buffer_data(text), &error_ctx);
         TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+        TEST_ASSERT_EQUAL(dice && !sent_first_response ? vscr_msg_type_PREKEY : vscr_msg_type_REGULAR,
+                vscr_ratchet_message_get_type(ratchet_message));
 
         size_t len = vscr_ratchet_session_decrypt_len(receiver, ratchet_message);
         vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(len);
@@ -233,6 +246,9 @@ encrypt_decrypt__100_plain_texts_random_order(
         TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
         TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(text), plain_text);
+
+        if (!dice)
+            sent_first_response = true;
 
         vsc_buffer_destroy(&text);
         vsc_buffer_destroy(&plain_text);
@@ -287,6 +303,9 @@ encrypt_decrypt__100_plain_texts_random_order_with_producers(
         TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
         TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(text), plain_text);
+
+        if (!dice)
+            producer_alice.sent_first_response = true;
 
         vsc_buffer_destroy(&text);
         vsc_buffer_destroy(&plain_text);
@@ -369,6 +388,7 @@ ratchet_session_cmp(vscr_ratchet_session_t *ratchet_session1, vscr_ratchet_sessi
                    sizeof(ratchet_session1->receiver_one_time_public_key)) == 0 &&
            ratchet_session1->is_initiator == ratchet_session2->is_initiator &&
            ratchet_session1->received_first_response == ratchet_session2->received_first_response &&
+           ratchet_session1->receiver_has_one_time_public_key == ratchet_session2->receiver_has_one_time_public_key &&
            ratchet_cmp(ratchet_session1->ratchet, ratchet_session2->ratchet);
 }
 
