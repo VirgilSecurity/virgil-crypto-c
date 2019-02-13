@@ -5,71 +5,71 @@
         No errors was occurred.
     </constant>
 
-    <constant name="protobuf decode" value="1">
+    <constant name="protobuf decode" value="-1">
         Error during protobuf deserialization
     </constant>
 
-    <constant name="message version doesn't match" value="2">
+    <constant name="message version doesn't match" value="-2">
         Message version doesn't match
     </constant>
 
-    <constant name="bad message type" value="3">
+    <constant name="bad message type" value="-3">
         Bad message type
     </constant>
 
-    <constant name="aes" value="4">
+    <constant name="aes" value="-4">
         AES error
     </constant>
 
-    <constant name="rng failed" value="5">
+    <constant name="rng failed" value="-5">
         RNG failed
     </constant>
 
-    <constant name="curve25519" value="6">
+    <constant name="curve25519" value="-6">
         Curve25519 error
     </constant>
 
-    <constant name="key deserialization" value="7">
+    <constant name="key deserialization" value="-7">
         Key deserialization error
     </constant>
 
-    <constant name="invalid key type" value="8">
+    <constant name="invalid key type" value="-8">
         Invalid key type
     </constant>
 
-    <constant name="identity key doesnt match" value="9">
+    <constant name="identity key doesnt match" value="-9">
         Identity key doesn't match
     </constant>
 
-    <constant name="message already decrypted" value="10">
+    <constant name="message already decrypted" value="-10">
         Message already decrypted
     </constant>
 
-    <constant name="too many lost messages" value="11">
+    <constant name="too many lost messages" value="-11">
         Too many lost messages
     </constant>
 
-    <constant name="sender chain missing" value="12">
+    <constant name="sender chain missing" value="-12">
         Sender chain missing
     </constant>
 
-    <constant name="skipped message missing" value="13">
+    <constant name="skipped message missing" value="-13">
         Skipped message missing
     </constant>
 
-    <constant name="can't encrypt yet" value="14">
+    <constant name="can't encrypt yet" value="-14">
         Can't encrypt yet
     </constant>
 
-    <constant name="exceeded max plain text len" value="15">
+    <constant name="exceeded max plain text len" value="-15">
         Exceeded max plain text len
     </constant>
 
-    <constant name="too many messages for sender chain" value="16">
+    <constant name="too many messages for sender chain" value="-16">
         Too many messages for sender chain
     </constant>
 
-    <constant name="too many messages for receiver chain" value="17">
+    <constant name="too many messages for receiver chain" value="-17">
         Too many messages for receiver chain
     </constant>
 </enum>
