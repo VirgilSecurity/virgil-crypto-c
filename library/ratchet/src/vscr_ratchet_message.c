@@ -68,9 +68,9 @@
 
 bool
 buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void **arg) {
-    VSCR_UNUSED(stream);
+    VSCR_ASSERT_PTR(stream);
+    VSCR_ASSERT_PTR(arg);
     VSCR_UNUSED(field);
-    VSCR_UNUSED(arg);
 
     *arg = vsc_buffer_new_with_data(vsc_data(stream->state, stream->bytes_left));
     stream->bytes_left = 0;
@@ -80,9 +80,9 @@ buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void **arg
 
 bool
 buffer_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg) {
-    VSCR_UNUSED(stream);
-    VSCR_UNUSED(field);
-    VSCR_UNUSED(arg);
+    VSCR_ASSERT_PTR(stream);
+    VSCR_ASSERT_PTR(arg);
+    VSCR_ASSERT_PTR(field);
 
     if (!pb_encode_tag_for_field(stream, field))
         return false;
@@ -353,8 +353,8 @@ vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *self) {
 VSCR_PUBLIC void
 vscr_ratchet_message_serialize(vscr_ratchet_message_t *self, vsc_buffer_t *output) {
 
-    VSCR_UNUSED(self);
-    VSCR_UNUSED(output);
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(output);
     VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_message_serialize_len(self));
     VSCR_ASSERT(self->message_pb.has_prekey_message != self->message_pb.has_regular_message);
 

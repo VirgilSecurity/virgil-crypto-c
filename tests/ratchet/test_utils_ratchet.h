@@ -32,42 +32,17 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_CRYPTO_UNRELIABLE_MSG_PRODUCER_H
-#define VIRGIL_CRYPTO_UNRELIABLE_MSG_PRODUCER_H
+#ifndef VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H
+#define VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H
 
+#include <virgil/crypto/common/vsc_buffer.h>
 #include <virgil/crypto/ratchet/vscr_ratchet_session.h>
-#include <virgil/crypto/ratchet/vscr_ratchet_message.h>
-#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 
-typedef struct out_of_order_msg {
-    vscr_ratchet_message_t *cipher_text;
-    vsc_buffer_t *plain_text;
-    size_t index;
-} out_of_order_msg_t;
+void generate_random_data(vsc_buffer_t **buffer);
+void generate_PKCS8_keypair(vsc_buffer_t **priv, vsc_buffer_t **pub);
+void initialize(vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool enable_one_time, bool should_restore);
+void encrypt_decrypt__100_plain_texts_random_order(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *session_bob);
+void encrypt_decrypt__100_plain_texts_random_order_with_producers(vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool should_restore);
+void restore_session(vscr_ratchet_session_t **session);
 
-typedef struct out_of_order_msg_node out_of_order_msg_node_t;
-
-struct out_of_order_msg_node {
-    out_of_order_msg_t *msg;
-    out_of_order_msg_node_t *next;
-};
-
-typedef struct unreliable_msg_producer {
-    vscf_ctr_drbg_t *rng;
-    vscr_ratchet_session_t **session;
-    out_of_order_msg_node_t *skipped_msgs_list;
-    size_t produced_count;
-    float lost_rate;
-    float out_of_order_rate;
-} unreliable_msg_producer_t;
-
-void
-init_producer(
-        unreliable_msg_producer_t *producer, vscr_ratchet_session_t **session, float lost_rate, float out_of_order_rate);
-
-void
-deinit_producer(unreliable_msg_producer_t *producer);
-
-void produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr_ratchet_message_t **msg, bool should_restore);
-
-#endif // VIRGIL_CRYPTO_UNRELIABLE_MSG_PRODUCER_H
+#endif //VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H
