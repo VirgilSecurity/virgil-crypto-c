@@ -73,6 +73,24 @@ import VirgilCryptoCommon
         vscf_pkcs8_der_deserializer_use_asn1_reader(self.c_ctx, asn1Reader.c_ctx)
     }
 
+    /// Deserialize Public Key by using internal ASN.1 reader.
+    /// Note, that caller code is responsible to reset ASN.1 reader with
+    /// an input buffer.
+    @objc public func deserializePublicKeyInplace(error: ErrorCtx) -> RawKey {
+        let proxyResult = vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(self.c_ctx, error.c_ctx)
+
+        return RawKey.init(take: proxyResult!)
+    }
+
+    /// Deserialize Public Key by using internal ASN.1 reader.
+    /// Note, that caller code is responsible to reset ASN.1 reader with
+    /// an input buffer.
+    @objc public func deserializePrivateKeyInplace(error: ErrorCtx) -> RawKey {
+        let proxyResult = vscf_pkcs8_der_deserializer_deserialize_private_key_inplace(self.c_ctx, error.c_ctx)
+
+        return RawKey.init(take: proxyResult!)
+    }
+
     /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_pkcs8_der_deserializer_setup_defaults(self.c_ctx)

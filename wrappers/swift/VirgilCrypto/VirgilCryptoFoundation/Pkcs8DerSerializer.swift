@@ -73,6 +73,24 @@ import VirgilCryptoCommon
         vscf_pkcs8_der_serializer_use_asn1_writer(self.c_ctx, asn1Writer.c_ctx)
     }
 
+    /// Serialize Public Key by using internal ASN.1 writer.
+    /// Note, that caller code is responsible to reset ASN.1 writer with
+    /// an output buffer.
+    @objc public func serializePublicKeyInplace(publicKey: PublicKey, error: ErrorCtx) -> Int {
+        let proxyResult = vscf_pkcs8_der_serializer_serialize_public_key_inplace(self.c_ctx, publicKey.c_ctx, error.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Serialize Private Key by using internal ASN.1 writer.
+    /// Note, that caller code is responsible to reset ASN.1 writer with
+    /// an output buffer.
+    @objc public func serializePrivateKeyInplace(privateKey: PrivateKey, error: ErrorCtx) -> Int {
+        let proxyResult = vscf_pkcs8_der_serializer_serialize_private_key_inplace(self.c_ctx, privateKey.c_ctx, error.c_ctx)
+
+        return proxyResult
+    }
+
     /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_pkcs8_der_serializer_setup_defaults(self.c_ctx)
