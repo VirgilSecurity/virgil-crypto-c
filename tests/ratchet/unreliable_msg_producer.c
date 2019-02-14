@@ -32,6 +32,9 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
+#if TEST_DEPENDENCIES_AVAILABLE
+
 #include <virgil/crypto/ratchet/vscr_memory.h>
 #include "unreliable_msg_producer.h"
 #include "unity.h"
@@ -49,6 +52,7 @@ init_producer(unreliable_msg_producer_t *producer, vscr_ratchet_session_t **sess
     producer->lost_rate = lost_rate;
     producer->out_of_order_rate = out_of_order_rate;
     producer->session = session;
+    producer->sent_first_response = false;
 }
 
 void
@@ -182,8 +186,15 @@ produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr
         *msg = ratchet_message;
         *plain_text = plain_text_local;
 
+        TEST_ASSERT_EQUAL((vscr_ratchet_session_is_initiator(*producer->session) && !producer->sent_first_response)
+                                  ? vscr_msg_type_PREKEY
+                                  : vscr_msg_type_REGULAR,
+                vscr_ratchet_message_get_type(ratchet_message));
+
         producer->produced_count++;
 
         return;
     }
 }
+
+#endif

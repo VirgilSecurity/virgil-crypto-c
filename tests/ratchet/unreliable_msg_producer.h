@@ -59,6 +59,7 @@ typedef struct unreliable_msg_producer {
     size_t produced_count;
     float lost_rate;
     float out_of_order_rate;
+    bool sent_first_response;
 } unreliable_msg_producer_t;
 
 void

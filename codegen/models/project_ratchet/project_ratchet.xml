@@ -59,6 +59,9 @@
     <class name="ratchet common hidden"/>
     <class name="ratchet key utils"/>
     <class name="error"/>
+    <class name="ratchet x3dh"/>
+    <class name="ratchet skipped messages"/>
+    <class name="ratchet receiver chains"/>
     <class name="ratchet message"/>
     <class name="ratchet cipher"/>
     <class name="ratchet chain key"/>

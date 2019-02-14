@@ -1,4 +1,6 @@
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  @license
+// --------------------------------------------------------------------------
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -31,63 +33,73 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-
-#define UNITY_BEGIN() UnityBegin(__FILENAME__)
-
-#include "unity.h"
-#include "test_utils.h"
-
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage errors in MSVC.
 // --------------------------------------------------------------------------
 // clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
-#if TEST_DEPENDENCIES_AVAILABLE
 
-#include "vscr_ratchet_session.h"
-#include "test_data_ratchet_session.h"
-#include <virgil/crypto/ratchet/private/vscr_ratchet_message_defs.h>
-#include "privateAPI.h"
-#include "test_utils_ratchet.h"
-
+//  @warning
 // --------------------------------------------------------------------------
-//  Test functions.
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-void
-test__serialization__randomly_skipped_messages__should_work_after_restore(void) {
-    vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
-    vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
+#ifndef VSCR_RATCHET_X3DH_H_INCLUDED
+#define VSCR_RATCHET_X3DH_H_INCLUDED
 
-    initialize(&session_alice, &session_bob, true, true);
+#include "vscr_library.h"
+#include "vscr_error.h"
 
-    encrypt_decrypt__100_plain_texts_random_order_with_producers(&session_alice, &session_bob, true);
-
-    vscr_ratchet_session_destroy(&session_alice);
-    vscr_ratchet_session_destroy(&session_bob);
-}
-
-#endif // TEST_DEPENDENCIES_AVAILABLE
-
-
-// --------------------------------------------------------------------------
-// Entrypoint.
-// --------------------------------------------------------------------------
-int
-main(void) {
-    UNITY_BEGIN();
-
-#if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__serialization__randomly_skipped_messages__should_work_after_restore);
-#else
-    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
-    return UNITY_END();
+#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
+
+// clang-format on
+//  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
+
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_x3dh_compute_initiator_x3dh_secret(vsc_data_t sender_identity_private_key,
+        vsc_data_t sender_ephemeral_private_key, vsc_data_t receiver_identity_public_key,
+        vsc_data_t receiver_long_term_public_key, vsc_data_t receiver_one_time_public_key,
+        vsc_buffer_t *shared_secret);
+
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_data_t sender_identity_public_key,
+        vsc_data_t sender_ephemeral_public_key, vsc_data_t receiver_identity_private_key,
+        vsc_data_t receiver_long_term_private_key, vsc_data_t receiver_one_time_private_key,
+        vsc_buffer_t *shared_secret);
+
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
 }
+#endif
+
+
+//  @footer
+#endif // VSCR_RATCHET_X3DH_H_INCLUDED
+//  @end
