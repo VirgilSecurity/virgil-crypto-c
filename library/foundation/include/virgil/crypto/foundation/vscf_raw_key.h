@@ -147,13 +147,13 @@ vscf_raw_key_shallow_copy(vscf_raw_key_t *self);
 //  Returns asymmetric algorithm type that raw key belongs to.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_raw_key_alg_id(vscf_raw_key_t *self);
+vscf_raw_key_alg_id(const vscf_raw_key_t *self);
 
 //
 //  Return raw key data.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_raw_key_data(vscf_raw_key_t *self);
+vscf_raw_key_data(const vscf_raw_key_t *self);
 
 
 // --------------------------------------------------------------------------
