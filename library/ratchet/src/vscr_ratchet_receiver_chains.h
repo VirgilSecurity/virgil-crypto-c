@@ -133,7 +133,7 @@ vscr_ratchet_receiver_chains_first_chain(vscr_ratchet_receiver_chains_t *self);
 VSCR_PUBLIC vscr_ratchet_receiver_chain_t *
 vscr_ratchet_receiver_chains_find_chain(vscr_ratchet_receiver_chains_t *self, vsc_data_t ratchet_public_key);
 
-VSCR_PUBLIC vscr_ratchet_receiver_chain_t *
+VSCR_PUBLIC void
 vscr_ratchet_receiver_chains_add_chain(vscr_ratchet_receiver_chains_t *self,
         vscr_ratchet_receiver_chain_t *receiver_chain);
 
