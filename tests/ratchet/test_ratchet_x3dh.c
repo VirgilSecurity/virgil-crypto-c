@@ -34,11 +34,25 @@
 
 #define UNITY_BEGIN() UnityBegin(__FILENAME__)
 
+#include <test_utils.h>
+#include "unity.h"
+
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage errors in MSVC.
+// --------------------------------------------------------------------------
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
+#if TEST_DEPENDENCIES_AVAILABLE
+
 #include <vscr_ratchet_x3dh.h>
 #include <test_data_ratchet_x3dh.h>
 #include <ed25519/ed25519.h>
-#include <test_utils.h>
-#include "unity.h"
 #include "test_utils_ratchet.h"
 
 void
@@ -199,6 +213,8 @@ test__x3dh__random_keys_weak__should_match(void) {
     vsc_buffer_destroy(&receiver_long_term_public_key);
 }
 
+#endif
+
 // --------------------------------------------------------------------------
 // Entrypoint.
 // --------------------------------------------------------------------------
@@ -206,12 +222,16 @@ int
 main(void) {
     UNITY_BEGIN();
 
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__initiator_x3dh__fixed_keys__should_match);
     RUN_TEST(test__initiator_x3dh__fixed_keys_weak__should_match);
     RUN_TEST(test__responder_x3dh__fixed_keys__should_match);
     RUN_TEST(test__responder_x3dh__fixed_keys_weak__should_match);
     RUN_TEST(test__x3dh__random_keys__should_match);
     RUN_TEST(test__x3dh__random_keys_weak__should_match);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#endif
 
     return UNITY_END();
 }

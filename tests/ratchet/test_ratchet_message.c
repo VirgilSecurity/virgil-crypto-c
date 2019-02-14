@@ -37,10 +37,6 @@
 #include "unity.h"
 #include "test_utils.h"
 
-#include <virgil/crypto/ratchet/private/vscr_ratchet_message_defs.h>
-#include <virgil/crypto/ratchet/vscr_ratchet_message.h>
-#include "test_data_ratchet_message.h"
-
 // --------------------------------------------------------------------------
 //  Should have it to prevent linkage errors in MSVC.
 // --------------------------------------------------------------------------
@@ -51,6 +47,12 @@ void suiteSetUp(void) { }
 int suiteTearDown(int num_failures) { return num_failures; }
 // clang-format on
 
+#define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
+#if TEST_DEPENDENCIES_AVAILABLE
+
+#include <virgil/crypto/ratchet/private/vscr_ratchet_message_defs.h>
+#include <virgil/crypto/ratchet/vscr_ratchet_message.h>
+#include "test_data_ratchet_message.h"
 
 // --------------------------------------------------------------------------
 //  Test functions.
@@ -308,6 +310,8 @@ test__methods__fixed_regular_msg__should_return_correct_values(void) {
     vscr_ratchet_message_destroy(&msg1);
 }
 
+#endif
+
 // --------------------------------------------------------------------------
 // Entrypoint.
 // --------------------------------------------------------------------------
@@ -315,12 +319,16 @@ int
 main(void) {
     UNITY_BEGIN();
 
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__serialize_deserialize__fixed_regular_msg__should_be_equal);
     RUN_TEST(test__serialize_deserialize__fixed_prekey_msg__should_be_equal);
     RUN_TEST(test__serialize_deserialize__fixed_prekey_msg_no_one_time__should_be_equal);
     RUN_TEST(test__methods__fixed_prekey_msg__should_return_correct_values);
     RUN_TEST(test__methods__fixed_prekey_msg_no_one_time__should_return_correct_values);
     RUN_TEST(test__methods__fixed_regular_msg__should_return_correct_values);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#endif
 
     return UNITY_END();
 }

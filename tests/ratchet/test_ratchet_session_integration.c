@@ -37,14 +37,6 @@
 #include "unity.h"
 #include "test_utils.h"
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
-#if TEST_DEPENDENCIES_AVAILABLE
-
-#include "vscr_ratchet_session.h"
-#include "test_data_ratchet_session.h"
-#include "test_utils_ratchet.h"
-#include <virgil/crypto/ratchet/private/vscr_ratchet_message_defs.h>
-
 // --------------------------------------------------------------------------
 //  Should have it to prevent linkage errors in MSVC.
 // --------------------------------------------------------------------------
@@ -54,6 +46,14 @@ void tearDown(void) { }
 void suiteSetUp(void) { }
 int suiteTearDown(int num_failures) { return num_failures; }
 // clang-format on
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
+#if TEST_DEPENDENCIES_AVAILABLE
+
+#include "vscr_ratchet_session.h"
+#include "test_data_ratchet_session.h"
+#include "test_utils_ratchet.h"
+#include <virgil/crypto/ratchet/private/vscr_ratchet_message_defs.h>
 
 // --------------------------------------------------------------------------
 //  Test functions.
