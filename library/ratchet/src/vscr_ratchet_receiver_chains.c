@@ -219,8 +219,6 @@ static void
 vscr_ratchet_receiver_chains_init_ctx(vscr_ratchet_receiver_chains_t *self) {
 
     VSCR_ASSERT_PTR(self);
-
-    //  TODO: Perform additional context initialization.
 }
 
 //

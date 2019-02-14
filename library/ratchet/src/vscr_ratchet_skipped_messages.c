@@ -219,8 +219,6 @@ static void
 vscr_ratchet_skipped_messages_init_ctx(vscr_ratchet_skipped_messages_t *self) {
 
     VSCR_ASSERT_PTR(self);
-
-    //  TODO: Perform additional context initialization.
 }
 
 //
@@ -233,7 +231,13 @@ vscr_ratchet_skipped_messages_cleanup_ctx(vscr_ratchet_skipped_messages_t *self)
 
     VSCR_ASSERT_PTR(self);
 
-    //  TODO: Release all inner resources.
+    vscr_ratchet_skipped_message_key_list_node_t *node = self->keys;
+
+    while (node) {
+        vscr_ratchet_skipped_message_key_list_node_t *next = node->next;
+        vscr_ratchet_skipped_message_key_list_node_destroy(&node);
+        node = next;
+    }
 }
 
 VSCR_PUBLIC vscr_ratchet_skipped_message_key_t *
