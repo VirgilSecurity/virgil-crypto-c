@@ -286,7 +286,7 @@ vscf_ecies_envelope_packed_len(vscf_ecies_envelope_t *self);
 //  ContentEncryptionAlgorithmIdentifier :: = AlgorithmIdentifier
 //  EncryptedContent ::= OCTET STRING
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_error_t
 vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out);
 
 //
