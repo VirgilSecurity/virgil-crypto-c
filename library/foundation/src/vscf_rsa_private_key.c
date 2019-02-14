@@ -448,8 +448,11 @@ vscf_rsa_private_key_export_private_key(const vscf_rsa_private_key_t *self, vsc_
     VSCF_ASSERT(vscf_asn1_writer_error(self->asn1wr) == vscf_SUCCESS);
     VSCF_ASSERT(error.error == vscf_SUCCESS);
 
-    vscf_asn1_writer_finish(self->asn1wr);
     vsc_buffer_inc_used(out, len);
+
+    if (!vsc_buffer_is_reverse(out)) {
+        vscf_asn1_writer_finish(self->asn1wr);
+    }
 
     return vscf_SUCCESS;
 }
