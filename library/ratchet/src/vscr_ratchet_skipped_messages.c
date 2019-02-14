@@ -296,7 +296,7 @@ vscr_ratchet_skipped_messages_add_key(
 
     vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key_list_node =
             vscr_ratchet_skipped_message_key_list_node_new();
-    skipped_message_key_list_node->value = vscr_ratchet_skipped_message_key_shallow_copy(skipped_message_key);
+    skipped_message_key_list_node->value = skipped_message_key;
     skipped_message_key_list_node->next = self->keys;
     self->keys = skipped_message_key_list_node;
 
@@ -311,9 +311,9 @@ vscr_ratchet_skipped_messages_add_key(
         skipped_message_key_list_node = skipped_message_key_list_node->next;
     }
 
-    VSCR_ASSERT(msgs_count <= vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES);
+    VSCR_ASSERT(msgs_count <= vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES + 1);
 
-    if (msgs_count == vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES) {
+    if (msgs_count == vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES + 1) {
         vscr_ratchet_skipped_message_key_list_node_destroy(&skipped_message_key_list_node->next);
     }
 }

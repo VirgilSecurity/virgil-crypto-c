@@ -831,7 +831,6 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
         memcpy(skipped_message_key->public_key, receiver_chain->public_key, sizeof(receiver_chain->public_key));
         vscr_ratchet_advance_chain_key(&receiver_chain->chain_key);
         vscr_ratchet_skipped_messages_add_key(self->skipped_messages, skipped_message_key);
-        vscr_ratchet_skipped_message_key_destroy(&skipped_message_key);
     }
 
     if (receiver_chain->chain_key.index == UINT32_MAX) {
