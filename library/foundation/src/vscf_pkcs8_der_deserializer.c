@@ -102,6 +102,10 @@ vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(
         return NULL;
     }
 
+    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
+        return NULL;
+    }
+
     //
     //  Read SubjectPublicKeyInfo
     //
@@ -155,6 +159,10 @@ vscf_pkcs8_der_deserializer_deserialize_private_key_inplace(
     //  }
 
     if (error && (error->error != vscf_SUCCESS)) {
+        return NULL;
+    }
+
+    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
         return NULL;
     }
 

@@ -511,6 +511,14 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
 
+    if (error && (error->error != vscf_SUCCESS)) {
+        return NULL;
+    }
+
+    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
+        return NULL;
+    }
+
     //
     //  Define algorithm identifier.
     //
