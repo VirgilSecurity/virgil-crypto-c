@@ -32,6 +32,9 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
+#if TEST_DEPENDENCIES_AVAILABLE
+
 #include <virgil/crypto/ratchet/vscr_memory.h>
 #include "unreliable_msg_producer.h"
 #include "unity.h"
@@ -193,3 +196,5 @@ produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr
         return;
     }
 }
+
+#endif

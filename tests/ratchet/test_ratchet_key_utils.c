@@ -37,6 +37,19 @@
 #include "unity.h"
 #include "test_utils.h"
 
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage errors in MSVC.
+// --------------------------------------------------------------------------
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
+#if TEST_DEPENDENCIES_AVAILABLE
+
 #include <virgil/crypto/common/vsc_buffer.h>
 #include <virgil/crypto/ratchet/vscr_error_ctx.h>
 #include <virgil/crypto/ratchet/vscr_ratchet_common.h>
@@ -126,6 +139,8 @@ test__key_id__fixed_curve_raw_key__should_match(void) {
     vscr_ratchet_key_utils_destroy(&key_utils);
 }
 
+#endif
+
 // --------------------------------------------------------------------------
 // Entrypoint.
 // --------------------------------------------------------------------------
@@ -133,10 +148,14 @@ int
 main(void) {
     UNITY_BEGIN();
 
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__extract__fixed_curve_keypair__should_match);
     RUN_TEST(test__extract__fixed_ed_keypair__should_match);
     RUN_TEST(test__key_id__fixed_curve_key__should_match);
     RUN_TEST(test__key_id__fixed_curve_raw_key__should_match);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#endif
 
     return UNITY_END();
 }

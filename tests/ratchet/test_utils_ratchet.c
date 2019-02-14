@@ -32,6 +32,9 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
+#if TEST_DEPENDENCIES_AVAILABLE
+
 #include "test_utils_ratchet.h"
 #include <test_utils.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
@@ -489,3 +492,5 @@ restore_session(vscr_ratchet_session_t **session) {
 
     vscr_ratchet_session_destroy(&session_ref);
 }
+
+#endif
