@@ -44,35 +44,23 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_H_INCLUDED
-#define VSCR_RATCHET_H_INCLUDED
+#ifndef VSCR_RATCHET_SKIPPED_MESSAGES_H_INCLUDED
+#define VSCR_RATCHET_SKIPPED_MESSAGES_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_cipher.h"
-#include "vscr_ratchet.h"
-#include "vscr_error.h"
+#include "vscr_ratchet_skipped_message_key.h"
+#include "vscr_ratchet_skipped_messages.h"
 
 #include <RatchetSession.pb.h>
-#include <RatchetMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
-#   include <VSCCommon/vsc_buffer.h>
-#endif
-
-#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
 #endif
 
 // clang-format on
@@ -91,118 +79,72 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet' context.
+//  Handle 'ratchet skipped messages' context.
 //
-typedef struct vscr_ratchet_t vscr_ratchet_t;
+typedef struct vscr_ratchet_skipped_messages_t vscr_ratchet_skipped_messages_t;
 
 //
-//  Return size of 'vscr_ratchet_t'.
+//  Return size of 'vscr_ratchet_skipped_messages_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_ctx_size(void);
+vscr_ratchet_skipped_messages_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_init(vscr_ratchet_t *self);
+vscr_ratchet_skipped_messages_init(vscr_ratchet_skipped_messages_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cleanup(vscr_ratchet_t *self);
+vscr_ratchet_skipped_messages_cleanup(vscr_ratchet_skipped_messages_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_t *
-vscr_ratchet_new(void);
+VSCR_PUBLIC vscr_ratchet_skipped_messages_t *
+vscr_ratchet_skipped_messages_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_delete(vscr_ratchet_t *self);
+vscr_ratchet_skipped_messages_delete(vscr_ratchet_skipped_messages_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_skipped_messages_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_destroy(vscr_ratchet_t **self_ref);
+vscr_ratchet_skipped_messages_destroy(vscr_ratchet_skipped_messages_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_t *
-vscr_ratchet_shallow_copy(vscr_ratchet_t *self);
+VSCR_PUBLIC vscr_ratchet_skipped_messages_t *
+vscr_ratchet_skipped_messages_shallow_copy(vscr_ratchet_skipped_messages_t *self);
 
-//
-//  Setup dependency to the interface 'random' with shared ownership.
-//
-VSCR_PUBLIC void
-vscr_ratchet_use_rng(vscr_ratchet_t *self, vscf_impl_t *rng);
-
-//
-//  Setup dependency to the interface 'random' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCR_PUBLIC void
-vscr_ratchet_take_rng(vscr_ratchet_t *self, vscf_impl_t *rng);
-
-//
-//  Release dependency to the interface 'random'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_release_rng(vscr_ratchet_t *self);
-
-//
-//  Setup dependency to the class 'ratchet cipher' with shared ownership.
-//
-VSCR_PUBLIC void
-vscr_ratchet_use_cipher(vscr_ratchet_t *self, vscr_ratchet_cipher_t *cipher);
-
-//
-//  Setup dependency to the class 'ratchet cipher' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCR_PUBLIC void
-vscr_ratchet_take_cipher(vscr_ratchet_t *self, vscr_ratchet_cipher_t *cipher);
-
-//
-//  Release dependency to the class 'ratchet cipher'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_release_cipher(vscr_ratchet_t *self);
+VSCR_PUBLIC vscr_ratchet_skipped_message_key_t *
+vscr_ratchet_skipped_messages_find_key(vscr_ratchet_skipped_messages_t *self, size_t counter,
+        vsc_data_t ratchet_public_key);
 
 VSCR_PUBLIC void
-vscr_ratchet_setup_defaults(vscr_ratchet_t *self);
-
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const RegularMessage *message);
-
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret);
-
-VSCR_PUBLIC size_t
-vscr_ratchet_encrypt_len(vscr_ratchet_t *self, size_t plain_text_len);
-
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage *regular_message);
-
-VSCR_PUBLIC size_t
-vscr_ratchet_decrypt_len(vscr_ratchet_t *self, size_t cipher_text_len);
-
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message, vsc_buffer_t *plain_text);
+vscr_ratchet_skipped_messages_delete_key(vscr_ratchet_skipped_messages_t *self,
+        vscr_ratchet_skipped_message_key_t *skipped_message_key);
 
 VSCR_PUBLIC void
-vscr_ratchet_serialize(vscr_ratchet_t *self, Ratchet *ratchet_pb);
+vscr_ratchet_skipped_messages_add_key(vscr_ratchet_skipped_messages_t *self,
+        vscr_ratchet_skipped_message_key_t *skipped_message_key);
 
 VSCR_PUBLIC void
-vscr_ratchet_deserialize(Ratchet *ratchet_pb, vscr_ratchet_t *ratchet);
+vscr_ratchet_skipped_messages_serialize(vscr_ratchet_skipped_messages_t *self, SkippedMessages *skipped_messages_pb);
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_messages_deserialize(SkippedMessages *skipped_messages_pb,
+        vscr_ratchet_skipped_messages_t *skipped_messages);
 
 
 // --------------------------------------------------------------------------
@@ -218,5 +160,5 @@ vscr_ratchet_deserialize(Ratchet *ratchet_pb, vscr_ratchet_t *ratchet);
 
 
 //  @footer
-#endif // VSCR_RATCHET_H_INCLUDED
+#endif // VSCR_RATCHET_SKIPPED_MESSAGES_H_INCLUDED
 //  @end

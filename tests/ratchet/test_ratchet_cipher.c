@@ -34,11 +34,25 @@
 
 #define UNITY_BEGIN() UnityBegin(__FILENAME__)
 
+#include "unity.h"
+#include "test_utils.h"
+
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage errors in MSVC.
+// --------------------------------------------------------------------------
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
+#if TEST_DEPENDENCIES_AVAILABLE
+
 #include <virgil/crypto/ratchet/private/vscr_ratchet_cipher.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <virgil/crypto/ratchet/private/vscr_ratchet_common_hidden.h>
-#include "unity.h"
-#include "test_utils.h"
 #include "test_data_ratchet_cipher.h"
 
 void
@@ -113,6 +127,8 @@ test__encrypt_decrypt__rnd_data__should_match(void) {
     vscf_ctr_drbg_destroy(&rng);
 }
 
+#endif
+
 // --------------------------------------------------------------------------
 // Entrypoint.
 // --------------------------------------------------------------------------
@@ -120,8 +136,12 @@ int
 main(void) {
     UNITY_BEGIN();
 
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__encrypt__fixed_data__should_match);
     RUN_TEST(test__encrypt_decrypt__rnd_data__should_match);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#endif
 
     return UNITY_END();
 }
