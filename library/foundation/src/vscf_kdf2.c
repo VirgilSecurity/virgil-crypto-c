@@ -86,7 +86,7 @@ VSCF_PUBLIC vscf_alg_id_t
 vscf_kdf2_alg_id(const vscf_kdf2_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    return vscf_alg_id_KDF1;
+    return vscf_alg_id_KDF2;
 }
 
 //
