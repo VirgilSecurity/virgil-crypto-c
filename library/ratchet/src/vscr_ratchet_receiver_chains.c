@@ -231,13 +231,7 @@ vscr_ratchet_receiver_chains_cleanup_ctx(vscr_ratchet_receiver_chains_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    vscr_ratchet_receiver_chain_list_node_t *node = self->chains;
-
-    while (node) {
-        vscr_ratchet_receiver_chain_list_node_t *next = node->next;
-        vscr_ratchet_receiver_chain_list_node_destroy(&node);
-        node = next;
-    }
+    vscr_ratchet_receiver_chain_list_node_destroy(&self->chains);
 }
 
 VSCR_PUBLIC vscr_ratchet_receiver_chain_t *

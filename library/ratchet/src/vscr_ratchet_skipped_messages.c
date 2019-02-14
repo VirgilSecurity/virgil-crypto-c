@@ -231,13 +231,7 @@ vscr_ratchet_skipped_messages_cleanup_ctx(vscr_ratchet_skipped_messages_t *self)
 
     VSCR_ASSERT_PTR(self);
 
-    vscr_ratchet_skipped_message_key_list_node_t *node = self->keys;
-
-    while (node) {
-        vscr_ratchet_skipped_message_key_list_node_t *next = node->next;
-        vscr_ratchet_skipped_message_key_list_node_destroy(&node);
-        node = next;
-    }
+    vscr_ratchet_skipped_message_key_list_node_destroy(&self->keys);
 }
 
 VSCR_PUBLIC vscr_ratchet_skipped_message_key_t *
