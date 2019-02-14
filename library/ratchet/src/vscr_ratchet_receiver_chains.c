@@ -287,9 +287,9 @@ vscr_ratchet_receiver_chains_add_chain(
         receiver_chain_list_node = receiver_chain_list_node->next;
     }
 
-    VSCR_ASSERT(chains_count <= vscr_ratchet_common_hidden_MAX_RECEIVERS_CHAINS);
+    VSCR_ASSERT(chains_count <= vscr_ratchet_common_hidden_MAX_RECEIVERS_CHAINS + 1);
 
-    if (chains_count == vscr_ratchet_common_hidden_MAX_RECEIVERS_CHAINS) {
+    if (chains_count == vscr_ratchet_common_hidden_MAX_RECEIVERS_CHAINS + 1) {
         vscr_ratchet_receiver_chain_list_node_destroy(&receiver_chain_list_node->next);
     }
 }
