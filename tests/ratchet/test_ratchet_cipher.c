@@ -59,16 +59,16 @@ void
 test__encrypt__fixed_data__should_match(void) {
     vscr_ratchet_cipher_t *cipher = vscr_ratchet_cipher_new();
 
-    size_t len = vscr_ratchet_cipher_encrypt_len(cipher, test_ratchet_cipher_plain_text.len);
+    size_t len = vscr_ratchet_cipher_encrypt_len(cipher, test_data_ratchet_cipher_plain_text.len);
 
-    TEST_ASSERT_EQUAL(test_ratchet_cipher_cipher_text_len, len);
+    TEST_ASSERT_EQUAL(test_data_ratchet_cipher_cipher_text_len, len);
 
     vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(len);
 
     TEST_ASSERT_EQUAL(vscr_SUCCESS,
-            vscr_ratchet_cipher_encrypt(cipher, test_ratchet_cipher_key, test_ratchet_cipher_plain_text, cipher_text));
+            vscr_ratchet_cipher_encrypt(cipher, test_data_ratchet_cipher_key, test_data_ratchet_cipher_plain_text, cipher_text));
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ratchet_cipher_cipher_text, cipher_text);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ratchet_cipher_cipher_text, cipher_text);
 
     vscr_ratchet_cipher_destroy(&cipher);
     vsc_buffer_destroy(&cipher_text);

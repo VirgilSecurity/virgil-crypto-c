@@ -48,10 +48,10 @@
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 #include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_keys.h"
 #include "vscr_ratchet_chain_key.h"
 #include "vscr_ratchet_receiver_chain.h"
 #include "vscr_ratchet_message_defs.h"
-#include "vscr_ratchet_message_key.h"
 #include "vscr_ratchet_sender_chain.h"
 #include "vscr_ratchet_receiver_chains.h"
 #include "vscr_ratchet_skipped_messages.h"
@@ -66,27 +66,6 @@
 
 // clang-format on
 //  @end
-
-
-// clang-format off
-
-// VIRGIL_RATCHET_KDF_ROOT_INFO
-static const uint8_t ratchet_kdf_root_info[] = {
-        0x56, 0x49, 0x52, 0x47, 0x49, 0x4c, 0x5f, 0x52,
-        0x41, 0x54, 0x43, 0x48, 0x45, 0x54, 0x5f, 0x4b,
-        0x44, 0x46, 0x5f, 0x52, 0x4f, 0x4f, 0x54, 0x5f,
-        0x49, 0x4e, 0x46, 0x4f
-};
-
-// VIRGIL_RATCHET_KDF_RATCHET_INFO
-static const uint8_t ratchet_kdf_ratchet_info[] = {
-        0xc5, 0x64, 0x95, 0x24, 0x74, 0x94, 0xc5, 0xf5,
-        0x24, 0x15, 0x44, 0x34, 0x84, 0x55, 0x45, 0xf4,
-        0xb4, 0x44, 0x65, 0xf5, 0x24, 0x15, 0x44, 0x34,
-        0x84, 0x55, 0x45, 0xf4, 0x94, 0xe4, 0x64
-};
-
-// clang-format on
 
 
 //  @generated
@@ -144,16 +123,6 @@ static void
 vscr_ratchet_cleanup_ctx(vscr_ratchet_t *self);
 
 static vscr_error_t
-vscr_ratchet_create_chain_key(const vscr_ratchet_t *self, vsc_data_t private_key, vsc_data_t public_key,
-        byte new_root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH], vscr_ratchet_chain_key_t *chain_key);
-
-static void
-vscr_ratchet_advance_chain_key(vscr_ratchet_chain_key_t *chain_key);
-
-static vscr_ratchet_message_key_t *
-vscr_ratchet_create_message_key(const vscr_ratchet_chain_key_t *chain_key);
-
-static vscr_error_t
 vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet_chain_key_t *chain_key,
         const RegularMessage *message, vsc_buffer_t *buffer);
 
@@ -162,14 +131,6 @@ vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const RegularMessage *m
 
 static vscr_error_t
 vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self, vscr_ratchet_sender_chain_t *sender_chain);
-
-static const uint8_t ratchet_chain_key_seed[] = {
-    0x02
-};
-
-static const uint8_t ratchet_message_key_seed[] = {
-    0x01
-};
 
 //
 //  Return size of 'vscr_ratchet_t'.
@@ -415,106 +376,6 @@ vscr_ratchet_setup_defaults(vscr_ratchet_t *self) {
 }
 
 static vscr_error_t
-vscr_ratchet_create_chain_key(const vscr_ratchet_t *self, vsc_data_t private_key, vsc_data_t public_key,
-        byte new_root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH], vscr_ratchet_chain_key_t *chain_key) {
-
-    VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(chain_key);
-
-    vscr_error_t status = vscr_SUCCESS;
-
-    byte secret[ED25519_DH_LEN];
-    int curve_status = curve25519_key_exchange(secret, public_key.bytes, private_key.bytes);
-    if (curve_status != 0) {
-        status = vscr_error_CURVE25519;
-        goto c_err;
-    }
-
-    vscf_hkdf_t *hkdf = vscf_hkdf_new();
-
-    vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
-
-    byte derived_secret[2 * vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
-    vsc_buffer_t buffer;
-    vsc_buffer_init(&buffer);
-    vsc_buffer_use(&buffer, derived_secret, sizeof(derived_secret));
-
-    vscf_hkdf_reset(hkdf, vsc_data(self->root_key, sizeof(self->root_key)), 0);
-    vscf_hkdf_set_info(hkdf, vsc_data(ratchet_kdf_ratchet_info, sizeof(ratchet_kdf_ratchet_info) - 1));
-    vscf_hkdf_derive(hkdf, vsc_data(secret, sizeof(secret)), sizeof(derived_secret), &buffer);
-
-    memcpy(new_root_key, derived_secret, vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH);
-
-    memcpy(chain_key->key, derived_secret + vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH,
-            vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH);
-    chain_key->index = 0;
-
-    vscf_hkdf_destroy(&hkdf);
-    vsc_buffer_delete(&buffer);
-    vscr_zeroize(derived_secret, sizeof(derived_secret));
-
-c_err:
-    vscr_zeroize(secret, sizeof(secret));
-
-    return status;
-}
-
-static void
-vscr_ratchet_advance_chain_key(vscr_ratchet_chain_key_t *chain_key) {
-
-    VSCR_ASSERT_PTR(chain_key);
-
-    vscf_hmac_t *hmac = vscf_hmac_new();
-    vscf_hmac_take_hash(hmac, vscf_sha512_impl(vscf_sha512_new()));
-
-    size_t digest_len = vscf_hmac_digest_len(hmac);
-
-    VSCR_ASSERT(digest_len >= sizeof(chain_key->key));
-
-    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(digest_len);
-    vsc_buffer_make_secure(buffer);
-
-    vscf_hmac_mac(hmac, vsc_data(chain_key->key, sizeof(chain_key->key)),
-            vsc_data(ratchet_chain_key_seed, sizeof(ratchet_chain_key_seed)), buffer);
-
-    memcpy(chain_key->key, vsc_buffer_bytes(buffer), sizeof(chain_key->key));
-    chain_key->index += 1;
-
-    vscf_hmac_destroy(&hmac);
-    vsc_buffer_destroy(&buffer);
-}
-
-static vscr_ratchet_message_key_t *
-vscr_ratchet_create_message_key(const vscr_ratchet_chain_key_t *chain_key) {
-
-    VSCR_ASSERT_PTR(chain_key);
-
-    vscf_hmac_t *hmac = vscf_hmac_new();
-    vscf_hmac_take_hash(hmac, vscf_sha512_impl(vscf_sha512_new()));
-
-    size_t digest_len = vscf_hmac_digest_len(hmac);
-
-    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(digest_len);
-    vsc_buffer_make_secure(buffer);
-
-    vscf_hmac_mac(hmac, vsc_data(chain_key->key, sizeof(chain_key->key)),
-            vsc_data(ratchet_message_key_seed, sizeof(ratchet_message_key_seed)), buffer);
-
-    vscr_ratchet_message_key_t *message_key = vscr_ratchet_message_key_new();
-
-    VSCR_ASSERT(digest_len >= sizeof(message_key->key));
-
-    memcpy(message_key->key, vsc_buffer_bytes(buffer), sizeof(message_key->key));
-
-    message_key->index = chain_key->index;
-
-    vscf_hmac_destroy(&hmac);
-    vsc_buffer_destroy(&buffer);
-
-    return message_key;
-}
-
-static vscr_error_t
 vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet_chain_key_t *chain_key,
         const RegularMessage *message, vsc_buffer_t *buffer) {
 
@@ -537,10 +398,10 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet
     vscr_ratchet_chain_key_clone(chain_key, new_chain_key);
 
     while (new_chain_key->index < message->counter) {
-        vscr_ratchet_advance_chain_key(new_chain_key);
+        vscr_ratchet_keys_advance_chain_key(new_chain_key);
     }
 
-    vscr_ratchet_message_key_t *message_key = vscr_ratchet_create_message_key(new_chain_key);
+    vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(new_chain_key);
 
     vscr_error_t result = vscr_ratchet_cipher_decrypt(self->cipher,
             vsc_data(message_key->key, sizeof(message_key->key)), vsc_buffer_data(message->cipher_text.arg), buffer);
@@ -569,7 +430,7 @@ vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const RegularMessage *m
     byte new_root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
 
     vscr_ratchet_receiver_chain_t *new_chain = vscr_ratchet_receiver_chain_new();
-    vscr_error_t result = vscr_ratchet_create_chain_key(self,
+    vscr_error_t result = vscr_ratchet_keys_create_chain_key(self->root_key,
             vsc_data(self->sender_chain->private_key, sizeof(self->sender_chain->private_key)),
             vsc_data(message->public_key, sizeof(message->public_key)), new_root_key, &new_chain->chain_key);
 
@@ -595,26 +456,10 @@ vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const Regul
 
     VSCR_ASSERT(!vscr_ratchet_receiver_chains_first_chain(self->receiver_chains));
 
-    vscf_hkdf_t *hkdf = vscf_hkdf_new();
-    vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
-
-    byte derived_secret[2 * vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
-
-    vsc_buffer_t buffer;
-    vsc_buffer_init(&buffer);
-    vsc_buffer_use(&buffer, derived_secret, sizeof(derived_secret));
-
-    vscf_hkdf_set_info(hkdf, vsc_data(ratchet_kdf_root_info, sizeof(ratchet_kdf_root_info) - 1));
-
-    vscf_hkdf_derive(hkdf, shared_secret, sizeof(derived_secret), &buffer);
-    vscf_hkdf_destroy(&hkdf);
-
-    memcpy(self->root_key, derived_secret, vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH);
-
     vscr_ratchet_receiver_chain_t *receiver_chain = vscr_ratchet_receiver_chain_new();
     receiver_chain->chain_key.index = 0;
-    memcpy(receiver_chain->chain_key.key, derived_secret + vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH,
-            vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH);
+
+    vscr_ratchet_keys_derive_initial_keys(shared_secret, self->root_key, receiver_chain->chain_key.key);
 
     memcpy(receiver_chain->public_key, message->public_key, sizeof(message->public_key));
 
@@ -631,9 +476,6 @@ vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const Regul
             vscr_ratchet_decrypt_for_existing_chain(self, &receiver_chain->chain_key, message, msg_buffer);
     vsc_buffer_destroy(&msg_buffer);
 
-    vscr_zeroize(derived_secret, sizeof(derived_secret));
-    vsc_buffer_delete(&buffer);
-
     return status;
 }
 
@@ -646,21 +488,6 @@ vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret) {
 
     vscr_error_t status = vscr_SUCCESS;
 
-    vscf_hkdf_t *hkdf = vscf_hkdf_new();
-    vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
-
-    byte derived_secret[2 * vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
-
-    vsc_buffer_t buffer;
-    vsc_buffer_init(&buffer);
-    vsc_buffer_use(&buffer, derived_secret, sizeof(derived_secret));
-
-    vscf_hkdf_set_info(hkdf, vsc_data(ratchet_kdf_root_info, sizeof(ratchet_kdf_root_info) - 1));
-    vscf_hkdf_derive(hkdf, shared_secret, sizeof(derived_secret), &buffer);
-    vscf_hkdf_destroy(&hkdf);
-
-    memcpy(self->root_key, derived_secret, vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH);
-
     vscr_ratchet_sender_chain_t *sender_chain = vscr_ratchet_sender_chain_new();
 
     status = vscr_ratchet_generate_sender_chain_keypair(self, sender_chain);
@@ -671,13 +498,10 @@ vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret) {
     }
 
     sender_chain->chain_key.index = 0;
-    memcpy(sender_chain->chain_key.key, derived_secret + vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH,
-            vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH);
+
+    vscr_ratchet_keys_derive_initial_keys(shared_secret, self->root_key, sender_chain->chain_key.key);
 
     self->sender_chain = sender_chain;
-
-    vscr_zeroize(derived_secret, sizeof(derived_secret));
-    vsc_buffer_delete(&buffer);
 
     return status;
 }
@@ -709,7 +533,7 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
 
         vscr_ratchet_receiver_chain_t *first_chain = vscr_ratchet_receiver_chains_first_chain(self->receiver_chains);
 
-        result = vscr_ratchet_create_chain_key(self,
+        result = vscr_ratchet_keys_create_chain_key(self->root_key,
                 vsc_data(sender_chain->private_key, sizeof(sender_chain->private_key)),
                 vsc_data(first_chain->public_key, sizeof(first_chain->public_key)), self->root_key,
                 &sender_chain->chain_key);
@@ -724,9 +548,9 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
         goto err1;
     }
 
-    vscr_ratchet_message_key_t *message_key = vscr_ratchet_create_message_key(&self->sender_chain->chain_key);
+    vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(&self->sender_chain->chain_key);
 
-    vscr_ratchet_advance_chain_key(&self->sender_chain->chain_key);
+    vscr_ratchet_keys_advance_chain_key(&self->sender_chain->chain_key);
 
     result = vscr_ratchet_cipher_encrypt(self->cipher, vsc_data(message_key->key, sizeof(message_key->key)), plain_text,
             regular_message->cipher_text.arg);
@@ -808,7 +632,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
 
         memcpy(new_receiver_chain->public_key, regular_message->public_key, sizeof(regular_message->public_key));
 
-        result = vscr_ratchet_create_chain_key(self,
+        result = vscr_ratchet_keys_create_chain_key(self->root_key,
                 vsc_data(self->sender_chain->private_key, sizeof(self->sender_chain->private_key)),
                 vsc_data(new_receiver_chain->public_key, sizeof(new_receiver_chain->public_key)), self->root_key,
                 &new_receiver_chain->chain_key);
@@ -827,9 +651,9 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
 
     while (receiver_chain->chain_key.index < regular_message->counter) {
         vscr_ratchet_skipped_message_key_t *skipped_message_key = vscr_ratchet_skipped_message_key_new();
-        skipped_message_key->message_key = vscr_ratchet_create_message_key(&receiver_chain->chain_key);
+        skipped_message_key->message_key = vscr_ratchet_keys_create_message_key(&receiver_chain->chain_key);
         memcpy(skipped_message_key->public_key, receiver_chain->public_key, sizeof(receiver_chain->public_key));
-        vscr_ratchet_advance_chain_key(&receiver_chain->chain_key);
+        vscr_ratchet_keys_advance_chain_key(&receiver_chain->chain_key);
         vscr_ratchet_skipped_messages_add_key(self->skipped_messages, skipped_message_key);
     }
 
@@ -838,7 +662,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
         goto err;
     }
 
-    vscr_ratchet_advance_chain_key(&receiver_chain->chain_key);
+    vscr_ratchet_keys_advance_chain_key(&receiver_chain->chain_key);
 
     vscr_ratchet_receiver_chains_delete_next_chain_if_possible(
             self->receiver_chains, receiver_chain, regular_message->prev_chain_count);

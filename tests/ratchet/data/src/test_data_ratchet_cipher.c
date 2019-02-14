@@ -34,7 +34,7 @@
 
 #include "test_data_ratchet_cipher.h"
 
-const byte test_ratchet_cipher_plain_text_BYTES[] = {
+const byte test_data_ratchet_cipher_plain_text_BYTES[] = {
         0x14, 0xd6, 0xbe, 0x44, 0x7f, 0x8c, 0xcd, 0x9c,
         0x61, 0xda, 0xf2, 0x60, 0x0c, 0x1c, 0xb1, 0x00,
         0xf3, 0x0a, 0x8e, 0x30, 0x0d, 0xbb, 0xf0, 0xba,
@@ -165,9 +165,9 @@ const byte test_ratchet_cipher_plain_text_BYTES[] = {
         0x0c, 0xc3, 0x46, 0x8c, 0xf4, 0x82, 0x68, 0xcb,
 };
 
-const size_t test_ratchet_cipher_cipher_text_len = 1056;
+const size_t test_data_ratchet_cipher_cipher_text_len = 1056;
 
-const byte test_ratchet_cipher_cipher_text_BYTES[] = {
+const byte test_data_ratchet_cipher_cipher_text_BYTES[] = {
         0xD9, 0xDC, 0x9D, 0x6D, 0xED, 0xDA, 0x7B, 0x15,
         0x7A, 0x8C, 0x16, 0x9B, 0x25, 0x20, 0x52, 0x56,
         0x41, 0x5F, 0x52, 0xFD, 0x6E, 0x75, 0x21, 0x1F,
@@ -300,21 +300,21 @@ const byte test_ratchet_cipher_cipher_text_BYTES[] = {
         0x41, 0x0C, 0x38, 0xC1, 0x5A, 0x5D, 0x5C, 0x6C,
 };
 
-const byte test_ratchet_cipher_key_BYTES[] = {
+const byte test_data_ratchet_cipher_key_BYTES[] = {
         0xfb, 0x6b, 0x75, 0xb1, 0x86, 0x43, 0x61, 0x38,
         0xfc, 0xb9, 0x7a, 0xdd, 0xdb, 0x39, 0xf6, 0x37,
         0xa5, 0x6b, 0x86, 0xdd, 0x90, 0x5c, 0xcb, 0x65,
         0x76, 0x61, 0xca, 0xf4, 0xbb, 0x00, 0x19, 0xc4,
 };
 
-const vsc_data_t test_ratchet_cipher_plain_text = {
-        test_ratchet_cipher_plain_text_BYTES, sizeof(test_ratchet_cipher_plain_text_BYTES)
+const vsc_data_t test_data_ratchet_cipher_plain_text = {
+        test_data_ratchet_cipher_plain_text_BYTES, sizeof(test_data_ratchet_cipher_plain_text_BYTES)
 };
 
-const vsc_data_t test_ratchet_cipher_cipher_text = {
-        test_ratchet_cipher_cipher_text_BYTES, sizeof(test_ratchet_cipher_cipher_text_BYTES)
+const vsc_data_t test_data_ratchet_cipher_cipher_text = {
+        test_data_ratchet_cipher_cipher_text_BYTES, sizeof(test_data_ratchet_cipher_cipher_text_BYTES)
 };
 
-const vsc_data_t test_ratchet_cipher_key = {
-        test_ratchet_cipher_key_BYTES, sizeof(test_ratchet_cipher_key_BYTES)
+const vsc_data_t test_data_ratchet_cipher_key = {
+        test_data_ratchet_cipher_key_BYTES, sizeof(test_data_ratchet_cipher_key_BYTES)
 };
