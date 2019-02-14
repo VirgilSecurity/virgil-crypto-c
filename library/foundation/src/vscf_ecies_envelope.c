@@ -106,6 +106,7 @@
 #include "vscf_assert.h"
 #include "vscf_ecies_envelope_defs.h"
 #include "vscf_alg.h"
+#include "vscf_hmac.h"
 #include "vscf_asn1rd.h"
 #include "vscf_asn1wr.h"
 #include "vscf_pkcs8_der_serializer.h"
@@ -113,6 +114,7 @@
 #include "vscf_alg_info_der_serializer.h"
 #include "vscf_alg_info_der_deserializer.h"
 #include "vscf_hash_based_alg_info.h"
+#include "vscf_alg_factory.h"
 
 // clang-format on
 //  @end
@@ -278,7 +280,13 @@ static void
 vscf_ecies_envelope_cleanup_ctx(vscf_ecies_envelope_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    //  Nothing to be done.
+
+    vscf_impl_destroy(&self->originator);
+    vscf_impl_destroy(&self->kdf);
+    vscf_impl_destroy(&self->mac);
+    vscf_impl_destroy(&self->cipher);
+    vsc_buffer_destroy(&self->mac_digest);
+    vsc_buffer_destroy(&self->encrypted_content);
 }
 
 //
@@ -290,7 +298,7 @@ vscf_ecies_envelope_set_originator(vscf_ecies_envelope_t *self, vscf_impl_t *ori
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(originator);
 
-    self->originator = originator;
+    self->originator = vscf_impl_shallow_copy(originator);
 }
 
 //
@@ -302,7 +310,7 @@ vscf_ecies_envelope_set_kdf(vscf_ecies_envelope_t *self, vscf_impl_t *kdf) {
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(kdf);
 
-    self->kdf = kdf;
+    self->kdf = vscf_impl_shallow_copy(kdf);
 }
 
 //
@@ -314,7 +322,7 @@ vscf_ecies_envelope_set_mac(vscf_ecies_envelope_t *self, vscf_impl_t *mac) {
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(mac);
 
-    self->mac = mac;
+    self->mac = vscf_impl_shallow_copy(mac);
 }
 
 //
@@ -326,7 +334,7 @@ vscf_ecies_envelope_set_mac_digest(vscf_ecies_envelope_t *self, vsc_buffer_t *ma
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(mac_digest);
 
-    self->mac_digest = mac_digest;
+    self->mac_digest = vsc_buffer_shallow_copy(mac_digest);
 }
 
 //
@@ -338,7 +346,7 @@ vscf_ecies_envelope_set_cipher(vscf_ecies_envelope_t *self, vscf_impl_t *cipher)
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(cipher);
 
-    self->cipher = cipher;
+    self->cipher = vscf_impl_shallow_copy(cipher);
 }
 
 //
@@ -350,13 +358,13 @@ vscf_ecies_envelope_set_encrypted_content(vscf_ecies_envelope_t *self, vsc_buffe
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(encrypted_content);
 
-    self->encrypted_content = encrypted_content;
+    self->encrypted_content = vsc_buffer_shallow_copy(encrypted_content);
 }
 
 //
 //  Return "originator".
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_ecies_envelope_get_originator(vscf_ecies_envelope_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -368,7 +376,7 @@ vscf_ecies_envelope_get_originator(vscf_ecies_envelope_t *self) {
 //
 //  Return "kdf".
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_ecies_envelope_get_kdf(vscf_ecies_envelope_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -380,7 +388,7 @@ vscf_ecies_envelope_get_kdf(vscf_ecies_envelope_t *self) {
 //
 //  Return "mac".
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_ecies_envelope_get_mac(vscf_ecies_envelope_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -404,7 +412,7 @@ vscf_ecies_envelope_get_mac_digest(vscf_ecies_envelope_t *self) {
 //
 //  Return "cipher".
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_ecies_envelope_get_cipher(vscf_ecies_envelope_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -450,7 +458,7 @@ vscf_ecies_envelope_packed_len(vscf_ecies_envelope_t *self) {
 //      originator OriginatorPublicKey,
 //      kdf KeyDerivationFunction,
 //      hmac DigestInfo,
-//      encryptedContentInfo EncryptedContentInfo }
+//      encryptedContent EncryptedContentInfo }
 //
 //  OriginatorPublicKey ::= SEQUENCE {
 //      algorithm AlgorithmIdentifier,
@@ -574,9 +582,103 @@ vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out) {
 //  Unpacked data can be accessed thru getters.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self) {
+vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+
+    vscf_error_ctx_t error;
+    vscf_error_ctx_reset(&error);
+
+    //
+    //  Remove previous data.
+    //
+    vscf_ecies_envelope_cleanup_ctx(self);
+
+    vscf_asn1rd_t *asn1rd = vscf_asn1rd_new();
+    vscf_asn1rd_reset(asn1rd, data);
+
+    vscf_alg_info_der_deserializer_t *alg_info_der_deserializer = vscf_alg_info_der_deserializer_new();
+    vscf_alg_info_der_deserializer_use_asn1_reader(alg_info_der_deserializer, vscf_asn1rd_impl(asn1rd));
+
+    vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
+    vscf_pkcs8_der_deserializer_use_asn1_reader(pkcs8, vscf_asn1rd_impl(asn1rd));
+
+    vscf_asn1rd_read_sequence(asn1rd);
+
+    //
+    // Read: version.
+    //
+    const int version = vscf_asn1rd_read_int(asn1rd);
+
+    //
+    // Read: originator.
+    //
+    vscf_raw_key_t *originator_raw_key = vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(pkcs8, &error);
+    if (originator_raw_key) {
+        self->originator = vscf_alg_factory_create_public_key_alg(originator_raw_key);
+        vscf_raw_key_destroy(&originator_raw_key);
+    }
+
+    //
+    // Read: kdf.
+    //
+    vscf_impl_t *kdf_info = vscf_alg_info_der_deserializer_deserialize_inplace(alg_info_der_deserializer, &error);
+    if (kdf_info) {
+        self->kdf = vscf_alg_factory_create_kdf_alg(kdf_info);
+        vscf_impl_destroy(&kdf_info);
+    }
+
+    //
+    // Read: hmac.
+    //
+    vscf_asn1rd_read_sequence(asn1rd);
+    vscf_impl_t *hmac_hash_info = vscf_alg_info_der_deserializer_deserialize_inplace(alg_info_der_deserializer, &error);
+
+    if (hmac_hash_info != NULL) {
+        vscf_hmac_t *hmac = vscf_hmac_new();
+        vscf_hmac_take_hash(hmac, vscf_alg_factory_create_hash_alg(hmac_hash_info));
+        self->mac = vscf_hmac_impl(hmac);
+        vscf_impl_destroy(&hmac_hash_info);
+    }
+
+    vsc_data_t mac_digest = vscf_asn1rd_read_octet_str(asn1rd);
+    if (mac_digest.len > 0) {
+        self->mac_digest = vsc_buffer_new_with_data(mac_digest);
+    }
+
+    //
+    // Read: encryptedContentInfo.
+    //
+    vscf_asn1rd_read_sequence(asn1rd);
+    vscf_impl_t *cipher_info = vscf_alg_info_der_deserializer_deserialize_inplace(alg_info_der_deserializer, &error);
+    if (cipher_info) {
+        self->cipher = vscf_alg_factory_create_cipher_alg(cipher_info);
+        vscf_impl_destroy(&cipher_info);
+    }
+
+    vsc_data_t encrypted_content = vscf_asn1rd_read_octet_str(asn1rd);
+    if (encrypted_content.len > 0) {
+        self->encrypted_content = vsc_buffer_new_with_data(encrypted_content);
+    }
+
+    //
+    //  Handle errors.
+    //
+    if (version != 0) {
+        vscf_error_ctx_update(&error, vscf_error_BAD_ENCRYPTED_DATA);
+    } else {
+        vscf_error_ctx_update(&error, vscf_asn1rd_error(asn1rd));
+    }
+
+    vscf_pkcs8_der_deserializer_destroy(&pkcs8);
+    vscf_alg_info_der_deserializer_destroy(&alg_info_der_deserializer);
+    vscf_asn1rd_destroy(&asn1rd);
+
+    if (error.error != vscf_SUCCESS) {
+        vscf_ecies_envelope_cleanup_ctx(self);
+        return error.error;
+    }
 
     return vscf_SUCCESS;
 }

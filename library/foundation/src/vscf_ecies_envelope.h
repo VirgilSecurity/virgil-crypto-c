@@ -110,10 +110,12 @@
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 // clang-format on
@@ -219,19 +221,19 @@ vscf_ecies_envelope_set_encrypted_content(vscf_ecies_envelope_t *self, vsc_buffe
 //
 //  Return "originator".
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_ecies_envelope_get_originator(vscf_ecies_envelope_t *self);
 
 //
 //  Return "kdf".
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_ecies_envelope_get_kdf(vscf_ecies_envelope_t *self);
 
 //
 //  Return "mac".
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_ecies_envelope_get_mac(vscf_ecies_envelope_t *self);
 
 //
@@ -243,7 +245,7 @@ vscf_ecies_envelope_get_mac_digest(vscf_ecies_envelope_t *self);
 //
 //  Return "cipher".
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_ecies_envelope_get_cipher(vscf_ecies_envelope_t *self);
 
 //
@@ -294,7 +296,7 @@ vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out);
 //  Unpacked data can be accessed thru getters.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self);
+vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data);
 
 
 // --------------------------------------------------------------------------
