@@ -82,6 +82,121 @@
 
 
 //
+//  Deserialize Public Key by using internal ASN.1 reader.
+//  Note, that caller code is responsible to reset ASN.1 reader with
+//  an input buffer.
+//
+VSCF_PUBLIC vscf_raw_key_t *
+vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(
+        vscf_pkcs8_der_deserializer_t *self, vscf_error_ctx_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->asn1_reader);
+
+    //  SubjectPublicKeyInfo ::= SEQUENCE {
+    //          algorithm AlgorithmIdentifier,
+    //          subjectPublicKey BIT STRING
+    //  }
+
+    if (error && (error->error != vscf_SUCCESS)) {
+        return NULL;
+    }
+
+    //
+    //  Read SubjectPublicKeyInfo
+    //
+    vscf_asn1_reader_read_sequence(self->asn1_reader);
+
+    //
+    //  Read algorithm
+    //
+    vscf_asn1_reader_read_sequence(self->asn1_reader);
+    vsc_data_t key_oid = vscf_asn1_reader_read_oid(self->asn1_reader);
+
+    if (vscf_asn1_reader_get_tag(self->asn1_reader) == vscf_asn1_tag_NULL) {
+        vscf_asn1_reader_read_null(self->asn1_reader);
+    }
+
+    //
+    //  Read subjectPublicKey
+    //
+    vsc_data_t public_key_bits = vscf_asn1_reader_read_bitstring_as_octet_str(self->asn1_reader);
+
+    //
+    //  Finalize
+    //
+    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_PKCS8_PUBLIC_KEY);
+        return NULL;
+    }
+
+    vscf_alg_id_t alg_id = vscf_oid_to_alg_id(key_oid);
+
+    return vscf_raw_key_new_with_data(alg_id, public_key_bits);
+}
+
+//
+//  Deserialize Public Key by using internal ASN.1 reader.
+//  Note, that caller code is responsible to reset ASN.1 reader with
+//  an input buffer.
+//
+VSCF_PUBLIC vscf_raw_key_t *
+vscf_pkcs8_der_deserializer_deserialize_private_key_inplace(
+        vscf_pkcs8_der_deserializer_t *self, vscf_error_ctx_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->asn1_reader);
+
+    //  PrivateKeyInfo ::= SEQUENCE {
+    //          version Version,
+    //          privateKeyAlgorithm PrivateKeyAlgorithmIdentifier,
+    //          privateKey PrivateKey,
+    //          attributes [0] IMPLICIT Attributes OPTIONAL
+    //  }
+
+    if (error && (error->error != vscf_SUCCESS)) {
+        return NULL;
+    }
+
+    //
+    //  Read PrivateKeyInfo
+    //
+    vscf_asn1_reader_read_sequence(self->asn1_reader);
+
+    //
+    //  Read version
+    //
+    int version = vscf_asn1_reader_read_int(self->asn1_reader);
+
+    //
+    //  Read privateKeyAlgorithm
+    //
+    vscf_asn1_reader_read_sequence(self->asn1_reader);
+    vsc_data_t key_oid = vscf_asn1_reader_read_oid(self->asn1_reader);
+
+    if (vscf_asn1_reader_get_tag(self->asn1_reader) == vscf_asn1_tag_NULL) {
+        vscf_asn1_reader_read_null(self->asn1_reader);
+    }
+
+    //
+    //  Read privateKey
+    //
+    vsc_data_t private_key_bits = vscf_asn1_reader_read_octet_str(self->asn1_reader);
+
+    //
+    //  Finalize
+    //
+    if ((vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) || (version != 0)) {
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_PKCS8_PRIVATE_KEY);
+        return NULL;
+    }
+
+    vscf_alg_id_t alg_id = vscf_oid_to_alg_id(key_oid);
+
+    return vscf_raw_key_new_with_data(alg_id, private_key_bits);
+}
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t
@@ -107,49 +222,8 @@ vscf_pkcs8_der_deserializer_deserialize_public_key(
     VSCF_ASSERT(vsc_data_is_valid(public_key_data));
     VSCF_ASSERT_PTR(self->asn1_reader);
 
-    //  SubjectPublicKeyInfo ::= SEQUENCE {
-    //          algorithm AlgorithmIdentifier,
-    //          subjectPublicKey BIT STRING
-    //  }
-
-    if (error) {
-        vscf_error_ctx_reset(error);
-    }
-
-    vscf_impl_t *asn1_reader = self->asn1_reader;
-    vscf_asn1_reader_reset(asn1_reader, public_key_data);
-
-    //
-    //  Read SubjectPublicKeyInfo
-    //
-    vscf_asn1_reader_read_sequence(asn1_reader);
-
-    //
-    //  Read algorithm
-    //
-    vscf_asn1_reader_read_sequence(asn1_reader);
-    vsc_data_t key_oid = vscf_asn1_reader_read_oid(asn1_reader);
-
-    if (vscf_asn1_reader_get_tag(asn1_reader) == vscf_asn1_tag_NULL) {
-        vscf_asn1_reader_read_null(asn1_reader);
-    }
-
-    //
-    //  Read subjectPublicKey
-    //
-    vsc_data_t public_key_bits = vscf_asn1_reader_read_bitstring_as_octet_str(asn1_reader);
-
-    //
-    //  Finalize
-    //
-    if (vscf_asn1_reader_error(asn1_reader) != vscf_SUCCESS) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_PKCS8_PUBLIC_KEY);
-        return NULL;
-    }
-
-    vscf_alg_id_t alg_id = vscf_oid_to_alg_id(key_oid);
-
-    return vscf_raw_key_new_with_data(alg_id, public_key_bits);
+    vscf_asn1_reader_reset(self->asn1_reader, public_key_data);
+    return vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(self, error);
 }
 
 //
@@ -163,54 +237,6 @@ vscf_pkcs8_der_deserializer_deserialize_private_key(
     VSCF_ASSERT(vsc_data_is_valid(private_key_data));
     VSCF_ASSERT_PTR(self->asn1_reader);
 
-    //  PrivateKeyInfo ::= SEQUENCE {
-    //          version Version,
-    //          privateKeyAlgorithm PrivateKeyAlgorithmIdentifier,
-    //          privateKey PrivateKey,
-    //          attributes [0] IMPLICIT Attributes OPTIONAL
-    //  }
-
-    if (error) {
-        vscf_error_ctx_reset(error);
-    }
-
-    vscf_impl_t *asn1_reader = self->asn1_reader;
-    vscf_asn1_reader_reset(asn1_reader, private_key_data);
-
-    //
-    //  Read PrivateKeyInfo
-    //
-    vscf_asn1_reader_read_sequence(asn1_reader);
-
-    //
-    //  Read version
-    //
-    int version = vscf_asn1_reader_read_int(asn1_reader);
-
-    //
-    //  Read privateKeyAlgorithm
-    //
-    vscf_asn1_reader_read_sequence(asn1_reader);
-    vsc_data_t key_oid = vscf_asn1_reader_read_oid(asn1_reader);
-
-    if (vscf_asn1_reader_get_tag(asn1_reader) == vscf_asn1_tag_NULL) {
-        vscf_asn1_reader_read_null(asn1_reader);
-    }
-
-    //
-    //  Read privateKey
-    //
-    vsc_data_t private_key_bits = vscf_asn1_reader_read_octet_str(asn1_reader);
-
-    //
-    //  Finalize
-    //
-    if ((vscf_asn1_reader_error(asn1_reader) != vscf_SUCCESS) || (version != 0)) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_PKCS8_PRIVATE_KEY);
-        return NULL;
-    }
-
-    vscf_alg_id_t alg_id = vscf_oid_to_alg_id(key_oid);
-
-    return vscf_raw_key_new_with_data(alg_id, private_key_bits);
+    vscf_asn1_reader_reset(self->asn1_reader, private_key_data);
+    return vscf_pkcs8_der_deserializer_deserialize_private_key_inplace(self, error);
 }

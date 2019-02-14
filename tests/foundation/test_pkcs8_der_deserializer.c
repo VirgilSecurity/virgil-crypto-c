@@ -69,6 +69,8 @@ test__deserialize_public_key__rsa2048__no_errors(void) {
     vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
 
     vscf_error_ctx_t error_ctx;
+    vscf_error_ctx_reset(&error_ctx);
+
     vscf_raw_key_t *raw_public_key =
             vscf_pkcs8_der_deserializer_deserialize_public_key(pkcs8, test_rsa_2048_PUBLIC_KEY_PKCS8_DER, &error_ctx);
 
@@ -89,9 +91,11 @@ test__deserialize_public_key__rsa2048__equals_to_rsa_2048_public_key_pkcs1_der(v
     vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
     vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
 
-    vscf_error_ctx_t error;
+    vscf_error_ctx_t error_ctx;
+    vscf_error_ctx_reset(&error_ctx);
+
     vscf_raw_key_t *raw_public_key =
-            vscf_pkcs8_der_deserializer_deserialize_public_key(pkcs8, test_rsa_2048_PUBLIC_KEY_PKCS8_DER, &error);
+            vscf_pkcs8_der_deserializer_deserialize_public_key(pkcs8, test_rsa_2048_PUBLIC_KEY_PKCS8_DER, &error_ctx);
 
     TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_public_key), vscf_alg_id_RSA);
 
@@ -112,6 +116,8 @@ test__deserialize_private_key__rsa2048__no_errors(void) {
     vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
 
     vscf_error_ctx_t error_ctx;
+    vscf_error_ctx_reset(&error_ctx);
+
     vscf_raw_key_t *raw_private_key =
             vscf_pkcs8_der_deserializer_deserialize_private_key(pkcs8, test_rsa_2048_PRIVATE_KEY_PKCS8_DER, &error_ctx);
 
@@ -132,9 +138,11 @@ test__deserialize_private_key__rsa2048__equals_to_rsa_2048_private_key_pkcs1_der
     vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
     vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
 
-    vscf_error_ctx_t error;
+    vscf_error_ctx_t error_ctx;
+    vscf_error_ctx_reset(&error_ctx);
+
     vscf_raw_key_t *raw_private_key =
-            vscf_pkcs8_der_deserializer_deserialize_private_key(pkcs8, test_rsa_2048_PRIVATE_KEY_PKCS8_DER, &error);
+            vscf_pkcs8_der_deserializer_deserialize_private_key(pkcs8, test_rsa_2048_PRIVATE_KEY_PKCS8_DER, &error_ctx);
 
     TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_private_key), vscf_alg_id_RSA);
 
@@ -157,6 +165,8 @@ test__deserialize_public_key__ed25519__no_errors(void) {
     vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
 
     vscf_error_ctx_t error_ctx;
+    vscf_error_ctx_reset(&error_ctx);
+
     vscf_raw_key_t *raw_public_key =
             vscf_pkcs8_der_deserializer_deserialize_public_key(pkcs8, test_ed25519_PUBLIC_KEY_PKCS8_DER, &error_ctx);
 
@@ -177,9 +187,11 @@ test__deserialize_public_key__ed25519__equals_to_ed25519_public_key(void) {
     vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
     vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
 
-    vscf_error_ctx_t error;
+    vscf_error_ctx_t error_ctx;
+    vscf_error_ctx_reset(&error_ctx);
+
     vscf_raw_key_t *raw_public_key =
-            vscf_pkcs8_der_deserializer_deserialize_public_key(pkcs8, test_ed25519_PUBLIC_KEY_PKCS8_DER, &error);
+            vscf_pkcs8_der_deserializer_deserialize_public_key(pkcs8, test_ed25519_PUBLIC_KEY_PKCS8_DER, &error_ctx);
 
     TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_public_key), vscf_alg_id_ED25519);
 
@@ -200,6 +212,8 @@ test__deserialize_private_key__ed25519__no_errors(void) {
     vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
 
     vscf_error_ctx_t error_ctx;
+    vscf_error_ctx_reset(&error_ctx);
+
     vscf_raw_key_t *raw_private_key =
             vscf_pkcs8_der_deserializer_deserialize_private_key(pkcs8, test_ed25519_PRIVATE_KEY_PKCS8_DER, &error_ctx);
 
@@ -220,9 +234,11 @@ test__deserialize_private_key__ed25519__equals_to_ed25519_private_key(void) {
     vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
     vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
 
-    vscf_error_ctx_t error;
+    vscf_error_ctx_t error_ctx;
+    vscf_error_ctx_reset(&error_ctx);
+
     vscf_raw_key_t *raw_private_key =
-            vscf_pkcs8_der_deserializer_deserialize_private_key(pkcs8, test_ed25519_PRIVATE_KEY_PKCS8_DER, &error);
+            vscf_pkcs8_der_deserializer_deserialize_private_key(pkcs8, test_ed25519_PRIVATE_KEY_PKCS8_DER, &error_ctx);
 
     TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_private_key), vscf_alg_id_ED25519);
 
