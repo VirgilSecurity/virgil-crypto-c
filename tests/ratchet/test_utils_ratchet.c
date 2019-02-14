@@ -351,31 +351,84 @@ ratchet_msg_key_cmp(vscr_ratchet_message_key_t *msg_key1, vscr_ratchet_message_k
 }
 
 static bool
-ratchet_skipped_msg_cmp(
-        vscr_ratchet_skipped_message_key_list_node_t *msg1, vscr_ratchet_skipped_message_key_list_node_t *msg2) {
+ratchet_skipped_msg_cmp(vscr_ratchet_skipped_message_key_t *msg1, vscr_ratchet_skipped_message_key_t *msg2) {
     if (msg1 == NULL && msg2 == NULL)
         return true;
 
-    return memcmp(msg1->value->public_key, msg1->value->public_key, sizeof(msg1->value->public_key)) == 0 &&
-           ratchet_msg_key_cmp(msg1->value->message_key, msg2->value->message_key) &&
-           ratchet_skipped_msg_cmp(msg1->next, msg2->next);
+    if (msg1 == NULL || msg2 == NULL) {
+        TEST_ASSERT(false);
+    }
+
+    return memcmp(msg1->public_key, msg1->public_key, sizeof(msg1->public_key)) == 0 &&
+           ratchet_msg_key_cmp(msg1->message_key, msg2->message_key);
 }
 
 static bool
-ratchet_receiver_chain_cmp(
-        vscr_ratchet_receiver_chain_list_node_t *chain1, vscr_ratchet_receiver_chain_list_node_t *chain2) {
+ratchet_skipped_msgs_cmp(vscr_ratchet_skipped_messages_t *msgs1, vscr_ratchet_skipped_messages_t *msgs2) {
+    vscr_ratchet_skipped_message_key_list_node_t *node1 = msgs1->keys;
+    vscr_ratchet_skipped_message_key_list_node_t *node2 = msgs2->keys;
+
+    while (true) {
+
+        if (node1 == NULL && node2 == NULL)
+            return true;
+
+        if (node1 == NULL || node2 == NULL) {
+            TEST_ASSERT(false);
+        }
+
+        if (!ratchet_skipped_msg_cmp(node1->value, node2->value))
+            return false;
+
+        node1 = node1->next;
+        node2 = node2->next;
+    }
+}
+
+static bool
+ratchet_receiver_chain_cmp(vscr_ratchet_receiver_chain_t *chain1, vscr_ratchet_receiver_chain_t *chain2) {
     if (chain1 == NULL && chain2 == NULL)
         return true;
 
-    return memcmp(chain1->value->public_key, chain2->value->public_key, sizeof(chain1->value->public_key)) == 0 &&
-           ratchet_chain_key_cmp(&chain1->value->chain_key, &chain2->value->chain_key) &&
-           ratchet_receiver_chain_cmp(chain1->next, chain2->next);
+    if (chain1 == NULL || chain2 == NULL) {
+        TEST_ASSERT(false);
+    }
+
+    return memcmp(chain1->public_key, chain2->public_key, sizeof(chain1->public_key)) == 0 &&
+           ratchet_chain_key_cmp(&chain1->chain_key, &chain2->chain_key);
+}
+
+static bool
+ratchet_receiver_chains_cmp(vscr_ratchet_receiver_chains_t *chains1, vscr_ratchet_receiver_chains_t *chains2) {
+
+    vscr_ratchet_receiver_chain_list_node_t *node1 = chains1->chains;
+    vscr_ratchet_receiver_chain_list_node_t *node2 = chains2->chains;
+
+    while (true) {
+
+        if (node1 == NULL && node2 == NULL)
+            return true;
+
+        if (node1 == NULL || node2 == NULL) {
+            TEST_ASSERT(false);
+        }
+
+        if (!ratchet_receiver_chain_cmp(node1->value, node2->value))
+            return false;
+
+        node1 = node1->next;
+        node2 = node2->next;
+    }
 }
 
 static bool
 ratchet_sender_chain_cmp(vscr_ratchet_sender_chain_t *sender_chain1, vscr_ratchet_sender_chain_t *sender_chain2) {
     if (sender_chain1 == NULL && sender_chain2 == NULL)
         return true;
+
+    if (sender_chain1 == NULL || sender_chain2 == NULL) {
+        TEST_ASSERT(false);
+    }
 
     return memcmp(sender_chain1->private_key, sender_chain2->private_key, sizeof(sender_chain1->private_key)) == 0 &&
            memcmp(sender_chain1->public_key, sender_chain2->public_key, sizeof(sender_chain1->public_key)) == 0 &&
@@ -388,8 +441,8 @@ ratchet_cmp(vscr_ratchet_t *ratchet1, vscr_ratchet_t *ratchet2) {
     return memcmp(ratchet1->root_key, ratchet2->root_key, sizeof(ratchet1->root_key)) == 0 &&
            ratchet_sender_chain_cmp(ratchet1->sender_chain, ratchet2->sender_chain) &&
            ratchet1->prev_sender_chain_count == ratchet2->prev_sender_chain_count &&
-           ratchet_receiver_chain_cmp(ratchet1->receiver_chains, ratchet2->receiver_chains) &&
-           ratchet_skipped_msg_cmp(ratchet1->skipped_message_keys, ratchet2->skipped_message_keys);
+           ratchet_receiver_chains_cmp(ratchet1->receiver_chains, ratchet2->receiver_chains) &&
+           ratchet_skipped_msgs_cmp(ratchet1->skipped_messages, ratchet2->skipped_messages);
 }
 
 static bool

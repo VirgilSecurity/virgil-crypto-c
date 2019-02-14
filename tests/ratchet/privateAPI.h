@@ -42,6 +42,34 @@
 #include <vscr_ratchet_sender_chain.h>
 #include <vscr_ratchet_receiver_chain_list_node.h>
 #include <vscr_ratchet_skipped_message_key_list_node.h>
+#include <vscr_ratchet_receiver_chains.h>
+#include <vscr_ratchet_skipped_messages.h>
+
+struct vscr_ratchet_skipped_messages_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+
+    vscr_ratchet_skipped_message_key_list_node_t *keys;
+};
+
+struct vscr_ratchet_receiver_chains_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+
+    vscr_ratchet_receiver_chain_list_node_t *chains;
+};
 
 struct vscr_ratchet_t {
     //
@@ -65,9 +93,9 @@ struct vscr_ratchet_t {
 
     uint32_t prev_sender_chain_count;
 
-    vscr_ratchet_receiver_chain_list_node_t *receiver_chains;
+    vscr_ratchet_receiver_chains_t *receiver_chains;
 
-    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys;
+    vscr_ratchet_skipped_messages_t *skipped_messages;
 
     byte root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
 };
