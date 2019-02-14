@@ -21,8 +21,6 @@
 
     <method name="add chain">
         <argument name="receiver chain" class="ratchet receiver chain" access="readwrite"/>
-
-        <return class="ratchet receiver chain" access="readwrite"/>
     </method>
 
     <method name="delete next chain if possible">

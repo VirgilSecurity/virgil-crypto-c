@@ -631,7 +631,6 @@ vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const Regul
             vscr_ratchet_decrypt_for_existing_chain(self, &receiver_chain->chain_key, message, msg_buffer);
     vsc_buffer_destroy(&msg_buffer);
 
-    vscr_ratchet_receiver_chain_destroy(&receiver_chain);
     vscr_zeroize(derived_secret, sizeof(derived_secret));
     vsc_buffer_delete(&buffer);
 
@@ -819,12 +818,11 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
             return result;
         }
 
-        new_receiver_chain = vscr_ratchet_receiver_chains_add_chain(self->receiver_chains, new_receiver_chain);
+        vscr_ratchet_receiver_chains_add_chain(self->receiver_chains, new_receiver_chain);
 
         self->prev_sender_chain_count = self->sender_chain->chain_key.index;
         vscr_ratchet_sender_chain_destroy(&self->sender_chain);
         receiver_chain = new_receiver_chain;
-        vscr_ratchet_receiver_chain_destroy(&new_receiver_chain);
     }
 
     while (receiver_chain->chain_key.index < regular_message->counter) {

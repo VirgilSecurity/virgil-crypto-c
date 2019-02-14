@@ -265,7 +265,7 @@ vscr_ratchet_receiver_chains_find_chain(vscr_ratchet_receiver_chains_t *self, vs
     return NULL;
 }
 
-VSCR_PUBLIC vscr_ratchet_receiver_chain_t *
+VSCR_PUBLIC void
 vscr_ratchet_receiver_chains_add_chain(
         vscr_ratchet_receiver_chains_t *self, vscr_ratchet_receiver_chain_t *receiver_chain) {
 
@@ -273,12 +273,12 @@ vscr_ratchet_receiver_chains_add_chain(
     VSCR_ASSERT_PTR(receiver_chain);
 
     vscr_ratchet_receiver_chain_list_node_t *receiver_chain_list_node = vscr_ratchet_receiver_chain_list_node_new();
-    receiver_chain_list_node->value = vscr_ratchet_receiver_chain_shallow_copy(receiver_chain);
+    receiver_chain_list_node->value = receiver_chain;
     receiver_chain_list_node->next = self->chains;
     self->chains = receiver_chain_list_node;
 
     if (!self->chains->next) {
-        return receiver_chain_list_node->value;
+        return;
     }
 
     size_t chains_count = 2;
@@ -292,8 +292,6 @@ vscr_ratchet_receiver_chains_add_chain(
     if (chains_count == vscr_ratchet_common_hidden_MAX_RECEIVERS_CHAINS) {
         vscr_ratchet_receiver_chain_list_node_destroy(&receiver_chain_list_node->next);
     }
-
-    return receiver_chain_list_node->value;
 }
 
 VSCR_PUBLIC void
@@ -357,7 +355,5 @@ vscr_ratchet_receiver_chains_deserialize(
         vscr_ratchet_receiver_chain_deserialize(&receiver_chains_pb->chains[i - 1], receiver_chain);
 
         vscr_ratchet_receiver_chains_add_chain(receiver_chains, receiver_chain);
-
-        vscr_ratchet_receiver_chain_destroy(&receiver_chain);
     }
 }
