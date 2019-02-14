@@ -62,6 +62,7 @@ option(VSCR_RATCHET_RECEIVER_CHAIN_LIST_NODE "Enable class 'ratchet receiver cha
 option(VSCR_RATCHET_SKIPPED_MESSAGE_KEY "Enable class 'ratchet skipped message key'." ON)
 option(VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE "Enable class 'ratchet skipped message key list node'." ON)
 option(VSCR_RATCHET_SENDER_CHAIN "Enable class 'ratchet sender chain'." ON)
+option(VSCR_RATCHET_KEYS "Enable class 'ratchet keys'." ON)
 option(VSCR_RATCHET "Enable class 'ratchet'." ON)
 option(VSCR_RATCHET_SESSION "Enable class 'ratchet session'." ON)
 mark_as_advanced(
@@ -82,6 +83,7 @@ mark_as_advanced(
         VSCR_RATCHET_SKIPPED_MESSAGE_KEY
         VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE
         VSCR_RATCHET_SENDER_CHAIN
+        VSCR_RATCHET_KEYS
         VSCR_RATCHET
         VSCR_RATCHET_SESSION
         )
@@ -266,6 +268,51 @@ if(VSCR_RATCHET_SENDER_CHAIN AND NOT VSCR_RATCHET_COMMON_HIDDEN)
     message(FATAL_ERROR)
 endif()
 
+if(VSCR_RATCHET_KEYS AND NOT VSCF_SHA512)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_KEYS depends on the feature:")
+    message("     VSCF_SHA512 - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_KEYS AND NOT VSCF_HMAC)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_KEYS depends on the feature:")
+    message("     VSCF_HMAC - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_KEYS AND NOT VSCF_HKDF)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_KEYS depends on the feature:")
+    message("     VSCF_HKDF - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_KEYS AND NOT VSCR_RATCHET_COMMON_HIDDEN)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_KEYS depends on the feature:")
+    message("     VSCR_RATCHET_COMMON_HIDDEN - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_KEYS AND NOT VSCR_RATCHET_CHAIN_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_KEYS depends on the feature:")
+    message("     VSCR_RATCHET_CHAIN_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCR_RATCHET AND NOT VSCF_SHA512)
     message("-- error --")
     message("--")
@@ -325,6 +372,15 @@ if(VSCR_RATCHET AND NOT VSCR_RATCHET_RECEIVER_CHAIN)
     message("--")
     message("Feature VSCR_RATCHET depends on the feature:")
     message("     VSCR_RATCHET_RECEIVER_CHAIN - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET AND NOT VSCR_RATCHET_KEYS)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET depends on the feature:")
+    message("     VSCR_RATCHET_KEYS - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

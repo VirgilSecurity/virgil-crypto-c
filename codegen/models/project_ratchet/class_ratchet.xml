@@ -10,6 +10,7 @@
     <require class="ratchet chain key" scope="private"/>
     <require class="ratchet receiver chain" scope="private"/>
     <require module="ratchet message defs" scope="private"/>
+    <require class="ratchet keys" scope="context"/>
 
     <require header="RatchetSession.pb.h" scope="public"/>
     <require header="RatchetMessage.pb.h" scope="public"/>
@@ -17,16 +18,6 @@
     <require header="pb_encode.h" scope="public"/>
 
     <require header="ed25519/ed25519.h" scope="private"/>
-
-    <variable name="ratchet chain key seed" type="unsigned" size="1" declaration="private" definition="private">
-        <array length="derived"/>
-        <value value="0x02"/>
-    </variable>
-
-    <variable name="ratchet message key seed" type="unsigned" size="1" declaration="private" definition="private">
-        <array length="derived"/>
-        <value value="0x01"/>
-    </variable>
 
     <dependency name="rng" interface="random" project="foundation"/>
     <dependency name="cipher" class="ratchet cipher" access="readwrite"/>
@@ -39,29 +30,6 @@
     </property>
 
     <method name="setup defaults">
-    </method>
-
-    <method name="create chain key" declaration="private" is_const="1">
-        <argument name="private key" class="data"/>
-        <argument name="public key" class="data"/>
-
-        <argument name="new root key" type="byte" access="readwrite">
-            <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_shared_key_length)"/>
-        </argument>
-
-        <argument name="chain key" class="ratchet chain key" access="readwrite"/>
-
-        <return enum="error"/>
-    </method>
-
-    <method name="advance chain key" declaration="private" is_static="1">
-        <argument name="chain key" class="ratchet chain key" access="readwrite"/>
-    </method>
-
-    <method name="create message key" declaration="private" is_static="1">
-        <argument name="chain key" class="ratchet chain key"/>
-
-        <return class="ratchet message key" access="readwrite"/>
     </method>
 
     <method name="decrypt for existing chain" declaration="private">
