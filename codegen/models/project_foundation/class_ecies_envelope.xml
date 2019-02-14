@@ -53,6 +53,7 @@
          END
 
     <require interface="alg"/>
+    <require impl="hmac"/>
     <require impl="asn1rd"/>
     <require impl="asn1wr"/>
     <require impl="pkcs8 der serializer"/>
@@ -60,6 +61,7 @@
     <require impl="alg info der serializer"/>
     <require impl="alg info der deserializer"/>
     <require impl="hash based alg info"/>
+    <require class="alg factory"/>
 
     <property name="originator" interface="public key"/>
     <property name="kdf" interface="alg info"/>
@@ -72,71 +74,71 @@
     <method name="set originator">
         Set "originator".
 
-        <argument name="originator" interface="public key" access="readwrite"/>
+        <argument name="originator" interface="public key" access="retain"/>
     </method>
 
     <method name="set kdf">
         Set "kdf" algorithm information.
 
-        <argument name="kdf" interface="alg info" access="readwrite"/>
+        <argument name="kdf" interface="alg info" access="retain"/>
     </method>
 
     <method name="set mac">
         Set "mac" algorithm information.
 
-        <argument name="mac" interface="alg info" access="readwrite"/>
+        <argument name="mac" interface="alg info" access="retain"/>
     </method>
 
     <method name="set mac digest">
         Set "mac" digest.
-        <argument name="mac digest" class="buffer" access="readwrite"/>
+        <argument name="mac digest" class="buffer" access="retain"/>
     </method>
 
     <method name="set cipher">
         Set "cipher" algorithm information.
 
-        <argument name="cipher" interface="alg info" access="readwrite"/>
+        <argument name="cipher" interface="alg info" access="retain"/>
     </method>
 
     <method name="set encrypted content">
         Set "encrypted content".
-        <argument name="encrypted content" class="buffer" access="readwrite"/>
+        <argument name="encrypted content" class="buffer" access="retain"/>
     </method>
 
     <method name="get originator">
         Return "originator".
 
-        <return interface="public key"/>
+        <return interface="public key" access="readwrite"/>
     </method>
 
     <method name="get kdf">
         Return "kdf".
 
-        <return interface="alg info"/>
+        <return interface="alg info" access="readwrite"/>
     </method>
 
     <method name="get mac">
         Return "mac".
 
-        <return interface="alg info"/>
+        <return interface="alg info" access="readwrite"/>
     </method>
 
     <method name="get mac digest">
         Return "mac digest".
 
-        <return class="buffer"/>
+        <return class="buffer" access="readwrite"/>
     </method>
 
     <method name="get cipher">
         Return "cipher".
 
-        <return interface="alg info"/>
+        <return interface="alg info" access="readwrite"/>
     </method>
 
     <method name="get encrypted content">
         Return "encrypted content".
 
-        <return class="buffer"/>
+        <return class="buffer" access="readwrite"/>
     </method>
 
     <method name="packed len">
@@ -183,6 +185,8 @@
     <method name="unpack">
         Unpack ECIES-Envelope ASN.1 structure.
         Unpacked data can be accessed thru getters.
+
+        <argument name="data" class="data"/>
 
         <return enum="error"/>
     </method>

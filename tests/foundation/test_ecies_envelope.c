@@ -112,6 +112,34 @@ test__pack__ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac__return_valid_pa
     vscf_ed25519_public_key_destroy(&originator);
 }
 
+void
+test__unpack__ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac__no_errors(void) {
+
+    vscf_ecies_envelope_t *envelope = vscf_ecies_envelope_new();
+
+    vscf_error_t status = vscf_ecies_envelope_unpack(envelope, test_data_ecies_envelope_ED25519_PACKED);
+    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+
+    vscf_ecies_envelope_destroy(&envelope);
+}
+
+void
+test__unpack__ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac__when_packed_again_equal_to_initial(void) {
+
+    vscf_ecies_envelope_t *envelope = vscf_ecies_envelope_new();
+
+    vscf_error_t status = vscf_ecies_envelope_unpack(envelope, test_data_ecies_envelope_ED25519_PACKED);
+    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_ecies_envelope_packed_len(envelope));
+    vscf_ecies_envelope_pack(envelope, out);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ecies_envelope_ED25519_PACKED, out);
+
+    vsc_buffer_destroy(&out);
+    vscf_ecies_envelope_destroy(&envelope);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -123,6 +151,8 @@ main(void) {
     UNITY_BEGIN();
 
     RUN_TEST(test__pack__ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac__return_valid_packed_data);
+    RUN_TEST(test__unpack__ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac__no_errors);
+    RUN_TEST(test__unpack__ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac__when_packed_again_equal_to_initial);
 
 #if TEST_DEPENDENCIES_AVAILABLE
 #else
