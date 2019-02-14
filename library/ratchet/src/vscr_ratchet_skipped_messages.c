@@ -350,7 +350,5 @@ vscr_ratchet_skipped_messages_deserialize(
         vscr_ratchet_skipped_message_key_deserialize(&skipped_messages_pb->keys[i - 1], skipped_message_key);
 
         vscr_ratchet_skipped_messages_add_key(skipped_messages, skipped_message_key);
-
-        vscr_ratchet_skipped_message_key_destroy(&skipped_message_key);
     }
 }
