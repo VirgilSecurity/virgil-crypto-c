@@ -265,7 +265,7 @@ vscf_raw_key_new_with_buffer(vscf_alg_id_t alg_id, vsc_buffer_t *buffer) {
 //  Returns asymmetric algorithm type that raw key belongs to.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_raw_key_alg_id(vscf_raw_key_t *self) {
+vscf_raw_key_alg_id(const vscf_raw_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
     return self->alg_id;
@@ -275,7 +275,7 @@ vscf_raw_key_alg_id(vscf_raw_key_t *self) {
 //  Return raw key data.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_raw_key_data(vscf_raw_key_t *self) {
+vscf_raw_key_data(const vscf_raw_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(self->alg_id != vscf_alg_id_NONE);
