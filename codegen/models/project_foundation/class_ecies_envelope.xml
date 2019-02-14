@@ -52,6 +52,15 @@
              EncryptedContent ::= OCTET STRING
          END
 
+    <require interface="alg"/>
+    <require impl="asn1rd"/>
+    <require impl="asn1wr"/>
+    <require impl="pkcs8 der serializer"/>
+    <require impl="pkcs8 der deserializer"/>
+    <require impl="alg info der serializer"/>
+    <require impl="alg info der deserializer"/>
+    <require impl="hash based alg info"/>
+
     <property name="originator" interface="public key"/>
     <property name="kdf" interface="alg info"/>
     <property name="mac" interface="alg info"/>
@@ -167,6 +176,8 @@
         <argument name="out" class="buffer">
             <length method="packed len"/>
         </argument>
+
+        <return enum="error"/>
     </method>
 
     <method name="unpack">
