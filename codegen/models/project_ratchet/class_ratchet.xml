@@ -8,6 +8,7 @@
 
     <require class="ratchet common hidden" scope="context"/>
     <require class="ratchet chain key" scope="private"/>
+    <require class="ratchet receiver chain" scope="private"/>
     <require module="ratchet message defs" scope="private"/>
 
     <require header="RatchetSession.pb.h" scope="public"/>
@@ -31,8 +32,8 @@
     <dependency name="cipher" class="ratchet cipher" access="readwrite"/>
     <property name="sender chain" class="ratchet sender chain" access="readwrite"/>
     <property name="prev sender chain count" type="unsigned" size="4" access="readwrite"/>
-    <property name="receiver chains" class="ratchet receiver chain list node" access="readwrite"/>
-    <property name="skipped message keys" class="ratchet skipped message key list node" access="readwrite"/>
+    <property name="receiver chains" class="ratchet receiver chains" access="readwrite"/>
+    <property name="skipped messages" class="ratchet skipped messages" access="readwrite"/>
     <property name="root key" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_shared_key_length)"/>
     </property>
@@ -129,36 +130,6 @@
         <argument name="sender chain" class="ratchet sender chain" access="readwrite"/>
 
         <return enum="error"/>
-    </method>
-
-    <method name="find receiver chain" declaration="private">
-        <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
-
-        <return class="ratchet receiver chain list node" access="readwrite"/>
-    </method>
-
-    <method name="add receiver chain" declaration="private">
-        <argument name="receiver chain" class="ratchet receiver chain" access="readwrite"/>
-
-        <return class="ratchet receiver chain list node" access="readwrite"/>
-    </method>
-
-    <method name="delete next receiver chain" declaration="private" is_static="1">
-        <argument name="node" class="ratchet receiver chain list node" access="readwrite"/>
-    </method>
-
-    <method name="find skipped message key" declaration="private">
-        <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
-
-        <return class="ratchet skipped message key" access="readwrite"/>
-    </method>
-
-    <method name="delete skipped message key" declaration="private">
-        <argument name="skipped message key" class="ratchet skipped message key" access="readwrite"/>
-    </method>
-
-    <method name="add skipped message key" declaration="private">
-        <argument name="skipped message key" class="ratchet skipped message key" access="readwrite"/>
     </method>
 
     <method name="serialize">
