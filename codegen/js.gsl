@@ -211,7 +211,7 @@ endfunction
 
 function js_create_class_module(source, destination, wrapper, meta)
   echo_info("js_create_class_module", my)
-  if my.source.scope = "public"
+  if my.source.scope = "public" & !(my.source.name = "error ctx")
     new js_module to my.destination
       js_module.name = my.source.name
 
@@ -269,4 +269,4 @@ function js_generate_sources(source, wrapper)
   js_generate_index_js_file(my.source, my.wrapper)
 endfunction
 
-.endtemplate
+endtemplate

@@ -574,4 +574,4 @@ function js_generate_index_js_file(source, wrapper)
   close
 endfunction
 
-.endtemplate
+endtemplate
