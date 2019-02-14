@@ -63,12 +63,17 @@
 #include "vscf_hmac.h"
 #include "vscf_hkdf.h"
 #include "vscf_aes256_gcm.h"
+#include "vscf_aes256_cbc.h"
 #include "vscf_hash_based_alg_info.h"
 #include "vscf_cipher_alg_info.h"
 #include "vscf_salted_kdf_alg_info.h"
 #include "vscf_pbe_alg_info.h"
 #include "vscf_pkcs5_pbkdf2.h"
 #include "vscf_pkcs5_pbes2.h"
+#include "vscf_rsa_public_key.h"
+#include "vscf_rsa_private_key.h"
+#include "vscf_ed25519_public_key.h"
+#include "vscf_ed25519_private_key.h"
 
 // clang-format on
 //  @end
@@ -169,13 +174,13 @@ vscf_alg_factory_create_kdf_alg(const vscf_impl_t *alg_info) {
     if (alg_id == vscf_alg_id_KDF2) {
         const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
-        vscf_kdf1_t *kdf2 = vscf_kdf1_new();
+        vscf_kdf2_t *kdf2 = vscf_kdf2_new();
         vscf_impl_t *hash =
                 vscf_alg_factory_create_hash_alg(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info));
 
-        vscf_kdf1_take_hash(kdf2, hash);
+        vscf_kdf2_take_hash(kdf2, hash);
 
-        return vscf_kdf1_impl(kdf2);
+        return vscf_kdf2_impl(kdf2);
     }
 
     if (alg_id == vscf_alg_id_HKDF || alg_id == vscf_alg_id_PKCS5_PBKDF2) {
@@ -243,6 +248,71 @@ vscf_alg_factory_create_cipher_alg(const vscf_impl_t *alg_info) {
         return vscf_aes256_gcm_impl(aes256_gcm);
     }
 
+    if (alg_id == vscf_alg_id_AES256_CBC) {
+        const vscf_cipher_alg_info_t *cipher_alg_info = (const vscf_cipher_alg_info_t *)alg_info;
+        vscf_aes256_cbc_t *aes256_cbc = vscf_aes256_cbc_new();
+        vscf_aes256_cbc_set_nonce(aes256_cbc, vscf_cipher_alg_info_nonce(cipher_alg_info));
+        return vscf_aes256_cbc_impl(aes256_cbc);
+    }
+
     VSCF_ASSERT(0 && "Can not create 'cipher' algorithm from the given alg id.");
+    return NULL;
+}
+
+//
+//  Create algorithm that implements "public key" interface.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_public_key_alg(const vscf_raw_key_t *raw_key) {
+
+    VSCF_ASSERT_PTR(raw_key);
+
+    const vscf_alg_id_t alg_id = vscf_raw_key_alg_id(raw_key);
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+
+    if (alg_id == vscf_alg_id_RSA) {
+        vscf_rsa_public_key_t *rsa_public_key = vscf_rsa_public_key_new();
+        vscf_rsa_public_key_setup_defaults(rsa_public_key);
+        vscf_rsa_public_key_import_public_key(rsa_public_key, vscf_raw_key_data(raw_key));
+        return vscf_rsa_public_key_impl(rsa_public_key);
+    }
+
+    if (alg_id == vscf_alg_id_ED25519) {
+        vscf_ed25519_public_key_t *ed25519_public_key = vscf_ed25519_public_key_new();
+        vscf_ed25519_public_key_setup_defaults(ed25519_public_key);
+        vscf_ed25519_public_key_import_public_key(ed25519_public_key, vscf_raw_key_data(raw_key));
+        return vscf_ed25519_public_key_impl(ed25519_public_key);
+    }
+
+    VSCF_ASSERT(0 && "Can not create 'public key' algorithm from the given alg id.");
+    return NULL;
+}
+
+//
+//  Create algorithm that implements "private key" interface.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_private_key_alg(const vscf_raw_key_t *raw_key) {
+
+    VSCF_ASSERT_PTR(raw_key);
+
+    const vscf_alg_id_t alg_id = vscf_raw_key_alg_id(raw_key);
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+
+    if (alg_id == vscf_alg_id_RSA) {
+        vscf_rsa_private_key_t *rsa_private_key = vscf_rsa_private_key_new();
+        vscf_rsa_private_key_setup_defaults(rsa_private_key);
+        vscf_rsa_private_key_import_private_key(rsa_private_key, vscf_raw_key_data(raw_key));
+        return vscf_rsa_private_key_impl(rsa_private_key);
+    }
+
+    if (alg_id == vscf_alg_id_ED25519) {
+        vscf_ed25519_private_key_t *ed25519_private_key = vscf_ed25519_private_key_new();
+        vscf_ed25519_private_key_setup_defaults(ed25519_private_key);
+        vscf_ed25519_private_key_import_private_key(ed25519_private_key, vscf_raw_key_data(raw_key));
+        return vscf_ed25519_private_key_impl(ed25519_private_key);
+    }
+
+    VSCF_ASSERT(0 && "Can not create 'private key' algorithm from the given alg id.");
     return NULL;
 }
