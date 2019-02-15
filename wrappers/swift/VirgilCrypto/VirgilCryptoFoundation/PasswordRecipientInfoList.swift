@@ -71,7 +71,8 @@ import VirgilCryptoCommon
     /// Add new item to the list.
     /// Note, ownership is transfered.
     @objc public func add(passwordRecipientInfo: PasswordRecipientInfo) {
-        vscf_password_recipient_info_list_add(self.c_ctx, &passwordRecipientInfo.c_ctx)
+        var passwordRecipientInfoCopy = vscf_password_recipient_info_shallow_copy(passwordRecipientInfo.c_ctx)
+        vscf_password_recipient_info_list_add(self.c_ctx, &passwordRecipientInfoCopy)
     }
 
     /// Return true if given list has item.

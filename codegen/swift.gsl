@@ -127,13 +127,27 @@ function class_derive_c_constructor (class, constructor)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C class retain method.
+#   Return .(UID) that refers to the C class shallow copy method.
 # ---------------------------------------------------------------------------
 function class_derive_c_method_shallow_copy (class)
     check_arguments (my, "class", my)
 
     my.of_class = my.class.of_class ? my.class.name
     return make_ref_c (make_id ("class", my.of_class, "method", "shallow copy"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C instance shallow copy method.
+# ---------------------------------------------------------------------------
+function insatnce_derive_c_method_shallow_copy (instance)
+    check_arguments (my, "instance", my)
+
+    if has_one_of_attribute(my.instance, "interface")
+        return make_ref_c (make_id ("class", "impl", "method", "shallow copy"))
+
+    elsif has_one_of_attribute(my.instance, "class, impl")
+        return make_ref_c (make_id ("class", my.instance.class ? my.instance.impl, "method", "shallow copy"))
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -777,6 +791,14 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type)
         my.buffers_init = format_left (my.buffers_init, my.scope_count)
     endif
 
+    #   Create shallow copies for objects that is passed as "disown" argument.
+    for my.swift_method.swift_argument where swift_argument.access = "disown"
+        my.shallow_copies ?= ""
+        my.shallow_copies += format_left("\
+            var $(swift_argument.name:)Copy = $(swift_argument.method_shallow_copy:)($(swift_argument.name:).c_ctx)
+        ", my.scope_count)
+    endfor
+
     if my.scope_count > 0
         my.proxy_invocation = (my.proxy_return_type <> "Void") ?? "return " ? ""
     else
@@ -793,7 +815,7 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type)
     endwhile
 
     return (my.buffers_instantiation ? "") + (my.opened_scope ? "") + (my.buffers_init ? "") + \
-            my.proxy_invocation + (my.closed_scope ? "") + (my.buffers_shrink ? "")
+            (my.shallow_copies ? "") + my.proxy_invocation + (my.closed_scope ? "") + (my.buffers_shrink ? "")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -848,7 +870,11 @@ function swift_format_c_proxy_args (class, method)
             my.proxy_arg = "$(my.arg_name:)Buf"
 
         elsif has_one_of_attribute (argument, "class, api, interface, impl")
-            my.proxy_arg = "$(my.arg_name:).c_ctx"
+            if argument.access = "disown"
+                my.proxy_arg = "$(my.arg_name:)Copy"
+            else
+                my.proxy_arg = "$(my.arg_name:).c_ctx"
+            endif
 
         elsif defined (argument.enum)
             my.enum_type = class_derive_c_instance_type (argument)
@@ -1009,6 +1035,12 @@ function swift_map_instance_type (swift_instance, instance)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Map <instance/> attributes to the <swift_instance type=""/> attributes.
+# ---------------------------------------------------------------------------
+function swift_map_instance_method_shallow_copy (swift_instance, instance)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Map <instance/> attributes to the <swift_instance/> attributes.
 # ---------------------------------------------------------------------------
 function swift_map_instance (swift_instance, instance)
@@ -1016,6 +1048,11 @@ function swift_map_instance (swift_instance, instance)
 
     swift_map_attr_access (my.swift_instance, my.instance)
     swift_map_instance_type (my.swift_instance, my.instance)
+
+    if item_in(my.instance, "argument") & my.instance.access = "disown" & \
+            has_one_of_attribute(my.instance, "interface, impl, class")
+        my.swift_instance.method_shallow_copy = insatnce_derive_c_method_shallow_copy(my.instance)
+    endif
 endfunction
 
 
