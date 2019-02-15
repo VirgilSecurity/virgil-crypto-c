@@ -126,8 +126,9 @@ produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr
             vscr_ratchet_session_encrypt(*producer->session, vsc_buffer_data(plain_text_local), &error_ctx);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
 
-    if (should_restore)
+    if (should_restore) {
         restore_session(producer->session);
+    }
 
     byte late_level;
     vsc_buffer_destroy(&fake_buffer);
