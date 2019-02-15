@@ -30,7 +30,7 @@ function js_create_method_structure(js_class, source_method)
   new js_method to my.js_class
     js_method.name = "$(my.source_method.name:Camel)"
     js_method.binding_name = js_binding_method_name(my.source_method)
-    for my.source_method.argument where !js_cpp_argument_is_buffer(argument)
+    for my.source_method.argument where !js_cpp_argument_is_buffer(argument) & !js_cpp_argument_is_error_ctx(argument)
       js_create_argument_structure(js_method, argument)
     endfor
   endnew
@@ -83,8 +83,21 @@ function js_create_cpp_js_argument(cpp_method, source_argument)
 endfunction
 
 function js_create_cpp_js_arguments(cpp_method, source_method)
-  for my.source_method.argument where !js_cpp_argument_is_buffer(argument)
+  for my.source_method.argument where !js_cpp_argument_is_buffer(argument) & !js_cpp_argument_is_error_ctx(argument)
     js_create_cpp_js_argument(my.cpp_method, argument)
+  endfor
+endfunction
+
+function js_create_cpp_error_context(cpp_method, source_argument, wrapper)
+  new cpp_error_context to my.cpp_method
+    cpp_error_context.name = js_cpp_argument_name(my.source_argument.name)
+    cpp_error_context.class = "$(my.wrapper.prefix:no)_$(my.source_argument.class:c)"
+  endnew
+endfunction
+
+function js_create_cpp_error_contexts(cpp_method, source_method, wrapper)
+  for my.source_method.argument where js_cpp_argument_is_error_ctx(argument)
+    js_create_cpp_error_context(my.cpp_method, argument, my.wrapper)
   endfor
 endfunction
 
@@ -157,8 +170,10 @@ function js_create_cpp_method_return(cpp_method, source_method)
       cpp_method_return.name = js_cpp_method_return_name()
       if defined(my.source_method->return.type)
         cpp_method_return.type = my.source_method->return.type
-      elsif defined(my.source_method->return.enum) & my.source_method->return.enum = "error"
-        cpp_method_return.type = "error"
+      elsif defined(my.source_method->return.enum)
+        cpp_method_return.type = my.source_method->return.enum
+      elsif defined(my.source_method->return.class)
+        cpp_method_return.type = my.source_method->return.class
       else
         echo_fatal("Unknown source method return type", my)
       endif
@@ -173,6 +188,7 @@ function js_create_cpp_method_structure(cpp_class, source_method, wrapper)
     cpp_method.c_name = "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.source_method.name:c)"
     js_create_cpp_call_arguments(cpp_method, my.source_method)
     js_create_cpp_js_arguments(cpp_method, my.source_method)
+    js_create_cpp_error_contexts(cpp_method, my.source_method, my.wrapper)
     js_create_cpp_js_returns(cpp_method, my.source_method, my.cpp_class, my.wrapper)
     js_create_cpp_method_return(cpp_method, my.source_method)
   endnew

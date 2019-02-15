@@ -62,6 +62,10 @@ function js_cpp_argument_is_buffer(source_argument)
     defined(my.source_argument.access) & my.source_argument.access = "writeonly"
 endfunction
 
+function js_cpp_argument_is_error_ctx(source_argument)
+  return defined(my.source_argument.class) & my.source_argument.class = "error ctx"
+endfunction
+
 function js_cpp_context_name(cpp_class, wrapper)
   return "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)"
 endfunction
@@ -291,6 +295,18 @@ function js_cpp_create_cpp_js_arguments(cpp_method, indent_level)
   endfor
 endfunction
 
+function js_cpp_create_cpp_error_context(cpp_error_context, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("$(my.cpp_error_context.class:no)_t $(my.cpp_error_context.name:no);", my.indent_levels.first)
+  js_out("$(my.cpp_error_context.class:no)_error(&$(my.cpp_error_context.name:no));", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_error_contexts(cpp_method, indent_level)
+  for my.cpp_method.cpp_error_context
+    js_cpp_create_cpp_error_context(cpp_error_context, my.indent_level)
+  endfor
+endfunction
+
 function js_cpp_create_cpp_size(cpp_size, cpp_class, wrapper, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   if my.cpp_size.type = "constant"
@@ -399,6 +415,7 @@ function js_cpp_create_method(cpp_class, cpp_method, wrapper, indent_level)
   js_out("void $(my.cpp_class.name:no)::$(my.cpp_method.name:no)(const Nan::FunctionCallbackInfo<v8::Value>& $(js_cpp_callback_info_name())) {", my.indent_levels.first)
   js_cpp_create_unwrap_class(my.cpp_class, my.indent_levels.second)
   js_cpp_create_cpp_js_arguments(my.cpp_method, my.indent_levels.second)
+  js_cpp_create_cpp_error_contexts(my.cpp_method, my.indent_levels.second)
   js_cpp_create_cpp_js_returns(my.cpp_method, my.cpp_class, my.wrapper, my.indent_levels.second)
   js_cpp_create_method_call(my.cpp_method, my.cpp_class, my.wrapper, my.indent_levels.second)
   js_cpp_create_method_return(my.cpp_method, my.indent_levels.second)
