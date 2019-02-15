@@ -32,16 +32,17 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include <unity.h>
+#include <test_utils.h>
+
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
+#include "virgil/crypto/foundation/vscf_ctr_drbg.h"
+#include "virgil/crypto/foundation/private/vscf_pkcs8_der_serializer_defs.h"
+#include "virgil/crypto/foundation/private/vscf_ed25519_private_key_defs.h"
+#include "virgil/crypto/foundation/vscf_ed25519_public_key.h"
 #include "test_utils_ratchet.h"
-#include <test_utils.h>
-#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
-#include <unity.h>
-#include <virgil/crypto/foundation/private/vscf_pkcs8_der_serializer_defs.h>
-#include <virgil/crypto/foundation/private/vscf_ed25519_private_key_defs.h>
-#include <virgil/crypto/foundation/vscf_ed25519_public_key.h>
 #include "unreliable_msg_producer.h"
 #include "privateAPI.h"
 

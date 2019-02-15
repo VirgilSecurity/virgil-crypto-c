@@ -32,12 +32,13 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include "unity.h"
+
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include <virgil/crypto/ratchet/vscr_memory.h>
+#include "virgil/crypto/ratchet/vscr_memory.h"
 #include "unreliable_msg_producer.h"
-#include "unity.h"
 #include "test_utils_ratchet.h"
 
 void

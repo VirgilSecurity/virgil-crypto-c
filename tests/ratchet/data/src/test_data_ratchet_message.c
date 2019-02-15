@@ -111,4 +111,3 @@ const vsc_data_t test_data_ratchet_message_raw_key5 = {
 const vsc_data_t test_data_ratchet_message_data = {
         test_data_ratchet_message_data_BYTES, sizeof(test_data_ratchet_message_data_BYTES)
 };
-
