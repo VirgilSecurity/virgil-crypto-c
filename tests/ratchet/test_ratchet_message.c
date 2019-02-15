@@ -50,8 +50,8 @@ int suiteTearDown(int num_failures) { return num_failures; }
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include "virgil/crypto/ratchet/private/vscr_ratchet_message_defs.h"
-#include "virgil/crypto/ratchet/vscr_ratchet_message.h"
+#include "vscr_ratchet_message_defs.h"
+#include "vscr_ratchet_message.h"
 #include "test_data_ratchet_message.h"
 
 // --------------------------------------------------------------------------

@@ -35,15 +35,15 @@
 #ifndef VIRGIL_CRYPTO_PRIVATEAPI_H
 #define VIRGIL_CRYPTO_PRIVATEAPI_H
 
-#include <virgil/crypto/ratchet/private/vscr_ratchet_common_hidden.h>
-#include <virgil/crypto/ratchet/private/vscr_ratchet_cipher.h>
-#include <vscr_ratchet.h>
 #include <virgil/crypto/foundation/private/vscf_pkcs8_der_deserializer_defs.h>
-#include <vscr_ratchet_sender_chain.h>
-#include <vscr_ratchet_receiver_chain_list_node.h>
-#include <vscr_ratchet_skipped_message_key_list_node.h>
-#include <vscr_ratchet_receiver_chains.h>
-#include <vscr_ratchet_skipped_messages.h>
+#include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_cipher.h"
+#include "vscr_ratchet.h"
+#include "vscr_ratchet_sender_chain.h"
+#include "vscr_ratchet_receiver_chain_list_node.h"
+#include "vscr_ratchet_skipped_message_key_list_node.h"
+#include "vscr_ratchet_receiver_chains.h"
+#include "vscr_ratchet_skipped_messages.h"
 
 struct vscr_ratchet_skipped_messages_t {
     //
