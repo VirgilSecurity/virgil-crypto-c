@@ -185,7 +185,81 @@ test__deserialize__cms_with_one_rsa2048_key_recipient__returns_valid_key_recipie
 }
 
 void
-test__deserialize__cms_with_v2_conpatible_one_rsa2048_key_recipient__returns_valid_key_recipient(void) {
+test__deserialize__cms_with_one_password_recipient__returns_valid_key_recipient(void) {
+
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_t *message_info = vscf_message_info_der_serializer_deserialize(
+            serializer, test_message_info_cms_ONE_PASSWORD_RECIPIENT.serialized, NULL);
+
+    TEST_ASSERT_NOT_NULL(message_info);
+
+    const vscf_password_recipient_info_list_t *recipient_info_list =
+            vscf_message_info_password_recipient_info_list(message_info);
+    TEST_ASSERT_NOT_NULL(recipient_info_list);
+    TEST_ASSERT_TRUE(vscf_password_recipient_info_list_has_item(recipient_info_list));
+
+    //
+    //  Check: pwri [3] PasswordRecipientInfo.
+    //
+    const vscf_password_recipient_info_t *password_recipient =
+            vscf_password_recipient_info_list_item(recipient_info_list);
+
+    //  Check: PBES2.
+    const vscf_impl_t *key_encryption_alg_info =
+            vscf_password_recipient_info_key_encryption_algorithm(password_recipient);
+    TEST_ASSERT_EQUAL(vscf_alg_id_PKCS5_PBES2, vscf_alg_info_alg_id(key_encryption_alg_info));
+
+    const vscf_pbe_alg_info_t *pbe_alg_info = (const vscf_pbe_alg_info_t *)key_encryption_alg_info;
+
+    const vscf_impl_t *pbe_cipher_alg_info = vscf_pbe_alg_info_cipher_alg_info(pbe_alg_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_AES256_CBC, vscf_alg_info_alg_id(pbe_cipher_alg_info));
+    const vscf_cipher_alg_info_t *pbe_underlying_cipher_alg_info = (const vscf_cipher_alg_info_t *)pbe_cipher_alg_info;
+
+    vsc_data_t key_encryption_alg_nonce = vscf_cipher_alg_info_nonce(pbe_underlying_cipher_alg_info);
+    TEST_ASSERT_EQUAL_DATA(
+            test_message_info_cms_ONE_PASSWORD_RECIPIENT.key_encryption_alg_nonce, key_encryption_alg_nonce);
+
+
+    //  Check: PBKDF2.
+    const vscf_impl_t *kdf_alg_info = vscf_pbe_alg_info_kdf_alg_info(pbe_alg_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_PKCS5_PBKDF2, vscf_alg_info_alg_id(kdf_alg_info));
+
+    const vscf_salted_kdf_alg_info_t *salted_kdf_alg_info = (const vscf_salted_kdf_alg_info_t *)kdf_alg_info;
+    vsc_data_t kdf_salt = vscf_salted_kdf_alg_info_salt(salted_kdf_alg_info);
+    TEST_ASSERT_EQUAL_DATA(test_message_info_cms_ONE_PASSWORD_RECIPIENT.kdf_salt, kdf_salt);
+
+    size_t kdf_iteration_count = vscf_salted_kdf_alg_info_iteration_count(salted_kdf_alg_info);
+    TEST_ASSERT_EQUAL(test_message_info_cms_ONE_PASSWORD_RECIPIENT.kdf_iteration_count, kdf_iteration_count);
+
+    const vscf_impl_t *kdf_hash_alg_info = vscf_salted_kdf_alg_info_hash_alg_info(salted_kdf_alg_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_HMAC, vscf_alg_info_alg_id(kdf_hash_alg_info));
+    const vscf_hash_based_alg_info_t *kdf_hmac_alg_info = (const vscf_hash_based_alg_info_t *)kdf_hash_alg_info;
+    const vscf_impl_t *hmac_hash_alg_info = vscf_hash_based_alg_info_hash_alg_info(kdf_hmac_alg_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_SHA384, vscf_alg_info_alg_id(hmac_hash_alg_info));
+
+    //  Check: encryptedKey.
+    vsc_data_t encrypted_key = vscf_password_recipient_info_encrypted_key(password_recipient);
+    TEST_ASSERT_EQUAL_DATA(test_message_info_cms_ONE_PASSWORD_RECIPIENT.encrypted_key, encrypted_key);
+
+    //
+    //  Check: contentEncryptionAlgorithm.
+    //
+    const vscf_impl_t *data_encryption_alg_info = vscf_message_info_data_encryption_alg_info(message_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_AES256_GCM, vscf_alg_info_alg_id(data_encryption_alg_info));
+
+    const vscf_cipher_alg_info_t *data_encryption_cipher_alg_info =
+            (const vscf_cipher_alg_info_t *)data_encryption_alg_info;
+    vsc_data_t alg_nonce = vscf_cipher_alg_info_nonce(data_encryption_cipher_alg_info);
+    TEST_ASSERT_EQUAL_DATA(test_message_info_cms_ONE_PASSWORD_RECIPIENT.data_encryption_alg_nonce, alg_nonce);
+
+    vscf_message_info_destroy(&message_info);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
+void
+test__deserialize__cms_with_v2_compatible_one_rsa2048_key_recipient__returns_valid_key_recipient(void) {
 
     vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
     vscf_message_info_der_serializer_setup_defaults(serializer);
@@ -229,13 +303,13 @@ test__deserialize__cms_with_v2_conpatible_one_rsa2048_key_recipient__returns_val
 }
 
 void
-test__deserialize__cms_with_one_password_recipient__returns_valid_key_recipient(void) {
+test__deserialize__cms_with_v2_compatible_one_password_recipient__returns_password_recipient(void) {
 
     vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
     vscf_message_info_der_serializer_setup_defaults(serializer);
 
     vscf_message_info_t *message_info = vscf_message_info_der_serializer_deserialize(
-            serializer, test_message_info_cms_ONE_PASSWORD_RECIPIENT.serialized, NULL);
+            serializer, test_message_info_cms_V2_COMPATIBLE_ONE_PASSWORD_RECIPIENT.serialized, NULL);
 
     TEST_ASSERT_NOT_NULL(message_info);
 
@@ -316,9 +390,11 @@ main(void) {
     RUN_TEST(test__serialize__one_password_recipient__returns_valid_cms);
 
     RUN_TEST(test__deserialize__cms_with_one_rsa2048_key_recipient__returns_valid_key_recipient);
-    RUN_TEST(test__deserialize__cms_with_v2_conpatible_one_rsa2048_key_recipient__returns_valid_key_recipient);
-
     RUN_TEST(test__deserialize__cms_with_one_password_recipient__returns_valid_key_recipient);
+
+    RUN_TEST(test__deserialize__cms_with_v2_compatible_one_rsa2048_key_recipient__returns_valid_key_recipient);
+    RUN_TEST(test__deserialize__cms_with_v2_compatible_one_password_recipient__returns_password_recipient);
+
 
 #if TEST_DEPENDENCIES_AVAILABLE
 #else

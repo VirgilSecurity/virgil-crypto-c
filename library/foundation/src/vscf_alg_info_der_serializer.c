@@ -214,6 +214,9 @@ vscf_alg_info_der_serializer_is_alg_require_null_params(vscf_alg_id_t alg_id) {
 
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
+    //  According to RFC 5754 - Using SHA2 Algorithms with Cryptographic Message Syntax.
+    //  Implementations MUST generate SHA2 AlgorithmIdentifiers with absent parameters.
+
     switch (alg_id) {
     case vscf_alg_id_RSA:
         return true;
@@ -480,6 +483,7 @@ vscf_alg_info_der_serializer_serialize_hmac_alg_info(
     }
 
     size_t hmac_len = 0;
+    hmac_len += vscf_asn1_writer_write_null(asn1_writer); //  Reuired by the RFC 4231
     hmac_len += vscf_asn1_writer_write_oid(asn1_writer, vscf_oid_from_id(hmac_oid_id));
     hmac_len += vscf_asn1_writer_write_sequence(asn1_writer, hmac_len);
 
