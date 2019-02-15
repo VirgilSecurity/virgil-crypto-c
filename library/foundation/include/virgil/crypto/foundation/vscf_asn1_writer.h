@@ -95,12 +95,6 @@ VSCF_PUBLIC void
 vscf_asn1_writer_reset(vscf_impl_t *impl, byte *out, size_t out_len);
 
 //
-//  Release a target buffer.
-//
-VSCF_PUBLIC void
-vscf_asn1_writer_release(vscf_impl_t *impl);
-
-//
 //  Move written data to the buffer beginning and forbid further operations.
 //  Returns written size in bytes.
 //
