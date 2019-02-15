@@ -840,11 +840,8 @@ vscf_asn1wr_write_octet_str_as_bitstring(vscf_asn1wr_t *self, vsc_data_t value) 
         return 0;
     }
 
-    if (*self->curr != 0x00) {
-        byte zero_byte = 0x00;
-        written_count += vscf_asn1wr_write_data(self, vsc_data(&zero_byte, 1));
-    }
-
+    byte zero_byte = 0x00;
+    written_count += vscf_asn1wr_write_data(self, vsc_data(&zero_byte, 1));
     written_count += vscf_asn1wr_write_len(self, written_count);
     written_count += vscf_asn1wr_write_tag(self, MBEDTLS_ASN1_BIT_STRING);
 
