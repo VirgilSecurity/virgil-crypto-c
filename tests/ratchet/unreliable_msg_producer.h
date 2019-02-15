@@ -35,9 +35,9 @@
 #ifndef VIRGIL_CRYPTO_UNRELIABLE_MSG_PRODUCER_H
 #define VIRGIL_CRYPTO_UNRELIABLE_MSG_PRODUCER_H
 
+#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include "virgil/crypto/ratchet/vscr_ratchet_session.h"
 #include "virgil/crypto/ratchet/vscr_ratchet_message.h"
-#include "virgil/crypto/foundation/vscf_ctr_drbg.h"
 
 typedef struct out_of_order_msg {
     vscr_ratchet_message_t *cipher_text;
