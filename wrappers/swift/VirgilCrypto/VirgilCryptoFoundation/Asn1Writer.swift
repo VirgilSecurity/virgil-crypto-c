@@ -45,9 +45,6 @@ import VirgilCryptoCommon
     /// Reset all internal states and prepare to new ASN.1 writing operations.
     @objc func reset(out: UnsafeMutablePointer<UInt8>, outLen: Int)
 
-    /// Release a target buffer.
-    @objc func release()
-
     /// Move written data to the buffer beginning and forbid further operations.
     /// Returns written size in bytes.
     @objc func finish() -> Int
@@ -181,11 +178,6 @@ import VirgilCryptoCommon
     /// Reset all internal states and prepare to new ASN.1 writing operations.
     @objc public func reset(out: UnsafeMutablePointer<UInt8>, outLen: Int) {
         vscf_asn1_writer_reset(self.c_ctx, out, outLen)
-    }
-
-    /// Release a target buffer.
-    @objc public func release() {
-        vscf_asn1_writer_release(self.c_ctx)
     }
 
     /// Move written data to the buffer beginning and forbid further operations.

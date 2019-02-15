@@ -37,9 +37,9 @@
 
 #include "vsc_data.h"
 
-extern const vsc_data_t test_ratchet_cipher_plain_text;
-extern const size_t test_ratchet_cipher_cipher_text_len;
-extern const vsc_data_t test_ratchet_cipher_cipher_text;
-extern const vsc_data_t test_ratchet_cipher_key;
+extern const vsc_data_t test_data_ratchet_cipher_plain_text;
+extern const size_t test_data_ratchet_cipher_cipher_text_len;
+extern const vsc_data_t test_data_ratchet_cipher_cipher_text;
+extern const vsc_data_t test_data_ratchet_cipher_key;
 
 #endif //VIRGIL_CRYPTO_TEST_DATA_RATCHET_CIPHER_H

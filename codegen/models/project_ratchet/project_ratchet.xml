@@ -71,6 +71,7 @@
     <class name="ratchet skipped message key"/>
     <class name="ratchet skipped message key list node"/>
     <class name="ratchet sender chain"/>
+    <class name="ratchet keys"/>
     <class name="ratchet"/>
     <class name="ratchet session"/>
 

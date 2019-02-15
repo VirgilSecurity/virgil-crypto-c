@@ -87,11 +87,6 @@ extern "C" {
 typedef void (*vscf_asn1_writer_api_reset_fn)(vscf_impl_t *impl, byte *out, size_t out_len);
 
 //
-//  Callback. Release a target buffer.
-//
-typedef void (*vscf_asn1_writer_api_release_fn)(vscf_impl_t *impl);
-
-//
 //  Callback. Move written data to the buffer beginning and forbid further operations.
 //          Returns written size in bytes.
 //
@@ -274,10 +269,6 @@ struct vscf_asn1_writer_api_t {
     //  Reset all internal states and prepare to new ASN.1 writing operations.
     //
     vscf_asn1_writer_api_reset_fn reset_cb;
-    //
-    //  Release a target buffer.
-    //
-    vscf_asn1_writer_api_release_fn release_cb;
     //
     //  Move written data to the buffer beginning and forbid further operations.
     //  Returns written size in bytes.

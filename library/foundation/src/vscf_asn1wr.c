@@ -336,19 +336,6 @@ vscf_asn1wr_reset(vscf_asn1wr_t *self, byte *out, size_t out_len) {
 }
 
 //
-//  Release a target buffer.
-//
-VSCF_PUBLIC void
-vscf_asn1wr_release(vscf_asn1wr_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    self->start = NULL;
-    self->curr = NULL;
-    self->error = vscf_error_UNINITIALIZED;
-}
-
-//
 //  Move written data to the buffer beginning and forbid further operations.
 //  Returns written size in bytes.
 //
@@ -840,11 +827,8 @@ vscf_asn1wr_write_octet_str_as_bitstring(vscf_asn1wr_t *self, vsc_data_t value) 
         return 0;
     }
 
-    if (*self->curr != 0x00) {
-        byte zero_byte = 0x00;
-        written_count += vscf_asn1wr_write_data(self, vsc_data(&zero_byte, 1));
-    }
-
+    byte zero_byte = 0x00;
+    written_count += vscf_asn1wr_write_data(self, vsc_data(&zero_byte, 1));
     written_count += vscf_asn1wr_write_len(self, written_count);
     written_count += vscf_asn1wr_write_tag(self, MBEDTLS_ASN1_BIT_STRING);
 

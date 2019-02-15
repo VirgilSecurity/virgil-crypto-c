@@ -32,18 +32,25 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H
-#define VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H
+#ifndef VIRGIL_CRYPTO_TEST_DATA_RATCHET_KEYS_H
+#define VIRGIL_CRYPTO_TEST_DATA_RATCHET_KEYS_H
 
-#include "virgil/crypto/common/vsc_buffer.h"
-#include "vscr_ratchet_session.h"
+#include "vsc_data.h"
 
-void generate_random_data(vsc_buffer_t **buffer);
-void generate_PKCS8_keypair(vsc_buffer_t **priv, vsc_buffer_t **pub);
-void generate_raw_keypair(vsc_buffer_t **priv, vsc_buffer_t **pub);
-void initialize(vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool enable_one_time, bool should_restore);
-void encrypt_decrypt__100_plain_texts_random_order(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *session_bob);
-void encrypt_decrypt__100_plain_texts_random_order_with_producers(vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool should_restore);
-void restore_session(vscr_ratchet_session_t **session);
+extern const vsc_data_t test_data_ratchet_keys_shared_secret;
+extern const vsc_data_t test_data_ratchet_keys_root_key;
+extern const vsc_data_t test_data_ratchet_keys_chain_key;
+extern const vsc_data_t test_data_ratchet_keys_shared_secret_weak;
+extern const vsc_data_t test_data_ratchet_keys_root_key_weak;
+extern const vsc_data_t test_data_ratchet_keys_chain_key_weak;
+extern const vsc_data_t test_data_ratchet_keys_private_key;
+extern const vsc_data_t test_data_ratchet_keys_public;
+extern const vsc_data_t test_data_ratchet_keys_new_root_key;
+extern const vsc_data_t test_data_ratchet_keys_new_chain_key;
+extern const vsc_data_t test_data_ratchet_keys_message_key;
+extern const uint32_t test_data_ratchet_keys_message_key_index;
+extern const uint32_t test_data_ratchet_keys_chain_key_index;
+extern const vsc_data_t test_data_ratchet_keys_next_chain_key;
+extern const vsc_data_t test_data_ratchet_keys_next_chain_key2;
 
-#endif //VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H
+#endif //VIRGIL_CRYPTO_TEST_DATA_RATCHET_KEYS_H

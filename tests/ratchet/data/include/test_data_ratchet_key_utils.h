@@ -37,11 +37,11 @@
 
 #include "vsc_data.h"
 
-extern const vsc_data_t test_ratchet_curve_private_key;
-extern const vsc_data_t test_ratchet_curve_public_key;
-extern const vsc_data_t test_ratchet_curve_public_key_raw;
-extern const vsc_data_t test_ratchet_curve_public_key_id;
-extern const vsc_data_t test_ratchet_ed_private_key;
-extern const vsc_data_t test_ratchet_ed_public_key;
+extern const vsc_data_t test_data_ratchet_curve_private_key;
+extern const vsc_data_t test_data_ratchet_curve_public_key;
+extern const vsc_data_t test_data_ratchet_curve_public_key_raw;
+extern const vsc_data_t test_data_ratchet_curve_public_key_id;
+extern const vsc_data_t test_data_ratchet_ed_private_key;
+extern const vsc_data_t test_data_ratchet_ed_public_key;
 
 #endif //VIRGIL_CRYPTO_TEST_DATA_RATCHET_KEY_UTILS_H
