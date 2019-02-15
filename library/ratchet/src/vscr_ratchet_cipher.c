@@ -56,7 +56,17 @@
 //  @end
 
 
-static const uint8_t ratchet_kdf_cipher_info[] = {"VIRGIL_RATCHET_KDF_CIPHER_INFO"};
+// clang-format off
+
+// VIRGIL_RATCHET_KDF_CIPHER_INFO
+static const byte ratchet_kdf_cipher_info[] = {
+        0x56, 0x49, 0x52, 0x47, 0x49, 0x4c, 0x5f, 0x52,
+        0x41, 0x54, 0x43, 0x48, 0x45, 0x54, 0x5f, 0x4b,
+        0x44, 0x46, 0x5f, 0x43, 0x49, 0x50, 0x48, 0x45,
+        0x52, 0x5f, 0x49, 0x4e, 0x46, 0x4f, 0x00,
+};
+
+// clang-format on
 
 
 //  @generated
@@ -300,6 +310,8 @@ vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, vsc_data_t key) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->aes256_gcm);
+
+    VSCR_ASSERT(key.len == vscr_ratchet_cipher_KEY_LEN);
 
     vscf_hkdf_t *hkdf = vscf_hkdf_new();
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));

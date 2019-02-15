@@ -32,43 +32,25 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_CRYPTO_UNRELIABLE_MSG_PRODUCER_H
-#define VIRGIL_CRYPTO_UNRELIABLE_MSG_PRODUCER_H
+#ifndef VIRGIL_CRYPTO_TEST_DATA_RATCHET_KEYS_H
+#define VIRGIL_CRYPTO_TEST_DATA_RATCHET_KEYS_H
 
-#include "virgil/crypto/foundation/vscf_ctr_drbg.h"
-#include "vscr_ratchet_session.h"
-#include "vscr_ratchet_message.h"
+#include "vsc_data.h"
 
-typedef struct out_of_order_msg {
-    vscr_ratchet_message_t *cipher_text;
-    vsc_buffer_t *plain_text;
-    size_t index;
-} out_of_order_msg_t;
+extern const vsc_data_t test_data_ratchet_keys_shared_secret;
+extern const vsc_data_t test_data_ratchet_keys_root_key;
+extern const vsc_data_t test_data_ratchet_keys_chain_key;
+extern const vsc_data_t test_data_ratchet_keys_shared_secret_weak;
+extern const vsc_data_t test_data_ratchet_keys_root_key_weak;
+extern const vsc_data_t test_data_ratchet_keys_chain_key_weak;
+extern const vsc_data_t test_data_ratchet_keys_private_key;
+extern const vsc_data_t test_data_ratchet_keys_public;
+extern const vsc_data_t test_data_ratchet_keys_new_root_key;
+extern const vsc_data_t test_data_ratchet_keys_new_chain_key;
+extern const vsc_data_t test_data_ratchet_keys_message_key;
+extern const uint32_t test_data_ratchet_keys_message_key_index;
+extern const uint32_t test_data_ratchet_keys_chain_key_index;
+extern const vsc_data_t test_data_ratchet_keys_next_chain_key;
+extern const vsc_data_t test_data_ratchet_keys_next_chain_key2;
 
-typedef struct out_of_order_msg_node out_of_order_msg_node_t;
-
-struct out_of_order_msg_node {
-    out_of_order_msg_t *msg;
-    out_of_order_msg_node_t *next;
-};
-
-typedef struct unreliable_msg_producer {
-    vscf_ctr_drbg_t *rng;
-    vscr_ratchet_session_t **session;
-    out_of_order_msg_node_t *skipped_msgs_list;
-    size_t produced_count;
-    float lost_rate;
-    float out_of_order_rate;
-    bool sent_first_response;
-} unreliable_msg_producer_t;
-
-void
-init_producer(
-        unreliable_msg_producer_t *producer, vscr_ratchet_session_t **session, float lost_rate, float out_of_order_rate);
-
-void
-deinit_producer(unreliable_msg_producer_t *producer);
-
-void produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr_ratchet_message_t **msg, bool should_restore);
-
-#endif // VIRGIL_CRYPTO_UNRELIABLE_MSG_PRODUCER_H
+#endif //VIRGIL_CRYPTO_TEST_DATA_RATCHET_KEYS_H

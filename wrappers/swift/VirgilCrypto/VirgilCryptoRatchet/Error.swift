@@ -40,55 +40,55 @@ import VSCRatchet
 @objc(VSCRRatchetError) public enum RatchetError: Int, Error {
 
     /// Error during protobuf deserialization
-    case protobufDecode = 1
+    case protobufDecode = -1
 
     /// Message version doesn't match
-    case messageVersionDoesnTMatch = 2
+    case messageVersionDoesnTMatch = -2
 
     /// Bad message type
-    case badMessageType = 3
+    case badMessageType = -3
 
     /// AES error
-    case aes = 4
+    case aes = -4
 
     /// RNG failed
-    case rngFailed = 5
+    case rngFailed = -5
 
     /// Curve25519 error
-    case curve25519 = 6
+    case curve25519 = -6
 
     /// Key deserialization error
-    case keyDeserialization = 7
+    case keyDeserialization = -7
 
     /// Invalid key type
-    case invalidKeyType = 8
+    case invalidKeyType = -8
 
     /// Identity key doesn't match
-    case identityKeyDoesntMatch = 9
+    case identityKeyDoesntMatch = -9
 
     /// Message already decrypted
-    case messageAlreadyDecrypted = 10
+    case messageAlreadyDecrypted = -10
 
     /// Too many lost messages
-    case tooManyLostMessages = 11
+    case tooManyLostMessages = -11
 
     /// Sender chain missing
-    case senderChainMissing = 12
+    case senderChainMissing = -12
 
     /// Skipped message missing
-    case skippedMessageMissing = 13
+    case skippedMessageMissing = -13
 
     /// Can't encrypt yet
-    case canTEncryptYet = 14
+    case canTEncryptYet = -14
 
     /// Exceeded max plain text len
-    case exceededMaxPlainTextLen = 15
+    case exceededMaxPlainTextLen = -15
 
     /// Too many messages for sender chain
-    case tooManyMessagesForSenderChain = 16
+    case tooManyMessagesForSenderChain = -16
 
     /// Too many messages for receiver chain
-    case tooManyMessagesForReceiverChain = 17
+    case tooManyMessagesForReceiverChain = -17
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC error: vscr_error_t) {
