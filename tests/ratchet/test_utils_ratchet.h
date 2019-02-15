@@ -35,8 +35,8 @@
 #ifndef VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H
 #define VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H
 
-#include <virgil/crypto/common/vsc_buffer.h>
-#include "virgil/crypto/ratchet/vscr_ratchet_session.h"
+#include "virgil/crypto/common/vsc_buffer.h"
+#include "vscr_ratchet_session.h"
 
 void generate_random_data(vsc_buffer_t **buffer);
 void generate_PKCS8_keypair(vsc_buffer_t **priv, vsc_buffer_t **pub);

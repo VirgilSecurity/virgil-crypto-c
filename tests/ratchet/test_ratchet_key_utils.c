@@ -50,11 +50,16 @@ int suiteTearDown(int num_failures) { return num_failures; }
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
+#include <ed25519/ed25519.h>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include "virgil/crypto/ratchet/vscr_error_ctx.h"
-#include "virgil/crypto/ratchet/vscr_ratchet_common.h"
-#include "virgil/crypto/ratchet/vscr_ratchet_key_utils.h"
-#include "ed25519/ed25519.h"
+#include <virgil/crypto/foundation/private/vscf_pkcs8_der_deserializer_defs.h>
+#include <virgil/crypto/foundation/private/vscf_pkcs8_der_serializer_defs.h>
+#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
+#include <virgil/crypto/foundation/vscf_ed25519_private_key.h>
+#include <virgil/crypto/foundation/vscf_ed25519_public_key.h>
+#include "vscr_error_ctx.h"
+#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_key_utils.h"
 #include "test_data_ratchet_key_utils.h"
 
 void
@@ -64,12 +69,12 @@ test__extract__fixed_curve_keypair__should_match(void) {
 
     vscr_ratchet_key_utils_t *key_utils = vscr_ratchet_key_utils_new();
 
-    vsc_buffer_t *private_key_raw =
-            vscr_ratchet_key_utils_extract_ratchet_private_key(key_utils, test_data_ratchet_curve_private_key, &error_ctx);
+    vsc_buffer_t *private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
+            key_utils, test_data_ratchet_curve_private_key, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
 
-    vsc_buffer_t *public_key_raw =
-            vscr_ratchet_key_utils_extract_ratchet_public_key(key_utils, test_data_ratchet_curve_public_key, &error_ctx);
+    vsc_buffer_t *public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
+            key_utils, test_data_ratchet_curve_public_key, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
 
     byte public_key[ED25519_KEY_LEN];
