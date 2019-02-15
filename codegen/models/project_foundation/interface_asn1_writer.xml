@@ -16,11 +16,6 @@
     </method>
 
 
-    <method name="release">
-        Release a target buffer.
-    </method>
-
-
     <method name="finish">
         Move written data to the buffer beginning and forbid further operations.
         Returns written size in bytes.

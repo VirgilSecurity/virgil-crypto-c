@@ -1270,7 +1270,6 @@ vscf_message_info_der_serializer_serialize(
     message_info_len += vscf_asn1_writer_write_sequence(self->asn1_writer, message_info_len);
 
     vsc_buffer_inc_used(out, message_info_len);
-    vscf_asn1_writer_release(self->asn1_writer);
 
     vsc_buffer_switch_reverse_mode(out, stored_out_mode);
 }

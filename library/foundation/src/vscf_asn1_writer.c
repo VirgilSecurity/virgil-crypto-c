@@ -80,19 +80,6 @@ vscf_asn1_writer_reset(vscf_impl_t *impl, byte *out, size_t out_len) {
 }
 
 //
-//  Release a target buffer.
-//
-VSCF_PUBLIC void
-vscf_asn1_writer_release(vscf_impl_t *impl) {
-
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
-    VSCF_ASSERT_PTR (asn1_writer_api);
-
-    VSCF_ASSERT_PTR (asn1_writer_api->release_cb);
-    asn1_writer_api->release_cb (impl);
-}
-
-//
 //  Move written data to the buffer beginning and forbid further operations.
 //  Returns written size in bytes.
 //

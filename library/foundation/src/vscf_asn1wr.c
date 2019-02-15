@@ -336,19 +336,6 @@ vscf_asn1wr_reset(vscf_asn1wr_t *self, byte *out, size_t out_len) {
 }
 
 //
-//  Release a target buffer.
-//
-VSCF_PUBLIC void
-vscf_asn1wr_release(vscf_asn1wr_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    self->start = NULL;
-    self->curr = NULL;
-    self->error = vscf_error_UNINITIALIZED;
-}
-
-//
 //  Move written data to the buffer beginning and forbid further operations.
 //  Returns written size in bytes.
 //

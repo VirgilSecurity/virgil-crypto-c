@@ -73,11 +73,6 @@ import VirgilCryptoCommon
         vscf_asn1wr_reset(self.c_ctx, out, outLen)
     }
 
-    /// Release a target buffer.
-    @objc public func release() {
-        vscf_asn1wr_release(self.c_ctx)
-    }
-
     /// Move written data to the buffer beginning and forbid further operations.
     /// Returns written size in bytes.
     @objc public func finish() -> Int {
