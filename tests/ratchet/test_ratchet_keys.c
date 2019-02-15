@@ -57,8 +57,8 @@ void
 test__derive_initial_keys__fixed_shared_secret__should_match(void) {
     vscr_ratchet_keys_t *keys = vscr_ratchet_keys_new();
 
-    byte root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
-    byte chain_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
+    byte root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte chain_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
     vscr_ratchet_keys_derive_initial_keys(test_data_ratchet_keys_shared_secret, root_key, chain_key);
 
@@ -72,8 +72,8 @@ void
 test__derive_initial_keys__fixed_shared_secret_weak__should_match(void) {
     vscr_ratchet_keys_t *keys = vscr_ratchet_keys_new();
 
-    byte root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
-    byte chain_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
+    byte root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte chain_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
     vscr_ratchet_keys_derive_initial_keys(test_data_ratchet_keys_shared_secret_weak, root_key, chain_key);
 
@@ -87,7 +87,7 @@ void
 test__create_chain_key__fixed_keys__should_match(void) {
     vscr_ratchet_keys_t *keys = vscr_ratchet_keys_new();
 
-    byte new_root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
+    byte new_root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
     vscr_ratchet_chain_key_t *chain_key = vscr_ratchet_chain_key_new();
 
