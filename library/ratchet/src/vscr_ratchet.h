@@ -58,8 +58,8 @@
 #include <pb_encode.h>
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -67,8 +67,8 @@
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -184,7 +184,7 @@ VSCR_PUBLIC vscr_error_t
 vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const RegularMessage *message);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret, vsc_data_t ratchet_private_key);
+vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_encrypt_len(vscr_ratchet_t *self, size_t plain_text_len);
