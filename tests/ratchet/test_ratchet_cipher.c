@@ -50,9 +50,9 @@ int suiteTearDown(int num_failures) { return num_failures; }
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include <virgil/crypto/ratchet/private/vscr_ratchet_cipher.h>
-#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
-#include <virgil/crypto/ratchet/private/vscr_ratchet_common_hidden.h>
+#include "virgil/crypto/ratchet/private/vscr_ratchet_cipher.h"
+#include "virgil/crypto/foundation/vscf_ctr_drbg.h"
+#include "virgil/crypto/ratchet/private/vscr_ratchet_common_hidden.h"
 #include "test_data_ratchet_cipher.h"
 
 void

@@ -50,7 +50,7 @@ int suiteTearDown(int num_failures) { return num_failures; }
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include <vscr_ratchet_keys.h>
+#include "vscr_ratchet_keys.h"
 #include "test_data_ratchet_keys.h"
 
 void
