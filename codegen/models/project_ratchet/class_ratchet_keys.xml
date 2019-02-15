@@ -1,0 +1,60 @@
+<class name="ratchet keys" context="internal" scope="internal">
+
+    <require impl="sha512" project="foundation" scope="private"/>
+    <require impl="hmac" project="foundation" scope="private"/>
+    <require impl="hkdf" project="foundation" scope="private"/>
+    <require module="buffer defs" scope="private" project="common"/>
+
+    <require class="ratchet common hidden" scope="context"/>
+    <require class="ratchet chain key" scope="private"/>
+
+    <require header="ed25519/ed25519.h" scope="private"/>
+
+    <variable name="ratchet chain key seed" type="unsigned" size="1" declaration="private" definition="private">
+        <array length="derived"/>
+        <value value="0x02"/>
+    </variable>
+
+    <variable name="ratchet message key seed" type="unsigned" size="1" declaration="private" definition="private">
+        <array length="derived"/>
+        <value value="0x01"/>
+    </variable>
+
+    <method name="derive initial keys" is_static="1">
+        <argument name="shared secret" class="data"/>
+
+        <argument name="root key" type="byte" access="readwrite">
+            <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+        </argument>
+        <argument name="chain key" type="byte" access="readwrite">
+            <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+        </argument>
+    </method>
+
+    <method name="create chain key" is_static="1">
+        <argument name="root key" type="byte">
+            <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+        </argument>
+        <argument name="private key" class="data"/>
+        <argument name="public key" class="data"/>
+
+        <argument name="new root key" type="byte" access="readwrite">
+            <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+        </argument>
+
+        <argument name="chain key" class="ratchet chain key" access="readwrite"/>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="advance chain key" is_static="1">
+        <argument name="chain key" class="ratchet chain key" access="readwrite"/>
+    </method>
+
+    <method name="create message key" is_static="1">
+        <argument name="chain key" class="ratchet chain key"/>
+
+        <return class="ratchet message key" access="readwrite"/>
+    </method>
+
+</class>

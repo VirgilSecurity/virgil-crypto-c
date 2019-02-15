@@ -50,9 +50,9 @@ int suiteTearDown(int num_failures) { return num_failures; }
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include <vscr_ratchet_receiver_chains.h>
+#include "vscr_ratchet_receiver_chains.h"
+#include "vscr_ratchet_common_hidden.h"
 #include "test_utils_ratchet.h"
-#include <vscr_ratchet_common_hidden.h>
 
 void
 test__receiver_chains__adding_chains__should_be_correct(void) {
