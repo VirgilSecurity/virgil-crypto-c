@@ -19,7 +19,7 @@
         <require impl="hmac"/>
         <require impl="aes256 cbc"/>
         <require impl="ctr drbg"/>
-        <require class="ecies envelope"/>
+        <require module="ecies envelope defs"/>
 
         <dependency name="random" interface="random"/>
         <dependency name="cipher" interface="cipher"/>
@@ -29,6 +29,7 @@
         <property name="public key" interface="public key"/>
         <property name="private key" interface="private key"/>
         <property name="ephemeral key" interface="private key"/>
+        <property name="envelope" class="ecies envelope"/>
 
 
         <method name="set encryption key" declaration="public">
@@ -43,7 +44,7 @@
             <argument name="public key" interface="public key" access="retain"/>
         </method>
 
-        <method name="set decyption key" declaration="public">
+        <method name="set decryption key" declaration="public">
             Set private key that used for data decryption.
 
             Private Key must be conformed to the interface "compute shared key".

@@ -235,7 +235,7 @@ vscf_ecies_set_encryption_key(vscf_ecies_t *self, vscf_impl_t *public_key);
 //  Private Key must be conformed to the interface "compute shared key".
 //
 VSCF_PUBLIC void
-vscf_ecies_set_decyption_key(vscf_ecies_t *self, vscf_impl_t *private_key);
+vscf_ecies_set_decryption_key(vscf_ecies_t *self, vscf_impl_t *private_key);
 
 //
 //  Set private key that used for data decryption.

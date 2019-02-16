@@ -183,76 +183,40 @@ VSCF_PUBLIC vscf_ecies_envelope_t *
 vscf_ecies_envelope_shallow_copy(vscf_ecies_envelope_t *self);
 
 //
-//  Set "originator".
+//  Set "ephemeral public ke".
 //
 VSCF_PUBLIC void
-vscf_ecies_envelope_set_originator(vscf_ecies_envelope_t *self, vscf_impl_t *originator);
+vscf_ecies_envelope_set_ephemeral_public_key(vscf_ecies_envelope_t *self, vscf_impl_t **ephemeral_public_key_ref);
 
 //
 //  Set "kdf" algorithm information.
 //
 VSCF_PUBLIC void
-vscf_ecies_envelope_set_kdf(vscf_ecies_envelope_t *self, vscf_impl_t *kdf);
+vscf_ecies_envelope_set_kdf(vscf_ecies_envelope_t *self, vscf_impl_t **kdf_ref);
 
 //
 //  Set "mac" algorithm information.
 //
 VSCF_PUBLIC void
-vscf_ecies_envelope_set_mac(vscf_ecies_envelope_t *self, vscf_impl_t *mac);
+vscf_ecies_envelope_set_mac(vscf_ecies_envelope_t *self, vscf_impl_t **mac_ref);
 
 //
 //  Set "mac" digest.
 //
 VSCF_PUBLIC void
-vscf_ecies_envelope_set_mac_digest(vscf_ecies_envelope_t *self, vsc_buffer_t *mac_digest);
+vscf_ecies_envelope_set_mac_digest(vscf_ecies_envelope_t *self, vsc_buffer_t **mac_digest_ref);
 
 //
 //  Set "cipher" algorithm information.
 //
 VSCF_PUBLIC void
-vscf_ecies_envelope_set_cipher(vscf_ecies_envelope_t *self, vscf_impl_t *cipher);
+vscf_ecies_envelope_set_cipher(vscf_ecies_envelope_t *self, vscf_impl_t **cipher_ref);
 
 //
 //  Set "encrypted content".
 //
 VSCF_PUBLIC void
-vscf_ecies_envelope_set_encrypted_content(vscf_ecies_envelope_t *self, vsc_buffer_t *encrypted_content);
-
-//
-//  Return "originator".
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_ecies_envelope_get_originator(vscf_ecies_envelope_t *self);
-
-//
-//  Return "kdf".
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_ecies_envelope_get_kdf(vscf_ecies_envelope_t *self);
-
-//
-//  Return "mac".
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_ecies_envelope_get_mac(vscf_ecies_envelope_t *self);
-
-//
-//  Return "mac digest".
-//
-VSCF_PUBLIC vsc_buffer_t *
-vscf_ecies_envelope_get_mac_digest(vscf_ecies_envelope_t *self);
-
-//
-//  Return "cipher".
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_ecies_envelope_get_cipher(vscf_ecies_envelope_t *self);
-
-//
-//  Return "encrypted content".
-//
-VSCF_PUBLIC vsc_buffer_t *
-vscf_ecies_envelope_get_encrypted_content(vscf_ecies_envelope_t *self);
+vscf_ecies_envelope_set_encrypted_content(vscf_ecies_envelope_t *self, vsc_buffer_t **encrypted_content_ref);
 
 //
 //  Return buffer length required to hold packed ECIES-Envelope.

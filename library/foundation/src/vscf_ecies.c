@@ -64,7 +64,7 @@
 #include "vscf_hmac.h"
 #include "vscf_aes256_cbc.h"
 #include "vscf_ctr_drbg.h"
-#include "vscf_ecies_envelope.h"
+#include "vscf_ecies_envelope_defs.h"
 #include "vscf_random.h"
 #include "vscf_cipher.h"
 #include "vscf_mac.h"
@@ -105,6 +105,7 @@ VSCF_PRIVATE void
 vscf_ecies_init_ctx(vscf_ecies_t *self) {
 
     VSCF_ASSERT_PTR(self);
+    self->envelope = vscf_ecies_envelope_new();
 }
 
 //
@@ -120,6 +121,7 @@ vscf_ecies_cleanup_ctx(vscf_ecies_t *self) {
     vscf_impl_destroy(&self->public_key);
     vscf_impl_destroy(&self->private_key);
     vscf_impl_destroy(&self->ephemeral_key);
+    vscf_ecies_envelope_destroy(&self->envelope);
 }
 
 //
@@ -147,7 +149,7 @@ vscf_ecies_set_encryption_key(vscf_ecies_t *self, vscf_impl_t *public_key) {
 //  Private Key must be conformed to the interface "compute shared key".
 //
 VSCF_PUBLIC void
-vscf_ecies_set_decyption_key(vscf_ecies_t *self, vscf_impl_t *private_key) {
+vscf_ecies_set_decryption_key(vscf_ecies_t *self, vscf_impl_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
@@ -240,9 +242,6 @@ vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     // Configure ECIES with default algorithms.
     //
     vscf_ecies_configure_defaults(self);
-    VSCF_ASSERT_PTR(self->mac);
-    VSCF_ASSERT_PTR(self->kdf);
-    VSCF_ASSERT_PTR(self->cipher);
 
     //
     // Generate ephemeral keypair, if not defined.
@@ -256,11 +255,17 @@ vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
         VSCF_ASSERT(vscf_compute_shared_key_is_implemented(self->ephemeral_key));
     }
 
+    vscf_impl_t *ephemeral_public_key = vscf_private_key_extract_public_key(self->ephemeral_key);
+    vscf_ecies_envelope_set_ephemeral_public_key(self->envelope, &ephemeral_public_key);
+
+    vsc_buffer_t *shared_key = NULL;
+    vsc_buffer_t *derived_key = NULL;
+    vsc_buffer_t *nonce = NULL;
+
     //
     // Compute shared secret key.
     //
-    vsc_buffer_t *shared_key =
-            vsc_buffer_new_with_capacity(vscf_compute_shared_key_shared_key_len(self->ephemeral_key));
+    shared_key = vsc_buffer_new_with_capacity(vscf_compute_shared_key_shared_key_len(self->ephemeral_key));
     vsc_buffer_make_secure(shared_key);
     error.error = vscf_compute_shared_key(self->ephemeral_key, self->public_key, shared_key);
 
@@ -274,7 +279,7 @@ vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     const size_t mac_key_len = vscf_mac_digest_len(self->mac);
     const size_t cipher_key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->cipher)));
     const size_t derived_key_len = cipher_key_len + mac_key_len;
-    vsc_buffer_t *derived_key = vsc_buffer_new_with_capacity(derived_key_len);
+    derived_key = vsc_buffer_new_with_capacity(derived_key_len);
     vsc_buffer_make_secure(derived_key);
     vscf_kdf_derive(self->kdf, vsc_buffer_data(shared_key), derived_key_len, derived_key);
 
@@ -285,7 +290,7 @@ vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     // Encrypt given message.
     //
     const size_t nonce_len = vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->cipher)));
-    vsc_buffer_t *nonce = vsc_buffer_new_with_capacity(nonce_len);
+    nonce = vsc_buffer_new_with_capacity(nonce_len);
     error.error = vscf_random(self->random, nonce_len, nonce);
 
     if (error.error != vscf_SUCCESS) {
@@ -302,6 +307,7 @@ vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     error.error = vscf_cipher_finish(self->cipher, encrypted_data);
 
     if (error.error != vscf_SUCCESS) {
+        vsc_buffer_destroy(&encrypted_data);
         goto encrypt_failed;
     }
 
@@ -313,35 +319,32 @@ vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     vscf_mac_update(self->mac, vsc_buffer_data(encrypted_data));
     vscf_mac_finish(self->mac, mac_digest);
 
+    vscf_ecies_envelope_set_encrypted_content(self->envelope, &encrypted_data);
+    vscf_ecies_envelope_set_mac_digest(self->envelope, &mac_digest);
+
     //
-    // Write envelope.
+    //  Configure and write envelope.
     //
-    vscf_impl_t *originator = vscf_private_key_extract_public_key(self->ephemeral_key);
-    VSCF_ASSERT_PTR(originator);
+    vscf_impl_t *cipher = vscf_impl_shallow_copy(self->cipher);
+    vscf_ecies_envelope_set_cipher(self->envelope, &cipher);
 
-    vscf_ecies_envelope_t *envelope = vscf_ecies_envelope_new();
-    vscf_ecies_envelope_set_originator(envelope, originator);
-    vscf_ecies_envelope_set_kdf(envelope, self->kdf);
-    vscf_ecies_envelope_set_mac(envelope, self->mac);
-    vscf_ecies_envelope_set_mac_digest(envelope, mac_digest);
-    vscf_ecies_envelope_set_cipher(envelope, self->cipher);
-    vscf_ecies_envelope_set_encrypted_content(envelope, encrypted_data);
+    vscf_impl_t *kdf = vscf_impl_shallow_copy(self->kdf);
+    vscf_ecies_envelope_set_kdf(self->envelope, &kdf);
 
-    vscf_ecies_envelope_pack(envelope, out);
+    vscf_impl_t *mac = vscf_impl_shallow_copy(self->mac);
+    vscf_ecies_envelope_set_mac(self->envelope, &mac);
 
-    vscf_ecies_envelope_destroy(&envelope);
-    vscf_impl_destroy(&originator);
-    vsc_buffer_destroy(&mac_digest);
+    vscf_ecies_envelope_pack(self->envelope, out);
 
 encrypt_failed:
-    vsc_buffer_destroy(&encrypted_data);
-
 random_failed:
     vsc_buffer_destroy(&nonce);
     vsc_buffer_destroy(&derived_key);
 
 compute_shared_failed:
     vsc_buffer_destroy(&shared_key);
+    vscf_ecies_envelope_cleanup(self->envelope);
+    vscf_ecies_envelope_init(self->envelope);
 
     return error.error;
 }
@@ -367,13 +370,88 @@ VSCF_PUBLIC vscf_error_t
 vscf_ecies_decrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->private_key);
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_ecies_decrypted_len(self, data.len));
-    //  TODO: This is STUB. Implement me.
 
-    return vscf_error_BAD_ARGUMENTS;
+    vscf_error_ctx_t error;
+    vscf_error_ctx_reset(&error);
+
+    vsc_buffer_t *shared_key = NULL;
+    vsc_buffer_t *derived_key = NULL;
+    vsc_buffer_t *mac_digest = NULL;
+
+    //
+    //  Unpack envelope.
+    //
+    error.error = vscf_ecies_envelope_unpack(self->envelope, data);
+    if (error.error != vscf_SUCCESS) {
+        goto unpack_envelope_failed;
+    }
+
+    //
+    //  Compute shared secret key.
+    //
+    shared_key = vsc_buffer_new_with_capacity(vscf_compute_shared_key_shared_key_len(self->private_key));
+    vsc_buffer_make_secure(shared_key);
+    error.error = vscf_compute_shared_key(self->private_key, self->envelope->ephemeral_public_key, shared_key);
+
+    if (error.error != vscf_SUCCESS) {
+        goto compute_shared_failed;
+    }
+
+    //
+    //  Derive keys (decryption key and hmac key).
+    //
+    const size_t mac_key_len = vscf_mac_digest_len(self->envelope->mac);
+    const size_t cipher_key_len =
+            vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->envelope->cipher)));
+    const size_t derived_key_len = cipher_key_len + mac_key_len;
+    derived_key = vsc_buffer_new_with_capacity(derived_key_len);
+    vsc_buffer_make_secure(derived_key);
+    vscf_kdf_derive(self->envelope->kdf, vsc_buffer_data(shared_key), derived_key_len, derived_key);
+
+    vsc_data_t cipher_key = vsc_data_slice_beg(vsc_buffer_data(derived_key), 0, cipher_key_len);
+    vsc_data_t mac_key = vsc_data_slice_beg(vsc_buffer_data(derived_key), cipher_key_len, mac_key_len);
+
+    //
+    //  Get HMAC for encrypted message and compare it.
+    //
+    mac_digest = vsc_buffer_new_with_capacity(vscf_mac_digest_len(self->envelope->mac));
+    vscf_mac_start(self->envelope->mac, mac_key);
+    vscf_mac_update(self->envelope->mac, vsc_buffer_data(self->envelope->encrypted_content));
+    vscf_mac_finish(self->envelope->mac, mac_digest);
+
+    if (!vsc_buffer_equal(self->envelope->mac_digest, mac_digest)) {
+        error.error = vscf_error_BAD_ENCRYPTED_DATA;
+        goto mac_validation_failed;
+    }
+
+    //
+    //  Decrypt given message.
+    //
+    vscf_cipher_set_key(self->envelope->cipher, cipher_key);
+    vscf_cipher_start_decryption(self->envelope->cipher);
+    vscf_cipher_update(self->envelope->cipher, vsc_buffer_data(self->envelope->encrypted_content), out);
+    error.error = vscf_cipher_finish(self->envelope->cipher, out);
+
+    //
+    //  Cleanup.
+    //
+mac_validation_failed:
+    vsc_buffer_destroy(&mac_digest);
+    vsc_buffer_destroy(&derived_key);
+
+compute_shared_failed:
+    vsc_buffer_destroy(&shared_key);
+
+unpack_envelope_failed:
+    vscf_ecies_envelope_cleanup(self->envelope);
+    vscf_ecies_envelope_init(self->envelope);
+
+    return error.error;
 }
 
 //

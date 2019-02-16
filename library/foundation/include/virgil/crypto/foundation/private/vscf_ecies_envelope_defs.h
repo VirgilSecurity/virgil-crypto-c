@@ -55,7 +55,6 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_alg_info_der_serializer.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -93,7 +92,7 @@ struct vscf_ecies_envelope_t {
     //
     size_t refcnt;
 
-    vscf_impl_t *originator;
+    vscf_impl_t *ephemeral_public_key;
 
     vscf_impl_t *kdf;
 
@@ -104,8 +103,6 @@ struct vscf_ecies_envelope_t {
     vscf_impl_t *cipher;
 
     vsc_buffer_t *encrypted_content;
-
-    vscf_alg_info_der_serializer_t *alg_info_der_serializer;
 };
 
 

@@ -36,7 +36,7 @@
 #include "vsc_data.h"
 
 extern const vsc_data_t test_data_ecies_envelope_ED25519_PACKED;
-extern const vsc_data_t test_data_ecies_envelope_ED25519_ORIGINATOR_PUBLIC_KEY;
+extern const vsc_data_t test_data_ecies_envelope_ED25519_EPHEMERAL_PUBLIC_KEY;
 extern const vsc_data_t test_data_ecies_envelope_ED25519_SHA384_MAC_DIGEST;
 extern const vsc_data_t test_data_ecies_envelope_ED25519_AES256_CBC_IV;
 extern const vsc_data_t test_data_ecies_envelope_ED25519_ENCRYPTED_CONTENT;

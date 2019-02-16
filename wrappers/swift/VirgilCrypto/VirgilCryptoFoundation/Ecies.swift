@@ -102,8 +102,8 @@ import VirgilCryptoCommon
     /// Set private key that used for data decryption.
     ///
     /// Private Key must be conformed to the interface "compute shared key".
-    @objc public func setDecyptionKey(privateKey: PrivateKey) {
-        vscf_ecies_set_decyption_key(self.c_ctx, privateKey.c_ctx)
+    @objc public func setDecryptionKey(privateKey: PrivateKey) {
+        vscf_ecies_set_decryption_key(self.c_ctx, privateKey.c_ctx)
     }
 
     /// Set private key that used for data decryption.
