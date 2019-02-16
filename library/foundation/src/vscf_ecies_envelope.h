@@ -262,6 +262,12 @@ vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out);
 VSCF_PUBLIC vscf_error_t
 vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data);
 
+//
+//  Destroy internal objects.
+//
+VSCF_PUBLIC void
+vscf_ecies_envelope_cleanup_properties(vscf_ecies_envelope_t *self);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

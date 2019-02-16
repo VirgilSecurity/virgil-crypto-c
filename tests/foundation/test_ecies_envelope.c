@@ -81,7 +81,7 @@ test__pack__ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac__return_valid_pa
     vscf_impl_t *kdf = vscf_kdf2_impl(kdf2);
 
     vscf_hmac_t *hmac = vscf_hmac_new();
-    vscf_hmac_use_hash(hmac, hash);
+    vscf_hmac_take_hash(hmac, hash);
     vscf_impl_t *mac = vscf_hmac_impl(hmac);
 
     vscf_aes256_cbc_t *aes256 = vscf_aes256_cbc_new();

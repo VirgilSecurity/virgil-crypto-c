@@ -343,8 +343,7 @@ random_failed:
 
 compute_shared_failed:
     vsc_buffer_destroy(&shared_key);
-    vscf_ecies_envelope_cleanup(self->envelope);
-    vscf_ecies_envelope_init(self->envelope);
+    vscf_ecies_envelope_cleanup_properties(self->envelope);
 
     return error.error;
 }
@@ -448,8 +447,7 @@ compute_shared_failed:
     vsc_buffer_destroy(&shared_key);
 
 unpack_envelope_failed:
-    vscf_ecies_envelope_cleanup(self->envelope);
-    vscf_ecies_envelope_init(self->envelope);
+    vscf_ecies_envelope_cleanup_properties(self->envelope);
 
     return error.error;
 }

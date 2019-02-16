@@ -153,4 +153,8 @@
 
         <return enum="error"/>
     </method>
+
+    <method name="cleanup properties">
+        Destroy internal objects.
+    </method>
 </class>

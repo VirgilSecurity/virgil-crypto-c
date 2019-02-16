@@ -104,21 +104,24 @@ test__encrypt__messege_with_ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac_
     vscf_impl_t *kdf = vscf_kdf2_impl(kdf2);
 
     vscf_hmac_t *hmac = vscf_hmac_new();
-    vscf_hmac_use_hash(hmac, hash);
+    vscf_hmac_take_hash(hmac, hash);
     vscf_impl_t *mac = vscf_hmac_impl(hmac);
 
     vscf_aes256_cbc_t *aes256 = vscf_aes256_cbc_new();
     vscf_aes256_cbc_set_nonce(aes256, test_data_ecies_ED25519_AES256_CBC_IV);
     vscf_impl_t *cipher = vscf_aes256_cbc_impl(aes256);
 
-    vscf_pkcs8_deserializer_t *pkcs8 = vscf_pkcs8_deserializer_new();
-    vscf_pkcs8_deserializer_setup_defaults(pkcs8);
-
     vscf_fake_random_t *cipher_nonce_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_data(cipher_nonce_random, test_data_ecies_ED25519_AES256_CBC_IV);
 
     vscf_ecies_t *ecies = vscf_ecies_new();
-    vscf_ecies_use_random(ecies, vscf_fake_random_impl(cipher_nonce_random));
+    vscf_ecies_take_random(ecies, vscf_fake_random_impl(cipher_nonce_random));
+    vscf_ecies_take_kdf(ecies, kdf);
+    vscf_ecies_take_mac(ecies, mac);
+    vscf_ecies_take_cipher(ecies, cipher);
+
+    vscf_pkcs8_deserializer_t *pkcs8 = vscf_pkcs8_deserializer_new();
+    vscf_pkcs8_deserializer_setup_defaults(pkcs8);
 
     vscf_raw_key_t *raw_public_key =
             vscf_pkcs8_deserializer_deserialize_public_key(pkcs8, test_data_ecies_ED25519_RECEIVER_PUBLIC_KEY, NULL);
@@ -140,17 +143,12 @@ test__encrypt__messege_with_ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac_
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ecies_ED25519_ENCRYPTED_MESSAGE, enc_msg);
 
     vsc_buffer_destroy(&enc_msg);
-    vscf_raw_key_destroy(&raw_ephemeral_key);
     vscf_impl_destroy(&ephemeral_key);
+    vscf_raw_key_destroy(&raw_ephemeral_key);
     vscf_impl_destroy(&public_key);
     vscf_raw_key_destroy(&raw_public_key);
-    vscf_fake_random_destroy(&cipher_nonce_random);
-    vscf_ecies_destroy(&ecies);
     vscf_pkcs8_deserializer_destroy(&pkcs8);
-    vscf_impl_destroy(&cipher);
-    vscf_impl_destroy(&mac);
-    vscf_impl_destroy(&kdf);
-    vscf_impl_destroy(&hash);
+    vscf_ecies_destroy(&ecies);
 }
 
 void
