@@ -324,18 +324,19 @@ vscf_ed25519_private_key_compute_shared_key(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT_PTR(vsc_buffer_is_valid(shared_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= ED25519_DH_LEN);
 
-    vscf_ed25519_public_key_t *ed25519_public_key = (vscf_ed25519_public_key_t *)public_key;
-    byte *ptr = vsc_buffer_unused_bytes(shared_key);
-    size_t available = vsc_buffer_unused_len(shared_key);
-    VSCF_ASSERT_PTR(available >= ED25519_KEY_LEN);
-    int ret = curve25519_key_exchange(ptr, ed25519_public_key->public_key, self->secret_key);
-    if (!ret) {
-        vscf_ed25519_public_key_delete(ed25519_public_key);
-        return vscf_SUCCESS;
+    const vscf_ed25519_public_key_t *ed25519_public_key = (const vscf_ed25519_public_key_t *)public_key;
+    const int status = curve25519_key_exchange(
+            vsc_buffer_unused_bytes(shared_key), ed25519_public_key->public_key, self->secret_key);
+
+    if (status != 0) {
+        return vscf_error_SHARED_KEY_EXCHANGE_FAILED;
     }
-    vscf_ed25519_public_key_delete(ed25519_public_key);
-    return vscf_error_SHARED_KEY_EXCHANGE_FAILED;
+
+    vsc_buffer_inc_used(shared_key, ED25519_DH_LEN);
+
+    return vscf_SUCCESS;
 }
 
 //
