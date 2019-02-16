@@ -326,9 +326,16 @@ vscf_ed25519_private_key_compute_shared_key(
     VSCF_ASSERT_PTR(vsc_buffer_is_valid(shared_key));
     VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= ED25519_DH_LEN);
 
+    unsigned char x25519_public_key[ED25519_KEY_LEN] = {0x00};
+    unsigned char x25519_private_key[ED25519_KEY_LEN] = {0x00};
+
     const vscf_ed25519_public_key_t *ed25519_public_key = (const vscf_ed25519_public_key_t *)public_key;
-    const int status = curve25519_key_exchange(
-            vsc_buffer_unused_bytes(shared_key), ed25519_public_key->public_key, self->secret_key);
+
+    ed25519_pubkey_to_curve25519(x25519_public_key, ed25519_public_key->public_key);
+    ed25519_key_to_curve25519(x25519_private_key, self->secret_key);
+
+    const int status =
+            curve25519_key_exchange(vsc_buffer_unused_bytes(shared_key), x25519_public_key, x25519_private_key);
 
     if (status != 0) {
         return vscf_error_SHARED_KEY_EXCHANGE_FAILED;
