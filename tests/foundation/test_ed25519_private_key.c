@@ -39,7 +39,7 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE (VSCF_ED25519_PRIVATE_KEY && VSCF_FAKE_RANDOM && VSCF_RANDOM && VSCF_ENDIANNESS)
+#define TEST_DEPENDENCIES_AVAILABLE (VSCF_ED25519_PRIVATE_KEY && VSCF_FAKE_RANDOM && VSCF_RANDOM)
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_assert.h"
@@ -67,7 +67,7 @@ int suiteTearDown(int num_failures) { return num_failures; }
 //  Test functions.
 // --------------------------------------------------------------------------
 void
-test__ed25519_private_key_key_len__imported_PRIVATE_KEY__returns_32(void) {
+test__key_len__imported_private_key__returns_32(void) {
     vscf_ed25519_private_key_t *private_key = vscf_ed25519_private_key_new();
 
     vscf_error_t result = vscf_ed25519_private_key_import_private_key(private_key, test_ed25519_PRIVATE_KEY);
@@ -77,7 +77,7 @@ test__ed25519_private_key_key_len__imported_PRIVATE_KEY__returns_32(void) {
 }
 
 void
-test__ed25519_private_key_export_private_key__from_imported_PRIVATE_KEY__expected_equal(void) {
+test__export_private_key__from_imported_private_key__expected_equal(void) {
     vscf_ed25519_private_key_t *private_key = vscf_ed25519_private_key_new();
     vscf_error_t result = vscf_ed25519_private_key_import_private_key(private_key, test_ed25519_PRIVATE_KEY);
     VSCF_ASSERT(result == vscf_SUCCESS);
@@ -87,16 +87,14 @@ test__ed25519_private_key_export_private_key__from_imported_PRIVATE_KEY__expecte
     result = vscf_ed25519_private_key_export_private_key(private_key, exported_key_buf);
 
     TEST_ASSERT_EQUAL(vscf_SUCCESS, result);
-    TEST_ASSERT_EQUAL(test_ed25519_PRIVATE_KEY.len, vsc_buffer_len(exported_key_buf));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(
-            test_ed25519_PRIVATE_KEY.bytes, vsc_buffer_bytes(exported_key_buf), vsc_buffer_len(exported_key_buf));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ed25519_PRIVATE_KEY, exported_key_buf);
 
     vsc_buffer_destroy(&exported_key_buf);
     vscf_ed25519_private_key_destroy(&private_key);
 }
 
 void
-test__ed25519_private_key_extract_public_key__from_imported_PRIVATE_KEY__when_exported_equals_PUBLIC_KEY(void) {
+test__extract_public_key__from_imported_private_key__when_exported_equals_public_key(void) {
     //  Setup dependencies
     vscf_ed25519_private_key_t *private_key = vscf_ed25519_private_key_new();
 
@@ -113,11 +111,7 @@ test__ed25519_private_key_extract_public_key__from_imported_PRIVATE_KEY__when_ex
     vscf_error_t export_err = vscf_public_key_export_public_key(public_key, exported_key_buf);
     VSCF_ASSERT(export_err == vscf_SUCCESS);
 
-    //  Check
-
-    TEST_ASSERT_EQUAL(test_ed25519_PUBLIC_KEY.len, vsc_buffer_len(exported_key_buf));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(
-            test_ed25519_PUBLIC_KEY.bytes, vsc_buffer_bytes(exported_key_buf), vsc_buffer_len(exported_key_buf));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ed25519_PUBLIC_KEY, exported_key_buf);
 
     vscf_ed25519_private_key_destroy(&private_key);
     vscf_impl_destroy(&public_key);
@@ -125,36 +119,27 @@ test__ed25519_private_key_extract_public_key__from_imported_PRIVATE_KEY__when_ex
 }
 
 void
-test__ed25519_private_key_sign__with_imported_PRIVATE_KEY_and_MESSAGE__equals_MESSAGE_SIGNATURE(void) {
+test__sign__with_imported_private_key_and_message__equals_message_signature(void) {
 
-    //  Setup dependencies
     vscf_ed25519_private_key_t *private_key = vscf_ed25519_private_key_new();
 
-    //  Import private key
     vscf_error_t result = vscf_ed25519_private_key_import_private_key(private_key, test_ed25519_PRIVATE_KEY);
     VSCF_ASSERT(result == vscf_SUCCESS);
 
-    //  Sign
     vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_ed25519_private_key_signature_len(private_key));
     vscf_error_t sign_result = vscf_ed25519_private_key_sign(private_key, test_ed25519_MESSAGE, signature);
 
-    //  Check
     TEST_ASSERT_EQUAL(vscf_SUCCESS, sign_result);
-    TEST_ASSERT_EQUAL(test_ed25519_SIGNATURE.len, vsc_buffer_len(signature));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_ed25519_SIGNATURE.bytes, vsc_buffer_bytes(signature), vsc_buffer_len(signature));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ed25519_SIGNATURE, signature);
 
-    //  Cleanup
     vsc_buffer_destroy(&signature);
     vscf_ed25519_private_key_destroy(&private_key);
 }
 
 void
-test__ed25519_private_key_export_private_key_with_imported_ed25519_PRIVATE_KEY__when_exported_equals_ed25519_PRIVATE_KEY(
-        void) {
-    //  Setup dependencies
+test__export_private_key_with_imported_ed25519_private_key__when_exported_equals_ed25519_private_key(void) {
     vscf_ed25519_private_key_t *private_key = vscf_ed25519_private_key_new();
 
-    //  Import private key
     vscf_error_t result = vscf_ed25519_private_key_import_private_key(private_key, test_ed25519_PRIVATE_KEY);
     VSCF_ASSERT(result == vscf_SUCCESS);
 
@@ -164,16 +149,14 @@ test__ed25519_private_key_export_private_key_with_imported_ed25519_PRIVATE_KEY__
     vscf_error_t export_err = vscf_ed25519_private_key_export_private_key(private_key, exported_key_buf);
     VSCF_ASSERT(export_err == vscf_SUCCESS);
 
-    // Check
-    TEST_ASSERT_EQUAL(test_ed25519_PRIVATE_KEY.len, vsc_buffer_len(exported_key_buf));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(
-            test_ed25519_PRIVATE_KEY.bytes, vsc_buffer_bytes(exported_key_buf), vsc_buffer_len(exported_key_buf));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ed25519_PRIVATE_KEY, exported_key_buf);
+
     vscf_ed25519_private_key_destroy(&private_key);
     vsc_buffer_destroy(&exported_key_buf);
 }
 
 void
-test__ed25519_private_key_generate_key__exported_equals_GENERATED_PRIVATE_KEY(void) {
+test__generate_key__exported_equals_private_key(void) {
     //  Setup dependencies
     vscf_ed25519_private_key_t *private_key = vscf_ed25519_private_key_new();
 
@@ -192,9 +175,7 @@ test__ed25519_private_key_generate_key__exported_equals_GENERATED_PRIVATE_KEY(vo
     vscf_error_t export_res = vscf_ed25519_private_key_export_private_key(private_key, exported_key_buf);
 
     TEST_ASSERT_EQUAL(vscf_SUCCESS, export_res);
-    TEST_ASSERT_EQUAL(test_ed25519_GENERATED_PRIVATE_KEY.len, vsc_buffer_len(exported_key_buf));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_ed25519_GENERATED_PRIVATE_KEY.bytes, vsc_buffer_bytes(exported_key_buf),
-            vsc_buffer_len(exported_key_buf));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ed25519_PRIVATE_KEY, exported_key_buf);
 
     //  Cleanup
     vsc_buffer_destroy(&exported_key_buf);
@@ -212,12 +193,12 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__ed25519_private_key_key_len__imported_PRIVATE_KEY__returns_32);
-    RUN_TEST(test__ed25519_private_key_export_private_key__from_imported_PRIVATE_KEY__expected_equal);
-    RUN_TEST(test__ed25519_private_key_extract_public_key__from_imported_PRIVATE_KEY__when_exported_equals_PUBLIC_KEY);
-    RUN_TEST(test__ed25519_private_key_sign__with_imported_PRIVATE_KEY_and_MESSAGE__equals_MESSAGE_SIGNATURE);
-    RUN_TEST(test__ed25519_private_key_export_private_key_with_imported_ed25519_PRIVATE_KEY__when_exported_equals_ed25519_PRIVATE_KEY);
-    RUN_TEST(test__ed25519_private_key_generate_key__exported_equals_GENERATED_PRIVATE_KEY);
+    RUN_TEST(test__key_len__imported_private_key__returns_32);
+    RUN_TEST(test__export_private_key__from_imported_private_key__expected_equal);
+    RUN_TEST(test__extract_public_key__from_imported_private_key__when_exported_equals_public_key);
+    RUN_TEST(test__sign__with_imported_private_key_and_message__equals_message_signature);
+    RUN_TEST(test__export_private_key_with_imported_ed25519_private_key__when_exported_equals_ed25519_private_key);
+    RUN_TEST(test__generate_key__exported_equals_private_key);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
