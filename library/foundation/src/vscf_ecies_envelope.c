@@ -281,12 +281,7 @@ vscf_ecies_envelope_cleanup_ctx(vscf_ecies_envelope_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&self->ephemeral_public_key);
-    vscf_impl_destroy(&self->kdf);
-    vscf_impl_destroy(&self->mac);
-    vscf_impl_destroy(&self->cipher);
-    vsc_buffer_destroy(&self->mac_digest);
-    vsc_buffer_destroy(&self->encrypted_content);
+    vscf_ecies_envelope_cleanup_properties(self);
 }
 
 //
@@ -621,4 +616,20 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
     }
 
     return vscf_SUCCESS;
+}
+
+//
+//  Destroy internal objects.
+//
+VSCF_PUBLIC void
+vscf_ecies_envelope_cleanup_properties(vscf_ecies_envelope_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->ephemeral_public_key);
+    vscf_impl_destroy(&self->kdf);
+    vscf_impl_destroy(&self->mac);
+    vscf_impl_destroy(&self->cipher);
+    vsc_buffer_destroy(&self->mac_digest);
+    vsc_buffer_destroy(&self->encrypted_content);
 }
