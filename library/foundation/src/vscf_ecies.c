@@ -352,7 +352,7 @@ compute_shared_failed:
 VSCF_PUBLIC size_t
 vscf_ecies_encrypted_len(vscf_ecies_t *self, size_t data_len) {
 
-    VSCF_ASSERT_PTR(self->mac);
+    VSCF_ASSERT_PTR(self);
 
     //  TODO: Make precise calculation.
     size_t len = 256 + data_len + 48;
