@@ -281,7 +281,7 @@ vscf_ecies_envelope_cleanup_ctx(vscf_ecies_envelope_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&self->originator);
+    vscf_impl_destroy(&self->ephemeral_public_key);
     vscf_impl_destroy(&self->kdf);
     vscf_impl_destroy(&self->mac);
     vscf_impl_destroy(&self->cipher);
@@ -290,147 +290,87 @@ vscf_ecies_envelope_cleanup_ctx(vscf_ecies_envelope_t *self) {
 }
 
 //
-//  Set "originator".
+//  Set "ephemeral public ke".
 //
 VSCF_PUBLIC void
-vscf_ecies_envelope_set_originator(vscf_ecies_envelope_t *self, vscf_impl_t *originator) {
+vscf_ecies_envelope_set_ephemeral_public_key(vscf_ecies_envelope_t *self, vscf_impl_t **ephemeral_public_key_ref) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(originator);
+    VSCF_ASSERT_PTR(ephemeral_public_key_ref);
+    VSCF_ASSERT_PTR(*ephemeral_public_key_ref);
 
-    self->originator = vscf_impl_shallow_copy(originator);
+    self->ephemeral_public_key = *ephemeral_public_key_ref;
+    *ephemeral_public_key_ref = NULL;
 }
 
 //
 //  Set "kdf" algorithm information.
 //
 VSCF_PUBLIC void
-vscf_ecies_envelope_set_kdf(vscf_ecies_envelope_t *self, vscf_impl_t *kdf) {
+vscf_ecies_envelope_set_kdf(vscf_ecies_envelope_t *self, vscf_impl_t **kdf_ref) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(kdf);
+    VSCF_ASSERT_PTR(kdf_ref);
+    VSCF_ASSERT_PTR(*kdf_ref);
 
-    self->kdf = vscf_impl_shallow_copy(kdf);
+    self->kdf = *kdf_ref;
+    *kdf_ref = NULL;
 }
 
 //
 //  Set "mac" algorithm information.
 //
 VSCF_PUBLIC void
-vscf_ecies_envelope_set_mac(vscf_ecies_envelope_t *self, vscf_impl_t *mac) {
+vscf_ecies_envelope_set_mac(vscf_ecies_envelope_t *self, vscf_impl_t **mac_ref) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(mac);
+    VSCF_ASSERT_PTR(mac_ref);
+    VSCF_ASSERT_PTR(*mac_ref);
 
-    self->mac = vscf_impl_shallow_copy(mac);
+    self->mac = *mac_ref;
+    *mac_ref = NULL;
 }
 
 //
 //  Set "mac" digest.
 //
 VSCF_PUBLIC void
-vscf_ecies_envelope_set_mac_digest(vscf_ecies_envelope_t *self, vsc_buffer_t *mac_digest) {
+vscf_ecies_envelope_set_mac_digest(vscf_ecies_envelope_t *self, vsc_buffer_t **mac_digest_ref) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(mac_digest);
+    VSCF_ASSERT_PTR(mac_digest_ref);
+    VSCF_ASSERT_PTR(*mac_digest_ref);
 
-    self->mac_digest = vsc_buffer_shallow_copy(mac_digest);
+    self->mac_digest = *mac_digest_ref;
+    *mac_digest_ref = NULL;
 }
 
 //
 //  Set "cipher" algorithm information.
 //
 VSCF_PUBLIC void
-vscf_ecies_envelope_set_cipher(vscf_ecies_envelope_t *self, vscf_impl_t *cipher) {
+vscf_ecies_envelope_set_cipher(vscf_ecies_envelope_t *self, vscf_impl_t **cipher_ref) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(cipher);
+    VSCF_ASSERT_PTR(cipher_ref);
+    VSCF_ASSERT_PTR(*cipher_ref);
 
-    self->cipher = vscf_impl_shallow_copy(cipher);
+    self->cipher = *cipher_ref;
+    *cipher_ref = NULL;
 }
 
 //
 //  Set "encrypted content".
 //
 VSCF_PUBLIC void
-vscf_ecies_envelope_set_encrypted_content(vscf_ecies_envelope_t *self, vsc_buffer_t *encrypted_content) {
+vscf_ecies_envelope_set_encrypted_content(vscf_ecies_envelope_t *self, vsc_buffer_t **encrypted_content_ref) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(encrypted_content);
+    VSCF_ASSERT_PTR(encrypted_content_ref);
+    VSCF_ASSERT_PTR(*encrypted_content_ref);
 
-    self->encrypted_content = vsc_buffer_shallow_copy(encrypted_content);
-}
-
-//
-//  Return "originator".
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_ecies_envelope_get_originator(vscf_ecies_envelope_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->originator);
-
-    return self->originator;
-}
-
-//
-//  Return "kdf".
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_ecies_envelope_get_kdf(vscf_ecies_envelope_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->kdf);
-
-    return self->kdf;
-}
-
-//
-//  Return "mac".
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_ecies_envelope_get_mac(vscf_ecies_envelope_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->mac);
-
-    return self->mac;
-}
-
-//
-//  Return "mac digest".
-//
-VSCF_PUBLIC vsc_buffer_t *
-vscf_ecies_envelope_get_mac_digest(vscf_ecies_envelope_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->mac_digest);
-
-    return self->mac_digest;
-}
-
-//
-//  Return "cipher".
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_ecies_envelope_get_cipher(vscf_ecies_envelope_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->cipher);
-
-    return self->cipher;
-}
-
-//
-//  Return "encrypted content".
-//
-VSCF_PUBLIC vsc_buffer_t *
-vscf_ecies_envelope_get_encrypted_content(vscf_ecies_envelope_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->encrypted_content);
-
-    return self->encrypted_content;
+    self->encrypted_content = *encrypted_content_ref;
+    *encrypted_content_ref = NULL;
 }
 
 //
@@ -440,7 +380,7 @@ VSCF_PUBLIC size_t
 vscf_ecies_envelope_packed_len(vscf_ecies_envelope_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->originator);
+    VSCF_ASSERT_PTR(self->ephemeral_public_key);
     VSCF_ASSERT_PTR(self->kdf);
     VSCF_ASSERT_PTR(self->mac);
     VSCF_ASSERT_PTR(self->mac_digest);
@@ -482,7 +422,7 @@ VSCF_PUBLIC vscf_error_t
 vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->originator);
+    VSCF_ASSERT_PTR(self->ephemeral_public_key);
     VSCF_ASSERT_PTR(self->kdf);
     VSCF_ASSERT_PTR(self->mac);
     VSCF_ASSERT_PTR(self->mac_digest);
@@ -544,7 +484,7 @@ vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out) {
     //
     // Write: originator.
     //
-    len += vscf_pkcs8_der_serializer_serialize_public_key_inplace(pkcs8, self->originator, &error);
+    len += vscf_pkcs8_der_serializer_serialize_public_key_inplace(pkcs8, self->ephemeral_public_key, &error);
 
     //
     // Write: version.
@@ -616,7 +556,7 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
     //
     vscf_raw_key_t *originator_raw_key = vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(pkcs8, &error);
     if (originator_raw_key) {
-        self->originator = vscf_alg_factory_create_public_key_alg(originator_raw_key);
+        self->ephemeral_public_key = vscf_alg_factory_create_public_key_alg(originator_raw_key);
         vscf_raw_key_destroy(&originator_raw_key);
     }
 

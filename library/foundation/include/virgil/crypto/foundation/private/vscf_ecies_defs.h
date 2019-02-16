@@ -59,6 +59,7 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_ecies.h"
+#include "vscf_ecies_envelope.h"
 #include "vscf_impl.h"
 
 // clang-format on
@@ -116,6 +117,10 @@ struct vscf_ecies_t {
     //  Implementation specific context.
     //
     vscf_impl_t *ephemeral_key;
+    //
+    //  Implementation specific context.
+    //
+    vscf_ecies_envelope_t *envelope;
 };
 
 

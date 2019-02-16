@@ -63,82 +63,45 @@
     <require impl="hash based alg info"/>
     <require class="alg factory"/>
 
-    <property name="originator" interface="public key"/>
+    <property name="ephemeral public key" interface="public key"/>
     <property name="kdf" interface="alg info"/>
     <property name="mac" interface="alg info"/>
     <property name="mac digest" class="buffer"/>
     <property name="cipher" interface="alg info"/>
     <property name="encrypted content" class="buffer"/>
-    <property name="alg info der serializer" impl="alg info der serializer"/>
 
-    <method name="set originator">
-        Set "originator".
+    <method name="set ephemeral public key">
+        Set "ephemeral public ke".
 
-        <argument name="originator" interface="public key" access="retain"/>
+        <argument name="ephemeral public key" interface="public key" access="disown"/>
     </method>
 
     <method name="set kdf">
         Set "kdf" algorithm information.
 
-        <argument name="kdf" interface="alg info" access="retain"/>
+        <argument name="kdf" interface="alg info" access="disown"/>
     </method>
 
     <method name="set mac">
         Set "mac" algorithm information.
 
-        <argument name="mac" interface="alg info" access="retain"/>
+        <argument name="mac" interface="alg info" access="disown"/>
     </method>
 
     <method name="set mac digest">
         Set "mac" digest.
-        <argument name="mac digest" class="buffer" access="retain"/>
+        <argument name="mac digest" class="buffer" access="disown"/>
     </method>
 
     <method name="set cipher">
         Set "cipher" algorithm information.
 
-        <argument name="cipher" interface="alg info" access="retain"/>
+        <argument name="cipher" interface="alg info" access="disown"/>
     </method>
 
     <method name="set encrypted content">
         Set "encrypted content".
-        <argument name="encrypted content" class="buffer" access="retain"/>
-    </method>
-
-    <method name="get originator">
-        Return "originator".
-
-        <return interface="public key" access="readwrite"/>
-    </method>
-
-    <method name="get kdf">
-        Return "kdf".
-
-        <return interface="alg info" access="readwrite"/>
-    </method>
-
-    <method name="get mac">
-        Return "mac".
-
-        <return interface="alg info" access="readwrite"/>
-    </method>
-
-    <method name="get mac digest">
-        Return "mac digest".
-
-        <return class="buffer" access="readwrite"/>
-    </method>
-
-    <method name="get cipher">
-        Return "cipher".
-
-        <return interface="alg info" access="readwrite"/>
-    </method>
-
-    <method name="get encrypted content">
-        Return "encrypted content".
-
-        <return class="buffer" access="readwrite"/>
+        <argument name="encrypted content" class="buffer" access="disown"/>
     </method>
 
     <method name="packed len">

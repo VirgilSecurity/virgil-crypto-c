@@ -67,9 +67,12 @@ int suiteTearDown(int num_failures) { return num_failures; }
 void
 test__pack__ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac__return_valid_packed_data(void) {
 
-    vscf_ed25519_public_key_t *originator = vscf_ed25519_public_key_new();
-    vscf_ed25519_public_key_setup_defaults(originator);
-    vscf_ed25519_public_key_import_public_key(originator, test_data_ecies_envelope_ED25519_ORIGINATOR_PUBLIC_KEY);
+    vscf_ed25519_public_key_t *ed25519_public_key = vscf_ed25519_public_key_new();
+    vscf_ed25519_public_key_setup_defaults(ed25519_public_key);
+    vscf_ed25519_public_key_import_public_key(
+            ed25519_public_key, test_data_ecies_envelope_ED25519_EPHEMERAL_PUBLIC_KEY);
+    vscf_impl_t *ephemeral_public_key = vscf_ed25519_public_key_impl(ed25519_public_key);
+    ed25519_public_key = NULL;
 
     vscf_impl_t *hash = vscf_sha384_impl(vscf_sha384_new());
 
@@ -89,12 +92,13 @@ test__pack__ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac__return_valid_pa
     vsc_buffer_t *encrypted_content = vsc_buffer_new_with_data(test_data_ecies_envelope_ED25519_ENCRYPTED_CONTENT);
 
     vscf_ecies_envelope_t *envelope = vscf_ecies_envelope_new();
-    vscf_ecies_envelope_set_originator(envelope, vscf_ed25519_public_key_impl(originator));
-    vscf_ecies_envelope_set_kdf(envelope, kdf);
-    vscf_ecies_envelope_set_mac(envelope, mac);
-    vscf_ecies_envelope_set_mac_digest(envelope, mac_digest);
-    vscf_ecies_envelope_set_cipher(envelope, cipher);
-    vscf_ecies_envelope_set_encrypted_content(envelope, encrypted_content);
+
+    vscf_ecies_envelope_set_ephemeral_public_key(envelope, &ephemeral_public_key);
+    vscf_ecies_envelope_set_kdf(envelope, &kdf);
+    vscf_ecies_envelope_set_mac(envelope, &mac);
+    vscf_ecies_envelope_set_mac_digest(envelope, &mac_digest);
+    vscf_ecies_envelope_set_cipher(envelope, &cipher);
+    vscf_ecies_envelope_set_encrypted_content(envelope, &encrypted_content);
 
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_ecies_envelope_packed_len(envelope));
     vscf_ecies_envelope_pack(envelope, out);
@@ -103,13 +107,6 @@ test__pack__ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac__return_valid_pa
 
     vsc_buffer_destroy(&out);
     vscf_ecies_envelope_destroy(&envelope);
-    vsc_buffer_destroy(&encrypted_content);
-    vsc_buffer_destroy(&mac_digest);
-    vscf_impl_destroy(&cipher);
-    vscf_impl_destroy(&mac);
-    vscf_impl_destroy(&kdf);
-    vscf_impl_destroy(&hash);
-    vscf_ed25519_public_key_destroy(&originator);
 }
 
 void
