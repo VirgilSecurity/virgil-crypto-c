@@ -226,7 +226,7 @@ vsce_phe_hash_use_simple_swu(vsce_phe_hash_t *self, vsce_simple_swu_t *simple_sw
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT_PTR(simple_swu);
-    VSCE_ASSERT_PTR(self->simple_swu == NULL);
+    VSCE_ASSERT(self->simple_swu == NULL);
 
     self->simple_swu = vsce_simple_swu_shallow_copy(simple_swu);
 }

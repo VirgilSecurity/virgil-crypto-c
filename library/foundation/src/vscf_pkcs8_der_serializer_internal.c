@@ -266,7 +266,7 @@ vscf_pkcs8_der_serializer_use_asn1_writer(vscf_pkcs8_der_serializer_t *self, vsc
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT_PTR(self->asn1_writer == NULL);
+    VSCF_ASSERT(self->asn1_writer == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
 

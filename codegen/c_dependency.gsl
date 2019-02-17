@@ -165,7 +165,7 @@ function c_dependency_add_method_use (dependency, declaration, definition, desti
             my.impl_check_precondition = "\
                 .(c_class_assert_macros_ptr)($(my.refs.c_argument_context));
                 .(c_class_assert_macros_ptr)($(my.dependency_arg));
-                .(c_class_assert_macros_ptr)($(my.full_dependency) == NULL);
+                .(c_class_assert_macros_assert)($(my.full_dependency) == NULL);
             "
 
             if defined(my.method_dependency_check)

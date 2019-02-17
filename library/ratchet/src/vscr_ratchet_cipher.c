@@ -231,7 +231,7 @@ vscr_ratchet_cipher_use_aes256_gcm(vscr_ratchet_cipher_t *self, vscf_aes256_gcm_
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(aes256_gcm);
-    VSCR_ASSERT_PTR(self->aes256_gcm == NULL);
+    VSCR_ASSERT(self->aes256_gcm == NULL);
 
     self->aes256_gcm = vscf_aes256_gcm_shallow_copy(aes256_gcm);
 }

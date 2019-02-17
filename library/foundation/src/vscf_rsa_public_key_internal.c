@@ -389,7 +389,7 @@ vscf_rsa_public_key_use_hash(vscf_rsa_public_key_t *self, vscf_impl_t *hash) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(self->hash == NULL);
+    VSCF_ASSERT(self->hash == NULL);
 
     VSCF_ASSERT(vscf_hash_is_implemented(hash));
 
@@ -431,7 +431,7 @@ vscf_rsa_public_key_use_random(vscf_rsa_public_key_t *self, vscf_impl_t *random)
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(self->random == NULL);
+    VSCF_ASSERT(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
@@ -473,7 +473,7 @@ vscf_rsa_public_key_use_asn1rd(vscf_rsa_public_key_t *self, vscf_impl_t *asn1rd)
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1rd);
-    VSCF_ASSERT_PTR(self->asn1rd == NULL);
+    VSCF_ASSERT(self->asn1rd == NULL);
 
     VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1rd));
 
@@ -515,7 +515,7 @@ vscf_rsa_public_key_use_asn1wr(vscf_rsa_public_key_t *self, vscf_impl_t *asn1wr)
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1wr);
-    VSCF_ASSERT_PTR(self->asn1wr == NULL);
+    VSCF_ASSERT(self->asn1wr == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1wr));
 

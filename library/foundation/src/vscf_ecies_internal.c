@@ -281,7 +281,7 @@ vscf_ecies_use_random(vscf_ecies_t *self, vscf_impl_t *random) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(self->random == NULL);
+    VSCF_ASSERT(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
@@ -323,7 +323,7 @@ vscf_ecies_use_cipher(vscf_ecies_t *self, vscf_impl_t *cipher) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(cipher);
-    VSCF_ASSERT_PTR(self->cipher == NULL);
+    VSCF_ASSERT(self->cipher == NULL);
 
     VSCF_ASSERT(vscf_cipher_is_implemented(cipher));
 
@@ -365,7 +365,7 @@ vscf_ecies_use_mac(vscf_ecies_t *self, vscf_impl_t *mac) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(mac);
-    VSCF_ASSERT_PTR(self->mac == NULL);
+    VSCF_ASSERT(self->mac == NULL);
 
     VSCF_ASSERT(vscf_mac_is_implemented(mac));
 
@@ -407,7 +407,7 @@ vscf_ecies_use_kdf(vscf_ecies_t *self, vscf_impl_t *kdf) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(kdf);
-    VSCF_ASSERT_PTR(self->kdf == NULL);
+    VSCF_ASSERT(self->kdf == NULL);
 
     VSCF_ASSERT(vscf_kdf_is_implemented(kdf));
 

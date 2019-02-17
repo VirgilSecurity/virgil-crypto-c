@@ -285,7 +285,7 @@ vscf_pkcs5_pbes2_use_kdf(vscf_pkcs5_pbes2_t *self, vscf_impl_t *kdf) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(kdf);
-    VSCF_ASSERT_PTR(self->kdf == NULL);
+    VSCF_ASSERT(self->kdf == NULL);
 
     VSCF_ASSERT(vscf_salted_kdf_is_implemented(kdf));
 
@@ -327,7 +327,7 @@ vscf_pkcs5_pbes2_use_cipher(vscf_pkcs5_pbes2_t *self, vscf_impl_t *cipher) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(cipher);
-    VSCF_ASSERT_PTR(self->cipher == NULL);
+    VSCF_ASSERT(self->cipher == NULL);
 
     VSCF_ASSERT(vscf_cipher_is_implemented(cipher));
 

@@ -252,7 +252,7 @@ vscf_pkcs8_deserializer_use_asn1_reader(vscf_pkcs8_deserializer_t *self, vscf_im
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1_reader);
-    VSCF_ASSERT_PTR(self->asn1_reader == NULL);
+    VSCF_ASSERT(self->asn1_reader == NULL);
 
     VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
 
@@ -294,7 +294,7 @@ vscf_pkcs8_deserializer_use_der_deserializer(vscf_pkcs8_deserializer_t *self, vs
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(der_deserializer);
-    VSCF_ASSERT_PTR(self->der_deserializer == NULL);
+    VSCF_ASSERT(self->der_deserializer == NULL);
 
     VSCF_ASSERT(vscf_key_deserializer_is_implemented(der_deserializer));
 
