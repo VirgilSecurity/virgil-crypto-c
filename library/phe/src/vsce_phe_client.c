@@ -269,7 +269,7 @@ vsce_phe_client_use_random(vsce_phe_client_t *self, vscf_impl_t *random) {
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT_PTR(random);
-    VSCE_ASSERT_PTR(self->random == NULL);
+    VSCE_ASSERT(self->random == NULL);
 
     VSCE_ASSERT(vscf_random_is_implemented(random));
 
@@ -311,7 +311,7 @@ vsce_phe_client_use_operation_random(vsce_phe_client_t *self, vscf_impl_t *opera
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT_PTR(operation_random);
-    VSCE_ASSERT_PTR(self->operation_random == NULL);
+    VSCE_ASSERT(self->operation_random == NULL);
 
     VSCE_ASSERT(vscf_random_is_implemented(operation_random));
 

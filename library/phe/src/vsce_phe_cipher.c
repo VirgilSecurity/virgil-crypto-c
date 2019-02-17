@@ -241,7 +241,7 @@ vsce_phe_cipher_use_random(vsce_phe_cipher_t *self, vscf_impl_t *random) {
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT_PTR(random);
-    VSCE_ASSERT_PTR(self->random == NULL);
+    VSCE_ASSERT(self->random == NULL);
 
     VSCE_ASSERT(vscf_random_is_implemented(random));
 

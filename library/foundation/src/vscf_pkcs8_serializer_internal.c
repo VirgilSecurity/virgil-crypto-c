@@ -268,7 +268,7 @@ vscf_pkcs8_serializer_use_asn1_writer(vscf_pkcs8_serializer_t *self, vscf_impl_t
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT_PTR(self->asn1_writer == NULL);
+    VSCF_ASSERT(self->asn1_writer == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
 
@@ -310,7 +310,7 @@ vscf_pkcs8_serializer_use_der_serializer(vscf_pkcs8_serializer_t *self, vscf_imp
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(der_serializer);
-    VSCF_ASSERT_PTR(self->der_serializer == NULL);
+    VSCF_ASSERT(self->der_serializer == NULL);
 
     VSCF_ASSERT(vscf_key_serializer_is_implemented(der_serializer));
 

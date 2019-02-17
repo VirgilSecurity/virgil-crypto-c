@@ -246,7 +246,7 @@ vscf_alg_info_der_deserializer_use_asn1_reader(vscf_alg_info_der_deserializer_t 
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1_reader);
-    VSCF_ASSERT_PTR(self->asn1_reader == NULL);
+    VSCF_ASSERT(self->asn1_reader == NULL);
 
     VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
 

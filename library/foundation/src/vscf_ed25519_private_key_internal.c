@@ -393,7 +393,7 @@ vscf_ed25519_private_key_use_random(vscf_ed25519_private_key_t *self, vscf_impl_
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(self->random == NULL);
+    VSCF_ASSERT(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
