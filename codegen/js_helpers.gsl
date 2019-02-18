@@ -98,6 +98,17 @@ function js_cpp_value_is_cpp_js_return(value)
   return js_cpp_value_is_cpp_buffer(my.value) & defined(my.value.access) & my.value.access = "writeonly"
 endfunction
 
+function js_cpp_value_is_cpp_enum(value, wrapper)
+  for my.wrapper.js_wrapped_enum where defined(my.value.enum) & my.value.enum = js_wrapped_enum.name
+    return 1
+  endfor
+  return 0
+endfunction
+
+function js_cpp_value_is_cpp_js_boolean(value)
+  return defined(my.value.type) & my.value.type = "boolean"
+endfunction
+
 function js_cpp_variable_name(name)
   return "$(my.name:c)"
 endfunction

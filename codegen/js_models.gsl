@@ -21,9 +21,9 @@ endfunction
 function js_append_js_wrapped_enum_model(parent, js_enum, wrapper)
   new js_wrapped_enum to my.parent
     js_wrapped_enum.name = my.js_enum.name
+    js_wrapped_enum.c_name = "$(my.wrapper.prefix)_$(my.js_enum.name:c)_t"
     js_wrapped_enum.js_source_file = "$(my.js_enum.name:cobol).js"
     js_wrapped_enum.js_source_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_enum.js_source_file)
-    echo js_wrapped_enum.string()
     return js_wrapped_enum
   endnew
 endfunction
@@ -295,6 +295,13 @@ function js_append_cpp_size_variable_declaration_model(parent, name)
   endnew
 endfunction
 
+function js_append_cpp_boolean_variable_declaration_model(parent, name)
+  new cpp_boolean_variable_declaration to my.parent
+    cpp_boolean_variable_declaration.name = my.name
+    return cpp_boolean_variable_declaration
+  endnew
+endfunction
+
 function js_append_cpp_data_variable_declaration_model(parent, name)
   new cpp_data_variable_declaration to my.parent
     cpp_data_variable_declaration.name = my.name
@@ -316,11 +323,19 @@ function js_append_cpp_error_variable_declaration_model(parent, name)
   endnew
 endfunction
 
-function js_append_cpp_js_module_variable_declaration_model(parent, name, module_name)
+function js_append_cpp_js_module_variable_declaration_model(parent, name, class)
   new cpp_js_module_variable_declaration to my.parent
     cpp_js_module_variable_declaration.name = my.name
-    cpp_js_module_variable_declaration.module_name = my.module_name
+    cpp_js_module_variable_declaration.class = my.class
     return cpp_js_module_variable_declaration
+  endnew
+endfunction
+
+function js_append_cpp_enum_variable_declaration_model(parent, name, enum)
+  new cpp_enum_variable_declaration to my.parent
+    cpp_enum_variable_declaration.name = my.name
+    cpp_enum_variable_declaration.enum = my.enum
+    return cpp_enum_variable_declaration
   endnew
 endfunction
 
@@ -336,6 +351,9 @@ function js_append_resolved_cpp_source_return(parent, cpp_source_return, wrapper
   if js_cpp_value_is_cpp_size(my.cpp_source_return)
     js_append_cpp_size_variable_declaration_model(my.parent, my.cpp_method_return.name)
     js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
+  elsif js_cpp_value_is_cpp_js_boolean(my.cpp_source_return)
+    js_append_cpp_boolean_variable_declaration_model(my.parent, my.cpp_method_return.name)
+    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
   elsif js_cpp_value_is_cpp_data(my.cpp_source_return)
     js_append_cpp_data_variable_declaration_model(my.parent, my.cpp_method_return.name)
     js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
@@ -347,8 +365,10 @@ function js_append_resolved_cpp_source_return(parent, cpp_source_return, wrapper
   elsif js_cpp_value_is_cpp_js_module(my.cpp_source_return, my.wrapper)
     js_append_cpp_js_module_variable_declaration_model(my.parent, my.cpp_method_return.name, my.cpp_source_return.class)
     js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
+  elsif js_cpp_value_is_cpp_enum(my.cpp_source_return, my.wrapper)
+    js_append_cpp_enum_variable_declaration_model(my.parent, my.cpp_method_return.name, my.cpp_source_return.enum)
+    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
   else
-    echo my.cpp_source_return.string()
     echo_fatal("Unable to resolve return", my)
   endif
 endfunction

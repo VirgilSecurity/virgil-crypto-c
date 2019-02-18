@@ -227,6 +227,11 @@ function js_cpp_create_cpp_size_variable_declaration(cpp_size_variable_declarati
   js_out("size_t $(my.cpp_size_variable_declaration.name:no);", my.indent_levels.first)
 endfunction
 
+function js_cpp_create_cpp_boolean_variable_declaration(cpp_boolean_variable_declaration, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("boolean $(my.cpp_boolean_variable_declaration.name:no);", my.indent_levels.first)
+endfunction
+
 function js_cpp_create_cpp_data_variable_declaration(cpp_data_variable_declaration, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   js_out("vsc_data_t $(my.cpp_data_variable_declaration.name:no);", my.indent_levels.first)
@@ -234,7 +239,7 @@ endfunction
 
 function js_cpp_create_cpp_buffer_variable_declaration(cpp_buffer_variable_declaration, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("vsc_buffer_t $(my.cpp_buffer_variable_declaration.name:no);", my.indent_levels.first)
+  js_out("vsc_buffer_t* $(my.cpp_buffer_variable_declaration.name:no);", my.indent_levels.first)
 endfunction
 
 function js_cpp_create_cpp_error_variable_declaration(cpp_error_variable_declaration, wrapper, indent_level)
@@ -246,6 +251,13 @@ function js_cpp_create_cpp_js_module_variable_declaration(cpp_js_module_variable
   my.indent_levels = js_create_indent_levels(my.indent_level)
 endfunction
 
+function js_cpp_create_cpp_enum_variable_declaration(cpp_enum_variable_declaration, wrapper, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  for my.wrapper.js_wrapped_enum where my.cpp_enum_variable_declaration.enum = js_wrapped_enum.name
+    js_out("$(js_wrapped_enum.c_name:no) $(my.cpp_enum_variable_declaration.name:no);", my.indent_levels.first)
+  endfor
+endfunction
+
 function js_cpp_create_method_variable_declarations(cpp_method, cpp_class, wrapper, indent_level)
   for my.cpp_method.cpp_buffer_argument
     js_cpp_create_cpp_buffer_argument(cpp_buffer_argument, my.cpp_class, my.indent_level)
@@ -255,6 +267,9 @@ function js_cpp_create_method_variable_declarations(cpp_method, cpp_class, wrapp
   endfor
   for my.cpp_method.cpp_size_variable_declaration
     js_cpp_create_cpp_size_variable_declaration(cpp_size_variable_declaration, my.indent_level)
+  endfor
+  for my.cpp_method.cpp_boolean_variable_declaration
+    js_cpp_create_cpp_boolean_variable_declaration(cpp_boolean_variable_declaration, my.indent_level)
   endfor
   for my.cpp_method.cpp_data_variable_declaration
     js_cpp_create_cpp_data_variable_declaration(cpp_data_variable_declaration, my.indent_level)
@@ -268,6 +283,9 @@ function js_cpp_create_method_variable_declarations(cpp_method, cpp_class, wrapp
   for my.cpp_method.cpp_js_module_variable_declaration
     js_cpp_create_cpp_js_module_variable_declaration(cpp_js_module_variable_declaration, my.indent_level)
   endfor
+  for my.cpp_method.cpp_enum_variable_declaration
+    js_cpp_create_cpp_enum_variable_declaration(cpp_enum_variable_declaration, my.wrapper, my.indent_level)
+  endfor
 endfunction
 
 function js_cpp_create_method_call(cpp_method, cpp_class, indent_level)
@@ -280,12 +298,25 @@ function js_cpp_create_method_call(cpp_method, cpp_class, indent_level)
 endfunction
 
 function js_cpp_create_method_return_value(cpp_js_return, cpp_method)
-  for my.cpp_method.cpp_buffer_argument where cpp_buffer_argument.name = my.cpp_js_return.name
-    return "Nan::NewBuffer((char*)$(js_cpp_bytes_name(my.cpp_js_return.name)), vsc_buffer_len($(my.cpp_js_return.name))).ToLocalChecked()"
+  for my.cpp_method.cpp_buffer_argument where my.cpp_js_return.name = cpp_buffer_argument.name
+    return "Nan::NewBuffer((char*)$(js_cpp_bytes_name(my.cpp_js_return.name)), vsc_buffer_len($(my.cpp_js_return.name:no))).ToLocalChecked()"
   endfor
-  for my.cpp_method.cpp_size_variable_declaration where cpp_size_variable_declaration.name = my.cpp_js_return.name
+  for my.cpp_method.cpp_size_variable_declaration where my.cpp_js_return.name = cpp_size_variable_declaration.name
     return "Nan::New<v8::Number>($(my.cpp_js_return.name:no))"
   endfor
+  for my.cpp_method.cpp_boolean_variable_declaration where my.cpp_js_return.name = cpp_boolean_variable_declaration.name
+    return "Nan::New<v8:Boolean>($(my.cpp_js_return.name:no))"
+  endfor
+  for my.cpp_method.cpp_enum_variable_declaration where my.cpp_js_return.name = cpp_enum_variable_declaration.name
+    return "Nan::New<v8::Number>((int)$(my.cpp_js_return.name:no))"
+  endfor
+  for my.cpp_method.cpp_buffer_variable_declaration where my.cpp_js_return.name = cpp_buffer_variable_declaration.name
+    return "Nan::NewBuffer((char*)vsc_buffer_bytes($(my.cpp_js_return.name:no)), vsc_buffer_len($(my.cpp_js_return.name:no))).ToLocalChecked()"
+  endfor
+  for my.cpp_method.cpp_data_variable_declaration where my.cpp_js_return.name = cpp_data_variable_declaration.name
+    return "Nan::NewBuffer((char*)$(my.cpp_js_return.name:no).bytes, $(my.cpp_js_return.name:no).len).ToLocalChecked()"
+  endfor
+  return "/* Work in progress... */"
 endfunction
 
 function js_cpp_create_method_return_multiple(cpp_method, indent_level)
