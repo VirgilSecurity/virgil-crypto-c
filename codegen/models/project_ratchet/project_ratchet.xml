@@ -71,5 +71,6 @@
     <class name="ratchet"/>
     <class name="ratchet session"/>
 
+    <wrapper lang="js"/>
     <wrapper lang="swift"/>
 </project>

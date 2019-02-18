@@ -346,7 +346,6 @@ function js_cpp_create_method_return_value(cpp_js_return, cpp_method, wrapper, i
       return "$(js_cpp_callback_info_name()).This()"
     endfor
   endfor
-  return "/* Work in progress... */"
 endfunction
 
 function js_cpp_create_method_return_multiple(cpp_method, wrapper, indent_level)
@@ -430,11 +429,11 @@ endfunction
 function js_cpp_create_class(cpp_class, wrapper, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   js_cpp_create_init(my.cpp_class, my.indent_levels.first)
+  js_cpp_create_constructor(my.cpp_class, my.wrapper, my.indent_levels.first)
   js_cpp_create_new(my.cpp_class, my.indent_levels.first)
   for my.cpp_class.cpp_method
     js_cpp_create_method(cpp_method, my.cpp_class, my.wrapper, my.indent_level)
   endfor
-  js_cpp_create_constructor(my.cpp_class, my.wrapper, my.indent_levels.first)
   js_cpp_create_destructor(my.cpp_class, my.wrapper, my.indent_levels.first)
   js_cpp_create_persistent_constructor(my.cpp_class, my.indent_levels.first)
 endfunction
