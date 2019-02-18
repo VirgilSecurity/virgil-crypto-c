@@ -47,6 +47,7 @@ function js_append_js_wrapped_module_model(parent, js_module, wrapper)
     js_wrapped_module.js_source_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_module.js_source_file)
     if defined(my.js_module->cpp_class)
       js_wrapped_module.cpp_class_name = my.js_module->cpp_class.name
+      js_wrapped_module.cpp_context_name = my.js_module->cpp_class.context_name
       js_wrapped_module.cpp_header_file = "$(my.js_module.name:c).h"
       js_wrapped_module.cpp_header_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_module.cpp_header_file)
       js_wrapped_module.cpp_source_file = "$(my.js_module.name:c).cc"
@@ -323,11 +324,11 @@ function js_append_cpp_error_variable_declaration_model(parent, name)
   endnew
 endfunction
 
-function js_append_cpp_js_module_variable_declaration_model(parent, name, class)
-  new cpp_js_module_variable_declaration to my.parent
-    cpp_js_module_variable_declaration.name = my.name
-    cpp_js_module_variable_declaration.class = my.class
-    return cpp_js_module_variable_declaration
+function js_append_cpp_js_module_context_variable_declaration_model(parent, name, class)
+  new cpp_js_module_context_variable_declaration to my.parent
+    cpp_js_module_context_variable_declaration.name = my.name
+    cpp_js_module_context_variable_declaration.class = my.class
+    return cpp_js_module_context_variable_declaration
   endnew
 endfunction
 
@@ -363,7 +364,7 @@ function js_append_resolved_cpp_source_return(parent, cpp_source_return, wrapper
   elsif js_cpp_value_is_cpp_error(my.cpp_source_return)
     js_append_cpp_error_variable_declaration_model(my.parent, my.cpp_method_return.name)
   elsif js_cpp_value_is_cpp_js_module(my.cpp_source_return, my.wrapper)
-    js_append_cpp_js_module_variable_declaration_model(my.parent, my.cpp_method_return.name, my.cpp_source_return.class)
+    js_append_cpp_js_module_context_variable_declaration_model(my.parent, my.cpp_method_return.name, my.cpp_source_return.class)
     js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
   elsif js_cpp_value_is_cpp_enum(my.cpp_source_return, my.wrapper)
     js_append_cpp_enum_variable_declaration_model(my.parent, my.cpp_method_return.name, my.cpp_source_return.enum)
