@@ -17,17 +17,17 @@ function js_cpp_header_create_define(js_module, indent_level)
   js_out("#define $(js_cpp_header_guard(my.js_module))", my.indent_levels.first)
 endfunction
 
-function js_cpp_header_create_js_module_include(js_module_include, indent_level)
+function js_cpp_header_create_js_include_module(js_include_module, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("#include \"$(my.js_module_include.cpp_header_file:no)\"", my.indent_levels.first)
+  js_out("#include \"$(my.js_include_module.cpp_header_file:no)\"", my.indent_levels.first)
 endfunction
 
 function js_cpp_header_create_includes(js_module, wrapper, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   js_out("#include <nan.h>", my.indent_levels.first)
   js_out("#include <$(string.replace(my.wrapper.namespace, " |/"))/$(my.wrapper.prefix:no)_$(my.js_module->cpp_class.c_name:no).h>", my.indent_levels.first)
-  for my.js_module.js_module_include
-    js_cpp_header_create_js_module_include(js_module_include, my.indent_levels.first)
+  for my.js_module.js_include_module
+    js_cpp_header_create_js_include_module(js_include_module, my.indent_levels.first)
   endfor
 endfunction
 
