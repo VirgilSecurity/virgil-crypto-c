@@ -38,6 +38,10 @@ function js_method_is_private(method)
   return defined(my.method.declaration) & my.method.declaration = "private"
 endfunction
 
+function js_method_is_static(method)
+  return defined(my.method.is_static) & my.method.is_static = "1"
+endfunction
+
 # --------------------------------------------------------------------------------------------------
 # JavaScript
 # --------------------------------------------------------------------------------------------------

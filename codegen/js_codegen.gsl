@@ -51,6 +51,12 @@ function js_cpp_header_create_init(indent_level)
   js_out("static void $(js_cpp_init_function_name())($(js_cpp_init_function_argument_type()) $(js_cpp_init_function_argument_name()));", my.indent_levels.first)
 endfunction
 
+function js_cpp_header_create_constructors(cpp_class, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("$(my.cpp_class.name:no)();", my.indent_levels.first)
+  js_out("$(my.cpp_class.name:no)($(js_cpp_context_type(my.cpp_class.context_name)) $(my.cpp_class.context_name));", my.indent_levels.first)
+endfunction
+
 function js_cpp_header_create_context_property(cpp_class, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   js_out("$(js_cpp_context_type(my.cpp_class.context_name)) $(my.cpp_class.context_name);", my.indent_levels.first)
@@ -66,10 +72,8 @@ function js_cpp_header_create_method(cpp_method, indent_level)
   js_out("static void $(my.cpp_method.name:no)($(js_cpp_callback_info_type()) $(js_cpp_callback_info_name()));", my.indent_levels.first)
 endfunction
 
-function js_cpp_header_create_constructor_and_destructor(cpp_class, indent_level)
+function js_cpp_header_create_destructor(cpp_class, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("$(my.cpp_class.name:no)();", my.indent_levels.first)
-  js_out("$(my.cpp_class.name:no)($(js_cpp_context_type(my.cpp_class.context_name)) $(my.cpp_class.context_name));", my.indent_levels.first)
   js_out("~$(my.cpp_class.name:no)();", my.indent_levels.first)
 endfunction
 
@@ -83,13 +87,14 @@ function js_cpp_header_create_class(cpp_class, wrapper, indent_level)
   js_out("class $(my.cpp_class.name:no) : public Nan::ObjectWrap {", my.indent_levels.first)
   js_cpp_header_create_public_access_specifier(my.indent_levels.first)
   js_cpp_header_create_init(my.indent_levels.second)
+  js_cpp_header_create_constructors(my.cpp_class, my.indent_levels.second)
   js_cpp_header_create_context_property(my.cpp_class, my.indent_levels.second)
   js_cpp_header_create_private_access_specifier(my.indent_levels.first)
   js_cpp_header_create_new(my.indent_levels.second)
   for my.cpp_class.cpp_method
     js_cpp_header_create_method(cpp_method, my.indent_levels.second)
   endfor
-  js_cpp_header_create_constructor_and_destructor(my.cpp_class, my.indent_levels.second)
+  js_cpp_header_create_destructor(my.cpp_class, my.indent_levels.second)
   js_cpp_header_create_private_properties(my.cpp_class, my.indent_levels.second)
   js_out("};", my.indent_levels.first)
 endfunction
@@ -142,7 +147,10 @@ function js_cpp_create_init(cpp_class, indent_level)
   js_out("v8::Local<v8::FunctionTemplate> function_template = Nan::New<v8::FunctionTemplate>($(my.cpp_class.name:no)::$(js_cpp_constructor_function_name()));", my.indent_levels.second)
   js_out("function_template->SetClassName(Nan::New(\"$(my.cpp_class.binding_name:no)\").ToLocalChecked());", my.indent_levels.second)
   js_out("function_template->InstanceTemplate()->SetInternalFieldCount(1);", my.indent_levels.second)
-  for my.cpp_class.cpp_method
+  for my.cpp_class.cpp_method where js_method_is_static(cpp_method)
+    js_out("Nan::SetMethod(function_template, \"$(cpp_method.binding_name:no)\", $(my.cpp_class.name:no)::$(cpp_method.name:no));", my.indent_levels.second)
+  endfor
+  for my.cpp_class.cpp_method where !js_method_is_static(cpp_method)
     js_out("Nan::SetPrototypeMethod(function_template, \"$(cpp_method.binding_name:no)\", $(my.cpp_class.name:no)::$(cpp_method.name:no));", my.indent_levels.second)
   endfor
   js_out("$(my.cpp_class.name:no)::$(js_cpp_persistent_constructor_name()).Reset(function_template->GetFunction());", my.indent_levels.second)
@@ -303,7 +311,13 @@ function js_cpp_create_method_call(cpp_method, cpp_class, indent_level)
   if defined(my.cpp_method->cpp_method_return)
     my.assignment = "$(my.cpp_method->cpp_method_return.name:no) = "
   endif
-  js_out("$(my.assignment)$(my.cpp_method.c_name:no)($(js_cpp_format_cpp_call_arguments_with_context(my.cpp_method, my.cpp_class)));", my.indent_levels.first)
+  my.arguments = ""
+  if js_method_is_static(my.cpp_method)
+    my.arguments = js_cpp_format_cpp_call_arguments(my.cpp_method)
+  else
+    my.arguments = js_cpp_format_cpp_call_arguments_with_context(my.cpp_method, my.cpp_class)
+  endif
+  js_out("$(my.assignment)$(my.cpp_method.c_name:no)($(my.arguments:no));", my.indent_levels.first)
 endfunction
 
 function js_cpp_create_method_return_value(cpp_js_return, cpp_method, wrapper, indent_level)
@@ -371,14 +385,16 @@ endfunction
 
 function js_cpp_create_method_cleanup(cpp_method, indent_level)
   for my.cpp_method.cpp_buffer_argument
-    js_cpp_create_cpp_buffer_argument_cleanup(cpp_buffer_argument, my.indent_level)
+    js_cpp_create_cpp_buffer_argument_destroy(cpp_buffer_argument, my.indent_level)
   endfor
 endfunction
 
 function js_cpp_create_method(cpp_method, cpp_class, wrapper, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   js_out("void $(my.cpp_class.name:no)::$(my.cpp_method.name:no)($(js_cpp_callback_info_type()) $(js_cpp_callback_info_name())) {", my.indent_levels.first)
-  js_cpp_create_unwrap_class(my.cpp_class, my.indent_levels.second)
+  if !js_method_is_static(my.cpp_method)
+    js_cpp_create_unwrap_class(my.cpp_class, my.indent_levels.second)
+  endif
   js_cpp_create_method_arguments(my.cpp_method, my.wrapper, my.indent_levels.second)
   js_cpp_create_method_variable_declarations(my.cpp_method, my.cpp_class, my.wrapper, my.indent_levels.second)
   js_cpp_create_method_call(my.cpp_method, my.cpp_class, my.indent_levels.second)
@@ -461,10 +477,15 @@ function js_create_constructor(js_class, indent_level)
   endif
 endfunction
 
-function js_create_method(js_method, indent_level)
+function js_create_method(js_method, js_class, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("$(my.js_method.name:no)($(js_format_arguments(my.js_method):no)) {", my.indent_levels.first)
-  js_out("return $(js_binding_reference()).$(my.js_method.binding_name:no)($(js_format_arguments(my.js_method)));", my.indent_levels.second)
+  if js_method_is_static(my.js_method)
+    js_out("static $(my.js_method.name:no)($(js_format_arguments(my.js_method):no)) {", my.indent_levels.first)
+    js_out("return $(my.js_class.binding_name:no).$(my.js_method.binding_name:no)($(js_format_arguments(my.js_method)));", my.indent_levels.second)
+  else
+    js_out("$(my.js_method.name:no)($(js_format_arguments(my.js_method):no)) {", my.indent_levels.first)
+    js_out("return $(js_binding_reference()).$(my.js_method.binding_name:no)($(js_format_arguments(my.js_method)));", my.indent_levels.second)
+  endif
   js_out("}", my.indent_levels.first)
 endfunction
 
@@ -476,7 +497,7 @@ function js_create_class(js_class, wrapper, indent_level)
   endfor
   js_create_constructor(my.js_class, my.indent_levels.second)
   for my.js_class.js_method
-    js_create_method(js_method, my.indent_levels.second)
+    js_create_method(js_method, my.js_class, my.indent_levels.second)
   endfor
   js_out("}", my.indent_levels.first)
 endfunction

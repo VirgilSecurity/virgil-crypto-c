@@ -100,6 +100,9 @@ function js_append_method_model(parent, source_method)
   new js_method to my.parent
     js_method.name = "$(my.source_method.name:Camel)"
     js_method.binding_name = js_binding_method_name(my.source_method)
+    if defined(my.source_method.is_static)
+      js_method.is_static = my.source_method.is_static
+    endif
     for my.source_method.argument where js_source_argument_is_js_argument(argument)
       js_append_js_argument_model(js_method, argument)
     endfor
@@ -379,6 +382,9 @@ function js_append_cpp_method_model(parent, source_method, cpp_class, wrapper)
     cpp_method.name = "$(my.source_method.name:Pascal)"
     cpp_method.binding_name = js_binding_method_name(my.source_method)
     cpp_method.c_name = "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.source_method.name:c)"
+    if defined(my.source_method.is_static)
+      cpp_method.is_static = my.source_method.is_static
+    endif
     for my.source_method.argument
       js_append_cpp_call_argument_model(cpp_method, argument)
       js_append_cpp_source_argument_model(cpp_method, argument)
