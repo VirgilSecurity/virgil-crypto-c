@@ -38,7 +38,7 @@ import VSCFoundation
 import VirgilCryptoCommon
 
 /// This is implementation of ED25519 public key
-@objc(VSCFEd25519PublicKey) public class Ed25519PublicKey: NSObject, Alg, Key, Verify, PublicKey {
+@objc(VSCFEd25519PublicKey) public class Ed25519PublicKey: NSObject, Defaults, Alg, Key, Verify, PublicKey, GenerateEphemeralKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -72,6 +72,18 @@ import VirgilCryptoCommon
     /// Release underlying C context.
     deinit {
         vscf_ed25519_public_key_delete(self.c_ctx)
+    }
+
+    @objc public func setRandom(random: Random) {
+        vscf_ed25519_public_key_release_random(self.c_ctx)
+        vscf_ed25519_public_key_use_random(self.c_ctx, random.c_ctx)
+    }
+
+    /// Setup predefined values to the uninitialized class dependencies.
+    @objc public func setupDefaults() throws {
+        let proxyResult = vscf_ed25519_public_key_setup_defaults(self.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
     }
 
     /// Provide algorithm identificator.
@@ -163,5 +175,12 @@ import VirgilCryptoCommon
         })
 
         try FoundationError.handleError(fromC: proxyResult)
+    }
+
+    /// Generate ephemeral private key of the same type.
+    @objc public func generateEphemeralKey(error: ErrorCtx) -> PrivateKey {
+        let proxyResult = vscf_ed25519_public_key_generate_ephemeral_key(self.c_ctx, error.c_ctx)
+
+        return PrivateKeyProxy.init(c_ctx: proxyResult!)
     }
 }

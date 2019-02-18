@@ -86,7 +86,7 @@ VSCF_PUBLIC vscf_alg_id_t
 vscf_kdf2_alg_id(const vscf_kdf2_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    return vscf_alg_id_KDF1;
+    return vscf_alg_id_KDF2;
 }
 
 //
@@ -100,7 +100,7 @@ vscf_kdf2_produce_alg_info(const vscf_kdf2_t *self) {
 
     vscf_impl_t *hash_alg_info = vscf_alg_produce_alg_info(self->hash);
     vscf_impl_t *kdf2_alg_info =
-            vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(vscf_alg_id_KDF1, &hash_alg_info));
+            vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(vscf_alg_id_KDF2, &hash_alg_info));
 
     return kdf2_alg_info;
 }

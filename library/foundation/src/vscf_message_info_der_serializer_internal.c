@@ -285,7 +285,7 @@ vscf_message_info_der_serializer_use_asn1_reader(vscf_message_info_der_serialize
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1_reader);
-    VSCF_ASSERT_PTR(self->asn1_reader == NULL);
+    VSCF_ASSERT(self->asn1_reader == NULL);
 
     VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
 
@@ -333,7 +333,7 @@ vscf_message_info_der_serializer_use_asn1_writer(vscf_message_info_der_serialize
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT_PTR(self->asn1_writer == NULL);
+    VSCF_ASSERT(self->asn1_writer == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
 

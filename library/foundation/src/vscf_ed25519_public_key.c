@@ -59,6 +59,9 @@
 #include "vscf_asn1wr.h"
 #include "vscf_asn1rd_defs.h"
 #include "vscf_asn1wr_defs.h"
+#include "vscf_ed25519_private_key.h"
+#include "vscf_ctr_drbg.h"
+#include "vscf_random.h"
 #include "vscf_ed25519_public_key_defs.h"
 #include "vscf_ed25519_public_key_internal.h"
 
@@ -100,6 +103,23 @@ VSCF_PRIVATE void
 vscf_ed25519_public_key_cleanup_ctx(vscf_ed25519_public_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
+}
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_ed25519_public_key_setup_defaults(vscf_ed25519_public_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        vscf_ctr_drbg_setup_defaults(random);
+        self->random = vscf_ctr_drbg_impl(random);
+    }
+
+    return vscf_SUCCESS;
 }
 
 //
@@ -219,4 +239,26 @@ vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_t *self, vsc_d
     memcpy(self->public_key, data.bytes, ED25519_KEY_LEN);
 
     return vscf_SUCCESS;
+}
+
+//
+//  Generate ephemeral private key of the same type.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_ed25519_public_key_generate_ephemeral_key(vscf_ed25519_public_key_t *self, vscf_error_ctx_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
+
+    vscf_ed25519_private_key_t *private_key = vscf_ed25519_private_key_new();
+    vscf_ed25519_private_key_use_random(private_key, self->random);
+
+    vscf_error_t status = vscf_ed25519_private_key_generate_key(private_key);
+    if (status != vscf_SUCCESS) {
+        vscf_ed25519_private_key_destroy(&private_key);
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, status);
+        return NULL;
+    }
+
+    return vscf_ed25519_private_key_impl(private_key);
 }

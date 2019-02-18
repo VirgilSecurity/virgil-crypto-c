@@ -154,6 +154,8 @@ vscf_alg_info_der_deserializer_deserialize_simple_alg_info(
     VSCF_ASSERT_PTR(self->asn1_reader);
     VSCF_ASSERT(vsc_data_is_valid(alg_oid));
 
+    //  According to RFC 5754 - Using SHA2 Algorithms with Cryptographic Message Syntax.
+    //  Implementations MUST accept SHA2 AlgorithmIdentifiers with NULL parameters.
     if (vscf_asn1_reader_get_tag(self->asn1_reader) == vscf_asn1_tag_NULL) {
         vscf_asn1_reader_read_null(self->asn1_reader);
     }
@@ -200,24 +202,17 @@ vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(
     VSCF_ASSERT(vsc_data_is_valid(alg_oid));
 
     //  Read HashFunction.
-    vscf_asn1_reader_read_sequence(self->asn1_reader);
-    vsc_data_t hash_oid = vscf_asn1_reader_read_oid(self->asn1_reader);
-
-    vscf_error_t status = vscf_asn1_reader_error(self->asn1_reader);
-    if (status != vscf_SUCCESS) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, status);
+    vscf_impl_t *hash_alg_info = vscf_alg_info_der_deserializer_deserialize_inplace(self, error);
+    if (hash_alg_info == NULL) {
         return NULL;
     }
 
     const vscf_alg_id_t alg_id = vscf_oid_to_alg_id(alg_oid);
-    const vscf_alg_id_t hash_id = vscf_oid_to_alg_id(hash_oid);
-
-    if ((alg_id == vscf_alg_id_NONE) || (hash_id == vscf_alg_id_NONE)) {
+    if (alg_id == vscf_alg_id_NONE) {
         VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_UNSUPPORTED_ALGORITHM);
         return NULL;
     }
 
-    vscf_impl_t *hash_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(hash_id));
     vscf_impl_t *hash_based_alg_info =
             vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(alg_id, &hash_alg_info));
 
@@ -336,6 +331,13 @@ vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(
     default:
         VSCF_ASSERT("Unexpected OID.");
         break;
+    }
+
+    if (vscf_asn1_reader_get_tag(self->asn1_reader) == vscf_asn1_tag_NULL) {
+        //  parameters NULL : NULL is reuired by the RFC 4231,
+        //  but this rule is relaxed to keep backward compatibility with Virgil Crypto v2,
+        //  that do not write NULL for this AlgorithmIdentifier.
+        vscf_asn1_reader_read_null(self->asn1_reader);
     }
 
     vscf_impl_t *hash_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(hash_alg_id));
@@ -510,6 +512,14 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
+
+    if (error && (error->error != vscf_SUCCESS)) {
+        return NULL;
+    }
+
+    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
+        return NULL;
+    }
 
     //
     //  Define algorithm identifier.

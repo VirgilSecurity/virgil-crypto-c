@@ -161,6 +161,24 @@ VSCF_PUBLIC void
 vscf_pkcs8_der_deserializer_release_asn1_reader(vscf_pkcs8_der_deserializer_t *self);
 
 //
+//  Deserialize Public Key by using internal ASN.1 reader.
+//  Note, that caller code is responsible to reset ASN.1 reader with
+//  an input buffer.
+//
+VSCF_PUBLIC vscf_raw_key_t *
+vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(vscf_pkcs8_der_deserializer_t *self,
+        vscf_error_ctx_t *error);
+
+//
+//  Deserialize Public Key by using internal ASN.1 reader.
+//  Note, that caller code is responsible to reset ASN.1 reader with
+//  an input buffer.
+//
+VSCF_PUBLIC vscf_raw_key_t *
+vscf_pkcs8_der_deserializer_deserialize_private_key_inplace(vscf_pkcs8_der_deserializer_t *self,
+        vscf_error_ctx_t *error);
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t

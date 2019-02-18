@@ -249,7 +249,7 @@ vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(rng);
-    VSCR_ASSERT_PTR(self->rng == NULL);
+    VSCR_ASSERT(self->rng == NULL);
 
     VSCR_ASSERT(vscf_random_is_implemented(rng));
 

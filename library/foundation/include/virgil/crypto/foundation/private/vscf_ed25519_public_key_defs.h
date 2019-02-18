@@ -59,6 +59,7 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_ed25519_public_key.h"
+#include "vscf_impl.h"
 
 #include <ed25519/ed25519.h>
 
@@ -89,6 +90,10 @@ struct vscf_ed25519_public_key_t {
     //  Reference counter.
     //
     size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *random;
     //
     //  Implementation specific context.
     //

@@ -55,6 +55,8 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_ed25519_private_key_defs.h"
+#include "vscf_defaults.h"
+#include "vscf_defaults_api.h"
 #include "vscf_alg.h"
 #include "vscf_alg_api.h"
 #include "vscf_key.h"
@@ -83,6 +85,21 @@
 
 static const vscf_api_t *
 vscf_ed25519_private_key_find_api(vscf_api_tag_t api_tag);
+
+//
+//  Configuration of the interface API 'defaults api'.
+//
+static const vscf_defaults_api_t defaults_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'defaults' MUST be equal to the 'vscf_api_tag_DEFAULTS'.
+    //
+    vscf_api_tag_DEFAULTS,
+    //
+    //  Setup predefined values to the uninitialized class dependencies.
+    //
+    (vscf_defaults_api_setup_defaults_fn)vscf_ed25519_private_key_setup_defaults
+};
 
 //
 //  Configuration of the interface API 'alg api'.
@@ -376,7 +393,7 @@ vscf_ed25519_private_key_use_random(vscf_ed25519_private_key_t *self, vscf_impl_
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(self->random == NULL);
+    VSCF_ASSERT(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
@@ -418,6 +435,8 @@ vscf_ed25519_private_key_find_api(vscf_api_tag_t api_tag) {
             return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_COMPUTE_SHARED_KEY:
             return (const vscf_api_t *) &compute_shared_key_api;
+        case vscf_api_tag_DEFAULTS:
+            return (const vscf_api_t *) &defaults_api;
         case vscf_api_tag_GENERATE_KEY:
             return (const vscf_api_t *) &generate_key_api;
         case vscf_api_tag_KEY:

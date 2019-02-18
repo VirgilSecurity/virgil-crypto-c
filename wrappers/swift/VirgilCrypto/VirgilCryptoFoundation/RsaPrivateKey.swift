@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-@objc(VSCFRsaPrivateKey) public class RsaPrivateKey: NSObject, Alg, Key, GenerateKey, Decrypt, Sign, PrivateKey {
+@objc(VSCFRsaPrivateKey) public class RsaPrivateKey: NSObject, Defaults, Alg, Key, GenerateKey, Decrypt, Sign, PrivateKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -96,6 +96,13 @@ import VirgilCryptoCommon
     /// Setup parameters that is used during key generation.
     @objc public func setKeygenParams(bitlen: Int, exponent: Int) {
         vscf_rsa_private_key_set_keygen_params(self.c_ctx, bitlen, exponent)
+    }
+
+    /// Setup predefined values to the uninitialized class dependencies.
+    @objc public func setupDefaults() throws {
+        let proxyResult = vscf_rsa_private_key_setup_defaults(self.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
     }
 
     /// Provide algorithm identificator.

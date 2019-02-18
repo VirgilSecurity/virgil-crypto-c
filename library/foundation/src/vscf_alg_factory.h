@@ -54,6 +54,7 @@
 #define VSCF_ALG_FACTORY_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_raw_key.h"
 #include "vscf_impl.h"
 
 // clang-format on
@@ -100,6 +101,18 @@ vscf_alg_factory_create_salted_kdf_alg(const vscf_impl_t *alg_info);
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_alg_factory_create_cipher_alg(const vscf_impl_t *alg_info);
+
+//
+//  Create algorithm that implements "public key" interface.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_public_key_alg(const vscf_raw_key_t *raw_key);
+
+//
+//  Create algorithm that implements "private key" interface.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_private_key_alg(const vscf_raw_key_t *raw_key);
 
 
 // --------------------------------------------------------------------------
