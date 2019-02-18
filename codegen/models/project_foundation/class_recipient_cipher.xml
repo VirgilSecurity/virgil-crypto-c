@@ -1,0 +1,141 @@
+<class name="recipient cipher">
+    This class provides hybrid encryption algorithm that combines symmetric
+    cipher for data encryption and asymmetric cipher and password based
+    cipher for symmetric key encryption.
+
+    <require interface="public key"/>
+    <require interface="private key"/>
+    <require interface="encrypt"/>
+    <require interface="decrypt"/>
+    <require class="message info der serializer"/>
+    <require class="key recipient list"/>
+    <require class="aes256 gcm"/>
+    <require class="ctr drbg"/>
+
+    <dependency name="random" interface="random"/>
+    <dependency name="cipher" interface="cipher"/>
+
+    <property name="key recipients" class="key recipient list"/>
+    <property name="decryption recipient id" class="buffer"/>
+    <property name="decryption key" interface="private key"/>
+    <property name="decryption password" class="buffer"/>
+    <property name="cipher key" class="buffer"/>
+    <property name="cipher nonce" class="buffer"/>
+
+    <method name="setup defaults">
+        Setup dependencies with default values.
+    </method>
+
+    <method name="add key recipient">
+        Add recipient defined with id and public key.
+
+        <argument name="recipient id" class="data"/>
+        <argument name="public key" interface="public key" access="retain"/>
+    </method>
+
+    <method name="clear recipients">
+        Remove all recipients.
+    </method>
+
+    <method name="message info len" is_const="1">
+        Return buffer length required to hold message info returned by the
+        "start encryption" method.
+        Precondition: all recipients and custom parameters should be set.
+
+        <return type="size"/>
+    </method>
+
+    <method name="start encryption">
+        Start encryption process.
+
+        Note, store returned message info to use it for decryption process,
+        or place it at the encrypted data beginning (embedding).
+
+        Return message info - recipients public information,
+        algorithm information, etc.
+
+        <argument name="message info" class="buffer">
+            <length method="message info len"/>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="encryption out len">
+        Return buffer length required to hold output of the method
+        "process encryption" and method "finish" during encryption.
+
+        <argument name="data len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="process encryption">
+        Process encryption of a new portion of data.
+
+        <argument name="data" class="data"/>
+        <argument name="out" class="buffer">
+            <length method="encryption out len">
+                <proxy argument="data" to="data len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="finish encryption">
+        Accomplish encryption.
+
+        <argument name="out" class="buffer">
+            <length method="encryption data len">
+                <proxy constant="0" to="data len"/>
+            </length>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="start decryption with key">
+        Initiate decryption process with a recipient private key.
+
+        <argument name="recipient id" class="data"/>
+        <argument name="private key" interface="private key" access="retain"/>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="decryption out len">
+        Return buffer length required to hold output of the method
+        "process decryption" and method "finish" during decryption.
+
+        <argument name="data len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="process decryption">
+        Process with a new portion of data.
+        Return error if data can not be encrypted or decrypted.
+
+        <argument name="data" class="data"/>
+        <argument name="out" class="buffer">
+            <length method="decryption out len">
+                <proxy argument="data" to="data len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="finish decryption">
+        Accomplish decryption.
+
+        <argument name="out" class="buffer">
+            <length method="decryption data len">
+                <proxy constant="0" to="data len"/>
+            </length>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+</class>

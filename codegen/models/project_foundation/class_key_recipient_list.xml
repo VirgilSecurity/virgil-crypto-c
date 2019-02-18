@@ -1,0 +1,65 @@
+<class name="key recipient list" scope="internal">
+    Handles a list of recipients defined by id and public key.
+
+    <require interface="public key"/>
+
+    <property name="recipient id" class="buffer"/>
+    <property name="recipient public key" interface="public key"/>
+    <property name="next" class="key recipient list"/>
+    <property name="prev" class="key recipient list"/>
+
+    <method name="add">
+        Add new item to the list.
+        Note, ownership is transfered.
+
+        <argument name="recipient id" class="data"/>
+        <argument name="recipient public key" interface="public key" access="retain"/>
+    </method>
+
+
+    <method name="has key recipient" is_const="1">
+        Return true if given list has key recipient.
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="recipient id" is_const="1">
+        Return recipient identifier.
+
+        <return class="data"/>
+    </method>
+
+    <method name="recipient public key" is_const="1">
+        Return recipient public key.
+
+        <return interface="public key"/>
+    </method>
+
+
+    <method name="has next" is_const="1">
+        Return true if list has next item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="next" is_const="1">
+        Return next list node if exists, or NULL otherwise.
+
+        <return class="self"/>
+    </method>
+
+
+    <method name="has prev" is_const="1">
+        Return true if list has previous item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="prev" is_const="1">
+        Return previous list node if exists, or NULL otherwise.
+
+        <return class="self"/>
+    </method>
+</class>
