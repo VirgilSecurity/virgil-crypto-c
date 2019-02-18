@@ -465,6 +465,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_recipient_cipher.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -672,6 +677,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_recipient_info_defs.h>"
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_recipient_info_list.h>"
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_recipient_info_list_defs.h>"
+            "$<$<BOOL:${VSCF_KEY_RECIPIENT_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_list.h>"
+            "$<$<BOOL:${VSCF_KEY_RECIPIENT_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_recipient_list_defs.h>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_READER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_reader.h>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_WRITER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_writer.h>"
             "$<$<BOOL:${VSCF_MBEDTLS_MD}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_md.h>"
@@ -686,6 +693,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_PEM_TITLE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pem_title.h>"
             "$<$<BOOL:${VSCF_RAW_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_raw_key.h>"
             "$<$<BOOL:${VSCF_RAW_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_raw_key_defs.h>"
+            "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_recipient_cipher.h>"
+            "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_recipient_cipher_defs.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_asn1_tag.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_id.h"
@@ -876,6 +885,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_info_defs.c>"
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_info_list.c>"
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_info_list_defs.c>"
+            "$<$<BOOL:${VSCF_KEY_RECIPIENT_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_list.c>"
+            "$<$<BOOL:${VSCF_KEY_RECIPIENT_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_list_defs.c>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_READER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_reader.c>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_WRITER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_writer.c>"
             "$<$<BOOL:${VSCF_MBEDTLS_MD}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_md.c>"
@@ -890,6 +901,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_PEM_TITLE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pem_title.c>"
             "$<$<BOOL:${VSCF_RAW_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_raw_key.c>"
             "$<$<BOOL:${VSCF_RAW_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_raw_key_defs.c>"
+            "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_recipient_cipher.c>"
+            "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_recipient_cipher_defs.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_error.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1_tag.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_id.c"
