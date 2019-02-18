@@ -1,0 +1,356 @@
+.template 0
+
+gsl from "common.gsl"
+gsl from "js_helpers.gsl"
+
+# --------------------------------------------------------------------------------------------------
+# General
+# --------------------------------------------------------------------------------------------------
+
+function js_append_js_module_model(parent, source, wrapper)
+  new js_module to my.parent
+    js_module.name = my.source.name
+    js_append_js_class_model(js_module, my.source)
+    if count(my.source.method) > 0
+      js_append_cpp_class_model(js_module, my.source, my.wrapper)
+    endif
+    return js_module
+  endnew
+endfunction
+
+function js_append_js_wrapped_module_model(parent, js_module, wrapper)
+  new js_wrapped_module to my.parent
+    js_wrapped_module.name = my.js_module.name
+    js_wrapped_module.js_class_name = my.js_module->js_class.name
+    js_wrapped_module.js_source_file = "$(my.js_module.name:cobol).js"
+    js_wrapped_module.js_source_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_module.js_source_file)
+    if defined(my.js_module->cpp_class)
+      js_wrapped_module.cpp_class_name = my.js_module->cpp_class.name
+      js_wrapped_module.cpp_header_file = "$(my.js_module.name:c).h"
+      js_wrapped_module.cpp_header_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_module.cpp_header_file)
+      js_wrapped_module.cpp_source_file = "$(my.js_module.name:c).cc"
+      js_wrapped_module.cpp_source_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_module.cpp_source_file)
+    endif
+    return js_wrapped_module
+  endnew
+endfunction
+
+function js_append_js_include_module_model(parent, js_wrapped_module)
+  new js_include_module to my.parent
+    js_include_module.name = my.js_wrapped_module.name
+    js_include_module.cpp_class_name = my.js_wrapped_module.cpp_class_name
+    js_include_module.cpp_header_file = my.js_wrapped_module.cpp_header_file
+    return js_include_module
+  endnew
+endfunction
+
+# --------------------------------------------------------------------------------------------------
+# JavaScript
+# --------------------------------------------------------------------------------------------------
+
+function js_append_js_constant_model(parent, source_constant)
+  new js_constant to my.parent
+    js_constant.name = "$(my.source_constant.name:Camel)"
+    js_constant.value = my.source_constant.value
+    return js_constant
+  endnew
+endfunction
+
+function js_append_js_argument_model(parent, source_argument)
+  new js_argument to my.parent
+    js_argument.name = "$(my.source_argument.name:Camel)"
+    return js_argument
+  endnew
+endfunction
+
+function js_append_method_model(parent, source_method)
+  new js_method to my.parent
+    js_method.name = "$(my.source_method.name:Camel)"
+    js_method.binding_name = js_binding_method_name(my.source_method)
+    for my.source_method.argument where js_source_argument_is_js_argument(argument)
+      js_append_js_argument_model(js_method, argument)
+    endfor
+    return js_method
+  endnew
+endfunction
+
+function js_append_js_class_model(parent, source)
+  new js_class to my.parent
+    js_class.name = "$(my.source.name:Pascal)"
+    js_class.binding_name = js_binding_class_name(js_class)
+    for my.source.constant where !js_constant_is_private(constant)
+      js_append_js_constant_model(js_class, constant)
+    endfor
+    for my.source.method where !js_method_is_private(method)
+      js_append_method_model(js_class, method)
+    endfor
+    return js_class
+  endnew
+endfunction
+
+# --------------------------------------------------------------------------------------------------
+# C++
+# --------------------------------------------------------------------------------------------------
+
+function js_append_cpp_call_argument_model(parent, source_argument)
+  new cpp_call_argument to my.parent
+    cpp_call_argument.name = js_cpp_variable_name(my.source_argument.name)
+    return cpp_call_argument
+  endnew
+endfunction
+
+function js_append_cpp_source_proxy_model(parent, source_proxy)
+  new cpp_source_proxy to my.parent
+    cpp_source_proxy.argument = my.source_proxy.argument
+    if defined(my.source_proxy.cast)
+      cpp_source_proxy.cast = my.source_proxy.cast
+    endif
+    return cpp_source_proxy
+  endnew
+endfunction
+
+function js_append_cpp_source_length_model(parent, source_length)
+  new cpp_source_length to my.parent
+    if defined(my.source_length.constant)
+      cpp_source_length.constant = my.source_length.constant
+    endif
+    if defined(my.source_length.class)
+      cpp_source_length.class = my.source_length.class
+    endif
+    if defined(my.source_length.method)
+      cpp_source_length.method = my.source_length.method
+      for my.source_length.proxy
+        js_append_cpp_source_proxy_model(cpp_source_length, proxy)
+      endfor
+    endif
+    return cpp_source_length
+  endnew
+endfunction
+
+function js_append_cpp_source_argument_model(parent, source_argument)
+  new cpp_source_argument to cpp_method
+    cpp_source_argument.name = my.source_argument.name
+    if defined(my.source_argument.type)
+      cpp_source_argument.type = my.source_argument.type
+    endif
+    if defined(my.source_argument.class)
+      cpp_source_argument.class = my.source_argument.class
+    endif
+    if defined(my.source_argument.access)
+      cpp_source_argument.access = my.source_argument.access
+    endif
+    if defined(my.source_argument->length)
+      js_append_cpp_source_length_model(cpp_source_argument, my.source_argument->length)
+    endif
+    return cpp_source_argument
+  endnew
+endfunction
+
+function js_append_cpp_size_argument_model(parent, cpp_source_argument)
+  new cpp_size_argument to my.parent
+    cpp_size_argument.name = js_cpp_variable_name(my.cpp_source_argument.name)
+    return cpp_size_argument
+  endnew
+endfunction
+
+function js_append_cpp_data_argument_model(parent, cpp_source_argument)
+  new cpp_data_argument to my.parent
+    cpp_data_argument.name = js_cpp_variable_name(my.cpp_source_argument.name)
+    return cpp_data_argument
+  endnew
+endfunction
+
+function js_append_cpp_call_argument_model_from_cpp_source_proxy(parent, cpp_source_proxy)
+  new cpp_call_argument to my.parent
+    cpp_call_argument.name = js_cpp_variable_name(my.cpp_source_proxy.argument)
+    if defined(my.cpp_source_proxy.cast)
+      cpp_call_argument.cast = my.cpp_source_proxy.cast
+    endif
+    return cpp_call_argument
+  endnew
+endfunction
+
+function js_append_cpp_buffer_size_model(parent, name, cpp_source_length, cpp_class, wrapper)
+  new cpp_buffer_size to my.parent
+    cpp_buffer_size.name = js_cpp_size_name(my.name)
+    if defined(my.cpp_source_length.constant)
+      cpp_buffer_size.type = js_cpp_size_type_constant()
+      cpp_buffer_size.constant = "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.cpp_source_length.constant:c,upper)"
+    elsif defined(my.cpp_source_length.method)
+      cpp_buffer_size.type = js_cpp_size_type_method()
+      cpp_buffer_size.method = "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.cpp_source_length.method:c)"
+      for my.cpp_source_length.cpp_source_proxy
+        js_append_cpp_call_argument_model_from_cpp_source_proxy(cpp_buffer_size, cpp_source_proxy)
+      endfor
+    else
+      echo_fatal("'cpp_source_length.constant' or 'cpp_source_length.method' should be defined", my)
+    endif
+    return cpp_buffer_size
+  endnew
+endfunction
+
+function js_append_cpp_buffer_argument_model(parent, cpp_source_argument, cpp_class, wrapper)
+  new cpp_buffer_argument to my.parent
+    cpp_buffer_argument.name = js_cpp_variable_name(my.cpp_source_argument.name)
+    if defined(my.cpp_source_argument->cpp_source_length)
+      js_append_cpp_buffer_size_model(cpp_buffer_argument, cpp_buffer_argument.name, my.cpp_source_argument->cpp_source_length, my.cpp_class, my.wrapper)
+    else
+      echo_fatal("'cpp_source_argument->cpp_source_length' should be defined", my)
+    endif
+    return cpp_buffer_argument
+  endnew
+endfunction
+
+function js_append_cpp_js_module_argument_model(parent, cpp_source_argument)
+  new cpp_js_module_argument to my.parent
+    cpp_js_module_argument.name = js_cpp_variable_name(my.cpp_source_argument.name)
+    cpp_js_module_argument.module_name = my.cpp_source_argument.class
+    return cpp_js_module_argument
+  endnew
+endfunction
+
+function js_append_cpp_error_context_argument_model(parent, cpp_source_argument, wrapper)
+  new cpp_error_context_argument to my.parent
+    cpp_error_context_argument.name = js_cpp_variable_name(my.cpp_source_argument.name)
+    cpp_error_context_argument.class = "$(my.wrapper.prefix:no)_$(my.cpp_source_argument.class:c)"
+    return cpp_error_context_argument
+  endnew
+endfunction
+
+function js_append_resolved_cpp_source_argument(parent, cpp_source_argument, cpp_class, wrapper)
+  if js_cpp_value_is_cpp_size(my.cpp_source_argument)
+    return js_append_cpp_size_argument_model(my.parent, my.cpp_source_argument)
+  elsif js_cpp_value_is_cpp_data(my.cpp_source_argument)
+    return js_append_cpp_data_argument_model(my.parent, my.cpp_source_argument)
+  elsif js_cpp_value_is_cpp_buffer(my.cpp_source_argument)
+    return js_append_cpp_buffer_argument_model(my.parent, my.cpp_source_argument, my.cpp_class, my.wrapper)
+  elsif js_cpp_value_is_cpp_js_module(my.cpp_source_argument, my.wrapper)
+    return js_append_cpp_js_module_argument_model(my.parent, my.cpp_source_argument)
+  elsif js_cpp_value_is_cpp_error_context(my.cpp_source_argument)
+    return js_append_cpp_error_context_argument_model(my.parent, my.cpp_source_argument, my.wrapper)
+  else
+    echo_fatal("Unable to resolve argument", my)
+  endif
+endfunction
+
+function js_append_cpp_js_return_model(parent, value)
+  new cpp_js_return to my.parent
+    cpp_js_return.name = js_cpp_variable_name(my.value.name)
+    cpp_js_return.binding_name = "$(my.value.name:Camel)"
+    return cpp_js_return
+  endnew
+endfunction
+
+function js_append_cpp_source_return_model(parent, source_return)
+  new cpp_source_return to my.parent
+    if defined(my.source_return.type)
+      cpp_source_return.type = my.source_return.type
+    endif
+    if defined(my.source_return.class)
+      cpp_source_return.class = my.source_return.class
+    endif
+    if defined(my.source_return.enum)
+      cpp_source_return.enum = my.source_return.enum
+    endif
+    return cpp_source_return
+  endnew
+endfunction
+
+function js_append_cpp_size_variable_declaration_model(parent, name)
+  new cpp_size_variable_declaration to my.parent
+    cpp_size_variable_declaration.name = my.name
+    return cpp_size_variable_declaration
+  endnew
+endfunction
+
+function js_append_cpp_data_variable_declaration_model(parent, name)
+  new cpp_data_variable_declaration to my.parent
+    cpp_data_variable_declaration.name = my.name
+    return cpp_data_variable_declaration
+  endnew
+endfunction
+
+function js_append_cpp_buffer_variable_declaration_model(parent, name)
+  new cpp_buffer_variable_declaration to my.parent
+    cpp_buffer_variable_declaration.name = my.name
+    return cpp_buffer_variable_declaration
+  endnew
+endfunction
+
+function js_append_cpp_error_variable_declaration_model(parent, name)
+  new cpp_error_variable_declaration to my.parent
+    cpp_error_variable_declaration.name = my.name
+    return cpp_error_variable_declaration
+  endnew
+endfunction
+
+function js_append_cpp_js_module_variable_declaration_model(parent, name, module_name)
+  new cpp_js_module_variable_declaration to my.parent
+    cpp_js_module_variable_declaration.name = my.name
+    cpp_js_module_variable_declaration.module_name = my.module_name
+    return cpp_js_module_variable_declaration
+  endnew
+endfunction
+
+function js_append_cpp_method_return_model(parent)
+  new cpp_method_return to my.parent
+    cpp_method_return.name = js_cpp_method_return_name()
+    return cpp_method_return
+  endnew
+endfunction
+
+function js_append_resolved_cpp_source_return(parent, cpp_source_return, wrapper)
+  my.cpp_method_return = js_append_cpp_method_return_model(my.parent)
+  if js_cpp_value_is_cpp_size(my.cpp_source_return)
+    js_append_cpp_size_variable_declaration_model(my.parent, my.cpp_method_return.name)
+    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
+  elsif js_cpp_value_is_cpp_data(my.cpp_source_return)
+    js_append_cpp_data_variable_declaration_model(my.parent, my.cpp_method_return.name)
+    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
+  elsif js_cpp_value_is_cpp_buffer(my.cpp_source_return)
+    js_append_cpp_buffer_variable_declaration_model(my.parent, my.cpp_method_return.name)
+    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
+  elsif js_cpp_value_is_cpp_error(my.cpp_source_return)
+    js_append_cpp_error_variable_declaration_model(my.parent, my.cpp_method_return.name)
+  elsif js_cpp_value_is_cpp_js_module(my.cpp_source_return, my.wrapper)
+    js_append_cpp_js_module_variable_declaration_model(my.parent, my.cpp_method_return.name, my.cpp_source_return.class)
+    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
+  else
+    echo my.cpp_source_return.string()
+    echo_fatal("Unable to resolve return", my)
+  endif
+endfunction
+
+function js_append_cpp_method_model(parent, source_method, cpp_class, wrapper)
+  new cpp_method to my.parent
+    cpp_method.name = "$(my.source_method.name:Pascal)"
+    cpp_method.binding_name = js_binding_method_name(my.source_method)
+    cpp_method.c_name = "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.source_method.name:c)"
+    for my.source_method.argument
+      js_append_cpp_call_argument_model(cpp_method, argument)
+      js_append_cpp_source_argument_model(cpp_method, argument)
+    endfor
+    for my.source_method.argument where js_cpp_value_is_cpp_js_return(argument)
+      js_append_cpp_js_return_model(cpp_method, argument)
+    endfor
+    if defined(my.source_method->return)
+      js_append_cpp_source_return_model(cpp_method, my.source_method->return)
+    endif
+    return cpp_method
+  endnew
+endfunction
+
+function js_append_cpp_class_model(parent, source, wrapper)
+  new cpp_class to my.parent
+    cpp_class.name = "$(my.source.name:Pascal)"
+    cpp_class.binding_name = js_binding_class_name(cpp_class)
+    cpp_class.c_name = "$(my.source.name:c)"
+    cpp_class.context_name = "$(my.wrapper.prefix:no)_$(my.source.name:c)"
+    for my.source.method where !js_method_is_private(method)
+      js_append_cpp_method_model(cpp_class, method, cpp_class, my.wrapper)
+    endfor
+    return cpp_class
+  endnew
+endfunction
+
+endtemplate

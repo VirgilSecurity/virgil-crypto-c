@@ -1,0 +1,180 @@
+.template 0
+
+gsl from "common.gsl"
+
+# --------------------------------------------------------------------------------------------------
+# General
+# --------------------------------------------------------------------------------------------------
+
+function js_indent_size()
+  return 2
+endfunction
+
+function js_out(str, indent_level, indent_size)
+  my.out = my.str
+  my.out = string_trim(my.out)
+  my.custom_indent_level = 1
+  if defined(my.indent_level)
+    my.custom_indent_level = my.indent_level
+  endif
+  my.custom_indent_size = js_indent_size()
+  if defined(my.indent_size)
+    my.custom_indent_size = my.indent_size
+  endif
+  my.out = string_indent(my.out, my.indent_level, my.custom_indent_size)
+  out(my.out)
+endfunction
+
+function js_create_indent_levels(indent_level)
+  my.custom_indent_level = 0
+  if defined(my.indent_level)
+    my.custom_indent_level = my.indent_level
+  endif
+  my.indent_levels = XML.new()
+  my.indent_levels.first = my.custom_indent_level
+  my.indent_levels.second = my.custom_indent_level + 1
+  my.indent_levels.third = my.custom_indent_level + 2
+  return my.indent_levels
+endfunction
+
+function js_method_is_private(method)
+  return defined(my.method.declaration) & my.method.declaration = "private"
+endfunction
+
+# --------------------------------------------------------------------------------------------------
+# JavaScript
+# --------------------------------------------------------------------------------------------------
+
+function js_constant_is_private(constant)
+  return defined(my.constant.definition) & my.constant.definition = "private"
+endfunction
+
+function js_source_argument_is_js_argument(source_argument)
+  return (defined(my.source_argument.type) & my.source_argument.type = "size") \
+    | (defined(my.source_argument.class) & my.source_argument.class = "data")
+endfunction
+
+function js_binding_class_name(class)
+  return "$(my.class.name:no)Binding"
+endfunction
+
+function js_binding_reference()
+  return "this.binding"
+endfunction
+
+function js_binding_method_name(method)
+  return "$(my.method.name:Camel)"
+endfunction
+
+# --------------------------------------------------------------------------------------------------
+# C++
+# --------------------------------------------------------------------------------------------------
+
+function js_cpp_value_is_cpp_size(value)
+  return defined(my.value.type) & my.value.type = "size"
+endfunction
+
+function js_cpp_value_is_cpp_data(value)
+  return defined(my.value.class) & my.value.class = "data"
+endfunction
+
+function js_cpp_value_is_cpp_buffer(value)
+  return defined(my.value.class) & my.value.class = "buffer"
+endfunction
+
+function js_cpp_value_is_cpp_error(value)
+  return defined(my.value.enum) & my.value.enum = "error"
+endfunction
+
+function js_cpp_value_is_cpp_js_module(value, wrapper)
+  for my.wrapper.js_wrapped_module where defined(my.value.class) & my.value.class = js_wrapped_module.name
+    return 1
+  endfor
+  return 0
+endfunction
+
+function js_cpp_value_is_cpp_error_context(value)
+  return defined(my.value.class) & my.value.class = "error ctx"
+endfunction
+
+function js_cpp_value_is_cpp_js_return(value)
+  return js_cpp_value_is_cpp_buffer(my.value) & defined(my.value.access) & my.value.access = "writeonly"
+endfunction
+
+function js_cpp_variable_name(name)
+  return "$(my.name:c)"
+endfunction
+
+function js_cpp_size_name(name)
+  return "$(my.name:c)_size"
+endfunction
+
+function js_cpp_size_type_constant()
+  return "constant"
+endfunction
+
+function js_cpp_size_type_method()
+  return "method"
+endfunction
+
+function js_cpp_method_return_name()
+  return "method_return"
+endfunction
+
+function js_cpp_header_guard(js_module)
+  return "$(my.js_module.name:c,upper)_H"
+endfunction
+
+function js_cpp_init_function_name()
+  return "Init"
+endfunction
+
+function js_cpp_init_function_argument_type()
+  return "v8::Local<v8::Object>"
+endfunction
+
+function js_cpp_init_function_argument_name()
+  return "exports"
+endfunction
+
+function js_cpp_constructor_function_name()
+  return "New"
+endfunction
+
+function js_cpp_callback_info_type()
+  return "const Nan::FunctionCallbackInfo<v8::Value>&"
+endfunction
+
+function js_cpp_callback_info_name()
+  return "info"
+endfunction
+
+function js_cpp_persistent_constructor_name()
+  return "constructor"
+endfunction
+
+function js_cpp_context_type(cpp_class, wrapper)
+  return "$(my.cpp_class.context_name:no)_t*"
+endfunction
+
+function js_cpp_class_instance_name(cpp_class)
+  return "$(my.cpp_class.c_name:no)"
+endfunction
+
+function js_cpp_bytes_name(name)
+  return "$(my.name:no)_bytes"
+endfunction
+
+function js_cpp_size_name(name)
+  return "$(my.name:no)_size"
+endfunction
+
+function js_cpp_context_constructor_name(cpp_class, wrapper)
+  return "$(my.cpp_class.context_name:no)_new"
+endfunction
+
+function js_cpp_context_destructor_name(cpp_class, wrapper)
+  return "$(my.cpp_class.context_name:no)_destroy"
+endfunction
+
+endtemplate
