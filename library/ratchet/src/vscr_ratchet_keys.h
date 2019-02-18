@@ -126,13 +126,13 @@ vscr_ratchet_keys_shallow_copy(vscr_ratchet_keys_t *self);
 
 VSCR_PUBLIC void
 vscr_ratchet_keys_derive_initial_keys(vsc_data_t shared_secret,
-        byte root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH],
-        byte chain_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH]);
+        byte root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH],
+        byte chain_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH]);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_keys_create_chain_key(const byte root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH],
+vscr_ratchet_keys_create_chain_key(const byte root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH],
         vsc_data_t private_key, vsc_data_t public_key,
-        byte new_root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH], vscr_ratchet_chain_key_t *chain_key);
+        byte new_root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH], vscr_ratchet_chain_key_t *chain_key);
 
 VSCR_PUBLIC void
 vscr_ratchet_keys_advance_chain_key(vscr_ratchet_chain_key_t *chain_key);

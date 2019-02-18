@@ -11,12 +11,17 @@
     <require impl="hmac"/>
     <require impl="hkdf"/>
     <require impl="aes256 gcm"/>
+    <require impl="aes256 cbc"/>
     <require impl="hash based alg info"/>
     <require impl="cipher alg info"/>
     <require impl="salted kdf alg info"/>
     <require impl="pbe alg info"/>
     <require impl="pkcs5 pbkdf2"/>
     <require impl="pkcs5 pbes2"/>
+    <require impl="rsa public key"/>
+    <require impl="rsa private key"/>
+    <require impl="ed25519 public key"/>
+    <require impl="ed25519 private key"/>
 
     <method name="create hash alg" is_static="1">
         Create algorithm that implements "hash stream" interface.
@@ -56,5 +61,21 @@
         <argument name="alg info" interface="alg info"/>
 
         <return interface="cipher" access="disown"/>
+    </method>
+
+    <method name="create public key alg" is_static="1">
+        Create algorithm that implements "public key" interface.
+
+        <argument name="raw key" class="raw key"/>
+
+        <return interface="public key" access="disown"/>
+    </method>
+
+    <method name="create private key alg" is_static="1">
+        Create algorithm that implements "private key" interface.
+
+        <argument name="raw key" class="raw key"/>
+
+        <return interface="private key" access="disown"/>
     </method>
 </class>

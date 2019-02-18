@@ -104,7 +104,7 @@
 
 
     <implementation name="pbe alg info">
-        Create information about password-based encryption algorithm.
+        Handle information about password-based encryption algorithm.
 
         <interface name="alg info"/>
 

@@ -267,7 +267,7 @@ vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_sou
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(entropy_source);
-    VSCF_ASSERT_PTR(self->entropy_source == NULL);
+    VSCF_ASSERT(self->entropy_source == NULL);
 
     VSCF_ASSERT(vscf_entropy_source_is_implemented(entropy_source));
 

@@ -22,14 +22,14 @@
     </constructor>
 
 
-    <method name="alg id">
+    <method name="alg id" is_const="1">
         Returns asymmetric algorithm type that raw key belongs to.
 
         <return enum="alg id"/>
     </method>
 
 
-    <method name="data">
+    <method name="data" is_const="1">
         Return raw key data.
 
         <return class="data"/>

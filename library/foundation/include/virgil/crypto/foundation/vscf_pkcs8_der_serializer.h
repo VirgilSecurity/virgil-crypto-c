@@ -54,6 +54,7 @@
 #define VSCF_PKCS8_DER_SERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_error_ctx.h"
 #include "vscf_impl.h"
 #include "vscf_error.h"
 
@@ -157,6 +158,24 @@ vscf_pkcs8_der_serializer_take_asn1_writer(vscf_pkcs8_der_serializer_t *self, vs
 //
 VSCF_PUBLIC void
 vscf_pkcs8_der_serializer_release_asn1_writer(vscf_pkcs8_der_serializer_t *self);
+
+//
+//  Serialize Public Key by using internal ASN.1 writer.
+//  Note, that caller code is responsible to reset ASN.1 writer with
+//  an output buffer.
+//
+VSCF_PUBLIC size_t
+vscf_pkcs8_der_serializer_serialize_public_key_inplace(vscf_pkcs8_der_serializer_t *self, const vscf_impl_t *public_key,
+        vscf_error_ctx_t *error);
+
+//
+//  Serialize Private Key by using internal ASN.1 writer.
+//  Note, that caller code is responsible to reset ASN.1 writer with
+//  an output buffer.
+//
+VSCF_PUBLIC size_t
+vscf_pkcs8_der_serializer_serialize_private_key_inplace(vscf_pkcs8_der_serializer_t *self,
+        const vscf_impl_t *private_key, vscf_error_ctx_t *error);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.

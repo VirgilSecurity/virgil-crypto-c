@@ -55,6 +55,8 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_rsa_private_key_defs.h"
+#include "vscf_defaults.h"
+#include "vscf_defaults_api.h"
 #include "vscf_alg.h"
 #include "vscf_alg_api.h"
 #include "vscf_key.h"
@@ -86,6 +88,21 @@
 
 static const vscf_api_t *
 vscf_rsa_private_key_find_api(vscf_api_tag_t api_tag);
+
+//
+//  Configuration of the interface API 'defaults api'.
+//
+static const vscf_defaults_api_t defaults_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'defaults' MUST be equal to the 'vscf_api_tag_DEFAULTS'.
+    //
+    vscf_api_tag_DEFAULTS,
+    //
+    //  Setup predefined values to the uninitialized class dependencies.
+    //
+    (vscf_defaults_api_setup_defaults_fn)vscf_rsa_private_key_setup_defaults
+};
 
 //
 //  Configuration of the interface API 'alg api'.
@@ -381,7 +398,7 @@ vscf_rsa_private_key_use_hash(vscf_rsa_private_key_t *self, vscf_impl_t *hash) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(self->hash == NULL);
+    VSCF_ASSERT(self->hash == NULL);
 
     VSCF_ASSERT(vscf_hash_is_implemented(hash));
 
@@ -423,7 +440,7 @@ vscf_rsa_private_key_use_random(vscf_rsa_private_key_t *self, vscf_impl_t *rando
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(self->random == NULL);
+    VSCF_ASSERT(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
@@ -465,7 +482,7 @@ vscf_rsa_private_key_use_asn1rd(vscf_rsa_private_key_t *self, vscf_impl_t *asn1r
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1rd);
-    VSCF_ASSERT_PTR(self->asn1rd == NULL);
+    VSCF_ASSERT(self->asn1rd == NULL);
 
     VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1rd));
 
@@ -507,7 +524,7 @@ vscf_rsa_private_key_use_asn1wr(vscf_rsa_private_key_t *self, vscf_impl_t *asn1w
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1wr);
-    VSCF_ASSERT_PTR(self->asn1wr == NULL);
+    VSCF_ASSERT(self->asn1wr == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1wr));
 
@@ -549,6 +566,8 @@ vscf_rsa_private_key_find_api(vscf_api_tag_t api_tag) {
             return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_DECRYPT:
             return (const vscf_api_t *) &decrypt_api;
+        case vscf_api_tag_DEFAULTS:
+            return (const vscf_api_t *) &defaults_api;
         case vscf_api_tag_GENERATE_KEY:
             return (const vscf_api_t *) &generate_key_api;
         case vscf_api_tag_KEY:

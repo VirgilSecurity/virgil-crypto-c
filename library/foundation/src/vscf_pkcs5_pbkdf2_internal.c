@@ -301,7 +301,7 @@ vscf_pkcs5_pbkdf2_use_hmac(vscf_pkcs5_pbkdf2_t *self, vscf_impl_t *hmac) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hmac);
-    VSCF_ASSERT_PTR(self->hmac == NULL);
+    VSCF_ASSERT(self->hmac == NULL);
 
     VSCF_ASSERT(vscf_mac_is_implemented(hmac));
 

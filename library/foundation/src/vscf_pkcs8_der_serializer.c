@@ -82,6 +82,153 @@
 
 
 //
+//  Serialize Public Key by using internal ASN.1 writer.
+//  Note, that caller code is responsible to reset ASN.1 writer with
+//  an output buffer.
+//
+VSCF_PUBLIC size_t
+vscf_pkcs8_der_serializer_serialize_public_key_inplace(
+        vscf_pkcs8_der_serializer_t *self, const vscf_impl_t *public_key, vscf_error_ctx_t *error) {
+
+    //  SubjectPublicKeyInfo ::= SEQUENCE {
+    //          algorithm AlgorithmIdentifier,
+    //          subjectPublicKey BIT STRING
+    //  }
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT(vscf_public_key_can_export_public_key(vscf_public_key_api(public_key)));
+    VSCF_ASSERT_PTR(self->asn1_writer);
+    VSCF_ASSERT(vscf_asn1_writer_unwritten_len(self->asn1_writer) >=
+                vscf_pkcs8_der_serializer_serialized_public_key_len(self, public_key));
+
+    if (error && (error->error != vscf_SUCCESS)) {
+        return 0;
+    }
+
+    size_t len = 0;
+
+    //
+    //  Write key
+    //
+    vsc_buffer_t *exportedKey = vsc_buffer_new_with_capacity(vscf_public_key_exported_public_key_len(public_key));
+    vscf_error_t status = vscf_public_key_export_public_key(public_key, exportedKey);
+
+    len += vscf_asn1_writer_write_octet_str_as_bitstring(self->asn1_writer, vsc_buffer_data(exportedKey));
+
+    vsc_buffer_destroy(&exportedKey);
+
+    if (status != vscf_SUCCESS) {
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, status);
+        return 0;
+    }
+
+    //
+    //  Write algorithm
+    //
+    size_t algorithm_count = 0;
+
+    vscf_alg_id_t public_key_alg_id = vscf_alg_alg_id(public_key);
+    if (vscf_alg_id_RSA == public_key_alg_id) {
+        algorithm_count += vscf_asn1_writer_write_null(self->asn1_writer);
+    }
+
+    algorithm_count += vscf_asn1_writer_write_oid(self->asn1_writer, vscf_oid_from_alg_id(public_key_alg_id));
+    algorithm_count += vscf_asn1_writer_write_sequence(self->asn1_writer, algorithm_count);
+    len += algorithm_count;
+
+    //
+    //  Write SubjectPublicKeyInfo
+    //
+    len += vscf_asn1_writer_write_sequence(self->asn1_writer, len);
+
+    //
+    //  Finalize
+    //
+    VSCF_ASSERT(vscf_asn1_writer_error(self->asn1_writer) == vscf_SUCCESS);
+
+    return len;
+}
+
+//
+//  Serialize Private Key by using internal ASN.1 writer.
+//  Note, that caller code is responsible to reset ASN.1 writer with
+//  an output buffer.
+//
+VSCF_PUBLIC size_t
+vscf_pkcs8_der_serializer_serialize_private_key_inplace(
+        vscf_pkcs8_der_serializer_t *self, const vscf_impl_t *private_key, vscf_error_ctx_t *error) {
+
+    //  PrivateKeyInfo ::= SEQUENCE {
+    //          version Version,
+    //          privateKeyAlgorithm PrivateKeyAlgorithmIdentifier,
+    //          privateKey PrivateKey,
+    //          attributes [0] IMPLICIT Attributes OPTIONAL
+    //  }
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT(vscf_private_key_can_export_private_key(vscf_private_key_api(private_key)));
+    VSCF_ASSERT_PTR(self->asn1_writer);
+    VSCF_ASSERT(vscf_asn1_writer_unwritten_len(self->asn1_writer) >=
+                vscf_pkcs8_der_serializer_serialized_private_key_len(self, private_key));
+
+    if (error && (error->error != vscf_SUCCESS)) {
+        return 0;
+    }
+
+    size_t len = 0;
+
+    //
+    //  Write key
+    //
+    vsc_buffer_t *exportedKey = vsc_buffer_new_with_capacity(vscf_private_key_exported_private_key_len(private_key));
+    vscf_error_t status = vscf_private_key_export_private_key(private_key, exportedKey);
+
+    len += vscf_asn1_writer_write_octet_str(self->asn1_writer, vsc_buffer_data(exportedKey));
+
+    vsc_buffer_destroy(&exportedKey);
+
+    if (status != vscf_SUCCESS) {
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, status);
+        return 0;
+    }
+
+    //
+    //  Write algorithm
+    //
+    size_t algorithm_count = 0;
+
+    vscf_alg_id_t private_key_alg_id = vscf_alg_alg_id(private_key);
+    if (vscf_alg_id_RSA == private_key_alg_id) {
+        algorithm_count += vscf_asn1_writer_write_null(self->asn1_writer);
+    }
+
+    algorithm_count += vscf_asn1_writer_write_oid(self->asn1_writer, vscf_oid_from_alg_id(private_key_alg_id));
+    algorithm_count += vscf_asn1_writer_write_sequence(self->asn1_writer, algorithm_count);
+    len += algorithm_count;
+
+    //
+    //  Write version
+    //
+    len += vscf_asn1_writer_write_int(self->asn1_writer, 0);
+
+    //
+    //  Write PrivateKeyInfo
+    //
+    len += vscf_asn1_writer_write_sequence(self->asn1_writer, len);
+
+    //
+    //  Finalize
+    //
+    VSCF_ASSERT(vscf_asn1_writer_error(self->asn1_writer) == vscf_SUCCESS);
+
+    return len;
+}
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t
@@ -136,54 +283,20 @@ vscf_pkcs8_der_serializer_serialize_public_key(
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_pkcs8_der_serializer_serialized_public_key_len(self, public_key));
     VSCF_ASSERT_PTR(self->asn1_writer);
 
-    //  SubjectPublicKeyInfo ::= SEQUENCE {
-    //          algorithm AlgorithmIdentifier,
-    //          subjectPublicKey BIT STRING
-    //  }
+    vscf_error_ctx_t error;
+    vscf_error_ctx_reset(&error);
 
-    vscf_impl_t *asn1_writer = self->asn1_writer;
-    vscf_asn1_writer_reset(asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
-    size_t total_count = 0;
+    vscf_asn1_writer_reset(self->asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
+    size_t len = vscf_pkcs8_der_serializer_serialize_public_key_inplace(self, public_key, &error);
 
-    //
-    //  Write key
-    //
-    vsc_buffer_t *exportedKey = vsc_buffer_new_with_capacity(vscf_public_key_exported_public_key_len(public_key));
-    vscf_error_t status = vscf_public_key_export_public_key(public_key, exportedKey);
-
-    total_count += vscf_asn1_writer_write_octet_str_as_bitstring(asn1_writer, vsc_buffer_data(exportedKey));
-
-    vsc_buffer_destroy(&exportedKey);
-
-    if (status != vscf_SUCCESS) {
-        return status;
+    if (error.error != vscf_SUCCESS) {
+        return error.error;
     }
 
-    //
-    //  Write algorithm
-    //
-    size_t algorithm_count = 0;
-
-    vscf_alg_id_t public_key_alg_id = vscf_alg_alg_id(public_key);
-    if (vscf_alg_id_RSA == public_key_alg_id) {
-        algorithm_count += vscf_asn1_writer_write_null(asn1_writer);
+    vsc_buffer_inc_used(out, len);
+    if (!vsc_buffer_is_reverse(out)) {
+        vscf_asn1_writer_finish(self->asn1_writer);
     }
-
-    algorithm_count += vscf_asn1_writer_write_oid(asn1_writer, vscf_oid_from_alg_id(public_key_alg_id));
-    algorithm_count += vscf_asn1_writer_write_sequence(asn1_writer, algorithm_count);
-    total_count += algorithm_count;
-
-    //
-    //  Write SubjectPublicKeyInfo
-    //
-    vscf_asn1_writer_write_sequence(asn1_writer, total_count);
-
-    //
-    //  Finalize
-    //
-    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
-
-    vsc_buffer_inc_used(out, vscf_asn1_writer_finish(asn1_writer));
 
     return vscf_SUCCESS;
 }
@@ -232,61 +345,20 @@ vscf_pkcs8_der_serializer_serialize_private_key(
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_pkcs8_der_serializer_serialized_private_key_len(self, private_key));
     VSCF_ASSERT_PTR(self->asn1_writer);
 
-    //  PrivateKeyInfo ::= SEQUENCE {
-    //          version Version,
-    //          privateKeyAlgorithm PrivateKeyAlgorithmIdentifier,
-    //          privateKey PrivateKey,
-    //          attributes [0] IMPLICIT Attributes OPTIONAL
-    //  }
+    vscf_error_ctx_t error;
+    vscf_error_ctx_reset(&error);
 
-    vscf_impl_t *asn1_writer = self->asn1_writer;
-    vscf_asn1_writer_reset(asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
-    size_t total_count = 0;
+    vscf_asn1_writer_reset(self->asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
+    size_t len = vscf_pkcs8_der_serializer_serialize_private_key_inplace(self, private_key, &error);
 
-    //
-    //  Write key
-    //
-    vsc_buffer_t *exportedKey = vsc_buffer_new_with_capacity(vscf_private_key_exported_private_key_len(private_key));
-    vscf_error_t status = vscf_private_key_export_private_key(private_key, exportedKey);
-
-    total_count += vscf_asn1_writer_write_octet_str(asn1_writer, vsc_buffer_data(exportedKey));
-
-    vsc_buffer_destroy(&exportedKey);
-
-    if (status != vscf_SUCCESS) {
-        return status;
+    if (error.error != vscf_SUCCESS) {
+        return error.error;
     }
 
-    //
-    //  Write algorithm
-    //
-    size_t algorithm_count = 0;
-
-    vscf_alg_id_t private_key_alg_id = vscf_alg_alg_id(private_key);
-    if (vscf_alg_id_RSA == private_key_alg_id) {
-        algorithm_count += vscf_asn1_writer_write_null(asn1_writer);
+    vsc_buffer_inc_used(out, len);
+    if (!vsc_buffer_is_reverse(out)) {
+        vscf_asn1_writer_finish(self->asn1_writer);
     }
-
-    algorithm_count += vscf_asn1_writer_write_oid(asn1_writer, vscf_oid_from_alg_id(private_key_alg_id));
-    algorithm_count += vscf_asn1_writer_write_sequence(asn1_writer, algorithm_count);
-    total_count += algorithm_count;
-
-    //
-    //  Write version
-    //
-    total_count += vscf_asn1_writer_write_int(asn1_writer, 0);
-
-    //
-    //  Write PrivateKeyInfo
-    //
-    vscf_asn1_writer_write_sequence(asn1_writer, total_count);
-
-    //
-    //  Finalize
-    //
-    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
-
-    vsc_buffer_inc_used(out, vscf_asn1_writer_finish(asn1_writer));
 
     return vscf_SUCCESS;
 }

@@ -279,7 +279,7 @@ vscf_hmac_use_hash(vscf_hmac_t *self, vscf_impl_t *hash) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(self->hash == NULL);
+    VSCF_ASSERT(self->hash == NULL);
 
     VSCF_ASSERT(vscf_hash_is_implemented(hash));
 

@@ -54,9 +54,10 @@
 #define VSCF_ED25519_PUBLIC_KEY_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_error_ctx.h"
 #include "vscf_impl.h"
-#include "vscf_alg_id.h"
 #include "vscf_error.h"
+#include "vscf_alg_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -157,6 +158,31 @@ VSCF_PUBLIC vscf_ed25519_public_key_t *
 vscf_ed25519_public_key_shallow_copy(vscf_ed25519_public_key_t *self);
 
 //
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ed25519_public_key_use_random(vscf_ed25519_public_key_t *self, vscf_impl_t *random);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ed25519_public_key_take_random(vscf_ed25519_public_key_t *self, vscf_impl_t *random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_ed25519_public_key_release_random(vscf_ed25519_public_key_t *self);
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_ed25519_public_key_setup_defaults(vscf_ed25519_public_key_t *self);
+
+//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -217,6 +243,12 @@ vscf_ed25519_public_key_exported_public_key_len(const vscf_ed25519_public_key_t 
 //
 VSCF_PUBLIC vscf_error_t
 vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_t *self, vsc_data_t data);
+
+//
+//  Generate ephemeral private key of the same type.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_ed25519_public_key_generate_ephemeral_key(vscf_ed25519_public_key_t *self, vscf_error_ctx_t *error);
 
 
 // --------------------------------------------------------------------------

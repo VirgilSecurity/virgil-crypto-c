@@ -55,8 +55,8 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_alg_id.h"
 #include "vscf_error.h"
+#include "vscf_alg_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -174,6 +174,12 @@ vscf_ed25519_private_key_take_random(vscf_ed25519_private_key_t *self, vscf_impl
 //
 VSCF_PUBLIC void
 vscf_ed25519_private_key_release_random(vscf_ed25519_private_key_t *self);
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_ed25519_private_key_setup_defaults(vscf_ed25519_private_key_t *self);
 
 //
 //  Provide algorithm identificator.

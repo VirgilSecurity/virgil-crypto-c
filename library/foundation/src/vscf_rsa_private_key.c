@@ -62,6 +62,7 @@
 #include "vscf_alg.h"
 #include "vscf_alg_info.h"
 #include "vscf_simple_alg_info.h"
+#include "vscf_ctr_drbg.h"
 #include "vscf_hash.h"
 #include "vscf_random.h"
 #include "vscf_asn1_reader.h"
@@ -131,6 +132,23 @@ vscf_rsa_private_key_set_keygen_params(vscf_rsa_private_key_t *self, size_t bitl
 
     self->gen_bitlen = bitlen;
     self->gen_exponent = exponent;
+}
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_rsa_private_key_setup_defaults(vscf_rsa_private_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        vscf_ctr_drbg_setup_defaults(random);
+        self->random = vscf_ctr_drbg_impl(random);
+    }
+
+    return vscf_SUCCESS;
 }
 
 //
@@ -386,59 +404,55 @@ vscf_rsa_private_key_export_private_key(const vscf_rsa_private_key_t *self, vsc_
     //       coefficient INTEGER -- (inverse of q) mod p }
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT_PTR(self->asn1wr);
-
     VSCF_ASSERT(mbedtls_rsa_check_privkey(&self->rsa_ctx) == 0);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_rsa_private_key_exported_private_key_len(self));
 
-    vscf_impl_t *asn1wr = self->asn1wr;
-    const mbedtls_rsa_context *rsa = &self->rsa_ctx;
-
+    vscf_asn1_writer_reset(self->asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
     vscf_error_ctx_t error;
     vscf_error_ctx_reset(&error);
 
-    vscf_asn1_writer_reset(asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
-
-    size_t top_sequence_len = 0;
+    size_t len = 0;
 
     // Write QP - modulus
-    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->QP, &error);
+    len += vscf_mbedtls_bignum_write_asn1(self->asn1wr, &self->rsa_ctx.QP, &error);
 
     // Write DQ - publicExponent
-    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->DQ, &error);
+    len += vscf_mbedtls_bignum_write_asn1(self->asn1wr, &self->rsa_ctx.DQ, &error);
 
     // Write DP - privateExponent
-    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->DP, &error);
+    len += vscf_mbedtls_bignum_write_asn1(self->asn1wr, &self->rsa_ctx.DP, &error);
 
     // Write Q - prime1
-    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->Q, &error);
+    len += vscf_mbedtls_bignum_write_asn1(self->asn1wr, &self->rsa_ctx.Q, &error);
 
     // Write P - prime2
-    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->P, &error);
+    len += vscf_mbedtls_bignum_write_asn1(self->asn1wr, &self->rsa_ctx.P, &error);
 
     // Write D - exponent1
-    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->D, &error);
+    len += vscf_mbedtls_bignum_write_asn1(self->asn1wr, &self->rsa_ctx.D, &error);
 
     // Write E - exponent2
-    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->E, &error);
+    len += vscf_mbedtls_bignum_write_asn1(self->asn1wr, &self->rsa_ctx.E, &error);
 
     // Write N - coefficient
-    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->N, &error);
+    len += vscf_mbedtls_bignum_write_asn1(self->asn1wr, &self->rsa_ctx.N, &error);
 
     // Write version (0)
-    top_sequence_len += vscf_asn1_writer_write_int(asn1wr, 0);
+    len += vscf_asn1_writer_write_int(self->asn1wr, 0);
 
-    vscf_asn1_writer_write_sequence(asn1wr, top_sequence_len);
+    len += vscf_asn1_writer_write_sequence(self->asn1wr, len);
 
-    vscf_error_ctx_update(&error, vscf_asn1_writer_error(asn1wr));
+    VSCF_ASSERT(vscf_asn1_writer_error(self->asn1wr) == vscf_SUCCESS);
+    VSCF_ASSERT(error.error == vscf_SUCCESS);
 
-    if (vscf_error_ctx_error(&error) != vscf_SUCCESS) {
-        return vscf_error_SMALL_BUFFER;
+    vsc_buffer_inc_used(out, len);
+
+    if (!vsc_buffer_is_reverse(out)) {
+        vscf_asn1_writer_finish(self->asn1wr);
     }
-
-    size_t writtenBytes = vscf_asn1_writer_finish(asn1wr);
-    vsc_buffer_inc_used(out, writtenBytes);
 
     return vscf_SUCCESS;
 }
