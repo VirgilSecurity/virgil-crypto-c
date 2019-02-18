@@ -7,6 +7,27 @@ gsl from "js_helpers.gsl"
 # General
 # --------------------------------------------------------------------------------------------------
 
+function js_append_js_enum_model(parent, source)
+  new js_enum to my.parent
+    js_enum.name = my.source.name
+    js_enum.variable_name = "$(my.source.name:Pascal)"
+    for my.source.constant
+      js_append_js_enum_value_model(js_enum, constant, index(constant) - 1)
+    endfor
+    return js_enum
+  endnew
+endfunction
+
+function js_append_js_wrapped_enum_model(parent, js_enum, wrapper)
+  new js_wrapped_enum to my.parent
+    js_wrapped_enum.name = my.js_enum.name
+    js_wrapped_enum.js_source_file = "$(my.js_enum.name:cobol).js"
+    js_wrapped_enum.js_source_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_enum.js_source_file)
+    echo js_wrapped_enum.string()
+    return js_wrapped_enum
+  endnew
+endfunction
+
 function js_append_js_module_model(parent, source, wrapper)
   new js_module to my.parent
     js_module.name = my.source.name
@@ -48,9 +69,20 @@ endfunction
 # JavaScript
 # --------------------------------------------------------------------------------------------------
 
+function js_append_js_enum_value_model(parent, source_enum_constant, index)
+  new js_enum_value to my.parent
+    js_enum_value.name = "$(my.source_enum_constant.name:c,upper)"
+    if defined(my.source_enum_constant.value)
+      js_enum_value.value = my.source_enum_constant.value
+    else
+      js_enum_value.value = my.index
+    endif
+  endnew
+endfunction
+
 function js_append_js_constant_model(parent, source_constant)
   new js_constant to my.parent
-    js_constant.name = "$(my.source_constant.name:Camel)"
+    js_constant.name = "$(my.source_constant.name:c,upper)"
     js_constant.value = my.source_constant.value
     return js_constant
   endnew

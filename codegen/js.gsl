@@ -30,6 +30,10 @@ endfunction
 
 function js_create_enum_module(source, destination, wrapper, meta)
   echo_info("js_create_enum_module", my)
+  if !(my.source.name = "error")
+    my.js_enum = js_append_js_enum_model(my.destination, my.source)
+    js_append_js_wrapped_enum_model(my.wrapper, my.js_enum, my.wrapper)
+  endif
 endfunction
 
 function js_module_resolve(source, wrapper)

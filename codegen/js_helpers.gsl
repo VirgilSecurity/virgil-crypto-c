@@ -26,10 +26,7 @@ function js_out(str, indent_level, indent_size)
 endfunction
 
 function js_create_indent_levels(indent_level)
-  my.custom_indent_level = 0
-  if defined(my.indent_level)
-    my.custom_indent_level = my.indent_level
-  endif
+  my.custom_indent_level = defined(my.indent_level) ?? my.indent_level ? 0
   my.indent_levels = XML.new()
   my.indent_levels.first = my.custom_indent_level
   my.indent_levels.second = my.custom_indent_level + 1

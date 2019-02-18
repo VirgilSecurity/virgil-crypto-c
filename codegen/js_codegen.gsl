@@ -434,6 +434,24 @@ function js_create_export_class(js_class, indent_level)
   js_out("module.exports.$(my.js_class.name:no) = $(my.js_class.name:no);", my.indent_levels.first)
 endfunction
 
+function js_create_enum(js_enum, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("const $(my.js_enum.variable_name:no) = {", my.indent_levels.first)
+  for my.js_enum.js_enum_value
+    my.value = "$(js_enum_value.name:no): $(js_enum_value.value:no)"
+    if !last()
+      my.value += ","
+    endif
+    js_out(my.value, my.indent_levels.second)
+  endfor
+  js_out("};", my.indent_levels.first)
+endfunction
+
+function js_create_export_enum(js_enum, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("module.exports.$(my.js_enum.variable_name:no) = $(my.js_enum.variable_name:no);", my.indent_levels.first)
+endfunction
+
 # --------------------------------------------------------------------------------------------------
 # Generate files
 # --------------------------------------------------------------------------------------------------
@@ -475,6 +493,15 @@ function js_create_js_source_files(source, wrapper)
       next js_module
     endfor
   endfor
+  for my.source.js_enum
+    for my.wrapper.js_wrapped_enum where js_enum.name = js_wrapped_enum.name
+      output js_wrapped_enum.js_source_file_path
+        js_create_enum(js_enum)
+        js_create_export_enum(js_enum)
+      close
+      next js_enum
+    endfor
+  endfor
 endfunction
 
 function js_create_index_js_file(wrapper)
@@ -485,6 +512,13 @@ function js_create_index_js_file(wrapper)
       js_out("{},", my.indent_levels.second)
       for my.wrapper.js_wrapped_module
         my.require = "require('./$(js_wrapped_module.js_source_file:no)')"
+        if !last() | !(count(my.wrapper.js_wrapped_enum) = 0)
+          my.require += ","
+        endif
+        js_out(my.require, my.indent_levels.second)
+      endfor
+      for my.wrapper.js_wrapped_enum
+        my.require = "require('./$(js_wrapped_enum.js_source_file:no)')"
         if !last()
           my.require += ","
         endif
