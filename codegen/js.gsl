@@ -51,9 +51,9 @@ function js_module_resolve(source, wrapper)
     endfor
     my.cpp_js_module_names = XML.new()
     for my.source->cpp_class.cpp_method
-      for cpp_method.cpp_js_module_argument
+      for cpp_method.cpp_js_module_context_argument
         new module_name to my.cpp_js_module_names
-          module_name.name = cpp_js_module_argument.module_name
+          module_name.name = cpp_js_module_context_argument.module_name
         endnew
       endfor
     endfor

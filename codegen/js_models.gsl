@@ -234,11 +234,11 @@ function js_append_cpp_buffer_argument_model(parent, cpp_source_argument, cpp_cl
   endnew
 endfunction
 
-function js_append_cpp_js_module_argument_model(parent, cpp_source_argument)
-  new cpp_js_module_argument to my.parent
-    cpp_js_module_argument.name = js_cpp_variable_name(my.cpp_source_argument.name)
-    cpp_js_module_argument.module_name = my.cpp_source_argument.class
-    return cpp_js_module_argument
+function js_append_cpp_js_module_context_argument_model(parent, cpp_source_argument)
+  new cpp_js_module_context_argument to my.parent
+    cpp_js_module_context_argument.name = js_cpp_variable_name(my.cpp_source_argument.name)
+    cpp_js_module_context_argument.module_name = my.cpp_source_argument.class
+    return cpp_js_module_context_argument
   endnew
 endfunction
 
@@ -258,7 +258,7 @@ function js_append_resolved_cpp_source_argument(parent, cpp_source_argument, cpp
   elsif js_cpp_value_is_cpp_buffer(my.cpp_source_argument)
     return js_append_cpp_buffer_argument_model(my.parent, my.cpp_source_argument, my.cpp_class, my.wrapper)
   elsif js_cpp_value_is_cpp_js_module(my.cpp_source_argument, my.wrapper)
-    return js_append_cpp_js_module_argument_model(my.parent, my.cpp_source_argument)
+    return js_append_cpp_js_module_context_argument_model(my.parent, my.cpp_source_argument)
   elsif js_cpp_value_is_cpp_error_context(my.cpp_source_argument)
     return js_append_cpp_error_context_argument_model(my.parent, my.cpp_source_argument, my.wrapper)
   else
