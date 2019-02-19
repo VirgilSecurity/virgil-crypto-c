@@ -237,11 +237,11 @@ function js_append_cpp_buffer_argument_model(parent, cpp_source_argument, cpp_cl
   endnew
 endfunction
 
-function js_append_cpp_js_module_context_argument_model(parent, cpp_source_argument)
-  new cpp_js_module_context_argument to my.parent
-    cpp_js_module_context_argument.name = js_cpp_variable_name(my.cpp_source_argument.name)
-    cpp_js_module_context_argument.module_name = my.cpp_source_argument.class
-    return cpp_js_module_context_argument
+function js_append_cpp_context_argument_model(parent, cpp_source_argument)
+  new cpp_context_argument to my.parent
+    cpp_context_argument.name = js_cpp_variable_name(my.cpp_source_argument.name)
+    cpp_context_argument.module_name = my.cpp_source_argument.class
+    return cpp_context_argument
   endnew
 endfunction
 
@@ -261,7 +261,7 @@ function js_append_resolved_cpp_source_argument(parent, cpp_source_argument, cpp
   elsif js_cpp_value_is_cpp_buffer(my.cpp_source_argument)
     return js_append_cpp_buffer_argument_model(my.parent, my.cpp_source_argument, my.cpp_class, my.wrapper)
   elsif js_cpp_value_is_cpp_js_module(my.cpp_source_argument, my.wrapper)
-    return js_append_cpp_js_module_context_argument_model(my.parent, my.cpp_source_argument)
+    return js_append_cpp_context_argument_model(my.parent, my.cpp_source_argument)
   elsif js_cpp_value_is_cpp_error_context(my.cpp_source_argument)
     return js_append_cpp_error_context_argument_model(my.parent, my.cpp_source_argument, my.wrapper)
   else
@@ -292,54 +292,54 @@ function js_append_cpp_source_return_model(parent, source_return)
   endnew
 endfunction
 
-function js_append_cpp_size_variable_declaration_model(parent, name)
-  new cpp_size_variable_declaration to my.parent
-    cpp_size_variable_declaration.name = my.name
-    return cpp_size_variable_declaration
+function js_append_cpp_method_return_size_model(parent, name)
+  new cpp_method_return_size to my.parent
+    cpp_method_return_size.name = my.name
+    return cpp_method_return_size
   endnew
 endfunction
 
-function js_append_cpp_boolean_variable_declaration_model(parent, name)
-  new cpp_boolean_variable_declaration to my.parent
-    cpp_boolean_variable_declaration.name = my.name
-    return cpp_boolean_variable_declaration
+function js_append_cpp_method_return_boolean_model(parent, name)
+  new cpp_method_return_boolean to my.parent
+    cpp_method_return_boolean.name = my.name
+    return cpp_method_return_boolean
   endnew
 endfunction
 
-function js_append_cpp_data_variable_declaration_model(parent, name)
-  new cpp_data_variable_declaration to my.parent
-    cpp_data_variable_declaration.name = my.name
-    return cpp_data_variable_declaration
+function js_append_cpp_method_return_data_model(parent, name)
+  new cpp_method_return_data to my.parent
+    cpp_method_return_data.name = my.name
+    return cpp_method_return_data
   endnew
 endfunction
 
-function js_append_cpp_buffer_variable_declaration_model(parent, name)
-  new cpp_buffer_variable_declaration to my.parent
-    cpp_buffer_variable_declaration.name = my.name
-    return cpp_buffer_variable_declaration
+function js_append_cpp_method_return_buffer_model(parent, name)
+  new cpp_method_return_buffer to my.parent
+    cpp_method_return_buffer.name = my.name
+    return cpp_method_return_buffer
   endnew
 endfunction
 
-function js_append_cpp_error_variable_declaration_model(parent, name)
-  new cpp_error_variable_declaration to my.parent
-    cpp_error_variable_declaration.name = my.name
-    return cpp_error_variable_declaration
+function js_append_cpp_method_return_error_model(parent, name)
+  new cpp_method_return_error to my.parent
+    cpp_method_return_error.name = my.name
+    return cpp_method_return_error
   endnew
 endfunction
 
-function js_append_cpp_js_module_context_variable_declaration_model(parent, name, class)
-  new cpp_js_module_context_variable_declaration to my.parent
-    cpp_js_module_context_variable_declaration.name = my.name
-    cpp_js_module_context_variable_declaration.class = my.class
-    return cpp_js_module_context_variable_declaration
+function js_append_cpp_method_return_context_model(parent, name, class)
+  new cpp_method_return_context to my.parent
+    cpp_method_return_context.name = my.name
+    cpp_method_return_context.class = my.class
+    return cpp_method_return_context
   endnew
 endfunction
 
-function js_append_cpp_enum_variable_declaration_model(parent, name, enum)
-  new cpp_enum_variable_declaration to my.parent
-    cpp_enum_variable_declaration.name = my.name
-    cpp_enum_variable_declaration.enum = my.enum
-    return cpp_enum_variable_declaration
+function js_append_cpp_method_return_enum_model(parent, name, enum)
+  new cpp_method_return_enum to my.parent
+    cpp_method_return_enum.name = my.name
+    cpp_method_return_enum.enum = my.enum
+    return cpp_method_return_enum
   endnew
 endfunction
 
@@ -353,24 +353,24 @@ endfunction
 function js_append_resolved_cpp_source_return(parent, cpp_source_return, wrapper)
   my.cpp_method_return = js_append_cpp_method_return_model(my.parent)
   if js_cpp_value_is_cpp_size(my.cpp_source_return)
-    js_append_cpp_size_variable_declaration_model(my.parent, my.cpp_method_return.name)
+    js_append_cpp_method_return_size_model(my.parent, my.cpp_method_return.name)
     js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
   elsif js_cpp_value_is_cpp_js_boolean(my.cpp_source_return)
-    js_append_cpp_boolean_variable_declaration_model(my.parent, my.cpp_method_return.name)
+    js_append_cpp_method_return_boolean_model(my.parent, my.cpp_method_return.name)
     js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
   elsif js_cpp_value_is_cpp_data(my.cpp_source_return)
-    js_append_cpp_data_variable_declaration_model(my.parent, my.cpp_method_return.name)
+    js_append_cpp_method_return_data_model(my.parent, my.cpp_method_return.name)
     js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
   elsif js_cpp_value_is_cpp_buffer(my.cpp_source_return)
-    js_append_cpp_buffer_variable_declaration_model(my.parent, my.cpp_method_return.name)
+    js_append_cpp_method_return_buffer_model(my.parent, my.cpp_method_return.name)
     js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
   elsif js_cpp_value_is_cpp_error(my.cpp_source_return)
-    js_append_cpp_error_variable_declaration_model(my.parent, my.cpp_method_return.name)
+    js_append_cpp_method_return_error_model(my.parent, my.cpp_method_return.name)
   elsif js_cpp_value_is_cpp_js_module(my.cpp_source_return, my.wrapper)
-    js_append_cpp_js_module_context_variable_declaration_model(my.parent, my.cpp_method_return.name, my.cpp_source_return.class)
+    js_append_cpp_method_return_context_model(my.parent, my.cpp_method_return.name, my.cpp_source_return.class)
     js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
   elsif js_cpp_value_is_cpp_enum(my.cpp_source_return, my.wrapper)
-    js_append_cpp_enum_variable_declaration_model(my.parent, my.cpp_method_return.name, my.cpp_source_return.enum)
+    js_append_cpp_method_return_enum_model(my.parent, my.cpp_method_return.name, my.cpp_source_return.enum)
     js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
   else
     echo_fatal("Unable to resolve return", my)
