@@ -262,7 +262,9 @@ vsce_phe_client_shallow_copy(vsce_phe_client_t *self) {
 }
 
 //
-//  Setup dependency to the interface 'random' with shared ownership.
+//  Random used for key generation, proofs, etc.
+//
+//  Note, ownership is shared.
 //
 VSCE_PUBLIC void
 vsce_phe_client_use_random(vsce_phe_client_t *self, vscf_impl_t *random) {
@@ -277,7 +279,9 @@ vsce_phe_client_use_random(vsce_phe_client_t *self, vscf_impl_t *random) {
 }
 
 //
-//  Setup dependency to the interface 'random' and transfer ownership.
+//  Random used for key generation, proofs, etc.
+//
+//  Note, ownership is transfered.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCE_PUBLIC void
@@ -304,7 +308,9 @@ vsce_phe_client_release_random(vsce_phe_client_t *self) {
 }
 
 //
-//  Setup dependency to the interface 'random' with shared ownership.
+//  Random used for crypto operations to make them const-time
+//
+//  Note, ownership is shared.
 //
 VSCE_PUBLIC void
 vsce_phe_client_use_operation_random(vsce_phe_client_t *self, vscf_impl_t *operation_random) {
@@ -319,7 +325,9 @@ vsce_phe_client_use_operation_random(vsce_phe_client_t *self, vscf_impl_t *opera
 }
 
 //
-//  Setup dependency to the interface 'random' and transfer ownership.
+//  Random used for crypto operations to make them const-time
+//
+//  Note, ownership is transfered.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCE_PUBLIC void
