@@ -218,6 +218,13 @@ function js_cpp_create_cpp_error_context_argument(cpp_error_context_argument, in
   js_out("$(my.cpp_error_context_argument.class:no)_error(&$(my.cpp_error_context_argument.name:no));", my.indent_levels.first)
 endfunction
 
+function js_cpp_create_cpp_enum_argument(cpp_enum_argument, index, wrapper, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  for my.wrapper.js_wrapped_enum where my.cpp_enum_argument.enum_name = js_wrapped_enum.name
+    js_out("$(js_wrapped_enum.c_name:no) $(my.cpp_enum_argument.name:no) = ($(js_wrapped_enum.c_name:no))Nan::To<int32_t>($(js_cpp_callback_info_name())[$(my.index)]).FromJust();", my.indent_levels.first)
+  endfor
+endfunction
+
 function js_cpp_create_method_arguments(cpp_method, cpp_class, wrapper, indent_level)
   for my.cpp_method.cpp_call_argument
     my.cpp_call_argument_index = index(cpp_call_argument) - 1
@@ -231,6 +238,10 @@ function js_cpp_create_method_arguments(cpp_method, cpp_class, wrapper, indent_l
     endfor
     for my.cpp_method.cpp_context_argument where cpp_context_argument.name = cpp_call_argument.name
       js_cpp_create_cpp_context_argument(cpp_context_argument, my.cpp_call_argument_index, my.wrapper, my.indent_level)
+      next cpp_call_argument
+    endfor
+    for my.cpp_method.cpp_enum_argument where cpp_enum_argument.name = cpp_call_argument.name
+      js_cpp_create_cpp_enum_argument(cpp_enum_argument, my.cpp_call_argument_index, my.wrapper, my.indent_level)
       next cpp_call_argument
     endfor
   endfor

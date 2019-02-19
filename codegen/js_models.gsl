@@ -169,6 +169,9 @@ function js_append_cpp_source_argument_model(parent, source_argument)
     if defined(my.source_argument.type)
       cpp_source_argument.type = my.source_argument.type
     endif
+    if defined(my.source_argument.enum)
+      cpp_source_argument.enum = my.source_argument.enum
+    endif
     if defined(my.source_argument.class)
       cpp_source_argument.class = my.source_argument.class
     endif
@@ -253,18 +256,29 @@ function js_append_cpp_error_context_argument_model(parent, cpp_source_argument,
   endnew
 endfunction
 
+function js_append_cpp_enum_argument_model(parent, cpp_source_argument)
+  new cpp_enum_argument to my.parent
+    cpp_enum_argument.name = js_cpp_variable_name(my.cpp_source_argument.name)
+    cpp_enum_argument.enum_name = my.cpp_source_argument.enum
+    return cpp_enum_argument
+  endnew
+endfunction
+
 function js_append_resolved_cpp_source_argument(parent, cpp_source_argument, cpp_class, wrapper)
   if js_cpp_value_is_cpp_size(my.cpp_source_argument)
-    return js_append_cpp_size_argument_model(my.parent, my.cpp_source_argument)
+    js_append_cpp_size_argument_model(my.parent, my.cpp_source_argument)
   elsif js_cpp_value_is_cpp_data(my.cpp_source_argument)
-    return js_append_cpp_data_argument_model(my.parent, my.cpp_source_argument)
+    js_append_cpp_data_argument_model(my.parent, my.cpp_source_argument)
   elsif js_cpp_value_is_cpp_buffer(my.cpp_source_argument)
-    return js_append_cpp_buffer_argument_model(my.parent, my.cpp_source_argument, my.cpp_class, my.wrapper)
+    js_append_cpp_buffer_argument_model(my.parent, my.cpp_source_argument, my.cpp_class, my.wrapper)
   elsif js_cpp_value_is_cpp_js_module(my.cpp_source_argument, my.wrapper)
-    return js_append_cpp_context_argument_model(my.parent, my.cpp_source_argument)
+    js_append_cpp_context_argument_model(my.parent, my.cpp_source_argument)
   elsif js_cpp_value_is_cpp_error_context(my.cpp_source_argument)
-    return js_append_cpp_error_context_argument_model(my.parent, my.cpp_source_argument, my.wrapper)
+    js_append_cpp_error_context_argument_model(my.parent, my.cpp_source_argument, my.wrapper)
+  elsif js_cpp_value_is_cpp_enum(my.cpp_source_argument, my.wrapper)
+    js_append_cpp_enum_argument_model(my.parent, my.cpp_source_argument)
   else
+    echo my.cpp_source_argument.string()
     echo_fatal("Unable to resolve argument", my)
   endif
 endfunction
