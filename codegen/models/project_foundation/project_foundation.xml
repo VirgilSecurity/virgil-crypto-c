@@ -47,12 +47,12 @@
     </license>
 
     <require project="common" feature="library"/>
-    <require library="mbedtls" feature="library"/>
+    <!--<require library="mbedtls" feature="library"/>-->
 
     <feature name="multi thread" default="on">
         Enable multi-threading safety for foundation library.
 
-        <require feature="THREADING C" library="mbedtls"/>
+        <!--<require feature="THREADING C" library="mbedtls"/>-->
     </feature>
 
     <module name="assert" from="shared"/>
@@ -65,73 +65,74 @@
     <enum name="oid id"/>
 
     <interface name="defaults" from="shared"/>
-    <interface name="cipher"/>
-    <interface name="auth encrypt"/>
-    <interface name="auth decrypt"/>
-    <interface name="cipher auth"/>
-    <interface name="cipher auth info"/>
-    <interface name="cipher info"/>
-    <interface name="decrypt"/>
-    <interface name="encrypt"/>
-    <interface name="salted kdf"/>
+    <!--<interface name="cipher"/>-->
+    <!--<interface name="auth encrypt"/>-->
+    <!--<interface name="auth decrypt"/>-->
+    <!--<interface name="cipher auth"/>-->
+    <!--<interface name="cipher auth info"/>-->
+    <!--<interface name="cipher info"/>-->
+    <!--<interface name="decrypt"/>-->
+    <!--<interface name="encrypt"/>-->
+    <!--<interface name="salted kdf"/>-->
     <interface name="hash"/>
-    <interface name="mac"/>
-    <interface name="kdf"/>
-    <interface name="random"/>
-    <interface name="entropy source"/>
+    <!--<interface name="mac"/>-->
+    <!--<interface name="kdf"/>-->
+    <!--<interface name="random"/>-->
+    <!--<interface name="entropy source"/>-->
 
-    <interface name="key"/>
-    <interface name="public key"/>
-    <interface name="private key"/>
-    <interface name="sign"/>
-    <interface name="verify"/>
-    <interface name="generate key"/>
-    <interface name="generate ephemeral key"/>
-    <interface name="compute shared key"/>
-    <interface name="key serializer"/>
-    <interface name="key deserializer"/>
+    <!--<interface name="key"/>-->
+    <!--<interface name="public key"/>-->
+    <!--<interface name="private key"/>-->
+    <!--<interface name="sign"/>-->
+    <!--<interface name="verify"/>-->
+    <!--<interface name="generate key"/>-->
+    <!--<interface name="generate ephemeral key"/>-->
+    <!--<interface name="compute shared key"/>-->
+    <!--<interface name="key serializer"/>-->
+    <!--<interface name="key deserializer"/>-->
 
-    <interface name="asn1 reader"/>
-    <interface name="asn1 writer"/>
+    <!--<interface name="asn1 reader"/>-->
+    <!--<interface name="asn1 writer"/>-->
 
     <interface name="alg"/>
-    <interface name="alg info"/>
-    <interface name="alg info serializer"/>
-    <interface name="alg info deserializer"/>
-    <interface name="message info serializer"/>
+    <!--<interface name="alg info"/>-->
+    <!--<interface name="alg info serializer"/>-->
+    <!--<interface name="alg info deserializer"/>-->
+    <!--<interface name="message info serializer"/>-->
 
     <class name="error"/>
-    <class name="mbedtls bignum asn1 writer"/>
-    <class name="mbedtls bignum asn1 reader"/>
-    <class name="mbedtls md"/>
-    <class name="raw key"/>
-    <class name="oid"/>
-    <class name="base64"/>
-    <class name="pem"/>
-    <class name="pem title"/>
-    <class name="message info"/>
-    <class name="key recipient info"/>
-    <class name="key recipient info list"/>
-    <class name="password recipient info"/>
-    <class name="password recipient info list"/>
-    <class name="alg factory"/>
-    <class name="ecies envelope"/>
+    <!--<class name="mbedtls bignum asn1 writer"/>-->
+    <!--<class name="mbedtls bignum asn1 reader"/>-->
+    <!--<class name="mbedtls md"/>-->
+    <!--<class name="raw key"/>-->
+    <!--<class name="oid"/>-->
+    <!--<class name="base64"/>-->
+    <!--<class name="pem"/>-->
+    <!--<class name="pem title"/>-->
+    <!--<class name="message info"/>-->
+    <!--<class name="key recipient info"/>-->
+    <!--<class name="key recipient info list"/>-->
+    <!--<class name="password recipient info"/>-->
+    <!--<class name="password recipient info list"/>-->
+    <!--<class name="alg factory"/>-->
+    <!--<class name="ecies envelope"/>-->
 
-    <implementor name="mbedtls"/>
-    <implementor name="mbedtls pk"/>
-    <implementor name="mbedtls rng"/>
-    <implementor name="virgil"/>
-    <implementor name="virgil pkcs8"/>
-    <implementor name="ed25519"/>
-    <implementor name="virgil ecies"/>
+    <!--<implementor name="mbedtls"/>-->
+    <!--<implementor name="mbedtls pk"/>-->
+    <!--<implementor name="mbedtls rng"/>-->
+    <!--<implementor name="virgil"/>-->
+    <!--<implementor name="virgil pkcs8"/>-->
+    <!--<implementor name="ed25519"/>-->
+    <!--<implementor name="virgil ecies"/>-->
+    <implementor name="iotelic"/>
 
-    <implementor name="alg info"/>
-    <implementor name="alg info der"/>
-    <implementor name="message info der serializer"/>
+    <!--<implementor name="alg info"/>-->
+    <!--<implementor name="alg info der"/>-->
+    <!--<implementor name="message info der serializer"/>-->
 
-    <module name="mbedtls bridge random"/>
-    <module name="mbedtls bridge entropy"/>
-    <module name="mbedtls bridge entropy poll"/>
+    <!--<module name="mbedtls bridge random"/>-->
+    <!--<module name="mbedtls bridge entropy"/>-->
+    <!--<module name="mbedtls bridge entropy poll"/>-->
 
     <error_message_getter success="0">
         <require enum="error"/>
@@ -140,5 +141,5 @@
         snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
     </error_message_getter>
 
-    <wrapper lang="swift"/>
+    <!--<wrapper lang="swift"/>-->
 </project>

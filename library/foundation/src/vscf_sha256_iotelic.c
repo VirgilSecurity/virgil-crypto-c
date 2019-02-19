@@ -39,10 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Implements custom assert mechanism, which:
-//      - allows to choose assertion handler from predefined set,
-//        or provide custom assertion handler;
-//      - allows to choose which assertion leave in production build.
+//  This module contains 'sha256_iotelic' implementation.
 // --------------------------------------------------------------------------
 
 
@@ -53,9 +50,11 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#include "vscf_sha256_iotelic.h"
 #include "vscf_assert.h"
-
-#include <stdio.h>
+#include "vscf_memory.h"
+#include "vscf_sha256_iotelic_defs.h"
+#include "vscf_sha256_iotelic_internal.h"
 
 // clang-format on
 //  @end
@@ -67,73 +66,79 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Return pointer to the last component in the path.
-//
-static const char *
-vscf_assert_path_basename(const char *path);
-
-//
-//  Active handler for assertion fail.
-//
-static vscf_assert_handler_fn active_handler = vscf_assert_abort;
-
-//
-//  Change active assertion handler.
-//
-VSCF_PUBLIC void
-vscf_assert_change_handler(vscf_assert_handler_fn handler_cb) {
-
-    VSCF_ASSERT (handler_cb);
-    active_handler = handler_cb;
-}
-
-//
-//  Assertion handler, that print given information and abort program.
-//  This is default handler.
-//
-VSCF_PUBLIC void
-vscf_assert_abort(const char *message, const char *file, int line) {
-
-    printf ("Assertion failed: %s, file %s, line %d\n",
-            message, vscf_assert_path_basename (file), line);
-
-    printf ("Abort");
-
-    abort ();
-}
-
-//
-//  Trigger active assertion handler.
-//
-VSCF_PUBLIC void
-vscf_assert_trigger(const char *message, const char *file, int line) {
-
-    active_handler (message, file, line);
-}
-
-//
-//  Return pointer to the last component in the path.
-//
-static const char *
-vscf_assert_path_basename(const char *path) {
-
-    const char *result = path;
-    for (const char *symbol = path; *symbol != '\0' && (symbol - path < 255); ++symbol) {
-
-        const char *next_symbol = symbol + 1;
-
-        if (*next_symbol != '\0' && (*symbol == '\\' || *symbol == '/')) {
-            result = next_symbol;
-        }
-    }
-
-    return result;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_sha256_iotelic_alg_id(const vscf_sha256_iotelic_t *self) {
+
+    VSCF_UNUSED(self);
+    return vscf_alg_id_SHA256;
+}
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_sha256_iotelic_produce_alg_info(const vscf_sha256_iotelic_t *self) {
+
+    VSCF_UNUSED(self);
+    return NULL;
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_sha256_iotelic_restore_alg_info(vscf_sha256_iotelic_t *self, const vscf_impl_t *alg_info) {
+
+    VSCF_UNUSED(self);
+    VSCF_UNUSED(alg_info);
+    return vscf_error_BAD_ARGUMENTS;
+}
+
+//
+//  Calculate hash over given data.
+//
+VSCF_PUBLIC void
+vscf_sha256_iotelic_hash(vsc_data_t data, vsc_buffer_t *digest) {
+
+    vsc_buffer_write_data(digest, data);
+}
+
+//
+//  Start a new hashing.
+//
+VSCF_PUBLIC void
+vscf_sha256_iotelic_start(vscf_sha256_iotelic_t *self) {
+
+    VSCF_UNUSED(self);
+}
+
+//
+//  Add given data to the hash.
+//
+VSCF_PUBLIC void
+vscf_sha256_iotelic_update(vscf_sha256_iotelic_t *self, vsc_data_t data) {
+
+    VSCF_UNUSED(self);
+    VSCF_UNUSED(data);
+}
+
+//
+//  Accompilsh hashing and return it's result (a message digest).
+//
+VSCF_PUBLIC void
+vscf_sha256_iotelic_finish(vscf_sha256_iotelic_t *self, vsc_buffer_t *digest) {
+
+    VSCF_UNUSED(self);
+    VSCF_UNUSED(digest);
+}

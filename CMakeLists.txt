@@ -87,6 +87,11 @@ option(VIRGIL_C_TESTING "On/Off C library integration tests." ON)
 option(VIRGIL_PHP_TESTING "On/Off PHP wrapper integration tests." ON)
 
 #
+# Specific implementations
+#
+option(VIRGIL_IMPL_IOTELIC "Build libraries for Iotelic" ON)
+
+#
 # Libraries
 #
 option(VIRGIL_LIB_COMMON "Build 'common' library" ON)
@@ -147,7 +152,7 @@ include(GNUInstallDirs)
 #
 # MbedTLS
 #
-if(VIRGIL_LIB_FOUNDATION OR VIRGIL_LIB_PYTHIA)
+if(NOT VIRGIL_IMPL_IOTELIC AND (VIRGIL_LIB_FOUNDATION OR VIRGIL_LIB_PYTHIA))
     add_subdirectory("thirdparty/mbedtls")
 endif()
 

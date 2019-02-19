@@ -1,0 +1,19 @@
+<implementor name="iotelic" is_default="1">
+    Provide implementation based on the Iotelic.
+
+    <implementation name="sha256_iotelic">
+        This is Iotelic implementation of SHA256.
+
+        <interface name="alg"/>
+        <interface name="hash">
+            <constant name="digest len" value="32"/>
+            <constant name="block len" value="64"/>
+        </interface>
+
+        <!--<require interface="alg info"/>-->
+        <!--<require impl="simple alg info"/>-->
+
+        <!--<property name="hash ctx" class="iotelic_sha256_context" is_reference="0"/>-->
+    </implementation>
+
+</implementor>

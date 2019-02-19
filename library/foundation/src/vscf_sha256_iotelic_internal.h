@@ -37,15 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Implements custom assert mechanism, which:
-//      - allows to choose assertion handler from predefined set,
-//        or provide custom assertion handler;
-//      - allows to choose which assertion leave in production build.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -53,12 +44,26 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_assert.h"
 
-#include <stdio.h>
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_SHA256_IOTELIC_INTERNAL_H_INCLUDED
+#define VSCF_SHA256_IOTELIC_INTERNAL_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_sha256_iotelic.h"
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -67,73 +72,19 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Return pointer to the last component in the path.
-//
-static const char *
-vscf_assert_path_basename(const char *path);
-
-//
-//  Active handler for assertion fail.
-//
-static vscf_assert_handler_fn active_handler = vscf_assert_abort;
-
-//
-//  Change active assertion handler.
-//
-VSCF_PUBLIC void
-vscf_assert_change_handler(vscf_assert_handler_fn handler_cb) {
-
-    VSCF_ASSERT (handler_cb);
-    active_handler = handler_cb;
-}
-
-//
-//  Assertion handler, that print given information and abort program.
-//  This is default handler.
-//
-VSCF_PUBLIC void
-vscf_assert_abort(const char *message, const char *file, int line) {
-
-    printf ("Assertion failed: %s, file %s, line %d\n",
-            message, vscf_assert_path_basename (file), line);
-
-    printf ("Abort");
-
-    abort ();
-}
-
-//
-//  Trigger active assertion handler.
-//
-VSCF_PUBLIC void
-vscf_assert_trigger(const char *message, const char *file, int line) {
-
-    active_handler (message, file, line);
-}
-
-//
-//  Return pointer to the last component in the path.
-//
-static const char *
-vscf_assert_path_basename(const char *path) {
-
-    const char *result = path;
-    for (const char *symbol = path; *symbol != '\0' && (symbol - path < 255); ++symbol) {
-
-        const char *next_symbol = symbol + 1;
-
-        if (*next_symbol != '\0' && (*symbol == '\\' || *symbol == '/')) {
-            result = next_symbol;
-        }
-    }
-
-    return result;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_SHA256_IOTELIC_INTERNAL_H_INCLUDED
 //  @end
