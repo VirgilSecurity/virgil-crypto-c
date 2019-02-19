@@ -95,22 +95,25 @@ import VirgilCryptoCommon
     ///
     /// In turn, Ephemeral Key must be conformed to the interface
     /// "compute shared key".
-    @objc public func setEncryptionKey(publicKey: PublicKey) {
-        vscf_ecies_set_encryption_key(self.c_ctx, publicKey.c_ctx)
+    @objc public func setEncryptionKey(encryptionKey: PublicKey) {
+        vscf_ecies_release_encryption_key(self.c_ctx)
+        vscf_ecies_use_encryption_key(self.c_ctx, encryptionKey.c_ctx)
     }
 
     /// Set private key that used for data decryption.
     ///
     /// Private Key must be conformed to the interface "compute shared key".
-    @objc public func setDecryptionKey(privateKey: PrivateKey) {
-        vscf_ecies_set_decryption_key(self.c_ctx, privateKey.c_ctx)
+    @objc public func setDecryptionKey(decryptionKey: PrivateKey) {
+        vscf_ecies_release_decryption_key(self.c_ctx)
+        vscf_ecies_use_decryption_key(self.c_ctx, decryptionKey.c_ctx)
     }
 
     /// Set private key that used for data decryption.
     ///
     /// Ephemeral Key must be conformed to the interface "compute shared key".
     @objc public func setEphemeralKey(ephemeralKey: PrivateKey) {
-        vscf_ecies_set_ephemeral_key(self.c_ctx, ephemeralKey.c_ctx)
+        vscf_ecies_release_ephemeral_key(self.c_ctx)
+        vscf_ecies_use_ephemeral_key(self.c_ctx, ephemeralKey.c_ctx)
     }
 
     /// Setup predefined values to the uninitialized class dependencies.

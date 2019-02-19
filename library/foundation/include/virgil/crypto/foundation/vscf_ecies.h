@@ -226,24 +226,85 @@ vscf_ecies_release_kdf(vscf_ecies_t *self);
 //  In turn, Ephemeral Key must be conformed to the interface
 //  "compute shared key".
 //
+//  Note, ownership is shared.
+//
 VSCF_PUBLIC void
-vscf_ecies_set_encryption_key(vscf_ecies_t *self, vscf_impl_t *public_key);
+vscf_ecies_use_encryption_key(vscf_ecies_t *self, vscf_impl_t *encryption_key);
+
+//
+//  Set public key that is used for data encryption.
+//
+//  If ephemeral key is not defined, then Public Key, must be conformed
+//  to the interface "generate ephemeral key".
+//
+//  In turn, Ephemeral Key must be conformed to the interface
+//  "compute shared key".
+//
+//  Note, ownership is transfered.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ecies_take_encryption_key(vscf_ecies_t *self, vscf_impl_t *encryption_key);
+
+//
+//  Release dependency to the interface 'public key'.
+//
+VSCF_PUBLIC void
+vscf_ecies_release_encryption_key(vscf_ecies_t *self);
 
 //
 //  Set private key that used for data decryption.
 //
 //  Private Key must be conformed to the interface "compute shared key".
 //
+//  Note, ownership is shared.
+//
 VSCF_PUBLIC void
-vscf_ecies_set_decryption_key(vscf_ecies_t *self, vscf_impl_t *private_key);
+vscf_ecies_use_decryption_key(vscf_ecies_t *self, vscf_impl_t *decryption_key);
+
+//
+//  Set private key that used for data decryption.
+//
+//  Private Key must be conformed to the interface "compute shared key".
+//
+//  Note, ownership is transfered.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ecies_take_decryption_key(vscf_ecies_t *self, vscf_impl_t *decryption_key);
+
+//
+//  Release dependency to the interface 'private key'.
+//
+VSCF_PUBLIC void
+vscf_ecies_release_decryption_key(vscf_ecies_t *self);
 
 //
 //  Set private key that used for data decryption.
 //
 //  Ephemeral Key must be conformed to the interface "compute shared key".
 //
+//  Note, ownership is shared.
+//
 VSCF_PUBLIC void
-vscf_ecies_set_ephemeral_key(vscf_ecies_t *self, vscf_impl_t *ephemeral_key);
+vscf_ecies_use_ephemeral_key(vscf_ecies_t *self, vscf_impl_t *ephemeral_key);
+
+//
+//  Set private key that used for data decryption.
+//
+//  Ephemeral Key must be conformed to the interface "compute shared key".
+//
+//  Note, ownership is transfered.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ecies_take_ephemeral_key(vscf_ecies_t *self, vscf_impl_t *ephemeral_key);
+
+//
+//  Release dependency to the interface 'private key'.
+//
+VSCF_PUBLIC void
+vscf_ecies_release_ephemeral_key(vscf_ecies_t *self);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.

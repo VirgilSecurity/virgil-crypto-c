@@ -106,15 +106,15 @@ struct vscf_ecies_t {
     //
     vscf_impl_t *kdf;
     //
-    //  Implementation specific context.
+    //  Dependency to the interface 'public key'.
     //
-    vscf_impl_t *public_key;
+    vscf_impl_t *encryption_key;
     //
-    //  Implementation specific context.
+    //  Dependency to the interface 'private key'.
     //
-    vscf_impl_t *private_key;
+    vscf_impl_t *decryption_key;
     //
-    //  Implementation specific context.
+    //  Dependency to the interface 'private key'.
     //
     vscf_impl_t *ephemeral_key;
     //
