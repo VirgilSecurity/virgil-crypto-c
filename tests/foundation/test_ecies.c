@@ -80,7 +80,7 @@ test__encrypt__virgil_message__success(void) {
 
     vscf_impl_t *public_key = vscf_alg_factory_create_public_key_alg(raw_public_key);
 
-    vscf_ecies_set_encryption_key(ecies, public_key);
+    vscf_ecies_take_encryption_key(ecies, public_key);
 
     vsc_buffer_t *enc_msg = vsc_buffer_new_with_capacity(vscf_ecies_encrypted_len(ecies, test_data_ecies_MESSAGE.len));
     vscf_error_t status = vscf_ecies_encrypt(ecies, test_data_ecies_MESSAGE, enc_msg);
@@ -88,7 +88,6 @@ test__encrypt__virgil_message__success(void) {
     TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
 
     vsc_buffer_destroy(&enc_msg);
-    vscf_impl_destroy(&public_key);
     vscf_raw_key_destroy(&raw_public_key);
     vscf_ecies_destroy(&ecies);
     vscf_pkcs8_deserializer_destroy(&pkcs8);
@@ -133,8 +132,8 @@ test__encrypt__messege_with_ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac_
 
     vscf_impl_t *ephemeral_key = vscf_alg_factory_create_private_key_alg(raw_ephemeral_key);
 
-    vscf_ecies_set_encryption_key(ecies, public_key);
-    vscf_ecies_set_ephemeral_key(ecies, ephemeral_key);
+    vscf_ecies_take_encryption_key(ecies, public_key);
+    vscf_ecies_take_ephemeral_key(ecies, ephemeral_key);
 
     vsc_buffer_t *enc_msg = vsc_buffer_new_with_capacity(vscf_ecies_encrypted_len(ecies, test_data_ecies_MESSAGE.len));
     vscf_error_t status = vscf_ecies_encrypt(ecies, test_data_ecies_MESSAGE, enc_msg);
@@ -143,9 +142,7 @@ test__encrypt__messege_with_ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac_
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ecies_ED25519_ENCRYPTED_MESSAGE, enc_msg);
 
     vsc_buffer_destroy(&enc_msg);
-    vscf_impl_destroy(&ephemeral_key);
     vscf_raw_key_destroy(&raw_ephemeral_key);
-    vscf_impl_destroy(&public_key);
     vscf_raw_key_destroy(&raw_public_key);
     vscf_pkcs8_deserializer_destroy(&pkcs8);
     vscf_ecies_destroy(&ecies);
@@ -165,7 +162,7 @@ test__decrypt__ed25519_encrypted_message__match_virgil_message(void) {
 
     vscf_impl_t *private_key = vscf_alg_factory_create_private_key_alg(raw_private_key);
 
-    vscf_ecies_set_decryption_key(ecies, private_key);
+    vscf_ecies_take_decryption_key(ecies, private_key);
 
     vsc_buffer_t *dec_msg = vsc_buffer_new_with_capacity(
             vscf_ecies_decrypted_len(ecies, test_data_ecies_ED25519_ENCRYPTED_MESSAGE.len));
@@ -175,7 +172,6 @@ test__decrypt__ed25519_encrypted_message__match_virgil_message(void) {
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ecies_MESSAGE, dec_msg);
 
     vsc_buffer_destroy(&dec_msg);
-    vscf_impl_destroy(&private_key);
     vscf_raw_key_destroy(&raw_private_key);
     vscf_ecies_destroy(&ecies);
     vscf_pkcs8_deserializer_destroy(&pkcs8);
