@@ -198,8 +198,6 @@ test__decrypt__message_with_imported_key__success(void) {
     TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ed25519_MESSAGE, dec_msg);
 
-    print_buffer(dec_msg);
-
     vsc_buffer_destroy(&dec_msg);
     vscf_ed25519_private_key_destroy(&private_key);
 }
