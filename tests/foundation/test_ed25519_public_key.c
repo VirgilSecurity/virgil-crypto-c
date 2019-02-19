@@ -121,8 +121,6 @@ test__encrypt__message_with_imported_key__success(void) {
             vsc_buffer_new_with_capacity(vscf_ed25519_public_key_encrypted_len(public_key, test_ed25519_MESSAGE.len));
     vscf_error_t status = vscf_ed25519_public_key_encrypt(public_key, test_ed25519_MESSAGE, enc_msg);
 
-    print_buffer(enc_msg);
-
     TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
 
     vsc_buffer_destroy(&enc_msg);
