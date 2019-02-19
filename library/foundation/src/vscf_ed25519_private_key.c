@@ -120,6 +120,12 @@ vscf_ed25519_private_key_setup_defaults(vscf_ed25519_private_key_t *self) {
         self->random = vscf_ctr_drbg_impl(random);
     }
 
+    if (NULL == self->ecies) {
+        self->ecies = vscf_ecies_new();
+        vscf_ecies_use_random(self->ecies, self->random);
+        vscf_ecies_setup_defaults(self->ecies);
+    }
+
     return vscf_SUCCESS;
 }
 
@@ -194,6 +200,43 @@ vscf_ed25519_private_key_generate_key(vscf_ed25519_private_key_t *self) {
     }
     vsc_buffer_destroy(&generated);
     return vscf_SUCCESS;
+}
+
+//
+//  Decrypt given data.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_ed25519_private_key_decrypt(vscf_ed25519_private_key_t *self, vsc_data_t data, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->ecies);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_ed25519_private_key_decrypted_len(self, data.len));
+
+    vscf_ecies_use_decryption_key(self->ecies, vscf_ed25519_private_key_impl(self));
+    vscf_error_t status = vscf_ecies_decrypt(self->ecies, data, out);
+    vscf_ecies_release_decryption_key(self->ecies);
+
+    if (status != vscf_SUCCESS) {
+        //  TODO: Log underlying error
+        return vscf_error_BAD_ENCRYPTED_DATA;
+    }
+
+    return vscf_SUCCESS;
+}
+
+//
+//  Calculate required buffer length to hold the decrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_ed25519_private_key_decrypted_len(vscf_ed25519_private_key_t *self, size_t data_len) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->ecies);
+
+    return vscf_ecies_decrypted_len(self->ecies, data_len);
 }
 
 //

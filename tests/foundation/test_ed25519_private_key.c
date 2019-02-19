@@ -182,6 +182,27 @@ test__generate_key__exported_equals_private_key(void) {
     vscf_ed25519_private_key_destroy(&private_key);
 }
 
+void
+test__decrypt__message_with_imported_key__success(void) {
+
+    vscf_ed25519_private_key_t *private_key = vscf_ed25519_private_key_new();
+    vscf_ed25519_private_key_setup_defaults(private_key);
+
+    vscf_error_t result = vscf_ed25519_private_key_import_private_key(private_key, test_ed25519_PRIVATE_KEY);
+    VSCF_ASSERT(result == vscf_SUCCESS);
+
+    vsc_buffer_t *dec_msg = vsc_buffer_new_with_capacity(
+            vscf_ed25519_private_key_decrypted_len(private_key, test_ed25519_ENCRYPTED_MESSAGE.len));
+    vscf_error_t status = vscf_ed25519_private_key_decrypt(private_key, test_ed25519_ENCRYPTED_MESSAGE, dec_msg);
+
+    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ed25519_MESSAGE, dec_msg);
+
+    print_buffer(dec_msg);
+
+    vsc_buffer_destroy(&dec_msg);
+    vscf_ed25519_private_key_destroy(&private_key);
+}
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 // --------------------------------------------------------------------------
@@ -199,6 +220,7 @@ main(void) {
     RUN_TEST(test__sign__with_imported_private_key_and_message__equals_message_signature);
     RUN_TEST(test__export_private_key_with_imported_ed25519_private_key__when_exported_equals_ed25519_private_key);
     RUN_TEST(test__generate_key__exported_equals_private_key);
+    RUN_TEST(test__decrypt__message_with_imported_key__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
