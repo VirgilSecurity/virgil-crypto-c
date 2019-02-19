@@ -234,7 +234,9 @@ vsce_phe_cipher_shallow_copy(vsce_phe_cipher_t *self) {
 }
 
 //
-//  Setup dependency to the interface 'random' with shared ownership.
+//  Random used for salt generation
+//
+//  Note, ownership is shared.
 //
 VSCE_PUBLIC void
 vsce_phe_cipher_use_random(vsce_phe_cipher_t *self, vscf_impl_t *random) {
@@ -249,7 +251,9 @@ vsce_phe_cipher_use_random(vsce_phe_cipher_t *self, vscf_impl_t *random) {
 }
 
 //
-//  Setup dependency to the interface 'random' and transfer ownership.
+//  Random used for salt generation
+//
+//  Note, ownership is transfered.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCE_PUBLIC void

@@ -242,7 +242,9 @@ vscr_ratchet_session_shallow_copy(vscr_ratchet_session_t *self) {
 }
 
 //
-//  Setup dependency to the interface 'random' with shared ownership.
+//  Random used to generate keys
+//
+//  Note, ownership is shared.
 //
 VSCR_PUBLIC void
 vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) {
@@ -257,7 +259,9 @@ vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) {
 }
 
 //
-//  Setup dependency to the interface 'random' and transfer ownership.
+//  Random used to generate keys
+//
+//  Note, ownership is transfered.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCR_PUBLIC void
