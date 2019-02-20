@@ -181,7 +181,9 @@ endif()
 #
 # Protobuf
 #
-add_subdirectory("thirdparty/nanopb")
+if(NOT VIRGIL_LIB_IOTELIC)
+    add_subdirectory("thirdparty/nanopb")
+endif()
 
 
 # ---------------------------------------------------------------------------
