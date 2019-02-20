@@ -455,11 +455,13 @@ vscf_message_info_der_serializer_serialized_key_recipient_info_len(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(key_recipient_info);
 
-    size_t len = 1 + 1 + 3 +       //  KeyTransRecipientInfo ::= SEQUENCE {
-                 1 + 1 + 1 +       //      version CMSVersion, -- always set to 0 or 2
-                 1 + 1 + 64 +      //      rid RecipientIdentifier,
-                 1 + 1 + 32 +      //      keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
-                 1 + 1 + 2 + 1024; //      encryptedKey EncryptedKey }
+    size_t encrypted_key_len = vscf_key_recipient_info_encrypted_key(key_recipient_info).len;
+
+    size_t len = 1 + 1 + 3 +                    //  KeyTransRecipientInfo ::= SEQUENCE {
+                 1 + 1 + 1 +                    //      version CMSVersion, -- always set to 0 or 2
+                 1 + 1 + 64 +                   //      rid RecipientIdentifier,
+                 1 + 1 + 32 +                   //      keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
+                 1 + 1 + 2 + encrypted_key_len; //      encryptedKey EncryptedKey }
 
     return len;
 }

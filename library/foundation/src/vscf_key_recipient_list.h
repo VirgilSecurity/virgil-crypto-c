@@ -152,7 +152,7 @@ vscf_key_recipient_list_recipient_id(const vscf_key_recipient_list_t *self);
 //
 //  Return recipient public key.
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_key_recipient_list_recipient_public_key(const vscf_key_recipient_list_t *self);
 
 //

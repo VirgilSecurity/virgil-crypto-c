@@ -55,7 +55,9 @@
 
 #include "vscf_library.h"
 #include "vscf_key_recipient_list.h"
+#include "vscf_message_info.h"
 #include "vscf_impl.h"
+#include "vscf_message_info_der_serializer.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -109,9 +111,9 @@ struct vscf_recipient_cipher_t {
 
     vsc_buffer_t *decryption_password;
 
-    vsc_buffer_t *cipher_key;
+    vscf_message_info_t *message_info;
 
-    vsc_buffer_t *cipher_nonce;
+    vscf_message_info_der_serializer_t *message_info_der_serializer;
 };
 
 

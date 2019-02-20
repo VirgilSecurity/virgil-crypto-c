@@ -313,3 +313,17 @@ vscf_message_info_password_recipient_info_list(const vscf_message_info_t *self) 
 
     return self->password_recipients;
 }
+
+//
+//  Remove all recipients.
+//
+VSCF_PUBLIC void
+vscf_message_info_clear_recipients(vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->key_recipients);
+    VSCF_ASSERT_PTR(self->password_recipients);
+
+    vscf_key_recipient_info_list_clear(self->key_recipients);
+    vscf_password_recipient_info_list_clear(self->password_recipients);
+}

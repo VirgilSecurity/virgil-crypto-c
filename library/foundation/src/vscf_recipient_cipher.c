@@ -306,7 +306,12 @@ static void
 vscf_recipient_cipher_init_ctx(vscf_recipient_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    //  Properties are allocated by request.
+
+    self->message_info = vscf_message_info_new();
+    self->message_info_der_serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(self->message_info_der_serializer);
+
+    //  Another properties are allocated by request.
 }
 
 //
@@ -323,6 +328,8 @@ vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self) {
     vsc_buffer_destroy(&self->decryption_recipient_id);
     vscf_impl_destroy(&self->decryption_key);
     vsc_buffer_destroy(&self->decryption_password);
+    vscf_message_info_destroy(&self->message_info);
+    vscf_message_info_der_serializer_destroy(&self->message_info_der_serializer);
 }
 
 //
@@ -330,6 +337,12 @@ vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self) {
 //
 VSCF_PUBLIC void
 vscf_recipient_cipher_setup_defaults(vscf_recipient_cipher_t *self) {
+
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        vscf_ctr_drbg_setup_defaults(random);
+        self->random = vscf_ctr_drbg_impl(random);
+    }
 
     if (NULL == self->cipher) {
         self->cipher = vscf_aes256_gcm_impl(vscf_aes256_gcm_new());
@@ -377,44 +390,131 @@ vscf_recipient_cipher_message_info_len(const vscf_recipient_cipher_t *self) {
 
     VSCF_ASSERT(self);
 
-    size_t key_recipients_len = 0;
-    for (const vscf_key_recipient_list_t *curr = self->key_recipients; curr != NULL;
-            curr = vscf_key_recipient_list_next(curr)) {
-        key_recipients_len += 512;
-    }
-
-    return key_recipients_len;
+    return vscf_message_info_der_serializer_serialized_len(self->message_info_der_serializer, self->message_info);
 }
 
 //
 //  Start encryption process.
 //
-//  Note, store returned message info to use it for decryption process,
+VSCF_PUBLIC vscf_error_t
+vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT_PTR(self->cipher);
+    VSCF_ASSERT_PTR(self->cipher);
+
+    vscf_error_t status = vscf_SUCCESS;
+
+    //
+    //  Generate cipher key and nonce.
+    //
+    vsc_buffer_t *cipher_key = NULL;
+    vsc_buffer_t *cipher_nonce = NULL;
+
+    const size_t cipher_key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->cipher)));
+    const size_t cipher_nonce_len =
+            vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->cipher)));
+
+    cipher_key = vsc_buffer_new_with_capacity(cipher_key_len);
+    vsc_buffer_make_secure(cipher_key);
+
+    status = vscf_random(self->random, cipher_key_len, cipher_key);
+    if (status != vscf_SUCCESS) {
+        goto failed_generate_cipher_key;
+    }
+
+    cipher_nonce = vsc_buffer_new_with_capacity(cipher_nonce_len);
+
+    status = vscf_random(self->random, cipher_nonce_len, cipher_nonce);
+    if (status != vscf_SUCCESS) {
+        goto failed_generate_cipher_nonce;
+    }
+
+    //
+    //  Encrypt cipher key for each recipient.
+    //
+    vscf_message_info_clear_recipients(self->message_info);
+
+    for (const vscf_key_recipient_list_t *curr = self->key_recipients; curr != NULL;
+            curr = vscf_key_recipient_list_next(curr)) {
+
+        vsc_data_t recipient_id = vscf_key_recipient_list_recipient_id(curr);
+        vscf_impl_t *recipient_public_key = vscf_key_recipient_list_recipient_public_key(curr);
+
+        const size_t encrypted_key_len = vscf_encrypt_encrypted_len(recipient_public_key, cipher_key_len);
+        vsc_buffer_t *encrypted_key = vsc_buffer_new_with_capacity(encrypted_key_len);
+        status = vscf_encrypt(recipient_public_key, vsc_buffer_data(cipher_key), encrypted_key);
+
+        if (status != vscf_SUCCESS) {
+            vsc_buffer_destroy(&encrypted_key);
+            goto failed_build_message_info;
+        }
+
+        vscf_impl_t *key_encryption_algorithm = vscf_alg_produce_alg_info(recipient_public_key);
+        vscf_key_recipient_info_t *recipient_info = vscf_key_recipient_info_new_with_members(
+                recipient_id, &key_encryption_algorithm, vsc_buffer_data(encrypted_key));
+
+        vscf_message_info_add_key_recipient(self->message_info, &recipient_info);
+
+        vsc_buffer_destroy(&encrypted_key);
+    }
+
+    //
+    //  TODO: Add password recipients.
+    //
+
+    //
+    //  Configure cipher key and nonce.
+    //
+    vscf_cipher_set_key(self->cipher, vsc_buffer_data(cipher_key));
+    vscf_cipher_set_nonce(self->cipher, vsc_buffer_data(cipher_nonce));
+    vscf_cipher_start_encryption(self->cipher);
+
+    vsc_buffer_destroy(&cipher_key);
+    vsc_buffer_destroy(&cipher_nonce);
+
+    //
+    //  Append cipher info to the message info.
+    //
+    vscf_impl_t *data_encryption_alg_info = vscf_alg_produce_alg_info(self->cipher);
+    vscf_message_info_set_data_encryption_alg_info(self->message_info, &data_encryption_alg_info);
+
+    return vscf_SUCCESS;
+
+failed_build_message_info:
+    vscf_message_info_clear_recipients(self->message_info);
+
+failed_generate_cipher_nonce:
+    vsc_buffer_destroy(&cipher_nonce);
+
+failed_generate_cipher_key:
+    vsc_buffer_destroy(&cipher_key);
+
+    return status;
+}
+
+//
+//  Return serialized message info to the buffer.
+//
+//  Precondition: this method can be called after "start encryption".
+//  Precondition: this method can be called before "finish encryption".
+//
+//  Note, store message info to use it for decryption process,
 //  or place it at the encrypted data beginning (embedding).
 //
 //  Return message info - recipients public information,
 //  algorithm information, etc.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self, vsc_buffer_t *message_info) {
+VSCF_PUBLIC void
+vscf_recipient_cipher_pack_message_info(vscf_recipient_cipher_t *self, vsc_buffer_t *message_info) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->cipher);
     VSCF_ASSERT_PTR(message_info);
+    VSCF_ASSERT(vsc_buffer_is_valid(message_info));
+    VSCF_ASSERT(vsc_buffer_unused_len(message_info) >= vscf_recipient_cipher_message_info_len(self));
 
-    //
-    //  Generate cipher key.
-    //
-
-    //
-    //  Encrypt cipher key for each recipient.
-    //
-
-    //
-    //  Serialize message info.
-    //
-
-    return vscf_error_BAD_ARGUMENTS;
+    vscf_message_info_der_serializer_serialize(self->message_info_der_serializer, self->message_info, message_info);
 }
 
 //
@@ -427,7 +527,7 @@ vscf_recipient_cipher_encryption_out_len(vscf_recipient_cipher_t *self, size_t d
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->cipher);
     VSCF_UNUSED(data_len);
-    //  TODO: This is STUB. Implement me.
+
     return vscf_cipher_encrypted_out_len(self->cipher, data_len);
 }
 
@@ -442,8 +542,11 @@ vscf_recipient_cipher_process_encryption(vscf_recipient_cipher_t *self, vsc_data
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    //  TODO: This is STUB. Implement me.
-    return vscf_error_BAD_ARGUMENTS;
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_recipient_cipher_encryption_out_len(self, data.len));
+
+    vscf_cipher_update(self->cipher, data, out);
+
+    return vscf_SUCCESS;
 }
 
 //
@@ -455,8 +558,11 @@ vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffe
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    //  TODO: This is STUB. Implement me.
-    return vscf_error_BAD_ARGUMENTS;
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_recipient_cipher_encryption_out_len(self, 0));
+
+    vscf_error_t status = vscf_cipher_finish(self->cipher, out);
+
+    return status;
 }
 
 //

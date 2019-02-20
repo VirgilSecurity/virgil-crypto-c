@@ -239,7 +239,7 @@ vscf_key_recipient_list_add(
     VSCF_ASSERT(vscf_public_key_is_implemented(recipient_public_key));
 
     if (NULL == self->recipient_id) {
-        VSCF_ASSERT_PTR(self->recipient_public_key);
+        VSCF_ASSERT_NULL(self->recipient_public_key);
         self->recipient_id = vsc_buffer_new_with_data(recipient_id);
         self->recipient_public_key = vscf_impl_shallow_copy(recipient_public_key);
     } else {
@@ -277,7 +277,7 @@ vscf_key_recipient_list_recipient_id(const vscf_key_recipient_list_t *self) {
 //
 //  Return recipient public key.
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_key_recipient_list_recipient_public_key(const vscf_key_recipient_list_t *self) {
 
     VSCF_ASSERT_PTR(self);
