@@ -60,6 +60,8 @@ endfunction
 function js_append_js_include_module_model(parent, js_wrapped_module)
   new js_include_module to my.parent
     js_include_module.name = my.js_wrapped_module.name
+    js_include_module.js_class_name = my.js_wrapped_module.js_class_name
+    js_include_module.js_source_file = my.js_wrapped_module.js_source_file
     js_include_module.cpp_class_name = my.js_wrapped_module.cpp_class_name
     js_include_module.cpp_header_file = my.js_wrapped_module.cpp_header_file
     return js_include_module
@@ -92,7 +94,31 @@ endfunction
 function js_append_js_argument_model(parent, source_argument)
   new js_argument to my.parent
     js_argument.name = "$(my.source_argument.name:Camel)"
+    if defined(my.source_argument.type)
+      js_argument.type = my.source_argument.type
+    endif
+    if defined(my.source_argument.enum)
+      js_argument.enum = my.source_argument.enum
+    endif
+    if defined(my.source_argument.class)
+      js_argument.class = my.source_argument.class
+    endif
     return js_argument
+  endnew
+endfunction
+
+function js_append_js_return_model(parent, source_return)
+  new js_return to my.parent
+    if defined(my.source_return.type)
+      js_return.type = my.source_return.type
+    endif
+    if defined(my.source_return.enum)
+      js_return.enum = my.source_return.enum
+    endif
+    if defined(my.source_return.class)
+      js_return.class = my.source_return.class
+    endif
+    return js_return
   endnew
 endfunction
 
@@ -106,6 +132,9 @@ function js_append_method_model(parent, source_method)
     for my.source_method.argument where js_source_argument_is_js_argument(argument)
       js_append_js_argument_model(js_method, argument)
     endfor
+    if defined(my.source_method->return)
+      js_append_js_return_model(js_method, my.source_method->return)
+    endif
     return js_method
   endnew
 endfunction

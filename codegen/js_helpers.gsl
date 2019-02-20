@@ -51,20 +51,34 @@ function js_constant_is_private(constant)
 endfunction
 
 function js_source_argument_is_js_argument(source_argument)
-  return (defined(my.source_argument.type) & my.source_argument.type = "size") \
-    | (defined(my.source_argument.class) & my.source_argument.class = "data")
+  return !(defined(my.source_argument.class) & my.source_argument.class = "error ctx") \
+    & !(defined(my.source_argument.class) & my.source_argument.class = "buffer")
 endfunction
 
 function js_binding_class_name(class)
   return "$(my.class.name:no)Binding"
 endfunction
 
-function js_binding_reference()
-  return "this.binding"
+function js_binding_property_name()
+  return "binding"
 endfunction
 
 function js_binding_method_name(method)
   return "$(my.method.name:Camel)"
+endfunction
+
+function js_js_argument_is_js_module(js_argument, wrapper)
+  for my.wrapper.js_wrapped_module where defined(my.js_argument.class) & my.js_argument.class = js_wrapped_module.name
+    return 1
+  endfor
+  return 0
+endfunction
+
+function js_js_return_is_js_module(js_return, wrapper)
+  for my.wrapper.js_wrapped_module where defined(my.js_return.class) & my.js_return.class = js_wrapped_module.name
+    return 1
+  endfor
+  return 0
 endfunction
 
 # --------------------------------------------------------------------------------------------------
