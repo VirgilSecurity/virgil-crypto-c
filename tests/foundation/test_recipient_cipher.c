@@ -85,6 +85,11 @@ test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
     //
     //  Encrypt.
     //
+    vscf_recipient_cipher_add_key_recipient(
+            recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, public_key);
+
+    TEST_ASSERT_EQUAL(vscf_SUCCESS, vscf_recipient_cipher_start_encryption(recipient_cipher));
+
     size_t message_info_len = vscf_recipient_cipher_message_info_len(recipient_cipher);
     size_t enc_msg_len =
             vscf_recipient_cipher_encryption_out_len(recipient_cipher, test_data_recipient_cipher_MESSAGE.len) +
@@ -92,15 +97,11 @@ test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
 
     vsc_buffer_t *enc_msg = vsc_buffer_new_with_capacity(message_info_len + enc_msg_len);
 
-    vscf_recipient_cipher_add_key_recipient(
-            recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, public_key);
+    vscf_recipient_cipher_pack_message_info(recipient_cipher, enc_msg);
 
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, vscf_recipient_cipher_start_encryption(recipient_cipher, enc_msg));
-    print_buffer(enc_msg); //  message info
     TEST_ASSERT_EQUAL(vscf_SUCCESS,
             vscf_recipient_cipher_process_encryption(recipient_cipher, test_data_recipient_cipher_MESSAGE, enc_msg));
     TEST_ASSERT_EQUAL(vscf_SUCCESS, vscf_recipient_cipher_finish_encryption(recipient_cipher, enc_msg));
-    print_buffer(enc_msg); //  message info + encrypted data
 
     //
     //  Clear and decrypt.
@@ -146,7 +147,7 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    // RUN_TEST(test__encrypt_decrypt__with_ed25519_key_recipient__success);
+    RUN_TEST(test__encrypt_decrypt__with_ed25519_key_recipient__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

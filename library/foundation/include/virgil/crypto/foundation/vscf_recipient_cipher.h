@@ -201,14 +201,23 @@ vscf_recipient_cipher_message_info_len(const vscf_recipient_cipher_t *self);
 //
 //  Start encryption process.
 //
-//  Note, store returned message info to use it for decryption process,
+VSCF_PUBLIC vscf_error_t
+vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self);
+
+//
+//  Return serialized message info to the buffer.
+//
+//  Precondition: this method can be called after "start encryption".
+//  Precondition: this method can be called before "finish encryption".
+//
+//  Note, store message info to use it for decryption process,
 //  or place it at the encrypted data beginning (embedding).
 //
 //  Return message info - recipients public information,
 //  algorithm information, etc.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self, vsc_buffer_t *message_info);
+VSCF_PUBLIC void
+vscf_recipient_cipher_pack_message_info(vscf_recipient_cipher_t *self, vsc_buffer_t *message_info);
 
 //
 //  Return buffer length required to hold output of the method

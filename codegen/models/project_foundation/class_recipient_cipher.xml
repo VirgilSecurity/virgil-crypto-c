@@ -19,8 +19,8 @@
     <property name="decryption recipient id" class="buffer"/>
     <property name="decryption key" interface="private key"/>
     <property name="decryption password" class="buffer"/>
-    <property name="cipher key" class="buffer"/>
-    <property name="cipher nonce" class="buffer"/>
+    <property name="message info" class="message info"/>
+    <property name="message info der serializer" impl="message info der serializer"/>
 
     <method name="setup defaults">
         Setup dependencies with default values.
@@ -48,7 +48,16 @@
     <method name="start encryption">
         Start encryption process.
 
-        Note, store returned message info to use it for decryption process,
+        <return enum="error"/>
+    </method>
+
+    <method name="pack message info">
+        Return serialized message info to the buffer.
+
+        Precondition: this method can be called after "start encryption".
+        Precondition: this method can be called before "finish encryption".
+
+        Note, store message info to use it for decryption process,
         or place it at the encrypted data beginning (embedding).
 
         Return message info - recipients public information,
@@ -57,8 +66,6 @@
         <argument name="message info" class="buffer">
             <length method="message info len"/>
         </argument>
-
-        <return enum="error"/>
     </method>
 
     <method name="encryption out len">

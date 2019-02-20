@@ -107,13 +107,23 @@ import VirgilCryptoCommon
     }
 
     /// Start encryption process.
+    @objc public func startEncryption() throws {
+        let proxyResult = vscf_recipient_cipher_start_encryption(self.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
+    }
+
+    /// Return serialized message info to the buffer.
     ///
-    /// Note, store returned message info to use it for decryption process,
+    /// Precondition: this method can be called after "start encryption".
+    /// Precondition: this method can be called before "finish encryption".
+    ///
+    /// Note, store message info to use it for decryption process,
     /// or place it at the encrypted data beginning (embedding).
     ///
     /// Return message info - recipients public information,
     /// algorithm information, etc.
-    @objc public func startEncryption() throws -> Data {
+    @objc public func packMessageInfo() -> Data {
         let messageInfoCount = self.messageInfoLen()
         var messageInfo = Data(count: messageInfoCount)
         var messageInfoBuf = vsc_buffer_new()
@@ -121,14 +131,12 @@ import VirgilCryptoCommon
             vsc_buffer_delete(messageInfoBuf)
         }
 
-        let proxyResult = messageInfo.withUnsafeMutableBytes({ (messageInfoPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        messageInfo.withUnsafeMutableBytes({ (messageInfoPointer: UnsafeMutablePointer<byte>) -> Void in
             vsc_buffer_init(messageInfoBuf)
             vsc_buffer_use(messageInfoBuf, messageInfoPointer, messageInfoCount)
-            return vscf_recipient_cipher_start_encryption(self.c_ctx, messageInfoBuf)
+            vscf_recipient_cipher_pack_message_info(self.c_ctx, messageInfoBuf)
         })
         messageInfo.count = vsc_buffer_len(messageInfoBuf)
-
-        try FoundationError.handleError(fromC: proxyResult)
 
         return messageInfo
     }
