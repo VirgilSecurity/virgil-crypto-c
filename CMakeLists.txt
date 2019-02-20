@@ -100,6 +100,7 @@ option(VIRGIL_LIB_PYTHIA "Build 'pythia' library" ON)
 option(VIRGIL_LIB_ED25519 "Build 'ed25519' library" ON)
 option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" ON)
 option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
+option(VIRGIL_LIB_IOTELIC "Build 'iotelic' library" ON)
 
 #
 # Wrappers
@@ -168,6 +169,13 @@ endif()
 #
 if(VIRGIL_LIB_ED25519)
     add_subdirectory("thirdparty/ed25519")
+endif()
+
+#
+# Iotelic
+#
+if(VIRGIL_LIB_IOTELIC)
+    add_subdirectory("thirdparty/iotelic")
 endif()
 
 #

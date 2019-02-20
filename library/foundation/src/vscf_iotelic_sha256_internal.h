@@ -51,11 +51,11 @@
 //  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_SHA256_IOTELIC_INTERNAL_H_INCLUDED
-#define VSCF_SHA256_IOTELIC_INTERNAL_H_INCLUDED
+#ifndef VSCF_IOTELIC_SHA256_INTERNAL_H_INCLUDED
+#define VSCF_IOTELIC_SHA256_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_sha256_iotelic.h"
+#include "vscf_iotelic_sha256.h"
 
 // clang-format on
 //  @end
@@ -86,5 +86,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSCF_SHA256_IOTELIC_INTERNAL_H_INCLUDED
+#endif // VSCF_IOTELIC_SHA256_INTERNAL_H_INCLUDED
 //  @end

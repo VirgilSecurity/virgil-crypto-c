@@ -1,14 +1,19 @@
-<implementor name="iotelic" is_default="1">
+<implementor name="iotelic" is_default="0">
     Provide implementation based on the Iotelic.
 
-    <implementation name="sha256_iotelic">
+    <implementation name="sha256">
         This is Iotelic implementation of SHA256.
+
+        <require library="iotelic" feature="library"/>
+        <require header="iot_io_api.h" scope="context"/>
 
         <interface name="alg"/>
         <interface name="hash">
             <constant name="digest len" value="32"/>
             <constant name="block len" value="64"/>
         </interface>
+
+
 
         <!--<require interface="alg info"/>-->
         <!--<require impl="simple alg info"/>-->

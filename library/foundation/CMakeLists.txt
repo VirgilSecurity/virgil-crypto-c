@@ -83,7 +83,9 @@ include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 #
 target_link_libraries(foundation PUBLIC vsc::common)
 if (NOT VIRGIL_IMPL_IOTELIC)
-    target_link_libraries(foundation PUBLIC mbed::crypto ed25519)
+    target_link_libraries(foundation PUBLIC vsc::common mbed::crypto ed25519)
+else()
+    target_link_libraries(foundation PRIVATE iotelic)
 endif ()
 
 #

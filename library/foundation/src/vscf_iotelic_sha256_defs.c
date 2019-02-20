@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'sha256_iotelic' implementation.
+//  Types of the 'iotelic sha256' implementation.
 //  This types SHOULD NOT be used directly.
 //  The only purpose of including this module is to place implementation
 //  object in the stack memory.
@@ -53,7 +53,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_sha256_iotelic_defs.h"
+#include "vscf_iotelic_sha256_defs.h"
 
 // clang-format on
 //  @end

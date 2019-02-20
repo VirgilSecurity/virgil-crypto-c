@@ -45,28 +45,7 @@
 
 include_guard()
 
-option(VSCF_LIBRARY "Enable build of the 'foundation' library" ON)
-option(VSCF_MULTI_THREAD "Enable multi-threading safety for foundation library." ON)
-option(VSCF_DEFAULTS "Enable interface 'defaults'." ON)
-option(VSCF_HASH "Enable interface 'hash'." ON)
-option(VSCF_ALG "Enable interface 'alg'." ON)
-option(VSCF_IOTELIC_SHA256 "Enable implementation 'iotelic sha256'." ON)
-option(VSCF_ERROR_CTX "Enable class 'error ctx'." ON)
+option(IOTELIC_LIBRARY "Enable build of the 'iotelic' library" ON)
 mark_as_advanced(
-        VSCF_LIBRARY
-        VSCF_MULTI_THREAD
-        VSCF_DEFAULTS
-        VSCF_HASH
-        VSCF_ALG
-        VSCF_IOTELIC_SHA256
-        VSCF_ERROR_CTX
+        IOTELIC_LIBRARY
         )
-
-if(VSCF_IOTELIC_SHA256 AND NOT IOTELIC_LIBRARY)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_IOTELIC_SHA256 depends on the feature:")
-    message("     IOTELIC_LIBRARY - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()

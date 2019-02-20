@@ -8,7 +8,7 @@ framework module VSCFoundation {
     header "vscf_alg.h"
     header "vscf_defaults.h"
     header "vscf_hash.h"
-    header "vscf_sha256_iotelic.h"
+    header "vscf_iotelic_sha256.h"
     header "vscf_error_ctx.h"
     header "vscf_error.h"
     header "vscf_asn1_tag.h"

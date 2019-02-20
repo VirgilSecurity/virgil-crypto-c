@@ -100,7 +100,7 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sha256_iotelic.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_iotelic_sha256.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -145,9 +145,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_DEFAULTS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_defaults_api.h>"
             "$<$<BOOL:${VSCF_HASH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_hash.h>"
             "$<$<BOOL:${VSCF_HASH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_hash_api.h>"
-            "$<$<BOOL:${VSCF_SHA256_IOTELIC}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sha256_iotelic.h>"
-            "$<$<BOOL:${VSCF_SHA256_IOTELIC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha256_iotelic_internal.h>"
-            "$<$<BOOL:${VSCF_SHA256_IOTELIC}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_sha256_iotelic_defs.h>"
+            "$<$<BOOL:${VSCF_IOTELIC_SHA256}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_iotelic_sha256.h>"
+            "$<$<BOOL:${VSCF_IOTELIC_SHA256}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_iotelic_sha256_internal.h>"
+            "$<$<BOOL:${VSCF_IOTELIC_SHA256}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_iotelic_sha256_defs.h>"
             "$<$<BOOL:${VSCF_ERROR_CTX}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error_ctx.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_asn1_tag.h"
@@ -167,9 +167,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_DEFAULTS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_defaults_api.c>"
             "$<$<BOOL:${VSCF_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash.c>"
             "$<$<BOOL:${VSCF_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_api.c>"
-            "$<$<BOOL:${VSCF_SHA256_IOTELIC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha256_iotelic.c>"
-            "$<$<BOOL:${VSCF_SHA256_IOTELIC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha256_iotelic_internal.c>"
-            "$<$<BOOL:${VSCF_SHA256_IOTELIC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha256_iotelic_defs.c>"
+            "$<$<BOOL:${VSCF_IOTELIC_SHA256}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_iotelic_sha256.c>"
+            "$<$<BOOL:${VSCF_IOTELIC_SHA256}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_iotelic_sha256_internal.c>"
+            "$<$<BOOL:${VSCF_IOTELIC_SHA256}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_iotelic_sha256_defs.c>"
             "$<$<BOOL:${VSCF_ERROR_CTX}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_error_ctx.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_error.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1_tag.c"

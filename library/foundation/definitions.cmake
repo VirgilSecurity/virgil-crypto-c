@@ -57,7 +57,7 @@ target_compile_definitions(foundation
             "VSCF_DEFAULTS=$<BOOL:${VSCF_DEFAULTS}>"
             "VSCF_HASH=$<BOOL:${VSCF_HASH}>"
             "VSCF_ALG=$<BOOL:${VSCF_ALG}>"
-            "VSCF_SHA256_IOTELIC=$<BOOL:${VSCF_SHA256_IOTELIC}>"
+            "VSCF_IOTELIC_SHA256=$<BOOL:${VSCF_IOTELIC_SHA256}>"
             "VSCF_ERROR_CTX=$<BOOL:${VSCF_ERROR_CTX}>"
         PRIVATE
             $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCF_BUILD_SHARED_LIBS>
