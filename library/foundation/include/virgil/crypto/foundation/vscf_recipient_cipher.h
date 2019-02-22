@@ -240,10 +240,11 @@ vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffe
 
 //
 //  Initiate decryption process with a recipient private key.
+//  Message info can be empty if it was embedded to encrypted data.
 //
 VSCF_PUBLIC vscf_error_t
 vscf_recipient_cipher_start_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id,
-        vscf_impl_t *private_key);
+        vscf_impl_t *private_key, vsc_data_t message_info);
 
 //
 //  Return buffer length required to hold output of the method

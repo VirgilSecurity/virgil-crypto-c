@@ -44,30 +44,8 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Provide interface for "message info" class serialization.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_MESSAGE_INFO_SERIALIZER_H_INCLUDED
-#define VSCF_MESSAGE_INFO_SERIALIZER_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_message_info.h"
-#include "vscf_error_ctx.h"
-#include "vscf_api.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#   include <VSCCommon/vsc_data.h>
-#endif
+#ifndef VSCF_RECIPIENT_CIPHER_DECRYPTION_STATE_H_INCLUDED
+#define VSCF_RECIPIENT_CIPHER_DECRYPTION_STATE_H_INCLUDED
 
 // clang-format on
 //  @end
@@ -84,62 +62,14 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Contains API requirements of the interface 'message info serializer'.
-//
-typedef struct vscf_message_info_serializer_api_t vscf_message_info_serializer_api_t;
-
-//
-//  Return buffer size enough to hold serialized message info.
-//
-VSCF_PUBLIC size_t
-vscf_message_info_serializer_serialized_len(vscf_impl_t *impl, const vscf_message_info_t *message_info);
-
-//
-//  Serialize class "message info".
-//
-VSCF_PUBLIC void
-vscf_message_info_serializer_serialize(vscf_impl_t *impl, const vscf_message_info_t *message_info, vsc_buffer_t *out);
-
-//
-//  Read message info prefix from the given data, and if it is valid,
-//  return a length of bytes of the whole message info.
-//
-//  Zero returned if length can not be determined from the given data,
-//  and this means that there is no message info at the data beginning.
-//
-VSCF_PUBLIC size_t
-vscf_message_info_serializer_read_prefix(vscf_impl_t *impl, vsc_data_t data);
-
-//
-//  Deserialize class "message info".
-//
-VSCF_PUBLIC vscf_message_info_t *
-vscf_message_info_serializer_deserialize(vscf_impl_t *impl, vsc_data_t data, vscf_error_ctx_t *error);
-
-//
-//  Returns constant 'prefix len'.
-//
-VSCF_PUBLIC size_t
-vscf_message_info_serializer_prefix_len(const vscf_message_info_serializer_api_t *message_info_serializer_api);
-
-//
-//  Return message info serializer API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_message_info_serializer_api_t *
-vscf_message_info_serializer_api(const vscf_impl_t *impl);
-
-//
-//  Check if given object implements interface 'message info serializer'.
-//
-VSCF_PUBLIC bool
-vscf_message_info_serializer_is_implemented(const vscf_impl_t *impl);
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_message_info_serializer_api_tag(const vscf_message_info_serializer_api_t *message_info_serializer_api);
+enum vscf_recipient_cipher_decryption_state_t {
+    vscf_recipient_cipher_decryption_state_WAITING_MESSAGE_INFO = 0,
+    vscf_recipient_cipher_decryption_state_PROCESSING_DATA,
+    vscf_recipient_cipher_decryption_state_MESSAGE_INFO_IS_BROKEN,
+    vscf_recipient_cipher_decryption_state_MESSAGE_INFO_IS_ABSENT,
+    vscf_recipient_cipher_decryption_state_FAILED
+};
+typedef enum vscf_recipient_cipher_decryption_state_t vscf_recipient_cipher_decryption_state_t;
 
 
 // --------------------------------------------------------------------------
@@ -155,5 +85,5 @@ vscf_message_info_serializer_api_tag(const vscf_message_info_serializer_api_t *m
 
 
 //  @footer
-#endif // VSCF_MESSAGE_INFO_SERIALIZER_H_INCLUDED
+#endif // VSCF_RECIPIENT_CIPHER_DECRYPTION_STATE_H_INCLUDED
 //  @end

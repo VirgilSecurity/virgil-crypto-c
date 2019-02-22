@@ -194,9 +194,12 @@ import VirgilCryptoCommon
     }
 
     /// Initiate decryption process with a recipient private key.
-    @objc public func startDecryptionWithKey(recipientId: Data, privateKey: PrivateKey) throws {
+    /// Message info can be empty if it was embedded to encrypted data.
+    @objc public func startDecryptionWithKey(recipientId: Data, privateKey: PrivateKey, messageInfo: Data) throws {
         let proxyResult = recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafePointer<byte>) -> vscf_error_t in
-            return vscf_recipient_cipher_start_decryption_with_key(self.c_ctx, vsc_data(recipientIdPointer, recipientId.count), privateKey.c_ctx)
+            messageInfo.withUnsafeBytes({ (messageInfoPointer: UnsafePointer<byte>) -> vscf_error_t in
+                return vscf_recipient_cipher_start_decryption_with_key(self.c_ctx, vsc_data(recipientIdPointer, recipientId.count), privateKey.c_ctx, vsc_data(messageInfoPointer, messageInfo.count))
+            })
         })
 
         try FoundationError.handleError(fromC: proxyResult)

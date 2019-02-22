@@ -63,6 +63,7 @@
     <enum name="asn1 tag"/>
     <enum name="alg id"/>
     <enum name="oid id"/>
+    <enum name="recipient cipher decryption state"/>
 
     <interface name="defaults" from="shared"/>
     <interface name="cipher"/>

@@ -50,7 +50,7 @@ import VSCFoundation
     /// Note, this error should not be returned if assertions is enabled.
     case unhandledThirdpartyError = -3
 
-    /// Buffer capacity is not enaugh to hold result.
+    /// Buffer capacity is not enough to hold result.
     case smallBuffer = -101
 
     /// Unsupported algorithm.
@@ -109,6 +109,23 @@ import VSCFoundation
 
     /// Ed25519 private key is corrupted.
     case badEd25519PrivateKey = -218
+
+    /// Decryption failed, because message info was not given explicitly,
+    /// and was not part of an encrypted message.
+    case noMessageInfo = -301
+
+    /// Message info is corrupted.
+    case badMessageInfo = -302
+
+    /// Recipient defined with id is not found within message info
+    /// during data decryption.
+    case keyRecipientIsNotFound = -303
+
+    /// Content encryption key can not be decrypted with a given private key.
+    case keyRecipientPrivateKeyIsWrong = -304
+
+    /// Content encryption key can not be decrypted with a given password.
+    case passwordRecipientPasswordIsWrong = -305
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC error: vscf_error_t) {

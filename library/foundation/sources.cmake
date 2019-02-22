@@ -699,6 +699,7 @@ target_sources(foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_asn1_tag.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_id.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_oid_id.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_recipient_cipher_decryption_state.h"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_library.c"
@@ -907,6 +908,7 @@ target_sources(foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1_tag.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_id.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_oid_id.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_recipient_cipher_decryption_state.c"
         )
 
 target_include_directories(foundation
