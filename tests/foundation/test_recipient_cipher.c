@@ -110,9 +110,9 @@ test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
             vscf_recipient_cipher_decryption_out_len(recipient_cipher, vsc_buffer_len(enc_msg)) +
             vscf_recipient_cipher_decryption_out_len(recipient_cipher, 0));
 
-    vscf_recipient_cipher_clear_recipients(recipient_cipher);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, vscf_recipient_cipher_start_decryption_with_key(recipient_cipher,
-                                            test_data_recipient_cipher_ED25519_RECIPIENT_ID, private_key));
+    TEST_ASSERT_EQUAL(
+            vscf_SUCCESS, vscf_recipient_cipher_start_decryption_with_key(recipient_cipher,
+                                  test_data_recipient_cipher_ED25519_RECIPIENT_ID, private_key, vsc_data_empty()));
 
     TEST_ASSERT_EQUAL(vscf_SUCCESS,
             vscf_recipient_cipher_process_decryption(recipient_cipher, vsc_buffer_data(enc_msg), dec_msg));

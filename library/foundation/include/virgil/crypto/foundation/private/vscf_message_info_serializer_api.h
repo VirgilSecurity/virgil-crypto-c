@@ -97,6 +97,15 @@ typedef void (*vscf_message_info_serializer_api_serialize_fn)(vscf_impl_t *impl,
         const vscf_message_info_t *message_info, vsc_buffer_t *out);
 
 //
+//  Callback. Read message info prefix from the given data, and if it is valid,
+//          return a length of bytes of the whole message info.
+//
+//          Zero returned if length can not be determined from the given data,
+//          and this means that there is no message info at the data beginning.
+//
+typedef size_t (*vscf_message_info_serializer_api_read_prefix_fn)(vscf_impl_t *impl, vsc_data_t data);
+
+//
 //  Callback. Deserialize class "message info".
 //
 typedef vscf_message_info_t * (*vscf_message_info_serializer_api_deserialize_fn)(vscf_impl_t *impl, vsc_data_t data,
@@ -120,9 +129,19 @@ struct vscf_message_info_serializer_api_t {
     //
     vscf_message_info_serializer_api_serialize_fn serialize_cb;
     //
+    //  Read message info prefix from the given data, and if it is valid,
+    //  return a length of bytes of the whole message info.
+    //
+    //  Zero returned if length can not be determined from the given data,
+    //  and this means that there is no message info at the data beginning.
+    //
+    vscf_message_info_serializer_api_read_prefix_fn read_prefix_cb;
+    //
     //  Deserialize class "message info".
     //
     vscf_message_info_serializer_api_deserialize_fn deserialize_cb;
+
+    size_t prefix_len;
 };
 
 

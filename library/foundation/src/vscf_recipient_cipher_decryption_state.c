@@ -44,37 +44,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'recipient cipher' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED
-#define VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_key_recipient_list.h"
-#include "vscf_message_info.h"
-#include "vscf_impl.h"
-#include "vscf_message_info_der_serializer.h"
 #include "vscf_recipient_cipher_decryption_state.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -83,59 +56,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'recipient cipher' context.
-//
-struct vscf_recipient_cipher_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscf_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-    //
-    //  Dependency to the interface 'cipher'.
-    //
-    vscf_impl_t *cipher;
-
-    vscf_key_recipient_list_t *key_recipients;
-
-    vsc_buffer_t *decryption_recipient_id;
-
-    vscf_impl_t *decryption_recipient_key;
-
-    vsc_buffer_t *decryption_password;
-
-    vscf_message_info_t *message_info;
-
-    vscf_message_info_der_serializer_t *message_info_der_serializer;
-
-    vsc_buffer_t *message_info_buffer;
-
-    size_t message_info_expected_len;
-
-    vscf_recipient_cipher_decryption_state_t decryption_state;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED
 //  @end
