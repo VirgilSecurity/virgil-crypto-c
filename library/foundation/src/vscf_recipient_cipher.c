@@ -856,7 +856,6 @@ vscf_recipient_cipher_unpack_message_info(vscf_recipient_cipher_t *self, vsc_dat
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->message_info_der_serializer);
-    VSCF_ASSERT_PTR(self->message_info_buffer);
 
     vscf_error_ctx_t error;
     vscf_error_ctx_reset(&error);
