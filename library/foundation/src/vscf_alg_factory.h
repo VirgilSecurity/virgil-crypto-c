@@ -76,43 +76,43 @@ extern "C" {
 //  Create algorithm that implements "hash stream" interface.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_hash_alg(const vscf_impl_t *alg_info);
+vscf_alg_factory_create_hash_from_info(const vscf_impl_t *alg_info);
 
 //
 //  Create algorithm that implements "mac stream" interface.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_mac_alg(const vscf_impl_t *alg_info);
+vscf_alg_factory_create_mac_from_info(const vscf_impl_t *alg_info);
 
 //
 //  Create algorithm that implements "kdf" interface.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_kdf_alg(const vscf_impl_t *alg_info);
+vscf_alg_factory_create_kdf_from_info(const vscf_impl_t *alg_info);
 
 //
 //  Create algorithm that implements "salted kdf" interface.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_salted_kdf_alg(const vscf_impl_t *alg_info);
+vscf_alg_factory_create_salted_kdf_from_info(const vscf_impl_t *alg_info);
 
 //
 //  Create algorithm that implements "cipher" interface.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_cipher_alg(const vscf_impl_t *alg_info);
+vscf_alg_factory_create_cipher_from_info(const vscf_impl_t *alg_info);
 
 //
 //  Create algorithm that implements "public key" interface.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_public_key_alg(const vscf_raw_key_t *raw_key);
+vscf_alg_factory_create_public_key_from_raw_key(const vscf_raw_key_t *raw_key);
 
 //
 //  Create algorithm that implements "private key" interface.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_private_key_alg(const vscf_raw_key_t *raw_key);
+vscf_alg_factory_create_private_key_from_raw_key(const vscf_raw_key_t *raw_key);
 
 
 // --------------------------------------------------------------------------
