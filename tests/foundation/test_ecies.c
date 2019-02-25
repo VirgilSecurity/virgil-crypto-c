@@ -78,7 +78,7 @@ test__encrypt__virgil_message__success(void) {
     vscf_raw_key_t *raw_public_key =
             vscf_pkcs8_deserializer_deserialize_public_key(pkcs8, test_data_ecies_ED25519_RECEIVER_PUBLIC_KEY, NULL);
 
-    vscf_impl_t *public_key = vscf_alg_factory_create_public_key_alg(raw_public_key);
+    vscf_impl_t *public_key = vscf_alg_factory_create_public_key_from_raw_key(raw_public_key);
 
     vscf_ecies_take_encryption_key(ecies, public_key);
 
@@ -125,12 +125,12 @@ test__encrypt__messege_with_ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac_
     vscf_raw_key_t *raw_public_key =
             vscf_pkcs8_deserializer_deserialize_public_key(pkcs8, test_data_ecies_ED25519_RECEIVER_PUBLIC_KEY, NULL);
 
-    vscf_impl_t *public_key = vscf_alg_factory_create_public_key_alg(raw_public_key);
+    vscf_impl_t *public_key = vscf_alg_factory_create_public_key_from_raw_key(raw_public_key);
 
     vscf_raw_key_t *raw_ephemeral_key =
             vscf_pkcs8_deserializer_deserialize_private_key(pkcs8, test_data_ecies_ED25519_EPHEMERAL_PRIVATE_KEY, NULL);
 
-    vscf_impl_t *ephemeral_key = vscf_alg_factory_create_private_key_alg(raw_ephemeral_key);
+    vscf_impl_t *ephemeral_key = vscf_alg_factory_create_private_key_from_raw_key(raw_ephemeral_key);
 
     vscf_ecies_take_encryption_key(ecies, public_key);
     vscf_ecies_take_ephemeral_key(ecies, ephemeral_key);
@@ -160,7 +160,7 @@ test__decrypt__ed25519_encrypted_message__match_virgil_message(void) {
     vscf_raw_key_t *raw_private_key =
             vscf_pkcs8_deserializer_deserialize_private_key(pkcs8, test_data_ecies_ED25519_RECEIVER_PRIVATE_KEY, NULL);
 
-    vscf_impl_t *private_key = vscf_alg_factory_create_private_key_alg(raw_private_key);
+    vscf_impl_t *private_key = vscf_alg_factory_create_private_key_from_raw_key(raw_private_key);
 
     vscf_ecies_take_decryption_key(ecies, private_key);
 

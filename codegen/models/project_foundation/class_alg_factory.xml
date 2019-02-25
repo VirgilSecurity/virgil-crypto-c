@@ -23,7 +23,7 @@
     <require impl="ed25519 public key"/>
     <require impl="ed25519 private key"/>
 
-    <method name="create hash alg" is_static="1">
+    <method name="create hash from info" is_static="1">
         Create algorithm that implements "hash stream" interface.
 
         <argument name="alg info" interface="alg info"/>
@@ -31,7 +31,7 @@
         <return interface="hash" access="disown"/>
     </method>
 
-    <method name="create mac alg" is_static="1">
+    <method name="create mac from info" is_static="1">
         Create algorithm that implements "mac stream" interface.
 
         <argument name="alg info" interface="alg info"/>
@@ -39,7 +39,7 @@
         <return interface="mac" access="disown"/>
     </method>
 
-    <method name="create kdf alg" is_static="1">
+    <method name="create kdf from info" is_static="1">
         Create algorithm that implements "kdf" interface.
 
         <argument name="alg info" interface="alg info"/>
@@ -47,7 +47,7 @@
         <return interface="kdf" access="disown"/>
     </method>
 
-    <method name="create salted kdf alg" is_static="1">
+    <method name="create salted kdf from info" is_static="1">
         Create algorithm that implements "salted kdf" interface.
 
         <argument name="alg info" interface="alg info"/>
@@ -55,7 +55,7 @@
         <return interface="salted kdf" access="disown"/>
     </method>
 
-    <method name="create cipher alg" is_static="1">
+    <method name="create cipher from info" is_static="1">
         Create algorithm that implements "cipher" interface.
 
         <argument name="alg info" interface="alg info"/>
@@ -63,7 +63,7 @@
         <return interface="cipher" access="disown"/>
     </method>
 
-    <method name="create public key alg" is_static="1">
+    <method name="create public key from raw key" is_static="1">
         Create algorithm that implements "public key" interface.
 
         <argument name="raw key" class="raw key"/>
@@ -71,7 +71,7 @@
         <return interface="public key" access="disown"/>
     </method>
 
-    <method name="create private key alg" is_static="1">
+    <method name="create private key from raw key" is_static="1">
         Create algorithm that implements "private key" interface.
 
         <argument name="raw key" class="raw key"/>
