@@ -1,4 +1,4 @@
-<class name="alg factory" context="none" scope="internal">
+<class name="alg factory" context="none">
     Create algorithms based on the given information.
 
     <require interface="alg info"/>
