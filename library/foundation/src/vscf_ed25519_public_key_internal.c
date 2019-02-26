@@ -61,6 +61,8 @@
 #include "vscf_alg_api.h"
 #include "vscf_key.h"
 #include "vscf_key_api.h"
+#include "vscf_encrypt.h"
+#include "vscf_encrypt_api.h"
 #include "vscf_verify.h"
 #include "vscf_verify_api.h"
 #include "vscf_public_key.h"
@@ -68,6 +70,7 @@
 #include "vscf_generate_ephemeral_key.h"
 #include "vscf_generate_ephemeral_key_api.h"
 #include "vscf_random.h"
+#include "vscf_ecies.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -143,6 +146,25 @@ static const vscf_key_api_t key_api = {
     //  Length of the key in bits.
     //
     (vscf_key_api_key_bitlen_fn)vscf_ed25519_public_key_key_bitlen
+};
+
+//
+//  Configuration of the interface API 'encrypt api'.
+//
+static const vscf_encrypt_api_t encrypt_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'encrypt' MUST be equal to the 'vscf_api_tag_ENCRYPT'.
+    //
+    vscf_api_tag_ENCRYPT,
+    //
+    //  Encrypt given data.
+    //
+    (vscf_encrypt_api_encrypt_fn)vscf_ed25519_public_key_encrypt,
+    //
+    //  Calculate required buffer length to hold the encrypted data.
+    //
+    (vscf_encrypt_api_encrypted_len_fn)vscf_ed25519_public_key_encrypted_len
 };
 
 //
@@ -273,6 +295,7 @@ vscf_ed25519_public_key_cleanup(vscf_ed25519_public_key_t *self) {
     }
 
     vscf_ed25519_public_key_release_random(self);
+    vscf_ed25519_public_key_release_ecies(self);
 
     vscf_ed25519_public_key_cleanup_ctx(self);
 
@@ -396,6 +419,44 @@ vscf_ed25519_public_key_release_random(vscf_ed25519_public_key_t *self) {
     vscf_impl_destroy(&self->random);
 }
 
+//
+//  Setup dependency to the implementation 'ecies' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ed25519_public_key_use_ecies(vscf_ed25519_public_key_t *self, vscf_ecies_t *ecies) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(ecies);
+    VSCF_ASSERT(self->ecies == NULL);
+
+    self->ecies = vscf_ecies_shallow_copy(ecies);
+}
+
+//
+//  Setup dependency to the implementation 'ecies' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ed25519_public_key_take_ecies(vscf_ed25519_public_key_t *self, vscf_ecies_t *ecies) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(ecies);
+    VSCF_ASSERT_PTR(self->ecies == NULL);
+
+    self->ecies = ecies;
+}
+
+//
+//  Release dependency to the implementation 'ecies'.
+//
+VSCF_PUBLIC void
+vscf_ed25519_public_key_release_ecies(vscf_ed25519_public_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_ecies_destroy(&self->ecies);
+}
+
 static const vscf_api_t *
 vscf_ed25519_public_key_find_api(vscf_api_tag_t api_tag) {
 
@@ -404,6 +465,8 @@ vscf_ed25519_public_key_find_api(vscf_api_tag_t api_tag) {
             return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_DEFAULTS:
             return (const vscf_api_t *) &defaults_api;
+        case vscf_api_tag_ENCRYPT:
+            return (const vscf_api_t *) &encrypt_api;
         case vscf_api_tag_GENERATE_EPHEMERAL_KEY:
             return (const vscf_api_t *) &generate_ephemeral_key_api;
         case vscf_api_tag_KEY:

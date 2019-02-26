@@ -63,6 +63,7 @@
     <enum name="asn1 tag"/>
     <enum name="alg id"/>
     <enum name="oid id"/>
+    <enum name="recipient cipher decryption state"/>
 
     <interface name="defaults" from="shared"/>
     <interface name="cipher"/>
@@ -116,6 +117,8 @@
     <class name="password recipient info list"/>
     <class name="alg factory"/>
     <class name="ecies envelope"/>
+    <class name="recipient cipher"/>
+    <class name="key recipient list"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>

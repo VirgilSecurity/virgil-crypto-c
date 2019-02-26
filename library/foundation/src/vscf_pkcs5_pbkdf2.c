@@ -162,7 +162,8 @@ vscf_pkcs5_pbkdf2_restore_alg_info(vscf_pkcs5_pbkdf2_t *self, const vscf_impl_t 
 
     const vscf_salted_kdf_alg_info_t *salted_kdf_alg_info = (const vscf_salted_kdf_alg_info_t *)alg_info;
 
-    vscf_impl_t *hmac = vscf_alg_factory_create_hash_alg(vscf_salted_kdf_alg_info_hash_alg_info(salted_kdf_alg_info));
+    vscf_impl_t *hmac =
+            vscf_alg_factory_create_hash_from_info(vscf_salted_kdf_alg_info_hash_alg_info(salted_kdf_alg_info));
     VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_HMAC);
 
     vscf_pkcs5_pbkdf2_release_hmac(self);

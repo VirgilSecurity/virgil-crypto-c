@@ -47,15 +47,23 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create algorithms based on the given information.
+//  Class 'key recipient list' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ALG_FACTORY_H_INCLUDED
-#define VSCF_ALG_FACTORY_H_INCLUDED
+#ifndef VSCF_KEY_RECIPIENT_LIST_DEFS_H_INCLUDED
+#define VSCF_KEY_RECIPIENT_LIST_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_raw_key.h"
+#include "vscf_key_recipient_list.h"
 #include "vscf_impl.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -73,46 +81,26 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Create algorithm that implements "hash stream" interface.
+//  Handle 'key recipient list' context.
 //
-VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_hash_alg(const vscf_impl_t *alg_info);
+struct vscf_key_recipient_list_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscf_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
 
-//
-//  Create algorithm that implements "mac stream" interface.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_mac_alg(const vscf_impl_t *alg_info);
+    vsc_buffer_t *recipient_id;
 
-//
-//  Create algorithm that implements "kdf" interface.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_kdf_alg(const vscf_impl_t *alg_info);
+    vscf_impl_t *recipient_public_key;
 
-//
-//  Create algorithm that implements "salted kdf" interface.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_salted_kdf_alg(const vscf_impl_t *alg_info);
+    vscf_key_recipient_list_t *next;
 
-//
-//  Create algorithm that implements "cipher" interface.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_cipher_alg(const vscf_impl_t *alg_info);
-
-//
-//  Create algorithm that implements "public key" interface.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_public_key_alg(const vscf_raw_key_t *raw_key);
-
-//
-//  Create algorithm that implements "private key" interface.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_private_key_alg(const vscf_raw_key_t *raw_key);
+    vscf_key_recipient_list_t *prev;
+};
 
 
 // --------------------------------------------------------------------------
@@ -128,5 +116,5 @@ vscf_alg_factory_create_private_key_alg(const vscf_raw_key_t *raw_key);
 
 
 //  @footer
-#endif // VSCF_ALG_FACTORY_H_INCLUDED
+#endif // VSCF_KEY_RECIPIENT_LIST_DEFS_H_INCLUDED
 //  @end

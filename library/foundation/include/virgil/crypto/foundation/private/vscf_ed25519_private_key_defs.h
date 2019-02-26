@@ -60,6 +60,7 @@
 #include "vscf_impl_private.h"
 #include "vscf_ed25519_private_key.h"
 #include "vscf_impl.h"
+#include "vscf_ecies.h"
 
 #include <ed25519/ed25519.h>
 
@@ -94,6 +95,10 @@ struct vscf_ed25519_private_key_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *random;
+    //
+    //  Dependency to the implementation 'ecies'.
+    //
+    vscf_ecies_t *ecies;
     //
     //  Implementation specific context.
     //

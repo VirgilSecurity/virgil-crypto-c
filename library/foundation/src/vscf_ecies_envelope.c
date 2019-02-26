@@ -551,7 +551,7 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
     //
     vscf_raw_key_t *originator_raw_key = vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(pkcs8, &error);
     if (originator_raw_key) {
-        self->ephemeral_public_key = vscf_alg_factory_create_public_key_alg(originator_raw_key);
+        self->ephemeral_public_key = vscf_alg_factory_create_public_key_from_raw_key(originator_raw_key);
         vscf_raw_key_destroy(&originator_raw_key);
     }
 
@@ -560,7 +560,7 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
     //
     vscf_impl_t *kdf_info = vscf_alg_info_der_deserializer_deserialize_inplace(alg_info_der_deserializer, &error);
     if (kdf_info) {
-        self->kdf = vscf_alg_factory_create_kdf_alg(kdf_info);
+        self->kdf = vscf_alg_factory_create_kdf_from_info(kdf_info);
         vscf_impl_destroy(&kdf_info);
     }
 
@@ -572,7 +572,7 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
 
     if (hmac_hash_info != NULL) {
         vscf_hmac_t *hmac = vscf_hmac_new();
-        vscf_hmac_take_hash(hmac, vscf_alg_factory_create_hash_alg(hmac_hash_info));
+        vscf_hmac_take_hash(hmac, vscf_alg_factory_create_hash_from_info(hmac_hash_info));
         self->mac = vscf_hmac_impl(hmac);
         vscf_impl_destroy(&hmac_hash_info);
     }
@@ -588,7 +588,7 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
     vscf_asn1rd_read_sequence(asn1rd);
     vscf_impl_t *cipher_info = vscf_alg_info_der_deserializer_deserialize_inplace(alg_info_der_deserializer, &error);
     if (cipher_info) {
-        self->cipher = vscf_alg_factory_create_cipher_alg(cipher_info);
+        self->cipher = vscf_alg_factory_create_cipher_from_info(cipher_info);
         vscf_impl_destroy(&cipher_info);
     }
 

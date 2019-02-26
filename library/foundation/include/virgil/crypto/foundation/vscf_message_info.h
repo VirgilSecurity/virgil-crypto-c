@@ -162,6 +162,12 @@ vscf_message_info_key_recipient_info_list(const vscf_message_info_t *self);
 VSCF_PUBLIC const vscf_password_recipient_info_list_t *
 vscf_message_info_password_recipient_info_list(const vscf_message_info_t *self);
 
+//
+//  Remove all recipients.
+//
+VSCF_PUBLIC void
+vscf_message_info_clear_recipients(vscf_message_info_t *self);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

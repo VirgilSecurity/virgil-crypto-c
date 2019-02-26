@@ -165,6 +165,12 @@ vscf_key_recipient_info_list_has_prev(const vscf_key_recipient_info_list_t *self
 VSCF_PUBLIC vscf_key_recipient_info_list_t *
 vscf_key_recipient_info_list_prev(const vscf_key_recipient_info_list_t *self);
 
+//
+//  Remove all items.
+//
+VSCF_PUBLIC void
+vscf_key_recipient_info_list_clear(vscf_key_recipient_info_list_t *self);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -141,9 +141,13 @@ function c_dependency_add_method_use (dependency, declaration, definition, desti
     my.refs = meta_refs (my.meta)
 
     new method to my.destination
-        . = "\
-        Setup dependency to the $(my.dependency.type_kind:) '$(my.dependency.type_name:)' with shared ownership.
-        "
+        if defined(my.dependency.)
+            . = format_left(my.dependency.) + "$(terminator)$(terminator)" + "Note, ownership is shared."
+        else
+            . = "\
+                Setup dependency to the $(my.dependency.type_kind:) '$(my.dependency.type_name:)' with shared ownership.
+            "
+        endif
 
         .name = my.names.dependency_method_use_$(make_id (dependency.name))
         .definition = my.definition
@@ -216,10 +220,17 @@ function c_dependency_add_method_take (dependency, declaration, definition, dest
     my.refs = meta_refs (my.meta)
 
     new method to my.destination
-        . = "\
-        Setup dependency to the $(my.dependency.type_kind:) '$(my.dependency.type_name)' and transfer ownership.
-        Note, transfer ownership does not mean that object is uniquely owned by the target object.
-        "
+        if defined(my.dependency.)
+            . = format_left(my.dependency.) + "$(terminator)$(terminator)" + \
+                    "Note, ownership is transfered." + "$(terminator)" + \
+                    "Note, transfer ownership does not mean that object is uniquely owned by the target object."
+
+        else
+            . = "\
+                Setup dependency to the $(my.dependency.type_kind:) '$(my.dependency.type_name)' and transfer ownership.
+                Note, transfer ownership does not mean that object is uniquely owned by the target object.
+            "
+        endif
 
         .name = my.names.dependency_method_take_$(make_id (dependency.name))
         .definition = my.definition

@@ -63,6 +63,8 @@
 #include "vscf_key_api.h"
 #include "vscf_generate_key.h"
 #include "vscf_generate_key_api.h"
+#include "vscf_decrypt.h"
+#include "vscf_decrypt_api.h"
 #include "vscf_sign.h"
 #include "vscf_sign_api.h"
 #include "vscf_private_key.h"
@@ -70,6 +72,7 @@
 #include "vscf_compute_shared_key.h"
 #include "vscf_compute_shared_key_api.h"
 #include "vscf_random.h"
+#include "vscf_ecies.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -161,6 +164,25 @@ static const vscf_generate_key_api_t generate_key_api = {
     //  Note, this operation can be slow.
     //
     (vscf_generate_key_api_generate_key_fn)vscf_ed25519_private_key_generate_key
+};
+
+//
+//  Configuration of the interface API 'decrypt api'.
+//
+static const vscf_decrypt_api_t decrypt_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'decrypt' MUST be equal to the 'vscf_api_tag_DECRYPT'.
+    //
+    vscf_api_tag_DECRYPT,
+    //
+    //  Decrypt given data.
+    //
+    (vscf_decrypt_api_decrypt_fn)vscf_ed25519_private_key_decrypt,
+    //
+    //  Calculate required buffer length to hold the decrypted data.
+    //
+    (vscf_decrypt_api_decrypted_len_fn)vscf_ed25519_private_key_decrypted_len
 };
 
 //
@@ -304,6 +326,7 @@ vscf_ed25519_private_key_cleanup(vscf_ed25519_private_key_t *self) {
     }
 
     vscf_ed25519_private_key_release_random(self);
+    vscf_ed25519_private_key_release_ecies(self);
 
     vscf_ed25519_private_key_cleanup_ctx(self);
 
@@ -427,6 +450,44 @@ vscf_ed25519_private_key_release_random(vscf_ed25519_private_key_t *self) {
     vscf_impl_destroy(&self->random);
 }
 
+//
+//  Setup dependency to the implementation 'ecies' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ed25519_private_key_use_ecies(vscf_ed25519_private_key_t *self, vscf_ecies_t *ecies) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(ecies);
+    VSCF_ASSERT(self->ecies == NULL);
+
+    self->ecies = vscf_ecies_shallow_copy(ecies);
+}
+
+//
+//  Setup dependency to the implementation 'ecies' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ed25519_private_key_take_ecies(vscf_ed25519_private_key_t *self, vscf_ecies_t *ecies) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(ecies);
+    VSCF_ASSERT_PTR(self->ecies == NULL);
+
+    self->ecies = ecies;
+}
+
+//
+//  Release dependency to the implementation 'ecies'.
+//
+VSCF_PUBLIC void
+vscf_ed25519_private_key_release_ecies(vscf_ed25519_private_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_ecies_destroy(&self->ecies);
+}
+
 static const vscf_api_t *
 vscf_ed25519_private_key_find_api(vscf_api_tag_t api_tag) {
 
@@ -435,6 +496,8 @@ vscf_ed25519_private_key_find_api(vscf_api_tag_t api_tag) {
             return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_COMPUTE_SHARED_KEY:
             return (const vscf_api_t *) &compute_shared_key_api;
+        case vscf_api_tag_DECRYPT:
+            return (const vscf_api_t *) &decrypt_api;
         case vscf_api_tag_DEFAULTS:
             return (const vscf_api_t *) &defaults_api;
         case vscf_api_tag_GENERATE_KEY:

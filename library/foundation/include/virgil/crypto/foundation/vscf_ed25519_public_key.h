@@ -54,6 +54,7 @@
 #define VSCF_ED25519_PUBLIC_KEY_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_ecies.h"
 #include "vscf_error_ctx.h"
 #include "vscf_impl.h"
 #include "vscf_error.h"
@@ -177,6 +178,25 @@ VSCF_PUBLIC void
 vscf_ed25519_public_key_release_random(vscf_ed25519_public_key_t *self);
 
 //
+//  Setup dependency to the implementation 'ecies' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ed25519_public_key_use_ecies(vscf_ed25519_public_key_t *self, vscf_ecies_t *ecies);
+
+//
+//  Setup dependency to the implementation 'ecies' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ed25519_public_key_take_ecies(vscf_ed25519_public_key_t *self, vscf_ecies_t *ecies);
+
+//
+//  Release dependency to the implementation 'ecies'.
+//
+VSCF_PUBLIC void
+vscf_ed25519_public_key_release_ecies(vscf_ed25519_public_key_t *self);
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t
@@ -211,6 +231,18 @@ vscf_ed25519_public_key_key_len(const vscf_ed25519_public_key_t *self);
 //
 VSCF_PUBLIC size_t
 vscf_ed25519_public_key_key_bitlen(const vscf_ed25519_public_key_t *self);
+
+//
+//  Encrypt given data.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_ed25519_public_key_encrypt(vscf_ed25519_public_key_t *self, vsc_data_t data, vsc_buffer_t *out);
+
+//
+//  Calculate required buffer length to hold the encrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_ed25519_public_key_encrypted_len(vscf_ed25519_public_key_t *self, size_t data_len);
 
 //
 //  Verify data with given public key and signature.

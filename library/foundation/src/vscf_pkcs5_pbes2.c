@@ -161,8 +161,8 @@ vscf_pkcs5_pbes2_restore_alg_info(vscf_pkcs5_pbes2_t *self, const vscf_impl_t *a
 
     const vscf_pbe_alg_info_t *pbe_alg_info = (const vscf_pbe_alg_info_t *)alg_info;
 
-    vscf_impl_t *kdf = vscf_alg_factory_create_kdf_alg(vscf_pbe_alg_info_kdf_alg_info(pbe_alg_info));
-    vscf_impl_t *cipher = vscf_alg_factory_create_cipher_alg(vscf_pbe_alg_info_cipher_alg_info(pbe_alg_info));
+    vscf_impl_t *kdf = vscf_alg_factory_create_kdf_from_info(vscf_pbe_alg_info_kdf_alg_info(pbe_alg_info));
+    vscf_impl_t *cipher = vscf_alg_factory_create_cipher_from_info(vscf_pbe_alg_info_cipher_alg_info(pbe_alg_info));
 
     vscf_pkcs5_pbes2_release_kdf(self);
     vscf_pkcs5_pbes2_release_cipher(self);
