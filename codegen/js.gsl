@@ -23,25 +23,27 @@ endfunction
 function js_create_class_module(source, destination, wrapper, meta)
   echo_info("js_create_class_module", my)
   if my.source.scope = "public" & !(my.source.name = "error ctx")
-    my.js_module = js_append_js_module_model(my.destination, my.source, my.wrapper)
-    js_append_js_wrapped_module_model(my.wrapper, my.js_module, my.wrapper)
+    my.js_module = js_append_js_module_model(my.destination, my.source)
+    my.js_class_module = js_append_js_class_module_model(my.js_module, my.source, my.wrapper)
+    js_append_js_wrapped_class_model(my.wrapper, my.js_class_module, my.wrapper)
   endif
 endfunction
 
 function js_create_enum_module(source, destination, wrapper, meta)
   echo_info("js_create_enum_module", my)
   if !(my.source.name = "error")
-    my.js_enum = js_append_js_enum_model(my.destination, my.source)
-    js_append_js_wrapped_enum_model(my.wrapper, my.js_enum, my.wrapper)
+    my.js_module = js_append_js_module_model(my.destination, my.source)
+    my.js_enum_module = js_append_js_enum_module_model(my.js_module, my.source)
+    js_append_js_wrapped_enum_model(my.wrapper, my.js_enum_module, my.wrapper)
   endif
 endfunction
 
-function js_module_resolve(source, wrapper)
-  echo_info("js_module_resolve", my)
-  if defined(my.source->cpp_class)
-    for my.source->cpp_class.cpp_method
+function js_resolve_js_class_module(js_class_module, wrapper)
+  if defined(my.js_class_module->cpp_class)
+    my.cpp_class = my.js_class_module->cpp_class
+    for my.cpp_class.cpp_method
       for cpp_method.cpp_source_argument
-        js_append_resolved_cpp_source_argument(cpp_method, cpp_source_argument, my.source->cpp_class, my.wrapper)
+        js_append_resolved_cpp_source_argument(cpp_method, cpp_source_argument, my.cpp_class, my.wrapper)
         delete cpp_source_argument
       endfor
       if defined(cpp_method->cpp_source_return)
@@ -49,21 +51,28 @@ function js_module_resolve(source, wrapper)
         delete cpp_method->cpp_source_return
       endif
     endfor
-    my.cpp_js_module_names = XML.new()
-    for my.source->cpp_class.cpp_method
+    my.class_names = XML.new()
+    for my.cpp_class.cpp_method
       for cpp_method.cpp_context_argument
-        new module_name to my.cpp_js_module_names
-          module_name.name = cpp_context_argument.module_name
+        new class_name to my.class_names
+          class_name.name = cpp_context_argument.module_name
         endnew
       endfor
     endfor
     my.cpp_js_includes = XML.new()
-    for my.wrapper.js_wrapped_module
-      for my.cpp_js_module_names.module_name where js_wrapped_module.name = module_name.name
-        js_append_js_include_module_model(my.source, js_wrapped_module)
-        next js_wrapped_module
+    for my.wrapper.js_wrapped_class
+      for my.class_names.class_name where class_name.name = js_wrapped_class.name
+        js_append_js_include_module_model(my.js_class_module, js_wrapped_class)
+        next js_wrapped_class
       endfor
     endfor
+  endif
+endfunction
+
+function js_module_resolve(source, wrapper)
+  echo_info("js_module_resolve", my)
+  if defined(my.source->js_class_module)
+    js_resolve_js_class_module(my.source->js_class_module, my.wrapper)
   endif
 endfunction
 
@@ -88,9 +97,7 @@ endfunction
 
 function js_generate_sources(source, wrapper)
   echo_info("js_generate_sources", my)
-  js_create_cpp_header_files(my.source, my.wrapper)
-  js_create_cpp_source_files(my.source, my.wrapper)
-  js_create_js_source_files(my.source, my.wrapper)
+  js_create_js_module_files(my.source, my.wrapper)
   js_create_index_js_file(my.wrapper)
 endfunction
 

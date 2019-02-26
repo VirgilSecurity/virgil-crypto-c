@@ -7,14 +7,21 @@ gsl from "js_helpers.gsl"
 # General
 # --------------------------------------------------------------------------------------------------
 
-function js_append_js_enum_model(parent, source)
-  new js_enum to my.parent
-    js_enum.name = my.source.name
-    js_enum.variable_name = "$(my.source.name:Pascal)"
+function js_append_js_module_model(parent, source)
+  new js_module to my.parent
+    js_module.name = my.source.name
+    return js_module
+  endnew
+endfunction
+
+function js_append_js_enum_module_model(parent, source)
+  new js_enum_module to my.parent
+    js_enum_module.name = my.source.name
+    js_enum_module.variable_name = "$(my.source.name:Pascal)"
     for my.source.constant
-      js_append_js_enum_value_model(js_enum, constant, index(constant) - 1)
+      js_append_js_enum_value_model(js_enum_module, constant, index(constant) - 1)
     endfor
-    return js_enum
+    return js_enum_module
   endnew
 endfunction
 
@@ -28,42 +35,42 @@ function js_append_js_wrapped_enum_model(parent, js_enum, wrapper)
   endnew
 endfunction
 
-function js_append_js_module_model(parent, source, wrapper)
-  new js_module to my.parent
-    js_module.name = my.source.name
-    js_append_js_class_model(js_module, my.source)
+function js_append_js_class_module_model(parent, source, wrapper)
+  new js_class_module to my.parent
+    js_class_module.name = my.source.name
+    js_append_js_class_model(js_class_module, my.source)
     if count(my.source.method) > 0
-      js_append_cpp_class_model(js_module, my.source, my.wrapper)
+      js_append_cpp_class_model(js_class_module, my.source, my.wrapper)
     endif
-    return js_module
+    return js_class_module
   endnew
 endfunction
 
-function js_append_js_wrapped_module_model(parent, js_module, wrapper)
-  new js_wrapped_module to my.parent
-    js_wrapped_module.name = my.js_module.name
-    js_wrapped_module.js_class_name = my.js_module->js_class.name
-    js_wrapped_module.js_source_file = "$(my.js_module.name:cobol).js"
-    js_wrapped_module.js_source_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_module.js_source_file)
-    if defined(my.js_module->cpp_class)
-      js_wrapped_module.cpp_class_name = my.js_module->cpp_class.name
-      js_wrapped_module.cpp_context_name = my.js_module->cpp_class.context_name
-      js_wrapped_module.cpp_header_file = "$(my.js_module.name:c).h"
-      js_wrapped_module.cpp_header_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_module.cpp_header_file)
-      js_wrapped_module.cpp_source_file = "$(my.js_module.name:c).cc"
-      js_wrapped_module.cpp_source_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_module.cpp_source_file)
+function js_append_js_wrapped_class_model(parent, js_class_module, wrapper)
+  new js_wrapped_class to my.parent
+    js_wrapped_class.name = my.js_class_module.name
+    js_wrapped_class.js_class_name = my.js_class_module->js_class.name
+    js_wrapped_class.js_source_file = "$(my.js_class_module.name:cobol).js"
+    js_wrapped_class.js_source_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_class.js_source_file)
+    if defined(my.js_class_module->cpp_class)
+      js_wrapped_class.cpp_class_name = my.js_class_module->cpp_class.name
+      js_wrapped_class.cpp_context_name = my.js_class_module->cpp_class.context_name
+      js_wrapped_class.cpp_header_file = "$(my.js_class_module.name:c).h"
+      js_wrapped_class.cpp_header_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_class.cpp_header_file)
+      js_wrapped_class.cpp_source_file = "$(my.js_class_module.name:c).cc"
+      js_wrapped_class.cpp_source_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_class.cpp_source_file)
     endif
-    return js_wrapped_module
+    return js_wrapped_class
   endnew
 endfunction
 
-function js_append_js_include_module_model(parent, js_wrapped_module)
+function js_append_js_include_module_model(parent, js_wrapped_class)
   new js_include_module to my.parent
-    js_include_module.name = my.js_wrapped_module.name
-    js_include_module.js_class_name = my.js_wrapped_module.js_class_name
-    js_include_module.js_source_file = my.js_wrapped_module.js_source_file
-    js_include_module.cpp_class_name = my.js_wrapped_module.cpp_class_name
-    js_include_module.cpp_header_file = my.js_wrapped_module.cpp_header_file
+    js_include_module.name = my.js_wrapped_class.name
+    js_include_module.js_class_name = my.js_wrapped_class.js_class_name
+    js_include_module.js_source_file = my.js_wrapped_class.js_source_file
+    js_include_module.cpp_class_name = my.js_wrapped_class.cpp_class_name
+    js_include_module.cpp_header_file = my.js_wrapped_class.cpp_header_file
     return js_include_module
   endnew
 endfunction
@@ -300,14 +307,13 @@ function js_append_resolved_cpp_source_argument(parent, cpp_source_argument, cpp
     js_append_cpp_data_argument_model(my.parent, my.cpp_source_argument)
   elsif js_cpp_value_is_cpp_buffer(my.cpp_source_argument)
     js_append_cpp_buffer_argument_model(my.parent, my.cpp_source_argument, my.cpp_class, my.wrapper)
-  elsif js_cpp_value_is_cpp_js_module(my.cpp_source_argument, my.wrapper)
+  elsif js_cpp_value_is_js_class_module(my.cpp_source_argument, my.wrapper)
     js_append_cpp_context_argument_model(my.parent, my.cpp_source_argument)
   elsif js_cpp_value_is_cpp_error_context(my.cpp_source_argument)
     js_append_cpp_error_context_argument_model(my.parent, my.cpp_source_argument, my.wrapper)
-  elsif js_cpp_value_is_cpp_enum(my.cpp_source_argument, my.wrapper)
+  elsif js_cpp_value_is_js_enum_module(my.cpp_source_argument, my.wrapper)
     js_append_cpp_enum_argument_model(my.parent, my.cpp_source_argument)
   else
-    echo my.cpp_source_argument.string()
     echo_fatal("Unable to resolve argument", my)
   endif
 endfunction
@@ -409,10 +415,10 @@ function js_append_resolved_cpp_source_return(parent, cpp_source_return, wrapper
     js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
   elsif js_cpp_value_is_cpp_error(my.cpp_source_return)
     js_append_cpp_method_return_error_model(my.parent, my.cpp_method_return.name)
-  elsif js_cpp_value_is_cpp_js_module(my.cpp_source_return, my.wrapper)
+  elsif js_cpp_value_is_js_class_module(my.cpp_source_return, my.wrapper)
     js_append_cpp_method_return_context_model(my.parent, my.cpp_method_return.name, my.cpp_source_return.class)
     js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
-  elsif js_cpp_value_is_cpp_enum(my.cpp_source_return, my.wrapper)
+  elsif js_cpp_value_is_js_enum_module(my.cpp_source_return, my.wrapper)
     js_append_cpp_method_return_enum_model(my.parent, my.cpp_method_return.name, my.cpp_source_return.enum)
     js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
   else

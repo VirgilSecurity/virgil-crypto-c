@@ -67,15 +67,15 @@ function js_binding_method_name(method)
   return "$(my.method.name:Camel)"
 endfunction
 
-function js_js_argument_is_js_module(js_argument, wrapper)
-  for my.wrapper.js_wrapped_module where defined(my.js_argument.class) & my.js_argument.class = js_wrapped_module.name
+function js_js_argument_is_js_class_module(js_argument, wrapper)
+  for my.wrapper.js_wrapped_class where defined(my.js_argument.class) & my.js_argument.class = js_wrapped_class.name
     return 1
   endfor
   return 0
 endfunction
 
-function js_js_return_is_js_module(js_return, wrapper)
-  for my.wrapper.js_wrapped_module where defined(my.js_return.class) & my.js_return.class = js_wrapped_module.name
+function js_js_return_is_js_class_module(js_return, wrapper)
+  for my.wrapper.js_wrapped_class where defined(my.js_return.class) & my.js_return.class = js_wrapped_class.name
     return 1
   endfor
   return 0
@@ -101,8 +101,8 @@ function js_cpp_value_is_cpp_error(value)
   return defined(my.value.enum) & my.value.enum = "error"
 endfunction
 
-function js_cpp_value_is_cpp_js_module(value, wrapper)
-  for my.wrapper.js_wrapped_module where defined(my.value.class) & my.value.class = js_wrapped_module.name
+function js_cpp_value_is_js_class_module(value, wrapper)
+  for my.wrapper.js_wrapped_class where defined(my.value.class) & my.value.class = js_wrapped_class.name
     return 1
   endfor
   return 0
@@ -116,7 +116,7 @@ function js_cpp_value_is_cpp_js_return(value)
   return js_cpp_value_is_cpp_buffer(my.value) & defined(my.value.access) & my.value.access = "writeonly"
 endfunction
 
-function js_cpp_value_is_cpp_enum(value, wrapper)
+function js_cpp_value_is_js_enum_module(value, wrapper)
   for my.wrapper.js_wrapped_enum where defined(my.value.enum) & my.value.enum = js_wrapped_enum.name
     return 1
   endfor
@@ -147,8 +147,8 @@ function js_cpp_method_return_name()
   return "method_return"
 endfunction
 
-function js_cpp_header_guard(js_module)
-  return "$(my.js_module.name:c,upper)_H"
+function js_cpp_header_guard(js_class_module)
+  return "$(my.js_class_module.name:c,upper)_H"
 endfunction
 
 function js_cpp_init_function_name()
