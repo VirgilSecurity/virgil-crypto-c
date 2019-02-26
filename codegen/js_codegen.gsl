@@ -331,7 +331,7 @@ function js_cpp_create_method_call(cpp_method, cpp_class, indent_level)
   js_out("$(my.assignment)$(my.cpp_method.c_name:no)($(my.arguments:no));", my.indent_levels.first)
 endfunction
 
-function js_cpp_create_method_return_variables(cpp_js_return, cpp_method, wrapper, indent_level)
+function js_cpp_create_cpp_js_return(cpp_js_return, cpp_method, wrapper, indent_level)
   for my.cpp_method.cpp_buffer_argument where my.cpp_js_return.name = cpp_buffer_argument.name
     return "Nan::NewBuffer((char*)$(js_cpp_bytes_name(my.cpp_js_return.name)), vsc_buffer_len($(my.cpp_js_return.name:no))).ToLocalChecked()"
   endfor
@@ -364,14 +364,14 @@ function js_cpp_create_method_return_multiple(cpp_method, wrapper, indent_level)
   js_out("Nan::EscapableHandleScope scope;", my.indent_levels.first)
   js_out("v8::Local<v8::Object> result = Nan::New<v8::Object>();", my.indent_levels.first)
   for my.cpp_method.cpp_js_return
-    js_out("result->Set(Nan::New<v8::String>(\"$(cpp_js_return.binding_name:no)\").ToLocalChecked(), $(js_cpp_create_method_return_variables(cpp_js_return, my.cpp_method, my.wrapper, my.indent_levels.first)));", my.indent_levels.first)
+    js_out("result->Set(Nan::New<v8::String>(\"$(cpp_js_return.binding_name:no)\").ToLocalChecked(), $(js_cpp_create_cpp_js_return(cpp_js_return, my.cpp_method, my.wrapper, my.indent_levels.first)));", my.indent_levels.first)
   endfor
   js_out("$(js_cpp_callback_info_name()).GetReturnValue().Set(scope.Escape(result));", my.indent_levels.first)
 endfunction
 
 function js_cpp_create_method_return_one(cpp_method, wrapper, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("$(js_cpp_callback_info_name()).GetReturnValue().Set($(js_cpp_create_method_return_variables(my.cpp_method->cpp_js_return, my.cpp_method, my.wrapper, my.indent_levels.first)));", my.indent_levels.first)
+  js_out("$(js_cpp_callback_info_name()).GetReturnValue().Set($(js_cpp_create_cpp_js_return(my.cpp_method->cpp_js_return, my.cpp_method, my.wrapper, my.indent_levels.first)));", my.indent_levels.first)
 endfunction
 
 function js_cpp_create_method_return(cpp_method, wrapper, indent_level)
