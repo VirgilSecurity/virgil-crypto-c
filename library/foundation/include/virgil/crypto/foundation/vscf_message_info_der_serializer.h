@@ -85,6 +85,13 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Public integral constants.
+//
+enum {
+    vscf_message_info_der_serializer_PREFIX_LEN = 32
+};
+
+//
 //  Handles implementation details.
 //
 typedef struct vscf_message_info_der_serializer_t vscf_message_info_der_serializer_t;
@@ -200,6 +207,16 @@ vscf_message_info_der_serializer_serialized_len(vscf_message_info_der_serializer
 VSCF_PUBLIC void
 vscf_message_info_der_serializer_serialize(vscf_message_info_der_serializer_t *self,
         const vscf_message_info_t *message_info, vsc_buffer_t *out);
+
+//
+//  Read message info prefix from the given data, and if it is valid,
+//  return a length of bytes of the whole message info.
+//
+//  Zero returned if length can not be determined from the given data,
+//  and this means that there is no message info at the data beginning.
+//
+VSCF_PUBLIC size_t
+vscf_message_info_der_serializer_read_prefix(vscf_message_info_der_serializer_t *self, vsc_data_t data);
 
 //
 //  Deserialize class "message info".

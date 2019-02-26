@@ -39,12 +39,20 @@ import VirgilCryptoCommon
 
 /// Provide interface for "message info" class serialization.
 @objc(VSCFMessageInfoSerializer) public protocol MessageInfoSerializer : CContext {
+    @objc var prefixLen: Int { get }
 
     /// Return buffer size enough to hold serialized message info.
     @objc func serializedLen(messageInfo: MessageInfo) -> Int
 
     /// Serialize class "message info".
     @objc func serialize(messageInfo: MessageInfo) -> Data
+
+    /// Read message info prefix from the given data, and if it is valid,
+    /// return a length of bytes of the whole message info.
+    ///
+    /// Zero returned if length can not be determined from the given data,
+    /// and this means that there is no message info at the data beginning.
+    @objc func readPrefix(data: Data) -> Int
 
     /// Deserialize class "message info".
     @objc func deserialize(data: Data, error: ErrorCtx) -> MessageInfo
@@ -55,6 +63,10 @@ import VirgilCryptoCommon
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
+
+    @objc public var prefixLen: Int {
+        return vscf_message_info_serializer_prefix_len(vscf_message_info_serializer_api(self.c_ctx))
+    }
 
     /// Take C context that implements this interface
     public init(c_ctx: OpaquePointer) {
@@ -91,6 +103,19 @@ import VirgilCryptoCommon
         out.count = vsc_buffer_len(outBuf)
 
         return out
+    }
+
+    /// Read message info prefix from the given data, and if it is valid,
+    /// return a length of bytes of the whole message info.
+    ///
+    /// Zero returned if length can not be determined from the given data,
+    /// and this means that there is no message info at the data beginning.
+    @objc public func readPrefix(data: Data) -> Int {
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Int in
+            return vscf_message_info_serializer_read_prefix(self.c_ctx, vsc_data(dataPointer, data.count))
+        })
+
+        return proxyResult
     }
 
     /// Deserialize class "message info".

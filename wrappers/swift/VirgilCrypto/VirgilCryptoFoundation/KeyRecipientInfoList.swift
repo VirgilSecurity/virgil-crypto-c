@@ -116,4 +116,9 @@ import VirgilCryptoCommon
 
         return KeyRecipientInfoList.init(take: proxyResult!)
     }
+
+    /// Remove all items.
+    @objc public func clear() {
+        vscf_key_recipient_info_list_clear(self.c_ctx)
+    }
 }

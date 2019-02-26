@@ -91,7 +91,7 @@ enum vscf_error_t {
     //
     vscf_error_UNHANDLED_THIRDPARTY_ERROR = -3,
     //
-    //  Buffer capacity is not enaugh to hold result.
+    //  Buffer capacity is not enough to hold result.
     //
     vscf_error_SMALL_BUFFER = -101,
     //
@@ -169,7 +169,29 @@ enum vscf_error_t {
     //
     //  Ed25519 private key is corrupted.
     //
-    vscf_error_BAD_ED25519_PRIVATE_KEY = -218
+    vscf_error_BAD_ED25519_PRIVATE_KEY = -218,
+    //
+    //  Decryption failed, because message info was not given explicitly,
+    //  and was not part of an encrypted message.
+    //
+    vscf_error_NO_MESSAGE_INFO = -301,
+    //
+    //  Message info is corrupted.
+    //
+    vscf_error_BAD_MESSAGE_INFO = -302,
+    //
+    //  Recipient defined with id is not found within message info
+    //  during data decryption.
+    //
+    vscf_error_KEY_RECIPIENT_IS_NOT_FOUND = -303,
+    //
+    //  Content encryption key can not be decrypted with a given private key.
+    //
+    vscf_error_KEY_RECIPIENT_PRIVATE_KEY_IS_WRONG = -304,
+    //
+    //  Content encryption key can not be decrypted with a given password.
+    //
+    vscf_error_PASSWORD_RECIPIENT_PASSWORD_IS_WRONG = -305
 };
 typedef enum vscf_error_t vscf_error_t;
 

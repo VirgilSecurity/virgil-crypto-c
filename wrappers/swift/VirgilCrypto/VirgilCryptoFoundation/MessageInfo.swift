@@ -107,4 +107,9 @@ import VirgilCryptoCommon
 
         return PasswordRecipientInfoList.init(use: proxyResult!)
     }
+
+    /// Remove all recipients.
+    @objc public func clearRecipients() {
+        vscf_message_info_clear_recipients(self.c_ctx)
+    }
 }

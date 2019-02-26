@@ -313,3 +313,15 @@ vscf_key_recipient_info_list_prev(const vscf_key_recipient_info_list_t *self) {
 
     return self->prev;
 }
+
+//
+//  Remove all items.
+//
+VSCF_PUBLIC void
+vscf_key_recipient_info_list_clear(vscf_key_recipient_info_list_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_key_recipient_info_destroy(&self->item);
+    vscf_key_recipient_info_list_destroy(&self->next);
+}

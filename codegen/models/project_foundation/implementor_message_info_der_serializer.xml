@@ -5,7 +5,9 @@
         CMS based implementation of the class "message info" serialization.
 
         <interface name="defaults"/>
-        <interface name="message info serializer"/>
+        <interface name="message info serializer">
+            <constant name="prefix len" value="32"/>
+        </interface>
 
         <require enum="asn1 tag"/>
         <require class="asn1rd"/>

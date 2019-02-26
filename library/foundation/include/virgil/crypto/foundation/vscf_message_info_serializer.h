@@ -102,10 +102,26 @@ VSCF_PUBLIC void
 vscf_message_info_serializer_serialize(vscf_impl_t *impl, const vscf_message_info_t *message_info, vsc_buffer_t *out);
 
 //
+//  Read message info prefix from the given data, and if it is valid,
+//  return a length of bytes of the whole message info.
+//
+//  Zero returned if length can not be determined from the given data,
+//  and this means that there is no message info at the data beginning.
+//
+VSCF_PUBLIC size_t
+vscf_message_info_serializer_read_prefix(vscf_impl_t *impl, vsc_data_t data);
+
+//
 //  Deserialize class "message info".
 //
 VSCF_PUBLIC vscf_message_info_t *
 vscf_message_info_serializer_deserialize(vscf_impl_t *impl, vsc_data_t data, vscf_error_ctx_t *error);
+
+//
+//  Returns constant 'prefix len'.
+//
+VSCF_PUBLIC size_t
+vscf_message_info_serializer_prefix_len(const vscf_message_info_serializer_api_t *message_info_serializer_api);
 
 //
 //  Return message info serializer API, or NULL if it is not implemented.

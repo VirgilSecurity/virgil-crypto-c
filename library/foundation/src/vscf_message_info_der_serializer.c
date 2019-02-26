@@ -455,11 +455,13 @@ vscf_message_info_der_serializer_serialized_key_recipient_info_len(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(key_recipient_info);
 
-    size_t len = 1 + 1 + 3 +       //  KeyTransRecipientInfo ::= SEQUENCE {
-                 1 + 1 + 1 +       //      version CMSVersion, -- always set to 0 or 2
-                 1 + 1 + 64 +      //      rid RecipientIdentifier,
-                 1 + 1 + 32 +      //      keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
-                 1 + 1 + 2 + 1024; //      encryptedKey EncryptedKey }
+    size_t encrypted_key_len = vscf_key_recipient_info_encrypted_key(key_recipient_info).len;
+
+    size_t len = 1 + 1 + 3 +                    //  KeyTransRecipientInfo ::= SEQUENCE {
+                 1 + 1 + 1 +                    //      version CMSVersion, -- always set to 0 or 2
+                 1 + 1 + 64 +                   //      rid RecipientIdentifier,
+                 1 + 1 + 32 +                   //      keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
+                 1 + 1 + 2 + encrypted_key_len; //      encryptedKey EncryptedKey }
 
     return len;
 }
@@ -1272,6 +1274,32 @@ vscf_message_info_der_serializer_serialize(
     vsc_buffer_inc_used(out, message_info_len);
 
     vsc_buffer_switch_reverse_mode(out, stored_out_mode);
+}
+
+//
+//  Read message info prefix from the given data, and if it is valid,
+//  return a length of bytes of the whole message info.
+//
+//  Zero returned if length can not be determined from the given data,
+//  and this means that there is no message info at the data beginning.
+//
+VSCF_PUBLIC size_t
+vscf_message_info_der_serializer_read_prefix(vscf_message_info_der_serializer_t *self, vsc_data_t data) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->asn1_reader);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT(data.len >= vscf_message_info_der_serializer_PREFIX_LEN);
+
+    vscf_asn1_reader_reset(self->asn1_reader, data);
+    size_t len = vscf_asn1_reader_read_sequence(self->asn1_reader);
+
+    if (vscf_asn1_reader_error(self->asn1_reader) == vscf_SUCCESS) {
+        vscf_asn1_reader_reset(self->asn1_reader, data);
+        len = vscf_asn1_reader_get_data_len(self->asn1_reader);
+    }
+
+    return len;
 }
 
 //

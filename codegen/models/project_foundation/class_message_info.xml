@@ -47,4 +47,9 @@
 
         <return class="password recipient info list"/>
     </method>
+
+
+    <method name="clear recipients">
+        Remove all recipients.
+    </method>
 </class>
