@@ -97,6 +97,10 @@ function js_cpp_value_is_cpp_buffer(value)
   return defined(my.value.class) & my.value.class = "buffer"
 endfunction
 
+function js_cpp_value_is_cpp_char(value)
+  return defined(my.value.type) & my.value.type = "char"
+endfunction
+
 function js_cpp_value_is_cpp_error(value)
   return defined(my.value.enum) & my.value.enum = "error"
 endfunction
@@ -113,7 +117,7 @@ function js_cpp_value_is_cpp_error_context(value)
 endfunction
 
 function js_cpp_value_is_cpp_js_return(value)
-  return js_cpp_value_is_cpp_buffer(my.value) & defined(my.value.access) & my.value.access = "writeonly"
+  return (js_cpp_value_is_cpp_buffer(my.value) | js_cpp_value_is_cpp_char(my.value)) & defined(my.value.access) & (my.value.access = "writeonly" | my.value.access = "readwrite")
 endfunction
 
 function js_cpp_value_is_js_enum_module(value, wrapper)
@@ -147,8 +151,8 @@ function js_cpp_method_return_name()
   return "method_return"
 endfunction
 
-function js_cpp_header_guard(js_class_module)
-  return "$(my.js_class_module.name:c,upper)_H"
+function js_cpp_header_guard(name)
+  return "$(my.name:c,upper)_H"
 endfunction
 
 function js_cpp_init_function_name()

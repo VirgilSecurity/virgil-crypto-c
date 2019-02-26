@@ -7,14 +7,14 @@ gsl from "js_helpers.gsl"
 # C++ - Header
 # --------------------------------------------------------------------------------------------------
 
-function js_cpp_header_create_ifndef(js_class_module, indent_level)
+function js_cpp_header_create_ifndef(name, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("#ifndef $(js_cpp_header_guard(my.js_class_module))", my.indent_levels.first)
+  js_out("#ifndef $(js_cpp_header_guard(my.name))", my.indent_levels.first)
 endfunction
 
-function js_cpp_header_create_define(js_class_module, indent_level)
+function js_cpp_header_create_define(name, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("#define $(js_cpp_header_guard(my.js_class_module))", my.indent_levels.first)
+  js_out("#define $(js_cpp_header_guard(my.name))", my.indent_levels.first)
 endfunction
 
 function js_cpp_header_create_js_include_module(js_include_module, indent_level)
@@ -225,6 +225,15 @@ function js_cpp_create_cpp_enum_argument(cpp_enum_argument, index, wrapper, inde
   endfor
 endfunction
 
+function js_cpp_create_cpp_char_argument(cpp_char_argument, index, cpp_class, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  if defined(my.cpp_char_argument.length)
+    js_out("char $(my.cpp_char_argument.name:no)[$(my.cpp_char_argument.length:no)];", my.indent_levels.first)
+  else
+    js_out("char* $(my.cpp_char_argument.name:no) = Nan::Utf8String($(js_cpp_callback_info_name())[$(my.index)]);", my.indent_levels.first)
+  endif
+endfunction
+
 function js_cpp_create_method_arguments(cpp_method, cpp_class, wrapper, indent_level)
   for my.cpp_method.cpp_call_argument
     my.cpp_call_argument_index = index(cpp_call_argument) - 1
@@ -242,6 +251,10 @@ function js_cpp_create_method_arguments(cpp_method, cpp_class, wrapper, indent_l
     endfor
     for my.cpp_method.cpp_enum_argument where cpp_enum_argument.name = cpp_call_argument.name
       js_cpp_create_cpp_enum_argument(cpp_enum_argument, my.cpp_call_argument_index, my.wrapper, my.indent_level)
+      next cpp_call_argument
+    endfor
+    for my.cpp_method.cpp_char_argument where cpp_char_argument.name = cpp_call_argument.name
+      js_cpp_create_cpp_char_argument(cpp_char_argument, my.cpp_call_argument_index, my.cpp_class, my.indent_level)
       next cpp_call_argument
     endfor
   endfor
@@ -349,6 +362,15 @@ function js_cpp_create_cpp_js_return(cpp_js_return, cpp_method, wrapper, indent_
   endfor
   for my.cpp_method.cpp_method_return_data where my.cpp_js_return.name = cpp_method_return_data.name
     return "Nan::NewBuffer((char*)$(my.cpp_js_return.name:no).bytes, $(my.cpp_js_return.name:no).len).ToLocalChecked()"
+  endfor
+  for my.cpp_method.cpp_char_argument where my.cpp_js_return.name = cpp_char_argument.name
+    if defined(cpp_char_argument.length)
+      return "Nan::New<v8::String>(&$(my.cpp_js_return.name:no), $(cpp_char_argument.length)).ToLocalChecked()"
+    else
+      my.name = "$(my.cpp_js_return.name:no)_p"
+      js_out("char* $(my.name:no)_p = &$(my.cpp_js_return.name:no);")
+      return "Nan::New<v8::String>($(my.name:no), strlen($(my.name:no))).ToLocalChecked()"
+    endif
   endfor
   for my.cpp_method.cpp_method_return_context where my.cpp_js_return.name = cpp_method_return_context.name
     for my.wrapper.js_wrapped_class where cpp_method_return_context.class = js_wrapped_class.name
@@ -573,8 +595,8 @@ function js_create_js_class_module_file(js_class_module, wrapper)
   for my.wrapper.js_wrapped_class where my.js_class_module.name = js_wrapped_class.name
     if defined(my.js_class_module->cpp_class)
       output js_wrapped_class.cpp_header_file_path
-        js_cpp_header_create_ifndef(my.js_class_module)
-        js_cpp_header_create_define(my.js_class_module)
+        js_cpp_header_create_ifndef(my.js_class_module.name)
+        js_cpp_header_create_define(my.js_class_module.name)
         js_cpp_header_create_includes(my.js_class_module, my.wrapper)
         js_cpp_header_create_class(my.js_class_module->cpp_class, my.wrapper)
         js_cpp_header_create_endif()

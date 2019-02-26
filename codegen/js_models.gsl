@@ -25,11 +25,11 @@ function js_append_js_enum_module_model(parent, source)
   endnew
 endfunction
 
-function js_append_js_wrapped_enum_model(parent, js_enum, wrapper)
+function js_append_js_wrapped_enum_model(parent, js_enum_module, wrapper)
   new js_wrapped_enum to my.parent
-    js_wrapped_enum.name = my.js_enum.name
-    js_wrapped_enum.c_name = "$(my.wrapper.prefix)_$(my.js_enum.name:c)_t"
-    js_wrapped_enum.js_source_file = "$(my.js_enum.name:cobol).js"
+    js_wrapped_enum.name = my.js_enum_module.name
+    js_wrapped_enum.c_name = "$(my.wrapper.prefix)_$(my.js_enum_module.name:c)_t"
+    js_wrapped_enum.js_source_file = "$(my.js_enum_module.name:cobol).js"
     js_wrapped_enum.js_source_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_enum.js_source_file)
     return js_wrapped_enum
   endnew
@@ -199,6 +199,20 @@ function js_append_cpp_source_length_model(parent, source_length)
   endnew
 endfunction
 
+function js_append_cpp_source_string_model(parent, source_string)
+  new cpp_source_string to my.parent
+    if defined(my.source_string.length)
+      cpp_source_string.length = my.source_string.length
+    endif
+    if defined(my.source_string.length_constant)
+      cpp_source_string.length_constant = my.source_string.length_constant
+    endif
+    if defined(my.source_string.access)
+      cpp_source_string.access = my.source_string.access
+    endif
+  endnew
+endfunction
+
 function js_append_cpp_source_argument_model(parent, source_argument)
   new cpp_source_argument to cpp_method
     cpp_source_argument.name = my.source_argument.name
@@ -216,6 +230,9 @@ function js_append_cpp_source_argument_model(parent, source_argument)
     endif
     if defined(my.source_argument->length)
       js_append_cpp_source_length_model(cpp_source_argument, my.source_argument->length)
+    endif
+    if defined(my.source_argument->string)
+      js_append_cpp_source_string_model(cpp_source_argument, my.source_argument->string)
     endif
     return cpp_source_argument
   endnew
@@ -300,6 +317,19 @@ function js_append_cpp_enum_argument_model(parent, cpp_source_argument)
   endnew
 endfunction
 
+function js_append_cpp_char_argument_model(parent, cpp_source_argument)
+  new cpp_char_argument to my.parent
+    cpp_char_argument.name = js_cpp_variable_name(my.cpp_source_argument.name)
+    if defined(my.cpp_source_argument->cpp_source_string)
+      if defined(my.cpp_source_argument->cpp_source_string.length_constant)
+        cpp_char_argument.length = my.cpp_source_argument->cpp_source_string.length_constant
+      endif
+    else
+      echo_fatal("'cpp_source_argument->cpp_source_string' should be defined", my)
+    endif
+  endnew
+endfunction
+
 function js_append_resolved_cpp_source_argument(parent, cpp_source_argument, cpp_class, wrapper)
   if js_cpp_value_is_cpp_size(my.cpp_source_argument)
     js_append_cpp_size_argument_model(my.parent, my.cpp_source_argument)
@@ -313,6 +343,8 @@ function js_append_resolved_cpp_source_argument(parent, cpp_source_argument, cpp
     js_append_cpp_error_context_argument_model(my.parent, my.cpp_source_argument, my.wrapper)
   elsif js_cpp_value_is_js_enum_module(my.cpp_source_argument, my.wrapper)
     js_append_cpp_enum_argument_model(my.parent, my.cpp_source_argument)
+  elsif js_cpp_value_is_cpp_char(my.cpp_source_argument)
+    js_append_cpp_char_argument_model(my.parent, my.cpp_source_argument)
   else
     echo_fatal("Unable to resolve argument", my)
   endif
