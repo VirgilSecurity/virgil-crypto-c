@@ -14,6 +14,25 @@ function js_append_js_module_model(parent, source)
   endnew
 endfunction
 
+function js_append_js_interface_module_model(parent, source, wrapper)
+  new js_interface_module to my.parent
+    js_interface_module.name = my.source.name
+    js_interface_module.class_name = "$(my.source.name:Pascal)"
+    js_interface_module.implementation_type = "$(my.wrapper.prefix:no)_impl_t"
+    js_interface_module.implementation_getter = "GetImplementation"
+    return js_interface_module
+  endnew
+endfunction
+
+function js_append_js_wrapped_interface_model(parent, js_interface_module, wrapper)
+  new js_wrapped_interface to my.parent
+    js_wrapped_interface.name = my.js_interface_module.name
+    js_wrapped_interface.cpp_header_file = "$(my.js_interface_module.name:c).h"
+    js_wrapped_interface.cpp_header_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_interface.cpp_header_file)
+    return js_wrapped_interface
+  endnew
+endfunction
+
 function js_append_js_enum_module_model(parent, source)
   new js_enum_module to my.parent
     js_enum_module.name = my.source.name

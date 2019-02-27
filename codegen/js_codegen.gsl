@@ -99,6 +99,20 @@ function js_cpp_header_create_class(cpp_class, wrapper, indent_level)
   js_out("};", my.indent_levels.first)
 endfunction
 
+function js_cpp_header_create_interface_includes(wrapper, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("#include <nan.h>", my.indent_levels.first)
+  js_out("#include <$(string.replace(my.wrapper.namespace, " |/"))/$(my.wrapper.prefix:no)_impl.h>", my.indent_levels.first)
+endfunction
+
+function js_cpp_header_create_interface(js_interface_module, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("class $(my.js_interface_module.class_name:no) : public Nan::ObjectWrap {", my.indent_levels.first)
+  js_cpp_header_create_public_access_specifier(my.indent_levels.first)
+  js_out("virtual $(my.js_interface_module.implementation_type:no)* $(my.js_interface_module.implementation_getter:no)() = 0;", my.indent_levels.second)
+  js_out("};", my.indent_levels.first)
+endfunction
+
 # --------------------------------------------------------------------------------------------------
 # C++ - Source
 # --------------------------------------------------------------------------------------------------
@@ -623,9 +637,23 @@ function js_create_js_enum_module_file(js_enum_module, wrapper)
   endfor
 endfunction
 
+function js_create_js_interface_module_file(js_interface_module, wrapper)
+  for my.wrapper.js_wrapped_interface where my.js_interface_module.name = js_wrapped_interface.name
+    output js_wrapped_interface.cpp_header_file_path
+      js_cpp_header_create_ifndef(my.js_interface_module.name)
+      js_cpp_header_create_define(my.js_interface_module.name)
+      js_cpp_header_create_interface_includes(my.wrapper)
+      js_cpp_header_create_interface(my.js_interface_module)
+      js_cpp_header_create_endif()
+    close
+  endfor
+endfunction
+
 function js_create_js_module_files(source, wrapper)
   for my.source.js_module
-    if defined(js_module->js_enum_module)
+    if defined(js_module->js_interface_module)
+      js_create_js_interface_module_file(js_module->js_interface_module, my.wrapper)
+    elsif defined(js_module->js_enum_module)
       js_create_js_enum_module_file(js_module->js_enum_module, my.wrapper)
     elsif defined(js_module->js_class_module)
       js_create_js_class_module_file(js_module->js_class_module, my.wrapper)

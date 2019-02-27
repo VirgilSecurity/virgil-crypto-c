@@ -14,6 +14,9 @@ endfunction
 
 function js_create_interface_module(source, destination, wrapper, meta)
   echo_info("js_create_interface_module", my)
+  my.js_module = js_append_js_module_model(my.destination, my.source)
+  my.js_interface_module = js_append_js_interface_module_model(my.js_module, my.source, my.wrapper)
+  js_append_js_wrapped_interface_model(my.wrapper, my.js_interface_module, my.wrapper)
 endfunction
 
 function js_create_implementation_module(source, destination, wrapper, meta)
