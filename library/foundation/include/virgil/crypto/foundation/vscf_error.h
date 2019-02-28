@@ -191,7 +191,16 @@ enum vscf_error_t {
     //
     //  Content encryption key can not be decrypted with a given password.
     //
-    vscf_error_PASSWORD_RECIPIENT_PASSWORD_IS_WRONG = -305
+    vscf_error_PASSWORD_RECIPIENT_PASSWORD_IS_WRONG = -305,
+    //
+    //  Custom parameter with a given key is not found within message info.
+    //
+    vscf_error_MESSAGE_INFO_CUSTOM_PARAM_NOT_FOUND = -306,
+    //
+    //  A custom parameter with a given key is found, but the requested value
+    //  type does not correspond to the actual type.
+    //
+    vscf_error_MESSAGE_INFO_CUSTOM_PARAM_TYPE_MISMATCH = -307
 };
 typedef enum vscf_error_t vscf_error_t;
 

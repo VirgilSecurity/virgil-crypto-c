@@ -127,6 +127,13 @@ import VSCFoundation
     /// Content encryption key can not be decrypted with a given password.
     case passwordRecipientPasswordIsWrong = -305
 
+    /// Custom parameter with a given key is not found within message info.
+    case messageInfoCustomParamNotFound = -306
+
+    /// A custom parameter with a given key is found, but the requested value
+    /// type does not correspond to the actual type.
+    case messageInfoCustomParamTypeMismatch = -307
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC error: vscf_error_t) {
         self.init(rawValue: Int(error.rawValue))!
