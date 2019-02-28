@@ -120,4 +120,13 @@
     <constant name="password recipient password is wrong" value="-305">
         Content encryption key can not be decrypted with a given password.
     </constant>
+
+    <constant name="message info custom param not found" value="-306">
+        Custom parameter with a given key is not found within message info.
+    </constant>
+
+    <constant name="message info custom param type mismatch" value="-307">
+        A custom parameter with a given key is found, but the requested value
+        type does not correspond to the actual type.
+    </constant>
 </enum>
