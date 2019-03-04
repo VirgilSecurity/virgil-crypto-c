@@ -260,10 +260,10 @@ function js_append_cpp_buffer_size_model(parent, name, source_length, cpp_class,
     else
       cpp_buffer_size.name = js_cpp_size_name(my.name)
       if defined(my.source_length.constant)
-        cpp_buffer_size.type = js_cpp_size_type_constant()
+        cpp_buffer_size.type = global.js_cpp_size_type_constant
         cpp_buffer_size.constant = "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.source_length.constant:c,upper)"
       elsif defined(my.source_length.method)
-        cpp_buffer_size.type = js_cpp_size_type_method()
+        cpp_buffer_size.type = global.js_cpp_size_type_method
         cpp_buffer_size.method = "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.source_length.method:c)"
         for my.source_length.proxy
           js_append_cpp_call_argument_model_from_source_proxy(cpp_buffer_size, proxy)
@@ -485,7 +485,7 @@ endfunction
 
 function js_append_cpp_method_return_model(parent)
   new cpp_method_return to my.parent
-    cpp_method_return.name = js_cpp_method_return_name()
+    cpp_method_return.name = global.js_cpp_method_return_name
     return cpp_method_return
   endnew
 endfunction

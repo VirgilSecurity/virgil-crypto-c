@@ -6,9 +6,7 @@ gsl from "common.gsl"
 # General
 # --------------------------------------------------------------------------------------------------
 
-function js_indent_size()
-  return 2
-endfunction
+global.js_indent_size = 2
 
 function js_out(str, indent_level, indent_size)
   my.out = my.str
@@ -17,7 +15,7 @@ function js_out(str, indent_level, indent_size)
   if defined(my.indent_level)
     my.custom_indent_level = my.indent_level
   endif
-  my.custom_indent_size = js_indent_size()
+  my.custom_indent_size = global.js_indent_size
   if defined(my.indent_size)
     my.custom_indent_size = my.indent_size
   endif
@@ -114,6 +112,8 @@ endfunction
 # JavaScript
 # --------------------------------------------------------------------------------------------------
 
+global.js_binding_property_name = "binding"
+
 function js_constant_is_private(constant)
   return defined(my.constant.definition) & my.constant.definition = "private"
 endfunction
@@ -127,10 +127,6 @@ function js_binding_class_name(class)
   return "$(my.class.name:no)Binding"
 endfunction
 
-function js_binding_property_name()
-  return "binding"
-endfunction
-
 function js_binding_method_name(method)
   return "$(my.method.name:Camel)"
 endfunction
@@ -138,6 +134,26 @@ endfunction
 # --------------------------------------------------------------------------------------------------
 # C++
 # --------------------------------------------------------------------------------------------------
+
+global.js_cpp_size_type_constant = "constant"
+
+global.js_cpp_size_type_method = "method"
+
+global.js_cpp_method_return_name = "method_return"
+
+global.js_cpp_init_function_name = "Init"
+
+global.js_cpp_init_function_argument_type = "v8::Local<v8::Object>"
+
+global.js_cpp_init_function_argument_name = "exports"
+
+global.js_cpp_constructor_function_name = "New"
+
+global.js_cpp_callback_info_type = "const Nan::FunctionCallbackInfo<v8::Value>&"
+
+global.js_cpp_callback_info_name = "info"
+
+global.js_cpp_persistent_constructor_name = "constructor"
 
 function js_cpp_value_is_cpp_js_return(value)
   return (js_value_is_buffer(my.value) | js_value_is_char(my.value)) & defined(my.value.access) & (my.value.access = "writeonly" | my.value.access = "readwrite")
@@ -151,48 +167,8 @@ function js_cpp_size_name(name)
   return "$(my.name:c)_size"
 endfunction
 
-function js_cpp_size_type_constant()
-  return "constant"
-endfunction
-
-function js_cpp_size_type_method()
-  return "method"
-endfunction
-
-function js_cpp_method_return_name()
-  return "method_return"
-endfunction
-
 function js_cpp_header_guard(name)
   return "$(my.name:c,upper)_H"
-endfunction
-
-function js_cpp_init_function_name()
-  return "Init"
-endfunction
-
-function js_cpp_init_function_argument_type()
-  return "v8::Local<v8::Object>"
-endfunction
-
-function js_cpp_init_function_argument_name()
-  return "exports"
-endfunction
-
-function js_cpp_constructor_function_name()
-  return "New"
-endfunction
-
-function js_cpp_callback_info_type()
-  return "const Nan::FunctionCallbackInfo<v8::Value>&"
-endfunction
-
-function js_cpp_callback_info_name()
-  return "info"
-endfunction
-
-function js_cpp_persistent_constructor_name()
-  return "constructor"
 endfunction
 
 function js_cpp_context_type(context_name)
