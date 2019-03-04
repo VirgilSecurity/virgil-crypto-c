@@ -33,6 +33,37 @@ function js_append_js_wrapped_interface_model(parent, js_interface_module, wrapp
   endnew
 endfunction
 
+function js_append_js_implementation_module_model(parent, source, wrapper)
+  new js_implementation_module to my.parent
+    js_implementation_module.name = my.source.name
+    for my.source.interface
+      new js_interface_implementation to js_implementation_module
+        js_interface_implementation.interface_name = interface.name
+      endnew
+      for interface.constant
+        copy constant to js_implementation_module
+      endfor
+      for interface.method
+        copy method to js_implementation_module
+      endfor
+    endfor
+    for my.source.constant
+      copy constant to js_implementation_module
+    endfor
+    for my.source.method
+      copy method to js_implementation_module
+    endfor
+    return js_implementation_module
+  endnew
+endfunction
+
+function js_append_js_wrapped_implementation_model(parent, js_implementation_module, wrapper)
+  new js_wrapped_implementation to my.parent
+    js_wrapped_implementation.name = my.js_implementation_module.name
+    return js_wrapped_interface
+  endnew
+endfunction
+
 function js_append_js_enum_module_model(parent, source)
   new js_enum_module to my.parent
     js_enum_module.name = my.source.name
@@ -129,6 +160,9 @@ function js_append_js_argument_model(parent, source_argument)
     if defined(my.source_argument.class)
       js_argument.class = my.source_argument.class
     endif
+    if defined(my.source_argument.interface)
+      js_argument.interface = my.source_argument.interface
+    endif
     return js_argument
   endnew
 endfunction
@@ -192,7 +226,13 @@ endfunction
 
 function js_append_cpp_source_proxy_model(parent, source_proxy)
   new cpp_source_proxy to my.parent
-    cpp_source_proxy.argument = my.source_proxy.argument
+    if defined(my.source_proxy.argument)
+      cpp_source_proxy.argument = my.source_proxy.argument
+    elsif defined(my.source_proxy.constant)
+      cpp_source_proxy.constant = my.source_proxy.constant
+    else
+      echo_fatal("Unknown format of 'cpp_source_proxy'", my)
+    endif
     if defined(my.source_proxy.cast)
       cpp_source_proxy.cast = my.source_proxy.cast
     endif
@@ -202,17 +242,21 @@ endfunction
 
 function js_append_cpp_source_length_model(parent, source_length)
   new cpp_source_length to my.parent
-    if defined(my.source_length.constant)
-      cpp_source_length.constant = my.source_length.constant
-    endif
-    if defined(my.source_length.class)
-      cpp_source_length.class = my.source_length.class
-    endif
-    if defined(my.source_length.method)
-      cpp_source_length.method = my.source_length.method
-      for my.source_length.proxy
-        js_append_cpp_source_proxy_model(cpp_source_length, proxy)
-      endfor
+    if defined(my.source_length.argument)
+      cpp_source_length.argument = my.source_length.argument
+    else
+      if defined(my.source_length.constant)
+        cpp_source_length.constant = my.source_length.constant
+      endif
+      if defined(my.source_length.class)
+        cpp_source_length.class = my.source_length.class
+      endif
+      if defined(my.source_length.method)
+        cpp_source_length.method = my.source_length.method
+        for my.source_length.proxy
+          js_append_cpp_source_proxy_model(cpp_source_length, proxy)
+        endfor
+      endif
     endif
     return cpp_source_length
   endnew
@@ -244,6 +288,9 @@ function js_append_cpp_source_argument_model(parent, source_argument)
     if defined(my.source_argument.class)
       cpp_source_argument.class = my.source_argument.class
     endif
+    if defined(my.source_argument.interface)
+      cpp_source_argument.interface = my.source_argument.interface
+    endif
     if defined(my.source_argument.access)
       cpp_source_argument.access = my.source_argument.access
     endif
@@ -273,7 +320,12 @@ endfunction
 
 function js_append_cpp_call_argument_model_from_cpp_source_proxy(parent, cpp_source_proxy)
   new cpp_call_argument to my.parent
-    cpp_call_argument.name = js_cpp_variable_name(my.cpp_source_proxy.argument)
+    if defined(my.cpp_source_proxy.argument)
+      cpp_call_argument.name = js_cpp_variable_name(my.cpp_source_proxy.argument)
+    endif
+    if defined(my.cpp_source_proxy.constant)
+      cpp_call_argument.constant = my.cpp_source_proxy.constant
+    endif
     if defined(my.cpp_source_proxy.cast)
       cpp_call_argument.cast = my.cpp_source_proxy.cast
     endif
@@ -283,18 +335,22 @@ endfunction
 
 function js_append_cpp_buffer_size_model(parent, name, cpp_source_length, cpp_class, wrapper)
   new cpp_buffer_size to my.parent
-    cpp_buffer_size.name = js_cpp_size_name(my.name)
-    if defined(my.cpp_source_length.constant)
-      cpp_buffer_size.type = js_cpp_size_type_constant()
-      cpp_buffer_size.constant = "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.cpp_source_length.constant:c,upper)"
-    elsif defined(my.cpp_source_length.method)
-      cpp_buffer_size.type = js_cpp_size_type_method()
-      cpp_buffer_size.method = "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.cpp_source_length.method:c)"
-      for my.cpp_source_length.cpp_source_proxy
-        js_append_cpp_call_argument_model_from_cpp_source_proxy(cpp_buffer_size, cpp_source_proxy)
-      endfor
+    if defined(my.cpp_source_length.argument)
+      cpp_buffer_size.name = my.cpp_source_length.argument
     else
-      echo_fatal("'cpp_source_length.constant' or 'cpp_source_length.method' should be defined", my)
+      cpp_buffer_size.name = js_cpp_size_name(my.name)
+      if defined(my.cpp_source_length.constant)
+        cpp_buffer_size.type = js_cpp_size_type_constant()
+        cpp_buffer_size.constant = "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.cpp_source_length.constant:c,upper)"
+      elsif defined(my.cpp_source_length.method)
+        cpp_buffer_size.type = js_cpp_size_type_method()
+        cpp_buffer_size.method = "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.cpp_source_length.method:c)"
+        for my.cpp_source_length.cpp_source_proxy
+          js_append_cpp_call_argument_model_from_cpp_source_proxy(cpp_buffer_size, cpp_source_proxy)
+        endfor
+      else
+        echo_fatal("'cpp_source_length.constant' or 'cpp_source_length.method' should be defined", my)
+      endif
     endif
     return cpp_buffer_size
   endnew
@@ -343,9 +399,46 @@ function js_append_cpp_char_argument_model(parent, cpp_source_argument)
       if defined(my.cpp_source_argument->cpp_source_string.length_constant)
         cpp_char_argument.length = my.cpp_source_argument->cpp_source_string.length_constant
       endif
+      return cpp_char_argument
     else
       echo_fatal("'cpp_source_argument->cpp_source_string' should be defined", my)
     endif
+  endnew
+endfunction
+
+function js_append_cpp_interface_argument_model(parent, cpp_source_argument)
+  new cpp_interface_argument to my.parent
+    cpp_interface_argument.name = js_cpp_variable_name(my.cpp_source_argument.name)
+    cpp_interface_argument.interface_name = my.cpp_source_argument.interface
+    return cpp_interface_argument
+  endnew
+endfunction
+
+function js_append_cpp_byte_argument_model(parent, cpp_source_argument)
+  new cpp_byte_argument to my.parent
+    cpp_byte_argument.name = js_cpp_variable_name(my.cpp_source_argument.name)
+    return cpp_byte_argument
+  endnew
+endfunction
+
+function js_append_cpp_integer_argument_model(parent, cpp_source_argument)
+  new cpp_integer_argument to my.parent
+    cpp_integer_argument.name = js_cpp_variable_name(my.cpp_source_argument.name)
+    return cpp_integer_argument
+  endnew
+endfunction
+
+function js_append_cpp_unsigned_argument_model(parent, cpp_source_argument)
+  new cpp_unsigned_argument to my.parent
+    cpp_unsigned_argument.name = js_cpp_variable_name(my.cpp_source_argument.name)
+    return cpp_unsigned_argument
+  endnew
+endfunction
+
+function js_append_cpp_boolean_argument_model(parent, cpp_source_argument)
+  new cpp_boolean_argument to my.parent
+    cpp_boolean_argument.name = js_cpp_variable_name(my.cpp_source_argument.name)
+    return cpp_boolean_argument
   endnew
 endfunction
 
@@ -362,9 +455,20 @@ function js_append_resolved_cpp_source_argument(parent, cpp_source_argument, cpp
     js_append_cpp_error_context_argument_model(my.parent, my.cpp_source_argument, my.wrapper)
   elsif js_cpp_value_is_js_enum_module(my.cpp_source_argument, my.wrapper)
     js_append_cpp_enum_argument_model(my.parent, my.cpp_source_argument)
+  elsif js_cpp_value_is_js_interface_module(my.cpp_source_argument, my.wrapper)
+    js_append_cpp_interface_argument_model(my.parent, my.cpp_source_argument)
   elsif js_cpp_value_is_cpp_char(my.cpp_source_argument)
     js_append_cpp_char_argument_model(my.parent, my.cpp_source_argument)
+  elsif js_cpp_value_is_cpp_byte(my.cpp_source_argument)
+    js_append_cpp_byte_argument_model(my.parent, my.cpp_source_argument)
+  elsif js_cpp_value_is_integer(my.cpp_source_argument)
+    js_append_cpp_integer_argument_model(my.parent, my.cpp_source_argument)
+  elsif js_cpp_value_is_unsigned(my.cpp_source_argument)
+    js_append_cpp_unsigned_argument_model(my.parent, my.cpp_source_argument)
+  elsif js_cpp_value_is_cpp_js_boolean(my.cpp_source_argument)
+    js_append_cpp_boolean_argument_model(my.parent, my.cpp_source_argument)
   else
+    echo my.cpp_source_argument.string()
     echo_fatal("Unable to resolve argument", my)
   endif
 endfunction
@@ -387,6 +491,12 @@ function js_append_cpp_source_return_model(parent, source_return)
     endif
     if defined(my.source_return.enum)
       cpp_source_return.enum = my.source_return.enum
+    endif
+    if defined(my.source_return.interface)
+      cpp_source_return.interface = my.source_return.interface
+    endif
+    if defined(my.source_return.impl)
+      cpp_source_return.impl = my.source_return.impl
     endif
     return cpp_source_return
   endnew
@@ -443,6 +553,38 @@ function js_append_cpp_method_return_enum_model(parent, name, enum)
   endnew
 endfunction
 
+function js_append_cpp_method_return_implementation_model(parent, name, implementation)
+  new cpp_method_return_implementation to my.parent
+    cpp_method_return_implementation.name = my.name
+    cpp_method_return_implementation.implementation_name = my.implementation
+  endnew
+endfunction
+
+function js_append_cpp_method_return_interface_model(parent, name, interface)
+  new cpp_method_return_interface to my.parent
+    cpp_method_return_interface.name = my.name
+    cpp_method_return_interface.interface_name = my.interface
+  endnew
+endfunction
+
+function js_append_cpp_method_return_integer_model(parent, name)
+  new cpp_method_return_integer to my.parent
+    cpp_method_return_integer.name = my.name
+  endnew
+endfunction
+
+function js_append_cpp_method_return_unsigned_model(parent, name)
+  new cpp_method_return_unsigned to my.parent
+    cpp_method_return_unsigned.name = my.name
+  endnew
+endfunction
+
+function js_append_cpp_method_return_byte_model(parent, name)
+  new cpp_method_return_byte to my.parent
+    cpp_method_return_byte.name = my.name
+  endnew
+endfunction
+
 function js_append_cpp_method_return_model(parent)
   new cpp_method_return to my.parent
     cpp_method_return.name = js_cpp_method_return_name()
@@ -472,7 +614,23 @@ function js_append_resolved_cpp_source_return(parent, cpp_source_return, wrapper
   elsif js_cpp_value_is_js_enum_module(my.cpp_source_return, my.wrapper)
     js_append_cpp_method_return_enum_model(my.parent, my.cpp_method_return.name, my.cpp_source_return.enum)
     js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
+  elsif js_cpp_value_is_js_implementation_module(my.cpp_source_return, my.wrapper)
+    js_append_cpp_method_return_implementation_model(my.parent, my.cpp_method_return.name, my.cpp_source_return.impl)
+    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
+  elsif js_cpp_value_is_js_interface_module(my.cpp_source_return, my.wrapper)
+    js_append_cpp_method_return_interface_model(my.parent, my.cpp_method_return.name, my.cpp_source_return.interface)
+    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
+  elsif js_cpp_value_is_integer(my.cpp_source_return)
+    js_append_cpp_method_return_integer_model(my.parent, my.cpp_method_return.name)
+    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
+  elsif js_cpp_value_is_unsigned(my.cpp_source_return)
+    js_append_cpp_method_return_unsigned_model(my.parent, my.cpp_method_return.name)
+    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
+  elsif js_cpp_value_is_cpp_byte(my.cpp_source_return)
+    js_append_cpp_method_return_byte_model(my.parent, my.cpp_method_return.name)
+    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
   else
+    echo my.cpp_source_return.string()
     echo_fatal("Unable to resolve return", my)
   endif
 endfunction

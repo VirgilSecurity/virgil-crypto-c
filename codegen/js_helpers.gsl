@@ -127,8 +127,34 @@ function js_cpp_value_is_js_enum_module(value, wrapper)
   return 0
 endfunction
 
+function js_cpp_value_is_js_interface_module(value, wrapper)
+  for my.wrapper.js_wrapped_interface where defined(my.value.interface) & my.value.interface = js_wrapped_interface.name
+    return 1
+  endfor
+  return 0
+endfunction
+
+function js_cpp_value_is_js_implementation_module(value, wrapper)
+  for my.wrapper.js_wrapped_implementation where defined(my.value.impl) & my.value.impl = js_wrapped_implementation.name
+    return 1
+  endfor
+  return 0
+endfunction
+
+function js_cpp_value_is_integer(value)
+  return defined(my.value.type) & my.value.type = "integer"
+endfunction
+
+function js_cpp_value_is_unsigned(value)
+  return defined(my.value.type) & my.value.type = "unsigned"
+endfunction
+
 function js_cpp_value_is_cpp_js_boolean(value)
   return defined(my.value.type) & my.value.type = "boolean"
+endfunction
+
+function js_cpp_value_is_cpp_byte(value)
+  return defined(my.value.type) & my.value.type = "byte"
 endfunction
 
 function js_cpp_variable_name(name)

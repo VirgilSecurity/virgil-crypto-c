@@ -21,6 +21,9 @@ endfunction
 
 function js_create_implementation_module(source, destination, wrapper, meta)
   echo_info("js_create_implementation_module", my)
+  my.js_module = js_append_js_module_model(my.destination, my.source)
+  my.js_implementation_module = js_append_js_implementation_module_model(my.js_module, my.source, my.wrapper)
+  js_append_js_wrapped_implementation_model(my.wrapper, my.js_implementation_module, my.wrapper)
 endfunction
 
 function js_create_class_module(source, destination, wrapper, meta)
@@ -72,8 +75,18 @@ function js_resolve_js_class_module(js_class_module, wrapper)
   endif
 endfunction
 
+function js_resolve_js_implementation_module(parent, js_implementation_module, wrapper)
+  my.js_class_module = js_append_js_class_module_model(my.parent, my.js_implementation_module, my.wrapper)
+  js_append_js_wrapped_class_model(my.wrapper, my.js_class_module, my.wrapper)
+  js_resolve_js_class_module(my.js_class_module, my.wrapper)
+endfunction
+
 function js_module_resolve(source, wrapper)
   echo_info("js_module_resolve", my)
+  if defined(my.source->js_implementation_module)
+    js_resolve_js_implementation_module(my.source, my.source->js_implementation_module, my.wrapper)
+    delete my.source->js_implementation_module
+  endif
   if defined(my.source->js_class_module)
     js_resolve_js_class_module(my.source->js_class_module, my.wrapper)
   endif
@@ -100,7 +113,7 @@ endfunction
 
 function js_generate_sources(source, wrapper)
   echo_info("js_generate_sources", my)
-  js_create_js_module_files(my.source, my.wrapper)
+  /* js_create_js_module_files(my.source, my.wrapper) */
   js_create_index_js_file(my.wrapper)
 endfunction
 
