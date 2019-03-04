@@ -503,7 +503,7 @@ endfunction
 function js_format_call_arguments(parent, wrapper)
   arguments = ""
   for my.parent.js_argument
-    if js_js_argument_is_js_class_module(js_argument, my.wrapper)
+    if js_value_is_class_module(js_argument, my.wrapper)
       arguments += "$(js_argument.name:no).$(js_binding_property_name())"
     else
       arguments += js_argument.name
@@ -544,7 +544,7 @@ endfunction
 function js_create_method_return(js_method, js_class, wrapper, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   my.binding = js_method_is_static(my.js_method) ?? "$(my.js_class.binding_name:no)" ? "this.$(js_binding_property_name())"
-  if defined(my.js_method->js_return) & js_js_return_is_js_class_module(my.js_method->js_return, my.wrapper)
+  if defined(my.js_method->js_return) & js_value_is_class_module(my.js_method->js_return, my.wrapper)
     for my.wrapper.js_wrapped_class where my.js_method->js_return.class = js_wrapped_class.name
       js_out("return new $(js_wrapped_class.js_class_name:no)($(my.binding:no).$(my.js_method.binding_name:no)($(js_format_call_arguments(my.js_method, my.wrapper))));", my.indent_levels.first)
     endfor

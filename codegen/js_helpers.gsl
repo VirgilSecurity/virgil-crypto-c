@@ -42,6 +42,74 @@ function js_method_is_static(method)
   return defined(my.method.is_static) & my.method.is_static = "1"
 endfunction
 
+function js_value_is_size(value)
+  return defined(my.value.type) & my.value.type = "size"
+endfunction
+
+function js_value_is_data(value)
+  return defined(my.value.class) & my.value.class = "data"
+endfunction
+
+function js_value_is_buffer(value)
+  return defined(my.value.class) & my.value.class = "buffer"
+endfunction
+
+function js_value_is_char(value)
+  return defined(my.value.type) & my.value.type = "char"
+endfunction
+
+function js_value_is_error(value)
+  return defined(my.value.enum) & my.value.enum = "error"
+endfunction
+
+function js_value_is_class_module(value, wrapper)
+  for my.wrapper.js_wrapped_class where defined(my.value.class) & my.value.class = js_wrapped_class.name
+    return 1
+  endfor
+  return 0
+endfunction
+
+function js_value_is_error_context(value)
+  return defined(my.value.class) & my.value.class = "error ctx"
+endfunction
+
+function js_value_is_enum_module(value, wrapper)
+  for my.wrapper.js_wrapped_enum where defined(my.value.enum) & my.value.enum = js_wrapped_enum.name
+    return 1
+  endfor
+  return 0
+endfunction
+
+  function js_value_is_interface_module(value, wrapper)
+  for my.wrapper.js_wrapped_interface where defined(my.value.interface) & my.value.interface = js_wrapped_interface.name
+    return 1
+  endfor
+  return 0
+endfunction
+
+function js_value_is_implementation_module(value, wrapper)
+  for my.wrapper.js_wrapped_implementation where defined(my.value.impl) & my.value.impl = js_wrapped_implementation.name
+    return 1
+  endfor
+  return 0
+endfunction
+
+function js_value_is_integer(value)
+  return defined(my.value.type) & my.value.type = "integer"
+endfunction
+
+function js_value_is_unsigned(value)
+  return defined(my.value.type) & my.value.type = "unsigned"
+endfunction
+
+function js_value_is_boolean(value)
+  return defined(my.value.type) & my.value.type = "boolean"
+endfunction
+
+function js_value_is_byte(value)
+  return defined(my.value.type) & my.value.type = "byte"
+endfunction
+
 # --------------------------------------------------------------------------------------------------
 # JavaScript
 # --------------------------------------------------------------------------------------------------
@@ -67,94 +135,12 @@ function js_binding_method_name(method)
   return "$(my.method.name:Camel)"
 endfunction
 
-function js_js_argument_is_js_class_module(js_argument, wrapper)
-  for my.wrapper.js_wrapped_class where defined(my.js_argument.class) & my.js_argument.class = js_wrapped_class.name
-    return 1
-  endfor
-  return 0
-endfunction
-
-function js_js_return_is_js_class_module(js_return, wrapper)
-  for my.wrapper.js_wrapped_class where defined(my.js_return.class) & my.js_return.class = js_wrapped_class.name
-    return 1
-  endfor
-  return 0
-endfunction
-
 # --------------------------------------------------------------------------------------------------
 # C++
 # --------------------------------------------------------------------------------------------------
 
-function js_cpp_value_is_cpp_size(value)
-  return defined(my.value.type) & my.value.type = "size"
-endfunction
-
-function js_cpp_value_is_cpp_data(value)
-  return defined(my.value.class) & my.value.class = "data"
-endfunction
-
-function js_cpp_value_is_cpp_buffer(value)
-  return defined(my.value.class) & my.value.class = "buffer"
-endfunction
-
-function js_cpp_value_is_cpp_char(value)
-  return defined(my.value.type) & my.value.type = "char"
-endfunction
-
-function js_cpp_value_is_cpp_error(value)
-  return defined(my.value.enum) & my.value.enum = "error"
-endfunction
-
-function js_cpp_value_is_js_class_module(value, wrapper)
-  for my.wrapper.js_wrapped_class where defined(my.value.class) & my.value.class = js_wrapped_class.name
-    return 1
-  endfor
-  return 0
-endfunction
-
-function js_cpp_value_is_cpp_error_context(value)
-  return defined(my.value.class) & my.value.class = "error ctx"
-endfunction
-
 function js_cpp_value_is_cpp_js_return(value)
-  return (js_cpp_value_is_cpp_buffer(my.value) | js_cpp_value_is_cpp_char(my.value)) & defined(my.value.access) & (my.value.access = "writeonly" | my.value.access = "readwrite")
-endfunction
-
-function js_cpp_value_is_js_enum_module(value, wrapper)
-  for my.wrapper.js_wrapped_enum where defined(my.value.enum) & my.value.enum = js_wrapped_enum.name
-    return 1
-  endfor
-  return 0
-endfunction
-
-function js_cpp_value_is_js_interface_module(value, wrapper)
-  for my.wrapper.js_wrapped_interface where defined(my.value.interface) & my.value.interface = js_wrapped_interface.name
-    return 1
-  endfor
-  return 0
-endfunction
-
-function js_cpp_value_is_js_implementation_module(value, wrapper)
-  for my.wrapper.js_wrapped_implementation where defined(my.value.impl) & my.value.impl = js_wrapped_implementation.name
-    return 1
-  endfor
-  return 0
-endfunction
-
-function js_cpp_value_is_integer(value)
-  return defined(my.value.type) & my.value.type = "integer"
-endfunction
-
-function js_cpp_value_is_unsigned(value)
-  return defined(my.value.type) & my.value.type = "unsigned"
-endfunction
-
-function js_cpp_value_is_cpp_js_boolean(value)
-  return defined(my.value.type) & my.value.type = "boolean"
-endfunction
-
-function js_cpp_value_is_cpp_byte(value)
-  return defined(my.value.type) & my.value.type = "byte"
+  return (js_value_is_buffer(my.value) | js_value_is_char(my.value)) & defined(my.value.access) & (my.value.access = "writeonly" | my.value.access = "readwrite")
 endfunction
 
 function js_cpp_variable_name(name)
