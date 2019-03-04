@@ -48,13 +48,13 @@ function js_resolve_js_class_module(js_class_module, wrapper)
   if defined(my.js_class_module->cpp_class)
     my.cpp_class = my.js_class_module->cpp_class
     for my.cpp_class.cpp_method
-      for cpp_method.cpp_source_argument
-        js_append_resolved_cpp_source_argument(cpp_method, cpp_source_argument, my.cpp_class, my.wrapper)
-        delete cpp_source_argument
+      for cpp_method.argument
+        js_append_resolved_argument(cpp_method, argument, my.cpp_class, my.wrapper)
+        delete argument
       endfor
-      if defined(cpp_method->cpp_source_return)
-        js_append_resolved_cpp_source_return(cpp_method, cpp_method->cpp_source_return, my.wrapper)
-        delete cpp_method->cpp_source_return
+      if defined(cpp_method->return)
+        js_append_resolved_return(cpp_method, cpp_method->return, my.wrapper)
+        delete cpp_method->return
       endif
     endfor
     my.class_names = XML.new()
