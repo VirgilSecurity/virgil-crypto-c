@@ -174,7 +174,7 @@ import VirgilCryptoCommon
 
     /// Accomplish encryption.
     @objc public func finishEncryption() throws -> Data {
-        let outCount = self.encryptionDataLen(dataLen: 0)
+        let outCount = self.encryptionOutLen(dataLen: 0)
         var out = Data(count: outCount)
         var outBuf = vsc_buffer_new()
         defer {
@@ -239,7 +239,7 @@ import VirgilCryptoCommon
 
     /// Accomplish decryption.
     @objc public func finishDecryption() throws -> Data {
-        let outCount = self.decryptionDataLen(dataLen: 0)
+        let outCount = self.decryptionOutLen(dataLen: 0)
         var out = Data(count: outCount)
         var outBuf = vsc_buffer_new()
         defer {
