@@ -98,7 +98,7 @@
         Accomplish encryption.
 
         <argument name="out" class="buffer">
-            <length method="encryption data len">
+            <length method="encryption out len">
                 <proxy constant="0" to="data len"/>
             </length>
         </argument>
@@ -144,7 +144,7 @@
         Accomplish decryption.
 
         <argument name="out" class="buffer">
-            <length method="decryption data len">
+            <length method="decryption out len">
                 <proxy constant="0" to="data len"/>
             </length>
         </argument>
