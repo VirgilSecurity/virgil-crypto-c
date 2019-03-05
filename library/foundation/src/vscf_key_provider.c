@@ -54,11 +54,11 @@
 #include "vscf_key_provider.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_public_key.h"
-#include "vscf_private_key.h"
 #include "vscf_random.h"
 #include "vscf_hash.h"
 #include "vscf_key_provider_defs.h"
+#include "vscf_public_key.h"
+#include "vscf_private_key.h"
 #include "vscf_sha384.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_rsa_public_key.h"
@@ -345,6 +345,9 @@ static void
 vscf_key_provider_init_ctx(vscf_key_provider_t *self) {
 
     VSCF_ASSERT_PTR(self);
+
+    self->rsa_bitlen = 4096;
+    self->rsa_exponent = 65537;
 }
 
 //
