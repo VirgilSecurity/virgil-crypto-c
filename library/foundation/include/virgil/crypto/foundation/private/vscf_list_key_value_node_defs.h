@@ -47,17 +47,22 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Class 'message info' types definition.
+//  Class 'list key value node' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_MESSAGE_INFO_DEFS_H_INCLUDED
-#define VSCF_MESSAGE_INFO_DEFS_H_INCLUDED
+#ifndef VSCF_LIST_KEY_VALUE_NODE_DEFS_H_INCLUDED
+#define VSCF_LIST_KEY_VALUE_NODE_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_key_recipient_info_list.h"
-#include "vscf_password_recipient_info_list.h"
-#include "vscf_message_info_custom_params.h"
-#include "vscf_impl.h"
+#include "vscf_list_key_value_node.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -75,9 +80,9 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'message info' context.
+//  Handle 'list key value node' context.
 //
-struct vscf_message_info_t {
+struct vscf_list_key_value_node_t {
     //
     //  Function do deallocate self context.
     //
@@ -87,13 +92,15 @@ struct vscf_message_info_t {
     //
     size_t refcnt;
 
-    vscf_key_recipient_info_list_t *key_recipients;
+    vsc_buffer_t *key;
 
-    vscf_password_recipient_info_list_t *password_recipients;
+    void *value;
 
-    vscf_impl_t *data_encryption_alg_info;
+    int value_tag;
 
-    vscf_message_info_custom_params_t *custom_params;
+    vscf_list_key_value_node_t *next;
+
+    vscf_list_key_value_node_t *prev;
 };
 
 
@@ -110,5 +117,5 @@ struct vscf_message_info_t {
 
 
 //  @footer
-#endif // VSCF_MESSAGE_INFO_DEFS_H_INCLUDED
+#endif // VSCF_LIST_KEY_VALUE_NODE_DEFS_H_INCLUDED
 //  @end

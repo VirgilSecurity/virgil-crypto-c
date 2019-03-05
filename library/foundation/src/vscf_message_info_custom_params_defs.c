@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'message info custom params' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,28 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'message info' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_MESSAGE_INFO_DEFS_H_INCLUDED
-#define VSCF_MESSAGE_INFO_DEFS_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_key_recipient_info_list.h"
-#include "vscf_password_recipient_info_list.h"
-#include "vscf_message_info_custom_params.h"
-#include "vscf_impl.h"
+#include "vscf_message_info_custom_params_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -74,41 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'message info' context.
-//
-struct vscf_message_info_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscf_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscf_key_recipient_info_list_t *key_recipients;
-
-    vscf_password_recipient_info_list_t *password_recipients;
-
-    vscf_impl_t *data_encryption_alg_info;
-
-    vscf_message_info_custom_params_t *custom_params;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_MESSAGE_INFO_DEFS_H_INCLUDED
 //  @end

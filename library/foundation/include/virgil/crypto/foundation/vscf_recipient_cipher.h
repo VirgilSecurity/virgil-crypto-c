@@ -56,6 +56,7 @@
 #define VSCF_RECIPIENT_CIPHER_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_message_info_custom_params.h"
 #include "vscf_impl.h"
 #include "vscf_error.h"
 
@@ -189,6 +190,13 @@ vscf_recipient_cipher_add_key_recipient(vscf_recipient_cipher_t *self, vsc_data_
 //
 VSCF_PUBLIC void
 vscf_recipient_cipher_clear_recipients(vscf_recipient_cipher_t *self);
+
+//
+//  Provide access to the custom params object.
+//  The returned object can be used to add custom params or read it.
+//
+VSCF_PUBLIC vscf_message_info_custom_params_t *
+vscf_recipient_cipher_custom_params(vscf_recipient_cipher_t *self);
 
 //
 //  Return buffer length required to hold message info returned by the

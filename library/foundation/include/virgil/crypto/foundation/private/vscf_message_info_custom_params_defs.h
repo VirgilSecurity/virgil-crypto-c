@@ -47,17 +47,14 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Class 'message info' types definition.
+//  Class 'message info custom params' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_MESSAGE_INFO_DEFS_H_INCLUDED
-#define VSCF_MESSAGE_INFO_DEFS_H_INCLUDED
+#ifndef VSCF_MESSAGE_INFO_CUSTOM_PARAMS_DEFS_H_INCLUDED
+#define VSCF_MESSAGE_INFO_CUSTOM_PARAMS_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_key_recipient_info_list.h"
-#include "vscf_password_recipient_info_list.h"
-#include "vscf_message_info_custom_params.h"
-#include "vscf_impl.h"
+#include "vscf_list_key_value_node.h"
 
 // clang-format on
 //  @end
@@ -75,9 +72,9 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'message info' context.
+//  Handle 'message info custom params' context.
 //
-struct vscf_message_info_t {
+struct vscf_message_info_custom_params_t {
     //
     //  Function do deallocate self context.
     //
@@ -87,13 +84,7 @@ struct vscf_message_info_t {
     //
     size_t refcnt;
 
-    vscf_key_recipient_info_list_t *key_recipients;
-
-    vscf_password_recipient_info_list_t *password_recipients;
-
-    vscf_impl_t *data_encryption_alg_info;
-
-    vscf_message_info_custom_params_t *custom_params;
+    vscf_list_key_value_node_t *key_value_node;
 };
 
 
@@ -110,5 +101,5 @@ struct vscf_message_info_t {
 
 
 //  @footer
-#endif // VSCF_MESSAGE_INFO_DEFS_H_INCLUDED
+#endif // VSCF_MESSAGE_INFO_CUSTOM_PARAMS_DEFS_H_INCLUDED
 //  @end
