@@ -97,6 +97,14 @@ import VirgilCryptoCommon
         vscf_recipient_cipher_clear_recipients(self.c_ctx)
     }
 
+    /// Provide access to the custom params object.
+    /// The returned object can be used to add custom params or read it.
+    @objc public func customParams() -> MessageInfoCustomParams {
+        let proxyResult = vscf_recipient_cipher_custom_params(self.c_ctx)
+
+        return MessageInfoCustomParams.init(use: proxyResult!)
+    }
+
     /// Return buffer length required to hold message info returned by the
     /// "start encryption" method.
     /// Precondition: all recipients and custom parameters should be set.

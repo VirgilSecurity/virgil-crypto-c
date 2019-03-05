@@ -41,6 +41,13 @@
         Remove all recipients.
     </method>
 
+    <method name="custom params">
+        Provide access to the custom params object.
+        The returned object can be used to add custom params or read it.
+
+        <return class="message info custom params" access="readwrite"/>
+    </method>
+
     <method name="message info len" is_const="1">
         Return buffer length required to hold message info returned by the
         "start encryption" method.

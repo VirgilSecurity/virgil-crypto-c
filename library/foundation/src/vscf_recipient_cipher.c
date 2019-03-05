@@ -420,6 +420,19 @@ vscf_recipient_cipher_clear_recipients(vscf_recipient_cipher_t *self) {
 }
 
 //
+//  Provide access to the custom params object.
+//  The returned object can be used to add custom params or read it.
+//
+VSCF_PUBLIC vscf_message_info_custom_params_t *
+vscf_recipient_cipher_custom_params(vscf_recipient_cipher_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->message_info);
+
+    return vscf_message_info_custom_params(self->message_info);
+}
+
+//
 //  Return buffer length required to hold message info returned by the
 //  "start encryption" method.
 //  Precondition: all recipients and custom parameters should be set.
