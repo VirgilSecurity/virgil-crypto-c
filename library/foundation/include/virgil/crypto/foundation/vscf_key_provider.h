@@ -215,7 +215,7 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8_data, vscf_error_ctx_t *error);
 
 //
-//  Import private key from the PKCS#8 format.
+//  Import public key from the PKCS#8 format.
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t pkcs8_data, vscf_error_ctx_t *error);
