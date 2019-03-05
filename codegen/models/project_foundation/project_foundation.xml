@@ -121,6 +121,7 @@
     <class name="key recipient list"/>
     <class name="list key value node"/>
     <class name="message info custom params"/>
+    <class name="key provider"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>
