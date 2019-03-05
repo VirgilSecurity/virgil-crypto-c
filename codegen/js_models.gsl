@@ -27,6 +27,7 @@ endfunction
 function js_append_js_wrapped_interface_model(parent, js_interface_module, wrapper)
   new js_wrapped_interface to my.parent
     js_wrapped_interface.name = my.js_interface_module.name
+    js_wrapped_interface.class_name = my.js_interface_module.class_name
     js_wrapped_interface.cpp_header_file = "$(my.js_interface_module.name:c).h"
     js_wrapped_interface.cpp_header_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_interface.cpp_header_file)
     return js_wrapped_interface
