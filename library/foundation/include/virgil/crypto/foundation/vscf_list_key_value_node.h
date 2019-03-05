@@ -47,20 +47,13 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Handle information about an encrypted message and algorithms
-//  that was used for encryption.
+//  Double linked list node with key and value.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_MESSAGE_INFO_H_INCLUDED
-#define VSCF_MESSAGE_INFO_H_INCLUDED
+#ifndef VSCF_LIST_KEY_VALUE_NODE_H_INCLUDED
+#define VSCF_LIST_KEY_VALUE_NODE_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_key_recipient_info.h"
-#include "vscf_password_recipient_info.h"
-#include "vscf_key_recipient_info_list.h"
-#include "vscf_password_recipient_info_list.h"
-#include "vscf_message_info_custom_params.h"
-#include "vscf_impl.h"
 
 // clang-format on
 //  @end
@@ -78,110 +71,53 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'message info' context.
+//  Handle 'list key value node' context.
 //
-typedef struct vscf_message_info_t vscf_message_info_t;
+typedef struct vscf_list_key_value_node_t vscf_list_key_value_node_t;
 
 //
-//  Return size of 'vscf_message_info_t'.
+//  Return size of 'vscf_list_key_value_node_t'.
 //
 VSCF_PUBLIC size_t
-vscf_message_info_ctx_size(void);
+vscf_list_key_value_node_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCF_PUBLIC void
-vscf_message_info_init(vscf_message_info_t *self);
+vscf_list_key_value_node_init(vscf_list_key_value_node_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCF_PUBLIC void
-vscf_message_info_cleanup(vscf_message_info_t *self);
+vscf_list_key_value_node_cleanup(vscf_list_key_value_node_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCF_PUBLIC vscf_message_info_t *
-vscf_message_info_new(void);
+VSCF_PUBLIC vscf_list_key_value_node_t *
+vscf_list_key_value_node_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCF_PUBLIC void
-vscf_message_info_delete(vscf_message_info_t *self);
+vscf_list_key_value_node_delete(vscf_list_key_value_node_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscf_message_info_new ()'.
+//  This is a reverse action of the function 'vscf_list_key_value_node_new ()'.
 //
 VSCF_PUBLIC void
-vscf_message_info_destroy(vscf_message_info_t **self_ref);
+vscf_list_key_value_node_destroy(vscf_list_key_value_node_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCF_PUBLIC vscf_message_info_t *
-vscf_message_info_shallow_copy(vscf_message_info_t *self);
-
-//
-//  Add recipient that is defined by Public Key.
-//
-VSCF_PUBLIC void
-vscf_message_info_add_key_recipient(vscf_message_info_t *self, vscf_key_recipient_info_t **key_recipient_ref);
-
-//
-//  Add recipient that is defined by password.
-//
-VSCF_PUBLIC void
-vscf_message_info_add_password_recipient(vscf_message_info_t *self,
-        vscf_password_recipient_info_t **password_recipient_ref);
-
-//
-//  Set information about algorithm that was used for data encryption.
-//
-VSCF_PUBLIC void
-vscf_message_info_set_data_encryption_alg_info(vscf_message_info_t *self, vscf_impl_t **data_encryption_alg_info_ref);
-
-//
-//  Return information about algorithm that was used for the data encryption.
-//
-VSCF_PUBLIC const vscf_impl_t *
-vscf_message_info_data_encryption_alg_info(const vscf_message_info_t *self);
-
-//
-//  Return list with a "key recipient info" elements.
-//
-VSCF_PUBLIC const vscf_key_recipient_info_list_t *
-vscf_message_info_key_recipient_info_list(const vscf_message_info_t *self);
-
-//
-//  Return list with a "password recipient info" elements.
-//
-VSCF_PUBLIC const vscf_password_recipient_info_list_t *
-vscf_message_info_password_recipient_info_list(const vscf_message_info_t *self);
-
-//
-//  Setup custom params.
-//
-VSCF_PUBLIC void
-vscf_message_info_set_custom_params(vscf_message_info_t *self, vscf_message_info_custom_params_t *custom_params);
-
-//
-//  Provide access to the custom params object.
-//  The returned object can be used to add custom params or read it.
-//  If custom params object was not set then new empty object is created.
-//
-VSCF_PUBLIC vscf_message_info_custom_params_t *
-vscf_message_info_custom_params(vscf_message_info_t *self);
-
-//
-//  Remove all recipients.
-//
-VSCF_PUBLIC void
-vscf_message_info_clear_recipients(vscf_message_info_t *self);
+VSCF_PUBLIC vscf_list_key_value_node_t *
+vscf_list_key_value_node_shallow_copy(vscf_list_key_value_node_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -197,5 +133,5 @@ vscf_message_info_clear_recipients(vscf_message_info_t *self);
 
 
 //  @footer
-#endif // VSCF_MESSAGE_INFO_H_INCLUDED
+#endif // VSCF_LIST_KEY_VALUE_NODE_H_INCLUDED
 //  @end

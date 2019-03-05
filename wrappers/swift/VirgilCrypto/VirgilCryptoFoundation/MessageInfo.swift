@@ -108,6 +108,20 @@ import VirgilCryptoCommon
         return PasswordRecipientInfoList.init(use: proxyResult!)
     }
 
+    /// Setup custom params.
+    @objc public func setCustomParams(customParams: MessageInfoCustomParams) {
+        vscf_message_info_set_custom_params(self.c_ctx, customParams.c_ctx)
+    }
+
+    /// Provide access to the custom params object.
+    /// The returned object can be used to add custom params or read it.
+    /// If custom params object was not set then new empty object is created.
+    @objc public func customParams() -> MessageInfoCustomParams {
+        let proxyResult = vscf_message_info_custom_params(self.c_ctx)
+
+        return MessageInfoCustomParams.init(use: proxyResult!)
+    }
+
     /// Remove all recipients.
     @objc public func clearRecipients() {
         vscf_message_info_clear_recipients(self.c_ctx)

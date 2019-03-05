@@ -119,6 +119,8 @@
     <class name="ecies envelope"/>
     <class name="recipient cipher"/>
     <class name="key recipient list"/>
+    <class name="list key value node"/>
+    <class name="message info custom params"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>

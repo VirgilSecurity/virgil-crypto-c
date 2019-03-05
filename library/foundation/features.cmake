@@ -131,6 +131,8 @@ option(VSCF_ALG_FACTORY "Enable class 'alg factory'." ON)
 option(VSCF_ECIES_ENVELOPE "Enable class 'ecies envelope'." ON)
 option(VSCF_RECIPIENT_CIPHER "Enable class 'recipient cipher'." ON)
 option(VSCF_KEY_RECIPIENT_LIST "Enable class 'key recipient list'." ON)
+option(VSCF_LIST_KEY_VALUE_NODE "Enable class 'list key value node'." ON)
+option(VSCF_MESSAGE_INFO_CUSTOM_PARAMS "Enable class 'message info custom params'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREAD
@@ -218,6 +220,8 @@ mark_as_advanced(
         VSCF_ECIES_ENVELOPE
         VSCF_RECIPIENT_CIPHER
         VSCF_KEY_RECIPIENT_LIST
+        VSCF_LIST_KEY_VALUE_NODE
+        VSCF_MESSAGE_INFO_CUSTOM_PARAMS
         )
 
 if(VSCF_MULTI_THREAD AND NOT MBEDTLS_THREADING_C)
