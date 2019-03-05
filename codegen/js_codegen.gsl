@@ -26,6 +26,11 @@ function js_cpp_header_create_includes(js_class_module, wrapper, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   js_out("#include <nan.h>", my.indent_levels.first)
   js_out("#include <$(string.replace(my.wrapper.namespace, " |/"))/$(my.wrapper.prefix:no)_$(my.js_class_module->cpp_class.c_name:no).h>", my.indent_levels.first)
+  for my.js_class_module->cpp_class.cpp_interface_implementation
+    for my.wrapper.js_wrapped_interface where cpp_interface_implementation.interface_name = js_wrapped_interface.name
+      js_out("#include \"$(js_wrapped_interface.cpp_header_file)\"", my.indent_levels.first)
+    endfor
+  endfor
   for my.js_class_module.js_include_module
     js_cpp_header_create_js_include_module(js_include_module, my.indent_levels.first)
   endfor
@@ -612,17 +617,17 @@ function js_create_js_class_module_file(js_class_module, wrapper)
         js_cpp_header_create_ifndef(my.js_class_module.name)
         js_cpp_header_create_define(my.js_class_module.name)
         js_cpp_header_create_includes(my.js_class_module, my.wrapper)
-        js_cpp_header_create_class(my.js_class_module->cpp_class, my.wrapper)
+        /* js_cpp_header_create_class(my.js_class_module->cpp_class, my.wrapper) */
         js_cpp_header_create_endif()
       close
       output js_wrapped_class.cpp_source_file_path
         js_cpp_create_header_include(js_wrapped_class)
-        js_cpp_create_class(my.js_class_module->cpp_class, my.wrapper)
+        /* js_cpp_create_class(my.js_class_module->cpp_class, my.wrapper) */
       close
     endif
     output js_wrapped_class.js_source_file_path
       js_create_requires(my.js_class_module, my.wrapper)
-      js_create_class(my.js_class_module->js_class, my.wrapper)
+      /* js_create_class(my.js_class_module->js_class, my.wrapper) */
       js_create_export_class(my.js_class_module->js_class)
     close
   endfor

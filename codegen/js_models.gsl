@@ -125,6 +125,16 @@ function js_append_js_include_module_model(parent, js_wrapped_class)
   endnew
 endfunction
 
+function js_append_interfaces_to_js_class_module(js_class_module, js_implementation_module)
+  if defined(my.js_class_module->cpp_class)
+    for my.js_implementation_module.js_interface_implementation
+      new cpp_interface_implementation to my.js_class_module->cpp_class
+        cpp_interface_implementation.interface_name = js_interface_implementation.interface_name
+      endnew
+    endfor
+  endif
+endfunction
+
 # --------------------------------------------------------------------------------------------------
 # JavaScript
 # --------------------------------------------------------------------------------------------------

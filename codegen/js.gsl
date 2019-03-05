@@ -78,7 +78,7 @@ endfunction
 function js_resolve_js_implementation_module(parent, js_implementation_module, wrapper)
   my.js_class_module = js_append_js_class_module_model(my.parent, my.js_implementation_module, my.wrapper)
   js_append_js_wrapped_class_model(my.wrapper, my.js_class_module, my.wrapper)
-  js_resolve_js_class_module(my.js_class_module, my.wrapper)
+  js_append_interfaces_to_js_class_module(my.js_class_module, my.js_implementation_module)
 endfunction
 
 function js_module_resolve(source, wrapper)
@@ -113,7 +113,7 @@ endfunction
 
 function js_generate_sources(source, wrapper)
   echo_info("js_generate_sources", my)
-  /* js_create_js_module_files(my.source, my.wrapper) */
+  js_create_js_module_files(my.source, my.wrapper)
   js_create_index_js_file(my.wrapper)
 endfunction
 
