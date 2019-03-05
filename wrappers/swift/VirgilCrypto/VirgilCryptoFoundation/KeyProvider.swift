@@ -112,7 +112,7 @@ import VirgilCryptoCommon
         return PrivateKeyProxy.init(c_ctx: proxyResult!)
     }
 
-    /// Import private key from the PKCS#8 format.
+    /// Import public key from the PKCS#8 format.
     @objc public func importPublicKey(pkcs8Data: Data, error: ErrorCtx) -> PublicKey {
         let proxyResult = pkcs8Data.withUnsafeBytes({ (pkcs8DataPointer: UnsafePointer<byte>) in
             return vscf_key_provider_import_public_key(self.c_ctx, vsc_data(pkcs8DataPointer, pkcs8Data.count), error.c_ctx)

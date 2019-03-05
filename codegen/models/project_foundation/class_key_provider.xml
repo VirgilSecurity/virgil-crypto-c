@@ -51,7 +51,7 @@
     </method>
 
     <method name="import public key">
-        Import private key from the PKCS#8 format.
+        Import public key from the PKCS#8 format.
 
         <argument name="pkcs8 data" class="data"/>
         <argument name="error" class="error ctx" access="readwrite"/>
