@@ -49,6 +49,7 @@
 
 #include "vscf_library.h"
 #include "vscf_error_ctx.h"
+#include "vscf_list_key_value_node.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -160,6 +161,60 @@ vscf_message_info_custom_params_find_string(vscf_message_info_custom_params_t *s
 VSCF_PUBLIC vsc_data_t
 vscf_message_info_custom_params_find_data(vscf_message_info_custom_params_t *self, vsc_data_t key,
         vscf_error_ctx_t *error);
+
+//
+//  Return first param, or NULL if does not exist.
+//
+VSCF_PRIVATE const vscf_list_key_value_node_t *
+vscf_message_info_custom_params_first_param(const vscf_message_info_custom_params_t *self);
+
+//
+//  Return next param, or NULL if does not exist.
+//
+VSCF_PRIVATE const vscf_list_key_value_node_t *
+vscf_message_info_custom_params_next_param(const vscf_list_key_value_node_t *param);
+
+//
+//  Return parameter's key.
+//
+VSCF_PRIVATE vsc_data_t
+vscf_message_info_custom_params_param_key(const vscf_list_key_value_node_t *param);
+
+//
+//  Return true if given parameter holds an integer value.
+//
+VSCF_PRIVATE bool
+vscf_message_info_custom_params_is_int_param(const vscf_list_key_value_node_t *param);
+
+//
+//  Return parameter as an integer value.
+//
+VSCF_PRIVATE int
+vscf_message_info_custom_params_as_int_value(const vscf_list_key_value_node_t *param);
+
+//
+//  Return true if given parameter holds a string value.
+//
+VSCF_PRIVATE bool
+vscf_message_info_custom_params_is_string_param(const vscf_list_key_value_node_t *param);
+
+//
+//  Return parameter as a string value.
+//
+VSCF_PRIVATE vsc_data_t
+vscf_message_info_custom_params_as_string_value(const vscf_list_key_value_node_t *param);
+
+//
+//  Return true if given parameter holds a data value.
+//
+VSCF_PRIVATE bool
+vscf_message_info_custom_params_is_data_param(const vscf_list_key_value_node_t *param);
+
+//
+//  Return parameter as a data value.
+//
+VSCF_PRIVATE vsc_data_t
+vscf_message_info_custom_params_as_data_value(const vscf_list_key_value_node_t *param);
 
 
 // --------------------------------------------------------------------------

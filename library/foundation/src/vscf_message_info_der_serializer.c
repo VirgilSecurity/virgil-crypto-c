@@ -415,9 +415,38 @@ vscf_message_info_der_serializer_serialized_custom_params_len(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
-    //  TODO: This is STUB. Implement me.
+    size_t len = 1 + 1 + 8;
 
-    return 0;
+    const vscf_message_info_custom_params_t *custom_params =
+            vscf_message_info_custom_params((vscf_message_info_t *)message_info);
+
+    for (const vscf_list_key_value_node_t *param = vscf_message_info_custom_params_first_param(custom_params);
+            param != NULL; param = vscf_message_info_custom_params_next_param(param)) {
+
+        //  KeyValue
+        len += 1 + 1 + 8;
+
+        //  Key
+        vsc_data_t key = vscf_message_info_custom_params_param_key(param);
+        len += 1 + 1 + 8 + key.len;
+
+        //  Value
+        if (vscf_message_info_custom_params_is_int_param(param)) {
+            len += 1 + 1 + 8 + 1 + 1 + 8;
+
+        } else if (vscf_message_info_custom_params_is_string_param(param)) {
+            vsc_data_t string = vscf_message_info_custom_params_as_string_value(param);
+            len += 1 + 1 + 8 + 1 + 1 + 8 + string.len;
+
+        } else if (vscf_message_info_custom_params_is_data_param(param)) {
+            vsc_data_t data = vscf_message_info_custom_params_as_data_value(param);
+            len += 1 + 1 + 8 + 1 + 1 + 8 + data.len;
+        } else {
+            VSCF_ASSERT(0 && "Unhandled custom param.");
+        }
+    }
+
+    return len;
 }
 
 //
@@ -443,9 +472,60 @@ vscf_message_info_der_serializer_serialize_custom_params(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
-    //  TODO: This is STUB. Implement me.
+    size_t len = 0;
 
-    return 0;
+    const vscf_message_info_custom_params_t *custom_params =
+            vscf_message_info_custom_params((vscf_message_info_t *)message_info);
+
+    for (const vscf_list_key_value_node_t *param = vscf_message_info_custom_params_first_param(custom_params);
+            param != NULL; param = vscf_message_info_custom_params_next_param(param)) {
+
+        size_t key_value_len = 0;
+
+        //
+        //  Write: val.
+        //
+        if (vscf_message_info_custom_params_is_int_param(param)) {
+            int value = vscf_message_info_custom_params_as_int_value(param);
+            key_value_len += vscf_asn1_writer_write_int(self->asn1_writer, value);
+            key_value_len += vscf_asn1_writer_write_context_tag(self->asn1_writer, 0, key_value_len);
+
+        } else if (vscf_message_info_custom_params_is_string_param(param)) {
+            vsc_data_t value = vscf_message_info_custom_params_as_string_value(param);
+            key_value_len += vscf_asn1_writer_write_utf8_str(self->asn1_writer, value);
+            key_value_len += vscf_asn1_writer_write_context_tag(self->asn1_writer, 1, key_value_len);
+
+        } else if (vscf_message_info_custom_params_is_data_param(param)) {
+            vsc_data_t value = vscf_message_info_custom_params_as_data_value(param);
+            key_value_len += vscf_asn1_writer_write_octet_str(self->asn1_writer, value);
+            key_value_len += vscf_asn1_writer_write_context_tag(self->asn1_writer, 2, key_value_len);
+        } else {
+            VSCF_ASSERT(0 && "Unhandled custom param.");
+        }
+
+        //
+        //  Write: key.
+        //
+        vsc_data_t key = vscf_message_info_custom_params_param_key(param);
+        key_value_len += vscf_asn1_writer_write_utf8_str(self->asn1_writer, key);
+
+        //
+        //  Write: KeyValue.
+        //
+        key_value_len += vscf_asn1_writer_write_sequence(self->asn1_writer, key_value_len);
+
+        //
+        //  Increase common top levevl sequence length.
+        //
+        len += key_value_len;
+    }
+
+    if (len > 0) {
+        len += vscf_asn1_writer_write_set(self->asn1_writer, len);
+        len += vscf_asn1_writer_write_context_tag(self->asn1_writer, 0, len);
+    }
+
+    return len;
 }
 
 static size_t
@@ -893,11 +973,48 @@ static void
 vscf_message_info_der_serializer_deserialize_custom_params(
         vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_ctx_t *error) {
 
-    //  TODO: This is STUB. Implement me.
-
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
-    VSCF_UNUSED(error);
+
+    const size_t custom_params_tag_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 0);
+    if (custom_params_tag_len == 0) {
+        return;
+    }
+
+    size_t custom_params_len = vscf_asn1_reader_read_set(self->asn1_reader);
+
+    while (custom_params_len != 0) {
+        const size_t custom_param_len = vscf_asn1_reader_get_data_len(self->asn1_reader);
+
+        if (custom_params_len >= custom_param_len) {
+            custom_params_len -= custom_param_len;
+        } else {
+            VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_ASN1);
+            return;
+        }
+
+        vscf_message_info_custom_params_t *custom_params = vscf_message_info_custom_params(message_info);
+
+        vscf_asn1_reader_read_sequence(self->asn1_reader);
+        vsc_data_t key = vscf_asn1_reader_read_utf8_str(self->asn1_reader);
+
+        if (vscf_asn1_reader_read_context_tag(self->asn1_reader, 0) > 0) {
+            int value = vscf_asn1_reader_read_int(self->asn1_reader);
+            vscf_message_info_custom_params_add_int(custom_params, key, value);
+
+        } else if (vscf_asn1_reader_read_context_tag(self->asn1_reader, 1) > 0) {
+            vsc_data_t value = vscf_asn1_reader_read_utf8_str(self->asn1_reader);
+            vscf_message_info_custom_params_add_string(custom_params, key, value);
+
+        } else if (vscf_asn1_reader_read_context_tag(self->asn1_reader, 2) > 0) {
+            vsc_data_t value = vscf_asn1_reader_read_octet_str(self->asn1_reader);
+            vscf_message_info_custom_params_add_data(custom_params, key, value);
+
+        } else {
+            VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_ASN1);
+            return;
+        }
+    }
 }
 
 //

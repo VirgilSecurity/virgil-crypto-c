@@ -1,4 +1,4 @@
-<class name="list key value node" lifecycle="none" scope="private">
+<class name="list key value node">
     Double linked list node with key and value.
 
     <property name="key" class="buffer"/>
