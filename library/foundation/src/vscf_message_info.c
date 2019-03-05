@@ -225,6 +225,7 @@ vscf_message_info_cleanup_ctx(vscf_message_info_t *self) {
 
     vscf_key_recipient_info_list_destroy(&self->key_recipients);
     vscf_password_recipient_info_list_destroy(&self->password_recipients);
+    vscf_message_info_custom_params_destroy(&self->custom_params);
     vscf_impl_destroy(&self->data_encryption_alg_info);
 }
 
