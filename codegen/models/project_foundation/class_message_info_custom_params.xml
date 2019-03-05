@@ -71,4 +71,74 @@
 
         <return class="list key value node"/>
     </method>
+
+    <method name="first param" visibility="private" is_const="1">
+        Return first param, or NULL if does not exist.
+
+        <return class="list key value node"/>
+    </method>
+
+    <method name="next param" visibility="private" is_static="1">
+        Return next param, or NULL if does not exist.
+
+        <argument name="param" class="list key value node"/>
+
+        <return class="list key value node"/>
+    </method>
+
+    <method name="param key" visibility="private" is_static="1">
+        Return parameter's key.
+
+        <argument name="param" class="list key value node"/>
+
+        <return class="data"/>
+    </method>
+
+    <method name="is int param" visibility="private" is_static="1">
+        Return true if given parameter holds an integer value.
+
+        <argument name="param" class="list key value node"/>
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="as int value" visibility="private" is_static="1">
+        Return parameter as an integer value.
+
+        <argument name="param" class="list key value node"/>
+
+        <return type="integer"/>
+    </method>
+
+    <method name="is string param" visibility="private" is_static="1">
+        Return true if given parameter holds a string value.
+
+        <argument name="param" class="list key value node"/>
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="as string value" visibility="private" is_static="1">
+        Return parameter as a string value.
+
+        <argument name="param" class="list key value node"/>
+
+        <return class="data"/>
+    </method>
+
+    <method name="is data param" visibility="private" is_static="1">
+        Return true if given parameter holds a data value.
+
+        <argument name="param" class="list key value node"/>
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="as data value" visibility="private" is_static="1">
+        Return parameter as a data value.
+
+        <argument name="param" class="list key value node"/>
+
+        <return class="data"/>
+    </method>
 </class>

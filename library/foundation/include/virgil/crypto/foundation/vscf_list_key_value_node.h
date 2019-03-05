@@ -81,6 +81,44 @@ typedef struct vscf_list_key_value_node_t vscf_list_key_value_node_t;
 VSCF_PUBLIC size_t
 vscf_list_key_value_node_ctx_size(void);
 
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCF_PUBLIC void
+vscf_list_key_value_node_init(vscf_list_key_value_node_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCF_PUBLIC void
+vscf_list_key_value_node_cleanup(vscf_list_key_value_node_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCF_PUBLIC vscf_list_key_value_node_t *
+vscf_list_key_value_node_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if context was allocated by the caller.
+//
+VSCF_PUBLIC void
+vscf_list_key_value_node_delete(vscf_list_key_value_node_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscf_list_key_value_node_new ()'.
+//
+VSCF_PUBLIC void
+vscf_list_key_value_node_destroy(vscf_list_key_value_node_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCF_PUBLIC vscf_list_key_value_node_t *
+vscf_list_key_value_node_shallow_copy(vscf_list_key_value_node_t *self);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

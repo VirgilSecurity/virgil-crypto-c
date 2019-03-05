@@ -83,6 +83,15 @@ extern "C" {
 //  Handle 'list key value node' context.
 //
 struct vscf_list_key_value_node_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscf_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+
     vsc_buffer_t *key;
 
     void *value;

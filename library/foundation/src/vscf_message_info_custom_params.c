@@ -49,7 +49,6 @@
 #include "vscf_assert.h"
 #include "vscf_message_info_custom_params_defs.h"
 #include "vscf_list_key_value_node_defs.h"
-#include "vscf_list_key_value_node.h"
 
 // clang-format on
 //  @end
@@ -402,15 +401,21 @@ vscf_message_info_custom_params_add_node(
     VSCF_ASSERT_NULL((*node_ref)->next);
     VSCF_ASSERT_NULL((*node_ref)->prev);
 
-    vscf_list_key_value_node_t *last = self->key_value_node;
-    while (last->next != NULL) {
-        last = last->next;
+    if (NULL == self->key_value_node) {
+        self->key_value_node = *node_ref;
+
+    } else {
+        vscf_list_key_value_node_t *last = self->key_value_node;
+        while (last != NULL && last->next != NULL) {
+            last = last->next;
+        }
+
+        VSCF_ASSERT_NULL(last->next);
+        last->next = *node_ref;
+        (*node_ref)->prev = last;
     }
 
-    VSCF_ASSERT_NULL(last->next);
-    last->next = *node_ref;
-    (*node_ref)->prev = last;
-    (*node_ref) = NULL;
+    *node_ref = NULL;
 }
 
 //
@@ -438,4 +443,110 @@ vscf_message_info_custom_params_find_node(
 
     VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_MESSAGE_INFO_CUSTOM_PARAM_NOT_FOUND);
     return NULL;
+}
+
+//
+//  Return first param, or NULL if does not exist.
+//
+VSCF_PRIVATE const vscf_list_key_value_node_t *
+vscf_message_info_custom_params_first_param(const vscf_message_info_custom_params_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return self->key_value_node;
+}
+
+//
+//  Return next param, or NULL if does not exist.
+//
+VSCF_PRIVATE const vscf_list_key_value_node_t *
+vscf_message_info_custom_params_next_param(const vscf_list_key_value_node_t *param) {
+
+    VSCF_ASSERT_PTR(param);
+
+    return param->next;
+}
+
+//
+//  Return parameter's key.
+//
+VSCF_PRIVATE vsc_data_t
+vscf_message_info_custom_params_param_key(const vscf_list_key_value_node_t *param) {
+
+    VSCF_ASSERT_PTR(param);
+    VSCF_ASSERT_PTR(param->key);
+
+    return vsc_buffer_data(param->key);
+}
+
+//
+//  Return true if given parameter holds an integer value.
+//
+VSCF_PRIVATE bool
+vscf_message_info_custom_params_is_int_param(const vscf_list_key_value_node_t *param) {
+
+    VSCF_ASSERT_PTR(param);
+
+    return param->value_tag == vscf_message_info_custom_params_OF_INT_TYPE;
+}
+
+//
+//  Return parameter as an integer value.
+//
+VSCF_PRIVATE int
+vscf_message_info_custom_params_as_int_value(const vscf_list_key_value_node_t *param) {
+
+    VSCF_ASSERT_PTR(param);
+    VSCF_ASSERT_PTR(param->value);
+    VSCF_ASSERT(vscf_message_info_custom_params_is_int_param(param));
+
+    return *(int *)param->value;
+}
+
+//
+//  Return true if given parameter holds a string value.
+//
+VSCF_PRIVATE bool
+vscf_message_info_custom_params_is_string_param(const vscf_list_key_value_node_t *param) {
+
+    VSCF_ASSERT_PTR(param);
+
+    return param->value_tag == vscf_message_info_custom_params_OF_STRING_TYPE;
+}
+
+//
+//  Return parameter as a string value.
+//
+VSCF_PRIVATE vsc_data_t
+vscf_message_info_custom_params_as_string_value(const vscf_list_key_value_node_t *param) {
+
+    VSCF_ASSERT_PTR(param);
+    VSCF_ASSERT_PTR(param->value);
+    VSCF_ASSERT(vscf_message_info_custom_params_is_string_param(param));
+
+    return vsc_buffer_data((const vsc_buffer_t *)param->value);
+}
+
+//
+//  Return true if given parameter holds a data value.
+//
+VSCF_PRIVATE bool
+vscf_message_info_custom_params_is_data_param(const vscf_list_key_value_node_t *param) {
+
+    VSCF_ASSERT_PTR(param);
+
+    return param->value_tag == vscf_message_info_custom_params_OF_DATA_TYPE;
+}
+
+//
+//  Return parameter as a data value.
+//
+VSCF_PRIVATE vsc_data_t
+vscf_message_info_custom_params_as_data_value(const vscf_list_key_value_node_t *param) {
+
+    VSCF_ASSERT_PTR(param);
+    VSCF_ASSERT_PTR(param->value);
+    VSCF_ASSERT(vscf_message_info_custom_params_is_data_param(param));
+
+    return vsc_buffer_data((const vsc_buffer_t *)param->value);
 }

@@ -315,6 +315,36 @@ vscf_message_info_password_recipient_info_list(const vscf_message_info_t *self) 
 }
 
 //
+//  Setup custom params.
+//
+VSCF_PUBLIC void
+vscf_message_info_set_custom_params(vscf_message_info_t *self, vscf_message_info_custom_params_t *custom_params) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(custom_params);
+
+    vscf_message_info_custom_params_destroy(&self->custom_params);
+    self->custom_params = vscf_message_info_custom_params_shallow_copy(custom_params);
+}
+
+//
+//  Provide access to the custom params object.
+//  The returned object can be used to add custom params or read it.
+//  If custom params object was not set then new empty object is created.
+//
+VSCF_PUBLIC vscf_message_info_custom_params_t *
+vscf_message_info_custom_params(vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->custom_params) {
+        self->custom_params = vscf_message_info_custom_params_new();
+    }
+
+    return self->custom_params;
+}
+
+//
 //  Remove all recipients.
 //
 VSCF_PUBLIC void
