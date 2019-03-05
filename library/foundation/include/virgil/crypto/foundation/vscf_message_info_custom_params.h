@@ -142,6 +142,12 @@ VSCF_PUBLIC void
 vscf_message_info_custom_params_add_data(vscf_message_info_custom_params_t *self, vsc_data_t key, vsc_data_t value);
 
 //
+//  Remove all parameters.
+//
+VSCF_PUBLIC void
+vscf_message_info_custom_params_clear(vscf_message_info_custom_params_t *self);
+
+//
 //  Return custom parameter with integer value.
 //
 VSCF_PUBLIC int

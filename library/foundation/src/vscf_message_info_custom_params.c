@@ -323,6 +323,17 @@ vscf_message_info_custom_params_add_data(vscf_message_info_custom_params_t *self
 }
 
 //
+//  Remove all parameters.
+//
+VSCF_PUBLIC void
+vscf_message_info_custom_params_clear(vscf_message_info_custom_params_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_message_info_custom_params_cleanup_ctx(self);
+}
+
+//
 //  Return custom parameter with integer value.
 //
 VSCF_PUBLIC int
