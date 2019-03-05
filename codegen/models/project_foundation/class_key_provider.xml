@@ -1,0 +1,61 @@
+<class name="key provider">
+    Provide functionality for private key generation and importing that
+    relies on the software default implementations.
+
+    <require interface="public key"/>
+    <require interface="private key"/>
+    <require impl="sha384"/>
+    <require impl="ctr drbg"/>
+    <require impl="rsa public key"/>
+    <require impl="rsa private key"/>
+    <require impl="ed25519 public key"/>
+    <require impl="ed25519 private key"/>
+    <require impl="pkcs8 der deserializer"/>
+
+    <dependency name="random" interface="random"/>
+    <dependency name="ecies" class="ecies"/>
+    <dependency name="hash" interface="hash"/>
+
+    <property name="rsa bitlen" type="size"/>
+    <property name="rsa exponent" type="size"/>
+
+    <method name="setup defaults">
+        Setup predefined values to the uninitialized class dependencies.
+
+        <return enum="error"/>
+    </method>
+
+    <method name="set rsa params">
+        Setup parameters that is used during RSA key generation.
+
+        <argument name="bitlen" type="size"/>
+        <argument name="exponent" type="size"/>
+    </method>
+
+    <method name="generate private key">
+        Generate new private key from the given id.
+
+        <argument name="alg id" enum="alg id"/>
+        <argument name="error" class="error ctx" access="readwrite"/>
+
+        <return interface="private key" access="disown"/>
+    </method>
+
+    <method name="import private key">
+        Import private key from the PKCS#8 format.
+
+        <argument name="pkcs8 data" class="data"/>
+        <argument name="error" class="error ctx" access="readwrite"/>
+
+        <return interface="private key" access="disown"/>
+    </method>
+
+    <method name="import public key">
+        Import private key from the PKCS#8 format.
+
+        <argument name="pkcs8 data" class="data"/>
+        <argument name="error" class="error ctx" access="readwrite"/>
+
+        <return interface="public key" access="disown"/>
+    </method>
+</class>
