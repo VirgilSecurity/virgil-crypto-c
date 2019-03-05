@@ -92,6 +92,11 @@ import VirgilCryptoCommon
         })
     }
 
+    /// Remove all parameters.
+    @objc public func clear() {
+        vscf_message_info_custom_params_clear(self.c_ctx)
+    }
+
     /// Return custom parameter with integer value.
     @objc public func findInt(key: Data, error: ErrorCtx) -> Int32 {
         let proxyResult = key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Int32 in

@@ -29,6 +29,10 @@
         <argument name="value" class="data"/>
     </method>
 
+    <method name="clear">
+        Remove all parameters.
+    </method>
+
     <method name="find int">
         Return custom parameter with integer value.
 
