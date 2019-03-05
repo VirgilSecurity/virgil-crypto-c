@@ -277,6 +277,14 @@ vscf_ed25519_private_key_extract_public_key(const vscf_ed25519_private_key_t *se
     int ret = ed25519_get_pubkey(ed25519_public_key->public_key, self->secret_key);
     VSCF_ASSERT(ret == 0);
 
+    if (self->random) {
+        vscf_ed25519_public_key_use_random(ed25519_public_key, self->random);
+    }
+
+    if (self->ecies) {
+        vscf_ed25519_public_key_use_ecies(ed25519_public_key, self->ecies);
+    }
+
     return vscf_ed25519_public_key_impl(ed25519_public_key);
 }
 
