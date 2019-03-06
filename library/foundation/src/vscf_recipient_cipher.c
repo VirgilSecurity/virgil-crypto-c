@@ -908,7 +908,7 @@ vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_da
                 vscf_message_info_der_serializer_read_prefix(self->message_info_der_serializer, message_info);
 
         if (self->message_info_expected_len == 0) {
-            self->decryption_state = vscf_recipient_cipher_decryption_state_FAILED;
+            self->decryption_state = vscf_recipient_cipher_decryption_state_MESSAGE_INFO_IS_ABSENT;
             return vscf_error_NO_MESSAGE_INFO;
         }
     }
@@ -924,7 +924,7 @@ vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_da
         } else {
             //  Also ABSENT, because first several bytes of an encrypted data
             //  can be a valid message info prefix.
-            self->decryption_state = vscf_recipient_cipher_decryption_state_FAILED;
+            self->decryption_state = vscf_recipient_cipher_decryption_state_MESSAGE_INFO_IS_ABSENT;
             return vscf_error_NO_MESSAGE_INFO;
         }
     }
