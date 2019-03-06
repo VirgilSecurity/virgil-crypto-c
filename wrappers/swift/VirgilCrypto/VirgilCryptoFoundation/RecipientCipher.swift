@@ -75,14 +75,9 @@ import VirgilCryptoCommon
         vscf_recipient_cipher_use_random(self.c_ctx, random.c_ctx)
     }
 
-    @objc public func setCipher(cipher: Cipher) {
-        vscf_recipient_cipher_release_cipher(self.c_ctx)
-        vscf_recipient_cipher_use_cipher(self.c_ctx, cipher.c_ctx)
-    }
-
-    /// Setup dependencies with default values.
-    @objc public func setupDefaults() {
-        vscf_recipient_cipher_setup_defaults(self.c_ctx)
+    @objc public func setEncryptionCipher(encryptionCipher: Cipher) {
+        vscf_recipient_cipher_release_encryption_cipher(self.c_ctx)
+        vscf_recipient_cipher_use_encryption_cipher(self.c_ctx, encryptionCipher.c_ctx)
     }
 
     /// Add recipient defined with id and public key.

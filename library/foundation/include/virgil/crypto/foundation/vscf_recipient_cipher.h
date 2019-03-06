@@ -157,26 +157,20 @@ vscf_recipient_cipher_release_random(vscf_recipient_cipher_t *self);
 //  Setup dependency to the interface 'cipher' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_recipient_cipher_use_cipher(vscf_recipient_cipher_t *self, vscf_impl_t *cipher);
+vscf_recipient_cipher_use_encryption_cipher(vscf_recipient_cipher_t *self, vscf_impl_t *encryption_cipher);
 
 //
 //  Setup dependency to the interface 'cipher' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_recipient_cipher_take_cipher(vscf_recipient_cipher_t *self, vscf_impl_t *cipher);
+vscf_recipient_cipher_take_encryption_cipher(vscf_recipient_cipher_t *self, vscf_impl_t *encryption_cipher);
 
 //
 //  Release dependency to the interface 'cipher'.
 //
 VSCF_PUBLIC void
-vscf_recipient_cipher_release_cipher(vscf_recipient_cipher_t *self);
-
-//
-//  Setup dependencies with default values.
-//
-VSCF_PUBLIC void
-vscf_recipient_cipher_setup_defaults(vscf_recipient_cipher_t *self);
+vscf_recipient_cipher_release_encryption_cipher(vscf_recipient_cipher_t *self);
 
 //
 //  Add recipient defined with id and public key.

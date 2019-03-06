@@ -172,7 +172,7 @@ vscf_recipient_cipher_cleanup(vscf_recipient_cipher_t *self) {
         vscf_recipient_cipher_cleanup_ctx(self);
 
         vscf_recipient_cipher_release_random(self);
-        vscf_recipient_cipher_release_cipher(self);
+        vscf_recipient_cipher_release_encryption_cipher(self);
 
         vscf_zeroize(self, sizeof(vscf_recipient_cipher_t));
     }
@@ -288,15 +288,15 @@ vscf_recipient_cipher_release_random(vscf_recipient_cipher_t *self) {
 //  Setup dependency to the interface 'cipher' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_recipient_cipher_use_cipher(vscf_recipient_cipher_t *self, vscf_impl_t *cipher) {
+vscf_recipient_cipher_use_encryption_cipher(vscf_recipient_cipher_t *self, vscf_impl_t *encryption_cipher) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(cipher);
-    VSCF_ASSERT(self->cipher == NULL);
+    VSCF_ASSERT_PTR(encryption_cipher);
+    VSCF_ASSERT(self->encryption_cipher == NULL);
 
-    VSCF_ASSERT(vscf_cipher_is_implemented(cipher));
+    VSCF_ASSERT(vscf_cipher_is_implemented(encryption_cipher));
 
-    self->cipher = vscf_impl_shallow_copy(cipher);
+    self->encryption_cipher = vscf_impl_shallow_copy(encryption_cipher);
 }
 
 //
@@ -304,26 +304,26 @@ vscf_recipient_cipher_use_cipher(vscf_recipient_cipher_t *self, vscf_impl_t *cip
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_recipient_cipher_take_cipher(vscf_recipient_cipher_t *self, vscf_impl_t *cipher) {
+vscf_recipient_cipher_take_encryption_cipher(vscf_recipient_cipher_t *self, vscf_impl_t *encryption_cipher) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(cipher);
-    VSCF_ASSERT_PTR(self->cipher == NULL);
+    VSCF_ASSERT_PTR(encryption_cipher);
+    VSCF_ASSERT_PTR(self->encryption_cipher == NULL);
 
-    VSCF_ASSERT(vscf_cipher_is_implemented(cipher));
+    VSCF_ASSERT(vscf_cipher_is_implemented(encryption_cipher));
 
-    self->cipher = cipher;
+    self->encryption_cipher = encryption_cipher;
 }
 
 //
 //  Release dependency to the interface 'cipher'.
 //
 VSCF_PUBLIC void
-vscf_recipient_cipher_release_cipher(vscf_recipient_cipher_t *self) {
+vscf_recipient_cipher_release_encryption_cipher(vscf_recipient_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&self->cipher);
+    vscf_impl_destroy(&self->encryption_cipher);
 }
 
 
@@ -368,23 +368,6 @@ vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self) {
     vscf_key_recipient_list_destroy(&self->key_recipients);
     vscf_message_info_der_serializer_destroy(&self->message_info_der_serializer);
     vscf_message_info_destroy(&self->message_info);
-}
-
-//
-//  Setup dependencies with default values.
-//
-VSCF_PUBLIC void
-vscf_recipient_cipher_setup_defaults(vscf_recipient_cipher_t *self) {
-
-    if (NULL == self->random) {
-        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
-        vscf_ctr_drbg_setup_defaults(random);
-        self->random = vscf_ctr_drbg_impl(random);
-    }
-
-    if (NULL == self->cipher) {
-        self->cipher = vscf_aes256_gcm_impl(vscf_aes256_gcm_new());
-    }
 }
 
 //
@@ -451,9 +434,16 @@ VSCF_PUBLIC vscf_error_t
 vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->random);
-    VSCF_ASSERT_PTR(self->cipher);
-    VSCF_ASSERT_PTR(self->cipher);
+
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        vscf_ctr_drbg_setup_defaults(random);
+        self->random = vscf_ctr_drbg_impl(random);
+    }
+
+    if (NULL == self->encryption_cipher) {
+        self->encryption_cipher = vscf_aes256_gcm_impl(vscf_aes256_gcm_new());
+    }
 
     vscf_error_t status = vscf_SUCCESS;
 
@@ -463,9 +453,10 @@ vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self) {
     vsc_buffer_t *cipher_key = NULL;
     vsc_buffer_t *cipher_nonce = NULL;
 
-    const size_t cipher_key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->cipher)));
+    const size_t cipher_key_len =
+            vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->encryption_cipher)));
     const size_t cipher_nonce_len =
-            vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->cipher)));
+            vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->encryption_cipher)));
 
     cipher_key = vsc_buffer_new_with_capacity(cipher_key_len);
     vsc_buffer_make_secure(cipher_key);
@@ -518,9 +509,9 @@ vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self) {
     //
     //  Configure cipher key and nonce.
     //
-    vscf_cipher_set_key(self->cipher, vsc_buffer_data(cipher_key));
-    vscf_cipher_set_nonce(self->cipher, vsc_buffer_data(cipher_nonce));
-    vscf_cipher_start_encryption(self->cipher);
+    vscf_cipher_set_key(self->encryption_cipher, vsc_buffer_data(cipher_key));
+    vscf_cipher_set_nonce(self->encryption_cipher, vsc_buffer_data(cipher_nonce));
+    vscf_cipher_start_encryption(self->encryption_cipher);
 
     vsc_buffer_destroy(&cipher_key);
     vsc_buffer_destroy(&cipher_nonce);
@@ -528,7 +519,7 @@ vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self) {
     //
     //  Append cipher info to the message info.
     //
-    vscf_impl_t *data_encryption_alg_info = vscf_alg_produce_alg_info(self->cipher);
+    vscf_impl_t *data_encryption_alg_info = vscf_alg_produce_alg_info(self->encryption_cipher);
     vscf_message_info_set_data_encryption_alg_info(self->message_info, &data_encryption_alg_info);
 
     return vscf_SUCCESS;
@@ -576,10 +567,10 @@ VSCF_PUBLIC size_t
 vscf_recipient_cipher_encryption_out_len(vscf_recipient_cipher_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->cipher);
+    VSCF_ASSERT_PTR(self->encryption_cipher);
     VSCF_UNUSED(data_len);
 
-    return vscf_cipher_encrypted_out_len(self->cipher, data_len);
+    return vscf_cipher_encrypted_out_len(self->encryption_cipher, data_len);
 }
 
 //
@@ -589,13 +580,13 @@ VSCF_PUBLIC vscf_error_t
 vscf_recipient_cipher_process_encryption(vscf_recipient_cipher_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->cipher);
+    VSCF_ASSERT_PTR(self->encryption_cipher);
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_recipient_cipher_encryption_out_len(self, data.len));
 
-    vscf_cipher_update(self->cipher, data, out);
+    vscf_cipher_update(self->encryption_cipher, data, out);
 
     return vscf_SUCCESS;
 }
@@ -611,7 +602,7 @@ vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffe
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_recipient_cipher_encryption_out_len(self, 0));
 
-    vscf_error_t status = vscf_cipher_finish(self->cipher, out);
+    vscf_error_t status = vscf_cipher_finish(self->encryption_cipher, out);
 
     return status;
 }

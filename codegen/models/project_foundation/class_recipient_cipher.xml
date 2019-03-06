@@ -15,7 +15,7 @@
     <require class="alg factory"/>
 
     <dependency name="random" interface="random"/>
-    <dependency name="cipher" interface="cipher"/>
+    <dependency name="encryption cipher" interface="cipher"/>
 
     <property name="key recipients" class="key recipient list"/>
     <property name="decryption recipient id" class="buffer"/>
@@ -27,10 +27,6 @@
     <property name="message info buffer" class="buffer"/>
     <property name="message info expected len" type="size"/>
     <property name="decryption state" enum="recipient cipher decryption state"/>
-
-    <method name="setup defaults">
-        Setup dependencies with default values.
-    </method>
 
     <method name="add key recipient">
         Add recipient defined with id and public key.
