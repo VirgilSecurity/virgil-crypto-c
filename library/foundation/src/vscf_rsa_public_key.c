@@ -53,16 +53,19 @@
 #include "vscf_rsa_public_key.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_asn1_tag.h"
-#include "vscf_mbedtls_bignum_asn1_writer.h"
+#include "vscf_asn1rd.h"
+#include "vscf_asn1wr.h"
 #include "vscf_mbedtls_bignum_asn1_reader.h"
-#include "vscf_mbedtls_bridge_random.h"
+#include "vscf_mbedtls_bignum_asn1_writer.h"
 #include "vscf_mbedtls_md.h"
-#include "vscf_alg.h"
-#include "vscf_alg_info.h"
 #include "vscf_simple_alg_info.h"
-#include "vscf_rsa_private_key.h"
+#include "vscf_asn1_tag.h"
 #include "vscf_ctr_drbg.h"
+#include "vscf_rsa_private_key.h"
+#include "vscf_sha384.h"
+#include "vscf_alg_info.h"
+#include "vscf_alg.h"
+#include "vscf_mbedtls_bridge_random.h"
 #include "vscf_hash.h"
 #include "vscf_random.h"
 #include "vscf_asn1_reader.h"
@@ -162,6 +165,18 @@ vscf_rsa_public_key_setup_defaults(vscf_rsa_public_key_t *self) {
             return status;
         }
         self->random = vscf_ctr_drbg_impl(random);
+    }
+
+    if (NULL == self->hash) {
+        self->hash = vscf_sha384_impl(vscf_sha384_new());
+    }
+
+    if (NULL == self->asn1rd) {
+        self->asn1rd = vscf_asn1rd_impl(vscf_asn1rd_new());
+    }
+
+    if (NULL == self->asn1wr) {
+        self->asn1wr = vscf_asn1wr_impl(vscf_asn1wr_new());
     }
 
     return vscf_SUCCESS;
