@@ -731,12 +731,8 @@ vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffe
     }
 
     vscf_error_t status = vscf_cipher_finish(self->cipher, out);
-    if (status != vscf_SUCCESS) {
-        //  TODO: Log underlying error.
-        return vscf_error_BAD_ARGUMENTS;
-    }
 
-    return vscf_SUCCESS;
+    return status;
 }
 
 //
