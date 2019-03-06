@@ -58,12 +58,12 @@
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
 
-    <enum name="error"/>
+    <enum name="status"/>
 
     <class name="pythia"/>
 
     <error_message_getter success="0">
-        <require enum="error"/>
+        <require enum="status"/>
 
         char error_message[48] = {0x00};
         snprintf(error_message, sizeof(error_message), "Unhandled vsc::pythia error -0x%04x", error);

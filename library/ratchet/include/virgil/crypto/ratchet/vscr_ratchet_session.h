@@ -56,9 +56,9 @@
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_message.h"
-#include "vscr_error_ctx.h"
-#include "vscr_ratchet_session.h"
 #include "vscr_error.h"
+#include "vscr_ratchet_session.h"
+#include "vscr_status.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -177,7 +177,7 @@ vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *self);
 //
 //  Initiates session
 //
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_identity_private_key,
         vsc_data_t receiver_identity_public_key, vsc_data_t receiver_long_term_public_key,
         vsc_data_t receiver_one_time_public_key);
@@ -185,7 +185,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
 //
 //  Responds to session initiation
 //
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_identity_public_key,
         vsc_data_t receiver_identity_private_key, vsc_data_t receiver_long_term_private_key,
         vsc_data_t receiver_one_time_private_key, const vscr_ratchet_message_t *message);
@@ -212,7 +212,7 @@ vscr_ratchet_session_receiver_has_one_time_public_key(vscr_ratchet_session_t *se
 //  Encrypts data
 //
 VSCR_PUBLIC vscr_ratchet_message_t *
-vscr_ratchet_session_encrypt(vscr_ratchet_session_t *self, vsc_data_t plain_text, vscr_error_ctx_t *err_ctx);
+vscr_ratchet_session_encrypt(vscr_ratchet_session_t *self, vsc_data_t plain_text, vscr_error_t *error);
 
 //
 //  Calculates size of buffer sufficient to store decrypted message
@@ -223,7 +223,7 @@ vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *self, const vscr_ratche
 //
 //  Decrypts message
 //
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_decrypt(vscr_ratchet_session_t *self, const vscr_ratchet_message_t *message,
         vsc_buffer_t *plain_text);
 
@@ -244,7 +244,7 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *self, vsc_buffer_t *outpu
 //  NOTE: Deserialized session needs dependencies to be set. Check setup defaults
 //
 VSCR_PUBLIC vscr_ratchet_session_t *
-vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx);
+vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error);
 
 
 // --------------------------------------------------------------------------

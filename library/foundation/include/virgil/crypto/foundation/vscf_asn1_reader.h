@@ -57,7 +57,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -95,10 +95,16 @@ VSCF_PUBLIC void
 vscf_asn1_reader_reset(vscf_impl_t *impl, vsc_data_t data);
 
 //
-//  Return last error.
+//  Return true if status is not "success".
 //
-VSCF_PUBLIC vscf_error_t
-vscf_asn1_reader_error(vscf_impl_t *impl);
+VSCF_PUBLIC bool
+vscf_asn1_reader_has_error(const vscf_impl_t *impl);
+
+//
+//  Return error code.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_asn1_reader_status(const vscf_impl_t *impl);
 
 //
 //  Get tag of the current ASN.1 element.

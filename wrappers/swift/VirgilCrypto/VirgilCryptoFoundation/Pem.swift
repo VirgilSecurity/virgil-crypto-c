@@ -86,8 +86,8 @@ import VirgilCryptoCommon
             vsc_buffer_delete(dataBuf)
         }
 
-        let proxyResult = pem.withUnsafeBytes({ (pemPointer: UnsafePointer<byte>) -> vscf_error_t in
-            data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = pem.withUnsafeBytes({ (pemPointer: UnsafePointer<byte>) -> vscf_status_t in
+            data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(dataBuf)
                 vsc_buffer_use(dataBuf, dataPointer, dataCount)
                 return vscf_pem_unwrap(vsc_data(pemPointer, pem.count), dataBuf)
@@ -95,7 +95,7 @@ import VirgilCryptoCommon
         })
         data.count = vsc_buffer_len(dataBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return data
     }

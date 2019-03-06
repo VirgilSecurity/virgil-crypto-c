@@ -4,6 +4,6 @@
     <method name="error">
         Return last occurred error.
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 </interface>

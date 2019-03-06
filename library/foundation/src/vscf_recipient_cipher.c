@@ -100,34 +100,34 @@ vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self);
 //  Nonce is restored from the message info.
 //  Note, this method change decryption state.
 //
-static vscf_error_t
+static vscf_status_t
 vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self, vsc_data_t decryption_key);
 
 //
 //  Decrypt data encryption key with a password.
 //
-static vscf_error_t
+static vscf_status_t
 vscf_recipient_cipher_decrypt_data_encryption_key_with_password(vscf_recipient_cipher_t *self);
 
 //
 //  Decrypt data encryption key with a private key.
 //
-static vscf_error_t
+static vscf_status_t
 vscf_recipient_cipher_decrypt_data_encryption_key_with_private_key(vscf_recipient_cipher_t *self);
 
 //
 //  Decrypt data encryption key and configure underlying cipher.
 //
-static vscf_error_t
+static vscf_status_t
 vscf_recipient_cipher_decrypt_data_encryption_key(vscf_recipient_cipher_t *self);
 
 //
 //  Read given message info from the given data or extracted data.
 //
-static vscf_error_t
+static vscf_status_t
 vscf_recipient_cipher_unpack_message_info(vscf_recipient_cipher_t *self, vsc_data_t message_info);
 
-static vscf_error_t
+static vscf_status_t
 vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_data_t data);
 
 //
@@ -430,15 +430,15 @@ vscf_recipient_cipher_message_info_len(const vscf_recipient_cipher_t *self) {
 //
 //  Start encryption process.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
     if (NULL == self->random) {
         vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
-        vscf_error_t status = vscf_ctr_drbg_setup_defaults(random);
-        if (status != vscf_SUCCESS) {
+        vscf_status_t status = vscf_ctr_drbg_setup_defaults(random);
+        if (status != vscf_status_SUCCESS) {
             vscf_ctr_drbg_destroy(&random);
             return status;
         }
@@ -449,7 +449,7 @@ vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self) {
         self->encryption_cipher = vscf_aes256_gcm_impl(vscf_aes256_gcm_new());
     }
 
-    vscf_error_t status = vscf_SUCCESS;
+    vscf_status_t status = vscf_status_SUCCESS;
 
     //
     //  Generate cipher key and nonce.
@@ -466,14 +466,14 @@ vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self) {
     vsc_buffer_make_secure(cipher_key);
 
     status = vscf_random(self->random, cipher_key_len, cipher_key);
-    if (status != vscf_SUCCESS) {
+    if (status != vscf_status_SUCCESS) {
         goto failed_generate_cipher_key;
     }
 
     cipher_nonce = vsc_buffer_new_with_capacity(cipher_nonce_len);
 
     status = vscf_random(self->random, cipher_nonce_len, cipher_nonce);
-    if (status != vscf_SUCCESS) {
+    if (status != vscf_status_SUCCESS) {
         goto failed_generate_cipher_nonce;
     }
 
@@ -492,7 +492,7 @@ vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self) {
         vsc_buffer_t *encrypted_key = vsc_buffer_new_with_capacity(encrypted_key_len);
         status = vscf_encrypt(recipient_public_key, vsc_buffer_data(cipher_key), encrypted_key);
 
-        if (status != vscf_SUCCESS) {
+        if (status != vscf_status_SUCCESS) {
             vsc_buffer_destroy(&encrypted_key);
             goto failed_build_message_info;
         }
@@ -526,7 +526,7 @@ vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self) {
     vscf_impl_t *data_encryption_alg_info = vscf_alg_produce_alg_info(self->encryption_cipher);
     vscf_message_info_set_data_encryption_alg_info(self->message_info, &data_encryption_alg_info);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 
 failed_build_message_info:
     vscf_message_info_clear_recipients(self->message_info);
@@ -580,7 +580,7 @@ vscf_recipient_cipher_encryption_out_len(vscf_recipient_cipher_t *self, size_t d
 //
 //  Process encryption of a new portion of data.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_process_encryption(vscf_recipient_cipher_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
@@ -592,13 +592,13 @@ vscf_recipient_cipher_process_encryption(vscf_recipient_cipher_t *self, vsc_data
 
     vscf_cipher_update(self->encryption_cipher, data, out);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
 //  Accomplish encryption.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
@@ -606,7 +606,7 @@ vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffe
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_recipient_cipher_encryption_out_len(self, 0));
 
-    vscf_error_t status = vscf_cipher_finish(self->encryption_cipher, out);
+    vscf_status_t status = vscf_cipher_finish(self->encryption_cipher, out);
 
     return status;
 }
@@ -615,7 +615,7 @@ vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffe
 //  Initiate decryption process with a recipient private key.
 //  Message info can be empty if it was embedded to encrypted data.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_start_decryption_with_key(
         vscf_recipient_cipher_t *self, vsc_data_t recipient_id, vscf_impl_t *private_key, vsc_data_t message_info) {
 
@@ -632,11 +632,11 @@ vscf_recipient_cipher_start_decryption_with_key(
     self->decryption_recipient_id = vsc_buffer_new_with_data(recipient_id);
     self->decryption_recipient_key = vscf_impl_shallow_copy(private_key);
 
-    vscf_error_t status = vscf_SUCCESS;
+    vscf_status_t status = vscf_status_SUCCESS;
 
     if (!vsc_data_is_empty(message_info)) {
         status = vscf_recipient_cipher_unpack_message_info(self, message_info);
-        if (status == vscf_SUCCESS) {
+        if (status == vscf_status_SUCCESS) {
             status = vscf_recipient_cipher_decrypt_data_encryption_key_with_private_key(self);
         } else {
             self->decryption_state = vscf_recipient_cipher_decryption_state_MESSAGE_INFO_IS_BROKEN;
@@ -676,7 +676,7 @@ vscf_recipient_cipher_decryption_out_len(vscf_recipient_cipher_t *self, size_t d
 //  Process with a new portion of data.
 //  Return error if data can not be encrypted or decrypted.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_process_decryption(vscf_recipient_cipher_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
@@ -690,11 +690,11 @@ vscf_recipient_cipher_process_decryption(vscf_recipient_cipher_t *self, vsc_data
     case vscf_recipient_cipher_decryption_state_PROCESSING_DATA:
         VSCF_ASSERT_PTR(self->decryption_cipher);
         vscf_cipher_update(self->decryption_cipher, data, out);
-        return vscf_SUCCESS;
+        return vscf_status_SUCCESS;
 
     case vscf_recipient_cipher_decryption_state_WAITING_MESSAGE_INFO: {
-        vscf_error_t status = vscf_recipient_cipher_extract_message_info(self, data);
-        if (status == vscf_SUCCESS && (self->message_info_buffer != NULL) &&
+        vscf_status_t status = vscf_recipient_cipher_extract_message_info(self, data);
+        if (status == vscf_status_SUCCESS && (self->message_info_buffer != NULL) &&
                 (self->decryption_state == vscf_recipient_cipher_decryption_state_PROCESSING_DATA)) {
 
             VSCF_ASSERT_PTR(self->decryption_cipher);
@@ -708,14 +708,14 @@ vscf_recipient_cipher_process_decryption(vscf_recipient_cipher_t *self, vsc_data
         return status;
     }
     default:
-        return vscf_error_BAD_ENCRYPTED_DATA;
+        return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
     }
 }
 
 //
 //  Accomplish decryption.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
@@ -724,11 +724,11 @@ vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffe
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_recipient_cipher_decryption_out_len(self, 0));
 
     if (self->decryption_state != vscf_recipient_cipher_decryption_state_PROCESSING_DATA) {
-        return vscf_error_BAD_ENCRYPTED_DATA;
+        return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
     }
 
     VSCF_ASSERT_PTR(self->decryption_cipher);
-    vscf_error_t status = vscf_cipher_finish(self->decryption_cipher, out);
+    vscf_status_t status = vscf_cipher_finish(self->decryption_cipher, out);
 
     vscf_impl_destroy(&self->decryption_cipher);
 
@@ -740,7 +740,7 @@ vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffe
 //  Nonce is restored from the message info.
 //  Note, this method change decryption state.
 //
-static vscf_error_t
+static vscf_status_t
 vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self, vsc_data_t decryption_key) {
 
     VSCF_ASSERT_PTR(self);
@@ -756,26 +756,26 @@ vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self,
 
     self->decryption_state = vscf_recipient_cipher_decryption_state_PROCESSING_DATA;
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
 //  Decrypt data encryption key with a password.
 //
-static vscf_error_t
+static vscf_status_t
 vscf_recipient_cipher_decrypt_data_encryption_key_with_password(vscf_recipient_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->message_info);
     VSCF_ASSERT_PTR(self->decryption_password);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
 //  Decrypt data encryption key with a private key.
 //
-static vscf_error_t
+static vscf_status_t
 vscf_recipient_cipher_decrypt_data_encryption_key_with_private_key(vscf_recipient_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -805,7 +805,7 @@ vscf_recipient_cipher_decrypt_data_encryption_key_with_private_key(vscf_recipien
             vscf_alg_id_t decryption_algorithm_alg_id = vscf_alg_alg_id(self->decryption_recipient_key);
 
             if (encryption_algorithm_alg_id != decryption_algorithm_alg_id) {
-                return vscf_error_BAD_MESSAGE_INFO;
+                return vscf_status_ERROR_BAD_MESSAGE_INFO;
             }
 
             //
@@ -815,11 +815,11 @@ vscf_recipient_cipher_decrypt_data_encryption_key_with_private_key(vscf_recipien
             size_t decryption_key_len = vscf_decrypt_decrypted_len(self->decryption_recipient_key, encrypted_key.len);
             vsc_buffer_t *decryption_key = vsc_buffer_new_with_capacity(decryption_key_len);
             vsc_buffer_make_secure(decryption_key);
-            vscf_error_t status = vscf_decrypt(self->decryption_recipient_key, encrypted_key, decryption_key);
+            vscf_status_t status = vscf_decrypt(self->decryption_recipient_key, encrypted_key, decryption_key);
 
-            if (status != vscf_SUCCESS) {
+            if (status != vscf_status_SUCCESS) {
                 vsc_buffer_destroy(&decryption_key);
-                return vscf_error_KEY_RECIPIENT_PRIVATE_KEY_IS_WRONG;
+                return vscf_status_ERROR_KEY_RECIPIENT_PRIVATE_KEY_IS_WRONG;
             }
 
             //
@@ -832,13 +832,13 @@ vscf_recipient_cipher_decrypt_data_encryption_key_with_private_key(vscf_recipien
         }
     }
 
-    return vscf_error_KEY_RECIPIENT_IS_NOT_FOUND;
+    return vscf_status_ERROR_KEY_RECIPIENT_IS_NOT_FOUND;
 }
 
 //
 //  Decrypt data encryption key and configure underlying cipher.
 //
-static vscf_error_t
+static vscf_status_t
 vscf_recipient_cipher_decrypt_data_encryption_key(vscf_recipient_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -854,23 +854,23 @@ vscf_recipient_cipher_decrypt_data_encryption_key(vscf_recipient_cipher_t *self)
 //
 //  Read given message info from the given data or extracted data.
 //
-static vscf_error_t
+static vscf_status_t
 vscf_recipient_cipher_unpack_message_info(vscf_recipient_cipher_t *self, vsc_data_t message_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->message_info_der_serializer);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vscf_message_info_destroy(&self->message_info);
     self->message_info =
             vscf_message_info_der_serializer_deserialize(self->message_info_der_serializer, message_info, &error);
 
-    return error.error;
+    return vscf_error_status(&error);
 }
 
-static vscf_error_t
+static vscf_status_t
 vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_data_t data) {
 
     VSCF_ASSERT_PTR(self);
@@ -892,7 +892,7 @@ vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_da
     vsc_buffer_write_data(self->message_info_buffer, data);
 
     if (vsc_buffer_len(self->message_info_buffer) < vscf_message_info_der_serializer_PREFIX_LEN) {
-        return vscf_SUCCESS;
+        return vscf_status_SUCCESS;
     }
 
     if (self->message_info_expected_len == 0) {
@@ -903,7 +903,7 @@ vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_da
 
         if (self->message_info_expected_len == 0) {
             self->decryption_state = vscf_recipient_cipher_decryption_state_MESSAGE_INFO_IS_ABSENT;
-            return vscf_error_NO_MESSAGE_INFO;
+            return vscf_status_ERROR_NO_MESSAGE_INFO;
         }
     }
 
@@ -911,17 +911,17 @@ vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_da
         vsc_data_t message_info =
                 vsc_data_slice_beg(vsc_buffer_data(self->message_info_buffer), 0, self->message_info_expected_len);
 
-        vscf_error_t status = vscf_recipient_cipher_unpack_message_info(self, message_info);
+        vscf_status_t status = vscf_recipient_cipher_unpack_message_info(self, message_info);
 
-        if (status == vscf_SUCCESS) {
+        if (status == vscf_status_SUCCESS) {
             return vscf_recipient_cipher_decrypt_data_encryption_key(self);
         } else {
             //  Also ABSENT, because first several bytes of an encrypted data
             //  can be a valid message info prefix.
             self->decryption_state = vscf_recipient_cipher_decryption_state_MESSAGE_INFO_IS_ABSENT;
-            return vscf_error_NO_MESSAGE_INFO;
+            return vscf_status_ERROR_NO_MESSAGE_INFO;
         }
     }
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }

@@ -11,7 +11,7 @@
             <length method="shared key len"/>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
 

@@ -456,7 +456,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted name of the Swift enum.
 # ---------------------------------------------------------------------------
-function swift_derive_enum_error_name (wrapper)
+function swift_derive_enum_status_name (wrapper)
     check_arguments (my, "wrapper", my)
 
     return "$(my.wrapper.project:Pascal)Error"
@@ -470,8 +470,8 @@ function swift_derive_enum_name (enum, wrapper)
 
     assert_attribute_one_of (my.enum, "name", my)
 
-    if my.enum.name = "error"
-        return swift_derive_enum_error_name (my.wrapper)
+    if my.enum.name = "status"
+        return swift_derive_enum_status_name (my.wrapper)
     else
         return "$(my.enum.name:Pascal)"
     endif
@@ -1338,8 +1338,8 @@ function swift_create_return_from_argument (class, method, argument, destination
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create entity <swift_return/> from the entity <return/>if it is not
-#   an error, otherwise nothing is created.
+#   Create entity <swift_return/> from the entity <return/> if it is not
+#   a status, otherwise nothing is created.
 # ---------------------------------------------------------------------------
 function swift_create_return (return, destination, wrapper, meta)
     check_arguments (my, "return, destination, wrapper, meta", my)
@@ -1359,7 +1359,7 @@ function swift_create_method_declaration (class, method, destination, wrapper, m
     new swift_method to my.destination
         . = swift_format_description (my.method) ?
         .name = swift_derive_method_name (method, my.wrapper)
-        .throws = count (my.method.return, string_equal (return.enum, "error")) ?? "1" ? "0"
+        .throws = count (my.method.return, string_equal (return.enum, "status")) ?? "1" ? "0"
         .interface = my.method.interface ?
 
         if ! defined (my.method.interface)
@@ -1378,7 +1378,7 @@ function swift_create_method_declaration (class, method, destination, wrapper, m
             endif
         endfor
 
-        for my.method.return where ! string_equal (return.enum, "error")
+        for my.method.return where ! string_equal (return.enum, "status")
             swift_create_return (return, swift_method, my.wrapper, my.meta)
         endfor
 
@@ -1410,10 +1410,10 @@ function swift_create_class_method (class, method, destination, wrapper, meta)
     my.proxy_return_type = swift_derive_proxy_return_type (my.method)
     my.proxy_invocation = swift_wrap_c_proxy_call (my.swift_method, my.proxy_call, my.proxy_return_type)
 
-    #   Handle errors
+    #   Handle statuses
     if is_true (my.swift_method.throws)
-        my.enum_error = swift_derive_enum_error_name (my.wrapper)
-        my.handle_errors = format_left("try $(my.enum_error:).handleError(fromC: proxyResult)")
+        my.enum_status = swift_derive_enum_status_name (my.wrapper)
+        my.handle_statuses = format_left("try $(my.enum_status:).handleStatus(fromC: proxyResult)")
     endif
 
     #   Return result
@@ -1442,7 +1442,7 @@ function swift_create_class_method (class, method, destination, wrapper, meta)
     new swift_code to my.swift_method
         my.method_body = ""
         my.method_body += my.proxy_invocation ? ""
-        my.method_body += terminator + my.handle_errors ? ""
+        my.method_body += terminator + my.handle_statuses ? ""
         my.method_body += terminator + my.return_result ? ""
 
         . = my.method_body
@@ -1619,9 +1619,9 @@ function swift_create_enum_constant (constant, swift_enum, wrapper, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Add entities specific for "error" enum.
+#   Add entities specific for "status" enum.
 # ---------------------------------------------------------------------------
-function swift_map_enum_error (swift_enum, enum, wrapper, meta)
+function swift_map_enum_status (swift_enum, enum, wrapper, meta)
     check_arguments (my, "swift_enum, enum, wrapper, meta")
 
     new swift_inherit to my.swift_enum
@@ -1633,8 +1633,8 @@ function swift_map_enum_error (swift_enum, enum, wrapper, meta)
     endfor
 
     new swift_method to my.swift_enum
-        . = "/// Check given C error (result), and if it's not \"success\" then throw correspond exception."
-        .name = "handleError"
+        . = "/// Check given C status, and if it's not \"success\" then throw correspond exception."
+        .name = "handleStatus"
         .visibility = "internal"
         .modifier = "static"
         .throws = "1"
@@ -1646,7 +1646,7 @@ function swift_map_enum_error (swift_enum, enum, wrapper, meta)
         endnew
 
         my.success_constant = \
-                make_ref_c (make_id ("global", "enum", my.enum.name, "constant success"))
+                make_ref_c (make_id ("class", my.enum.name, "enum", my.enum.name, "constant success"))
 
         new swift_code to swift_method
             . = "\
@@ -1659,7 +1659,7 @@ function swift_map_enum_error (swift_enum, enum, wrapper, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Add entities for regular enum (not error codes).
+#   Add entities for regular enum (not status codes).
 # ---------------------------------------------------------------------------
 function swift_map_enum_default (swift_enum, enum, wrapper, meta)
     check_arguments (my, "swift_enum, enum, wrapper, meta")
@@ -1850,15 +1850,15 @@ function swift_create_method_from_dependency (dependency, impl, destination, wra
         new swift_code to swift_method
             if my.dependency.has_observers
                 my.result_var = "let proxyResult = "
-                my.enum_error = swift_derive_enum_error_name (my.wrapper)
-                my.impl_handle_error = "try $(my.enum_error:).handleError(fromC: proxyResult)"
+                my.enum_status = swift_derive_enum_status_name (my.wrapper)
+                my.impl_handle_status = "try $(my.enum_status:).handleStatus(fromC: proxyResult)"
             endif
 
             . = format_left("\
                 $(class_derive_c_method_release_dependency (my.impl, my.dependency))(self.c_ctx)
                 $(my.result_var?:)$(class_derive_c_method_use_dependency (my.impl, my.dependency))(self.c_ctx,\
                         $(my.arg_name:).c_ctx)
-                $(my.impl_handle_error?:)
+                $(my.impl_handle_status?:)
             ")
         endnew
     endnew
@@ -2170,8 +2170,8 @@ function swift_create_enum_module (enum, destination, wrapper, meta)
                 .type = "Int"
             endnew
 
-            if my.enum.name = "error"
-                swift_map_enum_error (swift_enum, my.enum, my.wrapper, my.meta)
+            if my.enum.name = "status"
+                swift_map_enum_status (swift_enum, my.enum, my.wrapper, my.meta)
             else
                 swift_map_enum_default (swift_enum, my.enum, my.wrapper, my.meta)
             endif

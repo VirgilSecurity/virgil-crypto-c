@@ -56,9 +56,9 @@
 
 #include "vscf_library.h"
 #include "vscf_ecies.h"
-#include "vscf_error_ctx.h"
-#include "vscf_impl.h"
 #include "vscf_error.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
 #include "vscf_alg_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -193,7 +193,7 @@ vscf_key_provider_release_hash(vscf_key_provider_t *self);
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_key_provider_setup_defaults(vscf_key_provider_t *self);
 
 //
@@ -206,19 +206,19 @@ vscf_key_provider_set_rsa_params(vscf_key_provider_t *self, size_t bitlen, size_
 //  Generate new private key from the given id.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t alg_id, vscf_error_ctx_t *error);
+vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t alg_id, vscf_error_t *error);
 
 //
 //  Import private key from the PKCS#8 format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8_data, vscf_error_ctx_t *error);
+vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8_data, vscf_error_t *error);
 
 //
 //  Import public key from the PKCS#8 format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t pkcs8_data, vscf_error_ctx_t *error);
+vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t pkcs8_data, vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------

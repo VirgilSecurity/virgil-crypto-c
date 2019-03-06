@@ -79,7 +79,7 @@
 //  Client side must check state of 'asn1rd' to define result of reading.
 //
 VSCF_PUBLIC void
-vscf_mbedtls_bignum_read_asn1(vscf_impl_t *asn1rd, mbedtls_mpi *bignum, vscf_error_ctx_t *error) {
+vscf_mbedtls_bignum_read_asn1(vscf_impl_t *asn1rd, mbedtls_mpi *bignum, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(bignum);
     VSCF_ASSERT_PTR(asn1rd);
@@ -88,7 +88,7 @@ vscf_mbedtls_bignum_read_asn1(vscf_impl_t *asn1rd, mbedtls_mpi *bignum, vscf_err
     vsc_data_t data = vscf_asn1_reader_read_data(asn1rd, len);
 
     if (NULL == data.bytes) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_asn1_reader_error(asn1rd));
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_asn1_reader_status(asn1rd));
         return;
     }
 

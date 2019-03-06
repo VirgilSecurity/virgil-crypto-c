@@ -87,9 +87,13 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
     //
     (vscf_asn1_reader_api_reset_fn)vscf_asn1rd_reset,
     //
-    //  Return last error.
+    //  Return true if status is not "success".
     //
-    (vscf_asn1_reader_api_error_fn)vscf_asn1rd_error,
+    (vscf_asn1_reader_api_has_error_fn)vscf_asn1rd_has_error,
+    //
+    //  Return error code.
+    //
+    (vscf_asn1_reader_api_status_fn)vscf_asn1rd_status,
     //
     //  Get tag of the current ASN.1 element.
     //

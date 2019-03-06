@@ -67,7 +67,7 @@
 //
 //  Sign data given private key.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_sign(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *signature) {
 
     const vscf_sign_api_t *sign_api = vscf_sign_api(impl);

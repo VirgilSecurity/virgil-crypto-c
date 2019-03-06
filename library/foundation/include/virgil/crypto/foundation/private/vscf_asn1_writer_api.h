@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -113,9 +113,14 @@ typedef size_t (*vscf_asn1_writer_api_written_len_fn)(const vscf_impl_t *impl);
 typedef size_t (*vscf_asn1_writer_api_unwritten_len_fn)(const vscf_impl_t *impl);
 
 //
-//  Callback. Return last error.
+//  Callback. Return true if status is not "success".
 //
-typedef vscf_error_t (*vscf_asn1_writer_api_error_fn)(vscf_impl_t *impl);
+typedef bool (*vscf_asn1_writer_api_has_error_fn)(const vscf_impl_t *impl);
+
+//
+//  Callback. Return error code.
+//
+typedef vscf_status_t (*vscf_asn1_writer_api_status_fn)(const vscf_impl_t *impl);
 
 //
 //  Callback. Move writing position backward for the given length.
@@ -291,9 +296,13 @@ struct vscf_asn1_writer_api_t {
     //
     vscf_asn1_writer_api_unwritten_len_fn unwritten_len_cb;
     //
-    //  Return last error.
+    //  Return true if status is not "success".
     //
-    vscf_asn1_writer_api_error_fn error_cb;
+    vscf_asn1_writer_api_has_error_fn has_error_cb;
+    //
+    //  Return error code.
+    //
+    vscf_asn1_writer_api_status_fn status_cb;
     //
     //  Move writing position backward for the given length.
     //  Return current writing position.

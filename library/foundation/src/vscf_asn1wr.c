@@ -130,7 +130,7 @@ vscf_asn1wr_init_ctx(vscf_asn1wr_t *self) {
 
     self->start = NULL;
     self->curr = NULL;
-    self->error = vscf_error_UNINITIALIZED;
+    self->status = vscf_status_ERROR_UNINITIALIZED;
 }
 
 //
@@ -145,7 +145,7 @@ vscf_asn1wr_cleanup_ctx(vscf_asn1wr_t *self) {
 
     self->start = NULL;
     self->curr = NULL;
-    self->error = vscf_error_UNINITIALIZED;
+    self->status = vscf_status_ERROR_UNINITIALIZED;
 }
 
 //
@@ -163,12 +163,12 @@ vscf_asn1wr_mbedtls_has_error(vscf_asn1wr_t *self, int code) {
 
     switch (code) {
     case MBEDTLS_ERR_ASN1_BUF_TOO_SMALL:
-        self->error = vscf_error_SMALL_BUFFER;
+        self->status = vscf_status_ERROR_SMALL_BUFFER;
         break;
 
     default:
         VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(code);
-        self->error = vscf_error_UNHANDLED_THIRDPARTY_ERROR;
+        self->status = vscf_status_ERROR_UNHANDLED_THIRDPARTY_ERROR;
         break;
     }
 
@@ -184,7 +184,7 @@ vscf_asn1wr_write_tag_data(vscf_asn1wr_t *self, vsc_data_t data, int tag) {
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(data.bytes);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
@@ -193,7 +193,7 @@ vscf_asn1wr_write_tag_data(vscf_asn1wr_t *self, vsc_data_t data, int tag) {
     size += vscf_asn1wr_write_len(self, data.len);
     size += vscf_asn1wr_write_tag(self, tag);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
@@ -332,7 +332,7 @@ vscf_asn1wr_reset(vscf_asn1wr_t *self, byte *out, size_t out_len) {
     self->start = out;
     self->end = out + out_len;
     self->curr = out + out_len;
-    self->error = vscf_SUCCESS;
+    self->status = vscf_status_SUCCESS;
 }
 
 //
@@ -343,7 +343,7 @@ VSCF_PUBLIC size_t
 vscf_asn1wr_finish(vscf_asn1wr_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(self->error == vscf_SUCCESS);
+    VSCF_ASSERT(self->status == vscf_status_SUCCESS);
 
     size_t size = (size_t)(self->end - self->curr);
 
@@ -363,7 +363,7 @@ VSCF_PUBLIC byte *
 vscf_asn1wr_bytes(vscf_asn1wr_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(self->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
 
     return self->start;
 }
@@ -375,7 +375,7 @@ VSCF_PUBLIC size_t
 vscf_asn1wr_len(const vscf_asn1wr_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(self->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
 
     size_t len = (size_t)(self->end - self->start);
 
@@ -389,7 +389,7 @@ VSCF_PUBLIC size_t
 vscf_asn1wr_written_len(const vscf_asn1wr_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(self->error == vscf_SUCCESS);
+    VSCF_ASSERT(self->status == vscf_status_SUCCESS);
 
     size_t len = (size_t)(self->end - self->curr);
     return len;
@@ -402,7 +402,7 @@ VSCF_PUBLIC size_t
 vscf_asn1wr_unwritten_len(const vscf_asn1wr_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(self->error == vscf_SUCCESS);
+    VSCF_ASSERT(self->status == vscf_status_SUCCESS);
 
     size_t len = vscf_asn1wr_len(self) - vscf_asn1wr_written_len(self);
 
@@ -410,14 +410,25 @@ vscf_asn1wr_unwritten_len(const vscf_asn1wr_t *self) {
 }
 
 //
-//  Return last error.
+//  Return true if status is not "success".
 //
-VSCF_PUBLIC vscf_error_t
-vscf_asn1wr_error(vscf_asn1wr_t *self) {
+VSCF_PUBLIC bool
+vscf_asn1wr_has_error(const vscf_asn1wr_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    return self->error;
+    return self->status != vscf_status_SUCCESS;
+}
+
+//
+//  Return error code.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_asn1wr_status(const vscf_asn1wr_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return self->status;
 }
 
 //
@@ -430,7 +441,7 @@ vscf_asn1wr_reserve(vscf_asn1wr_t *self, size_t len) {
     VSCF_ASSERT_PTR(self);
 
     if (self->start > self->curr - len) {
-        self->error = vscf_error_SMALL_BUFFER;
+        self->status = vscf_status_ERROR_SMALL_BUFFER;
         return NULL;
     }
 
@@ -450,7 +461,7 @@ vscf_asn1wr_write_tag(vscf_asn1wr_t *self, int tag) {
     VSCF_ASSERT(tag > 0);
     VSCF_ASSERT(tag <= 0xFF);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
@@ -474,7 +485,7 @@ vscf_asn1wr_write_context_tag(vscf_asn1wr_t *self, int tag, size_t len) {
 
     VSCF_ASSERT(tag <= 0x1E);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
@@ -482,7 +493,7 @@ vscf_asn1wr_write_context_tag(vscf_asn1wr_t *self, int tag, size_t len) {
     total_len += vscf_asn1wr_write_len(self, len);
     total_len += vscf_asn1wr_write_tag(self, MBEDTLS_ASN1_CONTEXT_SPECIFIC | MBEDTLS_ASN1_CONSTRUCTED | tag);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
@@ -498,7 +509,7 @@ vscf_asn1wr_write_len(vscf_asn1wr_t *self, size_t len) {
 
     VSCF_ASSERT_PTR(self);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
@@ -640,7 +651,7 @@ vscf_asn1wr_write_int64(vscf_asn1wr_t *self, int64_t value) {
 
     for (;;) {
         if (*p - start < 1) {
-            self->error = vscf_error_SMALL_BUFFER;
+            self->status = vscf_status_ERROR_SMALL_BUFFER;
             return 0;
         }
 
@@ -657,7 +668,7 @@ vscf_asn1wr_write_int64(vscf_asn1wr_t *self, int64_t value) {
     len += vscf_asn1wr_write_len(self, len);
     len += vscf_asn1wr_write_tag(self, MBEDTLS_ASN1_INTEGER);
 
-    if (vscf_asn1wr_error(self) != vscf_SUCCESS) {
+    if (vscf_asn1wr_has_error(self)) {
         return 0;
     }
 
@@ -730,7 +741,7 @@ vscf_asn1wr_write_uint64(vscf_asn1wr_t *self, uint64_t value) {
 
     for (;;) {
         if (*p - start < 1) {
-            self->error = vscf_error_SMALL_BUFFER;
+            self->status = vscf_status_ERROR_SMALL_BUFFER;
             return 0;
         }
 
@@ -747,7 +758,7 @@ vscf_asn1wr_write_uint64(vscf_asn1wr_t *self, uint64_t value) {
     len += vscf_asn1wr_write_len(self, len);
     len += vscf_asn1wr_write_tag(self, MBEDTLS_ASN1_INTEGER);
 
-    if (vscf_asn1wr_error(self) != vscf_SUCCESS) {
+    if (vscf_asn1wr_has_error(self)) {
         return 0;
     }
 
@@ -763,7 +774,7 @@ vscf_asn1wr_write_bool(vscf_asn1wr_t *self, bool value) {
 
     VSCF_ASSERT_PTR(self);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
@@ -784,7 +795,7 @@ vscf_asn1wr_write_null(vscf_asn1wr_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
@@ -823,7 +834,7 @@ vscf_asn1wr_write_octet_str_as_bitstring(vscf_asn1wr_t *self, vsc_data_t value) 
 
     size_t written_count = vscf_asn1wr_write_data(self, value);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 

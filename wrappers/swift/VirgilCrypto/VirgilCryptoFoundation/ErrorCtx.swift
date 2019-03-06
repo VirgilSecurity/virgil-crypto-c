@@ -73,6 +73,6 @@ import VirgilCryptoCommon
     @objc public func error() throws {
         let proxyResult = vscf_error_ctx_error(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 }

@@ -38,7 +38,7 @@
         Deserialize class "message info".
 
         <argument name="data" class="data"/>
-        <argument name="error" class="error ctx" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return class="message info" access="disown"/>
     </method>

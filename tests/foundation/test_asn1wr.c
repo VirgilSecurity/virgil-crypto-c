@@ -795,7 +795,7 @@ test__asn1wr_error__write_to_small_buffer__returns_error_small_buffer(void) {
 
     vscf_asn1wr_write_int(asn1wr, 2);
 
-    TEST_ASSERT_EQUAL(vscf_error_SMALL_BUFFER, vscf_asn1wr_error(asn1wr));
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_SMALL_BUFFER, vscf_asn1wr_status(asn1wr));
 
     vsc_buffer_destroy(&asn1);
     vscf_asn1wr_destroy(&asn1wr);

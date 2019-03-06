@@ -422,12 +422,12 @@ test__deserialize__cms_with_no_recipients_and_3_params__read_int_param_is_valid(
 
     vscf_message_info_custom_params_t *custom_params = vscf_message_info_custom_params(message_info);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     int value =
             vscf_message_info_custom_params_find_int(custom_params, test_message_info_cms_INT_CUSTOM_PARAM_KEY, &error);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, error.error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
     TEST_ASSERT_EQUAL(test_message_info_cms_INT_CUSTOM_PARAM_VALUE, value);
 
     vscf_message_info_destroy(&message_info);
@@ -447,12 +447,12 @@ test__deserialize__cms_with_no_recipients_and_3_params__read_string_param_is_val
 
     vscf_message_info_custom_params_t *custom_params = vscf_message_info_custom_params(message_info);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vsc_data_t value = vscf_message_info_custom_params_find_string(
             custom_params, test_message_info_cms_STRING_CUSTOM_PARAM_KEY, &error);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, error.error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
     TEST_ASSERT_EQUAL_DATA(test_message_info_cms_STRING_CUSTOM_PARAM_VALUE, value);
 
     vscf_message_info_destroy(&message_info);
@@ -472,12 +472,12 @@ test__deserialize__cms_with_no_recipients_and_3_params__read_data_param_is_valid
 
     vscf_message_info_custom_params_t *custom_params = vscf_message_info_custom_params(message_info);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vsc_data_t value = vscf_message_info_custom_params_find_data(
             custom_params, test_message_info_cms_DATA_CUSTOM_PARAM_KEY, &error);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, error.error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
     TEST_ASSERT_EQUAL_DATA(test_message_info_cms_DATA_CUSTOM_PARAM_VALUE, value);
 
     vscf_message_info_destroy(&message_info);

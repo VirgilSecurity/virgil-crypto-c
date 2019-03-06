@@ -109,7 +109,7 @@ vscf_ed25519_private_key_cleanup_ctx(vscf_ed25519_private_key_t *self) {
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ed25519_private_key_setup_defaults(vscf_ed25519_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -126,7 +126,7 @@ vscf_ed25519_private_key_setup_defaults(vscf_ed25519_private_key_t *self) {
         vscf_ecies_setup_defaults(self->ecies);
     }
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -152,14 +152,14 @@ vscf_ed25519_private_key_produce_alg_info(const vscf_ed25519_private_key_t *self
 //
 //  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ed25519_private_key_restore_alg_info(vscf_ed25519_private_key_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
     VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_ED25519);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -186,7 +186,7 @@ vscf_ed25519_private_key_key_bitlen(const vscf_ed25519_private_key_t *self) {
 //  Generate new private or secret key.
 //  Note, this operation can be slow.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ed25519_private_key_generate_key(vscf_ed25519_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -194,18 +194,18 @@ vscf_ed25519_private_key_generate_key(vscf_ed25519_private_key_t *self) {
     vsc_buffer_t *generated = vsc_buffer_new();
     VSCF_ASSERT_PTR(generated);
     vsc_buffer_use(generated, self->secret_key, ED25519_KEY_LEN);
-    if (vscf_SUCCESS != vscf_random(self->random, ED25519_KEY_LEN, generated)) {
+    if (vscf_status_SUCCESS != vscf_random(self->random, ED25519_KEY_LEN, generated)) {
         vsc_buffer_destroy(&generated);
-        return vscf_error_KEY_GENERATION_FAILED;
+        return vscf_status_ERROR_KEY_GENERATION_FAILED;
     }
     vsc_buffer_destroy(&generated);
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
 //  Decrypt given data.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ed25519_private_key_decrypt(vscf_ed25519_private_key_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
@@ -216,15 +216,15 @@ vscf_ed25519_private_key_decrypt(vscf_ed25519_private_key_t *self, vsc_data_t da
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_ed25519_private_key_decrypted_len(self, data.len));
 
     vscf_ecies_use_decryption_key(self->ecies, vscf_ed25519_private_key_impl(self));
-    vscf_error_t status = vscf_ecies_decrypt(self->ecies, data, out);
+    vscf_status_t status = vscf_ecies_decrypt(self->ecies, data, out);
     vscf_ecies_release_decryption_key(self->ecies);
 
-    if (status != vscf_SUCCESS) {
+    if (status != vscf_status_SUCCESS) {
         //  TODO: Log underlying error
-        return vscf_error_BAD_ENCRYPTED_DATA;
+        return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
     }
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -242,7 +242,7 @@ vscf_ed25519_private_key_decrypted_len(vscf_ed25519_private_key_t *self, size_t 
 //
 //  Sign data given private key.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ed25519_private_key_sign(vscf_ed25519_private_key_t *self, vsc_data_t data, vsc_buffer_t *signature) {
 
     VSCF_ASSERT_PTR(self);
@@ -252,7 +252,7 @@ vscf_ed25519_private_key_sign(vscf_ed25519_private_key_t *self, vsc_data_t data,
     int ret = ed25519_sign(vsc_buffer_unused_bytes(signature), self->secret_key, data.bytes, data.len);
     VSCF_ASSERT(ret == 0);
     vsc_buffer_inc_used(signature, vscf_ed25519_private_key_signature_len(self));
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -295,7 +295,7 @@ vscf_ed25519_private_key_extract_public_key(const vscf_ed25519_private_key_t *se
 //  For instance, RSA private key must be exported in format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ed25519_private_key_export_private_key(const vscf_ed25519_private_key_t *self, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
@@ -315,7 +315,7 @@ vscf_ed25519_private_key_export_private_key(const vscf_ed25519_private_key_t *se
 
     vscf_asn1wr_cleanup(&asn1wr);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -341,7 +341,7 @@ vscf_ed25519_private_key_exported_private_key_len(const vscf_ed25519_private_key
 //  For instance, RSA private key must be imported from the format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ed25519_private_key_import_private_key(vscf_ed25519_private_key_t *self, vsc_data_t data) {
 
     VSCF_ASSERT_PTR(self);
@@ -355,20 +355,20 @@ vscf_ed25519_private_key_import_private_key(vscf_ed25519_private_key_t *self, vs
 
     vscf_asn1rd_cleanup(&asn1rd);
 
-    if (vscf_asn1rd_error(&asn1rd) != vscf_SUCCESS || key.len != ED25519_KEY_LEN) {
-        return vscf_error_BAD_ED25519_PRIVATE_KEY;
+    if (vscf_asn1rd_has_error(&asn1rd) || key.len != ED25519_KEY_LEN) {
+        return vscf_status_ERROR_BAD_ED25519_PRIVATE_KEY;
     }
 
     memcpy(self->secret_key, key.bytes, ED25519_KEY_LEN);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
 //  Compute shared key for 2 asymmetric keys.
 //  Note, shared key can be used only for symmetric cryptography.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ed25519_private_key_compute_shared_key(
         vscf_ed25519_private_key_t *self, const vscf_impl_t *public_key, vsc_buffer_t *shared_key) {
 
@@ -389,12 +389,12 @@ vscf_ed25519_private_key_compute_shared_key(
             curve25519_key_exchange(vsc_buffer_unused_bytes(shared_key), x25519_public_key, x25519_private_key);
 
     if (status != 0) {
-        return vscf_error_SHARED_KEY_EXCHANGE_FAILED;
+        return vscf_status_ERROR_SHARED_KEY_EXCHANGE_FAILED;
     }
 
     vsc_buffer_inc_used(shared_key, ED25519_DH_LEN);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //

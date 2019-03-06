@@ -54,7 +54,7 @@
 #define VSCR_RATCHET_MESSAGE_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_error_ctx.h"
+#include "vscr_error.h"
 #include "vscr_ratchet_message.h"
 #include "vscr_msg_type.h"
 
@@ -166,7 +166,7 @@ vscr_ratchet_message_serialize(vscr_ratchet_message_t *self, vsc_buffer_t *outpu
 //  Deserializes instance.
 //
 VSCR_PUBLIC vscr_ratchet_message_t *
-vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx);
+vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_t *error);
 
 
 // --------------------------------------------------------------------------

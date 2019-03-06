@@ -364,15 +364,15 @@ vscf_key_provider_cleanup_ctx(vscf_key_provider_t *self) {
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_key_provider_setup_defaults(vscf_key_provider_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
     if (NULL == self->random) {
         vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
-        vscf_error_t status = vscf_ctr_drbg_setup_defaults(random);
-        if (status != vscf_SUCCESS) {
+        vscf_status_t status = vscf_ctr_drbg_setup_defaults(random);
+        if (status != vscf_status_SUCCESS) {
             vscf_ctr_drbg_destroy(&random);
             return status;
         }
@@ -386,15 +386,15 @@ vscf_key_provider_setup_defaults(vscf_key_provider_t *self) {
     if (NULL == self->ecies) {
         vscf_ecies_t *ecies = vscf_ecies_new();
         vscf_ecies_use_random(ecies, self->random);
-        vscf_error_t status = vscf_ecies_setup_defaults(ecies);
-        if (status != vscf_SUCCESS) {
+        vscf_status_t status = vscf_ecies_setup_defaults(ecies);
+        if (status != vscf_status_SUCCESS) {
             vscf_ecies_destroy(&ecies);
             return status;
         }
         self->ecies = ecies;
     }
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -416,7 +416,7 @@ vscf_key_provider_set_rsa_params(vscf_key_provider_t *self, size_t bitlen, size_
 //  Generate new private key from the given id.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t alg_id, vscf_error_ctx_t *error) {
+vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t alg_id, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
@@ -429,12 +429,12 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
         vscf_rsa_private_key_use_random(private_key, self->random);
         vscf_rsa_private_key_set_keygen_params(private_key, self->rsa_bitlen, self->rsa_exponent);
         vscf_rsa_private_key_setup_defaults(private_key);
-        vscf_error_t status = vscf_rsa_private_key_generate_key(private_key);
-        if (status == vscf_SUCCESS) {
+        vscf_status_t status = vscf_rsa_private_key_generate_key(private_key);
+        if (status == vscf_status_SUCCESS) {
             return vscf_rsa_private_key_impl(private_key);
         } else {
             vscf_rsa_private_key_destroy(&private_key);
-            VSCF_ERROR_CTX_SAFE_UPDATE(error, status);
+            VSCF_ERROR_SAFE_UPDATE(error, status);
             return NULL;
         }
     }
@@ -445,19 +445,19 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
         vscf_ed25519_private_key_use_random(private_key, self->random);
         vscf_ed25519_private_key_setup_defaults(private_key);
         vscf_ed25519_private_key_generate_key(private_key);
-        vscf_error_t status = vscf_ed25519_private_key_generate_key(private_key);
-        if (status == vscf_SUCCESS) {
+        vscf_status_t status = vscf_ed25519_private_key_generate_key(private_key);
+        if (status == vscf_status_SUCCESS) {
             return vscf_ed25519_private_key_impl(private_key);
         } else {
             vscf_ed25519_private_key_destroy(&private_key);
-            VSCF_ERROR_CTX_SAFE_UPDATE(error, status);
+            VSCF_ERROR_SAFE_UPDATE(error, status);
             return NULL;
         }
     }
 
     default:
         VSCF_ASSERT(0 && "Unhandled algorithm identifier.");
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_KEY_GENERATION_FAILED);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_KEY_GENERATION_FAILED);
         return NULL;
     }
 }
@@ -466,7 +466,7 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
 //  Import private key from the PKCS#8 format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8_data, vscf_error_ctx_t *error) {
+vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8_data, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
@@ -506,7 +506,7 @@ vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8
     }
 
     default:
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_UNSUPPORTED_ALGORITHM);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
         break;
     }
 
@@ -515,13 +515,13 @@ vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8
         return NULL;
     }
 
-    vscf_error_t status = vscf_private_key_import_private_key(private_key, vscf_raw_key_data(raw_key));
+    vscf_status_t status = vscf_private_key_import_private_key(private_key, vscf_raw_key_data(raw_key));
     vscf_raw_key_destroy(&raw_key);
 
-    if (status == vscf_SUCCESS) {
+    if (status == vscf_status_SUCCESS) {
         return private_key;
     } else {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, status);
+        VSCF_ERROR_SAFE_UPDATE(error, status);
         vscf_impl_destroy(&private_key);
         return NULL;
     }
@@ -531,7 +531,7 @@ vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8
 //  Import public key from the PKCS#8 format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t pkcs8_data, vscf_error_ctx_t *error) {
+vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t pkcs8_data, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
@@ -570,7 +570,7 @@ vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t pkcs8_
     }
 
     default:
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_UNSUPPORTED_ALGORITHM);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
         break;
     }
 
@@ -579,13 +579,13 @@ vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t pkcs8_
         return NULL;
     }
 
-    vscf_error_t status = vscf_public_key_import_public_key(public_key, vscf_raw_key_data(raw_key));
+    vscf_status_t status = vscf_public_key_import_public_key(public_key, vscf_raw_key_data(raw_key));
     vscf_raw_key_destroy(&raw_key);
 
-    if (status == vscf_SUCCESS) {
+    if (status == vscf_status_SUCCESS) {
         return public_key;
     } else {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, status);
+        VSCF_ERROR_SAFE_UPDATE(error, status);
         vscf_impl_destroy(&public_key);
         return NULL;
     }

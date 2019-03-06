@@ -52,7 +52,7 @@
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
 
-    <enum name="error"/>
+    <enum name="status"/>
     <enum name="msg type"/>
 
     <class name="ratchet common"/>

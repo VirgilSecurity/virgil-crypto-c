@@ -278,7 +278,7 @@ vscf_alg_info_der_serializer_serialize_simple_alg_info(
     hash_len += vscf_asn1_writer_write_oid(asn1_writer, oid);
     hash_len += vscf_asn1_writer_write_sequence(asn1_writer, hash_len);
 
-    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(asn1_writer));
 
     return hash_len;
 }
@@ -354,7 +354,7 @@ vscf_alg_info_der_serializer_serialize_kdf_alg_info(vscf_alg_info_der_serializer
     kdf_len += vscf_asn1_writer_write_oid(asn1_writer, kdf_oid);
     kdf_len += vscf_asn1_writer_write_sequence(asn1_writer, kdf_len + params_len);
 
-    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(asn1_writer));
 
     return kdf_len + params_len;
 }
@@ -418,7 +418,7 @@ vscf_alg_info_der_serializer_serialize_hkdf_alg_info(
     hkdf_len += vscf_asn1_writer_write_oid(asn1_writer, vscf_oid_from_id(hkdf_oid_id));
     hkdf_len += vscf_asn1_writer_write_sequence(asn1_writer, hkdf_len);
 
-    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(asn1_writer));
 
     return hkdf_len;
 }
@@ -487,7 +487,7 @@ vscf_alg_info_der_serializer_serialize_hmac_alg_info(
     hmac_len += vscf_asn1_writer_write_oid(asn1_writer, vscf_oid_from_id(hmac_oid_id));
     hmac_len += vscf_asn1_writer_write_sequence(asn1_writer, hmac_len);
 
-    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(asn1_writer));
 
     return hmac_len;
 }
@@ -569,7 +569,7 @@ vscf_alg_info_der_serializer_serialize_cipher_alg_info(
     //  Write AlgorithmIdentifier SEQUENCE.
     len += vscf_asn1_writer_write_sequence(asn1_writer, len);
 
-    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(asn1_writer));
 
     return len;
 }
@@ -663,7 +663,7 @@ vscf_alg_info_der_serializer_serialize_pbkdf2_alg_info(
     //  Write AlgorithmIdentifier SEQUENCE.
     len += vscf_asn1_writer_write_sequence(asn1_writer, len);
 
-    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(asn1_writer));
 
     return len;
 }
@@ -746,7 +746,7 @@ vscf_alg_info_der_serializer_serialize_pbes2_alg_info(
     //  Write AlgorithmIdentifier SEQUENCE.
     len += vscf_asn1_writer_write_sequence(asn1_writer, len);
 
-    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(asn1_writer));
 
     return len;
 }
@@ -812,7 +812,7 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -821,7 +821,7 @@ vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *self
         vscf_alg_info_der_serializer_take_asn1_writer(self, vscf_asn1wr_impl(vscf_asn1wr_new()));
     }
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //

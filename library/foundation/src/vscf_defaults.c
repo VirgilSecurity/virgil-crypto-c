@@ -68,7 +68,7 @@
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_defaults_setup_defaults(vscf_impl_t *impl) {
 
     const vscf_defaults_api_t *defaults_api = vscf_defaults_api(impl);

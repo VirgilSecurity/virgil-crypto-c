@@ -113,7 +113,7 @@ option(VSCF_PBE_ALG_INFO "Enable implementation 'pbe alg info'." ON)
 option(VSCF_ALG_INFO_DER_SERIALIZER "Enable implementation 'alg info der serializer'." ON)
 option(VSCF_ALG_INFO_DER_DESERIALIZER "Enable implementation 'alg info der deserializer'." ON)
 option(VSCF_MESSAGE_INFO_DER_SERIALIZER "Enable implementation 'message info der serializer'." ON)
-option(VSCF_ERROR_CTX "Enable class 'error ctx'." ON)
+option(VSCF_ERROR "Enable class 'error'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
 option(VSCF_MBEDTLS_MD "Enable class 'mbedtls md'." ON)
@@ -203,7 +203,7 @@ mark_as_advanced(
         VSCF_ALG_INFO_DER_SERIALIZER
         VSCF_ALG_INFO_DER_DESERIALIZER
         VSCF_MESSAGE_INFO_DER_SERIALIZER
-        VSCF_ERROR_CTX
+        VSCF_ERROR
         VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
         VSCF_MBEDTLS_BIGNUM_ASN1_READER
         VSCF_MBEDTLS_MD

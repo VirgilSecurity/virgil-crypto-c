@@ -68,11 +68,11 @@ void
 test__generate_private_key__ed25519__success(void) {
 
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    vscf_error_t status = vscf_key_provider_setup_defaults(key_provider);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+    vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vscf_impl_t *private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ED25519, &error);
     TEST_ASSERT_NOT_NULL(private_key);
@@ -88,11 +88,11 @@ void
 test__generate_private_key__ed25519_and_then_do_encrypt_decrypt__success(void) {
 
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    vscf_error_t status = vscf_key_provider_setup_defaults(key_provider);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+    vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vscf_impl_t *private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ED25519, &error);
     TEST_ASSERT_NOT_NULL(private_key);
@@ -103,13 +103,13 @@ test__generate_private_key__ed25519_and_then_do_encrypt_decrypt__success(void) {
     vsc_data_t plain_data = vsc_data_from_str("test data", 9);
 
     vsc_buffer_t *enc_data = vsc_buffer_new_with_capacity(vscf_encrypt_encrypted_len(public_key, plain_data.len));
-    vscf_error_t enc_status = vscf_encrypt(public_key, plain_data, enc_data);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, enc_status);
+    vscf_status_t enc_status = vscf_encrypt(public_key, plain_data, enc_data);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, enc_status);
 
     vsc_buffer_t *dec_data =
             vsc_buffer_new_with_capacity(vscf_decrypt_decrypted_len(private_key, vsc_buffer_len(enc_data)));
-    vscf_error_t dec_status = vscf_decrypt(private_key, vsc_buffer_data(enc_data), dec_data);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, dec_status);
+    vscf_status_t dec_status = vscf_decrypt(private_key, vsc_buffer_data(enc_data), dec_data);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, dec_status);
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(plain_data, dec_data);
 
@@ -124,11 +124,11 @@ void
 test__generate_private_key__ed25519_and_then_do_sign_verify__success(void) {
 
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    vscf_error_t status = vscf_key_provider_setup_defaults(key_provider);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+    vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vscf_impl_t *private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ED25519, &error);
     TEST_ASSERT_NOT_NULL(private_key);
@@ -139,8 +139,8 @@ test__generate_private_key__ed25519_and_then_do_sign_verify__success(void) {
     vsc_data_t tbs_data = vsc_data_from_str("data to be signed", 17);
 
     vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_sign_signature_len(private_key));
-    vscf_error_t sign_status = vscf_sign(private_key, tbs_data, signature);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, sign_status);
+    vscf_status_t sign_status = vscf_sign(private_key, tbs_data, signature);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, sign_status);
 
     bool verified = vscf_verify(public_key, tbs_data, vsc_buffer_data(signature));
     TEST_ASSERT_TRUE(verified);
@@ -155,13 +155,13 @@ void
 test__generate_private_key__rsa_2048__success(void) {
 
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    vscf_error_t status = vscf_key_provider_setup_defaults(key_provider);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+    vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
     vscf_key_provider_set_rsa_params(key_provider, 2048, 65537);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vscf_impl_t *private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_RSA, &error);
     TEST_ASSERT_NOT_NULL(private_key);
@@ -177,12 +177,12 @@ void
 test__generate_private_key__rsa2048_and_then_do_encrypt_decrypt__success(void) {
 
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    vscf_error_t status = vscf_key_provider_setup_defaults(key_provider);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+    vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
     vscf_key_provider_set_rsa_params(key_provider, 2048, 65537);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vscf_impl_t *private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_RSA, &error);
     TEST_ASSERT_NOT_NULL(private_key);
@@ -193,13 +193,13 @@ test__generate_private_key__rsa2048_and_then_do_encrypt_decrypt__success(void) {
     vsc_data_t plain_data = vsc_data_from_str("test data", 9);
 
     vsc_buffer_t *enc_data = vsc_buffer_new_with_capacity(vscf_encrypt_encrypted_len(public_key, plain_data.len));
-    vscf_error_t enc_status = vscf_encrypt(public_key, plain_data, enc_data);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, enc_status);
+    vscf_status_t enc_status = vscf_encrypt(public_key, plain_data, enc_data);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, enc_status);
 
     vsc_buffer_t *dec_data =
             vsc_buffer_new_with_capacity(vscf_decrypt_decrypted_len(private_key, vsc_buffer_len(enc_data)));
-    vscf_error_t dec_status = vscf_decrypt(private_key, vsc_buffer_data(enc_data), dec_data);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, dec_status);
+    vscf_status_t dec_status = vscf_decrypt(private_key, vsc_buffer_data(enc_data), dec_data);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, dec_status);
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(plain_data, dec_data);
 
@@ -214,12 +214,12 @@ void
 test__generate_private_key__rsa2048_and_then_do_sign_verify__success(void) {
 
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    vscf_error_t status = vscf_key_provider_setup_defaults(key_provider);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+    vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
     vscf_key_provider_set_rsa_params(key_provider, 2048, 65537);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vscf_impl_t *private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_RSA, &error);
     TEST_ASSERT_NOT_NULL(private_key);
@@ -230,8 +230,8 @@ test__generate_private_key__rsa2048_and_then_do_sign_verify__success(void) {
     vsc_data_t tbs_data = vsc_data_from_str("data to be signed", 17);
 
     vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_sign_signature_len(private_key));
-    vscf_error_t sign_status = vscf_sign(private_key, tbs_data, signature);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, sign_status);
+    vscf_status_t sign_status = vscf_sign(private_key, tbs_data, signature);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, sign_status);
 
     bool verified = vscf_verify(public_key, tbs_data, vsc_buffer_data(signature));
     TEST_ASSERT_TRUE(verified);

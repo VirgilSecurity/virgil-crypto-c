@@ -68,7 +68,7 @@
 //  @end
 
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_x3dh_compute_initiator_x3dh_secret(vsc_data_t sender_identity_private_key,
         vsc_data_t sender_ephemeral_private_key, vsc_data_t receiver_identity_public_key,
         vsc_data_t receiver_long_term_public_key, vsc_data_t receiver_one_time_public_key,
@@ -89,7 +89,7 @@ vscr_ratchet_x3dh_compute_initiator_x3dh_secret(vsc_data_t sender_identity_priva
 
     VSCR_ASSERT(vsc_buffer_capacity(shared_secret) >= shared_secret_count * ED25519_DH_LEN);
 
-    vscr_error_t status = vscr_SUCCESS;
+    vscr_status_t status = vscr_status_SUCCESS;
 
     int curve_status = 0;
     curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), receiver_long_term_public_key.bytes,
@@ -97,7 +97,7 @@ vscr_ratchet_x3dh_compute_initiator_x3dh_secret(vsc_data_t sender_identity_priva
     vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
     if (curve_status != 0) {
-        status = vscr_error_CURVE25519;
+        status = vscr_status_ERROR_CURVE25519;
         goto curve_err;
     }
 
@@ -106,7 +106,7 @@ vscr_ratchet_x3dh_compute_initiator_x3dh_secret(vsc_data_t sender_identity_priva
     vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
     if (curve_status != 0) {
-        status = vscr_error_CURVE25519;
+        status = vscr_status_ERROR_CURVE25519;
         goto curve_err;
     }
 
@@ -115,7 +115,7 @@ vscr_ratchet_x3dh_compute_initiator_x3dh_secret(vsc_data_t sender_identity_priva
     vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
     if (curve_status != 0) {
-        status = vscr_error_CURVE25519;
+        status = vscr_status_ERROR_CURVE25519;
         goto curve_err;
     }
 
@@ -125,7 +125,7 @@ vscr_ratchet_x3dh_compute_initiator_x3dh_secret(vsc_data_t sender_identity_priva
         vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
         if (curve_status != 0) {
-            status = vscr_error_CURVE25519;
+            status = vscr_status_ERROR_CURVE25519;
             goto curve_err;
         }
     }
@@ -134,7 +134,7 @@ curve_err:
     return status;
 }
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_data_t sender_identity_public_key,
         vsc_data_t sender_ephemeral_public_key, vsc_data_t receiver_identity_private_key,
         vsc_data_t receiver_long_term_private_key, vsc_data_t receiver_one_time_private_key,
@@ -155,14 +155,14 @@ vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_data_t sender_identity_publi
 
     VSCR_ASSERT(vsc_buffer_capacity(shared_secret) >= shared_secret_count * ED25519_DH_LEN);
 
-    vscr_error_t status = vscr_SUCCESS;
+    vscr_status_t status = vscr_status_SUCCESS;
 
     int curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), sender_identity_public_key.bytes,
             receiver_long_term_private_key.bytes);
     vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
     if (curve_status != 0) {
-        status = vscr_error_CURVE25519;
+        status = vscr_status_ERROR_CURVE25519;
         goto curve_err;
     }
 
@@ -171,7 +171,7 @@ vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_data_t sender_identity_publi
     vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
     if (curve_status != 0) {
-        status = vscr_error_CURVE25519;
+        status = vscr_status_ERROR_CURVE25519;
         goto curve_err;
     }
 
@@ -180,7 +180,7 @@ vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_data_t sender_identity_publi
     vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
     if (curve_status != 0) {
-        status = vscr_error_CURVE25519;
+        status = vscr_status_ERROR_CURVE25519;
         goto curve_err;
     }
 
@@ -190,7 +190,7 @@ vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_data_t sender_identity_publi
         vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
         if (curve_status != 0) {
-            status = vscr_error_CURVE25519;
+            status = vscr_status_ERROR_CURVE25519;
             goto curve_err;
         }
     }

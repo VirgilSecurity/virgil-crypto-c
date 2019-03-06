@@ -2179,7 +2179,7 @@ function php_map_enum_error (php_enum, enum, wrapper, meta)
         endnew
 
         my.success_constant = \
-                make_ref_c (make_id ("global", "enum", my.enum.name, "constant success"))
+                make_ref_c (make_id ("class", my.enum.name, "enum", my.enum.name, "constant success"))
 
         new php_code to php_method
             . = "\

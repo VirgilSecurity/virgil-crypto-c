@@ -63,7 +63,7 @@
             Receiver one-time public key (optional)
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             Error
         </return>
     </method>
@@ -87,7 +87,7 @@
             Message received from initiator
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             Error
         </return>
     </method>
@@ -123,7 +123,7 @@
             Data to encrypt
         </argument>
 
-        <argument name="err ctx" class="error ctx" access="readwrite">
+        <argument name="error" class="error" access="readwrite">
             Error context to return error
         </argument>
 
@@ -159,7 +159,7 @@
             </length>
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             Error
         </return>
     </method>
@@ -190,7 +190,7 @@
             Serialized session data
         </argument>
 
-        <argument name="err ctx" class="error ctx" access="readwrite">
+        <argument name="error" class="error" access="readwrite">
             Error context to return error
         </argument>
 

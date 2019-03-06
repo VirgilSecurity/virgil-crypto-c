@@ -131,7 +131,7 @@ vscf_entropy_accumulator_add_source(vscf_entropy_accumulator_t *self, vscf_impl_
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -155,7 +155,7 @@ vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *self) {
 #endif
 
     VSCF_ASSERT(has_strong);
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -172,7 +172,7 @@ vscf_entropy_accumulator_is_strong(vscf_entropy_accumulator_t *self) {
 //
 //  Gather entropy of the requested length.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_entropy_accumulator_gather(vscf_entropy_accumulator_t *self, size_t len, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
@@ -187,13 +187,13 @@ vscf_entropy_accumulator_gather(vscf_entropy_accumulator_t *self, size_t len, vs
     switch (status) {
     case 0:
         vsc_buffer_inc_used(out, len);
-        return vscf_SUCCESS;
+        return vscf_status_SUCCESS;
 
     case MBEDTLS_ERR_ENTROPY_SOURCE_FAILED:
-        return vscf_error_ENTROPY_SOURCE_FAILED;
+        return vscf_status_ERROR_ENTROPY_SOURCE_FAILED;
 
     default:
         VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(status);
-        return vscf_error_UNHANDLED_THIRDPARTY_ERROR;
+        return vscf_status_ERROR_UNHANDLED_THIRDPARTY_ERROR;
     }
 }

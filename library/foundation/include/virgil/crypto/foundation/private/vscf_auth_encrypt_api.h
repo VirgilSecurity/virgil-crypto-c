@@ -57,7 +57,7 @@
 #include "vscf_api.h"
 #include "vscf_impl.h"
 #include "vscf_cipher_auth_info.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -88,7 +88,7 @@ extern "C" {
 //  Callback. Encrypt given data.
 //          If 'tag' is not give, then it will written to the 'enc'.
 //
-typedef vscf_error_t (*vscf_auth_encrypt_api_auth_encrypt_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data,
+typedef vscf_status_t (*vscf_auth_encrypt_api_auth_encrypt_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data,
         vsc_buffer_t *out, vsc_buffer_t *tag);
 
 //

@@ -38,7 +38,7 @@
             <length constant="phe public key length" class="phe common"/>
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             - vsce_error_RNG_ERROR in case rng failed
         </return>
     </method>
@@ -67,7 +67,7 @@
             <length method="enrollment response len"/>
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
             - vsce_error_RNG_ERROR in case rng failed
         </return>
@@ -100,7 +100,7 @@
             <length method="verify password response len"/>
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
             - vsce_error_INVALID_ECP if input points are invalid
             - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
@@ -118,7 +118,7 @@
         <argument name="c1" class="mbedtls_ecp_point" library="mbedtls"/>
         <argument name="success proof" class="ProofOfSuccess" library="nanopb" access="writeonly"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="prove failure" declaration="private">
@@ -130,7 +130,7 @@
         <argument name="c1" class="mbedtls_ecp_point" library="mbedtls" access="writeonly"/>
         <argument name="failure proof" class="ProofOfFail" library="nanopb" access="writeonly"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="update token len">
@@ -166,7 +166,7 @@
             <length method="update token len"/>
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
             - vsce_error_RNG_ERROR in case rng failed
         </return>

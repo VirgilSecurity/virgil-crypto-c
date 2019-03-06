@@ -13,7 +13,7 @@
 
         <argument name="asn1wr" interface="asn1 writer" access="readwrite"/>
         <argument name="bignum" class="mbedtls_mpi" library="mbedtls"/>
-        <argument name="error" class="error ctx" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
         <return type="size"/>
     </method>
 </class>

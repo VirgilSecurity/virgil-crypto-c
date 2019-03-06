@@ -22,7 +22,7 @@
     <method name="setup defaults">
         Setup predefined values to the uninitialized class dependencies.
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="set rsa params">
@@ -36,7 +36,7 @@
         Generate new private key from the given id.
 
         <argument name="alg id" enum="alg id"/>
-        <argument name="error" class="error ctx" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return interface="private key" access="disown"/>
     </method>
@@ -45,7 +45,7 @@
         Import private key from the PKCS#8 format.
 
         <argument name="pkcs8 data" class="data"/>
-        <argument name="error" class="error ctx" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return interface="private key" access="disown"/>
     </method>
@@ -54,7 +54,7 @@
         Import public key from the PKCS#8 format.
 
         <argument name="pkcs8 data" class="data"/>
-        <argument name="error" class="error ctx" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return interface="public key" access="disown"/>
     </method>

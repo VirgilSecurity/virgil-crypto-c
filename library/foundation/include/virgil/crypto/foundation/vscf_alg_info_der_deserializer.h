@@ -54,9 +54,9 @@
 #define VSCF_ALG_INFO_DER_DESERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error_ctx.h"
-#include "vscf_impl.h"
 #include "vscf_error.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -165,12 +165,12 @@ vscf_alg_info_der_deserializer_release_asn1_reader(vscf_alg_info_der_deserialize
 //  an input buffer.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserializer_t *self, vscf_error_ctx_t *error);
+vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserializer_t *self, vscf_error_t *error);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_alg_info_der_deserializer_setup_defaults(vscf_alg_info_der_deserializer_t *self);
 
 //
@@ -178,7 +178,7 @@ vscf_alg_info_der_deserializer_setup_defaults(vscf_alg_info_der_deserializer_t *
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_alg_info_der_deserializer_deserialize(vscf_alg_info_der_deserializer_t *self, vsc_data_t data,
-        vscf_error_ctx_t *error);
+        vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------

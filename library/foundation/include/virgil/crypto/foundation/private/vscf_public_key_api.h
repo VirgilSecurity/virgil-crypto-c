@@ -57,7 +57,7 @@
 #include "vscf_api.h"
 #include "vscf_impl.h"
 #include "vscf_key.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -91,7 +91,7 @@ extern "C" {
 //          For instance, RSA public key must be exported in format defined in
 //          RFC 3447 Appendix A.1.1.
 //
-typedef vscf_error_t (*vscf_public_key_api_export_public_key_fn)(const vscf_impl_t *impl, vsc_buffer_t *out);
+typedef vscf_status_t (*vscf_public_key_api_export_public_key_fn)(const vscf_impl_t *impl, vsc_buffer_t *out);
 
 //
 //  Callback. Return length in bytes required to hold exported public key.
@@ -105,7 +105,7 @@ typedef size_t (*vscf_public_key_api_exported_public_key_len_fn)(const vscf_impl
 //          For instance, RSA public key must be imported from the format defined in
 //          RFC 3447 Appendix A.1.1.
 //
-typedef vscf_error_t (*vscf_public_key_api_import_public_key_fn)(vscf_impl_t *impl, vsc_data_t data);
+typedef vscf_status_t (*vscf_public_key_api_import_public_key_fn)(vscf_impl_t *impl, vsc_data_t data);
 
 //
 //  Contains API requirements of the interface 'public key'.

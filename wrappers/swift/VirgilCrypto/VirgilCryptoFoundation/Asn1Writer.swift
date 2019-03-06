@@ -61,8 +61,11 @@ import VirgilCryptoCommon
     /// Returns how many bytes are available for writing.
     @objc func unwrittenLen() -> Int
 
-    /// Return last error.
-    @objc func error() throws
+    /// Return true if status is not "success".
+    @objc func hasError() -> Bool
+
+    /// Return error code.
+    @objc func status() throws
 
     /// Move writing position backward for the given length.
     /// Return current writing position.
@@ -216,11 +219,18 @@ import VirgilCryptoCommon
         return proxyResult
     }
 
-    /// Return last error.
-    @objc public func error() throws {
-        let proxyResult = vscf_asn1_writer_error(self.c_ctx)
+    /// Return true if status is not "success".
+    @objc public func hasError() -> Bool {
+        let proxyResult = vscf_asn1_writer_has_error(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        return proxyResult
+    }
+
+    /// Return error code.
+    @objc public func status() throws {
+        let proxyResult = vscf_asn1_writer_status(self.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Move writing position backward for the given length.

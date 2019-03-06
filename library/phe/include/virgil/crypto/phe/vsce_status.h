@@ -47,23 +47,11 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'platform entropy' implementation.
+//  Defines the library status codes.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_PLATFORM_ENTROPY_H_INCLUDED
-#define VSCF_PLATFORM_ENTROPY_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_error.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#ifndef VSCE_STATUS_H_INCLUDED
+#define VSCE_STATUS_H_INCLUDED
 
 // clang-format on
 //  @end
@@ -81,75 +69,43 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Defines the library status codes.
 //
-typedef struct vscf_platform_entropy_impl_t vscf_platform_entropy_impl_t;
-
-//
-//  Return size of 'vscf_platform_entropy_impl_t' type.
-//
-VSCF_PUBLIC size_t
-vscf_platform_entropy_impl_size(void);
-
-//
-//  Cast to the 'vscf_impl_t' type.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_platform_entropy_impl(vscf_platform_entropy_impl_t *platform_entropy_impl);
-
-//
-//  Perform initialization of preallocated implementation context.
-//
-VSCF_PUBLIC void
-vscf_platform_entropy_init(vscf_platform_entropy_impl_t *platform_entropy_impl);
-
-//
-//  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_platform_entropy_init()'.
-//
-VSCF_PUBLIC void
-vscf_platform_entropy_cleanup(vscf_platform_entropy_impl_t *platform_entropy_impl);
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Postcondition: check memory allocation result.
-//
-VSCF_PUBLIC vscf_platform_entropy_impl_t *
-vscf_platform_entropy_new(void);
-
-//
-//  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_platform_entropy_new()'.
-//
-VSCF_PUBLIC void
-vscf_platform_entropy_delete(vscf_platform_entropy_impl_t *platform_entropy_impl);
-
-//
-//  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_platform_entropy_new()'.
-//  Given reference is nullified.
-//
-VSCF_PUBLIC void
-vscf_platform_entropy_destroy(vscf_platform_entropy_impl_t **platform_entropy_impl_ref);
-
-//
-//  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
-//
-VSCF_PUBLIC vscf_platform_entropy_impl_t *
-vscf_platform_entropy_shallow_copyvscf_platform_entropy_impl_t *platform_entropy_impl);
-
-//
-//  Defines that implemented source is strong.
-//
-VSCF_PUBLIC bool
-vscf_platform_entropy_is_strong(vscf_platform_entropy_impl_t *platform_entropy_impl);
-
-//
-//  Gather entropy of the requested length.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_platform_entropy_gather(vscf_platform_entropy_impl_t *platform_entropy_impl, size_t len, vsc_buffer_t *out);
+enum vsce_status_t {
+    //
+    //  No errors was occurred.
+    //
+    vsce_status_SUCCESS = 0,
+    //
+    //  Success proof check failed.
+    //
+    vsce_status_ERROR_INVALID_SUCCESS_PROOF,
+    //
+    //  Failure proof check failed.
+    //
+    vsce_status_ERROR_INVALID_FAIL_PROOF,
+    //
+    //  RNG returned error.
+    //
+    vsce_status_ERROR_RNG_FAILED,
+    //
+    //  Protobuf decode failed.
+    //
+    vsce_status_ERROR_PROTOBUF_DECODE_FAILED,
+    //
+    //  Invalid ECP.
+    //
+    vsce_status_ERROR_INVALID_ECP,
+    //
+    //  Invalid private key.
+    //
+    vsce_status_ERROR_INVALID_PRIVATE_KEY,
+    //
+    //  AES error occurred.
+    //
+    vsce_status_ERROR_AES_FAILED
+};
+typedef enum vsce_status_t vsce_status_t;
 
 
 // --------------------------------------------------------------------------
@@ -165,5 +121,5 @@ vscf_platform_entropy_gather(vscf_platform_entropy_impl_t *platform_entropy_impl
 
 
 //  @footer
-#endif // VSCF_PLATFORM_ENTROPY_H_INCLUDED
+#endif // VSCE_STATUS_H_INCLUDED
 //  @end

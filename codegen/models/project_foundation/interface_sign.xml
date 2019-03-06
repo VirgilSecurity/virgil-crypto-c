@@ -9,7 +9,7 @@
             <length method="signature len"/>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
 

@@ -56,7 +56,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -91,7 +91,7 @@ typedef struct vscf_compute_shared_key_api_t vscf_compute_shared_key_api_t;
 //  Compute shared key for 2 asymmetric keys.
 //  Note, shared key can be used only for symmetric cryptography.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_compute_shared_key(vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_buffer_t *shared_key);
 
 //

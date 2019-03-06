@@ -52,10 +52,17 @@
     </method>
 
 
-    <method name="error">
-        Return last error.
+    <method name="has error" is_const="1">
+        Return true if status is not "success".
 
-        <return enum="error"/>
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="status" is_const="1">
+        Return error code.
+
+        <return enum="status"/>
     </method>
 
 

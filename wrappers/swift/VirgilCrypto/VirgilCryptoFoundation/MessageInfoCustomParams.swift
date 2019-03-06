@@ -98,7 +98,7 @@ import VirgilCryptoCommon
     }
 
     /// Return custom parameter with integer value.
-    @objc public func findInt(key: Data, error: ErrorCtx) -> Int32 {
+    @objc public func findInt(key: Data, error: Error) -> Int32 {
         let proxyResult = key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Int32 in
             return vscf_message_info_custom_params_find_int(self.c_ctx, vsc_data(keyPointer, key.count), error.c_ctx)
         })
@@ -107,7 +107,7 @@ import VirgilCryptoCommon
     }
 
     /// Return custom parameter with UTF8 string value.
-    @objc public func findString(key: Data, error: ErrorCtx) -> Data {
+    @objc public func findString(key: Data, error: Error) -> Data {
         let proxyResult = key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) in
             return vscf_message_info_custom_params_find_string(self.c_ctx, vsc_data(keyPointer, key.count), error.c_ctx)
         })
@@ -116,7 +116,7 @@ import VirgilCryptoCommon
     }
 
     /// Return custom parameter with octet string value.
-    @objc public func findData(key: Data, error: ErrorCtx) -> Data {
+    @objc public func findData(key: Data, error: Error) -> Data {
         let proxyResult = key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) in
             return vscf_message_info_custom_params_find_data(self.c_ctx, vsc_data(keyPointer, key.count), error.c_ctx)
         })

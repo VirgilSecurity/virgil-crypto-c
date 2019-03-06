@@ -61,7 +61,7 @@
         <argument name="input" class="data">
             Data with serialized instance.
         </argument>
-        <argument name="err ctx" class="error ctx" access="readwrite">
+        <argument name="error" class="error" access="readwrite">
             Error context.
         </argument>
 

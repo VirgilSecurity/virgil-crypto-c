@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_ecies.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 #include "vscf_alg_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -198,7 +198,7 @@ vscf_ed25519_private_key_release_ecies(vscf_ed25519_private_key_t *self);
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ed25519_private_key_setup_defaults(vscf_ed25519_private_key_t *self);
 
 //
@@ -216,7 +216,7 @@ vscf_ed25519_private_key_produce_alg_info(const vscf_ed25519_private_key_t *self
 //
 //  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ed25519_private_key_restore_alg_info(vscf_ed25519_private_key_t *self, const vscf_impl_t *alg_info);
 
 //
@@ -235,13 +235,13 @@ vscf_ed25519_private_key_key_bitlen(const vscf_ed25519_private_key_t *self);
 //  Generate new private or secret key.
 //  Note, this operation can be slow.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ed25519_private_key_generate_key(vscf_ed25519_private_key_t *self);
 
 //
 //  Decrypt given data.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ed25519_private_key_decrypt(vscf_ed25519_private_key_t *self, vsc_data_t data, vsc_buffer_t *out);
 
 //
@@ -253,7 +253,7 @@ vscf_ed25519_private_key_decrypted_len(vscf_ed25519_private_key_t *self, size_t 
 //
 //  Sign data given private key.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ed25519_private_key_sign(vscf_ed25519_private_key_t *self, vsc_data_t data, vsc_buffer_t *signature);
 
 //
@@ -275,7 +275,7 @@ vscf_ed25519_private_key_extract_public_key(const vscf_ed25519_private_key_t *se
 //  For instance, RSA private key must be exported in format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ed25519_private_key_export_private_key(const vscf_ed25519_private_key_t *self, vsc_buffer_t *out);
 
 //
@@ -291,14 +291,14 @@ vscf_ed25519_private_key_exported_private_key_len(const vscf_ed25519_private_key
 //  For instance, RSA private key must be imported from the format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ed25519_private_key_import_private_key(vscf_ed25519_private_key_t *self, vsc_data_t data);
 
 //
 //  Compute shared key for 2 asymmetric keys.
 //  Note, shared key can be used only for symmetric cryptography.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ed25519_private_key_compute_shared_key(vscf_ed25519_private_key_t *self, const vscf_impl_t *public_key,
         vsc_buffer_t *shared_key);
 

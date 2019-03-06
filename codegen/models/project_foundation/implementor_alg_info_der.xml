@@ -191,7 +191,7 @@
             Parse ASN.1 structure "AlgorithmIdentifier" with optional NULL parameter.
 
             <argument name="alg oid" class="data"/>
-            <argument name="error" class="error ctx" access="readwrite"/>
+            <argument name="error" class="error" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
         </method>
@@ -200,7 +200,7 @@
             Parse ASN.1 structure "KeyDerivationFunction" from the ISO/IEC 18033-2.
 
             <argument name="alg oid" class="data"/>
-            <argument name="error" class="error ctx" access="readwrite"/>
+            <argument name="error" class="error" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
         </method>
@@ -210,7 +210,7 @@
             https://tools.ietf.org/html/draft-housley-hkdf-oids-00.
 
             <argument name="alg oid" class="data"/>
-            <argument name="error" class="error ctx" access="readwrite"/>
+            <argument name="error" class="error" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
         </method>
@@ -219,7 +219,7 @@
             Parse ASN.1 structure "DigestAlgorithm" from the RFC 4231.
 
             <argument name="alg oid" class="data"/>
-            <argument name="error" class="error ctx" access="readwrite"/>
+            <argument name="error" class="error" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
         </method>
@@ -230,7 +230,7 @@
                 - defined in the RFC 5084.
 
             <argument name="alg oid" class="data"/>
-            <argument name="error" class="error ctx" access="readwrite"/>
+            <argument name="error" class="error" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
         </method>
@@ -240,7 +240,7 @@
             defined in the RFC 8018.
 
             <argument name="alg oid" class="data"/>
-            <argument name="error" class="error ctx" access="readwrite"/>
+            <argument name="error" class="error" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
         </method>
@@ -250,7 +250,7 @@
             defined in the RFC 8018.
 
             <argument name="alg oid" class="data"/>
-            <argument name="error" class="error ctx" access="readwrite"/>
+            <argument name="error" class="error" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
         </method>
@@ -260,7 +260,7 @@
             Note, that caller code is responsible to reset ASN.1 reader with
             an input buffer.
 
-            <argument name="error" class="error ctx" access="readwrite"/>
+            <argument name="error" class="error" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
         </method>

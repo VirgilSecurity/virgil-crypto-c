@@ -21,7 +21,7 @@
             <length constant="auth tag len"/>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
 

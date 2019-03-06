@@ -73,20 +73,20 @@ import VirgilCryptoCommon
     @objc public func setAsn1Reader(asn1Reader: Asn1Reader) throws {
         vscf_message_info_der_serializer_release_asn1_reader(self.c_ctx)
         let proxyResult = vscf_message_info_der_serializer_use_asn1_reader(self.c_ctx, asn1Reader.c_ctx)
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     @objc public func setAsn1Writer(asn1Writer: Asn1Writer) throws {
         vscf_message_info_der_serializer_release_asn1_writer(self.c_ctx)
         let proxyResult = vscf_message_info_der_serializer_use_asn1_writer(self.c_ctx, asn1Writer.c_ctx)
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_message_info_der_serializer_setup_defaults(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Return buffer size enough to hold serialized message info.
@@ -129,7 +129,7 @@ import VirgilCryptoCommon
     }
 
     /// Deserialize class "message info".
-    @objc public func deserialize(data: Data, error: ErrorCtx) -> MessageInfo {
+    @objc public func deserialize(data: Data, error: Error) -> MessageInfo {
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
             return vscf_message_info_der_serializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count), error.c_ctx)
         })

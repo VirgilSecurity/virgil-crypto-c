@@ -48,7 +48,7 @@
 #define VSCF_MESSAGE_INFO_CUSTOM_PARAMS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error_ctx.h"
+#include "vscf_error.h"
 #include "vscf_list_key_value_node.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -151,22 +151,20 @@ vscf_message_info_custom_params_clear(vscf_message_info_custom_params_t *self);
 //  Return custom parameter with integer value.
 //
 VSCF_PUBLIC int
-vscf_message_info_custom_params_find_int(vscf_message_info_custom_params_t *self, vsc_data_t key,
-        vscf_error_ctx_t *error);
+vscf_message_info_custom_params_find_int(vscf_message_info_custom_params_t *self, vsc_data_t key, vscf_error_t *error);
 
 //
 //  Return custom parameter with UTF8 string value.
 //
 VSCF_PUBLIC vsc_data_t
 vscf_message_info_custom_params_find_string(vscf_message_info_custom_params_t *self, vsc_data_t key,
-        vscf_error_ctx_t *error);
+        vscf_error_t *error);
 
 //
 //  Return custom parameter with octet string value.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_message_info_custom_params_find_data(vscf_message_info_custom_params_t *self, vsc_data_t key,
-        vscf_error_ctx_t *error);
+vscf_message_info_custom_params_find_data(vscf_message_info_custom_params_t *self, vsc_data_t key, vscf_error_t *error);
 
 //
 //  Return first param, or NULL if does not exist.

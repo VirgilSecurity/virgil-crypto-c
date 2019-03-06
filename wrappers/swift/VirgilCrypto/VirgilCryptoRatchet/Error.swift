@@ -35,70 +35,52 @@
 
 import Foundation
 import VSCRatchet
+import VirgilCryptoCommon
+import VirgilCryptoFoundation
 
-/// Error codes
-@objc(VSCRRatchetError) public enum RatchetError: Int, Error {
+/// Error context.
+/// Can be used for sequential operations, i.e. parsers, to accumulate error.
+/// In this way operation is successful if all steps are successful, otherwise
+/// last occurred error code can be obtained.
+@objc(VSCRError) public class Error: NSObject {
 
-    /// Error during protobuf deserialization
-    case protobufDecode = -1
+    /// Handle underlying C context.
+    @objc public let c_ctx: UnsafeMutablePointer<vscr_error_t>
 
-    /// Message version doesn't match
-    case messageVersionDoesnTMatch = -2
-
-    /// Bad message type
-    case badMessageType = -3
-
-    /// AES error
-    case aes = -4
-
-    /// RNG failed
-    case rngFailed = -5
-
-    /// Curve25519 error
-    case curve25519 = -6
-
-    /// Key deserialization error
-    case keyDeserialization = -7
-
-    /// Invalid key type
-    case invalidKeyType = -8
-
-    /// Identity key doesn't match
-    case identityKeyDoesntMatch = -9
-
-    /// Message already decrypted
-    case messageAlreadyDecrypted = -10
-
-    /// Too many lost messages
-    case tooManyLostMessages = -11
-
-    /// Sender chain missing
-    case senderChainMissing = -12
-
-    /// Skipped message missing
-    case skippedMessageMissing = -13
-
-    /// Can't encrypt yet
-    case canTEncryptYet = -14
-
-    /// Exceeded max plain text len
-    case exceededMaxPlainTextLen = -15
-
-    /// Too many messages for sender chain
-    case tooManyMessagesForSenderChain = -16
-
-    /// Too many messages for receiver chain
-    case tooManyMessagesForReceiverChain = -17
-
-    /// Create enumeration value from the correspond C enumeration value.
-    internal init(fromC error: vscr_error_t) {
-        self.init(rawValue: Int(error.rawValue))!
+    /// Create underlying C context.
+    public override init() {
+        self.c_ctx = vscr_alloc(vscr_error_ctx_size())!.bindMemory(to: vscr_error_t.self, capacity:1)
+        super.init()
     }
 
-    /// Check given C error (result), and if it's not "success" then throw correspond exception.
-    internal static func handleError(fromC code: vscr_error_t) throws {
-        if code != vscr_SUCCESS {
-            throw RatchetError(fromC: code)
-        }
+    /// Acquire C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(take c_ctx: UnsafeMutablePointer<vscr_error_t>) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Release underlying C context.
+    deinit {
+        vscr_dealloc(self.c_ctx)
+    }
+
+    /// Reset context to the "no error" state.
+    @objc public func reset() {
+        vscr_error_reset(self.c_ctx)
+    }
+
+    /// Return true if status is not "success".
+    @objc public func hasError() -> Bool {
+        let proxyResult = vscr_error_has_error(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return error code.
+    @objc public func status() throws {
+        let proxyResult = vscr_error_status(self.c_ctx)
+
+        try RatchetError.handleStatus(fromC: proxyResult)
     }
 }

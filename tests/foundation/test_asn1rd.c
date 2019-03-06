@@ -475,9 +475,7 @@ test__asn1rd_error__after_read_null__returns_SUCCESS(void) {
 
     vscf_asn1rd_read_null(asn1rd);
 
-    vscf_error_t error = vscf_asn1rd_error(asn1rd);
-
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, error);
+    TEST_ASSERT_FALSE(vscf_asn1rd_has_error(asn1rd));
 
     vscf_asn1rd_destroy(&asn1rd);
 }
@@ -493,9 +491,7 @@ test__asn1rd_error__after_read_int_twice__returns_OUT_OF_DATA(void) {
     (void)vscf_asn1rd_read_int(asn1rd);
     (void)vscf_asn1rd_read_int(asn1rd);
 
-    vscf_error_t error = vscf_asn1rd_error(asn1rd);
-
-    TEST_ASSERT_EQUAL(vscf_error_OUT_OF_DATA, error);
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_OUT_OF_DATA, vscf_asn1rd_status(asn1rd));
 
     vscf_asn1rd_destroy(&asn1rd);
 }
@@ -510,9 +506,7 @@ test__asn1rd_error__after_read_int_from_encoded_boolean_true__returns_BAD_ASN1(v
 
     (void)vscf_asn1rd_read_int(asn1rd);
 
-    vscf_error_t error = vscf_asn1rd_error(asn1rd);
-
-    TEST_ASSERT_EQUAL(vscf_error_BAD_ASN1, error);
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_ASN1, vscf_asn1rd_status(asn1rd));
 
     vscf_asn1rd_destroy(&asn1rd);
 }

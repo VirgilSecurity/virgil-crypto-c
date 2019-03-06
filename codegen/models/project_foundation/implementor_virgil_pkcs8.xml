@@ -23,7 +23,7 @@
             an output buffer.
 
             <argument name="public key" interface="public key"/>
-            <argument name="error" class="error ctx" access="readwrite"/>
+            <argument name="error" class="error" access="readwrite"/>
 
             <return type="size"/>
         </method>
@@ -34,7 +34,7 @@
             an output buffer.
 
             <argument name="private key" interface="private key"/>
-            <argument name="error" class="error ctx" access="readwrite"/>
+            <argument name="error" class="error" access="readwrite"/>
 
             <return type="size"/>
         </method>
@@ -61,7 +61,7 @@
             Note, that caller code is responsible to reset ASN.1 reader with
             an input buffer.
 
-            <argument name="error" class="error ctx" access="readwrite"/>
+            <argument name="error" class="error" access="readwrite"/>
 
             <return class="raw key" access="disown"/>
         </method>
@@ -71,7 +71,7 @@
             Note, that caller code is responsible to reset ASN.1 reader with
             an input buffer.
 
-            <argument name="error" class="error ctx" access="readwrite"/>
+            <argument name="error" class="error" access="readwrite"/>
 
             <return class="raw key" access="disown"/>
         </method>
