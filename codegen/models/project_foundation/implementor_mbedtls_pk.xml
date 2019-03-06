@@ -7,16 +7,20 @@
         <require library="mbedtls" feature="PKCS1 V21"/>
 
         <require header="mbedtls/rsa.h" scope="context"/>
-        <require enum="asn1 tag"/>
-        <require class="mbedtls bignum asn1 writer"/>
+
+        <require class="asn1rd"/>
+        <require class="asn1wr"/>
         <require class="mbedtls bignum asn1 reader"/>
-        <require module="mbedtls bridge random"/>
+        <require class="mbedtls bignum asn1 writer"/>
         <require class="mbedtls md"/>
-        <require interface="alg"/>
-        <require interface="alg info"/>
         <require class="simple alg info"/>
-        <require impl="rsa private key"/>
+        <require enum="asn1 tag"/>
         <require impl="ctr drbg"/>
+        <require impl="rsa private key"/>
+        <require impl="sha384"/>
+        <require interface="alg info"/>
+        <require interface="alg"/>
+        <require module="mbedtls bridge random"/>
 
         <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" is_reference="0"/>
 
@@ -51,16 +55,20 @@
 
         <require header="mbedtls/bignum.h"/>
         <require header="mbedtls/rsa.h" scope="context"/>
-        <require enum="asn1 tag"/>
-        <require class="mbedtls bignum asn1 writer"/>
+
+        <require class="asn1rd"/>
+        <require class="asn1wr"/>
         <require class="mbedtls bignum asn1 reader"/>
-        <require module="mbedtls bridge random"/>
+        <require class="mbedtls bignum asn1 writer"/>
         <require class="mbedtls md"/>
-        <require module="rsa public key defs"/>
-        <require interface="alg"/>
-        <require interface="alg info"/>
         <require class="simple alg info"/>
+        <require enum="asn1 tag"/>
         <require impl="ctr drbg"/>
+        <require impl="sha384"/>
+        <require interface="alg info"/>
+        <require interface="alg"/>
+        <require module="mbedtls bridge random"/>
+        <require module="rsa public key defs"/>
 
         <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" is_reference="0"/>
         <property name="gen bitlen" type="size"/>
