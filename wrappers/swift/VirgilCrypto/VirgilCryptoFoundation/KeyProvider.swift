@@ -88,7 +88,7 @@ import VirgilCryptoCommon
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_key_provider_setup_defaults(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Setup parameters that is used during RSA key generation.
@@ -97,14 +97,14 @@ import VirgilCryptoCommon
     }
 
     /// Generate new private key from the given id.
-    @objc public func generatePrivateKey(algId: AlgId, error: ErrorCtx) -> PrivateKey {
+    @objc public func generatePrivateKey(algId: AlgId, error: Error) -> PrivateKey {
         let proxyResult = vscf_key_provider_generate_private_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), error.c_ctx)
 
         return PrivateKeyProxy.init(c_ctx: proxyResult!)
     }
 
     /// Import private key from the PKCS#8 format.
-    @objc public func importPrivateKey(pkcs8Data: Data, error: ErrorCtx) -> PrivateKey {
+    @objc public func importPrivateKey(pkcs8Data: Data, error: Error) -> PrivateKey {
         let proxyResult = pkcs8Data.withUnsafeBytes({ (pkcs8DataPointer: UnsafePointer<byte>) in
             return vscf_key_provider_import_private_key(self.c_ctx, vsc_data(pkcs8DataPointer, pkcs8Data.count), error.c_ctx)
         })
@@ -113,7 +113,7 @@ import VirgilCryptoCommon
     }
 
     /// Import public key from the PKCS#8 format.
-    @objc public func importPublicKey(pkcs8Data: Data, error: ErrorCtx) -> PublicKey {
+    @objc public func importPublicKey(pkcs8Data: Data, error: Error) -> PublicKey {
         let proxyResult = pkcs8Data.withUnsafeBytes({ (pkcs8DataPointer: UnsafePointer<byte>) in
             return vscf_key_provider_import_public_key(self.c_ctx, vsc_data(pkcs8DataPointer, pkcs8Data.count), error.c_ctx)
         })

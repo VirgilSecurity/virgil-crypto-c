@@ -55,7 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -89,13 +89,13 @@ typedef struct vscf_random_api_t vscf_random_api_t;
 //
 //  Generate random bytes.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_random(vscf_impl_t *impl, size_t data_len, vsc_buffer_t *data);
 
 //
 //  Retreive new seed data from the entropy sources.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_random_reseed(vscf_impl_t *impl);
 
 //

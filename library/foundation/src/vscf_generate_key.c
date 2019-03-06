@@ -68,7 +68,7 @@
 //  Generate new private or secret key.
 //  Note, this operation can be slow.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_generate_key(vscf_impl_t *impl) {
 
     const vscf_generate_key_api_t *generate_key_api = vscf_generate_key_api(impl);

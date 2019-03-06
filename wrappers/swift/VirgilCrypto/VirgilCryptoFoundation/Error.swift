@@ -35,114 +35,51 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
-/// Defines library error codes.
-@objc(VSCFFoundationError) public enum FoundationError: Int, Error {
+/// Error context.
+/// Can be used for sequential operations, i.e. parsers, to accumulate error.
+/// In this way operation is successful if all steps are successful, otherwise
+/// last occurred error code can be obtained.
+@objc(VSCFError) public class Error: NSObject {
 
-    /// This error should not be returned if assertions is enabled.
-    case badArguments = -1
+    /// Handle underlying C context.
+    @objc public let c_ctx: UnsafeMutablePointer<vscf_error_t>
 
-    /// Can be used to define that not all context prerequisites are satisfied.
-    /// Note, this error should not be returned if assertions is enabled.
-    case uninitialized = -2
-
-    /// Define that error code from one of third-party module was not handled.
-    /// Note, this error should not be returned if assertions is enabled.
-    case unhandledThirdpartyError = -3
-
-    /// Buffer capacity is not enough to hold result.
-    case smallBuffer = -101
-
-    /// Unsupported algorithm.
-    case unsupportedAlgorithm = -200
-
-    /// Authentication failed during decryption.
-    case authFailed = -201
-
-    /// Attempt to read data out of buffer bounds.
-    case outOfData = -202
-
-    /// ASN.1 encoded data is corrupted.
-    case badAsn1 = -203
-
-    /// Attempt to read ASN.1 type that is bigger then requested C type.
-    case asn1LossyTypeNarrowing = -204
-
-    /// ASN.1 representation of PKCS#1 public key is corrupted.
-    case badPkcs1PublicKey = -205
-
-    /// ASN.1 representation of PKCS#1 private key is corrupted.
-    case badPkcs1PrivateKey = -206
-
-    /// ASN.1 representation of PKCS#8 public key is corrupted.
-    case badPkcs8PublicKey = -207
-
-    /// ASN.1 representation of PKCS#8 private key is corrupted.
-    case badPkcs8PrivateKey = -208
-
-    /// Encrypted data is corrupted.
-    case badEncryptedData = -209
-
-    /// Underlying random operation returns error.
-    case randomFailed = -210
-
-    /// Generation of the private or secret key failed.
-    case keyGenerationFailed = -211
-
-    /// One of the entropy sources failed.
-    case entropySourceFailed = -212
-
-    /// Requested data to be generated is too big.
-    case rngRequestedDataTooBig = -213
-
-    /// Base64 encoded string contains invalid characters.
-    case badBase64 = -214
-
-    /// PEM data is corrupted.
-    case badPem = -215
-
-    /// Exchange key return zero.
-    case sharedKeyExchangeFailed = -216
-
-    /// Ed25519 public key is corrupted.
-    case badEd25519PublicKey = -217
-
-    /// Ed25519 private key is corrupted.
-    case badEd25519PrivateKey = -218
-
-    /// Decryption failed, because message info was not given explicitly,
-    /// and was not part of an encrypted message.
-    case noMessageInfo = -301
-
-    /// Message info is corrupted.
-    case badMessageInfo = -302
-
-    /// Recipient defined with id is not found within message info
-    /// during data decryption.
-    case keyRecipientIsNotFound = -303
-
-    /// Content encryption key can not be decrypted with a given private key.
-    case keyRecipientPrivateKeyIsWrong = -304
-
-    /// Content encryption key can not be decrypted with a given password.
-    case passwordRecipientPasswordIsWrong = -305
-
-    /// Custom parameter with a given key is not found within message info.
-    case messageInfoCustomParamNotFound = -306
-
-    /// A custom parameter with a given key is found, but the requested value
-    /// type does not correspond to the actual type.
-    case messageInfoCustomParamTypeMismatch = -307
-
-    /// Create enumeration value from the correspond C enumeration value.
-    internal init(fromC error: vscf_error_t) {
-        self.init(rawValue: Int(error.rawValue))!
+    /// Create underlying C context.
+    public override init() {
+        self.c_ctx = vscf_alloc(vscf_error_ctx_size())!.bindMemory(to: vscf_error_t.self, capacity:1)
+        super.init()
     }
 
-    /// Check given C error (result), and if it's not "success" then throw correspond exception.
-    internal static func handleError(fromC code: vscf_error_t) throws {
-        if code != vscf_SUCCESS {
-            throw FoundationError(fromC: code)
-        }
+    /// Acquire C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(take c_ctx: UnsafeMutablePointer<vscf_error_t>) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Release underlying C context.
+    deinit {
+        vscf_dealloc(self.c_ctx)
+    }
+
+    /// Reset context to the "no error" state.
+    @objc public func reset() {
+        vscf_error_reset(self.c_ctx)
+    }
+
+    /// Return true if status is not "success".
+    @objc public func hasError() -> Bool {
+        let proxyResult = vscf_error_has_error(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return error code.
+    @objc public func status() throws {
+        let proxyResult = vscf_error_status(self.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 }

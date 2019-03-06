@@ -55,7 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error_ctx.h"
+#include "vscf_error.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -90,7 +90,7 @@ typedef struct vscf_alg_info_deserializer_api_t vscf_alg_info_deserializer_api_t
 //  Deserialize algorithm from the data.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_info_deserializer_deserialize(vscf_impl_t *impl, vsc_data_t data, vscf_error_ctx_t *error);
+vscf_alg_info_deserializer_deserialize(vscf_impl_t *impl, vsc_data_t data, vscf_error_t *error);
 
 //
 //  Return alg info deserializer API, or NULL if it is not implemented.

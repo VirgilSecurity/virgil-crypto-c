@@ -260,12 +260,12 @@ PHP_FUNCTION(vsce_phe_client_enroll_account_php) {
     vsc_buffer_t *account_key = vsc_buffer_new();
     vsc_buffer_use(account_key, (byte *)ZSTR_VAL(out_account_key), ZSTR_LEN(out_account_key));
 
-    vsce_error_t status = vsce_phe_client_enroll_account(phe_client, enrollment_response, password, enrollment_record, account_key);
+    vsce_status_t status = vsce_phe_client_enroll_account(phe_client, enrollment_response, password, enrollment_record, account_key);
 
     //
     //  Handle error
     //
-    if(status != vsce_SUCCESS) {
+    if(status != vsce_status_SUCCESS) {
         zend_throw_exception(NULL, "PHE Client error", status);
         goto fail;
     }
@@ -342,12 +342,12 @@ PHP_FUNCTION(vsce_phe_client_rotate_keys_php) {
     vsc_buffer_t *new_server_public_key = vsc_buffer_new();
     vsc_buffer_use(new_server_public_key, (byte *)ZSTR_VAL(out_new_server_public_key), ZSTR_LEN(out_new_server_public_key));
 
-    vsce_error_t status = vsce_phe_client_rotate_keys(phe_client, update_token, new_client_private_key, new_server_public_key);
+    vsce_status_t status = vsce_phe_client_rotate_keys(phe_client, update_token, new_client_private_key, new_server_public_key);
 
     //
     //  Handle error
     //
-    if(status != vsce_SUCCESS) {
+    if(status != vsce_status_SUCCESS) {
         zend_throw_exception(NULL, "PHE Client error", status);
         goto fail;
     }
@@ -413,12 +413,12 @@ PHP_FUNCTION(vsce_phe_client_generate_client_private_key_php) {
     vsc_buffer_t *client_private_key = vsc_buffer_new();
     vsc_buffer_use(client_private_key, (byte *)ZSTR_VAL(out_client_private_key), ZSTR_LEN(out_client_private_key));
 
-    vsce_error_t status = vsce_phe_client_generate_client_private_key(phe_client, client_private_key);
+    vsce_status_t status = vsce_phe_client_generate_client_private_key(phe_client, client_private_key);
 
     //
     //  Handle error
     //
-    if(status != vsce_SUCCESS) {
+    if(status != vsce_status_SUCCESS) {
         zend_throw_exception(NULL, "PHE Client error", status);
         goto fail;
     }
@@ -490,12 +490,12 @@ PHP_FUNCTION(vsce_phe_client_update_enrollment_record_php) {
     vsc_buffer_t *new_enrollment_record = vsc_buffer_new();
     vsc_buffer_use(new_enrollment_record, (byte *)ZSTR_VAL(out_new_enrollment_record), ZSTR_LEN(out_new_enrollment_record));
 
-    vsce_error_t status = vsce_phe_client_update_enrollment_record(phe_client, enrollment_record, update_token, new_enrollment_record);
+    vsce_status_t status = vsce_phe_client_update_enrollment_record(phe_client, enrollment_record, update_token, new_enrollment_record);
 
     //
     //  Handle error
     //
-    if(status != vsce_SUCCESS) {
+    if(status != vsce_status_SUCCESS) {
         zend_throw_exception(NULL, "PHE Client error", status);
         goto fail;
     }
@@ -567,12 +567,12 @@ PHP_FUNCTION(vsce_phe_client_create_verify_password_request_php) {
     vsc_buffer_t *verify_password_request = vsc_buffer_new();
     vsc_buffer_use(verify_password_request, (byte *)ZSTR_VAL(out_verify_password_request), ZSTR_LEN(out_verify_password_request));
 
-    vsce_error_t status = vsce_phe_client_create_verify_password_request(phe_client, password, enrollment_record, verify_password_request);
+    vsce_status_t status = vsce_phe_client_create_verify_password_request(phe_client, password, enrollment_record, verify_password_request);
 
     //
     //  Handle error
     //
-    if(status != vsce_SUCCESS) {
+    if(status != vsce_status_SUCCESS) {
         zend_throw_exception(NULL, "PHE Client error", status);
         goto fail;
     }
@@ -649,12 +649,12 @@ PHP_FUNCTION(vsce_phe_client_check_response_and_decrypt_php) {
     vsc_buffer_t *account_key = vsc_buffer_new();
     vsc_buffer_use(account_key, (byte *)ZSTR_VAL(out_account_key), ZSTR_LEN(out_account_key));
 
-    vsce_error_t status = vsce_phe_client_check_response_and_decrypt(phe_client, password, enrollment_record, verify_password_response, account_key);
+    vsce_status_t status = vsce_phe_client_check_response_and_decrypt(phe_client, password, enrollment_record, verify_password_response, account_key);
 
     //
     //  Handle error
     //
-    if(status != vsce_SUCCESS) {
+    if(status != vsce_status_SUCCESS) {
         zend_throw_exception(NULL, "PHE Client error", status);
         goto fail;
     }
@@ -953,12 +953,12 @@ PHP_FUNCTION(vsce_phe_server_rotate_keys_php) {
     vsc_buffer_t *update_token = vsc_buffer_new();
     vsc_buffer_use(update_token, (byte *)ZSTR_VAL(out_update_token), ZSTR_LEN(out_update_token));
 
-    vsce_error_t status = vsce_phe_server_rotate_keys(phe_server, server_private_key, new_server_private_key, new_server_public_key, update_token);
+    vsce_status_t status = vsce_phe_server_rotate_keys(phe_server, server_private_key, new_server_private_key, new_server_public_key, update_token);
 
     //
     //  Handle error
     //
-    if(status != vsce_SUCCESS) {
+    if(status != vsce_status_SUCCESS) {
         zend_throw_exception(NULL, "PHE Server error", status);
         goto fail;
     }
@@ -1033,12 +1033,12 @@ PHP_FUNCTION(vsce_phe_server_generate_server_key_pair_php) {
     vsc_buffer_t *server_public_key = vsc_buffer_new();
     vsc_buffer_use(server_public_key, (byte *)ZSTR_VAL(out_server_public_key), ZSTR_LEN(out_server_public_key));
 
-    vsce_error_t status = vsce_phe_server_generate_server_key_pair(phe_server, server_private_key, server_public_key);
+    vsce_status_t status = vsce_phe_server_generate_server_key_pair(phe_server, server_private_key, server_public_key);
 
     //
     //  Handle error
     //
-    if(status != vsce_SUCCESS) {
+    if(status != vsce_status_SUCCESS) {
         zend_throw_exception(NULL, "PHE Server error", status);
         goto fail;
     }
@@ -1120,12 +1120,12 @@ PHP_FUNCTION(vsce_phe_server_verify_password_php) {
     vsc_buffer_t *verify_password_response = vsc_buffer_new();
     vsc_buffer_use(verify_password_response, (byte *)ZSTR_VAL(out_verify_password_response), ZSTR_LEN(out_verify_password_response));
 
-    vsce_error_t status = vsce_phe_server_verify_password(phe_server, server_private_key, server_public_key, verify_password_request, verify_password_response);
+    vsce_status_t status = vsce_phe_server_verify_password(phe_server, server_private_key, server_public_key, verify_password_request, verify_password_response);
 
     //
     //  Handle error
     //
-    if(status != vsce_SUCCESS) {
+    if(status != vsce_status_SUCCESS) {
         zend_throw_exception(NULL, "PHE Server error", status);
         goto fail;
     }
@@ -1197,12 +1197,12 @@ PHP_FUNCTION(vsce_phe_server_get_enrollment_php) {
     vsc_buffer_t *enrollment_response = vsc_buffer_new();
     vsc_buffer_use(enrollment_response, (byte *)ZSTR_VAL(out_enrollment_response), ZSTR_LEN(out_enrollment_response));
 
-    vsce_error_t status = vsce_phe_server_get_enrollment(phe_server, server_private_key, server_public_key, enrollment_response);
+    vsce_status_t status = vsce_phe_server_get_enrollment(phe_server, server_private_key, server_public_key, enrollment_response);
 
     //
     //  Handle error
     //
-    if(status != vsce_SUCCESS) {
+    if(status != vsce_status_SUCCESS) {
         zend_throw_exception(NULL, "PHE Server error", status);
         goto fail;
     }
@@ -1365,12 +1365,12 @@ PHP_FUNCTION(vsce_phe_cipher_encrypt_php) {
     vsc_buffer_t *cipher_text = vsc_buffer_new();
     vsc_buffer_use(cipher_text, (byte *)ZSTR_VAL(out_cipher_text), ZSTR_LEN(out_cipher_text));
 
-    vsce_error_t status = vsce_phe_cipher_encrypt(phe_cipher, plain_text, account_key, cipher_text);
+    vsce_status_t status = vsce_phe_cipher_encrypt(phe_cipher, plain_text, account_key, cipher_text);
 
     //
     //  Handle error
     //
-    if(status != vsce_SUCCESS) {
+    if(status != vsce_status_SUCCESS) {
         zend_throw_exception(NULL, "PHE Cipher error", status);
         goto fail;
     }
@@ -1442,12 +1442,12 @@ PHP_FUNCTION(vsce_phe_cipher_decrypt_php) {
     vsc_buffer_t *plain_text = vsc_buffer_new();
     vsc_buffer_use(plain_text, (byte *)ZSTR_VAL(out_plain_text), ZSTR_LEN(out_plain_text));
 
-    vsce_error_t status = vsce_phe_cipher_decrypt(phe_cipher, cipher_text, account_key, plain_text);
+    vsce_status_t status = vsce_phe_cipher_decrypt(phe_cipher, cipher_text, account_key, plain_text);
 
     //
     //  Handle error
     //
-    if(status != vsce_SUCCESS) {
+    if(status != vsce_status_SUCCESS) {
         zend_throw_exception(NULL, "PHE Cipher error", status);
         goto fail;
     }

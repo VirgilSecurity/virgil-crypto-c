@@ -84,8 +84,8 @@ void
 test__decode__encoded_empty__returns_empty(void) {
     vsc_buffer_t *decoded = vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_EMPTY.len));
 
-    vscf_error_t status = vscf_base64_decode(test_base64_ENCODED_EMPTY, decoded);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+    vscf_status_t status = vscf_base64_decode(test_base64_ENCODED_EMPTY, decoded);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
     TEST_ASSERT_EQUAL(0, vsc_buffer_len(decoded));
 
     vsc_buffer_destroy(&decoded);
@@ -113,8 +113,8 @@ void
 test__decode__encoded_f__returns_f(void) {
     vsc_buffer_t *decoded = vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_F.len));
 
-    vscf_error_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_F, decoded);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+    vscf_status_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_F, decoded);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_base64_DECODED_LOWERCASE_F, decoded);
 
     vsc_buffer_destroy(&decoded);
@@ -142,8 +142,8 @@ void
 test__decode__encoded_fo__returns_fo(void) {
     vsc_buffer_t *decoded = vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_FO.len));
 
-    vscf_error_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_FO, decoded);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+    vscf_status_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_FO, decoded);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_base64_DECODED_LOWERCASE_FO, decoded);
 
     vsc_buffer_destroy(&decoded);
@@ -173,8 +173,8 @@ test__decode__encoded_foo__returns_foo(void) {
     vsc_buffer_t *decoded =
             vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_FOO.len));
 
-    vscf_error_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_FOO, decoded);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+    vscf_status_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_FOO, decoded);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_base64_DECODED_LOWERCASE_FOO, decoded);
 
     vsc_buffer_destroy(&decoded);
@@ -204,8 +204,8 @@ test__decode__encoded_foob__returns_foob(void) {
     vsc_buffer_t *decoded =
             vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_FOOB.len));
 
-    vscf_error_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_FOOB, decoded);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+    vscf_status_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_FOOB, decoded);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_base64_DECODED_LOWERCASE_FOOB, decoded);
 
     vsc_buffer_destroy(&decoded);
@@ -235,8 +235,8 @@ test__decode__encoded_fooba__returns_fooba(void) {
     vsc_buffer_t *decoded =
             vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_FOOBA.len));
 
-    vscf_error_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_FOOBA, decoded);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+    vscf_status_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_FOOBA, decoded);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_base64_DECODED_LOWERCASE_FOOBA, decoded);
 
     vsc_buffer_destroy(&decoded);
@@ -266,8 +266,8 @@ test__decode__encoded_foobar__returns_foobar(void) {
     vsc_buffer_t *decoded =
             vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_FOOBAR.len));
 
-    vscf_error_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_FOOBAR, decoded);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+    vscf_status_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_FOOBAR, decoded);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_base64_DECODED_LOWERCASE_FOOBAR, decoded);
 
     vsc_buffer_destroy(&decoded);

@@ -103,7 +103,7 @@ import VirgilCryptoCommon
     @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
         let proxyResult = vscf_aes256_gcm_restore_alg_info(self.c_ctx, algInfo.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Encrypt given data.
@@ -115,8 +115,8 @@ import VirgilCryptoCommon
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
                 return vscf_aes256_gcm_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
@@ -124,7 +124,7 @@ import VirgilCryptoCommon
         })
         out.count = vsc_buffer_len(outBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
     }
@@ -145,8 +145,8 @@ import VirgilCryptoCommon
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
                 return vscf_aes256_gcm_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
@@ -154,7 +154,7 @@ import VirgilCryptoCommon
         })
         out.count = vsc_buffer_len(outBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
     }
@@ -247,14 +247,14 @@ import VirgilCryptoCommon
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
             return vscf_aes256_gcm_finish(self.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
     }
@@ -276,10 +276,10 @@ import VirgilCryptoCommon
             vsc_buffer_delete(tagBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
-            authData.withUnsafeBytes({ (authDataPointer: UnsafePointer<byte>) -> vscf_error_t in
-                out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
-                    tag.withUnsafeMutableBytes({ (tagPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+            authData.withUnsafeBytes({ (authDataPointer: UnsafePointer<byte>) -> vscf_status_t in
+                out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+                    tag.withUnsafeMutableBytes({ (tagPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                         vsc_buffer_init(outBuf)
                         vsc_buffer_use(outBuf, outPointer, outCount)
 
@@ -293,7 +293,7 @@ import VirgilCryptoCommon
         out.count = vsc_buffer_len(outBuf)
         tag.count = vsc_buffer_len(tagBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return AuthEncryptAuthEncryptResult(out: out, tag: tag)
     }
@@ -315,10 +315,10 @@ import VirgilCryptoCommon
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
-            authData.withUnsafeBytes({ (authDataPointer: UnsafePointer<byte>) -> vscf_error_t in
-                tag.withUnsafeBytes({ (tagPointer: UnsafePointer<byte>) -> vscf_error_t in
-                    out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+            authData.withUnsafeBytes({ (authDataPointer: UnsafePointer<byte>) -> vscf_status_t in
+                tag.withUnsafeBytes({ (tagPointer: UnsafePointer<byte>) -> vscf_status_t in
+                    out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                         vsc_buffer_init(outBuf)
                         vsc_buffer_use(outBuf, outPointer, outCount)
                         return vscf_aes256_gcm_auth_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), vsc_data(authDataPointer, authData.count), vsc_data(tagPointer, tag.count), outBuf)
@@ -328,7 +328,7 @@ import VirgilCryptoCommon
         })
         out.count = vsc_buffer_len(outBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
     }

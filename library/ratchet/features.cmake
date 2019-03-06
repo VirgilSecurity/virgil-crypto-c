@@ -49,7 +49,7 @@ option(VSCR_LIBRARY "Enable build of the 'ratchet' library" ON)
 option(VSCR_RATCHET_COMMON "Enable class 'ratchet common'." ON)
 option(VSCR_RATCHET_COMMON_HIDDEN "Enable class 'ratchet common hidden'." ON)
 option(VSCR_RATCHET_KEY_UTILS "Enable class 'ratchet key utils'." ON)
-option(VSCR_ERROR_CTX "Enable class 'error ctx'." ON)
+option(VSCR_ERROR "Enable class 'error'." ON)
 option(VSCR_RATCHET_X3DH "Enable class 'ratchet x3dh'." ON)
 option(VSCR_RATCHET_SKIPPED_MESSAGES "Enable class 'ratchet skipped messages'." ON)
 option(VSCR_RATCHET_RECEIVER_CHAINS "Enable class 'ratchet receiver chains'." ON)
@@ -70,7 +70,7 @@ mark_as_advanced(
         VSCR_RATCHET_COMMON
         VSCR_RATCHET_COMMON_HIDDEN
         VSCR_RATCHET_KEY_UTILS
-        VSCR_ERROR_CTX
+        VSCR_ERROR
         VSCR_RATCHET_X3DH
         VSCR_RATCHET_SKIPPED_MESSAGES
         VSCR_RATCHET_RECEIVER_CHAINS

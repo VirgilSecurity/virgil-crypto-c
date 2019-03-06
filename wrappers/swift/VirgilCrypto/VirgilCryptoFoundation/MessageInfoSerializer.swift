@@ -55,7 +55,7 @@ import VirgilCryptoCommon
     @objc func readPrefix(data: Data) -> Int
 
     /// Deserialize class "message info".
-    @objc func deserialize(data: Data, error: ErrorCtx) -> MessageInfo
+    @objc func deserialize(data: Data, error: Error) -> MessageInfo
 }
 
 /// Implement interface methods
@@ -119,7 +119,7 @@ import VirgilCryptoCommon
     }
 
     /// Deserialize class "message info".
-    @objc public func deserialize(data: Data, error: ErrorCtx) -> MessageInfo {
+    @objc public func deserialize(data: Data, error: Error) -> MessageInfo {
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
             return vscf_message_info_serializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count), error.c_ctx)
         })

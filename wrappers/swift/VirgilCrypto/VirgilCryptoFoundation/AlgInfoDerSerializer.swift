@@ -86,7 +86,7 @@ import VirgilCryptoCommon
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_alg_info_der_serializer_setup_defaults(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Return buffer size enough to hold serialized algorithm.

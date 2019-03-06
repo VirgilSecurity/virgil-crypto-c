@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Defines the library status codes.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,28 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Error context.
-//  Can be used for sequential operations, i.e. parsers, to accumulate error.
-//  In this way operation is successful if all steps are successful, otherwise
-//  last occurred error code can be obtained.
-// --------------------------------------------------------------------------
-
-#ifndef VSCR_ERROR_CTX_H_INCLUDED
-#define VSCR_ERROR_CTX_H_INCLUDED
-
-#include "vscr_library.h"
-#include "vscr_error.h"
+#include "vsce_status.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -74,63 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Perform update only if context defined, otherwise log error.
-//
-#define VSCR_ERROR_CTX_SAFE_UPDATE(CTX, ERR)                        \
-    do {                                                            \
-        if (NULL != (CTX)) {                                        \
-            vscr_error_ctx_update ((CTX), (ERR));                   \
-        } else {                                                    \
-            /* TODO: Log this error, when logging will be added. */ \
-        }                                                           \
-    } while (false)
-
-//
-//  Handle 'error ctx' context.
-//
-typedef struct vscr_error_ctx_t vscr_error_ctx_t;
-struct vscr_error_ctx_t {
-    vscr_error_t error;
-};
-
-//
-//  Return size of 'vscr_error_ctx_t'.
-//
-VSCR_PUBLIC size_t
-vscr_error_ctx_ctx_size(void);
-
-//
-//  Reset context to the "no error" state.
-//
-VSCR_PUBLIC void
-vscr_error_ctx_reset(vscr_error_ctx_t *self);
-
-//
-//  Update context with given error.
-//
-VSCR_PRIVATE void
-vscr_error_ctx_update(vscr_error_ctx_t *self, vscr_error_t error);
-
-//
-//  Reset context to the "no error" state.
-//
-VSCR_PUBLIC vscr_error_t
-vscr_error_ctx_error(const vscr_error_ctx_t *self);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCR_ERROR_CTX_H_INCLUDED
 //  @end

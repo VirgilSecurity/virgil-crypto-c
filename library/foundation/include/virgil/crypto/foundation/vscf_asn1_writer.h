@@ -57,7 +57,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -126,10 +126,16 @@ VSCF_PUBLIC size_t
 vscf_asn1_writer_unwritten_len(const vscf_impl_t *impl);
 
 //
-//  Return last error.
+//  Return true if status is not "success".
 //
-VSCF_PUBLIC vscf_error_t
-vscf_asn1_writer_error(vscf_impl_t *impl);
+VSCF_PUBLIC bool
+vscf_asn1_writer_has_error(const vscf_impl_t *impl);
+
+//
+//  Return error code.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_asn1_writer_status(const vscf_impl_t *impl);
 
 //
 //  Move writing position backward for the given length.

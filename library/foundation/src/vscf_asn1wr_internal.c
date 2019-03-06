@@ -108,9 +108,13 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //
     (vscf_asn1_writer_api_unwritten_len_fn)vscf_asn1wr_unwritten_len,
     //
-    //  Return last error.
+    //  Return true if status is not "success".
     //
-    (vscf_asn1_writer_api_error_fn)vscf_asn1wr_error,
+    (vscf_asn1_writer_api_has_error_fn)vscf_asn1wr_has_error,
+    //
+    //  Return error code.
+    //
+    (vscf_asn1_writer_api_status_fn)vscf_asn1wr_status,
     //
     //  Move writing position backward for the given length.
     //  Return current writing position.

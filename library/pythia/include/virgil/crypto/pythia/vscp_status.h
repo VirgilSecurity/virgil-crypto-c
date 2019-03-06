@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Defines the library error codes.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,10 +44,22 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscp_error.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Defines the library status codes.
+// --------------------------------------------------------------------------
+
+#ifndef VSCP_STATUS_H_INCLUDED
+#define VSCP_STATUS_H_INCLUDED
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +68,42 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Defines the library status codes.
+//
+enum vscp_status_t {
+    //
+    //  No errors was occurred.
+    //
+    vscp_status_SUCCESS = 0,
+    //
+    //  This error should not be returned if assertions is enabled.
+    //
+    vscp_status_ERROR_BAD_ARGUMENTS = -1,
+    //
+    //  Undrlying pythia library returns -1.
+    //
+    vscp_status_ERROR_PYTHIA_INNER_FAIL = -200,
+    //
+    //  Pythia verify operation failed.
+    //
+    vscp_status_ERROR_VERIFICATION_FAIL = -201
+};
+typedef enum vscp_status_t vscp_status_t;
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCP_STATUS_H_INCLUDED
 //  @end

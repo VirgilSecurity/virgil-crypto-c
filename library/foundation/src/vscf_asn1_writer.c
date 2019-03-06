@@ -146,16 +146,29 @@ vscf_asn1_writer_unwritten_len(const vscf_impl_t *impl) {
 }
 
 //
-//  Return last error.
+//  Return true if status is not "success".
 //
-VSCF_PUBLIC vscf_error_t
-vscf_asn1_writer_error(vscf_impl_t *impl) {
+VSCF_PUBLIC bool
+vscf_asn1_writer_has_error(const vscf_impl_t *impl) {
 
     const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
-    VSCF_ASSERT_PTR (asn1_writer_api->error_cb);
-    return asn1_writer_api->error_cb (impl);
+    VSCF_ASSERT_PTR (asn1_writer_api->has_error_cb);
+    return asn1_writer_api->has_error_cb (impl);
+}
+
+//
+//  Return error code.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_asn1_writer_status(const vscf_impl_t *impl) {
+
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
+    VSCF_ASSERT_PTR (asn1_writer_api);
+
+    VSCF_ASSERT_PTR (asn1_writer_api->status_cb);
+    return asn1_writer_api->status_cb (impl);
 }
 
 //

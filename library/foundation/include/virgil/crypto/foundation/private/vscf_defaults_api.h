@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 // clang-format on
 //  @end
@@ -76,7 +76,7 @@ extern "C" {
 //
 //  Callback. Setup predefined values to the uninitialized class dependencies.
 //
-typedef vscf_error_t (*vscf_defaults_api_setup_defaults_fn)(vscf_impl_t *impl);
+typedef vscf_status_t (*vscf_defaults_api_setup_defaults_fn)(vscf_impl_t *impl);
 
 //
 //  Contains API requirements of the interface 'defaults'.

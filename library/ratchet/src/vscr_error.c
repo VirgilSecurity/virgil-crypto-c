@@ -39,7 +39,10 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Error codes
+//  Error context.
+//  Can be used for sequential operations, i.e. parsers, to accumulate error.
+//  In this way operation is successful if all steps are successful, otherwise
+//  last occurred error code can be obtained.
 // --------------------------------------------------------------------------
 
 
@@ -51,6 +54,8 @@
 // --------------------------------------------------------------------------
 
 #include "vscr_error.h"
+#include "vscr_memory.h"
+#include "vscr_assert.h"
 
 // clang-format on
 //  @end
@@ -62,9 +67,65 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Return size of 'vscr_error_t'.
+//
+VSCR_PUBLIC size_t
+vscr_error_ctx_size(void) {
+
+    return sizeof(vscr_error_t);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
+
+//
+//  Reset context to the "no error" state.
+//
+VSCR_PUBLIC void
+vscr_error_reset(vscr_error_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+    self->status = vscr_status_SUCCESS;
+}
+
+//
+//  Update context with given status.
+//  If status is "success" then do nothing.
+//
+VSCR_PRIVATE void
+vscr_error_update(vscr_error_t *self, vscr_status_t status) {
+
+    VSCR_ASSERT_PTR(self);
+
+    if (status != vscr_status_SUCCESS) {
+        self->status = status;
+    }
+}
+
+//
+//  Return true if status is not "success".
+//
+VSCR_PUBLIC bool
+vscr_error_has_error(const vscr_error_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+
+    return self->status != vscr_status_SUCCESS;
+}
+
+//
+//  Return error code.
+//
+VSCR_PUBLIC vscr_status_t
+vscr_error_status(const vscr_error_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+
+    return self->status;
+}

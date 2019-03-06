@@ -57,7 +57,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error_ctx.h"
+#include "vscf_error.h"
 #include "vscf_api.h"
 
 // clang-format on
@@ -84,7 +84,7 @@ typedef struct vscf_generate_ephemeral_key_api_t vscf_generate_ephemeral_key_api
 //  Generate ephemeral private key of the same type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_generate_ephemeral_key(vscf_impl_t *impl, vscf_error_ctx_t *error);
+vscf_generate_ephemeral_key(vscf_impl_t *impl, vscf_error_t *error);
 
 //
 //  Return generate ephemeral key API, or NULL if it is not implemented.

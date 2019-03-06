@@ -47,17 +47,11 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Error context.
-//  Can be used for sequential operations, i.e. parsers, to accumulate error.
-//  In this way operation is successful if all steps are successful, otherwise
-//  last occurred error code can be obtained.
+//  Defines the library status codes.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ERROR_CTX_H_INCLUDED
-#define VSCF_ERROR_CTX_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_error.h"
+#ifndef VSCR_STATUS_H_INCLUDED
+#define VSCR_STATUS_H_INCLUDED
 
 // clang-format on
 //  @end
@@ -75,48 +69,83 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Perform update only if context defined, otherwise log error.
+//  Defines the library status codes.
 //
-#define VSCF_ERROR_CTX_SAFE_UPDATE(CTX, ERR)                        \
-    do {                                                            \
-        if (NULL != (CTX)) {                                        \
-            vscf_error_ctx_update ((CTX), (ERR));                   \
-        } else {                                                    \
-            /* TODO: Log this error, when logging will be added. */ \
-        }                                                           \
-    } while (false)
-
-//
-//  Handle 'error ctx' context.
-//
-typedef struct vscf_error_ctx_t vscf_error_ctx_t;
-struct vscf_error_ctx_t {
-    vscf_error_t error;
+enum vscr_status_t {
+    //
+    //  No errors was occurred.
+    //
+    vscr_status_SUCCESS = 0,
+    //
+    //  Error during protobuf deserialization.
+    //
+    vscr_status_ERROR_PROTOBUF_DECODE = -1,
+    //
+    //  Message version doesn't match.
+    //
+    vscr_status_ERROR_MESSAGE_VERSION_DOESN_T_MATCH = -2,
+    //
+    //  Bad message type.
+    //
+    vscr_status_ERROR_BAD_MESSAGE_TYPE = -3,
+    //
+    //  AES error.
+    //
+    vscr_status_ERROR_AES = -4,
+    //
+    //  RNG failed.
+    //
+    vscr_status_ERROR_RNG_FAILED = -5,
+    //
+    //  Curve25519 error.
+    //
+    vscr_status_ERROR_CURVE25519 = -6,
+    //
+    //  Key deserialization failed.
+    //
+    vscr_status_ERROR_KEY_DESERIALIZATION_FAILED = -7,
+    //
+    //  Invalid key type.
+    //
+    vscr_status_ERROR_INVALID_KEY_TYPE = -8,
+    //
+    //  Identity key doesn't match.
+    //
+    vscr_status_ERROR_IDENTITY_KEY_DOESNT_MATCH = -9,
+    //
+    //  Message already decrypted.
+    //
+    vscr_status_ERROR_MESSAGE_ALREADY_DECRYPTED = -10,
+    //
+    //  Too many lost messages.
+    //
+    vscr_status_ERROR_TOO_MANY_LOST_MESSAGES = -11,
+    //
+    //  Sender chain missing.
+    //
+    vscr_status_ERROR_SENDER_CHAIN_MISSING = -12,
+    //
+    //  Skipped message missing.
+    //
+    vscr_status_ERROR_SKIPPED_MESSAGE_MISSING = -13,
+    //
+    //  Can't encrypt yet.
+    //
+    vscr_status_ERROR_CAN_T_ENCRYPT_YET = -14,
+    //
+    //  Exceeded max plain text len.
+    //
+    vscr_status_ERROR_EXCEEDED_MAX_PLAIN_TEXT_LEN = -15,
+    //
+    //  Too many messages for sender chain.
+    //
+    vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_SENDER_CHAIN = -16,
+    //
+    //  Too many messages for receiver chain.
+    //
+    vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN = -17
 };
-
-//
-//  Return size of 'vscf_error_ctx_t'.
-//
-VSCF_PUBLIC size_t
-vscf_error_ctx_ctx_size(void);
-
-//
-//  Reset context to the "no error" state.
-//
-VSCF_PUBLIC void
-vscf_error_ctx_reset(vscf_error_ctx_t *error_ctx_ctx);
-
-//
-//  Update context with given error.
-//
-VSCF_PUBLIC void
-vscf_error_ctx_update(vscf_error_ctx_t *error_ctx_ctx, vscf_error_t error);
-
-//
-//  Reset context to the "no error" state.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_error_ctx_error(const vscf_error_ctx_t *error_ctx_ctx);
+typedef enum vscr_status_t vscr_status_t;
 
 
 // --------------------------------------------------------------------------
@@ -132,5 +161,5 @@ vscf_error_ctx_error(const vscf_error_ctx_t *error_ctx_ctx);
 
 
 //  @footer
-#endif // VSCF_ERROR_CTX_H_INCLUDED
+#endif // VSCR_STATUS_H_INCLUDED
 //  @end

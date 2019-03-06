@@ -109,11 +109,18 @@ import VirgilCryptoCommon
         return proxyResult
     }
 
-    /// Return last error.
-    @objc public func error() throws {
-        let proxyResult = vscf_asn1wr_error(self.c_ctx)
+    /// Return true if status is not "success".
+    @objc public func hasError() -> Bool {
+        let proxyResult = vscf_asn1wr_has_error(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        return proxyResult
+    }
+
+    /// Return error code.
+    @objc public func status() throws {
+        let proxyResult = vscf_asn1wr_status(self.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Move writing position backward for the given length.

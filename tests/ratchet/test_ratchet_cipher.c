@@ -65,8 +65,8 @@ test__encrypt__fixed_data__should_match(void) {
 
     vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(len);
 
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, vscr_ratchet_cipher_encrypt(cipher, test_data_ratchet_cipher_key,
-                                            test_data_ratchet_cipher_plain_text, cipher_text));
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_cipher_encrypt(cipher, test_data_ratchet_cipher_key,
+                                                   test_data_ratchet_cipher_plain_text, cipher_text));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ratchet_cipher_cipher_text, cipher_text);
 
@@ -82,13 +82,14 @@ test__encrypt_decrypt__rnd_data__should_match(void) {
     for (size_t i = 0; i < 100; i++) {
         vsc_buffer_t *key = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
 
-        TEST_ASSERT_EQUAL(vscf_SUCCESS, vscf_ctr_drbg_random(rng, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH, key));
+        TEST_ASSERT_EQUAL(
+                vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH, key));
 
         uint16_t size;
         vsc_buffer_t *size_buf = vsc_buffer_new();
         vsc_buffer_use(size_buf, (byte *)&size, sizeof(size));
 
-        TEST_ASSERT_EQUAL(vscf_SUCCESS, vscf_ctr_drbg_random(rng, sizeof(size), size_buf));
+        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, sizeof(size), size_buf));
 
         // Do not exceed maximum value
         size /= UINT16_MAX / 64;
@@ -96,7 +97,7 @@ test__encrypt_decrypt__rnd_data__should_match(void) {
             size = UINT16_MAX / 64;
 
         vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(size);
-        TEST_ASSERT_EQUAL(vscf_SUCCESS, vscf_ctr_drbg_random(rng, size, plain_text));
+        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, size, plain_text));
 
         vscr_ratchet_cipher_t *cipher = vscr_ratchet_cipher_new();
 
@@ -104,14 +105,14 @@ test__encrypt_decrypt__rnd_data__should_match(void) {
 
         vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(len1);
 
-        TEST_ASSERT_EQUAL(vscr_SUCCESS,
+        TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
                 vscr_ratchet_cipher_encrypt(cipher, vsc_buffer_data(key), vsc_buffer_data(plain_text), cipher_text));
 
         size_t len2 = vscr_ratchet_cipher_decrypt_len(cipher, vsc_buffer_len(cipher_text));
 
         vsc_buffer_t *plain_text2 = vsc_buffer_new_with_capacity(len2);
 
-        TEST_ASSERT_EQUAL(vscr_SUCCESS,
+        TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
                 vscr_ratchet_cipher_decrypt(cipher, vsc_buffer_data(key), vsc_buffer_data(cipher_text), plain_text2));
 
         TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(plain_text), plain_text2);

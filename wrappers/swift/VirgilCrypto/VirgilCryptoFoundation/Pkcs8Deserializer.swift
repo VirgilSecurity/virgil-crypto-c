@@ -82,11 +82,11 @@ import VirgilCryptoCommon
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_pkcs8_deserializer_setup_defaults(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Deserialize given public key as an interchangeable format to the object.
-    @objc public func deserializePublicKey(publicKeyData: Data, error: ErrorCtx) -> RawKey {
+    @objc public func deserializePublicKey(publicKeyData: Data, error: Error) -> RawKey {
         let proxyResult = publicKeyData.withUnsafeBytes({ (publicKeyDataPointer: UnsafePointer<byte>) in
             return vscf_pkcs8_deserializer_deserialize_public_key(self.c_ctx, vsc_data(publicKeyDataPointer, publicKeyData.count), error.c_ctx)
         })
@@ -95,7 +95,7 @@ import VirgilCryptoCommon
     }
 
     /// Deserialize given private key as an interchangeable format to the object.
-    @objc public func deserializePrivateKey(privateKeyData: Data, error: ErrorCtx) -> RawKey {
+    @objc public func deserializePrivateKey(privateKeyData: Data, error: Error) -> RawKey {
         let proxyResult = privateKeyData.withUnsafeBytes({ (privateKeyDataPointer: UnsafePointer<byte>) in
             return vscf_pkcs8_deserializer_deserialize_private_key(self.c_ctx, vsc_data(privateKeyDataPointer, privateKeyData.count), error.c_ctx)
         })

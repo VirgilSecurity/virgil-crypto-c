@@ -66,13 +66,13 @@ test__deserialize_public_key__rsa2048_pem__no_errors(void) {
     vscf_pkcs8_deserializer_t *pkcs8 = vscf_pkcs8_deserializer_new();
     vscf_pkcs8_deserializer_setup_defaults(pkcs8);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vscf_raw_key_t *raw_public_key =
             vscf_pkcs8_deserializer_deserialize_public_key(pkcs8, test_rsa_2048_PUBLIC_KEY_PKCS8_PEM, &error);
 
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, error.error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
     TEST_ASSERT_NOT_NULL(raw_public_key);
 
     vscf_raw_key_destroy(&raw_public_key);
@@ -89,8 +89,8 @@ test__deserialize_public_key__rsa2048_pem__equals_to_rsa_2048_public_key_pkcs1(v
     vscf_pkcs8_deserializer_t *pkcs8 = vscf_pkcs8_deserializer_new();
     vscf_pkcs8_deserializer_setup_defaults(pkcs8);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vscf_raw_key_t *raw_public_key =
             vscf_pkcs8_deserializer_deserialize_public_key(pkcs8, test_rsa_2048_PUBLIC_KEY_PKCS8_PEM, &error);
@@ -113,13 +113,13 @@ test__deserialize_private_key__rsa2048_pem__no_errors(void) {
     vscf_pkcs8_deserializer_t *pkcs8 = vscf_pkcs8_deserializer_new();
     vscf_pkcs8_deserializer_setup_defaults(pkcs8);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vscf_raw_key_t *raw_private_key =
             vscf_pkcs8_deserializer_deserialize_private_key(pkcs8, test_rsa_2048_PRIVATE_KEY_PKCS8_PEM, &error);
 
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, error.error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
     TEST_ASSERT_NOT_NULL(raw_private_key);
 
     vscf_raw_key_destroy(&raw_private_key);
@@ -136,8 +136,8 @@ test__deserialize_private_key__rsa2048_pem__equals_to_rsa_2048_private_key_pkcs1
     vscf_pkcs8_deserializer_t *pkcs8 = vscf_pkcs8_deserializer_new();
     vscf_pkcs8_deserializer_setup_defaults(pkcs8);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vscf_raw_key_t *raw_private_key =
             vscf_pkcs8_deserializer_deserialize_private_key(pkcs8, test_rsa_2048_PRIVATE_KEY_PKCS8_PEM, &error);
@@ -160,13 +160,13 @@ test__deserialize_public_key__rsa2048_der__no_errors(void) {
     vscf_pkcs8_deserializer_t *pkcs8 = vscf_pkcs8_deserializer_new();
     vscf_pkcs8_deserializer_setup_defaults(pkcs8);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vscf_raw_key_t *raw_public_key =
             vscf_pkcs8_deserializer_deserialize_public_key(pkcs8, test_rsa_2048_PUBLIC_KEY_PKCS8_DER, &error);
 
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, error.error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
     TEST_ASSERT_NOT_NULL(raw_public_key);
 
     vscf_raw_key_destroy(&raw_public_key);
@@ -183,8 +183,8 @@ test__deserialize_public_key__rsa2048_der__equals_to_rsa_2048_public_key_pkcs1(v
     vscf_pkcs8_deserializer_t *pkcs8 = vscf_pkcs8_deserializer_new();
     vscf_pkcs8_deserializer_setup_defaults(pkcs8);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vscf_raw_key_t *raw_public_key =
             vscf_pkcs8_deserializer_deserialize_public_key(pkcs8, test_rsa_2048_PUBLIC_KEY_PKCS8_DER, &error);
@@ -207,13 +207,13 @@ test__deserialize_private_key__rsa2048_der__no_errors(void) {
     vscf_pkcs8_deserializer_t *pkcs8 = vscf_pkcs8_deserializer_new();
     vscf_pkcs8_deserializer_setup_defaults(pkcs8);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vscf_raw_key_t *raw_private_key =
             vscf_pkcs8_deserializer_deserialize_private_key(pkcs8, test_rsa_2048_PRIVATE_KEY_PKCS8_DER, &error);
 
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, error.error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
     TEST_ASSERT_NOT_NULL(raw_private_key);
 
     vscf_raw_key_destroy(&raw_private_key);
@@ -230,8 +230,8 @@ test__deserialize_private_key__rsa2048_der__equals_to_rsa_2048_private_key_pkcs1
     vscf_pkcs8_deserializer_t *pkcs8 = vscf_pkcs8_deserializer_new();
     vscf_pkcs8_deserializer_setup_defaults(pkcs8);
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vscf_raw_key_t *raw_private_key =
             vscf_pkcs8_deserializer_deserialize_private_key(pkcs8, test_rsa_2048_PRIVATE_KEY_PKCS8_DER, &error);

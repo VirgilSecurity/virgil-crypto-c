@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_error_ctx.h"
+#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -85,7 +85,7 @@ extern "C" {
 //  Callback. Deserialize algorithm from the data.
 //
 typedef vscf_impl_t * (*vscf_alg_info_deserializer_api_deserialize_fn)(vscf_impl_t *impl, vsc_data_t data,
-        vscf_error_ctx_t *error);
+        vscf_error_t *error);
 
 //
 //  Contains API requirements of the interface 'alg info deserializer'.

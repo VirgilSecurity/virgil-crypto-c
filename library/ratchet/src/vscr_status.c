@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'platform entropy' implementation.
+//  Defines the library status codes.
 // --------------------------------------------------------------------------
 
 
@@ -50,14 +50,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_platform_entropy.h"
-#include "vscf_assert.h"
-#include "vscf_memory.h"
-#include "vscf_platform_entropy_impl.h"
-#include "vscf_platform_entropy_internal.h"
-
-#include <mbedtls/entropy.h>
-#include <mbedtls/entropy_poll.h>
+#include "vscr_status.h"
 
 // clang-format on
 //  @end
@@ -75,43 +68,3 @@
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
-
-//
-//  Defines that implemented source is strong.
-//
-VSCF_PUBLIC bool
-vscf_platform_entropy_is_strong(vscf_platform_entropy_t *platform_entropy) {
-
-    VSCF_ASSERT_PTR(platform_entropy);
-    return true;
-}
-
-//
-//  Gather entropy of the requested length.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_platform_entropy_gather(vscf_platform_entropy_t *platform_entropy, size_t len, vsc_buffer_t *out) {
-
-    VSCF_ASSERT_PTR(platform_entropy);
-    VSCF_ASSERT_PTR(len > 0);
-    VSCF_ASSERT_PTR(out);
-    VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= len);
-
-    size_t olen = 0;
-    int status = mbedtls_platform_entropy_poll(NULL, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out), &olen);
-
-    switch (status) {
-    case 0:
-        vsc_buffer_inc_used(out, olen);
-        return vscf_SUCCESS;
-
-    case MBEDTLS_ERR_ENTROPY_SOURCE_FAILED:
-        return vscf_error_ENTROPY_SOURCE_FAILED;
-
-    default:
-        VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(status);
-        return vscf_error_UNHANDLED_THIRDPARTY_ERROR;
-    }
-}

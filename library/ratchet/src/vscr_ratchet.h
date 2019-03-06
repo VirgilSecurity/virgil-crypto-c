@@ -50,7 +50,7 @@
 #include "vscr_library.h"
 #include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet.h"
-#include "vscr_error.h"
+#include "vscr_status.h"
 
 #include <RatchetSession.pb.h>
 #include <RatchetMessage.pb.h>
@@ -180,22 +180,22 @@ vscr_ratchet_release_cipher(vscr_ratchet_t *self);
 VSCR_PUBLIC void
 vscr_ratchet_setup_defaults(vscr_ratchet_t *self);
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const RegularMessage *message);
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_encrypt_len(vscr_ratchet_t *self, size_t plain_text_len);
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage *regular_message);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_decrypt_len(vscr_ratchet_t *self, size_t cipher_text_len);
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message, vsc_buffer_t *plain_text);
 
 VSCR_PUBLIC void

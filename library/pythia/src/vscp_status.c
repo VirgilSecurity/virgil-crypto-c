@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Defines the library status codes.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,26 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This module contains logic for interface/implementation architecture.
-//  Do not use this module in any part of the code.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_PLATFORM_ENTROPY_INTERNAL_H_INCLUDED
-#define VSCF_PLATFORM_ENTROPY_INTERNAL_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_platform_entropy.h"
+#include "vscp_status.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -77,14 +67,4 @@ extern "C" {
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_PLATFORM_ENTROPY_INTERNAL_H_INCLUDED
 //  @end

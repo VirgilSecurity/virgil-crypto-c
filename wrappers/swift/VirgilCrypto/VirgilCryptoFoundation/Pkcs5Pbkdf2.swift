@@ -77,7 +77,7 @@ import VirgilCryptoCommon
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_pkcs5_pbkdf2_setup_defaults(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Provide algorithm identificator.
@@ -98,7 +98,7 @@ import VirgilCryptoCommon
     @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
         let proxyResult = vscf_pkcs5_pbkdf2_restore_alg_info(self.c_ctx, algInfo.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Derive key of the requested length from the given data.

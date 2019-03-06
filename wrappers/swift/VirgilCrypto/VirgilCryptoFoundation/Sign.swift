@@ -73,8 +73,8 @@ import VirgilCryptoCommon
             vsc_buffer_delete(signatureBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
-            signature.withUnsafeMutableBytes({ (signaturePointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+            signature.withUnsafeMutableBytes({ (signaturePointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(signatureBuf)
                 vsc_buffer_use(signatureBuf, signaturePointer, signatureCount)
                 return vscf_sign(self.c_ctx, vsc_data(dataPointer, data.count), signatureBuf)
@@ -82,7 +82,7 @@ import VirgilCryptoCommon
         })
         signature.count = vsc_buffer_len(signatureBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return signature
     }

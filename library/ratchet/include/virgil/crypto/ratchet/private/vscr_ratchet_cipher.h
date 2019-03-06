@@ -48,7 +48,7 @@
 #define VSCR_RATCHET_CIPHER_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_error.h"
+#include "vscr_status.h"
 
 #include <virgil/crypto/foundation/vscf_aes256_gcm.h>
 
@@ -162,10 +162,10 @@ vscr_ratchet_cipher_encrypt_len(vscr_ratchet_cipher_t *self, size_t plain_text_l
 VSCR_PUBLIC size_t
 vscr_ratchet_cipher_decrypt_len(vscr_ratchet_cipher_t *self, size_t cipher_text_len);
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t plain_text, vsc_buffer_t *buffer);
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t cipher_text, vsc_buffer_t *buffer);
 
 

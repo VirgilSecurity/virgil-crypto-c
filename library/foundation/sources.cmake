@@ -425,7 +425,7 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error_ctx.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -490,7 +490,7 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_status.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -692,7 +692,7 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_BASE64}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_base64.h>"
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_envelope.h>"
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_ecies_envelope_defs.h>"
-            "$<$<BOOL:${VSCF_ERROR_CTX}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error_ctx.h>"
+            "$<$<BOOL:${VSCF_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error.h>"
             "$<$<BOOL:${VSCF_KEY_PROVIDER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_provider.h>"
             "$<$<BOOL:${VSCF_KEY_PROVIDER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_provider_defs.h>"
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_recipient_info.h>"
@@ -721,7 +721,7 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_RAW_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_raw_key_defs.h>"
             "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_recipient_cipher.h>"
             "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_recipient_cipher_defs.h>"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_status.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_asn1_tag.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_id.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_oid_id.h"
@@ -907,7 +907,7 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_BASE64}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_base64.c>"
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_envelope.c>"
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_envelope_defs.c>"
-            "$<$<BOOL:${VSCF_ERROR_CTX}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_error_ctx.c>"
+            "$<$<BOOL:${VSCF_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_error.c>"
             "$<$<BOOL:${VSCF_KEY_PROVIDER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_provider.c>"
             "$<$<BOOL:${VSCF_KEY_PROVIDER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_provider_defs.c>"
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_info.c>"
@@ -936,7 +936,7 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_RAW_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_raw_key_defs.c>"
             "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_recipient_cipher.c>"
             "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_recipient_cipher_defs.c>"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_error.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_status.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1_tag.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_id.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_oid_id.c"

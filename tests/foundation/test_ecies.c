@@ -83,9 +83,9 @@ test__encrypt__virgil_message__success(void) {
     vscf_ecies_take_encryption_key(ecies, public_key);
 
     vsc_buffer_t *enc_msg = vsc_buffer_new_with_capacity(vscf_ecies_encrypted_len(ecies, test_data_ecies_MESSAGE.len));
-    vscf_error_t status = vscf_ecies_encrypt(ecies, test_data_ecies_MESSAGE, enc_msg);
+    vscf_status_t status = vscf_ecies_encrypt(ecies, test_data_ecies_MESSAGE, enc_msg);
 
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
     vsc_buffer_destroy(&enc_msg);
     vscf_raw_key_destroy(&raw_public_key);
@@ -136,9 +136,9 @@ test__encrypt__messege_with_ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac_
     vscf_ecies_take_ephemeral_key(ecies, ephemeral_key);
 
     vsc_buffer_t *enc_msg = vsc_buffer_new_with_capacity(vscf_ecies_encrypted_len(ecies, test_data_ecies_MESSAGE.len));
-    vscf_error_t status = vscf_ecies_encrypt(ecies, test_data_ecies_MESSAGE, enc_msg);
+    vscf_status_t status = vscf_ecies_encrypt(ecies, test_data_ecies_MESSAGE, enc_msg);
 
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ecies_ED25519_ENCRYPTED_MESSAGE, enc_msg);
 
     vsc_buffer_destroy(&enc_msg);
@@ -166,9 +166,9 @@ test__decrypt__ed25519_encrypted_message__match_virgil_message(void) {
 
     vsc_buffer_t *dec_msg = vsc_buffer_new_with_capacity(
             vscf_ecies_decrypted_len(ecies, test_data_ecies_ED25519_ENCRYPTED_MESSAGE.len));
-    vscf_error_t status = vscf_ecies_decrypt(ecies, test_data_ecies_ED25519_ENCRYPTED_MESSAGE, dec_msg);
+    vscf_status_t status = vscf_ecies_decrypt(ecies, test_data_ecies_ED25519_ENCRYPTED_MESSAGE, dec_msg);
 
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ecies_MESSAGE, dec_msg);
 
     vsc_buffer_destroy(&dec_msg);

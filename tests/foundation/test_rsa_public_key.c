@@ -74,8 +74,8 @@ test__rsa_public_key_key_len__imported_2048_PUBLIC_KEY_PKCS1__returns_256(void) 
 
     vscf_rsa_public_key_take_asn1rd(public_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
 
-    vscf_error_t result = vscf_rsa_public_key_import_public_key(public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
-    VSCF_ASSERT(result == vscf_SUCCESS);
+    vscf_status_t result = vscf_rsa_public_key_import_public_key(public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
+    VSCF_ASSERT(result == vscf_status_SUCCESS);
 
     TEST_ASSERT_EQUAL(256, vscf_rsa_public_key_key_len(public_key));
 
@@ -89,15 +89,15 @@ test__rsa_public_key_export_public_key__from_imported_2048_PUBLIC_KEY_PKCS1__exp
     vscf_rsa_public_key_take_asn1rd(public_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
     vscf_rsa_public_key_take_asn1wr(public_key, vscf_asn1wr_impl(vscf_asn1wr_new()));
 
-    vscf_error_t result = vscf_rsa_public_key_import_public_key(public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
-    VSCF_ASSERT(result == vscf_SUCCESS);
+    vscf_status_t result = vscf_rsa_public_key_import_public_key(public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
+    VSCF_ASSERT(result == vscf_status_SUCCESS);
 
     vsc_buffer_t *exported_key_buf =
             vsc_buffer_new_with_capacity(vscf_rsa_public_key_exported_public_key_len(public_key));
 
     result = vscf_rsa_public_key_export_public_key(public_key, exported_key_buf);
 
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, result);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, result);
     TEST_ASSERT_EQUAL(test_rsa_2048_PUBLIC_KEY_PKCS1.len, vsc_buffer_len(exported_key_buf));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(
             test_rsa_2048_PUBLIC_KEY_PKCS1.bytes, vsc_buffer_bytes(exported_key_buf), vsc_buffer_len(exported_key_buf));
@@ -122,8 +122,8 @@ test__rsa_public_key_encrypt__with_imported_2048_PUBLIC_KEY_PKCS1_and_DATA_1_and
 
 
     //  Import public key
-    vscf_error_t result = vscf_rsa_public_key_import_public_key(public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
-    VSCF_ASSERT(result == vscf_SUCCESS);
+    vscf_status_t result = vscf_rsa_public_key_import_public_key(public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
+    VSCF_ASSERT(result == vscf_status_SUCCESS);
 
 
     //  Encrypt
@@ -157,8 +157,8 @@ test__rsa_public_key_verify__with_imported_2048_PUBLIC_KEY_PKCS1_and_random_AB_a
 
 
     //  Import public key
-    vscf_error_t result = vscf_rsa_public_key_import_public_key(public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
-    VSCF_ASSERT(result == vscf_SUCCESS);
+    vscf_status_t result = vscf_rsa_public_key_import_public_key(public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
+    VSCF_ASSERT(result == vscf_status_SUCCESS);
 
     //  Sign
     bool verify_result = vscf_rsa_public_key_verify(public_key, test_rsa_DATA_1, test_rsa_2048_DATA_1_SIGNATURE);

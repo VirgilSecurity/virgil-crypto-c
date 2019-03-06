@@ -48,7 +48,7 @@
 #define VSCR_RATCHET_X3DH_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_error.h"
+#include "vscr_status.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -75,13 +75,13 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_x3dh_compute_initiator_x3dh_secret(vsc_data_t sender_identity_private_key,
         vsc_data_t sender_ephemeral_private_key, vsc_data_t receiver_identity_public_key,
         vsc_data_t receiver_long_term_public_key, vsc_data_t receiver_one_time_public_key,
         vsc_buffer_t *shared_secret);
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_data_t sender_identity_public_key,
         vsc_data_t sender_ephemeral_public_key, vsc_data_t receiver_identity_private_key,
         vsc_data_t receiver_long_term_private_key, vsc_data_t receiver_one_time_private_key,

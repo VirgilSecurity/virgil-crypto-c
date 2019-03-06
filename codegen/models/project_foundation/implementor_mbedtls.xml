@@ -168,7 +168,7 @@
 
         <property name="curr" type="byte" access="readwrite" is_reference="1"/>
         <property name="end" type="byte" access="readonly" is_reference="1"/>
-        <property name="error" enum="error"/>
+        <property name="status" enum="status"/>
 
         <method name="mbedtls has error">
             If given mbedtls code is equal to zero, then setup correspond error
@@ -202,7 +202,7 @@
         <property name="start" type="byte" is_reference="1"/>
         <property name="end" type="byte" access="readonly" is_reference="1"/>
         <property name="curr" type="byte" is_reference="1"/>
-        <property name="error" enum="error"/>
+        <property name="status" enum="status"/>
 
         <method name="mbedtls has error">
             If given mbedtls code is equal to zero, then setup correspond error

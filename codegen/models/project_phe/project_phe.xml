@@ -59,7 +59,7 @@
 
     <module name="const"/>
 
-    <enum name="error"/>
+    <enum name="status"/>
 
     <class name="error"/>
     <class name="phe common"/>
