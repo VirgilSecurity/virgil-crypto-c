@@ -67,6 +67,7 @@
 #include "vscf_key_recipient_list.h"
 #include "vscf_aes256_gcm.h"
 #include "vscf_ctr_drbg.h"
+#include "vscf_alg_factory.h"
 
 // clang-format on
 //  @end
@@ -121,10 +122,7 @@ static vscf_error_t
 vscf_recipient_cipher_decrypt_data_encryption_key(vscf_recipient_cipher_t *self);
 
 //
-//  Read given message info.
-//
-//  This method is used when message info was stored separately from
-//  an encrypted message.
+//  Read given message info from the given data or extracted data.
 //
 static vscf_error_t
 vscf_recipient_cipher_unpack_message_info(vscf_recipient_cipher_t *self, vsc_data_t message_info);
@@ -363,12 +361,13 @@ vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_key_recipient_list_destroy(&self->key_recipients);
-    vsc_buffer_destroy(&self->decryption_recipient_id);
-    vscf_impl_destroy(&self->decryption_recipient_key);
     vsc_buffer_destroy(&self->decryption_password);
-    vscf_message_info_destroy(&self->message_info);
+    vsc_buffer_destroy(&self->decryption_recipient_id);
+    vscf_impl_destroy(&self->decryption_cipher);
+    vscf_impl_destroy(&self->decryption_recipient_key);
+    vscf_key_recipient_list_destroy(&self->key_recipients);
     vscf_message_info_der_serializer_destroy(&self->message_info_der_serializer);
+    vscf_message_info_destroy(&self->message_info);
 }
 
 //
@@ -626,7 +625,6 @@ vscf_recipient_cipher_start_decryption_with_key(
         vscf_recipient_cipher_t *self, vsc_data_t recipient_id, vscf_impl_t *private_key, vsc_data_t message_info) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->cipher);
     VSCF_ASSERT_PTR(vsc_data_is_valid(recipient_id));
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
@@ -667,11 +665,15 @@ VSCF_PUBLIC size_t
 vscf_recipient_cipher_decryption_out_len(vscf_recipient_cipher_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->cipher);
 
+    //
+    //  Use constant value, because underlying cipher is not known before,
+    //  message info is read.
+    //
     //  The size is doubled to be able to decrypt tail
     //  after message info will be extracted.
-    size_t len = 2 * vscf_cipher_decrypted_out_len(self->cipher, data_len);
+    //
+    size_t len = 2 * (64 + data_len);
     return len;
 }
 
@@ -683,7 +685,6 @@ VSCF_PUBLIC vscf_error_t
 vscf_recipient_cipher_process_decryption(vscf_recipient_cipher_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->cipher);
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
@@ -692,7 +693,8 @@ vscf_recipient_cipher_process_decryption(vscf_recipient_cipher_t *self, vsc_data
 
     switch (self->decryption_state) {
     case vscf_recipient_cipher_decryption_state_PROCESSING_DATA:
-        vscf_cipher_update(self->cipher, data, out);
+        VSCF_ASSERT_PTR(self->decryption_cipher);
+        vscf_cipher_update(self->decryption_cipher, data, out);
         return vscf_SUCCESS;
 
     case vscf_recipient_cipher_decryption_state_WAITING_MESSAGE_INFO: {
@@ -700,10 +702,11 @@ vscf_recipient_cipher_process_decryption(vscf_recipient_cipher_t *self, vsc_data
         if (status == vscf_SUCCESS && (self->message_info_buffer != NULL) &&
                 (self->decryption_state == vscf_recipient_cipher_decryption_state_PROCESSING_DATA)) {
 
+            VSCF_ASSERT_PTR(self->decryption_cipher);
             VSCF_ASSERT(vsc_buffer_len(self->message_info_buffer) >= self->message_info_expected_len);
             size_t tail_len = vsc_buffer_len(self->message_info_buffer) - self->message_info_expected_len;
             vsc_data_t tail = vsc_data_slice_end(vsc_buffer_data(self->message_info_buffer), 0, tail_len);
-            vscf_cipher_update(self->cipher, tail, out);
+            vscf_cipher_update(self->decryption_cipher, tail, out);
             vsc_buffer_destroy(&self->message_info_buffer);
             self->message_info_expected_len = 0;
         }
@@ -721,7 +724,6 @@ VSCF_PUBLIC vscf_error_t
 vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->cipher);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_recipient_cipher_decryption_out_len(self, 0));
@@ -730,7 +732,10 @@ vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffe
         return vscf_error_BAD_ENCRYPTED_DATA;
     }
 
-    vscf_error_t status = vscf_cipher_finish(self->cipher, out);
+    VSCF_ASSERT_PTR(self->decryption_cipher);
+    vscf_error_t status = vscf_cipher_finish(self->decryption_cipher, out);
+
+    vscf_impl_destroy(&self->decryption_cipher);
 
     return status;
 }
@@ -745,17 +750,14 @@ vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self,
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->message_info);
-    VSCF_ASSERT_PTR(self->cipher);
 
-    const vscf_impl_t *encryption_alg_info = vscf_message_info_data_encryption_alg_info(self->message_info);
+    vscf_impl_destroy(&self->decryption_cipher);
 
-    vscf_error_t status = vscf_alg_restore_alg_info(self->cipher, encryption_alg_info);
-    if (status != vscf_SUCCESS) {
-        return vscf_error_BAD_MESSAGE_INFO;
-    }
+    const vscf_impl_t *cipher_alg_info = vscf_message_info_data_encryption_alg_info(self->message_info);
+    self->decryption_cipher = vscf_alg_factory_create_cipher_from_info(cipher_alg_info);
 
-    vscf_cipher_set_key(self->cipher, decryption_key);
-    vscf_cipher_start_decryption(self->cipher);
+    vscf_cipher_set_key(self->decryption_cipher, decryption_key);
+    vscf_cipher_start_decryption(self->decryption_cipher);
 
     self->decryption_state = vscf_recipient_cipher_decryption_state_PROCESSING_DATA;
 
@@ -855,10 +857,7 @@ vscf_recipient_cipher_decrypt_data_encryption_key(vscf_recipient_cipher_t *self)
 }
 
 //
-//  Read given message info.
-//
-//  This method is used when message info was stored separately from
-//  an encrypted message.
+//  Read given message info from the given data or extracted data.
 //
 static vscf_error_t
 vscf_recipient_cipher_unpack_message_info(vscf_recipient_cipher_t *self, vsc_data_t message_info) {

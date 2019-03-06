@@ -112,6 +112,8 @@ struct vscf_recipient_cipher_t {
 
     vsc_buffer_t *decryption_password;
 
+    vscf_impl_t *decryption_cipher;
+
     vscf_message_info_t *message_info;
 
     vscf_message_info_der_serializer_t *message_info_der_serializer;

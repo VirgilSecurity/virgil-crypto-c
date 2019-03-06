@@ -106,6 +106,9 @@ test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
     //
     //  Clear and decrypt.
     //
+    vscf_recipient_cipher_release_random(recipient_cipher);
+    vscf_recipient_cipher_release_cipher(recipient_cipher);
+
     vsc_buffer_t *dec_msg = vsc_buffer_new_with_capacity(
             vscf_recipient_cipher_decryption_out_len(recipient_cipher, vsc_buffer_len(enc_msg)) +
             vscf_recipient_cipher_decryption_out_len(recipient_cipher, 0));
