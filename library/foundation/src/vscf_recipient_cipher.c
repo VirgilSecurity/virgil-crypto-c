@@ -437,7 +437,11 @@ vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self) {
 
     if (NULL == self->random) {
         vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
-        vscf_ctr_drbg_setup_defaults(random);
+        vscf_error_t status = vscf_ctr_drbg_setup_defaults(random);
+        if (status != vscf_SUCCESS) {
+            vscf_ctr_drbg_destroy(&random);
+            return status;
+        }
         self->random = vscf_ctr_drbg_impl(random);
     }
 
