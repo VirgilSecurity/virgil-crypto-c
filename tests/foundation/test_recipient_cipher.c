@@ -80,7 +80,6 @@ test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
     vscf_impl_t *private_key = vscf_alg_factory_create_private_key_from_raw_key(raw_private_key);
 
     vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
-    vscf_recipient_cipher_setup_defaults(recipient_cipher);
 
     //
     //  Encrypt.
@@ -107,7 +106,7 @@ test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
     //  Clear and decrypt.
     //
     vscf_recipient_cipher_release_random(recipient_cipher);
-    vscf_recipient_cipher_release_cipher(recipient_cipher);
+    vscf_recipient_cipher_release_encryption_cipher(recipient_cipher);
 
     vsc_buffer_t *dec_msg = vsc_buffer_new_with_capacity(
             vscf_recipient_cipher_decryption_out_len(recipient_cipher, vsc_buffer_len(enc_msg)) +
