@@ -79,7 +79,7 @@ import VirgilCryptoCommon
     @objc public func setEntropySource(entropySource: EntropySource) throws {
         vscf_ctr_drbg_release_entropy_source(self.c_ctx)
         let proxyResult = vscf_ctr_drbg_use_entropy_source(self.c_ctx, entropySource.c_ctx)
-        try FoundationError.handleStatus(fromC: proxyResult)
+        try WrapperToTheSwiftProgrammingLanguageError.handleStatus(fromC: proxyResult)
     }
 
     /// Force entropy to be gathered at the beginning of every call to
@@ -120,6 +120,7 @@ import VirgilCryptoCommon
         let proxyResult = data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(dataBuf)
             vsc_buffer_use(dataBuf, dataPointer, dataCount)
+
             return vscf_ctr_drbg_random(self.c_ctx, dataLen, dataBuf)
         })
         data.count = vsc_buffer_len(dataBuf)

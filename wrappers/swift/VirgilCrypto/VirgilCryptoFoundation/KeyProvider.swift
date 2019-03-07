@@ -97,26 +97,40 @@ import VirgilCryptoCommon
     }
 
     /// Generate new private key from the given id.
-    @objc public func generatePrivateKey(algId: AlgId, error: Error) -> PrivateKey {
-        let proxyResult = vscf_key_provider_generate_private_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), error.c_ctx)
+    @objc public func generatePrivateKey(algId: AlgId) throws -> PrivateKey {
+        var error: vscf_error_t
+
+        let proxyResult = vscf_key_provider_generate_private_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
 
         return PrivateKeyProxy.init(c_ctx: proxyResult!)
     }
 
     /// Import private key from the PKCS#8 format.
-    @objc public func importPrivateKey(pkcs8Data: Data, error: Error) -> PrivateKey {
+    @objc public func importPrivateKey(pkcs8Data: Data) throws -> PrivateKey {
+        var error: vscf_error_t
+
         let proxyResult = pkcs8Data.withUnsafeBytes({ (pkcs8DataPointer: UnsafePointer<byte>) in
-            return vscf_key_provider_import_private_key(self.c_ctx, vsc_data(pkcs8DataPointer, pkcs8Data.count), error.c_ctx)
+
+            return vscf_key_provider_import_private_key(self.c_ctx, vsc_data(pkcs8DataPointer, pkcs8Data.count), &error)
         })
+
+        try FoundationError.handleStatus(fromC: error.status)
 
         return PrivateKeyProxy.init(c_ctx: proxyResult!)
     }
 
     /// Import public key from the PKCS#8 format.
-    @objc public func importPublicKey(pkcs8Data: Data, error: Error) -> PublicKey {
+    @objc public func importPublicKey(pkcs8Data: Data) throws -> PublicKey {
+        var error: vscf_error_t
+
         let proxyResult = pkcs8Data.withUnsafeBytes({ (pkcs8DataPointer: UnsafePointer<byte>) in
-            return vscf_key_provider_import_public_key(self.c_ctx, vsc_data(pkcs8DataPointer, pkcs8Data.count), error.c_ctx)
+
+            return vscf_key_provider_import_public_key(self.c_ctx, vsc_data(pkcs8DataPointer, pkcs8Data.count), &error)
         })
+
+        try FoundationError.handleStatus(fromC: error.status)
 
         return PublicKeyProxy.init(c_ctx: proxyResult!)
     }

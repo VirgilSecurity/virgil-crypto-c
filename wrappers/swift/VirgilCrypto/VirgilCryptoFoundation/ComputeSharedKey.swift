@@ -79,6 +79,7 @@ import VirgilCryptoCommon
         let proxyResult = sharedKey.withUnsafeMutableBytes({ (sharedKeyPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(sharedKeyBuf)
             vsc_buffer_use(sharedKeyBuf, sharedKeyPointer, sharedKeyCount)
+
             return vscf_compute_shared_key(self.c_ctx, publicKey.c_ctx, sharedKeyBuf)
         })
         sharedKey.count = vsc_buffer_len(sharedKeyBuf)

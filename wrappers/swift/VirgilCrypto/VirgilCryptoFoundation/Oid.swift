@@ -50,6 +50,7 @@ import VirgilCryptoCommon
     /// Return algorithm identifier for given OID.
     @objc public static func toAlgId(oid: Data) -> AlgId {
         let proxyResult = oid.withUnsafeBytes({ (oidPointer: UnsafePointer<byte>) -> vscf_alg_id_t in
+
             return vscf_oid_to_alg_id(vsc_data(oidPointer, oid.count))
         })
 
@@ -66,6 +67,7 @@ import VirgilCryptoCommon
     /// Return identifier for a given OID.
     @objc public static func toId(oid: Data) -> OidId {
         let proxyResult = oid.withUnsafeBytes({ (oidPointer: UnsafePointer<byte>) -> vscf_oid_id_t in
+
             return vscf_oid_to_id(vsc_data(oidPointer, oid.count))
         })
 
@@ -76,6 +78,7 @@ import VirgilCryptoCommon
     @objc public static func equal(lhs: Data, rhs: Data) -> Bool {
         let proxyResult = lhs.withUnsafeBytes({ (lhsPointer: UnsafePointer<byte>) -> Bool in
             rhs.withUnsafeBytes({ (rhsPointer: UnsafePointer<byte>) -> Bool in
+
                 return vscf_oid_equal(vsc_data(lhsPointer, lhs.count), vsc_data(rhsPointer, rhs.count))
             })
         })

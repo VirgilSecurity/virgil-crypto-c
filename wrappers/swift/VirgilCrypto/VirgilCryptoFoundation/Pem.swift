@@ -62,6 +62,7 @@ import VirgilCryptoCommon
             pem.withUnsafeMutableBytes({ (pemPointer: UnsafeMutablePointer<byte>) -> Void in
                 vsc_buffer_init(pemBuf)
                 vsc_buffer_use(pemBuf, pemPointer, pemCount)
+
                 vscf_pem_wrap(title, vsc_data(dataPointer, data.count), pemBuf)
             })
         })
@@ -90,6 +91,7 @@ import VirgilCryptoCommon
             data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(dataBuf)
                 vsc_buffer_use(dataBuf, dataPointer, dataCount)
+
                 return vscf_pem_unwrap(vsc_data(pemPointer, pem.count), dataBuf)
             })
         })
@@ -103,6 +105,7 @@ import VirgilCryptoCommon
     /// Returns PEM title if PEM data is valid, otherwise - empty data.
     @objc public static func title(pem: Data) -> Data {
         let proxyResult = pem.withUnsafeBytes({ (pemPointer: UnsafePointer<byte>) in
+
             return vscf_pem_title(vsc_data(pemPointer, pem.count))
         })
 

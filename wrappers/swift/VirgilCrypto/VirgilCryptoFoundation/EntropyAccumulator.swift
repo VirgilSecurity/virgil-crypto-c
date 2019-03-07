@@ -103,6 +103,7 @@ import VirgilCryptoCommon
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
+
             return vscf_entropy_accumulator_gather(self.c_ctx, len, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)

@@ -41,10 +41,10 @@ import VirgilCryptoCommon
 @objc(VSCFKeyDeserializer) public protocol KeyDeserializer : CContext {
 
     /// Deserialize given public key as an interchangeable format to the object.
-    @objc func deserializePublicKey(publicKeyData: Data, error: Error) -> RawKey
+    @objc func deserializePublicKey(publicKeyData: Data) throws -> RawKey
 
     /// Deserialize given private key as an interchangeable format to the object.
-    @objc func deserializePrivateKey(privateKeyData: Data, error: Error) -> RawKey
+    @objc func deserializePrivateKey(privateKeyData: Data) throws -> RawKey
 }
 
 /// Implement interface methods
@@ -65,19 +65,29 @@ import VirgilCryptoCommon
     }
 
     /// Deserialize given public key as an interchangeable format to the object.
-    @objc public func deserializePublicKey(publicKeyData: Data, error: Error) -> RawKey {
+    @objc public func deserializePublicKey(publicKeyData: Data) throws -> RawKey {
+        var error: vscf_error_t
+
         let proxyResult = publicKeyData.withUnsafeBytes({ (publicKeyDataPointer: UnsafePointer<byte>) in
-            return vscf_key_deserializer_deserialize_public_key(self.c_ctx, vsc_data(publicKeyDataPointer, publicKeyData.count), error.c_ctx)
+
+            return vscf_key_deserializer_deserialize_public_key(self.c_ctx, vsc_data(publicKeyDataPointer, publicKeyData.count), &error)
         })
+
+        try FoundationError.handleStatus(fromC: error.status)
 
         return RawKey.init(take: proxyResult!)
     }
 
     /// Deserialize given private key as an interchangeable format to the object.
-    @objc public func deserializePrivateKey(privateKeyData: Data, error: Error) -> RawKey {
+    @objc public func deserializePrivateKey(privateKeyData: Data) throws -> RawKey {
+        var error: vscf_error_t
+
         let proxyResult = privateKeyData.withUnsafeBytes({ (privateKeyDataPointer: UnsafePointer<byte>) in
-            return vscf_key_deserializer_deserialize_private_key(self.c_ctx, vsc_data(privateKeyDataPointer, privateKeyData.count), error.c_ctx)
+
+            return vscf_key_deserializer_deserialize_private_key(self.c_ctx, vsc_data(privateKeyDataPointer, privateKeyData.count), &error)
         })
+
+        try FoundationError.handleStatus(fromC: error.status)
 
         return RawKey.init(take: proxyResult!)
     }

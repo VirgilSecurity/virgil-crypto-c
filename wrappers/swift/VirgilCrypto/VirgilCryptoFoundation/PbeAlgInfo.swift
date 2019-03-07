@@ -68,6 +68,7 @@ import VirgilCryptoCommon
     public init(algId: AlgId, kdfAlgInfo: AlgInfo, cipherAlgInfo: AlgInfo) {
         var kdfAlgInfoCopy = vscf_impl_shallow_copy(kdfAlgInfo.c_ctx)
         var cipherAlgInfoCopy = vscf_impl_shallow_copy(cipherAlgInfo.c_ctx)
+
         let proxyResult = vscf_pbe_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), &kdfAlgInfoCopy, &cipherAlgInfoCopy)
 
         self.c_ctx = proxyResult!

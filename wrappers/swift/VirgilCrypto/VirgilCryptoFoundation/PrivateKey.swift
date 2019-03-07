@@ -150,6 +150,7 @@ import VirgilCryptoCommon
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
+
             return vscf_private_key_export_private_key(self.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
@@ -173,6 +174,7 @@ import VirgilCryptoCommon
     /// RFC 3447 Appendix A.1.2.
     @objc public func importPrivateKey(data: Data) throws {
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+
             return vscf_private_key_import_private_key(self.c_ctx, vsc_data(dataPointer, data.count))
         })
 

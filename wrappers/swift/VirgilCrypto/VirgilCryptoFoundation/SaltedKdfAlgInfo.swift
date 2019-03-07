@@ -67,7 +67,9 @@ import VirgilCryptoCommon
     /// salt and iteration count.
     public init(algId: AlgId, hashAlgInfo: AlgInfo, salt: Data, iterationCount: Int) {
         let proxyResult = salt.withUnsafeBytes({ (saltPointer: UnsafePointer<byte>) -> OpaquePointer? in
+
             var hashAlgInfoCopy = vscf_impl_shallow_copy(hashAlgInfo.c_ctx)
+
             return vscf_salted_kdf_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), &hashAlgInfoCopy, vsc_data(saltPointer, salt.count), iterationCount)
         })
 

@@ -73,13 +73,13 @@ import VirgilCryptoCommon
     @objc public func setAsn1Reader(asn1Reader: Asn1Reader) throws {
         vscf_message_info_der_serializer_release_asn1_reader(self.c_ctx)
         let proxyResult = vscf_message_info_der_serializer_use_asn1_reader(self.c_ctx, asn1Reader.c_ctx)
-        try FoundationError.handleStatus(fromC: proxyResult)
+        try WrapperToTheSwiftProgrammingLanguageError.handleStatus(fromC: proxyResult)
     }
 
     @objc public func setAsn1Writer(asn1Writer: Asn1Writer) throws {
         vscf_message_info_der_serializer_release_asn1_writer(self.c_ctx)
         let proxyResult = vscf_message_info_der_serializer_use_asn1_writer(self.c_ctx, asn1Writer.c_ctx)
-        try FoundationError.handleStatus(fromC: proxyResult)
+        try WrapperToTheSwiftProgrammingLanguageError.handleStatus(fromC: proxyResult)
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
@@ -108,6 +108,7 @@ import VirgilCryptoCommon
         out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> Void in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
+
             vscf_message_info_der_serializer_serialize(self.c_ctx, messageInfo.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
@@ -122,6 +123,7 @@ import VirgilCryptoCommon
     /// and this means that there is no message info at the data beginning.
     @objc public func readPrefix(data: Data) -> Int {
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Int in
+
             return vscf_message_info_der_serializer_read_prefix(self.c_ctx, vsc_data(dataPointer, data.count))
         })
 
@@ -129,10 +131,15 @@ import VirgilCryptoCommon
     }
 
     /// Deserialize class "message info".
-    @objc public func deserialize(data: Data, error: Error) -> MessageInfo {
+    @objc public func deserialize(data: Data) throws -> MessageInfo {
+        var error: vscf_error_t
+
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
-            return vscf_message_info_der_serializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count), error.c_ctx)
+
+            return vscf_message_info_der_serializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count), &error)
         })
+
+        try FoundationError.handleStatus(fromC: error.status)
 
         return MessageInfo.init(take: proxyResult!)
     }

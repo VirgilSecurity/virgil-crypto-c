@@ -61,6 +61,7 @@ import VirgilCryptoCommon
             str.withUnsafeMutableBytes({ (strPointer: UnsafeMutablePointer<byte>) -> Void in
                 vsc_buffer_init(strBuf)
                 vsc_buffer_use(strBuf, strPointer, strCount)
+
                 vscf_base64_encode(vsc_data(dataPointer, data.count), strBuf)
             })
         })
@@ -89,6 +90,7 @@ import VirgilCryptoCommon
             data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(dataBuf)
                 vsc_buffer_use(dataBuf, dataPointer, dataCount)
+
                 return vscf_base64_decode(vsc_data(strPointer, str.count), dataBuf)
             })
         })

@@ -111,6 +111,7 @@ import VirgilCryptoCommon
 
                         vsc_buffer_init(tagBuf)
                         vsc_buffer_use(tagBuf, tagPointer, tagCount)
+
                         return vscf_auth_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), vsc_data(authDataPointer, authData.count), outBuf, tagBuf)
                     })
                 })

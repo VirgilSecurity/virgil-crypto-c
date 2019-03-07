@@ -76,8 +76,12 @@ import VirgilCryptoCommon
     /// Deserialize by using internal ASN.1 reader.
     /// Note, that caller code is responsible to reset ASN.1 reader with
     /// an input buffer.
-    @objc public func deserializeInplace(error: Error) -> AlgInfo {
-        let proxyResult = vscf_alg_info_der_deserializer_deserialize_inplace(self.c_ctx, error.c_ctx)
+    @objc public func deserializeInplace() throws -> AlgInfo {
+        var error: vscf_error_t
+
+        let proxyResult = vscf_alg_info_der_deserializer_deserialize_inplace(self.c_ctx, &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
 
         return AlgInfoProxy.init(c_ctx: proxyResult!)
     }
@@ -90,10 +94,15 @@ import VirgilCryptoCommon
     }
 
     /// Deserialize algorithm from the data.
-    @objc public func deserialize(data: Data, error: Error) -> AlgInfo {
+    @objc public func deserialize(data: Data) throws -> AlgInfo {
+        var error: vscf_error_t
+
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
-            return vscf_alg_info_der_deserializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count), error.c_ctx)
+
+            return vscf_alg_info_der_deserializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count), &error)
         })
+
+        try FoundationError.handleStatus(fromC: error.status)
 
         return AlgInfoProxy.init(c_ctx: proxyResult!)
     }

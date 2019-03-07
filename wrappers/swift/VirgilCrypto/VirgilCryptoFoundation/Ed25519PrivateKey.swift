@@ -147,6 +147,7 @@ import VirgilCryptoCommon
             out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
+
                 return vscf_ed25519_private_key_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
@@ -177,6 +178,7 @@ import VirgilCryptoCommon
             signature.withUnsafeMutableBytes({ (signaturePointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(signatureBuf)
                 vsc_buffer_use(signatureBuf, signaturePointer, signatureCount)
+
                 return vscf_ed25519_private_key_sign(self.c_ctx, vsc_data(dataPointer, data.count), signatureBuf)
             })
         })
@@ -217,6 +219,7 @@ import VirgilCryptoCommon
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
+
             return vscf_ed25519_private_key_export_private_key(self.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
@@ -240,6 +243,7 @@ import VirgilCryptoCommon
     /// RFC 3447 Appendix A.1.2.
     @objc public func importPrivateKey(data: Data) throws {
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+
             return vscf_ed25519_private_key_import_private_key(self.c_ctx, vsc_data(dataPointer, data.count))
         })
 
@@ -259,6 +263,7 @@ import VirgilCryptoCommon
         let proxyResult = sharedKey.withUnsafeMutableBytes({ (sharedKeyPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(sharedKeyBuf)
             vsc_buffer_use(sharedKeyBuf, sharedKeyPointer, sharedKeyCount)
+
             return vscf_ed25519_private_key_compute_shared_key(self.c_ctx, publicKey.c_ctx, sharedKeyBuf)
         })
         sharedKey.count = vsc_buffer_len(sharedKeyBuf)

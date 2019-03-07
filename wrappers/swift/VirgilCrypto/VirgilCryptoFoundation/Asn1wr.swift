@@ -254,6 +254,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeOctetStr(value: Data) -> Int {
         let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
+
             return vscf_asn1wr_write_octet_str(self.c_ctx, vsc_data(valuePointer, value.count))
         })
 
@@ -265,6 +266,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeOctetStrAsBitstring(value: Data) -> Int {
         let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
+
             return vscf_asn1wr_write_octet_str_as_bitstring(self.c_ctx, vsc_data(valuePointer, value.count))
         })
 
@@ -276,6 +278,7 @@ import VirgilCryptoCommon
     /// Note, use this method carefully.
     @objc public func writeData(data: Data) -> Int {
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Int in
+
             return vscf_asn1wr_write_data(self.c_ctx, vsc_data(dataPointer, data.count))
         })
 
@@ -286,6 +289,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeUtf8Str(value: Data) -> Int {
         let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
+
             return vscf_asn1wr_write_utf8_str(self.c_ctx, vsc_data(valuePointer, value.count))
         })
 
@@ -296,6 +300,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeOid(value: Data) -> Int {
         let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
+
             return vscf_asn1wr_write_oid(self.c_ctx, vsc_data(valuePointer, value.count))
         })
 

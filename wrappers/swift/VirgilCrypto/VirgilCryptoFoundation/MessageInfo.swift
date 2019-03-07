@@ -72,18 +72,21 @@ import VirgilCryptoCommon
     /// Add recipient that is defined by Public Key.
     @objc public func addKeyRecipient(keyRecipient: KeyRecipientInfo) {
         var keyRecipientCopy = vscf_key_recipient_info_shallow_copy(keyRecipient.c_ctx)
+
         vscf_message_info_add_key_recipient(self.c_ctx, &keyRecipientCopy)
     }
 
     /// Add recipient that is defined by password.
     @objc public func addPasswordRecipient(passwordRecipient: PasswordRecipientInfo) {
         var passwordRecipientCopy = vscf_password_recipient_info_shallow_copy(passwordRecipient.c_ctx)
+
         vscf_message_info_add_password_recipient(self.c_ctx, &passwordRecipientCopy)
     }
 
     /// Set information about algorithm that was used for data encryption.
     @objc public func setDataEncryptionAlgInfo(dataEncryptionAlgInfo: AlgInfo) {
         var dataEncryptionAlgInfoCopy = vscf_impl_shallow_copy(dataEncryptionAlgInfo.c_ctx)
+
         vscf_message_info_set_data_encryption_alg_info(self.c_ctx, &dataEncryptionAlgInfoCopy)
     }
 
