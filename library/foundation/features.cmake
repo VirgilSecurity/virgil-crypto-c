@@ -65,8 +65,8 @@ option(VSCF_ENTROPY_SOURCE "Enable interface 'entropy source'." ON)
 option(VSCF_KEY "Enable interface 'key'." ON)
 option(VSCF_PUBLIC_KEY "Enable interface 'public key'." ON)
 option(VSCF_PRIVATE_KEY "Enable interface 'private key'." ON)
-option(VSCF_SIGN "Enable interface 'sign'." ON)
-option(VSCF_VERIFY "Enable interface 'verify'." ON)
+option(VSCF_SIGN_HASH "Enable interface 'sign hash'." ON)
+option(VSCF_VERIFY_HASH "Enable interface 'verify hash'." ON)
 option(VSCF_GENERATE_KEY "Enable interface 'generate key'." ON)
 option(VSCF_GENERATE_EPHEMERAL_KEY "Enable interface 'generate ephemeral key'." ON)
 option(VSCF_COMPUTE_SHARED_KEY "Enable interface 'compute shared key'." ON)
@@ -155,8 +155,8 @@ mark_as_advanced(
         VSCF_KEY
         VSCF_PUBLIC_KEY
         VSCF_PRIVATE_KEY
-        VSCF_SIGN
-        VSCF_VERIFY
+        VSCF_SIGN_HASH
+        VSCF_VERIFY_HASH
         VSCF_GENERATE_KEY
         VSCF_GENERATE_EPHEMERAL_KEY
         VSCF_COMPUTE_SHARED_KEY
@@ -631,15 +631,6 @@ if(VSCF_RSA_PUBLIC_KEY AND NOT VSCF_RSA_PRIVATE_KEY)
     message(FATAL_ERROR)
 endif()
 
-if(VSCF_RSA_PUBLIC_KEY AND NOT VSCF_SHA384)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_RSA_PUBLIC_KEY depends on the feature:")
-    message("     VSCF_SHA384 - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
 if(VSCF_RSA_PUBLIC_KEY AND NOT VSCF_ALG_INFO)
     message("-- error --")
     message("--")
@@ -744,15 +735,6 @@ if(VSCF_RSA_PRIVATE_KEY AND NOT VSCF_CTR_DRBG)
     message("--")
     message("Feature VSCF_RSA_PRIVATE_KEY depends on the feature:")
     message("     VSCF_CTR_DRBG - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_RSA_PRIVATE_KEY AND NOT VSCF_SHA384)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_RSA_PRIVATE_KEY depends on the feature:")
-    message("     VSCF_SHA384 - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -2103,15 +2085,6 @@ if(VSCF_KEY_PROVIDER AND NOT VSCF_PRIVATE_KEY)
     message("--")
     message("Feature VSCF_KEY_PROVIDER depends on the feature:")
     message("     VSCF_PRIVATE_KEY - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_KEY_PROVIDER AND NOT VSCF_SHA384)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_KEY_PROVIDER depends on the feature:")
-    message("     VSCF_SHA384 - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

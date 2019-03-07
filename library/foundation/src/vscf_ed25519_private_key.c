@@ -240,29 +240,33 @@ vscf_ed25519_private_key_decrypted_len(vscf_ed25519_private_key_t *self, size_t 
 }
 
 //
-//  Sign data given private key.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_ed25519_private_key_sign(vscf_ed25519_private_key_t *self, vsc_data_t data, vsc_buffer_t *signature) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(vsc_buffer_is_valid(signature));
-    VSCF_ASSERT(ED25519_SIG_LEN == vsc_buffer_capacity(signature));
-    VSCF_ASSERT_PTR(data.bytes);
-    int ret = ed25519_sign(vsc_buffer_unused_bytes(signature), self->secret_key, data.bytes, data.len);
-    VSCF_ASSERT(ret == 0);
-    vsc_buffer_inc_used(signature, vscf_ed25519_private_key_signature_len(self));
-    return vscf_status_SUCCESS;
-}
-
-//
 //  Return length in bytes required to hold signature.
 //
 VSCF_PUBLIC size_t
 vscf_ed25519_private_key_signature_len(vscf_ed25519_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
+
     return ED25519_SIG_LEN;
+}
+
+//
+//  Sign data given private key.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_ed25519_private_key_sign_hash(
+        vscf_ed25519_private_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id, vsc_buffer_t *signature) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_buffer_is_valid(signature));
+    VSCF_ASSERT(vsc_buffer_unused_len(signature) == ED25519_SIG_LEN);
+    VSCF_ASSERT(vsc_data_is_valid(hash_digest));
+    VSCF_UNUSED(hash_id);
+
+    int ret = ed25519_sign(vsc_buffer_unused_bytes(signature), self->secret_key, hash_digest.bytes, hash_digest.len);
+    VSCF_ASSERT(ret == 0);
+    vsc_buffer_inc_used(signature, vscf_ed25519_private_key_signature_len(self));
+    return vscf_status_SUCCESS;
 }
 
 //

@@ -127,10 +127,11 @@ test__sign__with_imported_private_key_and_message__equals_message_signature(void
     VSCF_ASSERT(result == vscf_status_SUCCESS);
 
     vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_ed25519_private_key_signature_len(private_key));
-    vscf_status_t sign_result = vscf_ed25519_private_key_sign(private_key, test_ed25519_MESSAGE, signature);
+    vscf_status_t sign_result = vscf_ed25519_private_key_sign_hash(
+            private_key, test_ed25519_MESSAGE_SHA256_DIGEST, vscf_alg_id_SHA256, signature);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, sign_result);
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ed25519_SIGNATURE, signature);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ed25519_SHA256_SIGNATURE, signature);
 
     vsc_buffer_destroy(&signature);
     vscf_ed25519_private_key_destroy(&private_key);

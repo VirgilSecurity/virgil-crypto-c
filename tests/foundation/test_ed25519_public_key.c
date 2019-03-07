@@ -102,7 +102,8 @@ test__verify__with_imported_public_key_and_data_signature__valid_signature(void)
     vscf_status_t result = vscf_ed25519_public_key_import_public_key(public_key, test_ed25519_PUBLIC_KEY);
     VSCF_ASSERT(result == vscf_status_SUCCESS);
 
-    bool verify_result = vscf_ed25519_public_key_verify(public_key, test_ed25519_MESSAGE, test_ed25519_SIGNATURE);
+    bool verify_result = vscf_ed25519_public_key_verify_hash(
+            public_key, test_ed25519_MESSAGE_SHA256_DIGEST, vscf_alg_id_SHA256, test_ed25519_SHA256_SIGNATURE);
     TEST_ASSERT_EQUAL(true, verify_result);
 
     vscf_ed25519_public_key_destroy(&public_key);

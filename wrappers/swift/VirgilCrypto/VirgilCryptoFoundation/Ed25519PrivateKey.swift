@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// This is implementation of ED25519 private key
-@objc(VSCFEd25519PrivateKey) public class Ed25519PrivateKey: NSObject, Defaults, Alg, Key, GenerateKey, Decrypt, Sign, PrivateKey, ComputeSharedKey {
+@objc(VSCFEd25519PrivateKey) public class Ed25519PrivateKey: NSObject, Defaults, Alg, Key, GenerateKey, Decrypt, SignHash, PrivateKey, ComputeSharedKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -164,8 +164,15 @@ import VSCFoundation
         return proxyResult
     }
 
+    /// Return length in bytes required to hold signature.
+    @objc public func signatureLen() -> Int {
+        let proxyResult = vscf_ed25519_private_key_signature_len(self.c_ctx)
+
+        return proxyResult
+    }
+
     /// Sign data given private key.
-    @objc public func sign(data: Data) throws -> Data {
+    @objc public func signHash(hashDigest: Data, hashId: AlgId) throws -> Data {
         let signatureCount = self.signatureLen()
         var signature = Data(count: signatureCount)
         var signatureBuf = vsc_buffer_new()
@@ -173,12 +180,12 @@ import VSCFoundation
             vsc_buffer_delete(signatureBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+        let proxyResult = hashDigest.withUnsafeBytes({ (hashDigestPointer: UnsafePointer<byte>) -> vscf_status_t in
             signature.withUnsafeMutableBytes({ (signaturePointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(signatureBuf)
                 vsc_buffer_use(signatureBuf, signaturePointer, signatureCount)
 
-                return vscf_ed25519_private_key_sign(self.c_ctx, vsc_data(dataPointer, data.count), signatureBuf)
+                return vscf_ed25519_private_key_sign_hash(self.c_ctx, vsc_data(hashDigestPointer, hashDigest.count), vscf_alg_id_t(rawValue: UInt32(hashId.rawValue)), signatureBuf)
             })
         })
         signature.count = vsc_buffer_len(signatureBuf)
@@ -186,13 +193,6 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: proxyResult)
 
         return signature
-    }
-
-    /// Return length in bytes required to hold signature.
-    @objc public func signatureLen() -> Int {
-        let proxyResult = vscf_ed25519_private_key_signature_len(self.c_ctx)
-
-        return proxyResult
     }
 
     /// Extract public part of the key.

@@ -65,8 +65,8 @@
 #include "vscf_generate_key_api.h"
 #include "vscf_decrypt.h"
 #include "vscf_decrypt_api.h"
-#include "vscf_sign.h"
-#include "vscf_sign_api.h"
+#include "vscf_sign_hash.h"
+#include "vscf_sign_hash_api.h"
 #include "vscf_private_key.h"
 #include "vscf_private_key_api.h"
 #include "vscf_compute_shared_key.h"
@@ -186,22 +186,22 @@ static const vscf_decrypt_api_t decrypt_api = {
 };
 
 //
-//  Configuration of the interface API 'sign api'.
+//  Configuration of the interface API 'sign hash api'.
 //
-static const vscf_sign_api_t sign_api = {
+static const vscf_sign_hash_api_t sign_hash_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'sign' MUST be equal to the 'vscf_api_tag_SIGN'.
+    //  For interface 'sign_hash' MUST be equal to the 'vscf_api_tag_SIGN_HASH'.
     //
-    vscf_api_tag_SIGN,
-    //
-    //  Sign data given private key.
-    //
-    (vscf_sign_api_sign_fn)vscf_ed25519_private_key_sign,
+    vscf_api_tag_SIGN_HASH,
     //
     //  Return length in bytes required to hold signature.
     //
-    (vscf_sign_api_signature_len_fn)vscf_ed25519_private_key_signature_len
+    (vscf_sign_hash_api_signature_len_fn)vscf_ed25519_private_key_signature_len,
+    //
+    //  Sign data given private key.
+    //
+    (vscf_sign_hash_api_sign_hash_fn)vscf_ed25519_private_key_sign_hash
 };
 
 //
@@ -506,8 +506,8 @@ vscf_ed25519_private_key_find_api(vscf_api_tag_t api_tag) {
             return (const vscf_api_t *) &key_api;
         case vscf_api_tag_PRIVATE_KEY:
             return (const vscf_api_t *) &private_key_api;
-        case vscf_api_tag_SIGN:
-            return (const vscf_api_t *) &sign_api;
+        case vscf_api_tag_SIGN_HASH:
+            return (const vscf_api_t *) &sign_hash_api;
         default:
             return NULL;
     }

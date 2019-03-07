@@ -285,7 +285,8 @@ vscf_rsa_public_key_encrypted_len(vscf_rsa_public_key_t *self, size_t data_len);
 //  Verify data with given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_rsa_public_key_verify(vscf_rsa_public_key_t *self, vsc_data_t data, vsc_data_t signature);
+vscf_rsa_public_key_verify_hash(vscf_rsa_public_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id,
+        vsc_data_t signature);
 
 //
 //  Export public key in the binary format.

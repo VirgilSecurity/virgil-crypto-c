@@ -235,12 +235,12 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sign.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sign_hash.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_verify.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_verify_hash.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -582,10 +582,10 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_random_api.h>"
             "$<$<BOOL:${VSCF_SALTED_KDF}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_salted_kdf.h>"
             "$<$<BOOL:${VSCF_SALTED_KDF}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_salted_kdf_api.h>"
-            "$<$<BOOL:${VSCF_SIGN}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sign.h>"
-            "$<$<BOOL:${VSCF_SIGN}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_sign_api.h>"
-            "$<$<BOOL:${VSCF_VERIFY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_verify.h>"
-            "$<$<BOOL:${VSCF_VERIFY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_verify_api.h>"
+            "$<$<BOOL:${VSCF_SIGN_HASH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sign_hash.h>"
+            "$<$<BOOL:${VSCF_SIGN_HASH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_sign_hash_api.h>"
+            "$<$<BOOL:${VSCF_VERIFY_HASH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_verify_hash.h>"
+            "$<$<BOOL:${VSCF_VERIFY_HASH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_verify_hash_api.h>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes256_cbc.h>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_cbc_internal.h>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_aes256_cbc_defs.h>"
@@ -797,10 +797,10 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_random_api.c>"
             "$<$<BOOL:${VSCF_SALTED_KDF}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_salted_kdf.c>"
             "$<$<BOOL:${VSCF_SALTED_KDF}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_salted_kdf_api.c>"
-            "$<$<BOOL:${VSCF_SIGN}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sign.c>"
-            "$<$<BOOL:${VSCF_SIGN}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sign_api.c>"
-            "$<$<BOOL:${VSCF_VERIFY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_verify.c>"
-            "$<$<BOOL:${VSCF_VERIFY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_verify_api.c>"
+            "$<$<BOOL:${VSCF_SIGN_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sign_hash.c>"
+            "$<$<BOOL:${VSCF_SIGN_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sign_hash_api.c>"
+            "$<$<BOOL:${VSCF_VERIFY_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_verify_hash.c>"
+            "$<$<BOOL:${VSCF_VERIFY_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_verify_hash_api.c>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_cbc.c>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_cbc_internal.c>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_cbc_defs.c>"

@@ -65,11 +65,10 @@
 #include "vscf_generate_key_api.h"
 #include "vscf_decrypt.h"
 #include "vscf_decrypt_api.h"
-#include "vscf_sign.h"
-#include "vscf_sign_api.h"
+#include "vscf_sign_hash.h"
+#include "vscf_sign_hash_api.h"
 #include "vscf_private_key.h"
 #include "vscf_private_key_api.h"
-#include "vscf_hash.h"
 #include "vscf_random.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_writer.h"
@@ -186,22 +185,22 @@ static const vscf_decrypt_api_t decrypt_api = {
 };
 
 //
-//  Configuration of the interface API 'sign api'.
+//  Configuration of the interface API 'sign hash api'.
 //
-static const vscf_sign_api_t sign_api = {
+static const vscf_sign_hash_api_t sign_hash_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'sign' MUST be equal to the 'vscf_api_tag_SIGN'.
+    //  For interface 'sign_hash' MUST be equal to the 'vscf_api_tag_SIGN_HASH'.
     //
-    vscf_api_tag_SIGN,
-    //
-    //  Sign data given private key.
-    //
-    (vscf_sign_api_sign_fn)vscf_rsa_private_key_sign,
+    vscf_api_tag_SIGN_HASH,
     //
     //  Return length in bytes required to hold signature.
     //
-    (vscf_sign_api_signature_len_fn)vscf_rsa_private_key_signature_len
+    (vscf_sign_hash_api_signature_len_fn)vscf_rsa_private_key_signature_len,
+    //
+    //  Sign data given private key.
+    //
+    (vscf_sign_hash_api_sign_hash_fn)vscf_rsa_private_key_sign_hash
 };
 
 //
@@ -305,7 +304,6 @@ vscf_rsa_private_key_cleanup(vscf_rsa_private_key_t *self) {
         return;
     }
 
-    vscf_rsa_private_key_release_hash(self);
     vscf_rsa_private_key_release_random(self);
     vscf_rsa_private_key_release_asn1rd(self);
     vscf_rsa_private_key_release_asn1wr(self);
@@ -388,48 +386,6 @@ vscf_rsa_private_key_impl(vscf_rsa_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
     return (vscf_impl_t *)(self);
-}
-
-//
-//  Setup dependency to the interface 'hash' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_rsa_private_key_use_hash(vscf_rsa_private_key_t *self, vscf_impl_t *hash) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT(self->hash == NULL);
-
-    VSCF_ASSERT(vscf_hash_is_implemented(hash));
-
-    self->hash = vscf_impl_shallow_copy(hash);
-}
-
-//
-//  Setup dependency to the interface 'hash' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_rsa_private_key_take_hash(vscf_rsa_private_key_t *self, vscf_impl_t *hash) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(self->hash == NULL);
-
-    VSCF_ASSERT(vscf_hash_is_implemented(hash));
-
-    self->hash = hash;
-}
-
-//
-//  Release dependency to the interface 'hash'.
-//
-VSCF_PUBLIC void
-vscf_rsa_private_key_release_hash(vscf_rsa_private_key_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->hash);
 }
 
 //
@@ -574,8 +530,8 @@ vscf_rsa_private_key_find_api(vscf_api_tag_t api_tag) {
             return (const vscf_api_t *) &key_api;
         case vscf_api_tag_PRIVATE_KEY:
             return (const vscf_api_t *) &private_key_api;
-        case vscf_api_tag_SIGN:
-            return (const vscf_api_t *) &sign_api;
+        case vscf_api_tag_SIGN_HASH:
+            return (const vscf_api_t *) &sign_hash_api;
         default:
             return NULL;
     }

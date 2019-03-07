@@ -63,8 +63,8 @@
 #include "vscf_key_api.h"
 #include "vscf_encrypt.h"
 #include "vscf_encrypt_api.h"
-#include "vscf_verify.h"
-#include "vscf_verify_api.h"
+#include "vscf_verify_hash.h"
+#include "vscf_verify_hash_api.h"
 #include "vscf_public_key.h"
 #include "vscf_public_key_api.h"
 #include "vscf_generate_ephemeral_key.h"
@@ -168,18 +168,18 @@ static const vscf_encrypt_api_t encrypt_api = {
 };
 
 //
-//  Configuration of the interface API 'verify api'.
+//  Configuration of the interface API 'verify hash api'.
 //
-static const vscf_verify_api_t verify_api = {
+static const vscf_verify_hash_api_t verify_hash_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'verify' MUST be equal to the 'vscf_api_tag_VERIFY'.
+    //  For interface 'verify_hash' MUST be equal to the 'vscf_api_tag_VERIFY_HASH'.
     //
-    vscf_api_tag_VERIFY,
+    vscf_api_tag_VERIFY_HASH,
     //
     //  Verify data with given public key and signature.
     //
-    (vscf_verify_api_verify_fn)vscf_ed25519_public_key_verify
+    (vscf_verify_hash_api_verify_hash_fn)vscf_ed25519_public_key_verify_hash
 };
 
 //
@@ -473,8 +473,8 @@ vscf_ed25519_public_key_find_api(vscf_api_tag_t api_tag) {
             return (const vscf_api_t *) &key_api;
         case vscf_api_tag_PUBLIC_KEY:
             return (const vscf_api_t *) &public_key_api;
-        case vscf_api_tag_VERIFY:
-            return (const vscf_api_t *) &verify_api;
+        case vscf_api_tag_VERIFY_HASH:
+            return (const vscf_api_t *) &verify_hash_api;
         default:
             return NULL;
     }
