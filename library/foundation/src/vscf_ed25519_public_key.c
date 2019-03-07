@@ -222,12 +222,15 @@ vscf_ed25519_public_key_encrypted_len(vscf_ed25519_public_key_t *self, size_t da
 //  Verify data with given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_ed25519_public_key_verify(vscf_ed25519_public_key_t *self, vsc_data_t data, vsc_data_t signature) {
+vscf_ed25519_public_key_verify_hash(
+        vscf_ed25519_public_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id, vsc_data_t signature) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(signature.bytes);
-    VSCF_ASSERT_PTR(data.bytes);
-    int ret = ed25519_verify(signature.bytes, self->public_key, data.bytes, data.len);
+    VSCF_ASSERT(vsc_data_is_valid(hash_digest));
+    VSCF_UNUSED(hash_id);
+    VSCF_ASSERT(vsc_data_is_valid(signature));
+
+    int ret = ed25519_verify(signature.bytes, self->public_key, hash_digest.bytes, hash_digest.len);
     return (ret == 0);
 }
 

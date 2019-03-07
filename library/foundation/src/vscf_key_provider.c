@@ -55,11 +55,9 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_random.h"
-#include "vscf_hash.h"
 #include "vscf_key_provider_defs.h"
 #include "vscf_public_key.h"
 #include "vscf_private_key.h"
-#include "vscf_sha384.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_rsa_public_key.h"
 #include "vscf_rsa_private_key.h"
@@ -136,7 +134,6 @@ vscf_key_provider_cleanup(vscf_key_provider_t *self) {
 
         vscf_key_provider_release_random(self);
         vscf_key_provider_release_ecies(self);
-        vscf_key_provider_release_hash(self);
 
         vscf_zeroize(self, sizeof(vscf_key_provider_t));
     }
@@ -286,48 +283,6 @@ vscf_key_provider_release_ecies(vscf_key_provider_t *self) {
     vscf_ecies_destroy(&self->ecies);
 }
 
-//
-//  Setup dependency to the interface 'hash' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_key_provider_use_hash(vscf_key_provider_t *self, vscf_impl_t *hash) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT(self->hash == NULL);
-
-    VSCF_ASSERT(vscf_hash_is_implemented(hash));
-
-    self->hash = vscf_impl_shallow_copy(hash);
-}
-
-//
-//  Setup dependency to the interface 'hash' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_key_provider_take_hash(vscf_key_provider_t *self, vscf_impl_t *hash) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(self->hash == NULL);
-
-    VSCF_ASSERT(vscf_hash_is_implemented(hash));
-
-    self->hash = hash;
-}
-
-//
-//  Release dependency to the interface 'hash'.
-//
-VSCF_PUBLIC void
-vscf_key_provider_release_hash(vscf_key_provider_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->hash);
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -379,10 +334,6 @@ vscf_key_provider_setup_defaults(vscf_key_provider_t *self) {
         self->random = vscf_ctr_drbg_impl(random);
     }
 
-    if (NULL == self->hash) {
-        self->hash = vscf_sha384_impl(vscf_sha384_new());
-    }
-
     if (NULL == self->ecies) {
         vscf_ecies_t *ecies = vscf_ecies_new();
         vscf_ecies_use_random(ecies, self->random);
@@ -423,9 +374,7 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
 
     switch (alg_id) {
     case vscf_alg_id_RSA: {
-        VSCF_ASSERT_PTR(self->hash);
         vscf_rsa_private_key_t *private_key = vscf_rsa_private_key_new();
-        vscf_rsa_private_key_use_hash(private_key, self->hash);
         vscf_rsa_private_key_use_random(private_key, self->random);
         vscf_rsa_private_key_set_keygen_params(private_key, self->rsa_bitlen, self->rsa_exponent);
         vscf_rsa_private_key_setup_defaults(private_key);
@@ -486,9 +435,7 @@ vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8
 
     switch (vscf_raw_key_alg_id(raw_key)) {
     case vscf_alg_id_RSA: {
-        VSCF_ASSERT_PTR(self->hash);
         vscf_rsa_private_key_t *rsa_private_key = vscf_rsa_private_key_new();
-        vscf_rsa_private_key_use_hash(rsa_private_key, self->hash);
         vscf_rsa_private_key_use_random(rsa_private_key, self->random);
         vscf_rsa_private_key_set_keygen_params(rsa_private_key, self->rsa_bitlen, self->rsa_exponent);
         vscf_rsa_private_key_setup_defaults(rsa_private_key);
@@ -551,9 +498,7 @@ vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t pkcs8_
 
     switch (vscf_raw_key_alg_id(raw_key)) {
     case vscf_alg_id_RSA: {
-        VSCF_ASSERT_PTR(self->hash);
         vscf_rsa_public_key_t *rsa_public_key = vscf_rsa_public_key_new();
-        vscf_rsa_public_key_use_hash(rsa_public_key, self->hash);
         vscf_rsa_public_key_use_random(rsa_public_key, self->random);
         vscf_rsa_public_key_setup_defaults(rsa_public_key);
         public_key = vscf_rsa_public_key_impl(rsa_public_key);

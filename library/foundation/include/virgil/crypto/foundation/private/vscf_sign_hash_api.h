@@ -47,22 +47,26 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provide interface for verifying data with public key.
+//  Interface 'sign hash' API.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_VERIFY_H_INCLUDED
-#define VSCF_VERIFY_H_INCLUDED
+#ifndef VSCF_SIGN_HASH_API_H_INCLUDED
+#define VSCF_SIGN_HASH_API_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl.h"
 #include "vscf_api.h"
+#include "vscf_impl.h"
+#include "vscf_alg_id.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -81,33 +85,34 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'verify'.
+//  Callback. Return length in bytes required to hold signature.
 //
-typedef struct vscf_verify_api_t vscf_verify_api_t;
+typedef size_t (*vscf_sign_hash_api_signature_len_fn)(vscf_impl_t *impl);
 
 //
-//  Verify data with given public key and signature.
+//  Callback. Sign data given private key.
 //
-VSCF_PUBLIC bool
-vscf_verify(vscf_impl_t *impl, vsc_data_t data, vsc_data_t signature);
+typedef vscf_status_t (*vscf_sign_hash_api_sign_hash_fn)(vscf_impl_t *impl, vsc_data_t hash_digest,
+        vscf_alg_id_t hash_id, vsc_buffer_t *signature);
 
 //
-//  Return verify API, or NULL if it is not implemented.
+//  Contains API requirements of the interface 'sign hash'.
 //
-VSCF_PUBLIC const vscf_verify_api_t *
-vscf_verify_api(const vscf_impl_t *impl);
-
-//
-//  Check if given object implements interface 'verify'.
-//
-VSCF_PUBLIC bool
-vscf_verify_is_implemented(const vscf_impl_t *impl);
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_verify_api_tag(const vscf_verify_api_t *verify_api);
+struct vscf_sign_hash_api_t {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'sign_hash' MUST be equal to the 'vscf_api_tag_SIGN_HASH'.
+    //
+    vscf_api_tag_t api_tag;
+    //
+    //  Return length in bytes required to hold signature.
+    //
+    vscf_sign_hash_api_signature_len_fn signature_len_cb;
+    //
+    //  Sign data given private key.
+    //
+    vscf_sign_hash_api_sign_hash_fn sign_hash_cb;
+};
 
 
 // --------------------------------------------------------------------------
@@ -123,5 +128,5 @@ vscf_verify_api_tag(const vscf_verify_api_t *verify_api);
 
 
 //  @footer
-#endif // VSCF_VERIFY_H_INCLUDED
+#endif // VSCF_SIGN_HASH_API_H_INCLUDED
 //  @end

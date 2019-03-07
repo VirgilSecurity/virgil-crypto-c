@@ -172,25 +172,6 @@ VSCF_PUBLIC void
 vscf_key_provider_release_ecies(vscf_key_provider_t *self);
 
 //
-//  Setup dependency to the interface 'hash' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_key_provider_use_hash(vscf_key_provider_t *self, vscf_impl_t *hash);
-
-//
-//  Setup dependency to the interface 'hash' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_key_provider_take_hash(vscf_key_provider_t *self, vscf_impl_t *hash);
-
-//
-//  Release dependency to the interface 'hash'.
-//
-VSCF_PUBLIC void
-vscf_key_provider_release_hash(vscf_key_provider_t *self);
-
-//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t

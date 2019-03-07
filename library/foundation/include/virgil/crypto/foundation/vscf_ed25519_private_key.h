@@ -251,16 +251,17 @@ VSCF_PUBLIC size_t
 vscf_ed25519_private_key_decrypted_len(vscf_ed25519_private_key_t *self, size_t data_len);
 
 //
-//  Sign data given private key.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_ed25519_private_key_sign(vscf_ed25519_private_key_t *self, vsc_data_t data, vsc_buffer_t *signature);
-
-//
 //  Return length in bytes required to hold signature.
 //
 VSCF_PUBLIC size_t
 vscf_ed25519_private_key_signature_len(vscf_ed25519_private_key_t *self);
+
+//
+//  Sign data given private key.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_ed25519_private_key_sign_hash(vscf_ed25519_private_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id,
+        vsc_buffer_t *signature);
 
 //
 //  Extract public part of the key.

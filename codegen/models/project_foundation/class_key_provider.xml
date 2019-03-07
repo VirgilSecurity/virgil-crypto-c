@@ -4,7 +4,6 @@
 
     <require interface="public key"/>
     <require interface="private key"/>
-    <require impl="sha384"/>
     <require impl="ctr drbg"/>
     <require impl="rsa public key"/>
     <require impl="rsa private key"/>
@@ -14,7 +13,6 @@
 
     <dependency name="random" interface="random"/>
     <dependency name="ecies" class="ecies"/>
-    <dependency name="hash" interface="hash"/>
 
     <property name="rsa bitlen" type="size"/>
     <property name="rsa exponent" type="size"/>

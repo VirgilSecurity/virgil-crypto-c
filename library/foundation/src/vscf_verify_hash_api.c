@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Interface 'verify hash' API.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,37 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Provide interface for signing data with private key.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_SIGN_H_INCLUDED
-#define VSCF_SIGN_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_status.h"
-#include "vscf_api.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#include "vscf_verify_hash_api.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -83,54 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Contains API requirements of the interface 'sign'.
-//
-typedef struct vscf_sign_api_t vscf_sign_api_t;
-
-//
-//  Sign data given private key.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_sign(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *signature);
-
-//
-//  Return length in bytes required to hold signature.
-//
-VSCF_PUBLIC size_t
-vscf_sign_signature_len(vscf_impl_t *impl);
-
-//
-//  Return sign API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_sign_api_t *
-vscf_sign_api(const vscf_impl_t *impl);
-
-//
-//  Check if given object implements interface 'sign'.
-//
-VSCF_PUBLIC bool
-vscf_sign_is_implemented(const vscf_impl_t *impl);
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_sign_api_tag(const vscf_sign_api_t *sign_api);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_SIGN_H_INCLUDED
 //  @end

@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Interface 'sign hash' API.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,34 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'verify' API.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_VERIFY_API_H_INCLUDED
-#define VSCF_VERIFY_API_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#endif
+#include "vscf_sign_hash_api.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -80,39 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Callback. Verify data with given public key and signature.
-//
-typedef bool (*vscf_verify_api_verify_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_data_t signature);
-
-//
-//  Contains API requirements of the interface 'verify'.
-//
-struct vscf_verify_api_t {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'verify' MUST be equal to the 'vscf_api_tag_VERIFY'.
-    //
-    vscf_api_tag_t api_tag;
-    //
-    //  Verify data with given public key and signature.
-    //
-    vscf_verify_api_verify_fn verify_cb;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_VERIFY_API_H_INCLUDED
 //  @end

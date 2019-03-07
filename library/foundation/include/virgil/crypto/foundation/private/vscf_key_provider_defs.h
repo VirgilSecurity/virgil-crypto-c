@@ -92,10 +92,6 @@ struct vscf_key_provider_t {
     //  Dependency to the class 'ecies'.
     //
     vscf_ecies_t *ecies;
-    //
-    //  Dependency to the interface 'hash'.
-    //
-    vscf_impl_t *hash;
 
     size_t rsa_bitlen;
 

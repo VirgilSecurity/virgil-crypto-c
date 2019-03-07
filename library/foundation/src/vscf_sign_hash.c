@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Provide interface for signing data with private key.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,37 +50,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'sign' API.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_SIGN_API_H_INCLUDED
-#define VSCF_SIGN_API_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
-#include "vscf_status.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#include "vscf_sign_hash.h"
+#include "vscf_assert.h"
+#include "vscf_sign_hash_api.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -84,47 +65,68 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Sign data given private key.
+//  Return length in bytes required to hold signature.
 //
-typedef vscf_status_t (*vscf_sign_api_sign_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *signature);
+VSCF_PUBLIC size_t
+vscf_sign_hash_signature_len(vscf_impl_t *impl) {
+
+    const vscf_sign_hash_api_t *sign_hash_api = vscf_sign_hash_api(impl);
+    VSCF_ASSERT_PTR (sign_hash_api);
+
+    VSCF_ASSERT_PTR (sign_hash_api->signature_len_cb);
+    return sign_hash_api->signature_len_cb (impl);
+}
 
 //
-//  Callback. Return length in bytes required to hold signature.
+//  Sign data given private key.
 //
-typedef size_t (*vscf_sign_api_signature_len_fn)(vscf_impl_t *impl);
+VSCF_PUBLIC vscf_status_t
+vscf_sign_hash(vscf_impl_t *impl, vsc_data_t hash_digest, vscf_alg_id_t hash_id, vsc_buffer_t *signature) {
+
+    const vscf_sign_hash_api_t *sign_hash_api = vscf_sign_hash_api(impl);
+    VSCF_ASSERT_PTR (sign_hash_api);
+
+    VSCF_ASSERT_PTR (sign_hash_api->sign_hash_cb);
+    return sign_hash_api->sign_hash_cb (impl, hash_digest, hash_id, signature);
+}
 
 //
-//  Contains API requirements of the interface 'sign'.
+//  Return sign hash API, or NULL if it is not implemented.
 //
-struct vscf_sign_api_t {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'sign' MUST be equal to the 'vscf_api_tag_SIGN'.
-    //
-    vscf_api_tag_t api_tag;
-    //
-    //  Sign data given private key.
-    //
-    vscf_sign_api_sign_fn sign_cb;
-    //
-    //  Return length in bytes required to hold signature.
-    //
-    vscf_sign_api_signature_len_fn signature_len_cb;
-};
+VSCF_PUBLIC const vscf_sign_hash_api_t *
+vscf_sign_hash_api(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_SIGN_HASH);
+    return (const vscf_sign_hash_api_t *) api;
+}
+
+//
+//  Check if given object implements interface 'sign hash'.
+//
+VSCF_PUBLIC bool
+vscf_sign_hash_is_implemented(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api(impl, vscf_api_tag_SIGN_HASH) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_sign_hash_api_tag(const vscf_sign_hash_api_t *sign_hash_api) {
+
+    VSCF_ASSERT_PTR (sign_hash_api);
+
+    return sign_hash_api->api_tag;
+}
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_SIGN_API_H_INCLUDED
 //  @end

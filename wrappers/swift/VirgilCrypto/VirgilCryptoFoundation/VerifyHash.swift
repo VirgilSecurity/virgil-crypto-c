@@ -37,14 +37,14 @@ import Foundation
 import VSCFoundation
 
 /// Provide interface for verifying data with public key.
-@objc(VSCFVerify) public protocol Verify : CContext {
+@objc(VSCFVerifyHash) public protocol VerifyHash : CContext {
 
     /// Verify data with given public key and signature.
-    @objc func verify(data: Data, signature: Data) -> Bool
+    @objc func verifyHash(hashDigest: Data, hashId: AlgId, signature: Data) -> Bool
 }
 
 /// Implement interface methods
-@objc(VSCFVerifyProxy) internal class VerifyProxy: NSObject, Verify {
+@objc(VSCFVerifyHashProxy) internal class VerifyHashProxy: NSObject, VerifyHash {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -61,11 +61,11 @@ import VSCFoundation
     }
 
     /// Verify data with given public key and signature.
-    @objc public func verify(data: Data, signature: Data) -> Bool {
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Bool in
+    @objc public func verifyHash(hashDigest: Data, hashId: AlgId, signature: Data) -> Bool {
+        let proxyResult = hashDigest.withUnsafeBytes({ (hashDigestPointer: UnsafePointer<byte>) -> Bool in
             signature.withUnsafeBytes({ (signaturePointer: UnsafePointer<byte>) -> Bool in
 
-                return vscf_verify(self.c_ctx, vsc_data(dataPointer, data.count), vsc_data(signaturePointer, signature.count))
+                return vscf_verify_hash(self.c_ctx, vsc_data(hashDigestPointer, hashDigest.count), vscf_alg_id_t(rawValue: UInt32(hashId.rawValue)), vsc_data(signaturePointer, signature.count))
             })
         })
 

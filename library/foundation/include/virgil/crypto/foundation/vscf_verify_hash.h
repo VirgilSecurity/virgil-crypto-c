@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Provide interface for verifying data with public key.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,12 +44,35 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_verify.h"
-#include "vscf_assert.h"
-#include "vscf_verify_api.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Provide interface for verifying data with public key.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_VERIFY_HASH_H_INCLUDED
+#define VSCF_VERIFY_HASH_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_alg_id.h"
+#include "vscf_api.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -65,55 +82,47 @@
 // --------------------------------------------------------------------------
 
 //
+//  Contains API requirements of the interface 'verify hash'.
+//
+typedef struct vscf_verify_hash_api_t vscf_verify_hash_api_t;
+
+//
 //  Verify data with given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_verify(vscf_impl_t *impl, vsc_data_t data, vsc_data_t signature) {
-
-    const vscf_verify_api_t *verify_api = vscf_verify_api(impl);
-    VSCF_ASSERT_PTR (verify_api);
-
-    VSCF_ASSERT_PTR (verify_api->verify_cb);
-    return verify_api->verify_cb (impl, data, signature);
-}
+vscf_verify_hash(vscf_impl_t *impl, vsc_data_t hash_digest, vscf_alg_id_t hash_id, vsc_data_t signature);
 
 //
-//  Return verify API, or NULL if it is not implemented.
+//  Return verify hash API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC const vscf_verify_api_t *
-vscf_verify_api(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_VERIFY);
-    return (const vscf_verify_api_t *) api;
-}
+VSCF_PUBLIC const vscf_verify_hash_api_t *
+vscf_verify_hash_api(const vscf_impl_t *impl);
 
 //
-//  Check if given object implements interface 'verify'.
+//  Check if given object implements interface 'verify hash'.
 //
 VSCF_PUBLIC bool
-vscf_verify_is_implemented(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    return vscf_impl_api(impl, vscf_api_tag_VERIFY) != NULL;
-}
+vscf_verify_hash_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.
 //
 VSCF_PUBLIC vscf_api_tag_t
-vscf_verify_api_tag(const vscf_verify_api_t *verify_api) {
-
-    VSCF_ASSERT_PTR (verify_api);
-
-    return verify_api->api_tag;
-}
+vscf_verify_hash_api_tag(const vscf_verify_hash_api_t *verify_hash_api);
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_VERIFY_HASH_H_INCLUDED
 //  @end

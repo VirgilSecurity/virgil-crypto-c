@@ -15,7 +15,7 @@
         <require impl="ed25519 private key"/>
         <require impl="ctr drbg"/>
 
-        <property name="public_key" type="byte" library="ed25519" access="readwrite">
+        <property name="public key" type="byte" library="ed25519" access="readwrite">
             <array length="fixed" length_constant="ED25519_KEY_LEN"/>
         </property>
 
@@ -30,7 +30,7 @@
         <interface name="alg"/>
         <interface name="key"/>
         <interface name="encrypt"/>
-        <interface name="verify"/>
+        <interface name="verify hash"/>
         <interface name="public key">
             <constant name="can import public key" value="true"/>
             <constant name="can export public key" value="true"/>
@@ -53,7 +53,7 @@
         <require module="asn1wr defs"/>
         <require impl="ctr drbg"/>
 
-        <property name="secret_key" type="byte" library="ed25519" access="readwrite">
+        <property name="secret key" type="byte" library="ed25519" access="readwrite">
             <array length="fixed" length_constant="ED25519_KEY_LEN"/>
         </property>
 
@@ -69,7 +69,7 @@
         <interface name="key"/>
         <interface name="generate key"/>
         <interface name="decrypt"/>
-        <interface name="sign"/>
+        <interface name="sign hash"/>
         <interface name="private key">
             <constant name="can import private key" value="true"/>
             <constant name="can export private key" value="true"/>

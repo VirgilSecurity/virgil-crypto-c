@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// This is implementation of ED25519 public key
-@objc(VSCFEd25519PublicKey) public class Ed25519PublicKey: NSObject, Defaults, Alg, Key, Encrypt, Verify, PublicKey, GenerateEphemeralKey {
+@objc(VSCFEd25519PublicKey) public class Ed25519PublicKey: NSObject, Defaults, Alg, Key, Encrypt, VerifyHash, PublicKey, GenerateEphemeralKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -157,11 +157,11 @@ import VSCFoundation
     }
 
     /// Verify data with given public key and signature.
-    @objc public func verify(data: Data, signature: Data) -> Bool {
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Bool in
+    @objc public func verifyHash(hashDigest: Data, hashId: AlgId, signature: Data) -> Bool {
+        let proxyResult = hashDigest.withUnsafeBytes({ (hashDigestPointer: UnsafePointer<byte>) -> Bool in
             signature.withUnsafeBytes({ (signaturePointer: UnsafePointer<byte>) -> Bool in
 
-                return vscf_ed25519_public_key_verify(self.c_ctx, vsc_data(dataPointer, data.count), vsc_data(signaturePointer, signature.count))
+                return vscf_ed25519_public_key_verify_hash(self.c_ctx, vsc_data(hashDigestPointer, hashDigest.count), vscf_alg_id_t(rawValue: UInt32(hashId.rawValue)), vsc_data(signaturePointer, signature.count))
             })
         })
 

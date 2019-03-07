@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'verify' API.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,10 +44,35 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_verify_api.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Interface 'verify hash' API.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_VERIFY_HASH_API_H_INCLUDED
+#define VSCF_VERIFY_HASH_API_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_api.h"
+#include "vscf_impl.h"
+#include "vscf_alg_id.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +81,40 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Callback. Verify data with given public key and signature.
+//
+typedef bool (*vscf_verify_hash_api_verify_hash_fn)(vscf_impl_t *impl, vsc_data_t hash_digest, vscf_alg_id_t hash_id,
+        vsc_data_t signature);
+
+//
+//  Contains API requirements of the interface 'verify hash'.
+//
+struct vscf_verify_hash_api_t {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'verify_hash' MUST be equal to the 'vscf_api_tag_VERIFY_HASH'.
+    //
+    vscf_api_tag_t api_tag;
+    //
+    //  Verify data with given public key and signature.
+    //
+    vscf_verify_hash_api_verify_hash_fn verify_hash_cb;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_VERIFY_HASH_API_H_INCLUDED
 //  @end

@@ -36,7 +36,7 @@
 import Foundation
 import VSCFoundation
 
-@objc(VSCFRsaPrivateKey) public class RsaPrivateKey: NSObject, Defaults, Alg, Key, GenerateKey, Decrypt, Sign, PrivateKey {
+@objc(VSCFRsaPrivateKey) public class RsaPrivateKey: NSObject, Defaults, Alg, Key, GenerateKey, Decrypt, SignHash, PrivateKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -70,11 +70,6 @@ import VSCFoundation
     /// Release underlying C context.
     deinit {
         vscf_rsa_private_key_delete(self.c_ctx)
-    }
-
-    @objc public func setHash(hash: Hash) {
-        vscf_rsa_private_key_release_hash(self.c_ctx)
-        vscf_rsa_private_key_use_hash(self.c_ctx, hash.c_ctx)
     }
 
     @objc public func setRandom(random: Random) {
@@ -178,8 +173,15 @@ import VSCFoundation
         return proxyResult
     }
 
+    /// Return length in bytes required to hold signature.
+    @objc public func signatureLen() -> Int {
+        let proxyResult = vscf_rsa_private_key_signature_len(self.c_ctx)
+
+        return proxyResult
+    }
+
     /// Sign data given private key.
-    @objc public func sign(data: Data) throws -> Data {
+    @objc public func signHash(hashDigest: Data, hashId: AlgId) throws -> Data {
         let signatureCount = self.signatureLen()
         var signature = Data(count: signatureCount)
         var signatureBuf = vsc_buffer_new()
@@ -187,12 +189,12 @@ import VSCFoundation
             vsc_buffer_delete(signatureBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+        let proxyResult = hashDigest.withUnsafeBytes({ (hashDigestPointer: UnsafePointer<byte>) -> vscf_status_t in
             signature.withUnsafeMutableBytes({ (signaturePointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(signatureBuf)
                 vsc_buffer_use(signatureBuf, signaturePointer, signatureCount)
 
-                return vscf_rsa_private_key_sign(self.c_ctx, vsc_data(dataPointer, data.count), signatureBuf)
+                return vscf_rsa_private_key_sign_hash(self.c_ctx, vsc_data(hashDigestPointer, hashDigest.count), vscf_alg_id_t(rawValue: UInt32(hashId.rawValue)), signatureBuf)
             })
         })
         signature.count = vsc_buffer_len(signatureBuf)
@@ -200,13 +202,6 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: proxyResult)
 
         return signature
-    }
-
-    /// Return length in bytes required to hold signature.
-    @objc public func signatureLen() -> Int {
-        let proxyResult = vscf_rsa_private_key_signature_len(self.c_ctx)
-
-        return proxyResult
     }
 
     /// Extract public part of the key.

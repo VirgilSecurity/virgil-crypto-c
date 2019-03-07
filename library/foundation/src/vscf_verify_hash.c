@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'sign' API.
+//  Provide interface for verifying data with public key.
 // --------------------------------------------------------------------------
 
 
@@ -50,7 +50,9 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_sign_api.h"
+#include "vscf_verify_hash.h"
+#include "vscf_assert.h"
+#include "vscf_verify_hash_api.h"
 
 // clang-format on
 //  @end
@@ -61,6 +63,53 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Verify data with given public key and signature.
+//
+VSCF_PUBLIC bool
+vscf_verify_hash(vscf_impl_t *impl, vsc_data_t hash_digest, vscf_alg_id_t hash_id, vsc_data_t signature) {
+
+    const vscf_verify_hash_api_t *verify_hash_api = vscf_verify_hash_api(impl);
+    VSCF_ASSERT_PTR (verify_hash_api);
+
+    VSCF_ASSERT_PTR (verify_hash_api->verify_hash_cb);
+    return verify_hash_api->verify_hash_cb (impl, hash_digest, hash_id, signature);
+}
+
+//
+//  Return verify hash API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_verify_hash_api_t *
+vscf_verify_hash_api(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_VERIFY_HASH);
+    return (const vscf_verify_hash_api_t *) api;
+}
+
+//
+//  Check if given object implements interface 'verify hash'.
+//
+VSCF_PUBLIC bool
+vscf_verify_hash_is_implemented(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api(impl, vscf_api_tag_VERIFY_HASH) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_verify_hash_api_tag(const vscf_verify_hash_api_t *verify_hash_api) {
+
+    VSCF_ASSERT_PTR (verify_hash_api);
+
+    return verify_hash_api->api_tag;
+}
 
 
 // --------------------------------------------------------------------------
