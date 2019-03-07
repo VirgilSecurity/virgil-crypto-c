@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Handles a list of "password recipient info" class objects.
 @objc(VSCFPasswordRecipientInfoList) public class PasswordRecipientInfoList: NSObject {

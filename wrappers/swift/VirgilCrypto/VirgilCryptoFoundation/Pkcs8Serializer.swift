@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Implements PKCS#8 key serialization to PEM format.
 @objc(VSCFPkcs8Serializer) public class Pkcs8Serializer: NSObject, Defaults, KeySerializer {

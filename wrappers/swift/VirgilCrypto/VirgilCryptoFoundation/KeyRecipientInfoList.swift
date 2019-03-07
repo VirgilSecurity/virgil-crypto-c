@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Handles a list of "key recipient info" class objects.
 @objc(VSCFKeyRecipientInfoList) public class KeyRecipientInfoList: NSObject {

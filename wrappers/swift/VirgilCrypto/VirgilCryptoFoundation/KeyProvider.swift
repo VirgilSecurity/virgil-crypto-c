@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provide functionality for private key generation and importing that
 /// relies on the software default implementations.

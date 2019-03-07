@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provide implementation agnostic representation of the asymmetric key.
 @objc(VSCFRawKey) public class RawKey: NSObject {

@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Create algorithms based on the given information.
 @objc(VSCFAlgFactory) public class AlgFactory: NSObject {

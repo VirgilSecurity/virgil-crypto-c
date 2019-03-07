@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Common information about asymmetric key.
 @objc(VSCFKey) public protocol Key : Alg {

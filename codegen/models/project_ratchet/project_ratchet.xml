@@ -1,11 +1,13 @@
 <project
-    name="ratchet"
-    brief="Implementation of the double ratchet algorithm."
-    namespace="virgil crypto ratchet"
-    framework="VSCRatchet"
-    prefix="vscr"
-    path="../library/ratchet"
-    work_path = "generated/ratchet/">
+        name="ratchet"
+        brief="Implementation of the double ratchet algorithm."
+        namespace="virgil crypto ratchet"
+        framework="VSCRatchet"
+        prefix="vscr"
+        path="../library/ratchet"
+        work_path = "generated/ratchet/"
+        wrappers="swift"
+        >
 
     <version major="0" minor="3" patch="0"/>
 
@@ -74,6 +76,4 @@
     <class name="ratchet keys"/>
     <class name="ratchet"/>
     <class name="ratchet session"/>
-
-    <wrapper lang="swift"/>
 </project>

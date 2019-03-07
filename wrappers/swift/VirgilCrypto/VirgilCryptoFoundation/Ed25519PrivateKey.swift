@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// This is implementation of ED25519 private key
 @objc(VSCFEd25519PrivateKey) public class Ed25519PrivateKey: NSObject, Defaults, Alg, Key, GenerateKey, Decrypt, Sign, PrivateKey, ComputeSharedKey {

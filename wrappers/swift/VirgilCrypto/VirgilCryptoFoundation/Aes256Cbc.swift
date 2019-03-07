@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Implementation of the symmetric cipher AES-256 bit in a CBC mode.
 /// Note, this implementation contains dynamic memory allocations,

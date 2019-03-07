@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCPythia
-import VirgilCryptoCommon
 
 /// Provide Pythia implementation based on the Virgil Security.
 @objc(VSCPPythia) public class Pythia: NSObject {

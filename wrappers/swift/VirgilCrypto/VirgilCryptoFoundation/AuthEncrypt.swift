@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provide interface for authenticated data encryption.
 @objc(VSCFAuthEncrypt) public protocol AuthEncrypt : CipherAuthInfo {

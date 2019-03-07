@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provide interface for "message info" class serialization.
 @objc(VSCFMessageInfoSerializer) public protocol MessageInfoSerializer : CContext {

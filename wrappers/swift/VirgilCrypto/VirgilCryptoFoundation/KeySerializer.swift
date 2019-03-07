@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Public and private key serialization to an interchangeable format.
 @objc(VSCFKeySerializer) public protocol KeySerializer : CContext {

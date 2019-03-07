@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Virgil Security implementation of the HKDF (RFC 6234) algorithm.
 @objc(VSCFHkdf) public class Hkdf: NSObject, Alg, Kdf, SaltedKdf {

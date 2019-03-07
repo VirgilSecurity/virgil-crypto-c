@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// This class provides hybrid encryption algorithm that combines symmetric
 /// cipher for data encryption and asymmetric cipher and password based

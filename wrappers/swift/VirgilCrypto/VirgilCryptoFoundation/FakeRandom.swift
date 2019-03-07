@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Random number generator that is used for test purposes only.
 @objc(VSCFFakeRandom) public class FakeRandom: NSObject, Random, EntropySource {

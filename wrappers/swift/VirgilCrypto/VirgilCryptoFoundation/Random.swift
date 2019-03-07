@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Common interface to get random data.
 @objc(VSCFRandom) public protocol Random : CContext {

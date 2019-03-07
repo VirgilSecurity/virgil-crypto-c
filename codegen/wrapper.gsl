@@ -56,12 +56,12 @@ gsl from "common.gsl"
 gsl from "swift.gsl"
 gsl from "php.gsl"
 
-function wrapper_resolve (project, wrapper)
-    check_arguments (my, "project, wrapper", my)
+function wrapper_resolve (project, wrapper, projects_api)
+    check_arguments (my, "project, wrapper, projects_api", my)
 
     my.proxy_func = make_id(my.wrapper.lang, "resolve")
     if macro (my.proxy_func)
-        $(my.proxy_func:) (my.project, my.wrapper)
+        $(my.proxy_func:) (my.project, my.wrapper, my.projects_api)
     else
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif

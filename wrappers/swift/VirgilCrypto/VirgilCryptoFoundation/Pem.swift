@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Simple PEM wrapper.
 @objc(VSCFPem) public class Pem: NSObject {

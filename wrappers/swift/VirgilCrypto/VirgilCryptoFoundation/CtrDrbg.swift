@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Implementation of the RNG using deterministic random bit generators
 /// based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).

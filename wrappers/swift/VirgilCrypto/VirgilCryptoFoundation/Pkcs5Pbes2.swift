@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Virgil Security implementation of the PBES2 (RFC 8018) algorithm.
 @objc(VSCFPkcs5Pbes2) public class Pkcs5Pbes2: NSObject, Alg, Encrypt, Decrypt {
