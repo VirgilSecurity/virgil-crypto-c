@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provide interface for signing data with private key.
 @objc(VSCFSign) public protocol Sign : CContext {

@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Handle symmetric cipher algorithm information.
 @objc(VSCFCipherAlgInfo) public class CipherAlgInfo: NSObject, AlgInfo {

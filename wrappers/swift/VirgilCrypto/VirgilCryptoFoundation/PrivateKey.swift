@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Contains private part of the key.
 @objc(VSCFPrivateKey) public protocol PrivateKey : Key {

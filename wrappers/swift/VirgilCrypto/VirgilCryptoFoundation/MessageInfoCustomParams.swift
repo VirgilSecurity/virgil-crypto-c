@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 @objc(VSCFMessageInfoCustomParams) public class MessageInfoCustomParams: NSObject {
 

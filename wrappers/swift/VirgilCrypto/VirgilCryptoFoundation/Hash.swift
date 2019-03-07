@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provides interface to the hashing (messege digest) algorithms.
 @objc(VSCFHash) public protocol Hash : CContext {

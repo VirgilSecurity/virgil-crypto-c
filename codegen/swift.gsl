@@ -45,6 +45,7 @@ gsl from "interface.gsl"
 gsl from "component.gsl"
 gsl from "c_component.gsl"
 gsl from "swift_codegen.gsl"
+gsl from "projects_api.gsl"
 
 
 # ===========================================================================
@@ -1159,8 +1160,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Setup and check default and automatically resolved attributes.
 # ---------------------------------------------------------------------------
-function swift_resolve (project, wrapper)
-    check_arguments (my, "project, wrapper", my)
+function swift_resolve (project, wrapper, projects_api)
+    check_arguments (my, "project, wrapper, projects_api", my)
 
     echo_info ("Resolve <wrapper lang=\"$(my.wrapper.lang:)\"/> for project: '$(my.project.name:)'", my)
 
@@ -1186,9 +1187,13 @@ function swift_resolve (project, wrapper)
     endnew
 
     for my.project.require where defined (0.project) & string_equal (0.feature, "library")
-        new swift_import to my.wrapper
-            .framework = make_ref_swift (make_id ("project", require.project, "framework name"))
-        endnew
+        my.required_project = projects_api_find_project (my.projects_api, require.project)
+
+        if my.required_project.wrappers = "all" | string_in (my.wrapper.lang, my.required_project.wrappers)
+            new swift_import to my.wrapper
+                .framework = make_ref_swift (make_id ("project", require.project, "framework name"))
+            endnew
+        endif
     endfor
 endfunction
 

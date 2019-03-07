@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// CMS based implementation of the class "message info" serialization.
 @objc(VSCFMessageInfoDerSerializer) public class MessageInfoDerSerializer: NSObject, Defaults, MessageInfoSerializer {

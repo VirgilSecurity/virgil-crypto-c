@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 @objc(VSCFCipherAuthInfo) public protocol CipherAuthInfo : CContext {
     /// Defines authentication tag length in bytes.

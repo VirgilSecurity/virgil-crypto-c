@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Handle information about password-based encryption algorithm.
 @objc(VSCFPbeAlgInfo) public class PbeAlgInfo: NSObject, AlgInfo {

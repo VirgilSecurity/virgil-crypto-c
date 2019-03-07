@@ -79,6 +79,8 @@ function project_resolve (project)
 
     my.project.version_string = "$(my.version.major:).$(my.version.minor:).$(my.version.patch:)"
     my.project.cmake_target ?= "$(my.project.name:c)"
+
+    my.project.wrappers ?= "all"
 endfunction
 
 # ---------------------------------------------------------------------------

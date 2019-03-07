@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provide conversion logic between OID and algorithm tags.
 @objc(VSCFOid) public class Oid: NSObject {

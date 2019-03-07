@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCRatchet
-import VirgilCryptoCommon
 import VirgilCryptoFoundation
 
 /// Class with public constants

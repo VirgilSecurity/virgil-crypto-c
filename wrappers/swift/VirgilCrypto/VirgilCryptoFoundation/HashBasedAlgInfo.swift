@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Handle hashed based algorithm information, i.e. HKDF, HMAC, etc.
 @objc(VSCFHashBasedAlgInfo) public class HashBasedAlgInfo: NSObject, AlgInfo {

@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provide interface for symmetric ciphers.
 @objc(VSCFCipher) public protocol Cipher : Encrypt, Decrypt, CipherInfo {

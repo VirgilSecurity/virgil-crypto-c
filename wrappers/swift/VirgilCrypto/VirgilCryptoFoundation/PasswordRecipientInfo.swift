@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Handle information about recipient that is defined by a password.
 @objc(VSCFPasswordRecipientInfo) public class PasswordRecipientInfo: NSObject {

@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Handle information about an encrypted message and algorithms
 /// that was used for encryption.

@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Handle KDF algorithms that are configured with salt and iteration count.
 @objc(VSCFSaltedKdfAlgInfo) public class SaltedKdfAlgInfo: NSObject, AlgInfo {

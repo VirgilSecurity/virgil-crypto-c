@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provides interface to the key derivation function (KDF) algorithms.
 @objc(VSCFKdf) public protocol Kdf : CContext {

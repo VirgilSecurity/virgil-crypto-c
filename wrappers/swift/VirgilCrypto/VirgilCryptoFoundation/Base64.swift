@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Implementation of the Base64 algorithm RFC 1421 and RFC 2045.
 @objc(VSCFBase64) public class Base64: NSObject {
