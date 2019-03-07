@@ -76,6 +76,7 @@ import VirgilCryptoCommon
         let proxyResult = data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(dataBuf)
             vsc_buffer_use(dataBuf, dataPointer, dataCount)
+
             return vscf_random(self.c_ctx, dataLen, dataBuf)
         })
         data.count = vsc_buffer_len(dataBuf)

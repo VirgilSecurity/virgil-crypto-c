@@ -136,6 +136,7 @@ import VirgilCryptoCommon
             out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
+
                 return vscf_ecies_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
@@ -166,6 +167,7 @@ import VirgilCryptoCommon
             out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
+
                 return vscf_ecies_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })

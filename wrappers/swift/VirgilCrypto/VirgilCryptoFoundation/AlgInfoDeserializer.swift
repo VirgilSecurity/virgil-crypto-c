@@ -41,7 +41,7 @@ import VirgilCryptoCommon
 @objc(VSCFAlgInfoDeserializer) public protocol AlgInfoDeserializer : CContext {
 
     /// Deserialize algorithm from the data.
-    @objc func deserialize(data: Data, error: Error) -> AlgInfo
+    @objc func deserialize(data: Data) throws -> AlgInfo
 }
 
 /// Implement interface methods
@@ -62,10 +62,15 @@ import VirgilCryptoCommon
     }
 
     /// Deserialize algorithm from the data.
-    @objc public func deserialize(data: Data, error: Error) -> AlgInfo {
+    @objc public func deserialize(data: Data) throws -> AlgInfo {
+        var error: vscf_error_t
+
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
-            return vscf_alg_info_deserializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count), error.c_ctx)
+
+            return vscf_alg_info_deserializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count), &error)
         })
+
+        try FoundationError.handleStatus(fromC: error.status)
 
         return AlgInfoProxy.init(c_ctx: proxyResult!)
     }

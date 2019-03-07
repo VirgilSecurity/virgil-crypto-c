@@ -124,6 +124,7 @@ import VirgilCryptoCommon
             out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
+
                 return vscf_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
@@ -154,6 +155,7 @@ import VirgilCryptoCommon
             out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
+
                 return vscf_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
@@ -174,6 +176,7 @@ import VirgilCryptoCommon
     /// Setup IV or nonce.
     @objc public func setNonce(nonce: Data) {
         nonce.withUnsafeBytes({ (noncePointer: UnsafePointer<byte>) -> Void in
+
             vscf_cipher_set_nonce(self.c_ctx, vsc_data(noncePointer, nonce.count))
         })
     }
@@ -181,6 +184,7 @@ import VirgilCryptoCommon
     /// Set cipher encryption / decryption key.
     @objc public func setKey(key: Data) {
         key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Void in
+
             vscf_cipher_set_key(self.c_ctx, vsc_data(keyPointer, key.count))
         })
     }
@@ -208,6 +212,7 @@ import VirgilCryptoCommon
             out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> Void in
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
+
                 vscf_cipher_update(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
@@ -255,6 +260,7 @@ import VirgilCryptoCommon
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
+
             return vscf_cipher_finish(self.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)

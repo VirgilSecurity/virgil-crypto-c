@@ -77,6 +77,7 @@ import VirgilCryptoCommon
             signature.withUnsafeMutableBytes({ (signaturePointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(signatureBuf)
                 vsc_buffer_use(signatureBuf, signaturePointer, signatureCount)
+
                 return vscf_sign(self.c_ctx, vsc_data(dataPointer, data.count), signatureBuf)
             })
         })

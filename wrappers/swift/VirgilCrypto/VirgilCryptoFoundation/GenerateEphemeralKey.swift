@@ -43,7 +43,7 @@ import VirgilCryptoCommon
 @objc(VSCFGenerateEphemeralKey) public protocol GenerateEphemeralKey : CContext {
 
     /// Generate ephemeral private key of the same type.
-    @objc func generateEphemeralKey(error: Error) -> PrivateKey
+    @objc func generateEphemeralKey() throws -> PrivateKey
 }
 
 /// Implement interface methods
@@ -64,8 +64,12 @@ import VirgilCryptoCommon
     }
 
     /// Generate ephemeral private key of the same type.
-    @objc public func generateEphemeralKey(error: Error) -> PrivateKey {
-        let proxyResult = vscf_generate_ephemeral_key(self.c_ctx, error.c_ctx)
+    @objc public func generateEphemeralKey() throws -> PrivateKey {
+        var error: vscf_error_t
+
+        let proxyResult = vscf_generate_ephemeral_key(self.c_ctx, &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
 
         return PrivateKeyProxy.init(c_ctx: proxyResult!)
     }

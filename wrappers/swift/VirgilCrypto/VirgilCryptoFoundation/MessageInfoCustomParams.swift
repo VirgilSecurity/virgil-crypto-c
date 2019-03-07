@@ -70,6 +70,7 @@ import VirgilCryptoCommon
     /// Add custom parameter with integer value.
     @objc public func addInt(key: Data, value: Int32) {
         key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Void in
+
             vscf_message_info_custom_params_add_int(self.c_ctx, vsc_data(keyPointer, key.count), value)
         })
     }
@@ -78,6 +79,7 @@ import VirgilCryptoCommon
     @objc public func addString(key: Data, value: Data) {
         key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Void in
             value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Void in
+
                 vscf_message_info_custom_params_add_string(self.c_ctx, vsc_data(keyPointer, key.count), vsc_data(valuePointer, value.count))
             })
         })
@@ -87,6 +89,7 @@ import VirgilCryptoCommon
     @objc public func addData(key: Data, value: Data) {
         key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Void in
             value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Void in
+
                 vscf_message_info_custom_params_add_data(self.c_ctx, vsc_data(keyPointer, key.count), vsc_data(valuePointer, value.count))
             })
         })
@@ -98,28 +101,43 @@ import VirgilCryptoCommon
     }
 
     /// Return custom parameter with integer value.
-    @objc public func findInt(key: Data, error: Error) -> Int32 {
+    @objc public func findInt(key: Data) throws -> Int32 {
+        var error: vscf_error_t
+
         let proxyResult = key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Int32 in
-            return vscf_message_info_custom_params_find_int(self.c_ctx, vsc_data(keyPointer, key.count), error.c_ctx)
+
+            return vscf_message_info_custom_params_find_int(self.c_ctx, vsc_data(keyPointer, key.count), &error)
         })
+
+        try FoundationError.handleStatus(fromC: error.status)
 
         return proxyResult
     }
 
     /// Return custom parameter with UTF8 string value.
-    @objc public func findString(key: Data, error: Error) -> Data {
+    @objc public func findString(key: Data) throws -> Data {
+        var error: vscf_error_t
+
         let proxyResult = key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) in
-            return vscf_message_info_custom_params_find_string(self.c_ctx, vsc_data(keyPointer, key.count), error.c_ctx)
+
+            return vscf_message_info_custom_params_find_string(self.c_ctx, vsc_data(keyPointer, key.count), &error)
         })
+
+        try FoundationError.handleStatus(fromC: error.status)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
     /// Return custom parameter with octet string value.
-    @objc public func findData(key: Data, error: Error) -> Data {
+    @objc public func findData(key: Data) throws -> Data {
+        var error: vscf_error_t
+
         let proxyResult = key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) in
-            return vscf_message_info_custom_params_find_data(self.c_ctx, vsc_data(keyPointer, key.count), error.c_ctx)
+
+            return vscf_message_info_custom_params_find_data(self.c_ctx, vsc_data(keyPointer, key.count), &error)
         })
+
+        try FoundationError.handleStatus(fromC: error.status)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }

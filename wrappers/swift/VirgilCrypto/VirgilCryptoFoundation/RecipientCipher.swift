@@ -83,6 +83,7 @@ import VirgilCryptoCommon
     /// Add recipient defined with id and public key.
     @objc public func addKeyRecipient(recipientId: Data, publicKey: PublicKey) {
         recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafePointer<byte>) -> Void in
+
             vscf_recipient_cipher_add_key_recipient(self.c_ctx, vsc_data(recipientIdPointer, recipientId.count), publicKey.c_ctx)
         })
     }
@@ -137,6 +138,7 @@ import VirgilCryptoCommon
         messageInfo.withUnsafeMutableBytes({ (messageInfoPointer: UnsafeMutablePointer<byte>) -> Void in
             vsc_buffer_init(messageInfoBuf)
             vsc_buffer_use(messageInfoBuf, messageInfoPointer, messageInfoCount)
+
             vscf_recipient_cipher_pack_message_info(self.c_ctx, messageInfoBuf)
         })
         messageInfo.count = vsc_buffer_len(messageInfoBuf)
@@ -165,6 +167,7 @@ import VirgilCryptoCommon
             out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
+
                 return vscf_recipient_cipher_process_encryption(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
@@ -187,6 +190,7 @@ import VirgilCryptoCommon
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
+
             return vscf_recipient_cipher_finish_encryption(self.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
@@ -201,6 +205,7 @@ import VirgilCryptoCommon
     @objc public func startDecryptionWithKey(recipientId: Data, privateKey: PrivateKey, messageInfo: Data) throws {
         let proxyResult = recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafePointer<byte>) -> vscf_status_t in
             messageInfo.withUnsafeBytes({ (messageInfoPointer: UnsafePointer<byte>) -> vscf_status_t in
+
                 return vscf_recipient_cipher_start_decryption_with_key(self.c_ctx, vsc_data(recipientIdPointer, recipientId.count), privateKey.c_ctx, vsc_data(messageInfoPointer, messageInfo.count))
             })
         })
@@ -230,6 +235,7 @@ import VirgilCryptoCommon
             out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
+
                 return vscf_recipient_cipher_process_decryption(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
@@ -252,6 +258,7 @@ import VirgilCryptoCommon
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
+
             return vscf_recipient_cipher_finish_decryption(self.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)

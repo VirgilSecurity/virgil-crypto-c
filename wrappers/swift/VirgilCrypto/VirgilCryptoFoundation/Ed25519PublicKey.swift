@@ -139,6 +139,7 @@ import VirgilCryptoCommon
             out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
+
                 return vscf_ed25519_public_key_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
@@ -160,6 +161,7 @@ import VirgilCryptoCommon
     @objc public func verify(data: Data, signature: Data) -> Bool {
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Bool in
             signature.withUnsafeBytes({ (signaturePointer: UnsafePointer<byte>) -> Bool in
+
                 return vscf_ed25519_public_key_verify(self.c_ctx, vsc_data(dataPointer, data.count), vsc_data(signaturePointer, signature.count))
             })
         })
@@ -183,6 +185,7 @@ import VirgilCryptoCommon
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
+
             return vscf_ed25519_public_key_export_public_key(self.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
@@ -206,6 +209,7 @@ import VirgilCryptoCommon
     /// RFC 3447 Appendix A.1.1.
     @objc public func importPublicKey(data: Data) throws {
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+
             return vscf_ed25519_public_key_import_public_key(self.c_ctx, vsc_data(dataPointer, data.count))
         })
 
@@ -213,8 +217,12 @@ import VirgilCryptoCommon
     }
 
     /// Generate ephemeral private key of the same type.
-    @objc public func generateEphemeralKey(error: Error) -> PrivateKey {
-        let proxyResult = vscf_ed25519_public_key_generate_ephemeral_key(self.c_ctx, error.c_ctx)
+    @objc public func generateEphemeralKey() throws -> PrivateKey {
+        var error: vscf_error_t
+
+        let proxyResult = vscf_ed25519_public_key_generate_ephemeral_key(self.c_ctx, &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
 
         return PrivateKeyProxy.init(c_ctx: proxyResult!)
     }

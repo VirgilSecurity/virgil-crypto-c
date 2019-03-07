@@ -108,6 +108,7 @@ import VirgilCryptoCommon
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
+
             return vscf_pkcs8_serializer_serialize_public_key(self.c_ctx, publicKey.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
@@ -140,6 +141,7 @@ import VirgilCryptoCommon
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
+
             return vscf_pkcs8_serializer_serialize_private_key(self.c_ctx, privateKey.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)

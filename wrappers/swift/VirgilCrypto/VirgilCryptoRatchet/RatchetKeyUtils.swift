@@ -82,6 +82,7 @@ import VirgilCryptoFoundation
             keyId.withUnsafeMutableBytes({ (keyIdPointer: UnsafeMutablePointer<byte>) -> vscr_status_t in
                 vsc_buffer_init(keyIdBuf)
                 vsc_buffer_use(keyIdBuf, keyIdPointer, keyIdCount)
+
                 return vscr_ratchet_key_utils_compute_public_key_id(self.c_ctx, vsc_data(publicKeyPointer, publicKey.count), keyIdBuf)
             })
         })
@@ -92,26 +93,36 @@ import VirgilCryptoFoundation
         return keyId
     }
 
-    @objc public func extractRatchetPublicKey(data: Data, error: Error) -> Data {
+    @objc public func extractRatchetPublicKey(data: Data) throws -> Data {
+        var error: vscr_error_t
+
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
-            return vscr_ratchet_key_utils_extract_ratchet_public_key(self.c_ctx, vsc_data(dataPointer, data.count), error.c_ctx)
+
+            return vscr_ratchet_key_utils_extract_ratchet_public_key(self.c_ctx, vsc_data(dataPointer, data.count), &error)
         })
 
         defer {
             vsc_buffer_delete(proxyResult)
         }
+
+        try RatchetError.handleStatus(fromC: error.status)
 
         return Data.init(bytes: vsc_buffer_bytes(proxyResult), count: vsc_buffer_len(proxyResult))
     }
 
-    @objc public func extractRatchetPrivateKey(data: Data, error: Error) -> Data {
+    @objc public func extractRatchetPrivateKey(data: Data) throws -> Data {
+        var error: vscr_error_t
+
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
-            return vscr_ratchet_key_utils_extract_ratchet_private_key(self.c_ctx, vsc_data(dataPointer, data.count), error.c_ctx)
+
+            return vscr_ratchet_key_utils_extract_ratchet_private_key(self.c_ctx, vsc_data(dataPointer, data.count), &error)
         })
 
         defer {
             vsc_buffer_delete(proxyResult)
         }
+
+        try RatchetError.handleStatus(fromC: error.status)
 
         return Data.init(bytes: vsc_buffer_bytes(proxyResult), count: vsc_buffer_len(proxyResult))
     }

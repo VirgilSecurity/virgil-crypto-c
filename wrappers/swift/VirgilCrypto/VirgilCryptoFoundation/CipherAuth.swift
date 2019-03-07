@@ -90,6 +90,7 @@ import VirgilCryptoCommon
 
                         vsc_buffer_init(tagBuf)
                         vsc_buffer_use(tagBuf, tagPointer, tagCount)
+
                         return vscf_auth_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), vsc_data(authDataPointer, authData.count), outBuf, tagBuf)
                     })
                 })
@@ -126,6 +127,7 @@ import VirgilCryptoCommon
                     out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                         vsc_buffer_init(outBuf)
                         vsc_buffer_use(outBuf, outPointer, outCount)
+
                         return vscf_auth_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), vsc_data(authDataPointer, authData.count), vsc_data(tagPointer, tag.count), outBuf)
                     })
                 })

@@ -456,10 +456,10 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted name of the Swift enum.
 # ---------------------------------------------------------------------------
-function swift_derive_enum_status_name (wrapper)
-    check_arguments (my, "wrapper", my)
+function swift_derive_enum_status_name (project_name)
+    check_arguments (my, "project_name", my)
 
-    return "$(my.wrapper.project:Pascal)Error"
+    return "$(my.project_name:Pascal)Error"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -471,7 +471,7 @@ function swift_derive_enum_name (enum, wrapper)
     assert_attribute_one_of (my.enum, "name", my)
 
     if my.enum.name = "status"
-        return swift_derive_enum_status_name (my.wrapper)
+        return swift_derive_enum_status_name (my.wrapper.project)
     else
         return "$(my.enum.name:Pascal)"
     endif
@@ -587,6 +587,9 @@ function swift_derive_instance_type (instance)
         elsif my.instance.class = "buffer"
             return "Data"
 
+        elsif my.instance.class = "error"
+            return class_derive_c_instance_type (my.instance)
+
         elsif is_ref (my.instance.class) | defined (my.instance.library)
             return swift_lang_ref (my.instance.class)
 
@@ -699,8 +702,22 @@ endfunction
 #       - proxy call
 #       - finalizing
 # ---------------------------------------------------------------------------
-function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type)
-    check_arguments (my, "swift_method, proxy_call, proxy_return_type", my)
+function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type, wrapper)
+    check_arguments (my, "swift_method, proxy_call, proxy_return_type, wrapper", my)
+
+    #   Wrap errors.
+    for my.swift_method.swift_argument where is_true (swift_argument.is_error)
+        my.errors_instantiation ?= terminator
+        my.errors_instantiation += format_left("\
+            var $(swift_argument.name:): $(swift_argument.type:)
+        ")
+
+        my.errors_handling ?= terminator
+        my.enum_status = swift_derive_enum_status_name (my.swift_argument.project ? my.wrapper.project)
+        my.errors_handling += format_left("\
+            try $(my.enum_status:).handleStatus(fromC: $(swift_argument.name:).status)
+        ")
+    endfor
 
     #   Wrap output buffers.
     for my.swift_method.swift_return where 0.type = "Data" & is_true_both (0.is_buffer, 0.was_argument)
@@ -712,21 +729,21 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type)
         my.buffer_name = swift_return.name ? "result"
 
         my.buffers_instantiation ?= ""
-        my.buffers_instantiation += format_left ("\
+        my.buffers_instantiation += terminator + format_left ("\
             let $(my.buffer_name:)Count = $(swift_return.length_getter:)
             var $(my.buffer_name:) = Data(count: $(my.buffer_name:)Count)
             var $(my.buffer_name:)Buf = .(c_project_common_class_buffer_method_new)()
             defer {
                 .(c_project_common_class_buffer_method_delete)($(my.buffer_name:)Buf)
             }
-        ") + terminator
+        ")
 
         my.buffers_init ?= ""
-        my.buffers_init += format_left("\
+        my.buffers_init += terminator + format_left("\
                 .(c_project_common_class_buffer_method_init)($(my.buffer_name:)Buf)
                 .(c_project_common_class_buffer_method_use)($(my.buffer_name:)Buf, \
                         $(my.buffer_name:)Pointer, $(my.buffer_name:)Count)
-        ") + terminator
+        ")
 
         my.buffers_shrink ?= ""
         my.buffers_shrink += format_left ("\
@@ -748,11 +765,11 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type)
         ")
 
         if swift_argument.access <> "disown"
-            my.buffers_init += format_left("\
+            my.buffers_init += terminator + format_left("\
                 defer {
                     .(c_project_common_class_buffer_method_delete)($(my.buffer_name:)Buf)
                 }
-            ") + terminator
+            ")
         endif
     endfor
 
@@ -765,7 +782,7 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type)
     my.proxy_return_statement = (my.proxy_return_type = "auto") ?? "" ? "-> $(my.proxy_return_type:) "
 
     for my.swift_method.swift_argument where 0.type = "Data"
-        my.opened_scope ?= ""
+        my.opened_scope ?= terminator
         my.opened_scope += format_left("\
             $(my.result_statement?:)$(swift_argument.name:).withUnsafeBytes({ \
                 ($(swift_argument.name:)Pointer: UnsafePointer<byte>) $(my.proxy_return_statement:)in
@@ -776,7 +793,7 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type)
     endfor
 
     for my.swift_method.swift_return where 0.type = "Data" & is_true_both (0.is_buffer, 0.was_argument)
-        my.opened_scope ?= ""
+        my.opened_scope ?= terminator
         my.opened_scope += format_left("\
             $(my.result_statement?:)$(swift_return.name:).withUnsafeMutableBytes({ \
                 ($(swift_return.name:)Pointer: UnsafeMutablePointer<byte>) $(my.proxy_return_statement:)in
@@ -793,7 +810,7 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type)
 
     #   Create shallow copies for objects that is passed as "disown" argument.
     for my.swift_method.swift_argument where swift_argument.access = "disown"
-        my.shallow_copies ?= ""
+        my.shallow_copies ?= terminator
         my.shallow_copies += format_left("\
             var $(swift_argument.name:)Copy = $(swift_argument.method_shallow_copy:)($(swift_argument.name:).c_ctx)
         ", my.scope_count)
@@ -805,7 +822,7 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type)
         my.proxy_invocation = (my.proxy_return_type <> "Void") ?? "let proxyResult = " ? ""
     endif
     my.proxy_invocation += my.proxy_call
-    my.proxy_invocation = format_left (my.proxy_invocation, my.scope_count)
+    my.proxy_invocation = terminator + format_left (my.proxy_invocation, my.scope_count)
 
     #   Create closed scopes for data and buffers.
     while my.scope_count > 0
@@ -814,8 +831,30 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type)
         my.closed_scope += format_left("})", my.scope_count)
     endwhile
 
-    return (my.buffers_instantiation ? "") + (my.opened_scope ? "") + (my.buffers_init ? "") + \
-            (my.shallow_copies ? "") + my.proxy_invocation + (my.closed_scope ? "") + (my.buffers_shrink ? "")
+    #   Defer returned buffer.
+    for my.swift_method.swift_return where \
+            is_true (swift_return.is_buffer) & string_in (swift_return.access, "disown, retain")
+
+        my.buffers_cleanup ?= terminator
+        my.buffers_cleanup += format_left ("\
+            defer {
+                .(c_project_common_class_buffer_method_delete)(proxyResult)
+            }
+        ")
+    endfor
+
+    #   Handle returned status.
+    if is_true (my.swift_method.handle_proxy_status)
+        my.errors_handling ?= ""
+        my.enum_status = swift_derive_enum_status_name (my.wrapper.project)
+        my.errors_handling += terminator + format_left("\
+            try $(my.enum_status:).handleStatus(fromC: proxyResult)
+        ")
+    endif
+
+    return (my.errors_instantiation ? "") + (my.buffers_instantiation ? "") + (my.opened_scope ? "") + \
+            (my.buffers_init ? "") + (my.shallow_copies ? "") + my.proxy_invocation + (my.closed_scope ? "") + \
+            (my.buffers_shrink ? "") + (my.buffers_cleanup ? "") + (my.errors_handling ? "")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -868,6 +907,9 @@ function swift_format_c_proxy_args (class, method)
 
         elsif string_equal (argument.class, "buffer")
             my.proxy_arg = "$(my.arg_name:)Buf"
+
+        elsif string_equal (argument.class, "error")
+            my.proxy_arg = "&$(my.arg_name:)"
 
         elsif has_one_of_attribute (argument, "class, api, interface, impl")
             if argument.access = "disown"
@@ -996,6 +1038,30 @@ function swift_map_attr_scope (swift_component, component)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return true if swift method handle status returned from the C proxy.
+# ---------------------------------------------------------------------------
+function swift_derive_handle_proxy_status(method)
+    check_arguments (my, "method", my)
+
+    return count (my.method.return, string_equal (return.enum, "status"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true if swift method must throws.
+# ---------------------------------------------------------------------------
+function swift_derive_method_throws(method)
+    check_arguments (my, "method", my)
+
+    if count (my.method.return, string_equal (return.enum, "status"))
+        return "1"
+    elsif count (my.method.argument, string_equal (argument.class, "error") & argument.access = "readwrite")
+        return "1"
+    else
+        return "0"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Map <instance/> attributes to the <swift_instance type=""/> attributes.
 # ---------------------------------------------------------------------------
 function swift_map_instance_type (swift_instance, instance)
@@ -1017,6 +1083,9 @@ function swift_map_instance_type (swift_instance, instance)
 
         elsif my.instance.class = "buffer"
             my.swift_instance.is_buffer = "1"
+
+        elsif my.instance.class = "error"
+            my.swift_instance.is_error= "1"
         endif
 
     elsif defined (my.instance.interface)
@@ -1350,6 +1419,19 @@ function swift_create_return (return, destination, wrapper, meta)
     endnew
 endfunction
 
+
+# ---------------------------------------------------------------------------
+#   Remove temporary create swift arguments that handle information about
+#   error context that is passed to the C proxy call.
+# ---------------------------------------------------------------------------
+function swift_remove_error_arguments (swift_method)
+    check_arguments (my, "swift_method", my)
+
+    for my.swift_method.swift_argument where is_true (swift_argument.is_error)
+        delete swift_argument
+    endfor
+endfunction
+
 # ---------------------------------------------------------------------------
 #   Create entity <swift_method/> with <method/> declaration.
 # ---------------------------------------------------------------------------
@@ -1359,7 +1441,8 @@ function swift_create_method_declaration (class, method, destination, wrapper, m
     new swift_method to my.destination
         . = swift_format_description (my.method) ?
         .name = swift_derive_method_name (method, my.wrapper)
-        .throws = count (my.method.return, string_equal (return.enum, "status")) ?? "1" ? "0"
+        .throws = swift_derive_method_throws (my.method)
+        .handle_proxy_status = swift_derive_handle_proxy_status (my.method)
         .interface = my.method.interface ?
 
         if ! defined (my.method.interface)
@@ -1392,7 +1475,9 @@ endfunction
 function swift_create_interface_method (interface, method, destination, wrapper, meta)
     check_arguments (my, "interface, method, destination, wrapper, meta", my)
 
-    return swift_create_method_declaration (my.interface, my.method, my.destination, my.wrapper, my.meta)
+    my.swift_method = swift_create_method_declaration (my.interface, my.method, my.destination, my.wrapper, my.meta)
+    swift_remove_error_arguments (my.swift_method)
+    return my.swift_method
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1408,45 +1493,33 @@ function swift_create_class_method (class, method, destination, wrapper, meta)
     my.proxy_args = swift_format_c_proxy_args (my.class, my.method)
     my.proxy_call = "$(class_derive_c_method (my.class, my.method))($(my.proxy_args:))"
     my.proxy_return_type = swift_derive_proxy_return_type (my.method)
-    my.proxy_invocation = swift_wrap_c_proxy_call (my.swift_method, my.proxy_call, my.proxy_return_type)
-
-    #   Handle statuses
-    if is_true (my.swift_method.throws)
-        my.enum_status = swift_derive_enum_status_name (my.wrapper)
-        my.handle_statuses = format_left("try $(my.enum_status:).handleStatus(fromC: proxyResult)")
-    endif
+    my.proxy_invocation = swift_wrap_c_proxy_call (my.swift_method, my.proxy_call, my.proxy_return_type, my.wrapper)
 
     #   Return result
     if count (my.swift_method.swift_return) = 1
         my.swift_return = my.swift_method->swift_return
 
-        my.return_result = ""
-
-        if is_true (my.swift_return.is_buffer) & string_in (my.swift_return.access, "disown, retain")
-            my.return_result += format_left ("\
-                defer {
-                    .(c_project_common_class_buffer_method_delete)(proxyResult)
-                }
-            ") + terminator
-        endif
-
-        my.return_result += format_left ("return $(swift_wrap_c_returned_value (my.swift_method->swift_return))")
+        my.return_result = terminator + \
+                format_left ("return $(swift_wrap_c_returned_value (my.swift_method->swift_return))")
 
     elsif count (my.swift_method.swift_return) > 1
         my.result_class = swift_derive_result_class_name (my.destination, my.swift_method)
         my.result_class_init_args = swift_format_result_class_init_args (my.swift_method)
 
-        my.return_result = format_left ("return $(my.result_class:)($(my.result_class_init_args:))")
+        my.return_result = terminator + \
+                format_left ("return $(my.result_class:)($(my.result_class_init_args:))")
     endif
 
     new swift_code to my.swift_method
         my.method_body = ""
         my.method_body += my.proxy_invocation ? ""
-        my.method_body += terminator + my.handle_statuses ? ""
-        my.method_body += terminator + my.return_result ? ""
+        my.method_body += my.return_result ? ""
 
         . = my.method_body
     endnew
+
+    #   Cleanup
+    swift_remove_error_arguments (my.swift_method)
 
     return my.swift_method
 endfunction
@@ -1785,7 +1858,7 @@ function swift_create_class_constructor (class, constructor, destination, wrappe
         my.proxy_args = swift_format_c_proxy_args (my.class, my.constructor)
         my.proxy_call = "$(class_derive_c_constructor (my.class, my.constructor))($(my.proxy_args:))"
         my.proxy_return_type = swift_derive_class_context_type (my.class) + "?"
-        my.proxy_invocation = swift_wrap_c_proxy_call (swift_constructor, my.proxy_call, my.proxy_return_type)
+        my.proxy_invocation = swift_wrap_c_proxy_call (swift_constructor, my.proxy_call, my.proxy_return_type, my.wrapper)
 
         my.context_assignment = format_left ("self.c_ctx = proxyResult!")
 
@@ -2070,7 +2143,7 @@ function swift_create_class_module (class, destination, wrapper, meta)
 
     assert_attribute (my.class, "name", my)
 
-    if string_in (my.class.name, "data, buffer")
+    if string_in (my.class.name, "data, buffer, error")
         #   Do not generate classes that can be mapped to the built-in types.
         return
     endif
@@ -2142,7 +2215,7 @@ function swift_create_enum_module (enum, destination, wrapper, meta)
     assert_attribute (my.enum, "name", my)
 
     new swift_module to my.destination
-        .name = swift_derive_module_name (my.enum)
+        .name = swift_derive_enum_name (my.enum, my.wrapper)
         .source_file_name = 0.name + ".swift"
         .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
 

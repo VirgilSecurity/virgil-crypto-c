@@ -67,6 +67,7 @@ import VirgilCryptoCommon
     /// Note, data is copied.
     public init(algId: AlgId, rawKeyData: Data) {
         let proxyResult = rawKeyData.withUnsafeBytes({ (rawKeyDataPointer: UnsafePointer<byte>) -> OpaquePointer? in
+
             return vscf_raw_key_new_with_data(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), vsc_data(rawKeyDataPointer, rawKeyData.count))
         })
 

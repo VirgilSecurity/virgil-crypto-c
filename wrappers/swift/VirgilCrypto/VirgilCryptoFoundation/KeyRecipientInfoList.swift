@@ -72,6 +72,7 @@ import VirgilCryptoCommon
     /// Note, ownership is transfered.
     @objc public func add(keyRecipientInfo: KeyRecipientInfo) {
         var keyRecipientInfoCopy = vscf_key_recipient_info_shallow_copy(keyRecipientInfo.c_ctx)
+
         vscf_key_recipient_info_list_add(self.c_ctx, &keyRecipientInfoCopy)
     }
 

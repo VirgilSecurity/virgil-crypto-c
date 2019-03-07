@@ -65,6 +65,7 @@ import VirgilCryptoCommon
     @objc public func verify(data: Data, signature: Data) -> Bool {
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Bool in
             signature.withUnsafeBytes({ (signaturePointer: UnsafePointer<byte>) -> Bool in
+
                 return vscf_verify(self.c_ctx, vsc_data(dataPointer, data.count), vsc_data(signaturePointer, signature.count))
             })
         })
