@@ -287,7 +287,7 @@ vscf_rsa_private_key_decrypted_len(vscf_rsa_private_key_t *self, size_t data_len
 //  Return length in bytes required to hold signature.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_private_key_signature_len(vscf_rsa_private_key_t *self) {
+vscf_rsa_private_key_signature_len(const vscf_rsa_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
 

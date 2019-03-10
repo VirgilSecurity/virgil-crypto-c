@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Provide interface for signing data with private key.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,12 +44,35 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_sign_hash.h"
-#include "vscf_assert.h"
-#include "vscf_sign_hash_api.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Verify data of any size.
+//  Compatible with the class "signer".
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_VERIFIER_H_INCLUDED
+#define VSCF_VERIFIER_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_status.h"
+#include "vscf_impl.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -65,68 +82,85 @@
 // --------------------------------------------------------------------------
 
 //
-//  Return length in bytes required to hold signature.
+//  Handle 'verifier' context.
+//
+typedef struct vscf_verifier_t vscf_verifier_t;
+
+//
+//  Return size of 'vscf_verifier_t'.
 //
 VSCF_PUBLIC size_t
-vscf_sign_hash_signature_len(const vscf_impl_t *impl) {
-
-    const vscf_sign_hash_api_t *sign_hash_api = vscf_sign_hash_api(impl);
-    VSCF_ASSERT_PTR (sign_hash_api);
-
-    VSCF_ASSERT_PTR (sign_hash_api->signature_len_cb);
-    return sign_hash_api->signature_len_cb (impl);
-}
+vscf_verifier_ctx_size(void);
 
 //
-//  Sign data given private key.
+//  Perform initialization of pre-allocated context.
+//
+VSCF_PUBLIC void
+vscf_verifier_init(vscf_verifier_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCF_PUBLIC void
+vscf_verifier_cleanup(vscf_verifier_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCF_PUBLIC vscf_verifier_t *
+vscf_verifier_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if context was allocated by the caller.
+//
+VSCF_PUBLIC void
+vscf_verifier_delete(vscf_verifier_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscf_verifier_new ()'.
+//
+VSCF_PUBLIC void
+vscf_verifier_destroy(vscf_verifier_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCF_PUBLIC vscf_verifier_t *
+vscf_verifier_shallow_copy(vscf_verifier_t *self);
+
+//
+//  Start verifying a signature.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_sign_hash(vscf_impl_t *impl, vsc_data_t hash_digest, vscf_alg_id_t hash_id, vsc_buffer_t *signature) {
-
-    const vscf_sign_hash_api_t *sign_hash_api = vscf_sign_hash_api(impl);
-    VSCF_ASSERT_PTR (sign_hash_api);
-
-    VSCF_ASSERT_PTR (sign_hash_api->sign_hash_cb);
-    return sign_hash_api->sign_hash_cb (impl, hash_digest, hash_id, signature);
-}
+vscf_verifier_reset(vscf_verifier_t *self, vsc_data_t signature);
 
 //
-//  Return sign hash API, or NULL if it is not implemented.
+//  Add given data to the signed data.
 //
-VSCF_PUBLIC const vscf_sign_hash_api_t *
-vscf_sign_hash_api(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_SIGN_HASH);
-    return (const vscf_sign_hash_api_t *) api;
-}
+VSCF_PUBLIC void
+vscf_verifier_update(vscf_verifier_t *self, vsc_data_t data);
 
 //
-//  Check if given object implements interface 'sign hash'.
+//  Verify accumulated data.
 //
 VSCF_PUBLIC bool
-vscf_sign_hash_is_implemented(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    return vscf_impl_api(impl, vscf_api_tag_SIGN_HASH) != NULL;
-}
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_sign_hash_api_tag(const vscf_sign_hash_api_t *sign_hash_api) {
-
-    VSCF_ASSERT_PTR (sign_hash_api);
-
-    return sign_hash_api->api_tag;
-}
+vscf_verifier_verify(vscf_verifier_t *self, vscf_impl_t *public_key);
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_VERIFIER_H_INCLUDED
 //  @end

@@ -47,16 +47,14 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'sign hash' API.
+//  Sign data of any size.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_SIGN_HASH_API_H_INCLUDED
-#define VSCF_SIGN_HASH_API_H_INCLUDED
+#ifndef VSCF_SIGNER_H_INCLUDED
+#define VSCF_SIGNER_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_alg_id.h"
 #include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -85,34 +83,96 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Return length in bytes required to hold signature.
+//  Handle 'signer' context.
 //
-typedef size_t (*vscf_sign_hash_api_signature_len_fn)(const vscf_impl_t *impl);
+typedef struct vscf_signer_t vscf_signer_t;
 
 //
-//  Callback. Sign data given private key.
+//  Return size of 'vscf_signer_t'.
 //
-typedef vscf_status_t (*vscf_sign_hash_api_sign_hash_fn)(vscf_impl_t *impl, vsc_data_t hash_digest,
-        vscf_alg_id_t hash_id, vsc_buffer_t *signature);
+VSCF_PUBLIC size_t
+vscf_signer_ctx_size(void);
 
 //
-//  Contains API requirements of the interface 'sign hash'.
+//  Perform initialization of pre-allocated context.
 //
-struct vscf_sign_hash_api_t {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'sign_hash' MUST be equal to the 'vscf_api_tag_SIGN_HASH'.
-    //
-    vscf_api_tag_t api_tag;
-    //
-    //  Return length in bytes required to hold signature.
-    //
-    vscf_sign_hash_api_signature_len_fn signature_len_cb;
-    //
-    //  Sign data given private key.
-    //
-    vscf_sign_hash_api_sign_hash_fn sign_hash_cb;
-};
+VSCF_PUBLIC void
+vscf_signer_init(vscf_signer_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCF_PUBLIC void
+vscf_signer_cleanup(vscf_signer_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCF_PUBLIC vscf_signer_t *
+vscf_signer_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if context was allocated by the caller.
+//
+VSCF_PUBLIC void
+vscf_signer_delete(vscf_signer_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscf_signer_new ()'.
+//
+VSCF_PUBLIC void
+vscf_signer_destroy(vscf_signer_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCF_PUBLIC vscf_signer_t *
+vscf_signer_shallow_copy(vscf_signer_t *self);
+
+//
+//  Setup dependency to the interface 'hash' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_signer_use_hash(vscf_signer_t *self, vscf_impl_t *hash);
+
+//
+//  Setup dependency to the interface 'hash' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_signer_take_hash(vscf_signer_t *self, vscf_impl_t *hash);
+
+//
+//  Release dependency to the interface 'hash'.
+//
+VSCF_PUBLIC void
+vscf_signer_release_hash(vscf_signer_t *self);
+
+//
+//  Start a processing a new signature.
+//
+VSCF_PUBLIC void
+vscf_signer_reset(vscf_signer_t *self);
+
+//
+//  Add given data to the signed data.
+//
+VSCF_PUBLIC void
+vscf_signer_update(vscf_signer_t *self, vsc_data_t data);
+
+//
+//  Return length of the signature.
+//
+VSCF_PUBLIC size_t
+vscf_signer_signature_len(vscf_signer_t *self, const vscf_impl_t *private_key);
+
+//
+//  Accomplish signing and return signature.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_signer_sign(vscf_signer_t *self, vscf_impl_t *private_key, vsc_buffer_t *signature);
 
 
 // --------------------------------------------------------------------------
@@ -128,5 +188,5 @@ struct vscf_sign_hash_api_t {
 
 
 //  @footer
-#endif // VSCF_SIGN_HASH_API_H_INCLUDED
+#endif // VSCF_SIGNER_H_INCLUDED
 //  @end

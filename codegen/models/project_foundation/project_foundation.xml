@@ -123,6 +123,8 @@
     <class name="list key value node"/>
     <class name="message info custom params"/>
     <class name="key provider"/>
+    <class name="signer"/>
+    <class name="verifier"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>

@@ -134,6 +134,8 @@ option(VSCF_KEY_RECIPIENT_LIST "Enable class 'key recipient list'." ON)
 option(VSCF_LIST_KEY_VALUE_NODE "Enable class 'list key value node'." ON)
 option(VSCF_MESSAGE_INFO_CUSTOM_PARAMS "Enable class 'message info custom params'." ON)
 option(VSCF_KEY_PROVIDER "Enable class 'key provider'." ON)
+option(VSCF_SIGNER "Enable class 'signer'." ON)
+option(VSCF_VERIFIER "Enable class 'verifier'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREAD
@@ -224,6 +226,8 @@ mark_as_advanced(
         VSCF_LIST_KEY_VALUE_NODE
         VSCF_MESSAGE_INFO_CUSTOM_PARAMS
         VSCF_KEY_PROVIDER
+        VSCF_SIGNER
+        VSCF_VERIFIER
         )
 
 if(VSCF_MULTI_THREAD AND NOT MBEDTLS_THREADING_C)
@@ -2139,6 +2143,69 @@ if(VSCF_KEY_PROVIDER AND NOT VSCF_PKCS8_DER_DESERIALIZER)
     message("--")
     message("Feature VSCF_KEY_PROVIDER depends on the feature:")
     message("     VSCF_PKCS8_DER_DESERIALIZER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_SIGNER AND NOT VSCF_SHA384)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_SIGNER depends on the feature:")
+    message("     VSCF_SHA384 - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_SIGNER AND NOT VSCF_ALG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_SIGNER depends on the feature:")
+    message("     VSCF_ALG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_SIGNER AND NOT VSCF_SIGN_HASH)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_SIGNER depends on the feature:")
+    message("     VSCF_SIGN_HASH - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_VERIFIER AND NOT VSCF_ALG_FACTORY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_VERIFIER depends on the feature:")
+    message("     VSCF_ALG_FACTORY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_VERIFIER AND NOT VSCF_ALG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_VERIFIER depends on the feature:")
+    message("     VSCF_ALG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_VERIFIER AND NOT VSCF_HASH)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_VERIFIER depends on the feature:")
+    message("     VSCF_HASH - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_VERIFIER AND NOT VSCF_VERIFY_HASH)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_VERIFIER depends on the feature:")
+    message("     VSCF_VERIFY_HASH - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

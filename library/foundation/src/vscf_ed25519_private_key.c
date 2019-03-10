@@ -243,7 +243,7 @@ vscf_ed25519_private_key_decrypted_len(vscf_ed25519_private_key_t *self, size_t 
 //  Return length in bytes required to hold signature.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_private_key_signature_len(vscf_ed25519_private_key_t *self) {
+vscf_ed25519_private_key_signature_len(const vscf_ed25519_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
 

@@ -1,7 +1,7 @@
 <interface name="sign hash">
     Provide interface for signing data with private key.
 
-    <method name="signature len">
+    <method name="signature len" is_const="1">
         Return length in bytes required to hold signature.
 
         <return type="size"/>

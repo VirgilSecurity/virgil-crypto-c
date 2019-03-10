@@ -134,6 +134,9 @@ import VSCFoundation
     /// type does not correspond to the actual type.
     case errorMessageInfoCustomParamTypeMismatch = -307
 
+    /// Signature format is corrupted.
+    case errorBadSignature = -308
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscf_status_t) {
         self.init(rawValue: Int(status.rawValue))!
