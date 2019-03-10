@@ -200,7 +200,11 @@ enum vscf_status_t {
     //  A custom parameter with a given key is found, but the requested value
     //  type does not correspond to the actual type.
     //
-    vscf_status_ERROR_MESSAGE_INFO_CUSTOM_PARAM_TYPE_MISMATCH = -307
+    vscf_status_ERROR_MESSAGE_INFO_CUSTOM_PARAM_TYPE_MISMATCH = -307,
+    //
+    //  Signature format is corrupted.
+    //
+    vscf_status_ERROR_BAD_SIGNATURE = -308
 };
 typedef enum vscf_status_t vscf_status_t;
 

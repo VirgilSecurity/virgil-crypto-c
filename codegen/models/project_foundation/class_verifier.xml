@@ -1,0 +1,36 @@
+<class name="verifier">
+    Verify data of any size.
+    Compatible with the class "signer".
+
+    <require class="alg factory"/>
+    <require interface="alg"/>
+    <require interface="hash"/>
+    <require interface="verify hash"/>
+
+    <property name="hash" interface="hash"/>
+    <property name="asn1rd" impl="asn1rd"/>
+    <property name="alg info der deserializer" impl="alg info der deserializer"/>
+    <property name="raw signature" class="buffer"/>
+
+    <method name="reset">
+        Start verifying a signature.
+
+        <argument name="signature" class="data"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="update">
+        Add given data to the signed data.
+
+        <argument name="data" class="data"/>
+    </method>
+
+    <method name="verify">
+        Verify accumulated data.
+
+        <argument name="public key" interface="verify hash" access="readwrite"/>
+
+        <return type="boolean"/>
+    </method>
+</class>

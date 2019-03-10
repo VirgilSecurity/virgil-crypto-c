@@ -129,4 +129,8 @@
         A custom parameter with a given key is found, but the requested value
         type does not correspond to the actual type.
     </constant>
+
+    <constant name="error bad signature" value="-308">
+        Signature format is corrupted.
+    </constant>
 </enum>

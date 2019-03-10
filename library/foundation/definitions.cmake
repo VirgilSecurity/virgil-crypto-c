@@ -141,6 +141,8 @@ target_compile_definitions(foundation
             "VSCF_LIST_KEY_VALUE_NODE=$<BOOL:${VSCF_LIST_KEY_VALUE_NODE}>"
             "VSCF_MESSAGE_INFO_CUSTOM_PARAMS=$<BOOL:${VSCF_MESSAGE_INFO_CUSTOM_PARAMS}>"
             "VSCF_KEY_PROVIDER=$<BOOL:${VSCF_KEY_PROVIDER}>"
+            "VSCF_SIGNER=$<BOOL:${VSCF_SIGNER}>"
+            "VSCF_VERIFIER=$<BOOL:${VSCF_VERIFIER}>"
         PRIVATE
             $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCF_BUILD_SHARED_LIBS>
         )

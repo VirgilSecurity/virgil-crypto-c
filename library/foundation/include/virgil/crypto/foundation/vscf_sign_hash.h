@@ -93,7 +93,7 @@ typedef struct vscf_sign_hash_api_t vscf_sign_hash_api_t;
 //  Return length in bytes required to hold signature.
 //
 VSCF_PUBLIC size_t
-vscf_sign_hash_signature_len(vscf_impl_t *impl);
+vscf_sign_hash_signature_len(const vscf_impl_t *impl);
 
 //
 //  Sign data given private key.
