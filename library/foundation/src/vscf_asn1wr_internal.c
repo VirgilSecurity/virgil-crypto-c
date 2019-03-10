@@ -87,8 +87,13 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //
     (vscf_asn1_writer_api_reset_fn)vscf_asn1wr_reset,
     //
-    //  Move written data to the buffer beginning and forbid further operations.
-    //  Returns written size in bytes.
+    //  Finalize writing and forbid further operations.
+    //
+    //  Note, that ASN.1 structure is always written to the buffer end, and
+    //  if argument "do not adjust" is false, then data is moved to the
+    //  beginning, otherwise - data is left at the buffer end.
+    //
+    //  Returns length of the written bytes.
     //
     (vscf_asn1_writer_api_finish_fn)vscf_asn1wr_finish,
     //

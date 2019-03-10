@@ -498,11 +498,8 @@ vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out) {
     }
 
     if (status == vscf_status_SUCCESS) {
+        vscf_asn1wr_finish(asn1wr, vsc_buffer_is_reverse(out));
         vsc_buffer_inc_used(out, len);
-
-        if (!vsc_buffer_is_reverse(out)) {
-            vscf_asn1wr_finish(asn1wr);
-        }
     }
 
     vscf_pkcs8_der_serializer_destroy(&pkcs8);

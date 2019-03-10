@@ -87,10 +87,15 @@ extern "C" {
 typedef void (*vscf_asn1_writer_api_reset_fn)(vscf_impl_t *impl, byte *out, size_t out_len);
 
 //
-//  Callback. Move written data to the buffer beginning and forbid further operations.
-//          Returns written size in bytes.
+//  Callback. Finalize writing and forbid further operations.
 //
-typedef size_t (*vscf_asn1_writer_api_finish_fn)(vscf_impl_t *impl);
+//          Note, that ASN.1 structure is always written to the buffer end, and
+//          if argument "do not adjust" is false, then data is moved to the
+//          beginning, otherwise - data is left at the buffer end.
+//
+//          Returns length of the written bytes.
+//
+typedef size_t (*vscf_asn1_writer_api_finish_fn)(vscf_impl_t *impl, bool do_not_adjust);
 
 //
 //  Callback. Returns pointer to the inner buffer.
@@ -275,8 +280,13 @@ struct vscf_asn1_writer_api_t {
     //
     vscf_asn1_writer_api_reset_fn reset_cb;
     //
-    //  Move written data to the buffer beginning and forbid further operations.
-    //  Returns written size in bytes.
+    //  Finalize writing and forbid further operations.
+    //
+    //  Note, that ASN.1 structure is always written to the buffer end, and
+    //  if argument "do not adjust" is false, then data is moved to the
+    //  beginning, otherwise - data is left at the buffer end.
+    //
+    //  Returns length of the written bytes.
     //
     vscf_asn1_writer_api_finish_fn finish_cb;
     //

@@ -373,10 +373,7 @@ vscf_signer_sign(vscf_signer_t *self, vscf_impl_t *private_key, vsc_buffer_t *si
         return vscf_asn1wr_status(self->asn1wr);
     }
 
-    if (!vsc_buffer_is_reverse(signature)) {
-        vscf_asn1wr_finish(self->asn1wr);
-    }
-
+    vscf_asn1wr_finish(self->asn1wr, vsc_buffer_is_reverse(signature));
     vsc_buffer_inc_used(signature, len);
 
     return vscf_status_SUCCESS;

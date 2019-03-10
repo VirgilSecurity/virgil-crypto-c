@@ -44,9 +44,14 @@ import VSCFoundation
     /// Reset all internal states and prepare to new ASN.1 writing operations.
     @objc func reset(out: UnsafeMutablePointer<UInt8>, outLen: Int)
 
-    /// Move written data to the buffer beginning and forbid further operations.
-    /// Returns written size in bytes.
-    @objc func finish() -> Int
+    /// Finalize writing and forbid further operations.
+    ///
+    /// Note, that ASN.1 structure is always written to the buffer end, and
+    /// if argument "do not adjust" is false, then data is moved to the
+    /// beginning, otherwise - data is left at the buffer end.
+    ///
+    /// Returns length of the written bytes.
+    @objc func finish(doNotAdjust: Bool) -> Int
 
     /// Returns pointer to the inner buffer.
     @objc func bytes() -> UnsafeMutablePointer<UInt8>
@@ -182,10 +187,15 @@ import VSCFoundation
         vscf_asn1_writer_reset(self.c_ctx, out, outLen)
     }
 
-    /// Move written data to the buffer beginning and forbid further operations.
-    /// Returns written size in bytes.
-    @objc public func finish() -> Int {
-        let proxyResult = vscf_asn1_writer_finish(self.c_ctx)
+    /// Finalize writing and forbid further operations.
+    ///
+    /// Note, that ASN.1 structure is always written to the buffer end, and
+    /// if argument "do not adjust" is false, then data is moved to the
+    /// beginning, otherwise - data is left at the buffer end.
+    ///
+    /// Returns length of the written bytes.
+    @objc public func finish(doNotAdjust: Bool) -> Int {
+        let proxyResult = vscf_asn1_writer_finish(self.c_ctx, doNotAdjust)
 
         return proxyResult
     }

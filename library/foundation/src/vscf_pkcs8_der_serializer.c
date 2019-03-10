@@ -293,10 +293,8 @@ vscf_pkcs8_der_serializer_serialize_public_key(
         return vscf_error_status(&error);
     }
 
+    vscf_asn1_writer_finish(self->asn1_writer, vsc_buffer_is_reverse(out));
     vsc_buffer_inc_used(out, len);
-    if (!vsc_buffer_is_reverse(out)) {
-        vscf_asn1_writer_finish(self->asn1_writer);
-    }
 
     return vscf_status_SUCCESS;
 }
@@ -355,10 +353,8 @@ vscf_pkcs8_der_serializer_serialize_private_key(
         return vscf_error_status(&error);
     }
 
+    vscf_asn1_writer_finish(self->asn1_writer, vsc_buffer_is_reverse(out));
     vsc_buffer_inc_used(out, len);
-    if (!vsc_buffer_is_reverse(out)) {
-        vscf_asn1_writer_finish(self->asn1_writer);
-    }
 
     return vscf_status_SUCCESS;
 }

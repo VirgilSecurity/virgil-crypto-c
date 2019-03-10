@@ -336,18 +336,23 @@ vscf_asn1wr_reset(vscf_asn1wr_t *self, byte *out, size_t out_len) {
 }
 
 //
-//  Move written data to the buffer beginning and forbid further operations.
-//  Returns written size in bytes.
+//  Finalize writing and forbid further operations.
+//
+//  Note, that ASN.1 structure is always written to the buffer end, and
+//  if argument "do not adjust" is false, then data is moved to the
+//  beginning, otherwise - data is left at the buffer end.
+//
+//  Returns length of the written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_finish(vscf_asn1wr_t *self) {
+vscf_asn1wr_finish(vscf_asn1wr_t *self, bool do_not_adjust) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(self->status == vscf_status_SUCCESS);
 
     size_t size = (size_t)(self->end - self->curr);
 
-    if (self->start < self->curr) {
+    if (!do_not_adjust && (self->start < self->curr)) {
         memmove(self->start, self->curr, size);
     }
 
