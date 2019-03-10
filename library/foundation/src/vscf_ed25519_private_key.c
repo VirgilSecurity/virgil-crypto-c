@@ -311,11 +311,9 @@ vscf_ed25519_private_key_export_private_key(const vscf_ed25519_private_key_t *se
     vscf_asn1wr_init(&asn1wr);
     vscf_asn1wr_reset(&asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
     size_t len = vscf_asn1wr_write_octet_str(&asn1wr, vsc_data(self->secret_key, ED25519_KEY_LEN));
-    vsc_buffer_inc_used(out, len);
 
-    if (!vsc_buffer_is_reverse(out)) {
-        vscf_asn1wr_finish(&asn1wr);
-    }
+    vscf_asn1wr_finish(&asn1wr, vsc_buffer_is_reverse(out));
+    vsc_buffer_inc_used(out, len);
 
     vscf_asn1wr_cleanup(&asn1wr);
 

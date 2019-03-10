@@ -95,11 +95,16 @@ VSCF_PUBLIC void
 vscf_asn1_writer_reset(vscf_impl_t *impl, byte *out, size_t out_len);
 
 //
-//  Move written data to the buffer beginning and forbid further operations.
-//  Returns written size in bytes.
+//  Finalize writing and forbid further operations.
+//
+//  Note, that ASN.1 structure is always written to the buffer end, and
+//  if argument "do not adjust" is false, then data is moved to the
+//  beginning, otherwise - data is left at the buffer end.
+//
+//  Returns length of the written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1_writer_finish(vscf_impl_t *impl);
+vscf_asn1_writer_finish(vscf_impl_t *impl, bool do_not_adjust);
 
 //
 //  Returns pointer to the inner buffer.
