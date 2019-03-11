@@ -78,7 +78,7 @@ import VSCFoundation
     @objc public func setEntropySource(entropySource: EntropySource) throws {
         vscf_ctr_drbg_release_entropy_source(self.c_ctx)
         let proxyResult = vscf_ctr_drbg_use_entropy_source(self.c_ctx, entropySource.c_ctx)
-        try WrapperToTheSwiftProgrammingLanguageError.handleStatus(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Force entropy to be gathered at the beginning of every call to
