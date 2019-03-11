@@ -86,7 +86,8 @@ import VSCFoundation
 
     /// Deserialize given public key as an interchangeable format to the object.
     @objc public func deserializePublicKey(publicKeyData: Data) throws -> RawKey {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = publicKeyData.withUnsafeBytes({ (publicKeyDataPointer: UnsafePointer<byte>) in
 
@@ -100,7 +101,8 @@ import VSCFoundation
 
     /// Deserialize given private key as an interchangeable format to the object.
     @objc public func deserializePrivateKey(privateKeyData: Data) throws -> RawKey {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = privateKeyData.withUnsafeBytes({ (privateKeyDataPointer: UnsafePointer<byte>) in
 

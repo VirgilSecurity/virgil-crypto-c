@@ -76,7 +76,8 @@ import VSCFoundation
     /// Note, that caller code is responsible to reset ASN.1 reader with
     /// an input buffer.
     @objc public func deserializePublicKeyInplace() throws -> RawKey {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(self.c_ctx, &error)
 
@@ -89,7 +90,8 @@ import VSCFoundation
     /// Note, that caller code is responsible to reset ASN.1 reader with
     /// an input buffer.
     @objc public func deserializePrivateKeyInplace() throws -> RawKey {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = vscf_pkcs8_der_deserializer_deserialize_private_key_inplace(self.c_ctx, &error)
 
@@ -107,7 +109,8 @@ import VSCFoundation
 
     /// Deserialize given public key as an interchangeable format to the object.
     @objc public func deserializePublicKey(publicKeyData: Data) throws -> RawKey {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = publicKeyData.withUnsafeBytes({ (publicKeyDataPointer: UnsafePointer<byte>) in
 
@@ -121,7 +124,8 @@ import VSCFoundation
 
     /// Deserialize given private key as an interchangeable format to the object.
     @objc public func deserializePrivateKey(privateKeyData: Data) throws -> RawKey {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = privateKeyData.withUnsafeBytes({ (privateKeyDataPointer: UnsafePointer<byte>) in
 

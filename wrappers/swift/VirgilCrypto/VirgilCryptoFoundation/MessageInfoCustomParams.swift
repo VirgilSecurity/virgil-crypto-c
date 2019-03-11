@@ -101,7 +101,8 @@ import VSCFoundation
 
     /// Return custom parameter with integer value.
     @objc public func findInt(key: Data) throws -> Int32 {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Int32 in
 
@@ -115,7 +116,8 @@ import VSCFoundation
 
     /// Return custom parameter with UTF8 string value.
     @objc public func findString(key: Data) throws -> Data {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) in
 
@@ -129,7 +131,8 @@ import VSCFoundation
 
     /// Return custom parameter with octet string value.
     @objc public func findData(key: Data) throws -> Data {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) in
 

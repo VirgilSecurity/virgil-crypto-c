@@ -76,7 +76,8 @@ import VSCFoundation
     /// Note, that caller code is responsible to reset ASN.1 reader with
     /// an input buffer.
     @objc public func deserializeInplace() throws -> AlgInfo {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = vscf_alg_info_der_deserializer_deserialize_inplace(self.c_ctx, &error)
 
@@ -94,7 +95,8 @@ import VSCFoundation
 
     /// Deserialize algorithm from the data.
     @objc public func deserialize(data: Data) throws -> AlgInfo {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
 

@@ -93,7 +93,8 @@ import VirgilCryptoFoundation
     }
 
     @objc public func extractRatchetPublicKey(data: Data) throws -> Data {
-        var error: vscr_error_t
+        var error: vscr_error_t = vscr_error_t()
+        vscr_error_reset(&error)
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
 
@@ -110,7 +111,8 @@ import VirgilCryptoFoundation
     }
 
     @objc public func extractRatchetPrivateKey(data: Data) throws -> Data {
-        var error: vscr_error_t
+        var error: vscr_error_t = vscr_error_t()
+        vscr_error_reset(&error)
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
 

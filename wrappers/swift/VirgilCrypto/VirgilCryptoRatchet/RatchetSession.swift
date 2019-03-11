@@ -137,7 +137,8 @@ import VirgilCryptoFoundation
 
     /// Encrypts data
     @objc public func encrypt(plainText: Data) throws -> RatchetMessage {
-        var error: vscr_error_t
+        var error: vscr_error_t = vscr_error_t()
+        vscr_error_reset(&error)
 
         let proxyResult = plainText.withUnsafeBytes({ (plainTextPointer: UnsafePointer<byte>) in
 
@@ -208,7 +209,8 @@ import VirgilCryptoFoundation
     /// Deserializes session from buffer.
     /// NOTE: Deserialized session needs dependencies to be set. Check setup defaults
     @objc public static func deserialize(input: Data) throws -> RatchetSession {
-        var error: vscr_error_t
+        var error: vscr_error_t = vscr_error_t()
+        vscr_error_reset(&error)
 
         let proxyResult = input.withUnsafeBytes({ (inputPointer: UnsafePointer<byte>) in
 

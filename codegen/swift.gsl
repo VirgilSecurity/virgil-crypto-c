@@ -710,7 +710,8 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type, w
     for my.swift_method.swift_argument where is_true (swift_argument.is_error)
         my.errors_instantiation ?= terminator
         my.errors_instantiation += format_left("\
-            var $(swift_argument.name:): $(swift_argument.type:)
+            var $(swift_argument.name:): $(swift_argument.type:) = $(swift_argument.type:)()
+            $(swift_argument.method_reset:)(&$(swift_argument.name:))
         ")
 
         my.errors_handling ?= terminator
@@ -1086,7 +1087,8 @@ function swift_map_instance_type (swift_instance, instance)
             my.swift_instance.is_buffer = "1"
 
         elsif my.instance.class = "error"
-            my.swift_instance.is_error= "1"
+            my.swift_instance.is_error = "1"
+            my.swift_instance.method_reset = make_ref_c (make_id ("class error method reset"))
         endif
 
     elsif defined (my.instance.interface)
