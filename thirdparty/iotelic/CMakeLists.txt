@@ -57,7 +57,7 @@ add_library(iotelic INTERFACE)
 #
 # Define include headers
 #
-set (INC_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../../ap/inc)
+set (INC_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../../../ap/inc)
 target_include_directories(iotelic
         INTERFACE
         "$<BUILD_INTERFACE:>${INC_DIR}"
