@@ -860,7 +860,26 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type, w
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return formatted arguments list that is used to initialize returned
+#   Return formatted arguments list that is used to be passed to the Swift
+#   proxy method.
+# ---------------------------------------------------------------------------
+function swift_format_proxy_args (swift_method)
+    check_arguments (my, "swift_method", my)
+
+    my.proxy_args = ""
+
+    for my.swift_method.swift_argument
+        my.proxy_args += "$(swift_argument.name:): $(swift_argument.name:)"
+        if ! last ()
+            my.proxy_args += ", "
+        endif
+    endfor
+
+    return my.proxy_args
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted arguments list that is used to proxy returned
 #   "result class".
 # ---------------------------------------------------------------------------
 function swift_format_result_class_init_args (swift_method)
@@ -1451,6 +1470,7 @@ function swift_create_method_declaration (class, method, destination, wrapper, m
         .throws = swift_derive_method_throws (my.method)
         .handle_proxy_status = swift_derive_handle_proxy_status (my.method)
         .interface = my.method.interface ?
+        .objc = "1"
 
         if ! defined (my.method.interface)
             .modifier = is_true (my.method.is_static) ?? "static" ?
@@ -1474,6 +1494,127 @@ function swift_create_method_declaration (class, method, destination, wrapper, m
 
         return swift_method
     endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true if Swift method throw exception and return primitive type it
+#   can not be used within Objective-C, so it should be wrapped separately.
+# ---------------------------------------------------------------------------
+function swift_method_is_objc_incompatible_case1 (swift_method)
+    check_arguments (my, "swift_method", my)
+
+    return is_true(my.swift_method.throws) & \
+            count (my.swift_method.swift_return) = 1 & \
+            is_true(my.swift_method->swift_return.is_primitive_type)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create <swift_method/> with declaration that is compatible with objc.
+#   Case 1:
+#       If Swift method throw exception and return primitive type it can not
+#       be used within Objective-C, so it should be wrapped separately.
+# ---------------------------------------------------------------------------
+function swift_create_objc_compatible_method_declaration_case1 (swift_method, destination)
+    check_arguments (my, "swift_method, destination", my)
+
+    if !swift_method_is_objc_incompatible_case1(my.swift_method)
+        echo_fatal(\
+            "Given Swift method <method name=\"$(my.swift_method.name:)\"/>" + \
+            " does not require Objective-C Case1 compatibility.", my)
+    endif
+
+    new swift_method to my.destination
+        . = my.swift_method. ?
+        .name = my.swift_method.name
+        .throws = my.swift_method.throws
+        .objc = "1"
+        .handle_proxy_status = my.swift_method.handle_proxy_status # must be "false"
+        .interface = my.swift_method.interface ?
+        .modifier = my.swift_method.modifier ?
+        .visibility = my.swift_method.visibility
+
+        for my.swift_method.swift_argument
+            copy swift_argument to swift_method
+        endfor
+
+        new swift_return to swift_method
+            .type = "NSNumber"
+            .is_primitive_type = "1"
+        endnew
+
+        return swift_method
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create implementation body Objective-C compatibility method.
+#   Case 1:
+#       If Swift method throw exception and return primitive type it can not
+#       be used within Objective-C, so it should be wrapped separately.
+# ---------------------------------------------------------------------------
+function swift_create_objc_compatible_method_body_case1 (swift_method)
+    check_arguments (my, "swift_method", my)
+
+    if !swift_method_is_objc_incompatible_case1(my.swift_method)
+        echo_fatal(\
+            "Given Swift method <method name=\"$(my.swift_method.name:)\"/>" + \
+            " does not require Objective-C Case1 compatibility.", my)
+    endif
+
+    new swift_code to my.swift_method
+        . = "\
+            return NSNumber(value: try self.$(my.swift_method.name:)($(swift_format_proxy_args (my.swift_method))))
+        "
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Return true if given method is not compatible with Objective-C.
+#   Case 1:
+#       If Swift method throw exception and return primitive type it can not
+#       be used within Objective-C, so it should be wrapped separately.
+# ---------------------------------------------------------------------------
+function swift_method_is_objc_incompatible (swift_method)
+    check_arguments (my, "swift_method", my)
+
+    return swift_method_is_objc_incompatible_case1 (my.swift_method)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create <swift_method/> with declaration that is compatible with objc.
+# ---------------------------------------------------------------------------
+function swift_create_objc_compatible_method_declaration (swift_method, destination)
+    check_arguments (my, "swift_method, destination", my)
+
+    if !swift_method_is_objc_incompatible(my.swift_method)
+        echo_fatal(\
+            "Given Swift method <method name=\"$(my.swift_method.name:)\"/>" + \
+            " does not require Objective-C compatibility.", my)
+    endif
+
+    my.swift_method.objc = "0"
+
+    if swift_method_is_objc_incompatible_case1 (my.swift_method)
+        return swift_create_objc_compatible_method_declaration_case1 (my.swift_method, my.destination)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create <swift_method/> with declaration that is compatible with objc.
+# ---------------------------------------------------------------------------
+function swift_create_objc_compatible_method_body (swift_method)
+    check_arguments (my, "swift_method", my)
+
+    if !swift_method_is_objc_incompatible(my.swift_method)
+        echo_fatal(\
+            "Given Swift method <method name=\"$(my.swift_method.name:)\"/>" + \
+            " does not require Objective-C compatibility.", my)
+    endif
+
+    if swift_method_is_objc_incompatible_case1 (my.swift_method)
+        return swift_create_objc_compatible_method_body_case1 (my.swift_method)
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1527,6 +1668,12 @@ function swift_create_class_method (class, method, destination, wrapper, meta)
 
     #   Cleanup
     swift_remove_error_arguments (my.swift_method)
+
+    #   Add Objective-C compatibile method if needed.
+    if swift_method_is_objc_incompatible (my.swift_method)
+        my.objc_compatible_method = swift_create_objc_compatible_method_declaration (my.swift_method, my.destination)
+        swift_create_objc_compatible_method_body (my.objc_compatible_method)
+    endif
 
     return my.swift_method
 endfunction
@@ -1718,6 +1865,7 @@ function swift_map_enum_status (swift_enum, enum, wrapper, meta)
         .visibility = "internal"
         .modifier = "static"
         .throws = "1"
+        .objc = "1"
 
         new swift_argument to swift_method
             .name = "code"
@@ -1919,6 +2067,7 @@ function swift_create_method_from_dependency (dependency, impl, destination, wra
         .name = swift_derive_method_name_str (cat ("set", my.dependency.name))
         .visibility = "public"
         .throws = my.dependency.has_observers
+        .objc = "1"
 
         my.arg_name = swift_derive_argument_name (my.dependency)
 
@@ -2055,7 +2204,12 @@ function swift_create_interface_module (interface, destination, wrapper, meta)
             endfor
 
             for my.interface.method
-                swift_create_interface_method (my.interface, method, swift_protocol, my.wrapper, my.meta)
+                my.swift_method = \
+                        swift_create_interface_method (my.interface, method, swift_protocol, my.wrapper, my.meta)
+
+                if swift_method_is_objc_incompatible (my.swift_method)
+                    swift_create_objc_compatible_method_declaration (my.swift_method, swift_protocol)
+                endif
             endfor
 
             for swift_protocol.swift_method where count (0.swift_return) > 1

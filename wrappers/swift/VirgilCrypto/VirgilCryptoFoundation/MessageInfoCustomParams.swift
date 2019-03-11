@@ -100,7 +100,7 @@ import VSCFoundation
     }
 
     /// Return custom parameter with integer value.
-    @objc public func findInt(key: Data) throws -> Int32 {
+    public func findInt(key: Data) throws -> Int32 {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
@@ -112,6 +112,11 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: error.status)
 
         return proxyResult
+    }
+
+    /// Return custom parameter with integer value.
+    @objc public func findInt(key: Data) throws -> NSNumber {
+        return NSNumber(value: try self.findInt(key: key))
     }
 
     /// Return custom parameter with UTF8 string value.
