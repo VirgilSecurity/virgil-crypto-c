@@ -118,7 +118,8 @@ import VirgilCryptoFoundation
 
     /// Deserializes instance.
     @objc public static func deserialize(input: Data) throws -> RatchetMessage {
-        var error: vscr_error_t
+        var error: vscr_error_t = vscr_error_t()
+        vscr_error_reset(&error)
 
         let proxyResult = input.withUnsafeBytes({ (inputPointer: UnsafePointer<byte>) in
 

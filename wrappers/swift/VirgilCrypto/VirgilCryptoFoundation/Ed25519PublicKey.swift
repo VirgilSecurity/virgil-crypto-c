@@ -217,7 +217,8 @@ import VSCFoundation
 
     /// Generate ephemeral private key of the same type.
     @objc public func generateEphemeralKey() throws -> PrivateKey {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = vscf_ed25519_public_key_generate_ephemeral_key(self.c_ctx, &error)
 

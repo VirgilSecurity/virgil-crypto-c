@@ -76,7 +76,8 @@ import VSCFoundation
     /// Note, that caller code is responsible to reset ASN.1 writer with
     /// an output buffer.
     @objc public func serializePublicKeyInplace(publicKey: PublicKey) throws -> Int {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = vscf_pkcs8_der_serializer_serialize_public_key_inplace(self.c_ctx, publicKey.c_ctx, &error)
 
@@ -89,7 +90,8 @@ import VSCFoundation
     /// Note, that caller code is responsible to reset ASN.1 writer with
     /// an output buffer.
     @objc public func serializePrivateKeyInplace(privateKey: PrivateKey) throws -> Int {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = vscf_pkcs8_der_serializer_serialize_private_key_inplace(self.c_ctx, privateKey.c_ctx, &error)
 

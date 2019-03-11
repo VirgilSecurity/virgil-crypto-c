@@ -92,7 +92,8 @@ import VSCFoundation
 
     /// Generate new private key from the given id.
     @objc public func generatePrivateKey(algId: AlgId) throws -> PrivateKey {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = vscf_key_provider_generate_private_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), &error)
 
@@ -103,7 +104,8 @@ import VSCFoundation
 
     /// Import private key from the PKCS#8 format.
     @objc public func importPrivateKey(pkcs8Data: Data) throws -> PrivateKey {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = pkcs8Data.withUnsafeBytes({ (pkcs8DataPointer: UnsafePointer<byte>) in
 
@@ -117,7 +119,8 @@ import VSCFoundation
 
     /// Import public key from the PKCS#8 format.
     @objc public func importPublicKey(pkcs8Data: Data) throws -> PublicKey {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = pkcs8Data.withUnsafeBytes({ (pkcs8DataPointer: UnsafePointer<byte>) in
 

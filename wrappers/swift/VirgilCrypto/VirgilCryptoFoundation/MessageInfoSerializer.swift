@@ -121,7 +121,8 @@ import VSCFoundation
 
     /// Deserialize class "message info".
     @objc public func deserialize(data: Data) throws -> MessageInfo {
-        var error: vscf_error_t
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
 
