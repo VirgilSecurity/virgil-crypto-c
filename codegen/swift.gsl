@@ -1930,7 +1930,7 @@ function swift_create_method_from_dependency (dependency, impl, destination, wra
         new swift_code to swift_method
             if my.dependency.has_observers
                 my.result_var = "let proxyResult = "
-                my.enum_status = swift_derive_enum_status_name (my.wrapper)
+                my.enum_status = swift_derive_enum_status_name (my.wrapper.project)
                 my.impl_handle_status = "try $(my.enum_status:).handleStatus(fromC: proxyResult)"
             endif
 
