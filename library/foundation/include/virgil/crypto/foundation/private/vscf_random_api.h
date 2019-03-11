@@ -101,6 +101,10 @@ struct vscf_random_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Generate random bytes.
     //
     vscf_random_api_random_fn random_cb;

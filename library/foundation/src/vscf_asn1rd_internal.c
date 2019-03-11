@@ -83,6 +83,10 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
     //
     vscf_api_tag_ASN1_READER,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ASN1RD,
+    //
     //  Reset all internal states and prepare to new ASN.1 reading operations.
     //
     (vscf_asn1_reader_api_reset_fn)vscf_asn1rd_reset,
@@ -201,6 +205,10 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
 //  Compile-time known information about 'asn1rd' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_ASN1RD,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

@@ -89,6 +89,10 @@ struct vscf_generate_ephemeral_key_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Generate ephemeral private key of the same type.
     //
     vscf_generate_ephemeral_key_api_generate_ephemeral_key_fn generate_ephemeral_key_cb;

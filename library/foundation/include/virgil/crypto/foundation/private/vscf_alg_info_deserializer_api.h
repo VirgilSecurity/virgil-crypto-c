@@ -97,6 +97,10 @@ struct vscf_alg_info_deserializer_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Deserialize algorithm from the data.
     //
     vscf_alg_info_deserializer_api_deserialize_fn deserialize_cb;

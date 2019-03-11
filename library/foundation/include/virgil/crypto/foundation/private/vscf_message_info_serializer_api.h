@@ -121,6 +121,10 @@ struct vscf_message_info_serializer_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Return buffer size enough to hold serialized message info.
     //
     vscf_message_info_serializer_api_serialized_len_fn serialized_len_cb;
