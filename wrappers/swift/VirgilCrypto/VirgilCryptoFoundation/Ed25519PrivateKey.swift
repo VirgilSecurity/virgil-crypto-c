@@ -101,7 +101,7 @@ import VSCFoundation
     @objc public func produceAlgInfo() -> AlgInfo {
         let proxyResult = vscf_ed25519_private_key_produce_alg_info(self.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Restore algorithm configuration from the given object.
@@ -199,7 +199,7 @@ import VSCFoundation
     @objc public func extractPublicKey() -> PublicKey {
         let proxyResult = vscf_ed25519_private_key_extract_public_key(self.c_ctx)
 
-        return PublicKeyProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapPublicKey(take: proxyResult!)
     }
 
     /// Export private key in the binary format.

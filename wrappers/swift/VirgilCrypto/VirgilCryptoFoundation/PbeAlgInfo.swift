@@ -82,14 +82,14 @@ import VSCFoundation
     @objc public func kdfAlgInfo() -> AlgInfo {
         let proxyResult = vscf_pbe_alg_info_kdf_alg_info(self.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Return cipher algorithm information.
     @objc public func cipherAlgInfo() -> AlgInfo {
         let proxyResult = vscf_pbe_alg_info_cipher_alg_info(self.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Provide algorithm identificator.

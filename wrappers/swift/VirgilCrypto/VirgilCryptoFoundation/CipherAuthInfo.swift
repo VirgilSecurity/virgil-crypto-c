@@ -40,26 +40,3 @@ import VSCFoundation
     /// Defines authentication tag length in bytes.
     @objc var authTagLen: Int { get }
 }
-
-/// Implement interface methods
-@objc(VSCFCipherAuthInfoProxy) internal class CipherAuthInfoProxy: NSObject, CipherAuthInfo {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Defines authentication tag length in bytes.
-    @objc public var authTagLen: Int {
-        return vscf_cipher_auth_info_auth_tag_len(vscf_cipher_auth_info_api(self.c_ctx))
-    }
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-}

@@ -33,6 +33,7 @@ Entities are sorted by generation simplicity.
     - <lang>_create_c_context_module (source, destination, wrapper, meta)
     - <lang>_create_interface_module (source, destination, wrapper, meta)
     - <lang>_create_implementation_module (source, destination, wrapper, meta)
+    - <lang>_finalize_implementation_helper_modules (destination, wrapper, meta) [optional]
     - <lang>_create_class_module (source, destination, wrapper, meta)
     - <lang>_create_enum_module (source, destination, wrapper, meta)
     - <lang>_module_resolve(source, wrapper)

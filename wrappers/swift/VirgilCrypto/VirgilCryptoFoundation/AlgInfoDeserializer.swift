@@ -42,36 +42,3 @@ import VSCFoundation
     /// Deserialize algorithm from the data.
     @objc func deserialize(data: Data) throws -> AlgInfo
 }
-
-/// Implement interface methods
-@objc(VSCFAlgInfoDeserializerProxy) internal class AlgInfoDeserializerProxy: NSObject, AlgInfoDeserializer {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Deserialize algorithm from the data.
-    @objc public func deserialize(data: Data) throws -> AlgInfo {
-        var error: vscf_error_t = vscf_error_t()
-        vscf_error_reset(&error)
-
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
-
-            return vscf_alg_info_deserializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count), &error)
-        })
-
-        try FoundationError.handleStatus(fromC: error.status)
-
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
-    }
-}

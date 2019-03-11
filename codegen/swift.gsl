@@ -424,17 +424,6 @@ function swift_derive_protocol_name (interface, wrapper)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return formatted name of the Swift protocol.
-# ---------------------------------------------------------------------------
-function swift_derive_proxy_protocol_name (interface, wrapper)
-    check_arguments (my, "interface", my)
-
-    assert_attribute_one_of (my.interface, "name, interface", my)
-
-    return "$(my.interface.name ? my.interface.interface:Pascal)Proxy"
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Return formatted name of the Swift class.
 # ---------------------------------------------------------------------------
 function swift_derive_class_name_str (name)
@@ -661,7 +650,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return C type wrapped to the Swift type.
 # ---------------------------------------------------------------------------
-function swift_wrap_c_returned_value (swift_return)
+function swift_wrap_c_returned_value (swift_return, wrapper)
     check_arguments (my, "swift_return", my)
 
     my.name = my.swift_return.name ? "proxyResult"
@@ -680,7 +669,8 @@ function swift_wrap_c_returned_value (swift_return)
         return "$(my.name:)!"
 
     elsif is_true (0.is_interface)
-        return "$(my.type:)Proxy.init(c_ctx: $(my.name:)!)"
+        my.impl_helper_class = "$(my.wrapper.project:Pascal)Implementation"
+        return "$(my.impl_helper_class:).wrap$(my.swift_return.type:)(take: $(my.name:)!)"
 
     elsif is_true (0.is_class) & is_false (0.is_buffer)
         if string_in (swift_return.access, "readonly, readwrite")
@@ -882,13 +872,13 @@ endfunction
 #   Return formatted arguments list that is used to proxy returned
 #   "result class".
 # ---------------------------------------------------------------------------
-function swift_format_result_class_init_args (swift_method)
-    check_arguments (my, "swift_method", my)
+function swift_format_result_class_init_args (swift_method, wrapper)
+    check_arguments (my, "swift_method, wrapper", my)
 
     my.init_args = ""
 
     for my.swift_method.swift_return
-        my.init_args += "$(swift_return.name:): $(swift_wrap_c_returned_value (swift_return))"
+        my.init_args += "$(swift_return.name:): $(swift_wrap_c_returned_value (swift_return, my.wrapper))"
         if ! last ()
             my.init_args += ", "
         endif
@@ -1648,11 +1638,11 @@ function swift_create_class_method (class, method, destination, wrapper, meta)
         my.swift_return = my.swift_method->swift_return
 
         my.return_result = terminator + \
-                format_left ("return $(swift_wrap_c_returned_value (my.swift_method->swift_return))")
+                format_left ("return $(swift_wrap_c_returned_value (my.swift_method->swift_return, my.wrapper))")
 
     elsif count (my.swift_method.swift_return) > 1
         my.result_class = swift_derive_result_class_name (my.destination, my.swift_method)
-        my.result_class_init_args = swift_format_result_class_init_args (my.swift_method)
+        my.result_class_init_args = swift_format_result_class_init_args (my.swift_method, my.wrapper)
 
         my.return_result = terminator + \
                 format_left ("return $(my.result_class:)($(my.result_class_init_args:))")
@@ -1755,78 +1745,6 @@ function swift_create_class_constructor_context (destination, wrapper, meta)
         endnew
 
         return swift_constructor
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Create <swift_destructor/> that takes delete C implementation context.
-# ---------------------------------------------------------------------------
-function swift_create_interface_proxy_class_destructor (destination, wrapper, meta)
-    check_arguments (my, "destination, wrapper, meta", my)
-
-    new swift_destructor to my.destination
-        . = "/// Release underlying C context."
-
-        new swift_code to swift_destructor
-            . = "\
-                .(c_class_impl_method_delete)(self.c_ctx)
-            "
-        endnew
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Add implementation of the inherited constants and methods to the
-#   interface proxy class.
-# ---------------------------------------------------------------------------
-function swift_create_interface_proxy_class_inheritance (interface, swift_class, wrapper, meta)
-    check_arguments (my, "interface, swift_class, wrapper, meta", my)
-
-    if count (my.swift_class.implemented, implemented.interface = my.interface.name)
-        return
-    endif
-
-    for my.interface.inherit
-        my.parent_interface = interface_global_find (inherit.interface, inherit.project)
-        swift_create_interface_proxy_class_inheritance (my.parent_interface, my.swift_class, my.wrapper, my.meta)
-    endfor
-
-    for my.interface.constant
-        swift_create_proxy_property_from_constant (constant, my.interface, my.swift_class, my.wrapper, my.meta)
-    endfor
-
-    for my.interface.method
-        swift_create_class_method (my.interface, method, my.swift_class, my.wrapper, my.meta)
-    endfor
-
-    new implemented to my.swift_class
-        .interface = my.interface.name
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Add all components related to the interface.
-# ---------------------------------------------------------------------------
-function swift_create_interface_proxy_class (interface, destination, wrapper, meta)
-    check_arguments (my, "interface, destination, wrapper, meta", my)
-
-   new swift_class to swift_module
-        . = "/// Implement interface methods "
-        .name = swift_derive_proxy_protocol_name (my.interface)
-        .objc_name = swift_derive_class_objc_name (swift_class, my.wrapper)
-        .visibility = "internal"
-
-        swift_create_inherit_nsobject (swift_class)
-        swift_create_inherit (my.interface, swift_class, my.wrapper, my.meta)
-        swift_create_class_property_context (swift_class)
-        swift_create_class_constructor_context (swift_class, my.wrapper, my.meta)
-        swift_create_interface_proxy_class_destructor (swift_class, my.wrapper, my.meta)
-
-        swift_create_interface_proxy_class_inheritance (my.interface, swift_class, my.wrapper, my.meta)
-
-        for swift_class.swift_method where count (0.swift_return) > 1
-            swift_create_result_class (swift_class, swift_method, swift_module, my.wrapper, my.meta)
-        endfor
     endnew
 endfunction
 
@@ -2111,6 +2029,116 @@ function swift_create_class_constant (constant, swift_class, wrapper, meta)
     endnew
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Create module and return it's class that handles implementation helper.
+# ---------------------------------------------------------------------------
+function swift_get_implementation_helper_class (destination, wrapper, meta)
+    check_arguments (my, "destination, wrapper, meta", my)
+
+    my.name = "$(my.wrapper.project:Pascal)Implementation"
+
+    my.implementation_helper_module = my.destination->swift_module(name = my.name) ?
+
+    if defined (my.implementation_helper_module)
+        return my.implementation_helper_module->swift_class
+    endif
+
+    new swift_module to my.destination
+        . = "/// Create factory that turns C implementation object to the Swift implementation object."
+        .name = my.name
+        .source_file_name = 0.name + ".swift"
+        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+
+        new swift_license to swift_module
+            . = swift_format_license (my.wrapper->license) ?
+        endnew
+
+        for my.wrapper.swift_import
+            copy swift_import to swift_module
+        endfor
+
+        new swift_class to swift_module
+            .name = my.name
+            .objc_name = swift_derive_class_objc_name (swift_class, my.wrapper)
+            .visibility = "public"
+
+            swift_create_inherit_nsobject (swift_class)
+
+            return swift_class
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return interface method that wraps C implementation object to the
+#   Swift object.
+# ---------------------------------------------------------------------------
+function swift_get_implementation_helper_interface_method (swift_class, interface, wrapper)
+    check_arguments (my, "swift_class, interface, wrapper", my)
+
+    my.interface_method_name = "wrap$(my.interface.name:Pascal)"
+
+    my.wrap_interface_method = my.swift_class->swift_method (name = my.interface_method_name) ?
+
+    if defined (my.wrap_interface_method)
+        return my.wrap_interface_method
+    endif
+
+    new swift_method to my.swift_class
+        . = "\
+            /// Wrap C implementation object to the Swift object that implements \
+            protocol $(swift_derive_protocol_name (my.interface, my.wrapper)).
+        "
+        .name = my.interface_method_name
+        .modifier = "static"
+        .objc = "1"
+
+        new swift_argument to swift_method
+            .name = "c_ctx"
+            .ext_name = "take"
+            .type = "OpaquePointer"
+        endnew
+
+        new swift_return to swift_method
+            .type = swift_derive_protocol_name (my.interface, my.wrapper)
+        endnew
+
+
+        new swift_code to swift_method
+            my.method_of_class = my.interface.of_class ? my.interface.name
+            my.method_is_implemented = make_ref_c (make_id ("class", my.method_of_class, "method", "is_implemented"))
+            .temp_code = format_left("\
+                assert($(my.method_is_implemented:)(c_ctx))
+                let implTag = .(c_class_impl_method_tag)(c_ctx)
+                switch(implTag) {
+            ")
+        endnew
+
+        return swift_method
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add wrapper "case" statement for implementation/interface pair.
+# ---------------------------------------------------------------------------
+function swift_update_implementation_helper_module (implementation, destination, wrapper, meta)
+    check_arguments (my, "implementation, destination, wrapper, meta", my)
+
+    my.helper_class = swift_get_implementation_helper_class(my.destination, my.wrapper, my.meta)
+    my.refs = meta_refs (my.meta)
+
+    for my.implementation.interface
+        my.wrap_interface_method = \
+                swift_get_implementation_helper_interface_method (my.helper_class, interface, my.wrapper)
+
+        my.wrap_interface_method->swift_code.temp_code += format_left("\
+            case $(my.refs.c_implementation_constant_tag):
+                return $(swift_derive_class_name (my.implementation, my.wrapper))(take: c_ctx)
+        ")
+    endfor
+endfunction
+
 
 # ===========================================================================
 #   Create modules.
@@ -2216,8 +2244,6 @@ function swift_create_interface_module (interface, destination, wrapper, meta)
                 swift_create_result_class (swift_protocol, swift_method, swift_module, my.wrapper, my.meta)
             endfor
         endnew
-
-        swift_create_interface_proxy_class (my.interface, swift_module, my.wrapper, my.meta)
     endnew
 
     echo_debug ("Done", my)
@@ -2284,6 +2310,7 @@ function swift_create_implementation_module (implementation, destination, wrappe
             endif
 
             swift_create_interface_implementation (my.implementation, swift_class, my.wrapper, my.meta)
+            swift_update_implementation_helper_module (my.implementation, my.destination, my.wrapper, my.meta)
 
             for swift_class.swift_method where count (0.swift_return) > 1
                 swift_create_result_class (swift_class, swift_method, swift_module, my.wrapper, my.meta)
@@ -2292,6 +2319,26 @@ function swift_create_implementation_module (implementation, destination, wrappe
     endnew
 
     echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add methods ending within implementation helper class.
+# ---------------------------------------------------------------------------
+function swift_finalize_implementation_helper_modules (destination, wrapper, meta)
+    check_arguments (my, "destination, wrapper, meta", my)
+
+    my.helper_class = swift_get_implementation_helper_class(my.destination, my.wrapper, my.meta)
+
+    for my.helper_class.swift_method
+        swift_method->swift_code.temp_code += format_left ("\
+            default:
+                assert(false)
+            }
+        ")
+
+        swift_method->swift_code. = swift_method->swift_code.temp_code
+        swift_method->swift_code.temp_code = # undefined
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------

@@ -99,7 +99,7 @@ import VSCFoundation
 
         try FoundationError.handleStatus(fromC: error.status)
 
-        return PrivateKeyProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
     }
 
     /// Import private key from the PKCS#8 format.
@@ -114,7 +114,7 @@ import VSCFoundation
 
         try FoundationError.handleStatus(fromC: error.status)
 
-        return PrivateKeyProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
     }
 
     /// Import public key from the PKCS#8 format.
@@ -129,6 +129,6 @@ import VSCFoundation
 
         try FoundationError.handleStatus(fromC: error.status)
 
-        return PublicKeyProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapPublicKey(take: proxyResult!)
     }
 }

@@ -44,33 +44,3 @@ import VSCFoundation
     /// Generate ephemeral private key of the same type.
     @objc func generateEphemeralKey() throws -> PrivateKey
 }
-
-/// Implement interface methods
-@objc(VSCFGenerateEphemeralKeyProxy) internal class GenerateEphemeralKeyProxy: NSObject, GenerateEphemeralKey {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Generate ephemeral private key of the same type.
-    @objc public func generateEphemeralKey() throws -> PrivateKey {
-        var error: vscf_error_t = vscf_error_t()
-        vscf_error_reset(&error)
-
-        let proxyResult = vscf_generate_ephemeral_key(self.c_ctx, &error)
-
-        try FoundationError.handleStatus(fromC: error.status)
-
-        return PrivateKeyProxy.init(c_ctx: proxyResult!)
-    }
-}
