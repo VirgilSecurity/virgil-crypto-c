@@ -94,7 +94,7 @@ import VSCFoundation
 
     /// Accomplish signing and return signature.
     @objc public func sign(privateKey: SignHash) throws -> Data {
-        let signatureCount = self.signatureLen(privateKey: private)
+        let signatureCount = self.signatureLen(privateKey: privateKey)
         var signature = Data(count: signatureCount)
         var signatureBuf = vsc_buffer_new()
         defer {

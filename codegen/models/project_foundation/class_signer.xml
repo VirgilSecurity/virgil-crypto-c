@@ -34,7 +34,7 @@
         <argument name="private key" interface="sign hash" access="readwrite"/>
         <argument name="signature" class="buffer">
             <length method="signature len">
-                <proxy argument="private" to="private key"/>
+                <proxy argument="private key" to="private key"/>
             </length>
         </argument>
 
