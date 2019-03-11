@@ -84,7 +84,7 @@ import VSCFoundation
     @objc public func produceAlgInfo() -> AlgInfo {
         let proxyResult = vscf_sha224_produce_alg_info(self.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Restore algorithm configuration from the given object.

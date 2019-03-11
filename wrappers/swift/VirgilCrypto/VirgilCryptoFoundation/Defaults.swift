@@ -43,28 +43,3 @@ import VSCFoundation
     /// Setup predefined values to the uninitialized class dependencies.
     @objc func setupDefaults() throws
 }
-
-/// Implement interface methods
-@objc(VSCFDefaultsProxy) internal class DefaultsProxy: NSObject, Defaults {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_defaults_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
-    }
-}

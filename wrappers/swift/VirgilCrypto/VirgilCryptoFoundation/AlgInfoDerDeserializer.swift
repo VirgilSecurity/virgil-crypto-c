@@ -83,7 +83,7 @@ import VSCFoundation
 
         try FoundationError.handleStatus(fromC: error.status)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
@@ -105,6 +105,6 @@ import VSCFoundation
 
         try FoundationError.handleStatus(fromC: error.status)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 }

@@ -43,6 +43,7 @@
 #           - <lang>_create_c_context_module (source, destination, wrapper, meta)
 #           - <lang>_create_interface_module (source, destination, wrapper, meta)
 #           - <lang>_create_implementation_module (source, destination, wrapper, meta)
+#           - <lang>_finalize_implementation_helper_modules (destination, wrapper, meta) [optional]
 #           - <lang>_create_class_module (source, destination, wrapper, meta)
 #           - <lang>_create_enum_module (source, destination, wrapper, meta)
 #           - <lang>_module_resolve(source, wrapper)
@@ -116,6 +117,7 @@ function wrapper_foreach_interface_create_module (source, destination, wrapper, 
     endif
 
     for my.source.interface where interface.scope = "public"
+        meta_reset_active_entity (my.meta, interface.name)
         $(my.proxy_func:) (interface, my.destination, my.wrapper, my.meta)
     endfor
 endfunction
@@ -129,8 +131,15 @@ function wrapper_foreach_implementation_create_module (source, destination, wrap
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 
+    my.finalize_impl_helper_func = make_id(my.wrapper.lang, "finalize_implementation_helper_modules")
+
     for my.source.implementation where implementation.scope = "public"
+        meta_reset_active_entity (my.meta, implementation.name)
         $(my.proxy_func:) (implementation, my.destination, my.wrapper, my.meta)
+
+        if last() & macro (my.finalize_impl_helper_func)
+            $(my.finalize_impl_helper_func:) (my.destination, my.wrapper, my.meta)
+        endif
     endfor
 endfunction
 
@@ -144,6 +153,8 @@ function wrapper_foreach_class_create_module (source, destination, wrapper, meta
     endif
 
     for my.source.class where class.scope = "public"
+        meta_reset_active_entity (my.meta, class.name)
+
         $(my.proxy_func:) (class, my.destination, my.wrapper, my.meta)
     endfor
 endfunction
@@ -158,6 +169,7 @@ function wrapper_foreach_enum_create_module (source, destination, wrapper, meta)
     endif
 
     for my.source.enum where 0.scope = "public"
+        meta_reset_active_entity (my.meta, enum.name)
         $(my.proxy_func:) (enum, my.destination, my.wrapper, my.meta)
     endfor
 endfunction

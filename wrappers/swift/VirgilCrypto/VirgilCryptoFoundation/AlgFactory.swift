@@ -43,48 +43,48 @@ import VSCFoundation
     @objc public static func createHashFromInfo(algInfo: AlgInfo) -> Hash {
         let proxyResult = vscf_alg_factory_create_hash_from_info(algInfo.c_ctx)
 
-        return HashProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapHash(take: proxyResult!)
     }
 
     /// Create algorithm that implements "mac stream" interface.
     @objc public static func createMacFromInfo(algInfo: AlgInfo) -> Mac {
         let proxyResult = vscf_alg_factory_create_mac_from_info(algInfo.c_ctx)
 
-        return MacProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapMac(take: proxyResult!)
     }
 
     /// Create algorithm that implements "kdf" interface.
     @objc public static func createKdfFromInfo(algInfo: AlgInfo) -> Kdf {
         let proxyResult = vscf_alg_factory_create_kdf_from_info(algInfo.c_ctx)
 
-        return KdfProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapKdf(take: proxyResult!)
     }
 
     /// Create algorithm that implements "salted kdf" interface.
     @objc public static func createSaltedKdfFromInfo(algInfo: AlgInfo) -> SaltedKdf {
         let proxyResult = vscf_alg_factory_create_salted_kdf_from_info(algInfo.c_ctx)
 
-        return SaltedKdfProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapSaltedKdf(take: proxyResult!)
     }
 
     /// Create algorithm that implements "cipher" interface.
     @objc public static func createCipherFromInfo(algInfo: AlgInfo) -> Cipher {
         let proxyResult = vscf_alg_factory_create_cipher_from_info(algInfo.c_ctx)
 
-        return CipherProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapCipher(take: proxyResult!)
     }
 
     /// Create algorithm that implements "public key" interface.
     @objc public static func createPublicKeyFromRawKey(rawKey: RawKey) -> PublicKey {
         let proxyResult = vscf_alg_factory_create_public_key_from_raw_key(rawKey.c_ctx)
 
-        return PublicKeyProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapPublicKey(take: proxyResult!)
     }
 
     /// Create algorithm that implements "private key" interface.
     @objc public static func createPrivateKeyFromRawKey(rawKey: RawKey) -> PrivateKey {
         let proxyResult = vscf_alg_factory_create_private_key_from_raw_key(rawKey.c_ctx)
 
-        return PrivateKeyProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
     }
 }

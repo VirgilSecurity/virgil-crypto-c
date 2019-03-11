@@ -93,7 +93,7 @@ import VSCFoundation
     @objc public func dataEncryptionAlgInfo() -> AlgInfo {
         let proxyResult = vscf_message_info_data_encryption_alg_info(self.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Return list with a "key recipient info" elements.
