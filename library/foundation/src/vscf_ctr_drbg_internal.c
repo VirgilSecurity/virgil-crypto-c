@@ -99,6 +99,10 @@ static const vscf_defaults_api_t defaults_api = {
     //
     vscf_api_tag_DEFAULTS,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_CTR_DRBG,
+    //
     //  Setup predefined values to the uninitialized class dependencies.
     //
     (vscf_defaults_api_setup_defaults_fn)vscf_ctr_drbg_setup_defaults
@@ -114,6 +118,10 @@ static const vscf_random_api_t random_api = {
     //
     vscf_api_tag_RANDOM,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_CTR_DRBG,
+    //
     //  Generate random bytes.
     //
     (vscf_random_api_random_fn)vscf_ctr_drbg_random,
@@ -127,6 +135,10 @@ static const vscf_random_api_t random_api = {
 //  Compile-time known information about 'ctr drbg' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_CTR_DRBG,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

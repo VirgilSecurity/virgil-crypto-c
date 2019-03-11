@@ -99,6 +99,10 @@ struct vscf_alg_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Provide algorithm identificator.
     //
     vscf_alg_api_alg_id_fn alg_id_cb;

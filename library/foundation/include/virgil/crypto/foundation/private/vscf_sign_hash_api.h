@@ -105,6 +105,10 @@ struct vscf_sign_hash_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Return length in bytes required to hold signature.
     //
     vscf_sign_hash_api_signature_len_fn signature_len_cb;

@@ -123,6 +123,10 @@ struct vscf_key_serializer_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Calculate buffer size enough to hold serialized public key.
     //
     //  Precondition: public key must be exportable.

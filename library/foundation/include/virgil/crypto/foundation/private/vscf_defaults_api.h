@@ -88,6 +88,10 @@ struct vscf_defaults_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Setup predefined values to the uninitialized class dependencies.
     //
     vscf_defaults_api_setup_defaults_fn setup_defaults_cb;
