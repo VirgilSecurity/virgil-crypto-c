@@ -75,7 +75,7 @@ import VSCFoundation
     /// Serialize Public Key by using internal ASN.1 writer.
     /// Note, that caller code is responsible to reset ASN.1 writer with
     /// an output buffer.
-    @objc public func serializePublicKeyInplace(publicKey: PublicKey) throws -> Int {
+    public func serializePublicKeyInplace(publicKey: PublicKey) throws -> Int {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
@@ -86,10 +86,17 @@ import VSCFoundation
         return proxyResult
     }
 
+    /// Serialize Public Key by using internal ASN.1 writer.
+    /// Note, that caller code is responsible to reset ASN.1 writer with
+    /// an output buffer.
+    @objc public func serializePublicKeyInplace(publicKey: PublicKey) throws -> NSNumber {
+        return NSNumber(value: try self.serializePublicKeyInplace(publicKey: publicKey))
+    }
+
     /// Serialize Private Key by using internal ASN.1 writer.
     /// Note, that caller code is responsible to reset ASN.1 writer with
     /// an output buffer.
-    @objc public func serializePrivateKeyInplace(privateKey: PrivateKey) throws -> Int {
+    public func serializePrivateKeyInplace(privateKey: PrivateKey) throws -> Int {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
@@ -98,6 +105,13 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: error.status)
 
         return proxyResult
+    }
+
+    /// Serialize Private Key by using internal ASN.1 writer.
+    /// Note, that caller code is responsible to reset ASN.1 writer with
+    /// an output buffer.
+    @objc public func serializePrivateKeyInplace(privateKey: PrivateKey) throws -> NSNumber {
+        return NSNumber(value: try self.serializePrivateKeyInplace(privateKey: privateKey))
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
