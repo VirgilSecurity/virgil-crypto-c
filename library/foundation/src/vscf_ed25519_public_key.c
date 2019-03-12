@@ -306,5 +306,9 @@ vscf_ed25519_public_key_generate_ephemeral_key(vscf_ed25519_public_key_t *self, 
         return NULL;
     }
 
+    if (self->ecies) {
+        vscf_ed25519_private_key_use_ecies(private_key, self->ecies);
+    }
+
     return vscf_ed25519_private_key_impl(private_key);
 }
