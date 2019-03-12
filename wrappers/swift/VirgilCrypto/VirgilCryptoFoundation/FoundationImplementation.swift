@@ -40,7 +40,10 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol Alg.
     @objc static func wrapAlg(take c_ctx: OpaquePointer) -> Alg {
-        assert(vscf_alg_is_implemented(c_ctx))
+        if (vscf_alg_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface Alg.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_SHA224:
@@ -76,13 +79,16 @@ import VSCFoundation
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
             return Ed25519PrivateKey(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol Hash.
     @objc static func wrapHash(take c_ctx: OpaquePointer) -> Hash {
-        assert(vscf_hash_is_implemented(c_ctx))
+        if (vscf_hash_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface Hash.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_SHA224:
@@ -94,13 +100,16 @@ import VSCFoundation
         case vscf_impl_tag_SHA512:
             return Sha512(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol Encrypt.
     @objc static func wrapEncrypt(take c_ctx: OpaquePointer) -> Encrypt {
-        assert(vscf_encrypt_is_implemented(c_ctx))
+        if (vscf_encrypt_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface Encrypt.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_AES256_GCM:
@@ -116,13 +125,16 @@ import VSCFoundation
         case vscf_impl_tag_ECIES:
             return Ecies(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol Decrypt.
     @objc static func wrapDecrypt(take c_ctx: OpaquePointer) -> Decrypt {
-        assert(vscf_decrypt_is_implemented(c_ctx))
+        if (vscf_decrypt_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface Decrypt.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_AES256_GCM:
@@ -138,13 +150,16 @@ import VSCFoundation
         case vscf_impl_tag_ECIES:
             return Ecies(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol CipherInfo.
     @objc static func wrapCipherInfo(take c_ctx: OpaquePointer) -> CipherInfo {
-        assert(vscf_cipher_info_is_implemented(c_ctx))
+        if (vscf_cipher_info_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface CipherInfo.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_AES256_GCM:
@@ -152,13 +167,16 @@ import VSCFoundation
         case vscf_impl_tag_AES256_CBC:
             return Aes256Cbc(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol Cipher.
     @objc static func wrapCipher(take c_ctx: OpaquePointer) -> Cipher {
-        assert(vscf_cipher_is_implemented(c_ctx))
+        if (vscf_cipher_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface Cipher.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_AES256_GCM:
@@ -166,85 +184,106 @@ import VSCFoundation
         case vscf_impl_tag_AES256_CBC:
             return Aes256Cbc(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol CipherAuthInfo.
     @objc static func wrapCipherAuthInfo(take c_ctx: OpaquePointer) -> CipherAuthInfo {
-        assert(vscf_cipher_auth_info_is_implemented(c_ctx))
+        if (vscf_cipher_auth_info_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface CipherAuthInfo.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_AES256_GCM:
             return Aes256Gcm(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol AuthEncrypt.
     @objc static func wrapAuthEncrypt(take c_ctx: OpaquePointer) -> AuthEncrypt {
-        assert(vscf_auth_encrypt_is_implemented(c_ctx))
+        if (vscf_auth_encrypt_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface AuthEncrypt.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_AES256_GCM:
             return Aes256Gcm(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol AuthDecrypt.
     @objc static func wrapAuthDecrypt(take c_ctx: OpaquePointer) -> AuthDecrypt {
-        assert(vscf_auth_decrypt_is_implemented(c_ctx))
+        if (vscf_auth_decrypt_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface AuthDecrypt.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_AES256_GCM:
             return Aes256Gcm(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol CipherAuth.
     @objc static func wrapCipherAuth(take c_ctx: OpaquePointer) -> CipherAuth {
-        assert(vscf_cipher_auth_is_implemented(c_ctx))
+        if (vscf_cipher_auth_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface CipherAuth.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_AES256_GCM:
             return Aes256Gcm(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol Asn1Reader.
     @objc static func wrapAsn1Reader(take c_ctx: OpaquePointer) -> Asn1Reader {
-        assert(vscf_asn1_reader_is_implemented(c_ctx))
+        if (vscf_asn1_reader_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface Asn1Reader.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_ASN1RD:
             return Asn1rd(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol Asn1Writer.
     @objc static func wrapAsn1Writer(take c_ctx: OpaquePointer) -> Asn1Writer {
-        assert(vscf_asn1_writer_is_implemented(c_ctx))
+        if (vscf_asn1_writer_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface Asn1Writer.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_ASN1WR:
             return Asn1wr(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol Defaults.
     @objc static func wrapDefaults(take c_ctx: OpaquePointer) -> Defaults {
-        assert(vscf_defaults_is_implemented(c_ctx))
+        if (vscf_defaults_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface Defaults.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_RSA_PUBLIC_KEY:
@@ -278,13 +317,16 @@ import VSCFoundation
         case vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER:
             return MessageInfoDerSerializer(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol Key.
     @objc static func wrapKey(take c_ctx: OpaquePointer) -> Key {
-        assert(vscf_key_is_implemented(c_ctx))
+        if (vscf_key_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface Key.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_RSA_PUBLIC_KEY:
@@ -296,13 +338,16 @@ import VSCFoundation
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
             return Ed25519PrivateKey(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol VerifyHash.
     @objc static func wrapVerifyHash(take c_ctx: OpaquePointer) -> VerifyHash {
-        assert(vscf_verify_hash_is_implemented(c_ctx))
+        if (vscf_verify_hash_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface VerifyHash.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_RSA_PUBLIC_KEY:
@@ -310,13 +355,16 @@ import VSCFoundation
         case vscf_impl_tag_ED25519_PUBLIC_KEY:
             return Ed25519PublicKey(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol PublicKey.
     @objc static func wrapPublicKey(take c_ctx: OpaquePointer) -> PublicKey {
-        assert(vscf_public_key_is_implemented(c_ctx))
+        if (vscf_public_key_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface PublicKey.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_RSA_PUBLIC_KEY:
@@ -324,13 +372,16 @@ import VSCFoundation
         case vscf_impl_tag_ED25519_PUBLIC_KEY:
             return Ed25519PublicKey(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol GenerateEphemeralKey.
     @objc static func wrapGenerateEphemeralKey(take c_ctx: OpaquePointer) -> GenerateEphemeralKey {
-        assert(vscf_generate_ephemeral_key_is_implemented(c_ctx))
+        if (vscf_generate_ephemeral_key_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface GenerateEphemeralKey.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_RSA_PUBLIC_KEY:
@@ -338,13 +389,16 @@ import VSCFoundation
         case vscf_impl_tag_ED25519_PUBLIC_KEY:
             return Ed25519PublicKey(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol GenerateKey.
     @objc static func wrapGenerateKey(take c_ctx: OpaquePointer) -> GenerateKey {
-        assert(vscf_generate_key_is_implemented(c_ctx))
+        if (vscf_generate_key_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface GenerateKey.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_RSA_PRIVATE_KEY:
@@ -352,13 +406,16 @@ import VSCFoundation
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
             return Ed25519PrivateKey(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol SignHash.
     @objc static func wrapSignHash(take c_ctx: OpaquePointer) -> SignHash {
-        assert(vscf_sign_hash_is_implemented(c_ctx))
+        if (vscf_sign_hash_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface SignHash.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_RSA_PRIVATE_KEY:
@@ -366,13 +423,16 @@ import VSCFoundation
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
             return Ed25519PrivateKey(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol PrivateKey.
     @objc static func wrapPrivateKey(take c_ctx: OpaquePointer) -> PrivateKey {
-        assert(vscf_private_key_is_implemented(c_ctx))
+        if (vscf_private_key_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface PrivateKey.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_RSA_PRIVATE_KEY:
@@ -380,13 +440,16 @@ import VSCFoundation
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
             return Ed25519PrivateKey(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol EntropySource.
     @objc static func wrapEntropySource(take c_ctx: OpaquePointer) -> EntropySource {
-        assert(vscf_entropy_source_is_implemented(c_ctx))
+        if (vscf_entropy_source_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface EntropySource.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_ENTROPY_ACCUMULATOR:
@@ -394,13 +457,16 @@ import VSCFoundation
         case vscf_impl_tag_FAKE_RANDOM:
             return FakeRandom(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol Random.
     @objc static func wrapRandom(take c_ctx: OpaquePointer) -> Random {
-        assert(vscf_random_is_implemented(c_ctx))
+        if (vscf_random_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface Random.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_CTR_DRBG:
@@ -408,25 +474,31 @@ import VSCFoundation
         case vscf_impl_tag_FAKE_RANDOM:
             return FakeRandom(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol Mac.
     @objc static func wrapMac(take c_ctx: OpaquePointer) -> Mac {
-        assert(vscf_mac_is_implemented(c_ctx))
+        if (vscf_mac_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface Mac.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_HMAC:
             return Hmac(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol Kdf.
     @objc static func wrapKdf(take c_ctx: OpaquePointer) -> Kdf {
-        assert(vscf_kdf_is_implemented(c_ctx))
+        if (vscf_kdf_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface Kdf.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_HKDF:
@@ -438,13 +510,16 @@ import VSCFoundation
         case vscf_impl_tag_PKCS5_PBKDF2:
             return Pkcs5Pbkdf2(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol SaltedKdf.
     @objc static func wrapSaltedKdf(take c_ctx: OpaquePointer) -> SaltedKdf {
-        assert(vscf_salted_kdf_is_implemented(c_ctx))
+        if (vscf_salted_kdf_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface SaltedKdf.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_HKDF:
@@ -452,13 +527,16 @@ import VSCFoundation
         case vscf_impl_tag_PKCS5_PBKDF2:
             return Pkcs5Pbkdf2(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol KeySerializer.
     @objc static func wrapKeySerializer(take c_ctx: OpaquePointer) -> KeySerializer {
-        assert(vscf_key_serializer_is_implemented(c_ctx))
+        if (vscf_key_serializer_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface KeySerializer.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_PKCS8_DER_SERIALIZER:
@@ -466,13 +544,16 @@ import VSCFoundation
         case vscf_impl_tag_PKCS8_SERIALIZER:
             return Pkcs8Serializer(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol KeyDeserializer.
     @objc static func wrapKeyDeserializer(take c_ctx: OpaquePointer) -> KeyDeserializer {
-        assert(vscf_key_deserializer_is_implemented(c_ctx))
+        if (vscf_key_deserializer_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface KeyDeserializer.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_PKCS8_DER_DESERIALIZER:
@@ -480,25 +561,31 @@ import VSCFoundation
         case vscf_impl_tag_PKCS8_DESERIALIZER:
             return Pkcs8Deserializer(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol ComputeSharedKey.
     @objc static func wrapComputeSharedKey(take c_ctx: OpaquePointer) -> ComputeSharedKey {
-        assert(vscf_compute_shared_key_is_implemented(c_ctx))
+        if (vscf_compute_shared_key_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface ComputeSharedKey.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
             return Ed25519PrivateKey(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol AlgInfo.
     @objc static func wrapAlgInfo(take c_ctx: OpaquePointer) -> AlgInfo {
-        assert(vscf_alg_info_is_implemented(c_ctx))
+        if (vscf_alg_info_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface AlgInfo.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_SIMPLE_ALG_INFO:
@@ -512,43 +599,52 @@ import VSCFoundation
         case vscf_impl_tag_PBE_ALG_INFO:
             return PbeAlgInfo(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol AlgInfoSerializer.
     @objc static func wrapAlgInfoSerializer(take c_ctx: OpaquePointer) -> AlgInfoSerializer {
-        assert(vscf_alg_info_serializer_is_implemented(c_ctx))
+        if (vscf_alg_info_serializer_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface AlgInfoSerializer.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_ALG_INFO_DER_SERIALIZER:
             return AlgInfoDerSerializer(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol AlgInfoDeserializer.
     @objc static func wrapAlgInfoDeserializer(take c_ctx: OpaquePointer) -> AlgInfoDeserializer {
-        assert(vscf_alg_info_deserializer_is_implemented(c_ctx))
+        if (vscf_alg_info_deserializer_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface AlgInfoDeserializer.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_ALG_INFO_DER_DESERIALIZER:
             return AlgInfoDerDeserializer(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol MessageInfoSerializer.
     @objc static func wrapMessageInfoSerializer(take c_ctx: OpaquePointer) -> MessageInfoSerializer {
-        assert(vscf_message_info_serializer_is_implemented(c_ctx))
+        if (vscf_message_info_serializer_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface MessageInfoSerializer.")
+        }
+
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
         case vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER:
             return MessageInfoDerSerializer(take: c_ctx)
         default:
-            assert(false)
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 }

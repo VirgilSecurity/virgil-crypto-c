@@ -2085,9 +2085,9 @@ function swift_get_implementation_helper_interface_method (swift_class, interfac
     endif
 
     new swift_method to my.swift_class
+        my.protocol_name = swift_derive_protocol_name (my.interface, my.wrapper)
         . = "\
-            /// Wrap C implementation object to the Swift object that implements \
-            protocol $(swift_derive_protocol_name (my.interface, my.wrapper)).
+            /// Wrap C implementation object to the Swift object that implements protocol $(my.protocol_name:).
         "
         .name = my.interface_method_name
         .modifier = "static"
@@ -2103,12 +2103,14 @@ function swift_get_implementation_helper_interface_method (swift_class, interfac
             .type = swift_derive_protocol_name (my.interface, my.wrapper)
         endnew
 
-
         new swift_code to swift_method
             my.method_of_class = my.interface.of_class ? my.interface.name
             my.method_is_implemented = make_ref_c (make_id ("class", my.method_of_class, "method", "is_implemented"))
             .temp_code = format_left("\
-                assert($(my.method_is_implemented:)(c_ctx))
+                if ($(my.method_is_implemented:)(c_ctx)) {
+                    fatalError(\"Given C implementation does not implement interface $(my.protocol_name:).\")
+                }
+
                 let implTag = .(c_class_impl_method_tag)(c_ctx)
                 switch(implTag) {
             ")
@@ -2332,7 +2334,7 @@ function swift_finalize_implementation_helper_modules (destination, wrapper, met
     for my.helper_class.swift_method
         swift_method->swift_code.temp_code += format_left ("\
             default:
-                assert(false)
+                fatalError(\"Unexpected C implementation cast to the Swift implementation.\")
             }
         ")
 
