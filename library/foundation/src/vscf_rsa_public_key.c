@@ -427,5 +427,17 @@ vscf_rsa_public_key_generate_ephemeral_key(vscf_rsa_public_key_t *self, vscf_err
         return NULL;
     }
 
+    if (self->random) {
+        vscf_rsa_private_key_use_random(private_key, self->random);
+    }
+
+    if (self->asn1rd) {
+        vscf_rsa_private_key_use_asn1rd(private_key, self->asn1rd);
+    }
+
+    if (self->asn1wr) {
+        vscf_rsa_private_key_use_asn1wr(private_key, self->asn1wr);
+    }
+
     return vscf_rsa_private_key_impl(private_key);
 }

@@ -78,6 +78,10 @@ import VSCFoundation
             return Ed25519PublicKey(take: c_ctx)
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
             return Ed25519PrivateKey(take: c_ctx)
+        case vscf_impl_tag_X25519_PUBLIC_KEY:
+            return X25519PublicKey(take: c_ctx)
+        case vscf_impl_tag_X25519_PRIVATE_KEY:
+            return X25519PrivateKey(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -122,6 +126,8 @@ import VSCFoundation
             return Pkcs5Pbes2(take: c_ctx)
         case vscf_impl_tag_ED25519_PUBLIC_KEY:
             return Ed25519PublicKey(take: c_ctx)
+        case vscf_impl_tag_X25519_PUBLIC_KEY:
+            return X25519PublicKey(take: c_ctx)
         case vscf_impl_tag_ECIES:
             return Ecies(take: c_ctx)
         default:
@@ -147,6 +153,8 @@ import VSCFoundation
             return Pkcs5Pbes2(take: c_ctx)
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
             return Ed25519PrivateKey(take: c_ctx)
+        case vscf_impl_tag_X25519_PRIVATE_KEY:
+            return X25519PrivateKey(take: c_ctx)
         case vscf_impl_tag_ECIES:
             return Ecies(take: c_ctx)
         default:
@@ -308,6 +316,10 @@ import VSCFoundation
             return Ed25519PublicKey(take: c_ctx)
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
             return Ed25519PrivateKey(take: c_ctx)
+        case vscf_impl_tag_X25519_PUBLIC_KEY:
+            return X25519PublicKey(take: c_ctx)
+        case vscf_impl_tag_X25519_PRIVATE_KEY:
+            return X25519PrivateKey(take: c_ctx)
         case vscf_impl_tag_ECIES:
             return Ecies(take: c_ctx)
         case vscf_impl_tag_ALG_INFO_DER_SERIALIZER:
@@ -337,6 +349,10 @@ import VSCFoundation
             return Ed25519PublicKey(take: c_ctx)
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
             return Ed25519PrivateKey(take: c_ctx)
+        case vscf_impl_tag_X25519_PUBLIC_KEY:
+            return X25519PublicKey(take: c_ctx)
+        case vscf_impl_tag_X25519_PRIVATE_KEY:
+            return X25519PrivateKey(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -371,6 +387,8 @@ import VSCFoundation
             return RsaPublicKey(take: c_ctx)
         case vscf_impl_tag_ED25519_PUBLIC_KEY:
             return Ed25519PublicKey(take: c_ctx)
+        case vscf_impl_tag_X25519_PUBLIC_KEY:
+            return X25519PublicKey(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -388,6 +406,8 @@ import VSCFoundation
             return RsaPublicKey(take: c_ctx)
         case vscf_impl_tag_ED25519_PUBLIC_KEY:
             return Ed25519PublicKey(take: c_ctx)
+        case vscf_impl_tag_X25519_PUBLIC_KEY:
+            return X25519PublicKey(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -405,6 +425,8 @@ import VSCFoundation
             return RsaPrivateKey(take: c_ctx)
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
             return Ed25519PrivateKey(take: c_ctx)
+        case vscf_impl_tag_X25519_PRIVATE_KEY:
+            return X25519PrivateKey(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -439,6 +461,8 @@ import VSCFoundation
             return RsaPrivateKey(take: c_ctx)
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
             return Ed25519PrivateKey(take: c_ctx)
+        case vscf_impl_tag_X25519_PRIVATE_KEY:
+            return X25519PrivateKey(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -575,6 +599,8 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
             return Ed25519PrivateKey(take: c_ctx)
+        case vscf_impl_tag_X25519_PRIVATE_KEY:
+            return X25519PrivateKey(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
