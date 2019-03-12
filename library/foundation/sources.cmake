@@ -415,6 +415,16 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_x25519_private_key.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_x25519_public_key.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_factory.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -698,6 +708,12 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_SIMPLE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_simple_alg_info.h>"
             "$<$<BOOL:${VSCF_SIMPLE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_simple_alg_info_internal.h>"
             "$<$<BOOL:${VSCF_SIMPLE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_simple_alg_info_defs.h>"
+            "$<$<BOOL:${VSCF_X25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_x25519_private_key.h>"
+            "$<$<BOOL:${VSCF_X25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_x25519_private_key_internal.h>"
+            "$<$<BOOL:${VSCF_X25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_x25519_private_key_defs.h>"
+            "$<$<BOOL:${VSCF_X25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_x25519_public_key.h>"
+            "$<$<BOOL:${VSCF_X25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_x25519_public_key_internal.h>"
+            "$<$<BOOL:${VSCF_X25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_x25519_public_key_defs.h>"
             "$<$<BOOL:${VSCF_ALG_FACTORY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_factory.h>"
             "$<$<BOOL:${VSCF_BASE64}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_base64.h>"
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_envelope.h>"
@@ -917,6 +933,12 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_SIMPLE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_simple_alg_info.c>"
             "$<$<BOOL:${VSCF_SIMPLE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_simple_alg_info_internal.c>"
             "$<$<BOOL:${VSCF_SIMPLE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_simple_alg_info_defs.c>"
+            "$<$<BOOL:${VSCF_X25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_x25519_private_key.c>"
+            "$<$<BOOL:${VSCF_X25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_x25519_private_key_internal.c>"
+            "$<$<BOOL:${VSCF_X25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_x25519_private_key_defs.c>"
+            "$<$<BOOL:${VSCF_X25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_x25519_public_key.c>"
+            "$<$<BOOL:${VSCF_X25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_x25519_public_key_internal.c>"
+            "$<$<BOOL:${VSCF_X25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_x25519_public_key_defs.c>"
             "$<$<BOOL:${VSCF_ALG_FACTORY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_factory.c>"
             "$<$<BOOL:${VSCF_BASE64}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_base64.c>"
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_envelope.c>"

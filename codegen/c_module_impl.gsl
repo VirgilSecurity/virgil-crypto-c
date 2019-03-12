@@ -145,6 +145,7 @@ function _L24_add_method_get_tag (meta, destination)
         . = "\Return unique 'Implementation TAG'."
 
         .name = my.names.enum_tag
+        .is_const = "1"
 
         new return
             .enum = ".(class_impl_enum_tag)"

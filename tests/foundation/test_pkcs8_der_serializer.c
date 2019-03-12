@@ -39,19 +39,24 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE (VSCF_PKCS8_DER_SERIALIZER && VSCF_ASN1RD && VSCF_ASN1WR)
+#define TEST_DEPENDENCIES_AVAILABLE                                                                                    \
+    (VSCF_PKCS8_DER_SERIALIZER && VSCF_ASN1RD && VSCF_ASN1WR && VSCF_ED25519_PRIVATE_KEY && VSCF_ED25519_PUBLIC_KEY && \
+            VSCF_X25519_PRIVATE_KEY && VSCF_X25519_PUBLIC_KEY)
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_asn1rd.h"
 #include "vscf_asn1wr.h"
 #include "vscf_ed25519_private_key.h"
 #include "vscf_ed25519_public_key.h"
+#include "vscf_x25519_private_key.h"
+#include "vscf_x25519_public_key.h"
 #include "vscf_pkcs8_der_serializer.h"
 #include "vscf_rsa_private_key.h"
 #include "vscf_rsa_public_key.h"
 
 #include "test_data_rsa.h"
 #include "test_data_ed25519.h"
+#include "test_data_x25519.h"
 
 
 // --------------------------------------------------------------------------
@@ -248,8 +253,6 @@ test__serialize_private_key__ed25519__equals_to_ed25519_private_key_pkcs8_der(vo
 
     vscf_pkcs8_der_serializer_serialize_private_key(pkcs8, vscf_ed25519_private_key_impl(private_key), out);
 
-    print_buffer(out);
-
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ed25519_PRIVATE_KEY_PKCS8_DER, out);
 
     vsc_buffer_destroy(&out);
@@ -257,6 +260,98 @@ test__serialize_private_key__ed25519__equals_to_ed25519_private_key_pkcs8_der(vo
     vscf_pkcs8_der_serializer_destroy(&pkcs8);
 #else
     TEST_IGNORE_MESSAGE("VSCF_ED25519_PRIVATE_KEY is disabled");
+#endif
+}
+
+
+// --------------------------------------------------------------------------
+// PKCS#8 x25519 keys.
+// --------------------------------------------------------------------------
+void
+test__serialized_public_key_len__x25519__greater_then_44(void) {
+#if VSCF_X25519_PUBLIC_KEY
+    vscf_pkcs8_der_serializer_t *pkcs8 = vscf_pkcs8_der_serializer_new();
+    vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
+
+    vscf_x25519_public_key_t *public_key = vscf_x25519_public_key_new();
+    vscf_x25519_public_key_import_public_key(public_key, test_x25519_PUBLIC_KEY);
+
+    size_t len = vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8, vscf_x25519_public_key_impl(public_key));
+
+    TEST_ASSERT_GREATER_OR_EQUAL(44, len);
+
+    vscf_x25519_public_key_destroy(&public_key);
+    vscf_pkcs8_der_serializer_destroy(&pkcs8);
+#else
+    TEST_IGNORE_MESSAGE("VSCF_X25519_PUBLIC_KEY is disabled");
+#endif
+}
+
+void
+test__serialize_public_key__x25519__equals_to_x25519_public_key_pkcs8_der(void) {
+#if VSCF_X25519_PUBLIC_KEY
+    vscf_pkcs8_der_serializer_t *pkcs8 = vscf_pkcs8_der_serializer_new();
+    vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
+
+    vscf_x25519_public_key_t *public_key = vscf_x25519_public_key_new();
+    vscf_x25519_public_key_import_public_key(public_key, test_x25519_PUBLIC_KEY);
+
+    size_t len = vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8, vscf_x25519_public_key_impl(public_key));
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
+
+    vscf_pkcs8_der_serializer_serialize_public_key(pkcs8, vscf_x25519_public_key_impl(public_key), out);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_x25519_PUBLIC_KEY_PKCS8_DER, out);
+
+    vsc_buffer_destroy(&out);
+    vscf_x25519_public_key_destroy(&public_key);
+    vscf_pkcs8_der_serializer_destroy(&pkcs8);
+#else
+    TEST_IGNORE_MESSAGE("VSCF_X25519_PUBLIC_KEY is disabled");
+#endif
+}
+
+void
+test__serialized_private_key_len__x25519__greater_then_48(void) {
+#if VSCF_X25519_PRIVATE_KEY
+    vscf_pkcs8_der_serializer_t *pkcs8 = vscf_pkcs8_der_serializer_new();
+    vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
+
+    vscf_x25519_private_key_t *private_key = vscf_x25519_private_key_new();
+    vscf_x25519_private_key_import_private_key(private_key, test_x25519_PRIVATE_KEY);
+
+    size_t len = vscf_pkcs8_der_serializer_serialized_private_key_len(pkcs8, vscf_x25519_private_key_impl(private_key));
+
+    TEST_ASSERT_GREATER_OR_EQUAL(48, len);
+
+    vscf_x25519_private_key_destroy(&private_key);
+    vscf_pkcs8_der_serializer_destroy(&pkcs8);
+#else
+    TEST_IGNORE_MESSAGE("VSCF_X25519_PRIVATE_KEY is disabled");
+#endif
+}
+
+void
+test__serialize_private_key__x25519__equals_to_x25519_private_key_pkcs8_der(void) {
+#if VSCF_X25519_PRIVATE_KEY
+    vscf_pkcs8_der_serializer_t *pkcs8 = vscf_pkcs8_der_serializer_new();
+    vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
+
+    vscf_x25519_private_key_t *private_key = vscf_x25519_private_key_new();
+    vscf_x25519_private_key_import_private_key(private_key, test_x25519_PRIVATE_KEY);
+
+    size_t len = vscf_pkcs8_der_serializer_serialized_private_key_len(pkcs8, vscf_x25519_private_key_impl(private_key));
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
+
+    vscf_pkcs8_der_serializer_serialize_private_key(pkcs8, vscf_x25519_private_key_impl(private_key), out);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_x25519_PRIVATE_KEY_PKCS8_DER, out);
+
+    vsc_buffer_destroy(&out);
+    vscf_x25519_private_key_destroy(&private_key);
+    vscf_pkcs8_der_serializer_destroy(&pkcs8);
+#else
+    TEST_IGNORE_MESSAGE("VSCF_X25519_PRIVATE_KEY is disabled");
 #endif
 }
 
@@ -281,6 +376,11 @@ main(void) {
     RUN_TEST(test__serialize_public_key__ed25519__equals_to_ed25519_public_key_pkcs8_der);
     RUN_TEST(test__serialized_private_key_len__ed25519__greater_then_48);
     RUN_TEST(test__serialize_private_key__ed25519__equals_to_ed25519_private_key_pkcs8_der);
+
+    RUN_TEST(test__serialized_public_key_len__x25519__greater_then_44);
+    RUN_TEST(test__serialize_public_key__x25519__equals_to_x25519_public_key_pkcs8_der);
+    RUN_TEST(test__serialized_private_key_len__x25519__greater_then_48);
+    RUN_TEST(test__serialize_private_key__x25519__equals_to_x25519_private_key_pkcs8_der);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
