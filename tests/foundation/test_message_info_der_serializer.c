@@ -92,7 +92,7 @@ test__serialize__one_rsa2048_key_recipient__returns_valid_cms(void) {
             vsc_buffer_new_with_capacity(vscf_message_info_der_serializer_serialized_len(serializer, message_info));
     vscf_message_info_der_serializer_serialize(serializer, message_info, out);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_cms_ONE_RSA2048_KEY_RECIPIENT.serialized, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_cms_V2_COMPATIBLE_ONE_RSA2048_KEY_RECIPIENT.serialized, out);
 
     vsc_buffer_destroy(&out);
     vscf_message_info_der_serializer_destroy(&serializer);
@@ -134,7 +134,7 @@ test__serialize__one_password_recipient__returns_valid_cms(void) {
             vsc_buffer_new_with_capacity(vscf_message_info_der_serializer_serialized_len(serializer, message_info));
     vscf_message_info_der_serializer_serialize(serializer, message_info, out);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_cms_ONE_PASSWORD_RECIPIENT.serialized, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_cms_V2_COMPATIBLE_ONE_PASSWORD_RECIPIENT.serialized, out);
 
     vsc_buffer_destroy(&out);
     vscf_message_info_der_serializer_destroy(&serializer);
@@ -166,7 +166,7 @@ test__serialize__cms_with_custom_params__returns_cms_with_no_recipients_and_3_pa
             vsc_buffer_new_with_capacity(vscf_message_info_der_serializer_serialized_len(serializer, message_info));
     vscf_message_info_der_serializer_serialize(serializer, message_info, out);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_cms_NO_RECIPIENTS_AND_3_CUSTOM_PARAMS, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_cms_V2_COMPATIBLE_NO_RECIPIENTS_AND_3_CUSTOM_PARAMS, out);
 
     vsc_buffer_destroy(&out);
     vscf_message_info_der_serializer_destroy(&serializer);

@@ -77,7 +77,38 @@ test__deserialize__sha256__returns_valid_simple_info(void) {
 }
 
 void
+test__deserialize__sha256_v2_compat__returns_valid_simple_info(void) {
+    vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
+    vscf_alg_info_der_deserializer_setup_defaults(deserializer);
+
+    vscf_impl_t *sha256_info = vscf_alg_info_der_deserializer_deserialize(deserializer, test_alg_info_SHA256_DER, NULL);
+
+    TEST_ASSERT_NOT_NULL(sha256_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_SHA256, vscf_alg_info_alg_id(sha256_info));
+
+    vscf_impl_destroy(&sha256_info);
+    vscf_alg_info_der_deserializer_destroy(&deserializer);
+}
+
+void
 test__deserialize__kdf1_sha256__returns_valid_hash_based_alg_info(void) {
+    vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
+    vscf_alg_info_der_deserializer_setup_defaults(deserializer);
+
+    vscf_hash_based_alg_info_t *kdf_info = (vscf_hash_based_alg_info_t *)vscf_alg_info_der_deserializer_deserialize(
+            deserializer, test_alg_info_KDF1_SHA256_DER, NULL);
+
+
+    TEST_ASSERT_NOT_NULL(kdf_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_KDF1, vscf_hash_based_alg_info_alg_id(kdf_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_SHA256, vscf_alg_info_alg_id(vscf_hash_based_alg_info_hash_alg_info(kdf_info)));
+
+    vscf_hash_based_alg_info_destroy(&kdf_info);
+    vscf_alg_info_der_deserializer_destroy(&deserializer);
+}
+
+void
+test__deserialize__kdf1_sha256_v2_compat__returns_valid_hash_based_alg_info(void) {
     vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
     vscf_alg_info_der_deserializer_setup_defaults(deserializer);
 
@@ -114,6 +145,27 @@ test__deserialize__aes256_gcm__returns_valid_cipher_alg_info(void) {
     vscf_alg_info_der_deserializer_destroy(&deserializer);
 }
 
+void
+test__deserialize__aes256_gcm_v2_compat__returns_valid_cipher_alg_info(void) {
+    vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
+    vscf_alg_info_der_deserializer_setup_defaults(deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_cipher_alg_info_t *cipher_info = (vscf_cipher_alg_info_t *)vscf_alg_info_der_deserializer_deserialize(
+            deserializer, test_alg_info_AES256_GCM_DER, &error);
+
+
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_NOT_NULL(cipher_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_AES256_GCM, vscf_cipher_alg_info_alg_id(cipher_info));
+    TEST_ASSERT_EQUAL_DATA(test_alg_info_AES256_GCM_NONCE, vscf_cipher_alg_info_nonce(cipher_info));
+
+    vscf_cipher_alg_info_destroy(&cipher_info);
+    vscf_alg_info_der_deserializer_destroy(&deserializer);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -126,8 +178,11 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__deserialize__sha256__returns_valid_simple_info);
+    RUN_TEST(test__deserialize__sha256_v2_compat__returns_valid_simple_info);
     RUN_TEST(test__deserialize__kdf1_sha256__returns_valid_hash_based_alg_info);
+    RUN_TEST(test__deserialize__kdf1_sha256_v2_compat__returns_valid_hash_based_alg_info);
     RUN_TEST(test__deserialize__aes256_gcm__returns_valid_cipher_alg_info);
+    RUN_TEST(test__deserialize__aes256_gcm_v2_compat__returns_valid_cipher_alg_info);
 
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
