@@ -139,7 +139,7 @@ test__encrypt__messege_with_ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac_
     vscf_status_t status = vscf_ecies_encrypt(ecies, test_data_ecies_MESSAGE, enc_msg);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ecies_ED25519_ENCRYPTED_MESSAGE, enc_msg);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ecies_ED25519_ENCRYPTED_MESSAGE_V2_COMPAT, enc_msg);
 
     vsc_buffer_destroy(&enc_msg);
     vscf_raw_key_destroy(&raw_ephemeral_key);

@@ -40,7 +40,9 @@ extern const vsc_data_t test_signer_DATA;
 extern const vsc_data_t test_signer_ED25519_PUBLIC_KEY_PKCS8;
 extern const vsc_data_t test_signer_ED25519_PRIVATE_KEY_PKCS8;
 extern const vsc_data_t test_signer_ED25519_SHA384_SIGNATURE;
+extern const vsc_data_t test_signer_ED25519_SHA384_SIGNATURE_V2_COMPAT;
 
 extern const vsc_data_t test_signer_RSA2048_PUBLIC_KEY_PKCS8;
 extern const vsc_data_t test_signer_RSA2048_PRIVATE_KEY_PKCS8;
 extern const vsc_data_t test_signer_RSA2048_SHA384_SIGNATURE;
+extern const vsc_data_t test_signer_RSA2048_SHA384_SIGNATURE_V2_COMPAT;

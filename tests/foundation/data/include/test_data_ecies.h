@@ -38,6 +38,7 @@
 extern const vsc_data_t test_data_ecies_MESSAGE;
 
 extern const vsc_data_t test_data_ecies_ED25519_ENCRYPTED_MESSAGE;
+extern const vsc_data_t test_data_ecies_ED25519_ENCRYPTED_MESSAGE_V2_COMPAT;
 extern const vsc_data_t test_data_ecies_ED25519_RECEIVER_PUBLIC_KEY;
 extern const vsc_data_t test_data_ecies_ED25519_RECEIVER_PRIVATE_KEY;
 extern const vsc_data_t test_data_ecies_ED25519_EPHEMERAL_PRIVATE_KEY;

@@ -97,6 +97,30 @@ test__verify__ed25519_sha384_signature_with_public_key__is_valid(void) {
 }
 
 void
+test__verify__ed25519_sha384_signature_v2_compat_with_public_key__is_valid(void) {
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+
+    vscf_impl_t *public_key =
+            vscf_key_provider_import_public_key(key_provider, test_signer_ED25519_PUBLIC_KEY_PKCS8, NULL);
+    TEST_ASSERT_NOT_NULL(public_key);
+
+    vscf_verifier_t *verifier = vscf_verifier_new();
+
+    vscf_verifier_reset(verifier, test_signer_ED25519_SHA384_SIGNATURE_V2_COMPAT);
+    vscf_verifier_update(verifier, test_signer_DATA);
+    bool is_valid = vscf_verifier_verify(verifier, public_key);
+
+    TEST_ASSERT_TRUE(is_valid);
+
+    vscf_verifier_destroy(&verifier);
+    vscf_impl_destroy(&public_key);
+    vscf_key_provider_destroy(&key_provider);
+}
+
+void
 test__reset__with_rsa2048_sha384_signature__format_is_valid(void) {
 
     vscf_verifier_t *verifier = vscf_verifier_new();
@@ -131,6 +155,30 @@ test__verify__rsa2048_sha384_signature_with_public_key__is_valid(void) {
     vscf_key_provider_destroy(&key_provider);
 }
 
+void
+test__verify__rsa2048_sha384_signature_v2_compat_with_public_key__is_valid(void) {
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+
+    vscf_impl_t *public_key =
+            vscf_key_provider_import_public_key(key_provider, test_signer_RSA2048_PUBLIC_KEY_PKCS8, NULL);
+    TEST_ASSERT_NOT_NULL(public_key);
+
+    vscf_verifier_t *verifier = vscf_verifier_new();
+
+    vscf_verifier_reset(verifier, test_signer_RSA2048_SHA384_SIGNATURE_V2_COMPAT);
+    vscf_verifier_update(verifier, test_signer_DATA);
+    bool is_valid = vscf_verifier_verify(verifier, public_key);
+
+    TEST_ASSERT_TRUE(is_valid);
+
+    vscf_verifier_destroy(&verifier);
+    vscf_impl_destroy(&public_key);
+    vscf_key_provider_destroy(&key_provider);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -144,8 +192,10 @@ main(void) {
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__reset__with_ed25519_sha384_signature__format_is_valid);
     RUN_TEST(test__verify__ed25519_sha384_signature_with_public_key__is_valid);
+    RUN_TEST(test__verify__ed25519_sha384_signature_v2_compat_with_public_key__is_valid);
     RUN_TEST(test__reset__with_rsa2048_sha384_signature__format_is_valid);
     RUN_TEST(test__verify__rsa2048_sha384_signature_with_public_key__is_valid);
+    RUN_TEST(test__verify__rsa2048_sha384_signature_v2_compat_with_public_key__is_valid);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

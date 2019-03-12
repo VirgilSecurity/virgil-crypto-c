@@ -214,13 +214,19 @@ vscf_alg_info_der_serializer_is_alg_require_null_params(vscf_alg_id_t alg_id) {
 
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
-    //  According to RFC 5754 - Using SHA2 Algorithms with Cryptographic Message Syntax.
-    //  Implementations MUST generate SHA2 AlgorithmIdentifiers with absent parameters.
-
     switch (alg_id) {
     case vscf_alg_id_RSA:
         return true;
 
+    case vscf_alg_id_SHA224:
+    case vscf_alg_id_SHA256:
+    case vscf_alg_id_SHA384:
+    case vscf_alg_id_SHA512:
+        //  According to RFC 5754 - Using SHA2 Algorithms with Cryptographic Message Syntax.
+        //  Implementations MUST generate SHA2 AlgorithmIdentifiers with absent parameters.
+        //  But to preserve forward compatibility this BUG is still here.
+        //  BUG: Fix this when Virgil Crypto V2 support will end up.
+        return true;
     default:
         return false;
     }
@@ -549,12 +555,15 @@ vscf_alg_info_der_serializer_serialize_cipher_alg_info(
     vscf_alg_id_t alg_id = vscf_cipher_alg_info_alg_id(cipher_alg_info);
 
     switch (alg_id) {
-    case vscf_alg_id_AES256_GCM:
-        //  Write GCMParameters.
-        len += vscf_asn1_writer_write_int(asn1_writer, vscf_cipher_alg_info_nonce(cipher_alg_info).len);
-        len += vscf_asn1_writer_write_octet_str(asn1_writer, vscf_cipher_alg_info_nonce(cipher_alg_info));
-        len += vscf_asn1_writer_write_sequence(asn1_writer, len);
-        break;
+        //  According to RFC 5084 - GCMParameters is written as SEQUENCE.
+        //  But to preserve forward compatibility with version V2 this BUG is still here.
+        //  BUG: Uncomment next code when Virgil Crypto V2 support will end up.
+        // case vscf_alg_id_AES256_GCM:
+        //     //  Write GCMParameters.
+        //     len += vscf_asn1_writer_write_int(asn1_writer, vscf_cipher_alg_info_nonce(cipher_alg_info).len);
+        //     len += vscf_asn1_writer_write_octet_str(asn1_writer, vscf_cipher_alg_info_nonce(cipher_alg_info));
+        //     len += vscf_asn1_writer_write_sequence(asn1_writer, len);
+        //     break;
 
     default:
         //  Write NONCE only.
