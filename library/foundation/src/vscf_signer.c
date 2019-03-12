@@ -55,7 +55,7 @@
 #include "vscf_assert.h"
 #include "vscf_hash.h"
 #include "vscf_signer_defs.h"
-#include "vscf_sha384.h"
+#include "vscf_sha512.h"
 #include "vscf_alg.h"
 #include "vscf_sign_hash.h"
 
@@ -284,7 +284,7 @@ vscf_signer_reset(vscf_signer_t *self) {
     VSCF_ASSERT_PTR(self);
 
     if (NULL == self->hash) {
-        self->hash = vscf_sha384_impl(vscf_sha384_new());
+        self->hash = vscf_sha512_impl(vscf_sha512_new());
     }
 
     vscf_hash_start(self->hash);

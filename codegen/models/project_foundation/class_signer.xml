@@ -1,7 +1,7 @@
 <class name="signer">
     Sign data of any size.
 
-    <require impl="sha384"/>
+    <require impl="sha512"/>
     <require interface="alg"/>
     <require interface="sign hash"/>
 
