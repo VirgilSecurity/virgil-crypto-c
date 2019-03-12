@@ -40,7 +40,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol Alg.
     @objc static func wrapAlg(take c_ctx: OpaquePointer) -> Alg {
-        if (vscf_alg_is_implemented(c_ctx)) {
+        if (!vscf_alg_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Alg.")
         }
 
@@ -85,7 +85,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol Hash.
     @objc static func wrapHash(take c_ctx: OpaquePointer) -> Hash {
-        if (vscf_hash_is_implemented(c_ctx)) {
+        if (!vscf_hash_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Hash.")
         }
 
@@ -106,7 +106,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol Encrypt.
     @objc static func wrapEncrypt(take c_ctx: OpaquePointer) -> Encrypt {
-        if (vscf_encrypt_is_implemented(c_ctx)) {
+        if (!vscf_encrypt_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Encrypt.")
         }
 
@@ -131,7 +131,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol Decrypt.
     @objc static func wrapDecrypt(take c_ctx: OpaquePointer) -> Decrypt {
-        if (vscf_decrypt_is_implemented(c_ctx)) {
+        if (!vscf_decrypt_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Decrypt.")
         }
 
@@ -156,7 +156,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol CipherInfo.
     @objc static func wrapCipherInfo(take c_ctx: OpaquePointer) -> CipherInfo {
-        if (vscf_cipher_info_is_implemented(c_ctx)) {
+        if (!vscf_cipher_info_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface CipherInfo.")
         }
 
@@ -173,7 +173,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol Cipher.
     @objc static func wrapCipher(take c_ctx: OpaquePointer) -> Cipher {
-        if (vscf_cipher_is_implemented(c_ctx)) {
+        if (!vscf_cipher_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Cipher.")
         }
 
@@ -190,7 +190,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol CipherAuthInfo.
     @objc static func wrapCipherAuthInfo(take c_ctx: OpaquePointer) -> CipherAuthInfo {
-        if (vscf_cipher_auth_info_is_implemented(c_ctx)) {
+        if (!vscf_cipher_auth_info_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface CipherAuthInfo.")
         }
 
@@ -205,7 +205,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol AuthEncrypt.
     @objc static func wrapAuthEncrypt(take c_ctx: OpaquePointer) -> AuthEncrypt {
-        if (vscf_auth_encrypt_is_implemented(c_ctx)) {
+        if (!vscf_auth_encrypt_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface AuthEncrypt.")
         }
 
@@ -220,7 +220,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol AuthDecrypt.
     @objc static func wrapAuthDecrypt(take c_ctx: OpaquePointer) -> AuthDecrypt {
-        if (vscf_auth_decrypt_is_implemented(c_ctx)) {
+        if (!vscf_auth_decrypt_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface AuthDecrypt.")
         }
 
@@ -235,7 +235,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol CipherAuth.
     @objc static func wrapCipherAuth(take c_ctx: OpaquePointer) -> CipherAuth {
-        if (vscf_cipher_auth_is_implemented(c_ctx)) {
+        if (!vscf_cipher_auth_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface CipherAuth.")
         }
 
@@ -250,7 +250,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol Asn1Reader.
     @objc static func wrapAsn1Reader(take c_ctx: OpaquePointer) -> Asn1Reader {
-        if (vscf_asn1_reader_is_implemented(c_ctx)) {
+        if (!vscf_asn1_reader_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Asn1Reader.")
         }
 
@@ -265,7 +265,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol Asn1Writer.
     @objc static func wrapAsn1Writer(take c_ctx: OpaquePointer) -> Asn1Writer {
-        if (vscf_asn1_writer_is_implemented(c_ctx)) {
+        if (!vscf_asn1_writer_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Asn1Writer.")
         }
 
@@ -280,7 +280,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol Defaults.
     @objc static func wrapDefaults(take c_ctx: OpaquePointer) -> Defaults {
-        if (vscf_defaults_is_implemented(c_ctx)) {
+        if (!vscf_defaults_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Defaults.")
         }
 
@@ -323,7 +323,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol Key.
     @objc static func wrapKey(take c_ctx: OpaquePointer) -> Key {
-        if (vscf_key_is_implemented(c_ctx)) {
+        if (!vscf_key_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Key.")
         }
 
@@ -344,7 +344,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol VerifyHash.
     @objc static func wrapVerifyHash(take c_ctx: OpaquePointer) -> VerifyHash {
-        if (vscf_verify_hash_is_implemented(c_ctx)) {
+        if (!vscf_verify_hash_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface VerifyHash.")
         }
 
@@ -361,7 +361,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol PublicKey.
     @objc static func wrapPublicKey(take c_ctx: OpaquePointer) -> PublicKey {
-        if (vscf_public_key_is_implemented(c_ctx)) {
+        if (!vscf_public_key_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface PublicKey.")
         }
 
@@ -378,7 +378,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol GenerateEphemeralKey.
     @objc static func wrapGenerateEphemeralKey(take c_ctx: OpaquePointer) -> GenerateEphemeralKey {
-        if (vscf_generate_ephemeral_key_is_implemented(c_ctx)) {
+        if (!vscf_generate_ephemeral_key_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface GenerateEphemeralKey.")
         }
 
@@ -395,7 +395,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol GenerateKey.
     @objc static func wrapGenerateKey(take c_ctx: OpaquePointer) -> GenerateKey {
-        if (vscf_generate_key_is_implemented(c_ctx)) {
+        if (!vscf_generate_key_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface GenerateKey.")
         }
 
@@ -412,7 +412,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol SignHash.
     @objc static func wrapSignHash(take c_ctx: OpaquePointer) -> SignHash {
-        if (vscf_sign_hash_is_implemented(c_ctx)) {
+        if (!vscf_sign_hash_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface SignHash.")
         }
 
@@ -429,7 +429,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol PrivateKey.
     @objc static func wrapPrivateKey(take c_ctx: OpaquePointer) -> PrivateKey {
-        if (vscf_private_key_is_implemented(c_ctx)) {
+        if (!vscf_private_key_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface PrivateKey.")
         }
 
@@ -446,7 +446,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol EntropySource.
     @objc static func wrapEntropySource(take c_ctx: OpaquePointer) -> EntropySource {
-        if (vscf_entropy_source_is_implemented(c_ctx)) {
+        if (!vscf_entropy_source_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface EntropySource.")
         }
 
@@ -463,7 +463,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol Random.
     @objc static func wrapRandom(take c_ctx: OpaquePointer) -> Random {
-        if (vscf_random_is_implemented(c_ctx)) {
+        if (!vscf_random_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Random.")
         }
 
@@ -480,7 +480,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol Mac.
     @objc static func wrapMac(take c_ctx: OpaquePointer) -> Mac {
-        if (vscf_mac_is_implemented(c_ctx)) {
+        if (!vscf_mac_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Mac.")
         }
 
@@ -495,7 +495,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol Kdf.
     @objc static func wrapKdf(take c_ctx: OpaquePointer) -> Kdf {
-        if (vscf_kdf_is_implemented(c_ctx)) {
+        if (!vscf_kdf_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Kdf.")
         }
 
@@ -516,7 +516,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol SaltedKdf.
     @objc static func wrapSaltedKdf(take c_ctx: OpaquePointer) -> SaltedKdf {
-        if (vscf_salted_kdf_is_implemented(c_ctx)) {
+        if (!vscf_salted_kdf_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface SaltedKdf.")
         }
 
@@ -533,7 +533,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol KeySerializer.
     @objc static func wrapKeySerializer(take c_ctx: OpaquePointer) -> KeySerializer {
-        if (vscf_key_serializer_is_implemented(c_ctx)) {
+        if (!vscf_key_serializer_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface KeySerializer.")
         }
 
@@ -550,7 +550,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol KeyDeserializer.
     @objc static func wrapKeyDeserializer(take c_ctx: OpaquePointer) -> KeyDeserializer {
-        if (vscf_key_deserializer_is_implemented(c_ctx)) {
+        if (!vscf_key_deserializer_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface KeyDeserializer.")
         }
 
@@ -567,7 +567,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol ComputeSharedKey.
     @objc static func wrapComputeSharedKey(take c_ctx: OpaquePointer) -> ComputeSharedKey {
-        if (vscf_compute_shared_key_is_implemented(c_ctx)) {
+        if (!vscf_compute_shared_key_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface ComputeSharedKey.")
         }
 
@@ -582,7 +582,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol AlgInfo.
     @objc static func wrapAlgInfo(take c_ctx: OpaquePointer) -> AlgInfo {
-        if (vscf_alg_info_is_implemented(c_ctx)) {
+        if (!vscf_alg_info_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface AlgInfo.")
         }
 
@@ -605,7 +605,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol AlgInfoSerializer.
     @objc static func wrapAlgInfoSerializer(take c_ctx: OpaquePointer) -> AlgInfoSerializer {
-        if (vscf_alg_info_serializer_is_implemented(c_ctx)) {
+        if (!vscf_alg_info_serializer_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface AlgInfoSerializer.")
         }
 
@@ -620,7 +620,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol AlgInfoDeserializer.
     @objc static func wrapAlgInfoDeserializer(take c_ctx: OpaquePointer) -> AlgInfoDeserializer {
-        if (vscf_alg_info_deserializer_is_implemented(c_ctx)) {
+        if (!vscf_alg_info_deserializer_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface AlgInfoDeserializer.")
         }
 
@@ -635,7 +635,7 @@ import VSCFoundation
 
     /// Wrap C implementation object to the Swift object that implements protocol MessageInfoSerializer.
     @objc static func wrapMessageInfoSerializer(take c_ctx: OpaquePointer) -> MessageInfoSerializer {
-        if (vscf_message_info_serializer_is_implemented(c_ctx)) {
+        if (!vscf_message_info_serializer_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface MessageInfoSerializer.")
         }
 

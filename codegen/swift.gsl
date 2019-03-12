@@ -2107,7 +2107,7 @@ function swift_get_implementation_helper_interface_method (swift_class, interfac
             my.method_of_class = my.interface.of_class ? my.interface.name
             my.method_is_implemented = make_ref_c (make_id ("class", my.method_of_class, "method", "is_implemented"))
             .temp_code = format_left("\
-                if ($(my.method_is_implemented:)(c_ctx)) {
+                if (!$(my.method_is_implemented:)(c_ctx)) {
                     fatalError(\"Given C implementation does not implement interface $(my.protocol_name:).\")
                 }
 
