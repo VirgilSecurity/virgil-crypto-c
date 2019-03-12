@@ -65,6 +65,8 @@
 #include "vscf_ed25519_private_key_defs.h"
 #include "vscf_ed25519_private_key_internal.h"
 
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
+
 // clang-format on
 //  @end
 
@@ -191,14 +193,18 @@ vscf_ed25519_private_key_generate_key(vscf_ed25519_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
-    vsc_buffer_t *generated = vsc_buffer_new();
-    VSCF_ASSERT_PTR(generated);
-    vsc_buffer_use(generated, self->secret_key, ED25519_KEY_LEN);
-    if (vscf_status_SUCCESS != vscf_random(self->random, ED25519_KEY_LEN, generated)) {
-        vsc_buffer_destroy(&generated);
+
+    vsc_buffer_t generated;
+    vsc_buffer_init(&generated);
+    vsc_buffer_use(&generated, self->secret_key, ED25519_KEY_LEN);
+
+    vscf_status_t status = vscf_random(self->random, ED25519_KEY_LEN, &generated);
+    vsc_buffer_cleanup(&generated);
+
+    if (status != vscf_status_SUCCESS) {
         return vscf_status_ERROR_KEY_GENERATION_FAILED;
     }
-    vsc_buffer_destroy(&generated);
+
     return vscf_status_SUCCESS;
 }
 
@@ -406,5 +412,5 @@ VSCF_PUBLIC size_t
 vscf_ed25519_private_key_shared_key_len(vscf_ed25519_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    return ED25519_KEY_LEN;
+    return ED25519_DH_LEN;
 }
