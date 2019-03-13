@@ -47,6 +47,7 @@ class PythiaTest extends PHPUnit\Framework\TestCase {
         list($blindedPassword, $blindingSecret) = $result;
         $this->assertEquals(49, strlen($blindedPassword));
         $this->assertEquals(33, strlen($blindingSecret));
+        vscp_pythia_delete_php($pythia);
     }
 }
 

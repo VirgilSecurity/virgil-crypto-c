@@ -49,6 +49,12 @@ class PHEClientTest extends \PHPUnit\Framework\TestCase
         $this->server = new PHEServer();
     }
 
+    protected function tearDown()
+    {
+        unset($this->client);
+        unset($this->server);
+    }
+
     public function testFullFlowRandomCorrectPwdShouldSucceed()
     {
         $password = "password";

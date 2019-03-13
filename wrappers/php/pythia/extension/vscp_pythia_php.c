@@ -125,7 +125,7 @@ PHP_FUNCTION(vscp_pythia_delete_php) {
     //
     vscp_pythia_t *pythia = zend_fetch_resource_ex(in_cctx, VSCP_PYTHIA_PHP_RES_NAME, le_vscp_pythia);
     VSCP_ASSERT_PTR(pythia);
-    zend_list_delete(Z_RES_P(in_cctx));
+    zend_list_close(Z_RES_P(in_cctx));
     RETURN_TRUE;
 }
 
