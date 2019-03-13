@@ -134,22 +134,27 @@ endfunction
 # C++ - Source
 # --------------------------------------------------------------------------------------------------
 
-function js_cpp_cast_cpp_call_argument(cpp_call_argument)
-  if cpp_call_argument.cast = "data_length"
-    return "$(cpp_call_argument.name:no).len"
+function js_cpp_create_cpp_argument(cpp_argument)
+  if my.cpp_argument.type = global.js_cpp_argument_type_variable
+    if defined(my.cpp_argument.cast)
+      if my.cpp_argument.cast = "data_length"
+        return "$(my.cpp_argument.name).len"
+      else
+        echo_fatal("Unknown 'cpp_argument.cast'", my)
+      endif
+    endif
+    return my.cpp_argument.name
+  elsif my.cpp_argument.type = global.js_cpp_argument_type_constant
+    return my.cpp_argument.constant
   else
-    echo_fatal("Unknown 'cpp_call_argument.cast'", my)
+    echo_fatal("Unknown 'cpp_argument.type'", my)
   endif
 endfunction
 
-function js_cpp_format_cpp_call_arguments(parent)
+function js_cpp_format_cpp_arguments(parent)
   my.arguments = ""
-  for my.parent.cpp_call_argument
-    if defined(cpp_call_argument.cast)
-      my.arguments += js_cpp_cast_cpp_call_argument(cpp_call_argument)
-    else
-      my.arguments += cpp_call_argument.name
-    endif
+  for my.parent.cpp_argument
+    my.arguments += js_cpp_create_cpp_argument(cpp_argument)
     if !last()
       my.arguments += ", "
     endif
@@ -157,11 +162,11 @@ function js_cpp_format_cpp_call_arguments(parent)
   return my.arguments
 endfunction
 
-function js_cpp_format_cpp_call_arguments_with_context(parent, cpp_class)
+function js_cpp_format_cpp_arguments_with_context(parent, cpp_class)
   my.arguments = "$(js_cpp_class_instance_name(my.cpp_class))->$(my.cpp_class.context_name)"
-  if count(my.parent.cpp_call_argument) > 0
+  if count(my.parent.cpp_argument) > 0
     my.arguments += ", "
-    my.arguments += js_cpp_format_cpp_call_arguments(my.parent)
+    my.arguments += js_cpp_format_cpp_arguments(my.parent)
   endif
   return my.arguments
 endfunction
@@ -265,98 +270,240 @@ function js_cpp_create_cpp_char_argument(cpp_char_argument, index, cpp_class, in
   endif
 endfunction
 
-function js_cpp_create_method_arguments(cpp_method, cpp_class, wrapper, indent_level)
-  for my.cpp_method.cpp_call_argument
-    my.cpp_call_argument_index = index(cpp_call_argument) - 1
-    for my.cpp_method.cpp_size_argument where cpp_size_argument.name = cpp_call_argument.name
-      js_cpp_create_cpp_size_argument(cpp_size_argument, my.cpp_call_argument_index, my.indent_level)
-      next cpp_call_argument
+function js_cpp_create_cpp_size_call_argument(cpp_size_call_argument, cpp_argument_index, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("size_t $(my.cpp_size_call_argument.name:no) = Nan::To<uint32_t>($(global.js_cpp_callback_info_name:no)[$(my.cpp_argument_index:no)]).FromJust();", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_integer_call_argument(cpp_integer_call_argument, cpp_argument_index, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("int32_t $(my.cpp_integer_call_argument.name:no) = Nan::To<int32_t>($(global.js_cpp_callback_info_name:no)[$(my.cpp_argument_index:no)]).FromJust();", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_unsigned_call_argument(cpp_unsigned_call_argument, cpp_argument_index, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("uint32_t $(my.cpp_unsigned_call_argument.name:no) = Nan::To<uint32_t>($(global.js_cpp_callback_info_name:no)[$(my.cpp_argument_index:no)]).FromJust();", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_boolean_call_argument(cpp_boolean_call_argument, cpp_argument_index, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("bool $(my.cpp_boolean_call_argument.name:no) = Nan::To<bool>($(global.js_cpp_callback_info_name:no)[$(my.cpp_argument_index:no)]).FromJust();", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_byte_call_argument(cpp_byte_call_argument, cpp_argument_index, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("byte* $(my.cpp_byte_call_argument.name:no) = node::Buffer::Data($(global.js_cpp_callback_info_name:no)[$(my.cpp_argument_index:no)]);", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_char_call_argument(cpp_char_call_argument, cpp_argument_index, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("char* $(my.cpp_char_call_argument.name:no) = Nan::Utf8String($(global.js_cpp_callback_info_name:no)[$(my.cpp_argument_index:no)]);", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_data_call_argument(cpp_data_call_argument, cpp_argument_index, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("vsc_data_t $(my.cpp_data_call_argument.name:no) = vsc_data_from_str(node::Buffer::Data($(global.js_cpp_callback_info_name:no)[$(my.cpp_argument_index:no)]), node::Buffer::Length($(global.js_cpp_callback_info_name:no)[$(my.cpp_argument_index:no)]));", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_enum_call_argument(cpp_enum_call_argument, wrapper, cpp_argument_index, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  for my.wrapper.js_wrapped_enum where js_wrapped_enum.name = my.cpp_enum_call_argument.enum_name
+    js_out("$(js_wrapped_enum.c_name:no) $(my.cpp_enum_call_argument.name:no) = ($(js_wrapped_enum.c_name:no))Nan::To<int32_t>($(global.js_cpp_callback_info_name:no)[$(my.cpp_argument_index:no)]).FromJust();", my.indent_levels.first)
+    last js_wrapped_enum
+  endfor
+endfunction
+
+function js_cpp_create_cpp_class_call_argument(cpp_class_call_argument, wrapper, cpp_argument_index, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  for my.wrapper.js_wrapped_class where js_wrapped_class.name = my.cpp_class_call_argument.class_name
+    js_out("$(js_cpp_context_type(js_wrapped_class.cpp_context_name)) $(my.cpp_class_call_argument.name:no) = Nan::ObjectWrap::Unwrap<$(js_wrapped_class.cpp_class_name:no)>($(global.js_cpp_callback_info_name:no)[$(my.cpp_argument_index:no)])->$(js_wrapped_class.cpp_context_name:no);", my.indent_levels.first)
+    last js_wrapped_class
+  endfor
+endfunction
+
+function js_cpp_create_cpp_interface_call_argument(cpp_interface_call_argument, wrapper, cpp_argument_index, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("// TODO: interface call argument", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_call_arguments(cpp_method, wrapper, indent_level)
+  for my.cpp_method.cpp_argument
+    my.cpp_argument_index = index(cpp_argument) - 1
+    for my.cpp_method.cpp_size_call_argument where cpp_size_call_argument.name = cpp_argument.name
+      js_cpp_create_cpp_size_call_argument(cpp_size_call_argument, my.cpp_argument_index, my.indent_level)
+      next cpp_argument
     endfor
-    for my.cpp_method.cpp_data_argument where cpp_data_argument.name = cpp_call_argument.name
-      js_cpp_create_cpp_data_argument(cpp_data_argument, my.cpp_call_argument_index, my.indent_level)
-      next cpp_call_argument
+    for my.cpp_method.cpp_integer_call_argument where cpp_integer_call_argument.name = cpp_argument.name
+      js_cpp_create_cpp_integer_call_argument(cpp_integer_call_argument, my.cpp_argument_index, my.indent_level)
+      next cpp_argument
     endfor
-    for my.cpp_method.cpp_context_argument where cpp_context_argument.name = cpp_call_argument.name
-      js_cpp_create_cpp_context_argument(cpp_context_argument, my.cpp_call_argument_index, my.wrapper, my.indent_level)
-      next cpp_call_argument
+    for my.cpp_method.cpp_unsigned_call_argument where cpp_unsigned_call_argument.name = cpp_argument.name
+      js_cpp_create_cpp_unsigned_call_argument(cpp_unsigned_call_argument, my.cpp_argument_index, my.indent_level)
+      next cpp_argument
     endfor
-    for my.cpp_method.cpp_enum_argument where cpp_enum_argument.name = cpp_call_argument.name
-      js_cpp_create_cpp_enum_argument(cpp_enum_argument, my.cpp_call_argument_index, my.wrapper, my.indent_level)
-      next cpp_call_argument
+    for my.cpp_method.cpp_boolean_call_argument where cpp_boolean_call_argument.name = cpp_argument.name
+      js_cpp_create_cpp_boolean_call_argument(cpp_boolean_call_argument, my.cpp_argument_index, my.indent_level)
+      next cpp_argument
     endfor
-    for my.cpp_method.cpp_char_argument where cpp_char_argument.name = cpp_call_argument.name
-      js_cpp_create_cpp_char_argument(cpp_char_argument, my.cpp_call_argument_index, my.cpp_class, my.indent_level)
-      next cpp_call_argument
+    for my.cpp_method.cpp_byte_call_argument where cpp_byte_call_argument.name = cpp_argument.name
+      js_cpp_create_cpp_byte_call_argument(cpp_byte_call_argument, my.cpp_argument_index, my.indent_level)
+      next cpp_argument
+    endfor
+    for my.cpp_method.cpp_char_call_argument where cpp_char_call_argument.name = cpp_argument.name
+      js_cpp_create_cpp_char_call_argument(cpp_char_call_argument, my.cpp_argument_index, my.indent_level)
+      next cpp_argument
+    endfor
+    for my.cpp_method.cpp_data_call_argument where cpp_data_call_argument.name = cpp_argument.name
+      js_cpp_create_cpp_data_call_argument(cpp_data_call_argument, my.cpp_argument_index, my.indent_level)
+      next cpp_argument
+    endfor
+    for my.cpp_method.cpp_enum_call_argument where cpp_enum_call_argument.name = cpp_argument.name
+      js_cpp_create_cpp_enum_call_argument(cpp_enum_call_argument, my.wrapper, my.cpp_argument_index, my.indent_level)
+      next cpp_argument
+    endfor
+    for my.cpp_method.cpp_class_call_argument where cpp_class_call_argument.name = cpp_argument.name
+      js_cpp_create_cpp_class_call_argument(cpp_class_call_argument, my.wrapper, my.cpp_argument_index, my.indent_level)
+      next cpp_argument
+    endfor
+    for my.cpp_method.cpp_interface_call_argument where cpp_interface_call_argument.name = cpp_argument.name
+      js_cpp_create_cpp_interface_call_argument(cpp_interface_call_argument, my.wrapper, my.cpp_argument_index, my.indent_level)
+      next cpp_argument
     endfor
   endfor
-  for my.cpp_method.cpp_buffer_argument
-    js_cpp_create_cpp_buffer_argument(cpp_buffer_argument, my.cpp_class, my.indent_level)
-  endfor
-  for my.cpp_method.cpp_error_context_argument
-    js_cpp_create_cpp_error_context_argument(cpp_error_context_argument, my.indent_level)
-  endfor
 endfunction
 
-function js_cpp_create_cpp_method_return_size(cpp_method_return_size, indent_level)
+function js_cpp_create_cpp_buffer_result_argument(cpp_buffer_result_argument, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("size_t $(my.cpp_method_return_size.name:no);", my.indent_levels.first)
+  js_out("// TODO: buffer result argument" , my.indent_levels.first)
 endfunction
 
-function js_cpp_create_cpp_method_return_boolean(cpp_method_return_boolean, indent_level)
+function js_cpp_create_cpp_byte_result_argument(cpp_byte_result_argument, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("boolean $(my.cpp_method_return_boolean.name:no);", my.indent_levels.first)
+  js_out("byte $(my.cpp_byte_result_argument.name:no)[$(my.cpp_byte_result_argument.length:no)];", my.indent_levels.first)
 endfunction
 
-function js_cpp_create_cpp_method_return_data(cpp_method_return_data, indent_level)
+function js_cpp_create_cpp_char_result_argument(cpp_char_result_argument, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("vsc_data_t $(my.cpp_method_return_data.name:no);", my.indent_levels.first)
+  js_out("char $(my.cpp_char_result_argument.name:no)[$(my.cpp_char_result_argument.length:no)];", my.indent_levels.first)
 endfunction
 
-function js_cpp_create_cpp_method_return_buffer(cpp_method_return_buffer, indent_level)
+function js_cpp_create_cpp_error_context_result_argument(cpp_error_context_result_argument, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("vsc_buffer_t* $(my.cpp_method_return_buffer.name:no);", my.indent_levels.first)
+  js_out("$(my.cpp_error_context_result_argument.c_class:no)_t $(my.cpp_error_context_result_argument.name:no);", my.indent_levels.first)
+  js_out("$(my.cpp_error_context_result_argument.c_class:no)_error(&$(my.cpp_error_context_result_argument.name:no));", my.indent_levels.first)
 endfunction
 
-function js_cpp_create_cpp_method_return_error(cpp_method_return_error, wrapper, indent_level)
+function js_cpp_create_cpp_result_arguments(cpp_method, wrapper, indent_level)
+  for my.cpp_method.cpp_buffer_result_argument
+    js_cpp_create_cpp_buffer_result_argument(cpp_buffer_result_argument, my.indent_level)
+  endfor
+  for my.cpp_method.cpp_byte_result_argument
+    js_cpp_create_cpp_byte_result_argument(cpp_byte_result_argument, my.indent_level)
+  endfor
+  for my.cpp_method.cpp_char_result_argument
+    js_cpp_create_cpp_char_result_argument(cpp_char_result_argument, my.indent_level)
+  endfor
+  for my.cpp_method.cpp_error_context_result_argument
+    js_cpp_create_cpp_error_context_result_argument(cpp_error_context_result_argument, my.indent_level)
+  endfor
+endfunction
+
+function js_cpp_create_cpp_size_method_return(cpp_size_method_return, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("$(my.wrapper.prefix:no)_error_t $(my.cpp_method_return_error.name:no);", my.indent_levels.first)
+  js_out("size_t $(my.cpp_size_method_return.name:no);", my.indent_levels.first)
 endfunction
 
-function js_cpp_create_cpp_method_return_context(cpp_method_return_context, wrapper, indent_level)
+function js_cpp_create_cpp_integer_method_return(cpp_integer_method_return, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  for my.wrapper.js_wrapped_class where my.cpp_method_return_context.class = js_wrapped_class.name
-    js_out("$(js_cpp_context_type(js_wrapped_class.cpp_context_name)) $(my.cpp_method_return_context.name:no);", my.indent_levels.first)
-  endfor
+  js_out("int32_t $(my.cpp_integer_method_return.name:no);", my.indent_levels.first)
 endfunction
 
-function js_cpp_create_cpp_method_return_enum(cpp_method_return_enum, wrapper, indent_level)
+function js_cpp_create_cpp_unsigned_method_return(cpp_unsigned_method_return, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  for my.wrapper.js_wrapped_enum where my.cpp_method_return_enum.enum = js_wrapped_enum.name
-    js_out("$(js_wrapped_enum.c_name:no) $(my.cpp_method_return_enum.name:no);", my.indent_levels.first)
-  endfor
+  js_out("uint32_t $(my.cpp_unsigned_method_return.name:no);", my.indent_levels.first)
 endfunction
 
-function js_cpp_create_method_return_variables(cpp_method, cpp_class, wrapper, indent_level)
-  for my.cpp_method.cpp_method_return_size
-    js_cpp_create_cpp_method_return_size(cpp_method_return_size, my.indent_level)
+function js_cpp_create_cpp_boolean_method_return(cpp_boolean_method_return, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("bool $(my.cpp_boolean_method_return.name:no);", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_byte_method_return(cpp_byte_method_return, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("byte* $(my.cpp_byte_method_return.name:no);", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_data_method_return(cpp_data_method_return, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("vsc_data_t $(my.cpp_data_method_return.name:no);", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_buffer_method_return(cpp_buffer_method_return, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("vsc_buffer_t* $(my.cpp_buffer_method_return.name:no);", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_error_method_return(cpp_error_method_return, wrapper, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("$(my.wrapper.prefix:no)_error_t $(my.cpp_error_method_return.name:no);", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_enum_method_return(cpp_enum_method_return, wrapper, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("// TODO: enum method return", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_class_method_return(cpp_class_method_return, wrapper, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("// TODO: class method return", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_implementation_method_return(cpp_implementation_method_return, wrapper, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("// TODO: implementation method return", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_interface_method_return(cpp_interface_method_return, wrapper, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("// TODO: interface method return", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_method_return(cpp_method, wrapper, indent_level)
+  for my.cpp_method.cpp_size_method_return
+    js_cpp_create_cpp_size_method_return(cpp_size_method_return, my.indent_level)
   endfor
-  for my.cpp_method.cpp_method_return_boolean
-    js_cpp_create_cpp_method_return_boolean(cpp_method_return_boolean, my.indent_level)
+  for my.cpp_method.cpp_integer_method_return
+    js_cpp_create_cpp_integer_method_return(cpp_integer_method_return, my.indent_level)
   endfor
-  for my.cpp_method.cpp_method_return_data
-    js_cpp_create_cpp_method_return_data(cpp_method_return_data, my.indent_level)
+  for my.cpp_method.cpp_unsigned_method_return
+    js_cpp_create_cpp_unsigned_method_return(cpp_unsigned_method_return, my.indent_level)
   endfor
-  for my.cpp_method.cpp_method_return_buffer
-    js_cpp_create_cpp_method_return_buffer(cpp_method_return_buffer, my.indent_level)
+  for my.cpp_method.cpp_boolean_method_return
+    js_cpp_create_cpp_boolean_method_return(cpp_boolean_method_return, my.indent_level)
   endfor
-  for my.cpp_method.cpp_method_return_error
-    js_cpp_create_cpp_method_return_error(cpp_method_return_error, my.wrapper, my.indent_level)
+  for my.cpp_method.cpp_byte_method_return
+    js_cpp_create_cpp_byte_method_return(cpp_byte_method_return, my.indent_level)
   endfor
-  for my.cpp_method.cpp_method_return_context
-    js_cpp_create_cpp_method_return_context(cpp_method_return_context, my.wrapper, my.indent_level)
+  for my.cpp_method.cpp_data_method_return
+    js_cpp_create_cpp_data_method_return(cpp_data_method_return, my.indent_level)
   endfor
-  for my.cpp_method.cpp_method_return_enum
-    js_cpp_create_cpp_method_return_enum(cpp_method_return_enum, my.wrapper, my.indent_level)
+  for my.cpp_method.cpp_buffer_method_return
+    js_cpp_create_cpp_buffer_method_return(cpp_buffer_method_return, my.indent_level)
+  endfor
+  for my.cpp_method.cpp_error_method_return
+    js_cpp_create_cpp_error_method_return(cpp_error_method_return, my.wrapper, my.indent_level)
+  endfor
+  for my.cpp_method.cpp_enum_method_return
+    js_cpp_create_cpp_enum_method_return(cpp_enum_method_return, my.wrapper, my.indent_level)
+  endfor
+  for my.cpp_method.cpp_class_method_return
+    js_cpp_create_cpp_class_method_return(cpp_class_method_return, my.wrapper, my.indent_level)
+  endfor
+  for my.cpp_method.cpp_implementation_method_return
+    js_cpp_create_cpp_implementation_method_return(cpp_implementation_method_return, my.wrapper, my.indent_level)
+  endfor
+  for my.cpp_method.cpp_interface_method_return
+    js_cpp_create_cpp_interface_method_return(cpp_interface_method_return, my.wrapper, my.indent_level)
   endfor
 endfunction
 
@@ -368,47 +515,58 @@ function js_cpp_create_method_call(cpp_method, cpp_class, indent_level)
   endif
   my.arguments = ""
   if js_method_is_static(my.cpp_method)
-    my.arguments = js_cpp_format_cpp_call_arguments(my.cpp_method)
+    my.arguments = js_cpp_format_cpp_arguments(my.cpp_method)
   else
-    my.arguments = js_cpp_format_cpp_call_arguments_with_context(my.cpp_method, my.cpp_class)
+    my.arguments = js_cpp_format_cpp_arguments_with_context(my.cpp_method, my.cpp_class)
   endif
   js_out("$(my.assignment)$(my.cpp_method.c_name:no)($(my.arguments:no));", my.indent_levels.first)
 endfunction
 
 function js_cpp_create_cpp_js_return(cpp_js_return, cpp_method, wrapper, indent_level)
-  for my.cpp_method.cpp_buffer_argument where my.cpp_js_return.name = cpp_buffer_argument.name
+  for my.cpp_method.cpp_buffer_result_argument where cpp_buffer_result_argument.name = my.cpp_js_return.name
     return "Nan::NewBuffer((char*)$(js_cpp_bytes_name(my.cpp_js_return.name)), vsc_buffer_len($(my.cpp_js_return.name:no))).ToLocalChecked()"
   endfor
-  for my.cpp_method.cpp_method_return_size where my.cpp_js_return.name = cpp_method_return_size.name
+  for my.cpp_method.cpp_byte_result_argument where cpp_byte_result_argument.name = my.cpp_js_return.name
+    return "Nan::NewBuffer((char*)$(my.cpp_js_return.name:no), $(cpp_byte_result_argument.length:no)).ToLocalChecked()"
+  endfor
+  for my.cpp_method.cpp_char_result_argument where cpp_char_result_argument.name = my.cpp_js_return.name
+    return "Nan::New<v8::String>(&$(my.cpp_js_return.name:no), $(cpp_char_result_argument.length:no)).ToLocalChecked()"
+  endfor
+  for my.cpp_method.cpp_size_method_return where cpp_size_method_return.name = my.cpp_js_return.name
     return "Nan::New<v8::Number>($(my.cpp_js_return.name:no))"
   endfor
-  for my.cpp_method.cpp_method_return_boolean where my.cpp_js_return.name = cpp_method_return_boolean.name
-    return "Nan::New<v8:Boolean>($(my.cpp_js_return.name:no))"
+  for my.cpp_method.cpp_integer_method_return where cpp_integer_method_return.name = my.cpp_js_return.name
+    return "Nan::New<v8::Number>($(my.cpp_js_return.name:no))"
   endfor
-  for my.cpp_method.cpp_method_return_enum where my.cpp_js_return.name = cpp_method_return_enum.name
-    return "Nan::New<v8::Number>((int)$(my.cpp_js_return.name:no))"
+  for my.cpp_method.cpp_unsigned_method_return where cpp_unsigned_method_return.name = my.cpp_js_return.name
+    return "Nan::New<v8::Number>($(my.cpp_js_return.name:no))"
   endfor
-  for my.cpp_method.cpp_method_return_buffer where my.cpp_js_return.name = cpp_method_return_buffer.name
-    return "Nan::NewBuffer((char*)vsc_buffer_bytes($(my.cpp_js_return.name:no)), vsc_buffer_len($(my.cpp_js_return.name:no))).ToLocalChecked()"
+  for my.cpp_method.cpp_boolean_method_return where cpp_boolean_method_return.name = my.cpp_js_return.name
+    return "Nan::New<v8::Boolean>($(my.cpp_js_return.name:no))"
   endfor
-  for my.cpp_method.cpp_method_return_data where my.cpp_js_return.name = cpp_method_return_data.name
+  for my.cpp_method.cpp_byte_method_return where cpp_byte_method_return.name = my.cpp_js_return.name
+    return "/* TODO: byte method return */"
+  endfor
+  for my.cpp_method.cpp_data_method_return where cpp_data_method_return.name = my.cpp_js_return.name
     return "Nan::NewBuffer((char*)$(my.cpp_js_return.name:no).bytes, $(my.cpp_js_return.name:no).len).ToLocalChecked()"
   endfor
-  for my.cpp_method.cpp_char_argument where my.cpp_js_return.name = cpp_char_argument.name
-    if defined(cpp_char_argument.length)
-      return "Nan::New<v8::String>(&$(my.cpp_js_return.name:no), $(cpp_char_argument.length:no)).ToLocalChecked()"
-    else
-      my.name = "$(my.cpp_js_return.name:no)_p"
-      js_out("char* $(my.name:no)_p = &$(my.cpp_js_return.name:no);")
-      return "Nan::New<v8::String>($(my.name:no), strlen($(my.name:no))).ToLocalChecked()"
-    endif
+  for my.cpp_method.cpp_buffer_method_return where cpp_buffer_method_return.name = my.cpp_js_return.name
+    return "Nan::NewBuffer((char*)vsc_buffer_bytes($(my.cpp_js_return.name:no)), vsc_buffer_len($(my.cpp_js_return.name:no))).ToLocalChecked()"
   endfor
-  for my.cpp_method.cpp_method_return_context where my.cpp_js_return.name = cpp_method_return_context.name
-    for my.wrapper.js_wrapped_class where cpp_method_return_context.class = js_wrapped_class.name
-      js_out("$(js_wrapped_class.cpp_class_name:no)* $(cpp_method_return_context.name:no)_instance = new $(js_wrapped_class.cpp_class_name:no)($(cpp_method_return_context.name:no));", my.indent_level)
-      js_out("$(cpp_method_return_context.name:no)_instance->Wrap($(global.js_cpp_callback_info_name:no).This());", my.indent_level)
-      return "$(global.js_cpp_callback_info_name:no).This()"
+  for my.cpp_method.cpp_enum_method_return where cpp_enum_method_return.name = my.cpp_js_return.name
+    return "Nan::New<v8::Number>((int)$(my.cpp_js_return.name:no))"
+  endfor
+  for my.cpp_method.cpp_class_method_return where cpp_class_method_return.name = my.cpp_js_return.name
+    for my.wrapper.js_wrapped_class where cpp_class_method_return.class_name = js_wrapped_class.name
+      js_out("$(js_wrapped_class.cpp_class_name:no)* $(cpp_class_method_return.name:no)_instance = new $(js_wrapped_class.cpp_class_name:no)($(cpp_class_method_return.name:no));", my.indent_level)
+      return "/* TODO: class method return */"
     endfor
+  endfor
+  for my.cpp_method.cpp_implementation_method_return where cpp_implementation_method_return.name = my.cpp_js_return.name
+    return "/* TODO: implementation method return */"
+  endfor
+  for my.cpp_method.cpp_interface_method_return where cpp_interface_method_return.name = my.cpp_js_return.name
+    return "/* TODO: interface method return */"
   endfor
 endfunction
 
@@ -435,34 +593,17 @@ function js_cpp_create_method_return(cpp_method, wrapper, indent_level)
   endif
 endfunction
 
-function js_cpp_create_cpp_buffer_argument_destroy(cpp_buffer_argument, indent_level)
-  my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("vsc_buffer_destroy(&$(my.cpp_buffer_argument.name:no));", my.indent_levels.first)
-endfunction
-
-function js_cpp_create_cpp_buffer_argument_cleanup(cpp_buffer_argument, indent_level)
-  my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_cpp_create_cpp_buffer_argument_destroy(my.cpp_buffer_argument, my.indent_levels.first)
-  js_out("delete[] $(js_cpp_bytes_name(my.cpp_buffer_argument.name));", my.indent_levels.first)
-endfunction
-
-function js_cpp_create_method_cleanup(cpp_method, indent_level)
-  for my.cpp_method.cpp_buffer_argument
-    js_cpp_create_cpp_buffer_argument_destroy(cpp_buffer_argument, my.indent_level)
-  endfor
-endfunction
-
 function js_cpp_create_method(cpp_method, cpp_class, wrapper, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   js_out("void $(my.cpp_class.name:no)::$(my.cpp_method.name:no)($(global.js_cpp_callback_info_type:no) $(global.js_cpp_callback_info_name:no)) {", my.indent_levels.first)
   if !js_method_is_static(my.cpp_method)
     js_cpp_create_unwrap_class(my.cpp_class, my.indent_levels.second)
   endif
-  js_cpp_create_method_arguments(my.cpp_method, my.cpp_class, my.wrapper, my.indent_levels.second)
-  js_cpp_create_method_return_variables(my.cpp_method, my.cpp_class, my.wrapper, my.indent_levels.second)
+  js_cpp_create_cpp_call_arguments(my.cpp_method, my.wrapper, my.indent_levels.second)
+  js_cpp_create_cpp_result_arguments(my.cpp_method, my.wrapper, my.indent_levels.second)
+  js_cpp_create_cpp_method_return(my.cpp_method, my.wrapper, my.indent_levels.second)
   js_cpp_create_method_call(my.cpp_method, my.cpp_class, my.indent_levels.second)
   js_cpp_create_method_return(my.cpp_method, my.wrapper, my.indent_levels.second)
-  js_cpp_create_method_cleanup(my.cpp_method, my.indent_levels.second)
   js_out("}", my.indent_levels.first)
 endfunction
 
@@ -495,9 +636,9 @@ function js_cpp_create_class(cpp_class, wrapper, indent_level)
   js_cpp_create_init(my.cpp_class, my.indent_levels.first)
   js_cpp_create_constructor(my.cpp_class, my.wrapper, my.indent_levels.first)
   js_cpp_create_new(my.cpp_class, my.indent_levels.first)
-  /* for my.cpp_class.cpp_method
+  for my.cpp_class.cpp_method
     js_cpp_create_method(cpp_method, my.cpp_class, my.wrapper, my.indent_level)
-  endfor */
+  endfor
   js_cpp_create_destructor(my.cpp_class, my.wrapper, my.indent_levels.first)
   js_cpp_create_persistent_constructor(my.cpp_class, my.indent_levels.first)
 endfunction

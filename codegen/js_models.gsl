@@ -200,7 +200,7 @@ function js_append_method_model(parent, source_method)
     if defined(my.source_method.is_static)
       js_method.is_static = my.source_method.is_static
     endif
-    for my.source_method.argument where js_source_argument_is_js_argument(argument)
+    for my.source_method.argument where !js_value_is_return_argument(argument)
       js_append_js_argument_model(js_method, argument)
     endfor
     if defined(my.source_method->return)
@@ -228,40 +228,130 @@ endfunction
 # C++
 # --------------------------------------------------------------------------------------------------
 
-function js_append_cpp_call_argument_model(parent, source_argument)
-  new cpp_call_argument to my.parent
-    cpp_call_argument.name = js_cpp_variable_name(my.source_argument.name)
-    return cpp_call_argument
+function js_append_cpp_argument_model(parent, source_argument)
+  new cpp_argument to my.parent
+    if defined(my.source_argument.name)
+      cpp_argument.type = global.js_cpp_argument_type_variable
+      cpp_argument.name = js_cpp_variable_name(my.source_argument.name)
+    endif
+    if defined(my.source_argument.argument)
+      cpp_argument.type = global.js_cpp_argument_type_variable
+      cpp_argument.name = js_cpp_variable_name(my.source_argument.argument)
+    endif
+    if defined(my.source_argument.constant)
+      cpp_argument.type = global.js_cpp_argument_type_constant
+      cpp_argument.constant = my.source_argument.constant
+    endif
+    if defined(my.source_argument.cast)
+      cpp_argument.cast = my.source_argument.cast
+    endif
+    return cpp_argument
   endnew
 endfunction
 
-function js_append_cpp_size_argument_model(parent, source_argument)
-  new cpp_size_argument to my.parent
-    cpp_size_argument.name = js_cpp_variable_name(my.source_argument.name)
-    return cpp_size_argument
+function js_append_cpp_js_return_model(parent, value)
+  new cpp_js_return to my.parent
+    cpp_js_return.name = js_cpp_variable_name(my.value)
+    cpp_js_return.binding_name = "$(my.value:Camel)"
+    return cpp_js_return
   endnew
 endfunction
 
-function js_append_cpp_data_argument_model(parent, source_argument)
-  new cpp_data_argument to my.parent
-    cpp_data_argument.name = js_cpp_variable_name(my.source_argument.name)
-    return cpp_data_argument
+function js_append_cpp_size_call_argument_model(parent, source_argument)
+  new cpp_size_call_argument to my.parent
+    cpp_size_call_argument.name = js_cpp_variable_name(my.source_argument.name)
+    return cpp_size_call_argument
   endnew
 endfunction
 
-function js_append_cpp_call_argument_model_from_source_proxy(parent, source_proxy)
-  new cpp_call_argument to my.parent
-    if defined(my.source_proxy.argument)
-      cpp_call_argument.name = js_cpp_variable_name(my.source_proxy.argument)
-    endif
-    if defined(my.source_proxy.constant)
-      cpp_call_argument.constant = my.source_proxy.constant
-    endif
-    if defined(my.source_proxy.cast)
-      cpp_call_argument.cast = my.source_proxy.cast
-    endif
-    return cpp_call_argument
+function js_append_cpp_integer_call_argument_model(parent, source_argument)
+  new cpp_integer_call_argument to my.parent
+    cpp_integer_call_argument.name = js_cpp_variable_name(my.source_argument.name)
+    return cpp_integer_call_argument
   endnew
+endfunction
+
+function js_append_cpp_unsigned_call_argument_model(parent, source_argument)
+  new cpp_unsigned_call_argument to my.parent
+    cpp_unsigned_call_argument.name = js_cpp_variable_name(my.source_argument.name)
+    return cpp_unsigned_call_argument
+  endnew
+endfunction
+
+function js_append_cpp_boolean_call_argument_model(parent, source_argument)
+  new cpp_boolean_call_argument to my.parent
+    cpp_boolean_call_argument.name = js_cpp_variable_name(my.source_argument.name)
+    return cpp_boolean_call_argument
+  endnew
+endfunction
+
+function js_append_cpp_byte_call_argument_model(parent, source_argument)
+  new cpp_byte_call_argument to my.parent
+    cpp_byte_call_argument.name = js_cpp_variable_name(my.source_argument.name)
+    return cpp_byte_call_argument
+  endnew
+endfunction
+
+function js_append_cpp_char_call_argument_model(parent, source_argument)
+  new cpp_char_call_argument to my.parent
+    cpp_char_call_argument.name = js_cpp_variable_name(my.source_argument.name)
+    return cpp_char_call_argument
+  endnew
+endfunction
+
+function js_append_cpp_data_call_argument_model(parent, source_argument)
+  new cpp_data_call_argument to my.parent
+    cpp_data_call_argument.name = js_cpp_variable_name(my.source_argument.name)
+    return cpp_data_call_argument
+  endnew
+endfunction
+
+function js_append_cpp_enum_call_argument_model(parent, source_argument)
+  new cpp_enum_call_argument to my.parent
+    cpp_enum_call_argument.name = js_cpp_variable_name(my.source_argument.name)
+    cpp_enum_call_argument.enum_name = my.source_argument.enum
+    return cpp_enum_call_argument
+  endnew
+endfunction
+
+function js_append_cpp_class_call_argument_model(parent, source_argument)
+  new cpp_class_call_argument to my.parent
+    cpp_class_call_argument.name = js_cpp_variable_name(my.source_argument.name)
+    cpp_class_call_argument.class_name = my.source_argument.class
+    return cpp_class_call_argument
+  endnew
+endfunction
+
+function js_append_cpp_interface_call_argument_model(parent, source_argument)
+  new cpp_interface_call_argument to my.parent
+    cpp_interface_call_argument.name = js_cpp_variable_name(my.source_argument.name)
+    cpp_interface_call_argument.interface_name = my.source_argument.interface
+    return cpp_interface_call_argument
+  endnew
+endfunction
+
+function js_append_resolved_call_argument_model(parent, source_argument, wrapper)
+  if js_value_is_size(my.source_argument)
+    return js_append_cpp_size_call_argument_model(my.parent, my.source_argument)
+  elsif js_value_is_integer(my.source_argument)
+    return js_append_cpp_integer_call_argument_model(my.parent, my.source_argument)
+  elsif js_value_is_unsigned(my.source_argument)
+    return js_append_cpp_unsigned_call_argument_model(my.parent, my.source_argument)
+  elsif js_value_is_boolean(my.source_argument)
+    return js_append_cpp_boolean_call_argument_model(my.parent, my.source_argument)
+  elsif js_value_is_byte(my.source_argument)
+    return js_append_cpp_byte_call_argument_model(my.parent, my.source_argument)
+  elsif js_value_is_char(my.source_argument)
+    return js_append_cpp_char_call_argument_model(my.parent, my.source_argument)
+  elsif js_value_is_data(my.source_argument)
+    return js_append_cpp_data_call_argument_model(my.parent, my.source_argument)
+  elsif js_value_is_enum_module(my.source_argument, my.wrapper)
+    return js_append_cpp_enum_call_argument_model(my.parent, my.source_argument)
+  elsif js_value_is_class_module(my.source_argument, my.wrapper)
+    return js_append_cpp_class_call_argument_model(my.parent, my.source_argument)
+  elsif js_value_is_interface_module(my.source_argument, my.wrapper)
+    return js_append_cpp_interface_call_argument_model(my.parent, my.source_argument)
+  endif
 endfunction
 
 function js_append_cpp_buffer_size_model(parent, name, source_length, cpp_class, wrapper)
@@ -277,7 +367,7 @@ function js_append_cpp_buffer_size_model(parent, name, source_length, cpp_class,
         cpp_buffer_size.type = global.js_cpp_size_type_method
         cpp_buffer_size.method = "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.source_length.method:c)"
         for my.source_length.proxy
-          js_append_cpp_call_argument_model_from_source_proxy(cpp_buffer_size, proxy)
+          js_append_cpp_argument_model(cpp_buffer_size, proxy)
         endfor
       else
         echo_fatal("'source_length.constant' or 'source_length.method' should be defined", my)
@@ -287,211 +377,62 @@ function js_append_cpp_buffer_size_model(parent, name, source_length, cpp_class,
   endnew
 endfunction
 
-function js_append_cpp_buffer_argument_model(parent, source_argument, cpp_class, wrapper)
-  new cpp_buffer_argument to my.parent
-    cpp_buffer_argument.name = js_cpp_variable_name(my.source_argument.name)
-    if defined(my.source_argument->length)
-      js_append_cpp_buffer_size_model(cpp_buffer_argument, cpp_buffer_argument.name, my.source_argument->length, my.cpp_class, my.wrapper)
-    else
-      echo_fatal("'source_argument->length' should be defined", my)
+function js_append_cpp_buffer_result_argument_model(parent, source_argument, cpp_class, wrapper)
+  new cpp_buffer_result_argument to my.parent
+    cpp_buffer_result_argument.name = js_cpp_variable_name(my.source_argument.name)
+    js_append_cpp_buffer_size_model(cpp_buffer_result_argument, cpp_buffer_result_argument.name, my.source_argument->length, my.cpp_class, my.wrapper)
+    return cpp_buffer_result_argument
+  endnew
+endfunction
+
+function js_append_cpp_byte_result_argument_model(parent, source_argument)
+  new cpp_byte_result_argument to my.parent
+    cpp_byte_result_argument.name = js_cpp_variable_name(my.source_argument.name)
+    cpp_byte_result_argument.length = js_cpp_variable_name(my.source_argument->length.argument)
+    return cpp_byte_result_argument
+  endnew
+endfunction
+
+function js_append_cpp_char_result_argument_model(parent, source_argument)
+  new cpp_char_result_argument to my.parent
+    cpp_char_result_argument.name = js_cpp_variable_name(my.source_argument.name)
+    cpp_char_result_argument.length = my.source_argument->string.length_constant
+    return cpp_char_result_argument
+  endnew
+endfunction
+
+function js_append_cpp_error_context_result_argument_model(parent, source_argument, wrapper)
+  new cpp_error_context_result_argument to my.parent
+    cpp_error_context_result_argument.name = js_cpp_variable_name(my.source_argument.name)
+    cpp_error_context_result_argument.c_class = "$(my.wrapper.prefix:no)_$(my.source_argument.class:c)"
+    return cpp_error_context_result_argument
+  endnew
+endfunction
+
+function js_append_resolved_result_argument_model(parent, source_argument, cpp_class, wrapper)
+  if js_value_is_return_argument(my.source_argument)
+    if js_value_is_error_context(my.source_argument)
+      return js_append_cpp_error_context_result_argument_model(my.parent, my.source_argument, my.wrapper)
     endif
-    return cpp_buffer_argument
-  endnew
-endfunction
-
-function js_append_cpp_context_argument_model(parent, source_argument)
-  new cpp_context_argument to my.parent
-    cpp_context_argument.name = js_cpp_variable_name(my.source_argument.name)
-    cpp_context_argument.module_name = my.source_argument.class
-    return cpp_context_argument
-  endnew
-endfunction
-
-function js_append_cpp_error_context_argument_model(parent, source_argument, wrapper)
-  new cpp_error_context_argument to my.parent
-    cpp_error_context_argument.name = js_cpp_variable_name(my.source_argument.name)
-    cpp_error_context_argument.class = "$(my.wrapper.prefix:no)_$(my.source_argument.class:c)"
-    return cpp_error_context_argument
-  endnew
-endfunction
-
-function js_append_cpp_enum_argument_model(parent, source_argument)
-  new cpp_enum_argument to my.parent
-    cpp_enum_argument.name = js_cpp_variable_name(my.source_argument.name)
-    cpp_enum_argument.enum_name = my.source_argument.enum
-    return cpp_enum_argument
-  endnew
-endfunction
-
-function js_append_cpp_char_argument_model(parent, source_argument)
-  new cpp_char_argument to my.parent
-    cpp_char_argument.name = js_cpp_variable_name(my.source_argument.name)
-    if defined(my.source_argument->string)
-      if defined(my.source_argument->string.length_constant)
-        cpp_char_argument.length = my.source_argument->string.length_constant
-      endif
-      return cpp_char_argument
-    else
-      echo_fatal("'source_argument->string' should be defined", my)
+    js_append_cpp_js_return_model(my.parent, my.source_argument.name)
+    if js_value_is_buffer(my.source_argument)
+      return js_append_cpp_buffer_result_argument_model(my.parent, my.source_argument, my.cpp_class, my.wrapper)
+    elsif js_value_is_byte(my.source_argument)
+      return js_append_cpp_byte_result_argument_model(my.parent, my.source_argument)
+    elsif js_value_is_char(my.source_argument)
+      return js_append_cpp_char_result_argument_model(my.parent, my.source_argument)
     endif
-  endnew
-endfunction
-
-function js_append_cpp_interface_argument_model(parent, source_argument)
-  new cpp_interface_argument to my.parent
-    cpp_interface_argument.name = js_cpp_variable_name(my.source_argument.name)
-    cpp_interface_argument.interface_name = my.source_argument.interface
-    return cpp_interface_argument
-  endnew
-endfunction
-
-function js_append_cpp_byte_argument_model(parent, source_argument)
-  new cpp_byte_argument to my.parent
-    cpp_byte_argument.name = js_cpp_variable_name(my.source_argument.name)
-    return cpp_byte_argument
-  endnew
-endfunction
-
-function js_append_cpp_integer_argument_model(parent, source_argument)
-  new cpp_integer_argument to my.parent
-    cpp_integer_argument.name = js_cpp_variable_name(my.source_argument.name)
-    return cpp_integer_argument
-  endnew
-endfunction
-
-function js_append_cpp_unsigned_argument_model(parent, source_argument)
-  new cpp_unsigned_argument to my.parent
-    cpp_unsigned_argument.name = js_cpp_variable_name(my.source_argument.name)
-    return cpp_unsigned_argument
-  endnew
-endfunction
-
-function js_append_cpp_boolean_argument_model(parent, source_argument)
-  new cpp_boolean_argument to my.parent
-    cpp_boolean_argument.name = js_cpp_variable_name(my.source_argument.name)
-    return cpp_boolean_argument
-  endnew
-endfunction
-
-function js_append_resolved_argument(parent, source_argument, cpp_class, wrapper)
-  if js_value_is_size(my.source_argument)
-    js_append_cpp_size_argument_model(my.parent, my.source_argument)
-  elsif js_value_is_data(my.source_argument)
-    js_append_cpp_data_argument_model(my.parent, my.source_argument)
-  elsif js_value_is_buffer(my.source_argument)
-    js_append_cpp_buffer_argument_model(my.parent, my.source_argument, my.cpp_class, my.wrapper)
-  elsif js_value_is_class_module(my.source_argument, my.wrapper)
-    js_append_cpp_context_argument_model(my.parent, my.source_argument)
-  elsif js_value_is_error_context(my.source_argument)
-    js_append_cpp_error_context_argument_model(my.parent, my.source_argument, my.wrapper)
-  elsif js_value_is_enum_module(my.source_argument, my.wrapper)
-    js_append_cpp_enum_argument_model(my.parent, my.source_argument)
-  elsif js_value_is_interface_module(my.source_argument, my.wrapper)
-    js_append_cpp_interface_argument_model(my.parent, my.source_argument)
-  elsif js_value_is_char(my.source_argument)
-    js_append_cpp_char_argument_model(my.parent, my.source_argument)
-  elsif js_value_is_byte(my.source_argument)
-    js_append_cpp_byte_argument_model(my.parent, my.source_argument)
-  elsif js_value_is_integer(my.source_argument)
-    js_append_cpp_integer_argument_model(my.parent, my.source_argument)
-  elsif js_value_is_unsigned(my.source_argument)
-    js_append_cpp_unsigned_argument_model(my.parent, my.source_argument)
-  elsif js_value_is_boolean(my.source_argument)
-    js_append_cpp_boolean_argument_model(my.parent, my.source_argument)
-  else
-    echo_fatal("Unable to resolve argument", my)
   endif
 endfunction
 
-function js_append_cpp_js_return_model(parent, value)
-  new cpp_js_return to my.parent
-    cpp_js_return.name = js_cpp_variable_name(my.value.name)
-    cpp_js_return.binding_name = "$(my.value.name:Camel)"
-    return cpp_js_return
-  endnew
-endfunction
-
-function js_append_cpp_method_return_size_model(parent, name)
-  new cpp_method_return_size to my.parent
-    cpp_method_return_size.name = my.name
-    return cpp_method_return_size
-  endnew
-endfunction
-
-function js_append_cpp_method_return_boolean_model(parent, name)
-  new cpp_method_return_boolean to my.parent
-    cpp_method_return_boolean.name = my.name
-    return cpp_method_return_boolean
-  endnew
-endfunction
-
-function js_append_cpp_method_return_data_model(parent, name)
-  new cpp_method_return_data to my.parent
-    cpp_method_return_data.name = my.name
-    return cpp_method_return_data
-  endnew
-endfunction
-
-function js_append_cpp_method_return_buffer_model(parent, name)
-  new cpp_method_return_buffer to my.parent
-    cpp_method_return_buffer.name = my.name
-    return cpp_method_return_buffer
-  endnew
-endfunction
-
-function js_append_cpp_method_return_error_model(parent, name)
-  new cpp_method_return_error to my.parent
-    cpp_method_return_error.name = my.name
-    return cpp_method_return_error
-  endnew
-endfunction
-
-function js_append_cpp_method_return_context_model(parent, name, class)
-  new cpp_method_return_context to my.parent
-    cpp_method_return_context.name = my.name
-    cpp_method_return_context.class = my.class
-    return cpp_method_return_context
-  endnew
-endfunction
-
-function js_append_cpp_method_return_enum_model(parent, name, enum)
-  new cpp_method_return_enum to my.parent
-    cpp_method_return_enum.name = my.name
-    cpp_method_return_enum.enum = my.enum
-    return cpp_method_return_enum
-  endnew
-endfunction
-
-function js_append_cpp_method_return_implementation_model(parent, name, implementation)
-  new cpp_method_return_implementation to my.parent
-    cpp_method_return_implementation.name = my.name
-    cpp_method_return_implementation.implementation_name = my.implementation
-  endnew
-endfunction
-
-function js_append_cpp_method_return_interface_model(parent, name, interface)
-  new cpp_method_return_interface to my.parent
-    cpp_method_return_interface.name = my.name
-    cpp_method_return_interface.interface_name = my.interface
-  endnew
-endfunction
-
-function js_append_cpp_method_return_integer_model(parent, name)
-  new cpp_method_return_integer to my.parent
-    cpp_method_return_integer.name = my.name
-  endnew
-endfunction
-
-function js_append_cpp_method_return_unsigned_model(parent, name)
-  new cpp_method_return_unsigned to my.parent
-    cpp_method_return_unsigned.name = my.name
-  endnew
-endfunction
-
-function js_append_cpp_method_return_byte_model(parent, name)
-  new cpp_method_return_byte to my.parent
-    cpp_method_return_byte.name = my.name
-  endnew
+function js_append_resolved_argument(parent, source_argument, cpp_class, wrapper)
+  if defined(js_append_resolved_result_argument_model(my.parent, my.source_argument, my.cpp_class, my.wrapper))
+    return
+  endif
+  if defined(js_append_resolved_call_argument_model(my.parent, my.source_argument, my.wrapper))
+    return
+  endif
+  echo_fatal("Unable to resolve argument", my)
 endfunction
 
 function js_append_cpp_method_return_model(parent)
@@ -501,46 +442,122 @@ function js_append_cpp_method_return_model(parent)
   endnew
 endfunction
 
+function js_append_cpp_size_method_return_model(parent, name)
+  new cpp_size_method_return to my.parent
+    cpp_size_method_return.name = my.name
+    return cpp_size_method_return
+  endnew
+endfunction
+
+function js_append_cpp_integer_method_return_model(parent, name)
+  new cpp_integer_method_return to my.parent
+    cpp_integer_method_return.name = my.name
+    return cpp_integer_method_return
+  endnew
+endfunction
+
+function js_append_cpp_unsigned_method_return_model(parent, name)
+  new cpp_unsigned_method_return to my.parent
+    cpp_unsigned_method_return.name = my.name
+    return cpp_unsigned_method_return
+  endnew
+endfunction
+
+function js_append_cpp_boolean_method_return_model(parent, name)
+  new cpp_boolean_method_return to my.parent
+    cpp_boolean_method_return.name = my.name
+    return cpp_boolean_method_return
+  endnew
+endfunction
+
+function js_append_cpp_byte_method_return_model(parent, name)
+  new cpp_byte_method_return to my.parent
+    cpp_byte_method_return.name = my.name
+    return cpp_byte_method_return
+  endnew
+endfunction
+
+function js_append_cpp_data_method_return_model(parent, name)
+  new cpp_data_method_return to my.parent
+    cpp_data_method_return.name = my.name
+    return cpp_data_method_return
+  endnew
+endfunction
+
+function js_append_cpp_buffer_method_return_model(parent, name)
+  new cpp_buffer_method_return to my.parent
+    cpp_buffer_method_return.name = my.name
+    return cpp_buffer_method_return
+  endnew
+endfunction
+
+function js_append_cpp_error_method_return_model(parent, name)
+  new cpp_error_method_return to my.parent
+    cpp_error_method_return.name = my.name
+    return cpp_error_method_return
+  endnew
+endfunction
+
+function js_append_cpp_enum_method_return_model(parent, name, enum)
+  new cpp_enum_method_return to my.parent
+    cpp_enum_method_return.name = my.name
+    cpp_enum_method_return.enum_name = my.enum
+    return cpp_enum_method_return
+  endnew
+endfunction
+
+function js_append_cpp_class_method_return_model(parent, name, class_name)
+  new cpp_class_method_return to my.parent
+    cpp_class_method_return.name = my.name
+    cpp_class_method_return.class_name = my.class_name
+    return cpp_class_method_return
+  endnew
+endfunction
+
+function js_append_cpp_implementation_method_return_model(parent, name, implementation_name)
+  new cpp_implementation_method_return to my.parent
+    cpp_implementation_method_return.name = my.name
+    cpp_implementation_method_return.implementation_name = my.implementation_name
+  endnew
+endfunction
+
+function js_append_cpp_interface_method_return_model(parent, name, interface_name)
+  new cpp_interface_method_return to my.parent
+    cpp_interface_method_return.name = my.name
+    cpp_interface_method_return.interface_name = my.interface_name
+  endnew
+endfunction
+
 function js_append_resolved_return(parent, source_return, wrapper)
   my.cpp_method_return = js_append_cpp_method_return_model(my.parent)
-  if js_value_is_size(my.source_return)
-    js_append_cpp_method_return_size_model(my.parent, my.cpp_method_return.name)
-    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
-  elsif js_value_is_boolean(my.source_return)
-    js_append_cpp_method_return_boolean_model(my.parent, my.cpp_method_return.name)
-    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
-  elsif js_value_is_data(my.source_return)
-    js_append_cpp_method_return_data_model(my.parent, my.cpp_method_return.name)
-    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
-  elsif js_value_is_buffer(my.source_return)
-    js_append_cpp_method_return_buffer_model(my.parent, my.cpp_method_return.name)
-    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
-  elsif js_value_is_error(my.source_return)
-    js_append_cpp_method_return_error_model(my.parent, my.cpp_method_return.name)
-  elsif js_value_is_class_module(my.source_return, my.wrapper)
-    js_append_cpp_method_return_context_model(my.parent, my.cpp_method_return.name, my.source_return.class)
-    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
-  elsif js_value_is_enum_module(my.source_return, my.wrapper)
-    js_append_cpp_method_return_enum_model(my.parent, my.cpp_method_return.name, my.source_return.enum)
-    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
-  elsif js_value_is_implementation_module(my.source_return, my.wrapper)
-    js_append_cpp_method_return_implementation_model(my.parent, my.cpp_method_return.name, my.source_return.impl)
-    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
-  elsif js_value_is_interface_module(my.source_return, my.wrapper)
-    js_append_cpp_method_return_interface_model(my.parent, my.cpp_method_return.name, my.source_return.interface)
-    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
-  elsif js_value_is_integer(my.source_return)
-    js_append_cpp_method_return_integer_model(my.parent, my.cpp_method_return.name)
-    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
-  elsif js_value_is_unsigned(my.source_return)
-    js_append_cpp_method_return_unsigned_model(my.parent, my.cpp_method_return.name)
-    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
-  elsif js_value_is_byte(my.source_return)
-    js_append_cpp_method_return_byte_model(my.parent, my.cpp_method_return.name)
-    js_append_cpp_js_return_model(my.parent, my.cpp_method_return)
-  else
-    echo_fatal("Unable to resolve return", my)
+  if js_value_is_error(my.source_return)
+    return js_append_cpp_error_method_return_model(my.parent, my.cpp_method_return.name)
   endif
+  js_append_cpp_js_return_model(my.parent, my.cpp_method_return.name)
+  if js_value_is_size(my.source_return)
+    return js_append_cpp_size_method_return_model(my.parent, my.cpp_method_return.name)
+  elsif js_value_is_integer(my.source_return)
+    return js_append_cpp_integer_method_return_model(my.parent, my.cpp_method_return.name)
+  elsif js_value_is_unsigned(my.source_return)
+    return js_append_cpp_unsigned_method_return_model(my.parent, my.cpp_method_return.name)
+  elsif js_value_is_boolean(my.source_return)
+    return js_append_cpp_boolean_method_return_model(my.parent, my.cpp_method_return.name)
+  elsif js_value_is_byte(my.source_return)
+    return js_append_cpp_byte_method_return_model(my.parent, my.cpp_method_return.name)
+  elsif js_value_is_data(my.source_return)
+    return js_append_cpp_data_method_return_model(my.parent, my.cpp_method_return.name)
+  elsif js_value_is_buffer(my.source_return)
+    return js_append_cpp_buffer_method_return_model(my.parent, my.cpp_method_return.name)
+  elsif js_value_is_enum_module(my.source_return, my.wrapper)
+    return js_append_cpp_enum_method_return_model(my.parent, my.cpp_method_return.name, my.source_return.enum)
+  elsif js_value_is_class_module(my.source_return, my.wrapper)
+    return js_append_cpp_class_method_return_model(my.parent, my.cpp_method_return.name, my.source_return.class)
+  elsif js_value_is_implementation_module(my.source_return, my.wrapper)
+    return js_append_cpp_implementation_method_return_model(my.parent, my.cpp_method_return.name, my.source_return.impl)
+  elsif js_value_is_interface_module(my.source_return, my.wrapper)
+    return js_append_cpp_interface_method_return_model(my.parent, my.cpp_method_return.name, my.source_return.interface)
+  endif
+  echo_fatal("Unable to resolve return", my)
 endfunction
 
 function js_append_cpp_method_model(parent, source_method, cpp_class, wrapper)
@@ -552,11 +569,8 @@ function js_append_cpp_method_model(parent, source_method, cpp_class, wrapper)
       cpp_method.is_static = my.source_method.is_static
     endif
     for my.source_method.argument
-      js_append_cpp_call_argument_model(cpp_method, argument)
+      js_append_cpp_argument_model(cpp_method, argument)
       copy argument to cpp_method
-    endfor
-    for my.source_method.argument where js_cpp_value_is_cpp_js_return(argument)
-      js_append_cpp_js_return_model(cpp_method, argument)
     endfor
     if defined(my.source_method->return)
       copy my.source_method->return to cpp_method

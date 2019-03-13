@@ -44,6 +44,26 @@ function js_value_is_size(value)
   return defined(my.value.type) & my.value.type = "size"
 endfunction
 
+function js_value_is_integer(value)
+  return defined(my.value.type) & my.value.type = "integer"
+endfunction
+
+function js_value_is_unsigned(value)
+  return defined(my.value.type) & my.value.type = "unsigned"
+endfunction
+
+function js_value_is_boolean(value)
+  return defined(my.value.type) & my.value.type = "boolean"
+endfunction
+
+function js_value_is_byte(value)
+  return defined(my.value.type) & my.value.type = "byte"
+endfunction
+
+function js_value_is_char(value)
+  return defined(my.value.type) & my.value.type = "char"
+endfunction
+
 function js_value_is_data(value)
   return defined(my.value.class) & my.value.class = "data"
 endfunction
@@ -52,27 +72,15 @@ function js_value_is_buffer(value)
   return defined(my.value.class) & my.value.class = "buffer"
 endfunction
 
-function js_value_is_char(value)
-  return defined(my.value.type) & my.value.type = "char"
-endfunction
-
-function js_value_is_error(value)
-  return defined(my.value.enum) & my.value.enum = "error"
-endfunction
-
-function js_value_is_class_module(value, wrapper)
-  for my.wrapper.js_wrapped_class where defined(my.value.class) & my.value.class = js_wrapped_class.name
+function js_value_is_enum_module(value, wrapper)
+  for my.wrapper.js_wrapped_enum where defined(my.value.enum) & my.value.enum = js_wrapped_enum.name
     return 1
   endfor
   return 0
 endfunction
 
-function js_value_is_error_context(value)
-  return defined(my.value.class) & my.value.class = "error ctx"
-endfunction
-
-function js_value_is_enum_module(value, wrapper)
-  for my.wrapper.js_wrapped_enum where defined(my.value.enum) & my.value.enum = js_wrapped_enum.name
+function js_value_is_class_module(value, wrapper)
+  for my.wrapper.js_wrapped_class where defined(my.value.class) & my.value.class = js_wrapped_class.name
     return 1
   endfor
   return 0
@@ -92,20 +100,16 @@ function js_value_is_implementation_module(value, wrapper)
   return 0
 endfunction
 
-function js_value_is_integer(value)
-  return defined(my.value.type) & my.value.type = "integer"
+function js_value_is_error(value)
+  return defined(my.value.enum) & my.value.enum = "error"
 endfunction
 
-function js_value_is_unsigned(value)
-  return defined(my.value.type) & my.value.type = "unsigned"
+function js_value_is_error_context(value)
+  return defined(my.value.class) & my.value.class = "error ctx"
 endfunction
 
-function js_value_is_boolean(value)
-  return defined(my.value.type) & my.value.type = "boolean"
-endfunction
-
-function js_value_is_byte(value)
-  return defined(my.value.type) & my.value.type = "byte"
+function js_value_is_return_argument(value)
+  return defined(my.value.access) & (my.value.access = "writeonly" | my.value.access = "readwrite")
 endfunction
 
 # --------------------------------------------------------------------------------------------------
@@ -116,11 +120,6 @@ global.js_binding_property_name = "binding"
 
 function js_constant_is_private(constant)
   return defined(my.constant.definition) & my.constant.definition = "private"
-endfunction
-
-function js_source_argument_is_js_argument(source_argument)
-  return !(defined(my.source_argument.class) & my.source_argument.class = "error ctx") \
-    & !(defined(my.source_argument.class) & my.source_argument.class = "buffer")
 endfunction
 
 function js_binding_class_name(class)
@@ -134,6 +133,9 @@ endfunction
 # --------------------------------------------------------------------------------------------------
 # C++
 # --------------------------------------------------------------------------------------------------
+
+global.js_cpp_argument_type_variable = "variable"
+global.js_cpp_argument_type_constant = "constant"
 
 global.js_cpp_size_type_constant = "constant"
 
