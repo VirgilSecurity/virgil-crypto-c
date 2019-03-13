@@ -56,7 +56,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 #include "vscf_api.h"
 
 // clang-format on
@@ -82,7 +82,7 @@ typedef struct vscf_defaults_api_t vscf_defaults_api_t;
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_defaults_setup_defaults(vscf_impl_t *impl);
 
 //

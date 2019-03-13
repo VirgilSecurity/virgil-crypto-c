@@ -57,25 +57,25 @@ int suiteTearDown(int num_failures) { return num_failures; }
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <virgil/crypto/foundation/vscf_ed25519_private_key.h>
 #include <virgil/crypto/foundation/vscf_ed25519_public_key.h>
-#include "vscr_error_ctx.h"
+#include "vscr_error.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_key_utils.h"
 #include "test_data_ratchet_key_utils.h"
 
 void
 test__extract__fixed_curve_keypair__should_match(void) {
-    vscr_error_ctx_t error_ctx;
-    vscr_error_ctx_reset(&error_ctx);
+    vscr_error_t error;
+    vscr_error_reset(&error);
 
     vscr_ratchet_key_utils_t *key_utils = vscr_ratchet_key_utils_new();
 
-    vsc_buffer_t *private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
-            key_utils, test_data_ratchet_curve_private_key, &error_ctx);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+    vsc_buffer_t *private_key_raw =
+            vscr_ratchet_key_utils_extract_ratchet_private_key(key_utils, test_data_ratchet_curve_private_key, &error);
+    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
 
-    vsc_buffer_t *public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
-            key_utils, test_data_ratchet_curve_public_key, &error_ctx);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+    vsc_buffer_t *public_key_raw =
+            vscr_ratchet_key_utils_extract_ratchet_public_key(key_utils, test_data_ratchet_curve_public_key, &error);
+    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
 
     byte public_key[ED25519_KEY_LEN];
 
@@ -91,18 +91,18 @@ test__extract__fixed_curve_keypair__should_match(void) {
 
 void
 test__extract__fixed_ed_keypair__should_match(void) {
-    vscr_error_ctx_t error_ctx;
-    vscr_error_ctx_reset(&error_ctx);
+    vscr_error_t error;
+    vscr_error_reset(&error);
 
     vscr_ratchet_key_utils_t *key_utils = vscr_ratchet_key_utils_new();
 
     vsc_buffer_t *private_key_raw =
-            vscr_ratchet_key_utils_extract_ratchet_private_key(key_utils, test_data_ratchet_ed_private_key, &error_ctx);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+            vscr_ratchet_key_utils_extract_ratchet_private_key(key_utils, test_data_ratchet_ed_private_key, &error);
+    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
 
     vsc_buffer_t *public_key_raw =
-            vscr_ratchet_key_utils_extract_ratchet_public_key(key_utils, test_data_ratchet_ed_public_key, &error_ctx);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+            vscr_ratchet_key_utils_extract_ratchet_public_key(key_utils, test_data_ratchet_ed_public_key, &error);
+    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
 
     byte public_key[ED25519_KEY_LEN];
 

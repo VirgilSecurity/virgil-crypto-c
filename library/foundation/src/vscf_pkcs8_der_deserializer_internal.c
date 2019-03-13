@@ -86,6 +86,10 @@ static const vscf_defaults_api_t defaults_api = {
     //
     vscf_api_tag_DEFAULTS,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_PKCS8_DER_DESERIALIZER,
+    //
     //  Setup predefined values to the uninitialized class dependencies.
     //
     (vscf_defaults_api_setup_defaults_fn)vscf_pkcs8_der_deserializer_setup_defaults
@@ -101,6 +105,10 @@ static const vscf_key_deserializer_api_t key_deserializer_api = {
     //
     vscf_api_tag_KEY_DESERIALIZER,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_PKCS8_DER_DESERIALIZER,
+    //
     //  Deserialize given public key as an interchangeable format to the object.
     //
     (vscf_key_deserializer_api_deserialize_public_key_fn)vscf_pkcs8_der_deserializer_deserialize_public_key,
@@ -114,6 +122,10 @@ static const vscf_key_deserializer_api_t key_deserializer_api = {
 //  Compile-time known information about 'pkcs8 der deserializer' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_PKCS8_DER_DESERIALIZER,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

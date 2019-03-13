@@ -22,6 +22,8 @@
     <require impl="rsa private key"/>
     <require impl="ed25519 public key"/>
     <require impl="ed25519 private key"/>
+    <require impl="curve25519 public key"/>
+    <require impl="curve25519 private key"/>
 
     <method name="create hash from info" is_static="1">
         Create algorithm that implements "hash stream" interface.

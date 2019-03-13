@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provide DER serializer of algorithm information.
 @objc(VSCFAlgInfoDerSerializer) public class AlgInfoDerSerializer: NSObject, Defaults, AlgInfoSerializer {
@@ -86,7 +85,7 @@ import VirgilCryptoCommon
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_alg_info_der_serializer_setup_defaults(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Return buffer size enough to hold serialized algorithm.
@@ -108,6 +107,7 @@ import VirgilCryptoCommon
         out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> Void in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
+
             vscf_alg_info_der_serializer_serialize(self.c_ctx, algInfo.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)

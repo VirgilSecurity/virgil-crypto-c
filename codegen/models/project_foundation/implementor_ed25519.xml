@@ -15,11 +15,7 @@
         <require impl="ed25519 private key"/>
         <require impl="ctr drbg"/>
 
-        <property name="public_key" type="byte" library="ed25519" access="readwrite">
-            <array length="fixed" length_constant="ED25519_KEY_LEN"/>
-        </property>
-
-        <property name="signature" type="byte" library="ed25519" access="readwrite">
+        <property name="public key" type="byte" library="ed25519" access="readwrite">
             <array length="fixed" length_constant="ED25519_KEY_LEN"/>
         </property>
 
@@ -30,14 +26,13 @@
         <interface name="alg"/>
         <interface name="key"/>
         <interface name="encrypt"/>
-        <interface name="verify"/>
+        <interface name="verify hash"/>
         <interface name="public key">
             <constant name="can import public key" value="true"/>
             <constant name="can export public key" value="true"/>
         </interface>
         <interface name="generate ephemeral key"/>
     </implementation>
-
 
     <implementation name="ed25519 private key">
         This is implementation of ED25519 private key
@@ -52,13 +47,10 @@
         <require module="asn1rd defs"/>
         <require module="asn1wr defs"/>
         <require impl="ctr drbg"/>
+        <require module="buffer defs" project="common"/>
 
-        <property name="secret_key" type="byte" library="ed25519" access="readwrite">
+        <property name="secret key" type="byte" library="ed25519" access="readwrite">
             <array length="fixed" length_constant="ED25519_KEY_LEN"/>
-        </property>
-
-        <property name="signature" type="byte" library="ed25519" access="readwrite">
-            <array length="fixed" length_constant="ED25519_SIG_LEN"/>
         </property>
 
         <dependency name="random" interface="random"/>
@@ -69,7 +61,73 @@
         <interface name="key"/>
         <interface name="generate key"/>
         <interface name="decrypt"/>
-        <interface name="sign"/>
+        <interface name="sign hash"/>
+        <interface name="private key">
+            <constant name="can import private key" value="true"/>
+            <constant name="can export private key" value="true"/>
+        </interface>
+        <interface name="compute shared key"/>
+    </implementation>
+
+    <implementation name="curve25519 public key">
+        This is implementation of CURVE25519 public key
+
+        <require library="ed25519" feature="library"/>
+        <require header="ed25519/ed25519.h" scope="context"/>
+        <require class="simple alg info"/>
+        <require interface="alg info"/>
+        <require class="asn1rd"/>
+        <require class="asn1wr"/>
+        <require module="asn1rd defs"/>
+        <require module="asn1wr defs"/>
+        <require impl="curve25519 private key"/>
+        <require impl="ctr drbg"/>
+
+        <property name="public key" type="byte" library="ed25519" access="readwrite">
+            <array length="fixed" length_constant="ED25519_KEY_LEN"/>
+        </property>
+
+        <dependency name="random" interface="random"/>
+        <dependency name="ecies" impl="ecies"/>
+
+        <interface name="defaults"/>
+        <interface name="alg"/>
+        <interface name="key"/>
+        <interface name="encrypt"/>
+        <interface name="public key">
+            <constant name="can import public key" value="true"/>
+            <constant name="can export public key" value="true"/>
+        </interface>
+        <interface name="generate ephemeral key"/>
+    </implementation>
+
+    <implementation name="curve25519 private key">
+        This is implementation of CURVE25519 private key
+
+        <require library="ed25519" feature="library"/>
+        <require header="ed25519/ed25519.h" scope="context"/>
+        <require module="curve25519 public key defs"/>
+        <require interface="alg info"/>
+        <require class="simple alg info"/>
+        <require class="asn1rd"/>
+        <require class="asn1wr"/>
+        <require module="asn1rd defs"/>
+        <require module="asn1wr defs"/>
+        <require impl="ctr drbg"/>
+        <require module="buffer defs" project="common"/>
+
+        <property name="secret key" type="byte" library="ed25519" access="readwrite">
+            <array length="fixed" length_constant="ED25519_KEY_LEN"/>
+        </property>
+
+        <dependency name="random" interface="random"/>
+        <dependency name="ecies" impl="ecies"/>
+
+        <interface name="defaults"/>
+        <interface name="alg"/>
+        <interface name="key"/>
+        <interface name="generate key"/>
+        <interface name="decrypt"/>
         <interface name="private key">
             <constant name="can import private key" value="true"/>
             <constant name="can export private key" value="true"/>

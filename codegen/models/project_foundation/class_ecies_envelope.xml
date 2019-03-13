@@ -142,7 +142,7 @@
             <length method="packed len"/>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="unpack">
@@ -151,7 +151,7 @@
 
         <argument name="data" class="data"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="cleanup properties">

@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Handle hashed based algorithm information, i.e. HKDF, HMAC, etc.
 @objc(VSCFHashBasedAlgInfo) public class HashBasedAlgInfo: NSObject, AlgInfo {
@@ -66,6 +65,7 @@ import VirgilCryptoCommon
     /// Create algorithm info with identificator and HASH algorithm info.
     public init(algId: AlgId, hashAlgInfo: AlgInfo) {
         var hashAlgInfoCopy = vscf_impl_shallow_copy(hashAlgInfo.c_ctx)
+
         let proxyResult = vscf_hash_based_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), &hashAlgInfoCopy)
 
         self.c_ctx = proxyResult!
@@ -80,7 +80,7 @@ import VirgilCryptoCommon
     @objc public func hashAlgInfo() -> AlgInfo {
         let proxyResult = vscf_hash_based_alg_info_hash_alg_info(self.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Provide algorithm identificator.

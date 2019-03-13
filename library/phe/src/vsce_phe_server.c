@@ -117,12 +117,12 @@ vsce_phe_server_init_ctx(vsce_phe_server_t *self);
 static void
 vsce_phe_server_cleanup_ctx(vsce_phe_server_t *self);
 
-static vsce_error_t
+static vsce_status_t
 vsce_phe_server_prove_success(vsce_phe_server_t *self, mbedtls_ecp_group *op_group, vsc_data_t server_private_key,
         vsc_data_t server_public_key, const mbedtls_ecp_point *hs0, const mbedtls_ecp_point *hs1,
         const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, ProofOfSuccess *success_proof);
 
-static vsce_error_t
+static vsce_status_t
 vsce_phe_server_prove_failure(vsce_phe_server_t *self, mbedtls_ecp_group *op_group, vsc_data_t server_private_key,
         vsc_data_t server_public_key, const mbedtls_ecp_point *c0, const mbedtls_ecp_point *hs0, mbedtls_ecp_point *c1,
         ProofOfFail *failure_proof);
@@ -388,7 +388,7 @@ vsce_phe_server_cleanup_ctx(vsce_phe_server_t *self) {
 //
 //  Generates new NIST P-256 server key pair for some client
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_server_generate_server_key_pair(
         vsce_phe_server_t *self, vsc_buffer_t *server_private_key, vsc_buffer_t *server_public_key) {
 
@@ -401,7 +401,7 @@ vsce_phe_server_generate_server_key_pair(
 
     mbedtls_ecp_group *op_group = vsce_phe_server_get_op_group(self);
 
-    vsce_error_t status = vsce_SUCCESS;
+    vsce_status_t status = vsce_status_SUCCESS;
     int mbedtls_status = 0;
 
     mbedtls_mpi priv;
@@ -413,7 +413,7 @@ vsce_phe_server_generate_server_key_pair(
     mbedtls_status = mbedtls_ecp_gen_keypair(op_group, &priv, &pub, vscf_mbedtls_bridge_random, self->random);
 
     if (mbedtls_status != 0) {
-        status = vsce_error_RNG_ERROR;
+        status = vsce_status_ERROR_RNG_FAILED;
         goto err;
     }
 
@@ -452,7 +452,7 @@ vsce_phe_server_enrollment_response_len(vsce_phe_server_t *self) {
 //
 //  Generates a new random enrollment and proof for a new user
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_server_get_enrollment(vsce_phe_server_t *self, vsc_data_t server_private_key, vsc_data_t server_public_key,
         vsc_buffer_t *enrollment_response) {
 
@@ -464,7 +464,7 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *self, vsc_data_t server_privat
 
     mbedtls_ecp_group *op_group = vsce_phe_server_get_op_group(self);
 
-    vsce_error_t status = vsce_SUCCESS;
+    vsce_status_t status = vsce_status_SUCCESS;
 
     mbedtls_mpi x;
     mbedtls_mpi_init(&x);
@@ -474,7 +474,7 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *self, vsc_data_t server_privat
 
     mbedtls_status = mbedtls_ecp_check_privkey(&self->group, &x);
     if (mbedtls_status != 0) {
-        status = vsce_error_INVALID_PRIVATE_KEY;
+        status = vsce_status_ERROR_INVALID_PRIVATE_KEY;
         goto priv_err;
     }
 
@@ -484,10 +484,10 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *self, vsc_data_t server_privat
     vsc_buffer_init(&ns);
     vsc_buffer_use(&ns, response.ns, sizeof(response.ns));
 
-    vscf_error_t f_status = vscf_random(self->random, vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH, &ns);
+    vscf_status_t f_status = vscf_random(self->random, vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH, &ns);
 
-    if (f_status != vscf_SUCCESS) {
-        status = vsce_error_RNG_ERROR;
+    if (f_status != vscf_status_SUCCESS) {
+        status = vsce_status_ERROR_RNG_FAILED;
         goto rng_err;
     }
 
@@ -523,7 +523,7 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *self, vsc_data_t server_privat
     status = vsce_phe_server_prove_success(
             self, op_group, server_private_key, server_public_key, &hs0, &hs1, &c0, &c1, &response.proof);
 
-    if (status != vsce_SUCCESS) {
+    if (status != vsce_status_SUCCESS) {
         goto err;
     }
 
@@ -566,7 +566,7 @@ vsce_phe_server_verify_password_response_len(vsce_phe_server_t *self) {
 //
 //  Verifies existing user's password and generates response with proof
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_private_key, vsc_data_t server_public_key,
         vsc_data_t verify_password_request, vsc_buffer_t *verify_password_response) {
 
@@ -578,7 +578,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_priva
 
     mbedtls_ecp_group *op_group = vsce_phe_server_get_op_group(self);
 
-    vsce_error_t status = vsce_SUCCESS;
+    vsce_status_t status = vsce_status_SUCCESS;
 
     mbedtls_mpi x;
     mbedtls_mpi_init(&x);
@@ -588,14 +588,14 @@ vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_priva
 
     mbedtls_status = mbedtls_ecp_check_privkey(&self->group, &x);
     if (mbedtls_status != 0) {
-        status = vsce_error_INVALID_PRIVATE_KEY;
+        status = vsce_status_ERROR_INVALID_PRIVATE_KEY;
         goto priv_err;
     }
 
     VerifyPasswordRequest request = VerifyPasswordRequest_init_zero;
 
     if (verify_password_request.len > VerifyPasswordRequest_size) {
-        status = vsce_error_PROTOBUF_DECODE_ERROR;
+        status = vsce_status_ERROR_PROTOBUF_DECODE_FAILED;
         goto pb_err;
     }
 
@@ -603,7 +603,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_priva
     bool pb_status = pb_decode(&istream, VerifyPasswordRequest_fields, &request);
 
     if (!pb_status) {
-        status = vsce_error_PROTOBUF_DECODE_ERROR;
+        status = vsce_status_ERROR_PROTOBUF_DECODE_FAILED;
         goto pb_err;
     }
 
@@ -612,7 +612,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_priva
 
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &c0, request.c0, sizeof(request.c0));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &c0) != 0) {
-        status = vsce_error_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_ECP;
         goto ecp_err;
     }
 
@@ -646,7 +646,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_priva
         status = vsce_phe_server_prove_success(
                 self, op_group, server_private_key, server_public_key, &hs0, &hs1, &c0, &c1, &response.proof.success);
 
-        if (status != vsce_SUCCESS) {
+        if (status != vsce_status_SUCCESS) {
             goto err;
         }
 
@@ -671,7 +671,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_priva
         status = vsce_phe_server_prove_failure(
                 self, op_group, server_private_key, server_public_key, &c0, &hs0, &c1, &response.proof.fail);
 
-        if (status != vsce_SUCCESS) {
+        if (status != vsce_status_SUCCESS) {
             goto err;
         }
 
@@ -709,7 +709,7 @@ priv_err:
     return status;
 }
 
-static vsce_error_t
+static vsce_status_t
 vsce_phe_server_prove_success(vsce_phe_server_t *self, mbedtls_ecp_group *op_group, vsc_data_t server_private_key,
         vsc_data_t server_public_key, const mbedtls_ecp_point *hs0, const mbedtls_ecp_point *hs1,
         const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, ProofOfSuccess *success_proof) {
@@ -723,7 +723,7 @@ vsce_phe_server_prove_success(vsce_phe_server_t *self, mbedtls_ecp_group *op_gro
     VSCE_ASSERT_PTR(c1);
     VSCE_ASSERT_PTR(success_proof);
 
-    vsce_error_t status = vsce_SUCCESS;
+    vsce_status_t status = vsce_status_SUCCESS;
 
     mbedtls_mpi blind_x;
     mbedtls_mpi_init(&blind_x);
@@ -732,7 +732,7 @@ vsce_phe_server_prove_success(vsce_phe_server_t *self, mbedtls_ecp_group *op_gro
     mbedtls_status = mbedtls_ecp_gen_privkey(&self->group, &blind_x, vscf_mbedtls_bridge_random, self->random);
 
     if (mbedtls_status != 0) {
-        status = vsce_error_RNG_ERROR;
+        status = vsce_status_ERROR_RNG_FAILED;
         goto err;
     }
 
@@ -744,7 +744,7 @@ vsce_phe_server_prove_success(vsce_phe_server_t *self, mbedtls_ecp_group *op_gro
 
     mbedtls_status = mbedtls_ecp_check_privkey(&self->group, &x);
     if (mbedtls_status != 0) {
-        status = vsce_error_INVALID_PRIVATE_KEY;
+        status = vsce_status_ERROR_INVALID_PRIVATE_KEY;
         goto priv_err;
     }
 
@@ -813,7 +813,7 @@ err:
     return status;
 }
 
-static vsce_error_t
+static vsce_status_t
 vsce_phe_server_prove_failure(vsce_phe_server_t *self, mbedtls_ecp_group *op_group, vsc_data_t server_private_key,
         vsc_data_t server_public_key, const mbedtls_ecp_point *c0, const mbedtls_ecp_point *hs0, mbedtls_ecp_point *c1,
         ProofOfFail *failure_proof) {
@@ -829,7 +829,7 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *self, mbedtls_ecp_group *op_gro
 
     VSCE_ASSERT_PTR(failure_proof);
 
-    vsce_error_t status = vsce_SUCCESS;
+    vsce_status_t status = vsce_status_SUCCESS;
 
     int mbedtls_status = 0;
 
@@ -841,7 +841,7 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *self, mbedtls_ecp_group *op_gro
 
     mbedtls_status = mbedtls_ecp_check_privkey(&self->group, &x);
     if (mbedtls_status != 0) {
-        status = vsce_error_INVALID_PRIVATE_KEY;
+        status = vsce_status_ERROR_INVALID_PRIVATE_KEY;
         goto priv_err;
     }
 
@@ -850,7 +850,7 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *self, mbedtls_ecp_group *op_gro
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &X, server_public_key.bytes, server_public_key.len);
 
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &X) != 0) {
-        status = vsce_error_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_ECP;
         goto ecp_err;
     }
 
@@ -864,21 +864,21 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *self, mbedtls_ecp_group *op_gro
     mbedtls_status = mbedtls_ecp_gen_privkey(&self->group, &r, vscf_mbedtls_bridge_random, self->random);
 
     if (mbedtls_status != 0) {
-        status = vsce_error_RNG_ERROR;
+        status = vsce_status_ERROR_RNG_FAILED;
         goto err;
     }
 
     mbedtls_status = mbedtls_ecp_gen_privkey(&self->group, &blind_A, vscf_mbedtls_bridge_random, self->random);
 
     if (mbedtls_status != 0) {
-        status = vsce_error_RNG_ERROR;
+        status = vsce_status_ERROR_RNG_FAILED;
         goto err;
     }
 
     mbedtls_status = mbedtls_ecp_gen_privkey(&self->group, &blind_B, vscf_mbedtls_bridge_random, self->random);
 
     if (mbedtls_status != 0) {
-        status = vsce_error_RNG_ERROR;
+        status = vsce_status_ERROR_RNG_FAILED;
         goto err;
     }
 
@@ -1010,7 +1010,7 @@ vsce_phe_server_update_token_len(vsce_phe_server_t *self) {
 //
 //  Updates server's private and public keys and issues an update token for use on client's side
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_server_rotate_keys(vsce_phe_server_t *self, vsc_data_t server_private_key,
         vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key, vsc_buffer_t *update_token) {
 
@@ -1026,7 +1026,7 @@ vsce_phe_server_rotate_keys(vsce_phe_server_t *self, vsc_data_t server_private_k
 
     mbedtls_ecp_group *op_group = vsce_phe_server_get_op_group(self);
 
-    vsce_error_t status = vsce_SUCCESS;
+    vsce_status_t status = vsce_status_SUCCESS;
 
     mbedtls_mpi x;
     mbedtls_mpi_init(&x);
@@ -1036,7 +1036,7 @@ vsce_phe_server_rotate_keys(vsce_phe_server_t *self, vsc_data_t server_private_k
 
     mbedtls_status = mbedtls_ecp_check_privkey(&self->group, &x);
     if (mbedtls_status != 0) {
-        status = vsce_error_INVALID_PRIVATE_KEY;
+        status = vsce_status_ERROR_INVALID_PRIVATE_KEY;
         goto priv_err;
     }
 
@@ -1047,14 +1047,14 @@ vsce_phe_server_rotate_keys(vsce_phe_server_t *self, vsc_data_t server_private_k
     mbedtls_status = mbedtls_ecp_gen_privkey(&self->group, &a, vscf_mbedtls_bridge_random, self->random);
 
     if (mbedtls_status != 0) {
-        status = vsce_error_RNG_ERROR;
+        status = vsce_status_ERROR_RNG_FAILED;
         goto err;
     }
 
     mbedtls_status = mbedtls_ecp_gen_privkey(&self->group, &b, vscf_mbedtls_bridge_random, self->random);
 
     if (mbedtls_status != 0) {
-        status = vsce_error_RNG_ERROR;
+        status = vsce_status_ERROR_RNG_FAILED;
         goto err;
     }
 

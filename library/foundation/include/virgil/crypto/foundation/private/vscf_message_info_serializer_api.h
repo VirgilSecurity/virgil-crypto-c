@@ -57,7 +57,7 @@
 #include "vscf_api.h"
 #include "vscf_impl.h"
 #include "vscf_message_info.h"
-#include "vscf_error_ctx.h"
+#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -109,7 +109,7 @@ typedef size_t (*vscf_message_info_serializer_api_read_prefix_fn)(vscf_impl_t *i
 //  Callback. Deserialize class "message info".
 //
 typedef vscf_message_info_t * (*vscf_message_info_serializer_api_deserialize_fn)(vscf_impl_t *impl, vsc_data_t data,
-        vscf_error_ctx_t *error);
+        vscf_error_t *error);
 
 //
 //  Contains API requirements of the interface 'message info serializer'.
@@ -120,6 +120,10 @@ struct vscf_message_info_serializer_api_t {
     //  For interface 'message_info_serializer' MUST be equal to the 'vscf_api_tag_MESSAGE_INFO_SERIALIZER'.
     //
     vscf_api_tag_t api_tag;
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
     //
     //  Return buffer size enough to hold serialized message info.
     //

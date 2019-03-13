@@ -80,7 +80,6 @@ test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
     vscf_impl_t *private_key = vscf_alg_factory_create_private_key_from_raw_key(raw_private_key);
 
     vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
-    vscf_recipient_cipher_setup_defaults(recipient_cipher);
 
     //
     //  Encrypt.
@@ -88,7 +87,7 @@ test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
     vscf_recipient_cipher_add_key_recipient(
             recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, public_key);
 
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, vscf_recipient_cipher_start_encryption(recipient_cipher));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_start_encryption(recipient_cipher));
 
     size_t message_info_len = vscf_recipient_cipher_message_info_len(recipient_cipher);
     size_t enc_msg_len =
@@ -99,24 +98,27 @@ test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
 
     vscf_recipient_cipher_pack_message_info(recipient_cipher, enc_msg);
 
-    TEST_ASSERT_EQUAL(vscf_SUCCESS,
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
             vscf_recipient_cipher_process_encryption(recipient_cipher, test_data_recipient_cipher_MESSAGE, enc_msg));
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, vscf_recipient_cipher_finish_encryption(recipient_cipher, enc_msg));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_encryption(recipient_cipher, enc_msg));
 
     //
     //  Clear and decrypt.
     //
+    vscf_recipient_cipher_release_random(recipient_cipher);
+    vscf_recipient_cipher_release_encryption_cipher(recipient_cipher);
+
     vsc_buffer_t *dec_msg = vsc_buffer_new_with_capacity(
             vscf_recipient_cipher_decryption_out_len(recipient_cipher, vsc_buffer_len(enc_msg)) +
             vscf_recipient_cipher_decryption_out_len(recipient_cipher, 0));
 
-    TEST_ASSERT_EQUAL(
-            vscf_SUCCESS, vscf_recipient_cipher_start_decryption_with_key(recipient_cipher,
-                                  test_data_recipient_cipher_ED25519_RECIPIENT_ID, private_key, vsc_data_empty()));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_recipient_cipher_start_decryption_with_key(
+                    recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, private_key, vsc_data_empty()));
 
-    TEST_ASSERT_EQUAL(vscf_SUCCESS,
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
             vscf_recipient_cipher_process_decryption(recipient_cipher, vsc_buffer_data(enc_msg), dec_msg));
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, vscf_recipient_cipher_finish_decryption(recipient_cipher, dec_msg));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_decryption(recipient_cipher, dec_msg));
 
     //
     //  Check.

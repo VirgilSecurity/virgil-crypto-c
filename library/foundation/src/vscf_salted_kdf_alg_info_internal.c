@@ -83,6 +83,10 @@ static const vscf_alg_info_api_t alg_info_api = {
     //
     vscf_api_tag_ALG_INFO,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_SALTED_KDF_ALG_INFO,
+    //
     //  Provide algorithm identificator.
     //
     (vscf_alg_info_api_alg_id_fn)vscf_salted_kdf_alg_info_alg_id
@@ -92,6 +96,10 @@ static const vscf_alg_info_api_t alg_info_api = {
 //  Compile-time known information about 'salted kdf alg info' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_SALTED_KDF_ALG_INFO,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

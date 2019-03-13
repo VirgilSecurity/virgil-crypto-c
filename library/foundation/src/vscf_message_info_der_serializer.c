@@ -233,7 +233,7 @@ vscf_message_info_der_serializer_serialize_cms_content_info(vscf_message_info_de
 //
 static void
 vscf_message_info_der_serializer_deserialize_custom_params(vscf_message_info_der_serializer_t *self,
-        vscf_message_info_t *message_info, vscf_error_ctx_t *error);
+        vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
 //  KeyTransRecipientInfo ::= SEQUENCE {
@@ -252,7 +252,7 @@ vscf_message_info_der_serializer_deserialize_custom_params(vscf_message_info_der
 //
 static void
 vscf_message_info_der_serializer_deserialize_key_recipient_info(vscf_message_info_der_serializer_t *self,
-        vscf_message_info_t *message_info, vscf_error_ctx_t *error);
+        vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
 //  PasswordRecipientInfo ::= SEQUENCE {
@@ -265,7 +265,7 @@ vscf_message_info_der_serializer_deserialize_key_recipient_info(vscf_message_inf
 //
 static void
 vscf_message_info_der_serializer_deserialize_password_recipient_info(vscf_message_info_der_serializer_t *self,
-        vscf_message_info_t *message_info, vscf_error_ctx_t *error);
+        vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
 //  RecipientInfos ::= SET SIZE (1..MAX) OF RecipientInfo
@@ -280,7 +280,7 @@ vscf_message_info_der_serializer_deserialize_password_recipient_info(vscf_messag
 //
 static void
 vscf_message_info_der_serializer_deserialize_recipient_infos(vscf_message_info_der_serializer_t *self,
-        vscf_message_info_t *message_info, vscf_error_ctx_t *error);
+        vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
 //  EncryptedContentInfo ::= SEQUENCE {
@@ -295,7 +295,7 @@ vscf_message_info_der_serializer_deserialize_recipient_infos(vscf_message_info_d
 //
 static void
 vscf_message_info_der_serializer_deserialize_encrypted_content_info(vscf_message_info_der_serializer_t *self,
-        vscf_message_info_t *message_info, vscf_error_ctx_t *error);
+        vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
 //  EnvelopedData ::= SEQUENCE {
@@ -310,7 +310,7 @@ vscf_message_info_der_serializer_deserialize_encrypted_content_info(vscf_message
 //
 static void
 vscf_message_info_der_serializer_deserialize_enveloped_data(vscf_message_info_der_serializer_t *self,
-        vscf_message_info_t *message_info, vscf_error_ctx_t *error);
+        vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
 //  ContentInfo ::= SEQUENCE {
@@ -322,7 +322,7 @@ vscf_message_info_der_serializer_deserialize_enveloped_data(vscf_message_info_de
 //
 static void
 vscf_message_info_der_serializer_deserialize_cms_content_info(vscf_message_info_der_serializer_t *self,
-        vscf_message_info_t *message_info, vscf_error_ctx_t *error);
+        vscf_message_info_t *message_info, vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------
@@ -363,14 +363,14 @@ vscf_message_info_der_serializer_cleanup_ctx(vscf_message_info_der_serializer_t 
 //
 //  This method is called when interface 'asn1 reader' was setup.
 //
-VSCF_PRIVATE vscf_error_t
+VSCF_PRIVATE vscf_status_t
 vscf_message_info_der_serializer_did_setup_asn1_reader(vscf_message_info_der_serializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
     vscf_alg_info_der_deserializer_use_asn1_reader(self->alg_info_deserializer, self->asn1_reader);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -387,14 +387,14 @@ vscf_message_info_der_serializer_did_release_asn1_reader(vscf_message_info_der_s
 //
 //  This method is called when interface 'asn1 writer' was setup.
 //
-VSCF_PRIVATE vscf_error_t
+VSCF_PRIVATE vscf_status_t
 vscf_message_info_der_serializer_did_setup_asn1_writer(vscf_message_info_der_serializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
     vscf_alg_info_der_serializer_use_asn1_writer(self->alg_info_serializer, self->asn1_writer);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -971,7 +971,7 @@ vscf_message_info_der_serializer_serialize_cms_content_info(
 //
 static void
 vscf_message_info_der_serializer_deserialize_custom_params(
-        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_ctx_t *error) {
+        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
@@ -989,7 +989,7 @@ vscf_message_info_der_serializer_deserialize_custom_params(
         if (custom_params_len >= custom_param_len) {
             custom_params_len -= custom_param_len;
         } else {
-            VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_ASN1);
+            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
             return;
         }
 
@@ -1011,7 +1011,7 @@ vscf_message_info_der_serializer_deserialize_custom_params(
             vscf_message_info_custom_params_add_data(custom_params, key, value);
 
         } else {
-            VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_ASN1);
+            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
             return;
         }
     }
@@ -1034,7 +1034,7 @@ vscf_message_info_der_serializer_deserialize_custom_params(
 //
 static void
 vscf_message_info_der_serializer_deserialize_key_recipient_info(
-        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_ctx_t *error) {
+        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
@@ -1042,19 +1042,19 @@ vscf_message_info_der_serializer_deserialize_key_recipient_info(
     vscf_asn1_reader_read_sequence(self->asn1_reader);
     const int version = vscf_asn1_reader_read_int(self->asn1_reader);
 
-    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
         return;
     }
 
     if (version != 2) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_ASN1);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
         return;
     }
 
     const size_t rid_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 0);
 
     if (rid_len == 0) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_ASN1);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
         return;
     }
 
@@ -1067,7 +1067,7 @@ vscf_message_info_der_serializer_deserialize_key_recipient_info(
         return;
     }
 
-    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
         vscf_impl_destroy(&key_encryption_alg_info);
         return;
     }
@@ -1089,7 +1089,7 @@ vscf_message_info_der_serializer_deserialize_key_recipient_info(
 //
 static void
 vscf_message_info_der_serializer_deserialize_password_recipient_info(
-        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_ctx_t *error) {
+        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
@@ -1097,12 +1097,12 @@ vscf_message_info_der_serializer_deserialize_password_recipient_info(
     vscf_asn1_reader_read_sequence(self->asn1_reader);
     const int version = vscf_asn1_reader_read_int(self->asn1_reader);
 
-    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
         return;
     }
 
     if (version != 0) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_ASN1);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
         return;
     }
 
@@ -1120,7 +1120,7 @@ vscf_message_info_der_serializer_deserialize_password_recipient_info(
         return;
     }
 
-    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
         vscf_impl_destroy(&key_encryption_alg_info);
         return;
     }
@@ -1144,7 +1144,7 @@ vscf_message_info_der_serializer_deserialize_password_recipient_info(
 //
 static void
 vscf_message_info_der_serializer_deserialize_recipient_infos(
-        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_ctx_t *error) {
+        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
@@ -1161,7 +1161,7 @@ vscf_message_info_der_serializer_deserialize_recipient_infos(
         if (recipient_infos_len >= recipient_len) {
             recipient_infos_len -= recipient_len;
         } else {
-            VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_ASN1);
+            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
             return;
         }
 
@@ -1177,7 +1177,7 @@ vscf_message_info_der_serializer_deserialize_recipient_infos(
             vscf_message_info_der_serializer_deserialize_key_recipient_info(self, message_info, error);
         }
 
-        if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
+        if (vscf_asn1_reader_has_error(self->asn1_reader)) {
             return;
         }
     }
@@ -1196,7 +1196,7 @@ vscf_message_info_der_serializer_deserialize_recipient_infos(
 //
 static void
 vscf_message_info_der_serializer_deserialize_encrypted_content_info(
-        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_ctx_t *error) {
+        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
@@ -1204,8 +1204,8 @@ vscf_message_info_der_serializer_deserialize_encrypted_content_info(
     vscf_asn1_reader_read_sequence(self->asn1_reader);
     vsc_data_t content_type_oid = vscf_asn1_reader_read_oid(self->asn1_reader);
 
-    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_asn1_reader_error(self->asn1_reader));
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_asn1_reader_status(self->asn1_reader));
         return;
     }
 
@@ -1236,7 +1236,7 @@ vscf_message_info_der_serializer_deserialize_encrypted_content_info(
 //
 static void
 vscf_message_info_der_serializer_deserialize_enveloped_data(
-        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_ctx_t *error) {
+        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
@@ -1248,14 +1248,14 @@ vscf_message_info_der_serializer_deserialize_enveloped_data(
     //
     const int version = vscf_asn1_reader_read_int(self->asn1_reader);
 
-    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS || (version != 2 && version != 3)) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_ASN1);
+    if (vscf_asn1_reader_has_error(self->asn1_reader) || (version != 2 && version != 3)) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
         return;
     }
 
     vscf_message_info_der_serializer_deserialize_recipient_infos(self, message_info, error);
-    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_asn1_reader_error(self->asn1_reader));
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_asn1_reader_status(self->asn1_reader));
         return;
     }
 
@@ -1269,7 +1269,7 @@ vscf_message_info_der_serializer_deserialize_enveloped_data(
     }
 
     if (version != expected_version) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_ASN1);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
         return;
     }
 
@@ -1289,7 +1289,7 @@ vscf_message_info_der_serializer_deserialize_enveloped_data(
 //
 static void
 vscf_message_info_der_serializer_deserialize_cms_content_info(
-        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_ctx_t *error) {
+        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
@@ -1298,7 +1298,7 @@ vscf_message_info_der_serializer_deserialize_cms_content_info(
     vscf_asn1_reader_read_sequence(self->asn1_reader);
 
     vsc_data_t content_type_oid = vscf_asn1_reader_read_oid(self->asn1_reader);
-    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
         return;
     }
 
@@ -1306,8 +1306,8 @@ vscf_message_info_der_serializer_deserialize_cms_content_info(
     VSCF_ASSERT(content_type == vscf_oid_id_CMS_ENVELOPED_DATA);
 
     const size_t content_tag_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 0);
-    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS || content_tag_len == 0) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_ASN1);
+    if (vscf_asn1_reader_has_error(self->asn1_reader) || content_tag_len == 0) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
         return;
     }
 
@@ -1317,7 +1317,7 @@ vscf_message_info_der_serializer_deserialize_cms_content_info(
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -1330,7 +1330,7 @@ vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer
         vscf_message_info_der_serializer_take_asn1_writer(self, vscf_asn1wr_impl(vscf_asn1wr_new()));
     }
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -1411,7 +1411,7 @@ vscf_message_info_der_serializer_read_prefix(vscf_message_info_der_serializer_t 
     vscf_asn1_reader_reset(self->asn1_reader, data);
     size_t len = vscf_asn1_reader_read_sequence(self->asn1_reader);
 
-    if (vscf_asn1_reader_error(self->asn1_reader) == vscf_SUCCESS) {
+    if (!vscf_asn1_reader_has_error(self->asn1_reader)) {
         vscf_asn1_reader_reset(self->asn1_reader, data);
         len = vscf_asn1_reader_get_data_len(self->asn1_reader);
     }
@@ -1424,7 +1424,7 @@ vscf_message_info_der_serializer_read_prefix(vscf_message_info_der_serializer_t 
 //
 VSCF_PUBLIC vscf_message_info_t *
 vscf_message_info_der_serializer_deserialize(
-        vscf_message_info_der_serializer_t *self, vsc_data_t data, vscf_error_ctx_t *error) {
+        vscf_message_info_der_serializer_t *self, vsc_data_t data, vscf_error_t *error) {
 
     //  VirgilMessageInfo ::= SEQUENCE {
     //      version ::= INTEGER { v0(0) },
@@ -1436,8 +1436,8 @@ vscf_message_info_der_serializer_deserialize(
     VSCF_ASSERT_PTR(self->asn1_reader);
     VSCF_ASSERT(vsc_data_is_valid(data));
 
-    vscf_error_ctx_t error_ctx;
-    vscf_error_ctx_reset(&error_ctx);
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
 
     vscf_message_info_t *message_info = vscf_message_info_new();
 
@@ -1445,21 +1445,21 @@ vscf_message_info_der_serializer_deserialize(
     vscf_asn1_reader_read_sequence(self->asn1_reader);
     const int version = vscf_asn1_reader_read_int(self->asn1_reader);
 
-    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS || version != 0) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_ASN1);
+    if (vscf_asn1_reader_has_error(self->asn1_reader) || version != 0) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
         goto error;
     }
 
     vscf_message_info_der_serializer_deserialize_cms_content_info(self, message_info, &error_ctx);
     vscf_message_info_der_serializer_deserialize_custom_params(self, message_info, &error_ctx);
 
-    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_asn1_reader_error(self->asn1_reader));
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_asn1_reader_status(self->asn1_reader));
         goto error;
     }
 
-    if (error_ctx.error != vscf_SUCCESS) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, error_ctx.error);
+    if (vscf_error_has_error(&error_ctx)) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_error_status(&error_ctx));
         goto error;
     }
 

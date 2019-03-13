@@ -144,7 +144,7 @@ vscf_aes256_cbc_produce_alg_info(const vscf_aes256_cbc_t *self) {
 //
 //  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_aes256_cbc_restore_alg_info(vscf_aes256_cbc_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
@@ -154,13 +154,13 @@ vscf_aes256_cbc_restore_alg_info(vscf_aes256_cbc_t *self, const vscf_impl_t *alg
     const vscf_cipher_alg_info_t *cipher_alg_info = (const vscf_cipher_alg_info_t *)alg_info;
     vscf_aes256_cbc_set_nonce(self, vscf_cipher_alg_info_nonce(cipher_alg_info));
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
 //  Encrypt given data.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_aes256_cbc_encrypt(vscf_aes256_cbc_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
@@ -172,7 +172,7 @@ vscf_aes256_cbc_encrypt(vscf_aes256_cbc_t *self, vsc_data_t data, vsc_buffer_t *
     vscf_aes256_cbc_update(self, data, out);
     vscf_aes256_cbc_finish(self, out);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -189,7 +189,7 @@ vscf_aes256_cbc_encrypted_len(vscf_aes256_cbc_t *self, size_t data_len) {
 //
 //  Decrypt given data.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_aes256_cbc_decrypt(vscf_aes256_cbc_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
@@ -345,7 +345,7 @@ vscf_aes256_cbc_decrypted_out_len(vscf_aes256_cbc_t *self, size_t data_len) {
 //
 //  Accomplish encryption or decryption process.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_aes256_cbc_finish(vscf_aes256_cbc_t *self, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
@@ -359,5 +359,5 @@ vscf_aes256_cbc_finish(vscf_aes256_cbc_t *self, vsc_buffer_t *out) {
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
     vsc_buffer_inc_used(out, last_block_len);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }

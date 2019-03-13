@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// This is MbedTLS implementation of SHA384.
 @objc(VSCFSha384) public class Sha384: NSObject, Alg, Hash {
@@ -85,14 +84,14 @@ import VirgilCryptoCommon
     @objc public func produceAlgInfo() -> AlgInfo {
         let proxyResult = vscf_sha384_produce_alg_info(self.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Restore algorithm configuration from the given object.
     @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
         let proxyResult = vscf_sha384_restore_alg_info(self.c_ctx, algInfo.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Calculate hash over given data.
@@ -108,6 +107,7 @@ import VirgilCryptoCommon
             digest.withUnsafeMutableBytes({ (digestPointer: UnsafeMutablePointer<byte>) -> Void in
                 vsc_buffer_init(digestBuf)
                 vsc_buffer_use(digestBuf, digestPointer, digestCount)
+
                 vscf_sha384_hash(vsc_data(dataPointer, data.count), digestBuf)
             })
         })
@@ -124,6 +124,7 @@ import VirgilCryptoCommon
     /// Add given data to the hash.
     @objc public func update(data: Data) {
         data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
+
             vscf_sha384_update(self.c_ctx, vsc_data(dataPointer, data.count))
         })
     }
@@ -140,6 +141,7 @@ import VirgilCryptoCommon
         digest.withUnsafeMutableBytes({ (digestPointer: UnsafeMutablePointer<byte>) -> Void in
             vsc_buffer_init(digestBuf)
             vsc_buffer_use(digestBuf, digestPointer, digestCount)
+
             vscf_sha384_finish(self.c_ctx, digestBuf)
         })
         digest.count = vsc_buffer_len(digestBuf)

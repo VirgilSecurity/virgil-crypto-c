@@ -1,11 +1,13 @@
 <project
-    name="phe"
-    brief="Implementation of the phe (password-hardened encryption) protocol."
-    namespace="virgil crypto phe"
-    framework="VSCPhe"
-    prefix="vsce"
-    path="../library/phe"
-    work_path = "generated/phe/">
+        name="phe"
+        brief="Implementation of the phe (password-hardened encryption) protocol."
+        namespace="virgil crypto phe"
+        framework="VSCPhe"
+        prefix="vsce"
+        path="../library/phe"
+        work_path = "generated/phe/"
+        wrappers="none"
+        >
 
     <version major="0" minor="3" patch="0"/>
 
@@ -59,7 +61,7 @@
 
     <module name="const"/>
 
-    <enum name="error"/>
+    <enum name="status"/>
 
     <class name="error"/>
     <class name="phe common"/>

@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -89,7 +89,7 @@ typedef bool (*vscf_entropy_source_api_is_strong_fn)(vscf_impl_t *impl);
 //
 //  Callback. Gather entropy of the requested length.
 //
-typedef vscf_error_t (*vscf_entropy_source_api_gather_fn)(vscf_impl_t *impl, size_t len, vsc_buffer_t *out);
+typedef vscf_status_t (*vscf_entropy_source_api_gather_fn)(vscf_impl_t *impl, size_t len, vsc_buffer_t *out);
 
 //
 //  Contains API requirements of the interface 'entropy source'.
@@ -100,6 +100,10 @@ struct vscf_entropy_source_api_t {
     //  For interface 'entropy_source' MUST be equal to the 'vscf_api_tag_ENTROPY_SOURCE'.
     //
     vscf_api_tag_t api_tag;
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
     //
     //  Defines that implemented source is strong.
     //

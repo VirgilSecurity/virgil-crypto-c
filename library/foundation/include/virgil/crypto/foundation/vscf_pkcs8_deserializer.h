@@ -54,10 +54,10 @@
 #define VSCF_PKCS8_DESERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error_ctx.h"
+#include "vscf_error.h"
 #include "vscf_raw_key.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -182,7 +182,7 @@ vscf_pkcs8_deserializer_release_der_deserializer(vscf_pkcs8_deserializer_t *self
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_pkcs8_deserializer_setup_defaults(vscf_pkcs8_deserializer_t *self);
 
 //
@@ -190,14 +190,14 @@ vscf_pkcs8_deserializer_setup_defaults(vscf_pkcs8_deserializer_t *self);
 //
 VSCF_PUBLIC vscf_raw_key_t *
 vscf_pkcs8_deserializer_deserialize_public_key(vscf_pkcs8_deserializer_t *self, vsc_data_t public_key_data,
-        vscf_error_ctx_t *error);
+        vscf_error_t *error);
 
 //
 //  Deserialize given private key as an interchangeable format to the object.
 //
 VSCF_PUBLIC vscf_raw_key_t *
 vscf_pkcs8_deserializer_deserialize_private_key(vscf_pkcs8_deserializer_t *self, vsc_data_t private_key_data,
-        vscf_error_ctx_t *error);
+        vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------

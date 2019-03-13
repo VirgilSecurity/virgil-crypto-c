@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 // clang-format on
 //  @end
@@ -77,7 +77,7 @@ extern "C" {
 //  Callback. Generate new private or secret key.
 //          Note, this operation can be slow.
 //
-typedef vscf_error_t (*vscf_generate_key_api_generate_key_fn)(vscf_impl_t *impl);
+typedef vscf_status_t (*vscf_generate_key_api_generate_key_fn)(vscf_impl_t *impl);
 
 //
 //  Contains API requirements of the interface 'generate key'.
@@ -88,6 +88,10 @@ struct vscf_generate_key_api_t {
     //  For interface 'generate_key' MUST be equal to the 'vscf_api_tag_GENERATE_KEY'.
     //
     vscf_api_tag_t api_tag;
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
     //
     //  Generate new private or secret key.
     //  Note, this operation can be slow.

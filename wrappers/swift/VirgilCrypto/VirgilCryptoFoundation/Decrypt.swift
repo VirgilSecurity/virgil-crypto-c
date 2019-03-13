@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provide interface for data encryption.
 @objc(VSCFDecrypt) public protocol Decrypt : CContext {
@@ -45,52 +44,4 @@ import VirgilCryptoCommon
 
     /// Calculate required buffer length to hold the decrypted data.
     @objc func decryptedLen(dataLen: Int) -> Int
-}
-
-/// Implement interface methods
-@objc(VSCFDecryptProxy) internal class DecryptProxy: NSObject, Decrypt {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Decrypt given data.
-    @objc public func decrypt(data: Data) throws -> Data {
-        let outCount = self.decryptedLen(dataLen: data.count)
-        var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(outBuf)
-        }
-
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
-                vsc_buffer_init(outBuf)
-                vsc_buffer_use(outBuf, outPointer, outCount)
-                return vscf_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
-            })
-        })
-        out.count = vsc_buffer_len(outBuf)
-
-        try FoundationError.handleError(fromC: proxyResult)
-
-        return out
-    }
-
-    /// Calculate required buffer length to hold the decrypted data.
-    @objc public func decryptedLen(dataLen: Int) -> Int {
-        let proxyResult = vscf_decrypt_decrypted_len(self.c_ctx, dataLen)
-
-        return proxyResult
-    }
 }

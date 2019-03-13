@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Virgil Security implementation of the HKDF (RFC 6234) algorithm.
 @objc(VSCFHkdf) public class Hkdf: NSObject, Alg, Kdf, SaltedKdf {
@@ -86,14 +85,14 @@ import VirgilCryptoCommon
     @objc public func produceAlgInfo() -> AlgInfo {
         let proxyResult = vscf_hkdf_produce_alg_info(self.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Restore algorithm configuration from the given object.
     @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
         let proxyResult = vscf_hkdf_restore_alg_info(self.c_ctx, algInfo.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Derive key of the requested length from the given data.
@@ -109,6 +108,7 @@ import VirgilCryptoCommon
             key.withUnsafeMutableBytes({ (keyPointer: UnsafeMutablePointer<byte>) -> Void in
                 vsc_buffer_init(keyBuf)
                 vsc_buffer_use(keyBuf, keyPointer, keyCount)
+
                 vscf_hkdf_derive(self.c_ctx, vsc_data(dataPointer, data.count), keyLen, keyBuf)
             })
         })
@@ -120,6 +120,7 @@ import VirgilCryptoCommon
     /// Prepare algorithm to derive new key.
     @objc public func reset(salt: Data, iterationCount: Int) {
         salt.withUnsafeBytes({ (saltPointer: UnsafePointer<byte>) -> Void in
+
             vscf_hkdf_reset(self.c_ctx, vsc_data(saltPointer, salt.count), iterationCount)
         })
     }
@@ -128,6 +129,7 @@ import VirgilCryptoCommon
     /// Can be empty.
     @objc public func setInfo(info: Data) {
         info.withUnsafeBytes({ (infoPointer: UnsafePointer<byte>) -> Void in
+
             vscf_hkdf_set_info(self.c_ctx, vsc_data(infoPointer, info.count))
         })
     }

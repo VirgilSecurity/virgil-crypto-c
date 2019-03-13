@@ -23,21 +23,21 @@
             <length constant="key id len" class="ratchet common"/>
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             Error
         </return>
     </method>
 
     <method name="extract ratchet public key">
         <argument name="data" class="data"/>
-        <argument name="err ctx" class="error ctx" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return class="buffer"/>
     </method>
 
     <method name="extract ratchet private key">
         <argument name="data" class="data"/>
-        <argument name="err ctx" class="error ctx" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return class="buffer"/>
     </method>

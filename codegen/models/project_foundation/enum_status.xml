@@ -1,0 +1,144 @@
+<enum name="status" definition="public">
+    Defines the library status codes.
+
+    <constant name="success" value="0">
+        No errors was occurred.
+    </constant>
+
+    <constant name="error bad arguments" value="-1">
+        This error should not be returned if assertions is enabled.
+    </constant>
+
+    <constant name="error uninitialized" value="-2">
+        Can be used to define that not all context prerequisites are satisfied.
+        Note, this error should not be returned if assertions is enabled.
+    </constant>
+
+    <constant name="error unhandled thirdparty error" value="-3">
+        Define that error code from one of third-party module was not handled.
+        Note, this error should not be returned if assertions is enabled.
+    </constant>
+
+    <constant name="error small buffer" value="-101">
+        Buffer capacity is not enough to hold result.
+    </constant>
+
+    <constant name="error unsupported algorithm" value="-200">
+        Unsupported algorithm.
+    </constant>
+
+    <constant name="error auth failed" value="-201">
+        Authentication failed during decryption.
+    </constant>
+
+    <constant name="error out of data" value="-202">
+        Attempt to read data out of buffer bounds.
+    </constant>
+
+    <constant name="error bad asn1" value="-203">
+        ASN.1 encoded data is corrupted.
+    </constant>
+
+    <constant name="error asn1 lossy type narrowing" value="-204">
+        Attempt to read ASN.1 type that is bigger then requested C type.
+    </constant>
+
+    <constant name="error bad pkcs1 public key" value="-205">
+        ASN.1 representation of PKCS#1 public key is corrupted.
+    </constant>
+
+    <constant name="error bad pkcs1 private key" value="-206">
+        ASN.1 representation of PKCS#1 private key is corrupted.
+    </constant>
+
+    <constant name="error bad pkcs8 public key" value="-207">
+        ASN.1 representation of PKCS#8 public key is corrupted.
+    </constant>
+
+    <constant name="error bad pkcs8 private key" value="-208">
+        ASN.1 representation of PKCS#8 private key is corrupted.
+    </constant>
+
+    <constant name="error bad encrypted data" value="-209">
+        Encrypted data is corrupted.
+    </constant>
+
+    <constant name="error random failed" value="-210">
+        Underlying random operation returns error.
+    </constant>
+
+    <constant name="error key generation failed" value="-211">
+        Generation of the private or secret key failed.
+    </constant>
+
+    <constant name="error entropy source failed" value="-212">
+        One of the entropy sources failed.
+    </constant>
+
+    <constant name="error rng requested data too big" value="-213">
+        Requested data to be generated is too big.
+    </constant>
+
+    <constant name="error bad base64" value="-214">
+        Base64 encoded string contains invalid characters.
+    </constant>
+
+    <constant name="error bad pem" value="-215">
+        PEM data is corrupted.
+    </constant>
+
+    <constant name="error shared key exchange failed" value="-216">
+        Exchange key return zero.
+    </constant>
+
+    <constant name="error bad ed25519 public key" value="-217">
+        Ed25519 public key is corrupted.
+    </constant>
+
+    <constant name="error bad ed25519 private key" value="-218">
+        Ed25519 private key is corrupted.
+    </constant>
+
+    <constant name="error bad curve25519 public key" value="-219">
+        CURVE25519 public key is corrupted.
+    </constant>
+
+    <constant name="error bad curve25519 private key" value="-220">
+        CURVE25519 private key is corrupted.
+    </constant>
+
+    <constant name="error no message info" value="-301">
+        Decryption failed, because message info was not given explicitly,
+        and was not part of an encrypted message.
+    </constant>
+
+    <constant name="error bad message info" value="-302">
+        Message info is corrupted.
+    </constant>
+
+    <constant name="error key recipient is not found" value="-303">
+        Recipient defined with id is not found within message info
+        during data decryption.
+    </constant>
+
+    <constant name="error key recipient private key is wrong" value="-304">
+        Content encryption key can not be decrypted with a given private key.
+    </constant>
+
+    <constant name="error password recipient password is wrong" value="-305">
+        Content encryption key can not be decrypted with a given password.
+    </constant>
+
+    <constant name="error message info custom param not found" value="-306">
+        Custom parameter with a given key is not found within message info.
+    </constant>
+
+    <constant name="error message info custom param type mismatch" value="-307">
+        A custom parameter with a given key is found, but the requested value
+        type does not correspond to the actual type.
+    </constant>
+
+    <constant name="error bad signature" value="-308">
+        Signature format is corrupted.
+    </constant>
+</enum>

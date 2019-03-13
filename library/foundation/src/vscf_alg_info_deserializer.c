@@ -68,7 +68,7 @@
 //  Deserialize algorithm from the data.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_info_deserializer_deserialize(vscf_impl_t *impl, vsc_data_t data, vscf_error_ctx_t *error) {
+vscf_alg_info_deserializer_deserialize(vscf_impl_t *impl, vsc_data_t data, vscf_error_t *error) {
 
     const vscf_alg_info_deserializer_api_t *alg_info_deserializer_api = vscf_alg_info_deserializer_api(impl);
     VSCF_ASSERT_PTR (alg_info_deserializer_api);

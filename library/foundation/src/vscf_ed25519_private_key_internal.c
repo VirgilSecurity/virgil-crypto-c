@@ -65,8 +65,8 @@
 #include "vscf_generate_key_api.h"
 #include "vscf_decrypt.h"
 #include "vscf_decrypt_api.h"
-#include "vscf_sign.h"
-#include "vscf_sign_api.h"
+#include "vscf_sign_hash.h"
+#include "vscf_sign_hash_api.h"
 #include "vscf_private_key.h"
 #include "vscf_private_key_api.h"
 #include "vscf_compute_shared_key.h"
@@ -99,6 +99,10 @@ static const vscf_defaults_api_t defaults_api = {
     //
     vscf_api_tag_DEFAULTS,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
+    //
     //  Setup predefined values to the uninitialized class dependencies.
     //
     (vscf_defaults_api_setup_defaults_fn)vscf_ed25519_private_key_setup_defaults
@@ -113,6 +117,10 @@ static const vscf_alg_api_t alg_api = {
     //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
     //
     vscf_api_tag_ALG,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
     //
     //  Provide algorithm identificator.
     //
@@ -137,6 +145,10 @@ static const vscf_key_api_t key_api = {
     //
     vscf_api_tag_KEY,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
+    //
     //  Link to the inherited interface API 'alg'.
     //
     &alg_api,
@@ -160,6 +172,10 @@ static const vscf_generate_key_api_t generate_key_api = {
     //
     vscf_api_tag_GENERATE_KEY,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
+    //
     //  Generate new private or secret key.
     //  Note, this operation can be slow.
     //
@@ -176,6 +192,10 @@ static const vscf_decrypt_api_t decrypt_api = {
     //
     vscf_api_tag_DECRYPT,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
+    //
     //  Decrypt given data.
     //
     (vscf_decrypt_api_decrypt_fn)vscf_ed25519_private_key_decrypt,
@@ -186,22 +206,26 @@ static const vscf_decrypt_api_t decrypt_api = {
 };
 
 //
-//  Configuration of the interface API 'sign api'.
+//  Configuration of the interface API 'sign hash api'.
 //
-static const vscf_sign_api_t sign_api = {
+static const vscf_sign_hash_api_t sign_hash_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'sign' MUST be equal to the 'vscf_api_tag_SIGN'.
+    //  For interface 'sign_hash' MUST be equal to the 'vscf_api_tag_SIGN_HASH'.
     //
-    vscf_api_tag_SIGN,
+    vscf_api_tag_SIGN_HASH,
     //
-    //  Sign data given private key.
+    //  Implementation unique identifier, MUST be second in the structure.
     //
-    (vscf_sign_api_sign_fn)vscf_ed25519_private_key_sign,
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
     //
     //  Return length in bytes required to hold signature.
     //
-    (vscf_sign_api_signature_len_fn)vscf_ed25519_private_key_signature_len
+    (vscf_sign_hash_api_signature_len_fn)vscf_ed25519_private_key_signature_len,
+    //
+    //  Sign data given private key.
+    //
+    (vscf_sign_hash_api_sign_hash_fn)vscf_ed25519_private_key_sign_hash
 };
 
 //
@@ -213,6 +237,10 @@ static const vscf_private_key_api_t private_key_api = {
     //  For interface 'private_key' MUST be equal to the 'vscf_api_tag_PRIVATE_KEY'.
     //
     vscf_api_tag_PRIVATE_KEY,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
     //
     //  Link to the inherited interface API 'key'.
     //
@@ -261,6 +289,10 @@ static const vscf_compute_shared_key_api_t compute_shared_key_api = {
     //
     vscf_api_tag_COMPUTE_SHARED_KEY,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
+    //
     //  Compute shared key for 2 asymmetric keys.
     //  Note, shared key can be used only for symmetric cryptography.
     //
@@ -275,6 +307,10 @@ static const vscf_compute_shared_key_api_t compute_shared_key_api = {
 //  Compile-time known information about 'ed25519 private key' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
@@ -506,8 +542,8 @@ vscf_ed25519_private_key_find_api(vscf_api_tag_t api_tag) {
             return (const vscf_api_t *) &key_api;
         case vscf_api_tag_PRIVATE_KEY:
             return (const vscf_api_t *) &private_key_api;
-        case vscf_api_tag_SIGN:
-            return (const vscf_api_t *) &sign_api;
+        case vscf_api_tag_SIGN_HASH:
+            return (const vscf_api_t *) &sign_hash_api;
         default:
             return NULL;
     }

@@ -127,14 +127,14 @@ vscf_sha384_produce_alg_info(const vscf_sha384_t *self) {
 //
 //  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_sha384_restore_alg_info(vscf_sha384_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
     VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_SHA384);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //

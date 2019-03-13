@@ -1,0 +1,75 @@
+<enum name="status" definition="public">
+    Defines the library status codes.
+
+    <constant name="success" value="0">
+        No errors was occurred.
+    </constant>
+
+    <constant name="error protobuf decode" value="-1">
+        Error during protobuf deserialization.
+    </constant>
+
+    <constant name="error message version doesn't match" value="-2">
+        Message version doesn't match.
+    </constant>
+
+    <constant name="error bad message type" value="-3">
+        Bad message type.
+    </constant>
+
+    <constant name="error aes" value="-4">
+        AES error.
+    </constant>
+
+    <constant name="error rng failed" value="-5">
+        RNG failed.
+    </constant>
+
+    <constant name="error curve25519" value="-6">
+        Curve25519 error.
+    </constant>
+
+    <constant name="error key deserialization failed" value="-7">
+        Key deserialization failed.
+    </constant>
+
+    <constant name="error invalid key type" value="-8">
+        Invalid key type.
+    </constant>
+
+    <constant name="error identity key doesnt match" value="-9">
+        Identity key doesn't match.
+    </constant>
+
+    <constant name="error message already decrypted" value="-10">
+        Message already decrypted.
+    </constant>
+
+    <constant name="error too many lost messages" value="-11">
+        Too many lost messages.
+    </constant>
+
+    <constant name="error sender chain missing" value="-12">
+        Sender chain missing.
+    </constant>
+
+    <constant name="error skipped message missing" value="-13">
+        Skipped message missing.
+    </constant>
+
+    <constant name="error can't encrypt yet" value="-14">
+        Can't encrypt yet.
+    </constant>
+
+    <constant name="error exceeded max plain text len" value="-15">
+        Exceeded max plain text len.
+    </constant>
+
+    <constant name="error too many messages for sender chain" value="-16">
+        Too many messages for sender chain.
+    </constant>
+
+    <constant name="error too many messages for receiver chain" value="-17">
+        Too many messages for receiver chain.
+    </constant>
+</enum>

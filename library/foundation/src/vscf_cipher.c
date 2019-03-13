@@ -177,7 +177,7 @@ vscf_cipher_decrypted_out_len(vscf_impl_t *impl, size_t data_len) {
 //
 //  Accomplish encryption or decryption process.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_cipher_finish(vscf_impl_t *impl, vsc_buffer_t *out) {
 
     const vscf_cipher_api_t *cipher_api = vscf_cipher_api(impl);

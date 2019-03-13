@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Handle information about recipient that is defined by a password.
 @objc(VSCFPasswordRecipientInfo) public class PasswordRecipientInfo: NSObject {
@@ -66,7 +65,9 @@ import VirgilCryptoCommon
     /// Create object and define all properties.
     public init(keyEncryptionAlgorithm: AlgInfo, encryptedKey: Data) {
         let proxyResult = encryptedKey.withUnsafeBytes({ (encryptedKeyPointer: UnsafePointer<byte>) -> OpaquePointer? in
+
             var keyEncryptionAlgorithmCopy = vscf_impl_shallow_copy(keyEncryptionAlgorithm.c_ctx)
+
             return vscf_password_recipient_info_new_with_members(&keyEncryptionAlgorithmCopy, vsc_data(encryptedKeyPointer, encryptedKey.count))
         })
 
@@ -83,7 +84,7 @@ import VirgilCryptoCommon
     @objc public func keyEncryptionAlgorithm() -> AlgInfo {
         let proxyResult = vscf_password_recipient_info_key_encryption_algorithm(self.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Return an encrypted data encryption key.

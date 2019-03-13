@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCRatchet
-import VirgilCryptoCommon
 import VirgilCryptoFoundation
 
 /// Class represents ratchet message
@@ -109,6 +108,7 @@ import VirgilCryptoFoundation
         output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutablePointer<byte>) -> Void in
             vsc_buffer_init(outputBuf)
             vsc_buffer_use(outputBuf, outputPointer, outputCount)
+
             vscr_ratchet_message_serialize(self.c_ctx, outputBuf)
         })
         output.count = vsc_buffer_len(outputBuf)
@@ -117,10 +117,16 @@ import VirgilCryptoFoundation
     }
 
     /// Deserializes instance.
-    @objc public static func deserialize(input: Data, errCtx: ErrorCtx) -> RatchetMessage {
+    @objc public static func deserialize(input: Data) throws -> RatchetMessage {
+        var error: vscr_error_t = vscr_error_t()
+        vscr_error_reset(&error)
+
         let proxyResult = input.withUnsafeBytes({ (inputPointer: UnsafePointer<byte>) in
-            return vscr_ratchet_message_deserialize(vsc_data(inputPointer, input.count), errCtx.c_ctx)
+
+            return vscr_ratchet_message_deserialize(vsc_data(inputPointer, input.count), &error)
         })
+
+        try RatchetError.handleStatus(fromC: error.status)
 
         return RatchetMessage.init(take: proxyResult!)
     }

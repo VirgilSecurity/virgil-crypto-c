@@ -101,7 +101,7 @@ vscf_ctr_drbg_cleanup_ctx(vscf_ctr_drbg_t *self) {
 //
 //  This method is called when interface 'entropy source' was setup.
 //
-VSCF_PRIVATE vscf_error_t
+VSCF_PRIVATE vscf_status_t
 vscf_ctr_drbg_did_setup_entropy_source(vscf_ctr_drbg_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -113,14 +113,14 @@ vscf_ctr_drbg_did_setup_entropy_source(vscf_ctr_drbg_t *self) {
 
     switch (status) {
     case 0:
-        return vscf_SUCCESS;
+        return vscf_status_SUCCESS;
 
     case MBEDTLS_ERR_CTR_DRBG_ENTROPY_SOURCE_FAILED:
-        return vscf_error_ENTROPY_SOURCE_FAILED;
+        return vscf_status_ERROR_ENTROPY_SOURCE_FAILED;
 
     default:
         VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(status);
-        return vscf_error_UNHANDLED_THIRDPARTY_ERROR;
+        return vscf_status_ERROR_UNHANDLED_THIRDPARTY_ERROR;
     }
 }
 
@@ -177,21 +177,21 @@ vscf_ctr_drbg_set_entropy_len(vscf_ctr_drbg_t *self, size_t len) {
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ctr_drbg_setup_defaults(vscf_ctr_drbg_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
     vscf_entropy_accumulator_t *entropy_source = vscf_entropy_accumulator_new();
     vscf_entropy_accumulator_setup_defaults(entropy_source);
-    vscf_error_t status = vscf_ctr_drbg_take_entropy_source(self, vscf_entropy_accumulator_impl(entropy_source));
+    vscf_status_t status = vscf_ctr_drbg_take_entropy_source(self, vscf_entropy_accumulator_impl(entropy_source));
     return status;
 }
 
 //
 //  Generate random bytes.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ctr_drbg_random(vscf_ctr_drbg_t *self, size_t data_len, vsc_buffer_t *data) {
 
     VSCF_ASSERT_PTR(self);
@@ -203,24 +203,24 @@ vscf_ctr_drbg_random(vscf_ctr_drbg_t *self, size_t data_len, vsc_buffer_t *data)
     switch (status) {
     case 0:
         vsc_buffer_inc_used(data, data_len);
-        return vscf_SUCCESS;
+        return vscf_status_SUCCESS;
 
     case MBEDTLS_ERR_CTR_DRBG_ENTROPY_SOURCE_FAILED:
-        return vscf_error_ENTROPY_SOURCE_FAILED;
+        return vscf_status_ERROR_ENTROPY_SOURCE_FAILED;
 
     case MBEDTLS_ERR_CTR_DRBG_REQUEST_TOO_BIG:
-        return vscf_error_RNG_REQUESTED_DATA_TOO_BIG;
+        return vscf_status_ERROR_RNG_REQUESTED_DATA_TOO_BIG;
 
     default:
         VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(status);
-        return vscf_error_UNHANDLED_THIRDPARTY_ERROR;
+        return vscf_status_ERROR_UNHANDLED_THIRDPARTY_ERROR;
     }
 }
 
 //
 //  Retreive new seed data from the entropy sources.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ctr_drbg_reseed(vscf_ctr_drbg_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -229,13 +229,13 @@ vscf_ctr_drbg_reseed(vscf_ctr_drbg_t *self) {
 
     switch (status) {
     case 0:
-        return vscf_SUCCESS;
+        return vscf_status_SUCCESS;
 
     case MBEDTLS_ERR_CTR_DRBG_ENTROPY_SOURCE_FAILED:
-        return vscf_error_ENTROPY_SOURCE_FAILED;
+        return vscf_status_ERROR_ENTROPY_SOURCE_FAILED;
 
     default:
         VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(status);
-        return vscf_error_UNHANDLED_THIRDPARTY_ERROR;
+        return vscf_status_ERROR_UNHANDLED_THIRDPARTY_ERROR;
     }
 }

@@ -84,7 +84,7 @@ vscf_private_key_extract_public_key(const vscf_impl_t *impl) {
 //  For instance, RSA private key must be exported in format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_private_key_export_private_key(const vscf_impl_t *impl, vsc_buffer_t *out) {
 
     const vscf_private_key_api_t *private_key_api = vscf_private_key_api(impl);
@@ -114,7 +114,7 @@ vscf_private_key_exported_private_key_len(const vscf_impl_t *impl) {
 //  For instance, RSA private key must be imported from the format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_private_key_import_private_key(vscf_impl_t *impl, vsc_data_t data) {
 
     const vscf_private_key_api_t *private_key_api = vscf_private_key_api(impl);

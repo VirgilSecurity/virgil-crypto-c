@@ -335,7 +335,7 @@ vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, vsc_data_t key) {
     vscr_zeroize(derived_secret, sizeof(derived_secret));
 }
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t plain_text, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(self);
@@ -345,16 +345,16 @@ vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_dat
 
     vscr_ratchet_cipher_setup_cipher(self, key);
 
-    vscf_error_t result = vscf_aes256_gcm_encrypt(self->aes256_gcm, plain_text, buffer);
+    vscf_status_t result = vscf_aes256_gcm_encrypt(self->aes256_gcm, plain_text, buffer);
 
-    if (result != vscf_SUCCESS) {
-        return vscr_error_AES;
+    if (result != vscf_status_SUCCESS) {
+        return vscr_status_ERROR_AES;
     }
 
-    return vscr_SUCCESS;
+    return vscr_status_SUCCESS;
 }
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t cipher_text, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(self);
@@ -364,11 +364,11 @@ vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_dat
 
     vscr_ratchet_cipher_setup_cipher(self, key);
 
-    vscf_error_t result = vscf_aes256_gcm_decrypt(self->aes256_gcm, cipher_text, buffer);
+    vscf_status_t result = vscf_aes256_gcm_decrypt(self->aes256_gcm, cipher_text, buffer);
 
-    if (result != vscf_SUCCESS) {
-        return vscr_error_AES;
+    if (result != vscf_status_SUCCESS) {
+        return vscr_status_ERROR_AES;
     }
 
-    return vscr_SUCCESS;
+    return vscr_status_SUCCESS;
 }

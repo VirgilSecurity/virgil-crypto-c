@@ -59,7 +59,7 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_asn1wr.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 // clang-format on
 //  @end
@@ -103,7 +103,7 @@ struct vscf_asn1wr_t {
     //
     //  Implementation specific context.
     //
-    vscf_error_t error;
+    vscf_status_t status;
 };
 
 

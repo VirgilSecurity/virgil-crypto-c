@@ -59,7 +59,7 @@
 #include "vscf_encrypt.h"
 #include "vscf_decrypt.h"
 #include "vscf_cipher_info.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -135,7 +135,7 @@ typedef size_t (*vscf_cipher_api_decrypted_out_len_fn)(vscf_impl_t *impl, size_t
 //
 //  Callback. Accomplish encryption or decryption process.
 //
-typedef vscf_error_t (*vscf_cipher_api_finish_fn)(vscf_impl_t *impl, vsc_buffer_t *out);
+typedef vscf_status_t (*vscf_cipher_api_finish_fn)(vscf_impl_t *impl, vsc_buffer_t *out);
 
 //
 //  Contains API requirements of the interface 'cipher'.
@@ -146,6 +146,10 @@ struct vscf_cipher_api_t {
     //  For interface 'cipher' MUST be equal to the 'vscf_api_tag_CIPHER'.
     //
     vscf_api_tag_t api_tag;
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
     //
     //  Link to the inherited interface API 'encrypt'.
     //

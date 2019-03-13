@@ -86,6 +86,10 @@ static const vscf_defaults_api_t defaults_api = {
     //
     vscf_api_tag_DEFAULTS,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ALG_INFO_DER_DESERIALIZER,
+    //
     //  Setup predefined values to the uninitialized class dependencies.
     //
     (vscf_defaults_api_setup_defaults_fn)vscf_alg_info_der_deserializer_setup_defaults
@@ -101,6 +105,10 @@ static const vscf_alg_info_deserializer_api_t alg_info_deserializer_api = {
     //
     vscf_api_tag_ALG_INFO_DESERIALIZER,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ALG_INFO_DER_DESERIALIZER,
+    //
     //  Deserialize algorithm from the data.
     //
     (vscf_alg_info_deserializer_api_deserialize_fn)vscf_alg_info_der_deserializer_deserialize
@@ -110,6 +118,10 @@ static const vscf_alg_info_deserializer_api_t alg_info_deserializer_api = {
 //  Compile-time known information about 'alg info der deserializer' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_ALG_INFO_DER_DESERIALIZER,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

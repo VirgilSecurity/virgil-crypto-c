@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Handle information about recipient that is defined by a Public Key.
 @objc(VSCFKeyRecipientInfo) public class KeyRecipientInfo: NSObject {
@@ -67,7 +66,9 @@ import VirgilCryptoCommon
     public init(recipientId: Data, keyEncryptionAlgorithm: AlgInfo, encryptedKey: Data) {
         let proxyResult = recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafePointer<byte>) -> OpaquePointer? in
             encryptedKey.withUnsafeBytes({ (encryptedKeyPointer: UnsafePointer<byte>) -> OpaquePointer? in
+
                 var keyEncryptionAlgorithmCopy = vscf_impl_shallow_copy(keyEncryptionAlgorithm.c_ctx)
+
                 return vscf_key_recipient_info_new_with_members(vsc_data(recipientIdPointer, recipientId.count), &keyEncryptionAlgorithmCopy, vsc_data(encryptedKeyPointer, encryptedKey.count))
             })
         })
@@ -92,7 +93,7 @@ import VirgilCryptoCommon
     @objc public func keyEncryptionAlgorithm() -> AlgInfo {
         let proxyResult = vscf_key_recipient_info_key_encryption_algorithm(self.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Return an encrypted data encryption key.

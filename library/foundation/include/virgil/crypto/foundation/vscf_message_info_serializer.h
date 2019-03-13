@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_message_info.h"
-#include "vscf_error_ctx.h"
+#include "vscf_error.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -115,7 +115,7 @@ vscf_message_info_serializer_read_prefix(vscf_impl_t *impl, vsc_data_t data);
 //  Deserialize class "message info".
 //
 VSCF_PUBLIC vscf_message_info_t *
-vscf_message_info_serializer_deserialize(vscf_impl_t *impl, vsc_data_t data, vscf_error_ctx_t *error);
+vscf_message_info_serializer_deserialize(vscf_impl_t *impl, vsc_data_t data, vscf_error_t *error);
 
 //
 //  Returns constant 'prefix len'.

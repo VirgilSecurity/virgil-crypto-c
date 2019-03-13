@@ -37,7 +37,7 @@
         Return custom parameter with integer value.
 
         <argument name="key" class="data"/>
-        <argument name="error" class="error ctx" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return type="integer"/>
     </method>
@@ -46,7 +46,7 @@
         Return custom parameter with UTF8 string value.
 
         <argument name="key" class="data"/>
-        <argument name="error" class="error ctx" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return class="data"/>
     </method>
@@ -55,7 +55,7 @@
         Return custom parameter with octet string value.
 
         <argument name="key" class="data"/>
-        <argument name="error" class="error ctx" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return class="data"/>
     </method>
@@ -71,7 +71,7 @@
 
         <argument name="key" class="data"/>
         <argument name="value tag" type="integer"/>
-        <argument name="error" class="error ctx" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return class="list key value node"/>
     </method>

@@ -55,7 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 #include "vscf_api.h"
 
 // clang-format on
@@ -82,7 +82,7 @@ typedef struct vscf_generate_key_api_t vscf_generate_key_api_t;
 //  Generate new private or secret key.
 //  Note, this operation can be slow.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_generate_key(vscf_impl_t *impl);
 
 //

@@ -37,27 +37,27 @@
         <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
         <argument name="buffer" class="buffer"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="decrypt for new chain" declaration="private">
         <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
         <argument name="buffer" class="buffer"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="respond">
         <argument name="shared secret" class="data"/>
         <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="initiate">
         <argument name="shared secret" class="data"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="encrypt len">
@@ -74,7 +74,7 @@
             </length>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="decrypt len">
@@ -91,13 +91,13 @@
             </length>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="generate sender chain keypair" declaration="private">
         <argument name="sender chain" class="ratchet sender chain" access="readwrite"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="serialize">

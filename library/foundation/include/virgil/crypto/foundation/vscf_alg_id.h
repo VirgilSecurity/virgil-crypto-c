@@ -81,7 +81,7 @@ enum vscf_alg_id_t {
     vscf_alg_id_KDF2,
     vscf_alg_id_RSA,
     vscf_alg_id_ED25519,
-    vscf_alg_id_X25519,
+    vscf_alg_id_CURVE25519,
     vscf_alg_id_AES256_GCM,
     vscf_alg_id_AES256_CBC,
     vscf_alg_id_HMAC,

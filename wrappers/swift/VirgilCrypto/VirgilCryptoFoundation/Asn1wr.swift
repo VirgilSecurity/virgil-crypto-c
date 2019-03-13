@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// This is MbedTLS implementation of ASN.1 writer.
 @objc(VSCFAsn1wr) public class Asn1wr: NSObject, Asn1Writer {
@@ -73,10 +72,15 @@ import VirgilCryptoCommon
         vscf_asn1wr_reset(self.c_ctx, out, outLen)
     }
 
-    /// Move written data to the buffer beginning and forbid further operations.
-    /// Returns written size in bytes.
-    @objc public func finish() -> Int {
-        let proxyResult = vscf_asn1wr_finish(self.c_ctx)
+    /// Finalize writing and forbid further operations.
+    ///
+    /// Note, that ASN.1 structure is always written to the buffer end, and
+    /// if argument "do not adjust" is false, then data is moved to the
+    /// beginning, otherwise - data is left at the buffer end.
+    ///
+    /// Returns length of the written bytes.
+    @objc public func finish(doNotAdjust: Bool) -> Int {
+        let proxyResult = vscf_asn1wr_finish(self.c_ctx, doNotAdjust)
 
         return proxyResult
     }
@@ -109,11 +113,18 @@ import VirgilCryptoCommon
         return proxyResult
     }
 
-    /// Return last error.
-    @objc public func error() throws {
-        let proxyResult = vscf_asn1wr_error(self.c_ctx)
+    /// Return true if status is not "success".
+    @objc public func hasError() -> Bool {
+        let proxyResult = vscf_asn1wr_has_error(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        return proxyResult
+    }
+
+    /// Return error code.
+    @objc public func status() throws {
+        let proxyResult = vscf_asn1wr_status(self.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Move writing position backward for the given length.
@@ -247,6 +258,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeOctetStr(value: Data) -> Int {
         let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
+
             return vscf_asn1wr_write_octet_str(self.c_ctx, vsc_data(valuePointer, value.count))
         })
 
@@ -258,6 +270,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeOctetStrAsBitstring(value: Data) -> Int {
         let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
+
             return vscf_asn1wr_write_octet_str_as_bitstring(self.c_ctx, vsc_data(valuePointer, value.count))
         })
 
@@ -269,6 +282,7 @@ import VirgilCryptoCommon
     /// Note, use this method carefully.
     @objc public func writeData(data: Data) -> Int {
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Int in
+
             return vscf_asn1wr_write_data(self.c_ctx, vsc_data(dataPointer, data.count))
         })
 
@@ -279,6 +293,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeUtf8Str(value: Data) -> Int {
         let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
+
             return vscf_asn1wr_write_utf8_str(self.c_ctx, vsc_data(valuePointer, value.count))
         })
 
@@ -289,6 +304,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeOid(value: Data) -> Int {
         let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
+
             return vscf_asn1wr_write_oid(self.c_ctx, vsc_data(valuePointer, value.count))
         })
 

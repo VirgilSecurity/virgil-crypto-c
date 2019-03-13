@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Double linked list node with key and value.
 @objc(VSCFListKeyValueNode) public class ListKeyValueNode: NSObject {

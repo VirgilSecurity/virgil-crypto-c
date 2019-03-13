@@ -411,7 +411,7 @@ vscp_pythia_password_update_token_buf_len(void) {
 //  Blinds password. Turns password into a pseudo-random string.
 //  This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 //
-VSCP_PUBLIC vscp_error_t
+VSCP_PUBLIC vscp_status_t
 vscp_pythia_blind(
         vscp_pythia_t *self, vsc_data_t password, vsc_buffer_t *blinded_password, vsc_buffer_t *blinding_secret) {
 
@@ -430,19 +430,19 @@ vscp_pythia_blind(
     pythia_buf_t blinding_secret_buf = VSCP_PYTHIA_BUFFER_FROM_BUFFER(blinding_secret);
 
     if (0 != pythia_w_blind(&password_buf, &blinded_password_buf, &blinding_secret_buf)) {
-        return vscp_error_PYTHIA_INNER_FAIL;
+        return vscp_status_ERROR_PYTHIA_INNER_FAIL;
     }
 
     vsc_buffer_inc_used(blinded_password, blinded_password_buf.len);
     vsc_buffer_inc_used(blinding_secret, blinding_secret_buf.len);
 
-    return vscp_SUCCESS;
+    return vscp_status_SUCCESS;
 }
 
 //
 //  Deblinds 'transformed password' value with previously returned 'blinding secret' from blind().
 //
-VSCP_PUBLIC vscp_error_t
+VSCP_PUBLIC vscp_status_t
 vscp_pythia_deblind(vscp_pythia_t *self, vsc_data_t transformed_password, vsc_data_t blinding_secret,
         vsc_buffer_t *deblinded_password) {
 
@@ -460,18 +460,18 @@ vscp_pythia_deblind(vscp_pythia_t *self, vsc_data_t transformed_password, vsc_da
     pythia_buf_t deblinded_password_buf = VSCP_PYTHIA_BUFFER_FROM_BUFFER(deblinded_password);
 
     if (0 != pythia_w_deblind(&transformed_password_buf, &blinding_secret_buf, &deblinded_password_buf)) {
-        return vscp_error_PYTHIA_INNER_FAIL;
+        return vscp_status_ERROR_PYTHIA_INNER_FAIL;
     }
 
     vsc_buffer_inc_used(deblinded_password, deblinded_password_buf.len);
 
-    return vscp_SUCCESS;
+    return vscp_status_SUCCESS;
 }
 
 //
 //  Computes transformation private and public key.
 //
-VSCP_PUBLIC vscp_error_t
+VSCP_PUBLIC vscp_status_t
 vscp_pythia_compute_transformation_key_pair(vscp_pythia_t *self, vsc_data_t transformation_key_id,
         vsc_data_t pythia_secret, vsc_data_t pythia_scope_secret, vsc_buffer_t *transformation_private_key,
         vsc_buffer_t *transformation_public_key) {
@@ -496,19 +496,19 @@ vscp_pythia_compute_transformation_key_pair(vscp_pythia_t *self, vsc_data_t tran
     if (0 != pythia_w_compute_transformation_key_pair(&transformation_key_id_buf, &pythia_secret_buf,
                      &pythia_scope_secret_buf, &transformation_private_key_buf, &transformation_public_key_buf)) {
 
-        return vscp_error_PYTHIA_INNER_FAIL;
+        return vscp_status_ERROR_PYTHIA_INNER_FAIL;
     }
 
     vsc_buffer_inc_used(transformation_private_key, transformation_private_key_buf.len);
     vsc_buffer_inc_used(transformation_public_key, transformation_public_key_buf.len);
 
-    return vscp_SUCCESS;
+    return vscp_status_SUCCESS;
 }
 
 //
 //  Transforms blinded password using transformation private key.
 //
-VSCP_PUBLIC vscp_error_t
+VSCP_PUBLIC vscp_status_t
 vscp_pythia_transform(vscp_pythia_t *self, vsc_data_t blinded_password, vsc_data_t tweak,
         vsc_data_t transformation_private_key, vsc_buffer_t *transformed_password, vsc_buffer_t *transformed_tweak) {
 
@@ -532,19 +532,19 @@ vscp_pythia_transform(vscp_pythia_t *self, vsc_data_t blinded_password, vsc_data
     if (0 != pythia_w_transform(&blinded_password_buf, &tweak_buf, &transformation_private_key_buf,
                      &transformed_password_buf, &transformed_tweak_buf)) {
 
-        return vscp_error_PYTHIA_INNER_FAIL;
+        return vscp_status_ERROR_PYTHIA_INNER_FAIL;
     }
 
     vsc_buffer_inc_used(transformed_password, transformed_password_buf.len);
     vsc_buffer_inc_used(transformed_tweak, transformed_tweak_buf.len);
 
-    return vscp_SUCCESS;
+    return vscp_status_SUCCESS;
 }
 
 //
 //  Generates proof that server possesses secret values that were used to transform password.
 //
-VSCP_PUBLIC vscp_error_t
+VSCP_PUBLIC vscp_status_t
 vscp_pythia_prove(vscp_pythia_t *self, vsc_data_t transformed_password, vsc_data_t blinded_password,
         vsc_data_t transformed_tweak, vsc_data_t transformation_private_key, vsc_data_t transformation_public_key,
         vsc_buffer_t *proof_value_c, vsc_buffer_t *proof_value_u) {
@@ -574,20 +574,20 @@ vscp_pythia_prove(vscp_pythia_t *self, vsc_data_t transformed_password, vsc_data
                      &transformation_private_key_buf, &transformation_public_key_buf, &proof_value_c_buf,
                      &proof_value_u_buf)) {
 
-        return vscp_error_PYTHIA_INNER_FAIL;
+        return vscp_status_ERROR_PYTHIA_INNER_FAIL;
     }
 
     vsc_buffer_inc_used(proof_value_c, proof_value_c_buf.len);
     vsc_buffer_inc_used(proof_value_u, proof_value_u_buf.len);
 
-    return vscp_SUCCESS;
+    return vscp_status_SUCCESS;
 }
 
 //
 //  This operation allows client to verify that the output of transform() is correct,
 //  assuming that client has previously stored transformation public key.
 //
-VSCP_PUBLIC vscp_error_t
+VSCP_PUBLIC vscp_status_t
 vscp_pythia_verify(vscp_pythia_t *self, vsc_data_t transformed_password, vsc_data_t blinded_password, vsc_data_t tweak,
         vsc_data_t transformation_public_key, vsc_data_t proof_value_c, vsc_data_t proof_value_u) {
 
@@ -611,14 +611,14 @@ vscp_pythia_verify(vscp_pythia_t *self, vsc_data_t transformed_password, vsc_dat
     if (0 != pythia_w_verify(&transformed_password_buf, &blinded_password_buf, &tweak_buf,
                      &transformation_public_key_buf, &proof_value_c_buf, &proof_value_u_buf, &verified)) {
 
-        return vscp_error_PYTHIA_INNER_FAIL;
+        return vscp_status_ERROR_PYTHIA_INNER_FAIL;
     }
 
     if (0 == verified) {
-        return vscp_error_VERIFICATION_FAIL;
+        return vscp_status_ERROR_VERIFICATION_FAIL;
     }
 
-    return vscp_SUCCESS;
+    return vscp_status_SUCCESS;
 }
 
 //
@@ -627,7 +627,7 @@ vscp_pythia_verify(vscp_pythia_t *self, vsc_data_t transformed_password, vsc_dat
 //
 //  This action should increment version of the 'pythia scope secret'.
 //
-VSCP_PUBLIC vscp_error_t
+VSCP_PUBLIC vscp_status_t
 vscp_pythia_get_password_update_token(vscp_pythia_t *self, vsc_data_t previous_transformation_private_key,
         vsc_data_t new_transformation_private_key, vsc_buffer_t *password_update_token) {
 
@@ -649,19 +649,19 @@ vscp_pythia_get_password_update_token(vscp_pythia_t *self, vsc_data_t previous_t
     if (0 != pythia_w_get_password_update_token(&previous_transformation_private_key_buf,
                      &new_transformation_private_key_buf, &password_update_token_buf)) {
 
-        return vscp_error_PYTHIA_INNER_FAIL;
+        return vscp_status_ERROR_PYTHIA_INNER_FAIL;
     }
 
     vsc_buffer_inc_used(password_update_token, password_update_token_buf.len);
 
-    return vscp_SUCCESS;
+    return vscp_status_SUCCESS;
 }
 
 //
 //  Updates previously stored 'deblinded password' with 'password update token'.
 //  After this call, 'transform()' called with new arguments will return corresponding values.
 //
-VSCP_PUBLIC vscp_error_t
+VSCP_PUBLIC vscp_status_t
 vscp_pythia_update_deblinded_with_token(vscp_pythia_t *self, vsc_data_t deblinded_password,
         vsc_data_t password_update_token, vsc_buffer_t *updated_deblinded_password) {
 
@@ -680,12 +680,12 @@ vscp_pythia_update_deblinded_with_token(vscp_pythia_t *self, vsc_data_t deblinde
     if (0 != pythia_w_update_deblinded_with_token(
                      &deblinded_password_buf, &password_update_token_buf, &updated_deblinded_password_buf)) {
 
-        return vscp_error_PYTHIA_INNER_FAIL;
+        return vscp_status_ERROR_PYTHIA_INNER_FAIL;
     }
 
     vsc_buffer_inc_used(updated_deblinded_password, updated_deblinded_password_buf.len);
 
-    return vscp_SUCCESS;
+    return vscp_status_SUCCESS;
 }
 
 //

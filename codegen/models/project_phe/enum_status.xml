@@ -1,0 +1,35 @@
+<enum name="status" definition="public">
+    Defines the library status codes.
+
+    <constant name="success" value="0">
+        No errors was occurred.
+    </constant>
+
+    <constant name="error invalid success proof">
+        Success proof check failed.
+    </constant>
+
+    <constant name="error invalid fail proof">
+        Failure proof check failed.
+    </constant>
+
+    <constant name="error RNG failed">
+        RNG returned error.
+    </constant>
+
+    <constant name="error Protobuf decode failed">
+        Protobuf decode failed.
+    </constant>
+
+    <constant name="error Invalid ECP">
+        Invalid ECP.
+    </constant>
+
+    <constant name="error Invalid private key">
+        Invalid private key.
+    </constant>
+
+    <constant name="error AES failed">
+        AES error occurred.
+    </constant>
+</enum>

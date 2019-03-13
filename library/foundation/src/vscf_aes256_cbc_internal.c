@@ -91,6 +91,10 @@ static const vscf_alg_api_t alg_api = {
     //
     vscf_api_tag_ALG,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_CBC,
+    //
     //  Provide algorithm identificator.
     //
     (vscf_alg_api_alg_id_fn)vscf_aes256_cbc_alg_id,
@@ -114,6 +118,10 @@ static const vscf_encrypt_api_t encrypt_api = {
     //
     vscf_api_tag_ENCRYPT,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_CBC,
+    //
     //  Encrypt given data.
     //
     (vscf_encrypt_api_encrypt_fn)vscf_aes256_cbc_encrypt,
@@ -133,6 +141,10 @@ static const vscf_decrypt_api_t decrypt_api = {
     //
     vscf_api_tag_DECRYPT,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_CBC,
+    //
     //  Decrypt given data.
     //
     (vscf_decrypt_api_decrypt_fn)vscf_aes256_cbc_decrypt,
@@ -151,6 +163,10 @@ static const vscf_cipher_info_api_t cipher_info_api = {
     //  For interface 'cipher_info' MUST be equal to the 'vscf_api_tag_CIPHER_INFO'.
     //
     vscf_api_tag_CIPHER_INFO,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_CBC,
     //
     //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
     //
@@ -178,6 +194,10 @@ static const vscf_cipher_api_t cipher_api = {
     //  For interface 'cipher' MUST be equal to the 'vscf_api_tag_CIPHER'.
     //
     vscf_api_tag_CIPHER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_CBC,
     //
     //  Link to the inherited interface API 'encrypt'.
     //
@@ -238,6 +258,10 @@ static const vscf_cipher_api_t cipher_api = {
 //  Compile-time known information about 'aes256 cbc' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_AES256_CBC,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

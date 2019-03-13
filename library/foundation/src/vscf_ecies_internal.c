@@ -94,6 +94,10 @@ static const vscf_defaults_api_t defaults_api = {
     //
     vscf_api_tag_DEFAULTS,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ECIES,
+    //
     //  Setup predefined values to the uninitialized class dependencies.
     //
     (vscf_defaults_api_setup_defaults_fn)vscf_ecies_setup_defaults
@@ -108,6 +112,10 @@ static const vscf_encrypt_api_t encrypt_api = {
     //  For interface 'encrypt' MUST be equal to the 'vscf_api_tag_ENCRYPT'.
     //
     vscf_api_tag_ENCRYPT,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ECIES,
     //
     //  Encrypt given data.
     //
@@ -128,6 +136,10 @@ static const vscf_decrypt_api_t decrypt_api = {
     //
     vscf_api_tag_DECRYPT,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ECIES,
+    //
     //  Decrypt given data.
     //
     (vscf_decrypt_api_decrypt_fn)vscf_ecies_decrypt,
@@ -141,6 +153,10 @@ static const vscf_decrypt_api_t decrypt_api = {
 //  Compile-time known information about 'ecies' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_ECIES,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

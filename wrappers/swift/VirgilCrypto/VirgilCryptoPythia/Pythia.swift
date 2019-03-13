@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCPythia
-import VirgilCryptoCommon
 
 /// Provide Pythia implementation based on the Virgil Security.
 @objc(VSCPPythia) public class Pythia: NSObject {
@@ -160,14 +159,15 @@ import VirgilCryptoCommon
             vsc_buffer_delete(blindingSecretBuf)
         }
 
-        let proxyResult = password.withUnsafeBytes({ (passwordPointer: UnsafePointer<byte>) -> vscp_error_t in
-            blindedPassword.withUnsafeMutableBytes({ (blindedPasswordPointer: UnsafeMutablePointer<byte>) -> vscp_error_t in
-                blindingSecret.withUnsafeMutableBytes({ (blindingSecretPointer: UnsafeMutablePointer<byte>) -> vscp_error_t in
+        let proxyResult = password.withUnsafeBytes({ (passwordPointer: UnsafePointer<byte>) -> vscp_status_t in
+            blindedPassword.withUnsafeMutableBytes({ (blindedPasswordPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
+                blindingSecret.withUnsafeMutableBytes({ (blindingSecretPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
                     vsc_buffer_init(blindedPasswordBuf)
                     vsc_buffer_use(blindedPasswordBuf, blindedPasswordPointer, blindedPasswordCount)
 
                     vsc_buffer_init(blindingSecretBuf)
                     vsc_buffer_use(blindingSecretBuf, blindingSecretPointer, blindingSecretCount)
+
                     return vscp_pythia_blind(self.c_ctx, vsc_data(passwordPointer, password.count), blindedPasswordBuf, blindingSecretBuf)
                 })
             })
@@ -175,7 +175,7 @@ import VirgilCryptoCommon
         blindedPassword.count = vsc_buffer_len(blindedPasswordBuf)
         blindingSecret.count = vsc_buffer_len(blindingSecretBuf)
 
-        try PythiaError.handleError(fromC: proxyResult)
+        try PythiaError.handleStatus(fromC: proxyResult)
 
         return PythiaBlindResult(blindedPassword: blindedPassword, blindingSecret: blindingSecret)
     }
@@ -189,18 +189,19 @@ import VirgilCryptoCommon
             vsc_buffer_delete(deblindedPasswordBuf)
         }
 
-        let proxyResult = transformedPassword.withUnsafeBytes({ (transformedPasswordPointer: UnsafePointer<byte>) -> vscp_error_t in
-            blindingSecret.withUnsafeBytes({ (blindingSecretPointer: UnsafePointer<byte>) -> vscp_error_t in
-                deblindedPassword.withUnsafeMutableBytes({ (deblindedPasswordPointer: UnsafeMutablePointer<byte>) -> vscp_error_t in
+        let proxyResult = transformedPassword.withUnsafeBytes({ (transformedPasswordPointer: UnsafePointer<byte>) -> vscp_status_t in
+            blindingSecret.withUnsafeBytes({ (blindingSecretPointer: UnsafePointer<byte>) -> vscp_status_t in
+                deblindedPassword.withUnsafeMutableBytes({ (deblindedPasswordPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
                     vsc_buffer_init(deblindedPasswordBuf)
                     vsc_buffer_use(deblindedPasswordBuf, deblindedPasswordPointer, deblindedPasswordCount)
+
                     return vscp_pythia_deblind(self.c_ctx, vsc_data(transformedPasswordPointer, transformedPassword.count), vsc_data(blindingSecretPointer, blindingSecret.count), deblindedPasswordBuf)
                 })
             })
         })
         deblindedPassword.count = vsc_buffer_len(deblindedPasswordBuf)
 
-        try PythiaError.handleError(fromC: proxyResult)
+        try PythiaError.handleStatus(fromC: proxyResult)
 
         return deblindedPassword
     }
@@ -221,16 +222,17 @@ import VirgilCryptoCommon
             vsc_buffer_delete(transformationPublicKeyBuf)
         }
 
-        let proxyResult = transformationKeyId.withUnsafeBytes({ (transformationKeyIdPointer: UnsafePointer<byte>) -> vscp_error_t in
-            pythiaSecret.withUnsafeBytes({ (pythiaSecretPointer: UnsafePointer<byte>) -> vscp_error_t in
-                pythiaScopeSecret.withUnsafeBytes({ (pythiaScopeSecretPointer: UnsafePointer<byte>) -> vscp_error_t in
-                    transformationPrivateKey.withUnsafeMutableBytes({ (transformationPrivateKeyPointer: UnsafeMutablePointer<byte>) -> vscp_error_t in
-                        transformationPublicKey.withUnsafeMutableBytes({ (transformationPublicKeyPointer: UnsafeMutablePointer<byte>) -> vscp_error_t in
+        let proxyResult = transformationKeyId.withUnsafeBytes({ (transformationKeyIdPointer: UnsafePointer<byte>) -> vscp_status_t in
+            pythiaSecret.withUnsafeBytes({ (pythiaSecretPointer: UnsafePointer<byte>) -> vscp_status_t in
+                pythiaScopeSecret.withUnsafeBytes({ (pythiaScopeSecretPointer: UnsafePointer<byte>) -> vscp_status_t in
+                    transformationPrivateKey.withUnsafeMutableBytes({ (transformationPrivateKeyPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
+                        transformationPublicKey.withUnsafeMutableBytes({ (transformationPublicKeyPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
                             vsc_buffer_init(transformationPrivateKeyBuf)
                             vsc_buffer_use(transformationPrivateKeyBuf, transformationPrivateKeyPointer, transformationPrivateKeyCount)
 
                             vsc_buffer_init(transformationPublicKeyBuf)
                             vsc_buffer_use(transformationPublicKeyBuf, transformationPublicKeyPointer, transformationPublicKeyCount)
+
                             return vscp_pythia_compute_transformation_key_pair(self.c_ctx, vsc_data(transformationKeyIdPointer, transformationKeyId.count), vsc_data(pythiaSecretPointer, pythiaSecret.count), vsc_data(pythiaScopeSecretPointer, pythiaScopeSecret.count), transformationPrivateKeyBuf, transformationPublicKeyBuf)
                         })
                     })
@@ -240,7 +242,7 @@ import VirgilCryptoCommon
         transformationPrivateKey.count = vsc_buffer_len(transformationPrivateKeyBuf)
         transformationPublicKey.count = vsc_buffer_len(transformationPublicKeyBuf)
 
-        try PythiaError.handleError(fromC: proxyResult)
+        try PythiaError.handleStatus(fromC: proxyResult)
 
         return PythiaComputeTransformationKeyPairResult(transformationPrivateKey: transformationPrivateKey, transformationPublicKey: transformationPublicKey)
     }
@@ -261,16 +263,17 @@ import VirgilCryptoCommon
             vsc_buffer_delete(transformedTweakBuf)
         }
 
-        let proxyResult = blindedPassword.withUnsafeBytes({ (blindedPasswordPointer: UnsafePointer<byte>) -> vscp_error_t in
-            tweak.withUnsafeBytes({ (tweakPointer: UnsafePointer<byte>) -> vscp_error_t in
-                transformationPrivateKey.withUnsafeBytes({ (transformationPrivateKeyPointer: UnsafePointer<byte>) -> vscp_error_t in
-                    transformedPassword.withUnsafeMutableBytes({ (transformedPasswordPointer: UnsafeMutablePointer<byte>) -> vscp_error_t in
-                        transformedTweak.withUnsafeMutableBytes({ (transformedTweakPointer: UnsafeMutablePointer<byte>) -> vscp_error_t in
+        let proxyResult = blindedPassword.withUnsafeBytes({ (blindedPasswordPointer: UnsafePointer<byte>) -> vscp_status_t in
+            tweak.withUnsafeBytes({ (tweakPointer: UnsafePointer<byte>) -> vscp_status_t in
+                transformationPrivateKey.withUnsafeBytes({ (transformationPrivateKeyPointer: UnsafePointer<byte>) -> vscp_status_t in
+                    transformedPassword.withUnsafeMutableBytes({ (transformedPasswordPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
+                        transformedTweak.withUnsafeMutableBytes({ (transformedTweakPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
                             vsc_buffer_init(transformedPasswordBuf)
                             vsc_buffer_use(transformedPasswordBuf, transformedPasswordPointer, transformedPasswordCount)
 
                             vsc_buffer_init(transformedTweakBuf)
                             vsc_buffer_use(transformedTweakBuf, transformedTweakPointer, transformedTweakCount)
+
                             return vscp_pythia_transform(self.c_ctx, vsc_data(blindedPasswordPointer, blindedPassword.count), vsc_data(tweakPointer, tweak.count), vsc_data(transformationPrivateKeyPointer, transformationPrivateKey.count), transformedPasswordBuf, transformedTweakBuf)
                         })
                     })
@@ -280,7 +283,7 @@ import VirgilCryptoCommon
         transformedPassword.count = vsc_buffer_len(transformedPasswordBuf)
         transformedTweak.count = vsc_buffer_len(transformedTweakBuf)
 
-        try PythiaError.handleError(fromC: proxyResult)
+        try PythiaError.handleStatus(fromC: proxyResult)
 
         return PythiaTransformResult(transformedPassword: transformedPassword, transformedTweak: transformedTweak)
     }
@@ -301,18 +304,19 @@ import VirgilCryptoCommon
             vsc_buffer_delete(proofValueUBuf)
         }
 
-        let proxyResult = transformedPassword.withUnsafeBytes({ (transformedPasswordPointer: UnsafePointer<byte>) -> vscp_error_t in
-            blindedPassword.withUnsafeBytes({ (blindedPasswordPointer: UnsafePointer<byte>) -> vscp_error_t in
-                transformedTweak.withUnsafeBytes({ (transformedTweakPointer: UnsafePointer<byte>) -> vscp_error_t in
-                    transformationPrivateKey.withUnsafeBytes({ (transformationPrivateKeyPointer: UnsafePointer<byte>) -> vscp_error_t in
-                        transformationPublicKey.withUnsafeBytes({ (transformationPublicKeyPointer: UnsafePointer<byte>) -> vscp_error_t in
-                            proofValueC.withUnsafeMutableBytes({ (proofValueCPointer: UnsafeMutablePointer<byte>) -> vscp_error_t in
-                                proofValueU.withUnsafeMutableBytes({ (proofValueUPointer: UnsafeMutablePointer<byte>) -> vscp_error_t in
+        let proxyResult = transformedPassword.withUnsafeBytes({ (transformedPasswordPointer: UnsafePointer<byte>) -> vscp_status_t in
+            blindedPassword.withUnsafeBytes({ (blindedPasswordPointer: UnsafePointer<byte>) -> vscp_status_t in
+                transformedTweak.withUnsafeBytes({ (transformedTweakPointer: UnsafePointer<byte>) -> vscp_status_t in
+                    transformationPrivateKey.withUnsafeBytes({ (transformationPrivateKeyPointer: UnsafePointer<byte>) -> vscp_status_t in
+                        transformationPublicKey.withUnsafeBytes({ (transformationPublicKeyPointer: UnsafePointer<byte>) -> vscp_status_t in
+                            proofValueC.withUnsafeMutableBytes({ (proofValueCPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
+                                proofValueU.withUnsafeMutableBytes({ (proofValueUPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
                                     vsc_buffer_init(proofValueCBuf)
                                     vsc_buffer_use(proofValueCBuf, proofValueCPointer, proofValueCCount)
 
                                     vsc_buffer_init(proofValueUBuf)
                                     vsc_buffer_use(proofValueUBuf, proofValueUPointer, proofValueUCount)
+
                                     return vscp_pythia_prove(self.c_ctx, vsc_data(transformedPasswordPointer, transformedPassword.count), vsc_data(blindedPasswordPointer, blindedPassword.count), vsc_data(transformedTweakPointer, transformedTweak.count), vsc_data(transformationPrivateKeyPointer, transformationPrivateKey.count), vsc_data(transformationPublicKeyPointer, transformationPublicKey.count), proofValueCBuf, proofValueUBuf)
                                 })
                             })
@@ -324,7 +328,7 @@ import VirgilCryptoCommon
         proofValueC.count = vsc_buffer_len(proofValueCBuf)
         proofValueU.count = vsc_buffer_len(proofValueUBuf)
 
-        try PythiaError.handleError(fromC: proxyResult)
+        try PythiaError.handleStatus(fromC: proxyResult)
 
         return PythiaProveResult(proofValueC: proofValueC, proofValueU: proofValueU)
     }
@@ -332,12 +336,13 @@ import VirgilCryptoCommon
     /// This operation allows client to verify that the output of transform() is correct,
     /// assuming that client has previously stored transformation public key.
     @objc public func verify(transformedPassword: Data, blindedPassword: Data, tweak: Data, transformationPublicKey: Data, proofValueC: Data, proofValueU: Data) throws {
-        let proxyResult = transformedPassword.withUnsafeBytes({ (transformedPasswordPointer: UnsafePointer<byte>) -> vscp_error_t in
-            blindedPassword.withUnsafeBytes({ (blindedPasswordPointer: UnsafePointer<byte>) -> vscp_error_t in
-                tweak.withUnsafeBytes({ (tweakPointer: UnsafePointer<byte>) -> vscp_error_t in
-                    transformationPublicKey.withUnsafeBytes({ (transformationPublicKeyPointer: UnsafePointer<byte>) -> vscp_error_t in
-                        proofValueC.withUnsafeBytes({ (proofValueCPointer: UnsafePointer<byte>) -> vscp_error_t in
-                            proofValueU.withUnsafeBytes({ (proofValueUPointer: UnsafePointer<byte>) -> vscp_error_t in
+        let proxyResult = transformedPassword.withUnsafeBytes({ (transformedPasswordPointer: UnsafePointer<byte>) -> vscp_status_t in
+            blindedPassword.withUnsafeBytes({ (blindedPasswordPointer: UnsafePointer<byte>) -> vscp_status_t in
+                tweak.withUnsafeBytes({ (tweakPointer: UnsafePointer<byte>) -> vscp_status_t in
+                    transformationPublicKey.withUnsafeBytes({ (transformationPublicKeyPointer: UnsafePointer<byte>) -> vscp_status_t in
+                        proofValueC.withUnsafeBytes({ (proofValueCPointer: UnsafePointer<byte>) -> vscp_status_t in
+                            proofValueU.withUnsafeBytes({ (proofValueUPointer: UnsafePointer<byte>) -> vscp_status_t in
+
                                 return vscp_pythia_verify(self.c_ctx, vsc_data(transformedPasswordPointer, transformedPassword.count), vsc_data(blindedPasswordPointer, blindedPassword.count), vsc_data(tweakPointer, tweak.count), vsc_data(transformationPublicKeyPointer, transformationPublicKey.count), vsc_data(proofValueCPointer, proofValueC.count), vsc_data(proofValueUPointer, proofValueU.count))
                             })
                         })
@@ -346,7 +351,7 @@ import VirgilCryptoCommon
             })
         })
 
-        try PythiaError.handleError(fromC: proxyResult)
+        try PythiaError.handleStatus(fromC: proxyResult)
     }
 
     /// Rotates old transformation key to new transformation key and generates 'password update token',
@@ -361,18 +366,19 @@ import VirgilCryptoCommon
             vsc_buffer_delete(passwordUpdateTokenBuf)
         }
 
-        let proxyResult = previousTransformationPrivateKey.withUnsafeBytes({ (previousTransformationPrivateKeyPointer: UnsafePointer<byte>) -> vscp_error_t in
-            newTransformationPrivateKey.withUnsafeBytes({ (newTransformationPrivateKeyPointer: UnsafePointer<byte>) -> vscp_error_t in
-                passwordUpdateToken.withUnsafeMutableBytes({ (passwordUpdateTokenPointer: UnsafeMutablePointer<byte>) -> vscp_error_t in
+        let proxyResult = previousTransformationPrivateKey.withUnsafeBytes({ (previousTransformationPrivateKeyPointer: UnsafePointer<byte>) -> vscp_status_t in
+            newTransformationPrivateKey.withUnsafeBytes({ (newTransformationPrivateKeyPointer: UnsafePointer<byte>) -> vscp_status_t in
+                passwordUpdateToken.withUnsafeMutableBytes({ (passwordUpdateTokenPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
                     vsc_buffer_init(passwordUpdateTokenBuf)
                     vsc_buffer_use(passwordUpdateTokenBuf, passwordUpdateTokenPointer, passwordUpdateTokenCount)
+
                     return vscp_pythia_get_password_update_token(self.c_ctx, vsc_data(previousTransformationPrivateKeyPointer, previousTransformationPrivateKey.count), vsc_data(newTransformationPrivateKeyPointer, newTransformationPrivateKey.count), passwordUpdateTokenBuf)
                 })
             })
         })
         passwordUpdateToken.count = vsc_buffer_len(passwordUpdateTokenBuf)
 
-        try PythiaError.handleError(fromC: proxyResult)
+        try PythiaError.handleStatus(fromC: proxyResult)
 
         return passwordUpdateToken
     }
@@ -387,18 +393,19 @@ import VirgilCryptoCommon
             vsc_buffer_delete(updatedDeblindedPasswordBuf)
         }
 
-        let proxyResult = deblindedPassword.withUnsafeBytes({ (deblindedPasswordPointer: UnsafePointer<byte>) -> vscp_error_t in
-            passwordUpdateToken.withUnsafeBytes({ (passwordUpdateTokenPointer: UnsafePointer<byte>) -> vscp_error_t in
-                updatedDeblindedPassword.withUnsafeMutableBytes({ (updatedDeblindedPasswordPointer: UnsafeMutablePointer<byte>) -> vscp_error_t in
+        let proxyResult = deblindedPassword.withUnsafeBytes({ (deblindedPasswordPointer: UnsafePointer<byte>) -> vscp_status_t in
+            passwordUpdateToken.withUnsafeBytes({ (passwordUpdateTokenPointer: UnsafePointer<byte>) -> vscp_status_t in
+                updatedDeblindedPassword.withUnsafeMutableBytes({ (updatedDeblindedPasswordPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
                     vsc_buffer_init(updatedDeblindedPasswordBuf)
                     vsc_buffer_use(updatedDeblindedPasswordBuf, updatedDeblindedPasswordPointer, updatedDeblindedPasswordCount)
+
                     return vscp_pythia_update_deblinded_with_token(self.c_ctx, vsc_data(deblindedPasswordPointer, deblindedPassword.count), vsc_data(passwordUpdateTokenPointer, passwordUpdateToken.count), updatedDeblindedPasswordBuf)
                 })
             })
         })
         updatedDeblindedPassword.count = vsc_buffer_len(updatedDeblindedPasswordBuf)
 
-        try PythiaError.handleError(fromC: proxyResult)
+        try PythiaError.handleStatus(fromC: proxyResult)
 
         return updatedDeblindedPassword
     }
