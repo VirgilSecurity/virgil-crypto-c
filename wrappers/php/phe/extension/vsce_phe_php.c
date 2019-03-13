@@ -126,7 +126,7 @@ PHP_FUNCTION(vsce_phe_client_delete_php) {
     //
     vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
     VSCE_ASSERT_PTR(phe_client);
-    zend_list_delete(Z_RES_P(in_cctx));
+    zend_list_close(Z_RES_P(in_cctx));
     RETURN_TRUE;
 }
 
@@ -775,7 +775,7 @@ PHP_FUNCTION(vsce_phe_server_delete_php) {
     //
     vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_cctx, VSCE_PHE_SERVER_PHP_RES_NAME, le_vsce_phe_server);
     VSCE_ASSERT_PTR(phe_server);
-    zend_list_delete(Z_RES_P(in_cctx));
+    zend_list_close(Z_RES_P(in_cctx));
     RETURN_TRUE;
 }
 
@@ -1274,7 +1274,7 @@ PHP_FUNCTION(vsce_phe_cipher_delete_php) {
     //
     vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CIPHER_PHP_RES_NAME, le_vsce_phe_cipher);
     VSCE_ASSERT_PTR(phe_cipher);
-    zend_list_delete(Z_RES_P(in_cctx));
+    zend_list_close(Z_RES_P(in_cctx));
     RETURN_TRUE;
 }
 
@@ -1534,11 +1534,11 @@ static void vsce_phe_client_dtor_php(zend_resource *rsrc) {
 }
 
 static void vsce_phe_server_dtor_php(zend_resource *rsrc) {
-   vsce_phe_server_delete((vsce_phe_server_t *)rsrc->ptr);
+    vsce_phe_server_delete((vsce_phe_server_t *)rsrc->ptr);
 }
 
 static void vsce_phe_cipher_dtor_php(zend_resource *rsrc) {
-   vsce_phe_cipher_delete((vsce_phe_cipher_t *)rsrc->ptr);
+    vsce_phe_cipher_delete((vsce_phe_cipher_t *)rsrc->ptr);
 }
 
 PHP_MINIT_FUNCTION(vsce_phe_php) {

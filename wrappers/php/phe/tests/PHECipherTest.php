@@ -46,6 +46,11 @@ class PHECipherTest extends \PHPUnit\Framework\TestCase
         $this->cipher = new PHECipher();
     }
 
+    protected function tearDown()
+    {
+        unset($this->cipher);
+    }
+
     public function testFullFlowShouldSucceed()
     {
         $plainText = "plain text";
