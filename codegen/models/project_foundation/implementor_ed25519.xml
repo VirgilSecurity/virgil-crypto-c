@@ -69,8 +69,8 @@
         <interface name="compute shared key"/>
     </implementation>
 
-    <implementation name="x25519 public key">
-        This is implementation of X25519 public key
+    <implementation name="curve25519 public key">
+        This is implementation of CURVE25519 public key
 
         <require library="ed25519" feature="library"/>
         <require header="ed25519/ed25519.h" scope="context"/>
@@ -80,7 +80,7 @@
         <require class="asn1wr"/>
         <require module="asn1rd defs"/>
         <require module="asn1wr defs"/>
-        <require impl="x25519 private key"/>
+        <require impl="curve25519 private key"/>
         <require impl="ctr drbg"/>
 
         <property name="public key" type="byte" library="ed25519" access="readwrite">
@@ -101,12 +101,12 @@
         <interface name="generate ephemeral key"/>
     </implementation>
 
-    <implementation name="x25519 private key">
-        This is implementation of X25519 private key
+    <implementation name="curve25519 private key">
+        This is implementation of CURVE25519 private key
 
         <require library="ed25519" feature="library"/>
         <require header="ed25519/ed25519.h" scope="context"/>
-        <require module="x25519 public key defs"/>
+        <require module="curve25519 public key defs"/>
         <require interface="alg info"/>
         <require class="simple alg info"/>
         <require class="asn1rd"/>

@@ -545,7 +545,7 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
     case vscf_alg_id_SHA512:
     case vscf_alg_id_RSA:
     case vscf_alg_id_ED25519:
-    case vscf_alg_id_X25519:
+    case vscf_alg_id_CURVE25519:
         return vscf_alg_info_der_deserializer_deserialize_simple_alg_info(self, alg_oid, error);
 
     case vscf_alg_id_KDF1:

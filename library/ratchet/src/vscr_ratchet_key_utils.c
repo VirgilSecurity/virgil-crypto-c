@@ -307,7 +307,7 @@ vscr_ratchet_key_utils_extract_ratchet_public_key(
         goto err;
     }
 
-    if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_X25519) {
+    if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_CURVE25519) {
         if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH) {
             VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
 
@@ -365,7 +365,7 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(
         goto err;
     }
 
-    if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_X25519) {
+    if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_CURVE25519) {
         if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH + 2) {
             VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_INVALID_KEY_TYPE);
 

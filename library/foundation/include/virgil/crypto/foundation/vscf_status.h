@@ -171,13 +171,13 @@ enum vscf_status_t {
     //
     vscf_status_ERROR_BAD_ED25519_PRIVATE_KEY = -218,
     //
-    //  X25519 public key is corrupted.
+    //  CURVE25519 public key is corrupted.
     //
-    vscf_status_ERROR_BAD_X25519_PUBLIC_KEY = -219,
+    vscf_status_ERROR_BAD_CURVE25519_PUBLIC_KEY = -219,
     //
-    //  X25519 private key is corrupted.
+    //  CURVE25519 private key is corrupted.
     //
-    vscf_status_ERROR_BAD_X25519_PRIVATE_KEY = -220,
+    vscf_status_ERROR_BAD_CURVE25519_PRIVATE_KEY = -220,
     //
     //  Decryption failed, because message info was not given explicitly,
     //  and was not part of an encrypted message.

@@ -110,11 +110,11 @@ import VSCFoundation
     /// Ed25519 private key is corrupted.
     case errorBadEd25519PrivateKey = -218
 
-    /// X25519 public key is corrupted.
-    case errorBadX25519PublicKey = -219
+    /// CURVE25519 public key is corrupted.
+    case errorBadCurve25519PublicKey = -219
 
-    /// X25519 private key is corrupted.
-    case errorBadX25519PrivateKey = -220
+    /// CURVE25519 private key is corrupted.
+    case errorBadCurve25519PrivateKey = -220
 
     /// Decryption failed, because message info was not given explicitly,
     /// and was not part of an encrypted message.

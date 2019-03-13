@@ -85,6 +85,8 @@ enum vscf_impl_tag_t {
     vscf_impl_tag_ASN1WR,
     vscf_impl_tag_CIPHER_ALG_INFO,
     vscf_impl_tag_CTR_DRBG,
+    vscf_impl_tag_CURVE25519_PRIVATE_KEY,
+    vscf_impl_tag_CURVE25519_PUBLIC_KEY,
     vscf_impl_tag_ECIES,
     vscf_impl_tag_ED25519_PRIVATE_KEY,
     vscf_impl_tag_ED25519_PUBLIC_KEY,
@@ -111,8 +113,6 @@ enum vscf_impl_tag_t {
     vscf_impl_tag_SHA384,
     vscf_impl_tag_SHA512,
     vscf_impl_tag_SIMPLE_ALG_INFO,
-    vscf_impl_tag_X25519_PRIVATE_KEY,
-    vscf_impl_tag_X25519_PUBLIC_KEY,
     vscf_impl_tag_END
 };
 typedef enum vscf_impl_tag_t vscf_impl_tag_t;

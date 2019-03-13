@@ -35,18 +35,18 @@
 
 #include "vsc_data.h"
 
-extern const vsc_data_t test_x25519_PRIVATE_KEY;
-extern const vsc_data_t test_x25519_PUBLIC_KEY;
-extern const vsc_data_t test_x25519_RANDOM;
-extern const vsc_data_t test_x25519_EXPORTED_PRIVATE_KEY;
-extern const vsc_data_t test_x25519_MESSAGE;
-extern const vsc_data_t test_x25519_ENCRYPTED_MESSAGE;
+extern const vsc_data_t test_curve25519_PRIVATE_KEY;
+extern const vsc_data_t test_curve25519_PUBLIC_KEY;
+extern const vsc_data_t test_curve25519_RANDOM;
+extern const vsc_data_t test_curve25519_EXPORTED_PRIVATE_KEY;
+extern const vsc_data_t test_curve25519_MESSAGE;
+extern const vsc_data_t test_curve25519_ENCRYPTED_MESSAGE;
 
 
 //
 //  PKCS#8 format
 //
-extern const vsc_data_t test_x25519_PUBLIC_KEY_PKCS8_DER;
-extern const vsc_data_t test_x25519_PRIVATE_KEY_PKCS8_DER;
+extern const vsc_data_t test_curve25519_PUBLIC_KEY_PKCS8_DER;
+extern const vsc_data_t test_curve25519_PRIVATE_KEY_PKCS8_DER;
 \
 

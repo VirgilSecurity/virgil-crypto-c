@@ -57,7 +57,7 @@ import VSCFoundation
 
     case ed25519
 
-    case x25519
+    case curve25519
 
     case aes256Gcm
 

@@ -36,21 +36,21 @@
 import Foundation
 import VSCFoundation
 
-/// This is implementation of X25519 public key
-@objc(VSCFX25519PublicKey) public class X25519PublicKey: NSObject, Defaults, Alg, Key, Encrypt, PublicKey, GenerateEphemeralKey {
+/// This is implementation of CURVE25519 private key
+@objc(VSCFCurve25519PrivateKey) public class Curve25519PrivateKey: NSObject, Defaults, Alg, Key, GenerateKey, Decrypt, PrivateKey, ComputeSharedKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
-    /// Defines whether a public key can be imported or not.
-    @objc public let canImportPublicKey: Bool = true
+    /// Define whether a private key can be imported or not.
+    @objc public let canImportPrivateKey: Bool = true
 
-    /// Define whether a public key can be exported or not.
-    @objc public let canExportPublicKey: Bool = true
+    /// Define whether a private key can be exported or not.
+    @objc public let canExportPrivateKey: Bool = true
 
     /// Create underlying C context.
     public override init() {
-        self.c_ctx = vscf_x25519_public_key_new()
+        self.c_ctx = vscf_curve25519_private_key_new()
         super.init()
     }
 
@@ -64,70 +64,78 @@ import VSCFoundation
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscf_x25519_public_key_shallow_copy(c_ctx)
+        self.c_ctx = vscf_curve25519_private_key_shallow_copy(c_ctx)
         super.init()
     }
 
     /// Release underlying C context.
     deinit {
-        vscf_x25519_public_key_delete(self.c_ctx)
+        vscf_curve25519_private_key_delete(self.c_ctx)
     }
 
     @objc public func setRandom(random: Random) {
-        vscf_x25519_public_key_release_random(self.c_ctx)
-        vscf_x25519_public_key_use_random(self.c_ctx, random.c_ctx)
+        vscf_curve25519_private_key_release_random(self.c_ctx)
+        vscf_curve25519_private_key_use_random(self.c_ctx, random.c_ctx)
     }
 
     @objc public func setEcies(ecies: Ecies) {
-        vscf_x25519_public_key_release_ecies(self.c_ctx)
-        vscf_x25519_public_key_use_ecies(self.c_ctx, ecies.c_ctx)
+        vscf_curve25519_private_key_release_ecies(self.c_ctx)
+        vscf_curve25519_private_key_use_ecies(self.c_ctx, ecies.c_ctx)
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() throws {
-        let proxyResult = vscf_x25519_public_key_setup_defaults(self.c_ctx)
+        let proxyResult = vscf_curve25519_private_key_setup_defaults(self.c_ctx)
 
         try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Provide algorithm identificator.
     @objc public func algId() -> AlgId {
-        let proxyResult = vscf_x25519_public_key_alg_id(self.c_ctx)
+        let proxyResult = vscf_curve25519_private_key_alg_id(self.c_ctx)
 
         return AlgId.init(fromC: proxyResult)
     }
 
     /// Produce object with algorithm information and configuration parameters.
     @objc public func produceAlgInfo() -> AlgInfo {
-        let proxyResult = vscf_x25519_public_key_produce_alg_info(self.c_ctx)
+        let proxyResult = vscf_curve25519_private_key_produce_alg_info(self.c_ctx)
 
         return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Restore algorithm configuration from the given object.
     @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
-        let proxyResult = vscf_x25519_public_key_restore_alg_info(self.c_ctx, algInfo.c_ctx)
+        let proxyResult = vscf_curve25519_private_key_restore_alg_info(self.c_ctx, algInfo.c_ctx)
 
         try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Length of the key in bytes.
     @objc public func keyLen() -> Int {
-        let proxyResult = vscf_x25519_public_key_key_len(self.c_ctx)
+        let proxyResult = vscf_curve25519_private_key_key_len(self.c_ctx)
 
         return proxyResult
     }
 
     /// Length of the key in bits.
     @objc public func keyBitlen() -> Int {
-        let proxyResult = vscf_x25519_public_key_key_bitlen(self.c_ctx)
+        let proxyResult = vscf_curve25519_private_key_key_bitlen(self.c_ctx)
 
         return proxyResult
     }
 
-    /// Encrypt given data.
-    @objc public func encrypt(data: Data) throws -> Data {
-        let outCount = self.encryptedLen(dataLen: data.count)
+    /// Generate new private or secret key.
+    /// Note, this operation can be slow.
+    @objc public func generateKey() throws {
+        let proxyResult = vscf_curve25519_private_key_generate_key(self.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+    }
+
+    /// Decrypt given data.
+    @objc public func decrypt(data: Data) throws -> Data {
+        let outCount = self.decryptedLen(dataLen: data.count)
         var out = Data(count: outCount)
         var outBuf = vsc_buffer_new()
         defer {
@@ -139,7 +147,7 @@ import VSCFoundation
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
 
-                return vscf_x25519_public_key_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
+                return vscf_curve25519_private_key_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
         out.count = vsc_buffer_len(outBuf)
@@ -149,20 +157,27 @@ import VSCFoundation
         return out
     }
 
-    /// Calculate required buffer length to hold the encrypted data.
-    @objc public func encryptedLen(dataLen: Int) -> Int {
-        let proxyResult = vscf_x25519_public_key_encrypted_len(self.c_ctx, dataLen)
+    /// Calculate required buffer length to hold the decrypted data.
+    @objc public func decryptedLen(dataLen: Int) -> Int {
+        let proxyResult = vscf_curve25519_private_key_decrypted_len(self.c_ctx, dataLen)
 
         return proxyResult
     }
 
-    /// Export public key in the binary format.
+    /// Extract public part of the key.
+    @objc public func extractPublicKey() -> PublicKey {
+        let proxyResult = vscf_curve25519_private_key_extract_public_key(self.c_ctx)
+
+        return FoundationImplementation.wrapPublicKey(take: proxyResult!)
+    }
+
+    /// Export private key in the binary format.
     ///
     /// Binary format must be defined in the key specification.
-    /// For instance, RSA public key must be exported in format defined in
-    /// RFC 3447 Appendix A.1.1.
-    @objc public func exportPublicKey() throws -> Data {
-        let outCount = self.exportedPublicKeyLen()
+    /// For instance, RSA private key must be exported in format defined in
+    /// RFC 3447 Appendix A.1.2.
+    @objc public func exportPrivateKey() throws -> Data {
+        let outCount = self.exportedPrivateKeyLen()
         var out = Data(count: outCount)
         var outBuf = vsc_buffer_new()
         defer {
@@ -173,7 +188,7 @@ import VSCFoundation
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
 
-            return vscf_x25519_public_key_export_public_key(self.c_ctx, outBuf)
+            return vscf_curve25519_private_key_export_private_key(self.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
 
@@ -182,36 +197,54 @@ import VSCFoundation
         return out
     }
 
-    /// Return length in bytes required to hold exported public key.
-    @objc public func exportedPublicKeyLen() -> Int {
-        let proxyResult = vscf_x25519_public_key_exported_public_key_len(self.c_ctx)
+    /// Return length in bytes required to hold exported private key.
+    @objc public func exportedPrivateKeyLen() -> Int {
+        let proxyResult = vscf_curve25519_private_key_exported_private_key_len(self.c_ctx)
 
         return proxyResult
     }
 
-    /// Import public key from the binary format.
+    /// Import private key from the binary format.
     ///
     /// Binary format must be defined in the key specification.
-    /// For instance, RSA public key must be imported from the format defined in
-    /// RFC 3447 Appendix A.1.1.
-    @objc public func importPublicKey(data: Data) throws {
+    /// For instance, RSA private key must be imported from the format defined in
+    /// RFC 3447 Appendix A.1.2.
+    @objc public func importPrivateKey(data: Data) throws {
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
 
-            return vscf_x25519_public_key_import_public_key(self.c_ctx, vsc_data(dataPointer, data.count))
+            return vscf_curve25519_private_key_import_private_key(self.c_ctx, vsc_data(dataPointer, data.count))
         })
 
         try FoundationError.handleStatus(fromC: proxyResult)
     }
 
-    /// Generate ephemeral private key of the same type.
-    @objc public func generateEphemeralKey() throws -> PrivateKey {
-        var error: vscf_error_t = vscf_error_t()
-        vscf_error_reset(&error)
+    /// Compute shared key for 2 asymmetric keys.
+    /// Note, shared key can be used only for symmetric cryptography.
+    @objc public func computeSharedKey(publicKey: PublicKey) throws -> Data {
+        let sharedKeyCount = self.sharedKeyLen()
+        var sharedKey = Data(count: sharedKeyCount)
+        var sharedKeyBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(sharedKeyBuf)
+        }
 
-        let proxyResult = vscf_x25519_public_key_generate_ephemeral_key(self.c_ctx, &error)
+        let proxyResult = sharedKey.withUnsafeMutableBytes({ (sharedKeyPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+            vsc_buffer_init(sharedKeyBuf)
+            vsc_buffer_use(sharedKeyBuf, sharedKeyPointer, sharedKeyCount)
 
-        try FoundationError.handleStatus(fromC: error.status)
+            return vscf_curve25519_private_key_compute_shared_key(self.c_ctx, publicKey.c_ctx, sharedKeyBuf)
+        })
+        sharedKey.count = vsc_buffer_len(sharedKeyBuf)
 
-        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
+        try FoundationError.handleStatus(fromC: proxyResult)
+
+        return sharedKey
+    }
+
+    /// Return number of bytes required to hold shared key.
+    @objc public func sharedKeyLen() -> Int {
+        let proxyResult = vscf_curve25519_private_key_shared_key_len(self.c_ctx)
+
+        return proxyResult
     }
 }

@@ -64,8 +64,8 @@ static const vsc_data_t oid_rsa = {oid_rsa_bytes, sizeof(oid_rsa_bytes)};
 static const byte oid_ed25519_bytes[] = {0x2B, 0x65, 0x70};
 static const vsc_data_t oid_ed25519 = {oid_ed25519_bytes, sizeof(oid_ed25519_bytes)};
 
-static const byte oid_x25519_bytes[] = {0x2B, 0x65, 0x6E};
-static const vsc_data_t oid_x25519 = {oid_x25519_bytes, sizeof(oid_x25519_bytes)};
+static const byte oid_curve25519_bytes[] = {0x2B, 0x65, 0x6E};
+static const vsc_data_t oid_curve25519 = {oid_curve25519_bytes, sizeof(oid_curve25519_bytes)};
 
 static const byte oid_sha224_bytes[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x04};
 static const vsc_data_t oid_sha224 = {oid_sha224_bytes, sizeof(oid_sha224_bytes)};
@@ -145,8 +145,8 @@ vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
     case vscf_alg_id_ED25519:
         return oid_ed25519;
 
-    case vscf_alg_id_X25519:
-        return oid_x25519;
+    case vscf_alg_id_CURVE25519:
+        return oid_curve25519;
 
     case vscf_alg_id_SHA224:
         return oid_sha224;
@@ -200,8 +200,8 @@ vscf_oid_to_alg_id(vsc_data_t oid) {
         return vscf_alg_id_ED25519;
     }
 
-    if (vscf_oid_equal(oid, oid_x25519)) {
-        return vscf_alg_id_X25519;
+    if (vscf_oid_equal(oid, oid_curve25519)) {
+        return vscf_alg_id_CURVE25519;
     }
 
     if (vscf_oid_equal(oid, oid_sha224)) {

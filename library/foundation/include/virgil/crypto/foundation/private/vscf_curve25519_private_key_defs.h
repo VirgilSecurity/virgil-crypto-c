@@ -47,18 +47,18 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'x25519 public key' implementation.
+//  Types of the 'curve25519 private key' implementation.
 //  This types SHOULD NOT be used directly.
 //  The only purpose of including this module is to place implementation
 //  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_X25519_PUBLIC_KEY_DEFS_H_INCLUDED
-#define VSCF_X25519_PUBLIC_KEY_DEFS_H_INCLUDED
+#ifndef VSCF_CURVE25519_PRIVATE_KEY_DEFS_H_INCLUDED
+#define VSCF_CURVE25519_PRIVATE_KEY_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
-#include "vscf_x25519_public_key.h"
+#include "vscf_curve25519_private_key.h"
 #include "vscf_impl.h"
 #include "vscf_ecies.h"
 
@@ -82,7 +82,7 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-struct vscf_x25519_public_key_t {
+struct vscf_curve25519_private_key_t {
     //
     //  Compile-time known information about this implementation.
     //
@@ -102,7 +102,7 @@ struct vscf_x25519_public_key_t {
     //
     //  Implementation specific context.
     //
-    byte public_key[ED25519_KEY_LEN];
+    byte secret_key[ED25519_KEY_LEN];
 };
 
 
@@ -119,5 +119,5 @@ struct vscf_x25519_public_key_t {
 
 
 //  @footer
-#endif // VSCF_X25519_PUBLIC_KEY_DEFS_H_INCLUDED
+#endif // VSCF_CURVE25519_PRIVATE_KEY_DEFS_H_INCLUDED
 //  @end
