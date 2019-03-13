@@ -5,6 +5,6 @@
         Generate new private or secret key.
         Note, this operation can be slow.
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 </interface>

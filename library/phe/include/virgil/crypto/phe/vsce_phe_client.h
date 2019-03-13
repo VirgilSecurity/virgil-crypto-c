@@ -56,7 +56,7 @@
 
 #include "vsce_library.h"
 #include "vsce_phe_common.h"
-#include "vsce_error.h"
+#include "vsce_status.h"
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -191,13 +191,13 @@ vsce_phe_client_release_operation_random(vsce_phe_client_t *self);
 //  Call this method before any other methods except `update enrollment record` and `generate client private key`
 //  This function should be called only once
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_client_set_keys(vsce_phe_client_t *self, vsc_data_t client_private_key, vsc_data_t server_public_key);
 
 //
 //  Generates client private key
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_client_generate_client_private_key(vsce_phe_client_t *self, vsc_buffer_t *client_private_key);
 
 //
@@ -211,7 +211,7 @@ vsce_phe_client_enrollment_record_len(vsce_phe_client_t *self);
 //  a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
 //  Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_client_enroll_account(vsce_phe_client_t *self, vsc_data_t enrollment_response, vsc_data_t password,
         vsc_buffer_t *enrollment_record, vsc_buffer_t *account_key);
 
@@ -224,7 +224,7 @@ vsce_phe_client_verify_password_request_len(vsce_phe_client_t *self);
 //
 //  Creates a request for further password verification at the PHE server side.
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_client_create_verify_password_request(vsce_phe_client_t *self, vsc_data_t password,
         vsc_data_t enrollment_record, vsc_buffer_t *verify_password_request);
 
@@ -233,7 +233,7 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *self, vsc_data
 //  If login succeeded, extracts account key
 //  If login failed account key will be empty
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *self, vsc_data_t password, vsc_data_t enrollment_record,
         vsc_data_t verify_password_response, vsc_buffer_t *account_key);
 
@@ -241,14 +241,14 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *self, vsc_data_t p
 //  Updates client's private key and server's public key using server's update token
 //  Use output values to instantiate new client instance with new keys
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_client_rotate_keys(vsce_phe_client_t *self, vsc_data_t update_token, vsc_buffer_t *new_client_private_key,
         vsc_buffer_t *new_server_public_key);
 
 //
 //  Updates EnrollmentRecord using server's update token
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_client_update_enrollment_record(vsce_phe_client_t *self, vsc_data_t enrollment_record, vsc_data_t update_token,
         vsc_buffer_t *new_enrollment_record);
 

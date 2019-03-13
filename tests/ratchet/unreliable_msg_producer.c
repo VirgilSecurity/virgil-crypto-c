@@ -119,12 +119,12 @@ produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr
     vsc_buffer_t *plain_text_local = NULL;
     generate_random_data(&plain_text_local);
 
-    vscr_error_ctx_t error_ctx;
-    vscr_error_ctx_reset(&error_ctx);
+    vscr_error_t error;
+    vscr_error_reset(&error);
 
     vscr_ratchet_message_t *ratchet_message =
-            vscr_ratchet_session_encrypt(*producer->session, vsc_buffer_data(plain_text_local), &error_ctx);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+            vscr_ratchet_session_encrypt(*producer->session, vsc_buffer_data(plain_text_local), &error);
+    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
 
     if (should_restore) {
         restore_session(producer->session);

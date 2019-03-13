@@ -54,7 +54,7 @@
 #define VSCF_BASE64_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -103,7 +103,7 @@ vscf_base64_decoded_len(size_t str_len);
 //
 //  Decode given data from the base64 format.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_base64_decode(vsc_data_t str, vsc_buffer_t *data);
 
 

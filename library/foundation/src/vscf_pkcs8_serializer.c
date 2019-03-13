@@ -88,7 +88,7 @@
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_pkcs8_serializer_setup_defaults(vscf_pkcs8_serializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -103,7 +103,7 @@ vscf_pkcs8_serializer_setup_defaults(vscf_pkcs8_serializer_t *self) {
         self->der_serializer = vscf_pkcs8_der_serializer_impl(der_serializer);
     }
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -130,7 +130,7 @@ vscf_pkcs8_serializer_serialized_public_key_len(vscf_pkcs8_serializer_t *self, c
 //
 //  Precondition: public key must be exportable.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_pkcs8_serializer_serialize_public_key(
         vscf_pkcs8_serializer_t *self, const vscf_impl_t *public_key, vsc_buffer_t *out) {
 
@@ -147,9 +147,9 @@ vscf_pkcs8_serializer_serialize_public_key(
     size_t der_len = vscf_key_serializer_serialized_public_key_len(self->der_serializer, public_key);
     vsc_buffer_t *der = vsc_buffer_new_with_capacity(der_len);
 
-    vscf_error_t status = vscf_key_serializer_serialize_public_key(self->der_serializer, public_key, der);
+    vscf_status_t status = vscf_key_serializer_serialize_public_key(self->der_serializer, public_key, der);
 
-    if (status != vscf_SUCCESS) {
+    if (status != vscf_status_SUCCESS) {
         vsc_buffer_destroy(&der);
         return status;
     }
@@ -158,7 +158,7 @@ vscf_pkcs8_serializer_serialize_public_key(
 
     vsc_buffer_destroy(&der);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -185,7 +185,7 @@ vscf_pkcs8_serializer_serialized_private_key_len(vscf_pkcs8_serializer_t *self, 
 //
 //  Precondition: private key must be exportable.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_pkcs8_serializer_serialize_private_key(
         vscf_pkcs8_serializer_t *self, const vscf_impl_t *private_key, vsc_buffer_t *out) {
 
@@ -201,9 +201,9 @@ vscf_pkcs8_serializer_serialize_private_key(
     size_t der_len = vscf_key_serializer_serialized_private_key_len(self->der_serializer, private_key);
     vsc_buffer_t *der = vsc_buffer_new_with_capacity(der_len);
 
-    vscf_error_t status = vscf_key_serializer_serialize_private_key(self->der_serializer, private_key, der);
+    vscf_status_t status = vscf_key_serializer_serialize_private_key(self->der_serializer, private_key, der);
 
-    if (status != vscf_SUCCESS) {
+    if (status != vscf_status_SUCCESS) {
         vsc_buffer_destroy(&der);
         return status;
     }
@@ -212,5 +212,5 @@ vscf_pkcs8_serializer_serialize_private_key(
 
     vsc_buffer_destroy(&der);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }

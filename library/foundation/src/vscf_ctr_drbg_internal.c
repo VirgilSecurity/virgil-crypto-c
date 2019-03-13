@@ -61,7 +61,7 @@
 #include "vscf_random_api.h"
 #include "vscf_entropy_source.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 #include "vscf_api.h"
 
 // clang-format on
@@ -77,7 +77,7 @@
 //
 //  This method is called when interface 'entropy source' was setup.
 //
-VSCF_PRIVATE vscf_error_t
+VSCF_PRIVATE vscf_status_t
 vscf_ctr_drbg_did_setup_entropy_source(vscf_ctr_drbg_t *self);
 
 //
@@ -99,6 +99,10 @@ static const vscf_defaults_api_t defaults_api = {
     //
     vscf_api_tag_DEFAULTS,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_CTR_DRBG,
+    //
     //  Setup predefined values to the uninitialized class dependencies.
     //
     (vscf_defaults_api_setup_defaults_fn)vscf_ctr_drbg_setup_defaults
@@ -114,6 +118,10 @@ static const vscf_random_api_t random_api = {
     //
     vscf_api_tag_RANDOM,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_CTR_DRBG,
+    //
     //  Generate random bytes.
     //
     (vscf_random_api_random_fn)vscf_ctr_drbg_random,
@@ -127,6 +135,10 @@ static const vscf_random_api_t random_api = {
 //  Compile-time known information about 'ctr drbg' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_CTR_DRBG,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
@@ -262,7 +274,7 @@ vscf_ctr_drbg_impl(vscf_ctr_drbg_t *self) {
 //
 //  Setup dependency to the interface 'entropy source' with shared ownership.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source) {
 
     VSCF_ASSERT_PTR(self);
@@ -280,7 +292,7 @@ vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_sou
 //  Setup dependency to the interface 'entropy source' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source) {
 
     VSCF_ASSERT_PTR(self);

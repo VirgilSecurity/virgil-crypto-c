@@ -91,10 +91,6 @@ struct vscf_rsa_private_key_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the interface 'hash'.
-    //
-    vscf_impl_t *hash;
-    //
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *random;

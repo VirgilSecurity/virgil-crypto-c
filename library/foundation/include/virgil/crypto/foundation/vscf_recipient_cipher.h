@@ -58,7 +58,7 @@
 #include "vscf_library.h"
 #include "vscf_message_info_custom_params.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -157,26 +157,20 @@ vscf_recipient_cipher_release_random(vscf_recipient_cipher_t *self);
 //  Setup dependency to the interface 'cipher' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_recipient_cipher_use_cipher(vscf_recipient_cipher_t *self, vscf_impl_t *cipher);
+vscf_recipient_cipher_use_encryption_cipher(vscf_recipient_cipher_t *self, vscf_impl_t *encryption_cipher);
 
 //
 //  Setup dependency to the interface 'cipher' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_recipient_cipher_take_cipher(vscf_recipient_cipher_t *self, vscf_impl_t *cipher);
+vscf_recipient_cipher_take_encryption_cipher(vscf_recipient_cipher_t *self, vscf_impl_t *encryption_cipher);
 
 //
 //  Release dependency to the interface 'cipher'.
 //
 VSCF_PUBLIC void
-vscf_recipient_cipher_release_cipher(vscf_recipient_cipher_t *self);
-
-//
-//  Setup dependencies with default values.
-//
-VSCF_PUBLIC void
-vscf_recipient_cipher_setup_defaults(vscf_recipient_cipher_t *self);
+vscf_recipient_cipher_release_encryption_cipher(vscf_recipient_cipher_t *self);
 
 //
 //  Add recipient defined with id and public key.
@@ -209,7 +203,7 @@ vscf_recipient_cipher_message_info_len(const vscf_recipient_cipher_t *self);
 //
 //  Start encryption process.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self);
 
 //
@@ -237,20 +231,20 @@ vscf_recipient_cipher_encryption_out_len(vscf_recipient_cipher_t *self, size_t d
 //
 //  Process encryption of a new portion of data.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_process_encryption(vscf_recipient_cipher_t *self, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Accomplish encryption.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffer_t *out);
 
 //
 //  Initiate decryption process with a recipient private key.
 //  Message info can be empty if it was embedded to encrypted data.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_start_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id,
         vscf_impl_t *private_key, vsc_data_t message_info);
 
@@ -265,13 +259,13 @@ vscf_recipient_cipher_decryption_out_len(vscf_recipient_cipher_t *self, size_t d
 //  Process with a new portion of data.
 //  Return error if data can not be encrypted or decrypted.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_process_decryption(vscf_recipient_cipher_t *self, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Accomplish decryption.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffer_t *out);
 
 

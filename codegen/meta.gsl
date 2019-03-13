@@ -259,6 +259,10 @@ function _X17_add_entity_impl (meta)
 
         _X17_add_smart_link (entity, "class impl struct impl")
         _X17_add_smart_link (entity, "class impl struct info")
+
+        _X17_add_smart_link (entity, "class impl enum tag")
+        _X17_add_smart_link (entity, "class impl enum tag constant begin")
+        _X17_add_smart_link (entity, "class impl enum tag constant end")
         return entity
     endnew
 endfunction
@@ -447,6 +451,7 @@ function _X17_add_entity_implementation (meta, implementation)
 
         _X17_add_name (entity, "implementation argument impl", "self")
         _X17_add_link (entity, "implementation struct impl", make_id ("class", my.name, "struct", my.name))
+        _X17_add_link (entity, "implementation constant tag", make_id ("class impl enum tag constant", my.name))
 
         _X17_add_link (entity, "implementation method init ctx", make_id ("class", my.name, "method", "init ctx"))
         _X17_add_link (entity, "implementation method cleanup ctx", make_id ("class", my.name, "method", "cleanup ctx"))

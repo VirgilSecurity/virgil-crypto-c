@@ -75,7 +75,7 @@ test__encrypt_decrypt__fixed_data__should_match(void) {
 
     vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(test_phe_cipher_cipher_text_capacity);
 
-    TEST_ASSERT_EQUAL(vsce_SUCCESS,
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
             vsce_phe_cipher_encrypt(cipher, test_phe_cipher_plain_text, test_phe_cipher_account_key, cipher_text));
 
     TEST_ASSERT_EQUAL(test_phe_cipher_cipher_text.len, vsc_buffer_len(cipher_text));
@@ -102,14 +102,15 @@ test__encrypt_decrypt__random_data__should_match(void) {
     for (int i = 0; i < 100; i++) {
         vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
 
-        TEST_ASSERT_EQUAL(vscf_SUCCESS, vscf_ctr_drbg_random(rng, vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH, account_key));
+        TEST_ASSERT_EQUAL(
+                vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH, account_key));
 
         byte len;
 
         vsc_buffer_t *len_buf = vsc_buffer_new();
         vsc_buffer_use(len_buf, &len, sizeof(len));
 
-        TEST_ASSERT_EQUAL(vscf_SUCCESS, vscf_ctr_drbg_random(rng, sizeof(len), len_buf));
+        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, sizeof(len), len_buf));
 
         if (len == 0) {
             len = 10;
@@ -117,18 +118,18 @@ test__encrypt_decrypt__random_data__should_match(void) {
 
         vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(len);
 
-        TEST_ASSERT_EQUAL(vscf_SUCCESS, vscf_ctr_drbg_random(rng, len, plain_text));
+        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, len, plain_text));
 
         vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(vsce_phe_cipher_encrypt_len(cipher1, len));
 
-        TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_cipher_encrypt(cipher1, vsc_buffer_data(plain_text),
-                                                vsc_buffer_data(account_key), cipher_text));
+        TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_cipher_encrypt(cipher1, vsc_buffer_data(plain_text),
+                                                       vsc_buffer_data(account_key), cipher_text));
 
         vsc_buffer_t *plain_text2 =
                 vsc_buffer_new_with_capacity(vsce_phe_cipher_decrypt_len(cipher2, vsc_buffer_len(cipher_text)));
 
-        TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_cipher_decrypt(cipher2, vsc_buffer_data(cipher_text),
-                                                vsc_buffer_data(account_key), plain_text2));
+        TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_cipher_decrypt(cipher2, vsc_buffer_data(cipher_text),
+                                                       vsc_buffer_data(account_key), plain_text2));
 
         TEST_ASSERT_EQUAL(vsc_buffer_len(plain_text), vsc_buffer_len(plain_text2));
 

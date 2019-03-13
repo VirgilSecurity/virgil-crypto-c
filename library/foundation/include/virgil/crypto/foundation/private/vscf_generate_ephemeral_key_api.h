@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_error_ctx.h"
+#include "vscf_error.h"
 
 // clang-format on
 //  @end
@@ -77,7 +77,7 @@ extern "C" {
 //  Callback. Generate ephemeral private key of the same type.
 //
 typedef vscf_impl_t * (*vscf_generate_ephemeral_key_api_generate_ephemeral_key_fn)(vscf_impl_t *impl,
-        vscf_error_ctx_t *error);
+        vscf_error_t *error);
 
 //
 //  Contains API requirements of the interface 'generate ephemeral key'.
@@ -88,6 +88,10 @@ struct vscf_generate_ephemeral_key_api_t {
     //  For interface 'generate_ephemeral_key' MUST be equal to the 'vscf_api_tag_GENERATE_EPHEMERAL_KEY'.
     //
     vscf_api_tag_t api_tag;
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
     //
     //  Generate ephemeral private key of the same type.
     //

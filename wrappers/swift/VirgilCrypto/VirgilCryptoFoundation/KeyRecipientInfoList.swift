@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Handles a list of "key recipient info" class objects.
 @objc(VSCFKeyRecipientInfoList) public class KeyRecipientInfoList: NSObject {
@@ -72,6 +71,7 @@ import VirgilCryptoCommon
     /// Note, ownership is transfered.
     @objc public func add(keyRecipientInfo: KeyRecipientInfo) {
         var keyRecipientInfoCopy = vscf_key_recipient_info_shallow_copy(keyRecipientInfo.c_ctx)
+
         vscf_key_recipient_info_list_add(self.c_ctx, &keyRecipientInfoCopy)
     }
 

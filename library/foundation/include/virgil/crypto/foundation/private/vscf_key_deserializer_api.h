@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_error_ctx.h"
+#include "vscf_error.h"
 #include "vscf_raw_key.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -86,13 +86,13 @@ extern "C" {
 //  Callback. Deserialize given public key as an interchangeable format to the object.
 //
 typedef vscf_raw_key_t * (*vscf_key_deserializer_api_deserialize_public_key_fn)(vscf_impl_t *impl,
-        vsc_data_t public_key_data, vscf_error_ctx_t *error);
+        vsc_data_t public_key_data, vscf_error_t *error);
 
 //
 //  Callback. Deserialize given private key as an interchangeable format to the object.
 //
 typedef vscf_raw_key_t * (*vscf_key_deserializer_api_deserialize_private_key_fn)(vscf_impl_t *impl,
-        vsc_data_t private_key_data, vscf_error_ctx_t *error);
+        vsc_data_t private_key_data, vscf_error_t *error);
 
 //
 //  Contains API requirements of the interface 'key deserializer'.
@@ -103,6 +103,10 @@ struct vscf_key_deserializer_api_t {
     //  For interface 'key_deserializer' MUST be equal to the 'vscf_api_tag_KEY_DESERIALIZER'.
     //
     vscf_api_tag_t api_tag;
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
     //
     //  Deserialize given public key as an interchangeable format to the object.
     //

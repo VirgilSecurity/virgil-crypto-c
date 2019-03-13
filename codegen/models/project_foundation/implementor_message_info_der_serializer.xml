@@ -201,7 +201,7 @@
             }
 
             <argument name="message info" class="message info" access="readwrite"/>
-            <argument name="error" class="error ctx" access="readwrite" />
+            <argument name="error" class="error" access="readwrite" />
         </method>
 
         <method name="deserialize key recipient info">
@@ -220,7 +220,7 @@
             EncryptedKey ::= OCTET STRING
 
             <argument name="message info" class="message info" access="readwrite"/>
-            <argument name="error" class="error ctx" access="readwrite" />
+            <argument name="error" class="error" access="readwrite" />
         </method>
 
         <method name="deserialize password recipient info">
@@ -233,7 +233,7 @@
             }
 
             <argument name="message info" class="message info" access="readwrite"/>
-            <argument name="error" class="error ctx" access="readwrite" />
+            <argument name="error" class="error" access="readwrite" />
         </method>
 
         <method name="deserialize recipient infos">
@@ -248,7 +248,7 @@
             }
 
             <argument name="message info" class="message info" access="readwrite"/>
-            <argument name="error" class="error ctx" access="readwrite" />
+            <argument name="error" class="error" access="readwrite" />
         </method>
 
         <method name="deserialize encrypted content info">
@@ -263,7 +263,7 @@
             EncryptedContent ::= OCTET STRING
 
             <argument name="message info" class="message info" access="readwrite"/>
-            <argument name="error" class="error ctx" access="readwrite" />
+            <argument name="error" class="error" access="readwrite" />
         </method>
 
         <method name="deserialize enveloped data">
@@ -278,7 +278,7 @@
             CMSVersion ::= INTEGER { v0(0), v1(1), v2(2), v3(3), v4(4), v5(5) }
 
             <argument name="message info" class="message info" access="readwrite"/>
-            <argument name="error" class="error ctx" access="readwrite" />
+            <argument name="error" class="error" access="readwrite" />
         </method>
 
         <method name="deserialize cms content info">
@@ -290,7 +290,7 @@
             ContentType ::= OBJECT IDENTIFIER
 
             <argument name="message info" class="message info" access="readwrite"/>
-            <argument name="error" class="error ctx" access="readwrite" />
+            <argument name="error" class="error" access="readwrite" />
         </method>
     </implementation>
 </implementor>

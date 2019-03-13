@@ -87,8 +87,7 @@
 //  an input buffer.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(
-        vscf_pkcs8_der_deserializer_t *self, vscf_error_ctx_t *error) {
+vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(vscf_pkcs8_der_deserializer_t *self, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
@@ -98,11 +97,11 @@ vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(
     //          subjectPublicKey BIT STRING
     //  }
 
-    if (error && (error->error != vscf_SUCCESS)) {
+    if (error && vscf_error_has_error(error)) {
         return NULL;
     }
 
-    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
         return NULL;
     }
 
@@ -129,8 +128,8 @@ vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(
     //
     //  Finalize
     //
-    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_PKCS8_PUBLIC_KEY);
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_PKCS8_PUBLIC_KEY);
         return NULL;
     }
 
@@ -145,8 +144,7 @@ vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(
 //  an input buffer.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_pkcs8_der_deserializer_deserialize_private_key_inplace(
-        vscf_pkcs8_der_deserializer_t *self, vscf_error_ctx_t *error) {
+vscf_pkcs8_der_deserializer_deserialize_private_key_inplace(vscf_pkcs8_der_deserializer_t *self, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
@@ -158,11 +156,11 @@ vscf_pkcs8_der_deserializer_deserialize_private_key_inplace(
     //          attributes [0] IMPLICIT Attributes OPTIONAL
     //  }
 
-    if (error && (error->error != vscf_SUCCESS)) {
+    if (error && vscf_error_has_error(error)) {
         return NULL;
     }
 
-    if (vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) {
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
         return NULL;
     }
 
@@ -194,8 +192,8 @@ vscf_pkcs8_der_deserializer_deserialize_private_key_inplace(
     //
     //  Finalize
     //
-    if ((vscf_asn1_reader_error(self->asn1_reader) != vscf_SUCCESS) || (version != 0)) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_PKCS8_PRIVATE_KEY);
+    if ((vscf_asn1_reader_has_error(self->asn1_reader)) || (version != 0)) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_PKCS8_PRIVATE_KEY);
         return NULL;
     }
 
@@ -207,7 +205,7 @@ vscf_pkcs8_der_deserializer_deserialize_private_key_inplace(
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_pkcs8_der_deserializer_setup_defaults(vscf_pkcs8_der_deserializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -216,7 +214,7 @@ vscf_pkcs8_der_deserializer_setup_defaults(vscf_pkcs8_der_deserializer_t *self) 
         vscf_pkcs8_der_deserializer_take_asn1_reader(self, vscf_asn1rd_impl(vscf_asn1rd_new()));
     }
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -224,7 +222,7 @@ vscf_pkcs8_der_deserializer_setup_defaults(vscf_pkcs8_der_deserializer_t *self) 
 //
 VSCF_PUBLIC vscf_raw_key_t *
 vscf_pkcs8_der_deserializer_deserialize_public_key(
-        vscf_pkcs8_der_deserializer_t *self, vsc_data_t public_key_data, vscf_error_ctx_t *error) {
+        vscf_pkcs8_der_deserializer_t *self, vsc_data_t public_key_data, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(public_key_data));
@@ -239,7 +237,7 @@ vscf_pkcs8_der_deserializer_deserialize_public_key(
 //
 VSCF_PUBLIC vscf_raw_key_t *
 vscf_pkcs8_der_deserializer_deserialize_private_key(
-        vscf_pkcs8_der_deserializer_t *self, vsc_data_t private_key_data, vscf_error_ctx_t *error) {
+        vscf_pkcs8_der_deserializer_t *self, vsc_data_t private_key_data, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(private_key_data));

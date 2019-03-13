@@ -106,8 +106,8 @@ enum vscf_api_tag_t {
     vscf_api_tag_PUBLIC_KEY,
     vscf_api_tag_RANDOM,
     vscf_api_tag_SALTED_KDF,
-    vscf_api_tag_SIGN,
-    vscf_api_tag_VERIFY,
+    vscf_api_tag_SIGN_HASH,
+    vscf_api_tag_VERIFY_HASH,
     vscf_api_tag_END
 };
 typedef enum vscf_api_tag_t vscf_api_tag_t;

@@ -44,7 +44,7 @@
 
         <argument name="chain key" class="ratchet chain key" access="readwrite"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="advance chain key" is_static="1">

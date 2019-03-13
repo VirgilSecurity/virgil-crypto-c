@@ -72,6 +72,6 @@
             </length>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 </interface>

@@ -1,0 +1,19 @@
+<enum name="status" definition="public">
+    Defines the library status codes.
+
+    <constant name="success" value="0">
+        No errors was occurred.
+    </constant>
+
+    <constant name="error bad arguments" value="-1">
+        This error should not be returned if assertions is enabled.
+    </constant>
+
+    <constant name="error pythia inner fail" value="-200">
+        Undrlying pythia library returns -1.
+    </constant>
+
+    <constant name="error verification fail" value="-201">
+        Pythia verify operation failed.
+    </constant>
+</enum>

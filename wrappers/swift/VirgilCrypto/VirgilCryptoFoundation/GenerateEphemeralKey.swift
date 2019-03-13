@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provide interface to compute shared key for 2 asymmetric keys.
 ///
@@ -43,30 +42,5 @@ import VirgilCryptoCommon
 @objc(VSCFGenerateEphemeralKey) public protocol GenerateEphemeralKey : CContext {
 
     /// Generate ephemeral private key of the same type.
-    @objc func generateEphemeralKey(error: ErrorCtx) -> PrivateKey
-}
-
-/// Implement interface methods
-@objc(VSCFGenerateEphemeralKeyProxy) internal class GenerateEphemeralKeyProxy: NSObject, GenerateEphemeralKey {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Generate ephemeral private key of the same type.
-    @objc public func generateEphemeralKey(error: ErrorCtx) -> PrivateKey {
-        let proxyResult = vscf_generate_ephemeral_key(self.c_ctx, error.c_ctx)
-
-        return PrivateKeyProxy.init(c_ctx: proxyResult!)
-    }
+    @objc func generateEphemeralKey() throws -> PrivateKey
 }

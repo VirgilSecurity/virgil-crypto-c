@@ -11,7 +11,7 @@
 
         <argument name="shared secret" class="buffer" access="readwrite"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="compute responder x3dh secret" is_static="1">
@@ -23,7 +23,7 @@
 
         <argument name="shared secret" class="buffer" access="readwrite"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
 </class>

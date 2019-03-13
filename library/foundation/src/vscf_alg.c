@@ -94,7 +94,7 @@ vscf_alg_produce_alg_info(const vscf_impl_t *impl) {
 //
 //  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_alg_restore_alg_info(vscf_impl_t *impl, const vscf_impl_t *alg_info) {
 
     const vscf_alg_api_t *alg_api = vscf_alg_api(impl);

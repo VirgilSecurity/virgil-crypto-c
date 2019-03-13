@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// This is MbedTLS implementation of ASN.1 reader.
 @objc(VSCFAsn1rd) public class Asn1rd: NSObject, Asn1Reader {
@@ -71,15 +70,23 @@ import VirgilCryptoCommon
     /// Reset all internal states and prepare to new ASN.1 reading operations.
     @objc public func reset(data: Data) {
         data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
+
             vscf_asn1rd_reset(self.c_ctx, vsc_data(dataPointer, data.count))
         })
     }
 
-    /// Return last error.
-    @objc public func error() throws {
-        let proxyResult = vscf_asn1rd_error(self.c_ctx)
+    /// Return true if status is not "success".
+    @objc public func hasError() -> Bool {
+        let proxyResult = vscf_asn1rd_has_error(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        return proxyResult
+    }
+
+    /// Return error code.
+    @objc public func status() throws {
+        let proxyResult = vscf_asn1rd_status(self.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Get tag of the current ASN.1 element.

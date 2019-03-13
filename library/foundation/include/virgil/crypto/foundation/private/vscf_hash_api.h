@@ -112,6 +112,10 @@ struct vscf_hash_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Calculate hash over given data.
     //
     vscf_hash_api_hash_fn hash_cb;

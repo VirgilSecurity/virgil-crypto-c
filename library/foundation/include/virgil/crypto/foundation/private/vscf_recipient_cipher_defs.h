@@ -102,7 +102,7 @@ struct vscf_recipient_cipher_t {
     //
     //  Dependency to the interface 'cipher'.
     //
-    vscf_impl_t *cipher;
+    vscf_impl_t *encryption_cipher;
 
     vscf_key_recipient_list_t *key_recipients;
 
@@ -111,6 +111,8 @@ struct vscf_recipient_cipher_t {
     vscf_impl_t *decryption_recipient_key;
 
     vsc_buffer_t *decryption_password;
+
+    vscf_impl_t *decryption_cipher;
 
     vscf_message_info_t *message_info;
 

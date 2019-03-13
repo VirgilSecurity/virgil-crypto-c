@@ -56,7 +56,7 @@
 
 #include "vsce_library.h"
 #include "vsce_phe_common.h"
-#include "vsce_error.h"
+#include "vsce_status.h"
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -184,14 +184,14 @@ vsce_phe_cipher_decrypt_len(vsce_phe_cipher_t *self, size_t cipher_text_len);
 //
 //  Encrypts data using account key
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_cipher_encrypt(vsce_phe_cipher_t *self, vsc_data_t plain_text, vsc_data_t account_key,
         vsc_buffer_t *cipher_text);
 
 //
 //  Decrypts data using account key
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_cipher_decrypt(vsce_phe_cipher_t *self, vsc_data_t cipher_text, vsc_data_t account_key,
         vsc_buffer_t *plain_text);
 

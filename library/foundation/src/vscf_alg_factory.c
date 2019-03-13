@@ -74,6 +74,8 @@
 #include "vscf_rsa_private_key.h"
 #include "vscf_ed25519_public_key.h"
 #include "vscf_ed25519_private_key.h"
+#include "vscf_curve25519_public_key.h"
+#include "vscf_curve25519_private_key.h"
 
 // clang-format on
 //  @end
@@ -285,6 +287,13 @@ vscf_alg_factory_create_public_key_from_raw_key(const vscf_raw_key_t *raw_key) {
         return vscf_ed25519_public_key_impl(ed25519_public_key);
     }
 
+    if (alg_id == vscf_alg_id_CURVE25519) {
+        vscf_curve25519_public_key_t *curve25519_public_key = vscf_curve25519_public_key_new();
+        vscf_curve25519_public_key_setup_defaults(curve25519_public_key);
+        vscf_curve25519_public_key_import_public_key(curve25519_public_key, vscf_raw_key_data(raw_key));
+        return vscf_curve25519_public_key_impl(curve25519_public_key);
+    }
+
     VSCF_ASSERT(0 && "Can not create 'public key' algorithm from the given alg id.");
     return NULL;
 }
@@ -312,6 +321,13 @@ vscf_alg_factory_create_private_key_from_raw_key(const vscf_raw_key_t *raw_key) 
         vscf_ed25519_private_key_setup_defaults(ed25519_private_key);
         vscf_ed25519_private_key_import_private_key(ed25519_private_key, vscf_raw_key_data(raw_key));
         return vscf_ed25519_private_key_impl(ed25519_private_key);
+    }
+
+    if (alg_id == vscf_alg_id_CURVE25519) {
+        vscf_curve25519_private_key_t *curve25519_private_key = vscf_curve25519_private_key_new();
+        vscf_curve25519_private_key_setup_defaults(curve25519_private_key);
+        vscf_curve25519_private_key_import_private_key(curve25519_private_key, vscf_raw_key_data(raw_key));
+        return vscf_curve25519_private_key_impl(curve25519_private_key);
     }
 
     VSCF_ASSERT(0 && "Can not create 'private key' algorithm from the given alg id.");

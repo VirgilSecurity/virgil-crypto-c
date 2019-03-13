@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -94,7 +94,7 @@ typedef size_t (*vscf_key_serializer_api_serialized_public_key_len_fn)(vscf_impl
 //
 //          Precondition: public key must be exportable.
 //
-typedef vscf_error_t (*vscf_key_serializer_api_serialize_public_key_fn)(vscf_impl_t *impl,
+typedef vscf_status_t (*vscf_key_serializer_api_serialize_public_key_fn)(vscf_impl_t *impl,
         const vscf_impl_t *public_key, vsc_buffer_t *out);
 
 //
@@ -110,7 +110,7 @@ typedef size_t (*vscf_key_serializer_api_serialized_private_key_len_fn)(vscf_imp
 //
 //          Precondition: private key must be exportable.
 //
-typedef vscf_error_t (*vscf_key_serializer_api_serialize_private_key_fn)(vscf_impl_t *impl,
+typedef vscf_status_t (*vscf_key_serializer_api_serialize_private_key_fn)(vscf_impl_t *impl,
         const vscf_impl_t *private_key, vsc_buffer_t *out);
 
 //
@@ -122,6 +122,10 @@ struct vscf_key_serializer_api_t {
     //  For interface 'key_serializer' MUST be equal to the 'vscf_api_tag_KEY_SERIALIZER'.
     //
     vscf_api_tag_t api_tag;
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
     //
     //  Calculate buffer size enough to hold serialized public key.
     //

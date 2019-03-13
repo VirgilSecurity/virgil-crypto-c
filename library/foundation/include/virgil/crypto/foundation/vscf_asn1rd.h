@@ -55,7 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -146,10 +146,16 @@ VSCF_PUBLIC void
 vscf_asn1rd_reset(vscf_asn1rd_t *self, vsc_data_t data);
 
 //
-//  Return last error.
+//  Return true if status is not "success".
 //
-VSCF_PUBLIC vscf_error_t
-vscf_asn1rd_error(vscf_asn1rd_t *self);
+VSCF_PUBLIC bool
+vscf_asn1rd_has_error(const vscf_asn1rd_t *self);
+
+//
+//  Return error code.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_asn1rd_status(const vscf_asn1rd_t *self);
 
 //
 //  Get tag of the current ASN.1 element.

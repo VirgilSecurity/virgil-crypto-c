@@ -70,7 +70,7 @@
 //  Generate ephemeral private key of the same type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_generate_ephemeral_key(vscf_impl_t *impl, vscf_error_ctx_t *error) {
+vscf_generate_ephemeral_key(vscf_impl_t *impl, vscf_error_t *error) {
 
     const vscf_generate_ephemeral_key_api_t *generate_ephemeral_key_api = vscf_generate_ephemeral_key_api(impl);
     VSCF_ASSERT_PTR (generate_ephemeral_key_api);

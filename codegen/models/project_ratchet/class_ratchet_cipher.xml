@@ -34,7 +34,7 @@
             </length>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="decrypt">
@@ -47,7 +47,7 @@
             </length>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
 </class>

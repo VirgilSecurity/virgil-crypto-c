@@ -75,7 +75,7 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_error_ctx.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_error.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -100,7 +100,7 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_error.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_status.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -111,27 +111,27 @@ target_sources(phe
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_memory.h"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_const.h"
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/phe/vsce_platform.h"
-            "$<$<BOOL:${VSCE_ERROR_CTX}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_error_ctx.h>"
+            "$<$<BOOL:${VSCE_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_error.h>"
             "$<$<BOOL:${VSCE_PHE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_cipher.h>"
             "$<$<BOOL:${VSCE_PHE_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_client.h>"
             "$<$<BOOL:${VSCE_PHE_COMMON}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_common.h>"
             "$<$<BOOL:${VSCE_PHE_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_hash.h>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_server.h>"
             "$<$<BOOL:${VSCE_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_simple_swu.h>"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_error.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_status.h"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_library.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_memory.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_const.c"
-            "$<$<BOOL:${VSCE_ERROR_CTX}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_error_ctx.c>"
+            "$<$<BOOL:${VSCE_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_error.c>"
             "$<$<BOOL:${VSCE_PHE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_cipher.c>"
             "$<$<BOOL:${VSCE_PHE_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_client.c>"
             "$<$<BOOL:${VSCE_PHE_COMMON}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_common.c>"
             "$<$<BOOL:${VSCE_PHE_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_hash.c>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_server.c>"
             "$<$<BOOL:${VSCE_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_simple_swu.c>"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vsce_error.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vsce_status.c"
         )
 
 target_include_directories(phe

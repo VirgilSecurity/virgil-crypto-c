@@ -50,7 +50,7 @@
 #include "vscr_library.h"
 #include "vscr_ratchet_chain_key.h"
 #include "vscr_ratchet_message_key.h"
-#include "vscr_error.h"
+#include "vscr_status.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -129,7 +129,7 @@ vscr_ratchet_keys_derive_initial_keys(vsc_data_t shared_secret,
         byte root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH],
         byte chain_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH]);
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_keys_create_chain_key(const byte root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH],
         vsc_data_t private_key, vsc_data_t public_key,
         byte new_root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH], vscr_ratchet_chain_key_t *chain_key);

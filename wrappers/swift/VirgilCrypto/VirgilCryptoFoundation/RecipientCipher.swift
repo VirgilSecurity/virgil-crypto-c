@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// This class provides hybrid encryption algorithm that combines symmetric
 /// cipher for data encryption and asymmetric cipher and password based
@@ -75,19 +74,15 @@ import VirgilCryptoCommon
         vscf_recipient_cipher_use_random(self.c_ctx, random.c_ctx)
     }
 
-    @objc public func setCipher(cipher: Cipher) {
-        vscf_recipient_cipher_release_cipher(self.c_ctx)
-        vscf_recipient_cipher_use_cipher(self.c_ctx, cipher.c_ctx)
-    }
-
-    /// Setup dependencies with default values.
-    @objc public func setupDefaults() {
-        vscf_recipient_cipher_setup_defaults(self.c_ctx)
+    @objc public func setEncryptionCipher(encryptionCipher: Cipher) {
+        vscf_recipient_cipher_release_encryption_cipher(self.c_ctx)
+        vscf_recipient_cipher_use_encryption_cipher(self.c_ctx, encryptionCipher.c_ctx)
     }
 
     /// Add recipient defined with id and public key.
     @objc public func addKeyRecipient(recipientId: Data, publicKey: PublicKey) {
         recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafePointer<byte>) -> Void in
+
             vscf_recipient_cipher_add_key_recipient(self.c_ctx, vsc_data(recipientIdPointer, recipientId.count), publicKey.c_ctx)
         })
     }
@@ -118,7 +113,7 @@ import VirgilCryptoCommon
     @objc public func startEncryption() throws {
         let proxyResult = vscf_recipient_cipher_start_encryption(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Return serialized message info to the buffer.
@@ -142,6 +137,7 @@ import VirgilCryptoCommon
         messageInfo.withUnsafeMutableBytes({ (messageInfoPointer: UnsafeMutablePointer<byte>) -> Void in
             vsc_buffer_init(messageInfoBuf)
             vsc_buffer_use(messageInfoBuf, messageInfoPointer, messageInfoCount)
+
             vscf_recipient_cipher_pack_message_info(self.c_ctx, messageInfoBuf)
         })
         messageInfo.count = vsc_buffer_len(messageInfoBuf)
@@ -166,16 +162,17 @@ import VirgilCryptoCommon
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
+
                 return vscf_recipient_cipher_process_encryption(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
         out.count = vsc_buffer_len(outBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
     }
@@ -189,14 +186,15 @@ import VirgilCryptoCommon
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
+
             return vscf_recipient_cipher_finish_encryption(self.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
     }
@@ -204,13 +202,14 @@ import VirgilCryptoCommon
     /// Initiate decryption process with a recipient private key.
     /// Message info can be empty if it was embedded to encrypted data.
     @objc public func startDecryptionWithKey(recipientId: Data, privateKey: PrivateKey, messageInfo: Data) throws {
-        let proxyResult = recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafePointer<byte>) -> vscf_error_t in
-            messageInfo.withUnsafeBytes({ (messageInfoPointer: UnsafePointer<byte>) -> vscf_error_t in
+        let proxyResult = recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafePointer<byte>) -> vscf_status_t in
+            messageInfo.withUnsafeBytes({ (messageInfoPointer: UnsafePointer<byte>) -> vscf_status_t in
+
                 return vscf_recipient_cipher_start_decryption_with_key(self.c_ctx, vsc_data(recipientIdPointer, recipientId.count), privateKey.c_ctx, vsc_data(messageInfoPointer, messageInfo.count))
             })
         })
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Return buffer length required to hold output of the method
@@ -231,16 +230,17 @@ import VirgilCryptoCommon
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
+
                 return vscf_recipient_cipher_process_decryption(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
         out.count = vsc_buffer_len(outBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
     }
@@ -254,14 +254,15 @@ import VirgilCryptoCommon
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
+
             return vscf_recipient_cipher_finish_decryption(self.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
     }

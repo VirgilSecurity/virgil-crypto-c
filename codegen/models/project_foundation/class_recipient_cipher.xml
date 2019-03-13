@@ -12,23 +12,21 @@
     <require class="key recipient list"/>
     <require class="aes256 gcm"/>
     <require class="ctr drbg"/>
+    <require class="alg factory"/>
 
     <dependency name="random" interface="random"/>
-    <dependency name="cipher" interface="cipher"/>
+    <dependency name="encryption cipher" interface="cipher"/>
 
     <property name="key recipients" class="key recipient list"/>
     <property name="decryption recipient id" class="buffer"/>
     <property name="decryption recipient key" interface="private key"/>
     <property name="decryption password" class="buffer"/>
+    <property name="decryption cipher" interface="cipher"/>
     <property name="message info" class="message info"/>
     <property name="message info der serializer" impl="message info der serializer"/>
     <property name="message info buffer" class="buffer"/>
     <property name="message info expected len" type="size"/>
     <property name="decryption state" enum="recipient cipher decryption state"/>
-
-    <method name="setup defaults">
-        Setup dependencies with default values.
-    </method>
 
     <method name="add key recipient">
         Add recipient defined with id and public key.
@@ -59,7 +57,7 @@
     <method name="start encryption">
         Start encryption process.
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="pack message info">
@@ -98,7 +96,7 @@
             </length>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="finish encryption">
@@ -110,7 +108,7 @@
             </length>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="start decryption with key">
@@ -121,7 +119,7 @@
         <argument name="private key" interface="private key" access="retain"/>
         <argument name="message info" class="data"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="decryption out len">
@@ -144,7 +142,7 @@
             </length>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="finish decryption">
@@ -156,7 +154,7 @@
             </length>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="configure decryption cipher" declaration="private">
@@ -166,41 +164,38 @@
 
         <argument name="decryption key" class="data"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="decrypt data encryption key with password" declaration="private">
         Decrypt data encryption key with a password.
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="decrypt data encryption key with private key" declaration="private">
         Decrypt data encryption key with a private key.
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="decrypt data encryption key" declaration="private">
         Decrypt data encryption key and configure underlying cipher.
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="unpack message info" declaration="private">
-        Read given message info.
-
-        This method is used when message info was stored separately from
-        an encrypted message.
+        Read given message info from the given data or extracted data.
 
         <argument name="message info" class="data"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="extract message info" declaration="private">
         <argument name="data" class="data"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 </class>

@@ -85,6 +85,10 @@ static const vscf_alg_api_t alg_api = {
     //
     vscf_api_tag_ALG,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_SHA224,
+    //
     //  Provide algorithm identificator.
     //
     (vscf_alg_api_alg_id_fn)vscf_sha224_alg_id,
@@ -107,6 +111,10 @@ static const vscf_hash_api_t hash_api = {
     //  For interface 'hash' MUST be equal to the 'vscf_api_tag_HASH'.
     //
     vscf_api_tag_HASH,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_SHA224,
     //
     //  Calculate hash over given data.
     //
@@ -137,6 +145,10 @@ static const vscf_hash_api_t hash_api = {
 //  Compile-time known information about 'sha224' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_SHA224,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

@@ -122,14 +122,14 @@ vscr_ratchet_init_ctx(vscr_ratchet_t *self);
 static void
 vscr_ratchet_cleanup_ctx(vscr_ratchet_t *self);
 
-static vscr_error_t
+static vscr_status_t
 vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet_chain_key_t *chain_key,
         const RegularMessage *message, vsc_buffer_t *buffer);
 
-static vscr_error_t
+static vscr_status_t
 vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const RegularMessage *message, vsc_buffer_t *buffer);
 
-static vscr_error_t
+static vscr_status_t
 vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self, vscr_ratchet_sender_chain_t *sender_chain);
 
 //
@@ -375,7 +375,7 @@ vscr_ratchet_setup_defaults(vscr_ratchet_t *self) {
     vscr_ratchet_take_cipher(self, vscr_ratchet_cipher_new());
 }
 
-static vscr_error_t
+static vscr_status_t
 vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet_chain_key_t *chain_key,
         const RegularMessage *message, vsc_buffer_t *buffer) {
 
@@ -386,12 +386,12 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet
 
     // This message should be already decrypted
     if (message->counter < chain_key->index) {
-        return vscr_error_MESSAGE_ALREADY_DECRYPTED;
+        return vscr_status_ERROR_MESSAGE_ALREADY_DECRYPTED;
     }
 
     // Too many lost messages
     if (message->counter - chain_key->index > vscr_ratchet_common_hidden_MAX_MESSAGE_GAP) {
-        return vscr_error_TOO_MANY_LOST_MESSAGES;
+        return vscr_status_ERROR_TOO_MANY_LOST_MESSAGES;
     }
 
     vscr_ratchet_chain_key_t *new_chain_key = vscr_ratchet_chain_key_new();
@@ -403,7 +403,7 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet
 
     vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(new_chain_key);
 
-    vscr_error_t result = vscr_ratchet_cipher_decrypt(self->cipher,
+    vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher,
             vsc_data(message_key->key, sizeof(message_key->key)), vsc_buffer_data(message->cipher_text.arg), buffer);
 
     vscr_ratchet_chain_key_destroy(&new_chain_key);
@@ -412,7 +412,7 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet
     return result;
 }
 
-static vscr_error_t
+static vscr_status_t
 vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const RegularMessage *message, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(self);
@@ -420,21 +420,21 @@ vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const RegularMessage *m
     VSCR_ASSERT_PTR(buffer);
 
     if (!self->sender_chain) {
-        return vscr_error_SENDER_CHAIN_MISSING;
+        return vscr_status_ERROR_SENDER_CHAIN_MISSING;
     }
 
     if (message->counter > vscr_ratchet_common_hidden_MAX_MESSAGE_GAP) {
-        return vscr_error_TOO_MANY_LOST_MESSAGES;
+        return vscr_status_ERROR_TOO_MANY_LOST_MESSAGES;
     }
 
     byte new_root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
 
     vscr_ratchet_receiver_chain_t *new_chain = vscr_ratchet_receiver_chain_new();
-    vscr_error_t result = vscr_ratchet_keys_create_chain_key(self->root_key,
+    vscr_status_t result = vscr_ratchet_keys_create_chain_key(self->root_key,
             vsc_data(self->sender_chain->private_key, sizeof(self->sender_chain->private_key)),
             vsc_data(message->public_key, sizeof(message->public_key)), new_root_key, &new_chain->chain_key);
 
-    if (result != vscr_SUCCESS) {
+    if (result != vscr_status_SUCCESS) {
         goto err;
     }
 
@@ -447,7 +447,7 @@ err:
     return result;
 }
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const RegularMessage *message) {
 
     VSCR_ASSERT_PTR(self);
@@ -472,27 +472,27 @@ vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const Regul
     vsc_buffer_t *msg_buffer =
             vsc_buffer_new_with_capacity(vscr_ratchet_decrypt_len(self, vsc_buffer_len(message->cipher_text.arg)));
     vsc_buffer_make_secure(msg_buffer);
-    vscr_error_t status =
+    vscr_status_t status =
             vscr_ratchet_decrypt_for_existing_chain(self, &receiver_chain->chain_key, message, msg_buffer);
     vsc_buffer_destroy(&msg_buffer);
 
     return status;
 }
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN || shared_secret.len == 4 * ED25519_DH_LEN);
     VSCR_ASSERT(!self->sender_chain);
 
-    vscr_error_t status = vscr_SUCCESS;
+    vscr_status_t status = vscr_status_SUCCESS;
 
     vscr_ratchet_sender_chain_t *sender_chain = vscr_ratchet_sender_chain_new();
 
     status = vscr_ratchet_generate_sender_chain_keypair(self, sender_chain);
 
-    if (status != vscr_SUCCESS) {
+    if (status != vscr_status_SUCCESS) {
         vscr_ratchet_sender_chain_destroy(&sender_chain);
         return status;
     }
@@ -514,19 +514,19 @@ vscr_ratchet_encrypt_len(vscr_ratchet_t *self, size_t plain_text_len) {
     return vscr_ratchet_cipher_encrypt_len(self->cipher, plain_text_len);
 }
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage *regular_message) {
 
     VSCR_ASSERT_PTR(self);
 
-    vscr_error_t result = vscr_SUCCESS;
+    vscr_status_t result = vscr_status_SUCCESS;
 
     if (!self->sender_chain) {
         vscr_ratchet_sender_chain_t *sender_chain = vscr_ratchet_sender_chain_new();
 
         result = vscr_ratchet_generate_sender_chain_keypair(self, sender_chain);
 
-        if (result != vscr_SUCCESS) {
+        if (result != vscr_status_SUCCESS) {
             vscr_ratchet_sender_chain_destroy(&sender_chain);
             return result;
         }
@@ -538,13 +538,13 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
                 vsc_data(first_chain->public_key, sizeof(first_chain->public_key)), self->root_key,
                 &sender_chain->chain_key);
 
-        if (result != vscr_SUCCESS) {
+        if (result != vscr_status_SUCCESS) {
             return result;
         }
     }
 
     if (self->sender_chain->chain_key.index == UINT32_MAX) {
-        result = vscr_error_TOO_MANY_MESSAGES_FOR_SENDER_CHAIN;
+        result = vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_SENDER_CHAIN;
         goto err1;
     }
 
@@ -555,7 +555,7 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
     result = vscr_ratchet_cipher_encrypt(self->cipher, vsc_data(message_key->key, sizeof(message_key->key)), plain_text,
             regular_message->cipher_text.arg);
 
-    if (result != vscr_SUCCESS) {
+    if (result != vscr_status_SUCCESS) {
         goto err2;
     }
 
@@ -580,17 +580,17 @@ vscr_ratchet_decrypt_len(vscr_ratchet_t *self, size_t cipher_text_len) {
     return vscr_ratchet_cipher_decrypt_len(self->cipher, cipher_text_len);
 }
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message, vsc_buffer_t *plain_text) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(plain_text);
 
     if (regular_message->version != vscr_ratchet_common_hidden_RATCHET_REGULAR_MESSAGE_VERSION) {
-        return vscr_error_MESSAGE_VERSION_DOESN_T_MATCH;
+        return vscr_status_ERROR_MESSAGE_VERSION_DOESN_T_MATCH;
     }
 
-    vscr_error_t result;
+    vscr_status_t result;
 
     vscr_ratchet_receiver_chain_t *receiver_chain = vscr_ratchet_receiver_chains_find_chain(
             self->receiver_chains, vsc_data(regular_message->public_key, sizeof(regular_message->public_key)));
@@ -602,14 +602,14 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
 
         if (!skipped_message_key) {
             if (receiver_chain) {
-                return vscr_error_SKIPPED_MESSAGE_MISSING;
+                return vscr_status_ERROR_SKIPPED_MESSAGE_MISSING;
             }
         } else {
             result = vscr_ratchet_cipher_decrypt(self->cipher,
                     vsc_data(skipped_message_key->message_key->key, sizeof(skipped_message_key->message_key->key)),
                     vsc_buffer_data(regular_message->cipher_text.arg), plain_text);
 
-            if (result == vscr_SUCCESS) {
+            if (result == vscr_status_SUCCESS) {
                 vscr_ratchet_skipped_messages_delete_key(self->skipped_messages, skipped_message_key);
             }
 
@@ -623,7 +623,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
         result = vscr_ratchet_decrypt_for_existing_chain(self, &receiver_chain->chain_key, regular_message, plain_text);
     }
 
-    if (result != vscr_SUCCESS) {
+    if (result != vscr_status_SUCCESS) {
         return result;
     }
 
@@ -637,7 +637,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
                 vsc_data(new_receiver_chain->public_key, sizeof(new_receiver_chain->public_key)), self->root_key,
                 &new_receiver_chain->chain_key);
 
-        if (result != vscr_SUCCESS) {
+        if (result != vscr_status_SUCCESS) {
             vscr_ratchet_receiver_chain_destroy(&new_receiver_chain);
             return result;
         }
@@ -658,7 +658,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
     }
 
     if (receiver_chain->chain_key.index == UINT32_MAX) {
-        result = vscr_error_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN;
+        result = vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN;
         goto err;
     }
 
@@ -671,7 +671,7 @@ err:
     return result;
 }
 
-static vscr_error_t
+static vscr_status_t
 vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self, vscr_ratchet_sender_chain_t *sender_chain) {
 
     VSCR_ASSERT_PTR(self);
@@ -682,11 +682,12 @@ vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self, vscr_ratchet_se
     vsc_buffer_init(&ratchet_private_key);
     vsc_buffer_use(&ratchet_private_key, sender_chain->private_key, sizeof(sender_chain->private_key));
 
-    vscf_error_t f_status = vscf_random(self->rng, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH, &ratchet_private_key);
+    vscf_status_t f_status =
+            vscf_random(self->rng, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH, &ratchet_private_key);
     vsc_buffer_delete(&ratchet_private_key);
 
-    if (f_status != vscf_SUCCESS) {
-        return vscr_error_RNG_FAILED;
+    if (f_status != vscf_status_SUCCESS) {
+        return vscr_status_ERROR_RNG_FAILED;
     }
 
     self->sender_chain = sender_chain;
@@ -694,10 +695,10 @@ vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self, vscr_ratchet_se
     int curve_status = curve25519_get_pubkey(sender_chain->public_key, sender_chain->private_key);
 
     if (curve_status != 0) {
-        return vscr_error_CURVE25519;
+        return vscr_status_ERROR_CURVE25519;
     }
 
-    return vscr_SUCCESS;
+    return vscr_status_SUCCESS;
 }
 
 VSCR_PUBLIC void

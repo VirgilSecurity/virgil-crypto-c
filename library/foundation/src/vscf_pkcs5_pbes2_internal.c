@@ -89,6 +89,10 @@ static const vscf_alg_api_t alg_api = {
     //
     vscf_api_tag_ALG,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_PKCS5_PBES2,
+    //
     //  Provide algorithm identificator.
     //
     (vscf_alg_api_alg_id_fn)vscf_pkcs5_pbes2_alg_id,
@@ -112,6 +116,10 @@ static const vscf_encrypt_api_t encrypt_api = {
     //
     vscf_api_tag_ENCRYPT,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_PKCS5_PBES2,
+    //
     //  Encrypt given data.
     //
     (vscf_encrypt_api_encrypt_fn)vscf_pkcs5_pbes2_encrypt,
@@ -131,6 +139,10 @@ static const vscf_decrypt_api_t decrypt_api = {
     //
     vscf_api_tag_DECRYPT,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_PKCS5_PBES2,
+    //
     //  Decrypt given data.
     //
     (vscf_decrypt_api_decrypt_fn)vscf_pkcs5_pbes2_decrypt,
@@ -144,6 +156,10 @@ static const vscf_decrypt_api_t decrypt_api = {
 //  Compile-time known information about 'pkcs5 pbes2' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_PKCS5_PBES2,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

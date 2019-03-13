@@ -56,7 +56,7 @@
 
 #include "vsce_library.h"
 #include "vsce_phe_common.h"
-#include "vsce_error.h"
+#include "vsce_status.h"
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -189,7 +189,7 @@ vsce_phe_server_release_operation_random(vsce_phe_server_t *self);
 //
 //  Generates new NIST P-256 server key pair for some client
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_server_generate_server_key_pair(vsce_phe_server_t *self, vsc_buffer_t *server_private_key,
         vsc_buffer_t *server_public_key);
 
@@ -202,7 +202,7 @@ vsce_phe_server_enrollment_response_len(vsce_phe_server_t *self);
 //
 //  Generates a new random enrollment and proof for a new user
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_server_get_enrollment(vsce_phe_server_t *self, vsc_data_t server_private_key, vsc_data_t server_public_key,
         vsc_buffer_t *enrollment_response);
 
@@ -215,7 +215,7 @@ vsce_phe_server_verify_password_response_len(vsce_phe_server_t *self);
 //
 //  Verifies existing user's password and generates response with proof
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_private_key, vsc_data_t server_public_key,
         vsc_data_t verify_password_request, vsc_buffer_t *verify_password_response);
 
@@ -228,7 +228,7 @@ vsce_phe_server_update_token_len(vsce_phe_server_t *self);
 //
 //  Updates server's private and public keys and issues an update token for use on client's side
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_server_rotate_keys(vsce_phe_server_t *self, vsc_data_t server_private_key,
         vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key, vsc_buffer_t *update_token);
 

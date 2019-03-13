@@ -190,7 +190,7 @@ function c_dependency_add_method_use (dependency, declaration, definition, desti
 
             if my.dependency.has_observers
                 new return to method
-                    .enum = "error"
+                    .enum = "status"
                 endnew
 
                 my.impl_did_setup_dependency = "\
@@ -265,7 +265,7 @@ function c_dependency_add_method_take (dependency, declaration, definition, dest
 
             if my.dependency.has_observers
                 new return to method
-                    .enum = "error"
+                    .enum = "status"
                 endnew
 
                 my.impl_did_setup_dependency = "\
@@ -361,7 +361,7 @@ function c_dependency_add_method_did_setup (dependency, declaration, definition,
         .visibility = "private"
 
         new return to method
-            .enum = "error"
+            .enum = "status"
         endnew
 
         c_dependency_add_argument_context (method, my.meta)

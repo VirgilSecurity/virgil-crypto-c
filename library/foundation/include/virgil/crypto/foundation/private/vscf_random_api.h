@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -84,12 +84,12 @@ extern "C" {
 //
 //  Callback. Generate random bytes.
 //
-typedef vscf_error_t (*vscf_random_api_random_fn)(vscf_impl_t *impl, size_t data_len, vsc_buffer_t *data);
+typedef vscf_status_t (*vscf_random_api_random_fn)(vscf_impl_t *impl, size_t data_len, vsc_buffer_t *data);
 
 //
 //  Callback. Retreive new seed data from the entropy sources.
 //
-typedef vscf_error_t (*vscf_random_api_reseed_fn)(vscf_impl_t *impl);
+typedef vscf_status_t (*vscf_random_api_reseed_fn)(vscf_impl_t *impl);
 
 //
 //  Contains API requirements of the interface 'random'.
@@ -100,6 +100,10 @@ struct vscf_random_api_t {
     //  For interface 'random' MUST be equal to the 'vscf_api_tag_RANDOM'.
     //
     vscf_api_tag_t api_tag;
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
     //
     //  Generate random bytes.
     //

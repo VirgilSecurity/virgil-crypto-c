@@ -22,6 +22,6 @@
 
         <argument name="alg info" interface="alg info" access="readonly"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 </interface>

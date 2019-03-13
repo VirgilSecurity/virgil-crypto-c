@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_alg_id.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -176,7 +176,7 @@ vscf_kdf2_produce_alg_info(const vscf_kdf2_t *self);
 //
 //  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_kdf2_restore_alg_info(vscf_kdf2_t *self, const vscf_impl_t *alg_info);
 
 //

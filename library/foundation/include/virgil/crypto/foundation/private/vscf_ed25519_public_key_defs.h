@@ -103,10 +103,6 @@ struct vscf_ed25519_public_key_t {
     //  Implementation specific context.
     //
     byte public_key[ED25519_KEY_LEN];
-    //
-    //  Implementation specific context.
-    //
-    byte signature[ED25519_KEY_LEN];
 };
 
 

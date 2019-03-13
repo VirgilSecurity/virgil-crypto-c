@@ -35,10 +35,9 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// This is implementation of ED25519 public key
-@objc(VSCFEd25519PublicKey) public class Ed25519PublicKey: NSObject, Defaults, Alg, Key, Encrypt, Verify, PublicKey, GenerateEphemeralKey {
+@objc(VSCFEd25519PublicKey) public class Ed25519PublicKey: NSObject, Defaults, Alg, Key, Encrypt, VerifyHash, PublicKey, GenerateEphemeralKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -88,7 +87,7 @@ import VirgilCryptoCommon
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_ed25519_public_key_setup_defaults(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Provide algorithm identificator.
@@ -102,14 +101,14 @@ import VirgilCryptoCommon
     @objc public func produceAlgInfo() -> AlgInfo {
         let proxyResult = vscf_ed25519_public_key_produce_alg_info(self.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Restore algorithm configuration from the given object.
     @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
         let proxyResult = vscf_ed25519_public_key_restore_alg_info(self.c_ctx, algInfo.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Length of the key in bytes.
@@ -135,16 +134,17 @@ import VirgilCryptoCommon
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
+
                 return vscf_ed25519_public_key_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
         out.count = vsc_buffer_len(outBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
     }
@@ -157,10 +157,11 @@ import VirgilCryptoCommon
     }
 
     /// Verify data with given public key and signature.
-    @objc public func verify(data: Data, signature: Data) -> Bool {
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Bool in
+    @objc public func verifyHash(hashDigest: Data, hashId: AlgId, signature: Data) -> Bool {
+        let proxyResult = hashDigest.withUnsafeBytes({ (hashDigestPointer: UnsafePointer<byte>) -> Bool in
             signature.withUnsafeBytes({ (signaturePointer: UnsafePointer<byte>) -> Bool in
-                return vscf_ed25519_public_key_verify(self.c_ctx, vsc_data(dataPointer, data.count), vsc_data(signaturePointer, signature.count))
+
+                return vscf_ed25519_public_key_verify_hash(self.c_ctx, vsc_data(hashDigestPointer, hashDigest.count), vscf_alg_id_t(rawValue: UInt32(hashId.rawValue)), vsc_data(signaturePointer, signature.count))
             })
         })
 
@@ -180,14 +181,15 @@ import VirgilCryptoCommon
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
+
             return vscf_ed25519_public_key_export_public_key(self.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
     }
@@ -205,17 +207,23 @@ import VirgilCryptoCommon
     /// For instance, RSA public key must be imported from the format defined in
     /// RFC 3447 Appendix A.1.1.
     @objc public func importPublicKey(data: Data) throws {
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+
             return vscf_ed25519_public_key_import_public_key(self.c_ctx, vsc_data(dataPointer, data.count))
         })
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Generate ephemeral private key of the same type.
-    @objc public func generateEphemeralKey(error: ErrorCtx) -> PrivateKey {
-        let proxyResult = vscf_ed25519_public_key_generate_ephemeral_key(self.c_ctx, error.c_ctx)
+    @objc public func generateEphemeralKey() throws -> PrivateKey {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
 
-        return PrivateKeyProxy.init(c_ctx: proxyResult!)
+        let proxyResult = vscf_ed25519_public_key_generate_ephemeral_key(self.c_ctx, &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
     }
 }

@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Handle symmetric cipher algorithm information.
 @objc(VSCFCipherAlgInfo) public class CipherAlgInfo: NSObject, AlgInfo {
@@ -66,6 +65,7 @@ import VirgilCryptoCommon
     /// Create symmetric cipher algorithm info with identificator and input vector.
     public init(algId: AlgId, nonce: Data) {
         let proxyResult = nonce.withUnsafeBytes({ (noncePointer: UnsafePointer<byte>) -> OpaquePointer? in
+
             return vscf_cipher_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), vsc_data(noncePointer, nonce.count))
         })
 

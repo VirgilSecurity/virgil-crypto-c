@@ -44,8 +44,20 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Error context.
+//  Can be used for sequential operations, i.e. parsers, to accumulate error.
+//  In this way operation is successful if all steps are successful, otherwise
+//  last occurred error code can be obtained.
+// --------------------------------------------------------------------------
+
 #ifndef VSCE_ERROR_H_INCLUDED
 #define VSCE_ERROR_H_INCLUDED
+
+#include "vsce_library.h"
+#include "vsce_status.h"
 
 // clang-format on
 //  @end
@@ -62,41 +74,56 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-enum vsce_error_t {
-    //
-    //  No errors was occurred.
-    //
-    vsce_SUCCESS = 0,
-    //
-    //  Success proof check failed.
-    //
-    vsce_error_INVALID_SUCCESS_PROOF,
-    //
-    //  Failure proof check failed.
-    //
-    vsce_error_INVALID_FAIL_PROOF,
-    //
-    //  RNG returned error
-    //
-    vsce_error_RNG_ERROR,
-    //
-    //  Protobuf decode failed
-    //
-    vsce_error_PROTOBUF_DECODE_ERROR,
-    //
-    //  Invalid ECP
-    //
-    vsce_error_INVALID_ECP,
-    //
-    //  Invalid private key
-    //
-    vsce_error_INVALID_PRIVATE_KEY,
-    //
-    //  AES error occurred
-    //
-    vsce_error_AES_ERROR
+//
+//  Perform update only if context defined, otherwise log error.
+//
+#define VSCE_ERROR_SAFE_UPDATE(CTX, ERR)                            \
+    do {                                                            \
+        if (NULL != (CTX)) {                                        \
+            vsce_error_update ((CTX), (ERR));                       \
+        } else {                                                    \
+            /* TODO: Log this error, when logging will be added. */ \
+        }                                                           \
+    } while (false)
+
+//
+//  Handle 'error' context.
+//
+typedef struct vsce_error_t vsce_error_t;
+struct vsce_error_t {
+    vsce_status_t status;
 };
-typedef enum vsce_error_t vsce_error_t;
+
+//
+//  Return size of 'vsce_error_t'.
+//
+VSCE_PUBLIC size_t
+vsce_error_ctx_size(void);
+
+//
+//  Reset context to the "no error" state.
+//
+VSCE_PUBLIC void
+vsce_error_reset(vsce_error_t *self);
+
+//
+//  Update context with given status.
+//  If status is "success" then do nothing.
+//
+VSCE_PRIVATE void
+vsce_error_update(vsce_error_t *self, vsce_status_t status);
+
+//
+//  Return true if status is not "success".
+//
+VSCE_PUBLIC bool
+vsce_error_has_error(const vsce_error_t *self);
+
+//
+//  Return error code.
+//
+VSCE_PUBLIC vsce_status_t
+vsce_error_status(const vsce_error_t *self);
 
 
 // --------------------------------------------------------------------------

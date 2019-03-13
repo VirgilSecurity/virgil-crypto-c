@@ -178,12 +178,12 @@ PHP_FUNCTION(vscp_pythia_blind_php) {
     vsc_buffer_t *blinding_secret = vsc_buffer_new();
     vsc_buffer_use(blinding_secret, (byte *)ZSTR_VAL(out_blinding_secret), ZSTR_LEN(out_blinding_secret));
 
-    vscp_error_t status = vscp_pythia_blind(pythia, password, blinded_password, blinding_secret);
+    vscp_status_t status = vscp_pythia_blind(pythia, password, blinded_password, blinding_secret);
 
     //
     //  Handle error
     //
-    if(status != vscp_SUCCESS) {
+    if(status != vscp_status_SUCCESS) {
         zend_throw_exception(NULL, "Pythia error", status);
         goto fail;
     }

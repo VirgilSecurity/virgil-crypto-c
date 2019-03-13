@@ -62,7 +62,7 @@
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 #include "vscf_api.h"
 
 // clang-format on
@@ -78,7 +78,7 @@
 //
 //  This method is called when interface 'asn1 reader' was setup.
 //
-VSCF_PRIVATE vscf_error_t
+VSCF_PRIVATE vscf_status_t
 vscf_message_info_der_serializer_did_setup_asn1_reader(vscf_message_info_der_serializer_t *self);
 
 //
@@ -90,7 +90,7 @@ vscf_message_info_der_serializer_did_release_asn1_reader(vscf_message_info_der_s
 //
 //  This method is called when interface 'asn1 writer' was setup.
 //
-VSCF_PRIVATE vscf_error_t
+VSCF_PRIVATE vscf_status_t
 vscf_message_info_der_serializer_did_setup_asn1_writer(vscf_message_info_der_serializer_t *self);
 
 //
@@ -112,6 +112,10 @@ static const vscf_defaults_api_t defaults_api = {
     //
     vscf_api_tag_DEFAULTS,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER,
+    //
     //  Setup predefined values to the uninitialized class dependencies.
     //
     (vscf_defaults_api_setup_defaults_fn)vscf_message_info_der_serializer_setup_defaults
@@ -126,6 +130,10 @@ static const vscf_message_info_serializer_api_t message_info_serializer_api = {
     //  For interface 'message_info_serializer' MUST be equal to the 'vscf_api_tag_MESSAGE_INFO_SERIALIZER'.
     //
     vscf_api_tag_MESSAGE_INFO_SERIALIZER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER,
     //
     //  Return buffer size enough to hold serialized message info.
     //
@@ -153,6 +161,10 @@ static const vscf_message_info_serializer_api_t message_info_serializer_api = {
 //  Compile-time known information about 'message info der serializer' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
@@ -289,7 +301,7 @@ vscf_message_info_der_serializer_impl(vscf_message_info_der_serializer_t *self) 
 //
 //  Setup dependency to the interface 'asn1 reader' with shared ownership.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_message_info_der_serializer_use_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader) {
 
     VSCF_ASSERT_PTR(self);
@@ -307,7 +319,7 @@ vscf_message_info_der_serializer_use_asn1_reader(vscf_message_info_der_serialize
 //  Setup dependency to the interface 'asn1 reader' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_message_info_der_serializer_take_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader) {
 
     VSCF_ASSERT_PTR(self);
@@ -337,7 +349,7 @@ vscf_message_info_der_serializer_release_asn1_reader(vscf_message_info_der_seria
 //
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_message_info_der_serializer_use_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer) {
 
     VSCF_ASSERT_PTR(self);
@@ -355,7 +367,7 @@ vscf_message_info_der_serializer_use_asn1_writer(vscf_message_info_der_serialize
 //  Setup dependency to the interface 'asn1 writer' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_message_info_der_serializer_take_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer) {
 
     VSCF_ASSERT_PTR(self);
