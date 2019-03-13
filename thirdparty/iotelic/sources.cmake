@@ -46,5 +46,14 @@ endif()
 
 target_sources(iotelic
         PRIVATE
-            "${CMAKE_CURRENT_LIST_DIR}/src/test.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/iotelic_sp_interface.c"
+        )
+
+set(SP_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../../../sp)
+
+target_include_directories(iotelic
+        PRIVATE
+        "${CMAKE_CURRENT_LIST_DIR}/include"
+        "${SP_DIR}/bsp/include"
+        "${SP_DIR}/bsp/driver"
         )
