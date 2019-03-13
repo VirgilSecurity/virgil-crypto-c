@@ -1,3 +1,5 @@
+#   @license
+#   -------------------------------------------------------------------------
 #   Copyright (C) 2015-2019 Virgil Security, Inc.
 #
 #   All rights reserved.
@@ -31,50 +33,18 @@
 #   POSSIBILITY OF SUCH DAMAGE.
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+#   -------------------------------------------------------------------------
+#   @end
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(iotelic VERSION 1.0.0 LANGUAGES C)
+include_guard()
 
-# ---------------------------------------------------------------------------
-#   Check dependencies
-# ---------------------------------------------------------------------------
+if(NOT TARGET iotelic)
+    message(FATAL_ERROR "Expected target 'iotelic' to be defined first.")
+endif()
 
-#
-# Options
-#
-include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 
-# ---------------------------------------------------------------------------
-#   Define library
-# ---------------------------------------------------------------------------
-
-#
-# Define sources
-#
-add_library(iotelic STATIC "")
-include("${CMAKE_CURRENT_LIST_DIR}/sources.cmake")
-#include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
-
-#
-# Define include headers
-#
-set (INC_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../../../ap/inc)
-target_include_directories(iotelic
-        INTERFACE
-        "$<BUILD_INTERFACE:>${INC_DIR}"
-        "$<BUILD_INTERFACE:>${INC_DIR}/app"
-        "$<BUILD_INTERFACE:>${INC_DIR}/bsp"
-        "$<BUILD_INTERFACE:>${INC_DIR}/gpio"
-        "$<BUILD_INTERFACE:>${INC_DIR}/compiler/gcc"
-        "$<BUILD_INTERFACE:>${INC_DIR}/dbglog"
-        "$<BUILD_INTERFACE:>${INC_DIR}/io_lib"
-        "$<BUILD_INTERFACE:>${INC_DIR}/os_shim"
-        "$<BUILD_INTERFACE:>${INC_DIR}/pib"
-        "$<BUILD_INTERFACE:>${INC_DIR}/pkt"
-        "$<BUILD_INTERFACE:>${INC_DIR}/plc_lib"
-        "$<BUILD_INTERFACE:>${INC_DIR}/uart"
-        "$<BUILD_INTERFACE:>${INC_DIR}/upgrade"
-        "$<BUILD_INTERFACE:>${INC_DIR}/utils"
-        "$<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}>"
+target_sources(iotelic
+        PRIVATE
+            "${CMAKE_CURRENT_LIST_DIR}/src/test.c"
         )
