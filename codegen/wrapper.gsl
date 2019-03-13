@@ -40,12 +40,12 @@
 #       1. Create file `<lang>.gsl` with methods:
 #           - <lang>_resolve (project, wrapper, projects_api)
 #           - <lang>_create_project_module (project, destination, wrapper)
-#           - <lang>_create_c_context_module (source, destination, wrapper, meta)
+#           - <lang>_create_custom_modules (source, destination, wrapper, meta) [optional]
 #           - <lang>_create_interface_module (source, destination, wrapper, meta)
 #           - <lang>_create_implementation_module (source, destination, wrapper, meta)
-#           - <lang>_finalize_implementation_helper_modules (destination, wrapper, meta) [optional]
 #           - <lang>_create_class_module (source, destination, wrapper, meta)
 #           - <lang>_create_enum_module (source, destination, wrapper, meta)
+#           - <lang>_finalize_custom_modules (source, destination, wrapper, meta) [optional]
 #           - <lang>_module_resolve(source, wrapper)
 #
 #       2. Create file `<lang>_codegen.gsl` with methods:
@@ -91,20 +91,13 @@ function wrapper_create_project_module (project, destination, wrapper)
 endfunction
 
 
-function wrapper_create_c_context_module (source, destination, wrapper, meta)
+function wrapper_create_custom_modules (source, destination, wrapper, meta)
     check_arguments (my, "source, destination, wrapper, meta", my)
 
-    if !count (my.source.class, scope = "public" & !string_in (name, "data, buffer")) & \
-            !count (my.source.interface, scope = "public")
-        return
+    my.proxy_func = make_id(my.wrapper.lang, "create_custom_modules")
+    if macro (my.proxy_func)
+        $(my.proxy_func:) (my.source, my.destination, my.wrapper, my.meta)
     endif
-
-    my.proxy_func = make_id(my.wrapper.lang, "create_c_context_module")
-    if ! macro (my.proxy_func)
-        echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
-    endif
-
-    $(my.proxy_func:) (my.destination, my.wrapper, my.meta)
 endfunction
 
 
@@ -131,15 +124,9 @@ function wrapper_foreach_implementation_create_module (source, destination, wrap
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 
-    my.finalize_impl_helper_func = make_id(my.wrapper.lang, "finalize_implementation_helper_modules")
-
     for my.source.implementation where implementation.scope = "public"
         meta_reset_active_entity (my.meta, implementation.name)
         $(my.proxy_func:) (implementation, my.destination, my.wrapper, my.meta)
-
-        if last() & macro (my.finalize_impl_helper_func)
-            $(my.finalize_impl_helper_func:) (my.destination, my.wrapper, my.meta)
-        endif
     endfor
 endfunction
 
@@ -172,6 +159,16 @@ function wrapper_foreach_enum_create_module (source, destination, wrapper, meta)
         meta_reset_active_entity (my.meta, enum.name)
         $(my.proxy_func:) (enum, my.destination, my.wrapper, my.meta)
     endfor
+endfunction
+
+
+function wrapper_finalize_custom_modules (source, destination, wrapper, meta)
+    check_arguments (my, "source, destination, wrapper, meta", my)
+
+    my.proxy_func = make_id(my.wrapper.lang, "finalize_custom_modules")
+    if macro (my.proxy_func)
+        $(my.proxy_func:) (my.source, my.destination, my.wrapper, my.meta)
+    endif
 endfunction
 
 

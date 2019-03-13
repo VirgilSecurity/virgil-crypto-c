@@ -30,12 +30,12 @@ Entities are sorted by generation simplicity.
 1. Create file `<lang>.gsl` with methods:
     - <lang>_resolve (project, wrapper, projects_api)
     - <lang>_create_project_module (project, destination, wrapper)
-    - <lang>_create_c_context_module (source, destination, wrapper, meta)
+    - <lang>_create_custom_modules (source, destination, wrapper, meta) [optional]
     - <lang>_create_interface_module (source, destination, wrapper, meta)
     - <lang>_create_implementation_module (source, destination, wrapper, meta)
-    - <lang>_finalize_implementation_helper_modules (destination, wrapper, meta) [optional]
     - <lang>_create_class_module (source, destination, wrapper, meta)
     - <lang>_create_enum_module (source, destination, wrapper, meta)
+    - <lang>_finalize_custom_modules (source, destination, wrapper, meta) [optional]
     - <lang>_module_resolve(source, wrapper)
 2. Create file `<lang>_codegen.gsl` with methods:
     - <lang>_generate_project(source, wrapper)
@@ -47,12 +47,19 @@ Entities are sorted by generation simplicity.
 7. For each project that should be wrapped update property `wrappers` by adding `<lang>`, for instance `<project wrappers="swift, php"/>`.
 
 
-## Enum `error` wrap strategy
+## Enum `status` wrap strategy
 
-Enum `error` is a special enumeration that contains library error codes.
+Enum `status` is a special enumeration that contains library status codes.
 
 It should be transformed into a language-specific error.
 
+
+
+## Class `error` wrap strategy
+
+Class `error` is a special class that contains library status codes.
+
+It should be transformed into a language-specific error.
 
 
 

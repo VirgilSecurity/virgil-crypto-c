@@ -2164,10 +2164,16 @@ function swift_create_project_module (project, destination, wrapper)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create module with base protocol that handles C context.
+#   Create custom modules:
+#       - module with base protocol that handles C context.
 # ---------------------------------------------------------------------------
-function swift_create_c_context_module (destination, wrapper, meta)
-    check_arguments (my, "destination, wrapper, meta", my)
+function swift_create_custom_modules (source, destination, wrapper, meta)
+    check_arguments (my, "source, destination, wrapper, meta", my)
+
+    if !count (my.source.class, scope = "public" & !string_in (name, "data, buffer")) & \
+            !count (my.source.interface, scope = "public")
+        return
+    endif
 
     my.name = "CContext"
 
@@ -2341,6 +2347,16 @@ function swift_finalize_implementation_helper_modules (destination, wrapper, met
         swift_method->swift_code. = swift_method->swift_code.temp_code
         swift_method->swift_code.temp_code = # undefined
     endfor
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Perform finalization for custom modules.
+# ---------------------------------------------------------------------------
+function swift_finalize_custom_modules (source, destination, wrapper, meta)
+    check_arguments (my, "source, destination, wrapper, meta", my)
+
+    swift_finalize_implementation_helper_modules (my.destination, my.wrapper, my.meta)
 endfunction
 
 # ---------------------------------------------------------------------------
