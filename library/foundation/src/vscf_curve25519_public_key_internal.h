@@ -51,11 +51,11 @@
 //  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_X25519_PRIVATE_KEY_INTERNAL_H_INCLUDED
-#define VSCF_X25519_PRIVATE_KEY_INTERNAL_H_INCLUDED
+#ifndef VSCF_CURVE25519_PUBLIC_KEY_INTERNAL_H_INCLUDED
+#define VSCF_CURVE25519_PUBLIC_KEY_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_x25519_private_key.h"
+#include "vscf_curve25519_public_key.h"
 
 // clang-format on
 //  @end
@@ -74,11 +74,11 @@ extern "C" {
 
 //
 //  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_x25519_private_key_init() is called.
+//  Note, this method is called automatically when method vscf_curve25519_public_key_init() is called.
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_x25519_private_key_init_ctx(vscf_x25519_private_key_t *self);
+vscf_curve25519_public_key_init_ctx(vscf_curve25519_public_key_t *self);
 
 //
 //  Release resources of the implementation specific context.
@@ -86,7 +86,7 @@ vscf_x25519_private_key_init_ctx(vscf_x25519_private_key_t *self);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_x25519_private_key_cleanup_ctx(vscf_x25519_private_key_t *self);
+vscf_curve25519_public_key_cleanup_ctx(vscf_curve25519_public_key_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -102,5 +102,5 @@ vscf_x25519_private_key_cleanup_ctx(vscf_x25519_private_key_t *self);
 
 
 //  @footer
-#endif // VSCF_X25519_PRIVATE_KEY_INTERNAL_H_INCLUDED
+#endif // VSCF_CURVE25519_PUBLIC_KEY_INTERNAL_H_INCLUDED
 //  @end

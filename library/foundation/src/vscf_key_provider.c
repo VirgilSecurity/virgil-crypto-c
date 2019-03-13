@@ -63,8 +63,8 @@
 #include "vscf_rsa_private_key.h"
 #include "vscf_ed25519_public_key.h"
 #include "vscf_ed25519_private_key.h"
-#include "vscf_x25519_public_key.h"
-#include "vscf_x25519_private_key.h"
+#include "vscf_curve25519_public_key.h"
+#include "vscf_curve25519_private_key.h"
 #include "vscf_pkcs8_der_deserializer.h"
 
 // clang-format on
@@ -406,17 +406,17 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
         }
     }
 
-    case vscf_alg_id_X25519: {
+    case vscf_alg_id_CURVE25519: {
         VSCF_ASSERT_PTR(self->ecies);
-        vscf_x25519_private_key_t *private_key = vscf_x25519_private_key_new();
-        vscf_x25519_private_key_use_random(private_key, self->random);
-        vscf_x25519_private_key_setup_defaults(private_key);
-        vscf_x25519_private_key_generate_key(private_key);
-        vscf_status_t status = vscf_x25519_private_key_generate_key(private_key);
+        vscf_curve25519_private_key_t *private_key = vscf_curve25519_private_key_new();
+        vscf_curve25519_private_key_use_random(private_key, self->random);
+        vscf_curve25519_private_key_setup_defaults(private_key);
+        vscf_curve25519_private_key_generate_key(private_key);
+        vscf_status_t status = vscf_curve25519_private_key_generate_key(private_key);
         if (status == vscf_status_SUCCESS) {
-            return vscf_x25519_private_key_impl(private_key);
+            return vscf_curve25519_private_key_impl(private_key);
         } else {
-            vscf_x25519_private_key_destroy(&private_key);
+            vscf_curve25519_private_key_destroy(&private_key);
             VSCF_ERROR_SAFE_UPDATE(error, status);
             return NULL;
         }
@@ -470,12 +470,12 @@ vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8
         break;
     }
 
-    case vscf_alg_id_X25519: {
+    case vscf_alg_id_CURVE25519: {
         VSCF_ASSERT_PTR(self->ecies);
-        vscf_x25519_private_key_t *x25519_private_key = vscf_x25519_private_key_new();
-        vscf_x25519_private_key_use_random(x25519_private_key, self->random);
-        vscf_x25519_private_key_setup_defaults(x25519_private_key);
-        private_key = vscf_x25519_private_key_impl(x25519_private_key);
+        vscf_curve25519_private_key_t *curve25519_private_key = vscf_curve25519_private_key_new();
+        vscf_curve25519_private_key_use_random(curve25519_private_key, self->random);
+        vscf_curve25519_private_key_setup_defaults(curve25519_private_key);
+        private_key = vscf_curve25519_private_key_impl(curve25519_private_key);
         break;
     }
 
@@ -541,12 +541,12 @@ vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t pkcs8_
         break;
     }
 
-    case vscf_alg_id_X25519: {
+    case vscf_alg_id_CURVE25519: {
         VSCF_ASSERT_PTR(self->ecies);
-        vscf_x25519_public_key_t *x25519_public_key = vscf_x25519_public_key_new();
-        vscf_x25519_public_key_use_random(x25519_public_key, self->random);
-        vscf_x25519_public_key_setup_defaults(x25519_public_key);
-        public_key = vscf_x25519_public_key_impl(x25519_public_key);
+        vscf_curve25519_public_key_t *curve25519_public_key = vscf_curve25519_public_key_new();
+        vscf_curve25519_public_key_use_random(curve25519_public_key, self->random);
+        vscf_curve25519_public_key_setup_defaults(curve25519_public_key);
+        public_key = vscf_curve25519_public_key_impl(curve25519_public_key);
         break;
     }
 

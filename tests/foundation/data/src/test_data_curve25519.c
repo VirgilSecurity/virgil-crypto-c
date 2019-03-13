@@ -1,17 +1,17 @@
-#include "test_data_x25519.h"
+#include "test_data_curve25519.h"
 
-const byte test_x25519_RANDOM_BYTES[] = {
+const byte test_curve25519_RANDOM_BYTES[] = {
     0x70, 0xDC, 0x80, 0x72, 0x96, 0x4D, 0x5C, 0xF6,
     0xF7, 0x32, 0xD4, 0xF3, 0x34, 0xFE, 0x14, 0xE8,
     0x28, 0x9A, 0xA4, 0xE6, 0x34, 0xFA, 0x7C, 0xF2,
     0x0D, 0x94, 0xFD, 0x6F, 0x82, 0x51, 0x22, 0xEF,
 };
 
-const vsc_data_t test_x25519_RANDOM = {
-    test_x25519_RANDOM_BYTES, sizeof(test_x25519_RANDOM_BYTES)
+const vsc_data_t test_curve25519_RANDOM = {
+    test_curve25519_RANDOM_BYTES, sizeof(test_curve25519_RANDOM_BYTES)
 };
 
-const byte test_x25519_PRIVATE_KEY_BYTES[] = {
+const byte test_curve25519_PRIVATE_KEY_BYTES[] = {
     0x04, 0x20, 0x70, 0xDC, 0x80, 0x72, 0x96, 0x4D,
     0x5C, 0xF6, 0xF7, 0x32, 0xD4, 0xF3, 0x34, 0xFE,
     0x14, 0xE8, 0x28, 0x9A, 0xA4, 0xE6, 0x34, 0xFA,
@@ -19,33 +19,33 @@ const byte test_x25519_PRIVATE_KEY_BYTES[] = {
     0x22, 0xEF
 };
 
-const vsc_data_t test_x25519_PRIVATE_KEY = {
-    test_x25519_PRIVATE_KEY_BYTES, sizeof(test_x25519_PRIVATE_KEY_BYTES)
+const vsc_data_t test_curve25519_PRIVATE_KEY = {
+    test_curve25519_PRIVATE_KEY_BYTES, sizeof(test_curve25519_PRIVATE_KEY_BYTES)
 };
 
-const byte test_x25519_PUBLIC_KEY_BYTES[] = {
+const byte test_curve25519_PUBLIC_KEY_BYTES[] = {
     0x2C, 0x25, 0x84, 0x8E, 0xD9, 0x73, 0xAB, 0xA2,
     0xFC, 0x3B, 0xFB, 0x9E, 0x75, 0xE6, 0x79, 0x02,
     0xDB, 0xC1, 0x47, 0xDA, 0x69, 0x24, 0xD7, 0x47,
     0xBE, 0x7F, 0xE8, 0x97, 0xC1, 0x5A, 0x63, 0x69,
 };
 
-const vsc_data_t test_x25519_PUBLIC_KEY = {
-    test_x25519_PUBLIC_KEY_BYTES, sizeof(test_x25519_PUBLIC_KEY_BYTES)
+const vsc_data_t test_curve25519_PUBLIC_KEY = {
+    test_curve25519_PUBLIC_KEY_BYTES, sizeof(test_curve25519_PUBLIC_KEY_BYTES)
 };
 
-const byte test_x25519_MESSAGE_BYTES[] = {
+const byte test_curve25519_MESSAGE_BYTES[] = {
     0x32, 0x37, 0x64, 0x32, 0x30, 0x39, 0x34, 0x30,
     0x65, 0x66, 0x30, 0x36, 0x30, 0x34, 0x64, 0x32,
     0x32, 0x39, 0x63, 0x32, 0x34, 0x65, 0x35, 0x61,
     0x35, 0x65, 0x62, 0x32, 0x30, 0x62, 0x31, 0x36
 };
 
-const vsc_data_t test_x25519_MESSAGE = {
-    test_x25519_MESSAGE_BYTES, sizeof(test_x25519_MESSAGE_BYTES)
+const vsc_data_t test_curve25519_MESSAGE = {
+    test_curve25519_MESSAGE_BYTES, sizeof(test_curve25519_MESSAGE_BYTES)
 };
 
-const byte test_x25519_ENCRYPTED_MESSAGE_BYTES[] = {
+const byte test_curve25519_ENCRYPTED_MESSAGE_BYTES[] = {
     0x30, 0x81, 0xDF, 0x02, 0x01, 0x00, 0x30, 0x2A,
     0x30, 0x05, 0x06, 0x03, 0x2B, 0x65, 0x6E, 0x03,
     0x21, 0x00, 0x4E, 0xE1, 0xB8, 0xF9, 0xC5, 0x14,
@@ -77,11 +77,11 @@ const byte test_x25519_ENCRYPTED_MESSAGE_BYTES[] = {
     0x53, 0xAE
 };
 
-const vsc_data_t test_x25519_ENCRYPTED_MESSAGE = {
-    test_x25519_ENCRYPTED_MESSAGE_BYTES, sizeof(test_x25519_ENCRYPTED_MESSAGE_BYTES)
+const vsc_data_t test_curve25519_ENCRYPTED_MESSAGE = {
+    test_curve25519_ENCRYPTED_MESSAGE_BYTES, sizeof(test_curve25519_ENCRYPTED_MESSAGE_BYTES)
 };
 
-const byte test_x25519_PUBLIC_KEY_PKCS8_DER_BYTES[] = {
+const byte test_curve25519_PUBLIC_KEY_PKCS8_DER_BYTES[] = {
     0x30, 0x2A, 0x30, 0x05, 0x06, 0x03, 0x2B, 0x65,
     0x6E, 0x03, 0x21, 0x00, 0x2C, 0x25, 0x84, 0x8E,
     0xD9, 0x73, 0xAB, 0xA2, 0xFC, 0x3B, 0xFB, 0x9E,
@@ -90,11 +90,11 @@ const byte test_x25519_PUBLIC_KEY_PKCS8_DER_BYTES[] = {
     0xC1, 0x5A, 0x63, 0x69
 };
 
-const vsc_data_t test_x25519_PUBLIC_KEY_PKCS8_DER = {
-    test_x25519_PUBLIC_KEY_PKCS8_DER_BYTES, sizeof(test_x25519_PUBLIC_KEY_PKCS8_DER_BYTES)
+const vsc_data_t test_curve25519_PUBLIC_KEY_PKCS8_DER = {
+    test_curve25519_PUBLIC_KEY_PKCS8_DER_BYTES, sizeof(test_curve25519_PUBLIC_KEY_PKCS8_DER_BYTES)
 };
 
-const byte test_x25519_PRIVATE_KEY_PKCS8_DER_BYTES[] = {
+const byte test_curve25519_PRIVATE_KEY_PKCS8_DER_BYTES[] = {
     0x30, 0x2E, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06,
     0x03, 0x2B, 0x65, 0x6E, 0x04, 0x22, 0x04, 0x20,
     0x70, 0xDC, 0x80, 0x72, 0x96, 0x4D, 0x5C, 0xF6,
@@ -103,6 +103,6 @@ const byte test_x25519_PRIVATE_KEY_PKCS8_DER_BYTES[] = {
     0x0D, 0x94, 0xFD, 0x6F, 0x82, 0x51, 0x22, 0xEF,
 };
 
-const vsc_data_t test_x25519_PRIVATE_KEY_PKCS8_DER = {
-    test_x25519_PRIVATE_KEY_PKCS8_DER_BYTES, sizeof(test_x25519_PRIVATE_KEY_PKCS8_DER_BYTES)
+const vsc_data_t test_curve25519_PRIVATE_KEY_PKCS8_DER = {
+    test_curve25519_PRIVATE_KEY_PKCS8_DER_BYTES, sizeof(test_curve25519_PRIVATE_KEY_PKCS8_DER_BYTES)
 };

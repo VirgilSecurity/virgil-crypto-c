@@ -787,7 +787,7 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
     case vscf_alg_id_SHA512:
     case vscf_alg_id_RSA:
     case vscf_alg_id_ED25519:
-    case vscf_alg_id_X25519:
+    case vscf_alg_id_CURVE25519:
         return vscf_alg_info_der_serializer_serialize_simple_alg_info(self, alg_info);
 
     case vscf_alg_id_KDF1:
@@ -855,7 +855,7 @@ vscf_alg_info_der_serializer_serialized_len(vscf_alg_info_der_serializer_t *self
     case vscf_alg_id_SHA512:
     case vscf_alg_id_RSA:
     case vscf_alg_id_ED25519:
-    case vscf_alg_id_X25519:
+    case vscf_alg_id_CURVE25519:
         return vscf_alg_info_der_serializer_serialized_simple_alg_info_len(self, alg_info);
 
     case vscf_alg_id_KDF1:

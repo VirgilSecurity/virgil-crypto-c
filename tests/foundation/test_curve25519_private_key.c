@@ -39,17 +39,17 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE (VSCF_X25519_PRIVATE_KEY && VSCF_FAKE_RANDOM && VSCF_RANDOM)
+#define TEST_DEPENDENCIES_AVAILABLE (VSCF_CURVE25519_PRIVATE_KEY && VSCF_FAKE_RANDOM && VSCF_RANDOM)
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_assert.h"
 
 #include "vscf_public_key.h"
-#include "vscf_x25519_private_key.h"
-#include "vscf_x25519_public_key.h"
+#include "vscf_curve25519_private_key.h"
+#include "vscf_curve25519_public_key.h"
 #include "vscf_fake_random.h"
 
-#include "test_data_x25519.h"
+#include "test_data_curve25519.h"
 
 
 // --------------------------------------------------------------------------
@@ -68,42 +68,42 @@ int suiteTearDown(int num_failures) { return num_failures; }
 // --------------------------------------------------------------------------
 void
 test__key_len__imported_private_key__returns_32(void) {
-    vscf_x25519_private_key_t *private_key = vscf_x25519_private_key_new();
+    vscf_curve25519_private_key_t *private_key = vscf_curve25519_private_key_new();
 
-    vscf_status_t result = vscf_x25519_private_key_import_private_key(private_key, test_x25519_PRIVATE_KEY);
+    vscf_status_t result = vscf_curve25519_private_key_import_private_key(private_key, test_curve25519_PRIVATE_KEY);
     VSCF_ASSERT(result == vscf_status_SUCCESS);
-    TEST_ASSERT_EQUAL(32, vscf_x25519_private_key_key_len(private_key));
-    vscf_x25519_private_key_destroy(&private_key);
+    TEST_ASSERT_EQUAL(32, vscf_curve25519_private_key_key_len(private_key));
+    vscf_curve25519_private_key_destroy(&private_key);
 }
 
 void
 test__export_private_key__from_imported_private_key__expected_equal(void) {
-    vscf_x25519_private_key_t *private_key = vscf_x25519_private_key_new();
-    vscf_status_t result = vscf_x25519_private_key_import_private_key(private_key, test_x25519_PRIVATE_KEY);
+    vscf_curve25519_private_key_t *private_key = vscf_curve25519_private_key_new();
+    vscf_status_t result = vscf_curve25519_private_key_import_private_key(private_key, test_curve25519_PRIVATE_KEY);
     VSCF_ASSERT(result == vscf_status_SUCCESS);
 
     vsc_buffer_t *exported_key_buf =
-            vsc_buffer_new_with_capacity(vscf_x25519_private_key_exported_private_key_len(private_key));
-    result = vscf_x25519_private_key_export_private_key(private_key, exported_key_buf);
+            vsc_buffer_new_with_capacity(vscf_curve25519_private_key_exported_private_key_len(private_key));
+    result = vscf_curve25519_private_key_export_private_key(private_key, exported_key_buf);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, result);
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_x25519_PRIVATE_KEY, exported_key_buf);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_curve25519_PRIVATE_KEY, exported_key_buf);
 
     vsc_buffer_destroy(&exported_key_buf);
-    vscf_x25519_private_key_destroy(&private_key);
+    vscf_curve25519_private_key_destroy(&private_key);
 }
 
 void
 test__extract_public_key__from_imported_private_key__when_exported_equals_public_key(void) {
     //  Setup dependencies
-    vscf_x25519_private_key_t *private_key = vscf_x25519_private_key_new();
+    vscf_curve25519_private_key_t *private_key = vscf_curve25519_private_key_new();
 
     //  Import private key
-    vscf_status_t result = vscf_x25519_private_key_import_private_key(private_key, test_x25519_PRIVATE_KEY);
+    vscf_status_t result = vscf_curve25519_private_key_import_private_key(private_key, test_curve25519_PRIVATE_KEY);
     VSCF_ASSERT(result == vscf_status_SUCCESS);
 
     //  Extract public key
-    vscf_impl_t *public_key = vscf_x25519_private_key_extract_public_key(private_key);
+    vscf_impl_t *public_key = vscf_curve25519_private_key_extract_public_key(private_key);
     TEST_ASSERT_NOT_NULL(public_key);
 
     vsc_buffer_t *exported_key_buf = vsc_buffer_new_with_capacity(vscf_public_key_exported_public_key_len(public_key));
@@ -111,77 +111,77 @@ test__extract_public_key__from_imported_private_key__when_exported_equals_public
     vscf_status_t export_err = vscf_public_key_export_public_key(public_key, exported_key_buf);
     VSCF_ASSERT(export_err == vscf_status_SUCCESS);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_x25519_PUBLIC_KEY, exported_key_buf);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_curve25519_PUBLIC_KEY, exported_key_buf);
 
-    vscf_x25519_private_key_destroy(&private_key);
+    vscf_curve25519_private_key_destroy(&private_key);
     vscf_impl_destroy(&public_key);
     vsc_buffer_destroy(&exported_key_buf);
 }
 
 void
-test__export_private_key_with_imported_x25519_private_key__when_exported_equals_x25519_private_key(void) {
-    vscf_x25519_private_key_t *private_key = vscf_x25519_private_key_new();
+test__export_private_key_with_imported_curve25519_private_key__when_exported_equals_curve25519_private_key(void) {
+    vscf_curve25519_private_key_t *private_key = vscf_curve25519_private_key_new();
 
-    vscf_status_t result = vscf_x25519_private_key_import_private_key(private_key, test_x25519_PRIVATE_KEY);
+    vscf_status_t result = vscf_curve25519_private_key_import_private_key(private_key, test_curve25519_PRIVATE_KEY);
     VSCF_ASSERT(result == vscf_status_SUCCESS);
 
     vsc_buffer_t *exported_key_buf =
-            vsc_buffer_new_with_capacity(vscf_x25519_private_key_exported_private_key_len(private_key));
+            vsc_buffer_new_with_capacity(vscf_curve25519_private_key_exported_private_key_len(private_key));
 
-    vscf_status_t export_err = vscf_x25519_private_key_export_private_key(private_key, exported_key_buf);
+    vscf_status_t export_err = vscf_curve25519_private_key_export_private_key(private_key, exported_key_buf);
     VSCF_ASSERT(export_err == vscf_status_SUCCESS);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_x25519_PRIVATE_KEY, exported_key_buf);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_curve25519_PRIVATE_KEY, exported_key_buf);
 
-    vscf_x25519_private_key_destroy(&private_key);
+    vscf_curve25519_private_key_destroy(&private_key);
     vsc_buffer_destroy(&exported_key_buf);
 }
 
 void
 test__generate_key__exported_equals_private_key(void) {
     //  Setup dependencies
-    vscf_x25519_private_key_t *private_key = vscf_x25519_private_key_new();
+    vscf_curve25519_private_key_t *private_key = vscf_curve25519_private_key_new();
 
     vscf_fake_random_t *fake_random = vscf_fake_random_new();
-    vscf_fake_random_setup_source_data(fake_random, test_x25519_RANDOM);
-    vscf_x25519_private_key_take_random(private_key, vscf_fake_random_impl(fake_random));
+    vscf_fake_random_setup_source_data(fake_random, test_curve25519_RANDOM);
+    vscf_curve25519_private_key_take_random(private_key, vscf_fake_random_impl(fake_random));
 
-    vscf_status_t gen_res = vscf_x25519_private_key_generate_key(private_key);
+    vscf_status_t gen_res = vscf_curve25519_private_key_generate_key(private_key);
 
     //  Check
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, gen_res);
 
     vsc_buffer_t *exported_key_buf =
-            vsc_buffer_new_with_capacity(vscf_x25519_private_key_exported_private_key_len(private_key));
+            vsc_buffer_new_with_capacity(vscf_curve25519_private_key_exported_private_key_len(private_key));
 
-    vscf_status_t export_res = vscf_x25519_private_key_export_private_key(private_key, exported_key_buf);
+    vscf_status_t export_res = vscf_curve25519_private_key_export_private_key(private_key, exported_key_buf);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, export_res);
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_x25519_PRIVATE_KEY, exported_key_buf);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_curve25519_PRIVATE_KEY, exported_key_buf);
 
     //  Cleanup
     vsc_buffer_destroy(&exported_key_buf);
-    vscf_x25519_private_key_destroy(&private_key);
+    vscf_curve25519_private_key_destroy(&private_key);
 }
 
 void
 test__decrypt__message_with_imported_key__success(void) {
 
-    vscf_x25519_private_key_t *private_key = vscf_x25519_private_key_new();
-    vscf_x25519_private_key_setup_defaults(private_key);
+    vscf_curve25519_private_key_t *private_key = vscf_curve25519_private_key_new();
+    vscf_curve25519_private_key_setup_defaults(private_key);
 
-    vscf_status_t result = vscf_x25519_private_key_import_private_key(private_key, test_x25519_PRIVATE_KEY);
+    vscf_status_t result = vscf_curve25519_private_key_import_private_key(private_key, test_curve25519_PRIVATE_KEY);
     VSCF_ASSERT(result == vscf_status_SUCCESS);
 
     vsc_buffer_t *dec_msg = vsc_buffer_new_with_capacity(
-            vscf_x25519_private_key_decrypted_len(private_key, test_x25519_ENCRYPTED_MESSAGE.len));
-    vscf_status_t status = vscf_x25519_private_key_decrypt(private_key, test_x25519_ENCRYPTED_MESSAGE, dec_msg);
+            vscf_curve25519_private_key_decrypted_len(private_key, test_curve25519_ENCRYPTED_MESSAGE.len));
+    vscf_status_t status = vscf_curve25519_private_key_decrypt(private_key, test_curve25519_ENCRYPTED_MESSAGE, dec_msg);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_x25519_MESSAGE, dec_msg);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_curve25519_MESSAGE, dec_msg);
 
     vsc_buffer_destroy(&dec_msg);
-    vscf_x25519_private_key_destroy(&private_key);
+    vscf_curve25519_private_key_destroy(&private_key);
 }
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
@@ -197,7 +197,7 @@ main(void) {
     RUN_TEST(test__key_len__imported_private_key__returns_32);
     RUN_TEST(test__export_private_key__from_imported_private_key__expected_equal);
     RUN_TEST(test__extract_public_key__from_imported_private_key__when_exported_equals_public_key);
-    RUN_TEST(test__export_private_key_with_imported_x25519_private_key__when_exported_equals_x25519_private_key);
+    RUN_TEST(test__export_private_key_with_imported_curve25519_private_key__when_exported_equals_curve25519_private_key);
     RUN_TEST(test__generate_key__exported_equals_private_key);
     RUN_TEST(test__decrypt__message_with_imported_key__success);
 #else

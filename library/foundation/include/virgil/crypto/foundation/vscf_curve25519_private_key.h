@@ -47,15 +47,14 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'x25519 public key' implementation.
+//  This module contains 'curve25519 private key' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_X25519_PUBLIC_KEY_H_INCLUDED
-#define VSCF_X25519_PUBLIC_KEY_H_INCLUDED
+#ifndef VSCF_CURVE25519_PRIVATE_KEY_H_INCLUDED
+#define VSCF_CURVE25519_PRIVATE_KEY_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_ecies.h"
-#include "vscf_error.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
 #include "vscf_alg_id.h"
@@ -90,191 +89,212 @@ extern "C" {
 //
 enum {
     //
-    //  Defines whether a public key can be imported or not.
+    //  Define whether a private key can be imported or not.
     //
-    vscf_x25519_public_key_CAN_IMPORT_PUBLIC_KEY = true,
+    vscf_curve25519_private_key_CAN_IMPORT_PRIVATE_KEY = true,
     //
-    //  Define whether a public key can be exported or not.
+    //  Define whether a private key can be exported or not.
     //
-    vscf_x25519_public_key_CAN_EXPORT_PUBLIC_KEY = true
+    vscf_curve25519_private_key_CAN_EXPORT_PRIVATE_KEY = true
 };
 
 //
 //  Handles implementation details.
 //
-typedef struct vscf_x25519_public_key_t vscf_x25519_public_key_t;
+typedef struct vscf_curve25519_private_key_t vscf_curve25519_private_key_t;
 
 //
-//  Return size of 'vscf_x25519_public_key_t' type.
+//  Return size of 'vscf_curve25519_private_key_t' type.
 //
 VSCF_PUBLIC size_t
-vscf_x25519_public_key_impl_size(void);
+vscf_curve25519_private_key_impl_size(void);
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_x25519_public_key_impl(vscf_x25519_public_key_t *self);
+vscf_curve25519_private_key_impl(vscf_curve25519_private_key_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_x25519_public_key_init(vscf_x25519_public_key_t *self);
+vscf_curve25519_private_key_init(vscf_curve25519_private_key_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_x25519_public_key_init()'.
+//  This is a reverse action of the function 'vscf_curve25519_private_key_init()'.
 //
 VSCF_PUBLIC void
-vscf_x25519_public_key_cleanup(vscf_x25519_public_key_t *self);
+vscf_curve25519_private_key_cleanup(vscf_curve25519_private_key_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_x25519_public_key_t *
-vscf_x25519_public_key_new(void);
+VSCF_PUBLIC vscf_curve25519_private_key_t *
+vscf_curve25519_private_key_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_x25519_public_key_new()'.
+//  This is a reverse action of the function 'vscf_curve25519_private_key_new()'.
 //
 VSCF_PUBLIC void
-vscf_x25519_public_key_delete(vscf_x25519_public_key_t *self);
+vscf_curve25519_private_key_delete(vscf_curve25519_private_key_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_x25519_public_key_new()'.
+//  This is a reverse action of the function 'vscf_curve25519_private_key_new()'.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_x25519_public_key_destroy(vscf_x25519_public_key_t **self_ref);
+vscf_curve25519_private_key_destroy(vscf_curve25519_private_key_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_x25519_public_key_t *
-vscf_x25519_public_key_shallow_copy(vscf_x25519_public_key_t *self);
+VSCF_PUBLIC vscf_curve25519_private_key_t *
+vscf_curve25519_private_key_shallow_copy(vscf_curve25519_private_key_t *self);
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_x25519_public_key_use_random(vscf_x25519_public_key_t *self, vscf_impl_t *random);
+vscf_curve25519_private_key_use_random(vscf_curve25519_private_key_t *self, vscf_impl_t *random);
 
 //
 //  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_x25519_public_key_take_random(vscf_x25519_public_key_t *self, vscf_impl_t *random);
+vscf_curve25519_private_key_take_random(vscf_curve25519_private_key_t *self, vscf_impl_t *random);
 
 //
 //  Release dependency to the interface 'random'.
 //
 VSCF_PUBLIC void
-vscf_x25519_public_key_release_random(vscf_x25519_public_key_t *self);
+vscf_curve25519_private_key_release_random(vscf_curve25519_private_key_t *self);
 
 //
 //  Setup dependency to the implementation 'ecies' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_x25519_public_key_use_ecies(vscf_x25519_public_key_t *self, vscf_ecies_t *ecies);
+vscf_curve25519_private_key_use_ecies(vscf_curve25519_private_key_t *self, vscf_ecies_t *ecies);
 
 //
 //  Setup dependency to the implementation 'ecies' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_x25519_public_key_take_ecies(vscf_x25519_public_key_t *self, vscf_ecies_t *ecies);
+vscf_curve25519_private_key_take_ecies(vscf_curve25519_private_key_t *self, vscf_ecies_t *ecies);
 
 //
 //  Release dependency to the implementation 'ecies'.
 //
 VSCF_PUBLIC void
-vscf_x25519_public_key_release_ecies(vscf_x25519_public_key_t *self);
+vscf_curve25519_private_key_release_ecies(vscf_curve25519_private_key_t *self);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_x25519_public_key_setup_defaults(vscf_x25519_public_key_t *self);
+vscf_curve25519_private_key_setup_defaults(vscf_curve25519_private_key_t *self);
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_x25519_public_key_alg_id(const vscf_x25519_public_key_t *self);
+vscf_curve25519_private_key_alg_id(const vscf_curve25519_private_key_t *self);
 
 //
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_x25519_public_key_produce_alg_info(const vscf_x25519_public_key_t *self);
+vscf_curve25519_private_key_produce_alg_info(const vscf_curve25519_private_key_t *self);
 
 //
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_x25519_public_key_restore_alg_info(vscf_x25519_public_key_t *self, const vscf_impl_t *alg_info);
+vscf_curve25519_private_key_restore_alg_info(vscf_curve25519_private_key_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_x25519_public_key_key_len(const vscf_x25519_public_key_t *self);
+vscf_curve25519_private_key_key_len(const vscf_curve25519_private_key_t *self);
 
 //
 //  Length of the key in bits.
 //
 VSCF_PUBLIC size_t
-vscf_x25519_public_key_key_bitlen(const vscf_x25519_public_key_t *self);
+vscf_curve25519_private_key_key_bitlen(const vscf_curve25519_private_key_t *self);
 
 //
-//  Encrypt given data.
+//  Generate new private or secret key.
+//  Note, this operation can be slow.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_x25519_public_key_encrypt(vscf_x25519_public_key_t *self, vsc_data_t data, vsc_buffer_t *out);
+vscf_curve25519_private_key_generate_key(vscf_curve25519_private_key_t *self);
 
 //
-//  Calculate required buffer length to hold the encrypted data.
+//  Decrypt given data.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_curve25519_private_key_decrypt(vscf_curve25519_private_key_t *self, vsc_data_t data, vsc_buffer_t *out);
+
+//
+//  Calculate required buffer length to hold the decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_x25519_public_key_encrypted_len(vscf_x25519_public_key_t *self, size_t data_len);
+vscf_curve25519_private_key_decrypted_len(vscf_curve25519_private_key_t *self, size_t data_len);
 
 //
-//  Export public key in the binary format.
-//
-//  Binary format must be defined in the key specification.
-//  For instance, RSA public key must be exported in format defined in
-//  RFC 3447 Appendix A.1.1.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_x25519_public_key_export_public_key(const vscf_x25519_public_key_t *self, vsc_buffer_t *out);
-
-//
-//  Return length in bytes required to hold exported public key.
-//
-VSCF_PUBLIC size_t
-vscf_x25519_public_key_exported_public_key_len(const vscf_x25519_public_key_t *self);
-
-//
-//  Import public key from the binary format.
-//
-//  Binary format must be defined in the key specification.
-//  For instance, RSA public key must be imported from the format defined in
-//  RFC 3447 Appendix A.1.1.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_x25519_public_key_import_public_key(vscf_x25519_public_key_t *self, vsc_data_t data);
-
-//
-//  Generate ephemeral private key of the same type.
+//  Extract public part of the key.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_x25519_public_key_generate_ephemeral_key(vscf_x25519_public_key_t *self, vscf_error_t *error);
+vscf_curve25519_private_key_extract_public_key(const vscf_curve25519_private_key_t *self);
+
+//
+//  Export private key in the binary format.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be exported in format defined in
+//  RFC 3447 Appendix A.1.2.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_curve25519_private_key_export_private_key(const vscf_curve25519_private_key_t *self, vsc_buffer_t *out);
+
+//
+//  Return length in bytes required to hold exported private key.
+//
+VSCF_PUBLIC size_t
+vscf_curve25519_private_key_exported_private_key_len(const vscf_curve25519_private_key_t *self);
+
+//
+//  Import private key from the binary format.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be imported from the format defined in
+//  RFC 3447 Appendix A.1.2.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_curve25519_private_key_import_private_key(vscf_curve25519_private_key_t *self, vsc_data_t data);
+
+//
+//  Compute shared key for 2 asymmetric keys.
+//  Note, shared key can be used only for symmetric cryptography.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_curve25519_private_key_compute_shared_key(vscf_curve25519_private_key_t *self, const vscf_impl_t *public_key,
+        vsc_buffer_t *shared_key);
+
+//
+//  Return number of bytes required to hold shared key.
+//
+VSCF_PUBLIC size_t
+vscf_curve25519_private_key_shared_key_len(vscf_curve25519_private_key_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -290,5 +310,5 @@ vscf_x25519_public_key_generate_ephemeral_key(vscf_x25519_public_key_t *self, vs
 
 
 //  @footer
-#endif // VSCF_X25519_PUBLIC_KEY_H_INCLUDED
+#endif // VSCF_CURVE25519_PRIVATE_KEY_H_INCLUDED
 //  @end

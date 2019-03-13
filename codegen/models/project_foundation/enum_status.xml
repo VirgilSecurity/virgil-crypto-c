@@ -99,12 +99,12 @@
         Ed25519 private key is corrupted.
     </constant>
 
-    <constant name="error bad x25519 public key" value="-219">
-        X25519 public key is corrupted.
+    <constant name="error bad curve25519 public key" value="-219">
+        CURVE25519 public key is corrupted.
     </constant>
 
-    <constant name="error bad x25519 private key" value="-220">
-        X25519 private key is corrupted.
+    <constant name="error bad curve25519 private key" value="-220">
+        CURVE25519 private key is corrupted.
     </constant>
 
     <constant name="error no message info" value="-301">
