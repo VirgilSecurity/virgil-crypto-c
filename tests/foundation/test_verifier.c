@@ -50,17 +50,6 @@
 
 #include "test_data_signer_verifier.h"
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
 void
 test__reset__with_ed25519_sha384_signature__format_is_valid(void) {
 

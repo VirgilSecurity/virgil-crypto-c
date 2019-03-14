@@ -65,6 +65,7 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ecies.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_recipient_cipher.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_signer_verifier.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_key_provider.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_aes256_gcm.c"
@@ -93,6 +94,7 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ecies.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_recipient_cipher.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_signer_verifier.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_key_provider.c"
         )
 
 target_include_directories(test_data_foundation
