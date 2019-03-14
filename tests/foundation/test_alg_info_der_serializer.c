@@ -50,17 +50,6 @@
 #include "test_data_alg_info_der.h"
 
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
 void
 test__serialize__sha256__returns_valid_der_v2_compat(void_v2_compat) {
     vscf_alg_info_der_serializer_t *serializer = vscf_alg_info_der_serializer_new();

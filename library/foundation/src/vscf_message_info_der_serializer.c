@@ -974,7 +974,16 @@ vscf_message_info_der_serializer_deserialize_custom_params(
         vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->asn1_reader);
     VSCF_ASSERT_PTR(message_info);
+
+    if (vscf_error_has_error(error) || vscf_asn1_reader_has_error(self->asn1_reader)) {
+        return;
+    }
+
+    if (vscf_asn1_reader_left_len(self->asn1_reader) == 0) {
+        return;
+    }
 
     const size_t custom_params_tag_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 0);
     if (custom_params_tag_len == 0) {
@@ -1039,6 +1048,10 @@ vscf_message_info_der_serializer_deserialize_key_recipient_info(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
+    if (vscf_error_has_error(error) || vscf_asn1_reader_has_error(self->asn1_reader)) {
+        return;
+    }
+
     vscf_asn1_reader_read_sequence(self->asn1_reader);
     const int version = vscf_asn1_reader_read_int(self->asn1_reader);
 
@@ -1093,6 +1106,10 @@ vscf_message_info_der_serializer_deserialize_password_recipient_info(
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
+
+    if (vscf_error_has_error(error) || vscf_asn1_reader_has_error(self->asn1_reader)) {
+        return;
+    }
 
     vscf_asn1_reader_read_sequence(self->asn1_reader);
     const int version = vscf_asn1_reader_read_int(self->asn1_reader);
@@ -1149,6 +1166,10 @@ vscf_message_info_der_serializer_deserialize_recipient_infos(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
+    if (vscf_error_has_error(error) || vscf_asn1_reader_has_error(self->asn1_reader)) {
+        return;
+    }
+
     size_t recipient_infos_len = vscf_asn1_reader_read_set(self->asn1_reader);
     if (recipient_infos_len == 0) {
         return;
@@ -1199,7 +1220,12 @@ vscf_message_info_der_serializer_deserialize_encrypted_content_info(
         vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->asn1_reader);
     VSCF_ASSERT_PTR(message_info);
+
+    if (vscf_error_has_error(error) || vscf_asn1_reader_has_error(self->asn1_reader)) {
+        return;
+    }
 
     vscf_asn1_reader_read_sequence(self->asn1_reader);
     vsc_data_t content_type_oid = vscf_asn1_reader_read_oid(self->asn1_reader);
@@ -1240,6 +1266,10 @@ vscf_message_info_der_serializer_deserialize_enveloped_data(
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
+
+    if (vscf_error_has_error(error) || vscf_asn1_reader_has_error(self->asn1_reader)) {
+        return;
+    }
 
     vscf_asn1_reader_read_sequence(self->asn1_reader);
 
@@ -1294,6 +1324,10 @@ vscf_message_info_der_serializer_deserialize_cms_content_info(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
     VSCF_ASSERT_PTR(message_info);
+
+    if (vscf_error_has_error(error) || vscf_asn1_reader_has_error(self->asn1_reader)) {
+        return;
+    }
 
     vscf_asn1_reader_read_sequence(self->asn1_reader);
 
