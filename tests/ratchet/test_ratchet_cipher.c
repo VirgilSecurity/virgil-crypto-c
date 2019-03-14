@@ -156,7 +156,8 @@ test__padding__growing_data_size__should_add_padding(void) {
 
         size_t expected_size = ((size + 2) / 160 + ((size + 2) % 160 == 0 ? 0 : 1)) * 160 + 16;
 
-        TEST_ASSERT_EQUAL(expected_size, vsc_buffer_len(cipher_text));
+        TEST_ASSERT_EQUAL(vsc_buffer_len(cipher_text), expected_size);
+        TEST_ASSERT_EQUAL(len1, expected_size + 16);
 
         size_t len2 = vscr_ratchet_cipher_decrypt_len(cipher, vsc_buffer_len(cipher_text));
 
