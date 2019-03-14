@@ -51,17 +51,6 @@
 #include "test_data_recipient_cipher.h"
 
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
 void
 test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
 

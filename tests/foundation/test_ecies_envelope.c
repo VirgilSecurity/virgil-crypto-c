@@ -53,17 +53,6 @@
 #include "test_data_ecies_envelope.h"
 
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
 void
 test__pack__ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac__return_valid_packed_data(void) {
 
