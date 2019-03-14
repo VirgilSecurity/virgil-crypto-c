@@ -488,6 +488,8 @@ vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_dat
 
     VSCR_ASSERT(vsc_buffer_unused_len(buffer) >= vscr_ratchet_cipher_decrypt_len(self, cipher_text.len));
 
+    vscr_status_t result = vscr_status_SUCCESS;
+
     vscr_ratchet_cipher_setup_cipher(self, key);
 
     size_t padded_text_len = vscf_aes256_gcm_decrypted_len(self->aes256_gcm, cipher_text.len);
@@ -497,14 +499,14 @@ vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_dat
     vscf_status_t f_result = vscf_aes256_gcm_decrypt(self->aes256_gcm, cipher_text, padded_text);
 
     if (f_result != vscf_status_SUCCESS) {
-        return vscr_status_ERROR_AES;
+        result = vscr_status_ERROR_AES;
+        goto err;
     }
 
-    vscr_status_t result = vscr_ratchet_cipher_remove_padding(vsc_buffer_data(padded_text), buffer);
+    result = vscr_ratchet_cipher_remove_padding(vsc_buffer_data(padded_text), buffer);
 
-    if (result != vscr_status_SUCCESS) {
-        return result;
-    }
+err:
+    vsc_buffer_destroy(&padded_text);
 
-    return vscr_status_SUCCESS;
+    return result;
 }
