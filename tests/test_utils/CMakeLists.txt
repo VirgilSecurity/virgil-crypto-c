@@ -41,7 +41,7 @@ if(NOT TARGET unity)
 endif()
 
 add_library(test_utils test_utils.h test_utils.c)
-target_link_libraries(test_utils unity vsc::common)
+target_link_libraries(test_utils PUBLIC unity vsc::common)
 
 set_target_properties(test_utils PROPERTIES C_STANDARD "99")
 
