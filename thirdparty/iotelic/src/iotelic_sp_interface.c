@@ -13,27 +13,20 @@ const char *iotelic_version(void) {
     return "0.1.0";
 }
 
-typedef struct mailbox_cmd_s {
-    uint16_t opcode;
-    uint16_t op_id;
-    void *in_data;
-    uint32_t ilen;
-    int32_t result;
-    void *out_data;
-    uint32_t out_buf_sz;
-    uint32_t olen;
-} mailbox_cmd_t;
-
 typedef struct mailbox_exch_ctx_s {
     bool is_initialized;
     bool is_blocked;
     bool is_result;
     vscf_iot_crypto_result_cb user_result_cb;
-    vscf_iot_crypto_result_cb default_result_cb;
     uint16_t op_id_counter;
 } mailbox_exch_ctx_t;
 
 static mailbox_exch_ctx_t exch_ctx = {0};
+
+static void
+crypto_result_blocked_op_cb(uint16_t op_ip, uint16_t opcode, void *out_data, uint32_t len){
+    exch_ctx.is_result = true;
+}
 
 static void
 mb_receive_cb(void) {
@@ -43,22 +36,21 @@ mb_receive_cb(void) {
     i = iot_mb_get_read_space();
 
     while (i) {
-        if (ERR_OK == iot_mb_read(&addr)
-                && NULL != exch_ctx.user_result_cb) {
+        if (ERR_OK == iot_mb_read(&addr)) {
             cmd = (mailbox_cmd_t *)addr;
-            exch_ctx.user_result_cb(cmd->op_id, cmd->opcode, cmd->out_data, cmd->olen);
+
+            if(exch_ctx.is_blocked) {
+                crypto_result_blocked_op_cb(cmd->op_id, cmd->opcode, cmd->out_data, cmd->olen);
+            } else if(NULL != exch_ctx.user_result_cb){
+                exch_ctx.user_result_cb(cmd->op_id, cmd->opcode, cmd->out_data, cmd->olen);
+            }
         }
         i--;
     }
 }
 
-static void
-crypto_result_default_cb(uint16_t op_ip, uint16_t opcode, void *out_data, uint32_t len){
-    exch_ctx.is_result = true;
-}
-
 void
-vscf_iot_init_crypto_interface(vscf_iot_crypto_result_cb cb){
+vs_iot_init_crypto_interface(vscf_iot_crypto_result_cb cb){
 
     if(exch_ctx.is_initialized) {
         return;
@@ -73,7 +65,12 @@ vscf_iot_init_crypto_interface(vscf_iot_crypto_result_cb cb){
 }
 
 int32_t
-vscf_iot_execute_crypto_op(uint16_t opcode, void *in_data, uint32_t ilen, void *out_data, uint32_t out_buf_sz) {
+vs_iot_execute_crypto_op(vscf_command_type_e opcode, void *in_data, uint32_t ilen, void *out_data, uint32_t out_buf_sz) {
+
+    if(!exch_ctx.is_initialized) {
+        return -ERR_NOT_READY;
+    }
+
     //TODO: Need to implement atomic crypto operations and queue. Change is_blocked flag to mutex
     while (exch_ctx.is_blocked);
     exch_ctx.is_blocked = true;
@@ -84,6 +81,7 @@ vscf_iot_execute_crypto_op(uint16_t opcode, void *in_data, uint32_t ilen, void *
     cmd.ilen = ilen;
     cmd.out_data = out_data;
     cmd.out_buf_sz = out_buf_sz;
+    cmd.olen = 0;
     cmd.op_id = exch_ctx.op_id_counter++;
 
     //TODO: Implement os messages for notifying about end crypto op
@@ -92,8 +90,7 @@ vscf_iot_execute_crypto_op(uint16_t opcode, void *in_data, uint32_t ilen, void *
     iot_mb_send(1, (size_t)&cmd);
 
     while(!exch_ctx.is_result);
-    return cmd.result;
-
     exch_ctx.is_blocked = false;
 
+    return cmd.result;
 }
