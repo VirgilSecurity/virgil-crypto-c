@@ -9,5 +9,5 @@ void
 vs_iot_init_crypto_interface(vscf_iot_crypto_result_cb cb);
 
 int32_t
-vs_iot_execute_crypto_op(vscf_command_type_e opcode, void *in_data, uint32_t ilen, void *out_data, uint32_t out_buf_sz);
+vs_iot_execute_crypto_op(vscf_command_type_e opcode, void *in_data, size_t ilen, void *out_data, size_t out_buf_sz, size_t *olen);
 #endif

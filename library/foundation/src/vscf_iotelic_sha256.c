@@ -55,6 +55,8 @@
 #include "vscf_memory.h"
 #include "vscf_iotelic_sha256_defs.h"
 #include "vscf_iotelic_sha256_internal.h"
+#include <iotelic_sp_interface.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 // clang-format on
 //  @end
@@ -111,8 +113,7 @@ vscf_iotelic_sha256_restore_alg_info(vscf_iotelic_sha256_t *self, const vscf_imp
 VSCF_PUBLIC void
 vscf_iotelic_sha256_hash(vsc_data_t data, vsc_buffer_t *digest) {
 
-    iot_cus_print_config(1);
-    vsc_buffer_write_data(digest, data);
+    vs_iot_execute_crypto_op(VS_IOT_HASH_SHA256, (void *)data.bytes, data.len, (void *)digest->bytes, digest->capacity, &digest->len);
 }
 
 //

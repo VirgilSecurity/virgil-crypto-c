@@ -65,7 +65,7 @@ vs_iot_init_crypto_interface(vscf_iot_crypto_result_cb cb){
 }
 
 int32_t
-vs_iot_execute_crypto_op(vscf_command_type_e opcode, void *in_data, uint32_t ilen, void *out_data, uint32_t out_buf_sz) {
+vs_iot_execute_crypto_op(vscf_command_type_e opcode, void *in_data, size_t ilen, void *out_data, size_t out_buf_sz, size_t *olen) {
 
     if(!exch_ctx.is_initialized) {
         return -ERR_NOT_READY;
@@ -90,6 +90,7 @@ vs_iot_execute_crypto_op(vscf_command_type_e opcode, void *in_data, uint32_t ile
     iot_mb_send(1, (size_t)&cmd);
 
     while(!exch_ctx.is_result);
+    *olen = cmd.olen;
     exch_ctx.is_blocked = false;
 
     return cmd.result;
