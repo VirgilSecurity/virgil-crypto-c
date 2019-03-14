@@ -16,7 +16,7 @@
 
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
 
-    <dependency name="rng" interface="random" project="foundation">
+    <dependency name="rng" interface="random" project="foundation" has_observers="1">
         Random used to generate keys
     </dependency>
 

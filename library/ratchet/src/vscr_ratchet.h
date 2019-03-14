@@ -48,7 +48,6 @@
 #define VSCR_RATCHET_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet.h"
 #include "vscr_status.h"
 
@@ -142,14 +141,14 @@ vscr_ratchet_shallow_copy(vscr_ratchet_t *self);
 //
 //  Setup dependency to the interface 'random' with shared ownership.
 //
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_use_rng(vscr_ratchet_t *self, vscf_impl_t *rng);
 
 //
 //  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_take_rng(vscr_ratchet_t *self, vscf_impl_t *rng);
 
 //
@@ -157,28 +156,6 @@ vscr_ratchet_take_rng(vscr_ratchet_t *self, vscf_impl_t *rng);
 //
 VSCR_PUBLIC void
 vscr_ratchet_release_rng(vscr_ratchet_t *self);
-
-//
-//  Setup dependency to the class 'ratchet cipher' with shared ownership.
-//
-VSCR_PUBLIC void
-vscr_ratchet_use_cipher(vscr_ratchet_t *self, vscr_ratchet_cipher_t *cipher);
-
-//
-//  Setup dependency to the class 'ratchet cipher' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCR_PUBLIC void
-vscr_ratchet_take_cipher(vscr_ratchet_t *self, vscr_ratchet_cipher_t *cipher);
-
-//
-//  Release dependency to the class 'ratchet cipher'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_release_cipher(vscr_ratchet_t *self);
-
-VSCR_PUBLIC void
-vscr_ratchet_setup_defaults(vscr_ratchet_t *self);
 
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const RegularMessage *message);

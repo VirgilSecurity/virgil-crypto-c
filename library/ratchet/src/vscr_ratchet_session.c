@@ -131,6 +131,18 @@ static void
 vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *self);
 
 //
+//  This method is called when interface 'random' was setup.
+//
+static vscr_status_t
+vscr_ratchet_session_did_setup_rng(vscr_ratchet_session_t *self);
+
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vscr_ratchet_session_did_release_rng(vscr_ratchet_session_t *self);
+
+//
 //  Return size of 'vscr_ratchet_session_t'.
 //
 VSCR_PUBLIC size_t
@@ -246,7 +258,7 @@ vscr_ratchet_session_shallow_copy(vscr_ratchet_session_t *self) {
 //
 //  Note, ownership is shared.
 //
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) {
 
     VSCR_ASSERT_PTR(self);
@@ -256,6 +268,8 @@ vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) {
     VSCR_ASSERT(vscf_random_is_implemented(rng));
 
     self->rng = vscf_impl_shallow_copy(rng);
+
+    return vscr_ratchet_session_did_setup_rng(self);
 }
 
 //
@@ -264,7 +278,7 @@ vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) {
 //  Note, ownership is transfered.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_take_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) {
 
     VSCR_ASSERT_PTR(self);
@@ -274,6 +288,8 @@ vscr_ratchet_session_take_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) {
     VSCR_ASSERT(vscf_random_is_implemented(rng));
 
     self->rng = rng;
+
+    return vscr_ratchet_session_did_setup_rng(self);
 }
 
 //
@@ -285,6 +301,8 @@ vscr_ratchet_session_release_rng(vscr_ratchet_session_t *self) {
     VSCR_ASSERT_PTR(self);
 
     vscf_impl_destroy(&self->rng);
+
+    vscr_ratchet_session_did_release_rng(self);
 }
 
 
@@ -325,6 +343,28 @@ vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *self) {
 }
 
 //
+//  This method is called when interface 'random' was setup.
+//
+static vscr_status_t
+vscr_ratchet_session_did_setup_rng(vscr_ratchet_session_t *self) {
+
+    if (self->rng != NULL) {
+        vscr_ratchet_use_rng(self->ratchet, self->rng);
+    }
+
+    return vscr_status_SUCCESS;
+}
+
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vscr_ratchet_session_did_release_rng(vscr_ratchet_session_t *self) {
+
+    VSCR_UNUSED(self);
+}
+
+//
 //  Setups default dependencies:
 //      - RNG: CTR DRBG
 //      - Key serialization: DER PKCS8
@@ -339,8 +379,6 @@ vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *self) {
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
     vscf_ctr_drbg_setup_defaults(rng);
     vscr_ratchet_session_take_rng(self, vscf_ctr_drbg_impl(rng));
-
-    vscr_ratchet_setup_defaults(self->ratchet);
 }
 
 //
