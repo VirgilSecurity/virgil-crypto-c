@@ -51,17 +51,6 @@
 #include "test_data_alg_info_der.h"
 
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
 void
 test__deserialize__sha256__returns_valid_simple_info(void) {
     vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
