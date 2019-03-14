@@ -87,6 +87,11 @@ extern "C" {
 typedef void (*vscf_asn1_reader_api_reset_fn)(vscf_impl_t *impl, vsc_data_t data);
 
 //
+//  Callback. Return length in bytes how many bytes are left for reading.
+//
+typedef size_t (*vscf_asn1_reader_api_left_len_fn)(vscf_impl_t *impl);
+
+//
 //  Callback. Return true if status is not "success".
 //
 typedef bool (*vscf_asn1_reader_api_has_error_fn)(const vscf_impl_t *impl);
@@ -185,6 +190,12 @@ typedef bool (*vscf_asn1_reader_api_read_bool_fn)(vscf_impl_t *impl);
 typedef void (*vscf_asn1_reader_api_read_null_fn)(vscf_impl_t *impl);
 
 //
+//  Callback. Read ASN.1 type: NULL, only if it exists.
+//          Note, this method is safe to call even no more data is left for reading.
+//
+typedef void (*vscf_asn1_reader_api_read_null_optional_fn)(vscf_impl_t *impl);
+
+//
 //  Callback. Read ASN.1 type: OCTET STRING.
 //
 typedef vsc_data_t (*vscf_asn1_reader_api_read_octet_str_fn)(vscf_impl_t *impl);
@@ -238,6 +249,10 @@ struct vscf_asn1_reader_api_t {
     //  Reset all internal states and prepare to new ASN.1 reading operations.
     //
     vscf_asn1_reader_api_reset_fn reset_cb;
+    //
+    //  Return length in bytes how many bytes are left for reading.
+    //
+    vscf_asn1_reader_api_left_len_fn left_len_cb;
     //
     //  Return true if status is not "success".
     //
@@ -317,6 +332,11 @@ struct vscf_asn1_reader_api_t {
     //  Read ASN.1 type: NULL.
     //
     vscf_asn1_reader_api_read_null_fn read_null_cb;
+    //
+    //  Read ASN.1 type: NULL, only if it exists.
+    //  Note, this method is safe to call even no more data is left for reading.
+    //
+    vscf_asn1_reader_api_read_null_optional_fn read_null_optional_cb;
     //
     //  Read ASN.1 type: OCTET STRING.
     //

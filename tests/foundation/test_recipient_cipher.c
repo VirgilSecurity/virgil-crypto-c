@@ -51,17 +51,6 @@
 #include "test_data_recipient_cipher.h"
 
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
 void
 test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
 
@@ -138,6 +127,51 @@ test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
     vscf_pkcs8_der_deserializer_destroy(&pkcs8);
 }
 
+void
+test__decrypt__with_ed25519_public_key__success(void) {
+    //
+    //  Prepare decryption key.
+    //
+    vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
+    vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
+
+    vscf_raw_key_t *raw_private_key = vscf_pkcs8_der_deserializer_deserialize_private_key(
+            pkcs8, test_data_recipient_cipher_ED25519_PRIVATE_KEY, NULL);
+    vscf_impl_t *private_key = vscf_alg_factory_create_private_key_from_raw_key(raw_private_key);
+
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+
+
+    //
+    //  Decrypt.
+    //
+    vsc_buffer_t *dec_msg = vsc_buffer_new_with_capacity(vscf_recipient_cipher_decryption_out_len(recipient_cipher,
+                                                                 test_data_recipient_cipher_ENCRYPTED_MESSAGE.len) +
+                                                         vscf_recipient_cipher_decryption_out_len(recipient_cipher, 0));
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_recipient_cipher_start_decryption_with_key(
+                    recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, private_key, vsc_data_empty()));
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_process_decryption(recipient_cipher,
+                                                   test_data_recipient_cipher_ENCRYPTED_MESSAGE, dec_msg));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_decryption(recipient_cipher, dec_msg));
+
+    //
+    //  Check.
+    //
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_recipient_cipher_MESSAGE_2, dec_msg);
+
+    //
+    //  Cleanup.
+    //
+    vsc_buffer_destroy(&dec_msg);
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+    vscf_impl_destroy(&private_key);
+    vscf_raw_key_destroy(&raw_private_key);
+    vscf_pkcs8_der_deserializer_destroy(&pkcs8);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -150,6 +184,7 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__encrypt_decrypt__with_ed25519_key_recipient__success);
+    RUN_TEST(test__decrypt__with_ed25519_public_key__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

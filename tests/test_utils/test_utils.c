@@ -174,3 +174,14 @@ void
 print_buffer(vsc_buffer_t *buffer) {
     print_data(vsc_buffer_data(buffer));
 }
+
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
+// --------------------------------------------------------------------------
+
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on

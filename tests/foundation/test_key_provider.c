@@ -40,7 +40,8 @@
 
 
 #define TEST_DEPENDENCIES_AVAILABLE                                                                                    \
-    (VSCF_KEY_PROVIDER && VSCF_KEY && VSCF_PRIVATE_KEY && VSCF_ENCRYPT && VSCF_DECRYPT && VSCF_SIGN && VSCF_VERIFY)
+    (VSCF_KEY_PROVIDER && VSCF_KEY && VSCF_PRIVATE_KEY && VSCF_ENCRYPT && VSCF_DECRYPT && VSCF_SIGN_HASH &&            \
+            VSCF_VERIFY_HASH)
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_alg.h"
@@ -49,19 +50,10 @@
 #include "vscf_private_key.h"
 #include "vscf_encrypt.h"
 #include "vscf_decrypt.h"
-#include "vscf_sign.h"
-#include "vscf_verify.h"
+#include "vscf_sign_hash.h"
+#include "vscf_verify_hash.h"
 
-
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
+#include "test_data_key_provider.h"
 
 
 void
@@ -121,7 +113,7 @@ test__generate_private_key__ed25519_and_then_do_encrypt_decrypt__success(void) {
 }
 
 void
-test__generate_private_key__ed25519_and_then_do_sign_verify__success(void) {
+test__generate_private_key__ed25519_and_then_do_sign_hash_and_verify_hash__success(void) {
 
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
     vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
@@ -136,13 +128,13 @@ test__generate_private_key__ed25519_and_then_do_sign_verify__success(void) {
     vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
     TEST_ASSERT_NOT_NULL(public_key);
 
-    vsc_data_t tbs_data = vsc_data_from_str("data to be signed", 17);
-
-    vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_sign_signature_len(private_key));
-    vscf_status_t sign_status = vscf_sign(private_key, tbs_data, signature);
+    vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_sign_hash_signature_len(private_key));
+    vscf_status_t sign_status =
+            vscf_sign_hash(private_key, test_key_provider_MESSAGE_SHA512_DIGEST, vscf_alg_id_SHA512, signature);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, sign_status);
 
-    bool verified = vscf_verify(public_key, tbs_data, vsc_buffer_data(signature));
+    bool verified = vscf_verify_hash(
+            public_key, test_key_provider_MESSAGE_SHA512_DIGEST, vscf_alg_id_SHA512, vsc_buffer_data(signature));
     TEST_ASSERT_TRUE(verified);
 
     vsc_buffer_destroy(&signature);
@@ -211,7 +203,7 @@ test__generate_private_key__rsa2048_and_then_do_encrypt_decrypt__success(void) {
 }
 
 void
-test__generate_private_key__rsa2048_and_then_do_sign_verify__success(void) {
+test__generate_private_key__rsa2048_and_then_do_sign_hash_and_verify_hash__success(void) {
 
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
     vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
@@ -227,13 +219,13 @@ test__generate_private_key__rsa2048_and_then_do_sign_verify__success(void) {
     vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
     TEST_ASSERT_NOT_NULL(public_key);
 
-    vsc_data_t tbs_data = vsc_data_from_str("data to be signed", 17);
-
-    vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_sign_signature_len(private_key));
-    vscf_status_t sign_status = vscf_sign(private_key, tbs_data, signature);
+    vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_sign_hash_signature_len(private_key));
+    vscf_status_t sign_status =
+            vscf_sign_hash(private_key, test_key_provider_MESSAGE_SHA512_DIGEST, vscf_alg_id_SHA512, signature);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, sign_status);
 
-    bool verified = vscf_verify(public_key, tbs_data, vsc_buffer_data(signature));
+    bool verified = vscf_verify_hash(
+            public_key, test_key_provider_MESSAGE_SHA512_DIGEST, vscf_alg_id_SHA512, vsc_buffer_data(signature));
     TEST_ASSERT_TRUE(verified);
 
     vsc_buffer_destroy(&signature);
@@ -255,11 +247,11 @@ main(void) {
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__generate_private_key__ed25519__success);
     RUN_TEST(test__generate_private_key__ed25519_and_then_do_encrypt_decrypt__success);
-    RUN_TEST(test__generate_private_key__ed25519_and_then_do_sign_verify__success);
+    RUN_TEST(test__generate_private_key__ed25519_and_then_do_sign_hash_and_verify_hash__success);
 
     RUN_TEST(test__generate_private_key__rsa_2048__success);
     RUN_TEST(test__generate_private_key__rsa2048_and_then_do_encrypt_decrypt__success);
-    RUN_TEST(test__generate_private_key__rsa2048_and_then_do_sign_verify__success);
+    RUN_TEST(test__generate_private_key__rsa2048_and_then_do_sign_hash_and_verify_hash__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

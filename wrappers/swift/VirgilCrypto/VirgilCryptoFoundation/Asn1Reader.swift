@@ -44,6 +44,9 @@ import VSCFoundation
     /// Reset all internal states and prepare to new ASN.1 reading operations.
     @objc func reset(data: Data)
 
+    /// Return length in bytes how many bytes are left for reading.
+    @objc func leftLen() -> Int
+
     /// Return true if status is not "success".
     @objc func hasError() -> Bool
 
@@ -103,6 +106,10 @@ import VSCFoundation
 
     /// Read ASN.1 type: NULL.
     @objc func readNull()
+
+    /// Read ASN.1 type: NULL, only if it exists.
+    /// Note, this method is safe to call even no more data is left for reading.
+    @objc func readNullOptional()
 
     /// Read ASN.1 type: OCTET STRING.
     @objc func readOctetStr() -> Data

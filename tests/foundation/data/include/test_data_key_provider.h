@@ -35,10 +35,4 @@
 
 #include "vsc_data.h"
 
-extern vsc_data_t test_data_recipient_cipher_MESSAGE;
-extern vsc_data_t test_data_recipient_cipher_MESSAGE_2;
-extern vsc_data_t test_data_recipient_cipher_ED25519_RECIPIENT_ID;
-extern vsc_data_t test_data_recipient_cipher_ED25519_PUBLIC_KEY;
-extern vsc_data_t test_data_recipient_cipher_ED25519_PRIVATE_KEY;
-
-extern vsc_data_t test_data_recipient_cipher_ENCRYPTED_MESSAGE;
+extern const vsc_data_t test_key_provider_MESSAGE_SHA512_DIGEST;
