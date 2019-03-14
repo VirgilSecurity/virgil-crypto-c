@@ -89,7 +89,6 @@ def build_LangC_Windows(slave) {
             cmake -G"NMake Makefiles" ^
                   -DCMAKE_BUILD_TYPE=Release ^
                   -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
-                  -DVIRGIL_LIB_RATCHET=OFF ^
                   -DVIRGIL_LIB_PYTHIA=OFF ^
                   -DCPACK_OUTPUT_FILE_PREFIX=c ^
                   -Bbuild -H.
