@@ -91,6 +91,10 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
     //
     (vscf_asn1_reader_api_reset_fn)vscf_asn1rd_reset,
     //
+    //  Return length in bytes how many bytes are left for reading.
+    //
+    (vscf_asn1_reader_api_left_len_fn)vscf_asn1rd_left_len,
+    //
     //  Return true if status is not "success".
     //
     (vscf_asn1_reader_api_has_error_fn)vscf_asn1rd_has_error,
@@ -169,6 +173,11 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
     //  Read ASN.1 type: NULL.
     //
     (vscf_asn1_reader_api_read_null_fn)vscf_asn1rd_read_null,
+    //
+    //  Read ASN.1 type: NULL, only if it exists.
+    //  Note, this method is safe to call even no more data is left for reading.
+    //
+    (vscf_asn1_reader_api_read_null_optional_fn)vscf_asn1rd_read_null_optional,
     //
     //  Read ASN.1 type: OCTET STRING.
     //

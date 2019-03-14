@@ -198,6 +198,23 @@ vscf_asn1rd_reset(vscf_asn1rd_t *self, vsc_data_t data) {
 }
 
 //
+//  Return length in bytes how many bytes are left for reading.
+//
+VSCF_PUBLIC size_t
+vscf_asn1rd_left_len(vscf_asn1rd_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
+
+    if (self->status != vscf_status_SUCCESS) {
+        return 0;
+    }
+
+    VSCF_ASSERT_PTR(self->curr <= self->end);
+    return (size_t)(self->end - self->curr);
+}
+
+//
 //  Return true if status is not "success".
 //
 VSCF_PUBLIC bool
@@ -229,6 +246,11 @@ vscf_asn1rd_get_tag(vscf_asn1rd_t *self) {
     VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
 
     if (self->status != vscf_status_SUCCESS) {
+        return 0;
+    }
+
+    if (self->curr == self->end) {
+        self->status = vscf_status_ERROR_OUT_OF_DATA;
         return 0;
     }
 
@@ -340,6 +362,11 @@ vscf_asn1rd_read_context_tag(vscf_asn1rd_t *self, int tag) {
     VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
 
     if (self->status != vscf_status_SUCCESS) {
+        return 0;
+    }
+
+    if (self->curr == self->end) {
+        self->status = vscf_status_ERROR_OUT_OF_DATA;
         return 0;
     }
 
@@ -656,6 +683,30 @@ vscf_asn1rd_read_null(vscf_asn1rd_t *self) {
     }
 
     VSCF_ASSERT(0 == len && "length of the NULL must be 0");
+}
+
+//
+//  Read ASN.1 type: NULL, only if it exists.
+//  Note, this method is safe to call even no more data is left for reading.
+//
+VSCF_PUBLIC void
+vscf_asn1rd_read_null_optional(vscf_asn1rd_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
+
+    if (self->status != vscf_status_SUCCESS) {
+        return;
+    }
+
+    if (vscf_asn1rd_left_len(self) == 0) {
+        return;
+    }
+
+    if (vscf_asn1rd_get_tag(self) == vscf_asn1_tag_NULL) {
+        vscf_asn1rd_read_null(self);
+    }
 }
 
 //

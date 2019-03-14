@@ -146,6 +146,12 @@ VSCF_PUBLIC void
 vscf_asn1rd_reset(vscf_asn1rd_t *self, vsc_data_t data);
 
 //
+//  Return length in bytes how many bytes are left for reading.
+//
+VSCF_PUBLIC size_t
+vscf_asn1rd_left_len(vscf_asn1rd_t *self);
+
+//
 //  Return true if status is not "success".
 //
 VSCF_PUBLIC bool
@@ -261,6 +267,13 @@ vscf_asn1rd_read_bool(vscf_asn1rd_t *self);
 //
 VSCF_PUBLIC void
 vscf_asn1rd_read_null(vscf_asn1rd_t *self);
+
+//
+//  Read ASN.1 type: NULL, only if it exists.
+//  Note, this method is safe to call even no more data is left for reading.
+//
+VSCF_PUBLIC void
+vscf_asn1rd_read_null_optional(vscf_asn1rd_t *self);
 
 //
 //  Read ASN.1 type: OCTET STRING.
