@@ -47,10 +47,21 @@
 #include "vscr_ratchet_cipher.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
+#include "vscr_ratchet_common_hidden.h"
+#include "vscr_error.h"
 
+#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
+
+#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_aes256_gcm.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_aes256_gcm.h>
+#endif
 
 // clang-format on
 //  @end
@@ -88,8 +99,10 @@ struct vscr_ratchet_cipher_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the implementation 'aes256 gcm'.
+    //  Dependency to the interface 'random'.
     //
+    vscf_impl_t *rng;
+
     vscf_aes256_gcm_t *aes256_gcm;
 };
 
@@ -111,6 +124,15 @@ vscr_ratchet_cipher_cleanup_ctx(vscr_ratchet_cipher_t *self);
 
 static void
 vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, vsc_data_t key);
+
+static size_t
+vscr_ratchet_cipher_padded_len(size_t plain_text_len);
+
+static vsc_buffer_t *
+vscr_ratchet_cipher_add_padding(vscr_ratchet_cipher_t *self, vsc_data_t plain_text, vscr_error_t *error);
+
+static vscr_status_t
+vscr_ratchet_cipher_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buffer);
 
 //
 //  Return size of 'vscr_ratchet_cipher_t'.
@@ -153,7 +175,7 @@ vscr_ratchet_cipher_cleanup(vscr_ratchet_cipher_t *self) {
     if (--self->refcnt == 0) {
         vscr_ratchet_cipher_cleanup_ctx(self);
 
-        vscr_ratchet_cipher_release_aes256_gcm(self);
+        vscr_ratchet_cipher_release_rng(self);
 
         vscr_zeroize(self, sizeof(vscr_ratchet_cipher_t));
     }
@@ -224,41 +246,45 @@ vscr_ratchet_cipher_shallow_copy(vscr_ratchet_cipher_t *self) {
 }
 
 //
-//  Setup dependency to the implementation 'aes256 gcm' with shared ownership.
+//  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_use_aes256_gcm(vscr_ratchet_cipher_t *self, vscf_aes256_gcm_t *aes256_gcm) {
+vscr_ratchet_cipher_use_rng(vscr_ratchet_cipher_t *self, vscf_impl_t *rng) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(aes256_gcm);
-    VSCR_ASSERT(self->aes256_gcm == NULL);
+    VSCR_ASSERT_PTR(rng);
+    VSCR_ASSERT(self->rng == NULL);
 
-    self->aes256_gcm = vscf_aes256_gcm_shallow_copy(aes256_gcm);
+    VSCR_ASSERT(vscf_random_is_implemented(rng));
+
+    self->rng = vscf_impl_shallow_copy(rng);
 }
 
 //
-//  Setup dependency to the implementation 'aes256 gcm' and transfer ownership.
+//  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_take_aes256_gcm(vscr_ratchet_cipher_t *self, vscf_aes256_gcm_t *aes256_gcm) {
+vscr_ratchet_cipher_take_rng(vscr_ratchet_cipher_t *self, vscf_impl_t *rng) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(aes256_gcm);
-    VSCR_ASSERT_PTR(self->aes256_gcm == NULL);
+    VSCR_ASSERT_PTR(rng);
+    VSCR_ASSERT_PTR(self->rng == NULL);
 
-    self->aes256_gcm = aes256_gcm;
+    VSCR_ASSERT(vscf_random_is_implemented(rng));
+
+    self->rng = rng;
 }
 
 //
-//  Release dependency to the implementation 'aes256 gcm'.
+//  Release dependency to the interface 'random'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_release_aes256_gcm(vscr_ratchet_cipher_t *self) {
+vscr_ratchet_cipher_release_rng(vscr_ratchet_cipher_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    vscf_aes256_gcm_destroy(&self->aes256_gcm);
+    vscf_impl_destroy(&self->rng);
 }
 
 
@@ -279,7 +305,7 @@ vscr_ratchet_cipher_init_ctx(vscr_ratchet_cipher_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    vscr_ratchet_cipher_take_aes256_gcm(self, vscf_aes256_gcm_new());
+    self->aes256_gcm = vscf_aes256_gcm_new();
 }
 
 //
@@ -291,18 +317,27 @@ static void
 vscr_ratchet_cipher_cleanup_ctx(vscr_ratchet_cipher_t *self) {
 
     VSCR_ASSERT_PTR(self);
+
+    vscf_aes256_gcm_destroy(&self->aes256_gcm);
 }
 
 VSCR_PUBLIC size_t
 vscr_ratchet_cipher_encrypt_len(vscr_ratchet_cipher_t *self, size_t plain_text_len) {
 
-    return vscf_aes256_gcm_encrypted_len(self->aes256_gcm, plain_text_len);
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(self->aes256_gcm);
+
+    return vscf_aes256_gcm_encrypted_len(self->aes256_gcm, vscr_ratchet_cipher_padded_len(plain_text_len));
 }
 
 VSCR_PUBLIC size_t
 vscr_ratchet_cipher_decrypt_len(vscr_ratchet_cipher_t *self, size_t cipher_text_len) {
 
-    return vscf_aes256_gcm_decrypted_len(self->aes256_gcm, cipher_text_len);
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(self->aes256_gcm);
+
+    return vscf_aes256_gcm_decrypted_len(self->aes256_gcm, cipher_text_len) -
+           vscr_ratchet_common_hidden_PADDING_SIZE_LEN;
 }
 
 static void
@@ -335,6 +370,60 @@ vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, vsc_data_t key) {
     vscr_zeroize(derived_secret, sizeof(derived_secret));
 }
 
+static size_t
+vscr_ratchet_cipher_padded_len(size_t plain_text_len) {
+
+    size_t full_size = plain_text_len + vscr_ratchet_common_hidden_PADDING_SIZE_LEN;
+
+    size_t factor = full_size / vscr_ratchet_common_hidden_PADDING_FACTOR +
+                    (full_size % vscr_ratchet_common_hidden_PADDING_FACTOR == 0 ? 0 : 1);
+
+    return factor * vscr_ratchet_common_hidden_PADDING_FACTOR;
+}
+
+static vsc_buffer_t *
+vscr_ratchet_cipher_add_padding(vscr_ratchet_cipher_t *self, vsc_data_t plain_text, vscr_error_t *error) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(self->rng);
+
+    uint32_t padded_len = (uint32_t)vscr_ratchet_cipher_padded_len(plain_text.len);
+
+    vsc_buffer_t *padded_text = vsc_buffer_new_with_capacity(padded_len);
+    vsc_buffer_make_secure(padded_text);
+
+    pb_ostream_t stream =
+            pb_ostream_from_buffer(vsc_buffer_unused_bytes(padded_text), vscr_ratchet_common_hidden_PADDING_SIZE_LEN);
+
+    bool pb_res = pb_encode_fixed32(&stream, &plain_text.len);
+
+    if (!pb_res) {
+        vsc_buffer_destroy(&padded_text);
+        return NULL;
+    }
+
+    vsc_buffer_inc_used(padded_text, vscr_ratchet_common_hidden_PADDING_SIZE_LEN);
+
+    memcpy(vsc_buffer_unused_bytes(padded_text), plain_text.bytes, plain_text.len);
+    vsc_buffer_inc_used(padded_text, plain_text.len);
+
+    size_t rest_len = padded_len - plain_text.len - vscr_ratchet_common_hidden_PADDING_SIZE_LEN;
+
+    if (rest_len != 0) {
+        vscf_status_t status = vscf_random(self->rng, rest_len, padded_text);
+
+        if (status != vscf_status_SUCCESS) {
+            vsc_buffer_destroy(&padded_text);
+            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_RNG_FAILED);
+            return NULL;
+        }
+    }
+
+    VSCR_ASSERT(vsc_buffer_unused_len(padded_text) == 0);
+
+    return padded_text;
+}
+
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t plain_text, vsc_buffer_t *buffer) {
 
@@ -345,11 +434,52 @@ vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_dat
 
     vscr_ratchet_cipher_setup_cipher(self, key);
 
-    vscf_status_t result = vscf_aes256_gcm_encrypt(self->aes256_gcm, plain_text, buffer);
+    vscr_error_t error;
+    vscr_error_reset(&error);
+
+    vsc_buffer_t *padded_text = vscr_ratchet_cipher_add_padding(self, plain_text, &error);
+
+    if (vscr_error_has_error(&error)) {
+        goto err;
+    }
+
+    vscf_status_t result = vscf_aes256_gcm_encrypt(self->aes256_gcm, vsc_buffer_data(padded_text), buffer);
 
     if (result != vscf_status_SUCCESS) {
-        return vscr_status_ERROR_AES;
+        error.status = vscr_status_ERROR_AES;
+        goto err;
     }
+
+err:
+    vsc_buffer_destroy(&padded_text);
+
+    return error.status;
+}
+
+static vscr_status_t
+vscr_ratchet_cipher_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buffer) {
+
+    if (decrypted_text.len < vscr_ratchet_common_hidden_PADDING_SIZE_LEN) {
+        return vscr_status_ERROR_INVALID_PADDING;
+    }
+
+    uint32_t plain_text_len = 0;
+
+    pb_istream_t stream = pb_istream_from_buffer(decrypted_text.bytes, vscr_ratchet_common_hidden_PADDING_SIZE_LEN);
+
+    bool pb_res = pb_decode_fixed32(&stream, &plain_text_len);
+
+    if (!pb_res) {
+        return vscr_status_ERROR_INVALID_PADDING;
+    }
+
+    if (vsc_buffer_unused_len(buffer) < plain_text_len) {
+        return vscr_status_ERROR_INVALID_PADDING;
+    }
+
+    memcpy(vsc_buffer_unused_bytes(buffer), decrypted_text.bytes + vscr_ratchet_common_hidden_PADDING_SIZE_LEN,
+            plain_text_len);
+    vsc_buffer_inc_used(buffer, plain_text_len);
 
     return vscr_status_SUCCESS;
 }
@@ -362,13 +492,25 @@ vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_dat
 
     VSCR_ASSERT(vsc_buffer_unused_len(buffer) >= vscr_ratchet_cipher_decrypt_len(self, cipher_text.len));
 
+    vscr_status_t result = vscr_status_SUCCESS;
+
     vscr_ratchet_cipher_setup_cipher(self, key);
 
-    vscf_status_t result = vscf_aes256_gcm_decrypt(self->aes256_gcm, cipher_text, buffer);
+    size_t padded_text_len = vscf_aes256_gcm_decrypted_len(self->aes256_gcm, cipher_text.len);
+    vsc_buffer_t *padded_text = vsc_buffer_new_with_capacity(padded_text_len);
+    vsc_buffer_make_secure(padded_text);
 
-    if (result != vscf_status_SUCCESS) {
-        return vscr_status_ERROR_AES;
+    vscf_status_t f_result = vscf_aes256_gcm_decrypt(self->aes256_gcm, cipher_text, padded_text);
+
+    if (f_result != vscf_status_SUCCESS) {
+        result = vscr_status_ERROR_AES;
+        goto err;
     }
 
-    return vscr_status_SUCCESS;
+    result = vscr_ratchet_cipher_remove_padding(vsc_buffer_data(padded_text), buffer);
+
+err:
+    vsc_buffer_destroy(&padded_text);
+
+    return result;
 }

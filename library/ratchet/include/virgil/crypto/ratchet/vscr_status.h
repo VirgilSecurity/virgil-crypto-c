@@ -143,7 +143,11 @@ enum vscr_status_t {
     //
     //  Too many messages for receiver chain.
     //
-    vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN = -17
+    vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN = -17,
+    //
+    //  Invalid padding.
+    //
+    vscr_status_ERROR_INVALID_PADDING = -18
 };
 typedef enum vscr_status_t vscr_status_t;
 

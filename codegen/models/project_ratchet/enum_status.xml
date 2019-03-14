@@ -72,4 +72,8 @@
     <constant name="error too many messages for receiver chain" value="-17">
         Too many messages for receiver chain.
     </constant>
+
+    <constant name="error invalid padding" value="-18">
+        Invalid padding.
+    </constant>
 </enum>

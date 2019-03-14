@@ -90,6 +90,9 @@ import VSCRatchet
     /// Too many messages for receiver chain.
     case errorTooManyMessagesForReceiverChain = -17
 
+    /// Invalid padding.
+    case errorInvalidPadding = -18
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscr_status_t) {
         self.init(rawValue: Int(status.rawValue))!
