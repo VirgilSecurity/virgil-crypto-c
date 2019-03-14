@@ -42,7 +42,7 @@ macro(_add_test test)
     add_executable(${test} ${test}.c)
     target_add_filename_definitions(${test})
     target_compile_definitions(${test} PRIVATE "ENABLE_HEAVY_TESTS=$<BOOL:${ENABLE_HEAVY_TESTS}>")
-    target_link_libraries(${test} unity test_utils test_data_foundation vsc::foundation)
+    target_link_libraries(${test} test_utils test_data_foundation vsc::foundation)
     set_target_properties(${test} PROPERTIES C_STANDARD "99")
     add_test (NAME ${test} COMMAND ${test})
 

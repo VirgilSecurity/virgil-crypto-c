@@ -49,16 +49,6 @@
 #include "test_data_pkcs5_pbkdf2.h"
 
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
 void
 test__derive__hmac_sha256_vector_1__returns_valid_key(void) {
     vscf_sha256_t *hash = vscf_sha256_new();
