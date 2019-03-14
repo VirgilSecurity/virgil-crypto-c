@@ -176,6 +176,9 @@ test__padding__growing_data_size__should_add_padding(void) {
                 vscr_ratchet_cipher_decrypt(cipher, vsc_buffer_data(key), vsc_buffer_data(cipher_text), plain_text2));
 
         TEST_ASSERT_EQUAL_DATA_AND_BUFFER(text, plain_text2);
+
+        vsc_buffer_destroy(&cipher_text);
+        vsc_buffer_destroy(&plain_text2);
     }
 
     vsc_buffer_destroy(&key);
