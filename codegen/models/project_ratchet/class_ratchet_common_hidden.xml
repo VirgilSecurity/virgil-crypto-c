@@ -10,5 +10,5 @@
     <constant name="max regular message len" value="32818"/>
     <constant name="max prekey message len" value="32964"/>
     <constant name="padding factor" value="160"/>
-    <constant name="padding size len" value="2"/>
+    <constant name="padding size len" value="4"/>
 </class>

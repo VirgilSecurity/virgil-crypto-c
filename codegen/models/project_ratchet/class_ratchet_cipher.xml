@@ -6,7 +6,12 @@
 
     <require class="ratchet common hidden" scope="context"/>
 
-    <dependency name="aes256 gcm" impl="aes256 gcm" project="foundation"/>
+    <require header="RatchetMessage.pb.h" scope="public"/>
+    <require header="pb_decode.h" scope="public"/>
+    <require header="pb_encode.h" scope="public"/>
+
+    <dependency name="rng" interface="random" project="foundation"/>
+    <property name="aes256 gcm" impl="aes256 gcm" project="foundation"/>
 
     <constant name="key len" value="32"/>
 
@@ -32,8 +37,9 @@
         <return type="size"/>
     </method>
 
-    <method name="add padding" declaration="private" is_static="1">
+    <method name="add padding" declaration="private">
         <argument name="plain text" class="data"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return class="buffer"/>
     </method>

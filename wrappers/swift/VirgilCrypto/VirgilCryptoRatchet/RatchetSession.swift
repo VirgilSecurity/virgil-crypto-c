@@ -69,9 +69,10 @@ import VirgilCryptoFoundation
     }
 
     /// Random used to generate keys
-    @objc public func setRng(rng: Random) {
+    @objc public func setRng(rng: Random) throws {
         vscr_ratchet_session_release_rng(self.c_ctx)
-        vscr_ratchet_session_use_rng(self.c_ctx, rng.c_ctx)
+        let proxyResult = vscr_ratchet_session_use_rng(self.c_ctx, rng.c_ctx)
+        try RatchetError.handleStatus(fromC: proxyResult)
     }
 
     /// Setups default dependencies:

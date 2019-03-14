@@ -50,7 +50,8 @@ int suiteTearDown(int num_failures) { return num_failures; }
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
+#include "vscf_ctr_drbg.h"
+#include "vscf_fake_random.h"
 #include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "test_data_ratchet_cipher.h"
@@ -58,6 +59,12 @@ int suiteTearDown(int num_failures) { return num_failures; }
 void
 test__encrypt__fixed_data__should_match(void) {
     vscr_ratchet_cipher_t *cipher = vscr_ratchet_cipher_new();
+
+    vscf_fake_random_t *rng = vscf_fake_random_new();
+
+    vscf_fake_random_setup_source_data(rng, test_data_ratchet_cipher_fake_rng);
+
+    vscr_ratchet_cipher_take_rng(cipher, vscf_fake_random_impl(rng));
 
     size_t len = vscr_ratchet_cipher_encrypt_len(cipher, test_data_ratchet_cipher_plain_text.len);
 
@@ -100,6 +107,7 @@ test__encrypt_decrypt__rnd_data__should_match(void) {
         TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, size, plain_text));
 
         vscr_ratchet_cipher_t *cipher = vscr_ratchet_cipher_new();
+        vscr_ratchet_cipher_use_rng(cipher, vscf_ctr_drbg_impl(rng));
 
         size_t len1 = vscr_ratchet_cipher_encrypt_len(cipher, vsc_buffer_len(plain_text));
 
@@ -143,8 +151,9 @@ test__padding__growing_data_size__should_add_padding(void) {
     vscf_ctr_drbg_random(rng, vsc_buffer_capacity(plain_text), plain_text);
 
     vscr_ratchet_cipher_t *cipher = vscr_ratchet_cipher_new();
+    vscr_ratchet_cipher_use_rng(cipher, vscf_ctr_drbg_impl(rng));
 
-    for (size_t size = 0; size < 320; size++) {
+    for (size_t size = 0; size <= max_size; size++) {
         size_t len1 = vscr_ratchet_cipher_encrypt_len(cipher, size);
 
         vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(len1);
@@ -154,7 +163,7 @@ test__padding__growing_data_size__should_add_padding(void) {
         TEST_ASSERT_EQUAL(
                 vscr_status_SUCCESS, vscr_ratchet_cipher_encrypt(cipher, vsc_buffer_data(key), text, cipher_text));
 
-        size_t expected_size = ((size + 2) / 160 + ((size + 2) % 160 == 0 ? 0 : 1)) * 160 + 16;
+        size_t expected_size = ((size + 4) / 160 + ((size + 4) % 160 == 0 ? 0 : 1)) * 160 + 16;
 
         TEST_ASSERT_EQUAL(vsc_buffer_len(cipher_text), expected_size);
         TEST_ASSERT_EQUAL(len1, expected_size + 16);

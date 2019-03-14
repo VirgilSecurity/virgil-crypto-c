@@ -3,7 +3,6 @@
     <require impl="sha512" project="foundation" scope="private"/>
     <require impl="hmac" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
-    <require impl="ctr drbg" project="foundation" scope="private"/>
     <require module="buffer defs" scope="private" project="common"/>
 
     <require class="ratchet common hidden" scope="context"/>
@@ -19,8 +18,8 @@
 
     <require header="ed25519/ed25519.h" scope="private"/>
 
-    <dependency name="rng" interface="random" project="foundation"/>
-    <dependency name="cipher" class="ratchet cipher" access="readwrite"/>
+    <dependency name="rng" interface="random" project="foundation" has_observers="1"/>
+    <property name="cipher" class="ratchet cipher" access="readwrite"/>
     <property name="sender chain" class="ratchet sender chain" access="readwrite"/>
     <property name="prev sender chain count" type="unsigned" size="4" access="readwrite"/>
     <property name="receiver chains" class="ratchet receiver chains" access="readwrite"/>
@@ -28,9 +27,6 @@
     <property name="root key" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_shared_key_length)"/>
     </property>
-
-    <method name="setup defaults">
-    </method>
 
     <method name="decrypt for existing chain" declaration="private">
         <argument name="chain key" class="ratchet chain key"/>
