@@ -458,7 +458,7 @@ vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_dat
 
     vscr_status_t result = vscr_ratchet_cipher_remove_padding(vsc_buffer_data(padded_text), buffer);
 
-    if (result != vscf_status_SUCCESS) {
+    if (result != vscr_status_SUCCESS) {
         return result;
     }
 
