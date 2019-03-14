@@ -56,17 +56,6 @@
 #include "test_data_message_info_der.h"
 
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
 void
 test__serialize__one_rsa2048_key_recipient__returns_valid_cms(void) {
 

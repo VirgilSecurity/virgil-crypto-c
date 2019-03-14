@@ -53,16 +53,6 @@
 #include "test_data_pkcs5_pbes2.h"
 
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
 void
 test__encrypt__pbkdf2_with_hmac_sha256_and_aes256_gcm_with_valid_nonce__success(void) {
     vscf_sha256_t *hash = vscf_sha256_new();
