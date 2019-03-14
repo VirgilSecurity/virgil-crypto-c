@@ -53,6 +53,7 @@
 #include "vscr_ratchet_receiver_chain.h"
 #include "vscr_ratchet_message_defs.h"
 #include "vscr_ratchet_sender_chain.h"
+#include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet_receiver_chains.h"
 #include "vscr_ratchet_skipped_messages.h"
 
@@ -60,7 +61,6 @@
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_hmac.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
-#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <ed25519/ed25519.h>
 
@@ -90,9 +90,7 @@ struct vscr_ratchet_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *rng;
-    //
-    //  Dependency to the class 'ratchet cipher'.
-    //
+
     vscr_ratchet_cipher_t *cipher;
 
     vscr_ratchet_sender_chain_t *sender_chain;
@@ -121,6 +119,18 @@ vscr_ratchet_init_ctx(vscr_ratchet_t *self);
 //
 static void
 vscr_ratchet_cleanup_ctx(vscr_ratchet_t *self);
+
+//
+//  This method is called when interface 'random' was setup.
+//
+static vscr_status_t
+vscr_ratchet_did_setup_rng(vscr_ratchet_t *self);
+
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vscr_ratchet_did_release_rng(vscr_ratchet_t *self);
 
 static vscr_status_t
 vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet_chain_key_t *chain_key,
@@ -174,7 +184,6 @@ vscr_ratchet_cleanup(vscr_ratchet_t *self) {
         vscr_ratchet_cleanup_ctx(self);
 
         vscr_ratchet_release_rng(self);
-        vscr_ratchet_release_cipher(self);
 
         vscr_zeroize(self, sizeof(vscr_ratchet_t));
     }
@@ -247,7 +256,7 @@ vscr_ratchet_shallow_copy(vscr_ratchet_t *self) {
 //
 //  Setup dependency to the interface 'random' with shared ownership.
 //
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_use_rng(vscr_ratchet_t *self, vscf_impl_t *rng) {
 
     VSCR_ASSERT_PTR(self);
@@ -257,13 +266,15 @@ vscr_ratchet_use_rng(vscr_ratchet_t *self, vscf_impl_t *rng) {
     VSCR_ASSERT(vscf_random_is_implemented(rng));
 
     self->rng = vscf_impl_shallow_copy(rng);
+
+    return vscr_ratchet_did_setup_rng(self);
 }
 
 //
 //  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_take_rng(vscr_ratchet_t *self, vscf_impl_t *rng) {
 
     VSCR_ASSERT_PTR(self);
@@ -273,6 +284,8 @@ vscr_ratchet_take_rng(vscr_ratchet_t *self, vscf_impl_t *rng) {
     VSCR_ASSERT(vscf_random_is_implemented(rng));
 
     self->rng = rng;
+
+    return vscr_ratchet_did_setup_rng(self);
 }
 
 //
@@ -284,44 +297,8 @@ vscr_ratchet_release_rng(vscr_ratchet_t *self) {
     VSCR_ASSERT_PTR(self);
 
     vscf_impl_destroy(&self->rng);
-}
 
-//
-//  Setup dependency to the class 'ratchet cipher' with shared ownership.
-//
-VSCR_PUBLIC void
-vscr_ratchet_use_cipher(vscr_ratchet_t *self, vscr_ratchet_cipher_t *cipher) {
-
-    VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(cipher);
-    VSCR_ASSERT(self->cipher == NULL);
-
-    self->cipher = vscr_ratchet_cipher_shallow_copy(cipher);
-}
-
-//
-//  Setup dependency to the class 'ratchet cipher' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCR_PUBLIC void
-vscr_ratchet_take_cipher(vscr_ratchet_t *self, vscr_ratchet_cipher_t *cipher) {
-
-    VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(cipher);
-    VSCR_ASSERT_PTR(self->cipher == NULL);
-
-    self->cipher = cipher;
-}
-
-//
-//  Release dependency to the class 'ratchet cipher'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_release_cipher(vscr_ratchet_t *self) {
-
-    VSCR_ASSERT_PTR(self);
-
-    vscr_ratchet_cipher_destroy(&self->cipher);
+    vscr_ratchet_did_release_rng(self);
 }
 
 
@@ -344,6 +321,7 @@ vscr_ratchet_init_ctx(vscr_ratchet_t *self) {
 
     self->skipped_messages = vscr_ratchet_skipped_messages_new();
     self->receiver_chains = vscr_ratchet_receiver_chains_new();
+    self->cipher = vscr_ratchet_cipher_new();
 }
 
 //
@@ -359,20 +337,29 @@ vscr_ratchet_cleanup_ctx(vscr_ratchet_t *self) {
     vscr_ratchet_sender_chain_destroy(&self->sender_chain);
     vscr_ratchet_receiver_chains_destroy(&self->receiver_chains);
     vscr_ratchet_skipped_messages_destroy(&self->skipped_messages);
+    vscr_ratchet_cipher_destroy(&self->cipher);
 }
 
-VSCR_PUBLIC void
-vscr_ratchet_setup_defaults(vscr_ratchet_t *self) {
+//
+//  This method is called when interface 'random' was setup.
+//
+static vscr_status_t
+vscr_ratchet_did_setup_rng(vscr_ratchet_t *self) {
 
-    VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(self->rng == NULL);
-    VSCR_ASSERT(self->cipher == NULL);
+    if (self->rng) {
+        vscr_ratchet_cipher_use_rng(self->cipher, self->rng);
+    }
 
-    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng);
+    return vscr_status_SUCCESS;
+}
 
-    vscr_ratchet_take_rng(self, vscf_ctr_drbg_impl(rng));
-    vscr_ratchet_take_cipher(self, vscr_ratchet_cipher_new());
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vscr_ratchet_did_release_rng(vscr_ratchet_t *self) {
+
+    VSCR_UNUSED(self);
 }
 
 static vscr_status_t

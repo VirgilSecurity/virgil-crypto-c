@@ -147,7 +147,7 @@ vscr_ratchet_session_shallow_copy(vscr_ratchet_session_t *self);
 //
 //  Note, ownership is shared.
 //
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng);
 
 //
@@ -156,7 +156,7 @@ vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng);
 //  Note, ownership is transfered.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_take_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng);
 
 //

@@ -77,7 +77,9 @@ enum {
     vscr_ratchet_common_hidden_MAX_RECEIVERS_CHAINS = 5,
     vscr_ratchet_common_hidden_MAX_MESSAGE_GAP = 2000,
     vscr_ratchet_common_hidden_MAX_REGULAR_MESSAGE_LEN = 32818,
-    vscr_ratchet_common_hidden_MAX_PREKEY_MESSAGE_LEN = 32964
+    vscr_ratchet_common_hidden_MAX_PREKEY_MESSAGE_LEN = 32964,
+    vscr_ratchet_common_hidden_PADDING_FACTOR = 160,
+    vscr_ratchet_common_hidden_PADDING_SIZE_LEN = 4
 };
 
 
