@@ -137,9 +137,9 @@ endfunction
 global.js_cpp_argument_type_variable = "variable"
 global.js_cpp_argument_type_constant = "constant"
 
-global.js_cpp_size_type_constant = "constant"
-
-global.js_cpp_size_type_method = "method"
+global.js_cpp_buffer_size_type_constant = "constant"
+global.js_cpp_buffer_size_type_method = "method"
+global.js_cpp_buffer_size_type_argument = "argument"
 
 global.js_cpp_method_return_name = "method_return"
 
@@ -156,6 +156,8 @@ global.js_cpp_callback_info_type = "const Nan::FunctionCallbackInfo<v8::Value>&"
 global.js_cpp_callback_info_name = "info"
 
 global.js_cpp_persistent_constructor_name = "constructor"
+
+global.js_cpp_implementation_getter = "GetImplementation"
 
 function js_cpp_value_is_cpp_js_return(value)
   return (js_value_is_buffer(my.value) | js_value_is_char(my.value)) & defined(my.value.access) & (my.value.access = "writeonly" | my.value.access = "readwrite")
@@ -195,6 +197,10 @@ endfunction
 
 function js_cpp_context_destructor_name(cpp_class, wrapper)
   return "$(my.cpp_class.context_name:no)_destroy"
+endfunction
+
+function js_cpp_implementation_type(wrapper)
+  return "$(my.wrapper.prefix)_impl_t*"
 endfunction
 
 endtemplate

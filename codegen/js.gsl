@@ -59,9 +59,9 @@ function js_resolve_js_class_module(js_class_module, wrapper)
     endfor
     my.class_names = XML.new()
     for my.cpp_class.cpp_method
-      for cpp_method.cpp_context_argument
+      for cpp_method.cpp_class_call_argument
         new class_name to my.class_names
-          class_name.name = cpp_context_argument.module_name
+          class_name.name = cpp_class_call_argument.class_name
         endnew
       endfor
     endfor
@@ -100,6 +100,8 @@ function js_resolve(project, wrapper)
   my.wrapper.root_dir = cat_path("../wrappers/$(my.wrapper.lang:no)", "crypto")
   my.wrapper.source_dir = cat_path(my.wrapper.root_dir, "src")
   my.wrapper.project_source_dir = cat_path(my.wrapper.source_dir, my.wrapper.name)
+  my.wrapper.index_cpp_file = "index.cc"
+  my.wrapper.index_cpp_file_path = cat_path(my.wrapper.project_source_dir, my.wrapper.index_cpp_file)
   my.wrapper.index_js_file = "index.js"
   my.wrapper.index_js_file_path = cat_path(my.wrapper.project_source_dir, my.wrapper.index_js_file)
 endfunction
@@ -114,6 +116,7 @@ endfunction
 function js_generate_sources(source, wrapper)
   echo_info("js_generate_sources", my)
   js_create_js_module_files(my.source, my.wrapper)
+  js_create_index_cpp_file(my.wrapper)
   js_create_index_js_file(my.wrapper)
 endfunction
 

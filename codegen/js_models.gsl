@@ -18,8 +18,6 @@ function js_append_js_interface_module_model(parent, source, wrapper)
   new js_interface_module to my.parent
     js_interface_module.name = my.source.name
     js_interface_module.class_name = "$(my.source.name:Pascal)"
-    js_interface_module.implementation_type = "$(my.wrapper.prefix:no)_impl_t"
-    js_interface_module.implementation_getter = "GetImplementation"
     return js_interface_module
   endnew
 endfunction
@@ -47,6 +45,9 @@ function js_append_js_implementation_module_model(parent, source, wrapper)
       for interface.method
         copy method to js_implementation_module
       endfor
+    endfor
+    for my.source.dependency
+      copy dependency to js_implementation_module
     endfor
     for my.source.constant
       copy constant to js_implementation_module
@@ -357,14 +358,15 @@ endfunction
 function js_append_cpp_buffer_size_model(parent, name, source_length, cpp_class, wrapper)
   new cpp_buffer_size to my.parent
     if defined(my.source_length.argument)
+      cpp_buffer_size.type = global.js_cpp_buffer_size_type_argument
       cpp_buffer_size.name = my.source_length.argument
     else
       cpp_buffer_size.name = js_cpp_size_name(my.name)
       if defined(my.source_length.constant)
-        cpp_buffer_size.type = global.js_cpp_size_type_constant
+        cpp_buffer_size.type = global.js_cpp_buffer_size_type_constant
         cpp_buffer_size.constant = "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.source_length.constant:c,upper)"
       elsif defined(my.source_length.method)
-        cpp_buffer_size.type = global.js_cpp_size_type_method
+        cpp_buffer_size.type = global.js_cpp_buffer_size_type_method
         cpp_buffer_size.method = "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.source_length.method:c)"
         for my.source_length.proxy
           js_append_cpp_argument_model(cpp_buffer_size, proxy)
@@ -517,7 +519,7 @@ endfunction
 function js_append_cpp_implementation_method_return_model(parent, name, implementation_name)
   new cpp_implementation_method_return to my.parent
     cpp_implementation_method_return.name = my.name
-    cpp_implementation_method_return.implementation_name = my.implementation_name
+    cpp_implementation_method_return.class_name = my.implementation_name
   endnew
 endfunction
 
@@ -579,12 +581,34 @@ function js_append_cpp_method_model(parent, source_method, cpp_class, wrapper)
   endnew
 endfunction
 
+function js_append_cpp_dependency_model(parent, source_dependency)
+  new cpp_dependency to my.parent
+    cpp_dependency.name = my.source_dependency.name
+    if defined(my.source_dependency.api)
+      cpp_dependency.interface_name = my.source_dependency.api
+    endif
+    if defined(my.source_dependency.class)
+      cpp_dependency.class_name = my.source_dependency.class
+    endif
+    if defined(my.source_dependency.interface)
+      cpp_dependency.interface_name = my.source_dependency.interface
+    endif
+    if defined(my.source_dependency.impl)
+      cpp_dependency.class_name = my.source_dependency.impl
+    endif
+    return cpp_dependency
+  endnew
+endfunction
+
 function js_append_cpp_class_model(parent, source, wrapper)
   new cpp_class to my.parent
     cpp_class.name = "$(my.source.name:Pascal)"
     cpp_class.binding_name = js_binding_class_name(cpp_class)
     cpp_class.c_name = "$(my.source.name:c)"
     cpp_class.context_name = "$(my.wrapper.prefix:no)_$(my.source.name:c)"
+    for my.source.dependency
+      js_append_cpp_dependency_model(cpp_class, dependency)
+    endfor
     for my.source.method where !js_method_is_private(method)
       js_append_cpp_method_model(cpp_class, method, cpp_class, my.wrapper)
     endfor

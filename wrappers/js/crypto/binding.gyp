@@ -2,7 +2,9 @@
     "targets": [
         {
             "target_name": "foundation",
-            "sources": [],
+            "sources": [
+                "index.cc"
+            ],
             "include_dirs" : [
                 "<!(node -e \"require('nan')\")"
             ],
@@ -10,7 +12,9 @@
         },
         {
             "target_name": "phe",
-            "sources": [],
+            "sources": [
+                "index.cc"
+            ],
             "include_dirs" : [
                 "<!(node -e \"require('nan')\")"
             ],
@@ -18,7 +22,9 @@
         },
         {
             "target_name": "pythia",
-            "sources": [],
+            "sources": [
+                "index.cc"
+            ],
             "include_dirs" : [
                 "<!(node -e \"require('nan')\")"
             ],
@@ -27,6 +33,7 @@
         {
             "target_name": "ratchet",
             "sources": [
+                "index.cc"
             ],
             "include_dirs" : [
                 "<!(node -e \"require('nan')\")"
