@@ -116,9 +116,7 @@ vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(vscf_pkcs8_der_deseri
     vscf_asn1_reader_read_sequence(self->asn1_reader);
     vsc_data_t key_oid = vscf_asn1_reader_read_oid(self->asn1_reader);
 
-    if (vscf_asn1_reader_get_tag(self->asn1_reader) == vscf_asn1_tag_NULL) {
-        vscf_asn1_reader_read_null(self->asn1_reader);
-    }
+    vscf_asn1_reader_read_null_optional(self->asn1_reader);
 
     //
     //  Read subjectPublicKey
@@ -180,9 +178,7 @@ vscf_pkcs8_der_deserializer_deserialize_private_key_inplace(vscf_pkcs8_der_deser
     vscf_asn1_reader_read_sequence(self->asn1_reader);
     vsc_data_t key_oid = vscf_asn1_reader_read_oid(self->asn1_reader);
 
-    if (vscf_asn1_reader_get_tag(self->asn1_reader) == vscf_asn1_tag_NULL) {
-        vscf_asn1_reader_read_null(self->asn1_reader);
-    }
+    vscf_asn1_reader_read_null_optional(self->asn1_reader);
 
     //
     //  Read privateKey

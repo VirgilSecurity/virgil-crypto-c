@@ -156,9 +156,7 @@ vscf_alg_info_der_deserializer_deserialize_simple_alg_info(
 
     //  According to RFC 5754 - Using SHA2 Algorithms with Cryptographic Message Syntax.
     //  Implementations MUST accept SHA2 AlgorithmIdentifiers with NULL parameters.
-    if (vscf_asn1_reader_get_tag(self->asn1_reader) == vscf_asn1_tag_NULL) {
-        vscf_asn1_reader_read_null(self->asn1_reader);
-    }
+    vscf_asn1_reader_read_null_optional(self->asn1_reader);
 
     vscf_status_t status = vscf_asn1_reader_status(self->asn1_reader);
 
@@ -333,12 +331,10 @@ vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(
         break;
     }
 
-    if (vscf_asn1_reader_get_tag(self->asn1_reader) == vscf_asn1_tag_NULL) {
-        //  parameters NULL : NULL is reuired by the RFC 4231,
-        //  but this rule is relaxed to keep backward compatibility with Virgil Crypto v2,
-        //  that do not write NULL for this AlgorithmIdentifier.
-        vscf_asn1_reader_read_null(self->asn1_reader);
-    }
+    //  parameters NULL : NULL is reuired by the RFC 4231,
+    //  but this rule is relaxed to keep backward compatibility with Virgil Crypto v2,
+    //  that do not write NULL for this AlgorithmIdentifier.
+    vscf_asn1_reader_read_null_optional(self->asn1_reader);
 
     vscf_impl_t *hash_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(hash_alg_id));
     vscf_impl_t *hash_based_alg_info =

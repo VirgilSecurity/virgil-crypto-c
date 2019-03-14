@@ -75,6 +75,13 @@ import VSCFoundation
         })
     }
 
+    /// Return length in bytes how many bytes are left for reading.
+    @objc public func leftLen() -> Int {
+        let proxyResult = vscf_asn1rd_left_len(self.c_ctx)
+
+        return proxyResult
+    }
+
     /// Return true if status is not "success".
     @objc public func hasError() -> Bool {
         let proxyResult = vscf_asn1rd_has_error(self.c_ctx)
@@ -207,6 +214,12 @@ import VSCFoundation
     /// Read ASN.1 type: NULL.
     @objc public func readNull() {
         vscf_asn1rd_read_null(self.c_ctx)
+    }
+
+    /// Read ASN.1 type: NULL, only if it exists.
+    /// Note, this method is safe to call even no more data is left for reading.
+    @objc public func readNullOptional() {
+        vscf_asn1rd_read_null_optional(self.c_ctx)
     }
 
     /// Read ASN.1 type: OCTET STRING.
