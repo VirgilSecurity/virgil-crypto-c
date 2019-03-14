@@ -459,6 +459,10 @@ err:
 static vscr_status_t
 vscr_ratchet_cipher_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buffer) {
 
+    if (decrypted_text.len < vscr_ratchet_common_hidden_PADDING_SIZE_LEN) {
+        return vscr_status_ERROR_INVALID_PADDING;
+    }
+
     uint32_t plain_text_len = 0;
 
     pb_istream_t stream = pb_istream_from_buffer(decrypted_text.bytes, vscr_ratchet_common_hidden_PADDING_SIZE_LEN);
