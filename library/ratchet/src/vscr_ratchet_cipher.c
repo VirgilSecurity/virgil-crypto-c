@@ -47,6 +47,7 @@
 #include "vscr_ratchet_cipher.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
+#include "vscr_ratchet_common_hidden.h"
 
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
@@ -111,6 +112,15 @@ vscr_ratchet_cipher_cleanup_ctx(vscr_ratchet_cipher_t *self);
 
 static void
 vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, vsc_data_t key);
+
+static size_t
+vscr_ratchet_cipher_padded_len(size_t plain_text_len);
+
+static vsc_buffer_t *
+vscr_ratchet_cipher_add_padding(vsc_data_t plain_text);
+
+static vscr_status_t
+vscr_ratchet_cipher_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buffer);
 
 //
 //  Return size of 'vscr_ratchet_cipher_t'.
@@ -296,13 +306,14 @@ vscr_ratchet_cipher_cleanup_ctx(vscr_ratchet_cipher_t *self) {
 VSCR_PUBLIC size_t
 vscr_ratchet_cipher_encrypt_len(vscr_ratchet_cipher_t *self, size_t plain_text_len) {
 
-    return vscf_aes256_gcm_encrypted_len(self->aes256_gcm, plain_text_len);
+    return vscf_aes256_gcm_encrypted_len(self->aes256_gcm, vscr_ratchet_cipher_padded_len(plain_text_len));
 }
 
 VSCR_PUBLIC size_t
 vscr_ratchet_cipher_decrypt_len(vscr_ratchet_cipher_t *self, size_t cipher_text_len) {
 
-    return vscf_aes256_gcm_decrypted_len(self->aes256_gcm, cipher_text_len);
+    return vscf_aes256_gcm_decrypted_len(self->aes256_gcm, cipher_text_len) -
+           vscr_ratchet_common_hidden_PADDING_SIZE_LEN;
 }
 
 static void
@@ -335,6 +346,42 @@ vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, vsc_data_t key) {
     vscr_zeroize(derived_secret, sizeof(derived_secret));
 }
 
+static size_t
+vscr_ratchet_cipher_padded_len(size_t plain_text_len) {
+
+    size_t full_size = plain_text_len + vscr_ratchet_common_hidden_PADDING_SIZE_LEN;
+
+    size_t factor = full_size / vscr_ratchet_common_hidden_PADDING_FACTOR +
+                    (full_size % vscr_ratchet_common_hidden_PADDING_FACTOR == 0 ? 0 : 1);
+
+    return factor * vscr_ratchet_common_hidden_PADDING_FACTOR;
+}
+
+static vsc_buffer_t *
+vscr_ratchet_cipher_add_padding(vsc_data_t plain_text) {
+
+    size_t padded_len = vscr_ratchet_cipher_padded_len(plain_text.len);
+
+    vsc_buffer_t *padded_text = vsc_buffer_new_with_capacity(padded_len);
+    vsc_buffer_make_secure(padded_text);
+
+    // FIXME: Should replace with endian-independent way to encode size
+    memcpy(vsc_buffer_unused_bytes(padded_text), &plain_text.len, vscr_ratchet_common_hidden_PADDING_SIZE_LEN);
+    vsc_buffer_inc_used(padded_text, vscr_ratchet_common_hidden_PADDING_SIZE_LEN);
+
+    memcpy(vsc_buffer_unused_bytes(padded_text), plain_text.bytes, plain_text.len);
+    vsc_buffer_inc_used(padded_text, plain_text.len);
+
+    size_t rest_len = padded_len - plain_text.len - vscr_ratchet_common_hidden_PADDING_SIZE_LEN;
+
+    memset(vsc_buffer_unused_bytes(padded_text), 0, rest_len);
+    vsc_buffer_inc_used(padded_text, rest_len);
+
+    VSCR_ASSERT(vsc_buffer_unused_len(padded_text) == 0);
+
+    return padded_text;
+}
+
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t plain_text, vsc_buffer_t *buffer) {
 
@@ -345,10 +392,45 @@ vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_dat
 
     vscr_ratchet_cipher_setup_cipher(self, key);
 
-    vscf_status_t result = vscf_aes256_gcm_encrypt(self->aes256_gcm, plain_text, buffer);
+    vsc_buffer_t *padded_text = vscr_ratchet_cipher_add_padding(plain_text);
+
+    vscf_status_t result = vscf_aes256_gcm_encrypt(self->aes256_gcm, vsc_buffer_data(padded_text), buffer);
+
+    vsc_buffer_destroy(&padded_text);
 
     if (result != vscf_status_SUCCESS) {
         return vscr_status_ERROR_AES;
+    }
+
+    return vscr_status_SUCCESS;
+}
+
+static vscr_status_t
+vscr_ratchet_cipher_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buffer) {
+
+    size_t plain_text_len = 0;
+
+    // FIXME: Should replace with endian-independent way to encode size
+    memcpy(&plain_text_len, decrypted_text.bytes, vscr_ratchet_common_hidden_PADDING_SIZE_LEN);
+
+    if (vsc_buffer_unused_len(buffer) < plain_text_len) {
+        return vscr_status_ERROR_INVALID_PADDING;
+    }
+
+    memcpy(vsc_buffer_unused_bytes(buffer), decrypted_text.bytes + vscr_ratchet_common_hidden_PADDING_SIZE_LEN,
+            plain_text_len);
+    vsc_buffer_inc_used(buffer, plain_text_len);
+
+    // TODO: Should we check padding for zeroes?
+    const byte *zero_region = decrypted_text.bytes + vscr_ratchet_common_hidden_PADDING_SIZE_LEN + plain_text_len;
+    size_t zero_region_len = decrypted_text.len - vscr_ratchet_common_hidden_PADDING_SIZE_LEN - plain_text_len;
+
+    if (zero_region_len == 0) {
+        return vscr_status_SUCCESS;
+    }
+
+    if (!(zero_region[0] == 0 && memcmp(zero_region, zero_region + 1, zero_region_len - 1) == 0)) {
+        return vscr_status_ERROR_INVALID_PADDING;
     }
 
     return vscr_status_SUCCESS;
@@ -364,10 +446,20 @@ vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_dat
 
     vscr_ratchet_cipher_setup_cipher(self, key);
 
-    vscf_status_t result = vscf_aes256_gcm_decrypt(self->aes256_gcm, cipher_text, buffer);
+    size_t padded_text_len = vscf_aes256_gcm_decrypted_len(self->aes256_gcm, cipher_text.len);
+    vsc_buffer_t *padded_text = vsc_buffer_new_with_capacity(padded_text_len);
+    vsc_buffer_make_secure(padded_text);
+
+    vscf_status_t f_result = vscf_aes256_gcm_decrypt(self->aes256_gcm, cipher_text, padded_text);
+
+    if (f_result != vscf_status_SUCCESS) {
+        return vscr_status_ERROR_AES;
+    }
+
+    vscr_status_t result = vscr_ratchet_cipher_remove_padding(vsc_buffer_data(padded_text), buffer);
 
     if (result != vscf_status_SUCCESS) {
-        return vscr_status_ERROR_AES;
+        return result;
     }
 
     return vscr_status_SUCCESS;
