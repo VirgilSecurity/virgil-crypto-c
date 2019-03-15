@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'iotelic sha256' implementation.
+//  This module contains 'iotelic sha512' implementation.
 // --------------------------------------------------------------------------
 
 
@@ -50,11 +50,11 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_iotelic_sha256.h"
+#include "vscf_iotelic_sha512.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_iotelic_sha256_defs.h"
-#include "vscf_iotelic_sha256_internal.h"
+#include "vscf_iotelic_sha512_defs.h"
+#include "vscf_iotelic_sha512_internal.h"
 
 // clang-format on
 //  @end
@@ -80,17 +80,17 @@
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_iotelic_sha256_alg_id(const vscf_iotelic_sha256_t *self) {
+vscf_iotelic_sha512_alg_id(const vscf_iotelic_sha512_t *self) {
 
     VSCF_UNUSED(self);
-    return vscf_alg_id_SHA256;
+    return vscf_alg_id_SHA512;
 }
 
 //
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_iotelic_sha256_produce_alg_info(const vscf_iotelic_sha256_t *self) {
+vscf_iotelic_sha512_produce_alg_info(const vscf_iotelic_sha512_t *self) {
 
     VSCF_UNUSED(self);
     return NULL;
@@ -100,7 +100,7 @@ vscf_iotelic_sha256_produce_alg_info(const vscf_iotelic_sha256_t *self) {
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_iotelic_sha256_restore_alg_info(vscf_iotelic_sha256_t *self, const vscf_impl_t *alg_info) {
+vscf_iotelic_sha512_restore_alg_info(vscf_iotelic_sha512_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_UNUSED(self);
     VSCF_UNUSED(alg_info);
@@ -111,17 +111,17 @@ vscf_iotelic_sha256_restore_alg_info(vscf_iotelic_sha256_t *self, const vscf_imp
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_iotelic_sha256_hash(vsc_data_t data, vsc_buffer_t *digest) {
+vscf_iotelic_sha512_hash(vsc_data_t data, vsc_buffer_t *digest) {
 
     vs_iot_execute_crypto_op(
-            VS_IOT_HASH_SHA256, (void *)data.bytes, data.len, (void *)digest->bytes, digest->capacity, &digest->len);
+            VS_IOT_HASH_SHA512, (void *)data.bytes, data.len, (void *)digest->bytes, digest->capacity, &digest->len);
 }
 
 //
 //  Start a new hashing.
 //
 VSCF_PUBLIC void
-vscf_iotelic_sha256_start(vscf_iotelic_sha256_t *self) {
+vscf_iotelic_sha512_start(vscf_iotelic_sha512_t *self) {
 
     VSCF_UNUSED(self);
 }
@@ -130,7 +130,7 @@ vscf_iotelic_sha256_start(vscf_iotelic_sha256_t *self) {
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_iotelic_sha256_update(vscf_iotelic_sha256_t *self, vsc_data_t data) {
+vscf_iotelic_sha512_update(vscf_iotelic_sha512_t *self, vsc_data_t data) {
 
     VSCF_UNUSED(self);
     VSCF_UNUSED(data);
@@ -140,7 +140,7 @@ vscf_iotelic_sha256_update(vscf_iotelic_sha256_t *self, vsc_data_t data) {
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_iotelic_sha256_finish(vscf_iotelic_sha256_t *self, vsc_buffer_t *digest) {
+vscf_iotelic_sha512_finish(vscf_iotelic_sha512_t *self, vsc_buffer_t *digest) {
 
     VSCF_UNUSED(self);
     VSCF_UNUSED(digest);

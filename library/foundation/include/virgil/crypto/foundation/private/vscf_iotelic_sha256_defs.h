@@ -60,8 +60,7 @@
 #include "vscf_impl_private.h"
 #include "vscf_iotelic_sha256.h"
 
-#include <io_lib/iot_io_api.h>
-//#include <iot_io_api.h>
+#include <iot_io_api.h>
 
 // clang-format on
 //  @end
