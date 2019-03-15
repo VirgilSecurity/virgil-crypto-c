@@ -370,15 +370,21 @@ vscr_ratchet_session_did_release_rng(vscr_ratchet_session_t *self) {
 //      - Key serialization: DER PKCS8
 //      - Symmetric cipher: AES256-GCM
 //
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *self) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(self->rng == NULL);
 
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng);
-    vscr_ratchet_session_take_rng(self, vscf_ctr_drbg_impl(rng));
+    vscf_status_t status = vscf_ctr_drbg_setup_defaults(rng);
+
+    if (status != vscf_status_SUCCESS) {
+        vscf_ctr_drbg_destroy(&rng);
+        return vscr_status_ERROR_RNG_FAILED;
+    }
+
+    return vscr_ratchet_session_take_rng(self, vscf_ctr_drbg_impl(rng));
 }
 
 //

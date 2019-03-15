@@ -166,7 +166,7 @@ vsce_phe_cipher_release_random(vsce_phe_cipher_t *self);
 //
 //  Setups dependencies with default values.
 //
-VSCE_PUBLIC void
+VSCE_PUBLIC vsce_status_t
 vsce_phe_cipher_setup_defaults(vsce_phe_cipher_t *self);
 
 //

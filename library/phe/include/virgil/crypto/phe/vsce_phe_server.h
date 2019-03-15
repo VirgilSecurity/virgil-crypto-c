@@ -186,6 +186,9 @@ vsce_phe_server_take_operation_random(vsce_phe_server_t *self, vscf_impl_t *oper
 VSCE_PUBLIC void
 vsce_phe_server_release_operation_random(vsce_phe_server_t *self);
 
+VSCE_PUBLIC vsce_status_t
+vsce_phe_server_setup_defaults(vsce_phe_server_t *self);
+
 //
 //  Generates new NIST P-256 server key pair for some client
 //

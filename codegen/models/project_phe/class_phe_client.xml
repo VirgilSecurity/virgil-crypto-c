@@ -35,6 +35,10 @@
     <property name="one" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
     <property name="minus one" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
 
+    <method name="setup defaults">
+        <return enum="status"/>
+    </method>
+
     <method name="set keys">
         Sets client private and server public key
         Call this method before any other methods except `update enrollment record` and `generate client private key`

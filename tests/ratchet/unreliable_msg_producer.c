@@ -45,7 +45,7 @@ void
 init_producer(unreliable_msg_producer_t *producer, vscr_ratchet_session_t **session, float lost_rate,
         float out_of_order_rate) {
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
     producer->rng = rng;
 
     producer->produced_count = 0;

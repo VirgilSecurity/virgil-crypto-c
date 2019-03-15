@@ -186,6 +186,9 @@ vsce_phe_client_take_operation_random(vsce_phe_client_t *self, vscf_impl_t *oper
 VSCE_PUBLIC void
 vsce_phe_client_release_operation_random(vsce_phe_client_t *self);
 
+VSCE_PUBLIC vsce_status_t
+vsce_phe_client_setup_defaults(vsce_phe_client_t *self);
+
 //
 //  Sets client private and server public key
 //  Call this method before any other methods except `update enrollment record` and `generate client private key`

@@ -171,7 +171,7 @@ vscr_ratchet_session_release_rng(vscr_ratchet_session_t *self);
 //      - Key serialization: DER PKCS8
 //      - Symmetric cipher: AES256-GCM
 //
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *self);
 
 //
