@@ -134,7 +134,7 @@ vscf_verifier_shallow_copy(vscf_verifier_t *self);
 //  Start verifying a signature.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_verifier_reset(vscf_verifier_t *self, vsc_data_t signature);
+vscf_verifier_reset(vscf_verifier_t *self, vsc_data_t signature) VSCF_NODISCARD;
 
 //
 //  Add given data to the signed data.

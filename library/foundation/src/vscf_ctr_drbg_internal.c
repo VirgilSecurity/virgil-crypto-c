@@ -78,7 +78,7 @@
 //  This method is called when interface 'entropy source' was setup.
 //
 VSCF_PRIVATE vscf_status_t
-vscf_ctr_drbg_did_setup_entropy_source(vscf_ctr_drbg_t *self);
+vscf_ctr_drbg_did_setup_entropy_source(vscf_ctr_drbg_t *self) VSCF_NODISCARD;
 
 //
 //  This method is called when interface 'entropy source' was released.

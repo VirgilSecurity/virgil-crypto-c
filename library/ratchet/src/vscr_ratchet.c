@@ -124,7 +124,7 @@ vscr_ratchet_cleanup_ctx(vscr_ratchet_t *self);
 //  This method is called when interface 'random' was setup.
 //
 static vscr_status_t
-vscr_ratchet_did_setup_rng(vscr_ratchet_t *self);
+vscr_ratchet_did_setup_rng(vscr_ratchet_t *self) VSCR_NODISCARD;
 
 //
 //  This method is called when interface 'random' was released.
@@ -134,13 +134,15 @@ vscr_ratchet_did_release_rng(vscr_ratchet_t *self);
 
 static vscr_status_t
 vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet_chain_key_t *chain_key,
-        const RegularMessage *message, vsc_buffer_t *buffer);
+        const RegularMessage *message, vsc_buffer_t *buffer) VSCR_NODISCARD;
 
 static vscr_status_t
-vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const RegularMessage *message, vsc_buffer_t *buffer);
+vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const RegularMessage *message,
+        vsc_buffer_t *buffer) VSCR_NODISCARD;
 
 static vscr_status_t
-vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self, vscr_ratchet_sender_chain_t *sender_chain);
+vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self,
+        vscr_ratchet_sender_chain_t *sender_chain) VSCR_NODISCARD;
 
 //
 //  Return size of 'vscr_ratchet_t'.

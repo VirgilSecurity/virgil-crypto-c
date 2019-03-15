@@ -157,14 +157,14 @@ vscf_ctr_drbg_shallow_copy(vscf_ctr_drbg_t *self);
 //  Setup dependency to the interface 'entropy source' with shared ownership.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source);
+vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source) VSCF_NODISCARD;
 
 //
 //  Setup dependency to the interface 'entropy source' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source);
+vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source) VSCF_NODISCARD;
 
 //
 //  Release dependency to the interface 'entropy source'.
@@ -198,19 +198,19 @@ vscf_ctr_drbg_set_entropy_len(vscf_ctr_drbg_t *self, size_t len);
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ctr_drbg_setup_defaults(vscf_ctr_drbg_t *self);
+vscf_ctr_drbg_setup_defaults(vscf_ctr_drbg_t *self) VSCF_NODISCARD;
 
 //
 //  Generate random bytes.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ctr_drbg_random(vscf_ctr_drbg_t *self, size_t data_len, vsc_buffer_t *data);
+vscf_ctr_drbg_random(vscf_ctr_drbg_t *self, size_t data_len, vsc_buffer_t *data) VSCF_NODISCARD;
 
 //
 //  Retreive new seed data from the entropy sources.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ctr_drbg_reseed(vscf_ctr_drbg_t *self);
+vscf_ctr_drbg_reseed(vscf_ctr_drbg_t *self) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

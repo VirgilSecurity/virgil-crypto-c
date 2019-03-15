@@ -172,7 +172,7 @@ vscf_sha224_produce_alg_info(const vscf_sha224_t *self);
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_sha224_restore_alg_info(vscf_sha224_t *self, const vscf_impl_t *alg_info);
+vscf_sha224_restore_alg_info(vscf_sha224_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
 
 //
 //  Calculate hash over given data.

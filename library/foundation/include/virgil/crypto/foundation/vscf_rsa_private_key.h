@@ -223,7 +223,7 @@ vscf_rsa_private_key_set_keygen_params(vscf_rsa_private_key_t *self, size_t bitl
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_rsa_private_key_setup_defaults(vscf_rsa_private_key_t *self);
+vscf_rsa_private_key_setup_defaults(vscf_rsa_private_key_t *self) VSCF_NODISCARD;
 
 //
 //  Provide algorithm identificator.
@@ -241,7 +241,7 @@ vscf_rsa_private_key_produce_alg_info(const vscf_rsa_private_key_t *self);
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_rsa_private_key_restore_alg_info(vscf_rsa_private_key_t *self, const vscf_impl_t *alg_info);
+vscf_rsa_private_key_restore_alg_info(vscf_rsa_private_key_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
 
 //
 //  Length of the key in bytes.
@@ -260,13 +260,13 @@ vscf_rsa_private_key_key_bitlen(const vscf_rsa_private_key_t *self);
 //  Note, this operation can be slow.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_rsa_private_key_generate_key(vscf_rsa_private_key_t *self);
+vscf_rsa_private_key_generate_key(vscf_rsa_private_key_t *self) VSCF_NODISCARD;
 
 //
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_rsa_private_key_decrypt(vscf_rsa_private_key_t *self, vsc_data_t data, vsc_buffer_t *out);
+vscf_rsa_private_key_decrypt(vscf_rsa_private_key_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Calculate required buffer length to hold the decrypted data.
@@ -285,7 +285,7 @@ vscf_rsa_private_key_signature_len(const vscf_rsa_private_key_t *self);
 //
 VSCF_PUBLIC vscf_status_t
 vscf_rsa_private_key_sign_hash(vscf_rsa_private_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id,
-        vsc_buffer_t *signature);
+        vsc_buffer_t *signature) VSCF_NODISCARD;
 
 //
 //  Extract public part of the key.
@@ -301,7 +301,7 @@ vscf_rsa_private_key_extract_public_key(const vscf_rsa_private_key_t *self);
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_rsa_private_key_export_private_key(const vscf_rsa_private_key_t *self, vsc_buffer_t *out);
+vscf_rsa_private_key_export_private_key(const vscf_rsa_private_key_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Return length in bytes required to hold exported private key.
@@ -317,7 +317,7 @@ vscf_rsa_private_key_exported_private_key_len(const vscf_rsa_private_key_t *self
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_rsa_private_key_import_private_key(vscf_rsa_private_key_t *self, vsc_data_t data);
+vscf_rsa_private_key_import_private_key(vscf_rsa_private_key_t *self, vsc_data_t data) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

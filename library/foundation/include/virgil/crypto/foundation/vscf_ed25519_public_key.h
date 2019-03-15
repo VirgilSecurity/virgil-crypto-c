@@ -200,7 +200,7 @@ vscf_ed25519_public_key_release_ecies(vscf_ed25519_public_key_t *self);
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ed25519_public_key_setup_defaults(vscf_ed25519_public_key_t *self);
+vscf_ed25519_public_key_setup_defaults(vscf_ed25519_public_key_t *self) VSCF_NODISCARD;
 
 //
 //  Provide algorithm identificator.
@@ -218,7 +218,7 @@ vscf_ed25519_public_key_produce_alg_info(const vscf_ed25519_public_key_t *self);
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ed25519_public_key_restore_alg_info(vscf_ed25519_public_key_t *self, const vscf_impl_t *alg_info);
+vscf_ed25519_public_key_restore_alg_info(vscf_ed25519_public_key_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
 
 //
 //  Length of the key in bytes.
@@ -236,7 +236,7 @@ vscf_ed25519_public_key_key_bitlen(const vscf_ed25519_public_key_t *self);
 //  Encrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ed25519_public_key_encrypt(vscf_ed25519_public_key_t *self, vsc_data_t data, vsc_buffer_t *out);
+vscf_ed25519_public_key_encrypt(vscf_ed25519_public_key_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Calculate required buffer length to hold the encrypted data.
@@ -259,7 +259,7 @@ vscf_ed25519_public_key_verify_hash(vscf_ed25519_public_key_t *self, vsc_data_t 
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ed25519_public_key_export_public_key(const vscf_ed25519_public_key_t *self, vsc_buffer_t *out);
+vscf_ed25519_public_key_export_public_key(const vscf_ed25519_public_key_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Return length in bytes required to hold exported public key.
@@ -275,7 +275,7 @@ vscf_ed25519_public_key_exported_public_key_len(const vscf_ed25519_public_key_t 
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_t *self, vsc_data_t data);
+vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_t *self, vsc_data_t data) VSCF_NODISCARD;
 
 //
 //  Generate ephemeral private key of the same type.

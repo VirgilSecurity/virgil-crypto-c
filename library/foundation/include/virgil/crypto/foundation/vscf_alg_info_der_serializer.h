@@ -170,7 +170,7 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *self);
+vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *self) VSCF_NODISCARD;
 
 //
 //  Return buffer size enough to hold serialized algorithm.
