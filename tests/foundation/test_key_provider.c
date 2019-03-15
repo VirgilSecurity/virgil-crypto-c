@@ -41,7 +41,7 @@
 
 #define TEST_DEPENDENCIES_AVAILABLE                                                                                    \
     (VSCF_KEY_PROVIDER && VSCF_KEY && VSCF_PRIVATE_KEY && VSCF_ENCRYPT && VSCF_DECRYPT && VSCF_SIGN_HASH &&            \
-            VSCF_VERIFY_HASH)
+            VSCF_VERIFY_HASH && VSCF_KEY_MATERIAL_RNG)
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_alg.h"
@@ -52,9 +52,10 @@
 #include "vscf_decrypt.h"
 #include "vscf_sign_hash.h"
 #include "vscf_verify_hash.h"
+#include "vscf_key_material_rng.h"
 
 #include "test_data_key_provider.h"
-
+#include "test_data_deterministic_key.h"
 
 void
 test__generate_private_key__ed25519__success(void) {
@@ -139,6 +140,35 @@ test__generate_private_key__ed25519_and_then_do_sign_hash_and_verify_hash__succe
 
     vsc_buffer_destroy(&signature);
     vscf_impl_destroy(&public_key);
+    vscf_impl_destroy(&private_key);
+    vscf_key_provider_destroy(&key_provider);
+}
+
+void
+test__generate_private_key__ed25519_with_key_material_rng__success(void) {
+
+    vscf_key_material_rng_t *key_material_rng = vscf_key_material_rng_new();
+    vscf_key_material_rng_reset_key_material(key_material_rng, test_data_deterministic_key_KEY_MATERIAL);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_take_random(key_provider, vscf_key_material_rng_impl(key_material_rng));
+    vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ED25519, &error);
+    TEST_ASSERT_NOT_NULL(private_key);
+
+    vsc_buffer_t *exported_private_key =
+            vsc_buffer_new_with_capacity(vscf_private_key_exported_private_key_len(private_key));
+    status = vscf_private_key_export_private_key(private_key, exported_private_key);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_deterministic_key_ED25519_PRIVATE_KEY, exported_private_key);
+
+    vsc_buffer_destroy(&exported_private_key);
     vscf_impl_destroy(&private_key);
     vscf_key_provider_destroy(&key_provider);
 }
@@ -234,6 +264,65 @@ test__generate_private_key__rsa2048_and_then_do_sign_hash_and_verify_hash__succe
     vscf_key_provider_destroy(&key_provider);
 }
 
+void
+test__generate_private_key__rsa256_with_key_material_rng__success(void) {
+
+    vscf_key_material_rng_t *key_material_rng = vscf_key_material_rng_new();
+    vscf_key_material_rng_reset_key_material(key_material_rng, test_data_deterministic_key_KEY_MATERIAL);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_take_random(key_provider, vscf_key_material_rng_impl(key_material_rng));
+    vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_set_rsa_params(key_provider, 256, 65537);
+    vscf_impl_t *private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_RSA, &error);
+    TEST_ASSERT_NOT_NULL(private_key);
+
+    vsc_buffer_t *exported_private_key =
+            vsc_buffer_new_with_capacity(vscf_private_key_exported_private_key_len(private_key));
+    status = vscf_private_key_export_private_key(private_key, exported_private_key);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_deterministic_key_RSA256_PRIVATE_KEY, exported_private_key);
+
+    vsc_buffer_destroy(&exported_private_key);
+    vscf_impl_destroy(&private_key);
+    vscf_key_provider_destroy(&key_provider);
+}
+
+void
+test__generate_private_key__rsa4096_with_key_material_rng__success(void) {
+    vscf_key_material_rng_t *key_material_rng = vscf_key_material_rng_new();
+    vscf_key_material_rng_reset_key_material(key_material_rng, test_data_deterministic_key_KEY_MATERIAL);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_take_random(key_provider, vscf_key_material_rng_impl(key_material_rng));
+    vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_set_rsa_params(key_provider, 4096, 65537);
+    vscf_impl_t *private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_RSA, &error);
+    TEST_ASSERT_NOT_NULL(private_key);
+
+    vsc_buffer_t *exported_private_key =
+            vsc_buffer_new_with_capacity(vscf_private_key_exported_private_key_len(private_key));
+    status = vscf_private_key_export_private_key(private_key, exported_private_key);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_deterministic_key_RSA4096_PRIVATE_KEY, exported_private_key);
+
+    vsc_buffer_destroy(&exported_private_key);
+    vscf_impl_destroy(&private_key);
+    vscf_key_provider_destroy(&key_provider);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -248,10 +337,13 @@ main(void) {
     RUN_TEST(test__generate_private_key__ed25519__success);
     RUN_TEST(test__generate_private_key__ed25519_and_then_do_encrypt_decrypt__success);
     RUN_TEST(test__generate_private_key__ed25519_and_then_do_sign_hash_and_verify_hash__success);
+    RUN_TEST(test__generate_private_key__ed25519_with_key_material_rng__success);
 
     RUN_TEST(test__generate_private_key__rsa_2048__success);
     RUN_TEST(test__generate_private_key__rsa2048_and_then_do_encrypt_decrypt__success);
     RUN_TEST(test__generate_private_key__rsa2048_and_then_do_sign_hash_and_verify_hash__success);
+    RUN_TEST(test__generate_private_key__rsa256_with_key_material_rng__success);
+    RUN_TEST(test__generate_private_key__rsa4096_with_key_material_rng__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
