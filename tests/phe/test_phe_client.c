@@ -61,6 +61,7 @@ int suiteTearDown(int num_failures) { return num_failures; }
 void
 test__enroll_account__mocked_rnd__should_match(void) {
     vsce_phe_client_t *client = vsce_phe_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_setup_defaults(client));
 
     vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key);
 
@@ -92,6 +93,7 @@ test__enroll_account__mocked_rnd__should_match(void) {
 void
 test__verify_password__mocked_rnd__should_match(void) {
     vsce_phe_client_t *client = vsce_phe_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_setup_defaults(client));
 
     vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key);
 
@@ -118,6 +120,7 @@ test__verify_password__mocked_rnd__should_match(void) {
 void
 test__verify_password__mocked_rnd_invalid_pwd__should_match(void) {
     vsce_phe_client_t *client = vsce_phe_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_setup_defaults(client));
 
     vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key);
 
@@ -144,6 +147,7 @@ test__verify_password__mocked_rnd_invalid_pwd__should_match(void) {
 void
 test__check_response__mocked_rnd__should_match(void) {
     vsce_phe_client_t *client = vsce_phe_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_setup_defaults(client));
 
     vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key);
 
@@ -163,6 +167,7 @@ test__check_response__mocked_rnd__should_match(void) {
 void
 test__check_response__mocked_rnd_invalid_pwd__should_match(void) {
     vsce_phe_client_t *client = vsce_phe_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_setup_defaults(client));
 
     vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key);
 
@@ -181,6 +186,7 @@ test__check_response__mocked_rnd_invalid_pwd__should_match(void) {
 void
 test__rotate_key__test_vector__should_match(void) {
     vsce_phe_client_t *client = vsce_phe_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_setup_defaults(client));
 
     vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key);
 
@@ -207,6 +213,7 @@ test__rotate_key__test_vector__should_match(void) {
 void
 test__update_record__test_vector__should_match(void) {
     vsce_phe_client_t *client = vsce_phe_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_setup_defaults(client));
 
     vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key);
 

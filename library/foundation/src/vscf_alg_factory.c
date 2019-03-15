@@ -270,6 +270,8 @@ vscf_alg_factory_create_public_key_from_raw_key(const vscf_raw_key_t *raw_key) {
 
     VSCF_ASSERT_PTR(raw_key);
 
+    // FIXME: Add error handling
+
     const vscf_alg_id_t alg_id = vscf_raw_key_alg_id(raw_key);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
@@ -305,6 +307,8 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_alg_factory_create_private_key_from_raw_key(const vscf_raw_key_t *raw_key) {
 
     VSCF_ASSERT_PTR(raw_key);
+
+    // FIXME: Add error handling
 
     const vscf_alg_id_t alg_id = vscf_raw_key_alg_id(raw_key);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);

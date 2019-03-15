@@ -75,7 +75,7 @@ test__simple_swu__random_hashes__should_be_on_curve(void) {
     int iterations = 1000;
 
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
     size_t len = 32;
     vsc_buffer_t *t_buf = vsc_buffer_new_with_capacity(len);

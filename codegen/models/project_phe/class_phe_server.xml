@@ -22,6 +22,10 @@
     <property name="phe hash" class="phe hash"/>
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
 
+    <method name="setup defaults">
+        <return enum="status"/>
+    </method>
+
     <method name="generate server key pair">
         Generates new NIST P-256 server key pair for some client
 
