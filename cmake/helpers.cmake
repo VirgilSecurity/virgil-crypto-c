@@ -43,10 +43,10 @@ function(enable_target_pedantic target)
     target_compile_options(${target}
             PRIVATE
                 $<$<C_COMPILER_ID:GNU>:
-                        -Wall -Werror -pedantic -Wextra>
+                        -Wall -pedantic -Wextra>
 
                 $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:
-                        -Werror -Wall -pedantic -Wassign-enum -Wextra>
+                        -Wall -pedantic -Wassign-enum -Wextra>
             )
 endfunction()
 
