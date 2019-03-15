@@ -35,9 +35,9 @@
 #ifndef VIRGIL_CRYPTO_UNRELIABLE_MSG_PRODUCER_H
 #define VIRGIL_CRYPTO_UNRELIABLE_MSG_PRODUCER_H
 
-#include <virgil/crypto/ratchet/vscr_ratchet_session.h>
-#include <virgil/crypto/ratchet/vscr_ratchet_message.h>
-#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
+#include "virgil/crypto/foundation/vscf_ctr_drbg.h"
+#include "vscr_ratchet_session.h"
+#include "vscr_ratchet_message.h"
 
 typedef struct out_of_order_msg {
     vscr_ratchet_message_t *cipher_text;
@@ -54,20 +54,21 @@ struct out_of_order_msg_node {
 
 typedef struct unreliable_msg_producer {
     vscf_ctr_drbg_t *rng;
-    vscr_ratchet_session_t *session;
+    vscr_ratchet_session_t **session;
     out_of_order_msg_node_t *skipped_msgs_list;
     size_t produced_count;
     float lost_rate;
     float out_of_order_rate;
+    bool sent_first_response;
 } unreliable_msg_producer_t;
 
 void
 init_producer(
-        unreliable_msg_producer_t *producer, vscr_ratchet_session_t *session, float lost_rate, float out_of_order_rate);
+        unreliable_msg_producer_t *producer, vscr_ratchet_session_t **session, float lost_rate, float out_of_order_rate);
 
 void
 deinit_producer(unreliable_msg_producer_t *producer);
 
-    void produce_msg(unreliable_msg_producer_t * producer, vsc_buffer_t * *plain_text, vscr_ratchet_message_t * *msg);
+void produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr_ratchet_message_t **msg, bool should_restore);
 
 #endif // VIRGIL_CRYPTO_UNRELIABLE_MSG_PRODUCER_H

@@ -44,12 +44,17 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class represents ratchet message
+// --------------------------------------------------------------------------
+
 #ifndef VSCR_RATCHET_MESSAGE_H_INCLUDED
 #define VSCR_RATCHET_MESSAGE_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_common.h"
-#include "vscr_error_ctx.h"
+#include "vscr_error.h"
 #include "vscr_ratchet_message.h"
 #include "vscr_msg_type.h"
 
@@ -93,13 +98,13 @@ vscr_ratchet_message_ctx_size(void);
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_init(vscr_ratchet_message_t *ratchet_message);
+vscr_ratchet_message_init(vscr_ratchet_message_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_cleanup(vscr_ratchet_message_t *ratchet_message);
+vscr_ratchet_message_cleanup(vscr_ratchet_message_t *self);
 
 //
 //  Allocate context and perform it's initialization.
@@ -112,56 +117,56 @@ vscr_ratchet_message_new(void);
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_delete(vscr_ratchet_message_t *ratchet_message);
+vscr_ratchet_message_delete(vscr_ratchet_message_t *self);
 
 //
 //  Delete given context and nullifies reference.
 //  This is a reverse action of the function 'vscr_ratchet_message_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_destroy(vscr_ratchet_message_t **ratchet_message_ref);
+vscr_ratchet_message_destroy(vscr_ratchet_message_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_message_t *
-vscr_ratchet_message_shallow_copy(vscr_ratchet_message_t *ratchet_message);
+vscr_ratchet_message_shallow_copy(vscr_ratchet_message_t *self);
 
 //
 //  Returns message type.
 //
 VSCR_PUBLIC vscr_msg_type_t
-vscr_ratchet_message_get_type(vscr_ratchet_message_t *ratchet_message);
+vscr_ratchet_message_get_type(vscr_ratchet_message_t *self);
 
 //
 //  Returns long-term public key, if message is prekey message.
 //
 VSCR_PUBLIC vsc_data_t
-vscr_ratchet_message_get_long_term_public_key(vscr_ratchet_message_t *ratchet_message);
+vscr_ratchet_message_get_long_term_public_key(vscr_ratchet_message_t *self);
 
 //
 //  Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
 //
 VSCR_PUBLIC vsc_data_t
-vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *ratchet_message);
+vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *self);
 
 //
 //  Buffer len to serialize this class.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *ratchet_message);
+vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *self);
 
 //
 //  Serializes instance.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *output);
+vscr_ratchet_message_serialize(vscr_ratchet_message_t *self, vsc_buffer_t *output);
 
 //
 //  Deserializes instance.
 //
 VSCR_PUBLIC vscr_ratchet_message_t *
-vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx);
+vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_t *error);
 
 
 // --------------------------------------------------------------------------

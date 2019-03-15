@@ -47,11 +47,17 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Defines library error codes.
+//  Error context.
+//  Can be used for sequential operations, i.e. parsers, to accumulate error.
+//  In this way operation is successful if all steps are successful, otherwise
+//  last occurred error code can be obtained.
 // --------------------------------------------------------------------------
 
 #ifndef VSCF_ERROR_H_INCLUDED
 #define VSCF_ERROR_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_status.h"
 
 // clang-format on
 //  @end
@@ -69,97 +75,55 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines library error codes.
+//  Perform update only if context defined, otherwise log error.
 //
-enum vscf_error_t {
-    //
-    //  No errors was occurred.
-    //
-    vscf_SUCCESS = 0,
-    //
-    //  This error should not be returned if assertions is enabled.
-    //
-    vscf_error_BAD_ARGUMENTS = -1,
-    //
-    //  Can be used to define that not all context prerequisites are satisfied.
-    //  Note, this error should not be returned if assertions is enabled.
-    //
-    vscf_error_UNINITIALIZED = -2,
-    //
-    //  Define that error code from one of third-party module was not handled.
-    //  Note, this error should not be returned if assertions is enabled.
-    //
-    vscf_error_UNHANDLED_THIRDPARTY_ERROR = -3,
-    //
-    //  Buffer capacity is not enaugh to hold result.
-    //
-    vscf_error_SMALL_BUFFER = -101,
-    //
-    //  Authentication failed during decryption.
-    //
-    vscf_error_AUTH_FAILED = -201,
-    //
-    //  Attempt to read data out of buffer bounds.
-    //
-    vscf_error_OUT_OF_DATA = -202,
-    //
-    //  ASN.1 encoded data is corrupted.
-    //
-    vscf_error_BAD_ASN1 = -203,
-    //
-    //  Attempt to read ASN.1 type that is bigger then requested C type.
-    //
-    vscf_error_ASN1_LOSSY_TYPE_NARROWING = -204,
-    //
-    //  ASN.1 representation of PKCS#1 public key is corrupted.
-    //
-    vscf_error_BAD_PKCS1_PUBLIC_KEY = -205,
-    //
-    //  ASN.1 representation of PKCS#1 private key is corrupted.
-    //
-    vscf_error_BAD_PKCS1_PRIVATE_KEY = -206,
-    //
-    //  ASN.1 representation of PKCS#8 public key is corrupted.
-    //
-    vscf_error_BAD_PKCS8_PUBLIC_KEY = -207,
-    //
-    //  ASN.1 representation of PKCS#8 private key is corrupted.
-    //
-    vscf_error_BAD_PKCS8_PRIVATE_KEY = -208,
-    //
-    //  Encrypted data is corrupted.
-    //
-    vscf_error_BAD_ENCRYPTED_DATA = -209,
-    //
-    //  Underlying random operation returns error.
-    //
-    vscf_error_RANDOM_FAILED = -210,
-    //
-    //  Generation of the private or secret key failed.
-    //
-    vscf_error_KEY_GENERATION_FAILED = -211,
-    //
-    //  One of the entropy sources failed.
-    //
-    vscf_error_ENTROPY_SOURCE_FAILED = -212,
-    //
-    //  Requested data to be generated is too big.
-    //
-    vscf_error_RNG_REQUESTED_DATA_TOO_BIG = -213,
-    //
-    //  Base64 encoded string contains invalid characters.
-    //
-    vscf_error_BAD_BASE64 = -214,
-    //
-    //  PEM data is corrupted.
-    //
-    vscf_error_BAD_PEM = -215,
-    //
-    //  Exchange key return zero.
-    //
-    vscf_error_SHARED_KEY_EXCHANGE_FAILED = -216
+#define VSCF_ERROR_SAFE_UPDATE(CTX, ERR)                            \
+    do {                                                            \
+        if (NULL != (CTX)) {                                        \
+            vscf_error_update ((CTX), (ERR));                       \
+        } else {                                                    \
+            /* TODO: Log this error, when logging will be added. */ \
+        }                                                           \
+    } while (false)
+
+//
+//  Handle 'error' context.
+//
+typedef struct vscf_error_t vscf_error_t;
+struct vscf_error_t {
+    vscf_status_t status;
 };
-typedef enum vscf_error_t vscf_error_t;
+
+//
+//  Return size of 'vscf_error_t'.
+//
+VSCF_PUBLIC size_t
+vscf_error_ctx_size(void);
+
+//
+//  Reset context to the "no error" state.
+//
+VSCF_PUBLIC void
+vscf_error_reset(vscf_error_t *self);
+
+//
+//  Update context with given status.
+//  If status is "success" then do nothing.
+//
+VSCF_PRIVATE void
+vscf_error_update(vscf_error_t *self, vscf_status_t status);
+
+//
+//  Return true if status is not "success".
+//
+VSCF_PUBLIC bool
+vscf_error_has_error(const vscf_error_t *self);
+
+//
+//  Return error code.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_error_status(const vscf_error_t *self);
 
 
 // --------------------------------------------------------------------------

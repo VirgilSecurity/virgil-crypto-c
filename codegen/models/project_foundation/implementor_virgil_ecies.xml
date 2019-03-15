@@ -1,0 +1,57 @@
+<implementor name="virgil ecies" is_default="1">
+    Virgil implementation of the ECIES algorithm.
+
+    <implementation name="ecies">
+        Virgil implementation of the ECIES algorithm.
+
+        <interface name="defaults"/>
+        <interface name="encrypt"/>
+        <interface name="decrypt"/>
+
+        <require class="alg factory"/>
+        <require interface="generate ephemeral key"/>
+        <require interface="compute shared key"/>
+        <require interface="encrypt"/>
+        <require interface="decrypt"/>
+        <require interface="private key"/>
+        <require impl="kdf2"/>
+        <require impl="sha384"/>
+        <require impl="hmac"/>
+        <require impl="aes256 cbc"/>
+        <require impl="ctr drbg"/>
+        <require module="ecies envelope defs"/>
+
+        <dependency name="random" interface="random"/>
+        <dependency name="cipher" interface="cipher"/>
+        <dependency name="mac" interface="mac"/>
+        <dependency name="kdf" interface="kdf"/>
+
+        <dependency name="encryption key" interface="public key">
+            Set public key that is used for data encryption.
+
+            If ephemeral key is not defined, then Public Key, must be conformed
+            to the interface "generate ephemeral key".
+
+            In turn, Ephemeral Key must be conformed to the interface
+            "compute shared key".
+        </dependency>
+
+        <dependency name="decryption key" interface="private key">
+            Set private key that used for data decryption.
+
+            Private Key must be conformed to the interface "compute shared key".
+        </dependency>
+
+        <dependency name="ephemeral key" interface="private key">
+            Set private key that used for data decryption.
+
+            Ephemeral Key must be conformed to the interface "compute shared key".
+        </dependency>
+
+        <property name="envelope" class="ecies envelope"/>
+
+        <method name="configure defaults">
+            Configure ECIES with default algorithms.
+        </method>
+    </implementation>
+</implementor>

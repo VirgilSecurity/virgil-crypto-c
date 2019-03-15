@@ -4,7 +4,16 @@
     <require impl="hkdf" project="foundation" scope="private"/>
     <require module="buffer defs" scope="private" project="common"/>
 
-    <dependency name="aes256 gcm" impl="aes256 gcm" project="foundation"/>
+    <require class="ratchet common hidden" scope="context"/>
+
+    <require header="RatchetMessage.pb.h" scope="public"/>
+    <require header="pb_decode.h" scope="public"/>
+    <require header="pb_encode.h" scope="public"/>
+
+    <dependency name="rng" interface="random" project="foundation"/>
+    <property name="aes256 gcm" impl="aes256 gcm" project="foundation"/>
+
+    <constant name="key len" value="32"/>
 
     <method name="encrypt len">
         <argument name="plain text len" type="size"/>
@@ -22,6 +31,19 @@
         <argument name="key" class="data"/>
     </method>
 
+    <method name="padded len" declaration="private" is_static="1">
+        <argument name="plain text len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="add padding" declaration="private">
+        <argument name="plain text" class="data"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="buffer"/>
+    </method>
+
     <method name="encrypt">
         <argument name="key" class="data"/>
         <argument name="plain text" class="data"/>
@@ -32,7 +54,14 @@
             </length>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
+    </method>
+
+    <method name="remove padding" declaration="private" is_static="1">
+        <argument name="decrypted text" class="data"/>
+        <argument name="buffer" class="buffer"/>
+
+        <return enum="status"/>
     </method>
 
     <method name="decrypt">
@@ -45,7 +74,7 @@
             </length>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
 </class>

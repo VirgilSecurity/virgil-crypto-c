@@ -49,8 +49,7 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet.h"
-#include "vscr_ratchet_cipher.h"
-#include "vscr_error.h"
+#include "vscr_status.h"
 
 #include <RatchetSession.pb.h>
 #include <RatchetMessage.pb.h>
@@ -58,8 +57,8 @@
 #include <pb_encode.h>
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -67,8 +66,8 @@
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -105,13 +104,13 @@ vscr_ratchet_ctx_size(void);
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_init(vscr_ratchet_t *ratchet);
+vscr_ratchet_init(vscr_ratchet_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cleanup(vscr_ratchet_t *ratchet);
+vscr_ratchet_cleanup(vscr_ratchet_t *self);
 
 //
 //  Allocate context and perform it's initialization.
@@ -124,82 +123,60 @@ vscr_ratchet_new(void);
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_delete(vscr_ratchet_t *ratchet);
+vscr_ratchet_delete(vscr_ratchet_t *self);
 
 //
 //  Delete given context and nullifies reference.
 //  This is a reverse action of the function 'vscr_ratchet_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_destroy(vscr_ratchet_t **ratchet_ref);
+vscr_ratchet_destroy(vscr_ratchet_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_t *
-vscr_ratchet_shallow_copy(vscr_ratchet_t *ratchet);
+vscr_ratchet_shallow_copy(vscr_ratchet_t *self);
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.
 //
-VSCR_PUBLIC void
-vscr_ratchet_use_rng(vscr_ratchet_t *ratchet, vscf_impl_t *rng);
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_use_rng(vscr_ratchet_t *self, vscf_impl_t *rng);
 
 //
 //  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCR_PUBLIC void
-vscr_ratchet_take_rng(vscr_ratchet_t *ratchet, vscf_impl_t *rng);
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_take_rng(vscr_ratchet_t *self, vscf_impl_t *rng);
 
 //
 //  Release dependency to the interface 'random'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_release_rng(vscr_ratchet_t *ratchet);
+vscr_ratchet_release_rng(vscr_ratchet_t *self);
 
-//
-//  Setup dependency to the class 'ratchet cipher' with shared ownership.
-//
-VSCR_PUBLIC void
-vscr_ratchet_use_cipher(vscr_ratchet_t *ratchet, vscr_ratchet_cipher_t *cipher);
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const RegularMessage *message);
 
-//
-//  Setup dependency to the class 'ratchet cipher' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCR_PUBLIC void
-vscr_ratchet_take_cipher(vscr_ratchet_t *ratchet, vscr_ratchet_cipher_t *cipher);
-
-//
-//  Release dependency to the class 'ratchet cipher'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_release_cipher(vscr_ratchet_t *ratchet);
-
-VSCR_PUBLIC void
-vscr_ratchet_setup_defaults(vscr_ratchet_t *ratchet);
-
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_respond(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, const RegularMessage *message);
-
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_initiate(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, vsc_data_t ratchet_private_key);
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret);
 
 VSCR_PUBLIC size_t
-vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet, size_t plain_text_len);
+vscr_ratchet_encrypt_len(vscr_ratchet_t *self, size_t plain_text_len);
 
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_encrypt(vscr_ratchet_t *ratchet, vsc_data_t plain_text, RegularMessage *regular_message);
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage *regular_message);
 
 VSCR_PUBLIC size_t
-vscr_ratchet_decrypt_len(vscr_ratchet_t *ratchet, size_t cipher_text_len);
+vscr_ratchet_decrypt_len(vscr_ratchet_t *self, size_t cipher_text_len);
 
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_decrypt(vscr_ratchet_t *ratchet, const RegularMessage *regular_message, vsc_buffer_t *plain_text);
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message, vsc_buffer_t *plain_text);
 
 VSCR_PUBLIC void
-vscr_ratchet_serialize(vscr_ratchet_t *ratchet, Ratchet *ratchet_pb);
+vscr_ratchet_serialize(vscr_ratchet_t *self, Ratchet *ratchet_pb);
 
 VSCR_PUBLIC void
 vscr_ratchet_deserialize(Ratchet *ratchet_pb, vscr_ratchet_t *ratchet);

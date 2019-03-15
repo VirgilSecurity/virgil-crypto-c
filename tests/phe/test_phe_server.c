@@ -70,7 +70,7 @@ test__get_enrollment__mocked_rnd__should_match(void) {
     vsce_phe_server_release_random(server);
     vsce_phe_server_take_random(server, vscf_fake_random_impl(fake_random));
 
-    TEST_ASSERT_EQUAL(vsce_SUCCESS,
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
             vsce_phe_server_get_enrollment(server, test_phe_server_private_key, test_phe_server_public_key, buffer));
 
     TEST_ASSERT_EQUAL(test_phe_server_enrollment_response.len, vsc_buffer_len(buffer));
@@ -93,8 +93,9 @@ test__verify_password__valid_password__should_match(void) {
     vsce_phe_server_release_random(server);
     vsce_phe_server_take_random(server, vscf_fake_random_impl(fake_random));
 
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_server_verify_password(server, test_phe_server_private_key,
-                                            test_phe_server_public_key, test_phe_client_verify_password_req, buffer));
+    TEST_ASSERT_EQUAL(
+            vsce_status_SUCCESS, vsce_phe_server_verify_password(server, test_phe_server_private_key,
+                                         test_phe_server_public_key, test_phe_client_verify_password_req, buffer));
 
     TEST_ASSERT_EQUAL(test_phe_server_verify_password_resp.len, vsc_buffer_len(buffer));
     TEST_ASSERT_EQUAL_MEMORY(
@@ -117,8 +118,8 @@ test__verify_password__invalid_password__should_match(void) {
     vsce_phe_server_take_random(server, vscf_fake_random_impl(fake_random));
 
     TEST_ASSERT_EQUAL(
-            vsce_SUCCESS, vsce_phe_server_verify_password(server, test_phe_server_private_key,
-                                  test_phe_server_public_key, test_phe_client_verify_bad_password_req, buffer));
+            vsce_status_SUCCESS, vsce_phe_server_verify_password(server, test_phe_server_private_key,
+                                         test_phe_server_public_key, test_phe_client_verify_bad_password_req, buffer));
 
     TEST_ASSERT_EQUAL(test_phe_server_verify_bad_password_resp.len, vsc_buffer_len(buffer));
     TEST_ASSERT_EQUAL_MEMORY(
@@ -143,8 +144,8 @@ test__rotate_keys__mocked_rnd__should_match(void) {
     vsce_phe_server_release_random(server);
     vsce_phe_server_take_random(server, vscf_fake_random_impl(fake_random));
 
-    TEST_ASSERT_EQUAL(
-            vsce_SUCCESS, vsce_phe_server_rotate_keys(server, test_phe_server_private_key, buffer1, buffer2, buffer3));
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_phe_server_rotate_keys(server, test_phe_server_private_key, buffer1, buffer2, buffer3));
 
     TEST_ASSERT_EQUAL(test_phe_server_rotated_server_sk.len, vsc_buffer_len(buffer1));
     TEST_ASSERT_EQUAL_MEMORY(

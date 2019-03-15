@@ -5,7 +5,7 @@
         Deserialize algorithm from the data.
 
         <argument name="data" class="data"/>
-        <argument name="error" class="error ctx" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return interface="alg info" access="disown"/>
     </method>

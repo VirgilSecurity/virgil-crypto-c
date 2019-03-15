@@ -78,7 +78,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_rsa_public_key_init_ctx(vscf_rsa_public_key_t *rsa_public_key);
+vscf_rsa_public_key_init_ctx(vscf_rsa_public_key_t *self);
 
 //
 //  Release resources of the implementation specific context.
@@ -86,7 +86,7 @@ vscf_rsa_public_key_init_ctx(vscf_rsa_public_key_t *rsa_public_key);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_rsa_public_key_cleanup_ctx(vscf_rsa_public_key_t *rsa_public_key);
+vscf_rsa_public_key_cleanup_ctx(vscf_rsa_public_key_t *self);
 
 
 // --------------------------------------------------------------------------

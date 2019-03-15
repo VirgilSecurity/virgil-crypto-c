@@ -6,9 +6,7 @@
 
         <interface name="alg info"/>
 
-        <context>
-            <property name="alg id" enum="alg id"/>
-        </context>
+        <property name="alg id" enum="alg id"/>
 
         <constructor name="with alg id">
             Create algorithm info with identificator.
@@ -18,28 +16,25 @@
     </implementation>
 
 
-    <implementation name="kdf alg info">
-        Handle KDF algorithm information.
+    <implementation name="hash based alg info">
+        Handle hashed based algorithm information, i.e. HKDF, HMAC, etc.
 
         <interface name="alg info"/>
 
-        <context>
-            <property name="alg id" enum="alg id"/>
-            <property name="hash alg info" impl="simple alg info"/>
-        </context>
-
+        <property name="alg id" enum="alg id"/>
+        <property name="hash alg info" interface="alg info"/>
 
         <constructor name="with members">
-            Create KDF algorithm info with identificator and HASH algorithm info.
+            Create algorithm info with identificator and HASH algorithm info.
 
             <argument name="alg id" enum="alg id"/>
-            <argument name="hash alg info" impl="simple alg info" access="retain"/>
+            <argument name="hash alg info" interface="alg info" access="disown"/>
         </constructor>
 
         <method name="hash alg info" is_const="1" declaration="public">
             Return hash algorithm information.
 
-            <return impl="simple alg info"/>
+            <return interface="alg info"/>
         </method>
     </implementation>
 
@@ -49,11 +44,8 @@
 
         <interface name="alg info"/>
 
-        <context>
-            <property name="alg id" enum="alg id"/>
-            <property name="nonce" class="buffer"/>
-        </context>
-
+        <property name="alg id" enum="alg id"/>
+        <property name="nonce" class="buffer"/>
 
         <constructor name="with members">
             Create symmetric cipher algorithm info with identificator and input vector.
@@ -66,6 +58,79 @@
             Return IV.
 
             <return class="data"/>
+        </method>
+    </implementation>
+
+
+    <implementation name="salted kdf alg info">
+        Handle KDF algorithms that are configured with salt and iteration count.
+
+        <interface name="alg info"/>
+
+        <property name="alg id" enum="alg id"/>
+        <property name="hash alg info" interface="alg info"/>
+        <property name="salt" class="buffer"/>
+        <property name="iteration count" type="size"/>
+
+        <constructor name="with members">
+            Create algorithm info with identificator, HASH algorithm info,
+            salt and iteration count.
+
+            <argument name="alg id" enum="alg id"/>
+            <argument name="hash alg info" interface="alg info" access="disown"/>
+            <argument name="salt" class="data"/>
+            <argument name="iteration count" type="size"/>
+        </constructor>
+
+        <method name="hash alg info" is_const="1" declaration="public">
+            Return hash algorithm information.
+
+            <return interface="alg info"/>
+        </method>
+
+        <method name="salt" is_const="1" declaration="public">
+            Return KDF salt.
+
+            <return class="data"/>
+        </method>
+
+        <method name="iteration count" is_const="1" declaration="public">
+            Return KDF iteration count.
+            Note, can be 0 if KDF does not need the iteration count.
+
+            <return type="size"/>
+        </method>
+    </implementation>
+
+
+    <implementation name="pbe alg info">
+        Handle information about password-based encryption algorithm.
+
+        <interface name="alg info"/>
+
+        <property name="alg id" enum="alg id"/>
+        <property name="kdf alg info" interface="alg info"/>
+        <property name="cipher alg info" interface="alg info"/>
+
+        <constructor name="with members">
+            Create algorithm info with identificator, KDF algorithm info and
+            cipher alg info.
+
+            <argument name="alg id" enum="alg id"/>
+            <argument name="kdf alg info" interface="alg info" access="disown"/>
+            <argument name="cipher alg info" interface="alg info" access="disown"/>
+        </constructor>
+
+        <method name="kdf alg info" is_const="1" declaration="public">
+            Return KDF algorithm information.
+
+            <return interface="alg info"/>
+        </method>
+
+        <method name="cipher alg info" is_const="1" declaration="public">
+            Return cipher algorithm information.
+
+            <return interface="alg info"/>
         </method>
     </implementation>
 </implementor>

@@ -217,7 +217,7 @@
         Defines if instance requires type definition.
 
         <restrict value="public">
-            Instance type definition is used within private scope.
+            Instance type definition is used within public scope.
         </restrict>
 
         <restrict value="private">

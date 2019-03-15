@@ -35,9 +35,8 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
-@objc(VSCFRsaPrivateKey) public class RsaPrivateKey: NSObject, Alg, Key, GenerateKey, Decrypt, Sign, PrivateKey {
+@objc(VSCFRsaPrivateKey) public class RsaPrivateKey: NSObject, Defaults, Alg, Key, GenerateKey, Decrypt, SignHash, PrivateKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -73,11 +72,6 @@ import VirgilCryptoCommon
         vscf_rsa_private_key_delete(self.c_ctx)
     }
 
-    @objc public func setHash(hash: Hash) {
-        vscf_rsa_private_key_release_hash(self.c_ctx)
-        vscf_rsa_private_key_use_hash(self.c_ctx, hash.c_ctx)
-    }
-
     @objc public func setRandom(random: Random) {
         vscf_rsa_private_key_release_random(self.c_ctx)
         vscf_rsa_private_key_use_random(self.c_ctx, random.c_ctx)
@@ -98,6 +92,13 @@ import VirgilCryptoCommon
         vscf_rsa_private_key_set_keygen_params(self.c_ctx, bitlen, exponent)
     }
 
+    /// Setup predefined values to the uninitialized class dependencies.
+    @objc public func setupDefaults() throws {
+        let proxyResult = vscf_rsa_private_key_setup_defaults(self.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+    }
+
     /// Provide algorithm identificator.
     @objc public func algId() -> AlgId {
         let proxyResult = vscf_rsa_private_key_alg_id(self.c_ctx)
@@ -109,14 +110,14 @@ import VirgilCryptoCommon
     @objc public func produceAlgInfo() -> AlgInfo {
         let proxyResult = vscf_rsa_private_key_produce_alg_info(self.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Restore algorithm configuration from the given object.
     @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
         let proxyResult = vscf_rsa_private_key_restore_alg_info(self.c_ctx, algInfo.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Length of the key in bytes.
@@ -138,7 +139,7 @@ import VirgilCryptoCommon
     @objc public func generateKey() throws {
         let proxyResult = vscf_rsa_private_key_generate_key(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Decrypt given data.
@@ -150,16 +151,17 @@ import VirgilCryptoCommon
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
+
                 return vscf_rsa_private_key_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
         out.count = vsc_buffer_len(outBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
     }
@@ -171,29 +173,6 @@ import VirgilCryptoCommon
         return proxyResult
     }
 
-    /// Sign data given private key.
-    @objc public func sign(data: Data) throws -> Data {
-        let signatureCount = self.signatureLen()
-        var signature = Data(count: signatureCount)
-        var signatureBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(signatureBuf)
-        }
-
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
-            signature.withUnsafeMutableBytes({ (signaturePointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
-                vsc_buffer_init(signatureBuf)
-                vsc_buffer_use(signatureBuf, signaturePointer, signatureCount)
-                return vscf_rsa_private_key_sign(self.c_ctx, vsc_data(dataPointer, data.count), signatureBuf)
-            })
-        })
-        signature.count = vsc_buffer_len(signatureBuf)
-
-        try FoundationError.handleError(fromC: proxyResult)
-
-        return signature
-    }
-
     /// Return length in bytes required to hold signature.
     @objc public func signatureLen() -> Int {
         let proxyResult = vscf_rsa_private_key_signature_len(self.c_ctx)
@@ -201,11 +180,35 @@ import VirgilCryptoCommon
         return proxyResult
     }
 
+    /// Sign data given private key.
+    @objc public func signHash(hashDigest: Data, hashId: AlgId) throws -> Data {
+        let signatureCount = self.signatureLen()
+        var signature = Data(count: signatureCount)
+        var signatureBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(signatureBuf)
+        }
+
+        let proxyResult = hashDigest.withUnsafeBytes({ (hashDigestPointer: UnsafePointer<byte>) -> vscf_status_t in
+            signature.withUnsafeMutableBytes({ (signaturePointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+                vsc_buffer_init(signatureBuf)
+                vsc_buffer_use(signatureBuf, signaturePointer, signatureCount)
+
+                return vscf_rsa_private_key_sign_hash(self.c_ctx, vsc_data(hashDigestPointer, hashDigest.count), vscf_alg_id_t(rawValue: UInt32(hashId.rawValue)), signatureBuf)
+            })
+        })
+        signature.count = vsc_buffer_len(signatureBuf)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+
+        return signature
+    }
+
     /// Extract public part of the key.
     @objc public func extractPublicKey() -> PublicKey {
         let proxyResult = vscf_rsa_private_key_extract_public_key(self.c_ctx)
 
-        return PublicKeyProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapPublicKey(take: proxyResult!)
     }
 
     /// Export private key in the binary format.
@@ -221,14 +224,15 @@ import VirgilCryptoCommon
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
+
             return vscf_rsa_private_key_export_private_key(self.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
     }
@@ -246,10 +250,11 @@ import VirgilCryptoCommon
     /// For instance, RSA private key must be imported from the format defined in
     /// RFC 3447 Appendix A.1.2.
     @objc public func importPrivateKey(data: Data) throws {
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+
             return vscf_rsa_private_key_import_private_key(self.c_ctx, vsc_data(dataPointer, data.count))
         })
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 }

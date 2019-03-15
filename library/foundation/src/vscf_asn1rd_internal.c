@@ -83,13 +83,25 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
     //
     vscf_api_tag_ASN1_READER,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ASN1RD,
+    //
     //  Reset all internal states and prepare to new ASN.1 reading operations.
     //
     (vscf_asn1_reader_api_reset_fn)vscf_asn1rd_reset,
     //
-    //  Return last error.
+    //  Return length in bytes how many bytes are left for reading.
     //
-    (vscf_asn1_reader_api_error_fn)vscf_asn1rd_error,
+    (vscf_asn1_reader_api_left_len_fn)vscf_asn1rd_left_len,
+    //
+    //  Return true if status is not "success".
+    //
+    (vscf_asn1_reader_api_has_error_fn)vscf_asn1rd_has_error,
+    //
+    //  Return error code.
+    //
+    (vscf_asn1_reader_api_status_fn)vscf_asn1rd_status,
     //
     //  Get tag of the current ASN.1 element.
     //
@@ -99,10 +111,20 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
     //
     (vscf_asn1_reader_api_get_len_fn)vscf_asn1rd_get_len,
     //
+    //  Get length of the current ASN.1 element with tag and length itself.
+    //
+    (vscf_asn1_reader_api_get_data_len_fn)vscf_asn1rd_get_data_len,
+    //
     //  Read ASN.1 type: TAG.
     //  Return element length.
     //
     (vscf_asn1_reader_api_read_tag_fn)vscf_asn1rd_read_tag,
+    //
+    //  Read ASN.1 type: context-specific TAG.
+    //  Return element length.
+    //  Return 0 if current position do not points to the requested tag.
+    //
+    (vscf_asn1_reader_api_read_context_tag_fn)vscf_asn1rd_read_context_tag,
     //
     //  Read ASN.1 type: INTEGER.
     //
@@ -152,6 +174,11 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
     //
     (vscf_asn1_reader_api_read_null_fn)vscf_asn1rd_read_null,
     //
+    //  Read ASN.1 type: NULL, only if it exists.
+    //  Note, this method is safe to call even no more data is left for reading.
+    //
+    (vscf_asn1_reader_api_read_null_optional_fn)vscf_asn1rd_read_null_optional,
+    //
     //  Read ASN.1 type: OCTET STRING.
     //
     (vscf_asn1_reader_api_read_octet_str_fn)vscf_asn1rd_read_octet_str,
@@ -188,6 +215,10 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
 //
 static const vscf_impl_info_t info = {
     //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_ASN1RD,
+    //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
     //
@@ -206,16 +237,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_init(vscf_asn1rd_t *asn1rd) {
+vscf_asn1rd_init(vscf_asn1rd_t *self) {
 
-    VSCF_ASSERT_PTR(asn1rd);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(asn1rd, sizeof(vscf_asn1rd_t));
+    vscf_zeroize(self, sizeof(vscf_asn1rd_t));
 
-    asn1rd->info = &info;
-    asn1rd->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_asn1rd_init_ctx(asn1rd);
+    vscf_asn1rd_init_ctx(self);
 }
 
 //
@@ -223,23 +254,23 @@ vscf_asn1rd_init(vscf_asn1rd_t *asn1rd) {
 //  This is a reverse action of the function 'vscf_asn1rd_init()'.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_cleanup(vscf_asn1rd_t *asn1rd) {
+vscf_asn1rd_cleanup(vscf_asn1rd_t *self) {
 
-    if (asn1rd == NULL || asn1rd->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (asn1rd->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--asn1rd->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_asn1rd_cleanup_ctx(asn1rd);
+    vscf_asn1rd_cleanup_ctx(self);
 
-    vscf_zeroize(asn1rd, sizeof(vscf_asn1rd_t));
+    vscf_zeroize(self, sizeof(vscf_asn1rd_t));
 }
 
 //
@@ -249,12 +280,12 @@ vscf_asn1rd_cleanup(vscf_asn1rd_t *asn1rd) {
 VSCF_PUBLIC vscf_asn1rd_t *
 vscf_asn1rd_new(void) {
 
-    vscf_asn1rd_t *asn1rd = (vscf_asn1rd_t *) vscf_alloc(sizeof (vscf_asn1rd_t));
-    VSCF_ASSERT_ALLOC(asn1rd);
+    vscf_asn1rd_t *self = (vscf_asn1rd_t *) vscf_alloc(sizeof (vscf_asn1rd_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_asn1rd_init(asn1rd);
+    vscf_asn1rd_init(self);
 
-    return asn1rd;
+    return self;
 }
 
 //
@@ -262,12 +293,12 @@ vscf_asn1rd_new(void) {
 //  This is a reverse action of the function 'vscf_asn1rd_new()'.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_delete(vscf_asn1rd_t *asn1rd) {
+vscf_asn1rd_delete(vscf_asn1rd_t *self) {
 
-    vscf_asn1rd_cleanup(asn1rd);
+    vscf_asn1rd_cleanup(self);
 
-    if (asn1rd && (asn1rd->refcnt == 0)) {
-        vscf_dealloc(asn1rd);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -277,14 +308,14 @@ vscf_asn1rd_delete(vscf_asn1rd_t *asn1rd) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_destroy(vscf_asn1rd_t **asn1rd_ref) {
+vscf_asn1rd_destroy(vscf_asn1rd_t **self_ref) {
 
-    VSCF_ASSERT_PTR(asn1rd_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_asn1rd_t *asn1rd = *asn1rd_ref;
-    *asn1rd_ref = NULL;
+    vscf_asn1rd_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_asn1rd_delete(asn1rd);
+    vscf_asn1rd_delete(self);
 }
 
 //
@@ -292,10 +323,10 @@ vscf_asn1rd_destroy(vscf_asn1rd_t **asn1rd_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_asn1rd_t *
-vscf_asn1rd_shallow_copy(vscf_asn1rd_t *asn1rd) {
+vscf_asn1rd_shallow_copy(vscf_asn1rd_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_asn1rd_t *)vscf_impl_shallow_copy((vscf_impl_t *)asn1rd);
+    return (vscf_asn1rd_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -311,10 +342,10 @@ vscf_asn1rd_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_asn1rd_impl(vscf_asn1rd_t *asn1rd) {
+vscf_asn1rd_impl(vscf_asn1rd_t *self) {
 
-    VSCF_ASSERT_PTR(asn1rd);
-    return (vscf_impl_t *)(asn1rd);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *

@@ -55,7 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -95,7 +95,7 @@ vscf_entropy_source_is_strong(vscf_impl_t *impl);
 //
 //  Gather entropy of the requested length.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_entropy_source_gather(vscf_impl_t *impl, size_t len, vsc_buffer_t *out);
 
 //

@@ -35,10 +35,9 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// This is MbedTLS implementation of SHA256.
-@objc(VSCFSha256) public class Sha256: NSObject, HashInfo, Hash, HashStream, Alg {
+@objc(VSCFSha256) public class Sha256: NSObject, Alg, Hash {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -74,11 +73,25 @@ import VirgilCryptoCommon
         vscf_sha256_delete(self.c_ctx)
     }
 
-    /// Return implemented hash algorithm type.
-    @objc public func alg() -> HashAlg {
-        let proxyResult = vscf_sha256_alg()
+    /// Provide algorithm identificator.
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_sha256_alg_id(self.c_ctx)
 
-        return HashAlg.init(fromC: proxyResult)
+        return AlgId.init(fromC: proxyResult)
+    }
+
+    /// Produce object with algorithm information and configuration parameters.
+    @objc public func produceAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_sha256_produce_alg_info(self.c_ctx)
+
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+    }
+
+    /// Restore algorithm configuration from the given object.
+    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
+        let proxyResult = vscf_sha256_restore_alg_info(self.c_ctx, algInfo.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Calculate hash over given data.
@@ -94,6 +107,7 @@ import VirgilCryptoCommon
             digest.withUnsafeMutableBytes({ (digestPointer: UnsafeMutablePointer<byte>) -> Void in
                 vsc_buffer_init(digestBuf)
                 vsc_buffer_use(digestBuf, digestPointer, digestCount)
+
                 vscf_sha256_hash(vsc_data(dataPointer, data.count), digestBuf)
             })
         })
@@ -110,6 +124,7 @@ import VirgilCryptoCommon
     /// Add given data to the hash.
     @objc public func update(data: Data) {
         data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
+
             vscf_sha256_update(self.c_ctx, vsc_data(dataPointer, data.count))
         })
     }
@@ -126,31 +141,11 @@ import VirgilCryptoCommon
         digest.withUnsafeMutableBytes({ (digestPointer: UnsafeMutablePointer<byte>) -> Void in
             vsc_buffer_init(digestBuf)
             vsc_buffer_use(digestBuf, digestPointer, digestCount)
+
             vscf_sha256_finish(self.c_ctx, digestBuf)
         })
         digest.count = vsc_buffer_len(digestBuf)
 
         return digest
-    }
-
-    /// Provide algorithm identificator.
-    @objc public func algId() -> AlgId {
-        let proxyResult = vscf_sha256_alg_id(self.c_ctx)
-
-        return AlgId.init(fromC: proxyResult)
-    }
-
-    /// Produce object with algorithm information and configuration parameters.
-    @objc public func produceAlgInfo() -> AlgInfo {
-        let proxyResult = vscf_sha256_produce_alg_info(self.c_ctx)
-
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
-    }
-
-    /// Restore algorithm configuration from the given object.
-    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
-        let proxyResult = vscf_sha256_restore_alg_info(self.c_ctx, algInfo.c_ctx)
-
-        try FoundationError.handleError(fromC: proxyResult)
     }
 }

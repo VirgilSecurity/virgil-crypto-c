@@ -48,7 +48,7 @@
 #define VSCR_RATCHET_SENDER_CHAIN_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_sender_chain.h"
 #include "vscr_ratchet_chain_key.h"
 
@@ -85,9 +85,9 @@ struct vscr_ratchet_sender_chain_t {
     //
     size_t refcnt;
 
-    byte private_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte private_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
-    byte public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
     vscr_ratchet_chain_key_t chain_key;
 };
@@ -102,13 +102,13 @@ vscr_ratchet_sender_chain_ctx_size(void);
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_init(vscr_ratchet_sender_chain_t *ratchet_sender_chain);
+vscr_ratchet_sender_chain_init(vscr_ratchet_sender_chain_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_cleanup(vscr_ratchet_sender_chain_t *ratchet_sender_chain);
+vscr_ratchet_sender_chain_cleanup(vscr_ratchet_sender_chain_t *self);
 
 //
 //  Allocate context and perform it's initialization.
@@ -121,23 +121,23 @@ vscr_ratchet_sender_chain_new(void);
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_delete(vscr_ratchet_sender_chain_t *ratchet_sender_chain);
+vscr_ratchet_sender_chain_delete(vscr_ratchet_sender_chain_t *self);
 
 //
 //  Delete given context and nullifies reference.
 //  This is a reverse action of the function 'vscr_ratchet_sender_chain_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_destroy(vscr_ratchet_sender_chain_t **ratchet_sender_chain_ref);
+vscr_ratchet_sender_chain_destroy(vscr_ratchet_sender_chain_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_sender_chain_t *
-vscr_ratchet_sender_chain_shallow_copy(vscr_ratchet_sender_chain_t *ratchet_sender_chain);
+vscr_ratchet_sender_chain_shallow_copy(vscr_ratchet_sender_chain_t *self);
 
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_serialize(vscr_ratchet_sender_chain_t *ratchet_sender_chain, SenderChain *sender_chain_pb);
+vscr_ratchet_sender_chain_serialize(vscr_ratchet_sender_chain_t *self, SenderChain *sender_chain_pb);
 
 VSCR_PUBLIC void
 vscr_ratchet_sender_chain_deserialize(const SenderChain *sender_chain_pb, vscr_ratchet_sender_chain_t *sender_chain);

@@ -86,6 +86,10 @@ static const vscf_defaults_api_t defaults_api = {
     //
     vscf_api_tag_DEFAULTS,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ALG_INFO_DER_SERIALIZER,
+    //
     //  Setup predefined values to the uninitialized class dependencies.
     //
     (vscf_defaults_api_setup_defaults_fn)vscf_alg_info_der_serializer_setup_defaults
@@ -101,6 +105,10 @@ static const vscf_alg_info_serializer_api_t alg_info_serializer_api = {
     //
     vscf_api_tag_ALG_INFO_SERIALIZER,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ALG_INFO_DER_SERIALIZER,
+    //
     //  Return buffer size enough to hold serialized algorithm.
     //
     (vscf_alg_info_serializer_api_serialized_len_fn)vscf_alg_info_der_serializer_serialized_len,
@@ -114,6 +122,10 @@ static const vscf_alg_info_serializer_api_t alg_info_serializer_api = {
 //  Compile-time known information about 'alg info der serializer' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_ALG_INFO_DER_SERIALIZER,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
@@ -133,14 +145,14 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_init(vscf_alg_info_der_serializer_t *alg_info_der_serializer) {
+vscf_alg_info_der_serializer_init(vscf_alg_info_der_serializer_t *self) {
 
-    VSCF_ASSERT_PTR(alg_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(alg_info_der_serializer, sizeof(vscf_alg_info_der_serializer_t));
+    vscf_zeroize(self, sizeof(vscf_alg_info_der_serializer_t));
 
-    alg_info_der_serializer->info = &info;
-    alg_info_der_serializer->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 }
 
 //
@@ -148,23 +160,23 @@ vscf_alg_info_der_serializer_init(vscf_alg_info_der_serializer_t *alg_info_der_s
 //  This is a reverse action of the function 'vscf_alg_info_der_serializer_init()'.
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_cleanup(vscf_alg_info_der_serializer_t *alg_info_der_serializer) {
+vscf_alg_info_der_serializer_cleanup(vscf_alg_info_der_serializer_t *self) {
 
-    if (alg_info_der_serializer == NULL || alg_info_der_serializer->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (alg_info_der_serializer->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--alg_info_der_serializer->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_alg_info_der_serializer_release_asn1_writer(alg_info_der_serializer);
+    vscf_alg_info_der_serializer_release_asn1_writer(self);
 
-    vscf_zeroize(alg_info_der_serializer, sizeof(vscf_alg_info_der_serializer_t));
+    vscf_zeroize(self, sizeof(vscf_alg_info_der_serializer_t));
 }
 
 //
@@ -174,12 +186,12 @@ vscf_alg_info_der_serializer_cleanup(vscf_alg_info_der_serializer_t *alg_info_de
 VSCF_PUBLIC vscf_alg_info_der_serializer_t *
 vscf_alg_info_der_serializer_new(void) {
 
-    vscf_alg_info_der_serializer_t *alg_info_der_serializer = (vscf_alg_info_der_serializer_t *) vscf_alloc(sizeof (vscf_alg_info_der_serializer_t));
-    VSCF_ASSERT_ALLOC(alg_info_der_serializer);
+    vscf_alg_info_der_serializer_t *self = (vscf_alg_info_der_serializer_t *) vscf_alloc(sizeof (vscf_alg_info_der_serializer_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_alg_info_der_serializer_init(alg_info_der_serializer);
+    vscf_alg_info_der_serializer_init(self);
 
-    return alg_info_der_serializer;
+    return self;
 }
 
 //
@@ -187,12 +199,12 @@ vscf_alg_info_der_serializer_new(void) {
 //  This is a reverse action of the function 'vscf_alg_info_der_serializer_new()'.
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_delete(vscf_alg_info_der_serializer_t *alg_info_der_serializer) {
+vscf_alg_info_der_serializer_delete(vscf_alg_info_der_serializer_t *self) {
 
-    vscf_alg_info_der_serializer_cleanup(alg_info_der_serializer);
+    vscf_alg_info_der_serializer_cleanup(self);
 
-    if (alg_info_der_serializer && (alg_info_der_serializer->refcnt == 0)) {
-        vscf_dealloc(alg_info_der_serializer);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -202,14 +214,14 @@ vscf_alg_info_der_serializer_delete(vscf_alg_info_der_serializer_t *alg_info_der
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_destroy(vscf_alg_info_der_serializer_t **alg_info_der_serializer_ref) {
+vscf_alg_info_der_serializer_destroy(vscf_alg_info_der_serializer_t **self_ref) {
 
-    VSCF_ASSERT_PTR(alg_info_der_serializer_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_alg_info_der_serializer_t *alg_info_der_serializer = *alg_info_der_serializer_ref;
-    *alg_info_der_serializer_ref = NULL;
+    vscf_alg_info_der_serializer_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_alg_info_der_serializer_delete(alg_info_der_serializer);
+    vscf_alg_info_der_serializer_delete(self);
 }
 
 //
@@ -217,10 +229,10 @@ vscf_alg_info_der_serializer_destroy(vscf_alg_info_der_serializer_t **alg_info_d
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_alg_info_der_serializer_t *
-vscf_alg_info_der_serializer_shallow_copy(vscf_alg_info_der_serializer_t *alg_info_der_serializer) {
+vscf_alg_info_der_serializer_shallow_copy(vscf_alg_info_der_serializer_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_alg_info_der_serializer_t *)vscf_impl_shallow_copy((vscf_impl_t *)alg_info_der_serializer);
+    return (vscf_alg_info_der_serializer_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -236,26 +248,25 @@ vscf_alg_info_der_serializer_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_info_der_serializer_impl(vscf_alg_info_der_serializer_t *alg_info_der_serializer) {
+vscf_alg_info_der_serializer_impl(vscf_alg_info_der_serializer_t *self) {
 
-    VSCF_ASSERT_PTR(alg_info_der_serializer);
-    return (vscf_impl_t *)(alg_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 //
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_use_asn1_writer(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        vscf_impl_t *asn1_writer) {
+vscf_alg_info_der_serializer_use_asn1_writer(vscf_alg_info_der_serializer_t *self, vscf_impl_t *asn1_writer) {
 
-    VSCF_ASSERT_PTR(alg_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT_PTR(alg_info_der_serializer->asn1_writer == NULL);
+    VSCF_ASSERT(self->asn1_writer == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
 
-    alg_info_der_serializer->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
+    self->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
 }
 
 //
@@ -263,27 +274,26 @@ vscf_alg_info_der_serializer_use_asn1_writer(vscf_alg_info_der_serializer_t *alg
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_take_asn1_writer(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        vscf_impl_t *asn1_writer) {
+vscf_alg_info_der_serializer_take_asn1_writer(vscf_alg_info_der_serializer_t *self, vscf_impl_t *asn1_writer) {
 
-    VSCF_ASSERT_PTR(alg_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT_PTR(alg_info_der_serializer->asn1_writer == NULL);
+    VSCF_ASSERT_PTR(self->asn1_writer == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
 
-    alg_info_der_serializer->asn1_writer = asn1_writer;
+    self->asn1_writer = asn1_writer;
 }
 
 //
 //  Release dependency to the interface 'asn1 writer'.
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_release_asn1_writer(vscf_alg_info_der_serializer_t *alg_info_der_serializer) {
+vscf_alg_info_der_serializer_release_asn1_writer(vscf_alg_info_der_serializer_t *self) {
 
-    VSCF_ASSERT_PTR(alg_info_der_serializer);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&alg_info_der_serializer->asn1_writer);
+    vscf_impl_destroy(&self->asn1_writer);
 }
 
 static const vscf_api_t *

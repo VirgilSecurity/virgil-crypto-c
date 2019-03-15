@@ -1,7 +1,9 @@
 <class name="ratchet session" context="internal">
+    Class for ratchet session between 2 participants
 
     <require class="ratchet common" scope="public"/>
-    <require class="ratchet common" scope="context"/>
+    <require class="ratchet common hidden" scope="context"/>
+    <require class="ratchet x3dh" scope="private"/>
     <require module="ratchet message defs" scope="private"/>
     <require module="buffer defs" scope="private" project="common"/>
 
@@ -14,91 +16,187 @@
 
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
 
-    <constant name="max ratchet length" definition="public" value="1024 * 1024">
-        FIXME
-    </constant>
+    <dependency name="rng" interface="random" project="foundation" has_observers="1">
+        Random used to generate keys
+    </dependency>
 
-    <dependency name="rng" interface="random" project="foundation"/>
+    <property name="key utils" class="ratchet key utils"/>
+    <property name="ratchet" class="ratchet"/>
 
     <property name="is initiator" type="boolean"/>
-    <property class="ratchet" name="ratchet"/>
     <property name="received first response" type="boolean"/>
 
     <property name="sender identity public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
     </property>
     <property name="sender ephemeral public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
     </property>
     <property name="receiver long term public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
     </property>
     <property name="receiver has one time public key" type="boolean" access="readwrite"/>
     <property name="receiver one time public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
     </property>
 
     <method name="setup defaults">
+        Setups default dependencies:
+            - RNG: CTR DRBG
+            - Key serialization: DER PKCS8
+            - Symmetric cipher: AES256-GCM
     </method>
 
     <method name="initiate">
-        <argument name="sender identity private key" class="data"/>
-        <argument name="receiver identity public key" class="data"/>
-        <argument name="receiver long term public key" class="data"/>
-        <argument name="receiver one time public key" class="data"/>
+        Initiates session
 
-        <return enum="error"/>
+        <argument name="sender identity private key" class="data">
+            Sender identity private key
+        </argument>
+        <argument name="receiver identity public key" class="data">
+            Receiver identity public key
+        </argument>
+        <argument name="receiver long term public key" class="data">
+            Receiver long-term public key
+        </argument>
+        <argument name="receiver one time public key" class="data">
+            Receiver one-time public key (optional)
+        </argument>
+
+        <return enum="status">
+            Error
+        </return>
     </method>
 
     <method name="respond">
-        <argument name="sender identity public key" class="data"/>
-        <argument name="receiver identity private key" class="data"/>
-        <argument name="receiver long term private key" class="data"/>
-        <argument name="receiver one time private key" class="data"/>
-        <argument name="message" class="ratchet message"/>
+        Responds to session initiation
 
-        <return enum="error"/>
+        <argument name="sender identity public key" class="data">
+            Sender identity public key
+        </argument>
+        <argument name="receiver identity private key" class="data">
+            Receiver identity private key
+        </argument>
+        <argument name="receiver long term private key" class="data">
+            Receiver long-term private key
+        </argument>
+        <argument name="receiver one time private key" class="data">
+            Receiver one-time private key (optional)
+        </argument>
+        <argument name="message" class="ratchet message">
+            Message received from initiator
+        </argument>
+
+        <return enum="status">
+            Error
+        </return>
+    </method>
+
+    <method name="is initiator">
+        Returns flag that indicates is this session was initiated or responded
+
+        <return type="boolean">
+            True is session was initiated, false if responded
+        </return>
+    </method>
+
+    <method name="received first response">
+        Returns true if at least 1 response was successfully decrypted, false - otherwise
+
+        <return type="boolean">
+            True if at least 1 response was successfully decrypted, false - otherwise
+        </return>
+    </method>
+
+    <method name="receiver has one time public key">
+        Returns true if receiver had one time public key
+
+        <return type="boolean">
+            True if receiver had one time public key
+        </return>
     </method>
 
     <method name="encrypt">
-        <argument name="plain text" class="data"/>
-        <argument name="err ctx" class="error ctx" access="readwrite"/>
+        Encrypts data
 
-        <return class="ratchet message" access="disown"/>
+        <argument name="plain text" class="data">
+            Data to encrypt
+        </argument>
+
+        <argument name="error" class="error" access="readwrite">
+            Error context to return error
+        </argument>
+
+        <return class="ratchet message" access="disown">
+            Result message. Use serialize to send this over the wire.
+        </return>
     </method>
 
     <method name="decrypt len">
-        <argument name="message" class="ratchet message"/>
+        Calculates size of buffer sufficient to store decrypted message
 
-        <return type="size"/>
+        <argument name="message" class="ratchet message">
+            Message to decrypt
+        </argument>
+
+        <return type="size">
+            Size of buffer sufficient to store decrypted message
+        </return>
     </method>
 
     <method name="decrypt">
-        <argument name="message" class="ratchet message"/>
+        Decrypts message
+
+        <argument name="message" class="ratchet message">
+            Message to decrypt. Use deserialize to obtain message from data
+        </argument>
+
         <argument name="plain text" class="buffer">
+            Decrypted data
+
             <length method="decrypt len">
                 <proxy argument="message" to="message"/>
             </length>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status">
+            Error
+        </return>
     </method>
 
     <method name="serialize len">
-        <return type="size"/>
+        Calculates size of buffer sufficient to store session
+
+        <return type="size">
+            Size of buffer sufficient to store session
+        </return>
     </method>
 
     <method name="serialize">
+        Serializes session to buffer
+
         <argument name="output" class="buffer">
+            Buffer to store session
+
             <length method="serialize len"/>
         </argument>
     </method>
 
     <method name="deserialize" is_static="1">
-        <argument name="input" class="data"/>
-        <argument name="err ctx" class="error ctx" access="readwrite"/>
+        Deserializes session from buffer.
+        NOTE: Deserialized session needs dependencies to be set. Check setup defaults
 
-        <return class="self" access="disown"/>
+        <argument name="input" class="data">
+            Serialized session data
+        </argument>
+
+        <argument name="error" class="error" access="readwrite">
+            Error context to return error
+        </argument>
+
+        <return class="self" access="disown">
+            Deserialized session.
+            NOTE: Deserialized session needs dependencies to be set. Check setup defaults
+        </return>
     </method>
-
 </class>

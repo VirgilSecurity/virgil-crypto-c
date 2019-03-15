@@ -1,0 +1,201 @@
+<class name="recipient cipher">
+    This class provides hybrid encryption algorithm that combines symmetric
+    cipher for data encryption and asymmetric cipher and password based
+    cipher for symmetric key encryption.
+
+    <require interface="alg info"/>
+    <require interface="public key"/>
+    <require interface="private key"/>
+    <require interface="encrypt"/>
+    <require interface="decrypt"/>
+    <require class="message info der serializer"/>
+    <require class="key recipient list"/>
+    <require class="aes256 gcm"/>
+    <require class="ctr drbg"/>
+    <require class="alg factory"/>
+
+    <dependency name="random" interface="random"/>
+    <dependency name="encryption cipher" interface="cipher"/>
+
+    <property name="key recipients" class="key recipient list"/>
+    <property name="decryption recipient id" class="buffer"/>
+    <property name="decryption recipient key" interface="private key"/>
+    <property name="decryption password" class="buffer"/>
+    <property name="decryption cipher" interface="cipher"/>
+    <property name="message info" class="message info"/>
+    <property name="message info der serializer" impl="message info der serializer"/>
+    <property name="message info buffer" class="buffer"/>
+    <property name="message info expected len" type="size"/>
+    <property name="decryption state" enum="recipient cipher decryption state"/>
+
+    <method name="add key recipient">
+        Add recipient defined with id and public key.
+
+        <argument name="recipient id" class="data"/>
+        <argument name="public key" interface="public key" access="retain"/>
+    </method>
+
+    <method name="clear recipients">
+        Remove all recipients.
+    </method>
+
+    <method name="custom params">
+        Provide access to the custom params object.
+        The returned object can be used to add custom params or read it.
+
+        <return class="message info custom params" access="readwrite"/>
+    </method>
+
+    <method name="message info len" is_const="1">
+        Return buffer length required to hold message info returned by the
+        "start encryption" method.
+        Precondition: all recipients and custom parameters should be set.
+
+        <return type="size"/>
+    </method>
+
+    <method name="start encryption">
+        Start encryption process.
+
+        <return enum="status"/>
+    </method>
+
+    <method name="pack message info">
+        Return serialized message info to the buffer.
+
+        Precondition: this method can be called after "start encryption".
+        Precondition: this method can be called before "finish encryption".
+
+        Note, store message info to use it for decryption process,
+        or place it at the encrypted data beginning (embedding).
+
+        Return message info - recipients public information,
+        algorithm information, etc.
+
+        <argument name="message info" class="buffer">
+            <length method="message info len"/>
+        </argument>
+    </method>
+
+    <method name="encryption out len">
+        Return buffer length required to hold output of the method
+        "process encryption" and method "finish" during encryption.
+
+        <argument name="data len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="process encryption">
+        Process encryption of a new portion of data.
+
+        <argument name="data" class="data"/>
+        <argument name="out" class="buffer">
+            <length method="encryption out len">
+                <proxy argument="data" to="data len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="finish encryption">
+        Accomplish encryption.
+
+        <argument name="out" class="buffer">
+            <length method="encryption out len">
+                <proxy constant="0" to="data len"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="start decryption with key">
+        Initiate decryption process with a recipient private key.
+        Message info can be empty if it was embedded to encrypted data.
+
+        <argument name="recipient id" class="data"/>
+        <argument name="private key" interface="private key" access="retain"/>
+        <argument name="message info" class="data"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="decryption out len">
+        Return buffer length required to hold output of the method
+        "process decryption" and method "finish" during decryption.
+
+        <argument name="data len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="process decryption">
+        Process with a new portion of data.
+        Return error if data can not be encrypted or decrypted.
+
+        <argument name="data" class="data"/>
+        <argument name="out" class="buffer">
+            <length method="decryption out len">
+                <proxy argument="data" to="data len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="finish decryption">
+        Accomplish decryption.
+
+        <argument name="out" class="buffer">
+            <length method="decryption out len">
+                <proxy constant="0" to="data len"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="configure decryption cipher" declaration="private">
+        Configure symmetric cipher with decryption key.
+        Nonce is restored from the message info.
+        Note, this method change decryption state.
+
+        <argument name="decryption key" class="data"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="decrypt data encryption key with password" declaration="private">
+        Decrypt data encryption key with a password.
+
+        <return enum="status"/>
+    </method>
+
+    <method name="decrypt data encryption key with private key" declaration="private">
+        Decrypt data encryption key with a private key.
+
+        <return enum="status"/>
+    </method>
+
+    <method name="decrypt data encryption key" declaration="private">
+        Decrypt data encryption key and configure underlying cipher.
+
+        <return enum="status"/>
+    </method>
+
+    <method name="unpack message info" declaration="private">
+        Read given message info from the given data or extracted data.
+
+        <argument name="message info" class="data"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="extract message info" declaration="private">
+        <argument name="data" class="data"/>
+
+        <return enum="status"/>
+    </method>
+</class>

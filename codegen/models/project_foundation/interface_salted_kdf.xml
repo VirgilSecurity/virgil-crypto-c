@@ -2,15 +2,19 @@
     Provides interface to the key derivation function (KDF) algorithms
     that use salt and teration count.
 
-    <method name="derive">
-        Derive key of the requested length from the given data, salt and info.
+    <inherit interface="kdf"/>
 
-        <argument name="data" class="data"/>
+    <method name="reset">
+        Prepare algorithm to derive new key.
+
         <argument name="salt" class="data"/>
+        <argument name="iteration count" type="size"/>
+    </method>
+
+    <method name="set info">
+        Setup application specific information (optional).
+        Can be empty.
+
         <argument name="info" class="data"/>
-        <argument name="key" class="buffer">
-            <length argument="key len"/>
-        </argument>
-        <argument name="key len" type="size" />
     </method>
 </interface>

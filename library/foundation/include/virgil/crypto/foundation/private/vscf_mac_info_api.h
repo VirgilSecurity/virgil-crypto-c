@@ -75,12 +75,12 @@ extern "C" {
 //
 //  Callback. Size of the digest (mac output) in bytes.
 //
-typedef size_t (*vscf_mac_info_api_digest_len_fn)(vscf_impl_t *impl);
+typedef size_t (*vscf_mac_api_digest_len_fn)(vscf_impl_t *impl);
 
 //
 //  Contains API requirements of the interface 'mac info'.
 //
-struct vscf_mac_info_api_t {
+struct vscf_mac_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
     //  For interface 'mac_info' MUST be equal to the 'vscf_api_tag_MAC_INFO'.
@@ -89,7 +89,7 @@ struct vscf_mac_info_api_t {
     //
     //  Size of the digest (mac output) in bytes.
     //
-    vscf_mac_info_api_digest_len_fn digest_len_cb;
+    vscf_mac_api_digest_len_fn digest_len_cb;
 };
 
 

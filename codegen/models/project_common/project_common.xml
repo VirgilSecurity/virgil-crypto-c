@@ -6,6 +6,7 @@
         prefix="vsc"
         path="../library/common/"
         work_path="generated/common/"
+        wrappers="none"
         >
 
     <version major="0" minor="3" patch="0"/>
@@ -52,6 +53,4 @@
 
     <class name="data"/>
     <class name="buffer"/>
-
-    <wrapper lang="swift"/>
 </project>

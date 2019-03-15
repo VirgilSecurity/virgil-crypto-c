@@ -147,6 +147,7 @@ function projects_api_reset_project (projects_api, project)
         .namespace = my.project.namespace
         .namespace_dir = my.project.namespace_dir
         .framework = my.project.framework
+        .wrappers = my.project.wrappers
 
         for my.project.require where defined (require.project) & string_equal (require.feature, "library")
             new require to my.project_info

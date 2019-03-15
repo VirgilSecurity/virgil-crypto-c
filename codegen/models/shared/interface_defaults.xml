@@ -5,6 +5,6 @@
     <method name="setup defaults">
         Setup predefined values to the uninitialized class dependencies.
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 </interface>

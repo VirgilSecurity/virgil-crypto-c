@@ -86,56 +86,56 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'mac stream'.
 //
-typedef struct vscf_mac_stream_api_t vscf_mac_stream_api_t;
+typedef struct vscf_mac_api_t vscf_mac_api_t;
 
 //
 //  Start a new MAC.
 //
 VSCF_PUBLIC void
-vscf_mac_stream_start(vscf_impl_t *impl, vsc_data_t key);
+vscf_mac_start(vscf_impl_t *impl, vsc_data_t key);
 
 //
 //  Add given data to the MAC.
 //
 VSCF_PUBLIC void
-vscf_mac_stream_update(vscf_impl_t *impl, vsc_data_t data);
+vscf_mac_update(vscf_impl_t *impl, vsc_data_t data);
 
 //
 //  Accomplish MAC and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_mac_stream_finish(vscf_impl_t *impl, vsc_buffer_t *mac);
+vscf_mac_finish(vscf_impl_t *impl, vsc_buffer_t *mac);
 
 //
 //  Prepare to authenticate a new message with the same key
 //  as the previous MAC operation.
 //
 VSCF_PUBLIC void
-vscf_mac_stream_reset(vscf_impl_t *impl);
+vscf_mac_reset(vscf_impl_t *impl);
 
 //
 //  Return mac stream API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC const vscf_mac_stream_api_t *
-vscf_mac_stream_api(const vscf_impl_t *impl);
+VSCF_PUBLIC const vscf_mac_api_t *
+vscf_mac_api(const vscf_impl_t *impl);
 
 //
 //  Return mac info API.
 //
-VSCF_PUBLIC const vscf_mac_info_api_t *
-vscf_mac_stream_mac_info_api(const vscf_mac_stream_api_t *mac_stream_api);
+VSCF_PUBLIC const vscf_mac_api_t *
+vscf_mac_mac_info_api(const vscf_mac_api_t *mac_stream_api);
 
 //
 //  Check if given object implements interface 'mac stream'.
 //
 VSCF_PUBLIC bool
-vscf_mac_stream_is_implemented(const vscf_impl_t *impl);
+vscf_mac_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.
 //
 VSCF_PUBLIC vscf_api_tag_t
-vscf_mac_stream_api_tag(const vscf_mac_stream_api_t *mac_stream_api);
+vscf_mac_api_tag(const vscf_mac_api_t *mac_stream_api);
 
 
 // --------------------------------------------------------------------------

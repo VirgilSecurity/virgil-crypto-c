@@ -131,7 +131,7 @@ vscf_cipher_update(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out) {
 
 //
 //  Return buffer length required to hold an output of the methods
-//  "update" or "finish".
+//  "update" or "finish" in an current mode.
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
@@ -145,9 +145,39 @@ vscf_cipher_out_len(vscf_impl_t *impl, size_t data_len) {
 }
 
 //
+//  Return buffer length required to hold an output of the methods
+//  "update" or "finish" in an encryption mode.
+//  Pass zero length to define buffer length of the method "finish".
+//
+VSCF_PUBLIC size_t
+vscf_cipher_encrypted_out_len(vscf_impl_t *impl, size_t data_len) {
+
+    const vscf_cipher_api_t *cipher_api = vscf_cipher_api(impl);
+    VSCF_ASSERT_PTR (cipher_api);
+
+    VSCF_ASSERT_PTR (cipher_api->encrypted_out_len_cb);
+    return cipher_api->encrypted_out_len_cb (impl, data_len);
+}
+
+//
+//  Return buffer length required to hold an output of the methods
+//  "update" or "finish" in an decryption mode.
+//  Pass zero length to define buffer length of the method "finish".
+//
+VSCF_PUBLIC size_t
+vscf_cipher_decrypted_out_len(vscf_impl_t *impl, size_t data_len) {
+
+    const vscf_cipher_api_t *cipher_api = vscf_cipher_api(impl);
+    VSCF_ASSERT_PTR (cipher_api);
+
+    VSCF_ASSERT_PTR (cipher_api->decrypted_out_len_cb);
+    return cipher_api->decrypted_out_len_cb (impl, data_len);
+}
+
+//
 //  Accomplish encryption or decryption process.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_cipher_finish(vscf_impl_t *impl, vsc_buffer_t *out) {
 
     const vscf_cipher_api_t *cipher_api = vscf_cipher_api(impl);

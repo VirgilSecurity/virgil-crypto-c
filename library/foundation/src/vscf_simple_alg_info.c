@@ -80,10 +80,10 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_simple_alg_info_init_ctx(vscf_simple_alg_info_t *simple_alg_info) {
+vscf_simple_alg_info_init_ctx(vscf_simple_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(simple_alg_info);
-    simple_alg_info->alg_id = vscf_alg_id_NONE;
+    VSCF_ASSERT_PTR(self);
+    self->alg_id = vscf_alg_id_NONE;
 }
 
 //
@@ -92,10 +92,10 @@ vscf_simple_alg_info_init_ctx(vscf_simple_alg_info_t *simple_alg_info) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_simple_alg_info_cleanup_ctx(vscf_simple_alg_info_t *simple_alg_info) {
+vscf_simple_alg_info_cleanup_ctx(vscf_simple_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(simple_alg_info);
-    simple_alg_info->alg_id = vscf_alg_id_NONE;
+    VSCF_ASSERT_PTR(self);
+    self->alg_id = vscf_alg_id_NONE;
 }
 
 //
@@ -106,19 +106,19 @@ vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_t alg_id) {
 
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
-    vscf_simple_alg_info_t *simple_alg_info = vscf_simple_alg_info_new();
+    vscf_simple_alg_info_t *self = vscf_simple_alg_info_new();
 
-    simple_alg_info->alg_id = alg_id;
+    self->alg_id = alg_id;
 
-    return simple_alg_info;
+    return self;
 }
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_simple_alg_info_alg_id(const vscf_simple_alg_info_t *simple_alg_info) {
+vscf_simple_alg_info_alg_id(const vscf_simple_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(simple_alg_info);
-    return simple_alg_info->alg_id;
+    VSCF_ASSERT_PTR(self);
+    return self->alg_id;
 }

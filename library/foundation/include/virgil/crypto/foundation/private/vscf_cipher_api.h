@@ -59,7 +59,7 @@
 #include "vscf_encrypt.h"
 #include "vscf_decrypt.h"
 #include "vscf_cipher_info.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -113,15 +113,29 @@ typedef void (*vscf_cipher_api_update_fn)(vscf_impl_t *impl, vsc_data_t data, vs
 
 //
 //  Callback. Return buffer length required to hold an output of the methods
-//          "update" or "finish".
+//          "update" or "finish" in an current mode.
 //          Pass zero length to define buffer length of the method "finish".
 //
 typedef size_t (*vscf_cipher_api_out_len_fn)(vscf_impl_t *impl, size_t data_len);
 
 //
+//  Callback. Return buffer length required to hold an output of the methods
+//          "update" or "finish" in an encryption mode.
+//          Pass zero length to define buffer length of the method "finish".
+//
+typedef size_t (*vscf_cipher_api_encrypted_out_len_fn)(vscf_impl_t *impl, size_t data_len);
+
+//
+//  Callback. Return buffer length required to hold an output of the methods
+//          "update" or "finish" in an decryption mode.
+//          Pass zero length to define buffer length of the method "finish".
+//
+typedef size_t (*vscf_cipher_api_decrypted_out_len_fn)(vscf_impl_t *impl, size_t data_len);
+
+//
 //  Callback. Accomplish encryption or decryption process.
 //
-typedef vscf_error_t (*vscf_cipher_api_finish_fn)(vscf_impl_t *impl, vsc_buffer_t *out);
+typedef vscf_status_t (*vscf_cipher_api_finish_fn)(vscf_impl_t *impl, vsc_buffer_t *out);
 
 //
 //  Contains API requirements of the interface 'cipher'.
@@ -132,6 +146,10 @@ struct vscf_cipher_api_t {
     //  For interface 'cipher' MUST be equal to the 'vscf_api_tag_CIPHER'.
     //
     vscf_api_tag_t api_tag;
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
     //
     //  Link to the inherited interface API 'encrypt'.
     //
@@ -166,10 +184,22 @@ struct vscf_cipher_api_t {
     vscf_cipher_api_update_fn update_cb;
     //
     //  Return buffer length required to hold an output of the methods
-    //  "update" or "finish".
+    //  "update" or "finish" in an current mode.
     //  Pass zero length to define buffer length of the method "finish".
     //
     vscf_cipher_api_out_len_fn out_len_cb;
+    //
+    //  Return buffer length required to hold an output of the methods
+    //  "update" or "finish" in an encryption mode.
+    //  Pass zero length to define buffer length of the method "finish".
+    //
+    vscf_cipher_api_encrypted_out_len_fn encrypted_out_len_cb;
+    //
+    //  Return buffer length required to hold an output of the methods
+    //  "update" or "finish" in an decryption mode.
+    //  Pass zero length to define buffer length of the method "finish".
+    //
+    vscf_cipher_api_decrypted_out_len_fn decrypted_out_len_cb;
     //
     //  Accomplish encryption or decryption process.
     //

@@ -127,7 +127,7 @@ vscf_base64_decoded_len(size_t str_len) {
 //
 //  Decode given data from the base64 format.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_base64_decode(vsc_data_t str, vsc_buffer_t *data) {
 
     VSCF_ASSERT(vsc_data_is_valid(str));
@@ -144,14 +144,14 @@ vscf_base64_decode(vsc_data_t str, vsc_buffer_t *data) {
         break;
 
     case MBEDTLS_ERR_BASE64_INVALID_CHARACTER:
-        return vscf_error_BAD_BASE64;
+        return vscf_status_ERROR_BAD_BASE64;
 
     default:
         VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(status);
-        return vscf_error_UNHANDLED_THIRDPARTY_ERROR;
+        return vscf_status_ERROR_UNHANDLED_THIRDPARTY_ERROR;
     }
 
     vsc_buffer_inc_used(data, len);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
