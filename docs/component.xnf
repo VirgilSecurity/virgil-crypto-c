@@ -528,6 +528,18 @@
         </restrict>
     </attr>
 
+    <attr name="nodiscard" default="0">
+        Defines that method's return value should not be ignored.
+
+        <restrict value="0">
+            Returned value from the method CAN be ignored.
+        </restrict>
+
+        <restrict value="1">
+            Returned value from the method CAN NOT be ignored.
+        </restrict>
+    </attr>
+
     <inherit entity="component"/>
     <inherit entity="visibility"/>
     <inherit entity="declaration"/>

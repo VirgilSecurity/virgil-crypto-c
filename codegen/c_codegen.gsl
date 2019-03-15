@@ -426,8 +426,10 @@ endfunction
 function c_insert_method_declaration (c_method)
     check_argument (my, "c_method")
 
+    my.attributes = c_derive_method_attributes (my.c_method)
+
     c_insert_description (my.c_method)
-    c_insert_method_signature (my.c_method, ";")
+    c_insert_method_signature (my.c_method, "$(my.attributes:);")
 endfunction
 
 # ---------------------------------------------------------------------------
