@@ -171,7 +171,7 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_alg_info_der_deserializer_setup_defaults(vscf_alg_info_der_deserializer_t *self);
+vscf_alg_info_der_deserializer_setup_defaults(vscf_alg_info_der_deserializer_t *self) VSCF_NODISCARD;
 
 //
 //  Deserialize algorithm from the data.

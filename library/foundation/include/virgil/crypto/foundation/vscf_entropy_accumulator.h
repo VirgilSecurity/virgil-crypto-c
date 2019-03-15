@@ -158,7 +158,7 @@ vscf_entropy_accumulator_add_source(vscf_entropy_accumulator_t *self, vscf_impl_
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *self);
+vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *self) VSCF_NODISCARD;
 
 //
 //  Defines that implemented source is strong.
@@ -170,7 +170,7 @@ vscf_entropy_accumulator_is_strong(vscf_entropy_accumulator_t *self);
 //  Gather entropy of the requested length.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_entropy_accumulator_gather(vscf_entropy_accumulator_t *self, size_t len, vsc_buffer_t *out);
+vscf_entropy_accumulator_gather(vscf_entropy_accumulator_t *self, size_t len, vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

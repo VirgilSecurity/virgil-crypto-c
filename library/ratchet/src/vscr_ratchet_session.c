@@ -134,7 +134,7 @@ vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *self);
 //  This method is called when interface 'random' was setup.
 //
 static vscr_status_t
-vscr_ratchet_session_did_setup_rng(vscr_ratchet_session_t *self);
+vscr_ratchet_session_did_setup_rng(vscr_ratchet_session_t *self) VSCR_NODISCARD;
 
 //
 //  This method is called when interface 'random' was released.

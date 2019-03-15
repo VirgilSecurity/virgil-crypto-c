@@ -137,11 +137,12 @@ vsce_phe_client_cleanup_ctx(vsce_phe_client_t *self);
 
 static vsce_status_t
 vsce_phe_client_check_success_proof(vsce_phe_client_t *self, mbedtls_ecp_group *op_group,
-        const ProofOfSuccess *success_proof, vsc_data_t ns, const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1);
+        const ProofOfSuccess *success_proof, vsc_data_t ns, const mbedtls_ecp_point *c0,
+        const mbedtls_ecp_point *c1) VSCE_NODISCARD;
 
 static vsce_status_t
 vsce_phe_client_check_fail_proof(vsce_phe_client_t *self, mbedtls_ecp_group *op_group, const ProofOfFail *fail_proof,
-        const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, const mbedtls_ecp_point *hs0);
+        const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, const mbedtls_ecp_point *hs0) VSCE_NODISCARD;
 
 static mbedtls_ecp_group *
 vsce_phe_client_get_op_group(vsce_phe_client_t *self);

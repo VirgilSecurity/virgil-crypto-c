@@ -79,7 +79,7 @@
 //  This method is called when interface 'asn1 reader' was setup.
 //
 VSCF_PRIVATE vscf_status_t
-vscf_message_info_der_serializer_did_setup_asn1_reader(vscf_message_info_der_serializer_t *self);
+vscf_message_info_der_serializer_did_setup_asn1_reader(vscf_message_info_der_serializer_t *self) VSCF_NODISCARD;
 
 //
 //  This method is called when interface 'asn1 reader' was released.
@@ -91,7 +91,7 @@ vscf_message_info_der_serializer_did_release_asn1_reader(vscf_message_info_der_s
 //  This method is called when interface 'asn1 writer' was setup.
 //
 VSCF_PRIVATE vscf_status_t
-vscf_message_info_der_serializer_did_setup_asn1_writer(vscf_message_info_der_serializer_t *self);
+vscf_message_info_der_serializer_did_setup_asn1_writer(vscf_message_info_der_serializer_t *self) VSCF_NODISCARD;
 
 //
 //  This method is called when interface 'asn1 writer' was released.

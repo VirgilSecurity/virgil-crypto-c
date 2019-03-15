@@ -132,7 +132,7 @@ static vsc_buffer_t *
 vscr_ratchet_cipher_add_padding(vscr_ratchet_cipher_t *self, vsc_data_t plain_text, vscr_error_t *error);
 
 static vscr_status_t
-vscr_ratchet_cipher_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buffer);
+vscr_ratchet_cipher_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buffer) VSCR_NODISCARD;
 
 //
 //  Return size of 'vscr_ratchet_cipher_t'.

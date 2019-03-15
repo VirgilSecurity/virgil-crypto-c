@@ -120,12 +120,12 @@ vsce_phe_server_cleanup_ctx(vsce_phe_server_t *self);
 static vsce_status_t
 vsce_phe_server_prove_success(vsce_phe_server_t *self, mbedtls_ecp_group *op_group, vsc_data_t server_private_key,
         vsc_data_t server_public_key, const mbedtls_ecp_point *hs0, const mbedtls_ecp_point *hs1,
-        const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, ProofOfSuccess *success_proof);
+        const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, ProofOfSuccess *success_proof) VSCE_NODISCARD;
 
 static vsce_status_t
 vsce_phe_server_prove_failure(vsce_phe_server_t *self, mbedtls_ecp_group *op_group, vsc_data_t server_private_key,
         vsc_data_t server_public_key, const mbedtls_ecp_point *c0, const mbedtls_ecp_point *hs0, mbedtls_ecp_point *c1,
-        ProofOfFail *failure_proof);
+        ProofOfFail *failure_proof) VSCE_NODISCARD;
 
 static mbedtls_ecp_group *
 vsce_phe_server_get_op_group(vsce_phe_server_t *self);

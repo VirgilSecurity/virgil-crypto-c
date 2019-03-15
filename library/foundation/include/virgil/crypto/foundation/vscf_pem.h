@@ -105,7 +105,7 @@ vscf_pem_unwrapped_len(size_t pem_len);
 //  Takes PEM data and extract binary data from it.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data);
+vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) VSCF_NODISCARD;
 
 //
 //  Returns PEM title if PEM data is valid, otherwise - empty data.

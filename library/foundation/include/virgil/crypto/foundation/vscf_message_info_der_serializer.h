@@ -154,14 +154,16 @@ vscf_message_info_der_serializer_shallow_copy(vscf_message_info_der_serializer_t
 //  Setup dependency to the interface 'asn1 reader' with shared ownership.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_message_info_der_serializer_use_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader);
+vscf_message_info_der_serializer_use_asn1_reader(vscf_message_info_der_serializer_t *self,
+        vscf_impl_t *asn1_reader) VSCF_NODISCARD;
 
 //
 //  Setup dependency to the interface 'asn1 reader' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_message_info_der_serializer_take_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader);
+vscf_message_info_der_serializer_take_asn1_reader(vscf_message_info_der_serializer_t *self,
+        vscf_impl_t *asn1_reader) VSCF_NODISCARD;
 
 //
 //  Release dependency to the interface 'asn1 reader'.
@@ -173,14 +175,16 @@ vscf_message_info_der_serializer_release_asn1_reader(vscf_message_info_der_seria
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_message_info_der_serializer_use_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
+vscf_message_info_der_serializer_use_asn1_writer(vscf_message_info_der_serializer_t *self,
+        vscf_impl_t *asn1_writer) VSCF_NODISCARD;
 
 //
 //  Setup dependency to the interface 'asn1 writer' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_message_info_der_serializer_take_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
+vscf_message_info_der_serializer_take_asn1_writer(vscf_message_info_der_serializer_t *self,
+        vscf_impl_t *asn1_writer) VSCF_NODISCARD;
 
 //
 //  Release dependency to the interface 'asn1 writer'.
@@ -192,7 +196,7 @@ vscf_message_info_der_serializer_release_asn1_writer(vscf_message_info_der_seria
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer_t *self);
+vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer_t *self) VSCF_NODISCARD;
 
 //
 //  Return buffer size enough to hold serialized message info.

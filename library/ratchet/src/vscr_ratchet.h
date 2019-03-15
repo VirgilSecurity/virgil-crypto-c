@@ -142,14 +142,14 @@ vscr_ratchet_shallow_copy(vscr_ratchet_t *self);
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_use_rng(vscr_ratchet_t *self, vscf_impl_t *rng);
+vscr_ratchet_use_rng(vscr_ratchet_t *self, vscf_impl_t *rng) VSCR_NODISCARD;
 
 //
 //  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_take_rng(vscr_ratchet_t *self, vscf_impl_t *rng);
+vscr_ratchet_take_rng(vscr_ratchet_t *self, vscf_impl_t *rng) VSCR_NODISCARD;
 
 //
 //  Release dependency to the interface 'random'.
@@ -158,22 +158,23 @@ VSCR_PUBLIC void
 vscr_ratchet_release_rng(vscr_ratchet_t *self);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const RegularMessage *message);
+vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const RegularMessage *message) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret);
+vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret) VSCR_NODISCARD;
 
 VSCR_PUBLIC size_t
 vscr_ratchet_encrypt_len(vscr_ratchet_t *self, size_t plain_text_len);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage *regular_message);
+vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage *regular_message) VSCR_NODISCARD;
 
 VSCR_PUBLIC size_t
 vscr_ratchet_decrypt_len(vscr_ratchet_t *self, size_t cipher_text_len);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message, vsc_buffer_t *plain_text);
+vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message,
+        vsc_buffer_t *plain_text) VSCR_NODISCARD;
 
 VSCR_PUBLIC void
 vscr_ratchet_serialize(vscr_ratchet_t *self, Ratchet *ratchet_pb);

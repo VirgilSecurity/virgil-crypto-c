@@ -187,7 +187,7 @@ VSCE_PUBLIC void
 vsce_phe_client_release_operation_random(vsce_phe_client_t *self);
 
 VSCE_PUBLIC vsce_status_t
-vsce_phe_client_setup_defaults(vsce_phe_client_t *self);
+vsce_phe_client_setup_defaults(vsce_phe_client_t *self) VSCE_NODISCARD;
 
 //
 //  Sets client private and server public key
@@ -195,13 +195,14 @@ vsce_phe_client_setup_defaults(vsce_phe_client_t *self);
 //  This function should be called only once
 //
 VSCE_PUBLIC vsce_status_t
-vsce_phe_client_set_keys(vsce_phe_client_t *self, vsc_data_t client_private_key, vsc_data_t server_public_key);
+vsce_phe_client_set_keys(vsce_phe_client_t *self, vsc_data_t client_private_key,
+        vsc_data_t server_public_key) VSCE_NODISCARD;
 
 //
 //  Generates client private key
 //
 VSCE_PUBLIC vsce_status_t
-vsce_phe_client_generate_client_private_key(vsce_phe_client_t *self, vsc_buffer_t *client_private_key);
+vsce_phe_client_generate_client_private_key(vsce_phe_client_t *self, vsc_buffer_t *client_private_key) VSCE_NODISCARD;
 
 //
 //  Buffer size needed to fit EnrollmentRecord
@@ -216,7 +217,7 @@ vsce_phe_client_enrollment_record_len(vsce_phe_client_t *self);
 //
 VSCE_PUBLIC vsce_status_t
 vsce_phe_client_enroll_account(vsce_phe_client_t *self, vsc_data_t enrollment_response, vsc_data_t password,
-        vsc_buffer_t *enrollment_record, vsc_buffer_t *account_key);
+        vsc_buffer_t *enrollment_record, vsc_buffer_t *account_key) VSCE_NODISCARD;
 
 //
 //  Buffer size needed to fit VerifyPasswordRequest
@@ -229,7 +230,7 @@ vsce_phe_client_verify_password_request_len(vsce_phe_client_t *self);
 //
 VSCE_PUBLIC vsce_status_t
 vsce_phe_client_create_verify_password_request(vsce_phe_client_t *self, vsc_data_t password,
-        vsc_data_t enrollment_record, vsc_buffer_t *verify_password_request);
+        vsc_data_t enrollment_record, vsc_buffer_t *verify_password_request) VSCE_NODISCARD;
 
 //
 //  Verifies PHE server's answer
@@ -238,7 +239,7 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *self, vsc_data
 //
 VSCE_PUBLIC vsce_status_t
 vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *self, vsc_data_t password, vsc_data_t enrollment_record,
-        vsc_data_t verify_password_response, vsc_buffer_t *account_key);
+        vsc_data_t verify_password_response, vsc_buffer_t *account_key) VSCE_NODISCARD;
 
 //
 //  Updates client's private key and server's public key using server's update token
@@ -246,14 +247,14 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *self, vsc_data_t p
 //
 VSCE_PUBLIC vsce_status_t
 vsce_phe_client_rotate_keys(vsce_phe_client_t *self, vsc_data_t update_token, vsc_buffer_t *new_client_private_key,
-        vsc_buffer_t *new_server_public_key);
+        vsc_buffer_t *new_server_public_key) VSCE_NODISCARD;
 
 //
 //  Updates EnrollmentRecord using server's update token
 //
 VSCE_PUBLIC vsce_status_t
 vsce_phe_client_update_enrollment_record(vsce_phe_client_t *self, vsc_data_t enrollment_record, vsc_data_t update_token,
-        vsc_buffer_t *new_enrollment_record);
+        vsc_buffer_t *new_enrollment_record) VSCE_NODISCARD;
 
 
 // --------------------------------------------------------------------------

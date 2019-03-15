@@ -191,7 +191,7 @@ vscf_asn1wr_has_error(const vscf_asn1wr_t *self);
 //  Return error code.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_asn1wr_status(const vscf_asn1wr_t *self);
+vscf_asn1wr_status(const vscf_asn1wr_t *self) VSCF_NODISCARD;
 
 //
 //  Move writing position backward for the given length.

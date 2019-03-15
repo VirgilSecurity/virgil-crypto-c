@@ -180,7 +180,7 @@ vscf_pkcs8_der_deserializer_deserialize_private_key_inplace(vscf_pkcs8_der_deser
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_pkcs8_der_deserializer_setup_defaults(vscf_pkcs8_der_deserializer_t *self);
+vscf_pkcs8_der_deserializer_setup_defaults(vscf_pkcs8_der_deserializer_t *self) VSCF_NODISCARD;
 
 //
 //  Deserialize given public key as an interchangeable format to the object.

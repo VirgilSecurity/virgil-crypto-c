@@ -181,7 +181,7 @@ vscf_pkcs8_serializer_release_der_serializer(vscf_pkcs8_serializer_t *self);
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_pkcs8_serializer_setup_defaults(vscf_pkcs8_serializer_t *self);
+vscf_pkcs8_serializer_setup_defaults(vscf_pkcs8_serializer_t *self) VSCF_NODISCARD;
 
 //
 //  Calculate buffer size enough to hold serialized public key.
@@ -198,7 +198,7 @@ vscf_pkcs8_serializer_serialized_public_key_len(vscf_pkcs8_serializer_t *self, c
 //
 VSCF_PUBLIC vscf_status_t
 vscf_pkcs8_serializer_serialize_public_key(vscf_pkcs8_serializer_t *self, const vscf_impl_t *public_key,
-        vsc_buffer_t *out);
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Calculate buffer size enough to hold serialized private key.
@@ -215,7 +215,7 @@ vscf_pkcs8_serializer_serialized_private_key_len(vscf_pkcs8_serializer_t *self, 
 //
 VSCF_PUBLIC vscf_status_t
 vscf_pkcs8_serializer_serialize_private_key(vscf_pkcs8_serializer_t *self, const vscf_impl_t *private_key,
-        vsc_buffer_t *out);
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

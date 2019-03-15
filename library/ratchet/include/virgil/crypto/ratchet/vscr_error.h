@@ -123,7 +123,7 @@ vscr_error_has_error(const vscr_error_t *self);
 //  Return error code.
 //
 VSCR_PUBLIC vscr_status_t
-vscr_error_status(const vscr_error_t *self);
+vscr_error_status(const vscr_error_t *self) VSCR_NODISCARD;
 
 
 // --------------------------------------------------------------------------
