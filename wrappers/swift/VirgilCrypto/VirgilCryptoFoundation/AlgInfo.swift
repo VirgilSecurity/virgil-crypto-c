@@ -35,36 +35,10 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provide details about implemented algorithms.
 @objc(VSCFAlgInfo) public protocol AlgInfo : CContext {
 
     /// Provide algorithm identificator.
     @objc func algId() -> AlgId
-}
-
-/// Implement interface methods
-@objc(VSCFAlgInfoProxy) internal class AlgInfoProxy: NSObject, AlgInfo {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Provide algorithm identificator.
-    @objc public func algId() -> AlgId {
-        let proxyResult = vscf_alg_info_alg_id(self.c_ctx)
-
-        return AlgId.init(fromC: proxyResult)
-    }
 }

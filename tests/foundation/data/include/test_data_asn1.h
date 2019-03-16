@@ -74,3 +74,8 @@ extern const vsc_data_t test_asn1_decoded_BIT_STRING;
 //
 extern const vsc_data_t test_asn1_encoded_SEQUENCE_WITH_LEN_32;
 extern const vsc_data_t test_asn1_encoded_SET_WITH_LEN_32;
+extern const vsc_data_t test_asn1_encoded_ORDERED_SET;
+extern const vsc_data_t test_asn1_SET_ELEMENT_0;
+extern const vsc_data_t test_asn1_SET_ELEMENT_1;
+extern const vsc_data_t test_asn1_SET_ELEMENT_2;
+extern const vsc_data_t test_asn1_SET_ELEMENT_3;

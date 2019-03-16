@@ -116,6 +116,8 @@ endfunction
 function process_project (project, features_list, projects_api, echo_level)
     check_arguments (my, "project, features_list, projects_api, echo_level", my)
 
+    #  Expects resolved project.
+
     #   Create my.root eleement where all models will be created.
     my.root = XML.new ("my.root")
 
@@ -141,7 +143,6 @@ function process_project (project, features_list, projects_api, echo_level)
     endfor
 
     #   Process project.
-    project_resolve (my.project)
     project_generate_structure (my.project)
     projects_api_reset_project (my.projects_api, my.project)
 
@@ -265,13 +266,14 @@ function process_project (project, features_list, projects_api, echo_level)
             my.wrapper = load_lang_wrapper (wrapper_link)
             my.wrappers_destination = XML.new(make_id(my.wrapper.lang, "wrapper", project.name))
 
-            wrapper_resolve (my.project, my.wrapper)
+            wrapper_resolve (my.project, my.wrapper, my.projects_api)
             wrapper_create_project_module (my.project, my.wrappers_destination, my.wrapper)
-            wrapper_create_c_context_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
+            wrapper_create_custom_modules (my.root, my.wrappers_destination, my.wrapper, my.meta)
             wrapper_foreach_enum_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
             wrapper_foreach_class_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
             wrapper_foreach_interface_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
             wrapper_foreach_implementation_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
+            wrapper_finalize_custom_modules (my.root, my.wrappers_destination, my.wrapper, my.meta)
             wrapper_foreach_module_resolve(my.wrappers_destination, my.wrapper)
             projects_api_cleanup_lang (my.projects_api, "swift")
             projects_api_collect_info (my.projects_api, "swift", my.wrappers_destination)
@@ -345,7 +347,6 @@ function run_main ()
         item_save_to_file (global.interfaces, "interfaces.xml", main.work_path)
     endif
 
-
     #   Process code generation.
     for main.library
         my.loaded_library = load_external_library (library)
@@ -356,6 +357,12 @@ function run_main ()
         my.loaded_project = load_project_model (project, project)
         my.loaded_project.skip_codegen_c = is_true (project.skip_codegen_c)
         my.loaded_project.skip_codegen_wrappers = is_true (project.skip_codegen_wrappers)
+        project_resolve (my.loaded_project)
+
+        for main.wrapper where my.loaded_project.wrappers = "all" | string_in (wrapper.lang, my.loaded_project.wrappers)
+            copy wrapper to my.loaded_project
+        endfor
+
         process_project (my.loaded_project, my.features_list, my.projects_api, main.echo_level)
     endfor
 

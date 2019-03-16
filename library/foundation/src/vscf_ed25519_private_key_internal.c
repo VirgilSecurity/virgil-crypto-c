@@ -55,19 +55,24 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_ed25519_private_key_defs.h"
+#include "vscf_defaults.h"
+#include "vscf_defaults_api.h"
 #include "vscf_alg.h"
 #include "vscf_alg_api.h"
 #include "vscf_key.h"
 #include "vscf_key_api.h"
 #include "vscf_generate_key.h"
 #include "vscf_generate_key_api.h"
-#include "vscf_sign.h"
-#include "vscf_sign_api.h"
+#include "vscf_decrypt.h"
+#include "vscf_decrypt_api.h"
+#include "vscf_sign_hash.h"
+#include "vscf_sign_hash_api.h"
 #include "vscf_private_key.h"
 #include "vscf_private_key_api.h"
 #include "vscf_compute_shared_key.h"
 #include "vscf_compute_shared_key_api.h"
 #include "vscf_random.h"
+#include "vscf_ecies.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -85,6 +90,25 @@ static const vscf_api_t *
 vscf_ed25519_private_key_find_api(vscf_api_tag_t api_tag);
 
 //
+//  Configuration of the interface API 'defaults api'.
+//
+static const vscf_defaults_api_t defaults_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'defaults' MUST be equal to the 'vscf_api_tag_DEFAULTS'.
+    //
+    vscf_api_tag_DEFAULTS,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
+    //
+    //  Setup predefined values to the uninitialized class dependencies.
+    //
+    (vscf_defaults_api_setup_defaults_fn)vscf_ed25519_private_key_setup_defaults
+};
+
+//
 //  Configuration of the interface API 'alg api'.
 //
 static const vscf_alg_api_t alg_api = {
@@ -93,6 +117,10 @@ static const vscf_alg_api_t alg_api = {
     //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
     //
     vscf_api_tag_ALG,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
     //
     //  Provide algorithm identificator.
     //
@@ -117,6 +145,10 @@ static const vscf_key_api_t key_api = {
     //
     vscf_api_tag_KEY,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
+    //
     //  Link to the inherited interface API 'alg'.
     //
     &alg_api,
@@ -140,6 +172,10 @@ static const vscf_generate_key_api_t generate_key_api = {
     //
     vscf_api_tag_GENERATE_KEY,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
+    //
     //  Generate new private or secret key.
     //  Note, this operation can be slow.
     //
@@ -147,22 +183,49 @@ static const vscf_generate_key_api_t generate_key_api = {
 };
 
 //
-//  Configuration of the interface API 'sign api'.
+//  Configuration of the interface API 'decrypt api'.
 //
-static const vscf_sign_api_t sign_api = {
+static const vscf_decrypt_api_t decrypt_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'sign' MUST be equal to the 'vscf_api_tag_SIGN'.
+    //  For interface 'decrypt' MUST be equal to the 'vscf_api_tag_DECRYPT'.
     //
-    vscf_api_tag_SIGN,
+    vscf_api_tag_DECRYPT,
     //
-    //  Sign data given private key.
+    //  Implementation unique identifier, MUST be second in the structure.
     //
-    (vscf_sign_api_sign_fn)vscf_ed25519_private_key_sign,
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
+    //
+    //  Decrypt given data.
+    //
+    (vscf_decrypt_api_decrypt_fn)vscf_ed25519_private_key_decrypt,
+    //
+    //  Calculate required buffer length to hold the decrypted data.
+    //
+    (vscf_decrypt_api_decrypted_len_fn)vscf_ed25519_private_key_decrypted_len
+};
+
+//
+//  Configuration of the interface API 'sign hash api'.
+//
+static const vscf_sign_hash_api_t sign_hash_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'sign_hash' MUST be equal to the 'vscf_api_tag_SIGN_HASH'.
+    //
+    vscf_api_tag_SIGN_HASH,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
     //
     //  Return length in bytes required to hold signature.
     //
-    (vscf_sign_api_signature_len_fn)vscf_ed25519_private_key_signature_len
+    (vscf_sign_hash_api_signature_len_fn)vscf_ed25519_private_key_signature_len,
+    //
+    //  Sign data given private key.
+    //
+    (vscf_sign_hash_api_sign_hash_fn)vscf_ed25519_private_key_sign_hash
 };
 
 //
@@ -174,6 +237,10 @@ static const vscf_private_key_api_t private_key_api = {
     //  For interface 'private_key' MUST be equal to the 'vscf_api_tag_PRIVATE_KEY'.
     //
     vscf_api_tag_PRIVATE_KEY,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
     //
     //  Link to the inherited interface API 'key'.
     //
@@ -222,6 +289,10 @@ static const vscf_compute_shared_key_api_t compute_shared_key_api = {
     //
     vscf_api_tag_COMPUTE_SHARED_KEY,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
+    //
     //  Compute shared key for 2 asymmetric keys.
     //  Note, shared key can be used only for symmetric cryptography.
     //
@@ -236,6 +307,10 @@ static const vscf_compute_shared_key_api_t compute_shared_key_api = {
 //  Compile-time known information about 'ed25519 private key' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
@@ -255,16 +330,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_ed25519_private_key_init(vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_init(vscf_ed25519_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(ed25519_private_key, sizeof(vscf_ed25519_private_key_t));
+    vscf_zeroize(self, sizeof(vscf_ed25519_private_key_t));
 
-    ed25519_private_key->info = &info;
-    ed25519_private_key->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_ed25519_private_key_init_ctx(ed25519_private_key);
+    vscf_ed25519_private_key_init_ctx(self);
 }
 
 //
@@ -272,25 +347,26 @@ vscf_ed25519_private_key_init(vscf_ed25519_private_key_t *ed25519_private_key) {
 //  This is a reverse action of the function 'vscf_ed25519_private_key_init()'.
 //
 VSCF_PUBLIC void
-vscf_ed25519_private_key_cleanup(vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_cleanup(vscf_ed25519_private_key_t *self) {
 
-    if (ed25519_private_key == NULL || ed25519_private_key->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (ed25519_private_key->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--ed25519_private_key->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_ed25519_private_key_release_random(ed25519_private_key);
+    vscf_ed25519_private_key_release_random(self);
+    vscf_ed25519_private_key_release_ecies(self);
 
-    vscf_ed25519_private_key_cleanup_ctx(ed25519_private_key);
+    vscf_ed25519_private_key_cleanup_ctx(self);
 
-    vscf_zeroize(ed25519_private_key, sizeof(vscf_ed25519_private_key_t));
+    vscf_zeroize(self, sizeof(vscf_ed25519_private_key_t));
 }
 
 //
@@ -300,12 +376,12 @@ vscf_ed25519_private_key_cleanup(vscf_ed25519_private_key_t *ed25519_private_key
 VSCF_PUBLIC vscf_ed25519_private_key_t *
 vscf_ed25519_private_key_new(void) {
 
-    vscf_ed25519_private_key_t *ed25519_private_key = (vscf_ed25519_private_key_t *) vscf_alloc(sizeof (vscf_ed25519_private_key_t));
-    VSCF_ASSERT_ALLOC(ed25519_private_key);
+    vscf_ed25519_private_key_t *self = (vscf_ed25519_private_key_t *) vscf_alloc(sizeof (vscf_ed25519_private_key_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_ed25519_private_key_init(ed25519_private_key);
+    vscf_ed25519_private_key_init(self);
 
-    return ed25519_private_key;
+    return self;
 }
 
 //
@@ -313,12 +389,12 @@ vscf_ed25519_private_key_new(void) {
 //  This is a reverse action of the function 'vscf_ed25519_private_key_new()'.
 //
 VSCF_PUBLIC void
-vscf_ed25519_private_key_delete(vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_delete(vscf_ed25519_private_key_t *self) {
 
-    vscf_ed25519_private_key_cleanup(ed25519_private_key);
+    vscf_ed25519_private_key_cleanup(self);
 
-    if (ed25519_private_key && (ed25519_private_key->refcnt == 0)) {
-        vscf_dealloc(ed25519_private_key);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -328,14 +404,14 @@ vscf_ed25519_private_key_delete(vscf_ed25519_private_key_t *ed25519_private_key)
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_ed25519_private_key_destroy(vscf_ed25519_private_key_t **ed25519_private_key_ref) {
+vscf_ed25519_private_key_destroy(vscf_ed25519_private_key_t **self_ref) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_ed25519_private_key_t *ed25519_private_key = *ed25519_private_key_ref;
-    *ed25519_private_key_ref = NULL;
+    vscf_ed25519_private_key_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_ed25519_private_key_delete(ed25519_private_key);
+    vscf_ed25519_private_key_delete(self);
 }
 
 //
@@ -343,10 +419,10 @@ vscf_ed25519_private_key_destroy(vscf_ed25519_private_key_t **ed25519_private_ke
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_ed25519_private_key_t *
-vscf_ed25519_private_key_shallow_copy(vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_shallow_copy(vscf_ed25519_private_key_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_ed25519_private_key_t *)vscf_impl_shallow_copy((vscf_impl_t *)ed25519_private_key);
+    return (vscf_ed25519_private_key_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -362,25 +438,25 @@ vscf_ed25519_private_key_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ed25519_private_key_impl(vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_impl(vscf_ed25519_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
-    return (vscf_impl_t *)(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_ed25519_private_key_use_random(vscf_ed25519_private_key_t *ed25519_private_key, vscf_impl_t *random) {
+vscf_ed25519_private_key_use_random(vscf_ed25519_private_key_t *self, vscf_impl_t *random) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(ed25519_private_key->random == NULL);
+    VSCF_ASSERT(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
-    ed25519_private_key->random = vscf_impl_shallow_copy(random);
+    self->random = vscf_impl_shallow_copy(random);
 }
 
 //
@@ -388,26 +464,64 @@ vscf_ed25519_private_key_use_random(vscf_ed25519_private_key_t *ed25519_private_
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_ed25519_private_key_take_random(vscf_ed25519_private_key_t *ed25519_private_key, vscf_impl_t *random) {
+vscf_ed25519_private_key_take_random(vscf_ed25519_private_key_t *self, vscf_impl_t *random) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(ed25519_private_key->random == NULL);
+    VSCF_ASSERT_PTR(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
-    ed25519_private_key->random = random;
+    self->random = random;
 }
 
 //
 //  Release dependency to the interface 'random'.
 //
 VSCF_PUBLIC void
-vscf_ed25519_private_key_release_random(vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_release_random(vscf_ed25519_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&ed25519_private_key->random);
+    vscf_impl_destroy(&self->random);
+}
+
+//
+//  Setup dependency to the implementation 'ecies' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ed25519_private_key_use_ecies(vscf_ed25519_private_key_t *self, vscf_ecies_t *ecies) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(ecies);
+    VSCF_ASSERT(self->ecies == NULL);
+
+    self->ecies = vscf_ecies_shallow_copy(ecies);
+}
+
+//
+//  Setup dependency to the implementation 'ecies' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ed25519_private_key_take_ecies(vscf_ed25519_private_key_t *self, vscf_ecies_t *ecies) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(ecies);
+    VSCF_ASSERT_PTR(self->ecies == NULL);
+
+    self->ecies = ecies;
+}
+
+//
+//  Release dependency to the implementation 'ecies'.
+//
+VSCF_PUBLIC void
+vscf_ed25519_private_key_release_ecies(vscf_ed25519_private_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_ecies_destroy(&self->ecies);
 }
 
 static const vscf_api_t *
@@ -418,14 +532,18 @@ vscf_ed25519_private_key_find_api(vscf_api_tag_t api_tag) {
             return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_COMPUTE_SHARED_KEY:
             return (const vscf_api_t *) &compute_shared_key_api;
+        case vscf_api_tag_DECRYPT:
+            return (const vscf_api_t *) &decrypt_api;
+        case vscf_api_tag_DEFAULTS:
+            return (const vscf_api_t *) &defaults_api;
         case vscf_api_tag_GENERATE_KEY:
             return (const vscf_api_t *) &generate_key_api;
         case vscf_api_tag_KEY:
             return (const vscf_api_t *) &key_api;
         case vscf_api_tag_PRIVATE_KEY:
             return (const vscf_api_t *) &private_key_api;
-        case vscf_api_tag_SIGN:
-            return (const vscf_api_t *) &sign_api;
+        case vscf_api_tag_SIGN_HASH:
+            return (const vscf_api_t *) &sign_hash_api;
         default:
             return NULL;
     }

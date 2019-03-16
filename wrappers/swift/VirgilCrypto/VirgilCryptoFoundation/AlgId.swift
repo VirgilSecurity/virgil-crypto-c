@@ -57,9 +57,19 @@ import VSCFoundation
 
     case ed25519
 
-    case x25519
+    case curve25519
 
     case aes256Gcm
+
+    case aes256Cbc
+
+    case hmac
+
+    case hkdf
+
+    case pkcs5Pbkdf2
+
+    case pkcs5Pbes2
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC algId: vscf_alg_id_t) {

@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provide DER deserializer of algorithm information.
 @objc(VSCFAlgInfoDerDeserializer) public class AlgInfoDerDeserializer: NSObject, Defaults, AlgInfoDeserializer {
@@ -73,19 +72,39 @@ import VirgilCryptoCommon
         vscf_alg_info_der_deserializer_use_asn1_reader(self.c_ctx, asn1Reader.c_ctx)
     }
 
+    /// Deserialize by using internal ASN.1 reader.
+    /// Note, that caller code is responsible to reset ASN.1 reader with
+    /// an input buffer.
+    @objc public func deserializeInplace() throws -> AlgInfo {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = vscf_alg_info_der_deserializer_deserialize_inplace(self.c_ctx, &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+    }
+
     /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_alg_info_der_deserializer_setup_defaults(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Deserialize algorithm from the data.
-    @objc public func deserialize(data: Data, error: ErrorCtx) -> AlgInfo {
+    @objc public func deserialize(data: Data) throws -> AlgInfo {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
-            return vscf_alg_info_der_deserializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count), error.c_ctx)
+
+            return vscf_alg_info_der_deserializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count), &error)
         })
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 }

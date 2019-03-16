@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Implements PKCS#8 key deserialization from PEM format.
 @objc(VSCFPkcs8Deserializer) public class Pkcs8Deserializer: NSObject, Defaults, KeyDeserializer {
@@ -82,23 +81,35 @@ import VirgilCryptoCommon
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_pkcs8_deserializer_setup_defaults(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Deserialize given public key as an interchangeable format to the object.
-    @objc public func deserializePublicKey(publicKeyData: Data, error: ErrorCtx) -> RawKey {
+    @objc public func deserializePublicKey(publicKeyData: Data) throws -> RawKey {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
         let proxyResult = publicKeyData.withUnsafeBytes({ (publicKeyDataPointer: UnsafePointer<byte>) in
-            return vscf_pkcs8_deserializer_deserialize_public_key(self.c_ctx, vsc_data(publicKeyDataPointer, publicKeyData.count), error.c_ctx)
+
+            return vscf_pkcs8_deserializer_deserialize_public_key(self.c_ctx, vsc_data(publicKeyDataPointer, publicKeyData.count), &error)
         })
+
+        try FoundationError.handleStatus(fromC: error.status)
 
         return RawKey.init(take: proxyResult!)
     }
 
     /// Deserialize given private key as an interchangeable format to the object.
-    @objc public func deserializePrivateKey(privateKeyData: Data, error: ErrorCtx) -> RawKey {
+    @objc public func deserializePrivateKey(privateKeyData: Data) throws -> RawKey {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
         let proxyResult = privateKeyData.withUnsafeBytes({ (privateKeyDataPointer: UnsafePointer<byte>) in
-            return vscf_pkcs8_deserializer_deserialize_private_key(self.c_ctx, vsc_data(privateKeyDataPointer, privateKeyData.count), error.c_ctx)
+
+            return vscf_pkcs8_deserializer_deserialize_private_key(self.c_ctx, vsc_data(privateKeyDataPointer, privateKeyData.count), &error)
         })
+
+        try FoundationError.handleStatus(fromC: error.status)
 
         return RawKey.init(take: proxyResult!)
     }

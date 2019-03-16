@@ -67,7 +67,7 @@
 //
 //  Encrypt given data.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_encrypt(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out) {
 
     const vscf_encrypt_api_t *encrypt_api = vscf_encrypt_api(impl);

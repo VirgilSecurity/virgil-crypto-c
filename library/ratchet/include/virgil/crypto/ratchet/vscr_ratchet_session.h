@@ -56,9 +56,9 @@
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_message.h"
-#include "vscr_error_ctx.h"
-#include "vscr_ratchet_session.h"
 #include "vscr_error.h"
+#include "vscr_ratchet_session.h"
+#include "vscr_status.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -94,16 +94,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
-//
-enum {
-    //
-    //  FIXME
-    //
-    vscr_ratchet_session_MAX_RATCHET_LENGTH = 1024 * 1024
-};
-
-//
 //  Handle 'ratchet session' context.
 //
 typedef struct vscr_ratchet_session_t vscr_ratchet_session_t;
@@ -118,13 +108,13 @@ vscr_ratchet_session_ctx_size(void);
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_init(vscr_ratchet_session_t *ratchet_session);
+vscr_ratchet_session_init(vscr_ratchet_session_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_cleanup(vscr_ratchet_session_t *ratchet_session);
+vscr_ratchet_session_cleanup(vscr_ratchet_session_t *self);
 
 //
 //  Allocate context and perform it's initialization.
@@ -137,39 +127,43 @@ vscr_ratchet_session_new(void);
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_delete(vscr_ratchet_session_t *ratchet_session);
+vscr_ratchet_session_delete(vscr_ratchet_session_t *self);
 
 //
 //  Delete given context and nullifies reference.
 //  This is a reverse action of the function 'vscr_ratchet_session_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_destroy(vscr_ratchet_session_t **ratchet_session_ref);
+vscr_ratchet_session_destroy(vscr_ratchet_session_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_session_t *
-vscr_ratchet_session_shallow_copy(vscr_ratchet_session_t *ratchet_session);
+vscr_ratchet_session_shallow_copy(vscr_ratchet_session_t *self);
 
 //
-//  Setup dependency to the interface 'random' with shared ownership.
+//  Random used to generate keys
 //
-VSCR_PUBLIC void
-vscr_ratchet_session_use_rng(vscr_ratchet_session_t *ratchet_session, vscf_impl_t *rng);
+//  Note, ownership is shared.
+//
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng);
 
 //
-//  Setup dependency to the interface 'random' and transfer ownership.
+//  Random used to generate keys
+//
+//  Note, ownership is transfered.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCR_PUBLIC void
-vscr_ratchet_session_take_rng(vscr_ratchet_session_t *ratchet_session, vscf_impl_t *rng);
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_session_take_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng);
 
 //
 //  Release dependency to the interface 'random'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_release_rng(vscr_ratchet_session_t *ratchet_session);
+vscr_ratchet_session_release_rng(vscr_ratchet_session_t *self);
 
 //
 //  Setups default dependencies:
@@ -178,21 +172,21 @@ vscr_ratchet_session_release_rng(vscr_ratchet_session_t *ratchet_session);
 //      - Symmetric cipher: AES256-GCM
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *ratchet_session);
+vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *self);
 
 //
 //  Initiates session
 //
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_t sender_identity_private_key,
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_identity_private_key,
         vsc_data_t receiver_identity_public_key, vsc_data_t receiver_long_term_public_key,
         vsc_data_t receiver_one_time_public_key);
 
 //
 //  Responds to session initiation
 //
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t sender_identity_public_key,
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_identity_public_key,
         vsc_data_t receiver_identity_private_key, vsc_data_t receiver_long_term_private_key,
         vsc_data_t receiver_one_time_private_key, const vscr_ratchet_message_t *message);
 
@@ -200,57 +194,57 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
 //  Returns flag that indicates is this session was initiated or responded
 //
 VSCR_PUBLIC bool
-vscr_ratchet_session_is_initiator(vscr_ratchet_session_t *ratchet_session);
+vscr_ratchet_session_is_initiator(vscr_ratchet_session_t *self);
 
 //
 //  Returns true if at least 1 response was successfully decrypted, false - otherwise
 //
 VSCR_PUBLIC bool
-vscr_ratchet_session_received_first_response(vscr_ratchet_session_t *ratchet_session);
+vscr_ratchet_session_received_first_response(vscr_ratchet_session_t *self);
 
 //
 //  Returns true if receiver had one time public key
 //
 VSCR_PUBLIC bool
-vscr_ratchet_session_receiver_has_one_time_public_key(vscr_ratchet_session_t *ratchet_session);
+vscr_ratchet_session_receiver_has_one_time_public_key(vscr_ratchet_session_t *self);
 
 //
 //  Encrypts data
 //
 VSCR_PUBLIC vscr_ratchet_message_t *
-vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session, vsc_data_t plain_text, vscr_error_ctx_t *err_ctx);
+vscr_ratchet_session_encrypt(vscr_ratchet_session_t *self, vsc_data_t plain_text, vscr_error_t *error);
 
 //
 //  Calculates size of buffer sufficient to store decrypted message
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session, const vscr_ratchet_message_t *message);
+vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *self, const vscr_ratchet_message_t *message);
 
 //
 //  Decrypts message
 //
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session, const vscr_ratchet_message_t *message,
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_session_decrypt(vscr_ratchet_session_t *self, const vscr_ratchet_message_t *message,
         vsc_buffer_t *plain_text);
 
 //
 //  Calculates size of buffer sufficient to store session
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *ratchet_session);
+vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *self);
 
 //
 //  Serializes session to buffer
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_serialize(vscr_ratchet_session_t *ratchet_session, vsc_buffer_t *output);
+vscr_ratchet_session_serialize(vscr_ratchet_session_t *self, vsc_buffer_t *output);
 
 //
 //  Deserializes session from buffer.
 //  NOTE: Deserialized session needs dependencies to be set. Check setup defaults
 //
 VSCR_PUBLIC vscr_ratchet_session_t *
-vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx);
+vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error);
 
 
 // --------------------------------------------------------------------------

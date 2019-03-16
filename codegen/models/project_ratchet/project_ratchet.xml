@@ -1,11 +1,13 @@
 <project
-    name="ratchet"
-    brief="Implementation of the double ratchet algorithm."
-    namespace="virgil crypto ratchet"
-    framework="VSCRatchet"
-    prefix="vscr"
-    path="../library/ratchet"
-    work_path = "generated/ratchet/">
+        name="ratchet"
+        brief="Implementation of the double ratchet algorithm."
+        namespace="virgil crypto ratchet"
+        framework="VSCRatchet"
+        prefix="vscr"
+        path="../library/ratchet"
+        work_path = "generated/ratchet/"
+        wrappers="swift, js"
+        >
 
     <version major="0" minor="3" patch="0"/>
 
@@ -52,13 +54,16 @@
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
 
-    <enum name="error"/>
+    <enum name="status"/>
     <enum name="msg type"/>
 
     <class name="ratchet common"/>
     <class name="ratchet common hidden"/>
-    <class name="ratchet key extractor"/>
+    <class name="ratchet key utils"/>
     <class name="error"/>
+    <class name="ratchet x3dh"/>
+    <class name="ratchet skipped messages"/>
+    <class name="ratchet receiver chains"/>
     <class name="ratchet message"/>
     <class name="ratchet cipher"/>
     <class name="ratchet chain key"/>
@@ -68,9 +73,7 @@
     <class name="ratchet skipped message key"/>
     <class name="ratchet skipped message key list node"/>
     <class name="ratchet sender chain"/>
+    <class name="ratchet keys"/>
     <class name="ratchet"/>
     <class name="ratchet session"/>
-
-    <wrapper lang="js"/>
-    <wrapper lang="swift"/>
 </project>

@@ -1,0 +1,12 @@
+<enum name="oid id" definition="public">
+    <constant name="none"/>
+    <constant name="cms data"/>
+    <constant name="cms enveloped data"/>
+    <constant name="hkdf with sha256"/>
+    <constant name="hkdf with sha384"/>
+    <constant name="hkdf with sha512"/>
+    <constant name="hmac With sha224"/>
+    <constant name="hmac With sha256"/>
+    <constant name="hmac With sha384"/>
+    <constant name="hmac With sha512"/>
+</enum>

@@ -3,6 +3,7 @@
 
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
+    <require class="ratchet x3dh" scope="private"/>
     <require module="ratchet message defs" scope="private"/>
     <require module="buffer defs" scope="private" project="common"/>
 
@@ -15,15 +16,11 @@
 
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
 
-    <constant name="max ratchet length" definition="public" value="1024 * 1024">
-        FIXME
-    </constant>
-
-    <dependency name="rng" interface="random" project="foundation">
+    <dependency name="rng" interface="random" project="foundation" has_observers="1">
         Random used to generate keys
     </dependency>
 
-    <property name="key extractor" class="ratchet key extractor"/>
+    <property name="key utils" class="ratchet key utils"/>
     <property name="ratchet" class="ratchet"/>
 
     <property name="is initiator" type="boolean"/>
@@ -66,7 +63,7 @@
             Receiver one-time public key (optional)
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             Error
         </return>
     </method>
@@ -90,7 +87,7 @@
             Message received from initiator
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             Error
         </return>
     </method>
@@ -126,7 +123,7 @@
             Data to encrypt
         </argument>
 
-        <argument name="err ctx" class="error ctx" access="readwrite">
+        <argument name="error" class="error" access="readwrite">
             Error context to return error
         </argument>
 
@@ -162,7 +159,7 @@
             </length>
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             Error
         </return>
     </method>
@@ -193,7 +190,7 @@
             Serialized session data
         </argument>
 
-        <argument name="err ctx" class="error ctx" access="readwrite">
+        <argument name="error" class="error" access="readwrite">
             Error context to return error
         </argument>
 

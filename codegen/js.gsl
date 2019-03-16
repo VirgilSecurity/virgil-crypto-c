@@ -28,7 +28,7 @@ endfunction
 
 function js_create_class_module(source, destination, wrapper, meta)
   echo_info("js_create_class_module", my)
-  if my.source.scope = "public" & !(my.source.name = "error ctx")
+  if my.source.scope = "public" & !(my.source.name = "error")
     my.js_module = js_append_js_module_model(my.destination, my.source)
     my.js_class_module = js_append_js_class_module_model(my.js_module, my.source, my.wrapper)
     js_append_js_wrapped_class_model(my.wrapper, my.js_class_module, my.wrapper)
@@ -37,7 +37,7 @@ endfunction
 
 function js_create_enum_module(source, destination, wrapper, meta)
   echo_info("js_create_enum_module", my)
-  if !(my.source.name = "error")
+  if !(my.source.name = "status")
     my.js_module = js_append_js_module_model(my.destination, my.source)
     my.js_enum_module = js_append_js_enum_module_model(my.js_module, my.source)
     js_append_js_wrapped_enum_model(my.wrapper, my.js_enum_module, my.wrapper)
@@ -92,7 +92,7 @@ function js_module_resolve(source, wrapper)
   endif
 endfunction
 
-function js_resolve(project, wrapper)
+function js_resolve(project, wrapper, projects_api)
   echo_info("js_resolve", my)
   my.wrapper.name = my.project.name
   my.wrapper.prefix = my.project.prefix
@@ -115,7 +115,7 @@ endfunction
 
 function js_generate_sources(source, wrapper)
   echo_info("js_generate_sources", my)
-  js_create_js_module_files(my.source, my.wrapper)
+  /* js_create_js_module_files(my.source, my.wrapper) */
   js_create_index_cpp_file(my.wrapper)
   js_create_index_js_file(my.wrapper)
 endfunction

@@ -9,12 +9,12 @@
             <length argument="data len"/>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="reseed">
         Retreive new seed data from the entropy sources.
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 </interface>

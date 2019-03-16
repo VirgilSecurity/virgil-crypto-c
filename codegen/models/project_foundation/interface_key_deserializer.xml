@@ -6,7 +6,7 @@
         Deserialize given public key as an interchangeable format to the object.
 
         <argument name="public key data" class="data"/>
-        <argument name="error" class="error ctx" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return class="raw key" access="disown"/>
     </method>
@@ -16,7 +16,7 @@
         Deserialize given private key as an interchangeable format to the object.
 
         <argument name="private key data" class="data"/>
-        <argument name="error" class="error ctx" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return class="raw key" access="disown"/>
     </method>

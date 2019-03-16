@@ -123,6 +123,16 @@ extern "C" {
     } while (false)
 
 //
+//  Assert that given pointer is NULL. It is enabled in debug mode.
+//
+#define VSCP_ASSERT_NULL(X)                                                       \
+    do {                                                                          \
+        if (X) {                                                                  \
+            vscp_assert_trigger (#X" == NULL", VSCP_FILE_PATH_OR_NAME, __LINE__); \
+        }                                                                         \
+    } while (false)
+
+//
 //  Assert that memory was successfully allocated.
 //  This macros is enabled by default and can be disabled by special macros.
 //

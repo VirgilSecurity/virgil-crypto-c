@@ -50,17 +50,6 @@
 
 
 // --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
-// --------------------------------------------------------------------------
 // Test implementation of the interface 'cipher info'.
 // --------------------------------------------------------------------------
 void
@@ -98,8 +87,8 @@ test__encrypt__vector_1__encrypted_len_equals_16(void) {
     vscf_aes256_gcm_set_key(aes256_gcm, test_aes256_gcm_VECTOR_1_KEY);
     vscf_aes256_gcm_set_nonce(aes256_gcm, test_aes256_gcm_VECTOR_1_NONCE);
 
-    vscf_error_t result = vscf_aes256_gcm_encrypt(aes256_gcm, test_aes256_gcm_VECTOR_1_DATA, out);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, result);
+    vscf_status_t result = vscf_aes256_gcm_encrypt(aes256_gcm, test_aes256_gcm_VECTOR_1_DATA, out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, result);
 
 
     TEST_ASSERT_EQUAL(16, vsc_buffer_len(out));
@@ -120,13 +109,10 @@ test__encrypt__vector_1__valid_encrypted_data(void) {
     vscf_aes256_gcm_set_key(aes256_gcm, test_aes256_gcm_VECTOR_1_KEY);
     vscf_aes256_gcm_set_nonce(aes256_gcm, test_aes256_gcm_VECTOR_1_NONCE);
 
-    vscf_error_t result = vscf_aes256_gcm_encrypt(aes256_gcm, test_aes256_gcm_VECTOR_1_DATA, out);
+    vscf_status_t result = vscf_aes256_gcm_encrypt(aes256_gcm, test_aes256_gcm_VECTOR_1_DATA, out);
 
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, result);
-    TEST_ASSERT_EQUAL(test_aes256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG.len, vsc_buffer_len(out));
-
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(
-            test_aes256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG.bytes, vsc_buffer_bytes(out), vsc_buffer_len(out));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, result);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_aes256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG, out);
 
     vscf_aes256_gcm_destroy(&aes256_gcm);
     vsc_buffer_destroy(&out);
@@ -144,10 +130,10 @@ test__decrypt__encrypted_vector_1__decrypted_len_equals_0(void) {
     vscf_aes256_gcm_set_key(aes256_gcm, test_aes256_gcm_VECTOR_1_KEY);
     vscf_aes256_gcm_set_nonce(aes256_gcm, test_aes256_gcm_VECTOR_1_NONCE);
 
-    vscf_error_t result = vscf_aes256_gcm_decrypt(aes256_gcm, test_aes256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG, out);
+    vscf_status_t result = vscf_aes256_gcm_decrypt(aes256_gcm, test_aes256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG, out);
 
 
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, result);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, result);
     TEST_ASSERT_EQUAL(0, vsc_buffer_len(out));
 
     vscf_aes256_gcm_destroy(&aes256_gcm);
@@ -177,7 +163,6 @@ test__auth_encrypt__vector_2__encrypted_len_equals_0(void) {
 
     vscf_aes256_gcm_auth_encrypt(aes256_gcm, test_aes256_gcm_VECTOR_2_DATA, test_aes256_gcm_VECTOR_2_ADD, enc, tag);
 
-
     TEST_ASSERT_EQUAL(0, vsc_buffer_len(enc));
 
     vsc_buffer_destroy(&enc);
@@ -200,9 +185,7 @@ test__auth_encrypt__vector_2__valid_auth_tag(void) {
 
     vscf_aes256_gcm_auth_encrypt(aes256_gcm, test_aes256_gcm_VECTOR_2_DATA, test_aes256_gcm_VECTOR_2_ADD, enc, tag);
 
-
-    TEST_ASSERT_EQUAL(test_aes256_gcm_VECTOR_2_AUTH_TAG.len, vsc_buffer_len(tag));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_aes256_gcm_VECTOR_2_AUTH_TAG.bytes, vsc_buffer_bytes(tag), vsc_buffer_len(tag));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_aes256_gcm_VECTOR_2_AUTH_TAG, tag);
 
     vsc_buffer_destroy(&enc);
     vsc_buffer_destroy(&tag);
@@ -241,11 +224,11 @@ test__auth_decrypt__encrypted_vector_2__valid_auth_tag(void) {
     vscf_aes256_gcm_set_key(aes256_gcm, test_aes256_gcm_VECTOR_2_KEY);
     vscf_aes256_gcm_set_nonce(aes256_gcm, test_aes256_gcm_VECTOR_2_NONCE);
 
-    vscf_error_t result = vscf_aes256_gcm_auth_decrypt(aes256_gcm, test_aes256_gcm_VECTOR_2_ENC,
+    vscf_status_t result = vscf_aes256_gcm_auth_decrypt(aes256_gcm, test_aes256_gcm_VECTOR_2_ENC,
             test_aes256_gcm_VECTOR_2_ADD, test_aes256_gcm_VECTOR_2_AUTH_TAG, dec);
 
 
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, result);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, result);
 
     vsc_buffer_destroy(&dec);
     vscf_aes256_gcm_destroy(&aes256_gcm);
@@ -289,9 +272,7 @@ test__auth_encrypt__vector_3__equals_encrypted_vector_3(void) {
 
     vscf_aes256_gcm_auth_encrypt(aes256_gcm, test_aes256_gcm_VECTOR_3_DATA, test_aes256_gcm_VECTOR_3_ADD, enc, tag);
 
-
-    TEST_ASSERT_EQUAL(test_aes256_gcm_VECTOR_3_ENC.len, vsc_buffer_len(enc));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_aes256_gcm_VECTOR_3_ENC.bytes, vsc_buffer_bytes(enc), vsc_buffer_len(enc));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_aes256_gcm_VECTOR_3_ENC, enc);
 
     vsc_buffer_destroy(&enc);
     vsc_buffer_destroy(&tag);
@@ -313,9 +294,7 @@ test__auth_encrypt__vector_3__valid_auth_tag(void) {
 
     vscf_aes256_gcm_auth_encrypt(aes256_gcm, test_aes256_gcm_VECTOR_3_DATA, test_aes256_gcm_VECTOR_3_ADD, enc, tag);
 
-
-    TEST_ASSERT_EQUAL(test_aes256_gcm_VECTOR_3_AUTH_TAG.len, vsc_buffer_len(tag));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_aes256_gcm_VECTOR_3_AUTH_TAG.bytes, vsc_buffer_bytes(tag), vsc_buffer_len(tag));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_aes256_gcm_VECTOR_3_AUTH_TAG, tag);
 
     vsc_buffer_destroy(&enc);
     vsc_buffer_destroy(&tag);
@@ -355,11 +334,11 @@ test__auth_decrypt__encrypted_vector_3__valid_auth_tag(void) {
     vscf_aes256_gcm_set_key(aes256_gcm, test_aes256_gcm_VECTOR_3_KEY);
     vscf_aes256_gcm_set_nonce(aes256_gcm, test_aes256_gcm_VECTOR_3_NONCE);
 
-    vscf_error_t result = vscf_aes256_gcm_auth_decrypt(aes256_gcm, test_aes256_gcm_VECTOR_3_ENC,
+    vscf_status_t result = vscf_aes256_gcm_auth_decrypt(aes256_gcm, test_aes256_gcm_VECTOR_3_ENC,
             test_aes256_gcm_VECTOR_3_ADD, test_aes256_gcm_VECTOR_3_AUTH_TAG, dec);
 
 
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, result);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, result);
 
     vsc_buffer_destroy(&dec);
     vscf_aes256_gcm_destroy(&aes256_gcm);
@@ -380,8 +359,7 @@ test__auth_decrypt__encrypted_vector_3__equals_vector_3(void) {
             test_aes256_gcm_VECTOR_3_AUTH_TAG, dec);
 
 
-    TEST_ASSERT_EQUAL(test_aes256_gcm_VECTOR_3_DATA.len, vsc_buffer_len(dec));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_aes256_gcm_VECTOR_3_DATA.bytes, vsc_buffer_bytes(dec), vsc_buffer_len(dec));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_aes256_gcm_VECTOR_3_DATA, dec);
 
     vsc_buffer_destroy(&dec);
     vscf_aes256_gcm_destroy(&aes256_gcm);

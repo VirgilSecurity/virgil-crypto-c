@@ -95,7 +95,7 @@ vscf_cipher_alg_info_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_cipher_alg_info_impl(vscf_cipher_alg_info_t *cipher_alg_info);
+vscf_cipher_alg_info_impl(vscf_cipher_alg_info_t *self);
 
 //
 //  Create symmetric cipher algorithm info with identificator and input vector.
@@ -107,14 +107,14 @@ vscf_cipher_alg_info_new_with_members(vscf_alg_id_t alg_id, vsc_data_t nonce);
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_cipher_alg_info_init(vscf_cipher_alg_info_t *cipher_alg_info);
+vscf_cipher_alg_info_init(vscf_cipher_alg_info_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_cipher_alg_info_init()'.
 //
 VSCF_PUBLIC void
-vscf_cipher_alg_info_cleanup(vscf_cipher_alg_info_t *cipher_alg_info);
+vscf_cipher_alg_info_cleanup(vscf_cipher_alg_info_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -128,7 +128,7 @@ vscf_cipher_alg_info_new(void);
 //  This is a reverse action of the function 'vscf_cipher_alg_info_new()'.
 //
 VSCF_PUBLIC void
-vscf_cipher_alg_info_delete(vscf_cipher_alg_info_t *cipher_alg_info);
+vscf_cipher_alg_info_delete(vscf_cipher_alg_info_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -136,26 +136,26 @@ vscf_cipher_alg_info_delete(vscf_cipher_alg_info_t *cipher_alg_info);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_cipher_alg_info_destroy(vscf_cipher_alg_info_t **cipher_alg_info_ref);
+vscf_cipher_alg_info_destroy(vscf_cipher_alg_info_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_cipher_alg_info_t *
-vscf_cipher_alg_info_shallow_copy(vscf_cipher_alg_info_t *cipher_alg_info);
+vscf_cipher_alg_info_shallow_copy(vscf_cipher_alg_info_t *self);
 
 //
 //  Return IV.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_cipher_alg_info_nonce(const vscf_cipher_alg_info_t *cipher_alg_info);
+vscf_cipher_alg_info_nonce(const vscf_cipher_alg_info_t *self);
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_cipher_alg_info_alg_id(const vscf_cipher_alg_info_t *cipher_alg_info);
+vscf_cipher_alg_info_alg_id(const vscf_cipher_alg_info_t *self);
 
 
 // --------------------------------------------------------------------------

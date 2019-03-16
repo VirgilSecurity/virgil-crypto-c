@@ -78,7 +78,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_fake_random_init_ctx(vscf_fake_random_t *fake_random);
+vscf_fake_random_init_ctx(vscf_fake_random_t *self);
 
 //
 //  Release resources of the implementation specific context.
@@ -86,7 +86,7 @@ vscf_fake_random_init_ctx(vscf_fake_random_t *fake_random);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_fake_random_cleanup_ctx(vscf_fake_random_t *fake_random);
+vscf_fake_random_cleanup_ctx(vscf_fake_random_t *self);
 
 
 // --------------------------------------------------------------------------

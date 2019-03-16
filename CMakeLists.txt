@@ -80,6 +80,7 @@ option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
 # Test
 #
 option(ENABLE_TESTING "On/Off integration tests." ON)
+option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
 option(ENABLE_PROFILING "On/Off GProf compilation options." OFF)
 
 option(VIRGIL_C_TESTING "On/Off C library integration tests." ON)
@@ -250,10 +251,10 @@ if(CLOC_EXECUTABLE)
 
     add_custom_target(cloc-ratchet
             COMMAND ${CLOC_EXECUTABLE}
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia"
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia/private"
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/src"
-            COMMENT "Calculate lines of the 'pythia' library..."
+                "${CMAKE_CURRENT_LIST_DIR}/library/ratchet/include/virgil/crypto/ratchet"
+                "${CMAKE_CURRENT_LIST_DIR}/library/ratchet/include/virgil/crypto/ratchet/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/ratchet/src"
+            COMMENT "Calculate lines of the 'ratchet' library..."
             )
 
     add_custom_target(cloc)

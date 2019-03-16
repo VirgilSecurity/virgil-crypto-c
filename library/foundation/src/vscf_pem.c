@@ -163,7 +163,7 @@ vscf_pem_unwrapped_len(size_t pem_len) {
 //
 //  Takes PEM data and extract binary data from it.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) {
 
     VSCF_ASSERT(vsc_data_is_valid(pem));
@@ -176,12 +176,12 @@ vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) {
     //
     const char *header_begin = strstr((const char *)pem.bytes, k_header_begin);
     if (NULL == header_begin) {
-        return vscf_error_BAD_PEM;
+        return vscf_status_ERROR_BAD_PEM;
     }
 
     const char *header_end = strstr(header_begin + strlen(k_header_begin), k_title_tail);
     if (NULL == header_end) {
-        return vscf_error_BAD_PEM;
+        return vscf_status_ERROR_BAD_PEM;
     }
     header_end += strlen(k_title_tail);
 
@@ -203,30 +203,30 @@ vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) {
     //
     const char *footer_begin = strstr((const char *)pem.bytes, k_footer_begin);
     if (NULL == footer_begin || footer_begin < body_begin) {
-        return vscf_error_BAD_PEM;
+        return vscf_status_ERROR_BAD_PEM;
     }
 
     const char *footer_end = strstr(footer_begin + strlen(k_footer_begin), k_title_tail);
     if (NULL == footer_end) {
-        return vscf_error_BAD_PEM;
+        return vscf_status_ERROR_BAD_PEM;
     }
     footer_end += strlen(k_title_tail);
 
     if (footer_end - header_begin > (ptrdiff_t)pem.len) {
-        return vscf_error_BAD_PEM;
+        return vscf_status_ERROR_BAD_PEM;
     }
 
     //
     //  Decode body
     //
-    vscf_error_t status = vscf_base64_decode(vsc_data_from_str(body_begin, footer_begin - body_begin), data);
+    vscf_status_t status = vscf_base64_decode(vsc_data_from_str(body_begin, footer_begin - body_begin), data);
     *vsc_buffer_unused_bytes(data) = 0x00;
 
-    if (status != vscf_SUCCESS) {
-        return vscf_error_BAD_PEM;
+    if (status != vscf_status_SUCCESS) {
+        return vscf_status_ERROR_BAD_PEM;
     }
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //

@@ -68,9 +68,9 @@
 
 bool
 buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void **arg) {
-    VSCR_UNUSED(stream);
+    VSCR_ASSERT_PTR(stream);
+    VSCR_ASSERT_PTR(arg);
     VSCR_UNUSED(field);
-    VSCR_UNUSED(arg);
 
     *arg = vsc_buffer_new_with_data(vsc_data(stream->state, stream->bytes_left));
     stream->bytes_left = 0;
@@ -80,9 +80,9 @@ buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void **arg
 
 bool
 buffer_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg) {
-    VSCR_UNUSED(stream);
-    VSCR_UNUSED(field);
-    VSCR_UNUSED(arg);
+    VSCR_ASSERT_PTR(stream);
+    VSCR_ASSERT_PTR(arg);
+    VSCR_ASSERT_PTR(field);
 
     if (!pb_encode_tag_for_field(stream, field))
         return false;
@@ -103,7 +103,7 @@ buffer_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void *cons
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_message_init_ctx(vscr_ratchet_message_t *ratchet_message);
+vscr_ratchet_message_init_ctx(vscr_ratchet_message_t *self);
 
 //
 //  Release all inner resources.
@@ -111,13 +111,13 @@ vscr_ratchet_message_init_ctx(vscr_ratchet_message_t *ratchet_message);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_message_cleanup_ctx(vscr_ratchet_message_t *ratchet_message);
+vscr_ratchet_message_cleanup_ctx(vscr_ratchet_message_t *self);
 
 static void
-vscr_ratchet_message_set_pb_encode_callback(vscr_ratchet_message_t *ratchet_message);
+vscr_ratchet_message_set_pb_encode_callback(vscr_ratchet_message_t *self);
 
 static void
-vscr_ratchet_message_set_pb_decode_callback(vscr_ratchet_message_t *ratchet_message);
+vscr_ratchet_message_set_pb_decode_callback(vscr_ratchet_message_t *self);
 
 //
 //  Return size of 'vscr_ratchet_message_t'.
@@ -132,35 +132,35 @@ vscr_ratchet_message_ctx_size(void) {
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_init(vscr_ratchet_message_t *ratchet_message) {
+vscr_ratchet_message_init(vscr_ratchet_message_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_message);
+    VSCR_ASSERT_PTR(self);
 
-    vscr_zeroize(ratchet_message, sizeof(vscr_ratchet_message_t));
+    vscr_zeroize(self, sizeof(vscr_ratchet_message_t));
 
-    ratchet_message->refcnt = 1;
+    self->refcnt = 1;
 
-    vscr_ratchet_message_init_ctx(ratchet_message);
+    vscr_ratchet_message_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_cleanup(vscr_ratchet_message_t *ratchet_message) {
+vscr_ratchet_message_cleanup(vscr_ratchet_message_t *self) {
 
-    if (ratchet_message == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    if (ratchet_message->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--ratchet_message->refcnt == 0) {
-        vscr_ratchet_message_cleanup_ctx(ratchet_message);
+    if (--self->refcnt == 0) {
+        vscr_ratchet_message_cleanup_ctx(self);
 
-        vscr_zeroize(ratchet_message, sizeof(vscr_ratchet_message_t));
+        vscr_zeroize(self, sizeof(vscr_ratchet_message_t));
     }
 }
 
@@ -170,14 +170,14 @@ vscr_ratchet_message_cleanup(vscr_ratchet_message_t *ratchet_message) {
 VSCR_PUBLIC vscr_ratchet_message_t *
 vscr_ratchet_message_new(void) {
 
-    vscr_ratchet_message_t *ratchet_message = (vscr_ratchet_message_t *) vscr_alloc(sizeof (vscr_ratchet_message_t));
-    VSCR_ASSERT_ALLOC(ratchet_message);
+    vscr_ratchet_message_t *self = (vscr_ratchet_message_t *) vscr_alloc(sizeof (vscr_ratchet_message_t));
+    VSCR_ASSERT_ALLOC(self);
 
-    vscr_ratchet_message_init(ratchet_message);
+    vscr_ratchet_message_init(self);
 
-    ratchet_message->self_dealloc_cb = vscr_dealloc;
+    self->self_dealloc_cb = vscr_dealloc;
 
-    return ratchet_message;
+    return self;
 }
 
 //
@@ -185,18 +185,18 @@ vscr_ratchet_message_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_delete(vscr_ratchet_message_t *ratchet_message) {
+vscr_ratchet_message_delete(vscr_ratchet_message_t *self) {
 
-    if (ratchet_message == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    vscr_dealloc_fn self_dealloc_cb = ratchet_message->self_dealloc_cb;
+    vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscr_ratchet_message_cleanup(ratchet_message);
+    vscr_ratchet_message_cleanup(self);
 
-    if (ratchet_message->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(ratchet_message);
+    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(self);
     }
 }
 
@@ -205,27 +205,27 @@ vscr_ratchet_message_delete(vscr_ratchet_message_t *ratchet_message) {
 //  This is a reverse action of the function 'vscr_ratchet_message_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_destroy(vscr_ratchet_message_t **ratchet_message_ref) {
+vscr_ratchet_message_destroy(vscr_ratchet_message_t **self_ref) {
 
-    VSCR_ASSERT_PTR(ratchet_message_ref);
+    VSCR_ASSERT_PTR(self_ref);
 
-    vscr_ratchet_message_t *ratchet_message = *ratchet_message_ref;
-    *ratchet_message_ref = NULL;
+    vscr_ratchet_message_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscr_ratchet_message_delete(ratchet_message);
+    vscr_ratchet_message_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_message_t *
-vscr_ratchet_message_shallow_copy(vscr_ratchet_message_t *ratchet_message) {
+vscr_ratchet_message_shallow_copy(vscr_ratchet_message_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_message);
+    VSCR_ASSERT_PTR(self);
 
-    ++ratchet_message->refcnt;
+    ++self->refcnt;
 
-    return ratchet_message;
+    return self;
 }
 
 
@@ -242,12 +242,12 @@ vscr_ratchet_message_shallow_copy(vscr_ratchet_message_t *ratchet_message) {
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_message_init_ctx(vscr_ratchet_message_t *ratchet_message) {
+vscr_ratchet_message_init_ctx(vscr_ratchet_message_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_message);
+    VSCR_ASSERT_PTR(self);
 
-    ratchet_message->message_pb.has_regular_message = false;
-    ratchet_message->message_pb.has_prekey_message = false;
+    self->message_pb.has_regular_message = false;
+    self->message_pb.has_prekey_message = false;
 }
 
 //
@@ -256,16 +256,16 @@ vscr_ratchet_message_init_ctx(vscr_ratchet_message_t *ratchet_message) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_message_cleanup_ctx(vscr_ratchet_message_t *ratchet_message) {
+vscr_ratchet_message_cleanup_ctx(vscr_ratchet_message_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_message);
+    VSCR_ASSERT_PTR(self);
 
     RegularMessage *msg = NULL;
 
-    if (ratchet_message->message_pb.has_prekey_message) {
-        msg = &ratchet_message->message_pb.prekey_message.regular_message;
-    } else if (ratchet_message->message_pb.has_regular_message) {
-        msg = &ratchet_message->message_pb.regular_message;
+    if (self->message_pb.has_prekey_message) {
+        msg = &self->message_pb.prekey_message.regular_message;
+    } else if (self->message_pb.has_regular_message) {
+        msg = &self->message_pb.regular_message;
     }
 
     if (msg && msg->cipher_text.arg) {
@@ -277,13 +277,13 @@ vscr_ratchet_message_cleanup_ctx(vscr_ratchet_message_t *ratchet_message) {
 //  Returns message type.
 //
 VSCR_PUBLIC vscr_msg_type_t
-vscr_ratchet_message_get_type(vscr_ratchet_message_t *ratchet_message) {
+vscr_ratchet_message_get_type(vscr_ratchet_message_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_message);
+    VSCR_ASSERT_PTR(self);
 
-    if (ratchet_message->message_pb.has_prekey_message) {
+    if (self->message_pb.has_prekey_message) {
         return vscr_msg_type_PREKEY;
-    } else if (ratchet_message->message_pb.has_regular_message) {
+    } else if (self->message_pb.has_regular_message) {
         return vscr_msg_type_REGULAR;
     } else {
         VSCR_ASSERT(false);
@@ -296,50 +296,50 @@ vscr_ratchet_message_get_type(vscr_ratchet_message_t *ratchet_message) {
 //  Returns long-term public key, if message is prekey message.
 //
 VSCR_PUBLIC vsc_data_t
-vscr_ratchet_message_get_long_term_public_key(vscr_ratchet_message_t *ratchet_message) {
+vscr_ratchet_message_get_long_term_public_key(vscr_ratchet_message_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_message);
+    VSCR_ASSERT_PTR(self);
 
-    if (!ratchet_message->message_pb.has_prekey_message)
+    if (!self->message_pb.has_prekey_message)
         return vsc_data_empty();
 
-    return vsc_data(ratchet_message->message_pb.prekey_message.receiver_long_term_key,
-            sizeof(ratchet_message->message_pb.prekey_message.receiver_long_term_key));
+    return vsc_data(self->message_pb.prekey_message.receiver_long_term_key,
+            sizeof(self->message_pb.prekey_message.receiver_long_term_key));
 }
 
 //
 //  Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
 //
 VSCR_PUBLIC vsc_data_t
-vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *ratchet_message) {
+vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_message);
+    VSCR_ASSERT_PTR(self);
 
-    if (!ratchet_message->message_pb.has_prekey_message)
+    if (!self->message_pb.has_prekey_message)
         return vsc_data_empty();
 
-    if (!ratchet_message->message_pb.prekey_message.has_receiver_one_time_key)
+    if (!self->message_pb.prekey_message.has_receiver_one_time_key)
         return vsc_data_empty();
 
-    return vsc_data(ratchet_message->message_pb.prekey_message.receiver_one_time_key,
-            sizeof(ratchet_message->message_pb.prekey_message.receiver_one_time_key));
+    return vsc_data(self->message_pb.prekey_message.receiver_one_time_key,
+            sizeof(self->message_pb.prekey_message.receiver_one_time_key));
 }
 
 //
 //  Buffer len to serialize this class.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *ratchet_message) {
+vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_message);
-    VSCR_ASSERT(ratchet_message->message_pb.has_prekey_message != ratchet_message->message_pb.has_regular_message);
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->message_pb.has_prekey_message != self->message_pb.has_regular_message);
 
-    if (ratchet_message->message_pb.has_prekey_message) {
+    if (self->message_pb.has_prekey_message) {
         return vscr_ratchet_common_hidden_MAX_PREKEY_MESSAGE_LEN - vscr_ratchet_common_MAX_CIPHER_TEXT_LEN +
-               vsc_buffer_len(ratchet_message->message_pb.prekey_message.regular_message.cipher_text.arg);
-    } else if (ratchet_message->message_pb.has_regular_message) {
+               vsc_buffer_len(self->message_pb.prekey_message.regular_message.cipher_text.arg);
+    } else if (self->message_pb.has_regular_message) {
         return vscr_ratchet_common_hidden_MAX_REGULAR_MESSAGE_LEN - vscr_ratchet_common_MAX_CIPHER_TEXT_LEN +
-               vsc_buffer_len(ratchet_message->message_pb.regular_message.cipher_text.arg);
+               vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg);
     }
 
     VSCR_ASSERT(false);
@@ -351,18 +351,18 @@ vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *ratchet_message) {
 //  Serializes instance.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *output) {
+vscr_ratchet_message_serialize(vscr_ratchet_message_t *self, vsc_buffer_t *output) {
 
-    VSCR_UNUSED(ratchet_message);
-    VSCR_UNUSED(output);
-    VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_message_serialize_len(ratchet_message));
-    VSCR_ASSERT(ratchet_message->message_pb.has_prekey_message != ratchet_message->message_pb.has_regular_message);
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(output);
+    VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_message_serialize_len(self));
+    VSCR_ASSERT(self->message_pb.has_prekey_message != self->message_pb.has_regular_message);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
 
-    vscr_ratchet_message_set_pb_encode_callback(ratchet_message);
+    vscr_ratchet_message_set_pb_encode_callback(self);
 
-    VSCR_ASSERT(pb_encode(&ostream, Message_fields, &ratchet_message->message_pb));
+    VSCR_ASSERT(pb_encode(&ostream, Message_fields, &self->message_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);
 }
 
@@ -370,12 +370,12 @@ vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message, vsc_buff
 //  Deserializes instance.
 //
 VSCR_PUBLIC vscr_ratchet_message_t *
-vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
+vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     VSCR_ASSERT(vsc_data_is_valid(input));
 
     if (input.len > vscr_ratchet_common_MAX_MESSAGE_LEN) {
-        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_PROTOBUF_DECODE);
+        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
 
         return NULL;
     }
@@ -389,7 +389,7 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
     bool status = pb_decode(&istream, Message_fields, &message->message_pb);
 
     if (!status || message->message_pb.has_prekey_message == message->message_pb.has_regular_message) {
-        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_PROTOBUF_DECODE);
+        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
         vscr_ratchet_message_destroy(&message);
 
         return NULL;
@@ -399,15 +399,15 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
 }
 
 static void
-vscr_ratchet_message_set_pb_encode_callback(vscr_ratchet_message_t *ratchet_message) {
+vscr_ratchet_message_set_pb_encode_callback(vscr_ratchet_message_t *self) {
 
-    ratchet_message->message_pb.prekey_message.regular_message.cipher_text.funcs.encode = buffer_encode_callback;
-    ratchet_message->message_pb.regular_message.cipher_text.funcs.encode = buffer_encode_callback;
+    self->message_pb.prekey_message.regular_message.cipher_text.funcs.encode = buffer_encode_callback;
+    self->message_pb.regular_message.cipher_text.funcs.encode = buffer_encode_callback;
 }
 
 static void
-vscr_ratchet_message_set_pb_decode_callback(vscr_ratchet_message_t *ratchet_message) {
+vscr_ratchet_message_set_pb_decode_callback(vscr_ratchet_message_t *self) {
 
-    ratchet_message->message_pb.prekey_message.regular_message.cipher_text.funcs.decode = buffer_decode_callback;
-    ratchet_message->message_pb.regular_message.cipher_text.funcs.decode = buffer_decode_callback;
+    self->message_pb.prekey_message.regular_message.cipher_text.funcs.decode = buffer_decode_callback;
+    self->message_pb.regular_message.cipher_text.funcs.decode = buffer_decode_callback;
 }

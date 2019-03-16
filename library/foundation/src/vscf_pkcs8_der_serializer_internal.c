@@ -86,6 +86,10 @@ static const vscf_defaults_api_t defaults_api = {
     //
     vscf_api_tag_DEFAULTS,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_PKCS8_DER_SERIALIZER,
+    //
     //  Setup predefined values to the uninitialized class dependencies.
     //
     (vscf_defaults_api_setup_defaults_fn)vscf_pkcs8_der_serializer_setup_defaults
@@ -100,6 +104,10 @@ static const vscf_key_serializer_api_t key_serializer_api = {
     //  For interface 'key_serializer' MUST be equal to the 'vscf_api_tag_KEY_SERIALIZER'.
     //
     vscf_api_tag_KEY_SERIALIZER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_PKCS8_DER_SERIALIZER,
     //
     //  Calculate buffer size enough to hold serialized public key.
     //
@@ -131,6 +139,10 @@ static const vscf_key_serializer_api_t key_serializer_api = {
 //
 static const vscf_impl_info_t info = {
     //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_PKCS8_DER_SERIALIZER,
+    //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
     //
@@ -149,14 +161,14 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_der_serializer_init(vscf_pkcs8_der_serializer_t *pkcs8_der_serializer) {
+vscf_pkcs8_der_serializer_init(vscf_pkcs8_der_serializer_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs8_der_serializer);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(pkcs8_der_serializer, sizeof(vscf_pkcs8_der_serializer_t));
+    vscf_zeroize(self, sizeof(vscf_pkcs8_der_serializer_t));
 
-    pkcs8_der_serializer->info = &info;
-    pkcs8_der_serializer->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 }
 
 //
@@ -164,23 +176,23 @@ vscf_pkcs8_der_serializer_init(vscf_pkcs8_der_serializer_t *pkcs8_der_serializer
 //  This is a reverse action of the function 'vscf_pkcs8_der_serializer_init()'.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_der_serializer_cleanup(vscf_pkcs8_der_serializer_t *pkcs8_der_serializer) {
+vscf_pkcs8_der_serializer_cleanup(vscf_pkcs8_der_serializer_t *self) {
 
-    if (pkcs8_der_serializer == NULL || pkcs8_der_serializer->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (pkcs8_der_serializer->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--pkcs8_der_serializer->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_pkcs8_der_serializer_release_asn1_writer(pkcs8_der_serializer);
+    vscf_pkcs8_der_serializer_release_asn1_writer(self);
 
-    vscf_zeroize(pkcs8_der_serializer, sizeof(vscf_pkcs8_der_serializer_t));
+    vscf_zeroize(self, sizeof(vscf_pkcs8_der_serializer_t));
 }
 
 //
@@ -190,12 +202,12 @@ vscf_pkcs8_der_serializer_cleanup(vscf_pkcs8_der_serializer_t *pkcs8_der_seriali
 VSCF_PUBLIC vscf_pkcs8_der_serializer_t *
 vscf_pkcs8_der_serializer_new(void) {
 
-    vscf_pkcs8_der_serializer_t *pkcs8_der_serializer = (vscf_pkcs8_der_serializer_t *) vscf_alloc(sizeof (vscf_pkcs8_der_serializer_t));
-    VSCF_ASSERT_ALLOC(pkcs8_der_serializer);
+    vscf_pkcs8_der_serializer_t *self = (vscf_pkcs8_der_serializer_t *) vscf_alloc(sizeof (vscf_pkcs8_der_serializer_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_pkcs8_der_serializer_init(pkcs8_der_serializer);
+    vscf_pkcs8_der_serializer_init(self);
 
-    return pkcs8_der_serializer;
+    return self;
 }
 
 //
@@ -203,12 +215,12 @@ vscf_pkcs8_der_serializer_new(void) {
 //  This is a reverse action of the function 'vscf_pkcs8_der_serializer_new()'.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_der_serializer_delete(vscf_pkcs8_der_serializer_t *pkcs8_der_serializer) {
+vscf_pkcs8_der_serializer_delete(vscf_pkcs8_der_serializer_t *self) {
 
-    vscf_pkcs8_der_serializer_cleanup(pkcs8_der_serializer);
+    vscf_pkcs8_der_serializer_cleanup(self);
 
-    if (pkcs8_der_serializer && (pkcs8_der_serializer->refcnt == 0)) {
-        vscf_dealloc(pkcs8_der_serializer);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -218,14 +230,14 @@ vscf_pkcs8_der_serializer_delete(vscf_pkcs8_der_serializer_t *pkcs8_der_serializ
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_der_serializer_destroy(vscf_pkcs8_der_serializer_t **pkcs8_der_serializer_ref) {
+vscf_pkcs8_der_serializer_destroy(vscf_pkcs8_der_serializer_t **self_ref) {
 
-    VSCF_ASSERT_PTR(pkcs8_der_serializer_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_pkcs8_der_serializer_t *pkcs8_der_serializer = *pkcs8_der_serializer_ref;
-    *pkcs8_der_serializer_ref = NULL;
+    vscf_pkcs8_der_serializer_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_pkcs8_der_serializer_delete(pkcs8_der_serializer);
+    vscf_pkcs8_der_serializer_delete(self);
 }
 
 //
@@ -233,10 +245,10 @@ vscf_pkcs8_der_serializer_destroy(vscf_pkcs8_der_serializer_t **pkcs8_der_serial
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_pkcs8_der_serializer_t *
-vscf_pkcs8_der_serializer_shallow_copy(vscf_pkcs8_der_serializer_t *pkcs8_der_serializer) {
+vscf_pkcs8_der_serializer_shallow_copy(vscf_pkcs8_der_serializer_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_pkcs8_der_serializer_t *)vscf_impl_shallow_copy((vscf_impl_t *)pkcs8_der_serializer);
+    return (vscf_pkcs8_der_serializer_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -252,25 +264,25 @@ vscf_pkcs8_der_serializer_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_pkcs8_der_serializer_impl(vscf_pkcs8_der_serializer_t *pkcs8_der_serializer) {
+vscf_pkcs8_der_serializer_impl(vscf_pkcs8_der_serializer_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs8_der_serializer);
-    return (vscf_impl_t *)(pkcs8_der_serializer);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 //
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_der_serializer_use_asn1_writer(vscf_pkcs8_der_serializer_t *pkcs8_der_serializer, vscf_impl_t *asn1_writer) {
+vscf_pkcs8_der_serializer_use_asn1_writer(vscf_pkcs8_der_serializer_t *self, vscf_impl_t *asn1_writer) {
 
-    VSCF_ASSERT_PTR(pkcs8_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT_PTR(pkcs8_der_serializer->asn1_writer == NULL);
+    VSCF_ASSERT(self->asn1_writer == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
 
-    pkcs8_der_serializer->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
+    self->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
 }
 
 //
@@ -278,27 +290,26 @@ vscf_pkcs8_der_serializer_use_asn1_writer(vscf_pkcs8_der_serializer_t *pkcs8_der
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_der_serializer_take_asn1_writer(vscf_pkcs8_der_serializer_t *pkcs8_der_serializer,
-        vscf_impl_t *asn1_writer) {
+vscf_pkcs8_der_serializer_take_asn1_writer(vscf_pkcs8_der_serializer_t *self, vscf_impl_t *asn1_writer) {
 
-    VSCF_ASSERT_PTR(pkcs8_der_serializer);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT_PTR(pkcs8_der_serializer->asn1_writer == NULL);
+    VSCF_ASSERT_PTR(self->asn1_writer == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
 
-    pkcs8_der_serializer->asn1_writer = asn1_writer;
+    self->asn1_writer = asn1_writer;
 }
 
 //
 //  Release dependency to the interface 'asn1 writer'.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_der_serializer_release_asn1_writer(vscf_pkcs8_der_serializer_t *pkcs8_der_serializer) {
+vscf_pkcs8_der_serializer_release_asn1_writer(vscf_pkcs8_der_serializer_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs8_der_serializer);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&pkcs8_der_serializer->asn1_writer);
+    vscf_impl_destroy(&self->asn1_writer);
 }
 
 static const vscf_api_t *

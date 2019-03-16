@@ -16,6 +16,28 @@
         <require interface="alg"/>
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
+
+        <method name="serialize public key inplace" declaration="public">
+            Serialize Public Key by using internal ASN.1 writer.
+            Note, that caller code is responsible to reset ASN.1 writer with
+            an output buffer.
+
+            <argument name="public key" interface="public key"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize private key inplace" declaration="public">
+            Serialize Private Key by using internal ASN.1 writer.
+            Note, that caller code is responsible to reset ASN.1 writer with
+            an output buffer.
+
+            <argument name="private key" interface="private key"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return type="size"/>
+        </method>
     </implementation>
 
 
@@ -33,6 +55,26 @@
         <require interface="alg"/>
 
         <dependency name="asn1 reader" interface="asn1 reader"/>
+
+        <method name="deserialize public key inplace" declaration="public">
+            Deserialize Public Key by using internal ASN.1 reader.
+            Note, that caller code is responsible to reset ASN.1 reader with
+            an input buffer.
+
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return class="raw key" access="disown"/>
+        </method>
+
+        <method name="deserialize private key inplace" declaration="public">
+            Deserialize Public Key by using internal ASN.1 reader.
+            Note, that caller code is responsible to reset ASN.1 reader with
+            an input buffer.
+
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return class="raw key" access="disown"/>
+        </method>
     </implementation>
 
 

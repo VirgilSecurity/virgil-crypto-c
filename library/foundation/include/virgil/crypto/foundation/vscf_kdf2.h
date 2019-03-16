@@ -55,6 +55,8 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
+#include "vscf_alg_id.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -96,20 +98,20 @@ vscf_kdf2_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_kdf2_impl(vscf_kdf2_t *kdf2);
+vscf_kdf2_impl(vscf_kdf2_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_kdf2_init(vscf_kdf2_t *kdf2);
+vscf_kdf2_init(vscf_kdf2_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_kdf2_init()'.
 //
 VSCF_PUBLIC void
-vscf_kdf2_cleanup(vscf_kdf2_t *kdf2);
+vscf_kdf2_cleanup(vscf_kdf2_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -123,7 +125,7 @@ vscf_kdf2_new(void);
 //  This is a reverse action of the function 'vscf_kdf2_new()'.
 //
 VSCF_PUBLIC void
-vscf_kdf2_delete(vscf_kdf2_t *kdf2);
+vscf_kdf2_delete(vscf_kdf2_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -131,39 +133,57 @@ vscf_kdf2_delete(vscf_kdf2_t *kdf2);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_kdf2_destroy(vscf_kdf2_t **kdf2_ref);
+vscf_kdf2_destroy(vscf_kdf2_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_kdf2_t *
-vscf_kdf2_shallow_copy(vscf_kdf2_t *kdf2);
+vscf_kdf2_shallow_copy(vscf_kdf2_t *self);
 
 //
-//  Setup dependency to the interface 'hash stream' with shared ownership.
+//  Setup dependency to the interface 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_kdf2_use_hash(vscf_kdf2_t *kdf2, vscf_impl_t *hash);
+vscf_kdf2_use_hash(vscf_kdf2_t *self, vscf_impl_t *hash);
 
 //
-//  Setup dependency to the interface 'hash stream' and transfer ownership.
+//  Setup dependency to the interface 'hash' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_kdf2_take_hash(vscf_kdf2_t *kdf2, vscf_impl_t *hash);
+vscf_kdf2_take_hash(vscf_kdf2_t *self, vscf_impl_t *hash);
 
 //
-//  Release dependency to the interface 'hash stream'.
+//  Release dependency to the interface 'hash'.
 //
 VSCF_PUBLIC void
-vscf_kdf2_release_hash(vscf_kdf2_t *kdf2);
+vscf_kdf2_release_hash(vscf_kdf2_t *self);
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_kdf2_alg_id(const vscf_kdf2_t *self);
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_kdf2_produce_alg_info(const vscf_kdf2_t *self);
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_kdf2_restore_alg_info(vscf_kdf2_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Derive key of the requested length from the given data.
 //
 VSCF_PUBLIC void
-vscf_kdf2_derive(vscf_kdf2_t *kdf2, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
+vscf_kdf2_derive(vscf_kdf2_t *self, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
 
 
 // --------------------------------------------------------------------------

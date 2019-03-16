@@ -33,7 +33,7 @@ function js_create_indent_levels(indent_level)
 endfunction
 
 function js_method_is_private(method)
-  return defined(my.method.declaration) & my.method.declaration = "private"
+  return (defined(my.method.visibility) & my.method.visibility = "private") | (defined(my.method.declaration) & my.method.declaration = "private")
 endfunction
 
 function js_method_is_static(method)
@@ -101,11 +101,11 @@ function js_value_is_implementation_module(value, wrapper)
 endfunction
 
 function js_value_is_error(value)
-  return defined(my.value.enum) & my.value.enum = "error"
+  return defined(my.value.enum) & my.value.enum = "status"
 endfunction
 
 function js_value_is_error_context(value)
-  return defined(my.value.class) & my.value.class = "error ctx"
+  return defined(my.value.class) & my.value.class = "error"
 endfunction
 
 function js_value_is_return_argument(value)

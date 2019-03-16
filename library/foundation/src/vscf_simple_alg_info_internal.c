@@ -83,6 +83,10 @@ static const vscf_alg_info_api_t alg_info_api = {
     //
     vscf_api_tag_ALG_INFO,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_SIMPLE_ALG_INFO,
+    //
     //  Provide algorithm identificator.
     //
     (vscf_alg_info_api_alg_id_fn)vscf_simple_alg_info_alg_id
@@ -92,6 +96,10 @@ static const vscf_alg_info_api_t alg_info_api = {
 //  Compile-time known information about 'simple alg info' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_SIMPLE_ALG_INFO,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
@@ -111,16 +119,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_simple_alg_info_init(vscf_simple_alg_info_t *simple_alg_info) {
+vscf_simple_alg_info_init(vscf_simple_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(simple_alg_info);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(simple_alg_info, sizeof(vscf_simple_alg_info_t));
+    vscf_zeroize(self, sizeof(vscf_simple_alg_info_t));
 
-    simple_alg_info->info = &info;
-    simple_alg_info->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_simple_alg_info_init_ctx(simple_alg_info);
+    vscf_simple_alg_info_init_ctx(self);
 }
 
 //
@@ -128,23 +136,23 @@ vscf_simple_alg_info_init(vscf_simple_alg_info_t *simple_alg_info) {
 //  This is a reverse action of the function 'vscf_simple_alg_info_init()'.
 //
 VSCF_PUBLIC void
-vscf_simple_alg_info_cleanup(vscf_simple_alg_info_t *simple_alg_info) {
+vscf_simple_alg_info_cleanup(vscf_simple_alg_info_t *self) {
 
-    if (simple_alg_info == NULL || simple_alg_info->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (simple_alg_info->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--simple_alg_info->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_simple_alg_info_cleanup_ctx(simple_alg_info);
+    vscf_simple_alg_info_cleanup_ctx(self);
 
-    vscf_zeroize(simple_alg_info, sizeof(vscf_simple_alg_info_t));
+    vscf_zeroize(self, sizeof(vscf_simple_alg_info_t));
 }
 
 //
@@ -154,12 +162,12 @@ vscf_simple_alg_info_cleanup(vscf_simple_alg_info_t *simple_alg_info) {
 VSCF_PUBLIC vscf_simple_alg_info_t *
 vscf_simple_alg_info_new(void) {
 
-    vscf_simple_alg_info_t *simple_alg_info = (vscf_simple_alg_info_t *) vscf_alloc(sizeof (vscf_simple_alg_info_t));
-    VSCF_ASSERT_ALLOC(simple_alg_info);
+    vscf_simple_alg_info_t *self = (vscf_simple_alg_info_t *) vscf_alloc(sizeof (vscf_simple_alg_info_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_simple_alg_info_init(simple_alg_info);
+    vscf_simple_alg_info_init(self);
 
-    return simple_alg_info;
+    return self;
 }
 
 //
@@ -167,12 +175,12 @@ vscf_simple_alg_info_new(void) {
 //  This is a reverse action of the function 'vscf_simple_alg_info_new()'.
 //
 VSCF_PUBLIC void
-vscf_simple_alg_info_delete(vscf_simple_alg_info_t *simple_alg_info) {
+vscf_simple_alg_info_delete(vscf_simple_alg_info_t *self) {
 
-    vscf_simple_alg_info_cleanup(simple_alg_info);
+    vscf_simple_alg_info_cleanup(self);
 
-    if (simple_alg_info && (simple_alg_info->refcnt == 0)) {
-        vscf_dealloc(simple_alg_info);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -182,14 +190,14 @@ vscf_simple_alg_info_delete(vscf_simple_alg_info_t *simple_alg_info) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_simple_alg_info_destroy(vscf_simple_alg_info_t **simple_alg_info_ref) {
+vscf_simple_alg_info_destroy(vscf_simple_alg_info_t **self_ref) {
 
-    VSCF_ASSERT_PTR(simple_alg_info_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_simple_alg_info_t *simple_alg_info = *simple_alg_info_ref;
-    *simple_alg_info_ref = NULL;
+    vscf_simple_alg_info_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_simple_alg_info_delete(simple_alg_info);
+    vscf_simple_alg_info_delete(self);
 }
 
 //
@@ -197,10 +205,10 @@ vscf_simple_alg_info_destroy(vscf_simple_alg_info_t **simple_alg_info_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_simple_alg_info_t *
-vscf_simple_alg_info_shallow_copy(vscf_simple_alg_info_t *simple_alg_info) {
+vscf_simple_alg_info_shallow_copy(vscf_simple_alg_info_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_simple_alg_info_t *)vscf_impl_shallow_copy((vscf_impl_t *)simple_alg_info);
+    return (vscf_simple_alg_info_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -216,10 +224,10 @@ vscf_simple_alg_info_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_simple_alg_info_impl(vscf_simple_alg_info_t *simple_alg_info) {
+vscf_simple_alg_info_impl(vscf_simple_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(simple_alg_info);
-    return (vscf_impl_t *)(simple_alg_info);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *

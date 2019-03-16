@@ -83,13 +83,13 @@ vsce_simple_swu_ctx_size(void);
 //  Perform initialization of pre-allocated context.
 //
 VSCE_PUBLIC void
-vsce_simple_swu_init(vsce_simple_swu_t *simple_swu);
+vsce_simple_swu_init(vsce_simple_swu_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCE_PUBLIC void
-vsce_simple_swu_cleanup(vsce_simple_swu_t *simple_swu);
+vsce_simple_swu_cleanup(vsce_simple_swu_t *self);
 
 //
 //  Allocate context and perform it's initialization.
@@ -102,23 +102,23 @@ vsce_simple_swu_new(void);
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCE_PUBLIC void
-vsce_simple_swu_delete(vsce_simple_swu_t *simple_swu);
+vsce_simple_swu_delete(vsce_simple_swu_t *self);
 
 //
 //  Delete given context and nullifies reference.
 //  This is a reverse action of the function 'vsce_simple_swu_new ()'.
 //
 VSCE_PUBLIC void
-vsce_simple_swu_destroy(vsce_simple_swu_t **simple_swu_ref);
+vsce_simple_swu_destroy(vsce_simple_swu_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCE_PUBLIC vsce_simple_swu_t *
-vsce_simple_swu_shallow_copy(vsce_simple_swu_t *simple_swu);
+vsce_simple_swu_shallow_copy(vsce_simple_swu_t *self);
 
 VSCE_PUBLIC void
-vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *simple_swu, const mbedtls_mpi *t, mbedtls_ecp_point *p);
+vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *self, const mbedtls_mpi *t, mbedtls_ecp_point *p);
 
 
 // --------------------------------------------------------------------------

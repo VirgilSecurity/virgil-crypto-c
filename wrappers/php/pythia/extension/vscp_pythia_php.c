@@ -125,7 +125,7 @@ PHP_FUNCTION(vscp_pythia_delete_php) {
     //
     vscp_pythia_t *pythia = zend_fetch_resource_ex(in_cctx, VSCP_PYTHIA_PHP_RES_NAME, le_vscp_pythia);
     VSCP_ASSERT_PTR(pythia);
-    zend_list_delete(Z_RES_P(in_cctx));
+    zend_list_close(Z_RES_P(in_cctx));
     RETURN_TRUE;
 }
 
@@ -178,12 +178,12 @@ PHP_FUNCTION(vscp_pythia_blind_php) {
     vsc_buffer_t *blinding_secret = vsc_buffer_new();
     vsc_buffer_use(blinding_secret, (byte *)ZSTR_VAL(out_blinding_secret), ZSTR_LEN(out_blinding_secret));
 
-    vscp_error_t status = vscp_pythia_blind(pythia, password, blinded_password, blinding_secret);
+    vscp_status_t status = vscp_pythia_blind(pythia, password, blinded_password, blinding_secret);
 
     //
     //  Handle error
     //
-    if(status != vscp_SUCCESS) {
+    if(status != vscp_status_SUCCESS) {
         zend_throw_exception(NULL, "Pythia error", status);
         goto fail;
     }

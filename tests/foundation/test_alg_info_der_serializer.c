@@ -43,26 +43,15 @@
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_alg_info_der_serializer.h"
-#include "vscf_kdf_alg_info.h"
+#include "vscf_hash_based_alg_info.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_cipher_alg_info.h"
 
 #include "test_data_alg_info_der.h"
 
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
 void
-test__serialize__sha256__returns_valid_der(void) {
+test__serialize__sha256__returns_valid_der_v2_compat(void_v2_compat) {
     vscf_alg_info_der_serializer_t *serializer = vscf_alg_info_der_serializer_new();
     vscf_alg_info_der_serializer_setup_defaults(serializer);
 
@@ -74,7 +63,7 @@ test__serialize__sha256__returns_valid_der(void) {
 
     vscf_alg_info_der_serializer_serialize(serializer, sha256_info, out);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_SHA256_DER, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_SHA256_DER_V2_COMPAT, out);
 
     vscf_impl_destroy(&sha256_info);
     vscf_alg_info_der_serializer_destroy(&serializer);
@@ -82,28 +71,28 @@ test__serialize__sha256__returns_valid_der(void) {
 }
 
 void
-test__serialize__kdf1_sha256__returns_valid_der(void) {
+test__serialize__kdf1_sha256__returns_valid_der_v2_compat(void) {
     vscf_alg_info_der_serializer_t *serializer = vscf_alg_info_der_serializer_new();
     vscf_alg_info_der_serializer_setup_defaults(serializer);
 
-    vscf_simple_alg_info_t *hash_info = vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256);
-    vscf_impl_t *kdf_info = vscf_kdf_alg_info_impl(vscf_kdf_alg_info_new_with_members(vscf_alg_id_KDF1, hash_info));
+    vscf_impl_t *hash_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256));
+    vscf_impl_t *kdf_info =
+            vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(vscf_alg_id_KDF1, &hash_info));
 
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_alg_info_der_serializer_serialized_len(serializer, kdf_info));
     vsc_buffer_switch_reverse_mode(out, true);
 
     vscf_alg_info_der_serializer_serialize(serializer, kdf_info, out);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_KDF1_SHA256_DER, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_KDF1_SHA256_DER_V2_COMPAT, out);
 
-    vscf_simple_alg_info_destroy(&hash_info);
+    vsc_buffer_destroy(&out);
     vscf_impl_destroy(&kdf_info);
     vscf_alg_info_der_serializer_destroy(&serializer);
-    vsc_buffer_destroy(&out);
 }
 
 void
-test__serialize__aes256_gcm__returns_valid_der(void) {
+test__serialize__aes256_gcm__returns_valid_der_v2_compat(void) {
     vscf_alg_info_der_serializer_t *serializer = vscf_alg_info_der_serializer_new();
     vscf_alg_info_der_serializer_setup_defaults(serializer);
 
@@ -115,11 +104,11 @@ test__serialize__aes256_gcm__returns_valid_der(void) {
 
     vscf_alg_info_der_serializer_serialize(serializer, cipher_info, out);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_AES256_GCM_DER, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_AES256_GCM_DER_V2_COMPAT, out);
 
+    vsc_buffer_destroy(&out);
     vscf_impl_destroy(&cipher_info);
     vscf_alg_info_der_serializer_destroy(&serializer);
-    vsc_buffer_destroy(&out);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
@@ -132,9 +121,9 @@ int
 main(void) {
     UNITY_BEGIN();
 
-    RUN_TEST(test__serialize__sha256__returns_valid_der);
-    RUN_TEST(test__serialize__kdf1_sha256__returns_valid_der);
-    RUN_TEST(test__serialize__aes256_gcm__returns_valid_der);
+    RUN_TEST(test__serialize__sha256__returns_valid_der_v2_compat);
+    RUN_TEST(test__serialize__kdf1_sha256__returns_valid_der_v2_compat);
+    RUN_TEST(test__serialize__aes256_gcm__returns_valid_der_v2_compat);
 
 #if TEST_DEPENDENCIES_AVAILABLE
 #else

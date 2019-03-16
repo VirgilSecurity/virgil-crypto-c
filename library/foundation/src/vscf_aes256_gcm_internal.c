@@ -55,6 +55,8 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_aes256_gcm_defs.h"
+#include "vscf_alg.h"
+#include "vscf_alg_api.h"
 #include "vscf_encrypt.h"
 #include "vscf_encrypt_api.h"
 #include "vscf_decrypt.h"
@@ -88,6 +90,33 @@ static const vscf_api_t *
 vscf_aes256_gcm_find_api(vscf_api_tag_t api_tag);
 
 //
+//  Configuration of the interface API 'alg api'.
+//
+static const vscf_alg_api_t alg_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
+    //
+    vscf_api_tag_ALG,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
+    //
+    //  Provide algorithm identificator.
+    //
+    (vscf_alg_api_alg_id_fn)vscf_aes256_gcm_alg_id,
+    //
+    //  Produce object with algorithm information and configuration parameters.
+    //
+    (vscf_alg_api_produce_alg_info_fn)vscf_aes256_gcm_produce_alg_info,
+    //
+    //  Restore algorithm configuration from the given object.
+    //
+    (vscf_alg_api_restore_alg_info_fn)vscf_aes256_gcm_restore_alg_info
+};
+
+//
 //  Configuration of the interface API 'encrypt api'.
 //
 static const vscf_encrypt_api_t encrypt_api = {
@@ -96,6 +125,10 @@ static const vscf_encrypt_api_t encrypt_api = {
     //  For interface 'encrypt' MUST be equal to the 'vscf_api_tag_ENCRYPT'.
     //
     vscf_api_tag_ENCRYPT,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
     //
     //  Encrypt given data.
     //
@@ -116,6 +149,10 @@ static const vscf_decrypt_api_t decrypt_api = {
     //
     vscf_api_tag_DECRYPT,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
+    //
     //  Decrypt given data.
     //
     (vscf_decrypt_api_decrypt_fn)vscf_aes256_gcm_decrypt,
@@ -134,6 +171,10 @@ static const vscf_cipher_info_api_t cipher_info_api = {
     //  For interface 'cipher_info' MUST be equal to the 'vscf_api_tag_CIPHER_INFO'.
     //
     vscf_api_tag_CIPHER_INFO,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
     //
     //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
     //
@@ -161,6 +202,10 @@ static const vscf_cipher_api_t cipher_api = {
     //  For interface 'cipher' MUST be equal to the 'vscf_api_tag_CIPHER'.
     //
     vscf_api_tag_CIPHER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
     //
     //  Link to the inherited interface API 'encrypt'.
     //
@@ -195,10 +240,22 @@ static const vscf_cipher_api_t cipher_api = {
     (vscf_cipher_api_update_fn)vscf_aes256_gcm_update,
     //
     //  Return buffer length required to hold an output of the methods
-    //  "update" or "finish".
+    //  "update" or "finish" in an current mode.
     //  Pass zero length to define buffer length of the method "finish".
     //
     (vscf_cipher_api_out_len_fn)vscf_aes256_gcm_out_len,
+    //
+    //  Return buffer length required to hold an output of the methods
+    //  "update" or "finish" in an encryption mode.
+    //  Pass zero length to define buffer length of the method "finish".
+    //
+    (vscf_cipher_api_encrypted_out_len_fn)vscf_aes256_gcm_encrypted_out_len,
+    //
+    //  Return buffer length required to hold an output of the methods
+    //  "update" or "finish" in an decryption mode.
+    //  Pass zero length to define buffer length of the method "finish".
+    //
+    (vscf_cipher_api_decrypted_out_len_fn)vscf_aes256_gcm_decrypted_out_len,
     //
     //  Accomplish encryption or decryption process.
     //
@@ -215,6 +272,10 @@ static const vscf_cipher_auth_info_api_t cipher_auth_info_api = {
     //
     vscf_api_tag_CIPHER_AUTH_INFO,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
+    //
     //  Defines authentication tag length in bytes.
     //
     vscf_aes256_gcm_AUTH_TAG_LEN
@@ -229,6 +290,10 @@ static const vscf_auth_encrypt_api_t auth_encrypt_api = {
     //  For interface 'auth_encrypt' MUST be equal to the 'vscf_api_tag_AUTH_ENCRYPT'.
     //
     vscf_api_tag_AUTH_ENCRYPT,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
     //
     //  Link to the inherited interface API 'cipher auth info'.
     //
@@ -254,6 +319,10 @@ static const vscf_auth_decrypt_api_t auth_decrypt_api = {
     //
     vscf_api_tag_AUTH_DECRYPT,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
+    //
     //  Link to the inherited interface API 'cipher auth info'.
     //
     &cipher_auth_info_api,
@@ -278,6 +347,10 @@ static const vscf_cipher_auth_api_t cipher_auth_api = {
     //
     vscf_api_tag_CIPHER_AUTH,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
+    //
     //  Link to the inherited interface API 'auth encrypt'.
     //
     &auth_encrypt_api,
@@ -291,6 +364,10 @@ static const vscf_cipher_auth_api_t cipher_auth_api = {
 //  Compile-time known information about 'aes256 gcm' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
@@ -310,16 +387,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_aes256_gcm_init(vscf_aes256_gcm_t *aes256_gcm) {
+vscf_aes256_gcm_init(vscf_aes256_gcm_t *self) {
 
-    VSCF_ASSERT_PTR(aes256_gcm);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(aes256_gcm, sizeof(vscf_aes256_gcm_t));
+    vscf_zeroize(self, sizeof(vscf_aes256_gcm_t));
 
-    aes256_gcm->info = &info;
-    aes256_gcm->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_aes256_gcm_init_ctx(aes256_gcm);
+    vscf_aes256_gcm_init_ctx(self);
 }
 
 //
@@ -327,23 +404,23 @@ vscf_aes256_gcm_init(vscf_aes256_gcm_t *aes256_gcm) {
 //  This is a reverse action of the function 'vscf_aes256_gcm_init()'.
 //
 VSCF_PUBLIC void
-vscf_aes256_gcm_cleanup(vscf_aes256_gcm_t *aes256_gcm) {
+vscf_aes256_gcm_cleanup(vscf_aes256_gcm_t *self) {
 
-    if (aes256_gcm == NULL || aes256_gcm->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (aes256_gcm->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--aes256_gcm->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_aes256_gcm_cleanup_ctx(aes256_gcm);
+    vscf_aes256_gcm_cleanup_ctx(self);
 
-    vscf_zeroize(aes256_gcm, sizeof(vscf_aes256_gcm_t));
+    vscf_zeroize(self, sizeof(vscf_aes256_gcm_t));
 }
 
 //
@@ -353,12 +430,12 @@ vscf_aes256_gcm_cleanup(vscf_aes256_gcm_t *aes256_gcm) {
 VSCF_PUBLIC vscf_aes256_gcm_t *
 vscf_aes256_gcm_new(void) {
 
-    vscf_aes256_gcm_t *aes256_gcm = (vscf_aes256_gcm_t *) vscf_alloc(sizeof (vscf_aes256_gcm_t));
-    VSCF_ASSERT_ALLOC(aes256_gcm);
+    vscf_aes256_gcm_t *self = (vscf_aes256_gcm_t *) vscf_alloc(sizeof (vscf_aes256_gcm_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_aes256_gcm_init(aes256_gcm);
+    vscf_aes256_gcm_init(self);
 
-    return aes256_gcm;
+    return self;
 }
 
 //
@@ -366,12 +443,12 @@ vscf_aes256_gcm_new(void) {
 //  This is a reverse action of the function 'vscf_aes256_gcm_new()'.
 //
 VSCF_PUBLIC void
-vscf_aes256_gcm_delete(vscf_aes256_gcm_t *aes256_gcm) {
+vscf_aes256_gcm_delete(vscf_aes256_gcm_t *self) {
 
-    vscf_aes256_gcm_cleanup(aes256_gcm);
+    vscf_aes256_gcm_cleanup(self);
 
-    if (aes256_gcm && (aes256_gcm->refcnt == 0)) {
-        vscf_dealloc(aes256_gcm);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -381,14 +458,14 @@ vscf_aes256_gcm_delete(vscf_aes256_gcm_t *aes256_gcm) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_aes256_gcm_destroy(vscf_aes256_gcm_t **aes256_gcm_ref) {
+vscf_aes256_gcm_destroy(vscf_aes256_gcm_t **self_ref) {
 
-    VSCF_ASSERT_PTR(aes256_gcm_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_aes256_gcm_t *aes256_gcm = *aes256_gcm_ref;
-    *aes256_gcm_ref = NULL;
+    vscf_aes256_gcm_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_aes256_gcm_delete(aes256_gcm);
+    vscf_aes256_gcm_delete(self);
 }
 
 //
@@ -396,10 +473,10 @@ vscf_aes256_gcm_destroy(vscf_aes256_gcm_t **aes256_gcm_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_aes256_gcm_t *
-vscf_aes256_gcm_shallow_copy(vscf_aes256_gcm_t *aes256_gcm) {
+vscf_aes256_gcm_shallow_copy(vscf_aes256_gcm_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_aes256_gcm_t *)vscf_impl_shallow_copy((vscf_impl_t *)aes256_gcm);
+    return (vscf_aes256_gcm_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -442,16 +519,18 @@ vscf_aes256_gcm_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_aes256_gcm_impl(vscf_aes256_gcm_t *aes256_gcm) {
+vscf_aes256_gcm_impl(vscf_aes256_gcm_t *self) {
 
-    VSCF_ASSERT_PTR(aes256_gcm);
-    return (vscf_impl_t *)(aes256_gcm);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *
 vscf_aes256_gcm_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
+        case vscf_api_tag_ALG:
+            return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_AUTH_DECRYPT:
             return (const vscf_api_t *) &auth_decrypt_api;
         case vscf_api_tag_AUTH_ENCRYPT:

@@ -35,12 +35,11 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provide conversion logic between OID and algorithm tags.
 @objc(VSCFOid) public class Oid: NSObject {
 
-    /// Return OID for given algorithm identifier
+    /// Return OID for given algorithm identifier.
     @objc public static func fromAlgId(algId: AlgId) -> Data {
         let proxyResult = vscf_oid_from_alg_id(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)))
 
@@ -50,16 +49,35 @@ import VirgilCryptoCommon
     /// Return algorithm identifier for given OID.
     @objc public static func toAlgId(oid: Data) -> AlgId {
         let proxyResult = oid.withUnsafeBytes({ (oidPointer: UnsafePointer<byte>) -> vscf_alg_id_t in
+
             return vscf_oid_to_alg_id(vsc_data(oidPointer, oid.count))
         })
 
         return AlgId.init(fromC: proxyResult)
     }
 
+    /// Return OID for a given identifier.
+    @objc public static func fromId(oidId: OidId) -> Data {
+        let proxyResult = vscf_oid_from_id(vscf_oid_id_t(rawValue: UInt32(oidId.rawValue)))
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
+    /// Return identifier for a given OID.
+    @objc public static func toId(oid: Data) -> OidId {
+        let proxyResult = oid.withUnsafeBytes({ (oidPointer: UnsafePointer<byte>) -> vscf_oid_id_t in
+
+            return vscf_oid_to_id(vsc_data(oidPointer, oid.count))
+        })
+
+        return OidId.init(fromC: proxyResult)
+    }
+
     /// Return true if given OIDs are equal.
     @objc public static func equal(lhs: Data, rhs: Data) -> Bool {
         let proxyResult = lhs.withUnsafeBytes({ (lhsPointer: UnsafePointer<byte>) -> Bool in
             rhs.withUnsafeBytes({ (rhsPointer: UnsafePointer<byte>) -> Bool in
+
                 return vscf_oid_equal(vsc_data(lhsPointer, lhs.count), vsc_data(rhsPointer, rhs.count))
             })
         })
