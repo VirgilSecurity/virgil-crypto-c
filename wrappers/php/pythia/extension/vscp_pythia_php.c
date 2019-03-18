@@ -54,12 +54,6 @@ const char VSCP_PYTHIA_PHP_RES_NAME[] = "vscp_pythia_t";
 
 
 // --------------------------------------------------------------------------
-//  Registered resources
-// --------------------------------------------------------------------------
-int le_vscp_pythia;
-
-
-// --------------------------------------------------------------------------
 //  Extension init functions declaration
 // --------------------------------------------------------------------------
 PHP_MINIT_FUNCTION(vscp_pythia_php);
@@ -71,75 +65,15 @@ PHP_MSHUTDOWN_FUNCTION(vscp_pythia_php);
 // --------------------------------------------------------------------------
 
 //
-//  Wrap method: vscp_pythia_new
-//
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
-        arginfo_vscp_pythia_new_php /*name*/,
-        0 /*return_reference*/,
-        0 /*required_num_args*/,
-        IS_RESOURCE /*type*/,
-        0 /*allow_null*/)
-ZEND_END_ARG_INFO()
-
-
-PHP_FUNCTION(vscp_pythia_new_php) {
-    //
-    //  Create new object
-    //
-    vscp_pythia_t *pythia = vscp_pythia_new();
-
-    //
-    //  Register newly created object as resource
-    //
-    zend_resource *pythia_res = zend_register_resource(pythia, le_vscp_pythia);
-
-    //
-    //  Return newly created object
-    //
-    RETVAL_RES(pythia_res);
-}
-
-//
-//  Wrap method: vscp_pythia_delete
-//
-ZEND_BEGIN_ARG_INFO(arginfo_vscp_pythia_delete_php /*name*/, 0 /*_unused*/)
-    ZEND_ARG_INFO(0, c_ctx)
-ZEND_END_ARG_INFO()
-
-
-PHP_FUNCTION(vscp_pythia_delete_php) {
-    //
-    //  Declare input arguments
-    //
-    zval *in_cctx = NULL;
-
-    //
-    //  Parse arguments
-    //
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
-        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
-    //
-    //  Fetch for type checking and then release
-    //
-    vscp_pythia_t *pythia = zend_fetch_resource_ex(in_cctx, VSCP_PYTHIA_PHP_RES_NAME, le_vscp_pythia);
-    VSCP_ASSERT_PTR(pythia);
-    zend_list_close(Z_RES_P(in_cctx));
-    RETURN_TRUE;
-}
-
-//
 //  Wrap method: vscp_pythia_blind
 //
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         arginfo_vscp_pythia_blind_php /*name*/,
         0 /*return_reference*/,
-        2 /*required_num_args*/,
+        1 /*required_num_args*/,
         IS_ARRAY /*type*/,
         0 /*allow_null*/)
 
-    ZEND_ARG_INFO(0, c_ctx)
     ZEND_ARG_TYPE_INFO(0, password, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
@@ -148,23 +82,15 @@ PHP_FUNCTION(vscp_pythia_blind_php) {
     //
     //  Declare input arguments
     //
-    zval *in_cctx = NULL;
     char *in_password = NULL;
     size_t in_password_len = 0;
 
     //
     //  Parse arguments
     //
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
-        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
         Z_PARAM_STRING_EX(in_password, in_password_len, 1 /*check_null*/, 0 /*deref and separate*/)
     ZEND_PARSE_PARAMETERS_END();
-
-    //
-    //  Proxy call
-    //
-    vscp_pythia_t *pythia = zend_fetch_resource_ex(in_cctx, VSCP_PYTHIA_PHP_RES_NAME, le_vscp_pythia);
-    VSCP_ASSERT_PTR(pythia);
 
     vsc_data_t password = vsc_data((const byte*)in_password, in_password_len);
 
@@ -178,7 +104,7 @@ PHP_FUNCTION(vscp_pythia_blind_php) {
     vsc_buffer_t *blinding_secret = vsc_buffer_new();
     vsc_buffer_use(blinding_secret, (byte *)ZSTR_VAL(out_blinding_secret), ZSTR_LEN(out_blinding_secret));
 
-    vscp_status_t status = vscp_pythia_blind(pythia, password, blinded_password, blinding_secret);
+    vscp_status_t status = vscp_pythia_blind(password, blinded_password, blinding_secret);
 
     //
     //  Handle error
@@ -216,8 +142,6 @@ success:
 //  Define all function entries
 // --------------------------------------------------------------------------
 static zend_function_entry vscp_pythia_php_functions[] = {
-    PHP_FE(vscp_pythia_new_php, arginfo_vscp_pythia_new_php)
-    PHP_FE(vscp_pythia_delete_php, arginfo_vscp_pythia_delete_php)
     PHP_FE(vscp_pythia_blind_php, arginfo_vscp_pythia_blind_php)
     PHP_FE_END
 };
@@ -249,22 +173,20 @@ ZEND_GET_MODULE(vscp_pythia_php)
 // --------------------------------------------------------------------------
 //  Extension init functions definition
 // --------------------------------------------------------------------------
-static void vscp_pythia_php_dtor(zend_resource *rsrc) {
-    vscp_pythia_delete((vscp_pythia_t *)rsrc->ptr);
-}
 
 PHP_MINIT_FUNCTION(vscp_pythia_php) {
-    le_vscp_pythia =
-            zend_register_list_destructors_ex(vscp_pythia_php_dtor, NULL, VSCP_PYTHIA_PHP_RES_NAME, module_number);
 
-    vscp_global_init();
+    vscp_status_t status = vscp_pythia_init();
+    if (status == vscp_status_SUCCESS) {
+        return SUCCESS;
+    }
 
-    return SUCCESS;
+    return FAILURE;
 }
 
 PHP_MSHUTDOWN_FUNCTION(vscp_pythia_php) {
 
-    vscp_global_cleanup();
+    vscp_pythia_cleanup();
 
     return SUCCESS;
 }

@@ -48,6 +48,9 @@ import VSCPythia
     /// Pythia verify operation failed.
     case errorVerificationFail = -201
 
+    /// Underlying random number generator failed.
+    case errorRngFailed = -202
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscp_status_t) {
         self.init(rawValue: Int(status.rawValue))!

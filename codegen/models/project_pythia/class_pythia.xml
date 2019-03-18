@@ -1,4 +1,4 @@
-<class name="pythia" context="private">
+<class name="pythia" context="none">
     Provide Pythia implementation based on the Virgil Security.
 
     <require header="pythia_init.h" scope="private" is_system="0"/>
@@ -30,13 +30,15 @@
     </macros>
 
 
-    <method name="global init" of_class="global" is_static="1">
+    <method name="init" is_static="1">
         Performs global initialization of the pythia library.
         Must be called once for entire application at startup.
+
+        <return enum="status"/>
     </method>
 
 
-    <method name="global cleanup" of_class="global" is_static="1">
+    <method name="cleanup" is_static="1">
         Performs global cleanup of the pythia library.
         Must be called once for entire application before exit.
     </method>
@@ -99,7 +101,7 @@
     </method>
 
 
-    <method name="blind">
+    <method name="blind" is_static="1">
         Blinds password. Turns password into a pseudo-random string.
         This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 
@@ -117,7 +119,7 @@
     </method>
 
 
-    <method name="deblind">
+    <method name="deblind" is_static="1">
         Deblinds 'transformed password' value with previously returned 'blinding secret' from blind().
 
         <argument name="transformed password" class="data"/>
@@ -131,7 +133,7 @@
     </method>
 
 
-    <method name="compute transformation key pair">
+    <method name="compute transformation key pair" is_static="1">
         Computes transformation private and public key.
 
         <argument name="transformation key id" class="data"/>
@@ -150,7 +152,7 @@
     </method>
 
 
-    <method name="transform">
+    <method name="transform" is_static="1">
         Transforms blinded password using transformation private key.
 
         <argument name="blinded password" class="data"/>
@@ -169,7 +171,7 @@
     </method>
 
 
-    <method name="prove">
+    <method name="prove" is_static="1">
         Generates proof that server possesses secret values that were used to transform password.
 
         <argument name="transformed password" class="data"/>
@@ -191,7 +193,7 @@
     </method>
 
 
-    <method name="verify">
+    <method name="verify" is_static="1">
         This operation allows client to verify that the output of transform() is correct,
         assuming that client has previously stored transformation public key.
 
@@ -206,7 +208,7 @@
     </method>
 
 
-    <method name="get password update token">
+    <method name="get password update token" is_static="1">
         Rotates old transformation key to new transformation key and generates 'password update token',
         that can update 'deblinded password'(s).
 
@@ -223,7 +225,7 @@
     </method>
 
 
-    <method name="update deblinded with token">
+    <method name="update deblinded with token" is_static="1">
         Updates previously stored 'deblinded password' with 'password update token'.
         After this call, 'transform()' called with new arguments will return corresponding values.
 

@@ -51,12 +51,6 @@
     <require library="mbedtls" feature="library"/>
     <require library="relic" feature="library"/>
 
-    <feature name="multi thread" default="on">
-        Enable multi-threading safety for Pythia library.
-
-        <require feature="use pthread" library="relic"/>
-    </feature>
-
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>

@@ -15,16 +15,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
 #include "unity.h"
-#include <relic/relic.h>
+#include "test_utils.h"
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCP_PYTHIA
+#if TEST_DEPENDENCIES_AVAILABLE
+
+#include "pythia.h"
+#include "pythia_c.h"
 #include "pythia_init.h"
 #include "pythia_init_c.h"
-#include "pythia_c.h"
+#include "vscp_pythia.h"
+
+#include <relic/relic.h>
 
 void
 bench1_BlindEvalProveVerify() {
-    TEST_ASSERT_EQUAL_INT(pythia_init(NULL), 0);
-    pythia_err_init();
+    vscp_pythia_init();
+
     const int iterations = 100;
 
     for (int i = 0; i < iterations; i++) {
@@ -90,16 +100,20 @@ bench1_BlindEvalProveVerify() {
         }
     }
 
-    pythia_deinit();
+    vscp_pythia_cleanup();
 }
+
+#endif
 
 int
 main() {
     UNITY_BEGIN();
 
-    conf_print();
-
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(bench1_BlindEvalProveVerify);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#endif
 
     return UNITY_END();
 }

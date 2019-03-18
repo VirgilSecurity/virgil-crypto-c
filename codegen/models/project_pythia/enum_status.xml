@@ -16,4 +16,8 @@
     <constant name="error verification fail" value="-201">
         Pythia verify operation failed.
     </constant>
+
+    <constant name="error rng failed" value="-202">
+        Underlying random number generator failed.
+    </constant>
 </enum>
