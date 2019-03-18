@@ -21,6 +21,7 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCP_PYTHIA
 #if TEST_DEPENDENCIES_AVAILABLE
 
+#include "vscp_pythia.h"
 #include "pythia_c.h"
 #include "pythia_init.h"
 #include "pythia_init_c.h"
@@ -80,7 +81,7 @@ blind_eval_deblind(gt_t deblinded) {
 
 void
 test1_DeblindStability() {
-    TEST_ASSERT_EQUAL_INT(pythia_init(NULL), 0);
+    vscp_pythia_t *pythia = vscp_pythia_new();
 
     gt_t deblinded1;
     gt_null(deblinded1);
@@ -111,12 +112,12 @@ test1_DeblindStability() {
     gt_free(deblinded1);
     gt_free(deblinded2);
 
-    pythia_deinit();
+    vscp_pythia_destroy(&pythia);
 }
 
 void
 test2_BlindEvalProveVerify() {
-    TEST_ASSERT_EQUAL_INT(pythia_init(NULL), 0);
+    vscp_pythia_t *pythia = vscp_pythia_new();
 
     const uint8_t password[9] = "password";
     const uint8_t w[11] = "virgil.com";
@@ -173,18 +174,18 @@ test2_BlindEvalProveVerify() {
     bn_free(rInv);
     g1_free(blinded);
 
-    pythia_deinit();
+    vscp_pythia_destroy(&pythia);
 }
 
 void
 test3_UpdateDelta() {
-    TEST_ASSERT_EQUAL_INT(pythia_init(NULL), 0);
-
     const uint8_t password[9] = "password";
     const uint8_t w[11] = "virgil.com";
     const uint8_t t[6] = "alice";
     const uint8_t msk0[14] = "master secret";
     const uint8_t ssk[14] = "server secret";
+
+    vscp_pythia_t *pythia = vscp_pythia_new();
 
     g1_t blinded;
     g1_new(blinded);
@@ -263,7 +264,7 @@ test3_UpdateDelta() {
     bn_free(rInv);
     g1_free(blinded);
 
-    pythia_deinit();
+    vscp_pythia_destroy(&pythia);
 }
 
 #endif
