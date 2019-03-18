@@ -15,35 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PYTHIA_PYTHIA_BUF_SIZES_H
-#define PYTHIA_PYTHIA_BUF_SIZES_H
+#ifndef PYTHIA_PYTHIA_H
+#define PYTHIA_PYTHIA_H
 
-#include <stddef.h>
+#include "pythia_buf.h"
+#include "pythia_buf_sizes.h"
+#include "pythia_init.h"
+#include "pythia_wrapper.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/// Buffer size for bn_t instances
-const extern size_t PYTHIA_BN_BUF_SIZE;
-
-/// Buffer size for g1_t instances
-const extern size_t PYTHIA_G1_BUF_SIZE;
-
-/// Buffer size for g2_t instances
-const extern size_t PYTHIA_G2_BUF_SIZE;
-
-/// Buffer size for gt_t instances
-const extern size_t PYTHIA_GT_BUF_SIZE;
-
-/// Minimum binary arguments size (e.g. tweak, secrets)
-const extern size_t PYTHIA_BIN_MIN_BUF_SIZE;
-
-/// Maximum binary arguments size (e.g. tweak, secrets)
-const extern size_t PYTHIA_BIN_MAX_BUF_SIZE;
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif //PYTHIA_PYTHIA_BUF_SIZES_H
+#endif // PYTHIA_PYTHIA_H

@@ -45,8 +45,8 @@
 
 include_guard()
 
-if(NOT TARGET pythia_wrap)
-    message(FATAL_ERROR "Expected target 'pythia_wrap' to be defined first.")
+if(NOT TARGET pythia)
+    message(FATAL_ERROR "Expected target 'pythia' to be defined first.")
 endif()
 
 configure_file(
@@ -84,7 +84,7 @@ set_property(
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
-target_sources(pythia_wrap
+target_sources(pythia
     PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_assert.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_library.h"
@@ -102,7 +102,7 @@ target_sources(pythia_wrap
             "${CMAKE_CURRENT_LIST_DIR}/src/vscp_status.c"
         )
 
-target_include_directories(pythia_wrap
+target_include_directories(pythia
         PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia>

@@ -46,12 +46,8 @@
 include_guard()
 
 option(RELIC_LIBRARY "Enable build of the 'relic' library" ON)
-option(RELIC_USE_GMP "Defines whether to use gmp arithmetic or relic." OFF)
 option(RELIC_USE_PTHREAD "Defines whether to enable relic multithreading using pthread." ON)
-option(RELIC_USE_EXT_RNG "Defines whether to use relic's random function or custom implementation." ON)
 mark_as_advanced(
         RELIC_LIBRARY
-        RELIC_USE_GMP
         RELIC_USE_PTHREAD
-        RELIC_USE_EXT_RNG
         )
