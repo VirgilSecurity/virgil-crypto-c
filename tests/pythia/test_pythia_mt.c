@@ -15,8 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
 #include "unity.h"
+#include "test_utils.h"
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCP_PYTHIA
+#if TEST_DEPENDENCIES_AVAILABLE
+
 #include "pythia.h"
+#include "vscp_pythia.h"
+
 #include <relic/relic.h>
 #include <pthread.h>
 #include <unistd.h>
@@ -153,8 +162,8 @@ pythia_err(void *ptr) {
 }
 
 void
-test() {
-    TEST_ASSERT_EQUAL_INT(pythia_init(NULL), 0);
+test(void) {
+    vscp_pythia_init();
 
     pthread_t t1, t2;
 
@@ -177,16 +186,20 @@ test() {
     pthread_join(t1, NULL);
     pthread_join(t2, NULL);
 
-    pythia_deinit();
+    vscp_pythia_cleanup();
 }
+
+#endif
 
 int
 main() {
     UNITY_BEGIN();
 
-    conf_print();
-
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#endif
 
     return UNITY_END();
 }

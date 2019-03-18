@@ -15,9 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <memory.h>
-#include "pythia.h"
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
 #include "unity.h"
+#include "test_utils.h"
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCP_PYTHIA
+#if TEST_DEPENDENCIES_AVAILABLE
+
+#include "pythia.h"
+#include "vscp_pythia.h"
 
 static const char deblinded_hex[769] =
         "13273238e3119262f86d3213b8eb6b99c093ef48737dfcfae96210f7350e096cbc7e6b992e4e6f705ac3f0a915d1622c1644596408e3d1"
@@ -97,7 +104,7 @@ blind_eval_deblind(pythia_buf_t *deblinded_password) {
 
 void
 test1_DeblindStability() {
-    TEST_ASSERT_EQUAL_INT(pythia_init(NULL), 0);
+    vscp_pythia_init();
 
     uint8_t deblinded_bin[384];
     const char *pos = deblinded_hex;
@@ -122,12 +129,12 @@ test1_DeblindStability() {
         deblinded_password.allocated = 0;
     }
 
-    pythia_deinit();
+    vscp_pythia_cleanup();
 }
 
 void
 test2_BlindEvalProveVerify() {
-    TEST_ASSERT_EQUAL_INT(pythia_init(NULL), 0);
+    vscp_pythia_init();
 
     pythia_buf_t blinded_password, blinding_secret, transformed_password, transformation_private_key, transformed_tweak,
             transformation_public_key, proof_value_c, proof_value_u, transformation_key_id_buf, tweak_buf,
@@ -203,12 +210,12 @@ test2_BlindEvalProveVerify() {
     free(proof_value_c.p);
     free(proof_value_u.p);
 
-    pythia_deinit();
+    vscp_pythia_cleanup();
 }
 
 void
 test3_UpdateDelta() {
-    TEST_ASSERT_EQUAL_INT(pythia_init(NULL), 0);
+    vscp_pythia_init();
 
     pythia_buf_t blinded_password, blinding_secret, transformed_password, transformation_private_key,
             new_transformation_private_key, transformed_tweak, password_update_token, updated_transformation_public_key,
@@ -329,7 +336,7 @@ test3_UpdateDelta() {
     free(blinding_secret.p);
     free(blinded_password.p);
 
-    pythia_deinit();
+    vscp_pythia_cleanup();
 }
 
 void
@@ -338,7 +345,7 @@ test4_BlindHugePassword() {
             "passwordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpa"
             "sswordpasswordpasswordpassword";
 
-    TEST_ASSERT_EQUAL_INT(pythia_init(NULL), 0);
+    vscp_pythia_init();
 
     pythia_buf_t blinded_password, blinding_secret, password_buf;
 
@@ -357,17 +364,23 @@ test4_BlindHugePassword() {
     free(blinded_password.p);
     free(blinding_secret.p);
 
-    pythia_deinit();
+    vscp_pythia_cleanup();
 }
+
+#endif
 
 int
 main() {
     UNITY_BEGIN();
 
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test1_DeblindStability);
     RUN_TEST(test2_BlindEvalProveVerify);
     RUN_TEST(test3_UpdateDelta);
     RUN_TEST(test4_BlindHugePassword);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#endif
 
     return UNITY_END();
 }

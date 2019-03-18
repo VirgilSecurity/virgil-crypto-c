@@ -46,19 +46,8 @@
 include_guard()
 
 option(VSCP_LIBRARY "Enable build of the 'pythia' library" ON)
-option(VSCP_MULTI_THREAD "Enable multi-threading safety for Pythia library." ON)
 option(VSCP_PYTHIA "Enable class 'pythia'." ON)
 mark_as_advanced(
         VSCP_LIBRARY
-        VSCP_MULTI_THREAD
         VSCP_PYTHIA
         )
-
-if(VSCP_MULTI_THREAD AND NOT RELIC_USE_PTHREAD)
-    message("-- error --")
-    message("--")
-    message("Feature VSCP_MULTI_THREAD depends on the feature:")
-    message("     RELIC_USE_PTHREAD - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()

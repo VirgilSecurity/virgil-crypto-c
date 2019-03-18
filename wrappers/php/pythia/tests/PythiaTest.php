@@ -41,13 +41,11 @@
 class PythiaTest extends PHPUnit\Framework\TestCase {
 
     public function test_blind_argumentPassword_returnsResult() {
-        $pythia = vscp_pythia_new_php();
-        $result = vscp_pythia_blind_php($pythia, "password");
+        $result = vscp_pythia_blind_php("password");
         $this->assertEquals(2, count($result));
         list($blindedPassword, $blindingSecret) = $result;
         $this->assertEquals(49, strlen($blindedPassword));
         $this->assertEquals(33, strlen($blindingSecret));
-        vscp_pythia_delete_php($pythia);
     }
 }
 

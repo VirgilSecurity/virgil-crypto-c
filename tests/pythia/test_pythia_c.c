@@ -15,16 +15,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <virgil/crypto/pythia/vscp_pythia.h>
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
 #include "unity.h"
+#include "test_utils.h"
 
 #define TEST_DEPENDENCIES_AVAILABLE VSCP_PYTHIA
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include "vscp_pythia.h"
 #include "pythia_c.h"
 #include "pythia_init.h"
 #include "pythia_init_c.h"
+#include "vscp_pythia.h"
 
 static const char deblinded_hex[769] =
         "13273238e3119262f86d3213b8eb6b99c093ef48737dfcfae96210f7350e096cbc7e6b992e4e6f705ac3f0a915d1622c1644596408e3d1"
@@ -81,7 +83,7 @@ blind_eval_deblind(gt_t deblinded) {
 
 void
 test1_DeblindStability() {
-    vscp_pythia_t *pythia = vscp_pythia_new();
+    vscp_pythia_init();
 
     gt_t deblinded1;
     gt_null(deblinded1);
@@ -112,18 +114,18 @@ test1_DeblindStability() {
     gt_free(deblinded1);
     gt_free(deblinded2);
 
-    vscp_pythia_destroy(&pythia);
+    vscp_pythia_cleanup();
 }
 
 void
 test2_BlindEvalProveVerify() {
-    vscp_pythia_t *pythia = vscp_pythia_new();
-
     const uint8_t password[9] = "password";
     const uint8_t w[11] = "virgil.com";
     const uint8_t t[6] = "alice";
     const uint8_t msk[14] = "master secret";
     const uint8_t ssk[14] = "server secret";
+
+    vscp_pythia_init();
 
     g1_t blinded;
     g1_null(blinded);
@@ -174,7 +176,7 @@ test2_BlindEvalProveVerify() {
     bn_free(rInv);
     g1_free(blinded);
 
-    vscp_pythia_destroy(&pythia);
+    vscp_pythia_cleanup();
 }
 
 void
@@ -185,7 +187,7 @@ test3_UpdateDelta() {
     const uint8_t msk0[14] = "master secret";
     const uint8_t ssk[14] = "server secret";
 
-    vscp_pythia_t *pythia = vscp_pythia_new();
+    vscp_pythia_init();
 
     g1_t blinded;
     g1_new(blinded);
@@ -264,7 +266,7 @@ test3_UpdateDelta() {
     bn_free(rInv);
     g1_free(blinded);
 
-    vscp_pythia_destroy(&pythia);
+    vscp_pythia_cleanup();
 }
 
 #endif
@@ -274,15 +276,9 @@ main() {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    vscp_global_init();
-
-    conf_print();
-
     RUN_TEST(test1_DeblindStability);
     RUN_TEST(test2_BlindEvalProveVerify);
     RUN_TEST(test3_UpdateDelta);
-
-    vscp_global_cleanup();
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
