@@ -40,15 +40,6 @@ project(pythia VERSION 0.2.2 LANGUAGES C)
 set(CMAKE_C_STANDARD 99)
 
 # ---------------------------------------------------------------------------
-#   Options
-# ---------------------------------------------------------------------------
-option(ENABLE_TESTING "Defines whether include unit testing or not." ON)
-
-option(RELIC_USE_GMP "Defines whether use gmp arithmetic or relic" OFF)
-option(RELIC_USE_PTHREAD "Defines whether to enable relic multithreading using pthread" ON)
-option(RELIC_USE_EXT_RNG "Defines whether to use relic's random function or custom implementation" OFF)
-
-# ---------------------------------------------------------------------------
 #   Helpers
 # ---------------------------------------------------------------------------
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
@@ -56,19 +47,20 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 # ---------------------------------------------------------------------------
 #   Dependencies
 # ---------------------------------------------------------------------------
-if(RELIC_USE_GMP)
-    find_package(GMP REQUIRED)
-
-    if(NOT GMP_FOUND)
-        message(FATAL_ERROR "Library GMP is required, but not found.")
-    endif()
-endif()
 
 #
 # Relic
 #
 if(NOT TARGET relic)
     message(FATAL_ERROR "Required library 'relic' is not found - looking for target 'relic'.")
+endif()
+
+if(RELIC_USE_GMP)
+    find_package(GMP REQUIRED)
+
+    if(NOT GMP_FOUND)
+        message(FATAL_ERROR "Library GMP is required, but not found.")
+    endif()
 endif()
 
 # ---------------------------------------------------------------------------
