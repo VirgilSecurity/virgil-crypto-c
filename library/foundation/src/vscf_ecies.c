@@ -293,6 +293,7 @@ random_failed:
 compute_shared_failed:
     vsc_buffer_destroy(&shared_key);
     vscf_ecies_envelope_cleanup_properties(self->envelope);
+    vscf_ecies_release_ephemeral_key(self);
 
     return vscf_error_status(&error);
 }
