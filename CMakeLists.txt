@@ -159,13 +159,6 @@ if(VIRGIL_LIB_PYTHIA)
 endif()
 
 #
-# Pythia
-#
-if(VIRGIL_LIB_PYTHIA)
-    add_subdirectory("thirdparty/pythia")
-endif()
-
-#
 # Ed25519
 #
 if(VIRGIL_LIB_ED25519)

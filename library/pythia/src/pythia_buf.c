@@ -17,7 +17,8 @@
 
 #include "pythia_buf.h"
 
-pythia_buf_t *pythia_buf_new(void) {
+pythia_buf_t *
+pythia_buf_new(void) {
     pythia_buf_t *buf = (pythia_buf_t *)malloc(sizeof(pythia_buf_t));
     buf->p = NULL;
     buf->allocated = 0;
@@ -27,11 +28,13 @@ pythia_buf_t *pythia_buf_new(void) {
 }
 
 /// Frees pythia buffer (WARNING: Doesn't free actual buffer memory, only memory needed for pythia_buf instance itself)
-void pythia_buf_free(pythia_buf_t *buf) {
+void
+pythia_buf_free(pythia_buf_t *buf) {
     free(buf);
 }
 
-void pythia_buf_setup(pythia_buf_t *buf, uint8_t *p, size_t allocated, size_t len) {
+void
+pythia_buf_setup(pythia_buf_t *buf, uint8_t *p, size_t allocated, size_t len) {
     buf->p = p;
     buf->allocated = allocated;
     buf->len = len;

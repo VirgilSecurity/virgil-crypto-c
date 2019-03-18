@@ -15,17 +15,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PYTHIA_PYTHIA_INIT_C_H
-#define PYTHIA_PYTHIA_INIT_C_H
+#ifndef PYTHIA_PYTHIA_INIT_H
+#define PYTHIA_PYTHIA_INIT_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void pythia_err_init(void);
+/// Struct used to initialize pythia
+typedef struct pythia_init_args {
+    void (*callback)(uint8_t *, int, void *); /// Callback called to obtain random value
+    void *args;                               /// Arguments passed to callback
+} pythia_init_args_t;
+
+/// Initializer pythia. This function is not thread-safe and should be called before any other pythia call
+/// \param init_args initialization arguments
+/// \return 0 if succeeded, -1 otherwise
+int
+pythia_init(const pythia_init_args_t *init_args);
+
+/// Clears pythia data. Should be called after all pythia interactions are ended
+void
+pythia_deinit(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //PYTHIA_PYTHIA_INIT_C_H
+#endif // PYTHIA_PYTHIA_INIT_H

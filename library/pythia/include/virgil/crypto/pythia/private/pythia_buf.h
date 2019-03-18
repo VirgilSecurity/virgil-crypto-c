@@ -27,27 +27,30 @@ extern "C" {
 
 /// Byte buffers used to pass data to/from pythia library
 typedef struct pythia_buf {
-    uint8_t *p;         /// Byte array pointer
-    size_t allocated;   /// Number of allocated bytes
-    size_t len;         /// Number of used bytes
+    uint8_t *p;       /// Byte array pointer
+    size_t allocated; /// Number of allocated bytes
+    size_t len;       /// Number of used bytes
 } pythia_buf_t;
 
 /// Creates new emoty pythia buffer (WARNING: Memory for actual byte array is not allocated here)
 /// \return allocated empty pythia buffer
-pythia_buf_t *pythia_buf_new(void);
+pythia_buf_t *
+pythia_buf_new(void);
 
 /// Frees pythia buffer (WARNING: Doesn't free actual buffer memory, only memory needed for pythia_buf instance itself)
-void pythia_buf_free(pythia_buf_t *buf);
+void
+pythia_buf_free(pythia_buf_t *buf);
 
 /// Initializes pythia buffer with given values
 /// \param buf pythia buffer to be initialized
 /// \param p byte array pointer
 /// \param allocated number of allocated bytes
 /// \param len number of used bytes
-void pythia_buf_setup(pythia_buf_t *buf, uint8_t *p, size_t allocated, size_t len);
+void
+pythia_buf_setup(pythia_buf_t *buf, uint8_t *p, size_t allocated, size_t len);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //PYTHIA_PYTHIA_BUF_H
+#endif // PYTHIA_PYTHIA_BUF_H

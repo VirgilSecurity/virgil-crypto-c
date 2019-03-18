@@ -21,7 +21,8 @@
 #include "pythia_init_c.h"
 #include "pythia_c.h"
 
-void bench1_BlindEvalProveVerify() {
+void
+bench1_BlindEvalProveVerify() {
     TEST_ASSERT_EQUAL_INT(pythia_init(NULL), 0);
     pythia_err_init();
     const int iterations = 100;
@@ -33,14 +34,22 @@ void bench1_BlindEvalProveVerify() {
         const uint8_t msk[14] = "master secret";
         const uint8_t ssk[14] = "server secret";
 
-        g1_t blinded; g1_null(blinded);
-        bn_t rInv; bn_null(rInv);
-        gt_t y; gt_null(y);
-        bn_t kw; bn_null(kw);
-        g2_t tTilde; g2_null(tTilde);
-        g1_t pi_p; g1_null(pi_p);
-        bn_t c; bn_null(c);
-        bn_t u; bn_null(u);
+        g1_t blinded;
+        g1_null(blinded);
+        bn_t rInv;
+        bn_null(rInv);
+        gt_t y;
+        gt_null(y);
+        bn_t kw;
+        bn_null(kw);
+        g2_t tTilde;
+        g2_null(tTilde);
+        g1_t pi_p;
+        g1_null(pi_p);
+        bn_t c;
+        bn_null(c);
+        bn_t u;
+        bn_null(u);
 
         TRY {
             g1_new(blinded);
@@ -84,7 +93,8 @@ void bench1_BlindEvalProveVerify() {
     pythia_deinit();
 }
 
-int main() {
+int
+main() {
     UNITY_BEGIN();
 
     conf_print();

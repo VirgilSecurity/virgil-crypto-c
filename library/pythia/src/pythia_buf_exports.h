@@ -15,31 +15,36 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PYTHIA_PYTHIA_INIT_H
-#define PYTHIA_PYTHIA_INIT_H
+#ifndef PYTHIA_PYTHIA_BUF_EXPORTS_H
+#define PYTHIA_PYTHIA_BUF_EXPORTS_H
 
-#include "pythia_conf.h"
+#include "pythia_buf.h"
+
+#include <relic/relic.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/// Struct used to initialize pythia
-typedef struct pythia_init_args {
-    void (*callback)(uint8_t *, int, void *);  /// Callback called to obtain random value
-    void *args;                                /// Arguments passed to callback
-} pythia_init_args_t;
-
-/// Initializer pythia. This function is not thread-safe and should be called before any other pythia call
-/// \param init_args initialization arguments
-/// \return 0 if succeeded, -1 otherwise
-int pythia_init(const pythia_init_args_t *init_args);
-
-/// Clears pythia data. Should be called after all pythia interactions are ended
-void pythia_deinit(void);
+void
+bn_read_buf(bn_t b, const pythia_buf_t *buf);
+void
+gt_read_buf(gt_t g, const pythia_buf_t *buf);
+void
+g1_read_buf(g1_t g, const pythia_buf_t *buf);
+void
+g2_read_buf(g2_t g, const pythia_buf_t *buf);
+void
+bn_write_buf(pythia_buf_t *buf, bn_t b);
+void
+g2_write_buf(pythia_buf_t *buf, g2_t e);
+void
+gt_write_buf(pythia_buf_t *buf, gt_t g);
+void
+g1_write_buf(pythia_buf_t *buf, g1_t g);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //PYTHIA_PYTHIA_INIT_H
+#endif // PYTHIA_PYTHIA_BUF_EXPORTS_H

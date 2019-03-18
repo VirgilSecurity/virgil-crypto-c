@@ -21,17 +21,20 @@
 #include "pythia_buf.h"
 #include "pythia_buf_exports.h"
 
-static void check_size_read(const pythia_buf_t *buf, size_t min_size, size_t max_size) {
+static void
+check_size_read(const pythia_buf_t *buf, size_t min_size, size_t max_size) {
     if (!buf || buf->len < min_size || buf->len > max_size)
         THROW(ERR_NO_BUFFER);
 }
 
-static void check_size_write(const pythia_buf_t *buf, size_t min_size) {
+static void
+check_size_write(const pythia_buf_t *buf, size_t min_size) {
     if (!buf || buf->allocated < min_size)
         THROW(ERR_NO_BUFFER);
 }
 
-void bn_read_buf(bn_t b, const pythia_buf_t *buf) {
+void
+bn_read_buf(bn_t b, const pythia_buf_t *buf) {
     check_size_read(buf, 2, PYTHIA_BN_BUF_SIZE);
 
     uint8_t sign = buf->p[0];
@@ -43,10 +46,11 @@ void bn_read_buf(bn_t b, const pythia_buf_t *buf) {
     b->sign = sign;
 }
 
-void gt_read_buf(gt_t g, const pythia_buf_t *buf) {
+void
+gt_read_buf(gt_t g, const pythia_buf_t *buf) {
     check_size_read(buf, 1, PYTHIA_GT_BUF_SIZE);
 
-    //TODO replace with proper sanity check
+    // TODO replace with proper sanity check
     int zeroBytes = 0;
     for (size_t i = 0; i < buf->len; i++) {
         zeroBytes += buf->p[i] == 0;
@@ -55,24 +59,26 @@ void gt_read_buf(gt_t g, const pythia_buf_t *buf) {
         THROW(ERR_NO_VALID);
 
     gt_read_bin(g, buf->p, (int)buf->len);
-
 }
 
-void g1_read_buf(g1_t g, const pythia_buf_t *buf) {
+void
+g1_read_buf(g1_t g, const pythia_buf_t *buf) {
     check_size_read(buf, 1, PYTHIA_G1_BUF_SIZE);
     g1_read_bin(g, buf->p, (int)buf->len);
     if (!g1_is_valid(g))
         THROW(ERR_NO_VALID);
 }
 
-void g2_read_buf(g2_t g, const pythia_buf_t *buf) {
+void
+g2_read_buf(g2_t g, const pythia_buf_t *buf) {
     check_size_read(buf, 1, PYTHIA_G2_BUF_SIZE);
     g2_read_bin(g, buf->p, (int)buf->len);
     if (!g2_is_valid(g))
         THROW(ERR_NO_VALID);
 }
 
-void bn_write_buf(pythia_buf_t *buf, bn_t b) {
+void
+bn_write_buf(pythia_buf_t *buf, bn_t b) {
     int size = bn_size_bin(b) + 1;
     check_size_write(buf, (size_t)size);
     bn_write_bin(buf->p + 1, size - 1, b);
@@ -80,21 +86,24 @@ void bn_write_buf(pythia_buf_t *buf, bn_t b) {
     buf->len = (size_t)size;
 }
 
-void g2_write_buf(pythia_buf_t *buf, g2_t e) {
+void
+g2_write_buf(pythia_buf_t *buf, g2_t e) {
     int size = g2_size_bin(e, 1);
     check_size_write(buf, (size_t)size);
     g2_write_bin(buf->p, size, e, 1);
     buf->len = (size_t)size;
 }
 
-void gt_write_buf(pythia_buf_t *buf, gt_t g) {
+void
+gt_write_buf(pythia_buf_t *buf, gt_t g) {
     int size = gt_size_bin(g, 1);
     check_size_write(buf, (size_t)size);
     gt_write_bin(buf->p, size, g, 1);
     buf->len = (size_t)size;
 }
 
-void g1_write_buf(pythia_buf_t *buf, g1_t g) {
+void
+g1_write_buf(pythia_buf_t *buf, g1_t g) {
     int size = g1_size_bin(g, 1);
     check_size_write(buf, (size_t)size);
     g1_write_bin(buf->p, size, g, 1);

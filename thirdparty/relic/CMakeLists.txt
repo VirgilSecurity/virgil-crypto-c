@@ -42,16 +42,8 @@ set(RELIC_ARGS_FILE ${CMAKE_CURRENT_LIST_DIR}/relic-args.cmake)
 
 include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 
-if(RELIC_USE_GMP)
-    set(RELIC_CMAKE_ARGS ${RELIC_CMAKE_ARGS} -DARITH=gmp)
-endif()
-
 if(RELIC_USE_PTHREAD)
     set(RELIC_CMAKE_ARGS ${RELIC_CMAKE_ARGS} -DERRMO=ERRMO_SPTHREAD)
-endif()
-
-if(RELIC_USE_EXT_RNG)
-    set(RELIC_CMAKE_ARGS ${RELIC_CMAKE_ARGS} -DRAND=CALL)
 endif()
 
 # ---------------------------------------------------------------------------
@@ -66,7 +58,7 @@ ExternalProject_Add(relic-ext
                 "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
                 "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
                 "-DCMAKE_INSTALL_PREFIX=${RELIC_LOCATION}"
-                ${RELIC_CMAKE_ARGS} -C "${RELIC_ARGS_FILE}"
+                -DRAND=CALL ${RELIC_CMAKE_ARGS} -C "${RELIC_ARGS_FILE}"
         )
 
 # ---------------------------------------------------------------------------

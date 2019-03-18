@@ -15,12 +15,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PYTHIA_PYTHIA_H
-#define PYTHIA_PYTHIA_H
+#ifndef PYTHIA_PYTHIA_INIT_C_H
+#define PYTHIA_PYTHIA_INIT_C_H
 
-#include "pythia_buf.h"
-#include "pythia_buf_sizes.h"
-#include "pythia_init.h"
-#include "pythia_wrapper.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#endif //PYTHIA_PYTHIA_H
+void
+pythia_err_init(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // PYTHIA_PYTHIA_INIT_C_H

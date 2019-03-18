@@ -6,7 +6,6 @@
         prefix="vscp"
         path="../library/pythia/"
         work_path="generated/pythia/"
-        cmake_target="pythia_wrap"
         wrappers="swift"
         >
 

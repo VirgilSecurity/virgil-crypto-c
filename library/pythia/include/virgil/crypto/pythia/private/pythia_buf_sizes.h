@@ -15,28 +15,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PYTHIA_PYTHIA_BUF_EXPORTS_H
-#define PYTHIA_PYTHIA_BUF_EXPORTS_H
+#ifndef PYTHIA_PYTHIA_BUF_SIZES_H
+#define PYTHIA_PYTHIA_BUF_SIZES_H
 
-#include "pythia_buf.h"
-
-#include <relic/relic.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void bn_read_buf(bn_t b, const pythia_buf_t *buf);
-void gt_read_buf(gt_t g, const pythia_buf_t *buf);
-void g1_read_buf(g1_t g, const pythia_buf_t *buf);
-void g2_read_buf(g2_t g, const pythia_buf_t *buf);
-void bn_write_buf(pythia_buf_t *buf, bn_t b);
-void g2_write_buf(pythia_buf_t *buf, g2_t e);
-void gt_write_buf(pythia_buf_t *buf, gt_t g);
-void g1_write_buf(pythia_buf_t *buf, g1_t g);
+/// Buffer size for bn_t instances
+const extern size_t PYTHIA_BN_BUF_SIZE;
+
+/// Buffer size for g1_t instances
+const extern size_t PYTHIA_G1_BUF_SIZE;
+
+/// Buffer size for g2_t instances
+const extern size_t PYTHIA_G2_BUF_SIZE;
+
+/// Buffer size for gt_t instances
+const extern size_t PYTHIA_GT_BUF_SIZE;
+
+/// Minimum binary arguments size (e.g. tweak, secrets)
+const extern size_t PYTHIA_BIN_MIN_BUF_SIZE;
+
+/// Maximum binary arguments size (e.g. tweak, secrets)
+const extern size_t PYTHIA_BIN_MAX_BUF_SIZE;
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //PYTHIA_PYTHIA_BUF_EXPORTS_H
+#endif // PYTHIA_PYTHIA_BUF_SIZES_H

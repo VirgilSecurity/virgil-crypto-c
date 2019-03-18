@@ -19,7 +19,14 @@
 #include "pythia.h"
 #include "unity.h"
 
-static const char deblinded_hex[769] = "13273238e3119262f86d3213b8eb6b99c093ef48737dfcfae96210f7350e096cbc7e6b992e4e6f705ac3f0a915d1622c1644596408e3d16126ddfa9ce594e9f361b21ef9c82309e5714c09bcd7f7ec5c2666591134c645d45ed8c9703e718ee005fe4b97fc40f69b424728831d0a889cd39be04683dd380daa0df67c38279e3b9fe32f6c40780311f2dfbb6e89fc90ef15fb2c7958e387182dc7ef57f716fdd152a58ac1d3f0d19bfa2f789024333976c69fbe9e24b58d6cd8fa49c5f4d642b00f8e390c199f37f7b3125758ef284ae10fd9c2da7ea280550baccd55dadd70873a063bcfc9cac9079042af88a543a6cc09aaed6ba4954d6ee8ccc6e1145944328266616cd00f8a616f0e79e52ddd2ef970c8ba8f8ffce35505dc643c8e2b6e430a1474a6d043a4daf9b62af87c1d45ca994d23f908f7898a3f44ca7bb642122087ca819308b3d8afad17ca1f6148e8750870336ca68eb783c89b0dc9d92392f453c650e9f09232b9fcffd1c2cad24b14d2b4952b7f54552295ce0e854996913c";
+static const char deblinded_hex[769] =
+        "13273238e3119262f86d3213b8eb6b99c093ef48737dfcfae96210f7350e096cbc7e6b992e4e6f705ac3f0a915d1622c1644596408e3d1"
+        "6126ddfa9ce594e9f361b21ef9c82309e5714c09bcd7f7ec5c2666591134c645d45ed8c9703e718ee005fe4b97fc40f69b424728831d0a"
+        "889cd39be04683dd380daa0df67c38279e3b9fe32f6c40780311f2dfbb6e89fc90ef15fb2c7958e387182dc7ef57f716fdd152a58ac1d3"
+        "f0d19bfa2f789024333976c69fbe9e24b58d6cd8fa49c5f4d642b00f8e390c199f37f7b3125758ef284ae10fd9c2da7ea280550baccd55"
+        "dadd70873a063bcfc9cac9079042af88a543a6cc09aaed6ba4954d6ee8ccc6e1145944328266616cd00f8a616f0e79e52ddd2ef970c8ba"
+        "8f8ffce35505dc643c8e2b6e430a1474a6d043a4daf9b62af87c1d45ca994d23f908f7898a3f44ca7bb642122087ca819308b3d8afad17"
+        "ca1f6148e8750870336ca68eb783c89b0dc9d92392f453c650e9f09232b9fcffd1c2cad24b14d2b4952b7f54552295ce0e854996913c";
 static const uint8_t password[9] = "password";
 static const uint8_t w[11] = "virgil.com";
 static const uint8_t t[6] = "alice";
@@ -27,11 +34,11 @@ static const uint8_t msk[14] = "master secret";
 static const uint8_t msk1[14] = "secret master";
 static const uint8_t ssk[14] = "server secret";
 
-void blind_eval_deblind(pythia_buf_t *deblinded_password) {
-    pythia_buf_t blinded_password, blinding_secret, transformed_password,
-            transformation_private_key, transformed_tweak,
-            transformation_key_id_buf, tweak_buf, pythia_secret_buf,
-            pythia_scope_secret_buf, password_buf, transformation_public_key;
+void
+blind_eval_deblind(pythia_buf_t *deblinded_password) {
+    pythia_buf_t blinded_password, blinding_secret, transformed_password, transformation_private_key, transformed_tweak,
+            transformation_key_id_buf, tweak_buf, pythia_secret_buf, pythia_scope_secret_buf, password_buf,
+            transformation_public_key;
 
     blinded_password.p = (uint8_t *)malloc(PYTHIA_G1_BUF_SIZE);
     blinded_password.allocated = PYTHIA_G1_BUF_SIZE;
@@ -70,12 +77,11 @@ void blind_eval_deblind(pythia_buf_t *deblinded_password) {
         TEST_FAIL();
 
     if (pythia_w_compute_transformation_key_pair(&transformation_key_id_buf, &pythia_secret_buf,
-                                                 &pythia_scope_secret_buf,
-                                                 &transformation_private_key, &transformation_public_key))
+                &pythia_scope_secret_buf, &transformation_private_key, &transformation_public_key))
         TEST_FAIL();
 
-    if (pythia_w_transform(&blinded_password, &tweak_buf, &transformation_private_key, &transformed_password,
-                           &transformed_tweak))
+    if (pythia_w_transform(
+                &blinded_password, &tweak_buf, &transformation_private_key, &transformed_password, &transformed_tweak))
         TEST_FAIL();
 
     if (pythia_w_deblind(&transformed_password, &blinding_secret, deblinded_password))
@@ -89,7 +95,8 @@ void blind_eval_deblind(pythia_buf_t *deblinded_password) {
     free(transformed_tweak.p);
 }
 
-void test1_DeblindStability() {
+void
+test1_DeblindStability() {
     TEST_ASSERT_EQUAL_INT(pythia_init(NULL), 0);
 
     uint8_t deblinded_bin[384];
@@ -118,14 +125,13 @@ void test1_DeblindStability() {
     pythia_deinit();
 }
 
-void test2_BlindEvalProveVerify() {
+void
+test2_BlindEvalProveVerify() {
     TEST_ASSERT_EQUAL_INT(pythia_init(NULL), 0);
 
-    pythia_buf_t blinded_password, blinding_secret, transformed_password,
-            transformation_private_key, transformed_tweak,
-            transformation_public_key, proof_value_c, proof_value_u,
-            transformation_key_id_buf, tweak_buf, pythia_secret_buf,
-            pythia_scope_secret_buf, password_buf;
+    pythia_buf_t blinded_password, blinding_secret, transformed_password, transformation_private_key, transformed_tweak,
+            transformation_public_key, proof_value_c, proof_value_u, transformation_key_id_buf, tweak_buf,
+            pythia_secret_buf, pythia_scope_secret_buf, password_buf;
 
     blinded_password.p = (uint8_t *)malloc(PYTHIA_G1_BUF_SIZE);
     blinded_password.allocated = PYTHIA_G1_BUF_SIZE;
@@ -170,22 +176,20 @@ void test2_BlindEvalProveVerify() {
         TEST_FAIL();
 
     if (pythia_w_compute_transformation_key_pair(&transformation_key_id_buf, &pythia_secret_buf,
-                                                 &pythia_scope_secret_buf,
-                                                 &transformation_private_key, &transformation_public_key))
+                &pythia_scope_secret_buf, &transformation_private_key, &transformation_public_key))
         TEST_FAIL();
 
-    if (pythia_w_transform(&blinded_password, &tweak_buf, &transformation_private_key, &transformed_password,
-                           &transformed_tweak))
+    if (pythia_w_transform(
+                &blinded_password, &tweak_buf, &transformation_private_key, &transformed_password, &transformed_tweak))
         TEST_FAIL();
 
     if (pythia_w_prove(&transformed_password, &blinded_password, &transformed_tweak, &transformation_private_key,
-                       &transformation_public_key,
-                       &proof_value_c, &proof_value_u))
+                &transformation_public_key, &proof_value_c, &proof_value_u))
         TEST_FAIL();
 
     int verified = 0;
     if (pythia_w_verify(&transformed_password, &blinded_password, &tweak_buf, &transformation_public_key,
-                        &proof_value_c, &proof_value_u, &verified))
+                &proof_value_c, &proof_value_u, &verified))
         TEST_FAIL();
 
     TEST_ASSERT_NOT_EQUAL(0, verified);
@@ -202,16 +206,15 @@ void test2_BlindEvalProveVerify() {
     pythia_deinit();
 }
 
-void test3_UpdateDelta() {
+void
+test3_UpdateDelta() {
     TEST_ASSERT_EQUAL_INT(pythia_init(NULL), 0);
 
-    pythia_buf_t blinded_password, blinding_secret, transformed_password,
-            transformation_private_key, new_transformation_private_key, transformed_tweak,
-            password_update_token, updated_transformation_public_key,
-            transformation_public_key, proof_value_c, proof_value_u,
-            transformation_key_id_buf, tweak_buf, pythia_secret_buf,
-            pythia_scope_secret_buf, password_buf, new_pythia_secret_buf,
-            updated_deblinded_password, deblinded_password, new_deblinded_password;
+    pythia_buf_t blinded_password, blinding_secret, transformed_password, transformation_private_key,
+            new_transformation_private_key, transformed_tweak, password_update_token, updated_transformation_public_key,
+            transformation_public_key, proof_value_c, proof_value_u, transformation_key_id_buf, tweak_buf,
+            pythia_secret_buf, pythia_scope_secret_buf, password_buf, new_pythia_secret_buf, updated_deblinded_password,
+            deblinded_password, new_deblinded_password;
 
     blinded_password.p = (uint8_t *)malloc(PYTHIA_G1_BUF_SIZE);
     blinded_password.allocated = PYTHIA_G1_BUF_SIZE;
@@ -277,24 +280,22 @@ void test3_UpdateDelta() {
         TEST_FAIL();
 
     if (pythia_w_compute_transformation_key_pair(&transformation_key_id_buf, &pythia_secret_buf,
-                                                 &pythia_scope_secret_buf,
-                                                 &transformation_private_key, &transformation_public_key))
+                &pythia_scope_secret_buf, &transformation_private_key, &transformation_public_key))
         TEST_FAIL();
 
-    if (pythia_w_transform(&blinded_password, &tweak_buf, &transformation_private_key, &transformed_password,
-                           &transformed_tweak))
+    if (pythia_w_transform(
+                &blinded_password, &tweak_buf, &transformation_private_key, &transformed_password, &transformed_tweak))
         TEST_FAIL();
 
     if (pythia_w_deblind(&transformed_password, &blinding_secret, &deblinded_password))
         TEST_FAIL();
 
     if (pythia_w_compute_transformation_key_pair(&transformation_key_id_buf, &new_pythia_secret_buf,
-                                                 &pythia_scope_secret_buf,
-                                                 &new_transformation_private_key, &transformation_public_key))
+                &pythia_scope_secret_buf, &new_transformation_private_key, &transformation_public_key))
         TEST_FAIL();
 
-    if (pythia_w_get_password_update_token(&transformation_private_key, &new_transformation_private_key,
-                                           &password_update_token))
+    if (pythia_w_get_password_update_token(
+                &transformation_private_key, &new_transformation_private_key, &password_update_token))
         TEST_FAIL();
 
     if (pythia_w_update_deblinded_with_token(&deblinded_password, &password_update_token, &updated_deblinded_password))
@@ -304,7 +305,7 @@ void test3_UpdateDelta() {
         TEST_FAIL();
 
     if (pythia_w_transform(&blinded_password, &tweak_buf, &new_transformation_private_key, &transformed_password,
-                           &transformed_tweak))
+                &transformed_tweak))
         TEST_FAIL();
 
     if (pythia_w_deblind(&transformed_password, &blinding_secret, &new_deblinded_password))
@@ -331,8 +332,11 @@ void test3_UpdateDelta() {
     pythia_deinit();
 }
 
-void test4_BlindHugePassword() {
-    const uint8_t password[137] = "passwordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpassword";
+void
+test4_BlindHugePassword() {
+    const uint8_t password[137] =
+            "passwordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpa"
+            "sswordpasswordpasswordpassword";
 
     TEST_ASSERT_EQUAL_INT(pythia_init(NULL), 0);
 
@@ -356,7 +360,8 @@ void test4_BlindHugePassword() {
     pythia_deinit();
 }
 
-int main() {
+int
+main() {
     UNITY_BEGIN();
 
     RUN_TEST(test1_DeblindStability);
