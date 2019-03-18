@@ -93,7 +93,7 @@ enum {
     //
     //  Maximum length in bytes for the key material.
     //
-    vscf_key_material_rng_KEY_MATERIAL_LEN_MAX = 256
+    vscf_key_material_rng_KEY_MATERIAL_LEN_MAX = 512
 };
 
 //
