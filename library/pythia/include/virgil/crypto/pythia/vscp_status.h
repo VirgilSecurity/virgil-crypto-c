@@ -81,7 +81,7 @@ enum vscp_status_t {
     //
     vscp_status_ERROR_BAD_ARGUMENTS = -1,
     //
-    //  Undrlying pythia library returns -1.
+    //  Underlying pythia library returns -1.
     //
     vscp_status_ERROR_PYTHIA_INNER_FAIL = -200,
     //

@@ -36,12 +36,10 @@ int pythia_init(const pythia_init_args_t *init_args) {
 
     pythia_err_init();
 
-#if RELIC_USE_EXT_RNG
     if (!init_args || !init_args->callback)
         return -1;
 
     rand_seed(init_args->callback, init_args->args);
-#endif // RELIC_USE_EXT_RNG
 
     if (ep_param_set_any_pairf() != STS_OK)
         return -1;
