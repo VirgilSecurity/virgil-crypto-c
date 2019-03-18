@@ -11,7 +11,7 @@
 
 
     <macros name="buffer from data" definition="private" is_method="1">
-        Create puthia_buf_t object initializer from common class 'buffer'.
+        Create pythia_buf_t object initializer from common class 'buffer'.
 
         <code>
             #define .(c_class_pythia_macros_buffer_from_data) (X) \
@@ -21,7 +21,7 @@
 
 
     <macros name="buffer from buffer" definition="private" is_method="1">
-        Create puthia_buf_t object initializer from common class 'buffer'.
+        Create pythia_buf_t object initializer from common class 'buffer'.
 
         <code>
             #define .(c_class_pythia_macros_buffer_from_buffer) (X) \
