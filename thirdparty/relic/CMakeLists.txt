@@ -40,6 +40,8 @@
 set(RELIC_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/relic)
 set(RELIC_ARGS_FILE ${CMAKE_CURRENT_LIST_DIR}/relic-args.cmake)
 
+include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
+
 if(RELIC_USE_GMP)
     set(RELIC_CMAKE_ARGS ${RELIC_CMAKE_ARGS} -DARITH=gmp)
 endif()
@@ -52,10 +54,6 @@ if(RELIC_USE_EXT_RNG)
     set(RELIC_CMAKE_ARGS ${RELIC_CMAKE_ARGS} -DRAND=CALL)
 endif()
 
-if(CMAKE_TOOLCHAIN_FILE)
-    list(APPEND RELIC_CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE:FILEPATH=${CMAKE_TOOLCHAIN_FILE}")
-endif()
-
 # ---------------------------------------------------------------------------
 #   Load relic as an external project
 # ---------------------------------------------------------------------------
@@ -64,10 +62,12 @@ ExternalProject_Add(relic-ext
         GIT_REPOSITORY https://github.com/VirgilSecurity/relic
         GIT_TAG c16932f83899f06acd28304a1ce49e9602409a8d
         CMAKE_ARGS
-                -G${CMAKE_GENERATOR}
-                -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                -DCMAKE_INSTALL_PREFIX=${RELIC_LOCATION} ${RELIC_CMAKE_ARGS}
-                -C "${RELIC_ARGS_FILE}" -C "${TRANSITIVE_ARGS_FILE}")
+                "${TRANSITIVE_ARGS}"
+                "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+                "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+                "-DCMAKE_INSTALL_PREFIX=${RELIC_LOCATION}"
+                ${RELIC_CMAKE_ARGS} -C "${RELIC_ARGS_FILE}"
+        )
 
 # ---------------------------------------------------------------------------
 #   Import relic libary as a target

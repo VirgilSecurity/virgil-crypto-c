@@ -1,0 +1,20 @@
+<library
+        name="relic"
+        path="../thirdparty/relic/"
+        prefix="relic">
+
+    External library: https://github.com/VirgilSecurity/relic
+
+
+    <feature name="use gmp" default="off">
+        Defines whether to use gmp arithmetic or relic.
+    </feature>
+
+    <feature name="use pthread" default="on">
+        Defines whether to enable relic multithreading using pthread.
+    </feature>
+
+    <feature name="use ext rng" default="on">
+        Defines whether to use relic's random function or custom implementation.
+    </feature>
+</library>
