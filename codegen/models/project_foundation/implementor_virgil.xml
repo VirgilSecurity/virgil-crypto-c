@@ -207,7 +207,7 @@
             Minimum length in bytes for the key material.
         </constant>
 
-        <constant name="key material len max" value="256" definition="public">
+        <constant name="key material len max" value="512" definition="public">
             Maximum length in bytes for the key material.
         </constant>
 

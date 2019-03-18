@@ -45,7 +45,7 @@ import VSCFoundation
     @objc public let keyMaterialLenMin: Int = 32
 
     /// Maximum length in bytes for the key material.
-    @objc public let keyMaterialLenMax: Int = 256
+    @objc public let keyMaterialLenMax: Int = 512
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
