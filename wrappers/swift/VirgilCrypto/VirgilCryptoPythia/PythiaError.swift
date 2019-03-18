@@ -42,7 +42,7 @@ import VSCPythia
     /// This error should not be returned if assertions is enabled.
     case errorBadArguments = -1
 
-    /// Undrlying pythia library returns -1.
+    /// Underlying pythia library returns -1.
     case errorPythiaInnerFail = -200
 
     /// Pythia verify operation failed.

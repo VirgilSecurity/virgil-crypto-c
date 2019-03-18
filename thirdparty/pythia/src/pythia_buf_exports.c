@@ -48,7 +48,7 @@ void gt_read_buf(gt_t g, const pythia_buf_t *buf) {
 
     //TODO replace with proper sanity check
     int zeroBytes = 0;
-    for (int i = 0; i < buf->len; i++) {
+    for (size_t i = 0; i < buf->len; i++) {
         zeroBytes += buf->p[i] == 0;
     }
     if (zeroBytes > 24)

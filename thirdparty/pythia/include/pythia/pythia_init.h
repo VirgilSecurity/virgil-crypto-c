@@ -26,10 +26,8 @@ extern "C" {
 
 /// Struct used to initialize pythia
 typedef struct pythia_init_args {
-#if RELIC_USE_EXT_RNG
     void (*callback)(uint8_t *, int, void *);  /// Callback called to obtain random value
     void *args;                                /// Arguments passed to callback
-#endif // RELIC_USE_EXT_RNG
 } pythia_init_args_t;
 
 /// Initializer pythia. This function is not thread-safe and should be called before any other pythia call
