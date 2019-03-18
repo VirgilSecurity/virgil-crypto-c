@@ -1,9 +1,9 @@
 <class name="pythia" context="private">
     Provide Pythia implementation based on the Virgil Security.
 
-    <require header="pythia/pythia_init.h" scope="private"/>
-    <require header="pythia/pythia_wrapper.h" scope="private"/>
-    <require header="pythia/pythia_buf_sizes.h" scope="private"/>
+    <require header="pythia_init.h" scope="private" is_system="0"/>
+    <require header="pythia_wrapper.h" scope="private" is_system="0"/>
+    <require header="pythia_buf_sizes.h" scope="private" is_system="0"/>
 
     <require header="mbedtls/ctr_drbg.h" scope="private"/>
     <require header="mbedtls/entropy.h" scope="private"/>

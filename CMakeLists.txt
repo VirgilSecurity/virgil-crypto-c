@@ -152,6 +152,13 @@ if(VIRGIL_LIB_FOUNDATION OR VIRGIL_LIB_PYTHIA)
 endif()
 
 #
+# Relic
+#
+if(VIRGIL_LIB_PYTHIA)
+    add_subdirectory("thirdparty/relic")
+endif()
+
+#
 # Pythia
 #
 if(VIRGIL_LIB_PYTHIA)

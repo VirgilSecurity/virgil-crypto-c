@@ -55,9 +55,9 @@
 #include "vscp_assert.h"
 #include "vscp_pythia_defs.h"
 
-#include <pythia/pythia_init.h>
-#include <pythia/pythia_wrapper.h>
-#include <pythia/pythia_buf_sizes.h>
+#include <pythia_init.h>
+#include <pythia_wrapper.h>
+#include <pythia_buf_sizes.h>
 #include <mbedtls/ctr_drbg.h>
 #include <mbedtls/entropy.h>
 #include <mbedtls/entropy_poll.h>
