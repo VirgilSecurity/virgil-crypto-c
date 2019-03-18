@@ -203,6 +203,14 @@
         <require impl="ctr drbg"/>
         <require impl="seed entropy source"/>
 
+        <constant name="key material len min" value="32" definition="public">
+            Minimum length in bytes for the key material.
+        </constant>
+
+        <constant name="key material len max" value="256" definition="public">
+            Maximum length in bytes for the key material.
+        </constant>
+
         <property name="ctr drbg" impl="ctr drbg"/>
         <property name="seed entropy source" impl="seed entropy source"/>
 

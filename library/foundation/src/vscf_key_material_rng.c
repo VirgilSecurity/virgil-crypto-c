@@ -114,6 +114,8 @@ vscf_key_material_rng_reset_key_material(vscf_key_material_rng_t *self, vsc_data
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->ctr_drbg);
     VSCF_ASSERT_PTR(self->seed_entropy_source);
+    VSCF_ASSERT(key_material.len >= vscf_key_material_rng_KEY_MATERIAL_LEN_MIN);
+    VSCF_ASSERT(key_material.len <= vscf_key_material_rng_KEY_MATERIAL_LEN_MAX);
 
     vscf_seed_entropy_source_reset_seed(self->seed_entropy_source, key_material);
     vscf_ctr_drbg_release_entropy_source(self->ctr_drbg);

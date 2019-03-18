@@ -41,6 +41,12 @@ import VSCFoundation
 /// This RNG can be used to transform key material rial to the private key.
 @objc(VSCFKeyMaterialRng) public class KeyMaterialRng: NSObject, Random {
 
+    /// Minimum length in bytes for the key material.
+    @objc public let keyMaterialLenMin: Int = 32
+
+    /// Maximum length in bytes for the key material.
+    @objc public let keyMaterialLenMax: Int = 256
+
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 

@@ -83,6 +83,20 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Public integral constants.
+//
+enum {
+    //
+    //  Minimum length in bytes for the key material.
+    //
+    vscf_key_material_rng_KEY_MATERIAL_LEN_MIN = 32,
+    //
+    //  Maximum length in bytes for the key material.
+    //
+    vscf_key_material_rng_KEY_MATERIAL_LEN_MAX = 256
+};
+
+//
 //  Handles implementation details.
 //
 typedef struct vscf_key_material_rng_t vscf_key_material_rng_t;
