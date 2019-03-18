@@ -15,11 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <virgil/crypto/pythia/vscp_pythia.h>
+#include "unity.h"
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCP_PYTHIA
+#if TEST_DEPENDENCIES_AVAILABLE
+
 #include "pythia_c.h"
 #include "pythia_init.h"
 #include "pythia_init_c.h"
-
-#include "unity.h"
 
 static const char deblinded_hex[769] =
         "13273238e3119262f86d3213b8eb6b99c093ef48737dfcfae96210f7350e096cbc7e6b992e4e6f705ac3f0a915d1622c1644596408e3d1"
@@ -262,15 +266,25 @@ test3_UpdateDelta() {
     pythia_deinit();
 }
 
+#endif
+
 int
 main() {
     UNITY_BEGIN();
+
+#if TEST_DEPENDENCIES_AVAILABLE
+    vscp_global_init();
 
     conf_print();
 
     RUN_TEST(test1_DeblindStability);
     RUN_TEST(test2_BlindEvalProveVerify);
     RUN_TEST(test3_UpdateDelta);
+
+    vscp_global_cleanup();
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#endif
 
     return UNITY_END();
 }
