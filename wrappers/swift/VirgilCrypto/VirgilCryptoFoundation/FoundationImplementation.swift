@@ -286,53 +286,6 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Defaults.
-    @objc static func wrapDefaults(take c_ctx: OpaquePointer) -> Defaults {
-        if (!vscf_defaults_is_implemented(c_ctx)) {
-            fatalError("Given C implementation does not implement interface Defaults.")
-        }
-
-        let implTag = vscf_impl_tag(c_ctx)
-        switch(implTag) {
-        case vscf_impl_tag_RSA_PUBLIC_KEY:
-            return RsaPublicKey(take: c_ctx)
-        case vscf_impl_tag_RSA_PRIVATE_KEY:
-            return RsaPrivateKey(take: c_ctx)
-        case vscf_impl_tag_ENTROPY_ACCUMULATOR:
-            return EntropyAccumulator(take: c_ctx)
-        case vscf_impl_tag_CTR_DRBG:
-            return CtrDrbg(take: c_ctx)
-        case vscf_impl_tag_PKCS5_PBKDF2:
-            return Pkcs5Pbkdf2(take: c_ctx)
-        case vscf_impl_tag_PKCS8_DER_SERIALIZER:
-            return Pkcs8DerSerializer(take: c_ctx)
-        case vscf_impl_tag_PKCS8_DER_DESERIALIZER:
-            return Pkcs8DerDeserializer(take: c_ctx)
-        case vscf_impl_tag_PKCS8_SERIALIZER:
-            return Pkcs8Serializer(take: c_ctx)
-        case vscf_impl_tag_PKCS8_DESERIALIZER:
-            return Pkcs8Deserializer(take: c_ctx)
-        case vscf_impl_tag_ED25519_PUBLIC_KEY:
-            return Ed25519PublicKey(take: c_ctx)
-        case vscf_impl_tag_ED25519_PRIVATE_KEY:
-            return Ed25519PrivateKey(take: c_ctx)
-        case vscf_impl_tag_CURVE25519_PUBLIC_KEY:
-            return Curve25519PublicKey(take: c_ctx)
-        case vscf_impl_tag_CURVE25519_PRIVATE_KEY:
-            return Curve25519PrivateKey(take: c_ctx)
-        case vscf_impl_tag_ECIES:
-            return Ecies(take: c_ctx)
-        case vscf_impl_tag_ALG_INFO_DER_SERIALIZER:
-            return AlgInfoDerSerializer(take: c_ctx)
-        case vscf_impl_tag_ALG_INFO_DER_DESERIALIZER:
-            return AlgInfoDerDeserializer(take: c_ctx)
-        case vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER:
-            return MessageInfoDerSerializer(take: c_ctx)
-        default:
-            fatalError("Unexpected C implementation cast to the Swift implementation.")
-        }
-    }
-
     /// Wrap C implementation object to the Swift object that implements protocol Key.
     @objc static func wrapKey(take c_ctx: OpaquePointer) -> Key {
         if (!vscf_key_is_implemented(c_ctx)) {

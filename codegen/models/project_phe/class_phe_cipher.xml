@@ -22,6 +22,8 @@
 
     <method name="setup defaults">
         Setups dependencies with default values.
+
+        <return enum="status"/>
     </method>
 
     <method name="encrypt len">

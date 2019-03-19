@@ -204,7 +204,7 @@ vscf_recipient_cipher_message_info_len(const vscf_recipient_cipher_t *self);
 //  Start encryption process.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self);
+vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
 
 //
 //  Return serialized message info to the buffer.
@@ -232,13 +232,14 @@ vscf_recipient_cipher_encryption_out_len(vscf_recipient_cipher_t *self, size_t d
 //  Process encryption of a new portion of data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_recipient_cipher_process_encryption(vscf_recipient_cipher_t *self, vsc_data_t data, vsc_buffer_t *out);
+vscf_recipient_cipher_process_encryption(vscf_recipient_cipher_t *self, vsc_data_t data,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Accomplish encryption.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffer_t *out);
+vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Initiate decryption process with a recipient private key.
@@ -246,7 +247,7 @@ vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffe
 //
 VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_start_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id,
-        vscf_impl_t *private_key, vsc_data_t message_info);
+        vscf_impl_t *private_key, vsc_data_t message_info) VSCF_NODISCARD;
 
 //
 //  Return buffer length required to hold output of the method
@@ -260,13 +261,14 @@ vscf_recipient_cipher_decryption_out_len(vscf_recipient_cipher_t *self, size_t d
 //  Return error if data can not be encrypted or decrypted.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_recipient_cipher_process_decryption(vscf_recipient_cipher_t *self, vsc_data_t data, vsc_buffer_t *out);
+vscf_recipient_cipher_process_decryption(vscf_recipient_cipher_t *self, vsc_data_t data,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Accomplish decryption.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffer_t *out);
+vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

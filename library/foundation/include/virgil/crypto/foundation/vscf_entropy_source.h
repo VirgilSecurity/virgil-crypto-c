@@ -96,7 +96,7 @@ vscf_entropy_source_is_strong(vscf_impl_t *impl);
 //  Gather entropy of the requested length.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_entropy_source_gather(vscf_impl_t *impl, size_t len, vsc_buffer_t *out);
+vscf_entropy_source_gather(vscf_impl_t *impl, size_t len, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Return entropy source API, or NULL if it is not implemented.

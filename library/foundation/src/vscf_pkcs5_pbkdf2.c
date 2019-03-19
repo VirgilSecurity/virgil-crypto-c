@@ -107,7 +107,7 @@ vscf_pkcs5_pbkdf2_cleanup_ctx(vscf_pkcs5_pbkdf2_t *self) {
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_status_t
+VSCF_PUBLIC void
 vscf_pkcs5_pbkdf2_setup_defaults(vscf_pkcs5_pbkdf2_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -118,8 +118,6 @@ vscf_pkcs5_pbkdf2_setup_defaults(vscf_pkcs5_pbkdf2_t *self) {
         vscf_hmac_take_hash(hmac, hash);
         self->hmac = vscf_hmac_impl(hmac);
     }
-
-    return vscf_status_SUCCESS;
 }
 
 //

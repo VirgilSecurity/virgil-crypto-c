@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// Implements PKCS#8 key deserialization from PEM format.
-@objc(VSCFPkcs8Deserializer) public class Pkcs8Deserializer: NSObject, Defaults, KeyDeserializer {
+@objc(VSCFPkcs8Deserializer) public class Pkcs8Deserializer: NSObject, KeyDeserializer {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -78,10 +78,8 @@ import VSCFoundation
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_pkcs8_deserializer_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
+    @objc public func setupDefaults() {
+        vscf_pkcs8_deserializer_setup_defaults(self.c_ctx)
     }
 
     /// Deserialize given public key as an interchangeable format to the object.

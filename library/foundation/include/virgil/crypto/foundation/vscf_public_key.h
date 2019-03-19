@@ -97,7 +97,7 @@ typedef struct vscf_public_key_api_t vscf_public_key_api_t;
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_public_key_export_public_key(const vscf_impl_t *impl, vsc_buffer_t *out);
+vscf_public_key_export_public_key(const vscf_impl_t *impl, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Return length in bytes required to hold exported public key.
@@ -113,7 +113,7 @@ vscf_public_key_exported_public_key_len(const vscf_impl_t *impl);
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_public_key_import_public_key(vscf_impl_t *impl, vsc_data_t data);
+vscf_public_key_import_public_key(vscf_impl_t *impl, vsc_data_t data) VSCF_NODISCARD;
 
 //
 //  Returns constant 'can export public key'.

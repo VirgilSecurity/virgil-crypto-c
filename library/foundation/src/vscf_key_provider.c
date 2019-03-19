@@ -374,57 +374,68 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
 
+    vscf_status_t status = vscf_status_SUCCESS;
+    vscf_impl_t *key = NULL;
+
     switch (alg_id) {
     case vscf_alg_id_RSA: {
         vscf_rsa_private_key_t *private_key = vscf_rsa_private_key_new();
+        key = vscf_rsa_private_key_impl(private_key);
         vscf_rsa_private_key_use_random(private_key, self->random);
         vscf_rsa_private_key_set_keygen_params(private_key, self->rsa_bitlen, self->rsa_exponent);
-        vscf_rsa_private_key_setup_defaults(private_key);
-        vscf_status_t status = vscf_rsa_private_key_generate_key(private_key);
-        if (status == vscf_status_SUCCESS) {
-            return vscf_rsa_private_key_impl(private_key);
-        } else {
-            vscf_rsa_private_key_destroy(&private_key);
-            VSCF_ERROR_SAFE_UPDATE(error, status);
-            return NULL;
+
+        status = vscf_rsa_private_key_setup_defaults(private_key);
+        if (status != vscf_status_SUCCESS) {
+            break;
         }
+
+        status = vscf_rsa_private_key_generate_key(private_key);
+        break;
     }
 
     case vscf_alg_id_ED25519: {
         VSCF_ASSERT_PTR(self->ecies);
         vscf_ed25519_private_key_t *private_key = vscf_ed25519_private_key_new();
+        key = vscf_ed25519_private_key_impl(private_key);
         vscf_ed25519_private_key_use_random(private_key, self->random);
-        vscf_ed25519_private_key_setup_defaults(private_key);
-        vscf_status_t status = vscf_ed25519_private_key_generate_key(private_key);
-        if (status == vscf_status_SUCCESS) {
-            return vscf_ed25519_private_key_impl(private_key);
-        } else {
-            vscf_ed25519_private_key_destroy(&private_key);
-            VSCF_ERROR_SAFE_UPDATE(error, status);
-            return NULL;
+
+        status = vscf_ed25519_private_key_setup_defaults(private_key);
+        if (status != vscf_status_SUCCESS) {
+            break;
         }
+
+        status = vscf_ed25519_private_key_generate_key(private_key);
+        break;
     }
 
     case vscf_alg_id_CURVE25519: {
         VSCF_ASSERT_PTR(self->ecies);
         vscf_curve25519_private_key_t *private_key = vscf_curve25519_private_key_new();
+        key = vscf_curve25519_private_key_impl(private_key);
         vscf_curve25519_private_key_use_random(private_key, self->random);
-        vscf_curve25519_private_key_setup_defaults(private_key);
-        vscf_status_t status = vscf_curve25519_private_key_generate_key(private_key);
-        if (status == vscf_status_SUCCESS) {
-            return vscf_curve25519_private_key_impl(private_key);
-        } else {
-            vscf_curve25519_private_key_destroy(&private_key);
-            VSCF_ERROR_SAFE_UPDATE(error, status);
-            return NULL;
+
+        status = vscf_curve25519_private_key_setup_defaults(private_key);
+        if (status != vscf_status_SUCCESS) {
+            break;
         }
+
+        status = vscf_curve25519_private_key_generate_key(private_key);
+        break;
     }
 
     default:
         VSCF_ASSERT(0 && "Unhandled algorithm identifier.");
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_KEY_GENERATION_FAILED);
-        return NULL;
+        status = vscf_status_ERROR_KEY_GENERATION_FAILED;
+        break;
     }
+
+    if ((key != NULL) && (status == vscf_status_SUCCESS)) {
+        return key;
+    }
+
+    vscf_impl_destroy(&key);
+    VSCF_ERROR_SAFE_UPDATE(error, status);
+    return NULL;
 }
 
 //
@@ -447,13 +458,19 @@ vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8
         return NULL;
     }
 
+    vscf_status_t status = vscf_status_SUCCESS;
     vscf_impl_t *private_key = NULL;
 
     switch (vscf_raw_key_alg_id(raw_key)) {
     case vscf_alg_id_RSA: {
         vscf_rsa_private_key_t *rsa_private_key = vscf_rsa_private_key_new();
         vscf_rsa_private_key_use_random(rsa_private_key, self->random);
-        vscf_rsa_private_key_setup_defaults(rsa_private_key);
+        vscf_rsa_private_key_set_keygen_params(rsa_private_key, self->rsa_bitlen, self->rsa_exponent);
+        status = vscf_rsa_private_key_setup_defaults(rsa_private_key);
+        if (status != vscf_status_SUCCESS) {
+            break;
+        }
+
         private_key = vscf_rsa_private_key_impl(rsa_private_key);
         break;
     }
@@ -462,7 +479,11 @@ vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8
         VSCF_ASSERT_PTR(self->ecies);
         vscf_ed25519_private_key_t *ed25519_private_key = vscf_ed25519_private_key_new();
         vscf_ed25519_private_key_use_random(ed25519_private_key, self->random);
-        vscf_ed25519_private_key_setup_defaults(ed25519_private_key);
+        status = vscf_ed25519_private_key_setup_defaults(ed25519_private_key);
+        if (status != vscf_status_SUCCESS) {
+            break;
+        }
+
         private_key = vscf_ed25519_private_key_impl(ed25519_private_key);
         break;
     }
@@ -471,22 +492,27 @@ vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8
         VSCF_ASSERT_PTR(self->ecies);
         vscf_curve25519_private_key_t *curve25519_private_key = vscf_curve25519_private_key_new();
         vscf_curve25519_private_key_use_random(curve25519_private_key, self->random);
-        vscf_curve25519_private_key_setup_defaults(curve25519_private_key);
+        status = vscf_curve25519_private_key_setup_defaults(curve25519_private_key);
+        if (status != vscf_status_SUCCESS) {
+            break;
+        }
+
         private_key = vscf_curve25519_private_key_impl(curve25519_private_key);
         break;
     }
 
     default:
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        status = vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
         break;
     }
 
     if (private_key == NULL) {
         vscf_raw_key_destroy(&raw_key);
+        VSCF_ERROR_SAFE_UPDATE(error, status);
         return NULL;
     }
 
-    vscf_status_t status = vscf_private_key_import_private_key(private_key, vscf_raw_key_data(raw_key));
+    status = vscf_private_key_import_private_key(private_key, vscf_raw_key_data(raw_key));
     vscf_raw_key_destroy(&raw_key);
 
     if (status == vscf_status_SUCCESS) {
@@ -519,12 +545,17 @@ vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t pkcs8_
     }
 
     vscf_impl_t *public_key = NULL;
+    vscf_status_t status = vscf_status_SUCCESS;
 
     switch (vscf_raw_key_alg_id(raw_key)) {
     case vscf_alg_id_RSA: {
         vscf_rsa_public_key_t *rsa_public_key = vscf_rsa_public_key_new();
         vscf_rsa_public_key_use_random(rsa_public_key, self->random);
-        vscf_rsa_public_key_setup_defaults(rsa_public_key);
+        status = vscf_rsa_public_key_setup_defaults(rsa_public_key);
+        if (status != vscf_status_SUCCESS) {
+            break;
+        }
+
         public_key = vscf_rsa_public_key_impl(rsa_public_key);
         break;
     }
@@ -533,7 +564,11 @@ vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t pkcs8_
         VSCF_ASSERT_PTR(self->ecies);
         vscf_ed25519_public_key_t *ed25519_public_key = vscf_ed25519_public_key_new();
         vscf_ed25519_public_key_use_random(ed25519_public_key, self->random);
-        vscf_ed25519_public_key_setup_defaults(ed25519_public_key);
+        status = vscf_ed25519_public_key_setup_defaults(ed25519_public_key);
+        if (status != vscf_status_SUCCESS) {
+            break;
+        }
+
         public_key = vscf_ed25519_public_key_impl(ed25519_public_key);
         break;
     }
@@ -542,22 +577,27 @@ vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t pkcs8_
         VSCF_ASSERT_PTR(self->ecies);
         vscf_curve25519_public_key_t *curve25519_public_key = vscf_curve25519_public_key_new();
         vscf_curve25519_public_key_use_random(curve25519_public_key, self->random);
-        vscf_curve25519_public_key_setup_defaults(curve25519_public_key);
+        status = vscf_curve25519_public_key_setup_defaults(curve25519_public_key);
+        if (status != vscf_status_SUCCESS) {
+            break;
+        }
+
         public_key = vscf_curve25519_public_key_impl(curve25519_public_key);
         break;
     }
 
     default:
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        status = vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
         break;
     }
 
     if (public_key == NULL) {
         vscf_raw_key_destroy(&raw_key);
+        VSCF_ERROR_SAFE_UPDATE(error, status);
         return NULL;
     }
 
-    vscf_status_t status = vscf_public_key_import_public_key(public_key, vscf_raw_key_data(raw_key));
+    status = vscf_public_key_import_public_key(public_key, vscf_raw_key_data(raw_key));
     vscf_raw_key_destroy(&raw_key);
 
     if (status == vscf_status_SUCCESS) {

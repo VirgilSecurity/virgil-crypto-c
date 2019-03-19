@@ -175,7 +175,7 @@ vscf_key_provider_release_ecies(vscf_key_provider_t *self);
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_provider_setup_defaults(vscf_key_provider_t *self);
+vscf_key_provider_setup_defaults(vscf_key_provider_t *self) VSCF_NODISCARD;
 
 //
 //  Setup parameters that is used during RSA key generation.

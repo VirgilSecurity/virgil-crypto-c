@@ -83,7 +83,7 @@ typedef struct vscf_defaults_api_t vscf_defaults_api_t;
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_defaults_setup_defaults(vscf_impl_t *impl);
+vscf_defaults_setup_defaults(vscf_impl_t *impl) VSCF_NODISCARD;
 
 //
 //  Return defaults API, or NULL if it is not implemented.

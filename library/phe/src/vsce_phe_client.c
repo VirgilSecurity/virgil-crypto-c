@@ -137,11 +137,12 @@ vsce_phe_client_cleanup_ctx(vsce_phe_client_t *self);
 
 static vsce_status_t
 vsce_phe_client_check_success_proof(vsce_phe_client_t *self, mbedtls_ecp_group *op_group,
-        const ProofOfSuccess *success_proof, vsc_data_t ns, const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1);
+        const ProofOfSuccess *success_proof, vsc_data_t ns, const mbedtls_ecp_point *c0,
+        const mbedtls_ecp_point *c1) VSCE_NODISCARD;
 
 static vsce_status_t
 vsce_phe_client_check_fail_proof(vsce_phe_client_t *self, mbedtls_ecp_group *op_group, const ProofOfFail *fail_proof,
-        const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, const mbedtls_ecp_point *hs0);
+        const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, const mbedtls_ecp_point *hs0) VSCE_NODISCARD;
 
 static mbedtls_ecp_group *
 vsce_phe_client_get_op_group(vsce_phe_client_t *self);
@@ -373,15 +374,6 @@ vsce_phe_client_init_ctx(vsce_phe_client_t *self) {
 
     self->phe_hash = vsce_phe_hash_new();
 
-    vscf_ctr_drbg_t *rng1, *rng2;
-    rng1 = vscf_ctr_drbg_new();
-    rng2 = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng1);
-    vscf_ctr_drbg_setup_defaults(rng2);
-
-    vsce_phe_client_take_random(self, vscf_ctr_drbg_impl(rng1));
-    vsce_phe_client_take_operation_random(self, vscf_ctr_drbg_impl(rng2));
-
     mbedtls_ecp_group_init(&self->group);
     int mbedtls_status = mbedtls_ecp_group_load(&self->group, MBEDTLS_ECP_DP_SECP256R1);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
@@ -423,6 +415,34 @@ vsce_phe_client_cleanup_ctx(vsce_phe_client_t *self) {
     mbedtls_mpi_free(&self->minus_y);
     mbedtls_mpi_free(&self->y_inv);
     mbedtls_ecp_point_free(&self->x);
+}
+
+VSCE_PUBLIC vsce_status_t
+vsce_phe_client_setup_defaults(vsce_phe_client_t *self) {
+
+    VSCE_ASSERT_PTR(self);
+
+    vscf_ctr_drbg_t *rng1 = vscf_ctr_drbg_new();
+    vscf_status_t status = vscf_ctr_drbg_setup_defaults(rng1);
+
+    if (status != vscf_status_SUCCESS) {
+        vscf_ctr_drbg_destroy(&rng1);
+        return vsce_status_ERROR_RNG_FAILED;
+    }
+
+    vsce_phe_client_take_random(self, vscf_ctr_drbg_impl(rng1));
+
+    vscf_ctr_drbg_t *rng2 = vscf_ctr_drbg_new();
+    status = vscf_ctr_drbg_setup_defaults(rng2);
+
+    if (status != vscf_status_SUCCESS) {
+        vscf_ctr_drbg_destroy(&rng2);
+        return vsce_status_ERROR_RNG_FAILED;
+    }
+
+    vsce_phe_client_take_operation_random(self, vscf_ctr_drbg_impl(rng2));
+
+    return vsce_status_SUCCESS;
 }
 
 //

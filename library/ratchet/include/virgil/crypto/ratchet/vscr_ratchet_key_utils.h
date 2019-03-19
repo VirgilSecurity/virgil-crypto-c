@@ -137,7 +137,7 @@ vscr_ratchet_key_utils_shallow_copy(vscr_ratchet_key_utils_t *self);
 //
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_key_utils_compute_public_key_id(vscr_ratchet_key_utils_t *self, vsc_data_t public_key,
-        vsc_buffer_t *key_id);
+        vsc_buffer_t *key_id) VSCR_NODISCARD;
 
 VSCR_PUBLIC vsc_buffer_t *
 vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, vscr_error_t *error);
