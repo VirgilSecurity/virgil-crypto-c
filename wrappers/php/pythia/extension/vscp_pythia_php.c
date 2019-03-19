@@ -176,7 +176,7 @@ ZEND_GET_MODULE(vscp_pythia_php)
 
 PHP_MINIT_FUNCTION(vscp_pythia_php) {
 
-    vscp_status_t status = vscp_pythia_init();
+    vscp_status_t status = vscp_pythia_configure();
     if (status == vscp_status_SUCCESS) {
         return SUCCESS;
     }

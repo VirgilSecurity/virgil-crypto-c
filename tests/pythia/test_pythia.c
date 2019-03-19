@@ -50,7 +50,7 @@
 // --------------------------------------------------------------------------
 void
 test__blind__valid_args___returns_success(void) {
-    vscp_status_t status = vscp_pythia_init();
+    vscp_status_t status = vscp_pythia_configure();
     TEST_ASSERT_EQUAL(vscp_status_SUCCESS, status);
 
     vsc_data_t password = vsc_data((const byte *)"password", 8);

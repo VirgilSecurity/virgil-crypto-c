@@ -104,7 +104,7 @@ blind_eval_deblind(pythia_buf_t *deblinded_password) {
 
 void
 test1_DeblindStability() {
-    vscp_pythia_init();
+    vscp_pythia_configure();
 
     uint8_t deblinded_bin[384];
     const char *pos = deblinded_hex;
@@ -134,7 +134,7 @@ test1_DeblindStability() {
 
 void
 test2_BlindEvalProveVerify() {
-    vscp_pythia_init();
+    vscp_pythia_configure();
 
     pythia_buf_t blinded_password, blinding_secret, transformed_password, transformation_private_key, transformed_tweak,
             transformation_public_key, proof_value_c, proof_value_u, transformation_key_id_buf, tweak_buf,
@@ -215,7 +215,7 @@ test2_BlindEvalProveVerify() {
 
 void
 test3_UpdateDelta() {
-    vscp_pythia_init();
+    vscp_pythia_configure();
 
     pythia_buf_t blinded_password, blinding_secret, transformed_password, transformation_private_key,
             new_transformation_private_key, transformed_tweak, password_update_token, updated_transformation_public_key,
@@ -345,7 +345,7 @@ test4_BlindHugePassword() {
             "passwordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpa"
             "sswordpasswordpasswordpassword";
 
-    vscp_pythia_init();
+    vscp_pythia_configure();
 
     pythia_buf_t blinded_password, blinding_secret, password_buf;
 

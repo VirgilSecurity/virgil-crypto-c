@@ -105,7 +105,7 @@ vscp_pythia_random_handler(byte *out, int out_len, void *ctx);
 //  Must be called once for entire application at startup.
 //
 VSCP_PUBLIC vscp_status_t
-vscp_pythia_init(void) {
+vscp_pythia_configure(void) {
 
     if (g_globally_inited) {
         return vscp_status_SUCCESS;
