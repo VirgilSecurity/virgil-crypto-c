@@ -855,7 +855,7 @@ PHP_FUNCTION(vsce_phe_server_setup_defaults_php) {
     //
     //  Proxy call
     //
-    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_server);
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_cctx, VSCE_PHE_SERVER_PHP_RES_NAME, le_vsce_phe_server);
     VSCE_ASSERT_PTR(phe_server);
 
     vsce_status_t status = vsce_phe_server_setup_defaults(phe_server);
