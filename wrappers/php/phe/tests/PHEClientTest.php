@@ -58,6 +58,36 @@ class PHEClientTest extends \PHPUnit\Framework\TestCase
         unset($this->server);
     }
 
+    public function testTwoClientsShouldSucceed()
+    {
+        $serverKeyPair = $this->server->generateServerKeyPair(); // [{privateKey}, {publicKey}]
+        $this->assertInternalType('array', $serverKeyPair);
+        $this->assertCount(2, $serverKeyPair);
+
+        $serverPrivateKey = $serverKeyPair[0];
+        $serverPublicKey = $serverKeyPair[1];
+
+        $this->assertInternalType('string', $serverPrivateKey);
+        $this->assertInternalType('string', $serverPublicKey);
+
+        $this->assertEquals(65, strlen($serverPublicKey));
+        $this->assertEquals(32, strlen($serverPrivateKey));
+
+        $client1 = new PHEClient();
+        $client1->setupDefaults();
+        $clientPK = $client1->generateClientPrivateKey();
+        $this->assertInternalType('string', $clientPK);
+        $this->client->setKeys($clientPK, $serverPublicKey); // void
+
+        unset($client1);
+
+        $client2 = new PHEClient();
+        $client2->setupDefaults();
+        $client2PK = $client2->generateClientPrivateKey();
+        $this->assertInternalType('string', $client2PK);
+        $this->client->setKeys($client2PK, $serverPublicKey); // void
+    }
+
     public function testFullFlowRandomCorrectPwdShouldSucceed()
     {
         $password = "password";
