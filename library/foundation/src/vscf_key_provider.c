@@ -395,7 +395,6 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
         vscf_ed25519_private_key_t *private_key = vscf_ed25519_private_key_new();
         vscf_ed25519_private_key_use_random(private_key, self->random);
         vscf_ed25519_private_key_setup_defaults(private_key);
-        vscf_ed25519_private_key_generate_key(private_key);
         vscf_status_t status = vscf_ed25519_private_key_generate_key(private_key);
         if (status == vscf_status_SUCCESS) {
             return vscf_ed25519_private_key_impl(private_key);
@@ -411,7 +410,6 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
         vscf_curve25519_private_key_t *private_key = vscf_curve25519_private_key_new();
         vscf_curve25519_private_key_use_random(private_key, self->random);
         vscf_curve25519_private_key_setup_defaults(private_key);
-        vscf_curve25519_private_key_generate_key(private_key);
         vscf_status_t status = vscf_curve25519_private_key_generate_key(private_key);
         if (status == vscf_status_SUCCESS) {
             return vscf_curve25519_private_key_impl(private_key);
@@ -455,7 +453,6 @@ vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8
     case vscf_alg_id_RSA: {
         vscf_rsa_private_key_t *rsa_private_key = vscf_rsa_private_key_new();
         vscf_rsa_private_key_use_random(rsa_private_key, self->random);
-        vscf_rsa_private_key_set_keygen_params(rsa_private_key, self->rsa_bitlen, self->rsa_exponent);
         vscf_rsa_private_key_setup_defaults(rsa_private_key);
         private_key = vscf_rsa_private_key_impl(rsa_private_key);
         break;

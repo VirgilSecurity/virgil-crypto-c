@@ -47,15 +47,25 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains common functionality for all 'implementation' object.
-//  It is also enumerate all available implementations within crypto libary.
+//  This module contains 'seed entropy source' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_IMPL_H_INCLUDED
-#define VSCF_IMPL_H_INCLUDED
+#ifndef VSCF_SEED_ENTROPY_SOURCE_H_INCLUDED
+#define VSCF_SEED_ENTROPY_SOURCE_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_api.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -73,94 +83,81 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible implementations within crypto library.
+//  Handles implementation details.
 //
-enum vscf_impl_tag_t {
-    vscf_impl_tag_BEGIN = 0,
-    vscf_impl_tag_AES256_CBC,
-    vscf_impl_tag_AES256_GCM,
-    vscf_impl_tag_ALG_INFO_DER_DESERIALIZER,
-    vscf_impl_tag_ALG_INFO_DER_SERIALIZER,
-    vscf_impl_tag_ASN1RD,
-    vscf_impl_tag_ASN1WR,
-    vscf_impl_tag_CIPHER_ALG_INFO,
-    vscf_impl_tag_CTR_DRBG,
-    vscf_impl_tag_CURVE25519_PRIVATE_KEY,
-    vscf_impl_tag_CURVE25519_PUBLIC_KEY,
-    vscf_impl_tag_ECIES,
-    vscf_impl_tag_ED25519_PRIVATE_KEY,
-    vscf_impl_tag_ED25519_PUBLIC_KEY,
-    vscf_impl_tag_ENTROPY_ACCUMULATOR,
-    vscf_impl_tag_FAKE_RANDOM,
-    vscf_impl_tag_HASH_BASED_ALG_INFO,
-    vscf_impl_tag_HKDF,
-    vscf_impl_tag_HMAC,
-    vscf_impl_tag_KDF1,
-    vscf_impl_tag_KDF2,
-    vscf_impl_tag_KEY_MATERIAL_RNG,
-    vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER,
-    vscf_impl_tag_PBE_ALG_INFO,
-    vscf_impl_tag_PKCS5_PBES2,
-    vscf_impl_tag_PKCS5_PBKDF2,
-    vscf_impl_tag_PKCS8_DER_DESERIALIZER,
-    vscf_impl_tag_PKCS8_DER_SERIALIZER,
-    vscf_impl_tag_PKCS8_DESERIALIZER,
-    vscf_impl_tag_PKCS8_SERIALIZER,
-    vscf_impl_tag_RSA_PRIVATE_KEY,
-    vscf_impl_tag_RSA_PUBLIC_KEY,
-    vscf_impl_tag_SALTED_KDF_ALG_INFO,
-    vscf_impl_tag_SEED_ENTROPY_SOURCE,
-    vscf_impl_tag_SHA224,
-    vscf_impl_tag_SHA256,
-    vscf_impl_tag_SHA384,
-    vscf_impl_tag_SHA512,
-    vscf_impl_tag_SIMPLE_ALG_INFO,
-    vscf_impl_tag_END
-};
-typedef enum vscf_impl_tag_t vscf_impl_tag_t;
+typedef struct vscf_seed_entropy_source_t vscf_seed_entropy_source_t;
 
 //
-//  Generic type for any 'implementation'.
+//  Return size of 'vscf_seed_entropy_source_t' type.
 //
-typedef struct vscf_impl_t vscf_impl_t;
+VSCF_PUBLIC size_t
+vscf_seed_entropy_source_impl_size(void);
 
 //
-//  Return 'API' object that is fulfiled with a meta information
-//  specific to the given implementation object.
-//  Or NULL if object does not implement requested 'API'.
-//
-VSCF_PUBLIC const vscf_api_t *
-vscf_impl_api(const vscf_impl_t *impl, vscf_api_tag_t api_tag);
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_impl_tag(const vscf_impl_t *impl);
-
-//
-//  Cleanup implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_cleanup(vscf_impl_t *impl);
-
-//
-//  Delete implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_delete(vscf_impl_t *impl);
-
-//
-//  Destroy implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_destroy(vscf_impl_t **impl_ref);
-
-//
-//  Copy implementation object by increasing reference counter.
+//  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_impl_shallow_copy(vscf_impl_t *impl);
+vscf_seed_entropy_source_impl(vscf_seed_entropy_source_t *self);
+
+//
+//  Perform initialization of preallocated implementation context.
+//
+VSCF_PUBLIC void
+vscf_seed_entropy_source_init(vscf_seed_entropy_source_t *self);
+
+//
+//  Cleanup implementation context and release dependencies.
+//  This is a reverse action of the function 'vscf_seed_entropy_source_init()'.
+//
+VSCF_PUBLIC void
+vscf_seed_entropy_source_cleanup(vscf_seed_entropy_source_t *self);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSCF_PUBLIC vscf_seed_entropy_source_t *
+vscf_seed_entropy_source_new(void);
+
+//
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_seed_entropy_source_new()'.
+//
+VSCF_PUBLIC void
+vscf_seed_entropy_source_delete(vscf_seed_entropy_source_t *self);
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_seed_entropy_source_new()'.
+//  Given reference is nullified.
+//
+VSCF_PUBLIC void
+vscf_seed_entropy_source_destroy(vscf_seed_entropy_source_t **self_ref);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_seed_entropy_source_t *
+vscf_seed_entropy_source_shallow_copy(vscf_seed_entropy_source_t *self);
+
+//
+//  Set a new seed as an entropy source.
+//
+VSCF_PUBLIC void
+vscf_seed_entropy_source_reset_seed(vscf_seed_entropy_source_t *self, vsc_data_t seed);
+
+//
+//  Defines that implemented source is strong.
+//
+VSCF_PUBLIC bool
+vscf_seed_entropy_source_is_strong(vscf_seed_entropy_source_t *self);
+
+//
+//  Gather entropy of the requested length.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_seed_entropy_source_gather(vscf_seed_entropy_source_t *self, size_t len, vsc_buffer_t *out);
 
 
 // --------------------------------------------------------------------------
@@ -176,5 +173,5 @@ vscf_impl_shallow_copy(vscf_impl_t *impl);
 
 
 //  @footer
-#endif // VSCF_IMPL_H_INCLUDED
+#endif // VSCF_SEED_ENTROPY_SOURCE_H_INCLUDED
 //  @end
