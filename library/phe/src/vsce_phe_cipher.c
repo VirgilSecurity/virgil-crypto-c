@@ -316,16 +316,23 @@ vsce_phe_cipher_cleanup_ctx(vsce_phe_cipher_t *self) {
 //
 //  Setups dependencies with default values.
 //
-VSCE_PUBLIC void
+VSCE_PUBLIC vsce_status_t
 vsce_phe_cipher_setup_defaults(vsce_phe_cipher_t *self) {
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT(self->random == NULL);
 
     vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(random);
+    vscf_status_t status = vscf_ctr_drbg_setup_defaults(random);
+
+    if (status != vscf_status_SUCCESS) {
+        vscf_ctr_drbg_destroy(&random);
+        return vsce_status_ERROR_RNG_FAILED;
+    }
 
     vsce_phe_cipher_take_random(self, vscf_ctr_drbg_impl(random));
+
+    return vsce_status_SUCCESS;
 }
 
 //

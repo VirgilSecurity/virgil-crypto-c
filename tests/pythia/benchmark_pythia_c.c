@@ -33,7 +33,7 @@
 
 void
 bench1_BlindEvalProveVerify() {
-    vscp_pythia_configure();
+    TEST_ASSERT_EQUAL(vscp_status_SUCCESS, vscp_pythia_configure());
 
     const int iterations = 100;
 

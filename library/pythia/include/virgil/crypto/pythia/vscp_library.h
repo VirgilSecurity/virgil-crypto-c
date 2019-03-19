@@ -101,6 +101,12 @@ extern "C" {
                 VSCP_VERSION_MINOR, \
                 VSCP_VERSION_PATCH)
 
+#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
+#   define VSCP_NODISCARD __attribute__ ((warn_unused_result))
+#else
+#   define VSCP_NODISCARD
+#endif
+
 //
 //  Custom implementation of the number ceil algorithm.
 //

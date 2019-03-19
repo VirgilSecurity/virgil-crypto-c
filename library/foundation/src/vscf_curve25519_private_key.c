@@ -118,14 +118,27 @@ vscf_curve25519_private_key_setup_defaults(vscf_curve25519_private_key_t *self) 
 
     if (NULL == self->random) {
         vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
-        vscf_ctr_drbg_setup_defaults(random);
+        vscf_status_t status = vscf_ctr_drbg_setup_defaults(random);
+
+        if (status != vscf_status_SUCCESS) {
+            vscf_ctr_drbg_destroy(&random);
+            return status;
+        }
+
         self->random = vscf_ctr_drbg_impl(random);
     }
 
     if (NULL == self->ecies) {
-        self->ecies = vscf_ecies_new();
-        vscf_ecies_use_random(self->ecies, self->random);
-        vscf_ecies_setup_defaults(self->ecies);
+        vscf_ecies_t *ecies = vscf_ecies_new();
+        vscf_ecies_use_random(ecies, self->random);
+        vscf_status_t status = vscf_ecies_setup_defaults(ecies);
+
+        if (status != vscf_status_SUCCESS) {
+            vscf_ecies_destroy(&ecies);
+            return status;
+        }
+
+        self->ecies = ecies;
     }
 
     return vscf_status_SUCCESS;

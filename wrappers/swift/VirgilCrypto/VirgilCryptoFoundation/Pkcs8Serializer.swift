@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// Implements PKCS#8 key serialization to PEM format.
-@objc(VSCFPkcs8Serializer) public class Pkcs8Serializer: NSObject, Defaults, KeySerializer {
+@objc(VSCFPkcs8Serializer) public class Pkcs8Serializer: NSObject, KeySerializer {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -78,10 +78,8 @@ import VSCFoundation
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_pkcs8_serializer_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
+    @objc public func setupDefaults() {
+        vscf_pkcs8_serializer_setup_defaults(self.c_ctx)
     }
 
     /// Calculate buffer size enough to hold serialized public key.

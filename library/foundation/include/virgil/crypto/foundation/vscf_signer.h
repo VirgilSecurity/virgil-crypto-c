@@ -172,7 +172,7 @@ vscf_signer_signature_len(vscf_signer_t *self, const vscf_impl_t *private_key);
 //  Accomplish signing and return signature.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_signer_sign(vscf_signer_t *self, vscf_impl_t *private_key, vsc_buffer_t *signature);
+vscf_signer_sign(vscf_signer_t *self, vscf_impl_t *private_key, vsc_buffer_t *signature) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

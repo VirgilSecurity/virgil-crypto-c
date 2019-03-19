@@ -206,6 +206,19 @@ vscf_alg_info_der_serializer_serialize_pbes2_alg_info(vscf_alg_info_der_serializ
 
 
 //
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->asn1_writer) {
+        vscf_alg_info_der_serializer_take_asn1_writer(self, vscf_asn1wr_impl(vscf_asn1wr_new()));
+    }
+}
+
+//
 //  Return true if algorithm identifier requires that optional
 //  parameter will be NULL.
 //
@@ -816,21 +829,6 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
     }
 
     return 0;
-}
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    if (NULL == self->asn1_writer) {
-        vscf_alg_info_der_serializer_take_asn1_writer(self, vscf_asn1wr_impl(vscf_asn1wr_new()));
-    }
-
-    return vscf_status_SUCCESS;
 }
 
 //

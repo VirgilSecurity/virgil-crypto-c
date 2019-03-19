@@ -166,8 +166,8 @@ vsce_phe_cipher_release_random(vsce_phe_cipher_t *self);
 //
 //  Setups dependencies with default values.
 //
-VSCE_PUBLIC void
-vsce_phe_cipher_setup_defaults(vsce_phe_cipher_t *self);
+VSCE_PUBLIC vsce_status_t
+vsce_phe_cipher_setup_defaults(vsce_phe_cipher_t *self) VSCE_NODISCARD;
 
 //
 //  Returns buffer capacity needed to fit cipher text
@@ -186,14 +186,14 @@ vsce_phe_cipher_decrypt_len(vsce_phe_cipher_t *self, size_t cipher_text_len);
 //
 VSCE_PUBLIC vsce_status_t
 vsce_phe_cipher_encrypt(vsce_phe_cipher_t *self, vsc_data_t plain_text, vsc_data_t account_key,
-        vsc_buffer_t *cipher_text);
+        vsc_buffer_t *cipher_text) VSCE_NODISCARD;
 
 //
 //  Decrypts data using account key
 //
 VSCE_PUBLIC vsce_status_t
 vsce_phe_cipher_decrypt(vsce_phe_cipher_t *self, vsc_data_t cipher_text, vsc_data_t account_key,
-        vsc_buffer_t *plain_text);
+        vsc_buffer_t *plain_text) VSCE_NODISCARD;
 
 
 // --------------------------------------------------------------------------

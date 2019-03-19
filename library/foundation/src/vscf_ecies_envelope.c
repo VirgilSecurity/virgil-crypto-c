@@ -548,7 +548,7 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
     //
     vscf_raw_key_t *originator_raw_key = vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(pkcs8, &error);
     if (originator_raw_key) {
-        self->ephemeral_public_key = vscf_alg_factory_create_public_key_from_raw_key(originator_raw_key);
+        self->ephemeral_public_key = vscf_alg_factory_create_public_key_from_raw_key(originator_raw_key, &error);
         vscf_raw_key_destroy(&originator_raw_key);
     }
 

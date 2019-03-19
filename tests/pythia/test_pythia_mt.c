@@ -163,7 +163,7 @@ pythia_err(void *ptr) {
 
 void
 test(void) {
-    vscp_pythia_configure();
+    TEST_ASSERT_EQUAL(vscp_status_SUCCESS, vscp_pythia_configure());
 
     pthread_t t1, t2;
 

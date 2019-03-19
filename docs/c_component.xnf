@@ -291,6 +291,7 @@
     <allow entity="c_return" occurs="0/1"/>
     <allow entity="c_argument" occurs="0+"/>
     <allow entity="c_precondition" occurs="0+"/>
+    <allow entity="c_attribute" occurs="0+"/>
 </entity>
 
 
@@ -418,3 +419,13 @@
         Position's weight of the precondition.
     </attr>
 </entity>
+
+
+<entity name="c_attribute">
+    Defines method attribute: __attribute__ (...).
+
+    <attr name="value">
+        Attribute itself.
+    </attr>
+</entity>
+

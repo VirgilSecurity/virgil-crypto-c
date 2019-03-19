@@ -1013,6 +1013,19 @@ function component_resolve_method_attr_is_const (method, parent)
     my.method.is_const ?= "0"
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Resolve attribute: method.nodiscard.
+# ---------------------------------------------------------------------------
+function component_resolve_method_attr_nodiscard (method, parent)
+    check_arguments (my, "method, parent", my)
+
+    if count (my.method.return, string_equal (return.enum?, "status"))
+        my.method.nodiscard ?= "1"
+    endif
+
+    my.method.nodiscard ?= "0"
+endfunction
+
 
 # ###########################################################################
 #   Per component resolution.
@@ -1143,6 +1156,7 @@ function component_resolve_dependency (dependency, parent)
         .access ?= "readwrite"
         .type_name = 0.interface ? 0.api ? 0.class ? 0.impl
         .has_observers ?= "0"
+        .is_observers_return_status ?= "0"
 
         my.project_uid = defined (dependency.project) ?? make_id ("project", dependency.project) ?
 
@@ -1382,6 +1396,7 @@ function component_resolve_method (method, parent)
     component_resolve_attr_definition (my.method, my.parent)
     component_resolve_method_attr_is_static (my.method, my.parent)
     component_resolve_method_attr_is_const (my.method, my.parent)
+    component_resolve_method_attr_nodiscard (my.method, my.parent)
 
     for my.method.argument
         component_resolve_argument (argument, my.method)

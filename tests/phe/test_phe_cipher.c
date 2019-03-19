@@ -91,13 +91,13 @@ test__encrypt_decrypt__random_data__should_match(void) {
     vsce_phe_cipher_t *cipher1, *cipher2;
 
     cipher1 = vsce_phe_cipher_new();
-    vsce_phe_cipher_setup_defaults(cipher1);
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_cipher_setup_defaults(cipher1));
 
     cipher2 = vsce_phe_cipher_new();
-    vsce_phe_cipher_setup_defaults(cipher2);
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_cipher_setup_defaults(cipher2));
 
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
     for (int i = 0; i < 100; i++) {
         vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);

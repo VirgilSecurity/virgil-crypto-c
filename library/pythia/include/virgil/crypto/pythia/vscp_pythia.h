@@ -86,7 +86,7 @@ extern "C" {
 //  Must be called once for entire application at startup.
 //
 VSCP_PUBLIC vscp_status_t
-vscp_pythia_configure(void);
+vscp_pythia_configure(void) VSCP_NODISCARD;
 
 //
 //  Performs global cleanup of the pythia library.
@@ -154,13 +154,14 @@ vscp_pythia_password_update_token_buf_len(void);
 //  This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 //
 VSCP_PUBLIC vscp_status_t
-vscp_pythia_blind(vsc_data_t password, vsc_buffer_t *blinded_password, vsc_buffer_t *blinding_secret);
+vscp_pythia_blind(vsc_data_t password, vsc_buffer_t *blinded_password, vsc_buffer_t *blinding_secret) VSCP_NODISCARD;
 
 //
 //  Deblinds 'transformed password' value with previously returned 'blinding secret' from blind().
 //
 VSCP_PUBLIC vscp_status_t
-vscp_pythia_deblind(vsc_data_t transformed_password, vsc_data_t blinding_secret, vsc_buffer_t *deblinded_password);
+vscp_pythia_deblind(vsc_data_t transformed_password, vsc_data_t blinding_secret,
+        vsc_buffer_t *deblinded_password) VSCP_NODISCARD;
 
 //
 //  Computes transformation private and public key.
@@ -168,14 +169,14 @@ vscp_pythia_deblind(vsc_data_t transformed_password, vsc_data_t blinding_secret,
 VSCP_PUBLIC vscp_status_t
 vscp_pythia_compute_transformation_key_pair(vsc_data_t transformation_key_id, vsc_data_t pythia_secret,
         vsc_data_t pythia_scope_secret, vsc_buffer_t *transformation_private_key,
-        vsc_buffer_t *transformation_public_key);
+        vsc_buffer_t *transformation_public_key) VSCP_NODISCARD;
 
 //
 //  Transforms blinded password using transformation private key.
 //
 VSCP_PUBLIC vscp_status_t
 vscp_pythia_transform(vsc_data_t blinded_password, vsc_data_t tweak, vsc_data_t transformation_private_key,
-        vsc_buffer_t *transformed_password, vsc_buffer_t *transformed_tweak);
+        vsc_buffer_t *transformed_password, vsc_buffer_t *transformed_tweak) VSCP_NODISCARD;
 
 //
 //  Generates proof that server possesses secret values that were used to transform password.
@@ -183,7 +184,7 @@ vscp_pythia_transform(vsc_data_t blinded_password, vsc_data_t tweak, vsc_data_t 
 VSCP_PUBLIC vscp_status_t
 vscp_pythia_prove(vsc_data_t transformed_password, vsc_data_t blinded_password, vsc_data_t transformed_tweak,
         vsc_data_t transformation_private_key, vsc_data_t transformation_public_key, vsc_buffer_t *proof_value_c,
-        vsc_buffer_t *proof_value_u);
+        vsc_buffer_t *proof_value_u) VSCP_NODISCARD;
 
 //
 //  This operation allows client to verify that the output of transform() is correct,
@@ -191,7 +192,7 @@ vscp_pythia_prove(vsc_data_t transformed_password, vsc_data_t blinded_password, 
 //
 VSCP_PUBLIC vscp_status_t
 vscp_pythia_verify(vsc_data_t transformed_password, vsc_data_t blinded_password, vsc_data_t tweak,
-        vsc_data_t transformation_public_key, vsc_data_t proof_value_c, vsc_data_t proof_value_u);
+        vsc_data_t transformation_public_key, vsc_data_t proof_value_c, vsc_data_t proof_value_u) VSCP_NODISCARD;
 
 //
 //  Rotates old transformation key to new transformation key and generates 'password update token',
@@ -201,7 +202,7 @@ vscp_pythia_verify(vsc_data_t transformed_password, vsc_data_t blinded_password,
 //
 VSCP_PUBLIC vscp_status_t
 vscp_pythia_get_password_update_token(vsc_data_t previous_transformation_private_key,
-        vsc_data_t new_transformation_private_key, vsc_buffer_t *password_update_token);
+        vsc_data_t new_transformation_private_key, vsc_buffer_t *password_update_token) VSCP_NODISCARD;
 
 //
 //  Updates previously stored 'deblinded password' with 'password update token'.
@@ -209,7 +210,7 @@ vscp_pythia_get_password_update_token(vsc_data_t previous_transformation_private
 //
 VSCP_PUBLIC vscp_status_t
 vscp_pythia_update_deblinded_with_token(vsc_data_t deblinded_password, vsc_data_t password_update_token,
-        vsc_buffer_t *updated_deblinded_password);
+        vsc_buffer_t *updated_deblinded_password) VSCP_NODISCARD;
 
 
 // --------------------------------------------------------------------------
