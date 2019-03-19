@@ -165,13 +165,13 @@ vscf_key_material_rng_reset_key_material(vscf_key_material_rng_t *self, vsc_data
 //  Generate random bytes.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_material_rng_random(vscf_key_material_rng_t *self, size_t data_len, vsc_buffer_t *data);
+vscf_key_material_rng_random(vscf_key_material_rng_t *self, size_t data_len, vsc_buffer_t *data) VSCF_NODISCARD;
 
 //
 //  Retreive new seed data from the entropy sources.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_material_rng_reseed(vscf_key_material_rng_t *self);
+vscf_key_material_rng_reseed(vscf_key_material_rng_t *self) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------
