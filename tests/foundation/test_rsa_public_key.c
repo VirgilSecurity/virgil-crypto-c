@@ -117,7 +117,7 @@ test__rsa_public_key_encrypt__with_imported_2048_PUBLIC_KEY_PKCS1_and_DATA_1_and
     //  Encrypt
     vsc_buffer_t *out =
             vsc_buffer_new_with_capacity(vscf_rsa_public_key_encrypted_len(public_key, test_rsa_DATA_1.len));
-    vscf_rsa_public_key_encrypt(public_key, test_rsa_DATA_1, out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_rsa_public_key_encrypt(public_key, test_rsa_DATA_1, out));
 
     //  Check
     TEST_ASSERT_EQUAL(test_rsa_2048_ENCRYPTED_DATA_1.len, vsc_buffer_len(out));

@@ -88,7 +88,7 @@
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_status_t
+VSCF_PUBLIC void
 vscf_pkcs8_serializer_setup_defaults(vscf_pkcs8_serializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -102,8 +102,6 @@ vscf_pkcs8_serializer_setup_defaults(vscf_pkcs8_serializer_t *self) {
         vscf_pkcs8_der_serializer_use_asn1_writer(der_serializer, self->asn1_writer);
         self->der_serializer = vscf_pkcs8_der_serializer_impl(der_serializer);
     }
-
-    return vscf_status_SUCCESS;
 }
 
 //

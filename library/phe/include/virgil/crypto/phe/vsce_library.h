@@ -101,6 +101,12 @@ extern "C" {
                 VSCE_VERSION_MINOR, \
                 VSCE_VERSION_PATCH)
 
+#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
+#   define VSCE_NODISCARD __attribute__ ((warn_unused_result))
+#else
+#   define VSCE_NODISCARD
+#endif
+
 //
 //  Custom implementation of the number ceil algorithm.
 //

@@ -155,11 +155,6 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_defaults.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_encrypt.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -580,8 +575,6 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_COMPUTE_SHARED_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_compute_shared_key_api.h>"
             "$<$<BOOL:${VSCF_DECRYPT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_decrypt.h>"
             "$<$<BOOL:${VSCF_DECRYPT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_decrypt_api.h>"
-            "$<$<BOOL:${VSCF_DEFAULTS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_defaults.h>"
-            "$<$<BOOL:${VSCF_DEFAULTS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_defaults_api.h>"
             "$<$<BOOL:${VSCF_ENCRYPT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_encrypt.h>"
             "$<$<BOOL:${VSCF_ENCRYPT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_encrypt_api.h>"
             "$<$<BOOL:${VSCF_ENTROPY_SOURCE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_entropy_source.h>"
@@ -811,8 +804,6 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_COMPUTE_SHARED_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_compute_shared_key_api.c>"
             "$<$<BOOL:${VSCF_DECRYPT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_decrypt.c>"
             "$<$<BOOL:${VSCF_DECRYPT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_decrypt_api.c>"
-            "$<$<BOOL:${VSCF_DEFAULTS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_defaults.c>"
-            "$<$<BOOL:${VSCF_DEFAULTS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_defaults_api.c>"
             "$<$<BOOL:${VSCF_ENCRYPT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_encrypt.c>"
             "$<$<BOOL:${VSCF_ENCRYPT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_encrypt_api.c>"
             "$<$<BOOL:${VSCF_ENTROPY_SOURCE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_entropy_source.c>"

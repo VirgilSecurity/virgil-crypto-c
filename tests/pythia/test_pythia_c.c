@@ -83,7 +83,7 @@ blind_eval_deblind(gt_t deblinded) {
 
 void
 test1_DeblindStability() {
-    vscp_pythia_configure();
+    TEST_ASSERT_EQUAL(vscp_status_SUCCESS, vscp_pythia_configure());
 
     gt_t deblinded1;
     gt_null(deblinded1);
@@ -125,7 +125,7 @@ test2_BlindEvalProveVerify() {
     const uint8_t msk[14] = "master secret";
     const uint8_t ssk[14] = "server secret";
 
-    vscp_pythia_configure();
+    TEST_ASSERT_EQUAL(vscp_status_SUCCESS, vscp_pythia_configure());
 
     g1_t blinded;
     g1_null(blinded);
@@ -187,7 +187,7 @@ test3_UpdateDelta() {
     const uint8_t msk0[14] = "master secret";
     const uint8_t ssk[14] = "server secret";
 
-    vscp_pythia_configure();
+    TEST_ASSERT_EQUAL(vscp_status_SUCCESS, vscp_pythia_configure());
 
     g1_t blinded;
     g1_new(blinded);

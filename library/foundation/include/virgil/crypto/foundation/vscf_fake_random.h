@@ -158,13 +158,13 @@ vscf_fake_random_setup_source_data(vscf_fake_random_t *self, vsc_data_t data_sou
 //  Generate random bytes.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_fake_random_random(vscf_fake_random_t *self, size_t data_len, vsc_buffer_t *data);
+vscf_fake_random_random(vscf_fake_random_t *self, size_t data_len, vsc_buffer_t *data) VSCF_NODISCARD;
 
 //
 //  Retreive new seed data from the entropy sources.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_fake_random_reseed(vscf_fake_random_t *self);
+vscf_fake_random_reseed(vscf_fake_random_t *self) VSCF_NODISCARD;
 
 //
 //  Defines that implemented source is strong.
@@ -176,7 +176,7 @@ vscf_fake_random_is_strong(vscf_fake_random_t *self);
 //  Gather entropy of the requested length.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_fake_random_gather(vscf_fake_random_t *self, size_t len, vsc_buffer_t *out);
+vscf_fake_random_gather(vscf_fake_random_t *self, size_t len, vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

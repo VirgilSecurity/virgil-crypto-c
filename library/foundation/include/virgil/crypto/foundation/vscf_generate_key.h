@@ -83,7 +83,7 @@ typedef struct vscf_generate_key_api_t vscf_generate_key_api_t;
 //  Note, this operation can be slow.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_generate_key(vscf_impl_t *impl);
+vscf_generate_key(vscf_impl_t *impl) VSCF_NODISCARD;
 
 //
 //  Return generate key API, or NULL if it is not implemented.

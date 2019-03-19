@@ -88,7 +88,9 @@ vscf_key_material_rng_init_ctx(vscf_key_material_rng_t *self) {
 
     self->seed_entropy_source = vscf_seed_entropy_source_new();
     self->ctr_drbg = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_use_entropy_source(self->ctr_drbg, vscf_seed_entropy_source_impl(self->seed_entropy_source));
+    vscf_status_t status =
+            vscf_ctr_drbg_use_entropy_source(self->ctr_drbg, vscf_seed_entropy_source_impl(self->seed_entropy_source));
+    VSCF_ASSERT(status == vscf_status_SUCCESS);
 }
 
 //
@@ -119,7 +121,9 @@ vscf_key_material_rng_reset_key_material(vscf_key_material_rng_t *self, vsc_data
 
     vscf_seed_entropy_source_reset_seed(self->seed_entropy_source, key_material);
     vscf_ctr_drbg_release_entropy_source(self->ctr_drbg);
-    vscf_ctr_drbg_use_entropy_source(self->ctr_drbg, vscf_seed_entropy_source_impl(self->seed_entropy_source));
+    vscf_status_t status =
+            vscf_ctr_drbg_use_entropy_source(self->ctr_drbg, vscf_seed_entropy_source_impl(self->seed_entropy_source));
+    VSCF_ASSERT(status == vscf_status_SUCCESS);
 }
 
 //

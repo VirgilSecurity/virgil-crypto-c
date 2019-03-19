@@ -89,7 +89,7 @@ void
 test__encrypt__message_with_imported_key__success(void) {
 
     vscf_curve25519_public_key_t *public_key = vscf_curve25519_public_key_new();
-    vscf_curve25519_public_key_setup_defaults(public_key);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_curve25519_public_key_setup_defaults(public_key));
 
     vscf_status_t result = vscf_curve25519_public_key_import_public_key(public_key, test_curve25519_PUBLIC_KEY);
     VSCF_ASSERT(result == vscf_status_SUCCESS);

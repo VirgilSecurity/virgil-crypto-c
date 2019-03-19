@@ -197,11 +197,11 @@ vscf_pkcs5_pbes2_encrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t
     vscf_cipher_set_key(self->cipher, vsc_buffer_data(key));
     vscf_cipher_start_encryption(self->cipher);
     vscf_cipher_update(self->cipher, data, out);
-    vscf_cipher_finish(self->cipher, out);
+    vscf_status_t status = vscf_cipher_finish(self->cipher, out);
 
     vsc_buffer_destroy(&key);
 
-    return vscf_status_SUCCESS;
+    return status;
 }
 
 //
@@ -241,11 +241,11 @@ vscf_pkcs5_pbes2_decrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t
     vscf_cipher_set_key(self->cipher, vsc_buffer_data(key));
     vscf_cipher_start_decryption(self->cipher);
     vscf_cipher_update(self->cipher, data, out);
-    vscf_cipher_finish(self->cipher, out);
+    vscf_status_t status = vscf_cipher_finish(self->cipher, out);
 
     vsc_buffer_destroy(&key);
 
-    return vscf_status_SUCCESS;
+    return status;
 }
 
 //

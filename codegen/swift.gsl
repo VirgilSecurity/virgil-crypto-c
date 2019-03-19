@@ -1984,7 +1984,7 @@ function swift_create_method_from_dependency (dependency, impl, destination, wra
         . = swift_format_description (my.dependency) ?
         .name = swift_derive_method_name_str (cat ("set", my.dependency.name))
         .visibility = "public"
-        .throws = my.dependency.has_observers
+        .throws = my.dependency.has_observers & my.dependency.is_observers_return_status
         .objc = "1"
 
         my.arg_name = swift_derive_argument_name (my.dependency)
@@ -1995,7 +1995,7 @@ function swift_create_method_from_dependency (dependency, impl, destination, wra
         endnew
 
         new swift_code to swift_method
-            if my.dependency.has_observers
+            if my.dependency.has_observers & my.dependency.is_observers_return_status
                 my.result_var = "let proxyResult = "
                 my.enum_status = swift_derive_enum_status_name (my.wrapper.project)
                 my.impl_handle_status = "try $(my.enum_status:).handleStatus(fromC: proxyResult)"

@@ -157,7 +157,7 @@ vscf_seed_entropy_source_is_strong(vscf_seed_entropy_source_t *self);
 //  Gather entropy of the requested length.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_seed_entropy_source_gather(vscf_seed_entropy_source_t *self, size_t len, vsc_buffer_t *out);
+vscf_seed_entropy_source_gather(vscf_seed_entropy_source_t *self, size_t len, vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------
