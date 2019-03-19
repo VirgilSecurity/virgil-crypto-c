@@ -233,7 +233,7 @@ encrypt_decrypt__100_plain_texts_random_order(
         byte dice_rnd;
         vsc_buffer_t *fake_buffer = vsc_buffer_new();
         vsc_buffer_use(fake_buffer, &dice_rnd, sizeof(dice_rnd));
-        vscf_ctr_drbg_random(rng, sizeof(dice_rnd), fake_buffer);
+        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, sizeof(dice_rnd), fake_buffer));
         bool dice = dice_rnd % 2 == 0;
 
         vsc_buffer_destroy(&fake_buffer);
@@ -292,7 +292,7 @@ encrypt_decrypt__100_plain_texts_random_order_with_producers(
         byte dice_rnd;
         vsc_buffer_t *fake_buffer = vsc_buffer_new();
         vsc_buffer_use(fake_buffer, &dice_rnd, sizeof(dice_rnd));
-        vscf_ctr_drbg_random(rng, sizeof(dice_rnd), fake_buffer);
+        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, sizeof(dice_rnd), fake_buffer));
         bool dice = dice_rnd % 2 == 0;
 
         vsc_buffer_destroy(&fake_buffer);
