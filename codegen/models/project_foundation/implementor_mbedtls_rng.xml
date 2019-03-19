@@ -24,8 +24,6 @@
 
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.
-
-            <return enum="status"/>
         </method>
 
         <method name="add source" declaration="public">

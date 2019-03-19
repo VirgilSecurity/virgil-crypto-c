@@ -149,8 +149,8 @@ vscf_entropy_accumulator_shallow_copy(vscf_entropy_accumulator_t *self);
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_status_t
-vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *self) VSCF_NODISCARD;
+VSCF_PUBLIC void
+vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *self);
 
 //
 //  Add given entropy source to the accumulator.

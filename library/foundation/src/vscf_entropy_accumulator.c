@@ -109,13 +109,11 @@ vscf_entropy_accumulator_cleanup_ctx(vscf_entropy_accumulator_t *self) {
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_status_t
+VSCF_PUBLIC void
 vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *self) {
 
     VSCF_ASSERT_PTR(self);
     bool has_strong = 0;
-
-    // FIXME: Check mbedtls_entropy_add_source
 
 #if defined(MBEDTLS_PLATFORM_ENTROPY)
     mbedtls_entropy_add_source(&self->ctx, mbedtls_platform_entropy_poll, NULL, MBEDTLS_ENTROPY_MIN_PLATFORM,
@@ -135,7 +133,6 @@ vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *self) {
 #endif
 
     VSCF_ASSERT(has_strong);
-    return vscf_status_SUCCESS;
 }
 
 //

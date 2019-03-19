@@ -144,11 +144,8 @@ vscf_ctr_drbg_setup_defaults(vscf_ctr_drbg_t *self) {
     VSCF_ASSERT_PTR(self);
 
     vscf_entropy_accumulator_t *entropy_source = vscf_entropy_accumulator_new();
-    vscf_status_t status = vscf_entropy_accumulator_setup_defaults(entropy_source);
-    if (status != vscf_status_SUCCESS) {
-        return status;
-    }
-    status = vscf_ctr_drbg_take_entropy_source(self, vscf_entropy_accumulator_impl(entropy_source));
+    vscf_entropy_accumulator_setup_defaults(entropy_source);
+    vscf_status_t status = vscf_ctr_drbg_take_entropy_source(self, vscf_entropy_accumulator_impl(entropy_source));
     return status;
 }
 

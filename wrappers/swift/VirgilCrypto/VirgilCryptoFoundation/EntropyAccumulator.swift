@@ -70,10 +70,8 @@ import VSCFoundation
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_entropy_accumulator_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
+    @objc public func setupDefaults() {
+        vscf_entropy_accumulator_setup_defaults(self.c_ctx)
     }
 
     /// Add given entropy source to the accumulator.
