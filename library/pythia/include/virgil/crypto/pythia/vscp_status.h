@@ -81,13 +81,17 @@ enum vscp_status_t {
     //
     vscp_status_ERROR_BAD_ARGUMENTS = -1,
     //
-    //  Undrlying pythia library returns -1.
+    //  Underlying pythia library returns -1.
     //
     vscp_status_ERROR_PYTHIA_INNER_FAIL = -200,
     //
     //  Pythia verify operation failed.
     //
-    vscp_status_ERROR_VERIFICATION_FAIL = -201
+    vscp_status_ERROR_VERIFICATION_FAIL = -201,
+    //
+    //  Underlying random number generator failed.
+    //
+    vscp_status_ERROR_RNG_FAILED = -202
 };
 typedef enum vscp_status_t vscp_status_t;
 

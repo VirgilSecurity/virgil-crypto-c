@@ -45,15 +45,9 @@
 
 include_guard()
 
-if(NOT TARGET pythia)
-    message(FATAL_ERROR "Expected target 'pythia' to be defined first.")
-endif()
-
-target_compile_definitions(pythia
-        PUBLIC
-            $<BUILD_INTERFACE:VSCP_INTERNAL_BUILD>
-            "VSCP_LIBRARY=$<BOOL:${VSCP_LIBRARY}>"
-            "VSCP_PYTHIA=$<BOOL:${VSCP_PYTHIA}>"
-        PRIVATE
-            $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCP_BUILD_SHARED_LIBS>
+option(RELIC_LIBRARY "Enable build of the 'relic' library" ON)
+option(RELIC_USE_PTHREAD "Defines whether to enable relic multithreading using pthread." ON)
+mark_as_advanced(
+        RELIC_LIBRARY
+        RELIC_USE_PTHREAD
         )

@@ -2024,6 +2024,7 @@ function swift_create_class_constant (constant, swift_class, wrapper, meta)
     new swift_constant to my.swift_class
         . = swift_format_description (my.constant) ?
         .name = swift_derive_constant_name (my.constant, my.wrapper)
+        .type = swift_derive_constant_type (my.constant, my.wrapper)
         .value = my.constant.value
         .visibility = "public"
     endnew
@@ -2292,7 +2293,7 @@ function swift_create_implementation_module (implementation, destination, wrappe
             swift_create_inherit_nsobject (swift_class)
 
             for my.implementation.constant
-                swift_create_property_from_constant (constant, swift_class, my.wrapper, my.meta)
+                swift_create_class_constant (constant, swift_class, my.wrapper, my.meta)
             endfor
 
             for my.implementation.dependency
