@@ -66,7 +66,7 @@ test__encrypt__virgil_message__success(void) {
     vscf_pkcs8_deserializer_setup_defaults(pkcs8);
 
     vscf_ecies_t *ecies = vscf_ecies_new();
-    vscf_ecies_setup_defaults(ecies);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ecies_setup_defaults(ecies));
 
     vscf_raw_key_t *raw_public_key =
             vscf_pkcs8_deserializer_deserialize_public_key(pkcs8, test_data_ecies_ED25519_RECEIVER_PUBLIC_KEY, NULL);
@@ -157,7 +157,7 @@ test__decrypt__ed25519_encrypted_message__match_virgil_message(void) {
     vscf_pkcs8_deserializer_setup_defaults(pkcs8);
 
     vscf_ecies_t *ecies = vscf_ecies_new();
-    vscf_ecies_setup_defaults(ecies);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ecies_setup_defaults(ecies));
 
     vscf_raw_key_t *raw_private_key =
             vscf_pkcs8_deserializer_deserialize_private_key(pkcs8, test_data_ecies_ED25519_RECEIVER_PRIVATE_KEY, NULL);
