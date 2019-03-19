@@ -448,8 +448,6 @@ vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8
     VSCF_ASSERT_PTR(self->random);
     VSCF_ASSERT(vsc_data_is_valid(pkcs8_data));
 
-    // FIXME: Add error handling
-
     vscf_pkcs8_der_deserializer_t *deserializer = vscf_pkcs8_der_deserializer_new();
     vscf_pkcs8_der_deserializer_setup_defaults(deserializer);
 
