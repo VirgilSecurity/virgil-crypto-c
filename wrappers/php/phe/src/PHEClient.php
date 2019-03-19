@@ -64,6 +64,15 @@ class PHEClient
     }
 
     /**
+     * @return void
+     * @throws Exception
+     */
+    public function setupDefaults()
+    {
+        vsce_phe_client_setup_defaults_php($this->c_ctx);
+    }
+
+    /**
      * @param string $clientPrivateKey
      * @param string $serverPublicKey
      * @return void

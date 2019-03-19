@@ -46,7 +46,10 @@ class PHEClientTest extends \PHPUnit\Framework\TestCase
     protected function setUp()
     {
         $this->client = new PHEClient();
+        $this->client->setupDefaults();
+
         $this->server = new PHEServer();
+        $this->server->setupDefaults();
     }
 
     protected function tearDown()

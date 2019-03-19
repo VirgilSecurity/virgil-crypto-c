@@ -65,6 +65,7 @@ class PHECipher
 
     /**
      * @return void
+     * @throws Exception
      */
     public function setupDefaults()
     {
