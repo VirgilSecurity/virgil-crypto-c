@@ -103,7 +103,7 @@ produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr
     byte lost_level;
     vsc_buffer_t *fake_buffer = vsc_buffer_new();
     vsc_buffer_use(fake_buffer, &lost_level, sizeof(lost_level));
-    vscf_ctr_drbg_random(producer->rng, sizeof(lost_level), fake_buffer);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(producer->rng, sizeof(lost_level), fake_buffer));
     vsc_buffer_destroy(&fake_buffer);
 
     byte lost_level_threshold = (byte)(255 * (1 - producer->lost_rate));
@@ -134,7 +134,7 @@ produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr
     vsc_buffer_destroy(&fake_buffer);
     fake_buffer = vsc_buffer_new();
     vsc_buffer_use(fake_buffer, &late_level, sizeof(late_level));
-    vscf_ctr_drbg_random(producer->rng, sizeof(late_level), fake_buffer);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(producer->rng, sizeof(late_level), fake_buffer));
     vsc_buffer_destroy(&fake_buffer);
 
     byte late_level_threshold = (byte)(255 * (1 - producer->out_of_order_rate));
@@ -145,7 +145,7 @@ produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr
 
         fake_buffer = vsc_buffer_new();
         vsc_buffer_use(fake_buffer, &late_number, sizeof(late_number));
-        vscf_ctr_drbg_random(producer->rng, sizeof(late_number), fake_buffer);
+        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(producer->rng, sizeof(late_number), fake_buffer));
         vsc_buffer_destroy(&fake_buffer);
 
         late_number = (byte)((5 * (float)(late_number + 26)) / 255.0);

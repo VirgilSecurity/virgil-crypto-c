@@ -86,7 +86,7 @@ test__simple_swu__random_hashes__should_be_on_curve(void) {
         mbedtls_mpi t;
 
         while (true) {
-            vscf_ctr_drbg_random(rng, len, t_buf);
+            TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, len, t_buf));
 
             mbedtls_mpi_init(&t);
             mbedtls_mpi_read_binary(&t, vsc_buffer_bytes(t_buf), vsc_buffer_len(t_buf));

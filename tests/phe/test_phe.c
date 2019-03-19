@@ -103,8 +103,9 @@ init(vsce_phe_server_t **server_ref, vsce_phe_client_t **client_ref, vsc_buffer_
 
     vsc_buffer_delete(&buffer);
 
-    vsce_phe_client_set_keys(*client_ref, vsc_data(client_private_key, sizeof(client_private_key)),
-            vsc_buffer_data(*server_public_key_ref));
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_phe_client_set_keys(*client_ref, vsc_data(client_private_key, sizeof(client_private_key)),
+                    vsc_buffer_data(*server_public_key_ref)));
 }
 
 void
@@ -241,8 +242,8 @@ test__rotation__random_rotation__server_public_keys_match(void) {
     vsc_buffer_t *new_server_public_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     vsc_buffer_t *token = vsc_buffer_new_with_capacity(vsce_phe_server_update_token_len(server));
 
-    vsce_phe_server_rotate_keys(
-            server, vsc_buffer_data(server_private_key), new_server_private_key, new_server_public_key, token);
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_server_rotate_keys(server, vsc_buffer_data(server_private_key),
+                                                   new_server_private_key, new_server_public_key, token));
 
     vsc_buffer_t *new_client_private_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_t *new_server_public_key2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
@@ -306,8 +307,8 @@ test__rotation__random_rotation__enrollment_record_updated_successfully(void) {
     vsce_phe_client_t *new_client = vsce_phe_client_new();
     TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_setup_defaults(new_client));
 
-    vsce_phe_client_set_keys(
-            new_client, vsc_buffer_data(new_client_private_key), vsc_buffer_data(new_server_public_key));
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_set_keys(new_client, vsc_buffer_data(new_client_private_key),
+                                                   vsc_buffer_data(new_server_public_key)));
 
     vsc_buffer_t *new_enrollment_record = vsc_buffer_new_with_capacity(vsce_phe_client_enrollment_record_len(client));
 

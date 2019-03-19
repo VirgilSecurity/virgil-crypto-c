@@ -148,7 +148,7 @@ test__padding__growing_data_size__should_add_padding(void) {
 
     size_t max_size = 320;
     vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(max_size);
-    vscf_ctr_drbg_random(rng, vsc_buffer_capacity(plain_text), plain_text);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, vsc_buffer_capacity(plain_text), plain_text));
 
     vscr_ratchet_cipher_t *cipher = vscr_ratchet_cipher_new();
     vscr_ratchet_cipher_use_rng(cipher, vscf_ctr_drbg_impl(rng));
