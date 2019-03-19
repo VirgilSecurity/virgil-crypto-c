@@ -41,8 +41,8 @@ import VSCPythia
 
     /// Performs global initialization of the pythia library.
     /// Must be called once for entire application at startup.
-    @objc public static func init() throws {
-        let proxyResult = vscp_pythia_init()
+    @objc public static func configure() throws {
+        let proxyResult = vscp_pythia_configure()
 
         try PythiaError.handleStatus(fromC: proxyResult)
     }

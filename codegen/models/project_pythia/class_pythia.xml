@@ -30,7 +30,7 @@
     </macros>
 
 
-    <method name="init" is_static="1">
+    <method name="configure" is_static="1">
         Performs global initialization of the pythia library.
         Must be called once for entire application at startup.
 

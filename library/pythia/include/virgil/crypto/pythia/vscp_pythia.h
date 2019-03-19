@@ -86,7 +86,7 @@ extern "C" {
 //  Must be called once for entire application at startup.
 //
 VSCP_PUBLIC vscp_status_t
-vscp_pythia_init(void);
+vscp_pythia_configure(void);
 
 //
 //  Performs global cleanup of the pythia library.
