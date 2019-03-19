@@ -433,6 +433,8 @@ import VSCFoundation
             return EntropyAccumulator(take: c_ctx)
         case vscf_impl_tag_FAKE_RANDOM:
             return FakeRandom(take: c_ctx)
+        case vscf_impl_tag_SEED_ENTROPY_SOURCE:
+            return SeedEntropySource(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -450,6 +452,8 @@ import VSCFoundation
             return CtrDrbg(take: c_ctx)
         case vscf_impl_tag_FAKE_RANDOM:
             return FakeRandom(take: c_ctx)
+        case vscf_impl_tag_KEY_MATERIAL_RNG:
+            return KeyMaterialRng(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
