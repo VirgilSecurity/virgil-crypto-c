@@ -42,10 +42,9 @@ import VSCFoundation
 @objc(VSCFKeyMaterialRng) public class KeyMaterialRng: NSObject, Random {
 
     /// Minimum length in bytes for the key material.
-    @objc public let keyMaterialLenMin: Int = 32
-
+    @objc public static let keyMaterialLenMin: Int = 32
     /// Maximum length in bytes for the key material.
-    @objc public let keyMaterialLenMax: Int = 512
+    @objc public static let keyMaterialLenMax: Int = 512
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer

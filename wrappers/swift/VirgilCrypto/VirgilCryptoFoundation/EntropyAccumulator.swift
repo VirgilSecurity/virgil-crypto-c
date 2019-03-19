@@ -39,7 +39,7 @@ import VSCFoundation
 /// Implementation based on a simple entropy accumulator.
 @objc(VSCFEntropyAccumulator) public class EntropyAccumulator: NSObject, Defaults, EntropySource {
 
-    @objc public let sourcesMax: Int = 15
+    @objc public static let sourcesMax: Int = 15
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
