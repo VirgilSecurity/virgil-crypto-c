@@ -25,22 +25,22 @@ extern "C" {
 #endif
 
 /// Buffer size for bn_t instances
-const extern size_t PYTHIA_BN_BUF_SIZE;
+extern const size_t PYTHIA_BN_BUF_SIZE;
 
 /// Buffer size for g1_t instances
-const extern size_t PYTHIA_G1_BUF_SIZE;
+extern const size_t PYTHIA_G1_BUF_SIZE;
 
 /// Buffer size for g2_t instances
-const extern size_t PYTHIA_G2_BUF_SIZE;
+extern const size_t PYTHIA_G2_BUF_SIZE;
 
 /// Buffer size for gt_t instances
-const extern size_t PYTHIA_GT_BUF_SIZE;
+extern const size_t PYTHIA_GT_BUF_SIZE;
 
 /// Minimum binary arguments size (e.g. tweak, secrets)
-const extern size_t PYTHIA_BIN_MIN_BUF_SIZE;
+extern const size_t PYTHIA_BIN_MIN_BUF_SIZE;
 
 /// Maximum binary arguments size (e.g. tweak, secrets)
-const extern size_t PYTHIA_BIN_MAX_BUF_SIZE;
+extern const size_t PYTHIA_BIN_MAX_BUF_SIZE;
 
 #ifdef __cplusplus
 }
