@@ -86,7 +86,7 @@ function js_value_is_class_module(value, wrapper)
   return 0
 endfunction
 
-  function js_value_is_interface_module(value, wrapper)
+function js_value_is_interface_module(value, wrapper)
   for my.wrapper.js_wrapped_interface where defined(my.value.interface) & my.value.interface = js_wrapped_interface.name
     return 1
   endfor
@@ -109,7 +109,7 @@ function js_value_is_error_context(value)
 endfunction
 
 function js_value_is_return_argument(value)
-  return defined(my.value.access) & (my.value.access = "writeonly" | my.value.access = "readwrite")
+  return js_value_is_buffer(my.value) | ((js_value_is_byte(my.value) | js_value_is_char(my.value) | js_value_is_error_context(my.value)) & (defined(my.value.access) & (my.value.access = "writeonly" | my.value.access = "readwrite")))
 endfunction
 
 # --------------------------------------------------------------------------------------------------
@@ -158,10 +158,6 @@ global.js_cpp_callback_info_name = "info"
 global.js_cpp_persistent_constructor_name = "constructor"
 
 global.js_cpp_implementation_getter = "GetImplementation"
-
-function js_cpp_value_is_cpp_js_return(value)
-  return (js_value_is_buffer(my.value) | js_value_is_char(my.value)) & defined(my.value.access) & (my.value.access = "writeonly" | my.value.access = "readwrite")
-endfunction
 
 function js_cpp_variable_name(name)
   return "$(my.name:c)"

@@ -115,7 +115,7 @@ endfunction
 
 function js_generate_sources(source, wrapper)
   echo_info("js_generate_sources", my)
-  /* js_create_js_module_files(my.source, my.wrapper) */
+  js_create_js_module_files(my.source, my.wrapper)
   js_create_index_cpp_file(my.wrapper)
   js_create_index_js_file(my.wrapper)
 endfunction
