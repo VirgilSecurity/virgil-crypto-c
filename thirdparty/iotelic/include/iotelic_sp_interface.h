@@ -5,7 +5,7 @@
 
 typedef void (*vscf_iot_crypto_result_cb)(uint16_t op_ip, uint16_t opcode, void *out_data, uint32_t len);
 
-void
+int32_t
 vs_iot_init_crypto_interface(vscf_iot_crypto_result_cb cb);
 
 int32_t

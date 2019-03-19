@@ -8,90 +8,252 @@
 #include <iotelic_sp_interface.h>
 #include <mailbox/mailbox.h>
 #include <common/iot_errno.h>
+#include <iot_module_api.h>
+#include <os_mem_api.h>
+#include <os_lock_api.h>
+#include <os_event_api.h>
+#include <iot_io_api.h>
+#include <iot_task_api.h>
+
+enum{
+    E_IPC_EV_START     = 0,
+    E_IPC_EV_MB,
+    E_IPC_EV_END       = 31
+};
+
+#ifndef BIT
+#define BIT(n)              (1<<(n))
+#endif
+
+typedef struct _safe_op_id_counter_s {
+    os_mutex_h blocked;
+    uint16_t op_id_counter;
+} safe_op_id_counter_t;
+
+typedef struct mailbox_exch_ctx_s {
+    os_mutex_h  blocked;
+    iot_task_h  handle;
+    os_event_h  event;  /* IPC sync event */
+    bool    is_result;
+    vscf_iot_crypto_result_cb user_result_cb;
+    safe_op_id_counter_t *op_id_counter;
+} mailbox_exch_ctx_t;
+
+static mailbox_exch_ctx_t *exch_ctx = NULL;
+
+static safe_op_id_counter_t *
+init_safe_op_id_counter() {
+    safe_op_id_counter_t *obj;
+    obj = (safe_op_id_counter_t*)os_mem_malloc(IOT_DRIVER_MID,
+                                           sizeof(safe_op_id_counter_t));
+    if(NULL == obj) {
+        IOT_ASSERT(0);
+        return NULL;
+    }
+
+    obj->blocked = os_create_mutex(IOT_DRIVER_MID);
+
+    if(obj->blocked == NULL){
+        IOT_ASSERT(0);
+        os_mem_free(obj);
+        obj = NULL;
+        return NULL;
+    }
+
+    return obj;
+
+}
+
+static uint16_t
+get_safe_op_id_counter(safe_op_id_counter_t *obj) {
+    uint16_t val;
+    os_acquire_mutex(obj->blocked);
+    val = obj->op_id_counter;
+    os_release_mutex(obj->blocked);
+    return val;
+}
+
+static void
+set_safe_op_id_counter(safe_op_id_counter_t *obj, uint16_t val) {
+    os_acquire_mutex(obj->blocked);
+    obj->op_id_counter = val;
+    os_release_mutex(obj->blocked);
+}
+
+static void
+inc_safe_op_id_counter(safe_op_id_counter_t *obj) {
+    os_acquire_mutex(obj->blocked);
+    obj->op_id_counter++;
+    os_release_mutex(obj->blocked);
+}
+
+static void
+deinit_safe_op_id_counter(safe_op_id_counter_t *obj) {
+    os_delete_mutex(obj->blocked);
+    os_mem_free(obj);
+}
+
+static void
+crypto_result_blocked_op_cb(uint16_t op_ip, uint16_t opcode, void *out_data, uint32_t len) {
+    exch_ctx->is_result = true;
+}
+
+static void
+mb_receive_cb(void) {
+    iot_mb_mask();
+    iot_printf("[AP]mb_receive_cb\n");
+    os_set_task_event_with_v_from_isr(
+            iot_task_get_os_task_h(exch_ctx->handle), BIT(E_IPC_EV_MB));
+}
+
+static void
+mb_task_event_handle(iot_task_h task_h, uint32_t event) {
+    (void)task_h;
+    iot_printf("[AP]mb_task_event_handle\n");
+    if(BIT(E_IPC_EV_MB) & event) {
+        uint32_t i;
+        mailbox_cmd_t *cmd = 0;
+        size_t addr = (size_t)cmd;
+        i = iot_mb_get_read_space();
+
+        while (i) {
+            if (ERR_OK == iot_mb_read(&addr)) {
+                cmd = (mailbox_cmd_t *)addr;
+                crypto_result_blocked_op_cb(cmd->op_id, cmd->opcode, cmd->out_data, cmd->olen);
+            }
+            i--;
+        }
+
+        /* enable mailbox again*/
+        iot_mb_unmask();
+    }
+    return;
+}
+
+static void
+mb_task_msg_handle(iot_task_h task_h, iot_task_msg_t *msg)  {
+
+}
+
+static void
+mb_task_msg_cancel(iot_task_h task_h, iot_task_msg_t *msg) {
+
+}
 
 const char *iotelic_version(void) {
     return "0.1.0";
 }
 
-typedef struct mailbox_exch_ctx_s {
-    bool is_initialized;
-    bool is_blocked;
-    bool is_result;
-    vscf_iot_crypto_result_cb user_result_cb;
-    uint16_t op_id_counter;
-} mailbox_exch_ctx_t;
-
-static mailbox_exch_ctx_t exch_ctx = {0};
-
-static void
-crypto_result_blocked_op_cb(uint16_t op_ip, uint16_t opcode, void *out_data, uint32_t len){
-    exch_ctx.is_result = true;
-}
-
-static void
-mb_receive_cb(void) {
-    uint32_t i;
-    mailbox_cmd_t *cmd = 0;
-    size_t addr = (size_t)cmd;
-    i = iot_mb_get_read_space();
-
-    while (i) {
-        if (ERR_OK == iot_mb_read(&addr)) {
-            cmd = (mailbox_cmd_t *)addr;
-
-            if(exch_ctx.is_blocked) {
-                crypto_result_blocked_op_cb(cmd->op_id, cmd->opcode, cmd->out_data, cmd->olen);
-            } else if(NULL != exch_ctx.user_result_cb){
-                exch_ctx.user_result_cb(cmd->op_id, cmd->opcode, cmd->out_data, cmd->olen);
-            }
-        }
-        i--;
-    }
-}
-
-void
+int32_t
 vs_iot_init_crypto_interface(vscf_iot_crypto_result_cb cb){
+    uint32_t ret = ERR_OK;
+    iot_task_config_t t_cfg;
 
-    if(exch_ctx.is_initialized) {
-        return;
+    if(NULL != exch_ctx) {
+        return ERR_EXIST;
     }
 
-    memset(&exch_ctx, 0, sizeof(mailbox_exch_ctx_t));
-    exch_ctx.is_initialized = true;
-    exch_ctx.user_result_cb = cb;
+    exch_ctx = (mailbox_exch_ctx_t*)os_mem_malloc(IOT_DRIVER_MID,
+                                  sizeof(mailbox_exch_ctx_t));
+
+    if (exch_ctx == NULL) {
+        iot_printf("[AP]%s:memory malloc fail.\n", __FUNCTION__);
+        return ERR_NOMEM;
+    }
+
+    memset(exch_ctx, 0, sizeof(mailbox_exch_ctx_t));
 
     iot_mb_init();
-    iot_mb_open(mb_receive_cb);
+    ret = iot_mb_open(mb_receive_cb);
+
+    if (ret != ERR_OK){
+        iot_printf("[AP]fail to open mailbox...\n");
+        goto out;
+    }
+
+    exch_ctx->blocked = os_create_mutex(IOT_DRIVER_MID);
+
+    if(exch_ctx->blocked == NULL){
+        IOT_ASSERT(0);
+        goto out;
+    }
+
+    exch_ctx->event = os_create_event(IOT_DRIVER_MID, false);
+    exch_ctx->op_id_counter = init_safe_op_id_counter();
+
+    if(exch_ctx->event == NULL
+            || exch_ctx->op_id_counter == NULL){
+        IOT_ASSERT(0);
+        goto out_1;
+    }
+
+    /* create mailbox task */
+    t_cfg.stack_size       = 0;
+    t_cfg.task_prio        = 8;
+    t_cfg.msg_size         = sizeof(size_t);
+    t_cfg.msg_cnt          = 64;
+    t_cfg.queue_cnt        = 1;
+    t_cfg.queue_cfg[0].quota = 0;
+    t_cfg.task_event_func  = mb_task_event_handle;
+    t_cfg.msg_exe_func     = mb_task_msg_handle;
+    t_cfg.msg_cancel_func  = mb_task_msg_cancel;
+    exch_ctx->handle  = iot_task_create(IOT_DRIVER_MID, &t_cfg);
+    if(exch_ctx->handle == NULL) {
+        goto out_2;
+    }
+
+    iot_printf("[AP]mailbox iot_task created...\n");
+
+    exch_ctx->user_result_cb = cb;
+
+    return ERR_OK;
+
+out_2:
+    os_delete_event(exch_ctx->event);
+out_1:
+    os_delete_mutex(exch_ctx->blocked);
+out:
+    os_mem_free(exch_ctx);
+    exch_ctx = NULL;
+
+    return ERR_FAIL;
 }
 
 int32_t
 vs_iot_execute_crypto_op(vscf_command_type_e opcode, void *in_data, size_t ilen, void *out_data, size_t out_buf_sz, size_t *olen) {
 
-    if(!exch_ctx.is_initialized) {
+    if(NULL == exch_ctx) {
         return -ERR_NOT_READY;
     }
 
-    //TODO: Need to implement atomic crypto operations and queue. Change is_blocked flag to mutex
-    while (exch_ctx.is_blocked);
-    exch_ctx.is_blocked = true;
+    os_acquire_mutex(exch_ctx->blocked);
 
-    mailbox_cmd_t cmd;
-    cmd.opcode = opcode;
-    cmd.in_data = in_data;
-    cmd.ilen = ilen;
-    cmd.out_data = out_data;
-    cmd.out_buf_sz = out_buf_sz;
-    cmd.olen = 0;
-    cmd.op_id = exch_ctx.op_id_counter++;
+    mailbox_cmd_t *cmd = os_mem_malloc(IOT_DRIVER_MID, sizeof(mailbox_cmd_t));
+    if(NULL == cmd) {
+        return -ERR_NOMEM;
+    }
 
-    //TODO: Implement os messages for notifying about end crypto op
-    exch_ctx.is_result = false;
+    cmd->opcode = opcode;
+    cmd->in_data = in_data;
+    cmd->ilen = ilen;
+    cmd->out_data = out_data;
+    cmd->out_buf_sz = out_buf_sz;
+    cmd->olen = 0;
+    cmd->op_id = get_safe_op_id_counter(exch_ctx->op_id_counter);
+    inc_safe_op_id_counter(exch_ctx->op_id_counter);
 
-    iot_mb_send(1, (size_t)&cmd);
+    iot_printf("[AP]cmd = %d\n", (size_t)cmd);
+    iot_printf("[AP]cmd->opcode = %d\n", (size_t)cmd->opcode);
 
-    while(!exch_ctx.is_result);
-    *olen = cmd.olen;
-    exch_ctx.is_blocked = false;
+    exch_ctx->is_result = false;
+    iot_mb_send(1, (size_t)cmd);
 
-    return cmd.result;
+    while(!exch_ctx->is_result);
+
+    *olen = cmd->olen;
+    os_mem_free(cmd);
+
+    os_release_mutex(exch_ctx->blocked);
+
+    return cmd->result;
 }
