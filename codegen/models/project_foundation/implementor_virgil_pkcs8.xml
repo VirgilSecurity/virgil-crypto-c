@@ -5,7 +5,6 @@
     <implementation name="pkcs8 der serializer">
         Implements PKCS#8 key serialization to DER format.
 
-        <interface name="defaults"/>
         <interface name="key serializer"/>
 
         <require interface="public key"/>
@@ -16,6 +15,10 @@
         <require interface="alg"/>
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+        </method>
 
         <method name="serialize public key inplace" declaration="public">
             Serialize Public Key by using internal ASN.1 writer.
@@ -44,7 +47,6 @@
     <implementation name="pkcs8 der deserializer">
         Implements PKCS#8 key deserialization from DER format.
 
-        <interface name="defaults"/>
         <interface name="key deserializer"/>
 
         <require interface="public key"/>
@@ -55,6 +57,10 @@
         <require interface="alg"/>
 
         <dependency name="asn1 reader" interface="asn1 reader"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+        </method>
 
         <method name="deserialize public key inplace" declaration="public">
             Deserialize Public Key by using internal ASN.1 reader.
@@ -81,7 +87,6 @@
     <implementation name="pkcs8 serializer">
         Implements PKCS#8 key serialization to PEM format.
 
-        <interface name="defaults"/>
         <interface name="key serializer"/>
 
         <require interface="public key"/>
@@ -95,13 +100,16 @@
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
         <dependency name="der serializer" interface="key serializer"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+        </method>
     </implementation>
 
 
     <implementation name="pkcs8 deserializer">
         Implements PKCS#8 key deserialization from PEM format.
 
-        <interface name="defaults"/>
         <interface name="key deserializer"/>
 
         <require interface="public key"/>
@@ -114,5 +122,9 @@
 
         <dependency name="asn1 reader" interface="asn1 reader"/>
         <dependency name="der deserializer" interface="key deserializer"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+        </method>
     </implementation>
 </implementor>

@@ -107,28 +107,6 @@ vscf_entropy_accumulator_cleanup_ctx(vscf_entropy_accumulator_t *self) {
 }
 
 //
-//  Add given entropy source to the accumulator.
-//  Threshold defines minimum number of bytes that must be gathered
-//  from the source during accumulation.
-//
-VSCF_PUBLIC void
-vscf_entropy_accumulator_add_source(vscf_entropy_accumulator_t *self, vscf_impl_t *source, size_t threshold) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(source);
-    VSCF_ASSERT(vscf_entropy_source_is_implemented(source));
-    VSCF_ASSERT(threshold > 0);
-    VSCF_ASSERT(self->source_count < vscf_entropy_accumulator_SOURCES_MAX);
-
-    self->sources[self->source_count++] = vscf_impl_shallow_copy(source);
-
-    int status = mbedtls_entropy_add_source(
-            &self->ctx, vscf_mbedtls_bridge_entropy_poll, source, threshold, vscf_entropy_source_is_strong(source));
-
-    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
-}
-
-//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
@@ -158,6 +136,28 @@ vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *self) {
 
     VSCF_ASSERT(has_strong);
     return vscf_status_SUCCESS;
+}
+
+//
+//  Add given entropy source to the accumulator.
+//  Threshold defines minimum number of bytes that must be gathered
+//  from the source during accumulation.
+//
+VSCF_PUBLIC void
+vscf_entropy_accumulator_add_source(vscf_entropy_accumulator_t *self, vscf_impl_t *source, size_t threshold) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(source);
+    VSCF_ASSERT(vscf_entropy_source_is_implemented(source));
+    VSCF_ASSERT(threshold > 0);
+    VSCF_ASSERT(self->source_count < vscf_entropy_accumulator_SOURCES_MAX);
+
+    self->sources[self->source_count++] = vscf_impl_shallow_copy(source);
+
+    int status = mbedtls_entropy_add_source(
+            &self->ctx, vscf_mbedtls_bridge_entropy_poll, source, threshold, vscf_entropy_source_is_strong(source));
+
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 }
 
 //

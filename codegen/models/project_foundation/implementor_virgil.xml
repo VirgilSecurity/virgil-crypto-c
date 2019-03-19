@@ -115,7 +115,6 @@
     <implementation name="pkcs5 pbkdf2">
         Virgil Security implementation of the PBKDF2 (RFC 8018) algorithm.
 
-        <interface name="defaults"/>
         <interface name="alg"/>
         <interface name="kdf"/>
         <interface name="salted kdf"/>
@@ -131,6 +130,10 @@
 
         <property name="salt" class="buffer"/>
         <property name="iteration count" type="size"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+        </method>
     </implementation>
 
 

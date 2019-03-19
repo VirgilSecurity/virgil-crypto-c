@@ -123,8 +123,8 @@ vscr_ratchet_cleanup_ctx(vscr_ratchet_t *self);
 //
 //  This method is called when interface 'random' was setup.
 //
-static vscr_status_t
-vscr_ratchet_did_setup_rng(vscr_ratchet_t *self) VSCR_NODISCARD;
+static void
+vscr_ratchet_did_setup_rng(vscr_ratchet_t *self);
 
 //
 //  This method is called when interface 'random' was released.
@@ -258,7 +258,7 @@ vscr_ratchet_shallow_copy(vscr_ratchet_t *self) {
 //
 //  Setup dependency to the interface 'random' with shared ownership.
 //
-VSCR_PUBLIC vscr_status_t
+VSCR_PUBLIC void
 vscr_ratchet_use_rng(vscr_ratchet_t *self, vscf_impl_t *rng) {
 
     VSCR_ASSERT_PTR(self);
@@ -269,14 +269,14 @@ vscr_ratchet_use_rng(vscr_ratchet_t *self, vscf_impl_t *rng) {
 
     self->rng = vscf_impl_shallow_copy(rng);
 
-    return vscr_ratchet_did_setup_rng(self);
+    vscr_ratchet_did_setup_rng(self);
 }
 
 //
 //  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCR_PUBLIC vscr_status_t
+VSCR_PUBLIC void
 vscr_ratchet_take_rng(vscr_ratchet_t *self, vscf_impl_t *rng) {
 
     VSCR_ASSERT_PTR(self);
@@ -287,7 +287,7 @@ vscr_ratchet_take_rng(vscr_ratchet_t *self, vscf_impl_t *rng) {
 
     self->rng = rng;
 
-    return vscr_ratchet_did_setup_rng(self);
+    vscr_ratchet_did_setup_rng(self);
 }
 
 //
@@ -345,14 +345,12 @@ vscr_ratchet_cleanup_ctx(vscr_ratchet_t *self) {
 //
 //  This method is called when interface 'random' was setup.
 //
-static vscr_status_t
+static void
 vscr_ratchet_did_setup_rng(vscr_ratchet_t *self) {
 
     if (self->rng) {
         vscr_ratchet_cipher_use_rng(self->cipher, self->rng);
     }
-
-    return vscr_status_SUCCESS;
 }
 
 //

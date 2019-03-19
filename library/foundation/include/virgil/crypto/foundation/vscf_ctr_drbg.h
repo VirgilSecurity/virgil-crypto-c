@@ -173,6 +173,12 @@ VSCF_PUBLIC void
 vscf_ctr_drbg_release_entropy_source(vscf_ctr_drbg_t *self);
 
 //
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_ctr_drbg_setup_defaults(vscf_ctr_drbg_t *self) VSCF_NODISCARD;
+
+//
 //  Force entropy to be gathered at the beginning of every call to
 //  the random() method.
 //  Note, use this if your entropy source has sufficient throughput.
@@ -193,12 +199,6 @@ vscf_ctr_drbg_set_reseed_interval(vscf_ctr_drbg_t *self, size_t interval);
 //
 VSCF_PUBLIC void
 vscf_ctr_drbg_set_entropy_len(vscf_ctr_drbg_t *self, size_t len);
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_ctr_drbg_setup_defaults(vscf_ctr_drbg_t *self) VSCF_NODISCARD;
 
 //
 //  Generate random bytes.

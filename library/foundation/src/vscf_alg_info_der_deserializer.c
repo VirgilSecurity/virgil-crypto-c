@@ -139,6 +139,19 @@ vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(vscf_alg_info_der_dese
 
 
 //
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_setup_defaults(vscf_alg_info_der_deserializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->asn1_reader) {
+        vscf_alg_info_der_deserializer_take_asn1_reader(self, vscf_asn1rd_impl(vscf_asn1rd_new()));
+    }
+}
+
+//
 //  Parse ASN.1 structure "AlgorithmIdentifier" with optional NULL parameter.
 //
 static vscf_impl_t *
@@ -570,21 +583,6 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
     }
 
     return NULL;
-}
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_alg_info_der_deserializer_setup_defaults(vscf_alg_info_der_deserializer_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    if (NULL == self->asn1_reader) {
-        vscf_alg_info_der_deserializer_take_asn1_reader(self, vscf_asn1rd_impl(vscf_asn1rd_new()));
-    }
-
-    return vscf_status_SUCCESS;
 }
 
 //

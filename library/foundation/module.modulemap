@@ -19,7 +19,6 @@ framework module VSCFoundation {
     header "vscf_cipher_info.h"
     header "vscf_compute_shared_key.h"
     header "vscf_decrypt.h"
-    header "vscf_defaults.h"
     header "vscf_encrypt.h"
     header "vscf_entropy_source.h"
     header "vscf_generate_ephemeral_key.h"

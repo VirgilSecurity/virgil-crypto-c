@@ -47,7 +47,6 @@ include_guard()
 
 option(VSCF_LIBRARY "Enable build of the 'foundation' library" ON)
 option(VSCF_MULTI_THREAD "Enable multi-threading safety for foundation library." ON)
-option(VSCF_DEFAULTS "Enable interface 'defaults'." ON)
 option(VSCF_CIPHER "Enable interface 'cipher'." ON)
 option(VSCF_AUTH_ENCRYPT "Enable interface 'auth encrypt'." ON)
 option(VSCF_AUTH_DECRYPT "Enable interface 'auth decrypt'." ON)
@@ -141,7 +140,6 @@ option(VSCF_VERIFIER "Enable class 'verifier'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREAD
-        VSCF_DEFAULTS
         VSCF_CIPHER
         VSCF_AUTH_ENCRYPT
         VSCF_AUTH_DECRYPT
@@ -1823,6 +1821,24 @@ if(VSCF_ALG_FACTORY AND NOT VSCF_ALG_INFO)
     message("--")
     message("Feature VSCF_ALG_FACTORY depends on the feature:")
     message("     VSCF_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ALG_FACTORY AND NOT VSCF_PUBLIC_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ALG_FACTORY depends on the feature:")
+    message("     VSCF_PUBLIC_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ALG_FACTORY AND NOT VSCF_PRIVATE_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ALG_FACTORY depends on the feature:")
+    message("     VSCF_PRIVATE_KEY - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

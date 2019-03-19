@@ -46,7 +46,7 @@ function(enable_target_pedantic target)
                         -Wall -pedantic -Wextra>
 
                 $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:
-                        -Wall -pedantic -Wassign-enum -Wextra>
+                        -Werror -Wall -pedantic -Wassign-enum -Wextra>
             )
 endfunction()
 

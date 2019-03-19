@@ -55,8 +55,6 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_entropy_accumulator_defs.h"
-#include "vscf_defaults.h"
-#include "vscf_defaults_api.h"
 #include "vscf_entropy_source.h"
 #include "vscf_entropy_source_api.h"
 #include "vscf_impl.h"
@@ -74,25 +72,6 @@
 
 static const vscf_api_t *
 vscf_entropy_accumulator_find_api(vscf_api_tag_t api_tag);
-
-//
-//  Configuration of the interface API 'defaults api'.
-//
-static const vscf_defaults_api_t defaults_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'defaults' MUST be equal to the 'vscf_api_tag_DEFAULTS'.
-    //
-    vscf_api_tag_DEFAULTS,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_ENTROPY_ACCUMULATOR,
-    //
-    //  Setup predefined values to the uninitialized class dependencies.
-    //
-    (vscf_defaults_api_setup_defaults_fn)vscf_entropy_accumulator_setup_defaults
-};
 
 //
 //  Configuration of the interface API 'entropy source api'.
@@ -259,8 +238,6 @@ static const vscf_api_t *
 vscf_entropy_accumulator_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
-        case vscf_api_tag_DEFAULTS:
-            return (const vscf_api_t *) &defaults_api;
         case vscf_api_tag_ENTROPY_SOURCE:
             return (const vscf_api_t *) &entropy_source_api;
         default:

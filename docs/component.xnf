@@ -665,6 +665,18 @@
         </restrict>
     </attr>
 
+    <attr name="is_observers_return_status" default="0">
+        Defines that observer can return error code.
+
+        <restrict value="0">
+            Observer methods CAN NOT return status code.
+        </restrict>
+
+        <restrict value="1">
+            Observer methods CAN return status code.
+        </restrict>
+    </attr>
+
     <inherit entity="landlord"/>
 </entity>
 

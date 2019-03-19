@@ -82,6 +82,19 @@
 
 
 //
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_der_serializer_setup_defaults(vscf_pkcs8_der_serializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->asn1_writer) {
+        vscf_pkcs8_der_serializer_take_asn1_writer(self, vscf_asn1wr_impl(vscf_asn1wr_new()));
+    }
+}
+
+//
 //  Serialize Public Key by using internal ASN.1 writer.
 //  Note, that caller code is responsible to reset ASN.1 writer with
 //  an output buffer.
@@ -226,21 +239,6 @@ vscf_pkcs8_der_serializer_serialize_private_key_inplace(
     VSCF_ASSERT(!vscf_asn1_writer_has_error(self->asn1_writer));
 
     return len;
-}
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_pkcs8_der_serializer_setup_defaults(vscf_pkcs8_der_serializer_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    if (NULL == self->asn1_writer) {
-        vscf_pkcs8_der_serializer_take_asn1_writer(self, vscf_asn1wr_impl(vscf_asn1wr_new()));
-    }
-
-    return vscf_status_SUCCESS;
 }
 
 //

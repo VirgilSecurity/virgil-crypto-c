@@ -57,7 +57,6 @@
 #include "vscf_error.h"
 #include "vscf_raw_key.h"
 #include "vscf_impl.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -182,8 +181,8 @@ vscf_pkcs8_deserializer_release_der_deserializer(vscf_pkcs8_deserializer_t *self
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_status_t
-vscf_pkcs8_deserializer_setup_defaults(vscf_pkcs8_deserializer_t *self) VSCF_NODISCARD;
+VSCF_PUBLIC void
+vscf_pkcs8_deserializer_setup_defaults(vscf_pkcs8_deserializer_t *self);
 
 //
 //  Deserialize given public key as an interchangeable format to the object.

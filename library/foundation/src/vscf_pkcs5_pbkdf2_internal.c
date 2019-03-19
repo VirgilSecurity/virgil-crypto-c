@@ -55,8 +55,6 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_pkcs5_pbkdf2_defs.h"
-#include "vscf_defaults.h"
-#include "vscf_defaults_api.h"
 #include "vscf_alg.h"
 #include "vscf_alg_api.h"
 #include "vscf_kdf.h"
@@ -79,25 +77,6 @@
 
 static const vscf_api_t *
 vscf_pkcs5_pbkdf2_find_api(vscf_api_tag_t api_tag);
-
-//
-//  Configuration of the interface API 'defaults api'.
-//
-static const vscf_defaults_api_t defaults_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'defaults' MUST be equal to the 'vscf_api_tag_DEFAULTS'.
-    //
-    vscf_api_tag_DEFAULTS,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_PKCS5_PBKDF2,
-    //
-    //  Setup predefined values to the uninitialized class dependencies.
-    //
-    (vscf_defaults_api_setup_defaults_fn)vscf_pkcs5_pbkdf2_setup_defaults
-};
 
 //
 //  Configuration of the interface API 'alg api'.
@@ -361,8 +340,6 @@ vscf_pkcs5_pbkdf2_find_api(vscf_api_tag_t api_tag) {
     switch(api_tag) {
         case vscf_api_tag_ALG:
             return (const vscf_api_t *) &alg_api;
-        case vscf_api_tag_DEFAULTS:
-            return (const vscf_api_t *) &defaults_api;
         case vscf_api_tag_KDF:
             return (const vscf_api_t *) &kdf_api;
         case vscf_api_tag_SALTED_KDF:

@@ -214,16 +214,16 @@ VSCF_PUBLIC void
 vscf_rsa_private_key_release_asn1wr(vscf_rsa_private_key_t *self);
 
 //
-//  Setup parameters that is used during key generation.
-//
-VSCF_PUBLIC void
-vscf_rsa_private_key_set_keygen_params(vscf_rsa_private_key_t *self, size_t bitlen, size_t exponent);
-
-//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_rsa_private_key_setup_defaults(vscf_rsa_private_key_t *self) VSCF_NODISCARD;
+
+//
+//  Setup parameters that is used during key generation.
+//
+VSCF_PUBLIC void
+vscf_rsa_private_key_set_keygen_params(vscf_rsa_private_key_t *self, size_t bitlen, size_t exponent);
 
 //
 //  Provide algorithm identificator.

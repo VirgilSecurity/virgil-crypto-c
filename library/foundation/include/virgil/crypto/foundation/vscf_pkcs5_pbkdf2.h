@@ -55,8 +55,8 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_status.h"
 #include "vscf_alg_id.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -164,8 +164,8 @@ vscf_pkcs5_pbkdf2_release_hmac(vscf_pkcs5_pbkdf2_t *self);
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_status_t
-vscf_pkcs5_pbkdf2_setup_defaults(vscf_pkcs5_pbkdf2_t *self) VSCF_NODISCARD;
+VSCF_PUBLIC void
+vscf_pkcs5_pbkdf2_setup_defaults(vscf_pkcs5_pbkdf2_t *self);
 
 //
 //  Provide algorithm identificator.

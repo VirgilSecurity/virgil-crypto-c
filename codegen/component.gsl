@@ -1156,6 +1156,7 @@ function component_resolve_dependency (dependency, parent)
         .access ?= "readwrite"
         .type_name = 0.interface ? 0.api ? 0.class ? 0.impl
         .has_observers ?= "0"
+        .is_observers_return_status ?= "0"
 
         my.project_uid = defined (dependency.project) ?? make_id ("project", dependency.project) ?
 
