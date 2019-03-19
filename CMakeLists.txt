@@ -152,10 +152,10 @@ if(VIRGIL_LIB_FOUNDATION OR VIRGIL_LIB_PYTHIA)
 endif()
 
 #
-# Pythia
+# Relic
 #
 if(VIRGIL_LIB_PYTHIA)
-    add_subdirectory("thirdparty/pythia")
+    add_subdirectory("thirdparty/relic")
 endif()
 
 #

@@ -42,10 +42,9 @@ import VSCFoundation
 @objc(VSCFCtrDrbg) public class CtrDrbg: NSObject, Random {
 
     /// The interval before reseed is performed by default.
-    @objc public let reseedInterval: Int = 10000
-
+    @objc public static let reseedInterval: Int = 10000
     /// The amount of entropy used per seed by default.
-    @objc public let entropyLen: Int = 48
+    @objc public static let entropyLen: Int = 48
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
