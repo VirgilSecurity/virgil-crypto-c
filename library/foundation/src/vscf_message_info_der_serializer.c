@@ -363,14 +363,12 @@ vscf_message_info_der_serializer_cleanup_ctx(vscf_message_info_der_serializer_t 
 //
 //  This method is called when interface 'asn1 reader' was setup.
 //
-VSCF_PRIVATE vscf_status_t
+VSCF_PRIVATE void
 vscf_message_info_der_serializer_did_setup_asn1_reader(vscf_message_info_der_serializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
     vscf_alg_info_der_deserializer_use_asn1_reader(self->alg_info_deserializer, self->asn1_reader);
-
-    return vscf_status_SUCCESS;
 }
 
 //
@@ -387,14 +385,12 @@ vscf_message_info_der_serializer_did_release_asn1_reader(vscf_message_info_der_s
 //
 //  This method is called when interface 'asn1 writer' was setup.
 //
-VSCF_PRIVATE vscf_status_t
+VSCF_PRIVATE void
 vscf_message_info_der_serializer_did_setup_asn1_writer(vscf_message_info_der_serializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
     vscf_alg_info_der_serializer_use_asn1_writer(self->alg_info_serializer, self->asn1_writer);
-
-    return vscf_status_SUCCESS;
 }
 
 //
@@ -406,6 +402,23 @@ vscf_message_info_der_serializer_did_release_asn1_writer(vscf_message_info_der_s
     VSCF_ASSERT_PTR(self);
 
     vscf_alg_info_der_serializer_release_asn1_writer(self->alg_info_serializer);
+}
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->asn1_reader) {
+        vscf_message_info_der_serializer_take_asn1_reader(self, vscf_asn1rd_impl(vscf_asn1rd_new()));
+    }
+
+    if (NULL == self->asn1_writer) {
+        vscf_message_info_der_serializer_take_asn1_writer(self, vscf_asn1wr_impl(vscf_asn1wr_new()));
+    }
 }
 
 static size_t
@@ -1346,25 +1359,6 @@ vscf_message_info_der_serializer_deserialize_cms_content_info(
     }
 
     vscf_message_info_der_serializer_deserialize_enveloped_data(self, message_info, error);
-}
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    if (NULL == self->asn1_reader) {
-        vscf_message_info_der_serializer_take_asn1_reader(self, vscf_asn1rd_impl(vscf_asn1rd_new()));
-    }
-
-    if (NULL == self->asn1_writer) {
-        vscf_message_info_der_serializer_take_asn1_writer(self, vscf_asn1wr_impl(vscf_asn1wr_new()));
-    }
-
-    return vscf_status_SUCCESS;
 }
 
 //

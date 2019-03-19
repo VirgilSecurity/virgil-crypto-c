@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// Implements PKCS#8 key deserialization from DER format.
-@objc(VSCFPkcs8DerDeserializer) public class Pkcs8DerDeserializer: NSObject, Defaults, KeyDeserializer {
+@objc(VSCFPkcs8DerDeserializer) public class Pkcs8DerDeserializer: NSObject, KeyDeserializer {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -72,6 +72,11 @@ import VSCFoundation
         vscf_pkcs8_der_deserializer_use_asn1_reader(self.c_ctx, asn1Reader.c_ctx)
     }
 
+    /// Setup predefined values to the uninitialized class dependencies.
+    @objc public func setupDefaults() {
+        vscf_pkcs8_der_deserializer_setup_defaults(self.c_ctx)
+    }
+
     /// Deserialize Public Key by using internal ASN.1 reader.
     /// Note, that caller code is responsible to reset ASN.1 reader with
     /// an input buffer.
@@ -98,13 +103,6 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: error.status)
 
         return RawKey.init(take: proxyResult!)
-    }
-
-    /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_pkcs8_der_deserializer_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Deserialize given public key as an interchangeable format to the object.

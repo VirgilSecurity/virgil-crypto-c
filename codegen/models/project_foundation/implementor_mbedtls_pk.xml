@@ -28,7 +28,12 @@
         <dependency name="asn1rd" interface="asn1 reader"/>
         <dependency name="asn1wr" interface="asn1 writer"/>
 
-        <interface name="defaults"/>
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
         <interface name="alg"/>
         <interface name="key"/>
         <interface name="encrypt"/>
@@ -76,7 +81,12 @@
         <dependency name="asn1rd" interface="asn1 reader"/>
         <dependency name="asn1wr" interface="asn1 writer"/>
 
-        <interface name="defaults"/>
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
         <interface name="alg"/>
         <interface name="key"/>
         <interface name="generate key"/>

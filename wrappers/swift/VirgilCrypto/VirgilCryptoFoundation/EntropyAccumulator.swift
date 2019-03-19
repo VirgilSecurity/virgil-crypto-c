@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// Implementation based on a simple entropy accumulator.
-@objc(VSCFEntropyAccumulator) public class EntropyAccumulator: NSObject, Defaults, EntropySource {
+@objc(VSCFEntropyAccumulator) public class EntropyAccumulator: NSObject, EntropySource {
 
     @objc public let sourcesMax: Int = 15
 
@@ -69,18 +69,18 @@ import VSCFoundation
         vscf_entropy_accumulator_delete(self.c_ctx)
     }
 
-    /// Add given entropy source to the accumulator.
-    /// Threshold defines minimum number of bytes that must be gathered
-    /// from the source during accumulation.
-    @objc public func addSource(source: EntropySource, threshold: Int) {
-        vscf_entropy_accumulator_add_source(self.c_ctx, source.c_ctx, threshold)
-    }
-
     /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_entropy_accumulator_setup_defaults(self.c_ctx)
 
         try FoundationError.handleStatus(fromC: proxyResult)
+    }
+
+    /// Add given entropy source to the accumulator.
+    /// Threshold defines minimum number of bytes that must be gathered
+    /// from the source during accumulation.
+    @objc public func addSource(source: EntropySource, threshold: Int) {
+        vscf_entropy_accumulator_add_source(self.c_ctx, source.c_ctx, threshold)
     }
 
     /// Defines that implemented source is strong.

@@ -56,7 +56,6 @@
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -160,18 +159,18 @@ VSCF_PUBLIC void
 vscf_alg_info_der_deserializer_release_asn1_reader(vscf_alg_info_der_deserializer_t *self);
 
 //
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_setup_defaults(vscf_alg_info_der_deserializer_t *self);
+
+//
 //  Deserialize by using internal ASN.1 reader.
 //  Note, that caller code is responsible to reset ASN.1 reader with
 //  an input buffer.
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserializer_t *self, vscf_error_t *error);
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_alg_info_der_deserializer_setup_defaults(vscf_alg_info_der_deserializer_t *self) VSCF_NODISCARD;
 
 //
 //  Deserialize algorithm from the data.

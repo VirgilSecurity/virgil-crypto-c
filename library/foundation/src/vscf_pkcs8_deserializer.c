@@ -86,7 +86,7 @@
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_status_t
+VSCF_PUBLIC void
 vscf_pkcs8_deserializer_setup_defaults(vscf_pkcs8_deserializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -100,8 +100,6 @@ vscf_pkcs8_deserializer_setup_defaults(vscf_pkcs8_deserializer_t *self) {
         vscf_pkcs8_der_deserializer_use_asn1_reader(der_deserializer, self->asn1_reader);
         self->der_deserializer = vscf_pkcs8_der_deserializer_impl(der_deserializer);
     }
-
-    return vscf_status_SUCCESS;
 }
 
 //

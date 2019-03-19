@@ -55,7 +55,6 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -159,18 +158,18 @@ VSCF_PUBLIC void
 vscf_alg_info_der_serializer_release_asn1_writer(vscf_alg_info_der_serializer_t *self);
 
 //
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *self);
+
+//
 //  Serialize by using internal ASN.1 writer.
 //  Note, that caller code is responsible to reset ASN.1 writer with
 //  an output buffer.
 //
 VSCF_PUBLIC size_t
 vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *self) VSCF_NODISCARD;
 
 //
 //  Return buffer size enough to hold serialized algorithm.

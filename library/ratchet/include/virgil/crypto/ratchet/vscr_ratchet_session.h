@@ -147,8 +147,8 @@ vscr_ratchet_session_shallow_copy(vscr_ratchet_session_t *self);
 //
 //  Note, ownership is shared.
 //
-VSCR_PUBLIC vscr_status_t
-vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) VSCR_NODISCARD;
+VSCR_PUBLIC void
+vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng);
 
 //
 //  Random used to generate keys
@@ -156,8 +156,8 @@ vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) VSC
 //  Note, ownership is transfered.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCR_PUBLIC vscr_status_t
-vscr_ratchet_session_take_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) VSCR_NODISCARD;
+VSCR_PUBLIC void
+vscr_ratchet_session_take_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng);
 
 //
 //  Release dependency to the interface 'random'.
