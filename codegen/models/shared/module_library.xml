@@ -86,6 +86,16 @@
         </code>
     </macroses>
 
+    <macros name="nodiscard">
+        <code lang="c">
+            #if (defined(__GNUC__) &amp;&amp; __GNUC__ >= 4) || defined(__clang__)
+            #   define .(c_global_macros_nodiscard) __attribute__ ((warn_unused_result))
+            #else
+            #   define .(c_global_macros_nodiscard)
+            #endif
+        </code>
+    </macros>
+
     <macros name="ceil">
         Custom implementation of the number ceil algorithm.
 

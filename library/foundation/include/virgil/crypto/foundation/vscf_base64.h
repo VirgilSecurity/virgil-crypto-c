@@ -104,7 +104,7 @@ vscf_base64_decoded_len(size_t str_len);
 //  Decode given data from the base64 format.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_base64_decode(vsc_data_t str, vsc_buffer_t *data);
+vscf_base64_decode(vsc_data_t str, vsc_buffer_t *data) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

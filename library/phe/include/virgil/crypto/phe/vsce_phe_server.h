@@ -186,12 +186,15 @@ vsce_phe_server_take_operation_random(vsce_phe_server_t *self, vscf_impl_t *oper
 VSCE_PUBLIC void
 vsce_phe_server_release_operation_random(vsce_phe_server_t *self);
 
+VSCE_PUBLIC vsce_status_t
+vsce_phe_server_setup_defaults(vsce_phe_server_t *self) VSCE_NODISCARD;
+
 //
 //  Generates new NIST P-256 server key pair for some client
 //
 VSCE_PUBLIC vsce_status_t
 vsce_phe_server_generate_server_key_pair(vsce_phe_server_t *self, vsc_buffer_t *server_private_key,
-        vsc_buffer_t *server_public_key);
+        vsc_buffer_t *server_public_key) VSCE_NODISCARD;
 
 //
 //  Buffer size needed to fit EnrollmentResponse
@@ -204,7 +207,7 @@ vsce_phe_server_enrollment_response_len(vsce_phe_server_t *self);
 //
 VSCE_PUBLIC vsce_status_t
 vsce_phe_server_get_enrollment(vsce_phe_server_t *self, vsc_data_t server_private_key, vsc_data_t server_public_key,
-        vsc_buffer_t *enrollment_response);
+        vsc_buffer_t *enrollment_response) VSCE_NODISCARD;
 
 //
 //  Buffer size needed to fit VerifyPasswordResponse
@@ -217,7 +220,7 @@ vsce_phe_server_verify_password_response_len(vsce_phe_server_t *self);
 //
 VSCE_PUBLIC vsce_status_t
 vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_private_key, vsc_data_t server_public_key,
-        vsc_data_t verify_password_request, vsc_buffer_t *verify_password_response);
+        vsc_data_t verify_password_request, vsc_buffer_t *verify_password_response) VSCE_NODISCARD;
 
 //
 //  Buffer size needed to fit UpdateToken
@@ -230,7 +233,8 @@ vsce_phe_server_update_token_len(vsce_phe_server_t *self);
 //
 VSCE_PUBLIC vsce_status_t
 vsce_phe_server_rotate_keys(vsce_phe_server_t *self, vsc_data_t server_private_key,
-        vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key, vsc_buffer_t *update_token);
+        vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key,
+        vsc_buffer_t *update_token) VSCE_NODISCARD;
 
 
 // --------------------------------------------------------------------------

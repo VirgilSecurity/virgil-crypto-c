@@ -122,7 +122,8 @@ test__key_id__fixed_curve_key__should_match(void) {
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vscr_ratchet_common_KEY_ID_LEN);
 
-    vscr_ratchet_key_utils_compute_public_key_id(key_utils, test_data_ratchet_curve_public_key, buffer);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+            vscr_ratchet_key_utils_compute_public_key_id(key_utils, test_data_ratchet_curve_public_key, buffer));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ratchet_curve_public_key_id, buffer);
 
@@ -136,7 +137,8 @@ test__key_id__fixed_curve_raw_key__should_match(void) {
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vscr_ratchet_common_KEY_ID_LEN);
 
-    vscr_ratchet_key_utils_compute_public_key_id(key_utils, test_data_ratchet_curve_public_key_raw, buffer);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+            vscr_ratchet_key_utils_compute_public_key_id(key_utils, test_data_ratchet_curve_public_key_raw, buffer));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ratchet_curve_public_key_id, buffer);
 

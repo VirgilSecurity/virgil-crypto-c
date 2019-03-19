@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// Virgil Security implementation of the PBKDF2 (RFC 8018) algorithm.
-@objc(VSCFPkcs5Pbkdf2) public class Pkcs5Pbkdf2: NSObject, Defaults, Alg, Kdf, SaltedKdf {
+@objc(VSCFPkcs5Pbkdf2) public class Pkcs5Pbkdf2: NSObject, Alg, Kdf, SaltedKdf {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -73,10 +73,8 @@ import VSCFoundation
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_pkcs5_pbkdf2_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
+    @objc public func setupDefaults() {
+        vscf_pkcs5_pbkdf2_setup_defaults(self.c_ctx)
     }
 
     /// Provide algorithm identificator.

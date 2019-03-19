@@ -84,7 +84,7 @@ test__encrypt__fixed_data__should_match(void) {
 void
 test__encrypt_decrypt__rnd_data__should_match(void) {
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
     for (size_t i = 0; i < 100; i++) {
         vsc_buffer_t *key = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
@@ -139,7 +139,7 @@ test__encrypt_decrypt__rnd_data__should_match(void) {
 void
 test__padding__growing_data_size__should_add_padding(void) {
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
 
@@ -148,7 +148,7 @@ test__padding__growing_data_size__should_add_padding(void) {
 
     size_t max_size = 320;
     vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(max_size);
-    vscf_ctr_drbg_random(rng, vsc_buffer_capacity(plain_text), plain_text);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, vsc_buffer_capacity(plain_text), plain_text));
 
     vscr_ratchet_cipher_t *cipher = vscr_ratchet_cipher_new();
     vscr_ratchet_cipher_use_rng(cipher, vscf_ctr_drbg_impl(rng));

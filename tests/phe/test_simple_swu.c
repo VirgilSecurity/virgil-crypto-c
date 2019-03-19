@@ -75,7 +75,7 @@ test__simple_swu__random_hashes__should_be_on_curve(void) {
     int iterations = 1000;
 
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
     size_t len = 32;
     vsc_buffer_t *t_buf = vsc_buffer_new_with_capacity(len);
@@ -86,7 +86,7 @@ test__simple_swu__random_hashes__should_be_on_curve(void) {
         mbedtls_mpi t;
 
         while (true) {
-            vscf_ctr_drbg_random(rng, len, t_buf);
+            TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, len, t_buf));
 
             mbedtls_mpi_init(&t);
             mbedtls_mpi_read_binary(&t, vsc_buffer_bytes(t_buf), vsc_buffer_len(t_buf));

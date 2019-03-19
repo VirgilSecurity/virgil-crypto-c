@@ -123,7 +123,7 @@ vscf_error_has_error(const vscf_error_t *self);
 //  Return error code.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_error_status(const vscf_error_t *self);
+vscf_error_status(const vscf_error_t *self) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

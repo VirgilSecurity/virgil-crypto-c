@@ -51,7 +51,7 @@
 
 
 void
-test__serialize__sha256__returns_valid_der_v2_compat(void_v2_compat) {
+test__serialize__sha256__returns_valid_der_v2_compat(void) {
     vscf_alg_info_der_serializer_t *serializer = vscf_alg_info_der_serializer_new();
     vscf_alg_info_der_serializer_setup_defaults(serializer);
 

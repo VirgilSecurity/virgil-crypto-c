@@ -45,6 +45,8 @@
             - RNG: CTR DRBG
             - Key serialization: DER PKCS8
             - Symmetric cipher: AES256-GCM
+
+        <return enum="status"/>
     </method>
 
     <method name="initiate">

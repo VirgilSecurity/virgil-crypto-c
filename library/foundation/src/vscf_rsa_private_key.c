@@ -121,21 +121,6 @@ vscf_rsa_private_key_cleanup_ctx(vscf_rsa_private_key_t *self) {
 }
 
 //
-//  Setup parameters that is used during key generation.
-//
-VSCF_PUBLIC void
-vscf_rsa_private_key_set_keygen_params(vscf_rsa_private_key_t *self, size_t bitlen, size_t exponent) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(bitlen >= 128 && bitlen <= 16384);
-    VSCF_ASSERT(bitlen % 2 == 0);
-    VSCF_ASSERT(exponent >= 3 && exponent <= 65537);
-
-    self->gen_bitlen = bitlen;
-    self->gen_exponent = exponent;
-}
-
-//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
@@ -162,6 +147,21 @@ vscf_rsa_private_key_setup_defaults(vscf_rsa_private_key_t *self) {
     }
 
     return vscf_status_SUCCESS;
+}
+
+//
+//  Setup parameters that is used during key generation.
+//
+VSCF_PUBLIC void
+vscf_rsa_private_key_set_keygen_params(vscf_rsa_private_key_t *self, size_t bitlen, size_t exponent) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(bitlen >= 128 && bitlen <= 16384);
+    VSCF_ASSERT(bitlen % 2 == 0);
+    VSCF_ASSERT(exponent >= 3 && exponent <= 65537);
+
+    self->gen_bitlen = bitlen;
+    self->gen_exponent = exponent;
 }
 
 //

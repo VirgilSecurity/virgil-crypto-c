@@ -69,18 +69,19 @@ import VirgilCryptoFoundation
     }
 
     /// Random used to generate keys
-    @objc public func setRng(rng: Random) throws {
+    @objc public func setRng(rng: Random) {
         vscr_ratchet_session_release_rng(self.c_ctx)
-        let proxyResult = vscr_ratchet_session_use_rng(self.c_ctx, rng.c_ctx)
-        try RatchetError.handleStatus(fromC: proxyResult)
+        vscr_ratchet_session_use_rng(self.c_ctx, rng.c_ctx)
     }
 
     /// Setups default dependencies:
     ///     - RNG: CTR DRBG
     ///     - Key serialization: DER PKCS8
     ///     - Symmetric cipher: AES256-GCM
-    @objc public func setupDefaults() {
-        vscr_ratchet_session_setup_defaults(self.c_ctx)
+    @objc public func setupDefaults() throws {
+        let proxyResult = vscr_ratchet_session_setup_defaults(self.c_ctx)
+
+        try RatchetError.handleStatus(fromC: proxyResult)
     }
 
     /// Initiates session

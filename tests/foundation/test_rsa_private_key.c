@@ -117,7 +117,8 @@ test__rsa_private_key_decrypt__with_imported_2048_PRIVATE_KEY_PKCS1_and_2048_ENC
     //  Decrypt
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(
             vscf_rsa_private_key_decrypted_len(private_key, test_rsa_2048_ENCRYPTED_DATA_1.len));
-    vscf_rsa_private_key_decrypt(private_key, test_rsa_2048_ENCRYPTED_DATA_1, out);
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_rsa_private_key_decrypt(private_key, test_rsa_2048_ENCRYPTED_DATA_1, out));
 
     //  Check
     TEST_ASSERT_EQUAL(test_rsa_DATA_1.len, vsc_buffer_len(out));

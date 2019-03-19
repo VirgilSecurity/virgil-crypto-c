@@ -167,9 +167,9 @@ vscf_aes256_gcm_encrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *
 
     vscf_aes256_gcm_start_encryption(self);
     vscf_aes256_gcm_update(self, data, out);
-    vscf_aes256_gcm_finish(self, out);
+    vscf_status_t status = vscf_aes256_gcm_finish(self, out);
 
-    return vscf_status_SUCCESS;
+    return status;
 }
 
 //

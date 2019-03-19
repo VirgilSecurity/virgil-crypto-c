@@ -36,7 +36,7 @@
 import Foundation
 import VSCFoundation
 
-@objc(VSCFRsaPrivateKey) public class RsaPrivateKey: NSObject, Defaults, Alg, Key, GenerateKey, Decrypt, SignHash, PrivateKey {
+@objc(VSCFRsaPrivateKey) public class RsaPrivateKey: NSObject, Alg, Key, GenerateKey, Decrypt, SignHash, PrivateKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -87,16 +87,16 @@ import VSCFoundation
         vscf_rsa_private_key_use_asn1wr(self.c_ctx, asn1wr.c_ctx)
     }
 
-    /// Setup parameters that is used during key generation.
-    @objc public func setKeygenParams(bitlen: Int, exponent: Int) {
-        vscf_rsa_private_key_set_keygen_params(self.c_ctx, bitlen, exponent)
-    }
-
     /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_rsa_private_key_setup_defaults(self.c_ctx)
 
         try FoundationError.handleStatus(fromC: proxyResult)
+    }
+
+    /// Setup parameters that is used during key generation.
+    @objc public func setKeygenParams(bitlen: Int, exponent: Int) {
+        vscf_rsa_private_key_set_keygen_params(self.c_ctx, bitlen, exponent)
     }
 
     /// Provide algorithm identificator.
