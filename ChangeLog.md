@@ -1,7 +1,7 @@
 # virgil-crypto-c ChangeLog (Sorted per date)
 
 
-## Version 0.3.0 released 2019-03-20
+## Version 0.5.0 released 2019-03-20
 
 ### Features
 
