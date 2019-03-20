@@ -631,7 +631,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_priva
 
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &c0, request.c0, sizeof(request.c0));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &c0) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto ecp_err;
     }
 
@@ -869,7 +869,7 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *self, mbedtls_ecp_group *op_gro
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &X, server_public_key.bytes, server_public_key.len);
 
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &X) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto ecp_err;
     }
 

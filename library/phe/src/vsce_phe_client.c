@@ -487,7 +487,7 @@ vsce_phe_client_set_keys(vsce_phe_client_t *self, vsc_data_t client_private_key,
             &self->group, &self->x, self->server_public_key, sizeof(self->server_public_key));
 
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &self->x) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto err;
     }
 
@@ -586,12 +586,12 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *self, vsc_data_t enrollment_re
     int mbedtls_status = 0;
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &c0, response.c0, sizeof(response.c0));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &c0) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto proof_err;
     }
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &c1, response.c1, sizeof(response.c1));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &c1) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto proof_err;
     }
 
@@ -748,7 +748,7 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *self, vsc_data
     mbedtls_ecp_point_init(&t0);
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &t0, record.t0, sizeof(record.t0));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &t0) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto ecp_err;
     }
 
@@ -851,17 +851,17 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *self, vsc_data_t p
     int mbedtls_status = 0;
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &t0, record.t0, sizeof(record.t0));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &t0) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto ecp_err;
     }
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &t1, record.t1, sizeof(record.t1));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &t1) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto ecp_err;
     }
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &c1, response.c1, sizeof(response.c1));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &c1) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto ecp_err;
     }
 
@@ -958,21 +958,21 @@ vsce_phe_client_check_success_proof(vsce_phe_client_t *self, mbedtls_ecp_group *
     mbedtls_status =
             mbedtls_ecp_point_read_binary(&self->group, &term1, success_proof->term1, sizeof(success_proof->term1));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &term1) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto ecp_err;
     }
 
     mbedtls_status =
             mbedtls_ecp_point_read_binary(&self->group, &term2, success_proof->term2, sizeof(success_proof->term2));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &term2) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto ecp_err;
     }
 
     mbedtls_status =
             mbedtls_ecp_point_read_binary(&self->group, &term3, success_proof->term3, sizeof(success_proof->term3));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &term3) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto ecp_err;
     }
 
@@ -1098,25 +1098,25 @@ vsce_phe_client_check_fail_proof(vsce_phe_client_t *self, mbedtls_ecp_group *op_
     int mbedtls_status = 0;
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &term1, fail_proof->term1, sizeof(fail_proof->term1));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &term1) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto ecp_err;
     }
 
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &term2, fail_proof->term2, sizeof(fail_proof->term2));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &term2) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto ecp_err;
     }
 
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &term3, fail_proof->term3, sizeof(fail_proof->term3));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &term3) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto ecp_err;
     }
 
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &term4, fail_proof->term4, sizeof(fail_proof->term4));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &term4) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto ecp_err;
     }
 
@@ -1376,13 +1376,13 @@ vsce_phe_client_update_enrollment_record(vsce_phe_client_t *self, vsc_data_t enr
 
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &t0, record.t0, sizeof(record.t0));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &t0) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto ecp_err;
     }
 
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &t1, record.t1, sizeof(record.t1));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &t1) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto ecp_err;
     }
 
