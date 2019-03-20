@@ -1,7 +1,7 @@
 # virgil-crypto-c ChangeLog (Sorted per date)
 
 
-## Version 0.3.0 released 2019-03-19
+## Version 0.3.0 released 2019-03-20
 
 ### Features
 
@@ -18,7 +18,7 @@
 ### Bugfix
 
 - Fix wrapper generation for Swift
-- Fix elliptic curve: ed25519
+- Fix ed25519 elliptic curve
 
 
 ## Version 0.2.0 released 2019-01-09
