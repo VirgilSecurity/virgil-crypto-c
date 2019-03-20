@@ -1,0 +1,45 @@
+<interface name="message info serializer">
+    Provide interface for "message info" class serialization.
+
+    <constant name="prefix len"/>
+
+    <method name="serialized len">
+        Return buffer size enough to hold serialized message info.
+
+        <argument name="message info" class="message info"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="serialize">
+        Serialize class "message info".
+
+        <argument name="message info" class="message info"/>
+        <argument name="out" class="buffer">
+            <length method="serialized len">
+                <proxy argument="message info" to="message info"/>
+            </length>
+        </argument>
+    </method>
+
+    <method name="read prefix">
+        Read message info prefix from the given data, and if it is valid,
+        return a length of bytes of the whole message info.
+
+        Zero returned if length can not be determined from the given data,
+        and this means that there is no message info at the data beginning.
+
+        <argument name="data" class="data"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="deserialize">
+        Deserialize class "message info".
+
+        <argument name="data" class="data"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="message info" access="disown"/>
+    </method>
+</interface>

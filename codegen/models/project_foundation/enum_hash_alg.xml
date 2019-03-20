@@ -1,7 +1,0 @@
-<enum name="hash alg" definition="public">
-    <constant name="none"/>
-    <constant name="sha224"/>
-    <constant name="sha256"/>
-    <constant name="sha384"/>
-    <constant name="sha512"/>
-</enum>

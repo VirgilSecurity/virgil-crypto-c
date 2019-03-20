@@ -44,8 +44,20 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Error context.
+//  Can be used for sequential operations, i.e. parsers, to accumulate error.
+//  In this way operation is successful if all steps are successful, otherwise
+//  last occurred error code can be obtained.
+// --------------------------------------------------------------------------
+
 #ifndef VSCR_ERROR_H_INCLUDED
 #define VSCR_ERROR_H_INCLUDED
+
+#include "vscr_library.h"
+#include "vscr_status.h"
 
 // clang-format on
 //  @end
@@ -62,45 +74,56 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-enum vscr_error_t {
-    //
-    //  No errors was occurred.
-    //
-    vscr_SUCCESS = 0,
-    //
-    //  Error during protobuf serialization
-    //
-    vscr_PROTOBUF_ENCODE_ERROR = 1,
-    //
-    //  Error during protobuf deserialization
-    //
-    vscr_PROTOBUF_DECODE_ERROR = 2,
-    //
-    //  Message version doesn't match
-    //
-    vscr_MESSAGE_VERSION_DOESN_T_MATCH = 3,
-    //
-    //  Bad message
-    //
-    vscr_BAD_MESSAGE = 4,
-    //
-    //  AES error
-    //
-    vscr_AES_ERROR = 5,
-    //
-    //  Wrong message format
-    //
-    vscr_WRONG_MESSAGE_FORMAT = 6,
-    //
-    //  Invalid arguments
-    //
-    vscr_INVALID_ARGUMENTS = 7,
-    //
-    //  curve25519 error
-    //
-    vscr_CURVE25519_ERROR = 8
+//
+//  Perform update only if context defined, otherwise log error.
+//
+#define VSCR_ERROR_SAFE_UPDATE(CTX, ERR)                            \
+    do {                                                            \
+        if (NULL != (CTX)) {                                        \
+            vscr_error_update ((CTX), (ERR));                       \
+        } else {                                                    \
+            /* TODO: Log this error, when logging will be added. */ \
+        }                                                           \
+    } while (false)
+
+//
+//  Handle 'error' context.
+//
+typedef struct vscr_error_t vscr_error_t;
+struct vscr_error_t {
+    vscr_status_t status;
 };
-typedef enum vscr_error_t vscr_error_t;
+
+//
+//  Return size of 'vscr_error_t'.
+//
+VSCR_PUBLIC size_t
+vscr_error_ctx_size(void);
+
+//
+//  Reset context to the "no error" state.
+//
+VSCR_PUBLIC void
+vscr_error_reset(vscr_error_t *self);
+
+//
+//  Update context with given status.
+//  If status is "success" then do nothing.
+//
+VSCR_PRIVATE void
+vscr_error_update(vscr_error_t *self, vscr_status_t status);
+
+//
+//  Return true if status is not "success".
+//
+VSCR_PUBLIC bool
+vscr_error_has_error(const vscr_error_t *self);
+
+//
+//  Return error code.
+//
+VSCR_PUBLIC vscr_status_t
+vscr_error_status(const vscr_error_t *self) VSCR_NODISCARD;
 
 
 // --------------------------------------------------------------------------

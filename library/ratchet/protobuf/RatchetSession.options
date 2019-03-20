@@ -1,0 +1,20 @@
+ChainKey.key max_size:32 fixed_length:true
+
+MessageKey.key max_size:32 fixed_length:true
+
+SenderChain.private_key max_size:32 fixed_length:true
+SenderChain.public_key max_size:32 fixed_length:true
+
+ReceiverChain.public_key max_size:32 fixed_length:true
+
+SkippedMessageKey.public_key max_size:32 fixed_length:true
+
+Ratchet.root_key max_size:32 fixed_length:true
+ReceiverChains.chains max_count:5 fixed_count:false
+SkippedMessages.keys max_count:40 fixed_count:false
+
+Session.sender_identity_key max_size:32 fixed_length:true
+Session.sender_ephemeral_key max_size:32 fixed_length:true
+Session.receiver_long_term_key max_size:32 fixed_length:true
+Session.receiver_one_time_key max_size:32 fixed_length:true
+Session.ratchet max_size:32 fixed_length:true

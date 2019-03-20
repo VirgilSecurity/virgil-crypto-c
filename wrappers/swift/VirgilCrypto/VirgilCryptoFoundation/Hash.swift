@@ -35,67 +35,23 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
-/// Provides interface to the stateless hashing (messege digest) algorithms.
-@objc(VSCFHash) public protocol Hash : HashInfo {
+/// Provides interface to the hashing (messege digest) algorithms.
+@objc(VSCFHash) public protocol Hash : CContext {
+    /// Length of the digest (hashing output) in bytes.
+    @objc var digestLen: Int { get }
+    /// Block length of the digest function in bytes.
+    @objc var blockLen: Int { get }
 
     /// Calculate hash over given data.
     @objc func hash(data: Data) -> Data
-}
 
-/// Implement interface methods
-@objc(VSCFHashProxy) internal class HashProxy: NSObject, Hash {
+    /// Start a new hashing.
+    @objc func start()
 
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
+    /// Add given data to the hash.
+    @objc func update(data: Data)
 
-    /// Length of the digest (hashing output) in bytes.
-    @objc public var digestLen: Int {
-        return vscf_hash_info_digest_len(vscf_hash_info_api(self.c_ctx))
-    }
-
-    /// Block length of the digest function in bytes.
-    @objc public var blockLen: Int {
-        return vscf_hash_info_block_len(vscf_hash_info_api(self.c_ctx))
-    }
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Return implemented hash algorithm type.
-    @objc public func alg() -> HashAlg {
-        let proxyResult = vscf_hash_info_alg(vscf_hash_info_api(self.c_ctx))
-
-        return HashAlg.init(fromC: proxyResult)
-    }
-
-    /// Calculate hash over given data.
-    @objc public func hash(data: Data) -> Data {
-        let digestCount = self.digestLen
-        var digest = Data(count: digestCount)
-        var digestBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(digestBuf)
-        }
-
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
-            digest.withUnsafeMutableBytes({ (digestPointer: UnsafeMutablePointer<byte>) -> Void in
-                vsc_buffer_init(digestBuf)
-                vsc_buffer_use(digestBuf, digestPointer, digestCount)
-                vscf_hash(vscf_hash_api(self.c_ctx), vsc_data(dataPointer, data.count), digestBuf)
-            })
-        })
-        digest.count = vsc_buffer_len(digestBuf)
-
-        return digest
-    }
+    /// Accompilsh hashing and return it's result (a message digest).
+    @objc func finish() -> Data
 }

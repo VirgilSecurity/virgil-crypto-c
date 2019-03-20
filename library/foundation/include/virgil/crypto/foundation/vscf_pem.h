@@ -54,7 +54,7 @@
 #define VSCF_PEM_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -104,8 +104,8 @@ vscf_pem_unwrapped_len(size_t pem_len);
 //
 //  Takes PEM data and extract binary data from it.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data);
+VSCF_PUBLIC vscf_status_t
+vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) VSCF_NODISCARD;
 
 //
 //  Returns PEM title if PEM data is valid, otherwise - empty data.

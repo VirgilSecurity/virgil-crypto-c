@@ -35,10 +35,9 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// This is MbedTLS implementation of SHA224.
-@objc(VSCFSha224) public class Sha224: NSObject, HashInfo, Hash, HashStream {
+@objc(VSCFSha224) public class Sha224: NSObject, Alg, Hash {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -74,11 +73,25 @@ import VirgilCryptoCommon
         vscf_sha224_delete(self.c_ctx)
     }
 
-    /// Return implemented hash algorithm type.
-    @objc public func alg() -> HashAlg {
-        let proxyResult = vscf_sha224_alg()
+    /// Provide algorithm identificator.
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_sha224_alg_id(self.c_ctx)
 
-        return HashAlg.init(fromC: proxyResult)
+        return AlgId.init(fromC: proxyResult)
+    }
+
+    /// Produce object with algorithm information and configuration parameters.
+    @objc public func produceAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_sha224_produce_alg_info(self.c_ctx)
+
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+    }
+
+    /// Restore algorithm configuration from the given object.
+    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
+        let proxyResult = vscf_sha224_restore_alg_info(self.c_ctx, algInfo.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Calculate hash over given data.
@@ -94,6 +107,7 @@ import VirgilCryptoCommon
             digest.withUnsafeMutableBytes({ (digestPointer: UnsafeMutablePointer<byte>) -> Void in
                 vsc_buffer_init(digestBuf)
                 vsc_buffer_use(digestBuf, digestPointer, digestCount)
+
                 vscf_sha224_hash(vsc_data(dataPointer, data.count), digestBuf)
             })
         })
@@ -110,6 +124,7 @@ import VirgilCryptoCommon
     /// Add given data to the hash.
     @objc public func update(data: Data) {
         data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
+
             vscf_sha224_update(self.c_ctx, vsc_data(dataPointer, data.count))
         })
     }
@@ -126,6 +141,7 @@ import VirgilCryptoCommon
         digest.withUnsafeMutableBytes({ (digestPointer: UnsafeMutablePointer<byte>) -> Void in
             vsc_buffer_init(digestBuf)
             vsc_buffer_use(digestBuf, digestPointer, digestCount)
+
             vscf_sha224_finish(self.c_ctx, digestBuf)
         })
         digest.count = vsc_buffer_len(digestBuf)

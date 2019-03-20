@@ -80,30 +80,100 @@ vscf_asn1_writer_reset(vscf_impl_t *impl, byte *out, size_t out_len) {
 }
 
 //
-//  Move written data to the buffer beginning and forbid further operations.
-//  Returns written size in bytes.
+//  Finalize writing and forbid further operations.
+//
+//  Note, that ASN.1 structure is always written to the buffer end, and
+//  if argument "do not adjust" is false, then data is moved to the
+//  beginning, otherwise - data is left at the buffer end.
+//
+//  Returns length of the written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1_writer_finish(vscf_impl_t *impl) {
+vscf_asn1_writer_finish(vscf_impl_t *impl, bool do_not_adjust) {
 
     const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->finish_cb);
-    return asn1_writer_api->finish_cb (impl);
+    return asn1_writer_api->finish_cb (impl, do_not_adjust);
 }
 
 //
-//  Return last error.
+//  Returns pointer to the inner buffer.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_asn1_writer_error(vscf_impl_t *impl) {
+VSCF_PUBLIC byte *
+vscf_asn1_writer_bytes(vscf_impl_t *impl) {
 
     const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
-    VSCF_ASSERT_PTR (asn1_writer_api->error_cb);
-    return asn1_writer_api->error_cb (impl);
+    VSCF_ASSERT_PTR (asn1_writer_api->bytes_cb);
+    return asn1_writer_api->bytes_cb (impl);
+}
+
+//
+//  Returns total inner buffer length.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_writer_len(const vscf_impl_t *impl) {
+
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
+    VSCF_ASSERT_PTR (asn1_writer_api);
+
+    VSCF_ASSERT_PTR (asn1_writer_api->len_cb);
+    return asn1_writer_api->len_cb (impl);
+}
+
+//
+//  Returns how many bytes were already written to the ASN.1 structure.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_writer_written_len(const vscf_impl_t *impl) {
+
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
+    VSCF_ASSERT_PTR (asn1_writer_api);
+
+    VSCF_ASSERT_PTR (asn1_writer_api->written_len_cb);
+    return asn1_writer_api->written_len_cb (impl);
+}
+
+//
+//  Returns how many bytes are available for writing.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_writer_unwritten_len(const vscf_impl_t *impl) {
+
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
+    VSCF_ASSERT_PTR (asn1_writer_api);
+
+    VSCF_ASSERT_PTR (asn1_writer_api->unwritten_len_cb);
+    return asn1_writer_api->unwritten_len_cb (impl);
+}
+
+//
+//  Return true if status is not "success".
+//
+VSCF_PUBLIC bool
+vscf_asn1_writer_has_error(const vscf_impl_t *impl) {
+
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
+    VSCF_ASSERT_PTR (asn1_writer_api);
+
+    VSCF_ASSERT_PTR (asn1_writer_api->has_error_cb);
+    return asn1_writer_api->has_error_cb (impl);
+}
+
+//
+//  Return error code.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_asn1_writer_status(const vscf_impl_t *impl) {
+
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
+    VSCF_ASSERT_PTR (asn1_writer_api);
+
+    VSCF_ASSERT_PTR (asn1_writer_api->status_cb);
+    return asn1_writer_api->status_cb (impl);
 }
 
 //
@@ -132,6 +202,20 @@ vscf_asn1_writer_write_tag(vscf_impl_t *impl, int tag) {
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_tag_cb);
     return asn1_writer_api->write_tag_cb (impl, tag);
+}
+
+//
+//  Write context-specific ASN.1 tag.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_writer_write_context_tag(vscf_impl_t *impl, int tag, size_t len) {
+
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
+    VSCF_ASSERT_PTR (asn1_writer_api);
+
+    VSCF_ASSERT_PTR (asn1_writer_api->write_context_tag_cb);
+    return asn1_writer_api->write_context_tag_cb (impl, tag, len);
 }
 
 //

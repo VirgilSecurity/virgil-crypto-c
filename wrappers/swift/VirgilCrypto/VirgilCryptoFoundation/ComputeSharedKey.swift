@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provide interface to compute shared key for 2 asymmetric keys.
 /// Assume that this interface is implemented on the private key.
@@ -47,51 +46,4 @@ import VirgilCryptoCommon
 
     /// Return number of bytes required to hold shared key.
     @objc func sharedKeyLen() -> Int
-}
-
-/// Implement interface methods
-@objc(VSCFComputeSharedKeyProxy) internal class ComputeSharedKeyProxy: NSObject, ComputeSharedKey {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Compute shared key for 2 asymmetric keys.
-    /// Note, shared key can be used only for symmetric cryptography.
-    @objc public func computeSharedKey(publicKey: PublicKey) throws -> Data {
-        let sharedKeyCount = self.sharedKeyLen()
-        var sharedKey = Data(count: sharedKeyCount)
-        var sharedKeyBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(sharedKeyBuf)
-        }
-
-        let proxyResult = sharedKey.withUnsafeMutableBytes({ (sharedKeyPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
-            vsc_buffer_init(sharedKeyBuf)
-            vsc_buffer_use(sharedKeyBuf, sharedKeyPointer, sharedKeyCount)
-            return vscf_compute_shared_key(self.c_ctx, publicKey.c_ctx, sharedKeyBuf)
-        })
-        sharedKey.count = vsc_buffer_len(sharedKeyBuf)
-
-        try FoundationError.handleError(fromC: proxyResult)
-
-        return sharedKey
-    }
-
-    /// Return number of bytes required to hold shared key.
-    @objc public func sharedKeyLen() -> Int {
-        let proxyResult = vscf_compute_shared_key_shared_key_len(self.c_ctx)
-
-        return proxyResult
-    }
 }

@@ -1,0 +1,14 @@
+<class name="ratchet common hidden" context="none" scope="private">
+    <constant name="ratchet regular message version" value="1"/>
+    <constant name="ratchet protocol version" value="1"/>
+    <constant name="ratchet message version" value="1"/>
+    <constant name="ratchet shared key length" value="32"/>
+    <constant name="ratchet key length" value="32"/>
+    <constant name="max skipped messages" value="40"/>
+    <constant name="max receivers chains" value="5"/>
+    <constant name="max message gap" value="2000"/>
+    <constant name="max regular message len" value="32818"/>
+    <constant name="max prekey message len" value="32964"/>
+    <constant name="padding factor" value="160"/>
+    <constant name="padding size len" value="4"/>
+</class>

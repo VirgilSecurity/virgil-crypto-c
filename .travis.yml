@@ -36,10 +36,10 @@ before_script:
   - valgrind --version
 
 script:
-  - cmake -H. -Bbuild -DVIRGIL_LIB_RATCHET=ON -DCMAKE_INSTALL_PREFIX=install
+  - cmake -H. -Bbuild -DENABLE_HEAVY_TESTS=OFF
   - cmake --build build -- -j8
     && pushd build
-    && ctest -T memcheck --verbose
+    && ctest -T memcheck --output-on-failure
     && cat Testing/Temporary/MemoryChecker.*.log
     && popd
 

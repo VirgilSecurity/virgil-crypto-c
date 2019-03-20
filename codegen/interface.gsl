@@ -194,6 +194,14 @@ function interface_create_feature (interface, project, destination)
         for my.interface.require where defined (0.feature)
             copy require to feature
         endfor
+
+        for my.interface.require where has_one_of_attribute (require, "class, interface, impl")
+            new require to feature
+                .feature = -1.class ? -1.interface ? -1.impl
+                .scope = -1.scope ?
+                .project = -1.project ?
+            endnew
+        endfor
     endnew
 endfunction
 

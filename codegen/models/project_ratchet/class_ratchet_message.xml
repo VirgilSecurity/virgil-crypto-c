@@ -1,0 +1,78 @@
+<class name="ratchet message" context="private">
+    Class represents ratchet message
+
+    <require class="ratchet common hidden" scope="private"/>
+    <require class="ratchet common" scope="private"/>
+
+    <require impl="sha512" project="foundation" scope="private"/>
+    <require module="buffer defs" scope="private" project="common"/>
+
+    <require header="RatchetMessage.pb.h" scope="context"/>
+    <require header="pb_decode.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
+
+    <property name="message pb" class="Message" library="nanopb" access="readwrite" is_reference="0"/>
+
+    <method name="get type">
+        Returns message type.
+
+        <return enum="msg type">
+            Message type.
+        </return>
+    </method>
+
+    <method name="get long-term public key">
+        Returns long-term public key, if message is prekey message.
+
+        <return class="data">
+            Long-term public key, if message is prekey message.
+        </return>
+    </method>
+
+    <method name="get one-time public key">
+        Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
+
+        <return class="data">
+            One-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
+        </return>
+    </method>
+
+    <method name="serialize len">
+        Buffer len to serialize this class.
+
+        <return type="size">
+            Buffer len to serialize this class.
+        </return>
+    </method>
+
+    <method name="serialize">
+        Serializes instance.
+
+        <argument name="output" class="buffer">
+            Buffer for result. Capacity should be >= serialize len.
+
+            <length method="serialize len"/>
+        </argument>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        Deserializes instance.
+
+        <argument name="input" class="data">
+            Data with serialized instance.
+        </argument>
+        <argument name="error" class="error" access="readwrite">
+            Error context.
+        </argument>
+
+        <return class="self" access="disown">
+            Deserialized instance
+        </return>
+    </method>
+
+    <method name="set pb encode callback" declaration="private">
+    </method>
+
+    <method name="set pb decode callback" declaration="private">
+    </method>
+</class>

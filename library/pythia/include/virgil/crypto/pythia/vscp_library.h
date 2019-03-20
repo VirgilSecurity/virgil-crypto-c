@@ -89,7 +89,7 @@ extern "C" {
 
 #define VSCP_VERSION_MAJOR 0
 
-#define VSCP_VERSION_MINOR 2
+#define VSCP_VERSION_MINOR 5
 
 #define VSCP_VERSION_PATCH 0
 
@@ -100,6 +100,12 @@ extern "C" {
                 VSCP_VERSION_MAJOR, \
                 VSCP_VERSION_MINOR, \
                 VSCP_VERSION_PATCH)
+
+#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
+#   define VSCP_NODISCARD __attribute__ ((warn_unused_result))
+#else
+#   define VSCP_NODISCARD
+#endif
 
 //
 //  Custom implementation of the number ceil algorithm.

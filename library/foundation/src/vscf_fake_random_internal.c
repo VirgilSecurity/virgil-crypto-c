@@ -85,6 +85,10 @@ static const vscf_random_api_t random_api = {
     //
     vscf_api_tag_RANDOM,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_FAKE_RANDOM,
+    //
     //  Generate random bytes.
     //
     (vscf_random_api_random_fn)vscf_fake_random_random,
@@ -104,6 +108,10 @@ static const vscf_entropy_source_api_t entropy_source_api = {
     //
     vscf_api_tag_ENTROPY_SOURCE,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_FAKE_RANDOM,
+    //
     //  Defines that implemented source is strong.
     //
     (vscf_entropy_source_api_is_strong_fn)vscf_fake_random_is_strong,
@@ -117,6 +125,10 @@ static const vscf_entropy_source_api_t entropy_source_api = {
 //  Compile-time known information about 'fake random' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_FAKE_RANDOM,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
@@ -136,16 +148,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_fake_random_init(vscf_fake_random_t *fake_random) {
+vscf_fake_random_init(vscf_fake_random_t *self) {
 
-    VSCF_ASSERT_PTR(fake_random);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(fake_random, sizeof(vscf_fake_random_t));
+    vscf_zeroize(self, sizeof(vscf_fake_random_t));
 
-    fake_random->info = &info;
-    fake_random->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_fake_random_init_ctx(fake_random);
+    vscf_fake_random_init_ctx(self);
 }
 
 //
@@ -153,23 +165,23 @@ vscf_fake_random_init(vscf_fake_random_t *fake_random) {
 //  This is a reverse action of the function 'vscf_fake_random_init()'.
 //
 VSCF_PUBLIC void
-vscf_fake_random_cleanup(vscf_fake_random_t *fake_random) {
+vscf_fake_random_cleanup(vscf_fake_random_t *self) {
 
-    if (fake_random == NULL || fake_random->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (fake_random->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--fake_random->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_fake_random_cleanup_ctx(fake_random);
+    vscf_fake_random_cleanup_ctx(self);
 
-    vscf_zeroize(fake_random, sizeof(vscf_fake_random_t));
+    vscf_zeroize(self, sizeof(vscf_fake_random_t));
 }
 
 //
@@ -179,12 +191,12 @@ vscf_fake_random_cleanup(vscf_fake_random_t *fake_random) {
 VSCF_PUBLIC vscf_fake_random_t *
 vscf_fake_random_new(void) {
 
-    vscf_fake_random_t *fake_random = (vscf_fake_random_t *) vscf_alloc(sizeof (vscf_fake_random_t));
-    VSCF_ASSERT_ALLOC(fake_random);
+    vscf_fake_random_t *self = (vscf_fake_random_t *) vscf_alloc(sizeof (vscf_fake_random_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_fake_random_init(fake_random);
+    vscf_fake_random_init(self);
 
-    return fake_random;
+    return self;
 }
 
 //
@@ -192,12 +204,12 @@ vscf_fake_random_new(void) {
 //  This is a reverse action of the function 'vscf_fake_random_new()'.
 //
 VSCF_PUBLIC void
-vscf_fake_random_delete(vscf_fake_random_t *fake_random) {
+vscf_fake_random_delete(vscf_fake_random_t *self) {
 
-    vscf_fake_random_cleanup(fake_random);
+    vscf_fake_random_cleanup(self);
 
-    if (fake_random && (fake_random->refcnt == 0)) {
-        vscf_dealloc(fake_random);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -207,14 +219,14 @@ vscf_fake_random_delete(vscf_fake_random_t *fake_random) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_fake_random_destroy(vscf_fake_random_t **fake_random_ref) {
+vscf_fake_random_destroy(vscf_fake_random_t **self_ref) {
 
-    VSCF_ASSERT_PTR(fake_random_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_fake_random_t *fake_random = *fake_random_ref;
-    *fake_random_ref = NULL;
+    vscf_fake_random_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_fake_random_delete(fake_random);
+    vscf_fake_random_delete(self);
 }
 
 //
@@ -222,10 +234,10 @@ vscf_fake_random_destroy(vscf_fake_random_t **fake_random_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_fake_random_t *
-vscf_fake_random_shallow_copy(vscf_fake_random_t *fake_random) {
+vscf_fake_random_shallow_copy(vscf_fake_random_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_fake_random_t *)vscf_impl_shallow_copy((vscf_impl_t *)fake_random);
+    return (vscf_fake_random_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -241,10 +253,10 @@ vscf_fake_random_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_fake_random_impl(vscf_fake_random_t *fake_random) {
+vscf_fake_random_impl(vscf_fake_random_t *self) {
 
-    VSCF_ASSERT_PTR(fake_random);
-    return (vscf_impl_t *)(fake_random);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *

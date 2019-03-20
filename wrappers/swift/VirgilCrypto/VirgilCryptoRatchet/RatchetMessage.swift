@@ -35,13 +35,13 @@
 
 import Foundation
 import VSCRatchet
-import VirgilCryptoCommon
 import VirgilCryptoFoundation
 
+/// Class represents ratchet message
 @objc(VSCRRatchetMessage) public class RatchetMessage: NSObject {
 
     /// Handle underlying C context.
-    @objc public let c_ctx: UnsafeMutablePointer<vscr_ratchet_message_t>
+    @objc public let c_ctx: OpaquePointer
 
     /// Create underlying C context.
     public override init() {
@@ -51,28 +51,16 @@ import VirgilCryptoFoundation
 
     /// Acquire C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    public init(take c_ctx: UnsafeMutablePointer<vscr_ratchet_message_t>) {
+    public init(take c_ctx: OpaquePointer) {
         self.c_ctx = c_ctx
         super.init()
     }
 
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    public init(use c_ctx: UnsafeMutablePointer<vscr_ratchet_message_t>) {
-        self.c_ctx = vscr_ratchet_message_shallow_copyc_ctx)
+    public init(use c_ctx: OpaquePointer) {
+        self.c_ctx = vscr_ratchet_message_shallow_copy(c_ctx)
         super.init()
-    }
-
-    public init(version: UInt8, type: UInt8, message: Data) {
-        let proxyResult = message.withUnsafeBytes({ (messagePointer: UnsafePointer<byte>) -> UnsafeMutablePointer<vscr_ratchet_message_t> in
-            var messageBuf = vsc_buffer_new_with_data(vsc_data(messagePointer, message.count))
-            defer {
-                vsc_buffer_delete(messageBuf)
-            }
-            return vscr_ratchet_message_new_with_members(version, type, messageBuf)
-        })
-
-        self.c_ctx = proxyResult
     }
 
     /// Release underlying C context.
@@ -80,42 +68,65 @@ import VirgilCryptoFoundation
         vscr_ratchet_message_delete(self.c_ctx)
     }
 
-    @objc public static func serializeLen(messageLen: Int) -> Int {
-        let proxyResult = vscr_ratchet_message_serialize_len(messageLen)
+    /// Returns message type.
+    @objc public func getType() -> MsgType {
+        let proxyResult = vscr_ratchet_message_get_type(self.c_ctx)
+
+        return MsgType.init(fromC: proxyResult)
+    }
+
+    /// Returns long-term public key, if message is prekey message.
+    @objc public func getLongTermPublicKey() -> Data {
+        let proxyResult = vscr_ratchet_message_get_long_term_public_key(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
+    /// Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
+    @objc public func getOneTimePublicKey() -> Data {
+        let proxyResult = vscr_ratchet_message_get_one_time_public_key(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
+    /// Buffer len to serialize this class.
+    @objc public func serializeLen() -> Int {
+        let proxyResult = vscr_ratchet_message_serialize_len(self.c_ctx)
 
         return proxyResult
     }
 
-    @objc public func serializeLenExt() -> Int {
-        let proxyResult = vscr_ratchet_message_serialize_len_ext(self.c_ctx)
-
-        return proxyResult
-    }
-
-    @objc public func serialize() throws -> Data {
-        let outputCount = self.serializeLenExt()
+    /// Serializes instance.
+    @objc public func serialize() -> Data {
+        let outputCount = self.serializeLen()
         var output = Data(count: outputCount)
         var outputBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outputBuf)
         }
 
-        let proxyResult = output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutablePointer<byte>) -> vscr_error_t in
+        output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutablePointer<byte>) -> Void in
             vsc_buffer_init(outputBuf)
             vsc_buffer_use(outputBuf, outputPointer, outputCount)
-            return vscr_ratchet_message_serialize(self.c_ctx, outputBuf)
+
+            vscr_ratchet_message_serialize(self.c_ctx, outputBuf)
         })
         output.count = vsc_buffer_len(outputBuf)
-
-        try RatchetError.handleError(fromC: proxyResult)
 
         return output
     }
 
-    @objc public static func deserialize(input: Data, errCtx: ErrorCtx) -> RatchetMessage {
+    /// Deserializes instance.
+    @objc public static func deserialize(input: Data) throws -> RatchetMessage {
+        var error: vscr_error_t = vscr_error_t()
+        vscr_error_reset(&error)
+
         let proxyResult = input.withUnsafeBytes({ (inputPointer: UnsafePointer<byte>) in
-            return vscr_ratchet_message_deserialize(vsc_data(inputPointer, input.count), errCtx.c_ctx)
+
+            return vscr_ratchet_message_deserialize(vsc_data(inputPointer, input.count), &error)
         })
+
+        try RatchetError.handleStatus(fromC: error.status)
 
         return RatchetMessage.init(take: proxyResult!)
     }

@@ -1,4 +1,4 @@
-<class name="ratchet skipped message key list node" context="public">
+<class name="ratchet skipped message key list node" context="public" scope="internal">
 
     <require class="ratchet skipped message key list node" scope="public"/>
 

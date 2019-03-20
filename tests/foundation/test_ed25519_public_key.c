@@ -39,7 +39,7 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE (VSCF_ED25519_PUBLIC_KEY && VSCF_FAKE_RANDOM && VSCF_RANDOM && VSCF_ENDIANNESS)
+#define TEST_DEPENDENCIES_AVAILABLE (VSCF_ED25519_PUBLIC_KEY && VSCF_FAKE_RANDOM && VSCF_RANDOM)
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_assert.h"
@@ -52,57 +52,70 @@
 
 
 // --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
-// --------------------------------------------------------------------------
 //  Test functions.
 // --------------------------------------------------------------------------
 void
-test__ed25519_public_key_key_len__imported_PUBLIC_KEY__returns_32(void) {
+test__key_len__imported_public_key__returns_32(void) {
     vscf_ed25519_public_key_t *public_key = vscf_ed25519_public_key_new();
-    vscf_error_t result = vscf_ed25519_public_key_import_public_key(public_key, test_ed25519_PUBLIC_KEY);
-    VSCF_ASSERT(result == vscf_SUCCESS);
+
+    vscf_status_t result = vscf_ed25519_public_key_import_public_key(public_key, test_ed25519_PUBLIC_KEY);
+    VSCF_ASSERT(result == vscf_status_SUCCESS);
+
     TEST_ASSERT_EQUAL(32, vscf_ed25519_public_key_key_len(public_key));
+
     vscf_ed25519_public_key_destroy(&public_key);
 }
 
 void
-test__ed25519_public_key_export_public_key__from_imported_PUBLIC_KEY__expected_equal(void) {
+test__export_public_key__from_imported_public_key__are_equal(void) {
     vscf_ed25519_public_key_t *public_key = vscf_ed25519_public_key_new();
-    vscf_error_t result = vscf_ed25519_public_key_import_public_key(public_key, test_ed25519_PUBLIC_KEY);
-    VSCF_ASSERT(result == vscf_SUCCESS);
+
+    vscf_status_t result = vscf_ed25519_public_key_import_public_key(public_key, test_ed25519_PUBLIC_KEY);
+    VSCF_ASSERT(result == vscf_status_SUCCESS);
+
     vsc_buffer_t *exported_key_buf =
             vsc_buffer_new_with_capacity(vscf_ed25519_public_key_exported_public_key_len(public_key));
     result = vscf_ed25519_public_key_export_public_key(public_key, exported_key_buf);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, result);
-    TEST_ASSERT_EQUAL(test_ed25519_PUBLIC_KEY.len, vsc_buffer_len(exported_key_buf));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(
-            test_ed25519_PUBLIC_KEY.bytes, vsc_buffer_bytes(exported_key_buf), vsc_buffer_len(exported_key_buf));
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, result);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ed25519_PUBLIC_KEY, exported_key_buf);
+
     vsc_buffer_destroy(&exported_key_buf);
     vscf_ed25519_public_key_destroy(&public_key);
 }
 
 void
-test__ed25519_public_key_verify__with_imported_PUBLIC_KEY_and_DATA_SIGNATURE(void) {
+test__verify__with_imported_public_key_and_data_signature__valid_signature(void) {
     vscf_ed25519_public_key_t *public_key = vscf_ed25519_public_key_new();
-    vscf_error_t result = vscf_ed25519_public_key_import_public_key(public_key, test_ed25519_PUBLIC_KEY_REVERSE);
-    VSCF_ASSERT(result == vscf_SUCCESS);
-    bool verify_result = vscf_ed25519_public_key_verify(public_key, test_ed25519_MESSAGE, test_ed25519_SIGNATURE);
-    //  Check
+
+    vscf_status_t result = vscf_ed25519_public_key_import_public_key(public_key, test_ed25519_PUBLIC_KEY);
+    VSCF_ASSERT(result == vscf_status_SUCCESS);
+
+    bool verify_result = vscf_ed25519_public_key_verify_hash(
+            public_key, test_ed25519_MESSAGE_SHA256_DIGEST, vscf_alg_id_SHA256, test_ed25519_SHA256_SIGNATURE);
     TEST_ASSERT_EQUAL(true, verify_result);
 
-    //  Cleanup
     vscf_ed25519_public_key_destroy(&public_key);
 }
 
+void
+test__encrypt__message_with_imported_key__success(void) {
+
+    vscf_ed25519_public_key_t *public_key = vscf_ed25519_public_key_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ed25519_public_key_setup_defaults(public_key));
+
+    vscf_status_t result = vscf_ed25519_public_key_import_public_key(public_key, test_ed25519_PUBLIC_KEY);
+    VSCF_ASSERT(result == vscf_status_SUCCESS);
+
+    vsc_buffer_t *enc_msg =
+            vsc_buffer_new_with_capacity(vscf_ed25519_public_key_encrypted_len(public_key, test_ed25519_MESSAGE.len));
+    vscf_status_t status = vscf_ed25519_public_key_encrypt(public_key, test_ed25519_MESSAGE, enc_msg);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+
+    vsc_buffer_destroy(&enc_msg);
+    vscf_ed25519_public_key_destroy(&public_key);
+}
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
@@ -116,9 +129,10 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__ed25519_public_key_key_len__imported_PUBLIC_KEY__returns_32);
-    RUN_TEST(test__ed25519_public_key_export_public_key__from_imported_PUBLIC_KEY__expected_equal);
-    RUN_TEST(test__ed25519_public_key_verify__with_imported_PUBLIC_KEY_and_DATA_SIGNATURE);
+    RUN_TEST(test__key_len__imported_public_key__returns_32);
+    RUN_TEST(test__export_public_key__from_imported_public_key__are_equal);
+    RUN_TEST(test__verify__with_imported_public_key_and_data_signature__valid_signature);
+    RUN_TEST(test__encrypt__message_with_imported_key__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

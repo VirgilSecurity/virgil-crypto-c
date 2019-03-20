@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -87,15 +87,45 @@ extern "C" {
 typedef void (*vscf_asn1_writer_api_reset_fn)(vscf_impl_t *impl, byte *out, size_t out_len);
 
 //
-//  Callback. Move written data to the buffer beginning and forbid further operations.
-//          Returns written size in bytes.
+//  Callback. Finalize writing and forbid further operations.
 //
-typedef size_t (*vscf_asn1_writer_api_finish_fn)(vscf_impl_t *impl);
+//          Note, that ASN.1 structure is always written to the buffer end, and
+//          if argument "do not adjust" is false, then data is moved to the
+//          beginning, otherwise - data is left at the buffer end.
+//
+//          Returns length of the written bytes.
+//
+typedef size_t (*vscf_asn1_writer_api_finish_fn)(vscf_impl_t *impl, bool do_not_adjust);
 
 //
-//  Callback. Return last error.
+//  Callback. Returns pointer to the inner buffer.
 //
-typedef vscf_error_t (*vscf_asn1_writer_api_error_fn)(vscf_impl_t *impl);
+typedef byte * (*vscf_asn1_writer_api_bytes_fn)(vscf_impl_t *impl);
+
+//
+//  Callback. Returns total inner buffer length.
+//
+typedef size_t (*vscf_asn1_writer_api_len_fn)(const vscf_impl_t *impl);
+
+//
+//  Callback. Returns how many bytes were already written to the ASN.1 structure.
+//
+typedef size_t (*vscf_asn1_writer_api_written_len_fn)(const vscf_impl_t *impl);
+
+//
+//  Callback. Returns how many bytes are available for writing.
+//
+typedef size_t (*vscf_asn1_writer_api_unwritten_len_fn)(const vscf_impl_t *impl);
+
+//
+//  Callback. Return true if status is not "success".
+//
+typedef bool (*vscf_asn1_writer_api_has_error_fn)(const vscf_impl_t *impl);
+
+//
+//  Callback. Return error code.
+//
+typedef vscf_status_t (*vscf_asn1_writer_api_status_fn)(const vscf_impl_t *impl);
 
 //
 //  Callback. Move writing position backward for the given length.
@@ -108,6 +138,12 @@ typedef byte * (*vscf_asn1_writer_api_reserve_fn)(vscf_impl_t *impl, size_t len)
 //          Return count of written bytes.
 //
 typedef size_t (*vscf_asn1_writer_api_write_tag_fn)(vscf_impl_t *impl, int tag);
+
+//
+//  Callback. Write context-specific ASN.1 tag.
+//          Return count of written bytes.
+//
+typedef size_t (*vscf_asn1_writer_api_write_context_tag_fn)(vscf_impl_t *impl, int tag, size_t len);
 
 //
 //  Callback. Write length of the following data.
@@ -240,18 +276,47 @@ struct vscf_asn1_writer_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Reset all internal states and prepare to new ASN.1 writing operations.
     //
     vscf_asn1_writer_api_reset_fn reset_cb;
     //
-    //  Move written data to the buffer beginning and forbid further operations.
-    //  Returns written size in bytes.
+    //  Finalize writing and forbid further operations.
+    //
+    //  Note, that ASN.1 structure is always written to the buffer end, and
+    //  if argument "do not adjust" is false, then data is moved to the
+    //  beginning, otherwise - data is left at the buffer end.
+    //
+    //  Returns length of the written bytes.
     //
     vscf_asn1_writer_api_finish_fn finish_cb;
     //
-    //  Return last error.
+    //  Returns pointer to the inner buffer.
     //
-    vscf_asn1_writer_api_error_fn error_cb;
+    vscf_asn1_writer_api_bytes_fn bytes_cb;
+    //
+    //  Returns total inner buffer length.
+    //
+    vscf_asn1_writer_api_len_fn len_cb;
+    //
+    //  Returns how many bytes were already written to the ASN.1 structure.
+    //
+    vscf_asn1_writer_api_written_len_fn written_len_cb;
+    //
+    //  Returns how many bytes are available for writing.
+    //
+    vscf_asn1_writer_api_unwritten_len_fn unwritten_len_cb;
+    //
+    //  Return true if status is not "success".
+    //
+    vscf_asn1_writer_api_has_error_fn has_error_cb;
+    //
+    //  Return error code.
+    //
+    vscf_asn1_writer_api_status_fn status_cb;
     //
     //  Move writing position backward for the given length.
     //  Return current writing position.
@@ -262,6 +327,11 @@ struct vscf_asn1_writer_api_t {
     //  Return count of written bytes.
     //
     vscf_asn1_writer_api_write_tag_fn write_tag_cb;
+    //
+    //  Write context-specific ASN.1 tag.
+    //  Return count of written bytes.
+    //
+    vscf_asn1_writer_api_write_context_tag_fn write_context_tag_cb;
     //
     //  Write length of the following data.
     //  Return count of written bytes.

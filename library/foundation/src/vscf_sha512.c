@@ -53,6 +53,8 @@
 #include "vscf_sha512.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_alg_info.h"
+#include "vscf_simple_alg_info.h"
 #include "vscf_sha512_defs.h"
 #include "vscf_sha512_internal.h"
 
@@ -80,11 +82,11 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_sha512_init_ctx(vscf_sha512_t *sha512) {
+vscf_sha512_init_ctx(vscf_sha512_t *self) {
 
-    VSCF_ASSERT_PTR(sha512);
+    VSCF_ASSERT_PTR(self);
 
-    mbedtls_sha512_init(&sha512->hash_ctx);
+    mbedtls_sha512_init(&self->hash_ctx);
 }
 
 //
@@ -93,20 +95,46 @@ vscf_sha512_init_ctx(vscf_sha512_t *sha512) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_sha512_cleanup_ctx(vscf_sha512_t *sha512) {
+vscf_sha512_cleanup_ctx(vscf_sha512_t *self) {
 
-    VSCF_ASSERT_PTR(sha512);
+    VSCF_ASSERT_PTR(self);
 
-    mbedtls_sha512_free(&sha512->hash_ctx);
+    mbedtls_sha512_free(&self->hash_ctx);
 }
 
 //
-//  Return implemented hash algorithm type.
+//  Provide algorithm identificator.
 //
-VSCF_PUBLIC vscf_hash_alg_t
-vscf_sha512_alg(void) {
+VSCF_PUBLIC vscf_alg_id_t
+vscf_sha512_alg_id(const vscf_sha512_t *self) {
 
-    return vscf_hash_alg_SHA512;
+    VSCF_ASSERT_PTR(self);
+
+    return vscf_alg_id_SHA512;
+}
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_sha512_produce_alg_info(const vscf_sha512_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA512));
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_sha512_restore_alg_info(vscf_sha512_t *self, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_SHA512);
+
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -119,45 +147,48 @@ vscf_sha512_hash(vsc_data_t data, vsc_buffer_t *digest) {
     VSCF_ASSERT(vsc_buffer_is_valid(digest));
     VSCF_ASSERT(vsc_buffer_unused_len(digest) >= vscf_sha512_DIGEST_LEN);
 
-    const int is384 = 0;
-    mbedtls_sha512(data.bytes, data.len, vsc_buffer_unused_bytes(digest), is384);
-    vsc_buffer_inc_used(digest, vscf_sha512_DIGEST_LEN);
+    vscf_sha512_t self;
+    vscf_sha512_init(&self);
+    vscf_sha512_start(&self);
+    vscf_sha512_update(&self, data);
+    vscf_sha512_finish(&self, digest);
+    vscf_sha512_cleanup(&self);
 }
 
 //
 //  Start a new hashing.
 //
 VSCF_PUBLIC void
-vscf_sha512_start(vscf_sha512_t *sha512) {
+vscf_sha512_start(vscf_sha512_t *self) {
 
-    VSCF_ASSERT_PTR(sha512);
+    VSCF_ASSERT_PTR(self);
 
     const int is384 = 0;
-    mbedtls_sha512_starts(&sha512->hash_ctx, is384);
+    mbedtls_sha512_starts(&self->hash_ctx, is384);
 }
 
 //
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_sha512_update(vscf_sha512_t *sha512, vsc_data_t data) {
+vscf_sha512_update(vscf_sha512_t *self, vsc_data_t data) {
 
-    VSCF_ASSERT_PTR(sha512);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(data));
 
-    mbedtls_sha512_update(&sha512->hash_ctx, data.bytes, data.len);
+    mbedtls_sha512_update(&self->hash_ctx, data.bytes, data.len);
 }
 
 //
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_sha512_finish(vscf_sha512_t *sha512, vsc_buffer_t *digest) {
+vscf_sha512_finish(vscf_sha512_t *self, vsc_buffer_t *digest) {
 
-    VSCF_ASSERT_PTR(sha512);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_buffer_is_valid(digest));
     VSCF_ASSERT(vsc_buffer_unused_len(digest) >= vscf_sha512_DIGEST_LEN);
 
-    mbedtls_sha512_finish(&sha512->hash_ctx, vsc_buffer_unused_bytes(digest));
+    mbedtls_sha512_finish(&self->hash_ctx, vsc_buffer_unused_bytes(digest));
     vsc_buffer_inc_used(digest, vscf_sha512_DIGEST_LEN);
 }

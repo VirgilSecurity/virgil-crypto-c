@@ -1,0 +1,37 @@
+<class name="key recipient info">
+    Handle information about recipient that is defined by a Public Key.
+
+    <property name="recipient id" class="buffer"/>
+    <property name="key encryption algorithm" interface="alg info"/>
+    <property name="encrypted key" class="buffer"/>
+
+    <constructor name="with members">
+        Create object and define all properties.
+
+        <argument name="recipient id" class="data"/>
+        <argument name="key encryption algorithm" interface="alg info" access="disown"/>
+        <argument name="encrypted key" class="data"/>
+    </constructor>
+
+
+    <method name="recipient id" is_const="1">
+        Return recipient identifier.
+
+        <return class="data"/>
+    </method>
+
+
+    <method name="key encryption algorithm" is_const="1">
+        Return algorithm information that was used for encryption
+        a data encryption key.
+
+        <return interface="alg info"/>
+    </method>
+
+
+    <method name="encrypted key" class="data" is_const="1">
+        Return an encrypted data encryption key.
+
+        <return class="data"/>
+    </method>
+</class>

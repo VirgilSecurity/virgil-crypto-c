@@ -89,7 +89,7 @@ extern "C" {
 
 #define VSCF_VERSION_MAJOR 0
 
-#define VSCF_VERSION_MINOR 2
+#define VSCF_VERSION_MINOR 5
 
 #define VSCF_VERSION_PATCH 0
 
@@ -100,6 +100,12 @@ extern "C" {
                 VSCF_VERSION_MAJOR, \
                 VSCF_VERSION_MINOR, \
                 VSCF_VERSION_PATCH)
+
+#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
+#   define VSCF_NODISCARD __attribute__ ((warn_unused_result))
+#else
+#   define VSCF_NODISCARD
+#endif
 
 //
 //  Custom implementation of the number ceil algorithm.

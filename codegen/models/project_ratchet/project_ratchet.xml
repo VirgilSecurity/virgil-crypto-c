@@ -1,13 +1,15 @@
 <project
-    name="ratchet"
-    brief="Implementation of the double ratchet algorithm."
-    namespace="virgil crypto ratchet"
-    framework="VSCRatchet"
-    prefix="vscr"
-    path="../library/ratchet"
-    work_path = "generated/ratchet/">
+        name="ratchet"
+        brief="Implementation of the double ratchet algorithm."
+        namespace="virgil crypto ratchet"
+        framework="VSCRatchet"
+        prefix="vscr"
+        path="../library/ratchet"
+        work_path = "generated/ratchet/"
+        wrappers="swift"
+        >
 
-    <version major="0" minor="2" patch="0"/>
+    <version major="0" minor="5" patch="0"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.
@@ -45,10 +47,6 @@
         Lead Maintainer: Virgil Security Inc. &lt;support@virgilsecurity.com&gt;
     </license>
 
-    <interface name="ratchet rng"/>
-
-    <implementor name="virgil ratchet"/>
-
     <require project="common" feature="library"/>
     <require project="foundation" feature="library"/>
 
@@ -56,10 +54,17 @@
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
 
-    <enum name="error"/>
+    <enum name="status"/>
+    <enum name="msg type"/>
 
     <class name="ratchet common"/>
+    <class name="ratchet common hidden"/>
+    <class name="ratchet key utils"/>
     <class name="error"/>
+    <class name="ratchet x3dh"/>
+    <class name="ratchet skipped messages"/>
+    <class name="ratchet receiver chains"/>
+    <class name="ratchet message"/>
     <class name="ratchet cipher"/>
     <class name="ratchet chain key"/>
     <class name="ratchet message key"/>
@@ -68,8 +73,7 @@
     <class name="ratchet skipped message key"/>
     <class name="ratchet skipped message key list node"/>
     <class name="ratchet sender chain"/>
+    <class name="ratchet keys"/>
     <class name="ratchet"/>
     <class name="ratchet session"/>
-
-    <wrapper lang="swift"/>
 </project>

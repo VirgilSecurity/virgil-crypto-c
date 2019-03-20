@@ -35,59 +35,26 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provides interface to the stateless MAC (message authentication code) algorithms.
-@objc(VSCFMac) public protocol Mac : MacInfo {
+@objc(VSCFMac) public protocol Mac : CContext {
+
+    /// Size of the digest (mac output) in bytes.
+    @objc func digestLen() -> Int
 
     /// Calculate MAC over given data.
     @objc func mac(key: Data, data: Data) -> Data
-}
 
-/// Implement interface methods
-@objc(VSCFMacProxy) internal class MacProxy: NSObject, Mac {
+    /// Start a new MAC.
+    @objc func start(key: Data)
 
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
+    /// Add given data to the MAC.
+    @objc func update(data: Data)
 
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
+    /// Accomplish MAC and return it's result (a message digest).
+    @objc func finish() -> Data
 
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Size of the digest (mac output) in bytes.
-    @objc public func digestLen() -> Int {
-        let proxyResult = vscf_mac_info_digest_len(self.c_ctx)
-
-        return proxyResult
-    }
-
-    /// Calculate MAC over given data.
-    @objc public func mac(key: Data, data: Data) -> Data {
-        let macCount = self.digestLen()
-        var mac = Data(count: macCount)
-        var macBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(macBuf)
-        }
-
-        key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Void in
-            data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
-                mac.withUnsafeMutableBytes({ (macPointer: UnsafeMutablePointer<byte>) -> Void in
-                    vsc_buffer_init(macBuf)
-                    vsc_buffer_use(macBuf, macPointer, macCount)
-                    vscf_mac(self.c_ctx, vsc_data(keyPointer, key.count), vsc_data(dataPointer, data.count), macBuf)
-                })
-            })
-        })
-        mac.count = vsc_buffer_len(macBuf)
-
-        return mac
-    }
+    /// Prepare to authenticate a new message with the same key
+    /// as the previous MAC operation.
+    @objc func reset()
 }

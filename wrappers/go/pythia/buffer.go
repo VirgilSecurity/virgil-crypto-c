@@ -36,7 +36,7 @@ package pythia
 
 // #cgo CFLAGS: -I${SRCDIR}/../include
 // #cgo LDFLAGS: -L${SRCDIR}/../lib -lvsc_common
-// #include <virgil/common/vsc_buffer.h>
+// #include <virgil/crypto/common/vsc_buffer.h>
 import "C"
 import unsafe "unsafe"
 

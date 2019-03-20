@@ -57,8 +57,8 @@ attribute names are case-sensitive and we use only lower-case names.
              <array .../>
           </argument>
        </callback>
-       <method name [definition] [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature]
-            [declaration] [is_static]>
+       <method name [declaration] [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature]
+            [definition] [is_static] [nodiscard]>
           <return .../>
           <argument .../>
           <variable .../>
@@ -561,7 +561,7 @@ require_definition:
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
-public: Instance type definition is used within private scope.
+public: Instance type definition is used within public scope.
 private: Instance type definition is used within private scope.
 
 definition:
@@ -746,7 +746,7 @@ require_definition:
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
-public: Instance type definition is used within private scope.
+public: Instance type definition is used within public scope.
 private: Instance type definition is used within private scope.
 
 value:
@@ -880,7 +880,7 @@ require_definition:
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
-public: Instance type definition is used within private scope.
+public: Instance type definition is used within public scope.
 private: Instance type definition is used within private scope.
 
 
@@ -1174,7 +1174,7 @@ require_definition:
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
-public: Instance type definition is used within private scope.
+public: Instance type definition is used within public scope.
 private: Instance type definition is used within private scope.
 
 name:
@@ -1365,7 +1365,7 @@ require_definition:
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
-public: Instance type definition is used within private scope.
+public: Instance type definition is used within public scope.
 private: Instance type definition is used within private scope.
 
 
@@ -1507,7 +1507,7 @@ require_definition:
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
-public: Instance type definition is used within private scope.
+public: Instance type definition is used within public scope.
 private: Instance type definition is used within private scope.
 
 name:
@@ -1522,15 +1522,16 @@ and optionally implementation.
 
     <method
         name = "..."
-      [ definition = "public | private | external"  ("private") ]
+      [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
       [ full_uid = "..." ]
       [ feature = "..." ]
-      [ declaration = "public | private | external"  ("public") ]
+      [ definition = "public | private | external"  ("private") ]
       [ is_static = "0 | 1"  ("0") ]
+      [ nodiscard = "0 | 1"  ("0") ]
         >
         <return>, optional
         <argument>
@@ -1600,6 +1601,15 @@ is_static:
 Value: Meaning:
 0: Method is a class-level method.
 1: Method is an object-level method.
+
+nodiscard:
+    Defines that method's return value should not be ignored. The nodiscard
+    attribute is optional. Its default value is "0". It can take one of the
+    following values:
+
+Value: Meaning:
+0: Returned value from the method CAN be ignored.
+1: Returned value from the method CAN NOT be ignored.
 
 
 The 'code' item

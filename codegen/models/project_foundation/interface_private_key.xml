@@ -29,7 +29,7 @@
             <length method="exported private key len"/>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
 
@@ -55,6 +55,6 @@
 
         <argument name="data" class="data"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 </interface>

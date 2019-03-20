@@ -97,6 +97,10 @@ struct vscf_kdf_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Derive key of the requested length from the given data.
     //
     vscf_kdf_api_derive_fn derive_cb;

@@ -65,6 +65,19 @@
 // --------------------------------------------------------------------------
 
 //
+//  Size of the digest (mac output) in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_mac_digest_len(vscf_impl_t *impl) {
+
+    const vscf_mac_api_t *mac_api = vscf_mac_api(impl);
+    VSCF_ASSERT_PTR (mac_api);
+
+    VSCF_ASSERT_PTR (mac_api->digest_len_cb);
+    return mac_api->digest_len_cb (impl);
+}
+
+//
 //  Calculate MAC over given data.
 //
 VSCF_PUBLIC void
@@ -78,6 +91,59 @@ vscf_mac(vscf_impl_t *impl, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac) 
 }
 
 //
+//  Start a new MAC.
+//
+VSCF_PUBLIC void
+vscf_mac_start(vscf_impl_t *impl, vsc_data_t key) {
+
+    const vscf_mac_api_t *mac_api = vscf_mac_api(impl);
+    VSCF_ASSERT_PTR (mac_api);
+
+    VSCF_ASSERT_PTR (mac_api->start_cb);
+    mac_api->start_cb (impl, key);
+}
+
+//
+//  Add given data to the MAC.
+//
+VSCF_PUBLIC void
+vscf_mac_update(vscf_impl_t *impl, vsc_data_t data) {
+
+    const vscf_mac_api_t *mac_api = vscf_mac_api(impl);
+    VSCF_ASSERT_PTR (mac_api);
+
+    VSCF_ASSERT_PTR (mac_api->update_cb);
+    mac_api->update_cb (impl, data);
+}
+
+//
+//  Accomplish MAC and return it's result (a message digest).
+//
+VSCF_PUBLIC void
+vscf_mac_finish(vscf_impl_t *impl, vsc_buffer_t *mac) {
+
+    const vscf_mac_api_t *mac_api = vscf_mac_api(impl);
+    VSCF_ASSERT_PTR (mac_api);
+
+    VSCF_ASSERT_PTR (mac_api->finish_cb);
+    mac_api->finish_cb (impl, mac);
+}
+
+//
+//  Prepare to authenticate a new message with the same key
+//  as the previous MAC operation.
+//
+VSCF_PUBLIC void
+vscf_mac_reset(vscf_impl_t *impl) {
+
+    const vscf_mac_api_t *mac_api = vscf_mac_api(impl);
+    VSCF_ASSERT_PTR (mac_api);
+
+    VSCF_ASSERT_PTR (mac_api->reset_cb);
+    mac_api->reset_cb (impl);
+}
+
+//
 //  Return mac API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_mac_api_t *
@@ -87,17 +153,6 @@ vscf_mac_api(const vscf_impl_t *impl) {
 
     const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_MAC);
     return (const vscf_mac_api_t *) api;
-}
-
-//
-//  Return mac info API.
-//
-VSCF_PUBLIC const vscf_mac_info_api_t *
-vscf_mac_mac_info_api(const vscf_mac_api_t *mac_api) {
-
-    VSCF_ASSERT_PTR (mac_api);
-
-    return mac_api->mac_info_api;
 }
 
 //

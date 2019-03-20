@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_key.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -102,8 +102,8 @@ vscf_private_key_extract_public_key(const vscf_impl_t *impl);
 //  For instance, RSA private key must be exported in format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_private_key_export_private_key(const vscf_impl_t *impl, vsc_buffer_t *out);
+VSCF_PUBLIC vscf_status_t
+vscf_private_key_export_private_key(const vscf_impl_t *impl, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Return length in bytes required to hold exported private key.
@@ -118,8 +118,8 @@ vscf_private_key_exported_private_key_len(const vscf_impl_t *impl);
 //  For instance, RSA private key must be imported from the format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_private_key_import_private_key(vscf_impl_t *impl, vsc_data_t data);
+VSCF_PUBLIC vscf_status_t
+vscf_private_key_import_private_key(vscf_impl_t *impl, vsc_data_t data) VSCF_NODISCARD;
 
 //
 //  Returns constant 'can export private key'.

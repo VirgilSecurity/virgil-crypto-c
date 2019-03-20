@@ -26,7 +26,8 @@ attribute names are case-sensitive and we use only lower-case names.
           <interface name>
              <constant name [c_prefix] [of_class] [uid] [full_uid] [feature] [definition] [value]/>
           </interface>
-          <dependency name [library] [project] [interface] [api] [class] [impl] [type_name] [has_observers]/>
+          <dependency name [library] [project] [interface] [api] [class] [impl] [type_name] [has_observers]
+               [is_observers_return_status]/>
           <require .../>
        </implementation>
     </implementor>
@@ -399,7 +400,7 @@ require_definition:
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
-public: Instance type definition is used within private scope.
+public: Instance type definition is used within public scope.
 private: Instance type definition is used within private scope.
 
 name:
@@ -575,6 +576,7 @@ Defines dependency to interface or class.
       [ impl = "..." ]
       [ type_name = "..." ]
       [ has_observers = "0 | 1"  ("0") ]
+      [ is_observers_return_status = "0 | 1"  ("0") ]
         />
 
 The dependency item can have these attributes:
@@ -619,4 +621,13 @@ has_observers:
 Value: Meaning:
 0: Property is not observed.
 1: Property is observed so methods "did_setup" and "did_release" must be generated.
+
+is_observers_return_status:
+    Defines that observer can return error code. The
+    is_observers_return_status attribute is optional. Its default value is
+    "0". It can take one of the following values:
+
+Value: Meaning:
+0: Observer methods CAN NOT return status code.
+1: Observer methods CAN return status code.
 
