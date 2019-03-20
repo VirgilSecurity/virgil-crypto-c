@@ -355,7 +355,7 @@ function run_main ()
 
     for main.wrapper
         my.loaded_wrapper = load_lang_wrapper (wrapper)
-        swift_resolve_toplevel (my.loaded_wrapper, main->license)
+        wrapper_resolve_toplevel (my.loaded_wrapper, main->license)
         wrapper_create_toplevel_modules (my.loaded_wrapper, my.loaded_wrapper, my.projects_api)
         wrapper_foreach_module_resolve (my.loaded_wrapper, my.loaded_wrapper)
         wrapper_generate_sources (my.loaded_wrapper, my.loaded_wrapper)

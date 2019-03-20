@@ -39,7 +39,8 @@
 #   To add new supported language do next:
 #       1. Create file `<lang>.gsl` with methods:
 #           - <lang>_create_toplevel_modules(destination, wrapper, projects_api) [optional]
-#           - <lang>_resolve (project, wrapper, projects_api)
+#           - <lang>_resolve_toplevel (wrapper, license) [optional]
+#           - <lang>_resolve_project (project, wrapper, projects_api)
 #           - <lang>_create_project_module (project, destination, wrapper)
 #           - <lang>_create_custom_modules (source, destination, wrapper, meta) [optional]
 #           - <lang>_create_interface_module (source, destination, wrapper, meta)
@@ -82,7 +83,7 @@ endfunction
 function wrapper_resolve_project (project, wrapper, projects_api)
     check_arguments (my, "project, wrapper, projects_api", my)
 
-    my.proxy_func = make_id(my.wrapper.lang, "resolve project")
+    my.proxy_func = make_id(my.wrapper.lang, "resolve_project")
     if macro (my.proxy_func)
         $(my.proxy_func:) (my.project, my.wrapper, my.projects_api)
     else
