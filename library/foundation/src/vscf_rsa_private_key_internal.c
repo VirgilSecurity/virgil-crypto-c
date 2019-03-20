@@ -55,17 +55,18 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_rsa_private_key_defs.h"
+#include "vscf_alg.h"
+#include "vscf_alg_api.h"
 #include "vscf_key.h"
 #include "vscf_key_api.h"
 #include "vscf_generate_key.h"
 #include "vscf_generate_key_api.h"
 #include "vscf_decrypt.h"
 #include "vscf_decrypt_api.h"
-#include "vscf_sign.h"
-#include "vscf_sign_api.h"
+#include "vscf_sign_hash.h"
+#include "vscf_sign_hash_api.h"
 #include "vscf_private_key.h"
 #include "vscf_private_key_api.h"
-#include "vscf_hash.h"
 #include "vscf_random.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_writer.h"
@@ -86,6 +87,33 @@ static const vscf_api_t *
 vscf_rsa_private_key_find_api(vscf_api_tag_t api_tag);
 
 //
+//  Configuration of the interface API 'alg api'.
+//
+static const vscf_alg_api_t alg_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
+    //
+    vscf_api_tag_ALG,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_RSA_PRIVATE_KEY,
+    //
+    //  Provide algorithm identificator.
+    //
+    (vscf_alg_api_alg_id_fn)vscf_rsa_private_key_alg_id,
+    //
+    //  Produce object with algorithm information and configuration parameters.
+    //
+    (vscf_alg_api_produce_alg_info_fn)vscf_rsa_private_key_produce_alg_info,
+    //
+    //  Restore algorithm configuration from the given object.
+    //
+    (vscf_alg_api_restore_alg_info_fn)vscf_rsa_private_key_restore_alg_info
+};
+
+//
 //  Configuration of the interface API 'key api'.
 //
 static const vscf_key_api_t key_api = {
@@ -95,9 +123,13 @@ static const vscf_key_api_t key_api = {
     //
     vscf_api_tag_KEY,
     //
-    //  Return implemented asymmetric key algorithm type.
+    //  Implementation unique identifier, MUST be second in the structure.
     //
-    (vscf_key_api_alg_fn)vscf_rsa_private_key_alg,
+    vscf_impl_tag_RSA_PRIVATE_KEY,
+    //
+    //  Link to the inherited interface API 'alg'.
+    //
+    &alg_api,
     //
     //  Length of the key in bytes.
     //
@@ -118,6 +150,10 @@ static const vscf_generate_key_api_t generate_key_api = {
     //
     vscf_api_tag_GENERATE_KEY,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_RSA_PRIVATE_KEY,
+    //
     //  Generate new private or secret key.
     //  Note, this operation can be slow.
     //
@@ -134,6 +170,10 @@ static const vscf_decrypt_api_t decrypt_api = {
     //
     vscf_api_tag_DECRYPT,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_RSA_PRIVATE_KEY,
+    //
     //  Decrypt given data.
     //
     (vscf_decrypt_api_decrypt_fn)vscf_rsa_private_key_decrypt,
@@ -144,22 +184,26 @@ static const vscf_decrypt_api_t decrypt_api = {
 };
 
 //
-//  Configuration of the interface API 'sign api'.
+//  Configuration of the interface API 'sign hash api'.
 //
-static const vscf_sign_api_t sign_api = {
+static const vscf_sign_hash_api_t sign_hash_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'sign' MUST be equal to the 'vscf_api_tag_SIGN'.
+    //  For interface 'sign_hash' MUST be equal to the 'vscf_api_tag_SIGN_HASH'.
     //
-    vscf_api_tag_SIGN,
+    vscf_api_tag_SIGN_HASH,
     //
-    //  Sign data given private key.
+    //  Implementation unique identifier, MUST be second in the structure.
     //
-    (vscf_sign_api_sign_fn)vscf_rsa_private_key_sign,
+    vscf_impl_tag_RSA_PRIVATE_KEY,
     //
     //  Return length in bytes required to hold signature.
     //
-    (vscf_sign_api_signature_len_fn)vscf_rsa_private_key_signature_len
+    (vscf_sign_hash_api_signature_len_fn)vscf_rsa_private_key_signature_len,
+    //
+    //  Sign data given private key.
+    //
+    (vscf_sign_hash_api_sign_hash_fn)vscf_rsa_private_key_sign_hash
 };
 
 //
@@ -171,6 +215,10 @@ static const vscf_private_key_api_t private_key_api = {
     //  For interface 'private_key' MUST be equal to the 'vscf_api_tag_PRIVATE_KEY'.
     //
     vscf_api_tag_PRIVATE_KEY,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_RSA_PRIVATE_KEY,
     //
     //  Link to the inherited interface API 'key'.
     //
@@ -214,6 +262,10 @@ static const vscf_private_key_api_t private_key_api = {
 //
 static const vscf_impl_info_t info = {
     //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_RSA_PRIVATE_KEY,
+    //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
     //
@@ -232,16 +284,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_init(vscf_rsa_private_key_t *rsa_private_key) {
+vscf_rsa_private_key_init(vscf_rsa_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(rsa_private_key);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(rsa_private_key, sizeof(vscf_rsa_private_key_t));
+    vscf_zeroize(self, sizeof(vscf_rsa_private_key_t));
 
-    rsa_private_key->info = &info;
-    rsa_private_key->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_rsa_private_key_init_ctx(rsa_private_key);
+    vscf_rsa_private_key_init_ctx(self);
 }
 
 //
@@ -249,28 +301,27 @@ vscf_rsa_private_key_init(vscf_rsa_private_key_t *rsa_private_key) {
 //  This is a reverse action of the function 'vscf_rsa_private_key_init()'.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_cleanup(vscf_rsa_private_key_t *rsa_private_key) {
+vscf_rsa_private_key_cleanup(vscf_rsa_private_key_t *self) {
 
-    if (rsa_private_key == NULL || rsa_private_key->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (rsa_private_key->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--rsa_private_key->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_rsa_private_key_release_hash(rsa_private_key);
-    vscf_rsa_private_key_release_random(rsa_private_key);
-    vscf_rsa_private_key_release_asn1rd(rsa_private_key);
-    vscf_rsa_private_key_release_asn1wr(rsa_private_key);
+    vscf_rsa_private_key_release_random(self);
+    vscf_rsa_private_key_release_asn1rd(self);
+    vscf_rsa_private_key_release_asn1wr(self);
 
-    vscf_rsa_private_key_cleanup_ctx(rsa_private_key);
+    vscf_rsa_private_key_cleanup_ctx(self);
 
-    vscf_zeroize(rsa_private_key, sizeof(vscf_rsa_private_key_t));
+    vscf_zeroize(self, sizeof(vscf_rsa_private_key_t));
 }
 
 //
@@ -280,12 +331,12 @@ vscf_rsa_private_key_cleanup(vscf_rsa_private_key_t *rsa_private_key) {
 VSCF_PUBLIC vscf_rsa_private_key_t *
 vscf_rsa_private_key_new(void) {
 
-    vscf_rsa_private_key_t *rsa_private_key = (vscf_rsa_private_key_t *) vscf_alloc(sizeof (vscf_rsa_private_key_t));
-    VSCF_ASSERT_ALLOC(rsa_private_key);
+    vscf_rsa_private_key_t *self = (vscf_rsa_private_key_t *) vscf_alloc(sizeof (vscf_rsa_private_key_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_rsa_private_key_init(rsa_private_key);
+    vscf_rsa_private_key_init(self);
 
-    return rsa_private_key;
+    return self;
 }
 
 //
@@ -293,12 +344,12 @@ vscf_rsa_private_key_new(void) {
 //  This is a reverse action of the function 'vscf_rsa_private_key_new()'.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_delete(vscf_rsa_private_key_t *rsa_private_key) {
+vscf_rsa_private_key_delete(vscf_rsa_private_key_t *self) {
 
-    vscf_rsa_private_key_cleanup(rsa_private_key);
+    vscf_rsa_private_key_cleanup(self);
 
-    if (rsa_private_key && (rsa_private_key->refcnt == 0)) {
-        vscf_dealloc(rsa_private_key);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -308,14 +359,14 @@ vscf_rsa_private_key_delete(vscf_rsa_private_key_t *rsa_private_key) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_destroy(vscf_rsa_private_key_t **rsa_private_key_ref) {
+vscf_rsa_private_key_destroy(vscf_rsa_private_key_t **self_ref) {
 
-    VSCF_ASSERT_PTR(rsa_private_key_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_rsa_private_key_t *rsa_private_key = *rsa_private_key_ref;
-    *rsa_private_key_ref = NULL;
+    vscf_rsa_private_key_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_rsa_private_key_delete(rsa_private_key);
+    vscf_rsa_private_key_delete(self);
 }
 
 //
@@ -323,10 +374,10 @@ vscf_rsa_private_key_destroy(vscf_rsa_private_key_t **rsa_private_key_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_rsa_private_key_t *
-vscf_rsa_private_key_shallow_copy(vscf_rsa_private_key_t *rsa_private_key) {
+vscf_rsa_private_key_shallow_copy(vscf_rsa_private_key_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_rsa_private_key_t *)vscf_impl_shallow_copy((vscf_impl_t *)rsa_private_key);
+    return (vscf_rsa_private_key_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -342,49 +393,25 @@ vscf_rsa_private_key_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_private_key_impl(vscf_rsa_private_key_t *rsa_private_key) {
+vscf_rsa_private_key_impl(vscf_rsa_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(rsa_private_key);
-    return (vscf_impl_t *)(rsa_private_key);
-}
-
-//
-//  Setup dependency to the interface api 'hash' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_rsa_private_key_use_hash(vscf_rsa_private_key_t *rsa_private_key, const vscf_hash_api_t *hash) {
-
-    VSCF_ASSERT_PTR(rsa_private_key);
-    VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(rsa_private_key->hash == NULL);
-
-    rsa_private_key->hash = hash;
-}
-
-//
-//  Release dependency to the interface api 'hash'.
-//
-VSCF_PUBLIC void
-vscf_rsa_private_key_release_hash(vscf_rsa_private_key_t *rsa_private_key) {
-
-    VSCF_ASSERT_PTR(rsa_private_key);
-
-    rsa_private_key->hash = NULL;
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_use_random(vscf_rsa_private_key_t *rsa_private_key, vscf_impl_t *random) {
+vscf_rsa_private_key_use_random(vscf_rsa_private_key_t *self, vscf_impl_t *random) {
 
-    VSCF_ASSERT_PTR(rsa_private_key);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(rsa_private_key->random == NULL);
+    VSCF_ASSERT(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
-    rsa_private_key->random = vscf_impl_shallow_copy(random);
+    self->random = vscf_impl_shallow_copy(random);
 }
 
 //
@@ -392,41 +419,41 @@ vscf_rsa_private_key_use_random(vscf_rsa_private_key_t *rsa_private_key, vscf_im
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_take_random(vscf_rsa_private_key_t *rsa_private_key, vscf_impl_t *random) {
+vscf_rsa_private_key_take_random(vscf_rsa_private_key_t *self, vscf_impl_t *random) {
 
-    VSCF_ASSERT_PTR(rsa_private_key);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(rsa_private_key->random == NULL);
+    VSCF_ASSERT_PTR(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
-    rsa_private_key->random = random;
+    self->random = random;
 }
 
 //
 //  Release dependency to the interface 'random'.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_release_random(vscf_rsa_private_key_t *rsa_private_key) {
+vscf_rsa_private_key_release_random(vscf_rsa_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(rsa_private_key);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&rsa_private_key->random);
+    vscf_impl_destroy(&self->random);
 }
 
 //
 //  Setup dependency to the interface 'asn1 reader' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_use_asn1rd(vscf_rsa_private_key_t *rsa_private_key, vscf_impl_t *asn1rd) {
+vscf_rsa_private_key_use_asn1rd(vscf_rsa_private_key_t *self, vscf_impl_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(rsa_private_key);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1rd);
-    VSCF_ASSERT_PTR(rsa_private_key->asn1rd == NULL);
+    VSCF_ASSERT(self->asn1rd == NULL);
 
     VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1rd));
 
-    rsa_private_key->asn1rd = vscf_impl_shallow_copy(asn1rd);
+    self->asn1rd = vscf_impl_shallow_copy(asn1rd);
 }
 
 //
@@ -434,41 +461,41 @@ vscf_rsa_private_key_use_asn1rd(vscf_rsa_private_key_t *rsa_private_key, vscf_im
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_take_asn1rd(vscf_rsa_private_key_t *rsa_private_key, vscf_impl_t *asn1rd) {
+vscf_rsa_private_key_take_asn1rd(vscf_rsa_private_key_t *self, vscf_impl_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(rsa_private_key);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1rd);
-    VSCF_ASSERT_PTR(rsa_private_key->asn1rd == NULL);
+    VSCF_ASSERT_PTR(self->asn1rd == NULL);
 
     VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1rd));
 
-    rsa_private_key->asn1rd = asn1rd;
+    self->asn1rd = asn1rd;
 }
 
 //
 //  Release dependency to the interface 'asn1 reader'.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_release_asn1rd(vscf_rsa_private_key_t *rsa_private_key) {
+vscf_rsa_private_key_release_asn1rd(vscf_rsa_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(rsa_private_key);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&rsa_private_key->asn1rd);
+    vscf_impl_destroy(&self->asn1rd);
 }
 
 //
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_use_asn1wr(vscf_rsa_private_key_t *rsa_private_key, vscf_impl_t *asn1wr) {
+vscf_rsa_private_key_use_asn1wr(vscf_rsa_private_key_t *self, vscf_impl_t *asn1wr) {
 
-    VSCF_ASSERT_PTR(rsa_private_key);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1wr);
-    VSCF_ASSERT_PTR(rsa_private_key->asn1wr == NULL);
+    VSCF_ASSERT(self->asn1wr == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1wr));
 
-    rsa_private_key->asn1wr = vscf_impl_shallow_copy(asn1wr);
+    self->asn1wr = vscf_impl_shallow_copy(asn1wr);
 }
 
 //
@@ -476,32 +503,34 @@ vscf_rsa_private_key_use_asn1wr(vscf_rsa_private_key_t *rsa_private_key, vscf_im
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_take_asn1wr(vscf_rsa_private_key_t *rsa_private_key, vscf_impl_t *asn1wr) {
+vscf_rsa_private_key_take_asn1wr(vscf_rsa_private_key_t *self, vscf_impl_t *asn1wr) {
 
-    VSCF_ASSERT_PTR(rsa_private_key);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1wr);
-    VSCF_ASSERT_PTR(rsa_private_key->asn1wr == NULL);
+    VSCF_ASSERT_PTR(self->asn1wr == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1wr));
 
-    rsa_private_key->asn1wr = asn1wr;
+    self->asn1wr = asn1wr;
 }
 
 //
 //  Release dependency to the interface 'asn1 writer'.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_release_asn1wr(vscf_rsa_private_key_t *rsa_private_key) {
+vscf_rsa_private_key_release_asn1wr(vscf_rsa_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(rsa_private_key);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&rsa_private_key->asn1wr);
+    vscf_impl_destroy(&self->asn1wr);
 }
 
 static const vscf_api_t *
 vscf_rsa_private_key_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
+        case vscf_api_tag_ALG:
+            return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_DECRYPT:
             return (const vscf_api_t *) &decrypt_api;
         case vscf_api_tag_GENERATE_KEY:
@@ -510,8 +539,8 @@ vscf_rsa_private_key_find_api(vscf_api_tag_t api_tag) {
             return (const vscf_api_t *) &key_api;
         case vscf_api_tag_PRIVATE_KEY:
             return (const vscf_api_t *) &private_key_api;
-        case vscf_api_tag_SIGN:
-            return (const vscf_api_t *) &sign_api;
+        case vscf_api_tag_SIGN_HASH:
+            return (const vscf_api_t *) &sign_hash_api;
         default:
             return NULL;
     }

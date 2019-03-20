@@ -55,7 +55,6 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_mac_info.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -89,22 +88,47 @@ extern "C" {
 typedef struct vscf_mac_api_t vscf_mac_api_t;
 
 //
+//  Size of the digest (mac output) in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_mac_digest_len(vscf_impl_t *impl);
+
+//
 //  Calculate MAC over given data.
 //
 VSCF_PUBLIC void
 vscf_mac(vscf_impl_t *impl, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac);
 
 //
+//  Start a new MAC.
+//
+VSCF_PUBLIC void
+vscf_mac_start(vscf_impl_t *impl, vsc_data_t key);
+
+//
+//  Add given data to the MAC.
+//
+VSCF_PUBLIC void
+vscf_mac_update(vscf_impl_t *impl, vsc_data_t data);
+
+//
+//  Accomplish MAC and return it's result (a message digest).
+//
+VSCF_PUBLIC void
+vscf_mac_finish(vscf_impl_t *impl, vsc_buffer_t *mac);
+
+//
+//  Prepare to authenticate a new message with the same key
+//  as the previous MAC operation.
+//
+VSCF_PUBLIC void
+vscf_mac_reset(vscf_impl_t *impl);
+
+//
 //  Return mac API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_mac_api_t *
 vscf_mac_api(const vscf_impl_t *impl);
-
-//
-//  Return mac info API.
-//
-VSCF_PUBLIC const vscf_mac_info_api_t *
-vscf_mac_mac_info_api(const vscf_mac_api_t *mac_api);
 
 //
 //  Check if given object implements interface 'mac'.

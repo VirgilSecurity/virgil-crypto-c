@@ -6,29 +6,49 @@
         <require library="mbedtls" feature="BIGNUM C"/>
         <require library="mbedtls" feature="PKCS1 V21"/>
 
-        <require enum="asn1 tag"/>
-        <require class="mbedtls bignum asn1 writer"/>
+        <require header="mbedtls/rsa.h" scope="context"/>
+
+        <require class="asn1rd"/>
+        <require class="asn1wr"/>
         <require class="mbedtls bignum asn1 reader"/>
-        <require module="mbedtls bridge random"/>
+        <require class="mbedtls bignum asn1 writer"/>
         <require class="mbedtls md"/>
+        <require class="simple alg info"/>
+        <require enum="asn1 tag"/>
+        <require impl="ctr drbg"/>
+        <require impl="rsa private key"/>
+        <require interface="alg info"/>
+        <require interface="alg"/>
+        <require module="mbedtls bridge random"/>
 
-        <context>
-            <require header="mbedtls/rsa.h"/>
-            <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" access="readwrite" is_reference="0"/>
-        </context>
+        <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" is_reference="0"/>
 
-        <dependency name="hash" api="hash" access="readonly"/>
+        <dependency name="hash" interface="hash"/>
         <dependency name="random" interface="random"/>
         <dependency name="asn1rd" interface="asn1 reader"/>
         <dependency name="asn1wr" interface="asn1 writer"/>
 
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
+        <interface name="alg"/>
         <interface name="key"/>
         <interface name="encrypt"/>
-        <interface name="verify"/>
+        <interface name="verify hash"/>
         <interface name="public key">
             <constant name="can import public key" value="true"/>
             <constant name="can export public key" value="true"/>
         </interface>
+        <interface name="generate ephemeral key"/>
+
+        <method name="key exponent">
+            Return public key exponent.
+
+            <return type="size"/>
+        </method>
     </implementation>
 
 
@@ -37,26 +57,45 @@
         <require library="mbedtls" feature="BIGNUM C"/>
         <require library="mbedtls" feature="PKCS1 V21"/>
 
-        <require enum="asn1 tag"/>
-        <require class="mbedtls bignum asn1 writer"/>
+        <require header="mbedtls/bignum.h"/>
+        <require header="mbedtls/rsa.h" scope="context"/>
+
+        <require class="asn1rd"/>
+        <require class="asn1wr"/>
         <require class="mbedtls bignum asn1 reader"/>
-        <require module="mbedtls bridge random"/>
+        <require class="mbedtls bignum asn1 writer"/>
         <require class="mbedtls md"/>
+        <require class="simple alg info"/>
+        <require enum="asn1 tag"/>
+        <require impl="ctr drbg"/>
+        <require interface="alg info"/>
+        <require interface="alg"/>
+        <require module="mbedtls bridge random"/>
         <require module="rsa public key defs"/>
 
-        <require header="mbedtls/bignum.h"/>
+        <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" is_reference="0"/>
+        <property name="gen bitlen" type="size"/>
+        <property name="gen exponent" type="size"/>
 
-        <context>
-            <require header="mbedtls/rsa.h"/>
-            <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" access="readwrite" is_reference="0"/>
-            <property name="gen bitlen" type="size"/>
-            <property name="gen exponent" type="size"/>
-        </context>
-
-        <dependency name="hash" api="hash" access="readonly"/>
         <dependency name="random" interface="random"/>
         <dependency name="asn1rd" interface="asn1 reader"/>
         <dependency name="asn1wr" interface="asn1 writer"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
+        <interface name="alg"/>
+        <interface name="key"/>
+        <interface name="generate key"/>
+        <interface name="decrypt"/>
+        <interface name="sign hash"/>
+        <interface name="private key">
+            <constant name="can import private key" value="true"/>
+            <constant name="can export private key" value="true"/>
+        </interface>
 
         <method name="set keygen params" visibility="public" declaration="public">
             Setup parameters that is used during key generation.
@@ -64,14 +103,5 @@
             <argument name="bitlen" type="size"/>
             <argument name="exponent" type="size"/>
         </method>
-
-        <interface name="key"/>
-        <interface name="generate key"/>
-        <interface name="decrypt"/>
-        <interface name="sign"/>
-        <interface name="private key">
-            <constant name="can import private key" value="true"/>
-            <constant name="can export private key" value="true"/>
-        </interface>
     </implementation>
 </implementor>

@@ -1,0 +1,44 @@
+@startuml
+
+class AlgInfo
+
+class MessageInfo {
+    + version: Integer
+    + keyRecipients: KeyRecipientInfo[]
+    + pwdRecipients: PasswordRecipientInfo[]
+    + dataEncryptionMechanism: AlgInfo
+    + stringAttributes: Map<name, String>
+    + byteAttributes: Map<name, byte[]>
+    + numberAttributes: Map<name, Integer>
+}
+
+class KeyRecipientInfo {
+    + recipientId: String
+    + keyEncryptionAlgorithm: AlgInfo
+    + encryptedKey: byte[]
+}
+
+class PasswordRecipientInfo {
+    + keyDerivationAlgorithm: AlgInfo
+    + keyEncryptionAlgorithm: AlgInfo
+    + encryptedKey: byte[]
+}
+
+interface MessageInfoSerializer {
+    serialize(: MessageInfo) : byte[]
+    canDeserialize(data: byte[]) : Boolean
+    deserialize(data: byte[]) : MessageInfo
+}
+
+
+class VirgilCMS
+
+MessageInfo -left-> AlgInfo : <<use>>
+
+MessageInfo "1" *-- "*" KeyRecipientInfo
+MessageInfo "1" *-- "*" PasswordRecipientInfo
+
+MessageInfoSerializer <|-- VirgilCMS
+MessageInfo <-- MessageInfoSerializer : <<serialize>>
+
+@enduml

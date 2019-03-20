@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Common interface to get random data.
 @objc(VSCFRandom) public protocol Random : CContext {
@@ -45,50 +44,4 @@ import VirgilCryptoCommon
 
     /// Retreive new seed data from the entropy sources.
     @objc func reseed() throws
-}
-
-/// Implement interface methods
-@objc(VSCFRandomProxy) internal class RandomProxy: NSObject, Random {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Generate random bytes.
-    @objc public func random(dataLen: Int) throws -> Data {
-        let dataCount = dataLen
-        var data = Data(count: dataCount)
-        var dataBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(dataBuf)
-        }
-
-        let proxyResult = data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
-            vsc_buffer_init(dataBuf)
-            vsc_buffer_use(dataBuf, dataPointer, dataCount)
-            return vscf_random(self.c_ctx, dataLen, dataBuf)
-        })
-        data.count = vsc_buffer_len(dataBuf)
-
-        try FoundationError.handleError(fromC: proxyResult)
-
-        return data
-    }
-
-    /// Retreive new seed data from the entropy sources.
-    @objc public func reseed() throws {
-        let proxyResult = vscf_random_reseed(self.c_ctx)
-
-        try FoundationError.handleError(fromC: proxyResult)
-    }
 }

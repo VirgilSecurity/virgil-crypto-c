@@ -75,42 +75,7 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_impl.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_rng.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_virgil_ratchet_fake_rng.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_error_ctx.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_chain_key.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_cipher.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_error.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -120,22 +85,12 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_message_key.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_key_utils.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_receiver_chain.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_receiver_chain_list_node.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_sender_chain.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_message.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -145,17 +100,12 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_skipped_message_key.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_status.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_skipped_message_key_list_node.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_error.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_msg_type.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -165,58 +115,54 @@ target_sources(ratchet
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_library.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_memory.h"
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/ratchet/vscr_platform.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_api.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/private/vscr_api_private.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_impl.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/private/vscr_impl_private.h"
-            "$<$<BOOL:${VSCR_RATCHET_RNG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_rng.h>"
-            "$<$<BOOL:${VSCR_RATCHET_RNG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/private/vscr_ratchet_rng_api.h>"
-            "$<$<BOOL:${VSCR_VIRGIL_RATCHET_FAKE_RNG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_virgil_ratchet_fake_rng.h>"
-            "$<$<BOOL:${VSCR_VIRGIL_RATCHET_FAKE_RNG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_virgil_ratchet_fake_rng_internal.h>"
-            "$<$<BOOL:${VSCR_VIRGIL_RATCHET_FAKE_RNG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/private/vscr_virgil_ratchet_fake_rng_defs.h>"
-            "$<$<BOOL:${VSCR_ERROR_CTX}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_error_ctx.h>"
-            "$<$<BOOL:${VSCR_RATCHET}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet.h>"
-            "$<$<BOOL:${VSCR_RATCHET}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/private/vscr_ratchet_defs.h>"
-            "$<$<BOOL:${VSCR_RATCHET_CHAIN_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_chain_key.h>"
-            "$<$<BOOL:${VSCR_RATCHET_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_cipher.h>"
+            "$<$<BOOL:${VSCR_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_error.h>"
+            "$<$<BOOL:${VSCR_RATCHET}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet.h>"
+            "$<$<BOOL:${VSCR_RATCHET_CHAIN_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_chain_key.h>"
+            "$<$<BOOL:${VSCR_RATCHET_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/private/vscr_ratchet_cipher.h>"
             "$<$<BOOL:${VSCR_RATCHET_COMMON}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_common.h>"
-            "$<$<BOOL:${VSCR_RATCHET_MESSAGE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_message_key.h>"
-            "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_receiver_chain.h>"
-            "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_receiver_chain_list_node.h>"
-            "$<$<BOOL:${VSCR_RATCHET_SENDER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_sender_chain.h>"
+            "$<$<BOOL:${VSCR_RATCHET_COMMON_HIDDEN}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/private/vscr_ratchet_common_hidden.h>"
+            "$<$<BOOL:${VSCR_RATCHET_KEY_UTILS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_key_utils.h>"
+            "$<$<BOOL:${VSCR_RATCHET_KEYS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_keys.h>"
+            "$<$<BOOL:${VSCR_RATCHET_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_message.h>"
+            "$<$<BOOL:${VSCR_RATCHET_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/private/vscr_ratchet_message_defs.h>"
+            "$<$<BOOL:${VSCR_RATCHET_MESSAGE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_message_key.h>"
+            "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_receiver_chain.h>"
+            "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_receiver_chain_list_node.h>"
+            "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAINS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_receiver_chains.h>"
+            "$<$<BOOL:${VSCR_RATCHET_SENDER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_sender_chain.h>"
             "$<$<BOOL:${VSCR_RATCHET_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_session.h>"
-            "$<$<BOOL:${VSCR_RATCHET_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/private/vscr_ratchet_session_defs.h>"
-            "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_skipped_message_key.h>"
-            "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_skipped_message_key_list_node.h>"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_error.h"
+            "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_skipped_message_key.h>"
+            "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_skipped_message_key_list_node.h>"
+            "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGES}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_skipped_messages.h>"
+            "$<$<BOOL:${VSCR_RATCHET_X3DH}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_x3dh.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_status.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_msg_type.h"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_library.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_memory.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscr_api.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscr_api_private.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscr_impl.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscr_impl_private.c"
-            "$<$<BOOL:${VSCR_RATCHET_RNG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_rng.c>"
-            "$<$<BOOL:${VSCR_RATCHET_RNG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_rng_api.c>"
-            "$<$<BOOL:${VSCR_VIRGIL_RATCHET_FAKE_RNG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_virgil_ratchet_fake_rng.c>"
-            "$<$<BOOL:${VSCR_VIRGIL_RATCHET_FAKE_RNG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_virgil_ratchet_fake_rng_internal.c>"
-            "$<$<BOOL:${VSCR_VIRGIL_RATCHET_FAKE_RNG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_virgil_ratchet_fake_rng_defs.c>"
-            "$<$<BOOL:${VSCR_ERROR_CTX}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_error_ctx.c>"
+            "$<$<BOOL:${VSCR_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_error.c>"
             "$<$<BOOL:${VSCR_RATCHET}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet.c>"
-            "$<$<BOOL:${VSCR_RATCHET}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_defs.c>"
             "$<$<BOOL:${VSCR_RATCHET_CHAIN_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_chain_key.c>"
             "$<$<BOOL:${VSCR_RATCHET_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_cipher.c>"
             "$<$<BOOL:${VSCR_RATCHET_COMMON}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_common.c>"
+            "$<$<BOOL:${VSCR_RATCHET_COMMON_HIDDEN}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_common_hidden.c>"
+            "$<$<BOOL:${VSCR_RATCHET_KEY_UTILS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_key_utils.c>"
+            "$<$<BOOL:${VSCR_RATCHET_KEYS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_keys.c>"
+            "$<$<BOOL:${VSCR_RATCHET_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_message.c>"
+            "$<$<BOOL:${VSCR_RATCHET_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_message_defs.c>"
             "$<$<BOOL:${VSCR_RATCHET_MESSAGE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_message_key.c>"
             "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_receiver_chain.c>"
             "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_receiver_chain_list_node.c>"
+            "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAINS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_receiver_chains.c>"
             "$<$<BOOL:${VSCR_RATCHET_SENDER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_sender_chain.c>"
             "$<$<BOOL:${VSCR_RATCHET_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_session.c>"
-            "$<$<BOOL:${VSCR_RATCHET_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_session_defs.c>"
             "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_skipped_message_key.c>"
             "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_skipped_message_key_list_node.c>"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscr_error.c"
+            "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGES}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_skipped_messages.c>"
+            "$<$<BOOL:${VSCR_RATCHET_X3DH}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_x3dh.c>"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscr_status.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscr_msg_type.c"
         )
 
 target_include_directories(ratchet

@@ -48,6 +48,8 @@
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 
+#include <ed25519/ed25519.h>
+
 // clang-format on
 //  @end
 
@@ -64,7 +66,7 @@
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_receiver_chain_init_ctx(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain);
+vscr_ratchet_receiver_chain_init_ctx(vscr_ratchet_receiver_chain_t *self);
 
 //
 //  Release all inner resources.
@@ -72,7 +74,7 @@ vscr_ratchet_receiver_chain_init_ctx(vscr_ratchet_receiver_chain_t *ratchet_rece
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_receiver_chain_cleanup_ctx(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain);
+vscr_ratchet_receiver_chain_cleanup_ctx(vscr_ratchet_receiver_chain_t *self);
 
 //
 //  Return size of 'vscr_ratchet_receiver_chain_t'.
@@ -87,35 +89,35 @@ vscr_ratchet_receiver_chain_ctx_size(void) {
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chain_init(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain) {
+vscr_ratchet_receiver_chain_init(vscr_ratchet_receiver_chain_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_receiver_chain);
+    VSCR_ASSERT_PTR(self);
 
-    vscr_zeroize(ratchet_receiver_chain, sizeof(vscr_ratchet_receiver_chain_t));
+    vscr_zeroize(self, sizeof(vscr_ratchet_receiver_chain_t));
 
-    ratchet_receiver_chain->refcnt = 1;
+    self->refcnt = 1;
 
-    vscr_ratchet_receiver_chain_init_ctx(ratchet_receiver_chain);
+    vscr_ratchet_receiver_chain_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chain_cleanup(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain) {
+vscr_ratchet_receiver_chain_cleanup(vscr_ratchet_receiver_chain_t *self) {
 
-    if (ratchet_receiver_chain == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    if (ratchet_receiver_chain->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--ratchet_receiver_chain->refcnt == 0) {
-        vscr_ratchet_receiver_chain_cleanup_ctx(ratchet_receiver_chain);
+    if (--self->refcnt == 0) {
+        vscr_ratchet_receiver_chain_cleanup_ctx(self);
 
-        vscr_zeroize(ratchet_receiver_chain, sizeof(vscr_ratchet_receiver_chain_t));
+        vscr_zeroize(self, sizeof(vscr_ratchet_receiver_chain_t));
     }
 }
 
@@ -125,14 +127,14 @@ vscr_ratchet_receiver_chain_cleanup(vscr_ratchet_receiver_chain_t *ratchet_recei
 VSCR_PUBLIC vscr_ratchet_receiver_chain_t *
 vscr_ratchet_receiver_chain_new(void) {
 
-    vscr_ratchet_receiver_chain_t *ratchet_receiver_chain = (vscr_ratchet_receiver_chain_t *) vscr_alloc(sizeof (vscr_ratchet_receiver_chain_t));
-    VSCR_ASSERT_ALLOC(ratchet_receiver_chain);
+    vscr_ratchet_receiver_chain_t *self = (vscr_ratchet_receiver_chain_t *) vscr_alloc(sizeof (vscr_ratchet_receiver_chain_t));
+    VSCR_ASSERT_ALLOC(self);
 
-    vscr_ratchet_receiver_chain_init(ratchet_receiver_chain);
+    vscr_ratchet_receiver_chain_init(self);
 
-    ratchet_receiver_chain->self_dealloc_cb = vscr_dealloc;
+    self->self_dealloc_cb = vscr_dealloc;
 
-    return ratchet_receiver_chain;
+    return self;
 }
 
 //
@@ -140,18 +142,18 @@ vscr_ratchet_receiver_chain_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chain_delete(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain) {
+vscr_ratchet_receiver_chain_delete(vscr_ratchet_receiver_chain_t *self) {
 
-    if (ratchet_receiver_chain == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    vscr_dealloc_fn self_dealloc_cb = ratchet_receiver_chain->self_dealloc_cb;
+    vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscr_ratchet_receiver_chain_cleanup(ratchet_receiver_chain);
+    vscr_ratchet_receiver_chain_cleanup(self);
 
-    if (ratchet_receiver_chain->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(ratchet_receiver_chain);
+    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(self);
     }
 }
 
@@ -160,27 +162,27 @@ vscr_ratchet_receiver_chain_delete(vscr_ratchet_receiver_chain_t *ratchet_receiv
 //  This is a reverse action of the function 'vscr_ratchet_receiver_chain_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chain_destroy(vscr_ratchet_receiver_chain_t **ratchet_receiver_chain_ref) {
+vscr_ratchet_receiver_chain_destroy(vscr_ratchet_receiver_chain_t **self_ref) {
 
-    VSCR_ASSERT_PTR(ratchet_receiver_chain_ref);
+    VSCR_ASSERT_PTR(self_ref);
 
-    vscr_ratchet_receiver_chain_t *ratchet_receiver_chain = *ratchet_receiver_chain_ref;
-    *ratchet_receiver_chain_ref = NULL;
+    vscr_ratchet_receiver_chain_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscr_ratchet_receiver_chain_delete(ratchet_receiver_chain);
+    vscr_ratchet_receiver_chain_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_receiver_chain_t *
-vscr_ratchet_receiver_chain_shallow_copy(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain) {
+vscr_ratchet_receiver_chain_shallow_copy(vscr_ratchet_receiver_chain_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_receiver_chain);
+    VSCR_ASSERT_PTR(self);
 
-    ++ratchet_receiver_chain->refcnt;
+    ++self->refcnt;
 
-    return ratchet_receiver_chain;
+    return self;
 }
 
 
@@ -197,11 +199,11 @@ vscr_ratchet_receiver_chain_shallow_copy(vscr_ratchet_receiver_chain_t *ratchet_
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_receiver_chain_init_ctx(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain) {
+vscr_ratchet_receiver_chain_init_ctx(vscr_ratchet_receiver_chain_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_receiver_chain);
+    VSCR_ASSERT_PTR(self);
 
-    vscr_ratchet_chain_key_init(&ratchet_receiver_chain->chain_key);
+    vscr_ratchet_chain_key_init(&self->chain_key);
 }
 
 //
@@ -210,9 +212,28 @@ vscr_ratchet_receiver_chain_init_ctx(vscr_ratchet_receiver_chain_t *ratchet_rece
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_receiver_chain_cleanup_ctx(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain) {
+vscr_ratchet_receiver_chain_cleanup_ctx(vscr_ratchet_receiver_chain_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_receiver_chain);
+    VSCR_ASSERT_PTR(self);
+}
 
-    vsc_buffer_destroy(&ratchet_receiver_chain->public_key);
+VSCR_PUBLIC void
+vscr_ratchet_receiver_chain_serialize(vscr_ratchet_receiver_chain_t *self, ReceiverChain *receiver_chain_pb) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(receiver_chain_pb);
+
+    memcpy(receiver_chain_pb->public_key, self->public_key, sizeof(receiver_chain_pb->public_key));
+    vscr_ratchet_chain_key_serialize(&self->chain_key, &receiver_chain_pb->chain_key);
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_receiver_chain_deserialize(
+        const ReceiverChain *receiver_chain_pb, vscr_ratchet_receiver_chain_t *receiver_chain) {
+
+    VSCR_ASSERT_PTR(receiver_chain);
+    VSCR_ASSERT_PTR(receiver_chain_pb);
+
+    memcpy(receiver_chain->public_key, receiver_chain_pb->public_key, sizeof(receiver_chain_pb->public_key));
+    vscr_ratchet_chain_key_deserialize(&receiver_chain_pb->chain_key, &receiver_chain->chain_key);
 }

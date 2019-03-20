@@ -156,6 +156,10 @@ function class_resolve_property (property, class)
     check_arguments (my, "property, class", my)
 
     my.property.access ?= "readwrite"
+
+    if string_equal (my.property.class ?, "self")
+        my.property.class = my.class.name
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -279,15 +283,11 @@ function class_create_feature (class, project, destination)
             copy require to feature
         endfor
 
-        for my.class.require where defined (0.class)
+        for my.class.require where has_one_of_attribute (require, "class, interface, impl")
             new require to feature
-                .feature = -1.class
-            endnew
-        endfor
-
-        for my.class.require where defined (0.interface)
-            new require to feature
-                .feature = -1.interface
+                .feature = -1.class ? -1.interface ? -1.impl
+                .scope = -1.scope ?
+                .project = -1.project ?
             endnew
         endfor
     endnew

@@ -55,9 +55,8 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_hash_info.h"
-#include "vscf_hash.h"
-#include "vscf_hash_alg.h"
+#include "vscf_alg_id.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -113,20 +112,20 @@ vscf_sha224_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_sha224_impl(vscf_sha224_t *sha224);
+vscf_sha224_impl(vscf_sha224_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_sha224_init(vscf_sha224_t *sha224);
+vscf_sha224_init(vscf_sha224_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_sha224_init()'.
 //
 VSCF_PUBLIC void
-vscf_sha224_cleanup(vscf_sha224_t *sha224);
+vscf_sha224_cleanup(vscf_sha224_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -140,7 +139,7 @@ vscf_sha224_new(void);
 //  This is a reverse action of the function 'vscf_sha224_new()'.
 //
 VSCF_PUBLIC void
-vscf_sha224_delete(vscf_sha224_t *sha224);
+vscf_sha224_delete(vscf_sha224_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -148,32 +147,32 @@ vscf_sha224_delete(vscf_sha224_t *sha224);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha224_destroy(vscf_sha224_t **sha224_ref);
+vscf_sha224_destroy(vscf_sha224_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_sha224_t *
-vscf_sha224_shallow_copy(vscf_sha224_t *sha224);
+vscf_sha224_shallow_copy(vscf_sha224_t *self);
 
 //
-//  Returns instance of the implemented interface 'hash info'.
+//  Provide algorithm identificator.
 //
-VSCF_PUBLIC const vscf_hash_info_api_t *
-vscf_sha224_hash_info_api(void);
+VSCF_PUBLIC vscf_alg_id_t
+vscf_sha224_alg_id(const vscf_sha224_t *self);
 
 //
-//  Returns instance of the implemented interface 'hash'.
+//  Produce object with algorithm information and configuration parameters.
 //
-VSCF_PUBLIC const vscf_hash_api_t *
-vscf_sha224_hash_api(void);
+VSCF_PUBLIC vscf_impl_t *
+vscf_sha224_produce_alg_info(const vscf_sha224_t *self);
 
 //
-//  Return implemented hash algorithm type.
+//  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_hash_alg_t
-vscf_sha224_alg(void);
+VSCF_PUBLIC vscf_status_t
+vscf_sha224_restore_alg_info(vscf_sha224_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
 
 //
 //  Calculate hash over given data.
@@ -185,19 +184,19 @@ vscf_sha224_hash(vsc_data_t data, vsc_buffer_t *digest);
 //  Start a new hashing.
 //
 VSCF_PUBLIC void
-vscf_sha224_start(vscf_sha224_t *sha224);
+vscf_sha224_start(vscf_sha224_t *self);
 
 //
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_sha224_update(vscf_sha224_t *sha224, vsc_data_t data);
+vscf_sha224_update(vscf_sha224_t *self, vsc_data_t data);
 
 //
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_sha224_finish(vscf_sha224_t *sha224, vsc_buffer_t *digest);
+vscf_sha224_finish(vscf_sha224_t *self, vsc_buffer_t *digest);
 
 
 // --------------------------------------------------------------------------

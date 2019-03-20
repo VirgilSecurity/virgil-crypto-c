@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Defines generic interface for the entropy source.
 @objc(VSCFEntropySource) public protocol EntropySource : CContext {
@@ -45,50 +44,4 @@ import VirgilCryptoCommon
 
     /// Gather entropy of the requested length.
     @objc func gather(len: Int) throws -> Data
-}
-
-/// Implement interface methods
-@objc(VSCFEntropySourceProxy) internal class EntropySourceProxy: NSObject, EntropySource {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Defines that implemented source is strong.
-    @objc public func isStrong() -> Bool {
-        let proxyResult = vscf_entropy_source_is_strong(self.c_ctx)
-
-        return proxyResult
-    }
-
-    /// Gather entropy of the requested length.
-    @objc public func gather(len: Int) throws -> Data {
-        let outCount = len
-        var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(outBuf)
-        }
-
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
-            vsc_buffer_init(outBuf)
-            vsc_buffer_use(outBuf, outPointer, outCount)
-            return vscf_entropy_source_gather(self.c_ctx, len, outBuf)
-        })
-        out.count = vsc_buffer_len(outBuf)
-
-        try FoundationError.handleError(fromC: proxyResult)
-
-        return out
-    }
 }

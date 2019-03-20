@@ -55,7 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -99,8 +99,9 @@ vscf_key_serializer_serialized_public_key_len(vscf_impl_t *impl, const vscf_impl
 //
 //  Precondition: public key must be exportable.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_key_serializer_serialize_public_key(vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_buffer_t *out);
+VSCF_PUBLIC vscf_status_t
+vscf_key_serializer_serialize_public_key(vscf_impl_t *impl, const vscf_impl_t *public_key,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Calculate buffer size enough to hold serialized private key.
@@ -115,8 +116,9 @@ vscf_key_serializer_serialized_private_key_len(vscf_impl_t *impl, const vscf_imp
 //
 //  Precondition: private key must be exportable.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_key_serializer_serialize_private_key(vscf_impl_t *impl, const vscf_impl_t *private_key, vsc_buffer_t *out);
+VSCF_PUBLIC vscf_status_t
+vscf_key_serializer_serialize_private_key(vscf_impl_t *impl, const vscf_impl_t *private_key,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Return key serializer API, or NULL if it is not implemented.

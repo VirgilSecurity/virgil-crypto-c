@@ -56,16 +56,15 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
+#include "vscf_kdf.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
-#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
-#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -89,17 +88,29 @@ extern "C" {
 typedef struct vscf_salted_kdf_api_t vscf_salted_kdf_api_t;
 
 //
-//  Derive key of the requested length from the given data, salt and info.
+//  Prepare algorithm to derive new key.
 //
 VSCF_PUBLIC void
-vscf_salted_kdf_derive(vscf_impl_t *impl, vsc_data_t data, vsc_data_t salt, vsc_data_t info, vsc_buffer_t *key,
-        size_t key_len);
+vscf_salted_kdf_reset(vscf_impl_t *impl, vsc_data_t salt, size_t iteration_count);
+
+//
+//  Setup application specific information (optional).
+//  Can be empty.
+//
+VSCF_PUBLIC void
+vscf_salted_kdf_set_info(vscf_impl_t *impl, vsc_data_t info);
 
 //
 //  Return salted kdf API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_salted_kdf_api_t *
 vscf_salted_kdf_api(const vscf_impl_t *impl);
+
+//
+//  Return kdf API.
+//
+VSCF_PUBLIC const vscf_kdf_api_t *
+vscf_salted_kdf_kdf_api(const vscf_salted_kdf_api_t *salted_kdf_api);
 
 //
 //  Check if given object implements interface 'salted kdf'.

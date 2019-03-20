@@ -54,7 +54,7 @@
 #define VSCF_MBEDTLS_BIGNUM_ASN1_READER_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error_ctx.h"
+#include "vscf_error.h"
 #include "vscf_impl.h"
 
 #include <mbedtls/bignum.h>
@@ -79,7 +79,7 @@ extern "C" {
 //  Client side must check state of 'asn1rd' to define result of reading.
 //
 VSCF_PUBLIC void
-vscf_mbedtls_bignum_read_asn1(vscf_impl_t *asn1rd, mbedtls_mpi *bignum, vscf_error_ctx_t *error);
+vscf_mbedtls_bignum_read_asn1(vscf_impl_t *asn1rd, mbedtls_mpi *bignum, vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------

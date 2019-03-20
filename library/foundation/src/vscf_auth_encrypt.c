@@ -68,7 +68,7 @@
 //  Encrypt given data.
 //  If 'tag' is not give, then it will written to the 'enc'.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_auth_encrypt(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_buffer_t *out, vsc_buffer_t *tag) {
 
     const vscf_auth_encrypt_api_t *auth_encrypt_api = vscf_auth_encrypt_api(impl);

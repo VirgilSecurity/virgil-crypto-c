@@ -58,14 +58,17 @@
 #include "vscf_encrypt.h"
 #include "vscf_decrypt.h"
 #include "vscf_cipher_info.h"
+#include "vscf_status.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -99,6 +102,54 @@ vscf_cipher_set_nonce(vscf_impl_t *impl, vsc_data_t nonce);
 //
 VSCF_PUBLIC void
 vscf_cipher_set_key(vscf_impl_t *impl, vsc_data_t key);
+
+//
+//  Start sequential encryption.
+//
+VSCF_PUBLIC void
+vscf_cipher_start_encryption(vscf_impl_t *impl);
+
+//
+//  Start sequential decryption.
+//
+VSCF_PUBLIC void
+vscf_cipher_start_decryption(vscf_impl_t *impl);
+
+//
+//  Process encryption or decryption of the given data chunk.
+//
+VSCF_PUBLIC void
+vscf_cipher_update(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out);
+
+//
+//  Return buffer length required to hold an output of the methods
+//  "update" or "finish" in an current mode.
+//  Pass zero length to define buffer length of the method "finish".
+//
+VSCF_PUBLIC size_t
+vscf_cipher_out_len(vscf_impl_t *impl, size_t data_len);
+
+//
+//  Return buffer length required to hold an output of the methods
+//  "update" or "finish" in an encryption mode.
+//  Pass zero length to define buffer length of the method "finish".
+//
+VSCF_PUBLIC size_t
+vscf_cipher_encrypted_out_len(vscf_impl_t *impl, size_t data_len);
+
+//
+//  Return buffer length required to hold an output of the methods
+//  "update" or "finish" in an decryption mode.
+//  Pass zero length to define buffer length of the method "finish".
+//
+VSCF_PUBLIC size_t
+vscf_cipher_decrypted_out_len(vscf_impl_t *impl, size_t data_len);
+
+//
+//  Accomplish encryption or decryption process.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_cipher_finish(vscf_impl_t *impl, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Return cipher API, or NULL if it is not implemented.

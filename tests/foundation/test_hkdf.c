@@ -52,17 +52,6 @@
 
 
 // --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
-// --------------------------------------------------------------------------
 // Test implementation of the interface 'hkdf'.
 // --------------------------------------------------------------------------
 void
@@ -73,8 +62,9 @@ test__hkdf_derive__sha256_vector_1__success(void) {
 
     vscf_hkdf_take_hash(hkdf, vscf_sha256_impl(vscf_sha256_new()));
 
-    vscf_hkdf_derive(hkdf, test_hkdf_VECTOR_1_KEY, test_hkdf_VECTOR_1_SALT, test_hkdf_VECTOR_1_INFO, key,
-            test_hkdf_VECTOR_1_DERIVED_DATA.len);
+    vscf_hkdf_reset(hkdf, test_hkdf_VECTOR_1_SALT, 0);
+    vscf_hkdf_set_info(hkdf, test_hkdf_VECTOR_1_INFO);
+    vscf_hkdf_derive(hkdf, test_hkdf_VECTOR_1_KEY, test_hkdf_VECTOR_1_DERIVED_DATA.len, key);
 
     TEST_ASSERT_EQUAL(test_hkdf_VECTOR_1_DERIVED_DATA.len, vsc_buffer_len(key));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hkdf_VECTOR_1_DERIVED_DATA.bytes, vsc_buffer_bytes(key), vsc_buffer_len(key));
@@ -91,8 +81,9 @@ test__hkdf_derive__sha256_vector_2__success(void) {
 
     vscf_hkdf_take_hash(hkdf, vscf_sha256_impl(vscf_sha256_new()));
 
-    vscf_hkdf_derive(hkdf, test_hkdf_VECTOR_2_KEY, test_hkdf_VECTOR_2_SALT, test_hkdf_VECTOR_2_INFO, key,
-            test_hkdf_VECTOR_2_DERIVED_DATA.len);
+    vscf_hkdf_reset(hkdf, test_hkdf_VECTOR_2_SALT, 0);
+    vscf_hkdf_set_info(hkdf, test_hkdf_VECTOR_2_INFO);
+    vscf_hkdf_derive(hkdf, test_hkdf_VECTOR_2_KEY, test_hkdf_VECTOR_2_DERIVED_DATA.len, key);
 
     TEST_ASSERT_EQUAL(test_hkdf_VECTOR_2_DERIVED_DATA.len, vsc_buffer_len(key));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hkdf_VECTOR_2_DERIVED_DATA.bytes, vsc_buffer_bytes(key), vsc_buffer_len(key));
@@ -109,8 +100,9 @@ test__hkdf_derive__sha256_vector_3__success(void) {
 
     vscf_hkdf_take_hash(hkdf, vscf_sha256_impl(vscf_sha256_new()));
 
-    vscf_hkdf_derive(hkdf, test_hkdf_VECTOR_3_KEY, test_hkdf_VECTOR_3_SALT, test_hkdf_VECTOR_3_INFO, key,
-            test_hkdf_VECTOR_3_DERIVED_DATA.len);
+    vscf_hkdf_reset(hkdf, test_hkdf_VECTOR_3_SALT, 0);
+    vscf_hkdf_set_info(hkdf, test_hkdf_VECTOR_3_INFO);
+    vscf_hkdf_derive(hkdf, test_hkdf_VECTOR_3_KEY, test_hkdf_VECTOR_3_DERIVED_DATA.len, key);
 
     TEST_ASSERT_EQUAL(test_hkdf_VECTOR_3_DERIVED_DATA.len, vsc_buffer_len(key));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hkdf_VECTOR_3_DERIVED_DATA.bytes, vsc_buffer_bytes(key), vsc_buffer_len(key));

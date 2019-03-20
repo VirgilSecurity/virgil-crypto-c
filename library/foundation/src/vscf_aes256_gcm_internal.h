@@ -78,7 +78,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_aes256_gcm_init_ctx(vscf_aes256_gcm_t *aes256_gcm);
+vscf_aes256_gcm_init_ctx(vscf_aes256_gcm_t *self);
 
 //
 //  Release resources of the implementation specific context.
@@ -86,7 +86,7 @@ vscf_aes256_gcm_init_ctx(vscf_aes256_gcm_t *aes256_gcm);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_aes256_gcm_cleanup_ctx(vscf_aes256_gcm_t *aes256_gcm);
+vscf_aes256_gcm_cleanup_ctx(vscf_aes256_gcm_t *self);
 
 
 // --------------------------------------------------------------------------

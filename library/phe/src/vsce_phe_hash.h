@@ -48,27 +48,19 @@
 #define VSCE_PHE_HASH_H_INCLUDED
 
 #include "vsce_library.h"
-#include "vsce_phe_common.h"
 #include "vsce_simple_swu.h"
+#include "vsce_phe_common.h"
 
 #include <mbedtls/ecp.h>
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_sha512.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
-#endif
-
-#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_sha512.h>
 #endif
 
 // clang-format on
@@ -101,13 +93,13 @@ vsce_phe_hash_ctx_size(void);
 //  Perform initialization of pre-allocated context.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_init(vsce_phe_hash_t *phe_hash);
+vsce_phe_hash_init(vsce_phe_hash_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_cleanup(vsce_phe_hash_t *phe_hash);
+vsce_phe_hash_cleanup(vsce_phe_hash_t *self);
 
 //
 //  Allocate context and perform it's initialization.
@@ -120,84 +112,65 @@ vsce_phe_hash_new(void);
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_delete(vsce_phe_hash_t *phe_hash);
+vsce_phe_hash_delete(vsce_phe_hash_t *self);
 
 //
 //  Delete given context and nullifies reference.
 //  This is a reverse action of the function 'vsce_phe_hash_new ()'.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_destroy(vsce_phe_hash_t **phe_hash_ref);
+vsce_phe_hash_destroy(vsce_phe_hash_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCE_PUBLIC vsce_phe_hash_t *
-vsce_phe_hash_shallow_copy(vsce_phe_hash_t *phe_hash);
-
-//
-//  Setup dependency to the implementation 'sha512' with shared ownership.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_use_sha512(vsce_phe_hash_t *phe_hash, vscf_sha512_t *sha512);
-
-//
-//  Setup dependency to the implementation 'sha512' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_take_sha512(vsce_phe_hash_t *phe_hash, vscf_sha512_t *sha512);
-
-//
-//  Release dependency to the implementation 'sha512'.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_release_sha512(vsce_phe_hash_t *phe_hash);
+vsce_phe_hash_shallow_copy(vsce_phe_hash_t *self);
 
 //
 //  Setup dependency to the class 'simple swu' with shared ownership.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_use_simple_swu(vsce_phe_hash_t *phe_hash, vsce_simple_swu_t *simple_swu);
+vsce_phe_hash_use_simple_swu(vsce_phe_hash_t *self, vsce_simple_swu_t *simple_swu);
 
 //
 //  Setup dependency to the class 'simple swu' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_take_simple_swu(vsce_phe_hash_t *phe_hash, vsce_simple_swu_t *simple_swu);
+vsce_phe_hash_take_simple_swu(vsce_phe_hash_t *self, vsce_simple_swu_t *simple_swu);
 
 //
 //  Release dependency to the class 'simple swu'.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_release_simple_swu(vsce_phe_hash_t *phe_hash);
+vsce_phe_hash_release_simple_swu(vsce_phe_hash_t *self);
 
 VSCE_PUBLIC void
-vsce_phe_hash_derive_account_key(vsce_phe_hash_t *phe_hash, const mbedtls_ecp_point *m, vsc_buffer_t *account_key);
+vsce_phe_hash_derive_account_key(vsce_phe_hash_t *self, const mbedtls_ecp_point *m, vsc_buffer_t *account_key);
 
 VSCE_PUBLIC void
-vsce_phe_hash_data_to_point(vsce_phe_hash_t *phe_hash, vsc_data_t data, mbedtls_ecp_point *p);
+vsce_phe_hash_data_to_point(vsce_phe_hash_t *self, vsc_data_t data, mbedtls_ecp_point *p);
 
 VSCE_PUBLIC void
-vsce_phe_hash_hc0(vsce_phe_hash_t *phe_hash, vsc_data_t nc, vsc_data_t password, mbedtls_ecp_point *hc0);
+vsce_phe_hash_hc0(vsce_phe_hash_t *self, vsc_data_t nc, vsc_data_t password, mbedtls_ecp_point *hc0);
 
 VSCE_PUBLIC void
-vsce_phe_hash_hc1(vsce_phe_hash_t *phe_hash, vsc_data_t nc, vsc_data_t password, mbedtls_ecp_point *hc1);
+vsce_phe_hash_hc1(vsce_phe_hash_t *self, vsc_data_t nc, vsc_data_t password, mbedtls_ecp_point *hc1);
 
 VSCE_PUBLIC void
-vsce_phe_hash_hs0(vsce_phe_hash_t *phe_hash, vsc_data_t ns, mbedtls_ecp_point *hs0);
+vsce_phe_hash_hs0(vsce_phe_hash_t *self, vsc_data_t ns, mbedtls_ecp_point *hs0);
 
 VSCE_PUBLIC void
-vsce_phe_hash_hs1(vsce_phe_hash_t *phe_hash, vsc_data_t ns, mbedtls_ecp_point *hs1);
+vsce_phe_hash_hs1(vsce_phe_hash_t *self, vsc_data_t ns, mbedtls_ecp_point *hs1);
 
 VSCE_PUBLIC void
-vsce_phe_hash_hash_z_success(vsce_phe_hash_t *phe_hash, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
+vsce_phe_hash_hash_z_success(vsce_phe_hash_t *self, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
         const mbedtls_ecp_point *c1, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
         const mbedtls_ecp_point *term3, mbedtls_mpi *z);
 
 VSCE_PUBLIC void
-vsce_phe_hash_hash_z_failure(vsce_phe_hash_t *phe_hash, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
+vsce_phe_hash_hash_z_failure(vsce_phe_hash_t *self, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
         const mbedtls_ecp_point *c1, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
         const mbedtls_ecp_point *term3, const mbedtls_ecp_point *term4, mbedtls_mpi *z);
 

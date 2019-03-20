@@ -59,6 +59,8 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_ed25519_public_key.h"
+#include "vscf_impl.h"
+#include "vscf_ecies.h"
 
 #include <ed25519/ed25519.h>
 
@@ -90,13 +92,17 @@ struct vscf_ed25519_public_key_t {
     //
     size_t refcnt;
     //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *random;
+    //
+    //  Dependency to the implementation 'ecies'.
+    //
+    vscf_ecies_t *ecies;
+    //
     //  Implementation specific context.
     //
     byte public_key[ED25519_KEY_LEN];
-    //
-    //  Implementation specific context.
-    //
-    byte signature[ED25519_KEY_LEN];
 };
 
 

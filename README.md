@@ -23,16 +23,18 @@ Virgil Security Crypto C library is decomposed to small libraries with specific 
 
 This library contains basic cryptographic algorithms and can be used as building blocks for complex solutions.
 
-| Algorithm Purpose    | Implementation details                                       |
-| -------------------- | ------------------------------------------------------------ |
-| Key Generation, PRNG | CTR_DRBG [NIST SP 800-90A](http://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-90Ar1.pdf) |
-| Key Derivation       | [KDF1, KDF2](https://www.shoup.net/iso/std6.pdf),  [HKDF](https://tools.ietf.org/html/rfc5869) |
-| Key Exchange         | [X25519](https://tools.ietf.org/html/rfc7748), [RSA](http://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-56Br1.pdf) |
-| Hashing              | [SHA-2 (224/256/384/512)](https://tools.ietf.org/html/rfc4634) |
-| Digital Signature    | [Ed25519](https://tools.ietf.org/html/rfc8032), [RSASSA-PSS](https://tools.ietf.org/html/rfc4056) |
-| Entropy Source       | Linux, macOS [/dev/urandom](https://tls.mbed.org/module-level-design-rng),<br>Windows [CryptGenRandom()](https://tls.mbed.org/module-level-design-rng) |
-| Symmetric Algorithms | [AES-256-GCM](http://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf) |
-| Elliptic Curves      | [Ed25519](https://tools.ietf.org/html/rfc8032)               |
+| Algorithm Purpose           | Implementation details                                                                                                                                    |
+|-----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Key Generation, PRNG        | CTR_DRBG [NIST SP 800-90A](http://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-90Ar1.pdf)                                                    |
+| Key Derivation              | [KDF1, KDF2](https://www.shoup.net/iso/std6.pdf),  [HKDF](https://tools.ietf.org/html/rfc5869), [PBKDF2](https://tools.ietf.org/html/rfc8018#section-5.2) |
+| Key Exchange                | [X25519](https://tools.ietf.org/html/rfc7748), [RSA](http://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-56Br1.pdf)                          |
+| Hashing                     | [SHA-2 (224/256/384/512)](https://tools.ietf.org/html/rfc4634)                                                                                            |
+| Message Authentication Code | [HMAC](https://www.ietf.org/rfc/rfc2104.txt)                                                                                                              |
+| Digital Signature           | [Ed25519](https://tools.ietf.org/html/rfc8032), [RSASSA-PSS](https://tools.ietf.org/html/rfc4056)                                                         |
+| Entropy Source              | Linux, macOS [/dev/urandom](https://tls.mbed.org/module-level-design-rng),<br>Windows [CryptGenRandom()](https://tls.mbed.org/module-level-design-rng)    |
+| Symmetric Algorithms        | [AES-256-GCM](http://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf), [AES-256-CBC](https://tools.ietf.org/html/rfc3602)           |
+| Encryption schemes          | [PBES2](https://tools.ietf.org/html/rfc8018#section-6.2)                                                                                                  |
+| Elliptic Curves             | [Ed25519](https://tools.ietf.org/html/rfc8032), [Curve25519](https://tools.ietf.org/html/rfc7748)                                                         |
 
 ### Library: PHE
 
@@ -42,15 +44,14 @@ Cryptographic background for the [Password-Hardened Encryption (PHE) protocol](h
 
 Cryptographic background for the  [Pythia PRF Service](http://pages.cs.wisc.edu/~ace/papers/pythia-full.pdf).
 
-
-
 ## Platforms & languages
 
 | Library    | Platforms    | Languages / Binaries                                         |
 | ---------- | ------------ | ------------------------------------------------------------ |
-| foundation | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c)        |
-| pythia     | linux, macOS | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c)        |
+| foundation | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), Swift |
+| pythia     | linux, macOS | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), Swift |
 | phe        | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [PHP](https://cdn.virgilsecurity.com/virgil-crypto-c/php) |
+| ratchet    | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), Swift |
 
 
 
@@ -85,7 +86,7 @@ Our developer support team is here to help you.
 
 You can find us on [Twitter](https://twitter.com/VirgilSecurity) or send us email support@VirgilSecurity.com.
 
-Also, get extra help from our support team on [Slack](https://join.slack.com/t/VirgilSecurity/shared_invite/enQtMjg4MDE4ODM3ODA4LTc2OWQwOTQ3YjNhNTQ0ZjJiZDc2NjkzYjYxNTI0YzhmNTY2ZDliMGJjYWQ5YmZiOGU5ZWEzNmJiMWZhYWVmYTM).
+Also, get extra help from our support team on [Slack](https://virgilsecurity.com/join-community).
 
 ## License
 

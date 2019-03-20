@@ -47,8 +47,9 @@ extern const vsc_data_t test_rsa_2048_PRIVATE_KEY_PKCS1;
 //  Test data
 //
 extern const vsc_data_t test_rsa_DATA_1;
+extern const vsc_data_t test_rsa_DATA_1_SHA512_DIGEST;
 extern const vsc_data_t test_rsa_2048_ENCRYPTED_DATA_1;
-extern const vsc_data_t test_rsa_2048_DATA_1_SIGNATURE;
+extern const vsc_data_t test_rsa_2048_DATA_1_SHA512_SIGNATURE;
 
 
 //

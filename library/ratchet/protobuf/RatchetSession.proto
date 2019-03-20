@@ -1,0 +1,56 @@
+syntax = "proto2";
+
+message Empty {
+}
+
+message ChainKey {
+	required uint32 index = 1;
+	required bytes key = 2;
+}
+
+message MessageKey {
+	required uint32 index = 1;
+	required bytes key = 2;
+}
+
+message SenderChain {
+	required bytes private_key = 1;
+	required bytes public_key = 2;
+	required ChainKey chain_key = 3;
+}
+
+message ReceiverChain {
+	required bytes public_key = 1;
+	required ChainKey chain_key = 2;
+}
+
+message SkippedMessageKey {
+	required bytes public_key = 1;
+	required MessageKey message_key = 2;
+}
+
+message SkippedMessages {
+	repeated SkippedMessageKey keys = 1;
+}
+
+message ReceiverChains {
+	repeated ReceiverChain chains = 1;
+}
+
+message Ratchet {
+	optional SenderChain sender_chain = 1;
+	required uint32 prev_sender_chain_count = 2;
+	required bytes root_key = 3;
+	required ReceiverChains receiver_chains = 4;
+	required SkippedMessages skipped_messages = 5;
+}
+
+message Session {
+	required bool received_first_response = 1;
+	required bool is_initiator = 2;
+	required bytes sender_identity_key = 3;
+	required bytes sender_ephemeral_key = 4;
+	required bytes receiver_long_term_key = 5;
+	optional bytes receiver_one_time_key = 6;
+	required Ratchet ratchet = 7;
+}

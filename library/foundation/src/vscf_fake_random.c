@@ -80,14 +80,14 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_fake_random_init_ctx(vscf_fake_random_t *fake_random) {
+vscf_fake_random_init_ctx(vscf_fake_random_t *self) {
 
-    VSCF_ASSERT_PTR(fake_random);
+    VSCF_ASSERT_PTR(self);
 
-    fake_random->data_source.bytes = NULL;
-    fake_random->data_source.len = 0;
-    fake_random->byte_source = 0;
-    fake_random->pos = 0;
+    self->data_source.bytes = NULL;
+    self->data_source.len = 0;
+    self->byte_source = 0;
+    self->pos = 0;
 }
 
 //
@@ -96,24 +96,24 @@ vscf_fake_random_init_ctx(vscf_fake_random_t *fake_random) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_fake_random_cleanup_ctx(vscf_fake_random_t *fake_random) {
+vscf_fake_random_cleanup_ctx(vscf_fake_random_t *self) {
 
-    VSCF_ASSERT_PTR(fake_random);
+    VSCF_ASSERT_PTR(self);
 
-    (void)vscf_fake_random_init_ctx(fake_random);
+    (void)vscf_fake_random_init_ctx(self);
 }
 
 //
 //  Configure random number generator to generate sequence filled with given byte.
 //
 VSCF_PUBLIC void
-vscf_fake_random_setup_source_byte(vscf_fake_random_t *fake_random, byte byte_source) {
+vscf_fake_random_setup_source_byte(vscf_fake_random_t *self, byte byte_source) {
 
-    VSCF_ASSERT_PTR(fake_random);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_fake_random_init_ctx(fake_random);
+    vscf_fake_random_init_ctx(self);
 
-    fake_random->byte_source = byte_source;
+    self->byte_source = byte_source;
 }
 
 //
@@ -121,22 +121,22 @@ vscf_fake_random_setup_source_byte(vscf_fake_random_t *fake_random, byte byte_so
 //  Note, that given data is used as circular source.
 //
 VSCF_PUBLIC void
-vscf_fake_random_setup_source_data(vscf_fake_random_t *fake_random, vsc_data_t data_source) {
+vscf_fake_random_setup_source_data(vscf_fake_random_t *self, vsc_data_t data_source) {
 
-    VSCF_ASSERT_PTR(fake_random);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_fake_random_init_ctx(fake_random);
+    vscf_fake_random_init_ctx(self);
 
-    fake_random->data_source = data_source;
+    self->data_source = data_source;
 }
 
 //
 //  Generate random bytes.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_fake_random_random(vscf_fake_random_t *fake_random, size_t data_len, vsc_buffer_t *data) {
+VSCF_PUBLIC vscf_status_t
+vscf_fake_random_random(vscf_fake_random_t *self, size_t data_len, vsc_buffer_t *data) {
 
-    VSCF_ASSERT_PTR(fake_random);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(data);
     VSCF_ASSERT(vsc_buffer_is_valid(data));
 
@@ -145,40 +145,40 @@ vscf_fake_random_random(vscf_fake_random_t *fake_random, size_t data_len, vsc_bu
     const byte *end = vsc_buffer_unused_bytes(data) + data_len;
 
     for (byte *write_ptr = vsc_buffer_unused_bytes(data); write_ptr < end; ++write_ptr) {
-        if (fake_random->data_source.bytes != NULL) {
-            *write_ptr = *(fake_random->data_source.bytes + fake_random->pos);
+        if (self->data_source.bytes != NULL) {
+            *write_ptr = *(self->data_source.bytes + self->pos);
 
-            if (++fake_random->pos >= fake_random->data_source.len) {
-                fake_random->pos = 0;
+            if (++self->pos >= self->data_source.len) {
+                self->pos = 0;
             }
         } else {
-            *write_ptr = fake_random->byte_source;
+            *write_ptr = self->byte_source;
         }
     }
 
     vsc_buffer_inc_used(data, data_len);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
 //  Retreive new seed data from the entropy sources.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_fake_random_reseed(vscf_fake_random_t *fake_random) {
+VSCF_PUBLIC vscf_status_t
+vscf_fake_random_reseed(vscf_fake_random_t *self) {
 
-    VSCF_UNUSED(fake_random);
+    VSCF_UNUSED(self);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
 //  Defines that implemented source is strong.
 //
 VSCF_PUBLIC bool
-vscf_fake_random_is_strong(vscf_fake_random_t *fake_random) {
+vscf_fake_random_is_strong(vscf_fake_random_t *self) {
 
-    VSCF_UNUSED(fake_random);
+    VSCF_UNUSED(self);
 
     return true;
 }
@@ -186,14 +186,14 @@ vscf_fake_random_is_strong(vscf_fake_random_t *fake_random) {
 //
 //  Gather entropy of the requested length.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_fake_random_gather(vscf_fake_random_t *fake_random, size_t len, vsc_buffer_t *out) {
+VSCF_PUBLIC vscf_status_t
+vscf_fake_random_gather(vscf_fake_random_t *self, size_t len, vsc_buffer_t *out) {
 
-    VSCF_ASSERT_PTR(fake_random);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
 
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= len);
 
-    return vscf_fake_random_random(fake_random, len, out);
+    return vscf_fake_random_random(self, len, out);
 }

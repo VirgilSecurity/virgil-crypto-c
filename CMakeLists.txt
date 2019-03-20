@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto VERSION 0.2.0 LANGUAGES C)
+project(virgil_crypto VERSION 0.5.0 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
@@ -80,6 +80,7 @@ option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
 # Test
 #
 option(ENABLE_TESTING "On/Off integration tests." ON)
+option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
 option(ENABLE_PROFILING "On/Off GProf compilation options." OFF)
 
 option(VIRGIL_C_TESTING "On/Off C library integration tests." ON)
@@ -92,7 +93,7 @@ option(VIRGIL_LIB_COMMON "Build 'common' library" ON)
 option(VIRGIL_LIB_FOUNDATION "Build 'foundation' library" ON)
 option(VIRGIL_LIB_PYTHIA "Build 'pythia' library" ON)
 option(VIRGIL_LIB_ED25519 "Build 'ed25519' library" ON)
-option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" OFF)
+option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" ON)
 option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
 
 #
@@ -151,10 +152,10 @@ if(VIRGIL_LIB_FOUNDATION OR VIRGIL_LIB_PYTHIA)
 endif()
 
 #
-# Pythia
+# Relic
 #
 if(VIRGIL_LIB_PYTHIA)
-    add_subdirectory("thirdparty/pythia")
+    add_subdirectory("thirdparty/relic")
 endif()
 
 #
@@ -250,10 +251,10 @@ if(CLOC_EXECUTABLE)
 
     add_custom_target(cloc-ratchet
             COMMAND ${CLOC_EXECUTABLE}
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia"
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia/private"
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/src"
-            COMMENT "Calculate lines of the 'pythia' library..."
+                "${CMAKE_CURRENT_LIST_DIR}/library/ratchet/include/virgil/crypto/ratchet"
+                "${CMAKE_CURRENT_LIST_DIR}/library/ratchet/include/virgil/crypto/ratchet/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/ratchet/src"
+            COMMENT "Calculate lines of the 'ratchet' library..."
             )
 
     add_custom_target(cloc)

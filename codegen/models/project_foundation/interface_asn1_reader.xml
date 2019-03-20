@@ -12,10 +12,24 @@
     </method>
 
 
-    <method name="error">
-        Return last error.
+    <method name="left len">
+        Return length in bytes how many bytes are left for reading.
 
-        <return enum="error"/>
+        <return type="size"/>
+    </method>
+
+
+    <method name="has error" is_const="1">
+        Return true if status is not "success".
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="status" is_const="1">
+        Return error code.
+
+        <return enum="status"/>
     </method>
 
 
@@ -33,9 +47,27 @@
     </method>
 
 
+    <method name="get data len">
+        Get length of the current ASN.1 element with tag and length itself.
+
+        <return type="size"/>
+    </method>
+
+
     <method name="read tag">
         Read ASN.1 type: TAG.
         Return element length.
+
+        <argument name="tag" type="integer"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="read context tag">
+        Read ASN.1 type: context-specific TAG.
+        Return element length.
+        Return 0 if current position do not points to the requested tag.
 
         <argument name="tag" type="integer"/>
 
@@ -121,6 +153,12 @@
 
     <method name="read null">
         Read ASN.1 type: NULL.
+    </method>
+
+
+    <method name="read null optional">
+        Read ASN.1 type: NULL, only if it exists.
+        Note, this method is safe to call even no more data is left for reading.
     </method>
 
 

@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Implementation of the Base64 algorithm RFC 1421 and RFC 2045.
 @objc(VSCFBase64) public class Base64: NSObject {
@@ -61,6 +60,7 @@ import VirgilCryptoCommon
             str.withUnsafeMutableBytes({ (strPointer: UnsafeMutablePointer<byte>) -> Void in
                 vsc_buffer_init(strBuf)
                 vsc_buffer_use(strBuf, strPointer, strCount)
+
                 vscf_base64_encode(vsc_data(dataPointer, data.count), strBuf)
             })
         })
@@ -85,16 +85,17 @@ import VirgilCryptoCommon
             vsc_buffer_delete(dataBuf)
         }
 
-        let proxyResult = str.withUnsafeBytes({ (strPointer: UnsafePointer<byte>) -> vscf_error_t in
-            data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = str.withUnsafeBytes({ (strPointer: UnsafePointer<byte>) -> vscf_status_t in
+            data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(dataBuf)
                 vsc_buffer_use(dataBuf, dataPointer, dataCount)
+
                 return vscf_base64_decode(vsc_data(strPointer, str.count), dataBuf)
             })
         })
         data.count = vsc_buffer_len(dataBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return data
     }

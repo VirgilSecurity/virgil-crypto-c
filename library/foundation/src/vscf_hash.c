@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provides interface to the stateless hashing (messege digest) algorithms.
+//  Provides interface to the hashing (messege digest) algorithms.
 // --------------------------------------------------------------------------
 
 
@@ -65,6 +65,45 @@
 // --------------------------------------------------------------------------
 
 //
+//  Start a new hashing.
+//
+VSCF_PUBLIC void
+vscf_hash_start(vscf_impl_t *impl) {
+
+    const vscf_hash_api_t *hash_api = vscf_hash_api(impl);
+    VSCF_ASSERT_PTR (hash_api);
+
+    VSCF_ASSERT_PTR (hash_api->start_cb);
+    hash_api->start_cb (impl);
+}
+
+//
+//  Add given data to the hash.
+//
+VSCF_PUBLIC void
+vscf_hash_update(vscf_impl_t *impl, vsc_data_t data) {
+
+    const vscf_hash_api_t *hash_api = vscf_hash_api(impl);
+    VSCF_ASSERT_PTR (hash_api);
+
+    VSCF_ASSERT_PTR (hash_api->update_cb);
+    hash_api->update_cb (impl, data);
+}
+
+//
+//  Accompilsh hashing and return it's result (a message digest).
+//
+VSCF_PUBLIC void
+vscf_hash_finish(vscf_impl_t *impl, vsc_buffer_t *digest) {
+
+    const vscf_hash_api_t *hash_api = vscf_hash_api(impl);
+    VSCF_ASSERT_PTR (hash_api);
+
+    VSCF_ASSERT_PTR (hash_api->finish_cb);
+    hash_api->finish_cb (impl, digest);
+}
+
+//
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
@@ -77,6 +116,28 @@ vscf_hash(const vscf_hash_api_t *hash_api, vsc_data_t data, vsc_buffer_t *digest
 }
 
 //
+//  Returns constant 'digest len'.
+//
+VSCF_PUBLIC size_t
+vscf_hash_digest_len(const vscf_hash_api_t *hash_api) {
+
+    VSCF_ASSERT_PTR (hash_api);
+
+    return hash_api->digest_len;
+}
+
+//
+//  Returns constant 'block len'.
+//
+VSCF_PUBLIC size_t
+vscf_hash_block_len(const vscf_hash_api_t *hash_api) {
+
+    VSCF_ASSERT_PTR (hash_api);
+
+    return hash_api->block_len;
+}
+
+//
 //  Return hash API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_hash_api_t *
@@ -86,17 +147,6 @@ vscf_hash_api(const vscf_impl_t *impl) {
 
     const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_HASH);
     return (const vscf_hash_api_t *) api;
-}
-
-//
-//  Return hash info API.
-//
-VSCF_PUBLIC const vscf_hash_info_api_t *
-vscf_hash_hash_info_api(const vscf_hash_api_t *hash_api) {
-
-    VSCF_ASSERT_PTR (hash_api);
-
-    return hash_api->hash_info_api;
 }
 
 //
