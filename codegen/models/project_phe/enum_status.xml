@@ -5,31 +5,31 @@
         No errors was occurred.
     </constant>
 
-    <constant name="error invalid success proof">
+    <constant name="error invalid success proof" value="-1">
         Success proof check failed.
     </constant>
 
-    <constant name="error invalid fail proof">
+    <constant name="error invalid fail proof" value="-2">
         Failure proof check failed.
     </constant>
 
-    <constant name="error RNG failed">
+    <constant name="error RNG failed" value="-3">
         RNG returned error.
     </constant>
 
-    <constant name="error Protobuf decode failed">
+    <constant name="error Protobuf decode failed" value="-4">
         Protobuf decode failed.
     </constant>
 
-    <constant name="error Invalid ECP">
+    <constant name="error Invalid ECP" value="-5">
         Invalid ECP.
     </constant>
 
-    <constant name="error Invalid private key">
+    <constant name="error Invalid private key" value="-6">
         Invalid private key.
     </constant>
 
-    <constant name="error AES failed">
+    <constant name="error AES failed" value="-7">
         AES error occurred.
     </constant>
 </enum>
