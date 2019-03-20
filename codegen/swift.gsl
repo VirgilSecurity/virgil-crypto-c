@@ -1171,7 +1171,21 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Setup and check default and automatically resolved attributes.
 # ---------------------------------------------------------------------------
-function swift_resolve (project, wrapper, projects_api)
+function swift_resolve_toplevel (wrapper, license)
+    check_arguments (my, "wrapper, license", my)
+
+    echo_info ("Resolve <wrapper lang=\"$(my.wrapper.lang:)\"/> for toplevel", my)
+
+    assert_attribute (my.wrapper, "lang", my)
+
+    my.wrapper.source_dir = cat_path ("../wrappers/$(my.wrapper.lang:c,lower)", "VirgilCrypto")
+    copy my.license to my.wrapper
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Setup and check default and automatically resolved attributes.
+# ---------------------------------------------------------------------------
+function swift_resolve_project (project, wrapper, projects_api)
     check_arguments (my, "project, wrapper, projects_api", my)
 
     echo_info ("Resolve <wrapper lang=\"$(my.wrapper.lang:)\"/> for project: '$(my.project.name:)'", my)
@@ -2146,7 +2160,6 @@ endfunction
 # ===========================================================================
 #   Create modules.
 # ===========================================================================
-
 
 # ---------------------------------------------------------------------------
 #   Create module that contains Swift specific project information.
