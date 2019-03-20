@@ -82,7 +82,7 @@ endfunction
 function wrapper_resolve_project (project, wrapper, projects_api)
     check_arguments (my, "project, wrapper, projects_api", my)
 
-    my.proxy_func = make_id(my.wrapper.lang, "resolve")
+    my.proxy_func = make_id(my.wrapper.lang, "resolve project")
     if macro (my.proxy_func)
         $(my.proxy_func:) (my.project, my.wrapper, my.projects_api)
     else
