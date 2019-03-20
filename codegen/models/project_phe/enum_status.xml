@@ -21,8 +21,8 @@
         Protobuf decode failed.
     </constant>
 
-    <constant name="error Invalid ECP" value="-5">
-        Invalid ECP.
+    <constant name="error Invalid public key" value="-5">
+        Invalid public key.
     </constant>
 
     <constant name="error Invalid private key" value="-6">
