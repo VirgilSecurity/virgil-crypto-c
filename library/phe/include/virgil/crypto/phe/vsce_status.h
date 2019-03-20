@@ -93,9 +93,9 @@ enum vsce_status_t {
     //
     vsce_status_ERROR_PROTOBUF_DECODE_FAILED = -4,
     //
-    //  Invalid ECP.
+    //  Invalid public key.
     //
-    vsce_status_ERROR_INVALID_ECP = -5,
+    vsce_status_ERROR_INVALID_PUBLIC_KEY = -5,
     //
     //  Invalid private key.
     //
