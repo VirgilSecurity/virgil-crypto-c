@@ -1,0 +1,863 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Functions for Java primitives generation: interface, class, enum, etc.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the GSL/4.1 code generation
+#   language. See https://github.com/zeromq/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+
+# ===========================================================================
+#   Format.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Return formatted list of arguments without braces.
+# ---------------------------------------------------------------------------
+function java_format_argument_list (java_method)
+    check_arguments (my, "java_method", my)
+
+    for my.java_method.java_argument
+        my.arg_list ?= ""
+        my.arg_list += "$(java_argument.type:) $(java_argument.ext_name + " "?:)$(java_argument.name:)"
+        if ! last()
+            my.arg_list += ", "
+        endif
+    endfor
+
+    return my.arg_list
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted list of returned value(s).
+# ---------------------------------------------------------------------------
+function java_format_return_list (java_method)
+    check_arguments (my, "java_method", my)
+
+    my.is_pair = count (my.java_method.java_return) > 1 ?? "1" ? "0"
+
+    for my.java_method.java_return
+        my.return_list ?= ""
+
+        if my.is_pair
+            my.return_list += "$(java_return.name:): $(java_return.type:)"
+        else
+            my.return_list += "$(java_return.type:)"
+        endif
+
+        if ! last()
+            my.return_list += ", "
+        endif
+    endfor
+
+    if defined (my.return_list) & my.is_pair
+        my.return_list = "(" + my.return_list + ")"
+    endif
+
+    if defined (my.return_list)
+        my.return_list = my.return_list
+    else
+        my.return_list = "void"
+    endif
+
+    return my.return_list
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted throw declaration.
+# ---------------------------------------------------------------------------
+function java_format_throw_declaration (java_method)
+    check_arguments (my, "java_method", my)
+
+    my.result = ""
+    if defined (my.java_method.throws)
+        my.result = " throws $(my.java_method.throws:)"
+    endif
+
+    return my.result
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return inheritance list if defined <java_implement/>, otherwise - nothing.
+# ---------------------------------------------------------------------------
+function java_format_implements_list (java_type)
+    check_arguments (my, "java_type", my)
+
+     for my.java_type.java_implement
+        my.implements_list ?= "implements "
+        my.implements_list += java_implement.type
+        if ! last ()
+            my.implements_list += ", "
+        endif
+    endfor
+
+    return my.implements_list
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return inheritance list if defined <java_extend/>, otherwise - nothing.
+# ---------------------------------------------------------------------------
+function java_format_extends_list (java_type)
+    check_arguments (my, "java_type", my)
+
+     for my.java_type.java_extend
+        my.extends_list ?= "extends "
+        my.extends_list += java_extend.type
+        if ! last ()
+            my.extends_list += ", "
+        endif
+    endfor
+
+    my.extends_list ?= ""
+    return my.extends_list
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted visibility.
+# ---------------------------------------------------------------------------
+function java_format_visibility (visibility)
+    check_arguments (my, "visibility", my)
+
+    my.result = ""
+    if my.visibility = "package"
+        my.result = ""
+    elsif my.visibility = "public"
+        my.result = "public "
+    elsif my.visibility = "private"
+         my.result = "private "
+    elsif my.visibility = "protected"
+         my.result = "protected "
+    elsif my.visibility = "internal"
+        my.result = ""
+    endif
+    
+    return my.result
+endfunction
+
+# ===========================================================================
+#   Generate C.
+# ===========================================================================
+# ---------------------------------------------------------------------------
+#   Insert: license + caution + description
+# ---------------------------------------------------------------------------
+function java_c_insert_prologue (c_module)
+    check_arguments (my, "c_module", my)
+
+    assert_item (my.c_module, "c_license", my)
+
+    java_insert_description (my.c_module->c_license)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: include
+# ---------------------------------------------------------------------------
+function java_c_insert_include (c_include)
+    check_arguments (my, "c_include", my)
+
+    assert_attribute (my.c_include, "include", my)
+
+    if defined (my.c_include.same_directory)
+        java_insert_code ("#include \"$(my.c_include.include:)\"")
+    else
+        java_insert_code ("#include <$(my.c_include.include:)>")
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: open module definition
+# ---------------------------------------------------------------------------
+function java_c_insert_define_start (c_module_name)
+    check_arguments (my, "c_module_name", my)
+
+    assert_attribute (my, "c_module_name", my)
+
+    java_insert_code ("\
+        #ifndef _Included_$(my.c_module_name:)
+        #define _Included_$(my.c_module_name:)
+        #ifdef __cplusplus
+        extern \"C\" {
+        #endif")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: close module definition
+# ---------------------------------------------------------------------------
+function java_c_insert_define_end (c_module_name)
+    check_arguments (my, "c_module_name", my)
+
+    assert_attribute (my, "c_module_name", my)
+
+    java_insert_code ("\
+        #ifdef __cplusplus
+        }
+        #endif
+        #endif")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted H arguments value.
+# ---------------------------------------------------------------------------
+function java_format_h_arguments (c_method)
+    check_arguments (my, "c_method", my)
+
+    my.args = "JNIEnv *, jobject"
+
+    for my.c_method.c_argument
+        my.args += ", $(c_argument.type:)"
+    endfor
+    
+    return my.args ? ""
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted C arguments value.
+# ---------------------------------------------------------------------------
+function java_format_c_arguments (c_method)
+    check_arguments (my, "c_method", my)
+
+    my.args = "JNIEnv *jenv, jobject jobj"
+    for my.c_method.c_argument
+        my.args += ", $(c_argument.type:) $(c_argument.name:)"
+    endfor
+
+    return my.args
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted returned value.
+# ---------------------------------------------------------------------------
+function java_format_c_return (c_method)
+    check_arguments (my, "c_method", my)
+
+    my.is_pair = count (my.c_method.c_return) > 1 ?? "1" ? "0"
+
+    for my.c_method.c_return
+        if my.is_pair
+            return "jobject"
+        else
+            return "$(c_return.type:)"
+        endif
+    endfor
+
+    return "void"
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: C method header
+# ---------------------------------------------------------------------------
+function java_h_insert_method (c_method)
+    check_arguments (my, "c_method", my)
+
+    assert_attribute (my, "c_method", my)
+    
+    my.args = java_format_h_arguments (my.c_method)
+    my.return_type = java_format_c_return (my.c_method)
+
+    if is_true (my.c_method.is_jni)
+        java_insert_code ("JNIEXPORT $(my.return_type:) JNICALL $(c_method.name:) \
+            ($(my.args:));")
+    else
+        java_insert_code ("$(my.return_type:) $(c_method.name:) \
+            ($(my.args:));")
+    endif
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: C method implementation
+# ---------------------------------------------------------------------------
+function java_c_insert_method (c_method)
+    check_arguments (my, "c_method", my)
+
+    assert_attribute (my, "c_method", my)
+    
+    my.args = java_format_c_arguments (my.c_method)
+    my.return_type = java_format_c_return (my.c_method)
+
+    if is_true (my.c_method.is_jni)
+        java_insert_code ("JNIEXPORT $(my.return_type:) JNICALL $(c_method.name:) \
+            ($(my.args:)) {")
+    else
+        java_insert_code ("$(my.return_type:) $(c_method.name:) ($(my.args:)) {")
+    endif
+
+    java_insert_code ("$(my.c_method->c_code.:)", 1)
+
+    java_insert_code ("}")
+
+endfunction
+
+# ===========================================================================
+#   Generate Java.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Insert given multiline code.
+# ---------------------------------------------------------------------------
+function java_insert_code (code, tab_count)
+    check_argument (my, "code", my)
+
+    my.code = "$(my.code:left,no)"
+    my.code = string_trim (my.code)
+    my.code = code_collapse_spaces (my.code)
+
+    my.code = string_indent (my.code, my.tab_count)
+    my.code = string_multi_rtrim (my.code)
+
+    out (my.code)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert description of the given object.
+# ---------------------------------------------------------------------------
+function java_insert_description (obj, tab_count)
+    my.description = my.obj. ?
+    my.tab_count ?= 0
+    if string_empty (my.description)
+        return
+    endif
+    java_insert_code (my.description, my.tab_count)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted multiline commented string.
+# ---------------------------------------------------------------------------
+function java_format_description (obj)
+    if ! defined (my.obj.)
+        return
+    endif
+  
+    my.str = my.obj.
+    my.str = string_indent (my.str)
+    my.str = "* $(my.str:left, block, no)$(terminator)"
+    my.str = string_multi_rtrim (my.str)
+    my.str = "/*$(terminator)$(my.str:)$(terminator)*/"
+  
+    return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return multiline formatted string with license.
+# ---------------------------------------------------------------------------
+function java_format_license(license)
+    return java_format_description (my.license) ?
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert: license + caution + description
+# ---------------------------------------------------------------------------
+function java_insert_prologue (java_module)
+    check_arguments (my, "java_module", my)
+
+    assert_item (my.java_module, "java_license", my)
+
+    java_insert_description (my.java_module->java_license)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: package
+# ---------------------------------------------------------------------------
+function java_insert_package (java_module)
+    check_arguments (my, "java_module", my)
+
+    assert_attribute (my.java_module, "package", my)
+
+    #TODO import more than one
+    java_insert_code ("package $(my.java_module.package:);")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: import
+# ---------------------------------------------------------------------------
+function java_insert_import (java_import)
+    check_arguments (my, "java_import", my)
+
+    assert_attribute (my.java_import, "import", my)
+
+    #TODO import more than one
+    java_insert_code ("import $(my.java_import.import:);")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: interface.field
+# ---------------------------------------------------------------------------
+function java_insert_interface_field (java_field)
+    check_arguments (my, "java_field", my)
+
+    assert_attributes (my.java_field, "name, type, visibility", my)
+    
+    my.value = defined (my.java_field.value) ?? " = $(my.java_field.value:)" ? ""
+    
+    java_insert_description (my.java_field, 1)
+
+    java_insert_code("\
+        $(java_format_visibility(my.java_field.visibility):)$(my.java_field.type:) $(my.java_field.name:)$(my.value:);
+    ", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: enum.case
+# ---------------------------------------------------------------------------
+function java_insert_enum_constant (java_constant)
+    check_arguments (my, "java_constant", my)
+
+    my.value = defined (my.java_constant.value) ?? "($(my.java_constant.value:))" ? ""
+    if last ()
+        my.separator = ";"
+    else
+        my.separator = ","
+    endif
+    java_insert_description (my.java_constant, 1)
+    java_insert_code ("\
+        $(my.java_constant.name:)$(my.value:)$(my.separator:)
+    ", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: constructor / init
+# ---------------------------------------------------------------------------
+function java_insert_constructor (java_class, java_constructor)
+    check_arguments (my, "java_class, java_constructor", my)
+
+    assert_attributes (my.java_constructor, "visibility", my)
+    assert_item (my.java_constructor, "java_code", my)
+
+    my.method_args = java_format_argument_list(my.java_constructor) ?
+    my.visibility = java_format_visibility(my.java_constructor.visibility)
+
+    java_insert_description (my.java_constructor, 1)
+    java_insert_code("\
+         $(my.visibility:) $(my.java_class.name:)($(my.method_args?:)) {
+    ", 1)
+
+    java_insert_code("\
+        $(my.java_constructor->java_code.:)
+    ", 2)
+
+    java_insert_code ("}", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: interface.method
+# ---------------------------------------------------------------------------
+/*
+function java_insert_interface_method (java_method)
+    check_arguments (my, "java_method", my)
+
+    assert_attributes (my.java_method, "name", my)
+
+    my.method_modifiers = ""
+    my.method_args = java_format_argument_list(my.java_method) ?
+    my.method_return = java_format_return_list(my.java_method) ?
+    my.method_throws = java_format_throw_declaration(my.java_method)
+
+    # vefiry java method
+    java_insert_description(java_method, 1)
+    java_insert_code("\
+        $(my.method_modifiers:) $(my.method_return?:) $(my.java_method.name:)($(my.method_args?:))$(my.method_throws?:);
+    ", 1)
+endfunction
+*/
+
+# ---------------------------------------------------------------------------
+#   Insert statement: class.field
+# ---------------------------------------------------------------------------
+function java_insert_class_field (java_field)
+    check_arguments (my, "java_field", my)
+    assert_attributes (my.java_field, "name, type, visibility", my)
+    
+    my.access_modifier = java_format_visibility(my.java_field.visibility)
+    my.access_modifier += "$(my.java_field.static?:) "
+    my.access_modifier += "$(my.java_field.final?:) "
+    my.access_modifier = string_trim(string_collapse_spaces(my.access_modifier))
+    my.value = defined (my.java_field.value) ?? " = $(my.java_field.value:)" ? ""
+
+    java_insert_code("\
+        $(my.access_modifier:) $(my.java_field.type:) $(my.java_field.name:)$(my.value:);
+    ", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: interface.method
+# ---------------------------------------------------------------------------
+function java_insert_interface_method (java_method)
+    check_arguments (my, "java_method", my)
+
+    assert_attributes (my.java_method, "name", my)
+
+    my.method_args = java_format_argument_list(my.java_method) ?
+    my.method_return = java_format_return_list(my.java_method) ?
+    my.method_throws = java_format_throw_declaration(my.java_method)
+
+    java_insert_description (my.java_method, 1)
+    if is_true (my.is_default_implementation)
+        java_insert_code("\
+            default $(my.java_method.static?:) $(my.method_return?:) $(my.java_method.name:)($(my.method_args?:))$(my.method_throws?:) { \
+        ", 1)
+        java_insert_code (my.java_method->java_code., 2)
+        java_insert_code ("}", 1)
+    else
+        java_insert_code("\
+            $(my.java_method.static?:) $(my.method_return?:) $(my.java_method.name:)($(my.method_args?:))$(my.method_throws?:); \
+        ", 1)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: class.method
+# ---------------------------------------------------------------------------
+function java_insert_class_method (java_method)
+    check_arguments (my, "java_method", my)
+
+    assert_attributes (my.java_method, "name", my)
+    
+    echo_info("Insert class method $(java_method.name:)")
+
+    my.method_args = java_format_argument_list(my.java_method) ?
+    my.method_return = java_format_return_list(my.java_method) ?
+    my.method_throws = java_format_throw_declaration(my.java_method)
+    my.visibility = java_format_visibility(my.java_method.visibility)
+
+    java_insert_description (my.java_method, 1)
+    
+    if is_true (my.java_method.abstract)
+        echo_trace("Abstract method")
+        java_insert_code("$(my.visibility:) abstract $(my.java_method.static?:) $(my.method_return?:) $(my.java_method.name:)($(my.method_args?:))$(my.method_throws?:); \
+            ", 1)
+    elsif is_true (my.java_method.native)
+        echo_trace("Native method")
+        java_insert_code("$(my.visibility:) native $(my.method_return?:) $(my.java_method.name:)($(my.method_args?:))$(my.method_throws?:); \
+            ", 1)
+    else
+        echo_trace("Implemented method")
+        java_insert_code("\
+            $(my.visibility:) $(my.java_method.static?:) $(my.method_return?:) $(my.java_method.name:)($(my.method_args?:))$(my.method_throws?:) { \
+            ", 1)
+
+        java_insert_code (my.java_method->java_code., 2)
+    
+        java_insert_code ("}", 1)
+    endif
+    echo_trace("Done")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: class.method
+# ---------------------------------------------------------------------------
+function java_insert_enum_method (java_method)
+    java_insert_class_method (java_method)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: JNI class initialization code
+# ---------------------------------------------------------------------------
+function java_insert_jni_class_initialization (java_class)
+    check_arguments (my, "java_class", my)
+
+    java_insert_code ("\
+        static {
+            NativeUtils.load(\"$(my.java_class.jni_library:)\");
+            INSTANCE = new $(my.java_class.name:)();
+        }
+
+        private $(my.java_class.name:)() {
+        }
+        ", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: interface
+# ---------------------------------------------------------------------------
+function java_insert_interface (java_interface)
+    check_arguments (my, "java_interface", my)
+
+    echo_trace ("Generate Java interface: " + my.java_interface.name)
+
+    assert_attributes (my.java_interface, "name, visibility", my)
+
+    my.java_extends_list = java_format_extends_list (my.java_interface)
+    my.visibility = java_format_visibility (my.java_interface.visibility)
+
+    java_insert_description(my.java_interface)
+    java_insert_code ("\
+        $(my.visibility:) interface $(my.java_interface.name:) \
+                $(my.java_extends_list?:) {
+    ")
+/*
+    for my.java_interface.java_field
+        newline ()
+        java_insert_interface_field (java_field)
+    endfor
+*/
+    for my.java_interface.java_method
+        newline ()
+        java_insert_interface_method (java_method)
+    endfor
+
+    java_insert_code ("}")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: class
+# ---------------------------------------------------------------------------
+function java_insert_class (java_class)
+    check_arguments (my, "java_class", my)
+
+    echo_trace ("Generate Java class: " + my.java_class.name)
+
+    assert_attributes (my.java_class, "name, visibility", my)
+    
+    my.java_extends_list = java_format_extends_list (my.java_class) ?
+    my.java_implements_list = java_format_implements_list (my.java_class) ?
+    my.visibility = java_format_visibility (my.java_class.visibility)
+
+    java_insert_description(my.java_class)
+    java_insert_code ("\
+        $(my.visibility:) class $(my.java_class.name:) \
+                $(my.java_extends_list?:) $(my.java_implements_list?:) {
+    ")
+
+    for my.java_class.java_field
+        newline ()
+        java_insert_class_field (java_field)
+    endfor
+    
+    if is_true (my.java_class.jni)
+        newline ()
+        java_insert_jni_class_initialization (my.java_class)
+    endif
+
+    for my.java_class.java_constructor
+        newline ()
+        java_insert_constructor (my.java_class, java_constructor)
+    endfor
+
+    for my.java_class.java_method
+        newline ()
+        java_insert_class_method (java_method)
+    endfor
+
+    java_insert_code ("}")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: enum
+# ---------------------------------------------------------------------------
+function java_insert_enum (java_enum)
+    check_arguments (my, "java_enum", my)
+
+    echo_trace ("Generate Java enum: " + my.java_enum.name, my)
+
+    assert_attributes (my.java_enum, "name, visibility", my)
+
+    my.java_inheritance_list = java_format_extends_list (my.java_enum) ?
+
+    java_insert_description(my.java_enum)
+    java_insert_code ("\
+        $(my.java_enum.visibility:) enum $(my.java_enum.name:)$(my.java_inheritance_list?:) {
+    ")
+
+    newline ()
+    for my.java_enum.java_constant
+        java_insert_enum_constant (java_constant)
+    endfor
+
+    newline ()
+    java_insert_code ("\
+        private final int code;
+
+        private $(my.java_enum.name:)(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+    ", 1)
+    
+    for my.java_enum.java_method
+        newline ()
+        java_insert_enum_method (java_method)
+    endfor
+
+    java_insert_code ("}")
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate project files.
+# ---------------------------------------------------------------------------
+function java_generate_project (source, wrapper)
+    check_arguments (my, "source, wrapper", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate source files from <java_module/> entities.
+# ---------------------------------------------------------------------------
+function java_generate_java_sources (java_module, wrapper)
+    check_arguments (my, "java_module, wrapper", my)
+    
+    assert_attribute (my.wrapper, "source_dir", my)
+
+    echo_trace ("Generate Java files from <$(name (my.java_module)) name = \"$(my.java_module.name:)\"/>", my)
+
+    output my.java_module.source_file_path
+
+    java_insert_prologue (my.java_module)
+    newline()
+        
+    java_insert_package (my.java_module)
+    newline()
+
+    for my.java_module.java_import
+        java_insert_import (java_import)
+        newline()
+    endfor
+
+    for my.java_module.java_enum
+        java_insert_enum (java_enum)
+        newline()
+    endfor
+
+    for my.java_module.java_interface
+        java_insert_interface (java_interface)
+        newline()
+    endfor
+
+    for my.java_module.java_class
+        java_insert_class (java_class)
+        newline()
+    endfor
+
+endfunction
+
+function java_generate_h_sources (java_module, wrapper)
+    check_arguments (my, "java_module, wrapper", my)
+
+    assert_attribute (my.wrapper, "source_dir", my)
+
+    echo_trace ("Generate H files from <$(name (java_module)) name = \"$(my.java_module.name:)\"/>", my)
+
+    if -1 = directory.create (my.java_module.source_dir)
+        echo_fatal ("Can not create directory: $(my.java_module.source_dir:)")
+    endif
+
+    output my.java_module.source_file_path
+
+    java_c_insert_prologue (my.java_module)
+    newline()
+
+    for my.java_module.c_include
+        java_c_insert_include (c_include)
+        newline()
+    endfor
+
+    java_c_insert_define_start (my.java_module.name)
+
+    for my.java_module.c_method
+        java_h_insert_method (c_method)
+        newline()
+    endfor
+
+    java_c_insert_define_end (my.java_module.name)
+
+endfunction
+
+function java_generate_c_sources (java_module, wrapper)
+    check_arguments (my, "java_module, wrapper", my)
+    
+    assert_attribute (my.wrapper, "source_dir", my)
+
+    echo_trace ("Generate C files from <$(name (java_module)) name = \"$(my.java_module.name:)\"/>", my)
+
+    if -1 = directory.create (my.java_module.source_dir)
+        echo_fatal ("Can not create directory: $(my.java_module.source_dir:)")
+    endif
+
+    output my.java_module.source_file_path
+
+    java_c_insert_prologue (my.java_module)
+    newline()
+
+    for my.java_module.c_include
+        java_c_insert_include (c_include)
+        newline()
+    endfor
+
+    for my.java_module.c_method where is_false (c_method.is_jni)
+        java_c_insert_method (c_method)
+        newline()
+    endfor
+
+    for my.java_module.c_method where is_true (c_method.is_jni)
+        java_c_insert_method (c_method)
+        newline()
+    endfor
+endfunction
+
+function java_generate_sources (source, wrapper)
+
+    check_arguments (my, "source, wrapper", my)
+
+    assert_attribute (my.wrapper, "source_dir", my)
+
+    if -1 = directory.create (my.wrapper.source_dir)
+        echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
+    endif
+
+    for my.source.java_module
+        if defined (java_module.source_type)
+            if java_module.source_type = "H"
+                java_generate_h_sources (java_module, my.wrapper)
+            elsif java_module.source_type = "C"
+                java_generate_c_sources (java_module, my.wrapper)
+            else
+                java_generate_java_sources (java_module, my.wrapper)
+            endif
+        else
+            java_generate_java_sources (java_module, my.wrapper)
+        endif
+    endfor
+
+endfunction
+
+.endtemplate
+

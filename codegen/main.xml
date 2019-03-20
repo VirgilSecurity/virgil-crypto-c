@@ -40,10 +40,11 @@
     <library name="nanopb"/>
 
     <project name="common" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-    <project name="foundation" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-    <project name="pythia" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-    <project name="ratchet" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
+    <project name="foundation" skip_codegen="0" skip_codegen_c="1" skip_codegen_wrappers="0"/>
+    <project name="pythia" skip_codegen="1" skip_codegen_c="1" skip_codegen_wrappers="1"/>
+    <project name="ratchet" skip_codegen="1" skip_codegen_c="1" skip_codegen_wrappers="1"/>
     <project name="phe" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
 
-    <wrapper lang="swift"/>
+    <wrapper lang="java"/>
+    <!--wrapper lang="swift"/-->
 </main>

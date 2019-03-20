@@ -1,0 +1,162 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Contains API for Java wrapper generation.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+
+# ---------------------------------------------------------------------------
+#   Create entity <java_method/> from the entity <instance/>.
+# ---------------------------------------------------------------------------
+function java_create_class_method_from_constant (constant, destination, wrapper, meta)
+    check_arguments (my, "constant, destination, wrapper, meta", my)
+
+    new java_method to my.destination
+        . = java_format_description (my.constant) ?
+        .name = java_derive_getter_name_by_constant (my.constant, my.wrapper)
+        .visibility = "public"
+
+        new java_return to java_method
+            .type = java_derive_constant_type (my.constant, my.wrapper)
+            .access = "readonly"
+            .is_enum = "0"
+            .is_reference = "0"
+        endnew
+        
+        if defined (my.constant.value)
+            new java_code to java_method
+                . = "\
+                    return $(my.constant.value:);
+                "
+            endnew
+        endif
+
+        return java_method
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create Java method that makes proxy to retrieve constant.
+# ---------------------------------------------------------------------------
+function java_create_proxy_method_from_constant (constant, interface, destination, wrappers_destination, wrapper, meta)
+    check_arguments (my, "constant, destination, wrappers_destination, wrapper, meta", my)
+    
+    my.java_method = java_create_class_method_from_constant (my.constant, my.destination, my.wrapper, my.meta)
+    
+    new java_code to my.java_method
+        . = "return $(java_derive_jni_context_class_name(my.wrapper):).INSTANCE.$(my.interface.name:Camel)_$(my.java_method.name:)(this.cCtx);"
+    endnew
+    
+    java_create_jni_proxy_method_from_constant (my.constant, my.interface, my.destination, my.wrappers_destination, my.wrapper, my.meta)
+    java_create_c_proxy_method_from_constant (my.constant, my.interface, my.destination, my.wrappers_destination, my.wrapper, my.meta)
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create Java computed constant that makes proxy to retrieve constant.
+# ---------------------------------------------------------------------------
+function java_create_proxy_method_from_constant2 (constant, interface, destination, wrappers_destination, wrapper, meta)
+    check_arguments (my, "constant, interface, destination, wrapper, meta", my)
+
+    java_create_jni_method_from_constant (my.constant, my.interface, my.destination, my.wrappers_destination, my.wrapper, my.meta)
+
+    my.api_getter = interface_derive_c_api_method (my.interface)
+    my.constant_getter = interface_derive_c_constant_method (my.interface, my.constant)
+    
+    my.getter_method_name = java_derive_getter_name_by_constant (my.constant, my.wrapper)
+    my.jni_call = "$(my.interface.name:Camel)_$(my.getter_method_name:Camel)"
+        
+    #   Create declaration
+    new java_method to my.destination
+        . = java_format_description (my.constant) ?
+        .name = my.getter_method_name
+        .visibility = "public"
+        new java_code to java_method
+            . = "return $(java_derive_jni_context_class_name(my.wrapper):).INSTANCE.$(my.jni_call:)(this.cCtx);"
+        endnew
+        
+        new java_return to java_method
+            .type = java_derive_constant_type (my.constant, my.wrapper)
+            .access = "readonly"
+            .is_enum = "0"
+            .is_reference = "0"
+        endnew
+
+        return java_method
+    endnew
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <java_method/> of from the class entity <method/>.
+# ---------------------------------------------------------------------------
+function java_create_class_method (class, method, java_class, wrappers_destination, wrapper, meta)
+    check_arguments (my, "class, method, java_class, wrappers_destination, wrapper, meta", my)
+
+    # Create declaration
+    echo_debug ("Create method $(my.method.name:) for Java class $(my.java_class.name:) by class $(my.class.name:)", my)
+    my.java_method = java_create_method_declaration (my.class, my.method, my.java_class, my.wrapper, my.meta)
+
+    #   Wrap proxy call
+    if defined (my.java_method->java_return)
+        my.hasReturn = "return "
+    else
+        my.hasReturn = ""
+    endif
+    my.jni_args = java_format_jni_args (my.class, my.method)
+
+    new java_code to my.java_method
+        . = "$(my.hasReturn:)$(java_derive_jni_context_class_name(my.wrapper):).INSTANCE.$(my.class.name:Camel)_$(my.java_method.name:)($(my.jni_args:));"
+    endnew
+
+    if count (my.java_method.java_return) > 1
+        java_create_result_class (my.class, my.java_method, my.wrappers_destination, my.wrapper, my.meta)
+    endif
+    
+    # Cleanup
+    java_remove_error_arguments (my.java_method)
+
+    java_create_c_class_method (my.class, my.method, my.java_class, my.java_method, my.wrappers_destination, my.wrapper, my.meta)
+    java_create_jni_class_method (my.class, my.method, my.java_method, my.java_class, my.wrappers_destination, my.wrapper, my.meta)
+
+    return my.java_method
+endfunction
+
+.endtemplate
