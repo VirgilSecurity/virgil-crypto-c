@@ -50,10 +50,16 @@ target_sources(iotelic
         )
 
 set(SP_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../../../sp)
+set (AP_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../../../ap)
 
 target_include_directories(iotelic
         PUBLIC
         "${CMAKE_CURRENT_LIST_DIR}/include"
+        "${AP_DIR}/inc"
+        "${AP_DIR}/inc/compiler/gcc"
+        "${AP_DIR}/inc/os_shim"
+        "${AP_DIR}/inc/utils"
+        "${AP_DIR}/inc/io_lib"
         "${SP_DIR}/bsp/include"
         "${SP_DIR}/bsp/driver"
         "${SP_DIR}/crypto/inc"
