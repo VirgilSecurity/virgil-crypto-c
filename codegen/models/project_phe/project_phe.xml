@@ -70,4 +70,6 @@
     <class name="phe server"/>
     <class name="phe client"/>
     <class name="phe cipher"/>
+
+    <wrapper lang="python"/>
 </project>

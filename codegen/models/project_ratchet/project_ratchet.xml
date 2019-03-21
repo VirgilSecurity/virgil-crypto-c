@@ -76,4 +76,7 @@
     <class name="ratchet keys"/>
     <class name="ratchet"/>
     <class name="ratchet session"/>
+
+    <!-- <wrapper lang="swift"/> -->
+    <wrapper lang="python"/>
 </project>

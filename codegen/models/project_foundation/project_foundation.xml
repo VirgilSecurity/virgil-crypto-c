@@ -148,4 +148,7 @@
         char error_message[48] = {0x00};
         snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
     </error_message_getter>
+
+    <!-- <wrapper lang="swift"/> -->
+    <wrapper lang="python"/>
 </project>

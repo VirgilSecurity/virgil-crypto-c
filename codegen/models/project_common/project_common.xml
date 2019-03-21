@@ -53,4 +53,7 @@
 
     <class name="data"/>
     <class name="buffer"/>
+
+    <!-- <wrapper lang="swift"/> -->
+    <wrapper lang="python"/>
 </project>

@@ -1,0 +1,599 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Functions for Python primitives generation: class, enum, etc.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+
+gsl from "common.gsl"
+
+# ===========================================================================
+#   Format.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Return formatted list of arguments without braces.
+# ---------------------------------------------------------------------------
+function python_format_argument_list (python_method)
+    check_arguments (my, "python_method", my)
+
+    for my.python_method.python_argument
+        my.arg_list ?= "self, "
+        my.arg_list += "$(python_argument.name:c)"
+        if ! last()
+            my.arg_list += ", "
+        endif
+    endfor
+
+    return my.arg_list
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted list of returned value(s).
+# ---------------------------------------------------------------------------
+function python_format_return_list (python_method)
+    check_arguments (my, "python_method", my)
+
+    my.is_tuple = count (my.python_method.python_return) > 1 ?? "1" ? "0"
+
+    for my.python_method.python_return
+        my.return_list ?= ""
+
+        if my.is_tuple
+            my.return_list += "$(python_return.name:)"
+        else
+            my.return_list += ""
+        endif
+
+        if ! last()
+            my.return_list += ", "
+        endif
+    endfor
+
+    if defined (my.return_list) & my.is_tuple
+        my.return_list = "(" + my.return_list + ")"
+    endif
+
+    if defined (my.return_list)
+        my.return_list = my.return_list
+    endif
+
+    return my.return_list
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return inheritance list if defined <python_inherit/>, otherwise - nothing.
+# ---------------------------------------------------------------------------
+function python_format_inheritance_list (python_type)
+    check_arguments (my, "python_type", my)
+
+     for my.python_type.python_inherit
+        my.inheritance_list ?= ""
+        my.inheritance_list += python_inherit.type
+        if ! last ()
+            my.inheritance_list += ", "
+        endif
+    endfor
+
+    return my.inheritance_list
+endfunction
+
+
+# ===========================================================================
+#   Generate.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Insert given multiline code.
+# ---------------------------------------------------------------------------
+function python_insert_code (code, tab_count)
+    check_argument (my, "code", my)
+
+    my.code = "$(my.code:left,no)"
+    my.code = string_trim (my.code)
+    my.code = code_collapse_spaces (my.code)
+
+    my.code = string_indent (my.code, my.tab_count)
+    my.code = string_multi_rtrim (my.code)
+
+    out (my.code)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert description of the given object.
+# ---------------------------------------------------------------------------
+function python_insert_description (obj, tab_count)
+    my.description = my.obj. ?
+    my.tab_count ?= 1
+    if string_empty (my.description)
+        return
+    endif
+    python_insert_code (my.description, my.tab_count)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert comment of the given object.
+# ---------------------------------------------------------------------------
+function python_insert_comment (obj, tab_count)
+    my.description = my.obj. ?
+    my.tab_count ?= 0
+    if string_empty (my.description)
+        return
+    endif
+    python_insert_code (my.description, my.tab_count)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted multiline commented string.
+# ---------------------------------------------------------------------------
+function python_format_comment (obj)
+    if ! defined (my.obj.)
+        return
+    endif
+
+    my.str = my.obj.
+    my.str = string_indent (my.str)
+    my.str = "# $(my.str:left, block, no)$(terminator)"
+    my.str = string_multi_rtrim (my.str)
+
+    return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted multiline description comment string.
+# ---------------------------------------------------------------------------
+function python_format_description (obj)
+    if ! defined (my.obj.)
+        return
+    endif
+
+    my.str = my.obj.
+    my.str = string_indent (my.str, 1)
+    my.str = "$(my.str:left, block, no)$(terminator)"
+    my.str = string_multi_rtrim (my.str)
+    my.str = "\"\"\"" + my.str + "\"\"\""
+
+    return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return multiline formatted string with license.
+# ---------------------------------------------------------------------------
+function python_format_license(license)
+    return python_format_comment (my.license) ?
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert: license + caution + description
+# ---------------------------------------------------------------------------
+function python_insert_prologue (python_module)
+    check_arguments (my, "python_module", my)
+
+    assert_item (my.python_module, "python_license", my)
+
+    python_insert_comment (my.python_module->python_license)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: import
+# ---------------------------------------------------------------------------
+function python_insert_import (python_import)
+    check_arguments (my, "python_import", my)
+
+    assert_attribute (my.python_import, "framework", my)
+
+    if is_true (my.python_import.import_all)
+        python_insert_code ("from $(my.python_import.framework:) import *")
+    else
+        python_insert_code ("import $(my.python_import.framework:)")
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: protocol.property
+# ---------------------------------------------------------------------------
+function python_insert_abstract_class_property (python_property)
+    check_arguments (my, "python_property", my)
+
+    assert_attributes (my.python_property, "name, type, visibility", my)
+
+    my.property_modifiers = (my.python_property.access = "readonly") ?? "{ get }" ? "{ get set }"
+
+    
+    python_insert_code("\
+        @property
+        @abstractmethod
+        def $(my.python_property.name:)():
+    ", 1)
+    python_insert_description (my.python_property, 2)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: enum.case
+# ---------------------------------------------------------------------------
+function python_insert_enum_constant (python_constant)
+    check_arguments (my, "python_constant", my)
+
+    my.value = defined (my.python_constant.value) ?? " = $(my.python_constant.value:)" ? ""
+    
+    python_insert_comment (my.python_constant, 1)
+    python_insert_code ("\
+        $(my.python_constant.name:c,UPPER) = $(my.value:)
+    ", 1)
+    
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: constructor / init
+# ---------------------------------------------------------------------------
+function python_insert_constructor (python_constructor)
+    check_arguments (my, "python_constructor", my)
+
+    assert_attributes (my.python_constructor, "visibility", my)
+    assert_item (my.python_constructor, "python_code", my)
+
+    my.method_args = python_format_argument_list(my.python_constructor) ?
+    my.method_args = string.search_replace (my.method_args, "self, ", "") ?
+    my.override = is_true (my.python_constructor.override) ?? "override" ?
+
+    
+    python_insert_code("\
+         def __init__(self$(' ,'+my.method_args?:)):
+    ", 1)
+    python_insert_description (my.python_constructor, 2)
+
+    python_insert_code("\
+        $(my.python_constructor->python_code.:)
+    ", 2)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: destructor / deinit
+# ---------------------------------------------------------------------------
+function python_insert_destructor (python_destructor)
+    check_arguments (my, "python_destructor", my)
+
+    
+    python_insert_code("\
+         def __delete__(self):
+    ", 1)
+    python_insert_description (my.python_destructor, 2)
+
+    python_insert_code("\
+        $(my.python_destructor->python_code.:)
+    ", 2)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: protocol.method
+# ---------------------------------------------------------------------------
+function python_insert_abstract_class_method (python_method)
+    check_arguments (my, "python_method", my)
+
+    assert_attributes (my.python_method, "name", my)
+
+    my.method_args = python_format_argument_list(my.python_method) ?
+    my.method_return = python_format_return_list(my.python_method) ?
+
+    
+    python_insert_code("\
+        @abstractmethod
+        def $(my.python_method.name:)($(my.method_args?:)):
+    ", 1)
+    python_insert_description (my.python_method, 2)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: class.constant
+# ---------------------------------------------------------------------------
+function python_insert_class_constant (python_constant)
+    check_arguments (my, "python_constant", my)
+    
+    python_insert_comment (my.python_constant, 1)
+    python_insert_code ("\
+        $(my.python_constant.name:c,UPPER) = $(my.python_constant.value:)
+    ", 1)
+    
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: class.property
+# ---------------------------------------------------------------------------
+function python_insert_class_property (python_property)
+    check_arguments (my, "python_property", my)
+
+    assert_attributes (my.python_property, "name, type, visibility", my)
+
+    my.is_computed = count (my.python_property.computed)
+    my.is_const = my.python_property.access = "readonly"
+    my.is_writeonly = my.python_property.access = "writeonly"
+
+    if defined (my.python_property.value)
+        my.var_init =  " = $(my.python_property.value:)"
+    endif
+
+    python_insert_code("\
+        @property
+        def $(my.python_property.name:):(): $(my.var_init?:)
+    ", 1)
+    python_insert_description (my.python_property, 2)
+
+    if my.is_computed
+        python_insert_code("\
+            $(my.python_property->computed.)
+        ", 2)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: class.method
+# ---------------------------------------------------------------------------
+function python_insert_class_method (python_method)
+    check_arguments (my, "python_method", my)
+
+    assert_attributes (my.python_method, "name", my)
+
+    my.method_args = python_format_argument_list(my.python_method) ? "self"
+    my.method_return = python_format_return_list(my.python_method) ?
+    my.override = is_true (my.python_method.override) ?? "override" ?
+
+    if ! count (my.python_method.python_code)
+        python_insert_code("\
+            @abstractmethod
+        ", 1)
+    endif
+    python_insert_code("\
+        def $(my.python_method.name:)($(my.method_args?:)):
+    ", 1)
+    python_insert_description (my.python_method, 2)
+
+    if count (my.python_method.python_code)
+        python_insert_code (my.python_method->python_code., 2)
+    else
+        python_insert_code ("raise NotImplementedError()", 2)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: class.method
+# ---------------------------------------------------------------------------
+function python_insert_enum_method (python_method)
+    check_arguments (my, "python_method", my)
+
+    assert_attributes (my.python_method, "name", my)
+
+    my.method_args = python_format_argument_list(my.python_method) ?
+    my.method_return = python_format_return_list(my.python_method) ?
+
+    
+    python_insert_code("\
+        def $(my.python_method.name:)($(my.method_args?:)):
+    ", 1)
+    python_insert_description (my.python_method, 2)
+
+    python_insert_code (my.python_method->python_code., 2)
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: abstract class
+# ---------------------------------------------------------------------------
+function python_insert_abstract_class (python_abstract_class)
+    check_arguments (my, "python_abstract_class", my)
+
+    echo_trace ("Generate python protocol: " + my.python_abstract_class.name, my)
+
+    assert_attributes (my.python_abstract_class, "name, visibility", my)
+
+    for my.python_abstract_class.python_inherit
+        if ! last()
+            my.python_inheritance_list += ", "
+        endif
+    endfor
+
+    
+    newline ()
+    python_insert_code ("\
+        class $(my.python_abstract_class.name:)$(my.python_inheritance_list?:):
+            __metaclass__ = ABCmeta
+    ")
+    python_insert_description(my.python_abstract_class, 1)
+
+    for my.python_abstract_class.python_property
+        python_insert_abstract_class_property (python_property)
+    endfor
+
+    for my.python_abstract_class.python_method
+        newline ()
+        python_insert_abstract_class_method (python_method)
+    endfor
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: class
+# ---------------------------------------------------------------------------
+function python_insert_class (python_class)
+    check_arguments (my, "python_class", my)
+
+    echo_trace ("Generate Python class: " + my.python_class.name, my)
+
+    assert_attributes (my.python_class, "name, visibility", my)
+
+    my.python_inheritance_list = python_format_inheritance_list (my.python_class) ?
+
+    newline ()
+    python_insert_code ("\
+            class $(my.python_class.name:)($(my.python_inheritance_list?:)):
+    ")
+
+    python_insert_description(my.python_class, 1)
+
+    if is_true (python_class.is_abstract)
+        python_insert_code(terminator + format_left("__metaclass__ = ABCmeta"), 1)
+    endif
+
+    for my.python_class.python_constant
+        newline_if (first ())
+        python_insert_class_constant (python_constant)
+    endfor
+
+    for my.python_class.python_constructor
+        newline ()
+        python_insert_constructor (python_constructor)
+    endfor
+
+    for my.python_class.python_destructor
+        newline ()
+        python_insert_destructor (python_destructor)
+    endfor
+
+    for my.python_class.python_method
+        newline ()
+        python_insert_class_method (python_method)
+    endfor
+
+    for my.python_class.python_property
+        newline ()
+        python_insert_class_property (python_property)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: enum
+# ---------------------------------------------------------------------------
+function python_insert_enum (python_enum)
+    check_arguments (my, "python_enum", my)
+
+    echo_trace ("Generate Python enum: " + my.python_enum.name, my)
+
+    assert_attributes (my.python_enum, "name, visibility", my)
+
+    my.python_inheritance_list = python_format_inheritance_list (my.python_enum) ?
+
+    python_insert_comment(my.python_enum, 1)
+    python_insert_code ("\
+        $(my.python_enum.visibility:)\
+                enum $(my.python_enum.name:)$(my.python_inheritance_list?:)
+    ")
+
+    for my.python_enum.python_constant
+        newline ()
+        python_insert_enum_constant (python_constant)
+    endfor
+
+    for my.python_enum.python_constructor
+        newline ()
+        python_insert_constructor (python_constructor)
+    endfor
+
+    for my.python_enum.python_method
+        newline ()
+        python_insert_enum_method (python_method)
+    endfor
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate project files.
+# ---------------------------------------------------------------------------
+function python_generate_project (source, wrapper)
+    check_arguments (my, "source, wrapper", my)
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate source files from <python_module/> entities.
+# ---------------------------------------------------------------------------
+function python_generate_sources (source, wrapper)
+    check_arguments (my, "source, wrapper", my)
+
+    assert_attribute (my.wrapper, "source_dir", my)
+
+    if -1 = directory.create (my.wrapper.source_dir)
+        echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
+    endif
+
+    for my.source.python_module
+        echo_trace ("Generate Python files from <$(name (python_module)) name = \"$(c_module.name:)\"/>", my)
+
+        if defined (python_module.source_dir)
+            if -1 = directory.create (python_module.source_dir)
+                echo_fatal ("Can not create directory: $(python_module.source_dir:)")
+            endif
+        endif
+
+        output python_module.source_file_path
+
+        python_insert_prologue (python_module)
+        newline ()
+
+        for python_module.python_import
+            newline_if (first ())
+            python_insert_import (python_import)
+        endfor
+
+        for python_module.python_enum
+            newline ()
+            python_insert_enum (python_enum)
+        endfor
+
+        for python_module.python_abstract_class
+            newline ()
+            python_insert_abstract_class (python_abstract_class)
+        endfor
+
+        for python_module.python_class
+            newline ()
+            python_insert_class (python_class)
+        endfor
+
+        for python_module.python_struct
+            newline ()
+            python_insert_struct (python_struct)
+        endfor
+
+        for python_module.python_extension
+            newline ()
+            python_insert_extension (python_extension)
+        endfor
+    endfor
+endfunction
+
+.endtemplate
