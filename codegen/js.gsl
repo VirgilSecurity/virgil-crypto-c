@@ -22,16 +22,16 @@ endfunction
 function js_create_implementation_module(source, destination, wrapper, meta)
   echo_info("js_create_implementation_module", my)
   my.js_module = js_append_js_module_model(my.destination, my.source)
-  my.js_implementation_module = js_append_js_implementation_module_model(my.js_module, my.source, my.wrapper)
-  js_append_js_wrapped_implementation_model(my.wrapper, my.js_implementation_module, my.wrapper)
+  my.js_wrapped_implementation = js_append_js_wrapped_implementation_model(my.wrapper, my.source, my.wrapper)
+  js_append_js_implementation_module_model(my.js_module, my.source, my.js_wrapped_implementation, my.wrapper)
 endfunction
 
 function js_create_class_module(source, destination, wrapper, meta)
   echo_info("js_create_class_module", my)
   if my.source.scope = "public" & !(my.source.name = "error")
     my.js_module = js_append_js_module_model(my.destination, my.source)
-    my.js_class_module = js_append_js_class_module_model(my.js_module, my.source, my.wrapper)
-    js_append_js_wrapped_class_model(my.wrapper, my.js_class_module, my.wrapper)
+    my.js_wrapped_class = js_append_js_wrapped_class_model(my.wrapper, my.source, my.wrapper)
+    js_append_js_class_module_model(my.js_module, my.source, my.js_wrapped_class, my.wrapper)
   endif
 endfunction
 
@@ -76,9 +76,11 @@ function js_resolve_js_class_module(js_class_module, wrapper)
 endfunction
 
 function js_resolve_js_implementation_module(parent, js_implementation_module, wrapper)
-  my.js_class_module = js_append_js_class_module_model(my.parent, my.js_implementation_module, my.wrapper)
-  js_append_js_wrapped_class_model(my.wrapper, my.js_class_module, my.wrapper)
-  js_append_interfaces_to_js_class_module(my.js_class_module, my.js_implementation_module)
+  for my.wrapper.js_wrapped_implementation where my.js_implementation_module.name = js_wrapped_implementation.name
+    my.js_class_module = js_append_js_class_module_model(my.parent, my.js_implementation_module, js_wrapped_implementation, my.wrapper)
+    js_append_interfaces_to_js_class_module(my.js_class_module, my.js_implementation_module, my.wrapper)
+    return
+  endfor
 endfunction
 
 function js_module_resolve(source, wrapper)

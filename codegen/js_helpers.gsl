@@ -94,7 +94,7 @@ function js_value_is_interface_module(value, wrapper)
 endfunction
 
 function js_value_is_implementation_module(value, wrapper)
-  for my.wrapper.js_wrapped_implementation where defined(my.value.impl) & my.value.impl = js_wrapped_implementation.name
+  for my.wrapper.js_wrapped_implementation where (defined(my.value.impl) & my.value.impl = js_wrapped_implementation.name) | (defined(my.value.class) & my.value.class = js_wrapped_implementation.name)
     return 1
   endfor
   return 0

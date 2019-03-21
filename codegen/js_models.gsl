@@ -32,9 +32,25 @@ function js_append_js_wrapped_interface_model(parent, js_interface_module, wrapp
   endnew
 endfunction
 
-function js_append_js_implementation_module_model(parent, source, wrapper)
+function js_append_js_wrapped_implementation_model(parent, source, wrapper)
+  new js_wrapped_implementation to my.parent
+    js_wrapped_implementation.name = my.source.name
+    js_wrapped_implementation.js_class_name = "$(my.source.name:Pascal)"
+    js_wrapped_implementation.js_source_file = "$(my.source.name:cobol).js"
+    js_wrapped_implementation.js_source_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_implementation.js_source_file)
+    js_wrapped_implementation.cpp_class_name = "$(my.source.name:Pascal)"
+    js_wrapped_implementation.cpp_context_name = "$(my.wrapper.prefix:no)_$(my.source.name:c)"
+    js_wrapped_implementation.cpp_header_file = "$(my.source.name:c).h"
+    js_wrapped_implementation.cpp_header_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_implementation.cpp_header_file)
+    js_wrapped_implementation.cpp_source_file = "$(my.source.name:c).cc"
+    js_wrapped_implementation.cpp_source_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_implementation.cpp_source_file)
+    return js_wrapped_implementation
+  endnew
+endfunction
+
+function js_append_js_implementation_module_model(parent, source, js_wrapped_implementation, wrapper)
   new js_implementation_module to my.parent
-    js_implementation_module.name = my.source.name
+    js_implementation_module.name = my.js_wrapped_implementation.name
     for my.source.interface
       new js_interface_implementation to js_implementation_module
         js_interface_implementation.interface_name = interface.name
@@ -59,13 +75,6 @@ function js_append_js_implementation_module_model(parent, source, wrapper)
   endnew
 endfunction
 
-function js_append_js_wrapped_implementation_model(parent, js_implementation_module, wrapper)
-  new js_wrapped_implementation to my.parent
-    js_wrapped_implementation.name = my.js_implementation_module.name
-    return js_wrapped_interface
-  endnew
-endfunction
-
 function js_append_js_enum_module_model(parent, source)
   new js_enum_module to my.parent
     js_enum_module.name = my.source.name
@@ -87,32 +96,32 @@ function js_append_js_wrapped_enum_model(parent, js_enum_module, wrapper)
   endnew
 endfunction
 
-function js_append_js_class_module_model(parent, source, wrapper)
-  new js_class_module to my.parent
-    js_class_module.name = my.source.name
-    js_append_js_class_model(js_class_module, my.source)
-    if count(my.source.method) > 0
-      js_append_cpp_class_model(js_class_module, my.source, my.wrapper)
-    endif
-    return js_class_module
-  endnew
-endfunction
-
-function js_append_js_wrapped_class_model(parent, js_class_module, wrapper)
+function js_append_js_wrapped_class_model(parent, source, wrapper)
   new js_wrapped_class to my.parent
-    js_wrapped_class.name = my.js_class_module.name
-    js_wrapped_class.js_class_name = my.js_class_module->js_class.name
-    js_wrapped_class.js_source_file = "$(my.js_class_module.name:cobol).js"
+    js_wrapped_class.name = my.source.name
+    js_wrapped_class.js_class_name = "$(my.source.name:Pascal)"
+    js_wrapped_class.js_source_file = "$(my.source.name:cobol).js"
     js_wrapped_class.js_source_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_class.js_source_file)
-    if defined(my.js_class_module->cpp_class)
-      js_wrapped_class.cpp_class_name = my.js_class_module->cpp_class.name
-      js_wrapped_class.cpp_context_name = my.js_class_module->cpp_class.context_name
-      js_wrapped_class.cpp_header_file = "$(my.js_class_module.name:c).h"
+    if count(my.source.method) > 0
+      js_wrapped_class.cpp_class_name = "$(my.source.name:Pascal)"
+      js_wrapped_class.cpp_context_name = "$(my.wrapper.prefix:no)_$(my.source.name:c)"
+      js_wrapped_class.cpp_header_file = "$(my.source.name:c).h"
       js_wrapped_class.cpp_header_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_class.cpp_header_file)
-      js_wrapped_class.cpp_source_file = "$(my.js_class_module.name:c).cc"
+      js_wrapped_class.cpp_source_file = "$(my.source.name:c).cc"
       js_wrapped_class.cpp_source_file_path = cat_path(my.wrapper.project_source_dir, js_wrapped_class.cpp_source_file)
     endif
     return js_wrapped_class
+  endnew
+endfunction
+
+function js_append_js_class_module_model(parent, source, js_wrapped_class, wrapper)
+  new js_class_module to my.parent
+    js_class_module.name = my.js_wrapped_class.name
+    js_append_js_class_model(js_class_module, my.source, my.js_wrapped_class)
+    if defined(my.js_wrapped_class.cpp_class_name)
+      js_append_cpp_class_model(js_class_module, my.source, my.js_wrapped_class, my.wrapper)
+    endif
+    return js_class_module
   endnew
 endfunction
 
@@ -127,12 +136,17 @@ function js_append_js_include_module_model(parent, js_wrapped_class)
   endnew
 endfunction
 
-function js_append_interfaces_to_js_class_module(js_class_module, js_implementation_module)
-  if defined(my.js_class_module->cpp_class)
+function js_append_interfaces_to_js_class_module(js_class_module, js_implementation_module, wrapper)
+  my.cpp_class = my.js_class_module->cpp_class
+  if defined(my.cpp_class)
     for my.js_implementation_module.js_interface_implementation
-      new cpp_interface_implementation to my.js_class_module->cpp_class
-        cpp_interface_implementation.interface_name = js_interface_implementation.interface_name
-      endnew
+      for my.wrapper.js_wrapped_interface where js_interface_implementation.interface_name = js_wrapped_interface.name
+        new cpp_interface_implementation to my.cpp_class
+          cpp_interface_implementation.interface_name = js_wrapped_interface.name
+          cpp_interface_implementation.class_name = js_wrapped_interface.class_name
+        endnew
+        next js_interface_implementation
+      endfor
     endfor
   endif
 endfunction
@@ -149,6 +163,14 @@ function js_append_js_enum_value_model(parent, source_enum_constant, index)
     else
       js_enum_value.value = my.index
     endif
+  endnew
+endfunction
+
+function js_append_js_dependency_model(parent, source_dependency)
+  new js_dependency to my.parent
+    js_dependency.name = "$(my.source_dependency.name:Camel)"
+    js_dependency.binding_method_name = "set$(my.source_dependency.name:Pascal)"
+    return js_dependency
   endnew
 endfunction
 
@@ -211,10 +233,13 @@ function js_append_method_model(parent, source_method)
   endnew
 endfunction
 
-function js_append_js_class_model(parent, source)
+function js_append_js_class_model(parent, source, js_wrapped_class)
   new js_class to my.parent
-    js_class.name = "$(my.source.name:Pascal)"
+    js_class.name = my.js_wrapped_class.js_class_name
     js_class.binding_name = js_binding_class_name(js_class)
+    for my.source.dependency
+      js_append_js_dependency_model(js_class, dependency)
+    endfor
     for my.source.constant where !js_constant_is_private(constant)
       js_append_js_constant_model(js_class, constant)
     endfor
@@ -307,28 +332,56 @@ function js_append_cpp_data_call_argument_model(parent, source_argument)
   endnew
 endfunction
 
-function js_append_cpp_enum_call_argument_model(parent, source_argument)
-  new cpp_enum_call_argument to my.parent
-    cpp_enum_call_argument.name = js_cpp_variable_name(my.source_argument.name)
-    cpp_enum_call_argument.enum_name = my.source_argument.enum
-    return cpp_enum_call_argument
-  endnew
+function js_append_cpp_enum_call_argument_model(parent, source_argument, wrapper)
+  for my.wrapper.js_wrapped_enum where my.source_argument.enum = js_wrapped_enum.name
+    new cpp_enum_call_argument to my.parent
+      cpp_enum_call_argument.name = js_cpp_variable_name(my.source_argument.name)
+      cpp_enum_call_argument.enum_name = my.source_argument.enum
+      cpp_enum_call_argument.c_type = js_wrapped_enum.c_name
+      return cpp_enum_call_argument
+    endnew
+  endfor
 endfunction
 
-function js_append_cpp_class_call_argument_model(parent, source_argument)
-  new cpp_class_call_argument to my.parent
-    cpp_class_call_argument.name = js_cpp_variable_name(my.source_argument.name)
-    cpp_class_call_argument.class_name = my.source_argument.class
-    return cpp_class_call_argument
-  endnew
+function js_append_cpp_class_call_argument_model(parent, source_argument, wrapper)
+  for my.wrapper.js_wrapped_class where my.source_argument.class = js_wrapped_class.name
+    new cpp_class_call_argument to my.parent
+      cpp_class_call_argument.name = js_cpp_variable_name(my.source_argument.name)
+      cpp_class_call_argument.class_name = js_wrapped_class.name
+      cpp_class_call_argument.cpp_class_name = js_wrapped_class.cpp_class_name
+      cpp_class_call_argument.cpp_context_name = js_wrapped_class.cpp_context_name
+      return cpp_class_call_argument
+    endnew
+  endfor
 endfunction
 
-function js_append_cpp_interface_call_argument_model(parent, source_argument)
-  new cpp_interface_call_argument to my.parent
-    cpp_interface_call_argument.name = js_cpp_variable_name(my.source_argument.name)
-    cpp_interface_call_argument.interface_name = my.source_argument.interface
-    return cpp_interface_call_argument
-  endnew
+function js_append_cpp_implementation_call_argument_model(parent, source_argument, wrapper)
+  if defined(my.source_argument.class)
+    my.implementation_name = my.source_argument.class
+  elsif defined(my.source_argument.impl)
+    my.implementation_name = my.source_argument.impl
+  endif
+  for my.wrapper.js_wrapped_implementation where my.implementation_name = js_wrapped_implementation.name
+    new cpp_implementation_call_argument to my.parent
+      cpp_implementation_call_argument.name = js_cpp_variable_name(my.source_argument.name)
+      cpp_implementation_call_argument.implementation_name = js_wrapped_implementation.name
+      cpp_implementation_call_argument.cpp_class_name = js_wrapped_implementation.cpp_class_name
+      cpp_implementation_call_argument.cpp_context_name = js_wrapped_implementation.cpp_context_name
+      return cpp_implementation_call_argument
+    endnew
+  endfor
+endfunction
+
+function js_append_cpp_interface_call_argument_model(parent, source_argument, wrapper)
+  for my.wrapper.js_wrapped_interface where my.source_argument.interface = js_wrapped_interface.name
+    new cpp_interface_call_argument to my.parent
+      cpp_interface_call_argument.name = js_cpp_variable_name(my.source_argument.name)
+      cpp_interface_call_argument.interface_name = js_wrapped_interface.name
+      cpp_interface_call_argument.cpp_class_name = js_wrapped_interface.class_name
+      cpp_interface_call_argument.implementation_type = js_cpp_implementation_type(my.wrapper)
+      return cpp_interface_call_argument
+    endnew
+  endfor
 endfunction
 
 function js_append_resolved_call_argument_model(parent, source_argument, wrapper)
@@ -347,11 +400,13 @@ function js_append_resolved_call_argument_model(parent, source_argument, wrapper
   elsif js_value_is_data(my.source_argument)
     return js_append_cpp_data_call_argument_model(my.parent, my.source_argument)
   elsif js_value_is_enum_module(my.source_argument, my.wrapper)
-    return js_append_cpp_enum_call_argument_model(my.parent, my.source_argument)
+    return js_append_cpp_enum_call_argument_model(my.parent, my.source_argument, my.wrapper)
   elsif js_value_is_class_module(my.source_argument, my.wrapper)
-    return js_append_cpp_class_call_argument_model(my.parent, my.source_argument)
+    return js_append_cpp_class_call_argument_model(my.parent, my.source_argument, my.wrapper)
+  elsif js_value_is_implementation_module(my.source_argument, my.wrapper)
+    return js_append_cpp_implementation_call_argument_model(my.parent, my.source_argument, my.wrapper)
   elsif js_value_is_interface_module(my.source_argument, my.wrapper)
-    return js_append_cpp_interface_call_argument_model(my.parent, my.source_argument)
+    return js_append_cpp_interface_call_argument_model(my.parent, my.source_argument, my.wrapper)
   endif
 endfunction
 
@@ -434,6 +489,7 @@ function js_append_resolved_argument(parent, source_argument, cpp_class, wrapper
   if defined(js_append_resolved_call_argument_model(my.parent, my.source_argument, my.wrapper))
     return
   endif
+  echo my.source_argument.string()
   echo_fatal("Unable to resolve argument", my)
 endfunction
 
@@ -493,34 +549,44 @@ function js_append_cpp_buffer_method_return_model(parent, name)
   endnew
 endfunction
 
-function js_append_cpp_error_method_return_model(parent, name)
+function js_append_cpp_error_method_return_model(parent, name, wrapper)
   new cpp_error_method_return to my.parent
     cpp_error_method_return.name = my.name
+    cpp_error_method_return.c_type = "$(my.wrapper.prefix:no)_error_t"
     return cpp_error_method_return
   endnew
 endfunction
 
-function js_append_cpp_enum_method_return_model(parent, name, enum)
-  new cpp_enum_method_return to my.parent
-    cpp_enum_method_return.name = my.name
-    cpp_enum_method_return.enum_name = my.enum
-    return cpp_enum_method_return
-  endnew
+function js_append_cpp_enum_method_return_model(parent, name, enum_name, wrapper)
+  for my.wrapper.js_wrapped_enum where my.enum_name = js_wrapped_enum.name
+    new cpp_enum_method_return to my.parent
+      cpp_enum_method_return.name = my.name
+      cpp_enum_method_return.enum_name = js_wrapped_enum.name
+      cpp_enum_method_return.c_type = js_wrapped_enum.c_name
+      return cpp_enum_method_return
+    endnew
+  endfor
 endfunction
 
-function js_append_cpp_class_method_return_model(parent, name, class_name)
-  new cpp_class_method_return to my.parent
-    cpp_class_method_return.name = my.name
-    cpp_class_method_return.class_name = my.class_name
-    return cpp_class_method_return
-  endnew
+function js_append_cpp_class_method_return_model(parent, name, class_name, wrapper)
+  for my.wrapper.js_wrapped_class where my.class_name = js_wrapped_class.name
+    new cpp_class_method_return to my.parent
+      cpp_class_method_return.name = my.name
+      cpp_class_method_return.cpp_class_name = js_wrapped_class.cpp_class_name
+      cpp_class_method_return.cpp_context_name = js_wrapped_class.cpp_context_name
+      return cpp_class_method_return
+    endnew
+  endfor
 endfunction
 
-function js_append_cpp_implementation_method_return_model(parent, name, implementation_name)
-  new cpp_implementation_method_return to my.parent
-    cpp_implementation_method_return.name = my.name
-    cpp_implementation_method_return.class_name = my.implementation_name
-  endnew
+function js_append_cpp_implementation_method_return_model(parent, name, implementation_name, wrapper)
+  for my.wrapper.js_wrapped_implementation where my.implementation_name = js_wrapped_implementation.name
+    new cpp_implementation_method_return to my.parent
+      cpp_implementation_method_return.name = my.name
+      cpp_implementation_method_return.cpp_class_name = js_wrapped_implementation.cpp_class_name
+      cpp_implementation_method_return.cpp_context_name = js_wrapped_implementation.cpp_context_name
+    endnew
+  endfor
 endfunction
 
 function js_append_cpp_interface_method_return_model(parent, name, interface_name)
@@ -533,7 +599,7 @@ endfunction
 function js_append_resolved_return(parent, source_return, wrapper)
   my.cpp_method_return = js_append_cpp_method_return_model(my.parent)
   if js_value_is_error(my.source_return)
-    return js_append_cpp_error_method_return_model(my.parent, my.cpp_method_return.name)
+    return js_append_cpp_error_method_return_model(my.parent, my.cpp_method_return.name, my.wrapper)
   endif
   js_append_cpp_js_return_model(my.parent, my.cpp_method_return.name)
   if js_value_is_size(my.source_return)
@@ -551,11 +617,11 @@ function js_append_resolved_return(parent, source_return, wrapper)
   elsif js_value_is_buffer(my.source_return)
     return js_append_cpp_buffer_method_return_model(my.parent, my.cpp_method_return.name)
   elsif js_value_is_enum_module(my.source_return, my.wrapper)
-    return js_append_cpp_enum_method_return_model(my.parent, my.cpp_method_return.name, my.source_return.enum)
+    return js_append_cpp_enum_method_return_model(my.parent, my.cpp_method_return.name, my.source_return.enum, my.wrapper)
   elsif js_value_is_class_module(my.source_return, my.wrapper)
-    return js_append_cpp_class_method_return_model(my.parent, my.cpp_method_return.name, my.source_return.class)
+    return js_append_cpp_class_method_return_model(my.parent, my.cpp_method_return.name, my.source_return.class, my.wrapper)
   elsif js_value_is_implementation_module(my.source_return, my.wrapper)
-    return js_append_cpp_implementation_method_return_model(my.parent, my.cpp_method_return.name, my.source_return.impl)
+    return js_append_cpp_implementation_method_return_model(my.parent, my.cpp_method_return.name, my.source_return.impl, my.wrapper)
   elsif js_value_is_interface_module(my.source_return, my.wrapper)
     return js_append_cpp_interface_method_return_model(my.parent, my.cpp_method_return.name, my.source_return.interface)
   endif
@@ -581,33 +647,26 @@ function js_append_cpp_method_model(parent, source_method, cpp_class, wrapper)
   endnew
 endfunction
 
-function js_append_cpp_dependency_model(parent, source_dependency)
-  new cpp_dependency to my.parent
-    cpp_dependency.name = my.source_dependency.name
-    if defined(my.source_dependency.api)
-      cpp_dependency.interface_name = my.source_dependency.api
-    endif
-    if defined(my.source_dependency.class)
-      cpp_dependency.class_name = my.source_dependency.class
-    endif
-    if defined(my.source_dependency.interface)
-      cpp_dependency.interface_name = my.source_dependency.interface
-    endif
-    if defined(my.source_dependency.impl)
-      cpp_dependency.class_name = my.source_dependency.impl
-    endif
-    return cpp_dependency
+function js_append_cpp_dependency_model(parent, source_dependency, cpp_class, wrapper)
+  new cpp_method to my.parent
+    cpp_method.name = "set $(my.source_dependency.name:no)"
+    cpp_method.binding_name = js_binding_method_name(cpp_method)
+    cpp_method.name = "$(cpp_method.name:Pascal)"
+    cpp_method.c_name = "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_use_$(my.source_dependency.name:c)"
+    js_append_cpp_argument_model(cpp_method, my.source_dependency)
+    copy my.source_dependency to cpp_method as argument
+    return cpp_method
   endnew
 endfunction
 
-function js_append_cpp_class_model(parent, source, wrapper)
+function js_append_cpp_class_model(parent, source, js_wrapped_class, wrapper)
   new cpp_class to my.parent
-    cpp_class.name = "$(my.source.name:Pascal)"
+    cpp_class.name = my.js_wrapped_class.cpp_class_name
     cpp_class.binding_name = js_binding_class_name(cpp_class)
     cpp_class.c_name = "$(my.source.name:c)"
-    cpp_class.context_name = "$(my.wrapper.prefix:no)_$(my.source.name:c)"
+    cpp_class.context_name = my.js_wrapped_class.cpp_context_name
     for my.source.dependency
-      js_append_cpp_dependency_model(cpp_class, dependency)
+      js_append_cpp_dependency_model(cpp_class, dependency, cpp_class, my.wrapper)
     endfor
     for my.source.method where !js_method_is_private(method)
       js_append_cpp_method_model(cpp_class, method, cpp_class, my.wrapper)
