@@ -94,6 +94,9 @@ endfunction
 
 function js_cpp_header_create_class_inheritance(cpp_class)
   my.inheritance = "public Nan::ObjectWrap"
+  if my.cpp_class.name = "Base64"
+    echo my.cpp_class.string()
+  endif
   if count(my.cpp_class.cpp_interface_implementation) > 0
     for my.cpp_class.cpp_interface_implementation
       my.inheritance += ", public $(cpp_interface_implementation.class_name:no)"
@@ -108,7 +111,9 @@ function js_cpp_header_create_class(cpp_class, wrapper, indent_level)
   js_cpp_header_create_public_access_specifier(my.indent_levels.first)
   js_cpp_header_create_init(my.indent_levels.second)
   js_cpp_header_create_constructors(my.cpp_class, my.indent_levels.second)
-  js_cpp_header_create_get_implementation_method(my.wrapper, my.indent_levels.second)
+  if count(my.cpp_class.cpp_interface_implementation) > 0
+    js_cpp_header_create_get_implementation_method(my.wrapper, my.indent_levels.second)
+  endif
   js_cpp_header_create_context_property(my.cpp_class, my.indent_levels.second)
   js_cpp_header_create_private_access_specifier(my.indent_levels.first)
   js_cpp_header_create_new(my.indent_levels.second)
@@ -607,7 +612,9 @@ function js_cpp_create_class(cpp_class, wrapper, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   js_cpp_create_init(my.cpp_class, my.indent_levels.first)
   js_cpp_create_constructor(my.cpp_class, my.wrapper, my.indent_levels.first)
-  js_cpp_create_get_implementation_method(my.cpp_class, my.wrapper, my.indent_levels.first)
+  if count(my.cpp_class.cpp_interface_implementation) > 0
+    js_cpp_create_get_implementation_method(my.cpp_class, my.wrapper, my.indent_levels.first)
+  endif
   js_cpp_create_new(my.cpp_class, my.indent_levels.first)
   for my.cpp_class.cpp_method
     js_cpp_create_method(cpp_method, my.cpp_class, my.wrapper, my.indent_level)

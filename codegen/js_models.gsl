@@ -489,7 +489,6 @@ function js_append_resolved_argument(parent, source_argument, cpp_class, wrapper
   if defined(js_append_resolved_call_argument_model(my.parent, my.source_argument, my.wrapper))
     return
   endif
-  echo my.source_argument.string()
   echo_fatal("Unable to resolve argument", my)
 endfunction
 
