@@ -136,19 +136,94 @@ function js_append_js_include_module_model(parent, js_wrapped_class)
   endnew
 endfunction
 
-function js_append_interfaces_to_js_class_module(js_class_module, js_implementation_module, wrapper)
-  my.cpp_class = my.js_class_module->cpp_class
-  if defined(my.cpp_class)
-    for my.js_implementation_module.js_interface_implementation
-      for my.wrapper.js_wrapped_interface where js_interface_implementation.interface_name = js_wrapped_interface.name
-        new cpp_interface_implementation to my.cpp_class
-          cpp_interface_implementation.interface_name = js_wrapped_interface.name
-          cpp_interface_implementation.class_name = js_wrapped_interface.class_name
-        endnew
-        next js_interface_implementation
-      endfor
+function js_append_interfaces_to_cpp_class(cpp_class, js_implementation_module, wrapper)
+  for my.js_implementation_module.js_interface_implementation
+    for my.wrapper.js_wrapped_interface where js_interface_implementation.interface_name = js_wrapped_interface.name
+      new cpp_interface_implementation to my.cpp_class
+        cpp_interface_implementation.interface_name = js_wrapped_interface.name
+        cpp_interface_implementation.class_name = js_wrapped_interface.class_name
+        cpp_interface_implementation.cpp_header_file = js_wrapped_interface.cpp_header_file
+      endnew
+      next js_interface_implementation
     endfor
-  endif
+  endfor
+endfunction
+
+function js_resolve_js_implementation_module(parent, js_implementation_module, wrapper)
+  for my.wrapper.js_wrapped_implementation where my.js_implementation_module.name = js_wrapped_implementation.name
+    my.js_class_module = js_append_js_class_module_model(my.parent, my.js_implementation_module, js_wrapped_implementation, my.wrapper)
+    if defined(my.js_class_module->cpp_class)
+      js_append_interfaces_to_cpp_class(my.js_class_module->cpp_class, my.js_implementation_module, my.wrapper)
+    endif
+    return
+  endfor
+endfunction
+
+function js_resolve_js_class_module_dependencies(js_class_module, wrapper)
+  my.cpp_only_includes = XML.new()
+  my.js_module_includes = XML.new()
+  for my.js_class_module->cpp_class.cpp_method
+    for cpp_method.cpp_class_call_argument
+      new class_name to my.cpp_only_includes
+        class_name.name = cpp_class_call_argument.class_name
+      endnew
+    endfor
+    for cpp_method.cpp_implementation_call_argument
+      new implementation_name to my.cpp_only_includes
+        implementation_name.name = cpp_implementation_call_argument.implementation_name
+      endnew
+    endfor
+    for cpp_method.cpp_interface_call_argument
+      new interface_name to my.cpp_only_includes
+        interface_name.name = cpp_interface_call_argument.interface_name
+      endnew
+    endfor
+    for cpp_method.cpp_class_method_return
+      new class_name to my.js_module_includes
+        class_name.name = cpp_class_method_return.class_name
+      endnew
+    endfor
+    for cpp_method.cpp_implementation_method_return
+      new implementation_name to my.js_module_includes
+        implementation_name.name = cpp_implementation_method_return.implementation_name
+      endnew
+    endfor
+  endfor
+  for my.js_module_includes.class_name as js_class_name
+    for my.cpp_only_includes.class_name where class_name.name = js_class_name.name
+      delete class_name
+    endfor
+  endfor
+  for my.js_module_includes.implementation_name as js_implementation_name
+    for my.cpp_only_includes.implementation_name where implementation_name.name = js_implementation_name.name
+      delete implementation_name
+    endfor
+  endfor
+  for my.wrapper.js_wrapped_class
+    for my.js_module_includes.class_name where class_name.name = js_wrapped_class.name
+      js_append_js_include_module_model(my.js_class_module, js_wrapped_class)
+      next js_wrapped_class
+    endfor
+    for my.cpp_only_includes.class_name where class_name.name = js_wrapped_class.name
+      js_append_cpp_include_module_model(my.js_class_module, js_wrapped_class)
+      next js_wrapped_class
+    endfor
+  endfor
+  for my.wrapper.js_wrapped_implementation
+    for my.js_module_includes.implementation_name where implementation_name.name = js_wrapped_implementation.name
+      js_append_js_include_module_model(my.js_class_module, js_wrapped_implementation)
+      next js_wrapped_implementation
+    endfor
+    for my.cpp_only_includes.implementation_name where implementation_name.name = js_wrapped_implementation.name
+      js_append_cpp_include_module_model(my.js_class_module, js_wrapped_implementation)
+      next js_wrapped_implementation
+    endfor
+  endfor
+  for my.wrapper.js_wrapped_interface
+    for my.cpp_only_includes.interface_name where interface_name.name = js_wrapped_interface.name
+      next js_wrapped_interface
+    endfor
+  endfor
 endfunction
 
 # --------------------------------------------------------------------------------------------------
@@ -571,6 +646,7 @@ function js_append_cpp_class_method_return_model(parent, name, class_name, wrapp
   for my.wrapper.js_wrapped_class where my.class_name = js_wrapped_class.name
     new cpp_class_method_return to my.parent
       cpp_class_method_return.name = my.name
+      cpp_class_method_return.class_name = js_wrapped_class.name
       cpp_class_method_return.cpp_class_name = js_wrapped_class.cpp_class_name
       cpp_class_method_return.cpp_context_name = js_wrapped_class.cpp_context_name
       return cpp_class_method_return
@@ -582,6 +658,7 @@ function js_append_cpp_implementation_method_return_model(parent, name, implemen
   for my.wrapper.js_wrapped_implementation where my.implementation_name = js_wrapped_implementation.name
     new cpp_implementation_method_return to my.parent
       cpp_implementation_method_return.name = my.name
+      cpp_implementation_method_return.implementation_name = js_wrapped_implementation.name
       cpp_implementation_method_return.cpp_class_name = js_wrapped_implementation.cpp_class_name
       cpp_implementation_method_return.cpp_context_name = js_wrapped_implementation.cpp_context_name
     endnew
@@ -672,6 +749,28 @@ function js_append_cpp_class_model(parent, source, js_wrapped_class, wrapper)
     endfor
     return cpp_class
   endnew
+endfunction
+
+function js_append_cpp_include_module_model(parent, js_wrapped_class)
+  new cpp_include_module to my.parent
+    cpp_include_module.name = my.js_wrapped_class.name
+    cpp_include_module.cpp_class_name = my.js_wrapped_class.cpp_class_name
+    cpp_include_module.cpp_header_file = my.js_wrapped_class.cpp_header_file
+    return cpp_include_module
+  endnew
+endfunction
+
+function js_resolve_cpp_class(cpp_class, wrapper)
+  for my.cpp_class.cpp_method
+    for cpp_method.argument
+      js_append_resolved_argument(cpp_method, argument, my.cpp_class, my.wrapper)
+      delete argument
+    endfor
+    if defined(cpp_method->return)
+      js_append_resolved_return(cpp_method, cpp_method->return, my.wrapper)
+      delete cpp_method->return
+    endif
+  endfor
 endfunction
 
 endtemplate

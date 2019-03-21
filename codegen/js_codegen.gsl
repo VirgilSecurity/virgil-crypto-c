@@ -22,17 +22,23 @@ function js_cpp_header_create_js_include_module(js_include_module, indent_level)
   js_out("#include \"$(my.js_include_module.cpp_header_file:no)\"", my.indent_levels.first)
 endfunction
 
+function js_cpp_header_create_cpp_include_module(cpp_include_module, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("#include \"$(my.cpp_include_module.cpp_header_file:no)\"", my.indent_levels.first)
+endfunction
+
 function js_cpp_header_create_includes(js_class_module, wrapper, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   js_out("#include <nan.h>", my.indent_levels.first)
   js_out("#include <$(string.replace(my.wrapper.namespace, " |/"))/$(my.wrapper.prefix:no)_$(my.js_class_module->cpp_class.c_name:no).h>", my.indent_levels.first)
   for my.js_class_module->cpp_class.cpp_interface_implementation
-    for my.wrapper.js_wrapped_interface where cpp_interface_implementation.interface_name = js_wrapped_interface.name
-      js_out("#include \"$(js_wrapped_interface.cpp_header_file:no)\"", my.indent_levels.first)
-    endfor
+    js_out("#include \"$(cpp_interface_implementation.cpp_header_file:no)\"", my.indent_levels.first)
   endfor
   for my.js_class_module.js_include_module
     js_cpp_header_create_js_include_module(js_include_module, my.indent_levels.first)
+  endfor
+  for my.js_class_module->cpp_class.cpp_include_module
+    js_cpp_header_create_cpp_include_module(cpp_include_module, my.indent_levels.first)
   endfor
 endfunction
 
@@ -94,14 +100,9 @@ endfunction
 
 function js_cpp_header_create_class_inheritance(cpp_class)
   my.inheritance = "public Nan::ObjectWrap"
-  if my.cpp_class.name = "Base64"
-    echo my.cpp_class.string()
-  endif
-  if count(my.cpp_class.cpp_interface_implementation) > 0
-    for my.cpp_class.cpp_interface_implementation
-      my.inheritance += ", public $(cpp_interface_implementation.class_name:no)"
-    endfor
-  endif
+  for my.cpp_class.cpp_interface_implementation
+    my.inheritance += ", public $(cpp_interface_implementation.class_name:no)"
+  endfor
   return my.inheritance
 endfunction
 
