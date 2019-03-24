@@ -226,6 +226,13 @@ function js_resolve_js_class_module_dependencies(js_class_module, wrapper)
   endfor
 endfunction
 
+function js_append_js_status_model(parent, source_constant, wrapper)
+  new js_status to my.parent
+    js_status.c_name = "$(my.wrapper.prefix)_status_$(my.source_constant.name:upper,c)"
+    js_status.message = string_trim("$(my.source_constant:no)")
+  endnew
+endfunction
+
 # --------------------------------------------------------------------------------------------------
 # JavaScript
 # --------------------------------------------------------------------------------------------------
@@ -665,10 +672,11 @@ function js_append_cpp_implementation_method_return_model(parent, name, implemen
   endfor
 endfunction
 
-function js_append_cpp_interface_method_return_model(parent, name, interface_name)
+function js_append_cpp_interface_method_return_model(parent, name, interface_name, wrapper)
   new cpp_interface_method_return to my.parent
     cpp_interface_method_return.name = my.name
     cpp_interface_method_return.interface_name = my.interface_name
+    cpp_interface_method_return.type = js_cpp_implementation_type(my.wrapper)
   endnew
 endfunction
 
@@ -699,7 +707,7 @@ function js_append_resolved_return(parent, source_return, wrapper)
   elsif js_value_is_implementation_module(my.source_return, my.wrapper)
     return js_append_cpp_implementation_method_return_model(my.parent, my.cpp_method_return.name, my.source_return.impl, my.wrapper)
   elsif js_value_is_interface_module(my.source_return, my.wrapper)
-    return js_append_cpp_interface_method_return_model(my.parent, my.cpp_method_return.name, my.source_return.interface)
+    return js_append_cpp_interface_method_return_model(my.parent, my.cpp_method_return.name, my.source_return.interface, my.wrapper)
   endif
   echo_fatal("Unable to resolve return", my)
 endfunction

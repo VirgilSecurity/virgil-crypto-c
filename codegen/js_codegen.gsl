@@ -432,7 +432,7 @@ endfunction
 
 function js_cpp_create_cpp_interface_method_return(cpp_interface_method_return, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("// TODO: interface method return", my.indent_levels.first)
+  js_out("$(my.cpp_interface_method_return.type:no) $(my.cpp_interface_method_return.name:no);", my.indent_levels.first)
 endfunction
 
 function js_cpp_create_cpp_method_return(cpp_method, indent_level)
@@ -487,6 +487,24 @@ function js_cpp_create_method_call(cpp_method, cpp_class, indent_level)
     my.arguments = js_cpp_format_cpp_arguments_with_context(my.cpp_method, my.cpp_class)
   endif
   js_out("$(my.assignment)$(my.cpp_method.c_name:no)($(my.arguments:no));", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_method_error_handing(cpp_method, wrapper, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  if defined(my.cpp_method->cpp_error_method_return)
+    for my.wrapper.js_status
+      my.comparison = "$(my.cpp_method->cpp_error_method_return.name:no) = $(js_status.c_name:no)"
+      if first()
+        js_out("if ($(my.comparison:no)) {", my.indent_levels.first)
+      elsif last()
+        js_out("} else ($(my.comparison:no)) {", my.indent_levels.first)
+      else
+        js_out("} else if ($(my.comparison:no)) {", my.indent_levels.first)
+      endif
+      js_out("Nan::ThrowError(\"$(js_status.message:no)\");", my.indent_levels.second)
+    endfor
+    js_out("}", my.indent_levels.first)
+  endif
 endfunction
 
 function js_cpp_create_cpp_js_return(cpp_js_return, cpp_method, cpp_class, wrapper, indent_level)
@@ -574,6 +592,7 @@ function js_cpp_create_method(cpp_method, cpp_class, wrapper, indent_level)
   js_cpp_create_cpp_result_arguments(my.cpp_method, my.cpp_class, my.indent_levels.second)
   js_cpp_create_cpp_method_return(my.cpp_method, my.indent_levels.second)
   js_cpp_create_method_call(my.cpp_method, my.cpp_class, my.indent_levels.second)
+  js_cpp_create_method_error_handing(my.cpp_method, my.wrapper, my.indent_levels.second)
   js_cpp_create_method_return(my.cpp_method, my.cpp_class, my.wrapper, my.indent_levels.second)
   js_out("}", my.indent_levels.first)
 endfunction
