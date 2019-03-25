@@ -5,23 +5,38 @@
     <require module="assert" scope="private"/>
 
 
-    <macros name="alloc default" is_method="1">
+    <macroses definition="private">
+        Include external platform header if defined.
+
+        <code>
+            #ifdef VIRGIL_PLATFORM_INCLUDE_STATEMENT
+            #   include VIRGIL_PLATFORM_INCLUDE_STATEMENT
+            #endif
+        </code>
+    </macroses>
+
+
+    <macros name="alloc default" is_method="1" definition="private">
         Compile-time configuration of the default alloc function.
 
         <code>
-            #ifndef .(c_global_macros_alloc_default)
-            #   define  .(c_global_macros_alloc_default) (size) calloc (1, (size))
+            #ifdef VIRGIL_PLATFORM_ALLOC
+            #   define .(c_global_macros_alloc_default)(size) VIRGIL_PLATFORM_ALLOC((size))
+            #else
+            #   define .(c_global_macros_alloc_default)(size) calloc(1, (size))
             #endif
         </code>
     </macros>
 
 
-    <macros name="dealloc default" is_method="1">
+    <macros name="dealloc default" is_method="1" definition="private">
         Compile-time configuration of the default dealloc function.
 
         <code>
-            #ifndef .(c_global_macros_dealloc_default)
-            #   define  .(c_global_macros_dealloc_default) (mem) free ((mem))
+            #ifdef VIRGIL_PLATFORM_DEALLOC
+            #   define .(c_global_macros_dealloc_default)(mem) VIRGIL_PLATFORM_DEALLOC(mem)
+            #else
+            #   define .(c_global_macros_dealloc_default)(mem) free((mem))
             #endif
         </code>
     </macros>
@@ -61,7 +76,7 @@
         <return class="any" access="disown"/>
 
         <code>
-            return .(c_global_macros_alloc_default) (.(_argument_size));
+            return .(c_global_macros_alloc_default)(.(_argument_size));
         </code>
     </method>
 
@@ -72,7 +87,7 @@
         <argument name="mem" class="any" access="writeonly"/>
 
         <code>
-            .(c_global_macros_dealloc_default) (.(_argument_mem));
+            .(c_global_macros_dealloc_default)(.(_argument_mem));
         </code>
     </method>
 
@@ -86,7 +101,22 @@
         <return class="any" access="disown"/>
 
         <code>
-            return .(c_class_memory_variable_inner_alloc) (.(_argument_size));
+            return .(c_class_memory_variable_inner_alloc)(.(_argument_size));
+        </code>
+    </method>
+
+
+    <method name="calloc">
+        Allocate required amount of memory by usging current allocation function.
+        Returns NULL if memory allocation fails.
+
+        <argument name="count" type="size"/>
+        <argument name="size" type="size"/>
+
+        <return class="any" access="disown"/>
+
+        <code>
+            return .(c_class_memory_variable_inner_alloc)(.(_argument_count) * .(_argument_size));
         </code>
     </method>
 
@@ -97,7 +127,7 @@
         <argument name="mem" class="any" access="writeonly"/>
 
         <code>
-            .(c_class_memory_variable_inner_dealloc) (.(_argument_mem));
+            .(c_class_memory_variable_inner_dealloc)(.(_argument_mem));
         </code>
     </method>
 
@@ -109,8 +139,8 @@
         <argument name="dealloc" callback=".(global_callback_dealloc)"/>
 
         <code>
-            .(c_class_assert_macros_ptr) (.(_argument_alloc));
-            .(c_class_assert_macros_ptr) (.(_argument_dealloc));
+            .(c_class_assert_macros_ptr)(.(_argument_alloc));
+            .(c_class_assert_macros_ptr)(.(_argument_dealloc));
 
             .(c_class_memory_variable_inner_alloc) = .(_argument_alloc);
             .(c_class_memory_variable_inner_dealloc) = .(_argument_dealloc);
@@ -121,14 +151,14 @@
     <method name="zeroize">
         Zeroize memory.
         Note, this function can be reduced by compiler during optimization step.
-        For sensitive data erasing use .(c_global_method_erase) ().
+        For sensitive data erasing use .(c_global_method_erase)().
 
         <argument name="mem" class="any" access="writeonly"/>
         <argument name="size" type="size"/>
 
         <code>
-            .(c_class_assert_macros_ptr) (.(_argument_mem));
-            memset (.(_argument_mem), 0, .(_argument_size));
+            .(c_class_assert_macros_ptr)(.(_argument_mem));
+            memset(.(_argument_mem), 0, .(_argument_size));
         </code>
     </method>
 
@@ -141,7 +171,7 @@
         <argument name="size" type="size"/>
 
         <code>
-            .(c_class_assert_macros_ptr) (.(_argument_mem));
+            .(c_class_assert_macros_ptr)(.(_argument_mem));
 
             volatile uint8_t* p = (uint8_t*).(_argument_mem);
             while (.(_argument_size)--) { *p++ = 0; }
