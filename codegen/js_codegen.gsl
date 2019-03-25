@@ -356,8 +356,8 @@ endfunction
 
 function js_cpp_create_cpp_error_context_result_argument(cpp_error_context_result_argument, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("$(my.cpp_error_context_result_argument.c_class:no)_t $(my.cpp_error_context_result_argument.name:no);", my.indent_levels.first)
-  js_out("$(my.cpp_error_context_result_argument.c_class:no)_error(&$(my.cpp_error_context_result_argument.name:no));", my.indent_levels.first)
+  js_out("$(my.cpp_error_context_result_argument.c_type:no) $(my.cpp_error_context_result_argument.name:no);", my.indent_levels.first)
+  js_out("$(my.cpp_error_context_result_argument.reset_method:no)(&$(my.cpp_error_context_result_argument.name:no));", my.indent_levels.first)
 endfunction
 
 function js_cpp_create_cpp_result_arguments(cpp_method, cpp_class, indent_level)
@@ -489,21 +489,46 @@ function js_cpp_create_method_call(cpp_method, cpp_class, indent_level)
   js_out("$(my.assignment)$(my.cpp_method.c_name:no)($(my.arguments:no));", my.indent_levels.first)
 endfunction
 
-function js_cpp_create_method_error_handing(cpp_method, wrapper, indent_level)
+function js_cpp_create_cpp_error_context_result_argument_error_handling(cpp_error_context_result_argument, wrapper, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
+  my.status_name = "$(my.cpp_error_context_result_argument.name:no)_status"
+  js_out("$(my.wrapper.prefix:no)_status_t $(my.status_name:no) = $(my.cpp_error_context_result_argument.get_status:no)(&$(my.cpp_error_context_result_argument.name:no));", my.indent_levels.first)
+  for my.wrapper.js_status
+    my.comparison = "$(my.status_name:no) = $(js_status.c_name:no)"
+    if first()
+      js_out("if ($(my.comparison:no)) {", my.indent_levels.first)
+    elsif last()
+      js_out("} else ($(my.comparison:no)) {", my.indent_levels.first)
+    else
+      js_out("} else if ($(my.comparison:no)) {", my.indent_levels.first)
+    endif
+    js_out("Nan::ThrowError(\"$(js_status.message:no)\");", my.indent_levels.second)
+  endfor
+  js_out("}", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_cpp_error_method_return_error_handling(cpp_error_method_return, wrapper, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  for my.wrapper.js_status
+    my.comparison = "$(my.cpp_error_method_return.name:no) = $(js_status.c_name:no)"
+    if first()
+      js_out("if ($(my.comparison:no)) {", my.indent_levels.first)
+    elsif last()
+      js_out("} else ($(my.comparison:no)) {", my.indent_levels.first)
+    else
+      js_out("} else if ($(my.comparison:no)) {", my.indent_levels.first)
+    endif
+    js_out("Nan::ThrowError(\"$(js_status.message:no)\");", my.indent_levels.second)
+  endfor
+  js_out("}", my.indent_levels.first)
+endfunction
+
+function js_cpp_create_method_error_handing(cpp_method, wrapper, indent_level)
+  for my.cpp_method.cpp_error_context_result_argument
+    js_cpp_create_cpp_error_context_result_argument_error_handling(cpp_error_context_result_argument, my.wrapper, my.indent_level)
+  endfor
   if defined(my.cpp_method->cpp_error_method_return)
-    for my.wrapper.js_status
-      my.comparison = "$(my.cpp_method->cpp_error_method_return.name:no) = $(js_status.c_name:no)"
-      if first()
-        js_out("if ($(my.comparison:no)) {", my.indent_levels.first)
-      elsif last()
-        js_out("} else ($(my.comparison:no)) {", my.indent_levels.first)
-      else
-        js_out("} else if ($(my.comparison:no)) {", my.indent_levels.first)
-      endif
-      js_out("Nan::ThrowError(\"$(js_status.message:no)\");", my.indent_levels.second)
-    endfor
-    js_out("}", my.indent_levels.first)
+    js_cpp_create_cpp_error_method_return_error_handling(my.cpp_method->cpp_error_method_return, my.wrapper, my.indent_level)
   endif
 endfunction
 

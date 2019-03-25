@@ -543,7 +543,9 @@ endfunction
 function js_append_cpp_error_context_result_argument_model(parent, source_argument, wrapper)
   new cpp_error_context_result_argument to my.parent
     cpp_error_context_result_argument.name = js_cpp_variable_name(my.source_argument.name)
-    cpp_error_context_result_argument.c_class = "$(my.wrapper.prefix:no)_$(my.source_argument.class:c)"
+    cpp_error_context_result_argument.c_type = "$(my.wrapper.prefix:no)_error_t"
+    cpp_error_context_result_argument.reset_method = "$(my.wrapper.prefix:no)_error_reset"
+    cpp_error_context_result_argument.get_status = "$(my.wrapper.prefix:no)_error_status"
     return cpp_error_context_result_argument
   endnew
 endfunction
