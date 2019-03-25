@@ -76,7 +76,7 @@
     <!--<interface name="salted kdf"/>-->
     <interface name="hash"/>
     <interface name="mac"/>
-    <!--<interface name="kdf"/>-->
+    <interface name="kdf"/>
     <!--<interface name="random"/>-->
     <!--<interface name="entropy source"/>-->
 

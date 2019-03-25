@@ -50,11 +50,13 @@ option(VSCF_MULTI_THREAD "Enable multi-threading safety for foundation library."
 option(VSCF_DEFAULTS "Enable interface 'defaults'." ON)
 option(VSCF_HASH "Enable interface 'hash'." ON)
 option(VSCF_MAC "Enable interface 'mac'." ON)
+option(VSCF_KDF "Enable interface 'kdf'." ON)
 option(VSCF_ALG "Enable interface 'alg'." ON)
 option(VSCF_IOTELIC_SHA256 "Enable implementation 'iotelic sha256'." ON)
 option(VSCF_IOTELIC_SHA384 "Enable implementation 'iotelic sha384'." ON)
 option(VSCF_IOTELIC_SHA512 "Enable implementation 'iotelic sha512'." ON)
 option(VSCF_IOTELIC_HMAC "Enable implementation 'iotelic hmac'." ON)
+option(VSCF_IOTELIC_KDF2 "Enable implementation 'iotelic kdf2'." ON)
 option(VSCF_ERROR_CTX "Enable class 'error ctx'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
@@ -62,11 +64,13 @@ mark_as_advanced(
         VSCF_DEFAULTS
         VSCF_HASH
         VSCF_MAC
+        VSCF_KDF
         VSCF_ALG
         VSCF_IOTELIC_SHA256
         VSCF_IOTELIC_SHA384
         VSCF_IOTELIC_SHA512
         VSCF_IOTELIC_HMAC
+        VSCF_IOTELIC_KDF2
         VSCF_ERROR_CTX
         )
 
@@ -101,6 +105,15 @@ if(VSCF_IOTELIC_HMAC AND NOT VSCF_ALG)
     message("-- error --")
     message("--")
     message("Feature VSCF_IOTELIC_HMAC depends on the feature:")
+    message("     VSCF_ALG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_IOTELIC_KDF2 AND NOT VSCF_ALG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_IOTELIC_KDF2 depends on the feature:")
     message("     VSCF_ALG - which is disabled.")
     message("--")
     message(FATAL_ERROR)

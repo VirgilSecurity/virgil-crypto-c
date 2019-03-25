@@ -51,25 +51,20 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_iotelic_hmac_internal.h"
+#include "vscf_iotelic_kdf2_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_iotelic_hmac_defs.h"
+#include "vscf_iotelic_kdf2_defs.h"
 #include "vscf_alg.h"
 #include "vscf_alg_api.h"
-#include "vscf_mac.h"
-#include "vscf_mac_api.h"
+#include "vscf_kdf.h"
+#include "vscf_kdf_api.h"
 #include "vscf_hash.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
 // clang-format on
 //  @end
-
-
-#include <iotelic_sp_interface.h>
-#include <vsc_buffer.h>
-#include <iotelic/hmac.h>
 
 
 //  @generated
@@ -79,7 +74,7 @@
 // --------------------------------------------------------------------------
 
 static const vscf_api_t *
-vscf_iotelic_hmac_find_api(vscf_api_tag_t api_tag);
+vscf_iotelic_kdf2_find_api(vscf_api_tag_t api_tag);
 
 //
 //  Configuration of the interface API 'alg api'.
@@ -93,94 +88,71 @@ static const vscf_alg_api_t alg_api = {
     //
     //  Provide algorithm identificator.
     //
-    (vscf_alg_api_alg_id_fn)vscf_iotelic_hmac_alg_id,
+    (vscf_alg_api_alg_id_fn)vscf_iotelic_kdf2_alg_id,
     //
     //  Produce object with algorithm information and configuration parameters.
     //
-    (vscf_alg_api_produce_alg_info_fn)vscf_iotelic_hmac_produce_alg_info,
+    (vscf_alg_api_produce_alg_info_fn)vscf_iotelic_kdf2_produce_alg_info,
     //
     //  Restore algorithm configuration from the given object.
     //
-    (vscf_alg_api_restore_alg_info_fn)vscf_iotelic_hmac_restore_alg_info
+    (vscf_alg_api_restore_alg_info_fn)vscf_iotelic_kdf2_restore_alg_info
 };
 
 //
-//  Configuration of the interface API 'mac api'.
+//  Configuration of the interface API 'kdf api'.
 //
-static const vscf_mac_api_t mac_api = {
+static const vscf_kdf_api_t kdf_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'mac' MUST be equal to the 'vscf_api_tag_MAC'.
+    //  For interface 'kdf' MUST be equal to the 'vscf_api_tag_KDF'.
     //
-    vscf_api_tag_MAC,
+    vscf_api_tag_KDF,
     //
-    //  Size of the digest (mac output) in bytes.
+    //  Derive key of the requested length from the given data.
     //
-    (vscf_mac_api_digest_len_fn)vscf_iotelic_hmac_digest_len,
-    //
-    //  Calculate MAC over given data.
-    //
-    (vscf_mac_api_mac_fn)vscf_iotelic_hmac_mac,
-    //
-    //  Start a new MAC.
-    //
-    (vscf_mac_api_start_fn)vscf_iotelic_hmac_start,
-    //
-    //  Add given data to the MAC.
-    //
-    (vscf_mac_api_update_fn)vscf_iotelic_hmac_update,
-    //
-    //  Accomplish MAC and return it's result (a message digest).
-    //
-    (vscf_mac_api_finish_fn)vscf_iotelic_hmac_finish,
-    //
-    //  Prepare to authenticate a new message with the same key
-    //  as the previous MAC operation.
-    //
-    (vscf_mac_api_reset_fn)vscf_iotelic_hmac_reset
+    (vscf_kdf_api_derive_fn)vscf_iotelic_kdf2_derive
 };
 
 //
-//  Compile-time known information about 'iotelic hmac' implementation.
+//  Compile-time known information about 'iotelic kdf2' implementation.
 //
 static const vscf_impl_info_t info = {
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
     //
-    vscf_iotelic_hmac_find_api,
+    vscf_iotelic_kdf2_find_api,
     //
     //  Release acquired inner resources.
     //
-    (vscf_impl_cleanup_fn)vscf_iotelic_hmac_cleanup,
+    (vscf_impl_cleanup_fn)vscf_iotelic_kdf2_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vscf_impl_delete_fn)vscf_iotelic_hmac_delete
+    (vscf_impl_delete_fn)vscf_iotelic_kdf2_delete
 };
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_iotelic_hmac_init(vscf_iotelic_hmac_t *self) {
+vscf_iotelic_kdf2_init(vscf_iotelic_kdf2_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_iotelic_hmac_t));
+    vscf_zeroize(self, sizeof(vscf_iotelic_kdf2_t));
 
     self->info = &info;
     self->refcnt = 1;
-
-    vscf_iotelic_hmac_init_ctx(self);
 }
 
 //
 //  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_iotelic_hmac_init()'.
+//  This is a reverse action of the function 'vscf_iotelic_kdf2_init()'.
 //
 VSCF_PUBLIC void
-vscf_iotelic_hmac_cleanup(vscf_iotelic_hmac_t *self) {
+vscf_iotelic_kdf2_cleanup(vscf_iotelic_kdf2_t *self) {
 
     if (self == NULL || self->info == NULL) {
         return;
@@ -194,36 +166,34 @@ vscf_iotelic_hmac_cleanup(vscf_iotelic_hmac_t *self) {
         return;
     }
 
-    vscf_iotelic_hmac_release_hash(self);
+    vscf_iotelic_kdf2_release_hash(self);
 
-    vscf_iotelic_hmac_cleanup_ctx(self);
-
-    vscf_zeroize(self, sizeof(vscf_iotelic_hmac_t));
+    vscf_zeroize(self, sizeof(vscf_iotelic_kdf2_t));
 }
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_iotelic_hmac_t *
-vscf_iotelic_hmac_new(void) {
+VSCF_PUBLIC vscf_iotelic_kdf2_t *
+vscf_iotelic_kdf2_new(void) {
 
-    vscf_iotelic_hmac_t *self = (vscf_iotelic_hmac_t *) vscf_alloc(sizeof (vscf_iotelic_hmac_t));
+    vscf_iotelic_kdf2_t *self = (vscf_iotelic_kdf2_t *) vscf_alloc(sizeof (vscf_iotelic_kdf2_t));
     VSCF_ASSERT_ALLOC(self);
 
-    vscf_iotelic_hmac_init(self);
+    vscf_iotelic_kdf2_init(self);
 
     return self;
 }
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_iotelic_hmac_new()'.
+//  This is a reverse action of the function 'vscf_iotelic_kdf2_new()'.
 //
 VSCF_PUBLIC void
-vscf_iotelic_hmac_delete(vscf_iotelic_hmac_t *self) {
+vscf_iotelic_kdf2_delete(vscf_iotelic_kdf2_t *self) {
 
-    vscf_iotelic_hmac_cleanup(self);
+    vscf_iotelic_kdf2_cleanup(self);
 
     if (self && (self->refcnt == 0)) {
         vscf_dealloc(self);
@@ -232,45 +202,45 @@ vscf_iotelic_hmac_delete(vscf_iotelic_hmac_t *self) {
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_iotelic_hmac_new()'.
+//  This is a reverse action of the function 'vscf_iotelic_kdf2_new()'.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_iotelic_hmac_destroy(vscf_iotelic_hmac_t **self_ref) {
+vscf_iotelic_kdf2_destroy(vscf_iotelic_kdf2_t **self_ref) {
 
     VSCF_ASSERT_PTR(self_ref);
 
-    vscf_iotelic_hmac_t *self = *self_ref;
+    vscf_iotelic_kdf2_t *self = *self_ref;
     *self_ref = NULL;
 
-    vscf_iotelic_hmac_delete(self);
+    vscf_iotelic_kdf2_delete(self);
 }
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_iotelic_hmac_t *
-vscf_iotelic_hmac_shallow_copy(vscf_iotelic_hmac_t *self) {
+VSCF_PUBLIC vscf_iotelic_kdf2_t *
+vscf_iotelic_kdf2_shallow_copy(vscf_iotelic_kdf2_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_iotelic_hmac_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
+    return (vscf_iotelic_kdf2_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
-//  Return size of 'vscf_iotelic_hmac_t' type.
+//  Return size of 'vscf_iotelic_kdf2_t' type.
 //
 VSCF_PUBLIC size_t
-vscf_iotelic_hmac_impl_size(void) {
+vscf_iotelic_kdf2_impl_size(void) {
 
-    return sizeof (vscf_iotelic_hmac_t);
+    return sizeof (vscf_iotelic_kdf2_t);
 }
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_iotelic_hmac_impl(vscf_iotelic_hmac_t *self) {
+vscf_iotelic_kdf2_impl(vscf_iotelic_kdf2_t *self) {
 
     VSCF_ASSERT_PTR(self);
     return (vscf_impl_t *)(self);
@@ -280,7 +250,7 @@ vscf_iotelic_hmac_impl(vscf_iotelic_hmac_t *self) {
 //  Setup dependency to the interface 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_iotelic_hmac_use_hash(vscf_iotelic_hmac_t *self, vscf_impl_t *hash) {
+vscf_iotelic_kdf2_use_hash(vscf_iotelic_kdf2_t *self, vscf_impl_t *hash) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hash);
@@ -296,7 +266,7 @@ vscf_iotelic_hmac_use_hash(vscf_iotelic_hmac_t *self, vscf_impl_t *hash) {
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_iotelic_hmac_take_hash(vscf_iotelic_hmac_t *self, vscf_impl_t *hash) {
+vscf_iotelic_kdf2_take_hash(vscf_iotelic_kdf2_t *self, vscf_impl_t *hash) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hash);
@@ -311,7 +281,7 @@ vscf_iotelic_hmac_take_hash(vscf_iotelic_hmac_t *self, vscf_impl_t *hash) {
 //  Release dependency to the interface 'hash'.
 //
 VSCF_PUBLIC void
-vscf_iotelic_hmac_release_hash(vscf_iotelic_hmac_t *self) {
+vscf_iotelic_kdf2_release_hash(vscf_iotelic_kdf2_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -319,13 +289,13 @@ vscf_iotelic_hmac_release_hash(vscf_iotelic_hmac_t *self) {
 }
 
 static const vscf_api_t *
-vscf_iotelic_hmac_find_api(vscf_api_tag_t api_tag) {
+vscf_iotelic_kdf2_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG:
             return (const vscf_api_t *) &alg_api;
-        case vscf_api_tag_MAC:
-            return (const vscf_api_t *) &mac_api;
+        case vscf_api_tag_KDF:
+            return (const vscf_api_t *) &kdf_api;
         default:
             return NULL;
     }

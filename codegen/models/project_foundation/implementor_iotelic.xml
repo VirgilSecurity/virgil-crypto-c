@@ -74,4 +74,18 @@
         <property name="ipad" class="buffer" access="readwrite"/>
     </implementation>
 
+    <implementation name="kdf2">
+        Virgil Security implementation of the KDF2 (ISO-18033-2) algorithm.
+
+        <interface name="alg"/>
+        <interface name="kdf"/>
+
+        <require interface="alg"/>
+        <!--        <require interface="alg info"/>  -->
+        <!--        <require class="alg factory"/>  -->
+        <!--        <require impl="hash based alg info"/> -->
+
+        <dependency name="hash" interface="hash"/>
+    </implementation>
+
 </implementor>

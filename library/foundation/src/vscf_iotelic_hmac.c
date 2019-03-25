@@ -61,9 +61,11 @@
 // clang-format on
 //  @end
 
+
 #include <iotelic_sp_interface.h>
 #include <vsc_buffer.h>
 #include <iotelic/hmac.h>
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -86,6 +88,7 @@
 //
 VSCF_PRIVATE void
 vscf_iotelic_hmac_init_ctx(vscf_iotelic_hmac_t *self) {
+
     //  TODO: This is STUB. Implement me.
     (void)self;
 }
@@ -97,6 +100,7 @@ vscf_iotelic_hmac_init_ctx(vscf_iotelic_hmac_t *self) {
 //
 VSCF_PRIVATE void
 vscf_iotelic_hmac_cleanup_ctx(vscf_iotelic_hmac_t *self) {
+
     //  TODO: This is STUB. Implement me.
     (void)self;
 }
@@ -140,6 +144,7 @@ vscf_iotelic_hmac_restore_alg_info(vscf_iotelic_hmac_t *self, const vscf_impl_t 
 //
 VSCF_PUBLIC size_t
 vscf_iotelic_hmac_digest_len(vscf_iotelic_hmac_t *self) {
+
     //  TODO: This is STUB. Implement me.
 
     VSCF_UNUSED(self);
@@ -151,6 +156,7 @@ vscf_iotelic_hmac_digest_len(vscf_iotelic_hmac_t *self) {
 //
 VSCF_PUBLIC void
 vscf_iotelic_hmac_mac(vscf_iotelic_hmac_t *self, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac) {
+
     hmac_cmd_t cmd;
     size_t used_bytes = vsc_buffer_len(mac);
 
@@ -186,6 +192,7 @@ vscf_iotelic_hmac_mac(vscf_iotelic_hmac_t *self, vsc_data_t key, vsc_data_t data
 //
 VSCF_PUBLIC void
 vscf_iotelic_hmac_start(vscf_iotelic_hmac_t *self, vsc_data_t key) {
+
     //  TODO: This is STUB. Implement me.
 
     VSCF_UNUSED(self);
@@ -197,6 +204,7 @@ vscf_iotelic_hmac_start(vscf_iotelic_hmac_t *self, vsc_data_t key) {
 //
 VSCF_PUBLIC void
 vscf_iotelic_hmac_update(vscf_iotelic_hmac_t *self, vsc_data_t data) {
+
     //  TODO: This is STUB. Implement me.
 
     VSCF_UNUSED(self);
@@ -208,6 +216,7 @@ vscf_iotelic_hmac_update(vscf_iotelic_hmac_t *self, vsc_data_t data) {
 //
 VSCF_PUBLIC void
 vscf_iotelic_hmac_finish(vscf_iotelic_hmac_t *self, vsc_buffer_t *mac) {
+
     //  TODO: This is STUB. Implement me.
 
     VSCF_UNUSED(self);
@@ -220,6 +229,7 @@ vscf_iotelic_hmac_finish(vscf_iotelic_hmac_t *self, vsc_buffer_t *mac) {
 //
 VSCF_PUBLIC void
 vscf_iotelic_hmac_reset(vscf_iotelic_hmac_t *self) {
+
     //  TODO: This is STUB. Implement me.
 
     VSCF_UNUSED(self);

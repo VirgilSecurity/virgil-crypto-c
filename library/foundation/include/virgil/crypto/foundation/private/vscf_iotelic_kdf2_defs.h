@@ -47,14 +47,19 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Types of the 'iotelic kdf2' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_API_H_INCLUDED
-#define VSCF_API_H_INCLUDED
+#ifndef VSCF_IOTELIC_KDF2_DEFS_H_INCLUDED
+#define VSCF_IOTELIC_KDF2_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_iotelic_kdf2.h"
+#include "vscf_impl.h"
 
 // clang-format on
 //  @end
@@ -72,23 +77,22 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Handles implementation details.
 //
-enum vscf_api_tag_t {
-    vscf_api_tag_BEGIN = 0,
-    vscf_api_tag_ALG,
-    vscf_api_tag_DEFAULTS,
-    vscf_api_tag_HASH,
-    vscf_api_tag_KDF,
-    vscf_api_tag_MAC,
-    vscf_api_tag_END
+struct vscf_iotelic_kdf2_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the interface 'hash'.
+    //
+    vscf_impl_t *hash;
 };
-typedef enum vscf_api_tag_t vscf_api_tag_t;
-
-//
-//  Generic type for any 'API' object.
-//
-typedef struct vscf_api_t vscf_api_t;
 
 
 // --------------------------------------------------------------------------
@@ -104,5 +108,5 @@ typedef struct vscf_api_t vscf_api_t;
 
 
 //  @footer
-#endif // VSCF_API_H_INCLUDED
+#endif // VSCF_IOTELIC_KDF2_DEFS_H_INCLUDED
 //  @end

@@ -47,14 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_API_H_INCLUDED
-#define VSCF_API_H_INCLUDED
+#ifndef VSCF_IOTELIC_KDF2_INTERNAL_H_INCLUDED
+#define VSCF_IOTELIC_KDF2_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_iotelic_kdf2.h"
 
 // clang-format on
 //  @end
@@ -71,25 +72,6 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Enumerates all possible interfaces within crypto library.
-//
-enum vscf_api_tag_t {
-    vscf_api_tag_BEGIN = 0,
-    vscf_api_tag_ALG,
-    vscf_api_tag_DEFAULTS,
-    vscf_api_tag_HASH,
-    vscf_api_tag_KDF,
-    vscf_api_tag_MAC,
-    vscf_api_tag_END
-};
-typedef enum vscf_api_tag_t vscf_api_tag_t;
-
-//
-//  Generic type for any 'API' object.
-//
-typedef struct vscf_api_t vscf_api_t;
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -104,5 +86,5 @@ typedef struct vscf_api_t vscf_api_t;
 
 
 //  @footer
-#endif // VSCF_API_H_INCLUDED
+#endif // VSCF_IOTELIC_KDF2_INTERNAL_H_INCLUDED
 //  @end

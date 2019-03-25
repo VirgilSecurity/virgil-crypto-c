@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains 'iotelic kdf2' implementation.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,51 +50,26 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_API_H_INCLUDED
-#define VSCF_API_H_INCLUDED
-
-#include "vscf_library.h"
+#include "vscf_iotelic_kdf2.h"
+#include "vscf_assert.h"
+#include "vscf_memory.h"
+#include "vscf_alg.h"
+#include "vscf_hash.h"
+#include "vscf_iotelic_kdf2_defs.h"
+#include "vscf_iotelic_kdf2_internal.h"
 
 // clang-format on
 //  @end
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+#include <iotelic_sp_interface.h>
+#include <vsc_buffer.h>
+#include <iotelic/kdf.h>
 
 //  @generated
 // --------------------------------------------------------------------------
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Enumerates all possible interfaces within crypto library.
-//
-enum vscf_api_tag_t {
-    vscf_api_tag_BEGIN = 0,
-    vscf_api_tag_ALG,
-    vscf_api_tag_DEFAULTS,
-    vscf_api_tag_HASH,
-    vscf_api_tag_KDF,
-    vscf_api_tag_MAC,
-    vscf_api_tag_END
-};
-typedef enum vscf_api_tag_t vscf_api_tag_t;
-
-//
-//  Generic type for any 'API' object.
-//
-typedef struct vscf_api_t vscf_api_t;
 
 
 // --------------------------------------------------------------------------
@@ -98,11 +79,72 @@ typedef struct vscf_api_t vscf_api_t;
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_iotelic_kdf2_alg_id(const vscf_iotelic_kdf2_t *self) {
+
+    VSCF_UNUSED(self);
+
+    return vscf_alg_id_KDF2;
 }
-#endif
 
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_iotelic_kdf2_produce_alg_info(const vscf_iotelic_kdf2_t *self) {
 
-//  @footer
-#endif // VSCF_API_H_INCLUDED
-//  @end
+    VSCF_UNUSED(self);
+
+    return NULL;
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_iotelic_kdf2_restore_alg_info(vscf_iotelic_kdf2_t *self, const vscf_impl_t *alg_info) {
+
+    VSCF_UNUSED(self);
+    VSCF_UNUSED(alg_info);
+
+    return vscf_error_BAD_ARGUMENTS;
+}
+
+//
+//  Derive key of the requested length from the given data.
+//
+VSCF_PUBLIC void
+vscf_iotelic_kdf2_derive(vscf_iotelic_kdf2_t *self, vsc_data_t data, size_t key_len, vsc_buffer_t *key) {
+    kdf_cmd_t cmd;
+    size_t used_bytes = vsc_buffer_len(key);
+
+    VSCF_UNUSED(key_len);
+
+    cmd.kdf_type = KDF_2;
+    cmd.input = data.bytes;
+    cmd.input_sz = data.len;
+
+    switch (vscf_alg_alg_id(self->hash)) {
+    case vscf_alg_id_SHA256:
+        cmd.hash_type = HASH_SHA_256;
+        break;
+    case vscf_alg_id_SHA384:
+        cmd.hash_type = HASH_SHA_384;
+        break;
+    case vscf_alg_id_SHA512:
+        cmd.hash_type = HASH_SHA_512;
+        break;
+    default:
+        cmd.hash_type = HASH_SHA_INVALID;
+        VSCF_ASSERT(false);
+        break;
+    }
+
+    vs_iot_execute_crypto_op(
+            VS_IOT_KDF, (void *)&cmd, sizeof(cmd), vsc_buffer_unused_bytes(key), vsc_buffer_capacity(key), &used_bytes);
+
+    vsc_buffer_inc_used(key, used_bytes);
+}
