@@ -79,6 +79,7 @@ enum vscf_api_tag_t {
     vscf_api_tag_ALG,
     vscf_api_tag_DEFAULTS,
     vscf_api_tag_HASH,
+    vscf_api_tag_MAC,
     vscf_api_tag_END
 };
 typedef enum vscf_api_tag_t vscf_api_tag_t;

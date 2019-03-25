@@ -59,8 +59,10 @@
 // clang-format on
 //  @end
 
+
 #include <iotelic_sp_interface.h>
 #include <virgil/crypto/common/vsc_buffer.h>
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -74,6 +76,7 @@
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
 
 //
 //  Provide algorithm identificator.
@@ -111,6 +114,7 @@ vscf_iotelic_sha512_restore_alg_info(vscf_iotelic_sha512_t *self, const vscf_imp
 //
 VSCF_PUBLIC void
 vscf_iotelic_sha512_hash(vsc_data_t data, vsc_buffer_t *digest) {
+
     size_t used_bytes = vsc_buffer_len(digest);
 
     vs_iot_execute_crypto_op(VS_IOT_HASH_SHA512, (void *)data.bytes, data.len, vsc_buffer_unused_bytes(digest),

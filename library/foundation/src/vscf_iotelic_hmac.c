@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'iotelic sha384' implementation.
+//  This module contains 'iotelic hmac' implementation.
 // --------------------------------------------------------------------------
 
 
@@ -50,19 +50,20 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_iotelic_sha384.h"
+#include "vscf_iotelic_hmac.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_iotelic_sha384_defs.h"
-#include "vscf_iotelic_sha384_internal.h"
+#include "vscf_alg.h"
+#include "vscf_hash.h"
+#include "vscf_iotelic_hmac_defs.h"
+#include "vscf_iotelic_hmac_internal.h"
 
 // clang-format on
 //  @end
 
-
 #include <iotelic_sp_interface.h>
-#include <virgil/crypto/common/vsc_buffer.h>
-
+#include <vsc_buffer.h>
+#include <iotelic/hmac.h>
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -79,22 +80,46 @@
 
 
 //
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_iotelic_hmac_init() is called.
+//  Note, that context is already zeroed.
+//
+VSCF_PRIVATE void
+vscf_iotelic_hmac_init_ctx(vscf_iotelic_hmac_t *self) {
+    //  TODO: This is STUB. Implement me.
+    (void)self;
+}
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_iotelic_hmac_cleanup_ctx(vscf_iotelic_hmac_t *self) {
+    //  TODO: This is STUB. Implement me.
+    (void)self;
+}
+
+//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_iotelic_sha384_alg_id(const vscf_iotelic_sha384_t *self) {
+vscf_iotelic_hmac_alg_id(const vscf_iotelic_hmac_t *self) {
 
     VSCF_UNUSED(self);
-    return vscf_alg_id_SHA384;
+
+    return vscf_alg_id_HMAC;
 }
 
 //
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_iotelic_sha384_produce_alg_info(const vscf_iotelic_sha384_t *self) {
+vscf_iotelic_hmac_produce_alg_info(const vscf_iotelic_hmac_t *self) {
 
     VSCF_UNUSED(self);
+
     return NULL;
 }
 
@@ -102,52 +127,100 @@ vscf_iotelic_sha384_produce_alg_info(const vscf_iotelic_sha384_t *self) {
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_iotelic_sha384_restore_alg_info(vscf_iotelic_sha384_t *self, const vscf_impl_t *alg_info) {
+vscf_iotelic_hmac_restore_alg_info(vscf_iotelic_hmac_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_UNUSED(self);
     VSCF_UNUSED(alg_info);
+
     return vscf_error_BAD_ARGUMENTS;
 }
 
 //
-//  Calculate hash over given data.
+//  Size of the digest (mac output) in bytes.
 //
-VSCF_PUBLIC void
-vscf_iotelic_sha384_hash(vsc_data_t data, vsc_buffer_t *digest) {
-
-    size_t used_bytes = vsc_buffer_len(digest);
-
-    vs_iot_execute_crypto_op(VS_IOT_HASH_SHA384, (void *)data.bytes, data.len, vsc_buffer_unused_bytes(digest),
-            vsc_buffer_capacity(digest), &used_bytes);
-
-    vsc_buffer_inc_used(digest, used_bytes);
-}
-
-//
-//  Start a new hashing.
-//
-VSCF_PUBLIC void
-vscf_iotelic_sha384_start(vscf_iotelic_sha384_t *self) {
+VSCF_PUBLIC size_t
+vscf_iotelic_hmac_digest_len(vscf_iotelic_hmac_t *self) {
+    //  TODO: This is STUB. Implement me.
 
     VSCF_UNUSED(self);
+    return 0;
 }
 
 //
-//  Add given data to the hash.
+//  Calculate MAC over given data.
 //
 VSCF_PUBLIC void
-vscf_iotelic_sha384_update(vscf_iotelic_sha384_t *self, vsc_data_t data) {
+vscf_iotelic_hmac_mac(vscf_iotelic_hmac_t *self, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac) {
+    hmac_cmd_t cmd;
+    size_t used_bytes = vsc_buffer_len(mac);
+
+    cmd.key = key.bytes;
+    cmd.key_sz = key.len;
+    cmd.input = data.bytes;
+    cmd.input_sz = data.len;
+
+    switch (vscf_alg_alg_id(self->hash)) {
+    case vscf_alg_id_SHA256:
+        cmd.hash_type = HASH_SHA_256;
+        break;
+    case vscf_alg_id_SHA384:
+        cmd.hash_type = HASH_SHA_384;
+        break;
+    case vscf_alg_id_SHA512:
+        cmd.hash_type = HASH_SHA_512;
+        break;
+    default:
+        cmd.hash_type = HASH_SHA_INVALID;
+        VSCF_ASSERT(false);
+        break;
+    }
+
+    vs_iot_execute_crypto_op(VS_IOT_HMAC, (void *)&cmd, sizeof(cmd), vsc_buffer_unused_bytes(mac),
+            vsc_buffer_capacity(mac), &used_bytes);
+
+    vsc_buffer_inc_used(mac, used_bytes);
+}
+
+//
+//  Start a new MAC.
+//
+VSCF_PUBLIC void
+vscf_iotelic_hmac_start(vscf_iotelic_hmac_t *self, vsc_data_t key) {
+    //  TODO: This is STUB. Implement me.
+
+    VSCF_UNUSED(self);
+    VSCF_UNUSED(key);
+}
+
+//
+//  Add given data to the MAC.
+//
+VSCF_PUBLIC void
+vscf_iotelic_hmac_update(vscf_iotelic_hmac_t *self, vsc_data_t data) {
+    //  TODO: This is STUB. Implement me.
 
     VSCF_UNUSED(self);
     VSCF_UNUSED(data);
 }
 
 //
-//  Accompilsh hashing and return it's result (a message digest).
+//  Accomplish MAC and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_iotelic_sha384_finish(vscf_iotelic_sha384_t *self, vsc_buffer_t *digest) {
+vscf_iotelic_hmac_finish(vscf_iotelic_hmac_t *self, vsc_buffer_t *mac) {
+    //  TODO: This is STUB. Implement me.
 
     VSCF_UNUSED(self);
-    VSCF_UNUSED(digest);
+    VSCF_UNUSED(mac);
+}
+
+//
+//  Prepare to authenticate a new message with the same key
+//  as the previous MAC operation.
+//
+VSCF_PUBLIC void
+vscf_iotelic_hmac_reset(vscf_iotelic_hmac_t *self) {
+    //  TODO: This is STUB. Implement me.
+
+    VSCF_UNUSED(self);
 }

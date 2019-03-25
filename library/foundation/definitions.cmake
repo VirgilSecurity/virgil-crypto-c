@@ -56,10 +56,12 @@ target_compile_definitions(foundation
             "VSCF_MULTI_THREAD=$<BOOL:${VSCF_MULTI_THREAD}>"
             "VSCF_DEFAULTS=$<BOOL:${VSCF_DEFAULTS}>"
             "VSCF_HASH=$<BOOL:${VSCF_HASH}>"
+            "VSCF_MAC=$<BOOL:${VSCF_MAC}>"
             "VSCF_ALG=$<BOOL:${VSCF_ALG}>"
             "VSCF_IOTELIC_SHA256=$<BOOL:${VSCF_IOTELIC_SHA256}>"
             "VSCF_IOTELIC_SHA384=$<BOOL:${VSCF_IOTELIC_SHA384}>"
             "VSCF_IOTELIC_SHA512=$<BOOL:${VSCF_IOTELIC_SHA512}>"
+            "VSCF_IOTELIC_HMAC=$<BOOL:${VSCF_IOTELIC_HMAC}>"
             "VSCF_ERROR_CTX=$<BOOL:${VSCF_ERROR_CTX}>"
         PRIVATE
             $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCF_BUILD_SHARED_LIBS>

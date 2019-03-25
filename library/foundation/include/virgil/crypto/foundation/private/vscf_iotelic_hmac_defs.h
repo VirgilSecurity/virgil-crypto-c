@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  This module contains 'iotelic sha384' implementation.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,18 +44,38 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_iotelic_sha384.h"
-#include "vscf_assert.h"
-#include "vscf_memory.h"
-#include "vscf_iotelic_sha384_defs.h"
-#include "vscf_iotelic_sha384_internal.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'iotelic hmac' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_IOTELIC_HMAC_DEFS_H_INCLUDED
+#define VSCF_IOTELIC_HMAC_DEFS_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_iotelic_hmac.h"
+#include "vscf_impl.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
 
 
-#include <iotelic_sp_interface.h>
-#include <virgil/crypto/common/vsc_buffer.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -69,6 +83,28 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Handles implementation details.
+//
+struct vscf_iotelic_hmac_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the interface 'hash'.
+    //
+    vscf_impl_t *hash;
+    //
+    //  Implementation specific context.
+    //
+    vsc_buffer_t *ipad;
+};
 
 
 // --------------------------------------------------------------------------
@@ -78,76 +114,11 @@
 //  @end
 
 
-//
-//  Provide algorithm identificator.
-//
-VSCF_PUBLIC vscf_alg_id_t
-vscf_iotelic_sha384_alg_id(const vscf_iotelic_sha384_t *self) {
-
-    VSCF_UNUSED(self);
-    return vscf_alg_id_SHA384;
+#ifdef __cplusplus
 }
+#endif
 
-//
-//  Produce object with algorithm information and configuration parameters.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_iotelic_sha384_produce_alg_info(const vscf_iotelic_sha384_t *self) {
 
-    VSCF_UNUSED(self);
-    return NULL;
-}
-
-//
-//  Restore algorithm configuration from the given object.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_iotelic_sha384_restore_alg_info(vscf_iotelic_sha384_t *self, const vscf_impl_t *alg_info) {
-
-    VSCF_UNUSED(self);
-    VSCF_UNUSED(alg_info);
-    return vscf_error_BAD_ARGUMENTS;
-}
-
-//
-//  Calculate hash over given data.
-//
-VSCF_PUBLIC void
-vscf_iotelic_sha384_hash(vsc_data_t data, vsc_buffer_t *digest) {
-
-    size_t used_bytes = vsc_buffer_len(digest);
-
-    vs_iot_execute_crypto_op(VS_IOT_HASH_SHA384, (void *)data.bytes, data.len, vsc_buffer_unused_bytes(digest),
-            vsc_buffer_capacity(digest), &used_bytes);
-
-    vsc_buffer_inc_used(digest, used_bytes);
-}
-
-//
-//  Start a new hashing.
-//
-VSCF_PUBLIC void
-vscf_iotelic_sha384_start(vscf_iotelic_sha384_t *self) {
-
-    VSCF_UNUSED(self);
-}
-
-//
-//  Add given data to the hash.
-//
-VSCF_PUBLIC void
-vscf_iotelic_sha384_update(vscf_iotelic_sha384_t *self, vsc_data_t data) {
-
-    VSCF_UNUSED(self);
-    VSCF_UNUSED(data);
-}
-
-//
-//  Accompilsh hashing and return it's result (a message digest).
-//
-VSCF_PUBLIC void
-vscf_iotelic_sha384_finish(vscf_iotelic_sha384_t *self, vsc_buffer_t *digest) {
-
-    VSCF_UNUSED(self);
-    VSCF_UNUSED(digest);
-}
+//  @footer
+#endif // VSCF_IOTELIC_HMAC_DEFS_H_INCLUDED
+//  @end

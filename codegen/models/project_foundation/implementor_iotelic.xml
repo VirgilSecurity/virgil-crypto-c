@@ -57,4 +57,21 @@
 
     </implementation>
 
+    <implementation name="hmac">
+        Virgil Security implementation of HMAC algorithm (RFC 2104) (FIPS PUB 198-1).
+
+        <interface name="alg"/>
+        <interface name="mac">
+
+        </interface>
+
+        <require interface="alg"/>
+        <!--        <require interface="alg info"/> -->
+        <!--        <require class="alg factory"/> -->
+        <!--        <require impl="hash based alg info"/> -->
+        <dependency name="hash" interface="hash"/>
+
+        <property name="ipad" class="buffer" access="readwrite"/>
+    </implementation>
+
 </implementor>
