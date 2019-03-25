@@ -51,6 +51,8 @@ option(VSCF_DEFAULTS "Enable interface 'defaults'." ON)
 option(VSCF_HASH "Enable interface 'hash'." ON)
 option(VSCF_ALG "Enable interface 'alg'." ON)
 option(VSCF_IOTELIC_SHA256 "Enable implementation 'iotelic sha256'." ON)
+option(VSCF_IOTELIC_SHA384 "Enable implementation 'iotelic sha384'." ON)
+option(VSCF_IOTELIC_SHA512 "Enable implementation 'iotelic sha512'." ON)
 option(VSCF_ERROR_CTX "Enable class 'error ctx'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
@@ -59,6 +61,8 @@ mark_as_advanced(
         VSCF_HASH
         VSCF_ALG
         VSCF_IOTELIC_SHA256
+        VSCF_IOTELIC_SHA384
+        VSCF_IOTELIC_SHA512
         VSCF_ERROR_CTX
         )
 
@@ -66,6 +70,24 @@ if(VSCF_IOTELIC_SHA256 AND NOT IOTELIC_LIBRARY)
     message("-- error --")
     message("--")
     message("Feature VSCF_IOTELIC_SHA256 depends on the feature:")
+    message("     IOTELIC_LIBRARY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_IOTELIC_SHA384 AND NOT IOTELIC_LIBRARY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_IOTELIC_SHA384 depends on the feature:")
+    message("     IOTELIC_LIBRARY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_IOTELIC_SHA512 AND NOT IOTELIC_LIBRARY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_IOTELIC_SHA512 depends on the feature:")
     message("     IOTELIC_LIBRARY - which is disabled.")
     message("--")
     message(FATAL_ERROR)
