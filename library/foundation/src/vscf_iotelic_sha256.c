@@ -55,12 +55,15 @@
 #include "vscf_memory.h"
 #include "vscf_iotelic_sha256_defs.h"
 #include "vscf_iotelic_sha256_internal.h"
-#include <iotelic_sp_interface.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 // clang-format on
 //  @end
 
+#include <iotelic_sp_interface.h>
+#include <virgil/crypto/common/vsc_buffer.h>
+
+#include "vscf_simple_alg_info.h"
+#include "vscf_alg_info.h"
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -83,6 +86,7 @@ VSCF_PUBLIC vscf_alg_id_t
 vscf_iotelic_sha256_alg_id(const vscf_iotelic_sha256_t *self) {
 
     VSCF_UNUSED(self);
+
     return vscf_alg_id_SHA256;
 }
 
@@ -92,8 +96,10 @@ vscf_iotelic_sha256_alg_id(const vscf_iotelic_sha256_t *self) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_iotelic_sha256_produce_alg_info(const vscf_iotelic_sha256_t *self) {
 
-    VSCF_UNUSED(self);
+    VSCF_ASSERT_PTR(self);
+
     return NULL;
+    //    return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_iotelic_sha256_alg_id(self)));
 }
 
 //
@@ -102,9 +108,13 @@ vscf_iotelic_sha256_produce_alg_info(const vscf_iotelic_sha256_t *self) {
 VSCF_PUBLIC vscf_error_t
 vscf_iotelic_sha256_restore_alg_info(vscf_iotelic_sha256_t *self, const vscf_impl_t *alg_info) {
 
-    VSCF_UNUSED(self);
-    VSCF_UNUSED(alg_info);
-    return vscf_error_BAD_ARGUMENTS;
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+
+    return vscf_error_UNSUPPORTED_ALGORITHM;
+    //    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_iotelic_sha256_alg_id(self));
+
+    //    return vscf_SUCCESS;
 }
 
 //
@@ -113,8 +123,12 @@ vscf_iotelic_sha256_restore_alg_info(vscf_iotelic_sha256_t *self, const vscf_imp
 VSCF_PUBLIC void
 vscf_iotelic_sha256_hash(vsc_data_t data, vsc_buffer_t *digest) {
 
-    vs_iot_execute_crypto_op(
-            VS_IOT_HASH_SHA256, (void *)data.bytes, data.len, (void *)digest->bytes, digest->capacity, &digest->len);
+    size_t used_bytes = vsc_buffer_len(digest);
+
+    vs_iot_execute_crypto_op(VS_IOT_HASH_SHA256, (void *)data.bytes, data.len, vsc_buffer_unused_bytes(digest),
+            vsc_buffer_capacity(digest), &used_bytes);
+
+    vsc_buffer_inc_used(digest, used_bytes);
 }
 
 //
@@ -124,6 +138,8 @@ VSCF_PUBLIC void
 vscf_iotelic_sha256_start(vscf_iotelic_sha256_t *self) {
 
     VSCF_UNUSED(self);
+
+    VSCF_ASSERT(false); // TODO : not implemented yet
 }
 
 //
@@ -134,6 +150,8 @@ vscf_iotelic_sha256_update(vscf_iotelic_sha256_t *self, vsc_data_t data) {
 
     VSCF_UNUSED(self);
     VSCF_UNUSED(data);
+
+    VSCF_ASSERT(false); // TODO : not implemented yet
 }
 
 //
@@ -144,4 +162,6 @@ vscf_iotelic_sha256_finish(vscf_iotelic_sha256_t *self, vsc_buffer_t *digest) {
 
     VSCF_UNUSED(self);
     VSCF_UNUSED(digest);
+
+    VSCF_ASSERT(false); // TODO : not implemented yet
 }

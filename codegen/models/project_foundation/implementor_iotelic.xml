@@ -21,4 +21,42 @@
         <!--<property name="hash ctx" class="iotelic_sha256_context" is_reference="0"/>-->
     </implementation>
 
+    <implementation name="sha384">
+        This is Iotelic implementation of SHA384.
+
+        <require library="iotelic" feature="library"/>
+        <require header="iot_io_api.h" scope="context"/>
+
+        <interface name="alg"/>
+        <interface name="hash">
+            <constant name="digest len" value="48"/>
+            <constant name="block len" value="128"/>
+        </interface>
+
+        <!--<require interface="alg info"/>-->
+        <!--<require impl="simple alg info"/>-->
+
+        <!--<property name="hash ctx" class="iotelic_sha256_context" is_reference="0"/>-->
+
+    </implementation>
+
+    <implementation name="sha512">
+        This is Iotelic implementation of SHA512.
+
+        <require library="iotelic" feature="library"/>
+        <require header="iot_io_api.h" scope="context"/>
+
+        <interface name="alg"/>
+        <interface name="hash">
+            <constant name="digest len" value="64"/>
+            <constant name="block len" value="128"/>
+        </interface>
+
+        <!--<require interface="alg info"/>-->
+        <!--<require impl="simple alg info"/>-->
+
+        <!--<property name="hash ctx" class="iotelic_sha256_context" is_reference="0"/>-->
+
+    </implementation>
+
 </implementor>

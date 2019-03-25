@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains 'iotelic sha512' implementation.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,52 +50,26 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Types of the 'iotelic sha256' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_IOTELIC_SHA256_DEFS_H_INCLUDED
-#define VSCF_IOTELIC_SHA256_DEFS_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_iotelic_sha256.h"
-
-#include <iot_io_api.h>
+#include "vscf_iotelic_sha512.h"
+#include "vscf_assert.h"
+#include "vscf_memory.h"
+#include "vscf_iotelic_sha512_defs.h"
+#include "vscf_iotelic_sha512_internal.h"
 
 // clang-format on
 //  @end
 
+#include <iotelic_sp_interface.h>
+#include <virgil/crypto/common/vsc_buffer.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+#include "vscf_simple_alg_info.h"
+#include "vscf_alg_info.h"
 
 //  @generated
 // --------------------------------------------------------------------------
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Handles implementation details.
-//
-struct vscf_iotelic_sha256_t {
-    //
-    //  Compile-time known information about this implementation.
-    //
-    const vscf_impl_info_t *info;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-};
 
 
 // --------------------------------------------------------------------------
@@ -99,11 +79,89 @@ struct vscf_iotelic_sha256_t {
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_iotelic_sha512_alg_id(const vscf_iotelic_sha512_t *self) {
+
+    VSCF_UNUSED(self);
+
+    return vscf_alg_id_SHA512;
 }
-#endif
 
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_iotelic_sha512_produce_alg_info(const vscf_iotelic_sha512_t *self) {
 
-//  @footer
-#endif // VSCF_IOTELIC_SHA256_DEFS_H_INCLUDED
-//  @end
+    VSCF_ASSERT_PTR(self);
+
+    return NULL;
+    //    return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_iotelic_sha512_alg_id(self)));
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_iotelic_sha512_restore_alg_info(vscf_iotelic_sha512_t *self, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+
+    return vscf_error_UNSUPPORTED_ALGORITHM;
+    //    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_iotelic_sha512_alg_id(self));
+
+    //    return vscf_SUCCESS;
+}
+
+//
+//  Calculate hash over given data.
+//
+VSCF_PUBLIC void
+vscf_iotelic_sha512_hash(vsc_data_t data, vsc_buffer_t *digest) {
+
+    size_t used_bytes = vsc_buffer_len(digest);
+
+    vs_iot_execute_crypto_op(VS_IOT_HASH_SHA512, (void *)data.bytes, data.len, vsc_buffer_unused_bytes(digest),
+            vsc_buffer_capacity(digest), &used_bytes);
+
+    vsc_buffer_inc_used(digest, used_bytes);
+}
+
+//
+//  Start a new hashing.
+//
+VSCF_PUBLIC void
+vscf_iotelic_sha512_start(vscf_iotelic_sha512_t *self) {
+
+    VSCF_UNUSED(self);
+
+    VSCF_ASSERT(false); // TODO : not implemented yet
+}
+
+//
+//  Add given data to the hash.
+//
+VSCF_PUBLIC void
+vscf_iotelic_sha512_update(vscf_iotelic_sha512_t *self, vsc_data_t data) {
+
+    VSCF_UNUSED(self);
+    VSCF_UNUSED(data);
+
+    VSCF_ASSERT(false); // TODO : not implemented yet
+}
+
+//
+//  Accompilsh hashing and return it's result (a message digest).
+//
+VSCF_PUBLIC void
+vscf_iotelic_sha512_finish(vscf_iotelic_sha512_t *self, vsc_buffer_t *digest) {
+
+    VSCF_UNUSED(self);
+    VSCF_UNUSED(digest);
+
+    VSCF_ASSERT(false); // TODO : not implemented yet
+}

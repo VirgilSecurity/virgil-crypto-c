@@ -47,18 +47,18 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'iotelic sha256' implementation.
+//  Types of the 'iotelic sha384' implementation.
 //  This types SHOULD NOT be used directly.
 //  The only purpose of including this module is to place implementation
 //  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_IOTELIC_SHA256_DEFS_H_INCLUDED
-#define VSCF_IOTELIC_SHA256_DEFS_H_INCLUDED
+#ifndef VSCF_IOTELIC_SHA384_DEFS_H_INCLUDED
+#define VSCF_IOTELIC_SHA384_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
-#include "vscf_iotelic_sha256.h"
+#include "vscf_iotelic_sha384.h"
 
 #include <iot_io_api.h>
 
@@ -80,7 +80,7 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-struct vscf_iotelic_sha256_t {
+struct vscf_iotelic_sha384_t {
     //
     //  Compile-time known information about this implementation.
     //
@@ -105,5 +105,5 @@ struct vscf_iotelic_sha256_t {
 
 
 //  @footer
-#endif // VSCF_IOTELIC_SHA256_DEFS_H_INCLUDED
+#endif // VSCF_IOTELIC_SHA384_DEFS_H_INCLUDED
 //  @end
