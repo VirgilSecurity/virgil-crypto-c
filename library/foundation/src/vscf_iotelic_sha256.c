@@ -113,7 +113,8 @@ vscf_iotelic_sha256_restore_alg_info(vscf_iotelic_sha256_t *self, const vscf_imp
 VSCF_PUBLIC void
 vscf_iotelic_sha256_hash(vsc_data_t data, vsc_buffer_t *digest) {
 
-    vs_iot_execute_crypto_op(VS_IOT_HASH_SHA256, (void *)data.bytes, data.len, (void *)digest->bytes, digest->capacity, &digest->len);
+    vs_iot_execute_crypto_op(
+            VS_IOT_HASH_SHA256, (void *)data.bytes, data.len, (void *)digest->bytes, digest->capacity, &digest->len);
 }
 
 //
