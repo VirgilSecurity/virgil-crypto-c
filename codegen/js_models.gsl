@@ -117,6 +117,10 @@ endfunction
 function js_append_js_class_module_model(parent, source, js_wrapped_class, wrapper)
   new js_class_module to my.parent
     js_class_module.name = my.js_wrapped_class.name
+    js_class_module.context = 1
+    if defined(my.source.context) & my.source.context = "none"
+      js_class_module.context = 0
+    endif
     js_append_js_class_model(js_class_module, my.source, my.js_wrapped_class)
     if defined(my.js_wrapped_class.cpp_class_name)
       js_append_cpp_class_model(js_class_module, my.source, my.js_wrapped_class, my.wrapper)
