@@ -53,28 +53,36 @@ include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 # Define sources
 #
 add_library(iotelic STATIC "")
-include("${CMAKE_CURRENT_LIST_DIR}/sources.cmake")
-#include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 
-#
-# Define include headers
-#
-set (INC_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../../../ap/inc)
+target_sources(iotelic
+        PRIVATE
+            "${CMAKE_CURRENT_LIST_DIR}/src/iotelic_sp_interface.c"
+        )
+
+set(SP_DIR  ${CMAKE_CURRENT_LIST_DIR}/../../../../../sp)
+set(AP_DIR  ${CMAKE_CURRENT_LIST_DIR}/../../../../../ap)
+
 target_include_directories(iotelic
-        INTERFACE
-        "$<BUILD_INTERFACE:>${INC_DIR}"
-        "$<BUILD_INTERFACE:>${INC_DIR}/app"
-        "$<BUILD_INTERFACE:>${INC_DIR}/bsp"
-        "$<BUILD_INTERFACE:>${INC_DIR}/gpio"
-        "$<BUILD_INTERFACE:>${INC_DIR}/compiler/gcc"
-        "$<BUILD_INTERFACE:>${INC_DIR}/dbglog"
-        "$<BUILD_INTERFACE:>${INC_DIR}/io_lib"
-        "$<BUILD_INTERFACE:>${INC_DIR}/os_shim"
-        "$<BUILD_INTERFACE:>${INC_DIR}/pib"
-        "$<BUILD_INTERFACE:>${INC_DIR}/pkt"
-        "$<BUILD_INTERFACE:>${INC_DIR}/plc_lib"
-        "$<BUILD_INTERFACE:>${INC_DIR}/uart"
-        "$<BUILD_INTERFACE:>${INC_DIR}/upgrade"
-        "$<BUILD_INTERFACE:>${INC_DIR}/utils"
-        "$<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}>"
+        PUBLIC
+        "$<BUILD_INTERFACE:${SP_DIR}/bsp/include>"
+        "$<BUILD_INTERFACE:${SP_DIR}/bsp/driver>"
+        "$<BUILD_INTERFACE:${SP_DIR}/crypto/inc>"
+
+        "$<BUILD_INTERFACE:${AP_DIR}/inc>"
+        "$<BUILD_INTERFACE:${AP_DIR}/inc/app>"
+        "$<BUILD_INTERFACE:${AP_DIR}/inc/bsp>"
+        "$<BUILD_INTERFACE:${AP_DIR}/inc/gpio>"
+        "$<BUILD_INTERFACE:${AP_DIR}/inc/compiler/gcc>"
+        "$<BUILD_INTERFACE:${AP_DIR}/inc/dbglog>"
+        "$<BUILD_INTERFACE:${AP_DIR}/inc/io_lib>"
+        "$<BUILD_INTERFACE:${AP_DIR}/inc/os_shim>"
+        "$<BUILD_INTERFACE:${AP_DIR}/inc/pib>"
+        "$<BUILD_INTERFACE:${AP_DIR}/inc/pkt>"
+        "$<BUILD_INTERFACE:${AP_DIR}/inc/plc_lib>"
+        "$<BUILD_INTERFACE:${AP_DIR}/inc/uart>"
+        "$<BUILD_INTERFACE:${AP_DIR}/inc/upgrade>"
+        "$<BUILD_INTERFACE:${AP_DIR}/inc/utils>"
+
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
         )
