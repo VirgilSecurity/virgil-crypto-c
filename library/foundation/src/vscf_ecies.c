@@ -125,6 +125,27 @@ vscf_ecies_cleanup_ctx(vscf_ecies_t *self) {
 }
 
 //
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_ecies_setup_defaults(vscf_ecies_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_status_t status = vscf_status_SUCCESS;
+
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        status = vscf_ctr_drbg_setup_defaults(random);
+        if (status == vscf_status_SUCCESS) {
+            vscf_ecies_take_random(self, vscf_ctr_drbg_impl(random));
+        }
+    }
+
+    return status;
+}
+
+//
 //  Configure ECIES with default algorithms.
 //
 static void
@@ -147,27 +168,6 @@ vscf_ecies_configure_defaults(vscf_ecies_t *self) {
         vscf_kdf2_take_hash(kdf, vscf_sha384_impl(vscf_sha384_new()));
         self->kdf = vscf_kdf2_impl(kdf);
     }
-}
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_ecies_setup_defaults(vscf_ecies_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_status_t status = vscf_status_SUCCESS;
-
-    if (NULL == self->random) {
-        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
-        status = vscf_ctr_drbg_setup_defaults(random);
-        if (status == vscf_status_SUCCESS) {
-            vscf_ecies_take_random(self, vscf_ctr_drbg_impl(random));
-        }
-    }
-
-    return status;
 }
 
 //
@@ -283,7 +283,7 @@ vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     vscf_impl_t *mac = vscf_impl_shallow_copy(self->mac);
     vscf_ecies_envelope_set_mac(self->envelope, &mac);
 
-    vscf_ecies_envelope_pack(self->envelope, out);
+    vscf_error_update(&error, vscf_ecies_envelope_pack(self->envelope, out));
 
 encrypt_failed:
 random_failed:
@@ -293,6 +293,7 @@ random_failed:
 compute_shared_failed:
     vsc_buffer_destroy(&shared_key);
     vscf_ecies_envelope_cleanup_properties(self->envelope);
+    vscf_ecies_release_ephemeral_key(self);
 
     return vscf_error_status(&error);
 }

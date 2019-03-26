@@ -187,13 +187,13 @@ vscf_aes256_cbc_produce_alg_info(const vscf_aes256_cbc_t *self);
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_cbc_restore_alg_info(vscf_aes256_cbc_t *self, const vscf_impl_t *alg_info);
+vscf_aes256_cbc_restore_alg_info(vscf_aes256_cbc_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
 
 //
 //  Encrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_cbc_encrypt(vscf_aes256_cbc_t *self, vsc_data_t data, vsc_buffer_t *out);
+vscf_aes256_cbc_encrypt(vscf_aes256_cbc_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Calculate required buffer length to hold the encrypted data.
@@ -205,7 +205,7 @@ vscf_aes256_cbc_encrypted_len(vscf_aes256_cbc_t *self, size_t data_len);
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_cbc_decrypt(vscf_aes256_cbc_t *self, vsc_data_t data, vsc_buffer_t *out);
+vscf_aes256_cbc_decrypt(vscf_aes256_cbc_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Calculate required buffer length to hold the decrypted data.
@@ -271,7 +271,7 @@ vscf_aes256_cbc_decrypted_out_len(vscf_aes256_cbc_t *self, size_t data_len);
 //  Accomplish encryption or decryption process.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_cbc_finish(vscf_aes256_cbc_t *self, vsc_buffer_t *out);
+vscf_aes256_cbc_finish(vscf_aes256_cbc_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

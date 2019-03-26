@@ -57,9 +57,9 @@ void
 test__pack__ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac__return_valid_packed_data(void) {
 
     vscf_ed25519_public_key_t *ed25519_public_key = vscf_ed25519_public_key_new();
-    vscf_ed25519_public_key_setup_defaults(ed25519_public_key);
-    vscf_ed25519_public_key_import_public_key(
-            ed25519_public_key, test_data_ecies_envelope_ED25519_EPHEMERAL_PUBLIC_KEY);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ed25519_public_key_setup_defaults(ed25519_public_key));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ed25519_public_key_import_public_key(ed25519_public_key,
+                                                   test_data_ecies_envelope_ED25519_EPHEMERAL_PUBLIC_KEY));
     vscf_impl_t *ephemeral_public_key = vscf_ed25519_public_key_impl(ed25519_public_key);
     ed25519_public_key = NULL;
 
@@ -90,7 +90,7 @@ test__pack__ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac__return_valid_pa
     vscf_ecies_envelope_set_encrypted_content(envelope, &encrypted_content);
 
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_ecies_envelope_packed_len(envelope));
-    vscf_ecies_envelope_pack(envelope, out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ecies_envelope_pack(envelope, out));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ecies_envelope_ED25519_PACKED_V2_COMPAT, out);
 
@@ -118,7 +118,7 @@ test__unpack__ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac__when_packed_a
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_ecies_envelope_packed_len(envelope));
-    vscf_ecies_envelope_pack(envelope, out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ecies_envelope_pack(envelope, out));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ecies_envelope_ED25519_PACKED_V2_COMPAT, out);
 
@@ -135,7 +135,7 @@ test__unpack__v2_compat_ed25519__when_packed_again_equal_to_initial(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_ecies_envelope_packed_len(envelope));
-    vscf_ecies_envelope_pack(envelope, out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ecies_envelope_pack(envelope, out));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ecies_envelope_ED25519_PACKED_V2_COMPAT, out);
 

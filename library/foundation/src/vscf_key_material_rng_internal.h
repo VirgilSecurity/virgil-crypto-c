@@ -34,12 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
-
-
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'hash info' API.
-// --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -49,8 +44,26 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscp_hash_info_api.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_KEY_MATERIAL_RNG_INTERNAL_H_INCLUDED
+#define VSCF_KEY_MATERIAL_RNG_INTERNAL_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_key_material_rng.h"
+
+// clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -59,9 +72,35 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_key_material_rng_init() is called.
+//  Note, that context is already zeroed.
+//
+VSCF_PRIVATE void
+vscf_key_material_rng_init_ctx(vscf_key_material_rng_t *self);
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_key_material_rng_cleanup_ctx(vscf_key_material_rng_t *self);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_KEY_MATERIAL_RNG_INTERNAL_H_INCLUDED
 //  @end

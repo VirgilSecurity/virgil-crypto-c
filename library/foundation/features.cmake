@@ -47,7 +47,6 @@ include_guard()
 
 option(VSCF_LIBRARY "Enable build of the 'foundation' library" ON)
 option(VSCF_MULTI_THREAD "Enable multi-threading safety for foundation library." ON)
-option(VSCF_DEFAULTS "Enable interface 'defaults'." ON)
 option(VSCF_CIPHER "Enable interface 'cipher'." ON)
 option(VSCF_AUTH_ENCRYPT "Enable interface 'auth encrypt'." ON)
 option(VSCF_AUTH_DECRYPT "Enable interface 'auth decrypt'." ON)
@@ -98,6 +97,8 @@ option(VSCF_KDF2 "Enable implementation 'kdf2'." ON)
 option(VSCF_FAKE_RANDOM "Enable implementation 'fake random'." ON)
 option(VSCF_PKCS5_PBKDF2 "Enable implementation 'pkcs5 pbkdf2'." ON)
 option(VSCF_PKCS5_PBES2 "Enable implementation 'pkcs5 pbes2'." ON)
+option(VSCF_SEED_ENTROPY_SOURCE "Enable implementation 'seed entropy source'." ON)
+option(VSCF_KEY_MATERIAL_RNG "Enable implementation 'key material rng'." ON)
 option(VSCF_PKCS8_DER_SERIALIZER "Enable implementation 'pkcs8 der serializer'." ON)
 option(VSCF_PKCS8_DER_DESERIALIZER "Enable implementation 'pkcs8 der deserializer'." ON)
 option(VSCF_PKCS8_SERIALIZER "Enable implementation 'pkcs8 serializer'." ON)
@@ -141,7 +142,6 @@ option(VSCF_VERIFIER "Enable class 'verifier'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREAD
-        VSCF_DEFAULTS
         VSCF_CIPHER
         VSCF_AUTH_ENCRYPT
         VSCF_AUTH_DECRYPT
@@ -192,6 +192,8 @@ mark_as_advanced(
         VSCF_FAKE_RANDOM
         VSCF_PKCS5_PBKDF2
         VSCF_PKCS5_PBES2
+        VSCF_SEED_ENTROPY_SOURCE
+        VSCF_KEY_MATERIAL_RNG
         VSCF_PKCS8_DER_SERIALIZER
         VSCF_PKCS8_DER_DESERIALIZER
         VSCF_PKCS8_SERIALIZER
@@ -1035,6 +1037,60 @@ if(VSCF_PKCS5_PBES2 AND NOT VSCF_PBE_ALG_INFO)
     message(FATAL_ERROR)
 endif()
 
+if(VSCF_SEED_ENTROPY_SOURCE AND NOT VSCF_KDF2)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_SEED_ENTROPY_SOURCE depends on the feature:")
+    message("     VSCF_KDF2 - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_SEED_ENTROPY_SOURCE AND NOT VSCF_SHA512)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_SEED_ENTROPY_SOURCE depends on the feature:")
+    message("     VSCF_SHA512 - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_SEED_ENTROPY_SOURCE AND NOT VSCF_HASH)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_SEED_ENTROPY_SOURCE depends on the feature:")
+    message("     VSCF_HASH - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_SEED_ENTROPY_SOURCE AND NOT VSCF_KDF)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_SEED_ENTROPY_SOURCE depends on the feature:")
+    message("     VSCF_KDF - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_KEY_MATERIAL_RNG AND NOT VSCF_CTR_DRBG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_KEY_MATERIAL_RNG depends on the feature:")
+    message("     VSCF_CTR_DRBG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_KEY_MATERIAL_RNG AND NOT VSCF_SEED_ENTROPY_SOURCE)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_KEY_MATERIAL_RNG depends on the feature:")
+    message("     VSCF_SEED_ENTROPY_SOURCE - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCF_PKCS8_DER_SERIALIZER AND NOT VSCF_PUBLIC_KEY)
     message("-- error --")
     message("--")
@@ -1823,6 +1879,24 @@ if(VSCF_ALG_FACTORY AND NOT VSCF_ALG_INFO)
     message("--")
     message("Feature VSCF_ALG_FACTORY depends on the feature:")
     message("     VSCF_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ALG_FACTORY AND NOT VSCF_PUBLIC_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ALG_FACTORY depends on the feature:")
+    message("     VSCF_PUBLIC_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ALG_FACTORY AND NOT VSCF_PRIVATE_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ALG_FACTORY depends on the feature:")
+    message("     VSCF_PRIVATE_KEY - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

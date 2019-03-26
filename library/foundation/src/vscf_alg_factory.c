@@ -54,6 +54,8 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_alg_info.h"
+#include "vscf_public_key.h"
+#include "vscf_private_key.h"
 #include "vscf_sha224.h"
 #include "vscf_sha256.h"
 #include "vscf_sha384.h"
@@ -266,70 +268,88 @@ vscf_alg_factory_create_cipher_from_info(const vscf_impl_t *alg_info) {
 //  Create algorithm that implements "public key" interface.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_public_key_from_raw_key(const vscf_raw_key_t *raw_key) {
+vscf_alg_factory_create_public_key_from_raw_key(const vscf_raw_key_t *raw_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(raw_key);
+
+    vscf_status_t status = vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+    vscf_impl_t *public_key = NULL;
 
     const vscf_alg_id_t alg_id = vscf_raw_key_alg_id(raw_key);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
     if (alg_id == vscf_alg_id_RSA) {
         vscf_rsa_public_key_t *rsa_public_key = vscf_rsa_public_key_new();
-        vscf_rsa_public_key_setup_defaults(rsa_public_key);
-        vscf_rsa_public_key_import_public_key(rsa_public_key, vscf_raw_key_data(raw_key));
-        return vscf_rsa_public_key_impl(rsa_public_key);
+        public_key = vscf_rsa_public_key_impl(rsa_public_key);
+        status = vscf_rsa_public_key_setup_defaults(rsa_public_key);
     }
 
     if (alg_id == vscf_alg_id_ED25519) {
         vscf_ed25519_public_key_t *ed25519_public_key = vscf_ed25519_public_key_new();
-        vscf_ed25519_public_key_setup_defaults(ed25519_public_key);
-        vscf_ed25519_public_key_import_public_key(ed25519_public_key, vscf_raw_key_data(raw_key));
-        return vscf_ed25519_public_key_impl(ed25519_public_key);
+        public_key = vscf_ed25519_public_key_impl(ed25519_public_key);
+        status = vscf_ed25519_public_key_setup_defaults(ed25519_public_key);
     }
 
     if (alg_id == vscf_alg_id_CURVE25519) {
         vscf_curve25519_public_key_t *curve25519_public_key = vscf_curve25519_public_key_new();
-        vscf_curve25519_public_key_setup_defaults(curve25519_public_key);
-        vscf_curve25519_public_key_import_public_key(curve25519_public_key, vscf_raw_key_data(raw_key));
-        return vscf_curve25519_public_key_impl(curve25519_public_key);
+        public_key = vscf_curve25519_public_key_impl(curve25519_public_key);
+        status = vscf_curve25519_public_key_setup_defaults(curve25519_public_key);
     }
 
-    VSCF_ASSERT(0 && "Can not create 'public key' algorithm from the given alg id.");
-    return NULL;
+    if (status == vscf_status_SUCCESS) {
+        status = vscf_public_key_import_public_key(public_key, vscf_raw_key_data(raw_key));
+    }
+
+    if (status == vscf_status_SUCCESS) {
+        return public_key;
+    } else {
+        vscf_impl_destroy(&public_key);
+        VSCF_ERROR_SAFE_UPDATE(error, status);
+        return NULL;
+    }
 }
 
 //
 //  Create algorithm that implements "private key" interface.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_private_key_from_raw_key(const vscf_raw_key_t *raw_key) {
+vscf_alg_factory_create_private_key_from_raw_key(const vscf_raw_key_t *raw_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(raw_key);
+
+    vscf_status_t status = vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+    vscf_impl_t *private_key = NULL;
 
     const vscf_alg_id_t alg_id = vscf_raw_key_alg_id(raw_key);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
     if (alg_id == vscf_alg_id_RSA) {
         vscf_rsa_private_key_t *rsa_private_key = vscf_rsa_private_key_new();
-        vscf_rsa_private_key_setup_defaults(rsa_private_key);
-        vscf_rsa_private_key_import_private_key(rsa_private_key, vscf_raw_key_data(raw_key));
-        return vscf_rsa_private_key_impl(rsa_private_key);
+        private_key = vscf_rsa_private_key_impl(rsa_private_key);
+        status = vscf_rsa_private_key_setup_defaults(rsa_private_key);
     }
 
     if (alg_id == vscf_alg_id_ED25519) {
         vscf_ed25519_private_key_t *ed25519_private_key = vscf_ed25519_private_key_new();
-        vscf_ed25519_private_key_setup_defaults(ed25519_private_key);
-        vscf_ed25519_private_key_import_private_key(ed25519_private_key, vscf_raw_key_data(raw_key));
-        return vscf_ed25519_private_key_impl(ed25519_private_key);
+        private_key = vscf_ed25519_private_key_impl(ed25519_private_key);
+        status = vscf_ed25519_private_key_setup_defaults(ed25519_private_key);
     }
 
     if (alg_id == vscf_alg_id_CURVE25519) {
         vscf_curve25519_private_key_t *curve25519_private_key = vscf_curve25519_private_key_new();
-        vscf_curve25519_private_key_setup_defaults(curve25519_private_key);
-        vscf_curve25519_private_key_import_private_key(curve25519_private_key, vscf_raw_key_data(raw_key));
-        return vscf_curve25519_private_key_impl(curve25519_private_key);
+        private_key = vscf_curve25519_private_key_impl(curve25519_private_key);
+        status = vscf_curve25519_private_key_setup_defaults(curve25519_private_key);
     }
 
-    VSCF_ASSERT(0 && "Can not create 'private key' algorithm from the given alg id.");
-    return NULL;
+    if (status == vscf_status_SUCCESS) {
+        status = vscf_private_key_import_private_key(private_key, vscf_raw_key_data(raw_key));
+    }
+
+    if (status == vscf_status_SUCCESS) {
+        return private_key;
+    } else {
+        vscf_impl_destroy(&private_key);
+        VSCF_ERROR_SAFE_UPDATE(error, status);
+        return NULL;
+    }
 }

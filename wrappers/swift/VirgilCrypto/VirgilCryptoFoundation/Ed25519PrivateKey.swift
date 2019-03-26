@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// This is implementation of ED25519 private key
-@objc(VSCFEd25519PrivateKey) public class Ed25519PrivateKey: NSObject, Defaults, Alg, Key, GenerateKey, Decrypt, SignHash, PrivateKey, ComputeSharedKey {
+@objc(VSCFEd25519PrivateKey) public class Ed25519PrivateKey: NSObject, Alg, Key, GenerateKey, Decrypt, SignHash, PrivateKey, ComputeSharedKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer

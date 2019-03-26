@@ -61,6 +61,15 @@ class PHEServer
     }
 
     /**
+     * @return void
+     * @throws Exception
+     */
+    public function setupDefaults()
+    {
+        vsce_phe_server_setup_defaults_php($this->c_ctx);
+    }
+
+    /**
      * @return array
      * @throws Exception
      */

@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -46,19 +47,22 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'hash stream' API.
+//  Types of the 'key material rng' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCP_HASH_STREAM_API_H_INCLUDED
-#define VSCP_HASH_STREAM_API_H_INCLUDED
+#ifndef VSCF_KEY_MATERIAL_RNG_DEFS_H_INCLUDED
+#define VSCF_KEY_MATERIAL_RNG_DEFS_H_INCLUDED
 
-#include "vscp_library.h"
-#include "vscp_api.h"
-#include "vscp_impl.h"
-#include "vscp_hash_info.h"
+#include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_key_material_rng.h"
+#include "vscf_ctr_drbg.h"
+#include "vscf_seed_entropy_source.h"
 
-#include <.(c_global_macros_project_common_namespace_dir)/vsc_data.h>
-#include <.(c_global_macros_project_common_namespace_dir)/vsc_buffer.h>
+// clang-format on
 //  @end
 
 
@@ -74,49 +78,25 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Start a new hashing.
+//  Handles implementation details.
 //
-typedef void (*vscp_hash_stream_api_start_fn)(vscp_impl_t *impl);
-
-//
-//  Callback. Add given data to the hash.
-//
-typedef void (*vscp_hash_stream_api_update_fn)(vscp_impl_t *impl, vsc_data_t data);
-
-//
-//  Callback. Accompilsh hashing and return it's result (a message digest).
-//
-typedef void (*vscp_hash_stream_api_finish_fn)(vscp_impl_t *impl, vsc_buffer_t *digest);
-
-//
-//  Contains API requirements of the interface 'hash stream'.
-//
-struct vscp_hash_stream_api_t {
+struct vscf_key_material_rng_t {
     //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'hash_stream' MUST be equal to the 'vscp_api_tag_HASH_STREAM'.
+    //  Compile-time known information about this implementation.
     //
-    vscp_api_tag_t api_tag;
+    const vscf_impl_info_t *info;
     //
-    //  Implementation unique identifier, MUST be second in the structure.
+    //  Reference counter.
     //
-    vscp_impl_tag_t impl_tag;
+    size_t refcnt;
     //
-    //  Link to the inherited interface API 'hash info'.
+    //  Implementation specific context.
     //
-    const vscp_hash_info_api_t *hash_info_api;
+    vscf_ctr_drbg_t *ctr_drbg;
     //
-    //  Start a new hashing.
+    //  Implementation specific context.
     //
-    vscp_hash_stream_api_start_fn start_cb;
-    //
-    //  Add given data to the hash.
-    //
-    vscp_hash_stream_api_update_fn update_cb;
-    //
-    //  Accompilsh hashing and return it's result (a message digest).
-    //
-    vscp_hash_stream_api_finish_fn finish_cb;
+    vscf_seed_entropy_source_t *seed_entropy_source;
 };
 
 
@@ -133,5 +113,5 @@ struct vscp_hash_stream_api_t {
 
 
 //  @footer
-#endif // VSCP_HASH_STREAM_API_H_INCLUDED
+#endif // VSCF_KEY_MATERIAL_RNG_DEFS_H_INCLUDED
 //  @end

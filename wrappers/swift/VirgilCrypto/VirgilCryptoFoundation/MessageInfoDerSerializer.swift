@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// CMS based implementation of the class "message info" serialization.
-@objc(VSCFMessageInfoDerSerializer) public class MessageInfoDerSerializer: NSObject, Defaults, MessageInfoSerializer {
+@objc(VSCFMessageInfoDerSerializer) public class MessageInfoDerSerializer: NSObject, MessageInfoSerializer {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -69,23 +69,19 @@ import VSCFoundation
         vscf_message_info_der_serializer_delete(self.c_ctx)
     }
 
-    @objc public func setAsn1Reader(asn1Reader: Asn1Reader) throws {
+    @objc public func setAsn1Reader(asn1Reader: Asn1Reader) {
         vscf_message_info_der_serializer_release_asn1_reader(self.c_ctx)
-        let proxyResult = vscf_message_info_der_serializer_use_asn1_reader(self.c_ctx, asn1Reader.c_ctx)
-        try FoundationError.handleStatus(fromC: proxyResult)
+        vscf_message_info_der_serializer_use_asn1_reader(self.c_ctx, asn1Reader.c_ctx)
     }
 
-    @objc public func setAsn1Writer(asn1Writer: Asn1Writer) throws {
+    @objc public func setAsn1Writer(asn1Writer: Asn1Writer) {
         vscf_message_info_der_serializer_release_asn1_writer(self.c_ctx)
-        let proxyResult = vscf_message_info_der_serializer_use_asn1_writer(self.c_ctx, asn1Writer.c_ctx)
-        try FoundationError.handleStatus(fromC: proxyResult)
+        vscf_message_info_der_serializer_use_asn1_writer(self.c_ctx, asn1Writer.c_ctx)
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_message_info_der_serializer_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
+    @objc public func setupDefaults() {
+        vscf_message_info_der_serializer_setup_defaults(self.c_ctx)
     }
 
     /// Return buffer size enough to hold serialized message info.

@@ -189,13 +189,19 @@ function c_dependency_add_method_use (dependency, declaration, definition, desti
             endif
 
             if my.dependency.has_observers
-                new return to method
-                    .enum = "status"
-                endnew
+                if my.dependency.is_observers_return_status
+                    new return to method
+                        .enum = "status"
+                    endnew
 
-                my.impl_did_setup_dependency = "\
-                    return $(my.method_dependency_did_setup:)($(my.refs.c_argument_context:));
-                "
+                    my.impl_did_setup_dependency = "\
+                        return $(my.method_dependency_did_setup:)($(my.refs.c_argument_context:));
+                    "
+                else
+                    my.impl_did_setup_dependency = "\
+                        $(my.method_dependency_did_setup:)($(my.refs.c_argument_context:));
+                    "
+                endif
             endif
 
             my.method_body = ""
@@ -264,13 +270,19 @@ function c_dependency_add_method_take (dependency, declaration, definition, dest
             "
 
             if my.dependency.has_observers
-                new return to method
-                    .enum = "status"
-                endnew
+                if my.dependency.is_observers_return_status
+                    new return to method
+                        .enum = "status"
+                    endnew
 
-                my.impl_did_setup_dependency = "\
-                    return $(my.method_dependency_did_setup:)($(my.refs.c_argument_context:));
-                "
+                    my.impl_did_setup_dependency = "\
+                        return $(my.method_dependency_did_setup:)($(my.refs.c_argument_context:));
+                    "
+                else
+                    my.impl_did_setup_dependency = "\
+                        $(my.method_dependency_did_setup:)($(my.refs.c_argument_context:));
+                    "
+                endif
             endif
 
             my.method_body = ""
@@ -360,9 +372,11 @@ function c_dependency_add_method_did_setup (dependency, declaration, definition,
         .declaration = my.declaration
         .visibility = "private"
 
-        new return to method
-            .enum = "status"
-        endnew
+        if my.dependency.is_observers_return_status
+            new return to method
+                .enum = "status"
+            endnew
+        endif
 
         c_dependency_add_argument_context (method, my.meta)
         c_component_create_stub (method)

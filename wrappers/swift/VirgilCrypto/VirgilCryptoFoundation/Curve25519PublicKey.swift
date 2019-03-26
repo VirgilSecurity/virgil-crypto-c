@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// This is implementation of CURVE25519 public key
-@objc(VSCFCurve25519PublicKey) public class Curve25519PublicKey: NSObject, Defaults, Alg, Key, Encrypt, PublicKey, GenerateEphemeralKey {
+@objc(VSCFCurve25519PublicKey) public class Curve25519PublicKey: NSObject, Alg, Key, Encrypt, PublicKey, GenerateEphemeralKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer

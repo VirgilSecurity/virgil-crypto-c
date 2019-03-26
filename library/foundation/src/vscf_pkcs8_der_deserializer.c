@@ -82,6 +82,19 @@
 
 
 //
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_der_deserializer_setup_defaults(vscf_pkcs8_der_deserializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->asn1_reader) {
+        vscf_pkcs8_der_deserializer_take_asn1_reader(self, vscf_asn1rd_impl(vscf_asn1rd_new()));
+    }
+}
+
+//
 //  Deserialize Public Key by using internal ASN.1 reader.
 //  Note, that caller code is responsible to reset ASN.1 reader with
 //  an input buffer.
@@ -196,21 +209,6 @@ vscf_pkcs8_der_deserializer_deserialize_private_key_inplace(vscf_pkcs8_der_deser
     vscf_alg_id_t alg_id = vscf_oid_to_alg_id(key_oid);
 
     return vscf_raw_key_new_with_data(alg_id, private_key_bits);
-}
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_pkcs8_der_deserializer_setup_defaults(vscf_pkcs8_der_deserializer_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    if (NULL == self->asn1_reader) {
-        vscf_pkcs8_der_deserializer_take_asn1_reader(self, vscf_asn1rd_impl(vscf_asn1rd_new()));
-    }
-
-    return vscf_status_SUCCESS;
 }
 
 //

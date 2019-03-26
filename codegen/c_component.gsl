@@ -763,6 +763,20 @@ function c_component_create_modifiers (component, destination)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Create 'c_attribute' for next 'method' attribues:
+#       - nodiscard.
+# ---------------------------------------------------------------------------
+function c_component_create_method_attributes (method, c_method)
+    check_arguments (my, "method, c_method", my)
+
+    if is_true (my.method.nodiscard)
+        new c_attribute to my.c_method
+            .value = ".(c_global_macros_nodiscard)"
+        endnew
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create 'c_code' from 'code'.
 # ---------------------------------------------------------------------------
 function c_component_create_code (code, destination)
@@ -956,6 +970,8 @@ function c_component_create_method (method, destination)
         c_component_map_attr_definition (c_method, my.method)
         c_component_map_attr_uid (c_method, my.method)
         c_component_map_attr_feature (c_method, my.method)
+
+        c_component_create_method_attributes (my.method, c_method)
 
         for my.method.argument
             c_component_create_argument (argument, c_method)

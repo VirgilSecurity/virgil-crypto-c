@@ -177,7 +177,7 @@ vscf_hkdf_produce_alg_info(const vscf_hkdf_t *self);
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_hkdf_restore_alg_info(vscf_hkdf_t *self, const vscf_impl_t *alg_info);
+vscf_hkdf_restore_alg_info(vscf_hkdf_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
 
 //
 //  Derive key of the requested length from the given data.

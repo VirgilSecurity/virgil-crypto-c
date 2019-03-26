@@ -34,12 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
-
-
-//  @description
-// --------------------------------------------------------------------------
-//  Provide details about implemented hash algorithm.
-// --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -49,10 +44,26 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscp_hash_info.h"
-#include "vscp_assert.h"
-#include "vscp_hash_info_api.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_SEED_ENTROPY_SOURCE_INTERNAL_H_INCLUDED
+#define VSCF_SEED_ENTROPY_SOURCE_INTERNAL_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_seed_entropy_source.h"
+
+// clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,75 +73,34 @@
 // --------------------------------------------------------------------------
 
 //
-//  Returns constant 'digest len'.
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_seed_entropy_source_init() is called.
+//  Note, that context is already zeroed.
 //
-VSCP_PUBLIC size_t
-vscp_hash_info_digest_len(const vscp_hash_info_api_t *hash_info_api) {
-
-    VSCP_ASSERT_PTR (hash_info_api);
-
-    return hash_info_api->digest_len;
-}
+VSCF_PRIVATE void
+vscf_seed_entropy_source_init_ctx(vscf_seed_entropy_source_t *self);
 
 //
-//  Returns constant 'block len'.
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
 //
-VSCP_PUBLIC size_t
-vscp_hash_info_block_len(const vscp_hash_info_api_t *hash_info_api) {
-
-    VSCP_ASSERT_PTR (hash_info_api);
-
-    return hash_info_api->block_len;
-}
-
-//
-//  Return hash info API, or NULL if it is not implemented.
-//
-VSCP_PUBLIC const vscp_hash_info_api_t *
-vscp_hash_info_api(vscp_impl_t *impl) {
-
-    VSCP_ASSERT_PTR (impl);
-
-    const vscp_api_t *api = vscp_impl_api (impl, vscp_api_tag_HASH_INFO);
-    return (const vscp_hash_info_api_t *) api;
-}
-
-//
-//  Check if given object implements interface 'hash info'.
-//
-VSCP_PUBLIC bool
-vscp_hash_info_is_implemented(vscp_impl_t *impl) {
-
-    VSCP_ASSERT_PTR (impl);
-
-    return vscp_impl_api (impl, vscp_api_tag_HASH_INFO) != NULL;
-}
-
-//
-//  Returns interface unique identifier.
-//
-VSCP_PUBLIC vscp_api_tag_t
-vscp_hash_info_api_tag(const vscp_hash_info_api_t *hash_info_api) {
-
-    VSCP_ASSERT_PTR (hash_info_api);
-
-    return hash_info_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCP_PUBLIC vscp_impl_tag_t
-vscp_hash_info_tag(const vscp_hash_info_api_t *hash_info_api) {
-
-    VSCP_ASSERT_PTR (hash_info_api);
-
-    return hash_info_api->impl_tag;
-}
+VSCF_PRIVATE void
+vscf_seed_entropy_source_cleanup_ctx(vscf_seed_entropy_source_t *self);
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_SEED_ENTROPY_SOURCE_INTERNAL_H_INCLUDED
 //  @end

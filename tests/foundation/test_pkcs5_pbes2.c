@@ -72,7 +72,7 @@ test__encrypt__pbkdf2_with_hmac_sha256_and_aes256_gcm_with_valid_nonce__success(
     vscf_pkcs5_pbes2_reset(pbes2, test_pkcs5_pbes2_PASSWORD);
 
     vsc_buffer_t *enc = vsc_buffer_new_with_capacity(vscf_pkcs5_pbes2_encrypted_len(pbes2, test_pkcs5_pbes2_DATA.len));
-    vscf_pkcs5_pbes2_encrypt(pbes2, test_pkcs5_pbes2_DATA, enc);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs5_pbes2_encrypt(pbes2, test_pkcs5_pbes2_DATA, enc));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_pkcs5_pbes2_ENCRYPTED_DATA, enc);
 
@@ -100,7 +100,7 @@ test__decrypt__pbkdf2_with_hmac_sha256_and_aes256_gcm_with_valid_nonce__success(
 
     vsc_buffer_t *dec =
             vsc_buffer_new_with_capacity(vscf_pkcs5_pbes2_decrypted_len(pbes2, test_pkcs5_pbes2_ENCRYPTED_DATA.len));
-    vscf_pkcs5_pbes2_decrypt(pbes2, test_pkcs5_pbes2_ENCRYPTED_DATA, dec);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs5_pbes2_decrypt(pbes2, test_pkcs5_pbes2_ENCRYPTED_DATA, dec));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_pkcs5_pbes2_DATA, dec);
 

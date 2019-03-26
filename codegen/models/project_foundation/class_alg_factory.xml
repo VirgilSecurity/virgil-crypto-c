@@ -2,6 +2,8 @@
     Create algorithms based on the given information.
 
     <require interface="alg info"/>
+    <require interface="public key"/>
+    <require interface="private key"/>
     <require impl="sha224"/>
     <require impl="sha256"/>
     <require impl="sha384"/>
@@ -69,6 +71,7 @@
         Create algorithm that implements "public key" interface.
 
         <argument name="raw key" class="raw key"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return interface="public key" access="disown"/>
     </method>
@@ -77,6 +80,7 @@
         Create algorithm that implements "private key" interface.
 
         <argument name="raw key" class="raw key"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return interface="private key" access="disown"/>
     </method>

@@ -42,11 +42,14 @@ import VSCPythia
     /// This error should not be returned if assertions is enabled.
     case errorBadArguments = -1
 
-    /// Undrlying pythia library returns -1.
+    /// Underlying pythia library returns -1.
     case errorPythiaInnerFail = -200
 
     /// Pythia verify operation failed.
     case errorVerificationFail = -201
+
+    /// Underlying random number generator failed.
+    case errorRngFailed = -202
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscp_status_t) {

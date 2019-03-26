@@ -528,6 +528,18 @@
         </restrict>
     </attr>
 
+    <attr name="nodiscard" default="0">
+        Defines that method's return value should not be ignored.
+
+        <restrict value="0">
+            Returned value from the method CAN be ignored.
+        </restrict>
+
+        <restrict value="1">
+            Returned value from the method CAN NOT be ignored.
+        </restrict>
+    </attr>
+
     <inherit entity="component"/>
     <inherit entity="visibility"/>
     <inherit entity="declaration"/>
@@ -650,6 +662,18 @@
 
         <restrict value="1">
             Property is observed so methods "did_setup" and "did_release" must be generated.
+        </restrict>
+    </attr>
+
+    <attr name="is_observers_return_status" default="0">
+        Defines that observer can return error code.
+
+        <restrict value="0">
+            Observer methods CAN NOT return status code.
+        </restrict>
+
+        <restrict value="1">
+            Observer methods CAN return status code.
         </restrict>
     </attr>
 

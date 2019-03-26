@@ -38,7 +38,9 @@
 #
 #   To add new supported language do next:
 #       1. Create file `<lang>.gsl` with methods:
-#           - <lang>_resolve (project, wrapper, projects_api)
+#           - <lang>_create_toplevel_modules(destination, wrapper, projects_api) [optional]
+#           - <lang>_resolve_toplevel (wrapper, license) [optional]
+#           - <lang>_resolve_project (project, wrapper, projects_api)
 #           - <lang>_create_project_module (project, destination, wrapper)
 #           - <lang>_create_custom_modules (source, destination, wrapper, meta) [optional]
 #           - <lang>_create_interface_module (source, destination, wrapper, meta)
@@ -68,14 +70,35 @@ gsl from "swift.gsl"
 gsl from "php.gsl"
 gsl from "python.gsl"
 
-function wrapper_resolve (project, wrapper, projects_api)
+
+function wrapper_resolve_toplevel (wrapper, license)
+    check_arguments (my, "wrapper, license", my)
+
+    my.proxy_func = make_id(my.wrapper.lang, "resolve_toplevel")
+    if macro (my.proxy_func)
+        $(my.proxy_func:) (my.wrapper, my.license)
+    endif
+endfunction
+
+
+function wrapper_resolve_project (project, wrapper, projects_api)
     check_arguments (my, "project, wrapper, projects_api", my)
 
-    my.proxy_func = make_id(my.wrapper.lang, "resolve")
+    my.proxy_func = make_id(my.wrapper.lang, "resolve_project")
     if macro (my.proxy_func)
         $(my.proxy_func:) (my.project, my.wrapper, my.projects_api)
     else
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
+    endif
+endfunction
+
+
+function wrapper_create_toplevel_modules(destination, wrapper, projects_api)
+    check_arguments (my, "destination, wrapper, projects_api", my)
+
+    my.proxy_func = make_id(my.wrapper.lang, "create_toplevel_modules")
+    if macro (my.proxy_func)
+        $(my.proxy_func:) (my.destination, my.wrapper, my.projects_api)
     endif
 endfunction
 

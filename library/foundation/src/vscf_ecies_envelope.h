@@ -253,14 +253,14 @@ vscf_ecies_envelope_packed_len(vscf_ecies_envelope_t *self);
 //  EncryptedContent ::= OCTET STRING
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out);
+vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Unpack ECIES-Envelope ASN.1 structure.
 //  Unpacked data can be accessed thru getters.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data);
+vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) VSCF_NODISCARD;
 
 //
 //  Destroy internal objects.

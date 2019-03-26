@@ -89,7 +89,7 @@ extern "C" {
 
 #define VSC_VERSION_MAJOR 0
 
-#define VSC_VERSION_MINOR 3
+#define VSC_VERSION_MINOR 6
 
 #define VSC_VERSION_PATCH 0
 
@@ -100,6 +100,12 @@ extern "C" {
                 VSC_VERSION_MAJOR, \
                 VSC_VERSION_MINOR, \
                 VSC_VERSION_PATCH)
+
+#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
+#   define VSC_NODISCARD __attribute__ ((warn_unused_result))
+#else
+#   define VSC_NODISCARD
+#endif
 
 //
 //  Custom implementation of the number ceil algorithm.

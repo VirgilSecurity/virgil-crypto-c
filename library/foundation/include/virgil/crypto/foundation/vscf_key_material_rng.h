@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -46,19 +47,27 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provide interface to calculate hash (message digest) over a stream.
+//  This module contains 'key material rng' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCP_HASH_STREAM_H_INCLUDED
-#define VSCP_HASH_STREAM_H_INCLUDED
+#ifndef VSCF_KEY_MATERIAL_RNG_H_INCLUDED
+#define VSCF_KEY_MATERIAL_RNG_H_INCLUDED
 
-#include "vscp_library.h"
-#include "vscp_impl.h"
-#include "vscp_hash_info.h"
-#include "vscp_api.h"
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
 
-#include <.(c_global_macros_project_common_namespace_dir)/vsc_data.h>
-#include <.(c_global_macros_project_common_namespace_dir)/vsc_buffer.h>
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
+
+// clang-format on
 //  @end
 
 
@@ -74,57 +83,95 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'hash stream'.
+//  Public integral constants.
 //
-typedef struct vscp_hash_stream_api_t vscp_hash_stream_api_t;
+enum {
+    //
+    //  Minimum length in bytes for the key material.
+    //
+    vscf_key_material_rng_KEY_MATERIAL_LEN_MIN = 32,
+    //
+    //  Maximum length in bytes for the key material.
+    //
+    vscf_key_material_rng_KEY_MATERIAL_LEN_MAX = 512
+};
 
 //
-//  Start a new hashing.
+//  Handles implementation details.
 //
-VSCP_PUBLIC void
-vscp_hash_stream_start(vscp_impl_t *impl);
+typedef struct vscf_key_material_rng_t vscf_key_material_rng_t;
 
 //
-//  Add given data to the hash.
+//  Return size of 'vscf_key_material_rng_t' type.
 //
-VSCP_PUBLIC void
-vscp_hash_stream_update(vscp_impl_t *impl, vsc_data_t data);
+VSCF_PUBLIC size_t
+vscf_key_material_rng_impl_size(void);
 
 //
-//  Accompilsh hashing and return it's result (a message digest).
+//  Cast to the 'vscf_impl_t' type.
 //
-VSCP_PUBLIC void
-vscp_hash_stream_finish(vscp_impl_t *impl, vsc_buffer_t *digest);
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_material_rng_impl(vscf_key_material_rng_t *self);
 
 //
-//  Return hash stream API, or NULL if it is not implemented.
+//  Perform initialization of preallocated implementation context.
 //
-VSCP_PUBLIC const vscp_hash_stream_api_t *
-vscp_hash_stream_api(vscp_impl_t *impl);
+VSCF_PUBLIC void
+vscf_key_material_rng_init(vscf_key_material_rng_t *self);
 
 //
-//  Return hash info API.
+//  Cleanup implementation context and release dependencies.
+//  This is a reverse action of the function 'vscf_key_material_rng_init()'.
 //
-VSCP_PUBLIC const vscp_hash_info_api_t *
-vscp_hash_stream_hash_info_api(const vscp_hash_stream_api_t *hash_stream_api);
+VSCF_PUBLIC void
+vscf_key_material_rng_cleanup(vscf_key_material_rng_t *self);
 
 //
-//  Check if given object implements interface 'hash stream'.
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
 //
-VSCP_PUBLIC bool
-vscp_hash_stream_is_implemented(vscp_impl_t *impl);
+VSCF_PUBLIC vscf_key_material_rng_t *
+vscf_key_material_rng_new(void);
 
 //
-//  Returns interface unique identifier.
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_key_material_rng_new()'.
 //
-VSCP_PUBLIC vscp_api_tag_t
-vscp_hash_stream_api_tag(const vscp_hash_stream_api_t *hash_stream_api);
+VSCF_PUBLIC void
+vscf_key_material_rng_delete(vscf_key_material_rng_t *self);
 
 //
-//  Returns implementation unique identifier.
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_key_material_rng_new()'.
+//  Given reference is nullified.
 //
-VSCP_PUBLIC vscp_impl_tag_t
-vscp_hash_stream_impl_tag(const vscp_hash_stream_api_t *hash_stream_api);
+VSCF_PUBLIC void
+vscf_key_material_rng_destroy(vscf_key_material_rng_t **self_ref);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_key_material_rng_t *
+vscf_key_material_rng_shallow_copy(vscf_key_material_rng_t *self);
+
+//
+//  Set a new key material.
+//
+VSCF_PUBLIC void
+vscf_key_material_rng_reset_key_material(vscf_key_material_rng_t *self, vsc_data_t key_material);
+
+//
+//  Generate random bytes.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_key_material_rng_random(vscf_key_material_rng_t *self, size_t data_len, vsc_buffer_t *data) VSCF_NODISCARD;
+
+//
+//  Retreive new seed data from the entropy sources.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_key_material_rng_reseed(vscf_key_material_rng_t *self) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------
@@ -140,5 +187,5 @@ vscp_hash_stream_impl_tag(const vscp_hash_stream_api_t *hash_stream_api);
 
 
 //  @footer
-#endif // VSCP_HASH_STREAM_H_INCLUDED
+#endif // VSCF_KEY_MATERIAL_RNG_H_INCLUDED
 //  @end

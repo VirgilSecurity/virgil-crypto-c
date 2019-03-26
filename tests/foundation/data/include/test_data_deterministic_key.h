@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -33,35 +31,11 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  This module contains Private API common for all 'implementation' objects.
-// --------------------------------------------------------------------------
+#include "vsc_data.h"
 
-
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
-
-#include "vscp_impl_private.h"
-//  @end
-
-
-//  @generated
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated section start.
-// --------------------------------------------------------------------------
-
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
+extern const vsc_data_t test_data_deterministic_key_KEY_MATERIAL;
+extern const vsc_data_t test_data_deterministic_key_RSA256_PRIVATE_KEY;
+extern const vsc_data_t test_data_deterministic_key_RSA4096_PRIVATE_KEY;
+extern const vsc_data_t test_data_deterministic_key_ED25519_PRIVATE_KEY;

@@ -14,7 +14,8 @@ attribute names are case-sensitive and we use only lower-case names.
           <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
                [impl] [enum]/>
        </require>
-       <dependency name [library] [project] [interface] [api] [class] [impl] [type_name] [has_observers]/>
+       <dependency name [library] [project] [interface] [api] [class] [impl] [type_name] [has_observers]
+            [is_observers_return_status]/>
        <constant name [c_prefix] [of_class] [uid] [full_uid] [feature] [definition] [value]/>
        <property is_reference name [full_uid] [library] [access] [type] [class] [enum] [callback]
             [interface] [api] [impl] [size] [uid] [require_definition] [project]
@@ -39,8 +40,8 @@ attribute names are case-sensitive and we use only lower-case names.
              <array .../>
           </argument>
        </callback>
-       <method name [definition] [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature]
-            [declaration] [is_static]>
+       <method name [declaration] [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature]
+            [definition] [is_static] [nodiscard]>
           <return .../>
           <argument .../>
           <variable name is_reference [access] [type] [project] [enum] [callback] [interface] [api]
@@ -319,6 +320,7 @@ Defines dependency to interface or class.
       [ impl = "..." ]
       [ type_name = "..." ]
       [ has_observers = "0 | 1"  ("0") ]
+      [ is_observers_return_status = "0 | 1"  ("0") ]
         />
 
 The dependency item can have these attributes:
@@ -363,6 +365,15 @@ has_observers:
 Value: Meaning:
 0: Property is not observed.
 1: Property is observed so methods "did_setup" and "did_release" must be generated.
+
+is_observers_return_status:
+    Defines that observer can return error code. The
+    is_observers_return_status attribute is optional. Its default value is
+    "0". It can take one of the following values:
+
+Value: Meaning:
+0: Observer methods CAN NOT return status code.
+1: Observer methods CAN return status code.
 
 
 The 'constant' item
@@ -1072,15 +1083,16 @@ and optionally implementation.
 
     <method
         name = "..."
-      [ definition = "public | private | external"  ("private") ]
+      [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
       [ full_uid = "..." ]
       [ feature = "..." ]
-      [ declaration = "public | private | external"  ("public") ]
+      [ definition = "public | private | external"  ("private") ]
       [ is_static = "0 | 1"  ("0") ]
+      [ nodiscard = "0 | 1"  ("0") ]
         >
         <return>, optional
         <argument>
@@ -1150,6 +1162,15 @@ is_static:
 Value: Meaning:
 0: Method is a class-level method.
 1: Method is an object-level method.
+
+nodiscard:
+    Defines that method's return value should not be ignored. The nodiscard
+    attribute is optional. Its default value is "0". It can take one of the
+    following values:
+
+Value: Meaning:
+0: Returned value from the method CAN be ignored.
+1: Returned value from the method CAN NOT be ignored.
 
 
 The 'variable' item
