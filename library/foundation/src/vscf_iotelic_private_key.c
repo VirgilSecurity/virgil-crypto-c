@@ -165,6 +165,9 @@ vscf_iotelic_private_key_produce_alg_info(const vscf_iotelic_private_key_t *self
 VSCF_PUBLIC vscf_status_t
 vscf_iotelic_private_key_restore_alg_info(vscf_iotelic_private_key_t *self, const vscf_impl_t *alg_info) {
 
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+
     //  TODO: This is STUB. Implement me.
 
     return vscf_status_ERROR_BAD_ARGUMENTS;
@@ -217,6 +220,7 @@ vscf_iotelic_private_key_sign_hash(
         vscf_iotelic_private_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id, vsc_buffer_t *signature) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_UNUSED(hash_digest);
     VSCF_UNUSED(hash_id);
     VSCF_UNUSED(signature);
 
