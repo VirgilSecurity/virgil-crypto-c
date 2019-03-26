@@ -54,16 +54,16 @@ target_compile_definitions(foundation
             $<BUILD_INTERFACE:VSCF_INTERNAL_BUILD>
             "VSCF_LIBRARY=$<BOOL:${VSCF_LIBRARY}>"
             "VSCF_MULTI_THREAD=$<BOOL:${VSCF_MULTI_THREAD}>"
-            "VSCF_DEFAULTS=$<BOOL:${VSCF_DEFAULTS}>"
             "VSCF_HASH=$<BOOL:${VSCF_HASH}>"
             "VSCF_MAC=$<BOOL:${VSCF_MAC}>"
             "VSCF_KDF=$<BOOL:${VSCF_KDF}>"
             "VSCF_KEY=$<BOOL:${VSCF_KEY}>"
             "VSCF_PUBLIC_KEY=$<BOOL:${VSCF_PUBLIC_KEY}>"
             "VSCF_PRIVATE_KEY=$<BOOL:${VSCF_PRIVATE_KEY}>"
-            "VSCF_SIGN=$<BOOL:${VSCF_SIGN}>"
-            "VSCF_VERIFY=$<BOOL:${VSCF_VERIFY}>"
+            "VSCF_SIGN_HASH=$<BOOL:${VSCF_SIGN_HASH}>"
+            "VSCF_VERIFY_HASH=$<BOOL:${VSCF_VERIFY_HASH}>"
             "VSCF_ALG=$<BOOL:${VSCF_ALG}>"
+            "VSCF_ALG_INFO=$<BOOL:${VSCF_ALG_INFO}>"
             "VSCF_IOTELIC_SHA256=$<BOOL:${VSCF_IOTELIC_SHA256}>"
             "VSCF_IOTELIC_SHA384=$<BOOL:${VSCF_IOTELIC_SHA384}>"
             "VSCF_IOTELIC_SHA512=$<BOOL:${VSCF_IOTELIC_SHA512}>"
@@ -71,7 +71,7 @@ target_compile_definitions(foundation
             "VSCF_IOTELIC_KDF2=$<BOOL:${VSCF_IOTELIC_KDF2}>"
             "VSCF_IOTELIC_PUBLIC_KEY=$<BOOL:${VSCF_IOTELIC_PUBLIC_KEY}>"
             "VSCF_IOTELIC_PRIVATE_KEY=$<BOOL:${VSCF_IOTELIC_PRIVATE_KEY}>"
-            "VSCF_ERROR_CTX=$<BOOL:${VSCF_ERROR_CTX}>"
+            "VSCF_ERROR=$<BOOL:${VSCF_ERROR}>"
         PRIVATE
             $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCF_BUILD_SHARED_LIBS>
         )

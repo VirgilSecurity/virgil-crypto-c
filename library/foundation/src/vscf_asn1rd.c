@@ -103,7 +103,7 @@ vscf_asn1rd_init_ctx(vscf_asn1rd_t *self) {
 
     self->curr = NULL;
     self->end = NULL;
-    self->error = vscf_error_UNINITIALIZED;
+    self->status = vscf_status_ERROR_UNINITIALIZED;
 }
 
 //
@@ -118,7 +118,7 @@ vscf_asn1rd_cleanup_ctx(vscf_asn1rd_t *self) {
 
     self->curr = NULL;
     self->end = NULL;
-    self->error = vscf_error_UNINITIALIZED;
+    self->status = vscf_status_ERROR_UNINITIALIZED;
 }
 
 //
@@ -138,16 +138,16 @@ vscf_asn1rd_mbedtls_has_error(vscf_asn1rd_t *self, int code) {
     case MBEDTLS_ERR_ASN1_INVALID_LENGTH:
     case MBEDTLS_ERR_ASN1_LENGTH_MISMATCH:
     case MBEDTLS_ERR_ASN1_UNEXPECTED_TAG:
-        self->error = vscf_error_BAD_ASN1;
+        self->status = vscf_status_ERROR_BAD_ASN1;
         break;
 
     case MBEDTLS_ERR_ASN1_OUT_OF_DATA:
-        self->error = vscf_error_OUT_OF_DATA;
+        self->status = vscf_status_ERROR_OUT_OF_DATA;
         break;
 
     default:
         VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(code);
-        self->error = vscf_error_UNHANDLED_THIRDPARTY_ERROR;
+        self->status = vscf_status_ERROR_UNHANDLED_THIRDPARTY_ERROR;
         break;
     }
 
@@ -162,9 +162,9 @@ vscf_asn1rd_read_tag_data(vscf_asn1rd_t *self, int tag) {
 
     VSCF_ASSERT_PTR(self);
 
-    VSCF_ASSERT(self->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return vsc_data_empty();
     }
 
@@ -194,18 +194,46 @@ vscf_asn1rd_reset(vscf_asn1rd_t *self, vsc_data_t data) {
     self->curr = (byte *)data.bytes;
     self->end = data.bytes + data.len;
 
-    self->error = vscf_SUCCESS;
+    self->status = vscf_status_SUCCESS;
 }
 
 //
-//  Return last error.
+//  Return length in bytes how many bytes are left for reading.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_asn1rd_error(vscf_asn1rd_t *self) {
+VSCF_PUBLIC size_t
+vscf_asn1rd_left_len(vscf_asn1rd_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
+
+    if (self->status != vscf_status_SUCCESS) {
+        return 0;
+    }
+
+    VSCF_ASSERT_PTR(self->curr <= self->end);
+    return (size_t)(self->end - self->curr);
+}
+
+//
+//  Return true if status is not "success".
+//
+VSCF_PUBLIC bool
+vscf_asn1rd_has_error(const vscf_asn1rd_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    return self->error;
+    return self->status != vscf_status_SUCCESS;
+}
+
+//
+//  Return error code.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_asn1rd_status(const vscf_asn1rd_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return self->status;
 }
 
 //
@@ -215,9 +243,14 @@ VSCF_PUBLIC int
 vscf_asn1rd_get_tag(vscf_asn1rd_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(self->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
+        return 0;
+    }
+
+    if (self->curr == self->end) {
+        self->status = vscf_status_ERROR_OUT_OF_DATA;
         return 0;
     }
 
@@ -232,14 +265,14 @@ vscf_asn1rd_get_len(vscf_asn1rd_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    VSCF_ASSERT(self->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
     if (self->curr == self->end) {
-        self->error = vscf_error_OUT_OF_DATA;
+        self->status = vscf_status_ERROR_OUT_OF_DATA;
         return 0;
     }
 
@@ -263,14 +296,14 @@ vscf_asn1rd_get_data_len(vscf_asn1rd_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    VSCF_ASSERT(self->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
     if (self->curr == self->end) {
-        self->error = vscf_error_OUT_OF_DATA;
+        self->status = vscf_status_ERROR_OUT_OF_DATA;
         return 0;
     }
 
@@ -300,9 +333,9 @@ vscf_asn1rd_read_tag(vscf_asn1rd_t *self, int tag) {
 
     VSCF_ASSERT_PTR(self);
 
-    VSCF_ASSERT(self->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
@@ -326,9 +359,14 @@ vscf_asn1rd_read_context_tag(vscf_asn1rd_t *self, int tag) {
 
     VSCF_ASSERT_PTR(self);
 
-    VSCF_ASSERT(self->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
+        return 0;
+    }
+
+    if (self->curr == self->end) {
+        self->status = vscf_status_ERROR_OUT_OF_DATA;
         return 0;
     }
 
@@ -351,12 +389,12 @@ vscf_asn1rd_read_int(vscf_asn1rd_t *self) {
 
     int64_t value = vscf_asn1rd_read_int64(self);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
     if (value > (int64_t)INT_MAX) {
-        self->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        self->status = vscf_status_ERROR_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
@@ -373,12 +411,12 @@ vscf_asn1rd_read_int8(vscf_asn1rd_t *self) {
 
     int64_t value = vscf_asn1rd_read_int64(self);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
     if (value < (int64_t)INT8_MIN || value > (int64_t)INT8_MAX) {
-        self->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        self->status = vscf_status_ERROR_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
@@ -395,12 +433,12 @@ vscf_asn1rd_read_int16(vscf_asn1rd_t *self) {
 
     int64_t value = vscf_asn1rd_read_int64(self);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
     if (value > (int64_t)INT16_MAX) {
-        self->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        self->status = vscf_status_ERROR_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
@@ -417,12 +455,12 @@ vscf_asn1rd_read_int32(vscf_asn1rd_t *self) {
 
     int64_t value = vscf_asn1rd_read_int64(self);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
     if (value < (int64_t)INT32_MIN || value > (int64_t)INT32_MAX) {
-        self->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        self->status = vscf_status_ERROR_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
@@ -441,17 +479,17 @@ vscf_asn1rd_read_int64(vscf_asn1rd_t *self) {
 
     size_t len = vscf_asn1rd_read_tag(self, MBEDTLS_ASN1_INTEGER);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
     if (len == 0) {
-        self->error = vscf_error_BAD_ASN1;
+        self->status = vscf_status_ERROR_BAD_ASN1;
         return 0;
     }
 
     if (len > sizeof(int64_t)) {
-        self->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        self->status = vscf_status_ERROR_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
@@ -474,12 +512,12 @@ vscf_asn1rd_read_uint(vscf_asn1rd_t *self) {
 
     uint64_t value = vscf_asn1rd_read_uint64(self);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
     if (value > (uint64_t)UINT_MAX) {
-        self->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        self->status = vscf_status_ERROR_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
@@ -496,12 +534,12 @@ vscf_asn1rd_read_uint8(vscf_asn1rd_t *self) {
 
     uint64_t value = vscf_asn1rd_read_uint64(self);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
     if (value > (uint64_t)UINT8_MAX) {
-        self->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        self->status = vscf_status_ERROR_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
@@ -518,12 +556,12 @@ vscf_asn1rd_read_uint16(vscf_asn1rd_t *self) {
 
     uint64_t value = vscf_asn1rd_read_uint64(self);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
     if (value > (uint64_t)UINT16_MAX) {
-        self->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        self->status = vscf_status_ERROR_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
@@ -540,12 +578,12 @@ vscf_asn1rd_read_uint32(vscf_asn1rd_t *self) {
 
     uint64_t value = vscf_asn1rd_read_uint64(self);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
     if (value > (uint64_t)UINT32_MAX) {
-        self->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        self->status = vscf_status_ERROR_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
@@ -565,17 +603,17 @@ vscf_asn1rd_read_uint64(vscf_asn1rd_t *self) {
     size_t len = vscf_asn1rd_read_tag(self, MBEDTLS_ASN1_INTEGER);
 
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
     if (len == 0) {
-        self->error = vscf_error_BAD_ASN1;
+        self->status = vscf_status_ERROR_BAD_ASN1;
         return 0;
     }
 
     if (len > sizeof(uint64_t) + 1) {
-        self->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        self->status = vscf_status_ERROR_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
@@ -584,7 +622,7 @@ vscf_asn1rd_read_uint64(vscf_asn1rd_t *self) {
             ++self->curr;
             --len;
         } else {
-            self->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+            self->status = vscf_status_ERROR_ASN1_LOSSY_TYPE_NARROWING;
             return 0;
         }
     }
@@ -607,9 +645,9 @@ vscf_asn1rd_read_bool(vscf_asn1rd_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    VSCF_ASSERT(self->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return 0;
     }
 
@@ -631,9 +669,9 @@ vscf_asn1rd_read_null(vscf_asn1rd_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    VSCF_ASSERT(self->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return;
     }
 
@@ -648,6 +686,30 @@ vscf_asn1rd_read_null(vscf_asn1rd_t *self) {
 }
 
 //
+//  Read ASN.1 type: NULL, only if it exists.
+//  Note, this method is safe to call even no more data is left for reading.
+//
+VSCF_PUBLIC void
+vscf_asn1rd_read_null_optional(vscf_asn1rd_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
+
+    if (self->status != vscf_status_SUCCESS) {
+        return;
+    }
+
+    if (vscf_asn1rd_left_len(self) == 0) {
+        return;
+    }
+
+    if (vscf_asn1rd_get_tag(self) == vscf_asn1_tag_NULL) {
+        vscf_asn1rd_read_null(self);
+    }
+}
+
+//
 //  Read ASN.1 type: OCTET STRING.
 //
 VSCF_PUBLIC vsc_data_t
@@ -655,9 +717,9 @@ vscf_asn1rd_read_octet_str(vscf_asn1rd_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    VSCF_ASSERT(self->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return vsc_data_empty();
     }
 
@@ -672,9 +734,9 @@ vscf_asn1rd_read_bitstring_as_octet_str(vscf_asn1rd_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    VSCF_ASSERT(self->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return vsc_data_empty();
     }
 
@@ -695,9 +757,9 @@ vscf_asn1rd_read_utf8_str(vscf_asn1rd_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    VSCF_ASSERT(self->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return vsc_data_empty();
     }
 
@@ -712,9 +774,9 @@ vscf_asn1rd_read_oid(vscf_asn1rd_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    VSCF_ASSERT(self->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(self->status != vscf_status_ERROR_UNINITIALIZED);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return vsc_data_empty();
     }
 
@@ -729,12 +791,12 @@ vscf_asn1rd_read_data(vscf_asn1rd_t *self, size_t len) {
 
     VSCF_ASSERT_PTR(self);
 
-    if (self->error != vscf_SUCCESS) {
+    if (self->status != vscf_status_SUCCESS) {
         return vsc_data_empty();
     }
 
     if (self->curr + len > self->end) {
-        self->error = vscf_error_OUT_OF_DATA;
+        self->status = vscf_status_ERROR_OUT_OF_DATA;
         return vsc_data_empty();
     }
 

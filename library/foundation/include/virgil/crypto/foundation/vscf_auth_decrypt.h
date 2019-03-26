@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_cipher_auth_info.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -93,8 +93,9 @@ typedef struct vscf_auth_decrypt_api_t vscf_auth_decrypt_api_t;
 //  Decrypt given data.
 //  If 'tag' is not give, then it will be taken from the 'enc'.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_auth_decrypt(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_data_t tag, vsc_buffer_t *out);
+VSCF_PUBLIC vscf_status_t
+vscf_auth_decrypt(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_data_t tag,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Calculate required buffer length to hold the authenticated decrypted data.

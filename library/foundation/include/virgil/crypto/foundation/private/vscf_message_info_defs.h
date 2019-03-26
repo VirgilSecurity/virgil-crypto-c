@@ -56,6 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_key_recipient_info_list.h"
 #include "vscf_password_recipient_info_list.h"
+#include "vscf_message_info_custom_params.h"
 #include "vscf_impl.h"
 
 // clang-format on
@@ -91,6 +92,8 @@ struct vscf_message_info_t {
     vscf_password_recipient_info_list_t *password_recipients;
 
     vscf_impl_t *data_encryption_alg_info;
+
+    vscf_message_info_custom_params_t *custom_params;
 };
 
 

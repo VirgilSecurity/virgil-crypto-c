@@ -55,8 +55,6 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_alg_info_der_serializer_defs.h"
-#include "vscf_defaults.h"
-#include "vscf_defaults_api.h"
 #include "vscf_alg_info_serializer.h"
 #include "vscf_alg_info_serializer_api.h"
 #include "vscf_asn1_writer.h"
@@ -77,21 +75,6 @@ static const vscf_api_t *
 vscf_alg_info_der_serializer_find_api(vscf_api_tag_t api_tag);
 
 //
-//  Configuration of the interface API 'defaults api'.
-//
-static const vscf_defaults_api_t defaults_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'defaults' MUST be equal to the 'vscf_api_tag_DEFAULTS'.
-    //
-    vscf_api_tag_DEFAULTS,
-    //
-    //  Setup predefined values to the uninitialized class dependencies.
-    //
-    (vscf_defaults_api_setup_defaults_fn)vscf_alg_info_der_serializer_setup_defaults
-};
-
-//
 //  Configuration of the interface API 'alg info serializer api'.
 //
 static const vscf_alg_info_serializer_api_t alg_info_serializer_api = {
@@ -100,6 +83,10 @@ static const vscf_alg_info_serializer_api_t alg_info_serializer_api = {
     //  For interface 'alg_info_serializer' MUST be equal to the 'vscf_api_tag_ALG_INFO_SERIALIZER'.
     //
     vscf_api_tag_ALG_INFO_SERIALIZER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ALG_INFO_DER_SERIALIZER,
     //
     //  Return buffer size enough to hold serialized algorithm.
     //
@@ -114,6 +101,10 @@ static const vscf_alg_info_serializer_api_t alg_info_serializer_api = {
 //  Compile-time known information about 'alg info der serializer' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_ALG_INFO_DER_SERIALIZER,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
@@ -290,8 +281,6 @@ vscf_alg_info_der_serializer_find_api(vscf_api_tag_t api_tag) {
     switch(api_tag) {
         case vscf_api_tag_ALG_INFO_SERIALIZER:
             return (const vscf_api_t *) &alg_info_serializer_api;
-        case vscf_api_tag_DEFAULTS:
-            return (const vscf_api_t *) &defaults_api;
         default:
             return NULL;
     }

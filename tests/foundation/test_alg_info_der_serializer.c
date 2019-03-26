@@ -50,19 +50,8 @@
 #include "test_data_alg_info_der.h"
 
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
 void
-test__serialize__sha256__returns_valid_der(void) {
+test__serialize__sha256__returns_valid_der_v2_compat(void) {
     vscf_alg_info_der_serializer_t *serializer = vscf_alg_info_der_serializer_new();
     vscf_alg_info_der_serializer_setup_defaults(serializer);
 
@@ -74,7 +63,7 @@ test__serialize__sha256__returns_valid_der(void) {
 
     vscf_alg_info_der_serializer_serialize(serializer, sha256_info, out);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_SHA256_DER, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_SHA256_DER_V2_COMPAT, out);
 
     vscf_impl_destroy(&sha256_info);
     vscf_alg_info_der_serializer_destroy(&serializer);
@@ -82,7 +71,7 @@ test__serialize__sha256__returns_valid_der(void) {
 }
 
 void
-test__serialize__kdf1_sha256__returns_valid_der(void) {
+test__serialize__kdf1_sha256__returns_valid_der_v2_compat(void) {
     vscf_alg_info_der_serializer_t *serializer = vscf_alg_info_der_serializer_new();
     vscf_alg_info_der_serializer_setup_defaults(serializer);
 
@@ -95,7 +84,7 @@ test__serialize__kdf1_sha256__returns_valid_der(void) {
 
     vscf_alg_info_der_serializer_serialize(serializer, kdf_info, out);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_KDF1_SHA256_DER, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_KDF1_SHA256_DER_V2_COMPAT, out);
 
     vsc_buffer_destroy(&out);
     vscf_impl_destroy(&kdf_info);
@@ -103,7 +92,7 @@ test__serialize__kdf1_sha256__returns_valid_der(void) {
 }
 
 void
-test__serialize__aes256_gcm__returns_valid_der(void) {
+test__serialize__aes256_gcm__returns_valid_der_v2_compat(void) {
     vscf_alg_info_der_serializer_t *serializer = vscf_alg_info_der_serializer_new();
     vscf_alg_info_der_serializer_setup_defaults(serializer);
 
@@ -115,7 +104,7 @@ test__serialize__aes256_gcm__returns_valid_der(void) {
 
     vscf_alg_info_der_serializer_serialize(serializer, cipher_info, out);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_AES256_GCM_DER, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_AES256_GCM_DER_V2_COMPAT, out);
 
     vsc_buffer_destroy(&out);
     vscf_impl_destroy(&cipher_info);
@@ -132,9 +121,9 @@ int
 main(void) {
     UNITY_BEGIN();
 
-    RUN_TEST(test__serialize__sha256__returns_valid_der);
-    RUN_TEST(test__serialize__kdf1_sha256__returns_valid_der);
-    RUN_TEST(test__serialize__aes256_gcm__returns_valid_der);
+    RUN_TEST(test__serialize__sha256__returns_valid_der_v2_compat);
+    RUN_TEST(test__serialize__kdf1_sha256__returns_valid_der_v2_compat);
+    RUN_TEST(test__serialize__aes256_gcm__returns_valid_der_v2_compat);
 
 #if TEST_DEPENDENCIES_AVAILABLE
 #else

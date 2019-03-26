@@ -54,8 +54,9 @@
 #define VSCF_ED25519_PRIVATE_KEY_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_ecies.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 #include "vscf_alg_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -176,10 +177,29 @@ VSCF_PUBLIC void
 vscf_ed25519_private_key_release_random(vscf_ed25519_private_key_t *self);
 
 //
+//  Setup dependency to the implementation 'ecies' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ed25519_private_key_use_ecies(vscf_ed25519_private_key_t *self, vscf_ecies_t *ecies);
+
+//
+//  Setup dependency to the implementation 'ecies' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ed25519_private_key_take_ecies(vscf_ed25519_private_key_t *self, vscf_ecies_t *ecies);
+
+//
+//  Release dependency to the implementation 'ecies'.
+//
+VSCF_PUBLIC void
+vscf_ed25519_private_key_release_ecies(vscf_ed25519_private_key_t *self);
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_setup_defaults(vscf_ed25519_private_key_t *self);
+VSCF_PUBLIC vscf_status_t
+vscf_ed25519_private_key_setup_defaults(vscf_ed25519_private_key_t *self) VSCF_NODISCARD;
 
 //
 //  Provide algorithm identificator.
@@ -196,8 +216,8 @@ vscf_ed25519_private_key_produce_alg_info(const vscf_ed25519_private_key_t *self
 //
 //  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_restore_alg_info(vscf_ed25519_private_key_t *self, const vscf_impl_t *alg_info);
+VSCF_PUBLIC vscf_status_t
+vscf_ed25519_private_key_restore_alg_info(vscf_ed25519_private_key_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
 
 //
 //  Length of the key in bytes.
@@ -215,20 +235,33 @@ vscf_ed25519_private_key_key_bitlen(const vscf_ed25519_private_key_t *self);
 //  Generate new private or secret key.
 //  Note, this operation can be slow.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_generate_key(vscf_ed25519_private_key_t *self);
+VSCF_PUBLIC vscf_status_t
+vscf_ed25519_private_key_generate_key(vscf_ed25519_private_key_t *self) VSCF_NODISCARD;
 
 //
-//  Sign data given private key.
+//  Decrypt given data.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_sign(vscf_ed25519_private_key_t *self, vsc_data_t data, vsc_buffer_t *signature);
+VSCF_PUBLIC vscf_status_t
+vscf_ed25519_private_key_decrypt(vscf_ed25519_private_key_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
+
+//
+//  Calculate required buffer length to hold the decrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_ed25519_private_key_decrypted_len(vscf_ed25519_private_key_t *self, size_t data_len);
 
 //
 //  Return length in bytes required to hold signature.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_private_key_signature_len(vscf_ed25519_private_key_t *self);
+vscf_ed25519_private_key_signature_len(const vscf_ed25519_private_key_t *self);
+
+//
+//  Sign data given private key.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_ed25519_private_key_sign_hash(vscf_ed25519_private_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id,
+        vsc_buffer_t *signature) VSCF_NODISCARD;
 
 //
 //  Extract public part of the key.
@@ -243,8 +276,8 @@ vscf_ed25519_private_key_extract_public_key(const vscf_ed25519_private_key_t *se
 //  For instance, RSA private key must be exported in format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_export_private_key(const vscf_ed25519_private_key_t *self, vsc_buffer_t *out);
+VSCF_PUBLIC vscf_status_t
+vscf_ed25519_private_key_export_private_key(const vscf_ed25519_private_key_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Return length in bytes required to hold exported private key.
@@ -259,16 +292,16 @@ vscf_ed25519_private_key_exported_private_key_len(const vscf_ed25519_private_key
 //  For instance, RSA private key must be imported from the format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_import_private_key(vscf_ed25519_private_key_t *self, vsc_data_t data);
+VSCF_PUBLIC vscf_status_t
+vscf_ed25519_private_key_import_private_key(vscf_ed25519_private_key_t *self, vsc_data_t data) VSCF_NODISCARD;
 
 //
 //  Compute shared key for 2 asymmetric keys.
 //  Note, shared key can be used only for symmetric cryptography.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ed25519_private_key_compute_shared_key(vscf_ed25519_private_key_t *self, const vscf_impl_t *public_key,
-        vsc_buffer_t *shared_key);
+        vsc_buffer_t *shared_key) VSCF_NODISCARD;
 
 //
 //  Return number of bytes required to hold shared key.

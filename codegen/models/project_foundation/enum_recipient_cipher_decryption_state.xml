@@ -1,0 +1,7 @@
+<enum name="recipient cipher decryption state" definition="public" scope="private">
+    <constant name="waiting message info" value="0"/>
+    <constant name="processing data"/>
+    <constant name="message info is broken"/>
+    <constant name="message info is absent"/>
+    <constant name="failed"/>
+</enum>

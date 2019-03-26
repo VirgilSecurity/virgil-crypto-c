@@ -85,6 +85,8 @@
 VSCF_PRIVATE void
 vscf_iotelic_private_key_init_ctx(vscf_iotelic_private_key_t *self) {
 
+    VSCF_ASSERT_PTR(self);
+
     //  TODO: This is STUB. Implement me.
 }
 
@@ -96,6 +98,8 @@ vscf_iotelic_private_key_init_ctx(vscf_iotelic_private_key_t *self) {
 VSCF_PRIVATE void
 vscf_iotelic_private_key_cleanup_ctx(vscf_iotelic_private_key_t *self) {
 
+    VSCF_ASSERT_PTR(self);
+
     //  TODO: This is STUB. Implement me.
 }
 
@@ -104,6 +108,8 @@ vscf_iotelic_private_key_cleanup_ctx(vscf_iotelic_private_key_t *self) {
 //
 VSCF_PUBLIC vscf_iotelic_private_key_t *
 vscf_iotelic_private_key_new_with_slot_id(size_t slot_id) {
+
+    VSCF_UNUSED(slot_id);
 
     vscf_iotelic_private_key_t *self = vscf_iotelic_private_key_new();
 
@@ -115,10 +121,16 @@ vscf_iotelic_private_key_new_with_slot_id(size_t slot_id) {
 //
 //  Generate new private with a given slot id.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_iotelic_private_key_generate_key(vscf_iotelic_private_key_t *self, size_t slot_id, vscf_alg_id_t alg_id) {
 
+    VSCF_ASSERT_PTR(self);
+    VSCF_UNUSED(slot_id);
+    VSCF_UNUSED(alg_id);
+
     //  TODO: This is STUB. Implement me.
+
+    return vscf_status_ERROR_BAD_ARGUMENTS;
 }
 
 //
@@ -127,7 +139,11 @@ vscf_iotelic_private_key_generate_key(vscf_iotelic_private_key_t *self, size_t s
 VSCF_PUBLIC vscf_alg_id_t
 vscf_iotelic_private_key_alg_id(const vscf_iotelic_private_key_t *self) {
 
+    VSCF_ASSERT_PTR(self);
+
     //  TODO: This is STUB. Implement me.
+
+    return vscf_alg_id_NONE;
 }
 
 //
@@ -136,16 +152,22 @@ vscf_iotelic_private_key_alg_id(const vscf_iotelic_private_key_t *self) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_iotelic_private_key_produce_alg_info(const vscf_iotelic_private_key_t *self) {
 
+    VSCF_ASSERT_PTR(self);
+
     //  TODO: This is STUB. Implement me.
+
+    return NULL;
 }
 
 //
 //  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_iotelic_private_key_restore_alg_info(vscf_iotelic_private_key_t *self, const vscf_impl_t *alg_info) {
 
     //  TODO: This is STUB. Implement me.
+
+    return vscf_status_ERROR_BAD_ARGUMENTS;
 }
 
 //
@@ -154,7 +176,11 @@ vscf_iotelic_private_key_restore_alg_info(vscf_iotelic_private_key_t *self, cons
 VSCF_PUBLIC size_t
 vscf_iotelic_private_key_key_len(const vscf_iotelic_private_key_t *self) {
 
+    VSCF_ASSERT_PTR(self);
+
     //  TODO: This is STUB. Implement me.
+
+    return 0;
 }
 
 //
@@ -163,25 +189,40 @@ vscf_iotelic_private_key_key_len(const vscf_iotelic_private_key_t *self) {
 VSCF_PUBLIC size_t
 vscf_iotelic_private_key_key_bitlen(const vscf_iotelic_private_key_t *self) {
 
-    //  TODO: This is STUB. Implement me.
-}
-
-//
-//  Sign data given private key.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_iotelic_private_key_sign(vscf_iotelic_private_key_t *self, vsc_data_t data, vsc_buffer_t *signature) {
+    VSCF_ASSERT_PTR(self);
 
     //  TODO: This is STUB. Implement me.
+
+    return 0;
 }
 
 //
 //  Return length in bytes required to hold signature.
 //
 VSCF_PUBLIC size_t
-vscf_iotelic_private_key_signature_len(vscf_iotelic_private_key_t *self) {
+vscf_iotelic_private_key_signature_len(const vscf_iotelic_private_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
 
     //  TODO: This is STUB. Implement me.
+
+    return 0;
+}
+
+//
+//  Sign data given private key.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_iotelic_private_key_sign_hash(
+        vscf_iotelic_private_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id, vsc_buffer_t *signature) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_UNUSED(hash_id);
+    VSCF_UNUSED(signature);
+
+    //  TODO: This is STUB. Implement me.
+
+    return vscf_status_ERROR_BAD_ARGUMENTS;
 }
 
 //
@@ -190,7 +231,11 @@ vscf_iotelic_private_key_signature_len(vscf_iotelic_private_key_t *self) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_iotelic_private_key_extract_public_key(const vscf_iotelic_private_key_t *self) {
 
+    VSCF_ASSERT_PTR(self);
+
     //  TODO: This is STUB. Implement me.
+
+    return NULL;
 }
 
 //
@@ -200,10 +245,15 @@ vscf_iotelic_private_key_extract_public_key(const vscf_iotelic_private_key_t *se
 //  For instance, RSA private key must be exported in format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_iotelic_private_key_export_private_key(const vscf_iotelic_private_key_t *self, vsc_buffer_t *out) {
 
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(out);
+
     //  TODO: This is STUB. Implement me.
+
+    return vscf_status_ERROR_BAD_ARGUMENTS;
 }
 
 //
@@ -212,7 +262,11 @@ vscf_iotelic_private_key_export_private_key(const vscf_iotelic_private_key_t *se
 VSCF_PUBLIC size_t
 vscf_iotelic_private_key_exported_private_key_len(const vscf_iotelic_private_key_t *self) {
 
+    VSCF_ASSERT_PTR(self);
+
     //  TODO: This is STUB. Implement me.
+
+    return 0;
 }
 
 //
@@ -222,8 +276,13 @@ vscf_iotelic_private_key_exported_private_key_len(const vscf_iotelic_private_key
 //  For instance, RSA private key must be imported from the format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_iotelic_private_key_import_private_key(vscf_iotelic_private_key_t *self, vsc_data_t data) {
 
+    VSCF_ASSERT_PTR(self);
+    VSCF_UNUSED(data);
+
     //  TODO: This is STUB. Implement me.
+
+    return vscf_status_ERROR_BAD_ARGUMENTS;
 }

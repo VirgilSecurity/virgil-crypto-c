@@ -4,7 +4,6 @@
     <implementation name="ecies">
         Virgil implementation of the ECIES algorithm.
 
-        <interface name="defaults"/>
         <interface name="encrypt"/>
         <interface name="decrypt"/>
 
@@ -26,13 +25,7 @@
         <dependency name="mac" interface="mac"/>
         <dependency name="kdf" interface="kdf"/>
 
-        <property name="public key" interface="public key"/>
-        <property name="private key" interface="private key"/>
-        <property name="ephemeral key" interface="private key"/>
-        <property name="envelope" class="ecies envelope"/>
-
-
-        <method name="set encryption key" declaration="public">
+        <dependency name="encryption key" interface="public key">
             Set public key that is used for data encryption.
 
             If ephemeral key is not defined, then Public Key, must be conformed
@@ -40,24 +33,26 @@
 
             In turn, Ephemeral Key must be conformed to the interface
             "compute shared key".
+        </dependency>
 
-            <argument name="public key" interface="public key" access="retain"/>
-        </method>
-
-        <method name="set decryption key" declaration="public">
+        <dependency name="decryption key" interface="private key">
             Set private key that used for data decryption.
 
             Private Key must be conformed to the interface "compute shared key".
+        </dependency>
 
-            <argument name="private key" interface="private key" access="retain"/>
-        </method>
-
-        <method name="set ephemeral key" declaration="public">
+        <dependency name="ephemeral key" interface="private key">
             Set private key that used for data decryption.
 
             Ephemeral Key must be conformed to the interface "compute shared key".
+        </dependency>
 
-            <argument name="ephemeral key" interface="private key" access="retain"/>
+        <property name="envelope" class="ecies envelope"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
         </method>
 
         <method name="configure defaults">

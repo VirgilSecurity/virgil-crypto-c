@@ -84,10 +84,10 @@ vscf_mbedtls_bridge_entropy_poll(void *ctx, byte *data, size_t len, size_t *olen
     vsc_buffer_init(&buffer);
     vsc_buffer_use(&buffer, (byte *)data, len);
 
-    vscf_error_t result = vscf_entropy_source_gather(entropy, len, &buffer);
+    vscf_status_t result = vscf_entropy_source_gather(entropy, len, &buffer);
 
     switch (result) {
-    case vscf_SUCCESS:
+    case vscf_status_SUCCESS:
         *olen = vsc_buffer_len(&buffer);
         vsc_buffer_cleanup(&buffer);
         return 0;

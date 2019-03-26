@@ -57,7 +57,7 @@
 #include "vscf_api.h"
 #include "vscf_impl.h"
 #include "vscf_alg_id.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 // clang-format on
 //  @end
@@ -87,7 +87,7 @@ typedef vscf_impl_t * (*vscf_alg_api_produce_alg_info_fn)(const vscf_impl_t *imp
 //
 //  Callback. Restore algorithm configuration from the given object.
 //
-typedef vscf_error_t (*vscf_alg_api_restore_alg_info_fn)(vscf_impl_t *impl, const vscf_impl_t *alg_info);
+typedef vscf_status_t (*vscf_alg_api_restore_alg_info_fn)(vscf_impl_t *impl, const vscf_impl_t *alg_info);
 
 //
 //  Contains API requirements of the interface 'alg'.
@@ -98,6 +98,10 @@ struct vscf_alg_api_t {
     //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
     //
     vscf_api_tag_t api_tag;
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
     //
     //  Provide algorithm identificator.
     //

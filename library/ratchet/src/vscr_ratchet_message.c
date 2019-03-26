@@ -370,12 +370,12 @@ vscr_ratchet_message_serialize(vscr_ratchet_message_t *self, vsc_buffer_t *outpu
 //  Deserializes instance.
 //
 VSCR_PUBLIC vscr_ratchet_message_t *
-vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
+vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     VSCR_ASSERT(vsc_data_is_valid(input));
 
     if (input.len > vscr_ratchet_common_MAX_MESSAGE_LEN) {
-        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_PROTOBUF_DECODE);
+        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
 
         return NULL;
     }
@@ -389,7 +389,7 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
     bool status = pb_decode(&istream, Message_fields, &message->message_pb);
 
     if (!status || message->message_pb.has_prekey_message == message->message_pb.has_regular_message) {
-        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_PROTOBUF_DECODE);
+        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
         vscr_ratchet_message_destroy(&message);
 
         return NULL;

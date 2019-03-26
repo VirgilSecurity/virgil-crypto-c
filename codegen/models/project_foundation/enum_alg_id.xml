@@ -9,7 +9,7 @@
     <constant name="kdf2"/>
     <constant name="rsa"/>
     <constant name="ed25519"/>
-    <constant name="x25519"/>
+    <constant name="curve25519"/>
     <constant name="aes256 gcm"/>
     <constant name="aes256 cbc"/>
     <constant name="hmac"/>

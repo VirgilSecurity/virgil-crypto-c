@@ -35,10 +35,10 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provide interface for "message info" class serialization.
 @objc(VSCFMessageInfoSerializer) public protocol MessageInfoSerializer : CContext {
+    @objc var prefixLen: Int { get }
 
     /// Return buffer size enough to hold serialized message info.
     @objc func serializedLen(messageInfo: MessageInfo) -> Int
@@ -46,59 +46,13 @@ import VirgilCryptoCommon
     /// Serialize class "message info".
     @objc func serialize(messageInfo: MessageInfo) -> Data
 
-    /// Deserialize class "message info".
-    @objc func deserialize(data: Data, error: ErrorCtx) -> MessageInfo
-}
-
-/// Implement interface methods
-@objc(VSCFMessageInfoSerializerProxy) internal class MessageInfoSerializerProxy: NSObject, MessageInfoSerializer {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Return buffer size enough to hold serialized message info.
-    @objc public func serializedLen(messageInfo: MessageInfo) -> Int {
-        let proxyResult = vscf_message_info_serializer_serialized_len(self.c_ctx, messageInfo.c_ctx)
-
-        return proxyResult
-    }
-
-    /// Serialize class "message info".
-    @objc public func serialize(messageInfo: MessageInfo) -> Data {
-        let outCount = self.serializedLen(messageInfo: messageInfo)
-        var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(outBuf)
-        }
-
-        out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> Void in
-            vsc_buffer_init(outBuf)
-            vsc_buffer_use(outBuf, outPointer, outCount)
-            vscf_message_info_serializer_serialize(self.c_ctx, messageInfo.c_ctx, outBuf)
-        })
-        out.count = vsc_buffer_len(outBuf)
-
-        return out
-    }
+    /// Read message info prefix from the given data, and if it is valid,
+    /// return a length of bytes of the whole message info.
+    ///
+    /// Zero returned if length can not be determined from the given data,
+    /// and this means that there is no message info at the data beginning.
+    @objc func readPrefix(data: Data) -> Int
 
     /// Deserialize class "message info".
-    @objc public func deserialize(data: Data, error: ErrorCtx) -> MessageInfo {
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
-            return vscf_message_info_serializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count), error.c_ctx)
-        })
-
-        return MessageInfo.init(take: proxyResult!)
-    }
+    @objc func deserialize(data: Data) throws -> MessageInfo
 }

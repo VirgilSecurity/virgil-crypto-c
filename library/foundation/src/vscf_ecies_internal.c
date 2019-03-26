@@ -55,8 +55,6 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_ecies_defs.h"
-#include "vscf_defaults.h"
-#include "vscf_defaults_api.h"
 #include "vscf_encrypt.h"
 #include "vscf_encrypt_api.h"
 #include "vscf_decrypt.h"
@@ -65,6 +63,9 @@
 #include "vscf_cipher.h"
 #include "vscf_mac.h"
 #include "vscf_kdf.h"
+#include "vscf_public_key.h"
+#include "vscf_private_key.h"
+#include "vscf_private_key.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -82,21 +83,6 @@ static const vscf_api_t *
 vscf_ecies_find_api(vscf_api_tag_t api_tag);
 
 //
-//  Configuration of the interface API 'defaults api'.
-//
-static const vscf_defaults_api_t defaults_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'defaults' MUST be equal to the 'vscf_api_tag_DEFAULTS'.
-    //
-    vscf_api_tag_DEFAULTS,
-    //
-    //  Setup predefined values to the uninitialized class dependencies.
-    //
-    (vscf_defaults_api_setup_defaults_fn)vscf_ecies_setup_defaults
-};
-
-//
 //  Configuration of the interface API 'encrypt api'.
 //
 static const vscf_encrypt_api_t encrypt_api = {
@@ -105,6 +91,10 @@ static const vscf_encrypt_api_t encrypt_api = {
     //  For interface 'encrypt' MUST be equal to the 'vscf_api_tag_ENCRYPT'.
     //
     vscf_api_tag_ENCRYPT,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ECIES,
     //
     //  Encrypt given data.
     //
@@ -125,6 +115,10 @@ static const vscf_decrypt_api_t decrypt_api = {
     //
     vscf_api_tag_DECRYPT,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ECIES,
+    //
     //  Decrypt given data.
     //
     (vscf_decrypt_api_decrypt_fn)vscf_ecies_decrypt,
@@ -138,6 +132,10 @@ static const vscf_decrypt_api_t decrypt_api = {
 //  Compile-time known information about 'ecies' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_ECIES,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
@@ -192,6 +190,9 @@ vscf_ecies_cleanup(vscf_ecies_t *self) {
     vscf_ecies_release_cipher(self);
     vscf_ecies_release_mac(self);
     vscf_ecies_release_kdf(self);
+    vscf_ecies_release_encryption_key(self);
+    vscf_ecies_release_decryption_key(self);
+    vscf_ecies_release_ephemeral_key(self);
 
     vscf_ecies_cleanup_ctx(self);
 
@@ -441,14 +442,170 @@ vscf_ecies_release_kdf(vscf_ecies_t *self) {
     vscf_impl_destroy(&self->kdf);
 }
 
+//
+//  Set public key that is used for data encryption.
+//
+//  If ephemeral key is not defined, then Public Key, must be conformed
+//  to the interface "generate ephemeral key".
+//
+//  In turn, Ephemeral Key must be conformed to the interface
+//  "compute shared key".
+//
+//  Note, ownership is shared.
+//
+VSCF_PUBLIC void
+vscf_ecies_use_encryption_key(vscf_ecies_t *self, vscf_impl_t *encryption_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(encryption_key);
+    VSCF_ASSERT(self->encryption_key == NULL);
+
+    VSCF_ASSERT(vscf_public_key_is_implemented(encryption_key));
+
+    self->encryption_key = vscf_impl_shallow_copy(encryption_key);
+}
+
+//
+//  Set public key that is used for data encryption.
+//
+//  If ephemeral key is not defined, then Public Key, must be conformed
+//  to the interface "generate ephemeral key".
+//
+//  In turn, Ephemeral Key must be conformed to the interface
+//  "compute shared key".
+//
+//  Note, ownership is transfered.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ecies_take_encryption_key(vscf_ecies_t *self, vscf_impl_t *encryption_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(encryption_key);
+    VSCF_ASSERT_PTR(self->encryption_key == NULL);
+
+    VSCF_ASSERT(vscf_public_key_is_implemented(encryption_key));
+
+    self->encryption_key = encryption_key;
+}
+
+//
+//  Release dependency to the interface 'public key'.
+//
+VSCF_PUBLIC void
+vscf_ecies_release_encryption_key(vscf_ecies_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->encryption_key);
+}
+
+//
+//  Set private key that used for data decryption.
+//
+//  Private Key must be conformed to the interface "compute shared key".
+//
+//  Note, ownership is shared.
+//
+VSCF_PUBLIC void
+vscf_ecies_use_decryption_key(vscf_ecies_t *self, vscf_impl_t *decryption_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(decryption_key);
+    VSCF_ASSERT(self->decryption_key == NULL);
+
+    VSCF_ASSERT(vscf_private_key_is_implemented(decryption_key));
+
+    self->decryption_key = vscf_impl_shallow_copy(decryption_key);
+}
+
+//
+//  Set private key that used for data decryption.
+//
+//  Private Key must be conformed to the interface "compute shared key".
+//
+//  Note, ownership is transfered.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ecies_take_decryption_key(vscf_ecies_t *self, vscf_impl_t *decryption_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(decryption_key);
+    VSCF_ASSERT_PTR(self->decryption_key == NULL);
+
+    VSCF_ASSERT(vscf_private_key_is_implemented(decryption_key));
+
+    self->decryption_key = decryption_key;
+}
+
+//
+//  Release dependency to the interface 'private key'.
+//
+VSCF_PUBLIC void
+vscf_ecies_release_decryption_key(vscf_ecies_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->decryption_key);
+}
+
+//
+//  Set private key that used for data decryption.
+//
+//  Ephemeral Key must be conformed to the interface "compute shared key".
+//
+//  Note, ownership is shared.
+//
+VSCF_PUBLIC void
+vscf_ecies_use_ephemeral_key(vscf_ecies_t *self, vscf_impl_t *ephemeral_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(ephemeral_key);
+    VSCF_ASSERT(self->ephemeral_key == NULL);
+
+    VSCF_ASSERT(vscf_private_key_is_implemented(ephemeral_key));
+
+    self->ephemeral_key = vscf_impl_shallow_copy(ephemeral_key);
+}
+
+//
+//  Set private key that used for data decryption.
+//
+//  Ephemeral Key must be conformed to the interface "compute shared key".
+//
+//  Note, ownership is transfered.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ecies_take_ephemeral_key(vscf_ecies_t *self, vscf_impl_t *ephemeral_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(ephemeral_key);
+    VSCF_ASSERT_PTR(self->ephemeral_key == NULL);
+
+    VSCF_ASSERT(vscf_private_key_is_implemented(ephemeral_key));
+
+    self->ephemeral_key = ephemeral_key;
+}
+
+//
+//  Release dependency to the interface 'private key'.
+//
+VSCF_PUBLIC void
+vscf_ecies_release_ephemeral_key(vscf_ecies_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->ephemeral_key);
+}
+
 static const vscf_api_t *
 vscf_ecies_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_DECRYPT:
             return (const vscf_api_t *) &decrypt_api;
-        case vscf_api_tag_DEFAULTS:
-            return (const vscf_api_t *) &defaults_api;
         case vscf_api_tag_ENCRYPT:
             return (const vscf_api_t *) &encrypt_api;
         default:

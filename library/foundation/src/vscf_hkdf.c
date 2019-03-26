@@ -216,7 +216,7 @@ vscf_hkdf_produce_alg_info(const vscf_hkdf_t *self) {
 //
 //  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_hkdf_restore_alg_info(vscf_hkdf_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
@@ -225,11 +225,12 @@ vscf_hkdf_restore_alg_info(vscf_hkdf_t *self, const vscf_impl_t *alg_info) {
 
     const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
-    vscf_impl_t *hash = vscf_alg_factory_create_hash_alg(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info));
+    vscf_impl_t *hash =
+            vscf_alg_factory_create_hash_from_info(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info));
     vscf_hkdf_release_hash(self);
     vscf_hkdf_take_hash(self, hash);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //

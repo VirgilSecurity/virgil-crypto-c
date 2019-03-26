@@ -55,8 +55,6 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_pkcs5_pbkdf2_defs.h"
-#include "vscf_defaults.h"
-#include "vscf_defaults_api.h"
 #include "vscf_alg.h"
 #include "vscf_alg_api.h"
 #include "vscf_kdf.h"
@@ -81,21 +79,6 @@ static const vscf_api_t *
 vscf_pkcs5_pbkdf2_find_api(vscf_api_tag_t api_tag);
 
 //
-//  Configuration of the interface API 'defaults api'.
-//
-static const vscf_defaults_api_t defaults_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'defaults' MUST be equal to the 'vscf_api_tag_DEFAULTS'.
-    //
-    vscf_api_tag_DEFAULTS,
-    //
-    //  Setup predefined values to the uninitialized class dependencies.
-    //
-    (vscf_defaults_api_setup_defaults_fn)vscf_pkcs5_pbkdf2_setup_defaults
-};
-
-//
 //  Configuration of the interface API 'alg api'.
 //
 static const vscf_alg_api_t alg_api = {
@@ -104,6 +87,10 @@ static const vscf_alg_api_t alg_api = {
     //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
     //
     vscf_api_tag_ALG,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_PKCS5_PBKDF2,
     //
     //  Provide algorithm identificator.
     //
@@ -128,6 +115,10 @@ static const vscf_kdf_api_t kdf_api = {
     //
     vscf_api_tag_KDF,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_PKCS5_PBKDF2,
+    //
     //  Derive key of the requested length from the given data.
     //
     (vscf_kdf_api_derive_fn)vscf_pkcs5_pbkdf2_derive
@@ -142,6 +133,10 @@ static const vscf_salted_kdf_api_t salted_kdf_api = {
     //  For interface 'salted_kdf' MUST be equal to the 'vscf_api_tag_SALTED_KDF'.
     //
     vscf_api_tag_SALTED_KDF,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_PKCS5_PBKDF2,
     //
     //  Link to the inherited interface API 'kdf'.
     //
@@ -161,6 +156,10 @@ static const vscf_salted_kdf_api_t salted_kdf_api = {
 //  Compile-time known information about 'pkcs5 pbkdf2' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_PKCS5_PBKDF2,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
@@ -341,8 +340,6 @@ vscf_pkcs5_pbkdf2_find_api(vscf_api_tag_t api_tag) {
     switch(api_tag) {
         case vscf_api_tag_ALG:
             return (const vscf_api_t *) &alg_api;
-        case vscf_api_tag_DEFAULTS:
-            return (const vscf_api_t *) &defaults_api;
         case vscf_api_tag_KDF:
             return (const vscf_api_t *) &kdf_api;
         case vscf_api_tag_SALTED_KDF:

@@ -55,8 +55,6 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_pkcs8_der_deserializer_defs.h"
-#include "vscf_defaults.h"
-#include "vscf_defaults_api.h"
 #include "vscf_key_deserializer.h"
 #include "vscf_key_deserializer_api.h"
 #include "vscf_asn1_reader.h"
@@ -77,21 +75,6 @@ static const vscf_api_t *
 vscf_pkcs8_der_deserializer_find_api(vscf_api_tag_t api_tag);
 
 //
-//  Configuration of the interface API 'defaults api'.
-//
-static const vscf_defaults_api_t defaults_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'defaults' MUST be equal to the 'vscf_api_tag_DEFAULTS'.
-    //
-    vscf_api_tag_DEFAULTS,
-    //
-    //  Setup predefined values to the uninitialized class dependencies.
-    //
-    (vscf_defaults_api_setup_defaults_fn)vscf_pkcs8_der_deserializer_setup_defaults
-};
-
-//
 //  Configuration of the interface API 'key deserializer api'.
 //
 static const vscf_key_deserializer_api_t key_deserializer_api = {
@@ -100,6 +83,10 @@ static const vscf_key_deserializer_api_t key_deserializer_api = {
     //  For interface 'key_deserializer' MUST be equal to the 'vscf_api_tag_KEY_DESERIALIZER'.
     //
     vscf_api_tag_KEY_DESERIALIZER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_PKCS8_DER_DESERIALIZER,
     //
     //  Deserialize given public key as an interchangeable format to the object.
     //
@@ -114,6 +101,10 @@ static const vscf_key_deserializer_api_t key_deserializer_api = {
 //  Compile-time known information about 'pkcs8 der deserializer' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_PKCS8_DER_DESERIALIZER,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
@@ -288,8 +279,6 @@ static const vscf_api_t *
 vscf_pkcs8_der_deserializer_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
-        case vscf_api_tag_DEFAULTS:
-            return (const vscf_api_t *) &defaults_api;
         case vscf_api_tag_KEY_DESERIALIZER:
             return (const vscf_api_t *) &key_deserializer_api;
         default:

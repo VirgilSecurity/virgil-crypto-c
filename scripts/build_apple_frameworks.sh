@@ -140,6 +140,7 @@ mkdir -p "${TVOS_DESTINATION_DIR}"
 mkdir -p "${WATCHOS_DESTINATION_DIR}"
 
 CMAKE_ARGS=""
+CMAKE_ARGS+=" -DCMAKE_BUILD_TYPE=Release"
 CMAKE_ARGS+=" -DBUILD_SHARED_LIBS=YES"
 CMAKE_ARGS+=" -DPB_NO_PACKED_STRUCTS=YES"
 CMAKE_ARGS+=" -DVIRGIL_LIB_RATCHET=YES"
@@ -163,14 +164,14 @@ function build_ios {
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
                         -DAPPLE_PLATFORM=IOS \
-                        -DVSCP_MULTI_THREAD=ON \
+                        -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=lib/dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
     cmake --build "${BUILD_DIR}/dev" --target install -- -j8
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
                         -DAPPLE_PLATFORM=IOS_SIM \
-                        -DVSCP_MULTI_THREAD=OFF \
+                        -DRELIC_USE_PTHREAD=OFF \
                         -DCMAKE_INSTALL_LIBDIR=lib/sim \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
     cmake --build "${BUILD_DIR}/sim" --target install -- -j8
@@ -198,14 +199,14 @@ function build_tvos {
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
                         -DAPPLE_PLATFORM=TVOS \
-                        -DVSCP_MULTI_THREAD=ON \
+                        -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=lib/dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
     cmake --build "${BUILD_DIR}/dev" --target install -- -j8
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
                         -DAPPLE_PLATFORM=TVOS_SIM \
-                        -DVSCP_MULTI_THREAD=ON \
+                        -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=lib/sim \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
     cmake --build "${BUILD_DIR}/sim" --target install -- -j8
@@ -233,14 +234,14 @@ function build_watchos {
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
                         -DAPPLE_PLATFORM=WATCHOS \
-                        -DVSCP_MULTI_THREAD=ON \
+                        -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=lib/dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
     cmake --build "${BUILD_DIR}/dev" --target install -- -j8
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
                         -DAPPLE_PLATFORM=WATCHOS_SIM \
-                        -DVSCP_MULTI_THREAD=OFF \
+                        -DRELIC_USE_PTHREAD=OFF \
                         -DCMAKE_INSTALL_LIBDIR=lib/sim \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
     cmake --build "${BUILD_DIR}/sim" --target install -- -j8
@@ -268,7 +269,7 @@ function build_macosx {
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
                         -DAPPLE_PLATFORM=MACOS \
-                        -DVSCP_MULTI_THREAD=ON \
+                        -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=lib/dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
     cmake --build "${BUILD_DIR}/dev" --target install -- -j8

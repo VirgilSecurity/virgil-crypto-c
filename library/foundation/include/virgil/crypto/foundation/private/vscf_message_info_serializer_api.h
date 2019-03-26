@@ -57,7 +57,7 @@
 #include "vscf_api.h"
 #include "vscf_impl.h"
 #include "vscf_message_info.h"
-#include "vscf_error_ctx.h"
+#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -97,10 +97,19 @@ typedef void (*vscf_message_info_serializer_api_serialize_fn)(vscf_impl_t *impl,
         const vscf_message_info_t *message_info, vsc_buffer_t *out);
 
 //
+//  Callback. Read message info prefix from the given data, and if it is valid,
+//          return a length of bytes of the whole message info.
+//
+//          Zero returned if length can not be determined from the given data,
+//          and this means that there is no message info at the data beginning.
+//
+typedef size_t (*vscf_message_info_serializer_api_read_prefix_fn)(vscf_impl_t *impl, vsc_data_t data);
+
+//
 //  Callback. Deserialize class "message info".
 //
 typedef vscf_message_info_t * (*vscf_message_info_serializer_api_deserialize_fn)(vscf_impl_t *impl, vsc_data_t data,
-        vscf_error_ctx_t *error);
+        vscf_error_t *error);
 
 //
 //  Contains API requirements of the interface 'message info serializer'.
@@ -112,6 +121,10 @@ struct vscf_message_info_serializer_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Return buffer size enough to hold serialized message info.
     //
     vscf_message_info_serializer_api_serialized_len_fn serialized_len_cb;
@@ -120,9 +133,19 @@ struct vscf_message_info_serializer_api_t {
     //
     vscf_message_info_serializer_api_serialize_fn serialize_cb;
     //
+    //  Read message info prefix from the given data, and if it is valid,
+    //  return a length of bytes of the whole message info.
+    //
+    //  Zero returned if length can not be determined from the given data,
+    //  and this means that there is no message info at the data beginning.
+    //
+    vscf_message_info_serializer_api_read_prefix_fn read_prefix_cb;
+    //
     //  Deserialize class "message info".
     //
     vscf_message_info_serializer_api_deserialize_fn deserialize_cb;
+
+    size_t prefix_len;
 };
 
 

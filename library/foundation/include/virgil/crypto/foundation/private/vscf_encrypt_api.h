@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -86,7 +86,7 @@ extern "C" {
 //
 //  Callback. Encrypt given data.
 //
-typedef vscf_error_t (*vscf_encrypt_api_encrypt_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out);
+typedef vscf_status_t (*vscf_encrypt_api_encrypt_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Callback. Calculate required buffer length to hold the encrypted data.
@@ -102,6 +102,10 @@ struct vscf_encrypt_api_t {
     //  For interface 'encrypt' MUST be equal to the 'vscf_api_tag_ENCRYPT'.
     //
     vscf_api_tag_t api_tag;
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
     //
     //  Encrypt given data.
     //

@@ -57,7 +57,7 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_alg_id.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 #include "vscf_api.h"
 
 // clang-format on
@@ -95,8 +95,8 @@ vscf_alg_produce_alg_info(const vscf_impl_t *impl);
 //
 //  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_alg_restore_alg_info(vscf_impl_t *impl, const vscf_impl_t *alg_info);
+VSCF_PUBLIC vscf_status_t
+vscf_alg_restore_alg_info(vscf_impl_t *impl, const vscf_impl_t *alg_info) VSCF_NODISCARD;
 
 //
 //  Return alg API, or NULL if it is not implemented.

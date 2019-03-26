@@ -97,7 +97,7 @@
 
         <interface name="alg"/>
         <interface name="key"/>
-        <interface name="verify"/>
+        <interface name="verify hash"/>
         <interface name="public key">
             <constant name="can import public key" value="false"/>
             <constant name="can export public key" value="false"/>
@@ -123,7 +123,7 @@
 
         <interface name="alg"/>
         <interface name="key"/>
-        <interface name="sign"/>
+        <interface name="sign hash"/>
         <interface name="private key">
             <constant name="can import private key" value="false"/>
             <constant name="can export private key" value="false"/>
@@ -141,7 +141,7 @@
             <argument name="slot id" type="size"/>
             <argument name="alg id" enum="alg id"/>
 
-            <return enum="error"/>
+            <return enum="status"/>
         </method>
     </implementation>
 </implementor>

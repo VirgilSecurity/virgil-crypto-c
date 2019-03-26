@@ -91,6 +91,10 @@ static const vscf_alg_api_t alg_api = {
     //
     vscf_api_tag_ALG,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_IOTELIC_HMAC,
+    //
     //  Provide algorithm identificator.
     //
     (vscf_alg_api_alg_id_fn)vscf_iotelic_hmac_alg_id,
@@ -113,6 +117,10 @@ static const vscf_mac_api_t mac_api = {
     //  For interface 'mac' MUST be equal to the 'vscf_api_tag_MAC'.
     //
     vscf_api_tag_MAC,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_IOTELIC_HMAC,
     //
     //  Size of the digest (mac output) in bytes.
     //
@@ -144,6 +152,10 @@ static const vscf_mac_api_t mac_api = {
 //  Compile-time known information about 'iotelic hmac' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_IOTELIC_HMAC,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

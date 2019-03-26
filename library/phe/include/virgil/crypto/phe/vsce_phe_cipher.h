@@ -56,7 +56,7 @@
 
 #include "vsce_library.h"
 #include "vsce_phe_common.h"
-#include "vsce_error.h"
+#include "vsce_status.h"
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -141,13 +141,17 @@ VSCE_PUBLIC vsce_phe_cipher_t *
 vsce_phe_cipher_shallow_copy(vsce_phe_cipher_t *self);
 
 //
-//  Setup dependency to the interface 'random' with shared ownership.
+//  Random used for salt generation
+//
+//  Note, ownership is shared.
 //
 VSCE_PUBLIC void
 vsce_phe_cipher_use_random(vsce_phe_cipher_t *self, vscf_impl_t *random);
 
 //
-//  Setup dependency to the interface 'random' and transfer ownership.
+//  Random used for salt generation
+//
+//  Note, ownership is transfered.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCE_PUBLIC void
@@ -162,8 +166,8 @@ vsce_phe_cipher_release_random(vsce_phe_cipher_t *self);
 //
 //  Setups dependencies with default values.
 //
-VSCE_PUBLIC void
-vsce_phe_cipher_setup_defaults(vsce_phe_cipher_t *self);
+VSCE_PUBLIC vsce_status_t
+vsce_phe_cipher_setup_defaults(vsce_phe_cipher_t *self) VSCE_NODISCARD;
 
 //
 //  Returns buffer capacity needed to fit cipher text
@@ -180,16 +184,16 @@ vsce_phe_cipher_decrypt_len(vsce_phe_cipher_t *self, size_t cipher_text_len);
 //
 //  Encrypts data using account key
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_cipher_encrypt(vsce_phe_cipher_t *self, vsc_data_t plain_text, vsc_data_t account_key,
-        vsc_buffer_t *cipher_text);
+        vsc_buffer_t *cipher_text) VSCE_NODISCARD;
 
 //
 //  Decrypts data using account key
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_cipher_decrypt(vsce_phe_cipher_t *self, vsc_data_t cipher_text, vsc_data_t account_key,
-        vsc_buffer_t *plain_text);
+        vsc_buffer_t *plain_text) VSCE_NODISCARD;
 
 
 // --------------------------------------------------------------------------

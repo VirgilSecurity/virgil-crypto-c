@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// This is MbedTLS implementation of ASN.1 reader.
 @objc(VSCFAsn1rd) public class Asn1rd: NSObject, Asn1Reader {
@@ -71,15 +70,30 @@ import VirgilCryptoCommon
     /// Reset all internal states and prepare to new ASN.1 reading operations.
     @objc public func reset(data: Data) {
         data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
+
             vscf_asn1rd_reset(self.c_ctx, vsc_data(dataPointer, data.count))
         })
     }
 
-    /// Return last error.
-    @objc public func error() throws {
-        let proxyResult = vscf_asn1rd_error(self.c_ctx)
+    /// Return length in bytes how many bytes are left for reading.
+    @objc public func leftLen() -> Int {
+        let proxyResult = vscf_asn1rd_left_len(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        return proxyResult
+    }
+
+    /// Return true if status is not "success".
+    @objc public func hasError() -> Bool {
+        let proxyResult = vscf_asn1rd_has_error(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return error code.
+    @objc public func status() throws {
+        let proxyResult = vscf_asn1rd_status(self.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Get tag of the current ASN.1 element.
@@ -200,6 +214,12 @@ import VirgilCryptoCommon
     /// Read ASN.1 type: NULL.
     @objc public func readNull() {
         vscf_asn1rd_read_null(self.c_ctx)
+    }
+
+    /// Read ASN.1 type: NULL, only if it exists.
+    /// Note, this method is safe to call even no more data is left for reading.
+    @objc public func readNullOptional() {
+        vscf_asn1rd_read_null_optional(self.c_ctx)
     }
 
     /// Read ASN.1 type: OCTET STRING.

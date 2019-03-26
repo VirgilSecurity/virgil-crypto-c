@@ -253,7 +253,7 @@ vscr_ratchet_key_utils_cleanup_ctx(vscr_ratchet_key_utils_t *self) {
 //
 //  Computes 8 bytes key pair id from public key
 //
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_key_utils_compute_public_key_id(
         vscr_ratchet_key_utils_t *self, vsc_data_t public_key, vsc_buffer_t *key_id) {
 
@@ -271,19 +271,19 @@ vscr_ratchet_key_utils_compute_public_key_id(
         memcpy(vsc_buffer_unused_bytes(key_id), digest, vscr_ratchet_common_KEY_ID_LEN);
         vsc_buffer_inc_used(key_id, vscr_ratchet_common_KEY_ID_LEN);
 
-        return vscr_SUCCESS;
+        return vscr_status_SUCCESS;
     }
 
-    vscr_error_ctx_t error_ctx;
-    vscr_error_ctx_reset(&error_ctx);
+    vscr_error_t error_ctx;
+    vscr_error_reset(&error_ctx);
 
     vsc_buffer_t *raw_public_key = vscr_ratchet_key_utils_extract_ratchet_public_key(self, public_key, &error_ctx);
 
-    if (error_ctx.error != vscr_SUCCESS) {
-        return error_ctx.error;
+    if (vscr_error_has_error(&error_ctx)) {
+        return vscr_error_status(&error_ctx);
     }
 
-    vscr_error_t result = vscr_ratchet_key_utils_compute_public_key_id(self, vsc_buffer_data(raw_public_key), key_id);
+    vscr_status_t result = vscr_ratchet_key_utils_compute_public_key_id(self, vsc_buffer_data(raw_public_key), key_id);
 
     vsc_buffer_destroy(&raw_public_key);
 
@@ -292,24 +292,24 @@ vscr_ratchet_key_utils_compute_public_key_id(
 
 VSCR_PUBLIC vsc_buffer_t *
 vscr_ratchet_key_utils_extract_ratchet_public_key(
-        vscr_ratchet_key_utils_t *self, vsc_data_t data, vscr_error_ctx_t *err_ctx) {
+        vscr_ratchet_key_utils_t *self, vsc_data_t data, vscr_error_t *error) {
 
-    vscf_error_ctx_t error_ctx;
-    vscf_error_ctx_reset(&error_ctx);
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
 
     vsc_buffer_t *result = NULL;
 
     vscf_raw_key_t *raw_key = vscf_pkcs8_der_deserializer_deserialize_public_key(self->pkcs8, data, &error_ctx);
 
-    if (error_ctx.error != vscf_SUCCESS) {
-        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_KEY_DESERIALIZATION);
+    if (vscf_error_has_error(&error_ctx)) {
+        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
 
         goto err;
     }
 
-    if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_X25519) {
+    if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_CURVE25519) {
         if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH) {
-            VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_KEY_DESERIALIZATION);
+            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
 
             goto err;
         }
@@ -317,7 +317,7 @@ vscr_ratchet_key_utils_extract_ratchet_public_key(
         result = vsc_buffer_new_with_data(vscf_raw_key_data(raw_key));
     } else if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_ED25519) {
         if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH) {
-            VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_KEY_DESERIALIZATION);
+            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
 
             goto err;
         }
@@ -328,7 +328,7 @@ vscr_ratchet_key_utils_extract_ratchet_public_key(
                 ed25519_pubkey_to_curve25519(vsc_buffer_unused_bytes(result), vscf_raw_key_data(raw_key).bytes);
 
         if (curve25519_status != 0) {
-            VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_CURVE25519);
+            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_CURVE25519);
 
             vsc_buffer_destroy(&result);
 
@@ -337,7 +337,7 @@ vscr_ratchet_key_utils_extract_ratchet_public_key(
 
         vsc_buffer_inc_used(result, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
     } else {
-        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_INVALID_KEY_TYPE);
+        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_INVALID_KEY_TYPE);
 
         goto err;
     }
@@ -350,24 +350,24 @@ err:
 
 VSCR_PUBLIC vsc_buffer_t *
 vscr_ratchet_key_utils_extract_ratchet_private_key(
-        vscr_ratchet_key_utils_t *self, vsc_data_t data, vscr_error_ctx_t *err_ctx) {
+        vscr_ratchet_key_utils_t *self, vsc_data_t data, vscr_error_t *error) {
 
-    vscf_error_ctx_t error_ctx;
-    vscf_error_ctx_reset(&error_ctx);
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
 
     vsc_buffer_t *result = NULL;
 
     vscf_raw_key_t *raw_key = vscf_pkcs8_der_deserializer_deserialize_private_key(self->pkcs8, data, &error_ctx);
 
-    if (error_ctx.error != vscf_SUCCESS) {
-        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_KEY_DESERIALIZATION);
+    if (vscf_error_has_error(&error_ctx)) {
+        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
 
         goto err;
     }
 
-    if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_X25519) {
+    if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_CURVE25519) {
         if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH + 2) {
-            VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_INVALID_KEY_TYPE);
+            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_INVALID_KEY_TYPE);
 
             goto err;
         }
@@ -376,7 +376,7 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(
                 vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH));
     } else if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_ED25519) {
         if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH + 2) {
-            VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_KEY_DESERIALIZATION);
+            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
 
             goto err;
         }
@@ -387,7 +387,7 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(
                 vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH).bytes);
 
         if (curve25519_status != 0) {
-            VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_CURVE25519);
+            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_CURVE25519);
 
             vsc_buffer_destroy(&result);
 
@@ -396,7 +396,7 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(
 
         vsc_buffer_inc_used(result, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
     } else {
-        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_INVALID_KEY_TYPE);
+        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_INVALID_KEY_TYPE);
 
         goto err;
     }

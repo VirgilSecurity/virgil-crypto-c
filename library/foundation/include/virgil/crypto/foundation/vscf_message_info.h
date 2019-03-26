@@ -59,6 +59,7 @@
 #include "vscf_password_recipient_info.h"
 #include "vscf_key_recipient_info_list.h"
 #include "vscf_password_recipient_info_list.h"
+#include "vscf_message_info_custom_params.h"
 #include "vscf_impl.h"
 
 // clang-format on
@@ -161,6 +162,26 @@ vscf_message_info_key_recipient_info_list(const vscf_message_info_t *self);
 //
 VSCF_PUBLIC const vscf_password_recipient_info_list_t *
 vscf_message_info_password_recipient_info_list(const vscf_message_info_t *self);
+
+//
+//  Setup custom params.
+//
+VSCF_PUBLIC void
+vscf_message_info_set_custom_params(vscf_message_info_t *self, vscf_message_info_custom_params_t *custom_params);
+
+//
+//  Provide access to the custom params object.
+//  The returned object can be used to add custom params or read it.
+//  If custom params object was not set then new empty object is created.
+//
+VSCF_PUBLIC vscf_message_info_custom_params_t *
+vscf_message_info_custom_params(vscf_message_info_t *self);
+
+//
+//  Remove all recipients.
+//
+VSCF_PUBLIC void
+vscf_message_info_clear_recipients(vscf_message_info_t *self);
 
 
 // --------------------------------------------------------------------------

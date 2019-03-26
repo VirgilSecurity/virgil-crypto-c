@@ -5,6 +5,7 @@
     <property name="key recipients" class="key recipient info list"/>
     <property name="password recipients" class="password recipient info list"/>
     <property name="data encryption alg info" interface="alg info"/>
+    <property name="custom params" class="message info custom params"/>
 
 
     <method name="add key recipient">
@@ -46,5 +47,23 @@
         Return list with a "password recipient info" elements.
 
         <return class="password recipient info list"/>
+    </method>
+
+    <method name="set custom params">
+        Setup custom params.
+
+        <argument name="custom params" class="message info custom params" access="retain"/>
+    </method>
+
+    <method name="custom params">
+        Provide access to the custom params object.
+        The returned object can be used to add custom params or read it.
+        If custom params object was not set then new empty object is created.
+
+        <return class="message info custom params" access="readwrite"/>
+    </method>
+
+    <method name="clear recipients">
+        Remove all recipients.
     </method>
 </class>

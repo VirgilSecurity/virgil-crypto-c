@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Handle information about password-based encryption algorithm.
 @objc(VSCFPbeAlgInfo) public class PbeAlgInfo: NSObject, AlgInfo {
@@ -68,6 +67,7 @@ import VirgilCryptoCommon
     public init(algId: AlgId, kdfAlgInfo: AlgInfo, cipherAlgInfo: AlgInfo) {
         var kdfAlgInfoCopy = vscf_impl_shallow_copy(kdfAlgInfo.c_ctx)
         var cipherAlgInfoCopy = vscf_impl_shallow_copy(cipherAlgInfo.c_ctx)
+
         let proxyResult = vscf_pbe_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), &kdfAlgInfoCopy, &cipherAlgInfoCopy)
 
         self.c_ctx = proxyResult!
@@ -82,14 +82,14 @@ import VirgilCryptoCommon
     @objc public func kdfAlgInfo() -> AlgInfo {
         let proxyResult = vscf_pbe_alg_info_kdf_alg_info(self.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Return cipher algorithm information.
     @objc public func cipherAlgInfo() -> AlgInfo {
         let proxyResult = vscf_pbe_alg_info_cipher_alg_info(self.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Provide algorithm identificator.

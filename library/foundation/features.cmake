@@ -47,16 +47,16 @@ include_guard()
 
 option(VSCF_LIBRARY "Enable build of the 'foundation' library" ON)
 option(VSCF_MULTI_THREAD "Enable multi-threading safety for foundation library." ON)
-option(VSCF_DEFAULTS "Enable interface 'defaults'." ON)
 option(VSCF_HASH "Enable interface 'hash'." ON)
 option(VSCF_MAC "Enable interface 'mac'." ON)
 option(VSCF_KDF "Enable interface 'kdf'." ON)
 option(VSCF_KEY "Enable interface 'key'." ON)
 option(VSCF_PUBLIC_KEY "Enable interface 'public key'." ON)
 option(VSCF_PRIVATE_KEY "Enable interface 'private key'." ON)
-option(VSCF_SIGN "Enable interface 'sign'." ON)
-option(VSCF_VERIFY "Enable interface 'verify'." ON)
+option(VSCF_SIGN_HASH "Enable interface 'sign hash'." ON)
+option(VSCF_VERIFY_HASH "Enable interface 'verify hash'." ON)
 option(VSCF_ALG "Enable interface 'alg'." ON)
+option(VSCF_ALG_INFO "Enable interface 'alg info'." ON)
 option(VSCF_IOTELIC_SHA256 "Enable implementation 'iotelic sha256'." ON)
 option(VSCF_IOTELIC_SHA384 "Enable implementation 'iotelic sha384'." ON)
 option(VSCF_IOTELIC_SHA512 "Enable implementation 'iotelic sha512'." ON)
@@ -64,20 +64,20 @@ option(VSCF_IOTELIC_HMAC "Enable implementation 'iotelic hmac'." ON)
 option(VSCF_IOTELIC_KDF2 "Enable implementation 'iotelic kdf2'." ON)
 option(VSCF_IOTELIC_PUBLIC_KEY "Enable implementation 'iotelic public key'." ON)
 option(VSCF_IOTELIC_PRIVATE_KEY "Enable implementation 'iotelic private key'." ON)
-option(VSCF_ERROR_CTX "Enable class 'error ctx'." ON)
+option(VSCF_ERROR "Enable class 'error'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREAD
-        VSCF_DEFAULTS
         VSCF_HASH
         VSCF_MAC
         VSCF_KDF
         VSCF_KEY
         VSCF_PUBLIC_KEY
         VSCF_PRIVATE_KEY
-        VSCF_SIGN
-        VSCF_VERIFY
+        VSCF_SIGN_HASH
+        VSCF_VERIFY_HASH
         VSCF_ALG
+        VSCF_ALG_INFO
         VSCF_IOTELIC_SHA256
         VSCF_IOTELIC_SHA384
         VSCF_IOTELIC_SHA512
@@ -85,7 +85,7 @@ mark_as_advanced(
         VSCF_IOTELIC_KDF2
         VSCF_IOTELIC_PUBLIC_KEY
         VSCF_IOTELIC_PRIVATE_KEY
-        VSCF_ERROR_CTX
+        VSCF_ERROR
         )
 
 if(VSCF_KEY AND NOT VSCF_ALG)

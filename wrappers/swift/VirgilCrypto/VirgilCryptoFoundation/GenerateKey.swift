@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Interface for private or secret key generation.
 @objc(VSCFGenerateKey) public protocol GenerateKey : CContext {
@@ -43,30 +42,4 @@ import VirgilCryptoCommon
     /// Generate new private or secret key.
     /// Note, this operation can be slow.
     @objc func generateKey() throws
-}
-
-/// Implement interface methods
-@objc(VSCFGenerateKeyProxy) internal class GenerateKeyProxy: NSObject, GenerateKey {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Generate new private or secret key.
-    /// Note, this operation can be slow.
-    @objc public func generateKey() throws {
-        let proxyResult = vscf_generate_key(self.c_ctx)
-
-        try FoundationError.handleError(fromC: proxyResult)
-    }
 }

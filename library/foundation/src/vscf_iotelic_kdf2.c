@@ -106,7 +106,7 @@ vscf_iotelic_kdf2_produce_alg_info(const vscf_iotelic_kdf2_t *self) {
 //
 //  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_iotelic_kdf2_restore_alg_info(vscf_iotelic_kdf2_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_UNUSED(self);

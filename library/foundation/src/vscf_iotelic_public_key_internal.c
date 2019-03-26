@@ -59,8 +59,8 @@
 #include "vscf_alg_api.h"
 #include "vscf_key.h"
 #include "vscf_key_api.h"
-#include "vscf_verify.h"
-#include "vscf_verify_api.h"
+#include "vscf_verify_hash.h"
+#include "vscf_verify_hash_api.h"
 #include "vscf_public_key.h"
 #include "vscf_public_key_api.h"
 #include "vscf_impl.h"
@@ -89,6 +89,10 @@ static const vscf_alg_api_t alg_api = {
     //
     vscf_api_tag_ALG,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_IOTELIC_PUBLIC_KEY,
+    //
     //  Provide algorithm identificator.
     //
     (vscf_alg_api_alg_id_fn)vscf_iotelic_public_key_alg_id,
@@ -112,6 +116,10 @@ static const vscf_key_api_t key_api = {
     //
     vscf_api_tag_KEY,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_IOTELIC_PUBLIC_KEY,
+    //
     //  Link to the inherited interface API 'alg'.
     //
     &alg_api,
@@ -126,18 +134,22 @@ static const vscf_key_api_t key_api = {
 };
 
 //
-//  Configuration of the interface API 'verify api'.
+//  Configuration of the interface API 'verify hash api'.
 //
-static const vscf_verify_api_t verify_api = {
+static const vscf_verify_hash_api_t verify_hash_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'verify' MUST be equal to the 'vscf_api_tag_VERIFY'.
+    //  For interface 'verify_hash' MUST be equal to the 'vscf_api_tag_VERIFY_HASH'.
     //
-    vscf_api_tag_VERIFY,
+    vscf_api_tag_VERIFY_HASH,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_IOTELIC_PUBLIC_KEY,
     //
     //  Verify data with given public key and signature.
     //
-    (vscf_verify_api_verify_fn)vscf_iotelic_public_key_verify
+    (vscf_verify_hash_api_verify_hash_fn)vscf_iotelic_public_key_verify_hash
 };
 
 //
@@ -149,6 +161,10 @@ static const vscf_public_key_api_t public_key_api = {
     //  For interface 'public_key' MUST be equal to the 'vscf_api_tag_PUBLIC_KEY'.
     //
     vscf_api_tag_PUBLIC_KEY,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_IOTELIC_PUBLIC_KEY,
     //
     //  Link to the inherited interface API 'key'.
     //
@@ -187,6 +203,10 @@ static const vscf_public_key_api_t public_key_api = {
 //  Compile-time known information about 'iotelic public key' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_IOTELIC_PUBLIC_KEY,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
@@ -327,8 +347,8 @@ vscf_iotelic_public_key_find_api(vscf_api_tag_t api_tag) {
             return (const vscf_api_t *) &key_api;
         case vscf_api_tag_PUBLIC_KEY:
             return (const vscf_api_t *) &public_key_api;
-        case vscf_api_tag_VERIFY:
-            return (const vscf_api_t *) &verify_api;
+        case vscf_api_tag_VERIFY_HASH:
+            return (const vscf_api_t *) &verify_hash_api;
         default:
             return NULL;
     }

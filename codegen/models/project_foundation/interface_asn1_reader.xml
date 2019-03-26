@@ -12,10 +12,24 @@
     </method>
 
 
-    <method name="error">
-        Return last error.
+    <method name="left len">
+        Return length in bytes how many bytes are left for reading.
 
-        <return enum="error"/>
+        <return type="size"/>
+    </method>
+
+
+    <method name="has error" is_const="1">
+        Return true if status is not "success".
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="status" is_const="1">
+        Return error code.
+
+        <return enum="status"/>
     </method>
 
 
@@ -139,6 +153,12 @@
 
     <method name="read null">
         Read ASN.1 type: NULL.
+    </method>
+
+
+    <method name="read null optional">
+        Read ASN.1 type: NULL, only if it exists.
+        Note, this method is safe to call even no more data is left for reading.
     </method>
 
 

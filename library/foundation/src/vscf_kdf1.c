@@ -108,7 +108,7 @@ vscf_kdf1_produce_alg_info(const vscf_kdf1_t *self) {
 //
 //  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_kdf1_restore_alg_info(vscf_kdf1_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
@@ -117,11 +117,12 @@ vscf_kdf1_restore_alg_info(vscf_kdf1_t *self, const vscf_impl_t *alg_info) {
 
     const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
-    vscf_impl_t *hash = vscf_alg_factory_create_hash_alg(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info));
+    vscf_impl_t *hash =
+            vscf_alg_factory_create_hash_from_info(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info));
     vscf_kdf1_release_hash(self);
     vscf_kdf1_take_hash(self, hash);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -149,7 +150,7 @@ vscf_kdf1_derive(vscf_kdf1_t *self, vsc_data_t data, size_t key_len, vsc_buffer_
     for (size_t counter = 0; counter < counter_len; ++counter) {
         counter_string[0] = (unsigned char)((counter >> 24) & 255);
         counter_string[1] = (unsigned char)((counter >> 16) & 255);
-        counter_string[2] = (unsigned char)((counter >> 8)) & 255;
+        counter_string[2] = (unsigned char)((counter >> 8) & 255);
         counter_string[3] = (unsigned char)(counter & 255);
 
         vscf_hash_start(self->hash);

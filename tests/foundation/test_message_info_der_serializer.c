@@ -56,17 +56,6 @@
 #include "test_data_message_info_der.h"
 
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
 void
 test__serialize__one_rsa2048_key_recipient__returns_valid_cms(void) {
 
@@ -92,7 +81,7 @@ test__serialize__one_rsa2048_key_recipient__returns_valid_cms(void) {
             vsc_buffer_new_with_capacity(vscf_message_info_der_serializer_serialized_len(serializer, message_info));
     vscf_message_info_der_serializer_serialize(serializer, message_info, out);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_cms_ONE_RSA2048_KEY_RECIPIENT.serialized, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_cms_V2_COMPATIBLE_ONE_RSA2048_KEY_RECIPIENT.serialized, out);
 
     vsc_buffer_destroy(&out);
     vscf_message_info_der_serializer_destroy(&serializer);
@@ -134,11 +123,44 @@ test__serialize__one_password_recipient__returns_valid_cms(void) {
             vsc_buffer_new_with_capacity(vscf_message_info_der_serializer_serialized_len(serializer, message_info));
     vscf_message_info_der_serializer_serialize(serializer, message_info, out);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_cms_ONE_PASSWORD_RECIPIENT.serialized, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_cms_V2_COMPATIBLE_ONE_PASSWORD_RECIPIENT.serialized, out);
 
     vsc_buffer_destroy(&out);
     vscf_message_info_der_serializer_destroy(&serializer);
     vscf_message_info_destroy(&message_info);
+}
+
+void
+test__serialize__cms_with_custom_params__returns_cms_with_no_recipients_and_3_params(void) {
+
+    vscf_message_info_custom_params_t *custom_params = vscf_message_info_custom_params_new();
+    vscf_message_info_custom_params_add_string(custom_params, test_message_info_cms_STRING_CUSTOM_PARAM_KEY,
+            test_message_info_cms_STRING_CUSTOM_PARAM_VALUE);
+    vscf_message_info_custom_params_add_data(
+            custom_params, test_message_info_cms_DATA_CUSTOM_PARAM_KEY, test_message_info_cms_DATA_CUSTOM_PARAM_VALUE);
+    vscf_message_info_custom_params_add_int(
+            custom_params, test_message_info_cms_INT_CUSTOM_PARAM_KEY, test_message_info_cms_INT_CUSTOM_PARAM_VALUE);
+
+    vscf_impl_t *data_encryption_alg_info = vscf_cipher_alg_info_impl(vscf_cipher_alg_info_new_with_members(
+            vscf_alg_id_AES256_GCM, test_message_info_cms_ONE_RSA2048_KEY_RECIPIENT.data_encryption_alg_nonce));
+
+    vscf_message_info_t *message_info = vscf_message_info_new();
+    vscf_message_info_set_custom_params(message_info, custom_params);
+    vscf_message_info_set_data_encryption_alg_info(message_info, &data_encryption_alg_info);
+
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vsc_buffer_t *out =
+            vsc_buffer_new_with_capacity(vscf_message_info_der_serializer_serialized_len(serializer, message_info));
+    vscf_message_info_der_serializer_serialize(serializer, message_info, out);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_cms_V2_COMPATIBLE_NO_RECIPIENTS_AND_3_CUSTOM_PARAMS, out);
+
+    vsc_buffer_destroy(&out);
+    vscf_message_info_der_serializer_destroy(&serializer);
+    vscf_message_info_destroy(&message_info);
+    vscf_message_info_custom_params_destroy(&custom_params);
 }
 
 void
@@ -376,6 +398,81 @@ test__deserialize__cms_with_v2_compatible_one_password_recipient__returns_passwo
     vscf_message_info_der_serializer_destroy(&serializer);
 }
 
+void
+test__deserialize__cms_with_no_recipients_and_3_params__read_int_param_is_valid(void) {
+
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_t *message_info = vscf_message_info_der_serializer_deserialize(
+            serializer, test_message_info_cms_NO_RECIPIENTS_AND_3_CUSTOM_PARAMS, NULL);
+
+    TEST_ASSERT_NOT_NULL(message_info);
+
+    vscf_message_info_custom_params_t *custom_params = vscf_message_info_custom_params(message_info);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    int value =
+            vscf_message_info_custom_params_find_int(custom_params, test_message_info_cms_INT_CUSTOM_PARAM_KEY, &error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL(test_message_info_cms_INT_CUSTOM_PARAM_VALUE, value);
+
+    vscf_message_info_destroy(&message_info);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
+void
+test__deserialize__cms_with_no_recipients_and_3_params__read_string_param_is_valid(void) {
+
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_t *message_info = vscf_message_info_der_serializer_deserialize(
+            serializer, test_message_info_cms_NO_RECIPIENTS_AND_3_CUSTOM_PARAMS, NULL);
+
+    TEST_ASSERT_NOT_NULL(message_info);
+
+    vscf_message_info_custom_params_t *custom_params = vscf_message_info_custom_params(message_info);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vsc_data_t value = vscf_message_info_custom_params_find_string(
+            custom_params, test_message_info_cms_STRING_CUSTOM_PARAM_KEY, &error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL_DATA(test_message_info_cms_STRING_CUSTOM_PARAM_VALUE, value);
+
+    vscf_message_info_destroy(&message_info);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
+void
+test__deserialize__cms_with_no_recipients_and_3_params__read_data_param_is_valid(void) {
+
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_t *message_info = vscf_message_info_der_serializer_deserialize(
+            serializer, test_message_info_cms_NO_RECIPIENTS_AND_3_CUSTOM_PARAMS, NULL);
+
+    TEST_ASSERT_NOT_NULL(message_info);
+
+    vscf_message_info_custom_params_t *custom_params = vscf_message_info_custom_params(message_info);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vsc_data_t value = vscf_message_info_custom_params_find_data(
+            custom_params, test_message_info_cms_DATA_CUSTOM_PARAM_KEY, &error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL_DATA(test_message_info_cms_DATA_CUSTOM_PARAM_VALUE, value);
+
+    vscf_message_info_destroy(&message_info);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -388,6 +485,7 @@ main(void) {
 
     RUN_TEST(test__serialize__one_rsa2048_key_recipient__returns_valid_cms);
     RUN_TEST(test__serialize__one_password_recipient__returns_valid_cms);
+    RUN_TEST(test__serialize__cms_with_custom_params__returns_cms_with_no_recipients_and_3_params);
 
     RUN_TEST(test__deserialize__cms_with_one_rsa2048_key_recipient__returns_valid_key_recipient);
     RUN_TEST(test__deserialize__cms_with_one_password_recipient__returns_valid_key_recipient);
@@ -395,6 +493,9 @@ main(void) {
     RUN_TEST(test__deserialize__cms_with_v2_compatible_one_rsa2048_key_recipient__returns_valid_key_recipient);
     RUN_TEST(test__deserialize__cms_with_v2_compatible_one_password_recipient__returns_password_recipient);
 
+    RUN_TEST(test__deserialize__cms_with_no_recipients_and_3_params__read_int_param_is_valid);
+    RUN_TEST(test__deserialize__cms_with_no_recipients_and_3_params__read_string_param_is_valid);
+    RUN_TEST(test__deserialize__cms_with_no_recipients_and_3_params__read_data_param_is_valid);
 
 #if TEST_DEPENDENCIES_AVAILABLE
 #else

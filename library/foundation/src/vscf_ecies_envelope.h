@@ -106,7 +106,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -252,15 +252,15 @@ vscf_ecies_envelope_packed_len(vscf_ecies_envelope_t *self);
 //  ContentEncryptionAlgorithmIdentifier :: = AlgorithmIdentifier
 //  EncryptedContent ::= OCTET STRING
 //
-VSCF_PUBLIC vscf_error_t
-vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out);
+VSCF_PUBLIC vscf_status_t
+vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Unpack ECIES-Envelope ASN.1 structure.
 //  Unpacked data can be accessed thru getters.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data);
+VSCF_PUBLIC vscf_status_t
+vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) VSCF_NODISCARD;
 
 //
 //  Destroy internal objects.

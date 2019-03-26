@@ -206,6 +206,19 @@ vscf_alg_info_der_serializer_serialize_pbes2_alg_info(vscf_alg_info_der_serializ
 
 
 //
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->asn1_writer) {
+        vscf_alg_info_der_serializer_take_asn1_writer(self, vscf_asn1wr_impl(vscf_asn1wr_new()));
+    }
+}
+
+//
 //  Return true if algorithm identifier requires that optional
 //  parameter will be NULL.
 //
@@ -214,13 +227,19 @@ vscf_alg_info_der_serializer_is_alg_require_null_params(vscf_alg_id_t alg_id) {
 
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
-    //  According to RFC 5754 - Using SHA2 Algorithms with Cryptographic Message Syntax.
-    //  Implementations MUST generate SHA2 AlgorithmIdentifiers with absent parameters.
-
     switch (alg_id) {
     case vscf_alg_id_RSA:
         return true;
 
+    case vscf_alg_id_SHA224:
+    case vscf_alg_id_SHA256:
+    case vscf_alg_id_SHA384:
+    case vscf_alg_id_SHA512:
+        //  According to RFC 5754 - Using SHA2 Algorithms with Cryptographic Message Syntax.
+        //  Implementations MUST generate SHA2 AlgorithmIdentifiers with absent parameters.
+        //  But to preserve forward compatibility this BUG is still here.
+        //  BUG: Fix this when Virgil Crypto V2 support will end up.
+        return true;
     default:
         return false;
     }
@@ -278,7 +297,7 @@ vscf_alg_info_der_serializer_serialize_simple_alg_info(
     hash_len += vscf_asn1_writer_write_oid(asn1_writer, oid);
     hash_len += vscf_asn1_writer_write_sequence(asn1_writer, hash_len);
 
-    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(asn1_writer));
 
     return hash_len;
 }
@@ -354,7 +373,7 @@ vscf_alg_info_der_serializer_serialize_kdf_alg_info(vscf_alg_info_der_serializer
     kdf_len += vscf_asn1_writer_write_oid(asn1_writer, kdf_oid);
     kdf_len += vscf_asn1_writer_write_sequence(asn1_writer, kdf_len + params_len);
 
-    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(asn1_writer));
 
     return kdf_len + params_len;
 }
@@ -418,7 +437,7 @@ vscf_alg_info_der_serializer_serialize_hkdf_alg_info(
     hkdf_len += vscf_asn1_writer_write_oid(asn1_writer, vscf_oid_from_id(hkdf_oid_id));
     hkdf_len += vscf_asn1_writer_write_sequence(asn1_writer, hkdf_len);
 
-    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(asn1_writer));
 
     return hkdf_len;
 }
@@ -487,7 +506,7 @@ vscf_alg_info_der_serializer_serialize_hmac_alg_info(
     hmac_len += vscf_asn1_writer_write_oid(asn1_writer, vscf_oid_from_id(hmac_oid_id));
     hmac_len += vscf_asn1_writer_write_sequence(asn1_writer, hmac_len);
 
-    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(asn1_writer));
 
     return hmac_len;
 }
@@ -549,12 +568,15 @@ vscf_alg_info_der_serializer_serialize_cipher_alg_info(
     vscf_alg_id_t alg_id = vscf_cipher_alg_info_alg_id(cipher_alg_info);
 
     switch (alg_id) {
-    case vscf_alg_id_AES256_GCM:
-        //  Write GCMParameters.
-        len += vscf_asn1_writer_write_int(asn1_writer, vscf_cipher_alg_info_nonce(cipher_alg_info).len);
-        len += vscf_asn1_writer_write_octet_str(asn1_writer, vscf_cipher_alg_info_nonce(cipher_alg_info));
-        len += vscf_asn1_writer_write_sequence(asn1_writer, len);
-        break;
+        //  According to RFC 5084 - GCMParameters is written as SEQUENCE.
+        //  But to preserve forward compatibility with version V2 this BUG is still here.
+        //  BUG: Uncomment next code when Virgil Crypto V2 support will end up.
+        // case vscf_alg_id_AES256_GCM:
+        //     //  Write GCMParameters.
+        //     len += vscf_asn1_writer_write_int(asn1_writer, vscf_cipher_alg_info_nonce(cipher_alg_info).len);
+        //     len += vscf_asn1_writer_write_octet_str(asn1_writer, vscf_cipher_alg_info_nonce(cipher_alg_info));
+        //     len += vscf_asn1_writer_write_sequence(asn1_writer, len);
+        //     break;
 
     default:
         //  Write NONCE only.
@@ -569,7 +591,7 @@ vscf_alg_info_der_serializer_serialize_cipher_alg_info(
     //  Write AlgorithmIdentifier SEQUENCE.
     len += vscf_asn1_writer_write_sequence(asn1_writer, len);
 
-    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(asn1_writer));
 
     return len;
 }
@@ -663,7 +685,7 @@ vscf_alg_info_der_serializer_serialize_pbkdf2_alg_info(
     //  Write AlgorithmIdentifier SEQUENCE.
     len += vscf_asn1_writer_write_sequence(asn1_writer, len);
 
-    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(asn1_writer));
 
     return len;
 }
@@ -746,7 +768,7 @@ vscf_alg_info_der_serializer_serialize_pbes2_alg_info(
     //  Write AlgorithmIdentifier SEQUENCE.
     len += vscf_asn1_writer_write_sequence(asn1_writer, len);
 
-    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(asn1_writer));
 
     return len;
 }
@@ -778,7 +800,7 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
     case vscf_alg_id_SHA512:
     case vscf_alg_id_RSA:
     case vscf_alg_id_ED25519:
-    case vscf_alg_id_X25519:
+    case vscf_alg_id_CURVE25519:
         return vscf_alg_info_der_serializer_serialize_simple_alg_info(self, alg_info);
 
     case vscf_alg_id_KDF1:
@@ -810,21 +832,6 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
 }
 
 //
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    if (NULL == self->asn1_writer) {
-        vscf_alg_info_der_serializer_take_asn1_writer(self, vscf_asn1wr_impl(vscf_asn1wr_new()));
-    }
-
-    return vscf_SUCCESS;
-}
-
-//
 //  Return buffer size enough to hold serialized algorithm.
 //
 VSCF_PUBLIC size_t
@@ -846,7 +853,7 @@ vscf_alg_info_der_serializer_serialized_len(vscf_alg_info_der_serializer_t *self
     case vscf_alg_id_SHA512:
     case vscf_alg_id_RSA:
     case vscf_alg_id_ED25519:
-    case vscf_alg_id_X25519:
+    case vscf_alg_id_CURVE25519:
         return vscf_alg_info_der_serializer_serialized_simple_alg_info_len(self, alg_info);
 
     case vscf_alg_id_KDF1:

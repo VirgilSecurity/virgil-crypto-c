@@ -156,6 +156,10 @@ function class_resolve_property (property, class)
     check_arguments (my, "property, class", my)
 
     my.property.access ?= "readwrite"
+
+    if string_equal (my.property.class ?, "self")
+        my.property.class = my.class.name
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------

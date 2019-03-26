@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Handle KDF algorithms that are configured with salt and iteration count.
 @objc(VSCFSaltedKdfAlgInfo) public class SaltedKdfAlgInfo: NSObject, AlgInfo {
@@ -67,7 +66,9 @@ import VirgilCryptoCommon
     /// salt and iteration count.
     public init(algId: AlgId, hashAlgInfo: AlgInfo, salt: Data, iterationCount: Int) {
         let proxyResult = salt.withUnsafeBytes({ (saltPointer: UnsafePointer<byte>) -> OpaquePointer? in
+
             var hashAlgInfoCopy = vscf_impl_shallow_copy(hashAlgInfo.c_ctx)
+
             return vscf_salted_kdf_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), &hashAlgInfoCopy, vsc_data(saltPointer, salt.count), iterationCount)
         })
 
@@ -83,7 +84,7 @@ import VirgilCryptoCommon
     @objc public func hashAlgInfo() -> AlgInfo {
         let proxyResult = vscf_salted_kdf_alg_info_hash_alg_info(self.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Return KDF salt.

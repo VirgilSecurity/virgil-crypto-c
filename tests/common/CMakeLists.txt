@@ -38,7 +38,7 @@ project(virgil_crypto_c_common_tests VERSION ${virgil_crypto_c_tests_VERSION} LA
 
 macro(_add_test test)
     add_executable(${test} ${test}.c)
-    target_link_libraries(${test} unity test_utils vsc::common)
+    target_link_libraries(${test} test_utils vsc::common)
     set_target_properties(${test} PROPERTIES C_STANDARD "99")
     add_test (NAME ${test} COMMAND ${test})
 

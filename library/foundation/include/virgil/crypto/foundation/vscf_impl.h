@@ -73,6 +73,22 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Enumerates all possible implementations within crypto library.
+//
+enum vscf_impl_tag_t {
+    vscf_impl_tag_BEGIN = 0,
+    vscf_impl_tag_IOTELIC_HMAC,
+    vscf_impl_tag_IOTELIC_KDF2,
+    vscf_impl_tag_IOTELIC_PRIVATE_KEY,
+    vscf_impl_tag_IOTELIC_PUBLIC_KEY,
+    vscf_impl_tag_IOTELIC_SHA256,
+    vscf_impl_tag_IOTELIC_SHA384,
+    vscf_impl_tag_IOTELIC_SHA512,
+    vscf_impl_tag_END
+};
+typedef enum vscf_impl_tag_t vscf_impl_tag_t;
+
+//
 //  Generic type for any 'implementation'.
 //
 typedef struct vscf_impl_t vscf_impl_t;
@@ -84,6 +100,12 @@ typedef struct vscf_impl_t vscf_impl_t;
 //
 VSCF_PUBLIC const vscf_api_t *
 vscf_impl_api(const vscf_impl_t *impl, vscf_api_tag_t api_tag);
+
+//
+//  Return unique 'Implementation TAG'.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_impl_tag(const vscf_impl_t *impl);
 
 //
 //  Cleanup implementation object and it's dependencies.

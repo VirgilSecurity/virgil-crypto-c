@@ -69,6 +69,9 @@
 #include "vscf_cipher.h"
 #include "vscf_mac.h"
 #include "vscf_kdf.h"
+#include "vscf_public_key.h"
+#include "vscf_private_key.h"
+#include "vscf_private_key.h"
 #include "vscf_ecies_defs.h"
 #include "vscf_ecies_internal.h"
 
@@ -118,61 +121,28 @@ vscf_ecies_cleanup_ctx(vscf_ecies_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&self->public_key);
-    vscf_impl_destroy(&self->private_key);
-    vscf_impl_destroy(&self->ephemeral_key);
     vscf_ecies_envelope_destroy(&self->envelope);
 }
 
 //
-//  Set public key that is used for data encryption.
+//  Setup predefined values to the uninitialized class dependencies.
 //
-//  If ephemeral key is not defined, then Public Key, must be conformed
-//  to the interface "generate ephemeral key".
-//
-//  In turn, Ephemeral Key must be conformed to the interface
-//  "compute shared key".
-//
-VSCF_PUBLIC void
-vscf_ecies_set_encryption_key(vscf_ecies_t *self, vscf_impl_t *public_key) {
+VSCF_PUBLIC vscf_status_t
+vscf_ecies_setup_defaults(vscf_ecies_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(public_key);
 
-    vscf_impl_destroy(&self->public_key);
-    self->public_key = vscf_impl_shallow_copy(public_key);
-}
+    vscf_status_t status = vscf_status_SUCCESS;
 
-//
-//  Set private key that used for data decryption.
-//
-//  Private Key must be conformed to the interface "compute shared key".
-//
-VSCF_PUBLIC void
-vscf_ecies_set_decryption_key(vscf_ecies_t *self, vscf_impl_t *private_key) {
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        status = vscf_ctr_drbg_setup_defaults(random);
+        if (status == vscf_status_SUCCESS) {
+            vscf_ecies_take_random(self, vscf_ctr_drbg_impl(random));
+        }
+    }
 
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT(vscf_compute_shared_key_is_implemented(private_key));
-
-    vscf_impl_destroy(&self->private_key);
-    self->private_key = vscf_impl_shallow_copy(private_key);
-}
-
-//
-//  Set private key that used for data decryption.
-//
-//  Ephemeral Key must be conformed to the interface "compute shared key".
-//
-VSCF_PUBLIC void
-vscf_ecies_set_ephemeral_key(vscf_ecies_t *self, vscf_impl_t *ephemeral_key) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(ephemeral_key);
-    VSCF_ASSERT(vscf_compute_shared_key_is_implemented(ephemeral_key));
-
-    vscf_impl_destroy(&self->ephemeral_key);
-    self->ephemeral_key = vscf_impl_shallow_copy(ephemeral_key);
+    return status;
 }
 
 //
@@ -201,42 +171,21 @@ vscf_ecies_configure_defaults(vscf_ecies_t *self) {
 }
 
 //
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_ecies_setup_defaults(vscf_ecies_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_error_t status = vscf_SUCCESS;
-
-    if (NULL == self->random) {
-        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
-        status = vscf_ctr_drbg_setup_defaults(random);
-        if (status == vscf_SUCCESS) {
-            vscf_ecies_take_random(self, vscf_ctr_drbg_impl(random));
-        }
-    }
-
-    return status;
-}
-
-//
 //  Encrypt given data.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
-    VSCF_ASSERT_PTR(self->public_key);
+    VSCF_ASSERT_PTR(self->encryption_key);
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_ecies_encrypted_len(self, data.len));
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     //
     // Configure ECIES with default algorithms.
@@ -247,10 +196,10 @@ vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     // Generate ephemeral keypair, if not defined.
     //
     if (NULL == self->ephemeral_key) {
-        VSCF_ASSERT(vscf_generate_ephemeral_key_is_implemented(self->public_key));
-        self->ephemeral_key = vscf_generate_ephemeral_key(self->public_key, &error);
-        if (error.error != vscf_SUCCESS) {
-            return error.error;
+        VSCF_ASSERT(vscf_generate_ephemeral_key_is_implemented(self->encryption_key));
+        self->ephemeral_key = vscf_generate_ephemeral_key(self->encryption_key, &error);
+        if (vscf_error_has_error(&error)) {
+            return vscf_error_status(&error);
         }
         VSCF_ASSERT(vscf_compute_shared_key_is_implemented(self->ephemeral_key));
     }
@@ -267,9 +216,9 @@ vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     //
     shared_key = vsc_buffer_new_with_capacity(vscf_compute_shared_key_shared_key_len(self->ephemeral_key));
     vsc_buffer_make_secure(shared_key);
-    error.error = vscf_compute_shared_key(self->ephemeral_key, self->public_key, shared_key);
+    vscf_error_update(&error, vscf_compute_shared_key(self->ephemeral_key, self->encryption_key, shared_key));
 
-    if (error.error != vscf_SUCCESS) {
+    if (vscf_error_has_error(&error)) {
         goto compute_shared_failed;
     }
 
@@ -291,9 +240,9 @@ vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     //
     const size_t nonce_len = vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->cipher)));
     nonce = vsc_buffer_new_with_capacity(nonce_len);
-    error.error = vscf_random(self->random, nonce_len, nonce);
+    vscf_error_update(&error, vscf_random(self->random, nonce_len, nonce));
 
-    if (error.error != vscf_SUCCESS) {
+    if (vscf_error_has_error(&error)) {
         goto random_failed;
     }
 
@@ -304,9 +253,9 @@ vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     vscf_cipher_set_key(self->cipher, cipher_key);
     vscf_cipher_start_encryption(self->cipher);
     vscf_cipher_update(self->cipher, data, encrypted_data);
-    error.error = vscf_cipher_finish(self->cipher, encrypted_data);
+    vscf_error_update(&error, vscf_cipher_finish(self->cipher, encrypted_data));
 
-    if (error.error != vscf_SUCCESS) {
+    if (vscf_error_has_error(&error)) {
         vsc_buffer_destroy(&encrypted_data);
         goto encrypt_failed;
     }
@@ -334,7 +283,7 @@ vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     vscf_impl_t *mac = vscf_impl_shallow_copy(self->mac);
     vscf_ecies_envelope_set_mac(self->envelope, &mac);
 
-    vscf_ecies_envelope_pack(self->envelope, out);
+    vscf_error_update(&error, vscf_ecies_envelope_pack(self->envelope, out));
 
 encrypt_failed:
 random_failed:
@@ -344,8 +293,9 @@ random_failed:
 compute_shared_failed:
     vsc_buffer_destroy(&shared_key);
     vscf_ecies_envelope_cleanup_properties(self->envelope);
+    vscf_ecies_release_ephemeral_key(self);
 
-    return error.error;
+    return vscf_error_status(&error);
 }
 
 //
@@ -365,18 +315,18 @@ vscf_ecies_encrypted_len(vscf_ecies_t *self, size_t data_len) {
 //
 //  Decrypt given data.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ecies_decrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->private_key);
+    VSCF_ASSERT_PTR(self->decryption_key);
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_ecies_decrypted_len(self, data.len));
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vsc_buffer_t *shared_key = NULL;
     vsc_buffer_t *derived_key = NULL;
@@ -385,19 +335,20 @@ vscf_ecies_decrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     //
     //  Unpack envelope.
     //
-    error.error = vscf_ecies_envelope_unpack(self->envelope, data);
-    if (error.error != vscf_SUCCESS) {
+    vscf_error_update(&error, vscf_ecies_envelope_unpack(self->envelope, data));
+    if (vscf_error_has_error(&error)) {
         goto unpack_envelope_failed;
     }
 
     //
     //  Compute shared secret key.
     //
-    shared_key = vsc_buffer_new_with_capacity(vscf_compute_shared_key_shared_key_len(self->private_key));
+    shared_key = vsc_buffer_new_with_capacity(vscf_compute_shared_key_shared_key_len(self->decryption_key));
     vsc_buffer_make_secure(shared_key);
-    error.error = vscf_compute_shared_key(self->private_key, self->envelope->ephemeral_public_key, shared_key);
+    vscf_error_update(
+            &error, vscf_compute_shared_key(self->decryption_key, self->envelope->ephemeral_public_key, shared_key));
 
-    if (error.error != vscf_SUCCESS) {
+    if (vscf_error_has_error(&error)) {
         goto compute_shared_failed;
     }
 
@@ -424,7 +375,7 @@ vscf_ecies_decrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     vscf_mac_finish(self->envelope->mac, mac_digest);
 
     if (!vsc_buffer_equal(self->envelope->mac_digest, mac_digest)) {
-        error.error = vscf_error_BAD_ENCRYPTED_DATA;
+        vscf_error_update(&error, vscf_status_ERROR_BAD_ENCRYPTED_DATA);
         goto mac_validation_failed;
     }
 
@@ -434,7 +385,7 @@ vscf_ecies_decrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     vscf_cipher_set_key(self->envelope->cipher, cipher_key);
     vscf_cipher_start_decryption(self->envelope->cipher);
     vscf_cipher_update(self->envelope->cipher, vsc_buffer_data(self->envelope->encrypted_content), out);
-    error.error = vscf_cipher_finish(self->envelope->cipher, out);
+    vscf_error_update(&error, vscf_cipher_finish(self->envelope->cipher, out));
 
     //
     //  Cleanup.
@@ -449,7 +400,7 @@ compute_shared_failed:
 unpack_envelope_failed:
     vscf_ecies_envelope_cleanup_properties(self->envelope);
 
-    return error.error;
+    return vscf_error_status(&error);
 }
 
 //

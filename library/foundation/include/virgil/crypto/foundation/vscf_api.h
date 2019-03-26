@@ -77,15 +77,15 @@ extern "C" {
 enum vscf_api_tag_t {
     vscf_api_tag_BEGIN = 0,
     vscf_api_tag_ALG,
-    vscf_api_tag_DEFAULTS,
+    vscf_api_tag_ALG_INFO,
     vscf_api_tag_HASH,
     vscf_api_tag_KDF,
     vscf_api_tag_KEY,
     vscf_api_tag_MAC,
     vscf_api_tag_PRIVATE_KEY,
     vscf_api_tag_PUBLIC_KEY,
-    vscf_api_tag_SIGN,
-    vscf_api_tag_VERIFY,
+    vscf_api_tag_SIGN_HASH,
+    vscf_api_tag_VERIFY_HASH,
     vscf_api_tag_END
 };
 typedef enum vscf_api_tag_t vscf_api_tag_t;

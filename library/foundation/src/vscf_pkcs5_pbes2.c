@@ -152,7 +152,7 @@ vscf_pkcs5_pbes2_produce_alg_info(const vscf_pkcs5_pbes2_t *self) {
 //
 //  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_pkcs5_pbes2_restore_alg_info(vscf_pkcs5_pbes2_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
@@ -161,8 +161,8 @@ vscf_pkcs5_pbes2_restore_alg_info(vscf_pkcs5_pbes2_t *self, const vscf_impl_t *a
 
     const vscf_pbe_alg_info_t *pbe_alg_info = (const vscf_pbe_alg_info_t *)alg_info;
 
-    vscf_impl_t *kdf = vscf_alg_factory_create_kdf_alg(vscf_pbe_alg_info_kdf_alg_info(pbe_alg_info));
-    vscf_impl_t *cipher = vscf_alg_factory_create_cipher_alg(vscf_pbe_alg_info_cipher_alg_info(pbe_alg_info));
+    vscf_impl_t *kdf = vscf_alg_factory_create_kdf_from_info(vscf_pbe_alg_info_kdf_alg_info(pbe_alg_info));
+    vscf_impl_t *cipher = vscf_alg_factory_create_cipher_from_info(vscf_pbe_alg_info_cipher_alg_info(pbe_alg_info));
 
     vscf_pkcs5_pbes2_release_kdf(self);
     vscf_pkcs5_pbes2_release_cipher(self);
@@ -170,13 +170,13 @@ vscf_pkcs5_pbes2_restore_alg_info(vscf_pkcs5_pbes2_t *self, const vscf_impl_t *a
     vscf_pkcs5_pbes2_take_kdf(self, kdf);
     vscf_pkcs5_pbes2_take_cipher(self, cipher);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
 //  Encrypt given data.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_pkcs5_pbes2_encrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
@@ -197,11 +197,11 @@ vscf_pkcs5_pbes2_encrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t
     vscf_cipher_set_key(self->cipher, vsc_buffer_data(key));
     vscf_cipher_start_encryption(self->cipher);
     vscf_cipher_update(self->cipher, data, out);
-    vscf_cipher_finish(self->cipher, out);
+    vscf_status_t status = vscf_cipher_finish(self->cipher, out);
 
     vsc_buffer_destroy(&key);
 
-    return vscf_SUCCESS;
+    return status;
 }
 
 //
@@ -220,7 +220,7 @@ vscf_pkcs5_pbes2_encrypted_len(vscf_pkcs5_pbes2_t *self, size_t data_len) {
 //
 //  Decrypt given data.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_pkcs5_pbes2_decrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
@@ -241,11 +241,11 @@ vscf_pkcs5_pbes2_decrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t
     vscf_cipher_set_key(self->cipher, vsc_buffer_data(key));
     vscf_cipher_start_decryption(self->cipher);
     vscf_cipher_update(self->cipher, data, out);
-    vscf_cipher_finish(self->cipher, out);
+    vscf_status_t status = vscf_cipher_finish(self->cipher, out);
 
     vsc_buffer_destroy(&key);
 
-    return vscf_SUCCESS;
+    return status;
 }
 
 //

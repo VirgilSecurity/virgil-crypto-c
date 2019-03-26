@@ -35,10 +35,9 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Virgil implementation of the ECIES algorithm.
-@objc(VSCFEcies) public class Ecies: NSObject, Defaults, Encrypt, Decrypt {
+@objc(VSCFEcies) public class Ecies: NSObject, Encrypt, Decrypt {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -95,29 +94,32 @@ import VirgilCryptoCommon
     ///
     /// In turn, Ephemeral Key must be conformed to the interface
     /// "compute shared key".
-    @objc public func setEncryptionKey(publicKey: PublicKey) {
-        vscf_ecies_set_encryption_key(self.c_ctx, publicKey.c_ctx)
+    @objc public func setEncryptionKey(encryptionKey: PublicKey) {
+        vscf_ecies_release_encryption_key(self.c_ctx)
+        vscf_ecies_use_encryption_key(self.c_ctx, encryptionKey.c_ctx)
     }
 
     /// Set private key that used for data decryption.
     ///
     /// Private Key must be conformed to the interface "compute shared key".
-    @objc public func setDecryptionKey(privateKey: PrivateKey) {
-        vscf_ecies_set_decryption_key(self.c_ctx, privateKey.c_ctx)
+    @objc public func setDecryptionKey(decryptionKey: PrivateKey) {
+        vscf_ecies_release_decryption_key(self.c_ctx)
+        vscf_ecies_use_decryption_key(self.c_ctx, decryptionKey.c_ctx)
     }
 
     /// Set private key that used for data decryption.
     ///
     /// Ephemeral Key must be conformed to the interface "compute shared key".
     @objc public func setEphemeralKey(ephemeralKey: PrivateKey) {
-        vscf_ecies_set_ephemeral_key(self.c_ctx, ephemeralKey.c_ctx)
+        vscf_ecies_release_ephemeral_key(self.c_ctx)
+        vscf_ecies_use_ephemeral_key(self.c_ctx, ephemeralKey.c_ctx)
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_ecies_setup_defaults(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Encrypt given data.
@@ -129,16 +131,17 @@ import VirgilCryptoCommon
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
+
                 return vscf_ecies_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
         out.count = vsc_buffer_len(outBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
     }
@@ -159,16 +162,17 @@ import VirgilCryptoCommon
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer, outCount)
+
                 return vscf_ecies_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
         out.count = vsc_buffer_len(outBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
     }

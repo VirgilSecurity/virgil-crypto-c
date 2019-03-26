@@ -6,9 +6,10 @@
         prefix="vsc"
         path="../library/common/"
         work_path="generated/common/"
+        wrappers="none"
         >
 
-    <version major="0" minor="3" patch="0"/>
+    <version major="0" minor="6" patch="0"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.
@@ -52,6 +53,4 @@
 
     <class name="data"/>
     <class name="buffer"/>
-
-    <wrapper lang="swift"/>
 </project>

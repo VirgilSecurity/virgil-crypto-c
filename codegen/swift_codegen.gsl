@@ -275,10 +275,11 @@ function swift_insert_protocol_method (swift_method)
     my.method_args = swift_format_argument_list(my.swift_method) ?
     my.method_return = swift_format_return_list(my.swift_method) ?
     my.method_throws = my.swift_method.throws ?? "throws" ?
+    my.method_objc = my.swift_method.objc ?? "@objc" ?
 
     swift_insert_description (my.swift_method, 1)
     swift_insert_code("\
-        @objc $(my.swift_method.modifier?:) func $(my.swift_method.name:)($(my.method_args?:)) \
+        $(my.method_objc?:) $(my.swift_method.modifier?:) func $(my.swift_method.name:)($(my.method_args?:)) \
                 $(my.method_throws?:) $(my.method_return?:)
     ", 1)
 endfunction
@@ -291,7 +292,8 @@ function swift_insert_class_constant (swift_constant)
 
     swift_insert_description (my.swift_constant, 1)
     swift_insert_code ("\
-        @objc $(my.swift_constant.visibility:) static let $(my.swift_constant.name:) = $(my.swift_constant.value:);
+        @objc $(my.swift_constant.visibility:) static let $(my.swift_constant.name:): $(my.swift_constant.type:) = \
+             $(my.swift_constant.value:)
     ", 1)
 endfunction
 
@@ -341,10 +343,11 @@ function swift_insert_class_method (swift_method)
     my.method_return = swift_format_return_list(my.swift_method) ?
     my.method_throws = is_true (my.swift_method.throws) ?? "throws" ?
     my.override = is_true (my.swift_method.override) ?? "override" ?
+    my.method_objc = my.swift_method.objc ?? "@objc" ?
 
     swift_insert_description (my.swift_method, 1)
     swift_insert_code("\
-        @objc $(my.swift_method.visibility?:) $(my.swift_method.modifier?:) $(my.override?:) \
+        $(my.method_objc?:) $(my.swift_method.visibility?:) $(my.swift_method.modifier?:) $(my.override?:) \
                 func $(my.swift_method.name:)($(my.method_args?:)) $(my.method_throws?:) $(my.method_return?:) {
     ", 1)
 

@@ -56,13 +56,6 @@ if(NOT TARGET mbed::crypto)
 endif()
 
 #
-# Pythia
-#
-if(NOT TARGET pythia)
-    message(FATAL_ERROR "Required library 'pythia' is not found - looking for target 'pythia'.")
-endif()
-
-#
 # Relic
 #
 if(NOT TARGET relic)
@@ -88,19 +81,39 @@ endif()
 #
 # Define sources
 #
-add_library(pythia_wrap "")
+add_library(pythia "")
 include("${CMAKE_CURRENT_LIST_DIR}/sources.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
+
+target_sources(pythia
+    PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/pythia.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/pythia_buf.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/pythia_buf_sizes.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/pythia_init.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/pythia_wrapper.h
+
+        ${CMAKE_CURRENT_LIST_DIR}/src/pythia_buf_exports.h
+        ${CMAKE_CURRENT_LIST_DIR}/src/pythia_buf_sizes_c.h
+        ${CMAKE_CURRENT_LIST_DIR}/src/pythia_c.h
+        ${CMAKE_CURRENT_LIST_DIR}/src/pythia_init_c.h
+
+        ${CMAKE_CURRENT_LIST_DIR}/src/pythia_buf.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/pythia_buf_exports.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/pythia_buf_sizes.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/pythia_c.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/pythia_wrapper.c
+        )
 
 #
 # Link to dependencies
 #
-target_link_libraries(pythia_wrap PUBLIC vsc::common mbed::crypto pythia relic)
+target_link_libraries(pythia PUBLIC vsc::common mbed::crypto relic)
 
 #
 # Define specific compilation and linkage flags.
 #
-set_target_properties(pythia_wrap PROPERTIES
+set_target_properties(pythia PROPERTIES
         C_STANDARD "99"
         DEBUG_POSTFIX "_d"
         OUTPUT_NAME vsc_pythia
@@ -109,14 +122,14 @@ set_target_properties(pythia_wrap PROPERTIES
 #
 # Add __FILENAME__ definition, that handles file name without path, to each source file.
 #
-target_add_filename_definitions(pythia_wrap)
+target_add_filename_definitions(pythia)
 
 #
 # Enable profiling
 #
 if(ENABLE_PROFILING)
     if(COMMAND enable_target_profiling)
-        enable_target_profiling(pythia_wrap)
+        enable_target_profiling(pythia)
     else()
         message(STATUS "To enable profiling create function 'enable_target_profiling(<target>)'.")
     endif()
@@ -126,7 +139,7 @@ endif()
 # Enable pedantic mode
 #
 if(COMMAND enable_target_pedantic)
-    enable_target_pedantic(pythia_wrap)
+    enable_target_pedantic(pythia)
 else()
     message(STATUS "To enable pedantic mode create function 'enable_target_pedantic(<target>)'.")
 endif()
@@ -134,13 +147,13 @@ endif()
 #
 # Add library alias
 #
-add_library(vsc::pythia ALIAS pythia_wrap)
+add_library(vsc::pythia ALIAS pythia)
 
 #
 # Format code
 #
 if(COMMAND add_clangformat)
-    add_clangformat(pythia_wrap)
+    add_clangformat(pythia)
 endif()
 
 
@@ -148,7 +161,7 @@ endif()
 #   Apple specific
 # ---------------------------------------------------------------------------
 if(CMAKE_CROSSCOMPILING AND APPLE AND COMMAND target_apple_framework)
-    target_apple_framework(pythia_wrap
+    target_apple_framework(pythia
             NAME VSCPythia
             VERSION "A"
             IDENTIFIER com.virgilsecurity.VSCPythia
@@ -177,7 +190,7 @@ endif()
 #
 if(VIRGIL_INSTALL_LIBS)
     install(
-            TARGETS pythia_wrap
+            TARGETS pythia
             EXPORT vsc_pythiaTargets
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"

@@ -35,18 +35,16 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Implementation of the RNG using deterministic random bit generators
 /// based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
 /// This class is thread-safe if the build option VSCF_MULTI_THREAD was enabled.
-@objc(VSCFCtrDrbg) public class CtrDrbg: NSObject, Defaults, Random {
+@objc(VSCFCtrDrbg) public class CtrDrbg: NSObject, Random {
 
     /// The interval before reseed is performed by default.
-    @objc public let reseedInterval: Int = 10000
-
+    @objc public static let reseedInterval: Int = 10000
     /// The amount of entropy used per seed by default.
-    @objc public let entropyLen: Int = 48
+    @objc public static let entropyLen: Int = 48
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -79,7 +77,14 @@ import VirgilCryptoCommon
     @objc public func setEntropySource(entropySource: EntropySource) throws {
         vscf_ctr_drbg_release_entropy_source(self.c_ctx)
         let proxyResult = vscf_ctr_drbg_use_entropy_source(self.c_ctx, entropySource.c_ctx)
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
+    }
+
+    /// Setup predefined values to the uninitialized class dependencies.
+    @objc public func setupDefaults() throws {
+        let proxyResult = vscf_ctr_drbg_setup_defaults(self.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Force entropy to be gathered at the beginning of every call to
@@ -101,13 +106,6 @@ import VirgilCryptoCommon
         vscf_ctr_drbg_set_entropy_len(self.c_ctx, len)
     }
 
-    /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_ctr_drbg_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleError(fromC: proxyResult)
-    }
-
     /// Generate random bytes.
     @objc public func random(dataLen: Int) throws -> Data {
         let dataCount = dataLen
@@ -117,14 +115,15 @@ import VirgilCryptoCommon
             vsc_buffer_delete(dataBuf)
         }
 
-        let proxyResult = data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
             vsc_buffer_init(dataBuf)
             vsc_buffer_use(dataBuf, dataPointer, dataCount)
+
             return vscf_ctr_drbg_random(self.c_ctx, dataLen, dataBuf)
         })
         data.count = vsc_buffer_len(dataBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return data
     }
@@ -133,6 +132,6 @@ import VirgilCryptoCommon
     @objc public func reseed() throws {
         let proxyResult = vscf_ctr_drbg_reseed(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 }

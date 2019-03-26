@@ -102,6 +102,10 @@ struct vscf_salted_kdf_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Link to the inherited interface API 'kdf'.
     //
     const vscf_kdf_api_t *kdf_api;

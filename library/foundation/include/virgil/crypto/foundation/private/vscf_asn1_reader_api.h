@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -87,9 +87,19 @@ extern "C" {
 typedef void (*vscf_asn1_reader_api_reset_fn)(vscf_impl_t *impl, vsc_data_t data);
 
 //
-//  Callback. Return last error.
+//  Callback. Return length in bytes how many bytes are left for reading.
 //
-typedef vscf_error_t (*vscf_asn1_reader_api_error_fn)(vscf_impl_t *impl);
+typedef size_t (*vscf_asn1_reader_api_left_len_fn)(vscf_impl_t *impl);
+
+//
+//  Callback. Return true if status is not "success".
+//
+typedef bool (*vscf_asn1_reader_api_has_error_fn)(const vscf_impl_t *impl);
+
+//
+//  Callback. Return error code.
+//
+typedef vscf_status_t (*vscf_asn1_reader_api_status_fn)(const vscf_impl_t *impl);
 
 //
 //  Callback. Get tag of the current ASN.1 element.
@@ -180,6 +190,12 @@ typedef bool (*vscf_asn1_reader_api_read_bool_fn)(vscf_impl_t *impl);
 typedef void (*vscf_asn1_reader_api_read_null_fn)(vscf_impl_t *impl);
 
 //
+//  Callback. Read ASN.1 type: NULL, only if it exists.
+//          Note, this method is safe to call even no more data is left for reading.
+//
+typedef void (*vscf_asn1_reader_api_read_null_optional_fn)(vscf_impl_t *impl);
+
+//
 //  Callback. Read ASN.1 type: OCTET STRING.
 //
 typedef vsc_data_t (*vscf_asn1_reader_api_read_octet_str_fn)(vscf_impl_t *impl);
@@ -226,13 +242,25 @@ struct vscf_asn1_reader_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Reset all internal states and prepare to new ASN.1 reading operations.
     //
     vscf_asn1_reader_api_reset_fn reset_cb;
     //
-    //  Return last error.
+    //  Return length in bytes how many bytes are left for reading.
     //
-    vscf_asn1_reader_api_error_fn error_cb;
+    vscf_asn1_reader_api_left_len_fn left_len_cb;
+    //
+    //  Return true if status is not "success".
+    //
+    vscf_asn1_reader_api_has_error_fn has_error_cb;
+    //
+    //  Return error code.
+    //
+    vscf_asn1_reader_api_status_fn status_cb;
     //
     //  Get tag of the current ASN.1 element.
     //
@@ -304,6 +332,11 @@ struct vscf_asn1_reader_api_t {
     //  Read ASN.1 type: NULL.
     //
     vscf_asn1_reader_api_read_null_fn read_null_cb;
+    //
+    //  Read ASN.1 type: NULL, only if it exists.
+    //  Note, this method is safe to call even no more data is left for reading.
+    //
+    vscf_asn1_reader_api_read_null_optional_fn read_null_optional_cb;
     //
     //  Read ASN.1 type: OCTET STRING.
     //

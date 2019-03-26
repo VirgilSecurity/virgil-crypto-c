@@ -91,16 +91,44 @@ vscf_message_info_serializer_serialize(vscf_impl_t *impl, const vscf_message_inf
 }
 
 //
+//  Read message info prefix from the given data, and if it is valid,
+//  return a length of bytes of the whole message info.
+//
+//  Zero returned if length can not be determined from the given data,
+//  and this means that there is no message info at the data beginning.
+//
+VSCF_PUBLIC size_t
+vscf_message_info_serializer_read_prefix(vscf_impl_t *impl, vsc_data_t data) {
+
+    const vscf_message_info_serializer_api_t *message_info_serializer_api = vscf_message_info_serializer_api(impl);
+    VSCF_ASSERT_PTR (message_info_serializer_api);
+
+    VSCF_ASSERT_PTR (message_info_serializer_api->read_prefix_cb);
+    return message_info_serializer_api->read_prefix_cb (impl, data);
+}
+
+//
 //  Deserialize class "message info".
 //
 VSCF_PUBLIC vscf_message_info_t *
-vscf_message_info_serializer_deserialize(vscf_impl_t *impl, vsc_data_t data, vscf_error_ctx_t *error) {
+vscf_message_info_serializer_deserialize(vscf_impl_t *impl, vsc_data_t data, vscf_error_t *error) {
 
     const vscf_message_info_serializer_api_t *message_info_serializer_api = vscf_message_info_serializer_api(impl);
     VSCF_ASSERT_PTR (message_info_serializer_api);
 
     VSCF_ASSERT_PTR (message_info_serializer_api->deserialize_cb);
     return message_info_serializer_api->deserialize_cb (impl, data, error);
+}
+
+//
+//  Returns constant 'prefix len'.
+//
+VSCF_PUBLIC size_t
+vscf_message_info_serializer_prefix_len(const vscf_message_info_serializer_api_t *message_info_serializer_api) {
+
+    VSCF_ASSERT_PTR (message_info_serializer_api);
+
+    return message_info_serializer_api->prefix_len;
 }
 
 //

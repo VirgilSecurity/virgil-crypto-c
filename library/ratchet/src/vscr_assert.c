@@ -55,7 +55,7 @@
 
 #include "vscr_assert.h"
 
-#include <virgil/crypto/foundation/vscf_error.h>
+#include <virgil/crypto/foundation/vscf_status.h>
 #include <stdio.h>
 
 // clang-format on

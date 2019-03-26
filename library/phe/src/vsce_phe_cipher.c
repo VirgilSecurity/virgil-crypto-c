@@ -234,7 +234,9 @@ vsce_phe_cipher_shallow_copy(vsce_phe_cipher_t *self) {
 }
 
 //
-//  Setup dependency to the interface 'random' with shared ownership.
+//  Random used for salt generation
+//
+//  Note, ownership is shared.
 //
 VSCE_PUBLIC void
 vsce_phe_cipher_use_random(vsce_phe_cipher_t *self, vscf_impl_t *random) {
@@ -249,7 +251,9 @@ vsce_phe_cipher_use_random(vsce_phe_cipher_t *self, vscf_impl_t *random) {
 }
 
 //
-//  Setup dependency to the interface 'random' and transfer ownership.
+//  Random used for salt generation
+//
+//  Note, ownership is transfered.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCE_PUBLIC void
@@ -312,16 +316,23 @@ vsce_phe_cipher_cleanup_ctx(vsce_phe_cipher_t *self) {
 //
 //  Setups dependencies with default values.
 //
-VSCE_PUBLIC void
+VSCE_PUBLIC vsce_status_t
 vsce_phe_cipher_setup_defaults(vsce_phe_cipher_t *self) {
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT(self->random == NULL);
 
     vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(random);
+    vscf_status_t status = vscf_ctr_drbg_setup_defaults(random);
+
+    if (status != vscf_status_SUCCESS) {
+        vscf_ctr_drbg_destroy(&random);
+        return vsce_status_ERROR_RNG_FAILED;
+    }
 
     vsce_phe_cipher_take_random(self, vscf_ctr_drbg_impl(random));
+
+    return vsce_status_SUCCESS;
 }
 
 //
@@ -351,7 +362,7 @@ vsce_phe_cipher_decrypt_len(vsce_phe_cipher_t *self, size_t cipher_text_len) {
 //
 //  Encrypts data using account key
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_cipher_encrypt(
         vsce_phe_cipher_t *self, vsc_data_t plain_text, vsc_data_t account_key, vsc_buffer_t *cipher_text) {
 
@@ -360,7 +371,7 @@ vsce_phe_cipher_encrypt(
     VSCE_ASSERT(plain_text.len <= vsce_phe_common_PHE_MAX_ENCRYPT_LEN);
     VSCE_ASSERT(vsc_buffer_capacity(cipher_text) >= vsce_phe_cipher_encrypt_len(self, plain_text.len));
 
-    vsce_error_t status = vsce_SUCCESS;
+    vsce_status_t status = vsce_status_SUCCESS;
 
     byte salt[vsce_phe_cipher_SALT_LEN];
 
@@ -368,10 +379,10 @@ vsce_phe_cipher_encrypt(
     vsc_buffer_init(&salt_buf);
     vsc_buffer_use(&salt_buf, salt, sizeof(salt));
 
-    vscf_error_t f_status = vscf_random(self->random, sizeof(salt), &salt_buf);
+    vscf_status_t f_status = vscf_random(self->random, sizeof(salt), &salt_buf);
 
-    if (f_status != vscf_SUCCESS) {
-        status = vsce_error_RNG_ERROR;
+    if (f_status != vscf_status_SUCCESS) {
+        status = vsce_status_ERROR_RNG_FAILED;
         goto rng_err;
     }
 
@@ -401,8 +412,8 @@ vsce_phe_cipher_encrypt(
 
     f_status = vscf_aes256_gcm_encrypt(aes256_gcm, plain_text, cipher_text);
 
-    if (f_status != vscf_SUCCESS) {
-        status = vsce_error_AES_ERROR;
+    if (f_status != vscf_status_SUCCESS) {
+        status = vsce_status_ERROR_AES_FAILED;
     }
 
     vscf_aes256_gcm_destroy(&aes256_gcm);
@@ -420,7 +431,7 @@ rng_err:
 //
 //  Decrypts data using account key
 //
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC vsce_status_t
 vsce_phe_cipher_decrypt(
         vsce_phe_cipher_t *self, vsc_data_t cipher_text, vsc_data_t account_key, vsc_buffer_t *plain_text) {
 
@@ -429,7 +440,7 @@ vsce_phe_cipher_decrypt(
     VSCE_ASSERT(cipher_text.len <= vsce_phe_common_PHE_MAX_DECRYPT_LEN);
     VSCE_ASSERT(vsc_buffer_capacity(plain_text) >= vsce_phe_cipher_decrypt_len(self, cipher_text.len));
 
-    vsce_error_t status = vsce_SUCCESS;
+    vsce_status_t status = vsce_status_SUCCESS;
 
     vscf_hkdf_t *hkdf = vscf_hkdf_new();
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
@@ -452,12 +463,12 @@ vsce_phe_cipher_decrypt(
     vscf_aes256_gcm_set_nonce(
             aes256_gcm, vsc_data_slice_end(vsc_buffer_data(&derived_secret_buf), 0, vsce_phe_cipher_NONCE_LEN));
 
-    vscf_error_t f_status = vscf_aes256_gcm_decrypt(aes256_gcm,
+    vscf_status_t f_status = vscf_aes256_gcm_decrypt(aes256_gcm,
             vsc_data_slice_beg(cipher_text, vsce_phe_cipher_SALT_LEN, cipher_text.len - vsce_phe_cipher_SALT_LEN),
             plain_text);
 
-    if (f_status != vscf_SUCCESS) {
-        status = vsce_error_AES_ERROR;
+    if (f_status != vscf_status_SUCCESS) {
+        status = vsce_status_ERROR_AES_FAILED;
     }
 
     vscf_aes256_gcm_destroy(&aes256_gcm);

@@ -83,12 +83,12 @@ vscf_mbedtls_bridge_entropy(void *ctx, byte *data, size_t len) {
     vsc_buffer_init(&buffer);
     vsc_buffer_use(&buffer, (byte *)data, len);
 
-    vscf_error_t result = vscf_entropy_source_gather(entropy, len, &buffer);
+    vscf_status_t result = vscf_entropy_source_gather(entropy, len, &buffer);
 
     vsc_buffer_cleanup(&buffer);
 
     switch (result) {
-    case vscf_SUCCESS:
+    case vscf_status_SUCCESS:
         return 0;
 
     default:

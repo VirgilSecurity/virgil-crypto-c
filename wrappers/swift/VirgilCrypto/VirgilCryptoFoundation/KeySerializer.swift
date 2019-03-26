@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Public and private key serialization to an interchangeable format.
 @objc(VSCFKeySerializer) public protocol KeySerializer : CContext {
@@ -59,86 +58,4 @@ import VirgilCryptoCommon
     ///
     /// Precondition: private key must be exportable.
     @objc func serializePrivateKey(privateKey: PrivateKey) throws -> Data
-}
-
-/// Implement interface methods
-@objc(VSCFKeySerializerProxy) internal class KeySerializerProxy: NSObject, KeySerializer {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Calculate buffer size enough to hold serialized public key.
-    ///
-    /// Precondition: public key must be exportable.
-    @objc public func serializedPublicKeyLen(publicKey: PublicKey) -> Int {
-        let proxyResult = vscf_key_serializer_serialized_public_key_len(self.c_ctx, publicKey.c_ctx)
-
-        return proxyResult
-    }
-
-    /// Serialize given public key to an interchangeable format.
-    ///
-    /// Precondition: public key must be exportable.
-    @objc public func serializePublicKey(publicKey: PublicKey) throws -> Data {
-        let outCount = self.serializedPublicKeyLen(publicKey: publicKey)
-        var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(outBuf)
-        }
-
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
-            vsc_buffer_init(outBuf)
-            vsc_buffer_use(outBuf, outPointer, outCount)
-            return vscf_key_serializer_serialize_public_key(self.c_ctx, publicKey.c_ctx, outBuf)
-        })
-        out.count = vsc_buffer_len(outBuf)
-
-        try FoundationError.handleError(fromC: proxyResult)
-
-        return out
-    }
-
-    /// Calculate buffer size enough to hold serialized private key.
-    ///
-    /// Precondition: private key must be exportable.
-    @objc public func serializedPrivateKeyLen(privateKey: PrivateKey) -> Int {
-        let proxyResult = vscf_key_serializer_serialized_private_key_len(self.c_ctx, privateKey.c_ctx)
-
-        return proxyResult
-    }
-
-    /// Serialize given private key to an interchangeable format.
-    ///
-    /// Precondition: private key must be exportable.
-    @objc public func serializePrivateKey(privateKey: PrivateKey) throws -> Data {
-        let outCount = self.serializedPrivateKeyLen(privateKey: privateKey)
-        var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(outBuf)
-        }
-
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
-            vsc_buffer_init(outBuf)
-            vsc_buffer_use(outBuf, outPointer, outCount)
-            return vscf_key_serializer_serialize_private_key(self.c_ctx, privateKey.c_ctx, outBuf)
-        })
-        out.count = vsc_buffer_len(outBuf)
-
-        try FoundationError.handleError(fromC: proxyResult)
-
-        return out
-    }
 }

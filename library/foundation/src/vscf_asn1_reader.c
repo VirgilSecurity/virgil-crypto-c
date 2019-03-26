@@ -80,16 +80,42 @@ vscf_asn1_reader_reset(vscf_impl_t *impl, vsc_data_t data) {
 }
 
 //
-//  Return last error.
+//  Return length in bytes how many bytes are left for reading.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_asn1_reader_error(vscf_impl_t *impl) {
+VSCF_PUBLIC size_t
+vscf_asn1_reader_left_len(vscf_impl_t *impl) {
 
     const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
-    VSCF_ASSERT_PTR (asn1_reader_api->error_cb);
-    return asn1_reader_api->error_cb (impl);
+    VSCF_ASSERT_PTR (asn1_reader_api->left_len_cb);
+    return asn1_reader_api->left_len_cb (impl);
+}
+
+//
+//  Return true if status is not "success".
+//
+VSCF_PUBLIC bool
+vscf_asn1_reader_has_error(const vscf_impl_t *impl) {
+
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
+    VSCF_ASSERT_PTR (asn1_reader_api);
+
+    VSCF_ASSERT_PTR (asn1_reader_api->has_error_cb);
+    return asn1_reader_api->has_error_cb (impl);
+}
+
+//
+//  Return error code.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_asn1_reader_status(const vscf_impl_t *impl) {
+
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
+    VSCF_ASSERT_PTR (asn1_reader_api);
+
+    VSCF_ASSERT_PTR (asn1_reader_api->status_cb);
+    return asn1_reader_api->status_cb (impl);
 }
 
 //
@@ -314,6 +340,20 @@ vscf_asn1_reader_read_null(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_null_cb);
     asn1_reader_api->read_null_cb (impl);
+}
+
+//
+//  Read ASN.1 type: NULL, only if it exists.
+//  Note, this method is safe to call even no more data is left for reading.
+//
+VSCF_PUBLIC void
+vscf_asn1_reader_read_null_optional(vscf_impl_t *impl) {
+
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
+    VSCF_ASSERT_PTR (asn1_reader_api);
+
+    VSCF_ASSERT_PTR (asn1_reader_api->read_null_optional_cb);
+    asn1_reader_api->read_null_optional_cb (impl);
 }
 
 //

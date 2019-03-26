@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Handles a list of "password recipient info" class objects.
 @objc(VSCFPasswordRecipientInfoList) public class PasswordRecipientInfoList: NSObject {
@@ -72,6 +71,7 @@ import VirgilCryptoCommon
     /// Note, ownership is transfered.
     @objc public func add(passwordRecipientInfo: PasswordRecipientInfo) {
         var passwordRecipientInfoCopy = vscf_password_recipient_info_shallow_copy(passwordRecipientInfo.c_ctx)
+
         vscf_password_recipient_info_list_add(self.c_ctx, &passwordRecipientInfoCopy)
     }
 
@@ -115,5 +115,10 @@ import VirgilCryptoCommon
         let proxyResult = vscf_password_recipient_info_list_prev(self.c_ctx)
 
         return PasswordRecipientInfoList.init(take: proxyResult!)
+    }
+
+    /// Remove all items.
+    @objc public func clear() {
+        vscf_password_recipient_info_list_clear(self.c_ctx)
     }
 }

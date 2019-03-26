@@ -54,9 +54,10 @@
 #define VSCF_ED25519_PUBLIC_KEY_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error_ctx.h"
-#include "vscf_impl.h"
+#include "vscf_ecies.h"
 #include "vscf_error.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
 #include "vscf_alg_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -177,10 +178,29 @@ VSCF_PUBLIC void
 vscf_ed25519_public_key_release_random(vscf_ed25519_public_key_t *self);
 
 //
+//  Setup dependency to the implementation 'ecies' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ed25519_public_key_use_ecies(vscf_ed25519_public_key_t *self, vscf_ecies_t *ecies);
+
+//
+//  Setup dependency to the implementation 'ecies' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ed25519_public_key_take_ecies(vscf_ed25519_public_key_t *self, vscf_ecies_t *ecies);
+
+//
+//  Release dependency to the implementation 'ecies'.
+//
+VSCF_PUBLIC void
+vscf_ed25519_public_key_release_ecies(vscf_ed25519_public_key_t *self);
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_ed25519_public_key_setup_defaults(vscf_ed25519_public_key_t *self);
+VSCF_PUBLIC vscf_status_t
+vscf_ed25519_public_key_setup_defaults(vscf_ed25519_public_key_t *self) VSCF_NODISCARD;
 
 //
 //  Provide algorithm identificator.
@@ -197,8 +217,8 @@ vscf_ed25519_public_key_produce_alg_info(const vscf_ed25519_public_key_t *self);
 //
 //  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_ed25519_public_key_restore_alg_info(vscf_ed25519_public_key_t *self, const vscf_impl_t *alg_info);
+VSCF_PUBLIC vscf_status_t
+vscf_ed25519_public_key_restore_alg_info(vscf_ed25519_public_key_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
 
 //
 //  Length of the key in bytes.
@@ -213,10 +233,23 @@ VSCF_PUBLIC size_t
 vscf_ed25519_public_key_key_bitlen(const vscf_ed25519_public_key_t *self);
 
 //
+//  Encrypt given data.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_ed25519_public_key_encrypt(vscf_ed25519_public_key_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
+
+//
+//  Calculate required buffer length to hold the encrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_ed25519_public_key_encrypted_len(vscf_ed25519_public_key_t *self, size_t data_len);
+
+//
 //  Verify data with given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_ed25519_public_key_verify(vscf_ed25519_public_key_t *self, vsc_data_t data, vsc_data_t signature);
+vscf_ed25519_public_key_verify_hash(vscf_ed25519_public_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id,
+        vsc_data_t signature);
 
 //
 //  Export public key in the binary format.
@@ -225,8 +258,8 @@ vscf_ed25519_public_key_verify(vscf_ed25519_public_key_t *self, vsc_data_t data,
 //  For instance, RSA public key must be exported in format defined in
 //  RFC 3447 Appendix A.1.1.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_ed25519_public_key_export_public_key(const vscf_ed25519_public_key_t *self, vsc_buffer_t *out);
+VSCF_PUBLIC vscf_status_t
+vscf_ed25519_public_key_export_public_key(const vscf_ed25519_public_key_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Return length in bytes required to hold exported public key.
@@ -241,14 +274,14 @@ vscf_ed25519_public_key_exported_public_key_len(const vscf_ed25519_public_key_t 
 //  For instance, RSA public key must be imported from the format defined in
 //  RFC 3447 Appendix A.1.1.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_t *self, vsc_data_t data);
+VSCF_PUBLIC vscf_status_t
+vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_t *self, vsc_data_t data) VSCF_NODISCARD;
 
 //
 //  Generate ephemeral private key of the same type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ed25519_public_key_generate_ephemeral_key(vscf_ed25519_public_key_t *self, vscf_error_ctx_t *error);
+vscf_ed25519_public_key_generate_ephemeral_key(vscf_ed25519_public_key_t *self, vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------

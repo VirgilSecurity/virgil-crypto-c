@@ -123,6 +123,16 @@ extern "C" {
     } while (false)
 
 //
+//  Assert that given pointer is NULL. It is enabled in debug mode.
+//
+#define VSCE_ASSERT_NULL(X)                                                       \
+    do {                                                                          \
+        if (X) {                                                                  \
+            vsce_assert_trigger (#X" == NULL", VSCE_FILE_PATH_OR_NAME, __LINE__); \
+        }                                                                         \
+    } while (false)
+
+//
 //  Assert that memory was successfully allocated.
 //  This macros is enabled by default and can be disabled by special macros.
 //

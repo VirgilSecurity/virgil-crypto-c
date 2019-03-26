@@ -55,7 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -146,11 +146,16 @@ VSCF_PUBLIC void
 vscf_asn1wr_reset(vscf_asn1wr_t *self, byte *out, size_t out_len);
 
 //
-//  Move written data to the buffer beginning and forbid further operations.
-//  Returns written size in bytes.
+//  Finalize writing and forbid further operations.
+//
+//  Note, that ASN.1 structure is always written to the buffer end, and
+//  if argument "do not adjust" is false, then data is moved to the
+//  beginning, otherwise - data is left at the buffer end.
+//
+//  Returns length of the written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_finish(vscf_asn1wr_t *self);
+vscf_asn1wr_finish(vscf_asn1wr_t *self, bool do_not_adjust);
 
 //
 //  Returns pointer to the inner buffer.
@@ -177,10 +182,16 @@ VSCF_PUBLIC size_t
 vscf_asn1wr_unwritten_len(const vscf_asn1wr_t *self);
 
 //
-//  Return last error.
+//  Return true if status is not "success".
 //
-VSCF_PUBLIC vscf_error_t
-vscf_asn1wr_error(vscf_asn1wr_t *self);
+VSCF_PUBLIC bool
+vscf_asn1wr_has_error(const vscf_asn1wr_t *self);
+
+//
+//  Return error code.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_asn1wr_status(const vscf_asn1wr_t *self) VSCF_NODISCARD;
 
 //
 //  Move writing position backward for the given length.

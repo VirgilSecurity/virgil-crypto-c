@@ -1,0 +1,148 @@
+<class name="message info custom params">
+
+    <require module="list key value node defs"/>
+
+    <constant name="of int type" value="1" definition="private"/>
+    <constant name="of string type" value="2" definition="private"/>
+    <constant name="of data type" value="3" definition="private"/>
+
+    <property name="key value node" class="list key value node"/>
+
+    <method name="add int">
+        Add custom parameter with integer value.
+
+        <argument name="key" class="data"/>
+        <argument name="value" type="integer"/>
+    </method>
+
+    <method name="add string">
+        Add custom parameter with UTF8 string value.
+
+        <argument name="key" class="data"/>
+        <argument name="value" class="data"/>
+    </method>
+
+    <method name="add data">
+        Add custom parameter with octet string value.
+
+        <argument name="key" class="data"/>
+        <argument name="value" class="data"/>
+    </method>
+
+    <method name="clear">
+        Remove all parameters.
+    </method>
+
+    <method name="find int">
+        Return custom parameter with integer value.
+
+        <argument name="key" class="data"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return type="integer"/>
+    </method>
+
+    <method name="find string">
+        Return custom parameter with UTF8 string value.
+
+        <argument name="key" class="data"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="data"/>
+    </method>
+
+    <method name="find data">
+        Return custom parameter with octet string value.
+
+        <argument name="key" class="data"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="data"/>
+    </method>
+
+    <method name="add node" declaration="private">
+        Add given node to the list ending.
+
+        <argument name="node" class="list key value node" access="disown"/>
+    </method>
+
+    <method name="find node" declaration="private">
+        Add given node to the list ending.
+
+        <argument name="key" class="data"/>
+        <argument name="value tag" type="integer"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="list key value node"/>
+    </method>
+
+    <method name="first param" visibility="private" is_const="1">
+        Return first param, or NULL if does not exist.
+
+        <return class="list key value node"/>
+    </method>
+
+    <method name="next param" visibility="private" is_static="1">
+        Return next param, or NULL if does not exist.
+
+        <argument name="param" class="list key value node"/>
+
+        <return class="list key value node"/>
+    </method>
+
+    <method name="param key" visibility="private" is_static="1">
+        Return parameter's key.
+
+        <argument name="param" class="list key value node"/>
+
+        <return class="data"/>
+    </method>
+
+    <method name="is int param" visibility="private" is_static="1">
+        Return true if given parameter holds an integer value.
+
+        <argument name="param" class="list key value node"/>
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="as int value" visibility="private" is_static="1">
+        Return parameter as an integer value.
+
+        <argument name="param" class="list key value node"/>
+
+        <return type="integer"/>
+    </method>
+
+    <method name="is string param" visibility="private" is_static="1">
+        Return true if given parameter holds a string value.
+
+        <argument name="param" class="list key value node"/>
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="as string value" visibility="private" is_static="1">
+        Return parameter as a string value.
+
+        <argument name="param" class="list key value node"/>
+
+        <return class="data"/>
+    </method>
+
+    <method name="is data param" visibility="private" is_static="1">
+        Return true if given parameter holds a data value.
+
+        <argument name="param" class="list key value node"/>
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="as data value" visibility="private" is_static="1">
+        Return parameter as a data value.
+
+        <argument name="param" class="list key value node"/>
+
+        <return class="data"/>
+    </method>
+</class>

@@ -57,7 +57,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -95,10 +95,22 @@ VSCF_PUBLIC void
 vscf_asn1_reader_reset(vscf_impl_t *impl, vsc_data_t data);
 
 //
-//  Return last error.
+//  Return length in bytes how many bytes are left for reading.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_asn1_reader_error(vscf_impl_t *impl);
+VSCF_PUBLIC size_t
+vscf_asn1_reader_left_len(vscf_impl_t *impl);
+
+//
+//  Return true if status is not "success".
+//
+VSCF_PUBLIC bool
+vscf_asn1_reader_has_error(const vscf_impl_t *impl);
+
+//
+//  Return error code.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_asn1_reader_status(const vscf_impl_t *impl) VSCF_NODISCARD;
 
 //
 //  Get tag of the current ASN.1 element.
@@ -204,6 +216,13 @@ vscf_asn1_reader_read_bool(vscf_impl_t *impl);
 //
 VSCF_PUBLIC void
 vscf_asn1_reader_read_null(vscf_impl_t *impl);
+
+//
+//  Read ASN.1 type: NULL, only if it exists.
+//  Note, this method is safe to call even no more data is left for reading.
+//
+VSCF_PUBLIC void
+vscf_asn1_reader_read_null_optional(vscf_impl_t *impl);
 
 //
 //  Read ASN.1 type: OCTET STRING.

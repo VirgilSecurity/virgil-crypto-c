@@ -80,7 +80,7 @@ vscf_entropy_source_is_strong(vscf_impl_t *impl) {
 //
 //  Gather entropy of the requested length.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_entropy_source_gather(vscf_impl_t *impl, size_t len, vsc_buffer_t *out) {
 
     const vscf_entropy_source_api_t *entropy_source_api = vscf_entropy_source_api(impl);

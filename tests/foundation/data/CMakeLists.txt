@@ -48,6 +48,7 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_kdf2.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_rsa.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ed25519.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_curve25519.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_sha224.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_sha256.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_sha384.h"
@@ -62,6 +63,10 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_pkcs5_pbes2.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ecies_envelope.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ecies.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_recipient_cipher.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_signer_verifier.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_key_provider.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_deterministic_key.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_aes256_gcm.c"
@@ -73,6 +78,7 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_kdf2.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_rsa.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ed25519.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_curve25519.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_sha224.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_sha256.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_sha384.c"
@@ -87,6 +93,10 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_pkcs5_pbes2.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ecies_envelope.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ecies.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_recipient_cipher.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_signer_verifier.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_key_provider.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_deterministic_key.c"
         )
 
 target_include_directories(test_data_foundation

@@ -35,50 +35,13 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Public and private key deserialization from an interchangeable format.
 @objc(VSCFKeyDeserializer) public protocol KeyDeserializer : CContext {
 
     /// Deserialize given public key as an interchangeable format to the object.
-    @objc func deserializePublicKey(publicKeyData: Data, error: ErrorCtx) -> RawKey
+    @objc func deserializePublicKey(publicKeyData: Data) throws -> RawKey
 
     /// Deserialize given private key as an interchangeable format to the object.
-    @objc func deserializePrivateKey(privateKeyData: Data, error: ErrorCtx) -> RawKey
-}
-
-/// Implement interface methods
-@objc(VSCFKeyDeserializerProxy) internal class KeyDeserializerProxy: NSObject, KeyDeserializer {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Deserialize given public key as an interchangeable format to the object.
-    @objc public func deserializePublicKey(publicKeyData: Data, error: ErrorCtx) -> RawKey {
-        let proxyResult = publicKeyData.withUnsafeBytes({ (publicKeyDataPointer: UnsafePointer<byte>) in
-            return vscf_key_deserializer_deserialize_public_key(self.c_ctx, vsc_data(publicKeyDataPointer, publicKeyData.count), error.c_ctx)
-        })
-
-        return RawKey.init(take: proxyResult!)
-    }
-
-    /// Deserialize given private key as an interchangeable format to the object.
-    @objc public func deserializePrivateKey(privateKeyData: Data, error: ErrorCtx) -> RawKey {
-        let proxyResult = privateKeyData.withUnsafeBytes({ (privateKeyDataPointer: UnsafePointer<byte>) in
-            return vscf_key_deserializer_deserialize_private_key(self.c_ctx, vsc_data(privateKeyDataPointer, privateKeyData.count), error.c_ctx)
-        })
-
-        return RawKey.init(take: proxyResult!)
-    }
+    @objc func deserializePrivateKey(privateKeyData: Data) throws -> RawKey
 }

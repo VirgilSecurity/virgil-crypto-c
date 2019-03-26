@@ -50,17 +50,6 @@
 
 
 // --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
-// --------------------------------------------------------------------------
 // Test implementation of the interface 'cipher info'.
 // --------------------------------------------------------------------------
 void
@@ -97,8 +86,8 @@ test__encrypt__data_of_length_16_and_pkcs7_padding__encrypted_len_equals_32(void
     vscf_aes256_cbc_set_key(aes256_cbc, test_aes256_cbc_KEY);
     vscf_aes256_cbc_set_nonce(aes256_cbc, test_aes256_cbc_IV);
 
-    vscf_error_t result = vscf_aes256_cbc_encrypt(aes256_cbc, test_aes256_cbc_ONE_BLOCK_DATA, out);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, result);
+    vscf_status_t result = vscf_aes256_cbc_encrypt(aes256_cbc, test_aes256_cbc_ONE_BLOCK_DATA, out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, result);
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_aes256_cbc_ONE_BLOCK_ENCRYPTED_DATA, out);
 
@@ -117,8 +106,8 @@ test__encrypt__data_of_length_64_and_pkcs7_padding__encrypted_len_equals_80(void
     vscf_aes256_cbc_set_key(aes256_cbc, test_aes256_cbc_KEY);
     vscf_aes256_cbc_set_nonce(aes256_cbc, test_aes256_cbc_IV);
 
-    vscf_error_t result = vscf_aes256_cbc_encrypt(aes256_cbc, test_aes256_cbc_FOUR_BLOCK_DATA, out);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, result);
+    vscf_status_t result = vscf_aes256_cbc_encrypt(aes256_cbc, test_aes256_cbc_FOUR_BLOCK_DATA, out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, result);
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_aes256_cbc_FOUR_BLOCK_ENCRYPTED_DATA, out);
 
@@ -137,8 +126,8 @@ test__decrypt__encrypted_data_of_length_32_and_pkcs7_padding__decrypted_len_equa
     vscf_aes256_cbc_set_key(aes256_cbc, test_aes256_cbc_KEY);
     vscf_aes256_cbc_set_nonce(aes256_cbc, test_aes256_cbc_IV);
 
-    vscf_error_t result = vscf_aes256_cbc_decrypt(aes256_cbc, test_aes256_cbc_ONE_BLOCK_ENCRYPTED_DATA, out);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, result);
+    vscf_status_t result = vscf_aes256_cbc_decrypt(aes256_cbc, test_aes256_cbc_ONE_BLOCK_ENCRYPTED_DATA, out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, result);
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_aes256_cbc_ONE_BLOCK_DATA, out);
 
@@ -157,8 +146,8 @@ test__decrypt__encrypted_data_of_length_80_and_pkcs7_padding__decrypted_len_equa
     vscf_aes256_cbc_set_key(aes256_cbc, test_aes256_cbc_KEY);
     vscf_aes256_cbc_set_nonce(aes256_cbc, test_aes256_cbc_IV);
 
-    vscf_error_t result = vscf_aes256_cbc_decrypt(aes256_cbc, test_aes256_cbc_FOUR_BLOCK_ENCRYPTED_DATA, out);
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, result);
+    vscf_status_t result = vscf_aes256_cbc_decrypt(aes256_cbc, test_aes256_cbc_FOUR_BLOCK_ENCRYPTED_DATA, out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, result);
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_aes256_cbc_FOUR_BLOCK_DATA, out);
 

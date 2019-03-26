@@ -165,6 +165,12 @@ vscf_password_recipient_info_list_has_prev(const vscf_password_recipient_info_li
 VSCF_PUBLIC vscf_password_recipient_info_list_t *
 vscf_password_recipient_info_list_prev(const vscf_password_recipient_info_list_t *self);
 
+//
+//  Remove all items.
+//
+VSCF_PUBLIC void
+vscf_password_recipient_info_list_clear(vscf_password_recipient_info_list_t *self);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

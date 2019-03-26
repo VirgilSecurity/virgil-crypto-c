@@ -48,9 +48,8 @@
 #define VSCR_RATCHET_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet.h"
-#include "vscr_error.h"
+#include "vscr_status.h"
 
 #include <RatchetSession.pb.h>
 #include <RatchetMessage.pb.h>
@@ -158,45 +157,24 @@ vscr_ratchet_take_rng(vscr_ratchet_t *self, vscf_impl_t *rng);
 VSCR_PUBLIC void
 vscr_ratchet_release_rng(vscr_ratchet_t *self);
 
-//
-//  Setup dependency to the class 'ratchet cipher' with shared ownership.
-//
-VSCR_PUBLIC void
-vscr_ratchet_use_cipher(vscr_ratchet_t *self, vscr_ratchet_cipher_t *cipher);
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const RegularMessage *message) VSCR_NODISCARD;
 
-//
-//  Setup dependency to the class 'ratchet cipher' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCR_PUBLIC void
-vscr_ratchet_take_cipher(vscr_ratchet_t *self, vscr_ratchet_cipher_t *cipher);
-
-//
-//  Release dependency to the class 'ratchet cipher'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_release_cipher(vscr_ratchet_t *self);
-
-VSCR_PUBLIC void
-vscr_ratchet_setup_defaults(vscr_ratchet_t *self);
-
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const RegularMessage *message);
-
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret);
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret) VSCR_NODISCARD;
 
 VSCR_PUBLIC size_t
 vscr_ratchet_encrypt_len(vscr_ratchet_t *self, size_t plain_text_len);
 
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage *regular_message);
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage *regular_message) VSCR_NODISCARD;
 
 VSCR_PUBLIC size_t
 vscr_ratchet_decrypt_len(vscr_ratchet_t *self, size_t cipher_text_len);
 
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message, vsc_buffer_t *plain_text);
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message,
+        vsc_buffer_t *plain_text) VSCR_NODISCARD;
 
 VSCR_PUBLIC void
 vscr_ratchet_serialize(vscr_ratchet_t *self, Ratchet *ratchet_pb);

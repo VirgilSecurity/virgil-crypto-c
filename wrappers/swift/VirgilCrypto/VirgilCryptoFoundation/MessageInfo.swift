@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Handle information about an encrypted message and algorithms
 /// that was used for encryption.
@@ -72,18 +71,21 @@ import VirgilCryptoCommon
     /// Add recipient that is defined by Public Key.
     @objc public func addKeyRecipient(keyRecipient: KeyRecipientInfo) {
         var keyRecipientCopy = vscf_key_recipient_info_shallow_copy(keyRecipient.c_ctx)
+
         vscf_message_info_add_key_recipient(self.c_ctx, &keyRecipientCopy)
     }
 
     /// Add recipient that is defined by password.
     @objc public func addPasswordRecipient(passwordRecipient: PasswordRecipientInfo) {
         var passwordRecipientCopy = vscf_password_recipient_info_shallow_copy(passwordRecipient.c_ctx)
+
         vscf_message_info_add_password_recipient(self.c_ctx, &passwordRecipientCopy)
     }
 
     /// Set information about algorithm that was used for data encryption.
     @objc public func setDataEncryptionAlgInfo(dataEncryptionAlgInfo: AlgInfo) {
         var dataEncryptionAlgInfoCopy = vscf_impl_shallow_copy(dataEncryptionAlgInfo.c_ctx)
+
         vscf_message_info_set_data_encryption_alg_info(self.c_ctx, &dataEncryptionAlgInfoCopy)
     }
 
@@ -91,7 +93,7 @@ import VirgilCryptoCommon
     @objc public func dataEncryptionAlgInfo() -> AlgInfo {
         let proxyResult = vscf_message_info_data_encryption_alg_info(self.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Return list with a "key recipient info" elements.
@@ -106,5 +108,24 @@ import VirgilCryptoCommon
         let proxyResult = vscf_message_info_password_recipient_info_list(self.c_ctx)
 
         return PasswordRecipientInfoList.init(use: proxyResult!)
+    }
+
+    /// Setup custom params.
+    @objc public func setCustomParams(customParams: MessageInfoCustomParams) {
+        vscf_message_info_set_custom_params(self.c_ctx, customParams.c_ctx)
+    }
+
+    /// Provide access to the custom params object.
+    /// The returned object can be used to add custom params or read it.
+    /// If custom params object was not set then new empty object is created.
+    @objc public func customParams() -> MessageInfoCustomParams {
+        let proxyResult = vscf_message_info_custom_params(self.c_ctx)
+
+        return MessageInfoCustomParams.init(use: proxyResult!)
+    }
+
+    /// Remove all recipients.
+    @objc public func clearRecipients() {
+        vscf_message_info_clear_recipients(self.c_ctx)
     }
 }

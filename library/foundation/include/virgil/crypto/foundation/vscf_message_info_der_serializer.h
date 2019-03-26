@@ -55,9 +55,8 @@
 
 #include "vscf_library.h"
 #include "vscf_message_info.h"
-#include "vscf_error_ctx.h"
-#include "vscf_impl.h"
 #include "vscf_error.h"
+#include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -83,6 +82,13 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Public integral constants.
+//
+enum {
+    vscf_message_info_der_serializer_PREFIX_LEN = 32
+};
 
 //
 //  Handles implementation details.
@@ -146,14 +152,14 @@ vscf_message_info_der_serializer_shallow_copy(vscf_message_info_der_serializer_t
 //
 //  Setup dependency to the interface 'asn1 reader' with shared ownership.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_message_info_der_serializer_use_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader);
 
 //
 //  Setup dependency to the interface 'asn1 reader' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_message_info_der_serializer_take_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader);
 
 //
@@ -165,14 +171,14 @@ vscf_message_info_der_serializer_release_asn1_reader(vscf_message_info_der_seria
 //
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_message_info_der_serializer_use_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
 
 //
 //  Setup dependency to the interface 'asn1 writer' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_message_info_der_serializer_take_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
 
 //
@@ -184,7 +190,7 @@ vscf_message_info_der_serializer_release_asn1_writer(vscf_message_info_der_seria
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer_t *self);
 
 //
@@ -202,11 +208,21 @@ vscf_message_info_der_serializer_serialize(vscf_message_info_der_serializer_t *s
         const vscf_message_info_t *message_info, vsc_buffer_t *out);
 
 //
+//  Read message info prefix from the given data, and if it is valid,
+//  return a length of bytes of the whole message info.
+//
+//  Zero returned if length can not be determined from the given data,
+//  and this means that there is no message info at the data beginning.
+//
+VSCF_PUBLIC size_t
+vscf_message_info_der_serializer_read_prefix(vscf_message_info_der_serializer_t *self, vsc_data_t data);
+
+//
 //  Deserialize class "message info".
 //
 VSCF_PUBLIC vscf_message_info_t *
 vscf_message_info_der_serializer_deserialize(vscf_message_info_der_serializer_t *self, vsc_data_t data,
-        vscf_error_ctx_t *error);
+        vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------

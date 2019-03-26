@@ -53,17 +53,18 @@
 #include "vscf_rsa_private_key.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_asn1_tag.h"
-#include "vscf_mbedtls_bignum_asn1_writer.h"
+#include "vscf_asn1rd.h"
+#include "vscf_asn1wr.h"
 #include "vscf_mbedtls_bignum_asn1_reader.h"
-#include "vscf_mbedtls_bridge_random.h"
+#include "vscf_mbedtls_bignum_asn1_writer.h"
 #include "vscf_mbedtls_md.h"
-#include "vscf_rsa_public_key_defs.h"
-#include "vscf_alg.h"
-#include "vscf_alg_info.h"
 #include "vscf_simple_alg_info.h"
+#include "vscf_asn1_tag.h"
 #include "vscf_ctr_drbg.h"
-#include "vscf_hash.h"
+#include "vscf_alg_info.h"
+#include "vscf_alg.h"
+#include "vscf_mbedtls_bridge_random.h"
+#include "vscf_rsa_public_key_defs.h"
 #include "vscf_random.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_writer.h"
@@ -120,6 +121,35 @@ vscf_rsa_private_key_cleanup_ctx(vscf_rsa_private_key_t *self) {
 }
 
 //
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_rsa_private_key_setup_defaults(vscf_rsa_private_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        vscf_status_t status = vscf_ctr_drbg_setup_defaults(random);
+        if (status != vscf_status_SUCCESS) {
+            vscf_ctr_drbg_destroy(&random);
+            return status;
+        }
+        self->random = vscf_ctr_drbg_impl(random);
+    }
+
+    if (NULL == self->asn1rd) {
+        self->asn1rd = vscf_asn1rd_impl(vscf_asn1rd_new());
+    }
+
+    if (NULL == self->asn1wr) {
+        self->asn1wr = vscf_asn1wr_impl(vscf_asn1wr_new());
+    }
+
+    return vscf_status_SUCCESS;
+}
+
+//
 //  Setup parameters that is used during key generation.
 //
 VSCF_PUBLIC void
@@ -132,23 +162,6 @@ vscf_rsa_private_key_set_keygen_params(vscf_rsa_private_key_t *self, size_t bitl
 
     self->gen_bitlen = bitlen;
     self->gen_exponent = exponent;
-}
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_rsa_private_key_setup_defaults(vscf_rsa_private_key_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    if (NULL == self->random) {
-        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
-        vscf_ctr_drbg_setup_defaults(random);
-        self->random = vscf_ctr_drbg_impl(random);
-    }
-
-    return vscf_SUCCESS;
 }
 
 //
@@ -174,14 +187,14 @@ vscf_rsa_private_key_produce_alg_info(const vscf_rsa_private_key_t *self) {
 //
 //  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_rsa_private_key_restore_alg_info(vscf_rsa_private_key_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
     VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_RSA);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -210,7 +223,7 @@ vscf_rsa_private_key_key_bitlen(const vscf_rsa_private_key_t *self) {
 //  Generate new private or secret key.
 //  Note, this operation can be slow.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_rsa_private_key_generate_key(vscf_rsa_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -218,18 +231,17 @@ vscf_rsa_private_key_generate_key(vscf_rsa_private_key_t *self) {
     int ret = mbedtls_rsa_gen_key(&self->rsa_ctx, vscf_mbedtls_bridge_random, self->random,
             (unsigned int)self->gen_bitlen, (int)self->gen_exponent);
 
-    return ret == 0 ? vscf_SUCCESS : vscf_error_KEY_GENERATION_FAILED;
+    return ret == 0 ? vscf_status_SUCCESS : vscf_status_ERROR_KEY_GENERATION_FAILED;
 }
 
 //
 //  Decrypt given data.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_rsa_private_key_decrypt(vscf_rsa_private_key_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
-    VSCF_ASSERT_PTR(self->hash);
     VSCF_ASSERT_PTR(out);
 
     VSCF_ASSERT(vsc_data_is_valid(data));
@@ -240,11 +252,10 @@ vscf_rsa_private_key_decrypt(vscf_rsa_private_key_t *self, vsc_data_t data, vsc_
     VSCF_ASSERT(mbedtls_rsa_check_privkey(&self->rsa_ctx) == 0);
 
     if (data.len != vscf_rsa_private_key_key_len(self)) {
-        return vscf_error_BAD_ENCRYPTED_DATA;
+        return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
     }
 
-    mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(vscf_alg_alg_id(self->hash));
-    mbedtls_rsa_set_padding(&self->rsa_ctx, MBEDTLS_RSA_PKCS_V21, md_alg);
+    mbedtls_rsa_set_padding(&self->rsa_ctx, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_SHA512);
 
     size_t out_len = 0;
     int ret = mbedtls_rsa_rsaes_oaep_decrypt(&self->rsa_ctx, vscf_mbedtls_bridge_random, self->random,
@@ -252,12 +263,12 @@ vscf_rsa_private_key_decrypt(vscf_rsa_private_key_t *self, vsc_data_t data, vsc_
             vsc_buffer_unused_len(out));
 
     if (ret != 0) {
-        return vscf_error_BAD_ENCRYPTED_DATA;
+        return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
     }
 
     vsc_buffer_inc_used(out, out_len);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -273,66 +284,52 @@ vscf_rsa_private_key_decrypted_len(vscf_rsa_private_key_t *self, size_t data_len
 }
 
 //
+//  Return length in bytes required to hold signature.
+//
+VSCF_PUBLIC size_t
+vscf_rsa_private_key_signature_len(const vscf_rsa_private_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return vscf_rsa_private_key_key_len(self);
+}
+
+//
 //  Sign data given private key.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_rsa_private_key_sign(vscf_rsa_private_key_t *self, vsc_data_t data, vsc_buffer_t *signature) {
+VSCF_PUBLIC vscf_status_t
+vscf_rsa_private_key_sign_hash(
+        vscf_rsa_private_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id, vsc_buffer_t *signature) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
-    VSCF_ASSERT_PTR(self->hash);
+    VSCF_ASSERT(vsc_data_is_valid(hash_digest));
     VSCF_ASSERT_PTR(signature);
-
-    VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT(vsc_buffer_is_valid(signature));
-
-    VSCF_ASSERT_OPT(vsc_buffer_unused_len(signature) >= vscf_rsa_private_key_signature_len(self));
-
+    VSCF_ASSERT(vsc_buffer_unused_len(signature) >= vscf_rsa_private_key_signature_len(self));
     VSCF_ASSERT(mbedtls_rsa_check_privkey(&self->rsa_ctx) == 0);
 
-    //  Hash
-    size_t data_hash_len = vscf_hash_digest_len(vscf_hash_api(self->hash));
-    vsc_buffer_t *data_hash_buf = vsc_buffer_new_with_capacity(data_hash_len);
-    VSCF_ASSERT(data_hash_len <= UINT_MAX);
-
-    vscf_hash(vscf_hash_api(self->hash), data, data_hash_buf);
-
-    //  Sign
     mbedtls_rsa_context *rsa = &self->rsa_ctx;
-    mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(vscf_alg_alg_id(self->hash));
+    mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(hash_id);
 
     mbedtls_rsa_set_padding(&self->rsa_ctx, MBEDTLS_RSA_PKCS_V21, md_alg);
 
     int ret = mbedtls_rsa_rsassa_pss_sign(rsa, vscf_mbedtls_bridge_random, self->random, MBEDTLS_RSA_PRIVATE, md_alg,
-            (unsigned int)vsc_buffer_len(data_hash_buf), vsc_buffer_bytes(data_hash_buf),
-            vsc_buffer_unused_bytes(signature));
-
-    vsc_buffer_destroy(&data_hash_buf);
+            (unsigned int)hash_digest.len, hash_digest.bytes, vsc_buffer_unused_bytes(signature));
 
     VSCF_ASSERT_ALLOC(ret != MBEDTLS_ERR_MD_ALLOC_FAILED);
 
     switch (ret) {
     case 0:
         vsc_buffer_inc_used(signature, vscf_rsa_private_key_signature_len(self));
-        return vscf_SUCCESS;
+        return vscf_status_SUCCESS;
 
     case MBEDTLS_ERR_RSA_RNG_FAILED:
-        return vscf_error_RANDOM_FAILED;
+        return vscf_status_ERROR_RANDOM_FAILED;
 
     default:
-        return vscf_error_BAD_ARGUMENTS;
+        return vscf_status_ERROR_BAD_ARGUMENTS;
     }
-}
-
-//
-//  Return length in bytes required to hold signature.
-//
-VSCF_PUBLIC size_t
-vscf_rsa_private_key_signature_len(vscf_rsa_private_key_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    return vscf_rsa_private_key_key_len(self);
 }
 
 //
@@ -358,10 +355,6 @@ vscf_rsa_private_key_extract_public_key(const vscf_rsa_private_key_t *self) {
     VSCF_ASSERT_ALLOC((0 == copy_n_ret) && (0 == copy_e_ret));
 
     rsa_public->len = rsa_private->len;
-
-    if (self->hash) {
-        vscf_rsa_public_key_use_hash(rsa_public_key, self->hash);
-    }
 
     if (self->random) {
         vscf_rsa_public_key_use_random(rsa_public_key, self->random);
@@ -389,7 +382,7 @@ vscf_rsa_private_key_extract_public_key(const vscf_rsa_private_key_t *self) {
 //  For instance, RSA private key must be exported in format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_rsa_private_key_export_private_key(const vscf_rsa_private_key_t *self, vsc_buffer_t *out) {
 
     //  RSAPrivateKey ::= SEQUENCE {
@@ -411,8 +404,8 @@ vscf_rsa_private_key_export_private_key(const vscf_rsa_private_key_t *self, vsc_
 
     vscf_asn1_writer_reset(self->asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     size_t len = 0;
 
@@ -445,16 +438,13 @@ vscf_rsa_private_key_export_private_key(const vscf_rsa_private_key_t *self, vsc_
 
     len += vscf_asn1_writer_write_sequence(self->asn1wr, len);
 
-    VSCF_ASSERT(vscf_asn1_writer_error(self->asn1wr) == vscf_SUCCESS);
-    VSCF_ASSERT(error.error == vscf_SUCCESS);
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(self->asn1wr));
+    VSCF_ASSERT(!vscf_error_has_error(&error));
 
+    vscf_asn1_writer_finish(self->asn1wr, vsc_buffer_is_reverse(out));
     vsc_buffer_inc_used(out, len);
 
-    if (!vsc_buffer_is_reverse(out)) {
-        vscf_asn1_writer_finish(self->asn1wr);
-    }
-
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -483,7 +473,7 @@ vscf_rsa_private_key_exported_private_key_len(const vscf_rsa_private_key_t *self
 //  For instance, RSA private key must be imported from the format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_rsa_private_key_import_private_key(vscf_rsa_private_key_t *self, vsc_data_t data) {
 
     //  RSAPrivateKey ::= SEQUENCE {
@@ -511,11 +501,11 @@ vscf_rsa_private_key_import_private_key(vscf_rsa_private_key_t *self, vsc_data_t
     // version
     int version = vscf_asn1_reader_read_int(asn1rd);
     if (version != 0) {
-        return vscf_error_BAD_PKCS1_PRIVATE_KEY;
+        return vscf_status_ERROR_BAD_PKCS1_PRIVATE_KEY;
     }
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     // modulus
     vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa->N, &error);
@@ -533,8 +523,8 @@ vscf_rsa_private_key_import_private_key(vscf_rsa_private_key_t *self, vsc_data_t
     vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa->Q, &error);
 
     // Handle both errors: ASN.1 reader and mbedtls bignum reader.
-    if (vscf_error_ctx_error(&error) != vscf_SUCCESS) {
-        return vscf_error_BAD_PKCS1_PRIVATE_KEY;
+    if (vscf_error_has_error(&error)) {
+        return vscf_status_ERROR_BAD_PKCS1_PRIVATE_KEY;
     }
 
     /* Complete the RSA private key */
@@ -543,5 +533,5 @@ vscf_rsa_private_key_import_private_key(vscf_rsa_private_key_t *self, vsc_data_t
     int rsa_complete_ret = mbedtls_rsa_complete(rsa);
     VSCF_ASSERT_ALLOC(rsa_complete_ret == 0);
 
-    return vscf_SUCCESS;
+    return vscf_status_SUCCESS;
 }

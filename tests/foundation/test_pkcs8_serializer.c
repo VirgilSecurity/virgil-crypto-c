@@ -51,17 +51,6 @@
 
 
 // --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
-// --------------------------------------------------------------------------
 // PKCS#8 RSA keys.
 // --------------------------------------------------------------------------
 void
@@ -72,7 +61,8 @@ test__serialized_public_key_len__rsa2048__greater_then_450(void) {
 
     vscf_rsa_public_key_t *rsa_public_key = vscf_rsa_public_key_new();
     vscf_rsa_public_key_take_asn1rd(rsa_public_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
-    vscf_rsa_public_key_import_public_key(rsa_public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_rsa_public_key_import_public_key(rsa_public_key, test_rsa_2048_PUBLIC_KEY_PKCS1));
 
     size_t len = vscf_pkcs8_serializer_serialized_public_key_len(pkcs8, vscf_rsa_public_key_impl(rsa_public_key));
 
@@ -94,12 +84,14 @@ test__serialize_public_key__rsa2048__equals_to_rsa_2048_public_key_pkcs8_pem(voi
     vscf_rsa_public_key_t *rsa_public_key = vscf_rsa_public_key_new();
     vscf_rsa_public_key_take_asn1rd(rsa_public_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
     vscf_rsa_public_key_take_asn1wr(rsa_public_key, vscf_asn1wr_impl(vscf_asn1wr_new()));
-    vscf_rsa_public_key_import_public_key(rsa_public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_rsa_public_key_import_public_key(rsa_public_key, test_rsa_2048_PUBLIC_KEY_PKCS1));
 
     size_t len = vscf_pkcs8_serializer_serialized_public_key_len(pkcs8, vscf_rsa_public_key_impl(rsa_public_key));
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
 
-    vscf_pkcs8_serializer_serialize_public_key(pkcs8, vscf_rsa_public_key_impl(rsa_public_key), out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_pkcs8_serializer_serialize_public_key(pkcs8, vscf_rsa_public_key_impl(rsa_public_key), out));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_rsa_2048_PUBLIC_KEY_PKCS8_PEM, out);
 
@@ -119,7 +111,8 @@ test__serialized_private_key_len__rsa2048__greater_then_1704(void) {
 
     vscf_rsa_private_key_t *rsa_private_key = vscf_rsa_private_key_new();
     vscf_rsa_private_key_take_asn1rd(rsa_private_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
-    vscf_rsa_private_key_import_private_key(rsa_private_key, test_rsa_2048_PRIVATE_KEY_PKCS1);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_rsa_private_key_import_private_key(rsa_private_key, test_rsa_2048_PRIVATE_KEY_PKCS1));
 
     size_t len = vscf_pkcs8_serializer_serialized_private_key_len(pkcs8, vscf_rsa_private_key_impl(rsa_private_key));
 
@@ -141,12 +134,14 @@ test__serialize_private_key__rsa2048__equals_to_rsa_2048_private_key_pkcs8_pem(v
     vscf_rsa_private_key_t *rsa_private_key = vscf_rsa_private_key_new();
     vscf_rsa_private_key_take_asn1rd(rsa_private_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
     vscf_rsa_private_key_take_asn1wr(rsa_private_key, vscf_asn1wr_impl(vscf_asn1wr_new()));
-    vscf_rsa_private_key_import_private_key(rsa_private_key, test_rsa_2048_PRIVATE_KEY_PKCS1);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_rsa_private_key_import_private_key(rsa_private_key, test_rsa_2048_PRIVATE_KEY_PKCS1));
 
     size_t len = vscf_pkcs8_serializer_serialized_private_key_len(pkcs8, vscf_rsa_private_key_impl(rsa_private_key));
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
 
-    vscf_pkcs8_serializer_serialize_private_key(pkcs8, vscf_rsa_private_key_impl(rsa_private_key), out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_pkcs8_serializer_serialize_private_key(pkcs8, vscf_rsa_private_key_impl(rsa_private_key), out));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_rsa_2048_PRIVATE_KEY_PKCS8_PEM, out);
 

@@ -313,3 +313,13 @@ vscf_password_recipient_info_list_prev(const vscf_password_recipient_info_list_t
 
     return self->prev;
 }
+
+//
+//  Remove all items.
+//
+VSCF_PUBLIC void
+vscf_password_recipient_info_list_clear(vscf_password_recipient_info_list_t *self) {
+
+    vscf_password_recipient_info_destroy(&self->item);
+    vscf_password_recipient_info_list_destroy(&self->next);
+}

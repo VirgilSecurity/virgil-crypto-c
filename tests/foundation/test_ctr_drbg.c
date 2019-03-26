@@ -49,17 +49,6 @@
 
 
 // --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
-// --------------------------------------------------------------------------
 //  Test functions.
 // --------------------------------------------------------------------------
 void
@@ -68,12 +57,12 @@ test__ctr_drbg_random__zero_entropy_and_len_128__returns__random_set_1(void) {
     vscf_fake_random_setup_source_byte(entropy, 0x00);
 
     vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_take_entropy_source(random, vscf_fake_random_impl(entropy));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_take_entropy_source(random, vscf_fake_random_impl(entropy)));
 
     size_t len = 128;
     vsc_buffer_t *data = vsc_buffer_new_with_capacity(len);
 
-    vscf_ctr_drbg_random(random, len, data);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(random, len, data));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ctr_drbg_RANDOM_SET_1, data);
 
@@ -87,14 +76,14 @@ test__ctr_drbg_random__zero_entropy_and_len_32_and_capacity_64__writes_32_bytes_
     vscf_fake_random_setup_source_byte(entropy, 0x00);
 
     vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_take_entropy_source(random, vscf_fake_random_impl(entropy));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_take_entropy_source(random, vscf_fake_random_impl(entropy)));
 
     size_t len = 32;
     size_t capacity = 64;
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(capacity);
     vsc_buffer_erase(buffer);
 
-    vscf_ctr_drbg_random(random, len, buffer);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(random, len, buffer));
 
     vsc_data_t buffer_left = vsc_data_slice_beg(vsc_data(vsc_buffer_bytes(buffer), capacity), 32, 32);
     TEST_ASSERT_TRUE_MESSAGE(vsc_data_is_zero(buffer_left), "Writes more then requested");

@@ -83,12 +83,21 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //
     vscf_api_tag_ASN1_WRITER,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ASN1WR,
+    //
     //  Reset all internal states and prepare to new ASN.1 writing operations.
     //
     (vscf_asn1_writer_api_reset_fn)vscf_asn1wr_reset,
     //
-    //  Move written data to the buffer beginning and forbid further operations.
-    //  Returns written size in bytes.
+    //  Finalize writing and forbid further operations.
+    //
+    //  Note, that ASN.1 structure is always written to the buffer end, and
+    //  if argument "do not adjust" is false, then data is moved to the
+    //  beginning, otherwise - data is left at the buffer end.
+    //
+    //  Returns length of the written bytes.
     //
     (vscf_asn1_writer_api_finish_fn)vscf_asn1wr_finish,
     //
@@ -108,9 +117,13 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //
     (vscf_asn1_writer_api_unwritten_len_fn)vscf_asn1wr_unwritten_len,
     //
-    //  Return last error.
+    //  Return true if status is not "success".
     //
-    (vscf_asn1_writer_api_error_fn)vscf_asn1wr_error,
+    (vscf_asn1_writer_api_has_error_fn)vscf_asn1wr_has_error,
+    //
+    //  Return error code.
+    //
+    (vscf_asn1_writer_api_status_fn)vscf_asn1wr_status,
     //
     //  Move writing position backward for the given length.
     //  Return current writing position.
@@ -233,6 +246,10 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
 //  Compile-time known information about 'asn1wr' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_ASN1WR,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

@@ -38,15 +38,28 @@
 #
 #   To add new supported language do next:
 #       1. Create file `<lang>.gsl` with methods:
-#           - <lang>_create_interface_module(source, destination, wrapper, meta)
-#           - <lang>_create_class_module(source, destination, wrapper, meta)
+#           - <lang>_create_toplevel_modules(destination, wrapper, projects_api) [optional]
+#           - <lang>_resolve_toplevel (wrapper, license) [optional]
+#           - <lang>_resolve_project (project, wrapper, projects_api)
+#           - <lang>_create_project_module (project, destination, wrapper)
+#           - <lang>_create_custom_modules (source, destination, wrapper, meta) [optional]
+#           - <lang>_create_interface_module (source, destination, wrapper, meta)
+#           - <lang>_create_implementation_module (source, destination, wrapper, meta)
+#           - <lang>_create_class_module (source, destination, wrapper, meta)
+#           - <lang>_create_enum_module (source, destination, wrapper, meta)
+#           - <lang>_finalize_custom_modules (source, destination, wrapper, meta) [optional]
 #           - <lang>_module_resolve(source, wrapper)
+#
+#       2. Create file `<lang>_codegen.gsl` with methods:
 #           - <lang>_generate_project(source, wrapper)
 #           - <lang>_generate_sources(source, wrapper)
 #
-#       2. Add `gsl from "<lang>.gsl"` to this file.
-#       3. Create file `models/wrapper/wrapper_<lang>.xml`
-#       4. Add entity `<wrapper lang="<lang>"/>` to your project.
+#       3. Add `gsl from "<lang>.gsl"` to this file.
+#       4. Add `gsl from "<lang>_codegen.gsl"` to `<lang>.gsl` file.
+#       5. Create file `models/wrapper/wrapper_<lang>.xml`
+#       6. Add entity `<wrapper lang="<lang>"/>` to main project.
+#       7. For each project that should be wrapped update property `wrappers`
+#          by adding `<lang>`, for instance `<project wrappers="swift, php"/>`.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
 #   language. See https://github.com/imatix/gsl for details.
@@ -56,14 +69,35 @@ gsl from "common.gsl"
 gsl from "swift.gsl"
 gsl from "php.gsl"
 
-function wrapper_resolve (project, wrapper)
-    check_arguments (my, "project, wrapper", my)
 
-    my.proxy_func = make_id(my.wrapper.lang, "resolve")
+function wrapper_resolve_toplevel (wrapper, license)
+    check_arguments (my, "wrapper, license", my)
+
+    my.proxy_func = make_id(my.wrapper.lang, "resolve_toplevel")
     if macro (my.proxy_func)
-        $(my.proxy_func:) (my.project, my.wrapper)
+        $(my.proxy_func:) (my.wrapper, my.license)
+    endif
+endfunction
+
+
+function wrapper_resolve_project (project, wrapper, projects_api)
+    check_arguments (my, "project, wrapper, projects_api", my)
+
+    my.proxy_func = make_id(my.wrapper.lang, "resolve_project")
+    if macro (my.proxy_func)
+        $(my.proxy_func:) (my.project, my.wrapper, my.projects_api)
     else
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
+    endif
+endfunction
+
+
+function wrapper_create_toplevel_modules(destination, wrapper, projects_api)
+    check_arguments (my, "destination, wrapper, projects_api", my)
+
+    my.proxy_func = make_id(my.wrapper.lang, "create_toplevel_modules")
+    if macro (my.proxy_func)
+        $(my.proxy_func:) (my.destination, my.wrapper, my.projects_api)
     endif
 endfunction
 
@@ -80,20 +114,13 @@ function wrapper_create_project_module (project, destination, wrapper)
 endfunction
 
 
-function wrapper_create_c_context_module (source, destination, wrapper, meta)
+function wrapper_create_custom_modules (source, destination, wrapper, meta)
     check_arguments (my, "source, destination, wrapper, meta", my)
 
-    if !count (my.source.class, scope = "public" & !string_in (name, "data, buffer")) & \
-            !count (my.source.interface, scope = "public")
-        return
+    my.proxy_func = make_id(my.wrapper.lang, "create_custom_modules")
+    if macro (my.proxy_func)
+        $(my.proxy_func:) (my.source, my.destination, my.wrapper, my.meta)
     endif
-
-    my.proxy_func = make_id(my.wrapper.lang, "create_c_context_module")
-    if ! macro (my.proxy_func)
-        echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
-    endif
-
-    $(my.proxy_func:) (my.destination, my.wrapper, my.meta)
 endfunction
 
 
@@ -106,6 +133,7 @@ function wrapper_foreach_interface_create_module (source, destination, wrapper, 
     endif
 
     for my.source.interface where interface.scope = "public"
+        meta_reset_active_entity (my.meta, interface.name)
         $(my.proxy_func:) (interface, my.destination, my.wrapper, my.meta)
     endfor
 endfunction
@@ -120,6 +148,7 @@ function wrapper_foreach_implementation_create_module (source, destination, wrap
     endif
 
     for my.source.implementation where implementation.scope = "public"
+        meta_reset_active_entity (my.meta, implementation.name)
         $(my.proxy_func:) (implementation, my.destination, my.wrapper, my.meta)
     endfor
 endfunction
@@ -134,6 +163,8 @@ function wrapper_foreach_class_create_module (source, destination, wrapper, meta
     endif
 
     for my.source.class where class.scope = "public"
+        meta_reset_active_entity (my.meta, class.name)
+
         $(my.proxy_func:) (class, my.destination, my.wrapper, my.meta)
     endfor
 endfunction
@@ -148,8 +179,19 @@ function wrapper_foreach_enum_create_module (source, destination, wrapper, meta)
     endif
 
     for my.source.enum where 0.scope = "public"
+        meta_reset_active_entity (my.meta, enum.name)
         $(my.proxy_func:) (enum, my.destination, my.wrapper, my.meta)
     endfor
+endfunction
+
+
+function wrapper_finalize_custom_modules (source, destination, wrapper, meta)
+    check_arguments (my, "source, destination, wrapper, meta", my)
+
+    my.proxy_func = make_id(my.wrapper.lang, "finalize_custom_modules")
+    if macro (my.proxy_func)
+        $(my.proxy_func:) (my.source, my.destination, my.wrapper, my.meta)
+    endif
 endfunction
 
 

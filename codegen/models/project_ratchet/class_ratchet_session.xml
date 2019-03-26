@@ -16,7 +16,7 @@
 
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
 
-    <dependency name="rng" interface="random" project="foundation">
+    <dependency name="rng" interface="random" project="foundation" has_observers="1">
         Random used to generate keys
     </dependency>
 
@@ -45,6 +45,8 @@
             - RNG: CTR DRBG
             - Key serialization: DER PKCS8
             - Symmetric cipher: AES256-GCM
+
+        <return enum="status"/>
     </method>
 
     <method name="initiate">
@@ -63,7 +65,7 @@
             Receiver one-time public key (optional)
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             Error
         </return>
     </method>
@@ -87,7 +89,7 @@
             Message received from initiator
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             Error
         </return>
     </method>
@@ -123,7 +125,7 @@
             Data to encrypt
         </argument>
 
-        <argument name="err ctx" class="error ctx" access="readwrite">
+        <argument name="error" class="error" access="readwrite">
             Error context to return error
         </argument>
 
@@ -159,7 +161,7 @@
             </length>
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             Error
         </return>
     </method>
@@ -190,7 +192,7 @@
             Serialized session data
         </argument>
 
-        <argument name="err ctx" class="error ctx" access="readwrite">
+        <argument name="error" class="error" access="readwrite">
             Error context to return error
         </argument>
 

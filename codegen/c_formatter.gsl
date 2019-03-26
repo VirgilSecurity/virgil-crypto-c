@@ -179,6 +179,21 @@ function c_derive_instance_value (c_value, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return formatted string with a component binary visibility modifiers.
+# ---------------------------------------------------------------------------
+function c_derive_method_attributes (c_method)
+    check_argument (my, "c_method", my)
+
+    my.attributes = ""
+
+    for my.c_method.c_attribute
+        my.attributes += " " + c_attribute.value
+    endfor
+
+    return my.attributes
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return formatted name constructed by parts concatenation.
 # ---------------------------------------------------------------------------
 function c_format_name (part1, part2, part3, part4, part5, part6, part7, part8)

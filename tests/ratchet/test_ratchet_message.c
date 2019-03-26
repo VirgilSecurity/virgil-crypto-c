@@ -115,12 +115,12 @@ test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
     vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);
     vscr_ratchet_message_serialize(msg1, buff);
 
-    vscr_error_ctx_t error_ctx;
-    vscr_error_ctx_reset(&error_ctx);
+    vscr_error_t error;
+    vscr_error_reset(&error);
 
-    vscr_ratchet_message_t *msg2 = vscr_ratchet_message_deserialize(vsc_buffer_data(buff), &error_ctx);
+    vscr_ratchet_message_t *msg2 = vscr_ratchet_message_deserialize(vsc_buffer_data(buff), &error);
     TEST_ASSERT(msg2 != NULL);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
 
     TEST_ASSERT(msg_cmp(msg1, msg2));
 
@@ -161,12 +161,12 @@ test__serialize_deserialize__fixed_prekey_msg__should_be_equal(void) {
     vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);
     vscr_ratchet_message_serialize(msg1, buff);
 
-    vscr_error_ctx_t error_ctx;
-    vscr_error_ctx_reset(&error_ctx);
+    vscr_error_t error;
+    vscr_error_reset(&error);
 
-    vscr_ratchet_message_t *msg2 = vscr_ratchet_message_deserialize(vsc_buffer_data(buff), &error_ctx);
+    vscr_ratchet_message_t *msg2 = vscr_ratchet_message_deserialize(vsc_buffer_data(buff), &error);
     TEST_ASSERT(msg2 != NULL);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
 
     TEST_ASSERT(msg_cmp(msg1, msg2));
 
@@ -205,12 +205,12 @@ test__serialize_deserialize__fixed_prekey_msg_no_one_time__should_be_equal(void)
     vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);
     vscr_ratchet_message_serialize(msg1, buff);
 
-    vscr_error_ctx_t error_ctx;
-    vscr_error_ctx_reset(&error_ctx);
+    vscr_error_t error;
+    vscr_error_reset(&error);
 
-    vscr_ratchet_message_t *msg2 = vscr_ratchet_message_deserialize(vsc_buffer_data(buff), &error_ctx);
+    vscr_ratchet_message_t *msg2 = vscr_ratchet_message_deserialize(vsc_buffer_data(buff), &error);
     TEST_ASSERT(msg2 != NULL);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
 
     TEST_ASSERT(msg_cmp(msg1, msg2));
 

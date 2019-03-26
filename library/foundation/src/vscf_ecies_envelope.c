@@ -413,7 +413,7 @@ vscf_ecies_envelope_packed_len(vscf_ecies_envelope_t *self) {
 //  ContentEncryptionAlgorithmIdentifier :: = AlgorithmIdentifier
 //  EncryptedContent ::= OCTET STRING
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
@@ -427,8 +427,8 @@ vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out) {
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_ecies_envelope_packed_len(self));
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     vscf_asn1wr_t *asn1wr = vscf_asn1wr_new();
     vscf_asn1wr_reset(asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
@@ -487,22 +487,19 @@ vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out) {
     len += vscf_asn1wr_write_int(asn1wr, 0);
     len += vscf_asn1wr_write_sequence(asn1wr, len);
 
-    vscf_error_t status = vscf_SUCCESS;
+    vscf_status_t status = vscf_status_SUCCESS;
 
-    if (vscf_asn1wr_error(asn1wr) != vscf_SUCCESS) {
-        status = vscf_asn1wr_error(asn1wr);
+    if (vscf_asn1wr_has_error(asn1wr)) {
+        status = vscf_asn1wr_status(asn1wr);
     }
 
-    if (error.error != vscf_SUCCESS) {
-        status = error.error;
+    if (vscf_error_has_error(&error)) {
+        status = vscf_error_status(&error);
     }
 
-    if (status == vscf_SUCCESS) {
+    if (status == vscf_status_SUCCESS) {
+        vscf_asn1wr_finish(asn1wr, vsc_buffer_is_reverse(out));
         vsc_buffer_inc_used(out, len);
-
-        if (!vsc_buffer_is_reverse(out)) {
-            vscf_asn1wr_finish(asn1wr);
-        }
     }
 
     vscf_pkcs8_der_serializer_destroy(&pkcs8);
@@ -516,14 +513,14 @@ vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out) {
 //  Unpack ECIES-Envelope ASN.1 structure.
 //  Unpacked data can be accessed thru getters.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC vscf_status_t
 vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(data));
 
-    vscf_error_ctx_t error;
-    vscf_error_ctx_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     //
     //  Remove previous data.
@@ -551,7 +548,7 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
     //
     vscf_raw_key_t *originator_raw_key = vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(pkcs8, &error);
     if (originator_raw_key) {
-        self->ephemeral_public_key = vscf_alg_factory_create_public_key_alg(originator_raw_key);
+        self->ephemeral_public_key = vscf_alg_factory_create_public_key_from_raw_key(originator_raw_key, &error);
         vscf_raw_key_destroy(&originator_raw_key);
     }
 
@@ -560,7 +557,7 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
     //
     vscf_impl_t *kdf_info = vscf_alg_info_der_deserializer_deserialize_inplace(alg_info_der_deserializer, &error);
     if (kdf_info) {
-        self->kdf = vscf_alg_factory_create_kdf_alg(kdf_info);
+        self->kdf = vscf_alg_factory_create_kdf_from_info(kdf_info);
         vscf_impl_destroy(&kdf_info);
     }
 
@@ -572,7 +569,7 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
 
     if (hmac_hash_info != NULL) {
         vscf_hmac_t *hmac = vscf_hmac_new();
-        vscf_hmac_take_hash(hmac, vscf_alg_factory_create_hash_alg(hmac_hash_info));
+        vscf_hmac_take_hash(hmac, vscf_alg_factory_create_hash_from_info(hmac_hash_info));
         self->mac = vscf_hmac_impl(hmac);
         vscf_impl_destroy(&hmac_hash_info);
     }
@@ -588,7 +585,7 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
     vscf_asn1rd_read_sequence(asn1rd);
     vscf_impl_t *cipher_info = vscf_alg_info_der_deserializer_deserialize_inplace(alg_info_der_deserializer, &error);
     if (cipher_info) {
-        self->cipher = vscf_alg_factory_create_cipher_alg(cipher_info);
+        self->cipher = vscf_alg_factory_create_cipher_from_info(cipher_info);
         vscf_impl_destroy(&cipher_info);
     }
 
@@ -601,21 +598,20 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
     //  Handle errors.
     //
     if (version != 0) {
-        vscf_error_ctx_update(&error, vscf_error_BAD_ENCRYPTED_DATA);
+        vscf_error_update(&error, vscf_status_ERROR_BAD_ENCRYPTED_DATA);
     } else {
-        vscf_error_ctx_update(&error, vscf_asn1rd_error(asn1rd));
+        vscf_error_update(&error, vscf_asn1rd_status(asn1rd));
     }
 
     vscf_pkcs8_der_deserializer_destroy(&pkcs8);
     vscf_alg_info_der_deserializer_destroy(&alg_info_der_deserializer);
     vscf_asn1rd_destroy(&asn1rd);
 
-    if (error.error != vscf_SUCCESS) {
+    if (vscf_error_has_error(&error)) {
         vscf_ecies_envelope_cleanup_ctx(self);
-        return error.error;
     }
 
-    return vscf_SUCCESS;
+    return vscf_error_status(&error);
 }
 
 //
