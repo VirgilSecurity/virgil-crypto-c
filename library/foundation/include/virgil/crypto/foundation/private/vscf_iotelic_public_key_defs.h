@@ -90,7 +90,7 @@ struct vscf_iotelic_public_key_t {
     //
     //  Implementation specific context.
     //
-    size_t slot_no;
+    size_t slot_id;
 };
 
 

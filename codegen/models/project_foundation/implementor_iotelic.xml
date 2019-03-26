@@ -93,7 +93,7 @@
         <require library="iotelic" feature="library"/>
         <require header="iotelic_sp_interface.h" library="iotelic"/>
 
-        <property name="slot_no" type="size"/>
+        <property name="slot id" type="size"/>
 
         <interface name="alg"/>
         <interface name="key"/>
@@ -102,6 +102,12 @@
             <constant name="can import public key" value="false"/>
             <constant name="can export public key" value="false"/>
         </interface>
+
+        <constructor name="with slot id">
+            Create public key with specific slot id.
+
+            <argument name="slot id" type="size"/>
+        </constructor>
     </implementation>
 
 
@@ -113,7 +119,7 @@
 
         <require impl="iotelic public key"/>
 
-        <property name="slot no" type="size"/>
+        <property name="slot id" type="size"/>
 
         <interface name="alg"/>
         <interface name="key"/>
@@ -123,10 +129,16 @@
             <constant name="can export private key" value="false"/>
         </interface>
 
-        <method name="generate key" declaration="public">
-            Generate new private.
+        <constructor name="with slot id">
+            Create private key with specific slot id.
 
-            <argument name="slot no" type="size"/>
+            <argument name="slot id" type="size"/>
+        </constructor>
+
+        <method name="generate key" declaration="public">
+            Generate new private with a given slot id.
+
+            <argument name="slot id" type="size"/>
             <argument name="alg id" enum="alg id"/>
 
             <return enum="error"/>

@@ -115,6 +115,12 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_iotelic_private_key_impl(vscf_iotelic_private_key_t *self);
 
 //
+//  Create private key with specific slot id.
+//
+VSCF_PUBLIC vscf_iotelic_private_key_t *
+vscf_iotelic_private_key_new_with_slot_id(size_t slot_id);
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -157,10 +163,10 @@ VSCF_PUBLIC vscf_iotelic_private_key_t *
 vscf_iotelic_private_key_shallow_copy(vscf_iotelic_private_key_t *self);
 
 //
-//  Generate new private.
+//  Generate new private with a given slot id.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_iotelic_private_key_generate_key(vscf_iotelic_private_key_t *self, size_t slot_no, vscf_alg_id_t alg_id);
+vscf_iotelic_private_key_generate_key(vscf_iotelic_private_key_t *self, size_t slot_id, vscf_alg_id_t alg_id);
 
 //
 //  Provide algorithm identificator.

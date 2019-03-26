@@ -115,6 +115,12 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_iotelic_public_key_impl(vscf_iotelic_public_key_t *self);
 
 //
+//  Create public key with specific slot id.
+//
+VSCF_PUBLIC vscf_iotelic_public_key_t *
+vscf_iotelic_public_key_new_with_slot_id(size_t slot_id);
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
