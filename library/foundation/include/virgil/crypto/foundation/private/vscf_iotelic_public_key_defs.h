@@ -47,18 +47,18 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'iotelic sha384' implementation.
+//  Types of the 'iotelic public key' implementation.
 //  This types SHOULD NOT be used directly.
 //  The only purpose of including this module is to place implementation
 //  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_IOTELIC_SHA384_DEFS_H_INCLUDED
-#define VSCF_IOTELIC_SHA384_DEFS_H_INCLUDED
+#ifndef VSCF_IOTELIC_PUBLIC_KEY_DEFS_H_INCLUDED
+#define VSCF_IOTELIC_PUBLIC_KEY_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
-#include "vscf_iotelic_sha384.h"
+#include "vscf_iotelic_public_key.h"
 
 // clang-format on
 //  @end
@@ -78,7 +78,7 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-struct vscf_iotelic_sha384_t {
+struct vscf_iotelic_public_key_t {
     //
     //  Compile-time known information about this implementation.
     //
@@ -87,6 +87,10 @@ struct vscf_iotelic_sha384_t {
     //  Reference counter.
     //
     size_t refcnt;
+    //
+    //  Implementation specific context.
+    //
+    size_t slot_no;
 };
 
 
@@ -103,5 +107,5 @@ struct vscf_iotelic_sha384_t {
 
 
 //  @footer
-#endif // VSCF_IOTELIC_SHA384_DEFS_H_INCLUDED
+#endif // VSCF_IOTELIC_PUBLIC_KEY_DEFS_H_INCLUDED
 //  @end

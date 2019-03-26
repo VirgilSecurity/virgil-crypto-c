@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'iotelic kdf2' implementation.
+//  This module contains 'iotelic public key' implementation.
 // --------------------------------------------------------------------------
 
 
@@ -50,21 +50,16 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_iotelic_kdf2.h"
+#include "vscf_iotelic_public_key.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_alg.h"
-#include "vscf_hash.h"
-#include "vscf_iotelic_kdf2_defs.h"
-#include "vscf_iotelic_kdf2_internal.h"
+#include "vscf_iotelic_public_key_defs.h"
+#include "vscf_iotelic_public_key_internal.h"
+
+#include <iotelic_sp_interface.h>
 
 // clang-format on
 //  @end
-
-
-#include <iotelic_sp_interface.h>
-#include <vsc_buffer.h>
-#include <iotelic/kdf.h>
 
 
 //  @generated
@@ -82,72 +77,112 @@
 
 
 //
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_iotelic_public_key_init() is called.
+//  Note, that context is already zeroed.
+//
+VSCF_PRIVATE void
+vscf_iotelic_public_key_init_ctx(vscf_iotelic_public_key_t *self) {
+
+    //  TODO: This is STUB. Implement me.
+}
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_iotelic_public_key_cleanup_ctx(vscf_iotelic_public_key_t *self) {
+
+    //  TODO: This is STUB. Implement me.
+}
+
+//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_iotelic_kdf2_alg_id(const vscf_iotelic_kdf2_t *self) {
+vscf_iotelic_public_key_alg_id(const vscf_iotelic_public_key_t *self) {
 
-    VSCF_UNUSED(self);
-
-    return vscf_alg_id_KDF2;
+    //  TODO: This is STUB. Implement me.
 }
 
 //
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_iotelic_kdf2_produce_alg_info(const vscf_iotelic_kdf2_t *self) {
+vscf_iotelic_public_key_produce_alg_info(const vscf_iotelic_public_key_t *self) {
 
-    VSCF_UNUSED(self);
-
-    return NULL;
+    //  TODO: This is STUB. Implement me.
 }
 
 //
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_iotelic_kdf2_restore_alg_info(vscf_iotelic_kdf2_t *self, const vscf_impl_t *alg_info) {
+vscf_iotelic_public_key_restore_alg_info(vscf_iotelic_public_key_t *self, const vscf_impl_t *alg_info) {
 
-    VSCF_UNUSED(self);
-    VSCF_UNUSED(alg_info);
-
-    return vscf_error_BAD_ARGUMENTS;
+    //  TODO: This is STUB. Implement me.
 }
 
 //
-//  Derive key of the requested length from the given data.
+//  Length of the key in bytes.
 //
-VSCF_PUBLIC void
-vscf_iotelic_kdf2_derive(vscf_iotelic_kdf2_t *self, vsc_data_t data, size_t key_len, vsc_buffer_t *key) {
+VSCF_PUBLIC size_t
+vscf_iotelic_public_key_key_len(const vscf_iotelic_public_key_t *self) {
 
-    kdf_cmd_t cmd;
-    size_t used_bytes = vsc_buffer_len(key);
+    //  TODO: This is STUB. Implement me.
+}
 
-    VSCF_UNUSED(key_len);
+//
+//  Length of the key in bits.
+//
+VSCF_PUBLIC size_t
+vscf_iotelic_public_key_key_bitlen(const vscf_iotelic_public_key_t *self) {
 
-    cmd.kdf_type = KDF_2;
-    cmd.input = data.bytes;
-    cmd.input_sz = data.len;
+    //  TODO: This is STUB. Implement me.
+}
 
-    switch (vscf_alg_alg_id(self->hash)) {
-    case vscf_alg_id_SHA256:
-        cmd.hash_type = HASH_SHA_256;
-        break;
-    case vscf_alg_id_SHA384:
-        cmd.hash_type = HASH_SHA_384;
-        break;
-    case vscf_alg_id_SHA512:
-        cmd.hash_type = HASH_SHA_512;
-        break;
-    default:
-        cmd.hash_type = HASH_SHA_INVALID;
-        VSCF_ASSERT(false);
-        break;
-    }
+//
+//  Verify data with given public key and signature.
+//
+VSCF_PUBLIC bool
+vscf_iotelic_public_key_verify(vscf_iotelic_public_key_t *self, vsc_data_t data, vsc_data_t signature) {
 
-    vs_iot_execute_crypto_op(
-            VS_IOT_KDF, (void *)&cmd, sizeof(cmd), vsc_buffer_unused_bytes(key), vsc_buffer_capacity(key), &used_bytes);
+    //  TODO: This is STUB. Implement me.
+}
 
-    vsc_buffer_inc_used(key, used_bytes);
+//
+//  Export public key in the binary format.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be exported in format defined in
+//  RFC 3447 Appendix A.1.1.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_iotelic_public_key_export_public_key(const vscf_iotelic_public_key_t *self, vsc_buffer_t *out) {
+
+    //  TODO: This is STUB. Implement me.
+}
+
+//
+//  Return length in bytes required to hold exported public key.
+//
+VSCF_PUBLIC size_t
+vscf_iotelic_public_key_exported_public_key_len(const vscf_iotelic_public_key_t *self) {
+
+    //  TODO: This is STUB. Implement me.
+}
+
+//
+//  Import public key from the binary format.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be imported from the format defined in
+//  RFC 3447 Appendix A.1.1.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_iotelic_public_key_import_public_key(vscf_iotelic_public_key_t *self, vsc_data_t data) {
+
+    //  TODO: This is STUB. Implement me.
 }

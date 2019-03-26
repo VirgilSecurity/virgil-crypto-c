@@ -80,11 +80,11 @@
     <!--<interface name="random"/>-->
     <!--<interface name="entropy source"/>-->
 
-    <!--<interface name="key"/>-->
-    <!--<interface name="public key"/>-->
-    <!--<interface name="private key"/>-->
-    <!--<interface name="sign"/>-->
-    <!--<interface name="verify"/>-->
+    <interface name="key"/>
+    <interface name="public key"/>
+    <interface name="private key"/>
+    <interface name="sign"/>
+    <interface name="verify"/>
     <!--<interface name="generate key"/>-->
     <!--<interface name="generate ephemeral key"/>-->
     <!--<interface name="compute shared key"/>-->

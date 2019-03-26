@@ -51,12 +51,19 @@ option(VSCF_DEFAULTS "Enable interface 'defaults'." ON)
 option(VSCF_HASH "Enable interface 'hash'." ON)
 option(VSCF_MAC "Enable interface 'mac'." ON)
 option(VSCF_KDF "Enable interface 'kdf'." ON)
+option(VSCF_KEY "Enable interface 'key'." ON)
+option(VSCF_PUBLIC_KEY "Enable interface 'public key'." ON)
+option(VSCF_PRIVATE_KEY "Enable interface 'private key'." ON)
+option(VSCF_SIGN "Enable interface 'sign'." ON)
+option(VSCF_VERIFY "Enable interface 'verify'." ON)
 option(VSCF_ALG "Enable interface 'alg'." ON)
 option(VSCF_IOTELIC_SHA256 "Enable implementation 'iotelic sha256'." ON)
 option(VSCF_IOTELIC_SHA384 "Enable implementation 'iotelic sha384'." ON)
 option(VSCF_IOTELIC_SHA512 "Enable implementation 'iotelic sha512'." ON)
 option(VSCF_IOTELIC_HMAC "Enable implementation 'iotelic hmac'." ON)
 option(VSCF_IOTELIC_KDF2 "Enable implementation 'iotelic kdf2'." ON)
+option(VSCF_IOTELIC_PUBLIC_KEY "Enable implementation 'iotelic public key'." ON)
+option(VSCF_IOTELIC_PRIVATE_KEY "Enable implementation 'iotelic private key'." ON)
 option(VSCF_ERROR_CTX "Enable class 'error ctx'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
@@ -65,14 +72,48 @@ mark_as_advanced(
         VSCF_HASH
         VSCF_MAC
         VSCF_KDF
+        VSCF_KEY
+        VSCF_PUBLIC_KEY
+        VSCF_PRIVATE_KEY
+        VSCF_SIGN
+        VSCF_VERIFY
         VSCF_ALG
         VSCF_IOTELIC_SHA256
         VSCF_IOTELIC_SHA384
         VSCF_IOTELIC_SHA512
         VSCF_IOTELIC_HMAC
         VSCF_IOTELIC_KDF2
+        VSCF_IOTELIC_PUBLIC_KEY
+        VSCF_IOTELIC_PRIVATE_KEY
         VSCF_ERROR_CTX
         )
+
+if(VSCF_KEY AND NOT VSCF_ALG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_KEY depends on the feature:")
+    message("     VSCF_ALG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PUBLIC_KEY AND NOT VSCF_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PUBLIC_KEY depends on the feature:")
+    message("     VSCF_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PRIVATE_KEY AND NOT VSCF_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PRIVATE_KEY depends on the feature:")
+    message("     VSCF_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
 
 if(VSCF_IOTELIC_SHA256 AND NOT IOTELIC_LIBRARY)
     message("-- error --")
@@ -115,6 +156,33 @@ if(VSCF_IOTELIC_KDF2 AND NOT VSCF_ALG)
     message("--")
     message("Feature VSCF_IOTELIC_KDF2 depends on the feature:")
     message("     VSCF_ALG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_IOTELIC_PUBLIC_KEY AND NOT IOTELIC_LIBRARY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_IOTELIC_PUBLIC_KEY depends on the feature:")
+    message("     IOTELIC_LIBRARY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_IOTELIC_PRIVATE_KEY AND NOT IOTELIC_LIBRARY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_IOTELIC_PRIVATE_KEY depends on the feature:")
+    message("     IOTELIC_LIBRARY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_IOTELIC_PRIVATE_KEY AND NOT VSCF_IOTELIC_PUBLIC_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_IOTELIC_PRIVATE_KEY depends on the feature:")
+    message("     VSCF_IOTELIC_PUBLIC_KEY - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

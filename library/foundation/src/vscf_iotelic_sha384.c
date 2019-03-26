@@ -56,6 +56,8 @@
 #include "vscf_iotelic_sha384_defs.h"
 #include "vscf_iotelic_sha384_internal.h"
 
+#include <io_lib/iot_io_api.h>
+
 // clang-format on
 //  @end
 

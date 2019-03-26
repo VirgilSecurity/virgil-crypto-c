@@ -47,18 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'iotelic sha384' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_IOTELIC_SHA384_DEFS_H_INCLUDED
-#define VSCF_IOTELIC_SHA384_DEFS_H_INCLUDED
+#ifndef VSCF_IOTELIC_PRIVATE_KEY_INTERNAL_H_INCLUDED
+#define VSCF_IOTELIC_PRIVATE_KEY_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_iotelic_sha384.h"
+#include "vscf_iotelic_private_key.h"
 
 // clang-format on
 //  @end
@@ -76,18 +73,20 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_iotelic_private_key_init() is called.
+//  Note, that context is already zeroed.
 //
-struct vscf_iotelic_sha384_t {
-    //
-    //  Compile-time known information about this implementation.
-    //
-    const vscf_impl_info_t *info;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-};
+VSCF_PRIVATE void
+vscf_iotelic_private_key_init_ctx(vscf_iotelic_private_key_t *self);
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_iotelic_private_key_cleanup_ctx(vscf_iotelic_private_key_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -103,5 +102,5 @@ struct vscf_iotelic_sha384_t {
 
 
 //  @footer
-#endif // VSCF_IOTELIC_SHA384_DEFS_H_INCLUDED
+#endif // VSCF_IOTELIC_PRIVATE_KEY_INTERNAL_H_INCLUDED
 //  @end

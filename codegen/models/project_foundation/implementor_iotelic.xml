@@ -5,7 +5,7 @@
         This is Iotelic implementation of SHA256.
 
         <require library="iotelic" feature="library"/>
-        <require header="iot_io_api.h" scope="context"/>
+        <require header="io_lib/iot_io_api.h" library="iotelic"/>
 
         <interface name="alg"/>
         <interface name="hash">
@@ -23,7 +23,7 @@
         This is Iotelic implementation of SHA384.
 
         <require library="iotelic" feature="library"/>
-        <require header="iot_io_api.h" scope="context"/>
+        <require header="io_lib/iot_io_api.h" library="iotelic"/>
 
         <interface name="alg"/>
         <interface name="hash">
@@ -42,7 +42,7 @@
         This is Iotelic implementation of SHA512.
 
         <require library="iotelic" feature="library"/>
-        <require header="iot_io_api.h" scope="context"/>
+        <require header="io_lib/iot_io_api.h" library="iotelic"/>
 
         <interface name="alg"/>
         <interface name="hash">
@@ -61,9 +61,7 @@
         Virgil Security implementation of HMAC algorithm (RFC 2104) (FIPS PUB 198-1).
 
         <interface name="alg"/>
-        <interface name="mac">
-
-        </interface>
+        <interface name="mac"/>
 
         <require interface="alg"/>
         <!--        <require interface="alg info"/> -->
@@ -88,4 +86,50 @@
         <dependency name="hash" interface="hash"/>
     </implementation>
 
+
+    <implementation name="public key">
+        This is implementation of the public key
+
+        <require library="iotelic" feature="library"/>
+        <require header="iotelic_sp_interface.h" library="iotelic"/>
+
+        <property name="slot_no" type="size"/>
+
+        <interface name="alg"/>
+        <interface name="key"/>
+        <interface name="verify"/>
+        <interface name="public key">
+            <constant name="can import public key" value="false"/>
+            <constant name="can export public key" value="false"/>
+        </interface>
+    </implementation>
+
+
+    <implementation name="private key">
+        This is implementation of ED25519 private key
+
+        <require library="iotelic" feature="library"/>
+        <require header="iotelic_sp_interface.h" library="iotelic"/>
+
+        <require impl="iotelic public key"/>
+
+        <property name="slot no" type="size"/>
+
+        <interface name="alg"/>
+        <interface name="key"/>
+        <interface name="sign"/>
+        <interface name="private key">
+            <constant name="can import private key" value="false"/>
+            <constant name="can export private key" value="false"/>
+        </interface>
+
+        <method name="generate key" declaration="public">
+            Generate new private.
+
+            <argument name="slot no" type="size"/>
+            <argument name="alg id" enum="alg id"/>
+
+            <return enum="error"/>
+        </method>
+    </implementation>
 </implementor>
