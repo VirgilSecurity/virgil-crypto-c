@@ -108,7 +108,7 @@ vscf_iotelic_sha384_restore_alg_info(vscf_iotelic_sha384_t *self, const vscf_imp
 
     VSCF_UNUSED(self);
     VSCF_UNUSED(alg_info);
-    return vscf_error_BAD_ARGUMENTS;
+    return vscf_status_ERROR_BAD_ARGUMENTS;
 }
 
 //

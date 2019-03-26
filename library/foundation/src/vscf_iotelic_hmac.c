@@ -136,7 +136,7 @@ vscf_iotelic_hmac_restore_alg_info(vscf_iotelic_hmac_t *self, const vscf_impl_t 
     VSCF_UNUSED(self);
     VSCF_UNUSED(alg_info);
 
-    return vscf_error_BAD_ARGUMENTS;
+    return vscf_status_ERROR_BAD_ARGUMENTS;
 }
 
 //
