@@ -271,11 +271,12 @@ vs_iot_execute_crypto_op(vscf_command_type_e opcode, void *in_data, size_t ilen,
     os_wait_event(exch_ctx->event, MAX_TIME);
 
     *olen = cmd->olen;
+    int32_t result = cmd->result;
     os_mem_free(cmd);
 
     delete_mb_iot_task();
 
     os_release_mutex(exch_ctx->blocked);
 
-    return cmd->result;
+    return result;
 }
