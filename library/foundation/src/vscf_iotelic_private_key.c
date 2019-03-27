@@ -65,6 +65,7 @@
 #include <iotelic_sp_interface.h>
 #include <vsc_buffer.h>
 #include <iotelic/keypair.h>
+#include <iotelic/ecdsa.h>
 #include <common/iot_errno.h>
 
 //  @generated
@@ -113,11 +114,9 @@ vscf_iotelic_private_key_cleanup_ctx(vscf_iotelic_private_key_t *self) {
 VSCF_PUBLIC vscf_iotelic_private_key_t *
 vscf_iotelic_private_key_new_with_slot_id(size_t slot_id) {
 
-    VSCF_UNUSED(slot_id);
-
     vscf_iotelic_private_key_t *self = vscf_iotelic_private_key_new();
 
-    //   TODO: Perform initialization.
+    self->slot_id = slot_id;
 
     return self;
 }
@@ -247,13 +246,38 @@ vscf_iotelic_private_key_sign_hash(
         vscf_iotelic_private_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id, vsc_buffer_t *signature) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_UNUSED(hash_digest);
-    VSCF_UNUSED(hash_id);
-    VSCF_UNUSED(signature);
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
 
-    return vscf_status_ERROR_BAD_ARGUMENTS;
+    // Fill request to SP
+    vs_ecdsa_sign_cmd_t cmd;
+    cmd.slot = self->slot_id;
+
+    // Fill hash type
+    if (vscf_alg_id_SHA256 == hash_id) {
+        cmd.hash_type = HASH_SHA_256;
+    } else if (vscf_alg_id_SHA384 == hash_id) {
+        cmd.hash_type = HASH_SHA_384;
+    } else if (vscf_alg_id_SHA512 == hash_id) {
+        cmd.hash_type = HASH_SHA_512;
+    } else {
+        return vscf_status_ERROR_BAD_ARGUMENTS;
+    }
+
+    // Fill hash data
+    cmd.hash_data = hash_digest.bytes;
+    cmd.hash_sz = hash_digest.len;
+
+    size_t used_bytes = vsc_buffer_len(signature);
+
+    if (ERR_OK != vs_iot_execute_crypto_op(VS_IOT_ECDSA_SIGN, (void *)&cmd, sizeof(cmd),
+                          vsc_buffer_unused_bytes(signature), vsc_buffer_capacity(signature), &used_bytes)) {
+        return vscf_status_ERROR_KEY_GENERATION_FAILED;
+    }
+
+    vsc_buffer_inc_used(signature, used_bytes);
+
+    return vscf_status_SUCCESS;
 }
 
 //
