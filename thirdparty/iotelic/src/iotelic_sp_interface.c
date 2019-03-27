@@ -240,6 +240,8 @@ vs_iot_deinit_crypto_interface(void) {
 int32_t
 vs_iot_execute_crypto_op(vscf_command_type_e opcode, void *in_data, size_t ilen, void *out_data, size_t out_buf_sz, size_t *olen) {
 
+    vs_iot_init_crypto_interface();
+
     if(NULL == exch_ctx) {
         return -ERR_NOT_READY;
     }

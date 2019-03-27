@@ -62,6 +62,10 @@
 // clang-format on
 //  @end
 
+#include <iotelic_sp_interface.h>
+#include <vsc_buffer.h>
+#include <iotelic/keypair.h>
+#include <common/iot_errno.h>
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -125,12 +129,35 @@ VSCF_PUBLIC vscf_status_t
 vscf_iotelic_private_key_generate_key(vscf_iotelic_private_key_t *self, size_t slot_id, vscf_alg_id_t alg_id) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_UNUSED(slot_id);
-    VSCF_UNUSED(alg_id);
 
-    //  TODO: This is STUB. Implement me.
+    size_t sz;
 
-    return vscf_status_ERROR_BAD_ARGUMENTS;
+    self->slot_id = slot_id;
+
+    // Fill request to SP
+    vs_keypair_cmd_t cmd;
+    cmd.slot = slot_id;
+    // Fill algorithm type
+    switch (alg_id) {
+    case vscf_alg_id_CURVE25519:
+        cmd.keypair_type = KEYPAIR_EC_CURVE25519;
+        break;
+    case vscf_alg_id_ED25519:
+        cmd.keypair_type = KEYPAIR_EC_ED25519;
+        break;
+    case KEYPAIR_EC_ED25519:
+        cmd.keypair_type = KEYPAIR_EC_ED25519;
+        break;
+    default: {
+        return vscf_status_ERROR_BAD_ARGUMENTS;
+    }
+    }
+
+    if (ERR_OK != vs_iot_execute_crypto_op(VS_IOT_KEYPAIR_CREATE, (void *)&cmd, sizeof(cmd), 0, 0, &sz)) {
+        return vscf_status_ERROR_KEY_GENERATION_FAILED;
+    }
+
+    return vscf_status_SUCCESS;
 }
 
 //

@@ -61,6 +61,10 @@
 // clang-format on
 //  @end
 
+#include <vsc_buffer.h>
+#include <iotelic/keypair.h>
+#include <common/iot_errno.h>
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -213,9 +217,21 @@ vscf_iotelic_public_key_export_public_key(const vscf_iotelic_public_key_t *self,
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(out);
 
-    //  TODO: This is STUB. Implement me.
+    size_t sz;
 
-    return vscf_status_ERROR_BAD_ARGUMENTS;
+    // Fill request to SP
+    vs_keypair_cmd_t cmd;
+    cmd.slot = self->slot_id;
+
+
+    if (ERR_OK != vs_iot_execute_crypto_op(VS_IOT_KEYPAIR_GET_PUBLIC, (void *)&cmd, sizeof(cmd),
+                          vsc_buffer_unused_bytes(out), vsc_buffer_capacity(out), &sz)) {
+        return vscf_status_ERROR_KEY_GENERATION_FAILED;
+    }
+
+    vsc_buffer_inc_used(out, sz);
+
+    return vscf_status_SUCCESS;
 }
 
 //
