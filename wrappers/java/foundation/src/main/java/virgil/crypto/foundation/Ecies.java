@@ -39,7 +39,7 @@ package virgil.crypto.foundation;
 /*
 * Virgil implementation of the ECIES algorithm.
 */
-public class Ecies implements AutoCloseable, Defaults, Encrypt, Decrypt {
+public class Ecies implements AutoCloseable, Encrypt, Decrypt {
 
     public long cCtx;
 
@@ -105,16 +105,16 @@ public class Ecies implements AutoCloseable, Defaults, Encrypt, Decrypt {
         FoundationJNI.INSTANCE.ecies_setEphemeralKey(this.cCtx, ephemeralKey);
     }
 
-    /* Close resource. */
-    public void close() {
-        FoundationJNI.INSTANCE.ecies_close(this.cCtx);
-    }
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.ecies_setupDefaults(this.cCtx);
+    }
+
+    /* Close resource. */
+    public void close() {
+        FoundationJNI.INSTANCE.ecies_close(this.cCtx);
     }
 
     /*

@@ -39,7 +39,7 @@ package virgil.crypto.foundation;
 /*
 * Provide DER deserializer of algorithm information.
 */
-public class AlgInfoDerDeserializer implements AutoCloseable, Defaults, AlgInfoDeserializer {
+public class AlgInfoDerDeserializer implements AutoCloseable, AlgInfoDeserializer {
 
     public long cCtx;
 
@@ -63,6 +63,13 @@ public class AlgInfoDerDeserializer implements AutoCloseable, Defaults, AlgInfoD
     }
 
     /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public void setupDefaults() {
+        FoundationJNI.INSTANCE.algInfoDerDeserializer_setupDefaults(this.cCtx);
+    }
+
+    /*
     * Deserialize by using internal ASN.1 reader.
     * Note, that caller code is responsible to reset ASN.1 reader with
     * an input buffer.
@@ -74,13 +81,6 @@ public class AlgInfoDerDeserializer implements AutoCloseable, Defaults, AlgInfoD
     /* Close resource. */
     public void close() {
         FoundationJNI.INSTANCE.algInfoDerDeserializer_close(this.cCtx);
-    }
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public void setupDefaults() throws FoundationException {
-        FoundationJNI.INSTANCE.algInfoDerDeserializer_setupDefaults(this.cCtx);
     }
 
     /*

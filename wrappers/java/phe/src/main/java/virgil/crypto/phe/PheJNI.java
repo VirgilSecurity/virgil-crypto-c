@@ -85,6 +85,8 @@ public class PheJNI {
     */
     public native void pheServer_setOperationRandom(long cCtx, Random operationRandom);
 
+    public native void pheServer_setupDefaults(long cCtx) throws PheException;
+
     /*
     * Generates new NIST P-256 server key pair for some client
     */
@@ -133,6 +135,8 @@ public class PheJNI {
     * Random used for crypto operations to make them const-time
     */
     public native void pheClient_setOperationRandom(long cCtx, Random operationRandom);
+
+    public native void pheClient_setupDefaults(long cCtx) throws PheException;
 
     /*
     * Sets client private and server public key
@@ -198,7 +202,7 @@ public class PheJNI {
     /*
     * Setups dependencies with default values.
     */
-    public native void pheCipher_setupDefaults(long cCtx);
+    public native void pheCipher_setupDefaults(long cCtx) throws PheException;
 
     /*
     * Returns buffer capacity needed to fit cipher text

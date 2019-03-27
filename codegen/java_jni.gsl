@@ -213,7 +213,7 @@ function java_create_jni_class_method (interface, method, java_method, class, wr
         # Create declaration
         new java_method to my.jni_context_class
             #TODO insert description
-            . = my.java_method.
+            . = my.java_method. ? ""
             .throws = my.java_method.throws ?
             .name = my.jni_method_name
             .visibility = "public"

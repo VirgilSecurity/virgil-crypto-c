@@ -45,19 +45,19 @@ public class PheException extends RuntimeException {
 
     public static final int SUCCESS = 0;
 
-    public static final int ERROR_INVALID_SUCCESS_PROOF = 1;
+    public static final int ERROR_INVALID_SUCCESS_PROOF = -1;
 
-    public static final int ERROR_INVALID_FAIL_PROOF = 2;
+    public static final int ERROR_INVALID_FAIL_PROOF = -2;
 
-    public static final int ERROR_RNG_FAILED = 3;
+    public static final int ERROR_RNG_FAILED = -3;
 
-    public static final int ERROR_PROTOBUF_DECODE_FAILED = 4;
+    public static final int ERROR_PROTOBUF_DECODE_FAILED = -4;
 
-    public static final int ERROR_INVALID_ECP = 5;
+    public static final int ERROR_INVALID_PUBLIC_KEY = -5;
 
-    public static final int ERROR_INVALID_PRIVATE_KEY = 6;
+    public static final int ERROR_INVALID_PRIVATE_KEY = -6;
 
-    public static final int ERROR_AES_FAILED = 7;
+    public static final int ERROR_AES_FAILED = -7;
 
     private int statusCode;
 

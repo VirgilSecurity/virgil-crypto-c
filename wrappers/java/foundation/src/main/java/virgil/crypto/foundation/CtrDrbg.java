@@ -41,7 +41,7 @@ package virgil.crypto.foundation;
 * based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
 * This class is thread-safe if the build option VSCF_MULTI_THREAD was enabled.
 */
-public class CtrDrbg implements AutoCloseable, Defaults, Random {
+public class CtrDrbg implements AutoCloseable, Random {
 
     public long cCtx;
 
@@ -79,6 +79,13 @@ public class CtrDrbg implements AutoCloseable, Defaults, Random {
     }
 
     /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public void setupDefaults() throws FoundationException {
+        FoundationJNI.INSTANCE.ctrDrbg_setupDefaults(this.cCtx);
+    }
+
+    /*
     * Force entropy to be gathered at the beginning of every call to
     * the random() method.
     * Note, use this if your entropy source has sufficient throughput.
@@ -106,13 +113,6 @@ public class CtrDrbg implements AutoCloseable, Defaults, Random {
     /* Close resource. */
     public void close() {
         FoundationJNI.INSTANCE.ctrDrbg_close(this.cCtx);
-    }
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public void setupDefaults() throws FoundationException {
-        FoundationJNI.INSTANCE.ctrDrbg_setupDefaults(this.cCtx);
     }
 
     /*

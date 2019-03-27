@@ -59,6 +59,8 @@ JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1setRandom (JNIEn
 
 JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1setOperationRandom (JNIEnv *, jobject, jlong, jobject);
 
+JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1setupDefaults (JNIEnv *, jobject, jlong);
+
 JNIEXPORT jobject JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1generateServerKeyPair (JNIEnv *, jobject, jlong);
 
 JNIEXPORT jint JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1enrollmentResponseLen (JNIEnv *, jobject, jlong);
@@ -80,6 +82,8 @@ JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1close (JNIEnv *,
 JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1setRandom (JNIEnv *, jobject, jlong, jobject);
 
 JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1setOperationRandom (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1setupDefaults (JNIEnv *, jobject, jlong);
 
 JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1setKeys (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
 

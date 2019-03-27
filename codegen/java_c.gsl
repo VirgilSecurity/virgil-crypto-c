@@ -1437,7 +1437,7 @@ function java_create_c_method_from_dependency (dependency, impl, destination, wr
             endnew
             
             new c_code to c_method
-                if my.dependency.has_observers
+                if my.dependency.has_observers & my.dependency.is_observers_return_status
                     my.status_type = make_ref_c (make_id ("class", "status", "enum", "status"))
                     my.success_constant = make_ref_c (make_id ("class status", "enum status", "constant success"))
                     my.exception = java_derive_default_exception_name (my.wrapper)

@@ -39,7 +39,7 @@ package virgil.crypto.foundation;
 /*
 * CMS based implementation of the class "message info" serialization.
 */
-public class MessageInfoDerSerializer implements AutoCloseable, Defaults, MessageInfoSerializer {
+public class MessageInfoDerSerializer implements AutoCloseable, MessageInfoSerializer {
 
     public long cCtx;
 
@@ -58,24 +58,24 @@ public class MessageInfoDerSerializer implements AutoCloseable, Defaults, Messag
         this.cCtx = cCtx;
     }
 
-    public void setAsn1Reader(Asn1Reader asn1Reader) throws FoundationException {
+    public void setAsn1Reader(Asn1Reader asn1Reader) {
         FoundationJNI.INSTANCE.messageInfoDerSerializer_setAsn1Reader(this.cCtx, asn1Reader);
     }
 
-    public void setAsn1Writer(Asn1Writer asn1Writer) throws FoundationException {
+    public void setAsn1Writer(Asn1Writer asn1Writer) {
         FoundationJNI.INSTANCE.messageInfoDerSerializer_setAsn1Writer(this.cCtx, asn1Writer);
-    }
-
-    /* Close resource. */
-    public void close() {
-        FoundationJNI.INSTANCE.messageInfoDerSerializer_close(this.cCtx);
     }
 
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
-    public void setupDefaults() throws FoundationException {
+    public void setupDefaults() {
         FoundationJNI.INSTANCE.messageInfoDerSerializer_setupDefaults(this.cCtx);
+    }
+
+    /* Close resource. */
+    public void close() {
+        FoundationJNI.INSTANCE.messageInfoDerSerializer_close(this.cCtx);
     }
 
     public int getPrefixLen() {

@@ -36,7 +36,7 @@
 
 package virgil.crypto.foundation;
 
-public class RsaPrivateKey implements AutoCloseable, Defaults, Alg, Key, GenerateKey, Decrypt, SignHash, PrivateKey {
+public class RsaPrivateKey implements AutoCloseable, Alg, Key, GenerateKey, Decrypt, SignHash, PrivateKey {
 
     public long cCtx;
 
@@ -68,6 +68,13 @@ public class RsaPrivateKey implements AutoCloseable, Defaults, Alg, Key, Generat
     }
 
     /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public void setupDefaults() throws FoundationException {
+        FoundationJNI.INSTANCE.rsaPrivateKey_setupDefaults(this.cCtx);
+    }
+
+    /*
     * Setup parameters that is used during key generation.
     */
     public void setKeygenParams(int bitlen, int exponent) {
@@ -77,13 +84,6 @@ public class RsaPrivateKey implements AutoCloseable, Defaults, Alg, Key, Generat
     /* Close resource. */
     public void close() {
         FoundationJNI.INSTANCE.rsaPrivateKey_close(this.cCtx);
-    }
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public void setupDefaults() throws FoundationException {
-        FoundationJNI.INSTANCE.rsaPrivateKey_setupDefaults(this.cCtx);
     }
 
     /*

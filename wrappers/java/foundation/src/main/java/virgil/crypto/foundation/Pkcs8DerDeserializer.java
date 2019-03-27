@@ -39,7 +39,7 @@ package virgil.crypto.foundation;
 /*
 * Implements PKCS#8 key deserialization from DER format.
 */
-public class Pkcs8DerDeserializer implements AutoCloseable, Defaults, KeyDeserializer {
+public class Pkcs8DerDeserializer implements AutoCloseable, KeyDeserializer {
 
     public long cCtx;
 
@@ -63,6 +63,13 @@ public class Pkcs8DerDeserializer implements AutoCloseable, Defaults, KeyDeseria
     }
 
     /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public void setupDefaults() {
+        FoundationJNI.INSTANCE.pkcs8DerDeserializer_setupDefaults(this.cCtx);
+    }
+
+    /*
     * Deserialize Public Key by using internal ASN.1 reader.
     * Note, that caller code is responsible to reset ASN.1 reader with
     * an input buffer.
@@ -83,13 +90,6 @@ public class Pkcs8DerDeserializer implements AutoCloseable, Defaults, KeyDeseria
     /* Close resource. */
     public void close() {
         FoundationJNI.INSTANCE.pkcs8DerDeserializer_close(this.cCtx);
-    }
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public void setupDefaults() throws FoundationException {
-        FoundationJNI.INSTANCE.pkcs8DerDeserializer_setupDefaults(this.cCtx);
     }
 
     /*

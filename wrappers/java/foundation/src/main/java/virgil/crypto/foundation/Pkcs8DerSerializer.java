@@ -39,7 +39,7 @@ package virgil.crypto.foundation;
 /*
 * Implements PKCS#8 key serialization to DER format.
 */
-public class Pkcs8DerSerializer implements AutoCloseable, Defaults, KeySerializer {
+public class Pkcs8DerSerializer implements AutoCloseable, KeySerializer {
 
     public long cCtx;
 
@@ -63,6 +63,13 @@ public class Pkcs8DerSerializer implements AutoCloseable, Defaults, KeySerialize
     }
 
     /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public void setupDefaults() {
+        FoundationJNI.INSTANCE.pkcs8DerSerializer_setupDefaults(this.cCtx);
+    }
+
+    /*
     * Serialize Public Key by using internal ASN.1 writer.
     * Note, that caller code is responsible to reset ASN.1 writer with
     * an output buffer.
@@ -83,13 +90,6 @@ public class Pkcs8DerSerializer implements AutoCloseable, Defaults, KeySerialize
     /* Close resource. */
     public void close() {
         FoundationJNI.INSTANCE.pkcs8DerSerializer_close(this.cCtx);
-    }
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public void setupDefaults() throws FoundationException {
-        FoundationJNI.INSTANCE.pkcs8DerSerializer_setupDefaults(this.cCtx);
     }
 
     /*

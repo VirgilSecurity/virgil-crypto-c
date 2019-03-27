@@ -39,7 +39,7 @@ package virgil.crypto.foundation;
 /*
 * Implements PKCS#8 key deserialization from PEM format.
 */
-public class Pkcs8Deserializer implements AutoCloseable, Defaults, KeyDeserializer {
+public class Pkcs8Deserializer implements AutoCloseable, KeyDeserializer {
 
     public long cCtx;
 
@@ -66,16 +66,16 @@ public class Pkcs8Deserializer implements AutoCloseable, Defaults, KeyDeserializ
         FoundationJNI.INSTANCE.pkcs8Deserializer_setDerDeserializer(this.cCtx, derDeserializer);
     }
 
-    /* Close resource. */
-    public void close() {
-        FoundationJNI.INSTANCE.pkcs8Deserializer_close(this.cCtx);
-    }
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
-    public void setupDefaults() throws FoundationException {
+    public void setupDefaults() {
         FoundationJNI.INSTANCE.pkcs8Deserializer_setupDefaults(this.cCtx);
+    }
+
+    /* Close resource. */
+    public void close() {
+        FoundationJNI.INSTANCE.pkcs8Deserializer_close(this.cCtx);
     }
 
     /*

@@ -88,7 +88,7 @@ public class PheCipher implements AutoCloseable {
     /*
     * Setups dependencies with default values.
     */
-    public void setupDefaults() {
+    public void setupDefaults() throws PheException {
         PheJNI.INSTANCE.pheCipher_setupDefaults(this.cCtx);
     }
 

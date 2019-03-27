@@ -25,8 +25,6 @@ public class Aes256CbcTest extends SampleBasedTest {
 		this.aes.setNonce(getBytes("aes256_cbc.iv"));
 
 		byte[] encryptedData = this.aes.encrypt(getBytes("data"));
-		
-		System.out.println(Base64.getEncoder().encodeToString(encryptedData));
 
 		assertNotNull(encryptedData);
 		assertArrayEquals(getBytes("aes256_cbc.encrypted_data"), encryptedData);

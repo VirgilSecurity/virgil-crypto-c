@@ -39,7 +39,7 @@ package virgil.crypto.foundation;
 /*
 * This is implementation of CURVE25519 public key
 */
-public class Curve25519PublicKey implements AutoCloseable, Defaults, Alg, Key, Encrypt, PublicKey, GenerateEphemeralKey {
+public class Curve25519PublicKey implements AutoCloseable, Alg, Key, Encrypt, PublicKey, GenerateEphemeralKey {
 
     public long cCtx;
 
@@ -66,16 +66,16 @@ public class Curve25519PublicKey implements AutoCloseable, Defaults, Alg, Key, E
         FoundationJNI.INSTANCE.curve25519PublicKey_setEcies(this.cCtx, ecies);
     }
 
-    /* Close resource. */
-    public void close() {
-        FoundationJNI.INSTANCE.curve25519PublicKey_close(this.cCtx);
-    }
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.curve25519PublicKey_setupDefaults(this.cCtx);
+    }
+
+    /* Close resource. */
+    public void close() {
+        FoundationJNI.INSTANCE.curve25519PublicKey_close(this.cCtx);
     }
 
     /*

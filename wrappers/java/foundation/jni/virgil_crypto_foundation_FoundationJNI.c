@@ -112,6 +112,10 @@
 
 #include <virgil/crypto/foundation/vscf_pkcs5_pbes2.h>
 
+#include <virgil/crypto/foundation/vscf_seed_entropy_source.h>
+
+#include <virgil/crypto/foundation/vscf_key_material_rng.h>
+
 #include <virgil/crypto/foundation/vscf_pkcs8_der_serializer.h>
 
 #include <virgil/crypto/foundation/vscf_pkcs8_der_deserializer.h>
@@ -652,86 +656,6 @@ jobject wrapAsn1Writer (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
 }
 
-char* getDefaultsClassName (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    if (!vscf_defaults_is_implemented(c_ctx)) {
-        printf("Given C implementation does not implement interface Defaults.");
-    }
-    char *classFullName = malloc(200);
-    strcpy (classFullName, "virgil/crypto/foundation/");
-    vscf_impl_tag_t implTag = vscf_impl_tag((vscf_impl_t*) c_ctx);
-    switch(implTag) {
-    case vscf_impl_tag_RSA_PUBLIC_KEY:
-        strcat (classFullName, "RsaPublicKey");
-        break;
-    case vscf_impl_tag_RSA_PRIVATE_KEY:
-        strcat (classFullName, "RsaPrivateKey");
-        break;
-    case vscf_impl_tag_ENTROPY_ACCUMULATOR:
-        strcat (classFullName, "EntropyAccumulator");
-        break;
-    case vscf_impl_tag_CTR_DRBG:
-        strcat (classFullName, "CtrDrbg");
-        break;
-    case vscf_impl_tag_PKCS5_PBKDF2:
-        strcat (classFullName, "Pkcs5Pbkdf2");
-        break;
-    case vscf_impl_tag_PKCS8_DER_SERIALIZER:
-        strcat (classFullName, "Pkcs8DerSerializer");
-        break;
-    case vscf_impl_tag_PKCS8_DER_DESERIALIZER:
-        strcat (classFullName, "Pkcs8DerDeserializer");
-        break;
-    case vscf_impl_tag_PKCS8_SERIALIZER:
-        strcat (classFullName, "Pkcs8Serializer");
-        break;
-    case vscf_impl_tag_PKCS8_DESERIALIZER:
-        strcat (classFullName, "Pkcs8Deserializer");
-        break;
-    case vscf_impl_tag_ED25519_PUBLIC_KEY:
-        strcat (classFullName, "Ed25519PublicKey");
-        break;
-    case vscf_impl_tag_ED25519_PRIVATE_KEY:
-        strcat (classFullName, "Ed25519PrivateKey");
-        break;
-    case vscf_impl_tag_CURVE25519_PUBLIC_KEY:
-        strcat (classFullName, "Curve25519PublicKey");
-        break;
-    case vscf_impl_tag_CURVE25519_PRIVATE_KEY:
-        strcat (classFullName, "Curve25519PrivateKey");
-        break;
-    case vscf_impl_tag_ECIES:
-        strcat (classFullName, "Ecies");
-        break;
-    case vscf_impl_tag_ALG_INFO_DER_SERIALIZER:
-        strcat (classFullName, "AlgInfoDerSerializer");
-        break;
-    case vscf_impl_tag_ALG_INFO_DER_DESERIALIZER:
-        strcat (classFullName, "AlgInfoDerDeserializer");
-        break;
-    case vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER:
-        strcat (classFullName, "MessageInfoDerSerializer");
-        break;
-    default:
-        free(classFullName);
-        printf("Unexpected C implementation cast to the Java implementation.");
-    }
-    return classFullName;
-}
-
-jobject wrapDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    char *classFullName = getDefaultsClassName(jenv, jobj, c_ctx);
-    jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
-    if (NULL == cls) {
-        printf("Class not found.");
-    }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
-    if (NULL == methodID) {
-        printf("Class has no constructor with C context parameter.");
-    }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
-}
-
 char* getKeyClassName (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     if (!vscf_key_is_implemented(c_ctx)) {
         printf("Given C implementation does not implement interface Key.");
@@ -1015,6 +939,9 @@ char* getEntropySourceClassName (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     case vscf_impl_tag_FAKE_RANDOM:
         strcat (classFullName, "FakeRandom");
         break;
+    case vscf_impl_tag_SEED_ENTROPY_SOURCE:
+        strcat (classFullName, "SeedEntropySource");
+        break;
     default:
         free(classFullName);
         printf("Unexpected C implementation cast to the Java implementation.");
@@ -1049,6 +976,9 @@ char* getRandomClassName (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
         break;
     case vscf_impl_tag_FAKE_RANDOM:
         strcat (classFullName, "FakeRandom");
+        break;
+    case vscf_impl_tag_KEY_MATERIAL_RNG:
+        strcat (classFullName, "KeyMaterialRng");
         break;
     default:
         free(classFullName);
@@ -2089,7 +2019,9 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_algFactory
 }
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_algFactory_1createPublicKeyFromRawKey (JNIEnv *jenv, jobject jobj, jobject jrawKey) {
-    // Wrap Java classes
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);// Wrap Java classes
     jclass raw_key_cls = (*jenv)->FindClass(jenv, "virgil/crypto/foundation/RawKey");
     if (NULL == raw_key_cls) {
         printf("Class RawKey not found.");
@@ -2100,14 +2032,20 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_algFactory
     }
     vscf_raw_key_t * /*5*/ raw_key = (vscf_raw_key_t * /*5*/) (*jenv)->GetLongField(jenv, jrawKey, raw_key_fidCtx);
 
-    vscf_impl_t */*6*/ proxyResult = vscf_alg_factory_create_public_key_from_raw_key(raw_key /*3*/);
+    vscf_impl_t */*6*/ proxyResult = vscf_alg_factory_create_public_key_from_raw_key(raw_key /*3*/, &error /*2*/);
+
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+    }
     // TDB interface
     jobject ret = wrapPublicKey(jenv, jobj, proxyResult);
     return ret;
 }
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_algFactory_1createPrivateKeyFromRawKey (JNIEnv *jenv, jobject jobj, jobject jrawKey) {
-    // Wrap Java classes
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);// Wrap Java classes
     jclass raw_key_cls = (*jenv)->FindClass(jenv, "virgil/crypto/foundation/RawKey");
     if (NULL == raw_key_cls) {
         printf("Class RawKey not found.");
@@ -2118,7 +2056,11 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_algFactory
     }
     vscf_raw_key_t * /*5*/ raw_key = (vscf_raw_key_t * /*5*/) (*jenv)->GetLongField(jenv, jrawKey, raw_key_fidCtx);
 
-    vscf_impl_t */*6*/ proxyResult = vscf_alg_factory_create_private_key_from_raw_key(raw_key /*3*/);
+    vscf_impl_t */*6*/ proxyResult = vscf_alg_factory_create_private_key_from_raw_key(raw_key /*3*/, &error /*2*/);
+
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+    }
     // TDB interface
     jobject ret = wrapPrivateKey(jenv, jobj, proxyResult);
     return ret;
@@ -3871,19 +3813,19 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPublicKey_
     vscf_rsa_public_key_use_asn1wr((vscf_impl_t */*6*/ *) c_ctx, asn1wr);
 }
 
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPublicKey_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_status_t status = vscf_rsa_public_key_setup_defaults((vscf_rsa_public_key_t /*7*/ *) c_ctx /*1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+    }
+}
+
 JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPublicKey_1new (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscf_rsa_public_key_new();
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPublicKey_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_rsa_public_key_delete((vscf_rsa_public_key_t /*7*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPublicKey_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_status_t status = vscf_rsa_public_key_setup_defaults((vscf_rsa_public_key_t /*7*/ *) c_ctx /*1*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
 }
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPublicKey_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -4067,6 +4009,13 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey
     vscf_rsa_private_key_use_asn1wr((vscf_impl_t */*6*/ *) c_ctx, asn1wr);
 }
 
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_status_t status = vscf_rsa_private_key_setup_defaults((vscf_rsa_private_key_t /*7*/ *) c_ctx /*1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+    }
+}
+
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey_1setKeygenParams (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jbitlen, jint jexponent) {
     vscf_rsa_private_key_set_keygen_params((vscf_rsa_private_key_t /*7*/ *) c_ctx /*1*/, jbitlen /*4*/, jexponent /*4*/);
 }
@@ -4077,13 +4026,6 @@ JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKe
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_rsa_private_key_delete((vscf_rsa_private_key_t /*7*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_status_t status = vscf_rsa_private_key_setup_defaults((vscf_rsa_private_key_t /*7*/ *) c_ctx /*1*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
 }
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -4233,6 +4175,10 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey
     }
 }
 
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_entropyAccumulator_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_entropy_accumulator_setup_defaults((vscf_entropy_accumulator_t /*7*/ *) c_ctx /*1*/);
+}
+
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_entropyAccumulator_1addSource (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jsource, jint jthreshold) {
     // Wrap Java interfaces
     jclass source_cls = (*jenv)->GetObjectClass(jenv, jsource);
@@ -4254,13 +4200,6 @@ JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_entropyAccum
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_entropyAccumulator_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_entropy_accumulator_delete((vscf_entropy_accumulator_t /*7*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_entropyAccumulator_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_status_t status = vscf_entropy_accumulator_setup_defaults((vscf_entropy_accumulator_t /*7*/ *) c_ctx /*1*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
 }
 
 JNIEXPORT jboolean JNICALL Java_virgil_crypto_foundation_FoundationJNI_entropyAccumulator_1isStrong (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -4302,6 +4241,13 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ctrDrbg_1setE
     }
 }
 
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ctrDrbg_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_status_t status = vscf_ctr_drbg_setup_defaults((vscf_ctr_drbg_t /*7*/ *) c_ctx /*1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+    }
+}
+
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ctrDrbg_1enablePredictionResistance (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_ctr_drbg_enable_prediction_resistance((vscf_ctr_drbg_t /*7*/ *) c_ctx /*1*/);
 }
@@ -4320,13 +4266,6 @@ JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_ctrDrbg_1new
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ctrDrbg_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_ctr_drbg_delete((vscf_ctr_drbg_t /*7*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ctrDrbg_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_status_t status = vscf_ctr_drbg_setup_defaults((vscf_ctr_drbg_t /*7*/ *) c_ctx /*1*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
 }
 
 JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_ctrDrbg_1random (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
@@ -4814,19 +4753,16 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1
     vscf_pkcs5_pbkdf2_use_hmac((vscf_impl_t */*6*/ *) c_ctx, hmac);
 }
 
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_pkcs5_pbkdf2_setup_defaults((vscf_pkcs5_pbkdf2_t /*7*/ *) c_ctx /*1*/);
+}
+
 JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1new (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscf_pkcs5_pbkdf2_new();
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_pkcs5_pbkdf2_delete((vscf_pkcs5_pbkdf2_t /*7*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_status_t status = vscf_pkcs5_pbkdf2_setup_defaults((vscf_pkcs5_pbkdf2_t /*7*/ *) c_ctx /*1*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
 }
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -5041,6 +4977,84 @@ JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs5Pbes2_1d
     return ret;
 }
 
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_seedEntropySource_1resetSeed (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jseed) {
+    // Wrap input data
+    vsc_data_t seed = vsc_data(
+        (*jenv)->GetByteArrayElements(jenv, jseed, NULL),
+        (*jenv)->GetArrayLength(jenv, jseed));
+
+    vscf_seed_entropy_source_reset_seed((vscf_seed_entropy_source_t /*7*/ *) c_ctx /*1*/, seed /*1*/);
+}
+
+JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_seedEntropySource_1new (JNIEnv *jenv, jobject jobj) {
+    return (jlong) vscf_seed_entropy_source_new();
+}
+
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_seedEntropySource_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_seed_entropy_source_delete((vscf_seed_entropy_source_t /*7*/ *) c_ctx /*5*/);
+}
+
+JNIEXPORT jboolean JNICALL Java_virgil_crypto_foundation_FoundationJNI_seedEntropySource_1isStrong (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    jboolean ret = vscf_seed_entropy_source_is_strong((vscf_seed_entropy_source_t /*7*/ *) c_ctx /*1*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_seedEntropySource_1gather (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jlen) {
+    // Wrap input buffers
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(jlen);
+
+    vscf_status_t status = vscf_seed_entropy_source_gather((vscf_seed_entropy_source_t /*7*/ *) c_ctx /*1*/, jlen /*4*/, out /*1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), vsc_buffer_bytes(out));
+    // Free resources
+    vsc_buffer_delete(out);
+
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyMaterialRng_1resetKeyMaterial (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jkeyMaterial) {
+    // Wrap input data
+    vsc_data_t key_material = vsc_data(
+        (*jenv)->GetByteArrayElements(jenv, jkeyMaterial, NULL),
+        (*jenv)->GetArrayLength(jenv, jkeyMaterial));
+
+    vscf_key_material_rng_reset_key_material((vscf_key_material_rng_t /*7*/ *) c_ctx /*1*/, key_material /*1*/);
+}
+
+JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyMaterialRng_1new (JNIEnv *jenv, jobject jobj) {
+    return (jlong) vscf_key_material_rng_new();
+}
+
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyMaterialRng_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_key_material_rng_delete((vscf_key_material_rng_t /*7*/ *) c_ctx /*5*/);
+}
+
+JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyMaterialRng_1random (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Wrap input buffers
+    vsc_buffer_t *data = vsc_buffer_new_with_capacity(jdataLen);
+
+    vscf_status_t status = vscf_key_material_rng_random((vscf_key_material_rng_t /*7*/ *) c_ctx /*1*/, jdataLen /*4*/, data /*1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(data));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(data), vsc_buffer_bytes(data));
+    // Free resources
+    vsc_buffer_delete(data);
+
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyMaterialRng_1reseed (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_status_t status = vscf_key_material_rng_reseed((vscf_key_material_rng_t /*7*/ *) c_ctx /*1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+    }
+}
+
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerSerializer_1setAsn1Writer (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jasn1Writer) {
     jclass asn1_writer_cls = (*jenv)->GetObjectClass(jenv, jasn1Writer);
     if (NULL == asn1_writer_cls) {
@@ -5054,6 +5068,10 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerSeria
 
     vscf_pkcs8_der_serializer_release_asn1_writer((vscf_impl_t */*6*/ *) c_ctx);
     vscf_pkcs8_der_serializer_use_asn1_writer((vscf_impl_t */*6*/ *) c_ctx, asn1_writer);
+}
+
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerSerializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_pkcs8_der_serializer_setup_defaults((vscf_pkcs8_der_serializer_t /*7*/ *) c_ctx /*1*/);
 }
 
 JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerSerializer_1serializePublicKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
@@ -5106,13 +5124,6 @@ JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerSeri
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerSerializer_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_pkcs8_der_serializer_delete((vscf_pkcs8_der_serializer_t /*7*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerSerializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_status_t status = vscf_pkcs8_der_serializer_setup_defaults((vscf_pkcs8_der_serializer_t /*7*/ *) c_ctx /*1*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
 }
 
 JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerSerializer_1serializedPublicKeyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
@@ -5216,6 +5227,10 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerDeser
     vscf_pkcs8_der_deserializer_use_asn1_reader((vscf_impl_t */*6*/ *) c_ctx, asn1_reader);
 }
 
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerDeserializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_pkcs8_der_deserializer_setup_defaults((vscf_pkcs8_der_deserializer_t /*7*/ *) c_ctx /*1*/);
+}
+
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerDeserializer_1deserializePublicKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Wrap errors
     struct vscf_error_t /*4*/ error;
@@ -5264,13 +5279,6 @@ JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerDese
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerDeserializer_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_pkcs8_der_deserializer_delete((vscf_pkcs8_der_deserializer_t /*7*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerDeserializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_status_t status = vscf_pkcs8_der_deserializer_setup_defaults((vscf_pkcs8_der_deserializer_t /*7*/ *) c_ctx /*1*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
 }
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerDeserializer_1deserializePublicKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jpublicKeyData) {
@@ -5355,19 +5363,16 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8Serializ
     vscf_pkcs8_serializer_use_der_serializer((vscf_impl_t */*6*/ *) c_ctx, der_serializer);
 }
 
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8Serializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_pkcs8_serializer_setup_defaults((vscf_pkcs8_serializer_t /*7*/ *) c_ctx /*1*/);
+}
+
 JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8Serializer_1new (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscf_pkcs8_serializer_new();
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8Serializer_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_pkcs8_serializer_delete((vscf_pkcs8_serializer_t /*7*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8Serializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_status_t status = vscf_pkcs8_serializer_setup_defaults((vscf_pkcs8_serializer_t /*7*/ *) c_ctx /*1*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
 }
 
 JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8Serializer_1serializedPublicKeyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
@@ -5486,19 +5491,16 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8Deserial
     vscf_pkcs8_deserializer_use_der_deserializer((vscf_impl_t */*6*/ *) c_ctx, der_deserializer);
 }
 
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8Deserializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_pkcs8_deserializer_setup_defaults((vscf_pkcs8_deserializer_t /*7*/ *) c_ctx /*1*/);
+}
+
 JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8Deserializer_1new (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscf_pkcs8_deserializer_new();
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8Deserializer_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_pkcs8_deserializer_delete((vscf_pkcs8_deserializer_t /*7*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8Deserializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_status_t status = vscf_pkcs8_deserializer_setup_defaults((vscf_pkcs8_deserializer_t /*7*/ *) c_ctx /*1*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
 }
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8Deserializer_1deserializePublicKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jpublicKeyData) {
@@ -5583,19 +5585,19 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519Public
     vscf_ed25519_public_key_use_ecies((vscf_impl_t */*6*/ *) c_ctx, ecies);
 }
 
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519PublicKey_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_status_t status = vscf_ed25519_public_key_setup_defaults((vscf_ed25519_public_key_t /*7*/ *) c_ctx /*1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+    }
+}
+
 JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519PublicKey_1new (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscf_ed25519_public_key_new();
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519PublicKey_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_ed25519_public_key_delete((vscf_ed25519_public_key_t /*7*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519PublicKey_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_status_t status = vscf_ed25519_public_key_setup_defaults((vscf_ed25519_public_key_t /*7*/ *) c_ctx /*1*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
 }
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519PublicKey_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -5764,19 +5766,19 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519Privat
     vscf_ed25519_private_key_use_ecies((vscf_impl_t */*6*/ *) c_ctx, ecies);
 }
 
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519PrivateKey_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_status_t status = vscf_ed25519_private_key_setup_defaults((vscf_ed25519_private_key_t /*7*/ *) c_ctx /*1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+    }
+}
+
 JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519PrivateKey_1new (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscf_ed25519_private_key_new();
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519PrivateKey_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_ed25519_private_key_delete((vscf_ed25519_private_key_t /*7*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519PrivateKey_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_status_t status = vscf_ed25519_private_key_setup_defaults((vscf_ed25519_private_key_t /*7*/ *) c_ctx /*1*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
 }
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519PrivateKey_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -5988,19 +5990,19 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519Pub
     vscf_curve25519_public_key_use_ecies((vscf_impl_t */*6*/ *) c_ctx, ecies);
 }
 
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519PublicKey_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_status_t status = vscf_curve25519_public_key_setup_defaults((vscf_curve25519_public_key_t /*7*/ *) c_ctx /*1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+    }
+}
+
 JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519PublicKey_1new (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscf_curve25519_public_key_new();
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519PublicKey_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_curve25519_public_key_delete((vscf_curve25519_public_key_t /*7*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519PublicKey_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_status_t status = vscf_curve25519_public_key_setup_defaults((vscf_curve25519_public_key_t /*7*/ *) c_ctx /*1*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
 }
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519PublicKey_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -6155,19 +6157,19 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519Pri
     vscf_curve25519_private_key_use_ecies((vscf_impl_t */*6*/ *) c_ctx, ecies);
 }
 
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519PrivateKey_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_status_t status = vscf_curve25519_private_key_setup_defaults((vscf_curve25519_private_key_t /*7*/ *) c_ctx /*1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+    }
+}
+
 JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519PrivateKey_1new (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscf_curve25519_private_key_new();
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519PrivateKey_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_curve25519_private_key_delete((vscf_curve25519_private_key_t /*7*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519PrivateKey_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_status_t status = vscf_curve25519_private_key_setup_defaults((vscf_curve25519_private_key_t /*7*/ *) c_ctx /*1*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
 }
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519PrivateKey_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -6429,19 +6431,19 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ecies_1setEph
     vscf_ecies_use_ephemeral_key((vscf_impl_t */*6*/ *) c_ctx, ephemeral_key);
 }
 
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ecies_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_status_t status = vscf_ecies_setup_defaults((vscf_ecies_t /*7*/ *) c_ctx /*1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+    }
+}
+
 JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_ecies_1new (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscf_ecies_new();
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ecies_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_ecies_delete((vscf_ecies_t /*7*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ecies_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_status_t status = vscf_ecies_setup_defaults((vscf_ecies_t /*7*/ *) c_ctx /*1*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
 }
 
 JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_ecies_1encrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
@@ -6671,6 +6673,10 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_algInfoDerSer
     vscf_alg_info_der_serializer_use_asn1_writer((vscf_impl_t */*6*/ *) c_ctx, asn1_writer);
 }
 
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_algInfoDerSerializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_alg_info_der_serializer_setup_defaults((vscf_alg_info_der_serializer_t /*7*/ *) c_ctx /*1*/);
+}
+
 JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializeInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
     // Wrap Java interfaces
     jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
@@ -6693,13 +6699,6 @@ JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_algInfoDerSe
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_algInfoDerSerializer_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_alg_info_der_serializer_delete((vscf_alg_info_der_serializer_t /*7*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_algInfoDerSerializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_status_t status = vscf_alg_info_der_serializer_setup_defaults((vscf_alg_info_der_serializer_t /*7*/ *) c_ctx /*1*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
 }
 
 JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
@@ -6757,6 +6756,10 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_algInfoDerDes
     vscf_alg_info_der_deserializer_use_asn1_reader((vscf_impl_t */*6*/ *) c_ctx, asn1_reader);
 }
 
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_alg_info_der_deserializer_setup_defaults((vscf_alg_info_der_deserializer_t /*7*/ *) c_ctx /*1*/);
+}
+
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1deserializeInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Wrap errors
     struct vscf_error_t /*4*/ error;
@@ -6777,13 +6780,6 @@ JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_algInfoDerDe
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_alg_info_der_deserializer_delete((vscf_alg_info_der_deserializer_t /*7*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_status_t status = vscf_alg_info_der_deserializer_setup_defaults((vscf_alg_info_der_deserializer_t /*7*/ *) c_ctx /*1*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
 }
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1deserialize (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
@@ -6817,10 +6813,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_messageInfoDe
     vscf_impl_t */*6*/ asn1_reader = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jasn1Reader, asn1_reader_fidCtx);
 
     vscf_message_info_der_serializer_release_asn1_reader((vscf_impl_t */*6*/ *) c_ctx);
-    vscf_status_t status = vscf_message_info_der_serializer_use_asn1_reader((vscf_impl_t */*6*/ *) c_ctx, asn1_reader);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
+    vscf_message_info_der_serializer_use_asn1_reader((vscf_impl_t */*6*/ *) c_ctx, asn1_reader);
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1setAsn1Writer (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jasn1Writer) {
@@ -6835,10 +6828,11 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_messageInfoDe
     vscf_impl_t */*6*/ asn1_writer = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jasn1Writer, asn1_writer_fidCtx);
 
     vscf_message_info_der_serializer_release_asn1_writer((vscf_impl_t */*6*/ *) c_ctx);
-    vscf_status_t status = vscf_message_info_der_serializer_use_asn1_writer((vscf_impl_t */*6*/ *) c_ctx, asn1_writer);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
+    vscf_message_info_der_serializer_use_asn1_writer((vscf_impl_t */*6*/ *) c_ctx, asn1_writer);
+}
+
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_message_info_der_serializer_setup_defaults((vscf_message_info_der_serializer_t /*7*/ *) c_ctx /*1*/);
 }
 
 JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1new (JNIEnv *jenv, jobject jobj) {
@@ -6847,13 +6841,6 @@ JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_messageInfoD
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_message_info_der_serializer_delete((vscf_message_info_der_serializer_t /*7*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_status_t status = vscf_message_info_der_serializer_setup_defaults((vscf_message_info_der_serializer_t /*7*/ *) c_ctx /*1*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-    }
 }
 
 JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {

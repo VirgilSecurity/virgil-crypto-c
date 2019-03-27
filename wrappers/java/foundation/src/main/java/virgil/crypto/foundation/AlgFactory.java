@@ -79,14 +79,14 @@ public class AlgFactory {
     /*
     * Create algorithm that implements "public key" interface.
     */
-    public static PublicKey createPublicKeyFromRawKey(RawKey rawKey) {
+    public static PublicKey createPublicKeyFromRawKey(RawKey rawKey) throws FoundationException {
         return FoundationJNI.INSTANCE.algFactory_createPublicKeyFromRawKey(rawKey);
     }
 
     /*
     * Create algorithm that implements "private key" interface.
     */
-    public static PrivateKey createPrivateKeyFromRawKey(RawKey rawKey) {
+    public static PrivateKey createPrivateKeyFromRawKey(RawKey rawKey) throws FoundationException {
         return FoundationJNI.INSTANCE.algFactory_createPrivateKeyFromRawKey(rawKey);
     }
 }

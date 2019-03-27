@@ -19,12 +19,14 @@ public class PheClientTest {
 	@Before
 	public void setup() {
 		this.client = new PheClient();
+		this.client.setupDefaults();
 		assertTrue("C context should be set", this.client.cCtx > 0);
 
 		this.server = new PheServer();
+		this.server.setupDefaults();
 		assertTrue("C context should be set", this.server.cCtx > 0);
 	}
-	
+
 	@After
 	public void teardown() {
 		this.client.close();

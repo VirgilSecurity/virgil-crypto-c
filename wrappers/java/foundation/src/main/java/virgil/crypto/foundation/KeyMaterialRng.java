@@ -37,84 +37,67 @@
 package virgil.crypto.foundation;
 
 /*
-* Virgil Security implementation of the PBKDF2 (RFC 8018) algorithm.
+* Random number generator that generate deterministic sequence based
+* on a given seed.
+* This RNG can be used to transform key material rial to the private key.
 */
-public class Pkcs5Pbkdf2 implements AutoCloseable, Alg, Kdf, SaltedKdf {
+public class KeyMaterialRng implements AutoCloseable, Random {
 
     public long cCtx;
 
     /* Create underlying C context. */
-    public Pkcs5Pbkdf2() {
+    public KeyMaterialRng() {
         super();
-        this.cCtx = FoundationJNI.INSTANCE.pkcs5Pbkdf2_new();
+        this.cCtx = FoundationJNI.INSTANCE.keyMaterialRng_new();
     }
 
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Pkcs5Pbkdf2(long cCtx) {
+    public KeyMaterialRng(long cCtx) {
         super();
         this.cCtx = cCtx;
     }
 
-    public void setHmac(Mac hmac) {
-        FoundationJNI.INSTANCE.pkcs5Pbkdf2_setHmac(this.cCtx, hmac);
+    /*
+    * Minimum length in bytes for the key material.
+    */
+    public int getKeyMaterialLenMin() {
+        return 32;
     }
 
     /*
-    * Setup predefined values to the uninitialized class dependencies.
+    * Maximum length in bytes for the key material.
     */
-    public void setupDefaults() {
-        FoundationJNI.INSTANCE.pkcs5Pbkdf2_setupDefaults(this.cCtx);
+    public int getKeyMaterialLenMax() {
+        return 512;
+    }
+
+    /*
+    * Set a new key material.
+    */
+    public void resetKeyMaterial(byte[] keyMaterial) {
+        FoundationJNI.INSTANCE.keyMaterialRng_resetKeyMaterial(this.cCtx, keyMaterial);
     }
 
     /* Close resource. */
     public void close() {
-        FoundationJNI.INSTANCE.pkcs5Pbkdf2_close(this.cCtx);
+        FoundationJNI.INSTANCE.keyMaterialRng_close(this.cCtx);
     }
 
     /*
-    * Provide algorithm identificator.
+    * Generate random bytes.
     */
-    public AlgId algId() {
-        return FoundationJNI.INSTANCE.pkcs5Pbkdf2_algId(this.cCtx);
+    public byte[] random(int dataLen) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyMaterialRng_random(this.cCtx, dataLen);
     }
 
     /*
-    * Produce object with algorithm information and configuration parameters.
+    * Retreive new seed data from the entropy sources.
     */
-    public AlgInfo produceAlgInfo() {
-        return FoundationJNI.INSTANCE.pkcs5Pbkdf2_produceAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Restore algorithm configuration from the given object.
-    */
-    public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
-        FoundationJNI.INSTANCE.pkcs5Pbkdf2_restoreAlgInfo(this.cCtx, algInfo);
-    }
-
-    /*
-    * Derive key of the requested length from the given data.
-    */
-    public byte[] derive(byte[] data, int keyLen) {
-        return FoundationJNI.INSTANCE.pkcs5Pbkdf2_derive(this.cCtx, data, keyLen);
-    }
-
-    /*
-    * Prepare algorithm to derive new key.
-    */
-    public void reset(byte[] salt, int iterationCount) {
-        FoundationJNI.INSTANCE.pkcs5Pbkdf2_reset(this.cCtx, salt, iterationCount);
-    }
-
-    /*
-    * Setup application specific information (optional).
-    * Can be empty.
-    */
-    public void setInfo(byte[] info) {
-        FoundationJNI.INSTANCE.pkcs5Pbkdf2_setInfo(this.cCtx, info);
+    public void reseed() throws FoundationException {
+        FoundationJNI.INSTANCE.keyMaterialRng_reseed(this.cCtx);
     }
 }
 

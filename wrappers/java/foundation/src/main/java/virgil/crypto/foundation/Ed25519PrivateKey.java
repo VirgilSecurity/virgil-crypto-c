@@ -39,7 +39,7 @@ package virgil.crypto.foundation;
 /*
 * This is implementation of ED25519 private key
 */
-public class Ed25519PrivateKey implements AutoCloseable, Defaults, Alg, Key, GenerateKey, Decrypt, SignHash, PrivateKey, ComputeSharedKey {
+public class Ed25519PrivateKey implements AutoCloseable, Alg, Key, GenerateKey, Decrypt, SignHash, PrivateKey, ComputeSharedKey {
 
     public long cCtx;
 
@@ -66,16 +66,16 @@ public class Ed25519PrivateKey implements AutoCloseable, Defaults, Alg, Key, Gen
         FoundationJNI.INSTANCE.ed25519PrivateKey_setEcies(this.cCtx, ecies);
     }
 
-    /* Close resource. */
-    public void close() {
-        FoundationJNI.INSTANCE.ed25519PrivateKey_close(this.cCtx);
-    }
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.ed25519PrivateKey_setupDefaults(this.cCtx);
+    }
+
+    /* Close resource. */
+    public void close() {
+        FoundationJNI.INSTANCE.ed25519PrivateKey_close(this.cCtx);
     }
 
     /*

@@ -366,12 +366,12 @@ public class FoundationJNI {
     /*
     * Create algorithm that implements "public key" interface.
     */
-    public native PublicKey algFactory_createPublicKeyFromRawKey(RawKey rawKey);
+    public native PublicKey algFactory_createPublicKeyFromRawKey(RawKey rawKey) throws FoundationException;
 
     /*
     * Create algorithm that implements "private key" interface.
     */
-    public native PrivateKey algFactory_createPrivateKeyFromRawKey(RawKey rawKey);
+    public native PrivateKey algFactory_createPrivateKeyFromRawKey(RawKey rawKey) throws FoundationException;
 
     public native long recipientCipher_new();
 
@@ -1293,14 +1293,14 @@ public class FoundationJNI {
 
     public native void rsaPublicKey_setAsn1wr(long cCtx, Asn1Writer asn1wr);
 
-    public native long rsaPublicKey_new();
-
-    public native void rsaPublicKey_close(long cCtx);
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
     public native void rsaPublicKey_setupDefaults(long cCtx) throws FoundationException;
+
+    public native long rsaPublicKey_new();
+
+    public native void rsaPublicKey_close(long cCtx);
 
     /*
     * Provide algorithm identificator.
@@ -1377,6 +1377,11 @@ public class FoundationJNI {
     public native void rsaPrivateKey_setAsn1wr(long cCtx, Asn1Writer asn1wr);
 
     /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public native void rsaPrivateKey_setupDefaults(long cCtx) throws FoundationException;
+
+    /*
     * Setup parameters that is used during key generation.
     */
     public native void rsaPrivateKey_setKeygenParams(long cCtx, int bitlen, int exponent);
@@ -1384,11 +1389,6 @@ public class FoundationJNI {
     public native long rsaPrivateKey_new();
 
     public native void rsaPrivateKey_close(long cCtx);
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public native void rsaPrivateKey_setupDefaults(long cCtx) throws FoundationException;
 
     /*
     * Provide algorithm identificator.
@@ -1470,6 +1470,11 @@ public class FoundationJNI {
     public native void rsaPrivateKey_importPrivateKey(long cCtx, byte[] data) throws FoundationException;
 
     /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public native void entropyAccumulator_setupDefaults(long cCtx);
+
+    /*
     * Add given entropy source to the accumulator.
     * Threshold defines minimum number of bytes that must be gathered
     * from the source during accumulation.
@@ -1479,11 +1484,6 @@ public class FoundationJNI {
     public native long entropyAccumulator_new();
 
     public native void entropyAccumulator_close(long cCtx);
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public native void entropyAccumulator_setupDefaults(long cCtx) throws FoundationException;
 
     /*
     * Defines that implemented source is strong.
@@ -1496,6 +1496,11 @@ public class FoundationJNI {
     public native byte[] entropyAccumulator_gather(long cCtx, int len) throws FoundationException;
 
     public native void ctrDrbg_setEntropySource(long cCtx, EntropySource entropySource) throws FoundationException;
+
+    /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public native void ctrDrbg_setupDefaults(long cCtx) throws FoundationException;
 
     /*
     * Force entropy to be gathered at the beginning of every call to
@@ -1519,11 +1524,6 @@ public class FoundationJNI {
     public native long ctrDrbg_new();
 
     public native void ctrDrbg_close(long cCtx);
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public native void ctrDrbg_setupDefaults(long cCtx) throws FoundationException;
 
     /*
     * Generate random bytes.
@@ -1713,14 +1713,14 @@ public class FoundationJNI {
 
     public native void pkcs5Pbkdf2_setHmac(long cCtx, Mac hmac);
 
-    public native long pkcs5Pbkdf2_new();
-
-    public native void pkcs5Pbkdf2_close(long cCtx);
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
-    public native void pkcs5Pbkdf2_setupDefaults(long cCtx) throws FoundationException;
+    public native void pkcs5Pbkdf2_setupDefaults(long cCtx);
+
+    public native long pkcs5Pbkdf2_new();
+
+    public native void pkcs5Pbkdf2_close(long cCtx);
 
     /*
     * Provide algorithm identificator.
@@ -1801,7 +1801,50 @@ public class FoundationJNI {
     */
     public native int pkcs5Pbes2_decryptedLen(long cCtx, int dataLen);
 
+    /*
+    * Set a new seed as an entropy source.
+    */
+    public native void seedEntropySource_resetSeed(long cCtx, byte[] seed);
+
+    public native long seedEntropySource_new();
+
+    public native void seedEntropySource_close(long cCtx);
+
+    /*
+    * Defines that implemented source is strong.
+    */
+    public native boolean seedEntropySource_isStrong(long cCtx);
+
+    /*
+    * Gather entropy of the requested length.
+    */
+    public native byte[] seedEntropySource_gather(long cCtx, int len) throws FoundationException;
+
+    /*
+    * Set a new key material.
+    */
+    public native void keyMaterialRng_resetKeyMaterial(long cCtx, byte[] keyMaterial);
+
+    public native long keyMaterialRng_new();
+
+    public native void keyMaterialRng_close(long cCtx);
+
+    /*
+    * Generate random bytes.
+    */
+    public native byte[] keyMaterialRng_random(long cCtx, int dataLen) throws FoundationException;
+
+    /*
+    * Retreive new seed data from the entropy sources.
+    */
+    public native void keyMaterialRng_reseed(long cCtx) throws FoundationException;
+
     public native void pkcs8DerSerializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
+
+    /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public native void pkcs8DerSerializer_setupDefaults(long cCtx);
 
     /*
     * Serialize Public Key by using internal ASN.1 writer.
@@ -1820,11 +1863,6 @@ public class FoundationJNI {
     public native long pkcs8DerSerializer_new();
 
     public native void pkcs8DerSerializer_close(long cCtx);
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public native void pkcs8DerSerializer_setupDefaults(long cCtx) throws FoundationException;
 
     /*
     * Calculate buffer size enough to hold serialized public key.
@@ -1857,6 +1895,11 @@ public class FoundationJNI {
     public native void pkcs8DerDeserializer_setAsn1Reader(long cCtx, Asn1Reader asn1Reader);
 
     /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public native void pkcs8DerDeserializer_setupDefaults(long cCtx);
+
+    /*
     * Deserialize Public Key by using internal ASN.1 reader.
     * Note, that caller code is responsible to reset ASN.1 reader with
     * an input buffer.
@@ -1875,11 +1918,6 @@ public class FoundationJNI {
     public native void pkcs8DerDeserializer_close(long cCtx);
 
     /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public native void pkcs8DerDeserializer_setupDefaults(long cCtx) throws FoundationException;
-
-    /*
     * Deserialize given public key as an interchangeable format to the object.
     */
     public native RawKey pkcs8DerDeserializer_deserializePublicKey(long cCtx, byte[] publicKeyData) throws FoundationException;
@@ -1893,14 +1931,14 @@ public class FoundationJNI {
 
     public native void pkcs8Serializer_setDerSerializer(long cCtx, KeySerializer derSerializer);
 
-    public native long pkcs8Serializer_new();
-
-    public native void pkcs8Serializer_close(long cCtx);
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
-    public native void pkcs8Serializer_setupDefaults(long cCtx) throws FoundationException;
+    public native void pkcs8Serializer_setupDefaults(long cCtx);
+
+    public native long pkcs8Serializer_new();
+
+    public native void pkcs8Serializer_close(long cCtx);
 
     /*
     * Calculate buffer size enough to hold serialized public key.
@@ -1934,14 +1972,14 @@ public class FoundationJNI {
 
     public native void pkcs8Deserializer_setDerDeserializer(long cCtx, KeyDeserializer derDeserializer);
 
-    public native long pkcs8Deserializer_new();
-
-    public native void pkcs8Deserializer_close(long cCtx);
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
-    public native void pkcs8Deserializer_setupDefaults(long cCtx) throws FoundationException;
+    public native void pkcs8Deserializer_setupDefaults(long cCtx);
+
+    public native long pkcs8Deserializer_new();
+
+    public native void pkcs8Deserializer_close(long cCtx);
 
     /*
     * Deserialize given public key as an interchangeable format to the object.
@@ -1957,14 +1995,14 @@ public class FoundationJNI {
 
     public native void ed25519PublicKey_setEcies(long cCtx, Ecies ecies);
 
-    public native long ed25519PublicKey_new();
-
-    public native void ed25519PublicKey_close(long cCtx);
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
     public native void ed25519PublicKey_setupDefaults(long cCtx) throws FoundationException;
+
+    public native long ed25519PublicKey_new();
+
+    public native void ed25519PublicKey_close(long cCtx);
 
     /*
     * Provide algorithm identificator.
@@ -2038,14 +2076,14 @@ public class FoundationJNI {
 
     public native void ed25519PrivateKey_setEcies(long cCtx, Ecies ecies);
 
-    public native long ed25519PrivateKey_new();
-
-    public native void ed25519PrivateKey_close(long cCtx);
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
     public native void ed25519PrivateKey_setupDefaults(long cCtx) throws FoundationException;
+
+    public native long ed25519PrivateKey_new();
+
+    public native void ed25519PrivateKey_close(long cCtx);
 
     /*
     * Provide algorithm identificator.
@@ -2141,14 +2179,14 @@ public class FoundationJNI {
 
     public native void curve25519PublicKey_setEcies(long cCtx, Ecies ecies);
 
-    public native long curve25519PublicKey_new();
-
-    public native void curve25519PublicKey_close(long cCtx);
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
     public native void curve25519PublicKey_setupDefaults(long cCtx) throws FoundationException;
+
+    public native long curve25519PublicKey_new();
+
+    public native void curve25519PublicKey_close(long cCtx);
 
     /*
     * Provide algorithm identificator.
@@ -2217,14 +2255,14 @@ public class FoundationJNI {
 
     public native void curve25519PrivateKey_setEcies(long cCtx, Ecies ecies);
 
-    public native long curve25519PrivateKey_new();
-
-    public native void curve25519PrivateKey_close(long cCtx);
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
     public native void curve25519PrivateKey_setupDefaults(long cCtx) throws FoundationException;
+
+    public native long curve25519PrivateKey_new();
+
+    public native void curve25519PrivateKey_close(long cCtx);
 
     /*
     * Provide algorithm identificator.
@@ -2339,14 +2377,14 @@ public class FoundationJNI {
     */
     public native void ecies_setEphemeralKey(long cCtx, PrivateKey ephemeralKey);
 
-    public native long ecies_new();
-
-    public native void ecies_close(long cCtx);
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
     public native void ecies_setupDefaults(long cCtx) throws FoundationException;
+
+    public native long ecies_new();
+
+    public native void ecies_close(long cCtx);
 
     /*
     * Encrypt given data.
@@ -2462,6 +2500,11 @@ public class FoundationJNI {
     public native void algInfoDerSerializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
 
     /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public native void algInfoDerSerializer_setupDefaults(long cCtx);
+
+    /*
     * Serialize by using internal ASN.1 writer.
     * Note, that caller code is responsible to reset ASN.1 writer with
     * an output buffer.
@@ -2471,11 +2514,6 @@ public class FoundationJNI {
     public native long algInfoDerSerializer_new();
 
     public native void algInfoDerSerializer_close(long cCtx);
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public native void algInfoDerSerializer_setupDefaults(long cCtx) throws FoundationException;
 
     /*
     * Return buffer size enough to hold serialized algorithm.
@@ -2490,6 +2528,11 @@ public class FoundationJNI {
     public native void algInfoDerDeserializer_setAsn1Reader(long cCtx, Asn1Reader asn1Reader);
 
     /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public native void algInfoDerDeserializer_setupDefaults(long cCtx);
+
+    /*
     * Deserialize by using internal ASN.1 reader.
     * Note, that caller code is responsible to reset ASN.1 reader with
     * an input buffer.
@@ -2501,11 +2544,6 @@ public class FoundationJNI {
     public native void algInfoDerDeserializer_close(long cCtx);
 
     /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public native void algInfoDerDeserializer_setupDefaults(long cCtx) throws FoundationException;
-
-    /*
     * Deserialize algorithm from the data.
     */
     public native AlgInfo algInfoDerDeserializer_deserialize(long cCtx, byte[] data) throws FoundationException;
@@ -2514,14 +2552,14 @@ public class FoundationJNI {
 
     public native void messageInfoDerSerializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer) throws FoundationException;
 
-    public native long messageInfoDerSerializer_new();
-
-    public native void messageInfoDerSerializer_close(long cCtx);
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
-    public native void messageInfoDerSerializer_setupDefaults(long cCtx) throws FoundationException;
+    public native void messageInfoDerSerializer_setupDefaults(long cCtx);
+
+    public native long messageInfoDerSerializer_new();
+
+    public native void messageInfoDerSerializer_close(long cCtx);
 
     /*
     * Return buffer size enough to hold serialized message info.

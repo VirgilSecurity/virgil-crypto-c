@@ -37,84 +37,58 @@
 package virgil.crypto.foundation;
 
 /*
-* Virgil Security implementation of the PBKDF2 (RFC 8018) algorithm.
+* Deterministic entropy source that is based only on the given seed.
 */
-public class Pkcs5Pbkdf2 implements AutoCloseable, Alg, Kdf, SaltedKdf {
+public class SeedEntropySource implements AutoCloseable, EntropySource {
 
     public long cCtx;
 
     /* Create underlying C context. */
-    public Pkcs5Pbkdf2() {
+    public SeedEntropySource() {
         super();
-        this.cCtx = FoundationJNI.INSTANCE.pkcs5Pbkdf2_new();
+        this.cCtx = FoundationJNI.INSTANCE.seedEntropySource_new();
     }
 
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Pkcs5Pbkdf2(long cCtx) {
+    public SeedEntropySource(long cCtx) {
         super();
         this.cCtx = cCtx;
     }
 
-    public void setHmac(Mac hmac) {
-        FoundationJNI.INSTANCE.pkcs5Pbkdf2_setHmac(this.cCtx, hmac);
+    /*
+    * The maximum length of the entropy requested at once.
+    */
+    public int getGatherLenMax() {
+        return 48;
     }
 
     /*
-    * Setup predefined values to the uninitialized class dependencies.
+    * Set a new seed as an entropy source.
     */
-    public void setupDefaults() {
-        FoundationJNI.INSTANCE.pkcs5Pbkdf2_setupDefaults(this.cCtx);
+    public void resetSeed(byte[] seed) {
+        FoundationJNI.INSTANCE.seedEntropySource_resetSeed(this.cCtx, seed);
     }
 
     /* Close resource. */
     public void close() {
-        FoundationJNI.INSTANCE.pkcs5Pbkdf2_close(this.cCtx);
+        FoundationJNI.INSTANCE.seedEntropySource_close(this.cCtx);
     }
 
     /*
-    * Provide algorithm identificator.
+    * Defines that implemented source is strong.
     */
-    public AlgId algId() {
-        return FoundationJNI.INSTANCE.pkcs5Pbkdf2_algId(this.cCtx);
+    public boolean isStrong() {
+        return FoundationJNI.INSTANCE.seedEntropySource_isStrong(this.cCtx);
     }
 
     /*
-    * Produce object with algorithm information and configuration parameters.
+    * Gather entropy of the requested length.
     */
-    public AlgInfo produceAlgInfo() {
-        return FoundationJNI.INSTANCE.pkcs5Pbkdf2_produceAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Restore algorithm configuration from the given object.
-    */
-    public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
-        FoundationJNI.INSTANCE.pkcs5Pbkdf2_restoreAlgInfo(this.cCtx, algInfo);
-    }
-
-    /*
-    * Derive key of the requested length from the given data.
-    */
-    public byte[] derive(byte[] data, int keyLen) {
-        return FoundationJNI.INSTANCE.pkcs5Pbkdf2_derive(this.cCtx, data, keyLen);
-    }
-
-    /*
-    * Prepare algorithm to derive new key.
-    */
-    public void reset(byte[] salt, int iterationCount) {
-        FoundationJNI.INSTANCE.pkcs5Pbkdf2_reset(this.cCtx, salt, iterationCount);
-    }
-
-    /*
-    * Setup application specific information (optional).
-    * Can be empty.
-    */
-    public void setInfo(byte[] info) {
-        FoundationJNI.INSTANCE.pkcs5Pbkdf2_setInfo(this.cCtx, info);
+    public byte[] gather(int len) throws FoundationException {
+        return FoundationJNI.INSTANCE.seedEntropySource_gather(this.cCtx, len);
     }
 }
 

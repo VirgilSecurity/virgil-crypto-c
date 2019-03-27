@@ -667,7 +667,22 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Setup and check default and automatically resolved attributes.
 # ---------------------------------------------------------------------------
-function java_resolve (project, wrapper, projects_api)
+function java_resolve_toplevel (wrapper, license)
+    check_arguments (my, "wrapper, license", my)
+
+    echo_info ("Resolve <wrapper lang=\"$(my.wrapper.lang:)\"/> for toplevel", my)
+
+    assert_attribute (my.wrapper, "lang", my)
+
+    my.wrapper.source_dir = cat_path ("../wrappers/$(my.wrapper.lang:c,lower)")
+    copy my.license to my.wrapper
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Setup and check default and automatically resolved attributes.
+# ---------------------------------------------------------------------------
+function java_resolve_project (project, wrapper, projects_api)
     check_arguments (my, "project, wrapper, projects_api", my)
 
     echo_info ("Resolve <wrapper lang=\"$(my.wrapper.lang:)\"/> for project: '$(my.project.name:)'", my)
@@ -1267,7 +1282,7 @@ function java_create_method_from_dependency (dependency, impl, destination, wrap
         .name = java_derive_method_name_str (cat ("set", my.dependency.name))
         .visibility = "public"
 
-        if is_true (my.dependency.has_observers)
+        if is_true (my.dependency.has_observers) & is_true (my.dependency.is_observers_return_status)
             .throws = java_derive_default_exception_name (my.wrapper)
         endif
 

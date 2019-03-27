@@ -39,7 +39,7 @@ package virgil.crypto.foundation;
 /*
 * Implementation based on a simple entropy accumulator.
 */
-public class EntropyAccumulator implements AutoCloseable, Defaults, EntropySource {
+public class EntropyAccumulator implements AutoCloseable, EntropySource {
 
     public long cCtx;
 
@@ -63,6 +63,13 @@ public class EntropyAccumulator implements AutoCloseable, Defaults, EntropySourc
     }
 
     /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public void setupDefaults() {
+        FoundationJNI.INSTANCE.entropyAccumulator_setupDefaults(this.cCtx);
+    }
+
+    /*
     * Add given entropy source to the accumulator.
     * Threshold defines minimum number of bytes that must be gathered
     * from the source during accumulation.
@@ -74,13 +81,6 @@ public class EntropyAccumulator implements AutoCloseable, Defaults, EntropySourc
     /* Close resource. */
     public void close() {
         FoundationJNI.INSTANCE.entropyAccumulator_close(this.cCtx);
-    }
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public void setupDefaults() throws FoundationException {
-        FoundationJNI.INSTANCE.entropyAccumulator_setupDefaults(this.cCtx);
     }
 
     /*

@@ -36,7 +36,7 @@
 
 package virgil.crypto.foundation;
 
-public class RsaPublicKey implements AutoCloseable, Defaults, Alg, Key, Encrypt, VerifyHash, PublicKey, GenerateEphemeralKey {
+public class RsaPublicKey implements AutoCloseable, Alg, Key, Encrypt, VerifyHash, PublicKey, GenerateEphemeralKey {
 
     public long cCtx;
 
@@ -71,16 +71,16 @@ public class RsaPublicKey implements AutoCloseable, Defaults, Alg, Key, Encrypt,
         FoundationJNI.INSTANCE.rsaPublicKey_setAsn1wr(this.cCtx, asn1wr);
     }
 
-    /* Close resource. */
-    public void close() {
-        FoundationJNI.INSTANCE.rsaPublicKey_close(this.cCtx);
-    }
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.rsaPublicKey_setupDefaults(this.cCtx);
+    }
+
+    /* Close resource. */
+    public void close() {
+        FoundationJNI.INSTANCE.rsaPublicKey_close(this.cCtx);
     }
 
     /*

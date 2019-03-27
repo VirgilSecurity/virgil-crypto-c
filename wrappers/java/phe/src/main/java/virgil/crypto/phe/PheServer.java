@@ -80,6 +80,10 @@ public class PheServer implements AutoCloseable {
         PheJNI.INSTANCE.pheServer_setOperationRandom(this.cCtx, operationRandom);
     }
 
+    public void setupDefaults() throws PheException {
+        PheJNI.INSTANCE.pheServer_setupDefaults(this.cCtx);
+    }
+
     /*
     * Generates new NIST P-256 server key pair for some client
     */

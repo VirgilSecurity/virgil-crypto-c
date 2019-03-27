@@ -130,6 +130,13 @@ JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1setOperationRand
     vsce_phe_server_use_operation_random((vscf_impl_t */*6*/ *) c_ctx, operation_random);
 }
 
+JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vsce_status_t status = vsce_phe_server_setup_defaults((vsce_phe_server_t /*2*/ *) c_ctx /*1*/);
+    if (status != vsce_status_SUCCESS) {
+        throwPheException(jenv, jobj, status);
+    }
+}
+
 JNIEXPORT jobject JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1generateServerKeyPair (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Wrap input buffers
     vsc_buffer_t *server_private_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
@@ -137,9 +144,11 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1generateServe
     vsc_buffer_t *server_public_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
     vsce_status_t status = vsce_phe_server_generate_server_key_pair((vsce_phe_server_t /*2*/ *) c_ctx /*1*/, server_private_key /*1*/, server_public_key /*1*/);
+
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
     }
+
     jclass cls = (*jenv)->FindClass(jenv, "virgil/crypto/phe/PheServerGenerateServerKeyPairResult");
     if (NULL == cls) {
         printf("Class PheServerGenerateServerKeyPairResult not found.");
@@ -309,6 +318,13 @@ JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1setOperationRand
 
     vsce_phe_client_release_operation_random((vscf_impl_t */*6*/ *) c_ctx);
     vsce_phe_client_use_operation_random((vscf_impl_t */*6*/ *) c_ctx, operation_random);
+}
+
+JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vsce_status_t status = vsce_phe_client_setup_defaults((vsce_phe_client_t /*2*/ *) c_ctx /*1*/);
+    if (status != vsce_status_SUCCESS) {
+        throwPheException(jenv, jobj, status);
+    }
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1setKeys (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jclientPrivateKey, jbyteArray jserverPublicKey) {
@@ -529,7 +545,10 @@ JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheCipher_1setRandom (JNIEn
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheCipher_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vsce_phe_cipher_setup_defaults((vsce_phe_cipher_t /*2*/ *) c_ctx /*1*/);
+    vsce_status_t status = vsce_phe_cipher_setup_defaults((vsce_phe_cipher_t /*2*/ *) c_ctx /*1*/);
+    if (status != vsce_status_SUCCESS) {
+        throwPheException(jenv, jobj, status);
+    }
 }
 
 JNIEXPORT jint JNICALL Java_virgil_crypto_phe_PheJNI_pheCipher_1encryptLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jplainTextLen) {

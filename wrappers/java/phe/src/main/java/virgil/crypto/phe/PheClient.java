@@ -80,6 +80,10 @@ public class PheClient implements AutoCloseable {
         PheJNI.INSTANCE.pheClient_setOperationRandom(this.cCtx, operationRandom);
     }
 
+    public void setupDefaults() throws PheException {
+        PheJNI.INSTANCE.pheClient_setupDefaults(this.cCtx);
+    }
+
     /*
     * Sets client private and server public key
     * Call this method before any other methods except `update enrollment record` and `generate client private key`
