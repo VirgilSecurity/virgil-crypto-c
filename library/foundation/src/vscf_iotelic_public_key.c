@@ -112,11 +112,9 @@ vscf_iotelic_public_key_cleanup_ctx(vscf_iotelic_public_key_t *self) {
 VSCF_PUBLIC vscf_iotelic_public_key_t *
 vscf_iotelic_public_key_new_with_slot_id(size_t slot_id) {
 
-    VSCF_UNUSED(slot_id);
-
     vscf_iotelic_public_key_t *self = vscf_iotelic_public_key_new();
 
-    //   TODO: Perform initialization.
+    self->slot_id = slot_id;
 
     return self;
 }
