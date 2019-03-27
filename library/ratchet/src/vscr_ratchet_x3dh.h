@@ -79,13 +79,13 @@ VSCR_PUBLIC vscr_status_t
 vscr_ratchet_x3dh_compute_initiator_x3dh_secret(vsc_data_t sender_identity_private_key,
         vsc_data_t sender_ephemeral_private_key, vsc_data_t receiver_identity_public_key,
         vsc_data_t receiver_long_term_public_key, vsc_data_t receiver_one_time_public_key,
-        vsc_buffer_t *shared_secret);
+        vsc_buffer_t *shared_secret) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_data_t sender_identity_public_key,
         vsc_data_t sender_ephemeral_public_key, vsc_data_t receiver_identity_private_key,
         vsc_data_t receiver_long_term_private_key, vsc_data_t receiver_one_time_private_key,
-        vsc_buffer_t *shared_secret);
+        vsc_buffer_t *shared_secret) VSCR_NODISCARD;
 
 
 // --------------------------------------------------------------------------

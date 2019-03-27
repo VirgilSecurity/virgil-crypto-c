@@ -160,6 +160,12 @@ VSCF_PUBLIC void
 vscf_pkcs8_der_serializer_release_asn1_writer(vscf_pkcs8_der_serializer_t *self);
 
 //
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_der_serializer_setup_defaults(vscf_pkcs8_der_serializer_t *self);
+
+//
 //  Serialize Public Key by using internal ASN.1 writer.
 //  Note, that caller code is responsible to reset ASN.1 writer with
 //  an output buffer.
@@ -178,12 +184,6 @@ vscf_pkcs8_der_serializer_serialize_private_key_inplace(vscf_pkcs8_der_serialize
         const vscf_impl_t *private_key, vscf_error_t *error);
 
 //
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_pkcs8_der_serializer_setup_defaults(vscf_pkcs8_der_serializer_t *self);
-
-//
 //  Calculate buffer size enough to hold serialized public key.
 //
 //  Precondition: public key must be exportable.
@@ -198,7 +198,7 @@ vscf_pkcs8_der_serializer_serialized_public_key_len(vscf_pkcs8_der_serializer_t 
 //
 VSCF_PUBLIC vscf_status_t
 vscf_pkcs8_der_serializer_serialize_public_key(vscf_pkcs8_der_serializer_t *self, const vscf_impl_t *public_key,
-        vsc_buffer_t *out);
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Calculate buffer size enough to hold serialized private key.
@@ -215,7 +215,7 @@ vscf_pkcs8_der_serializer_serialized_private_key_len(vscf_pkcs8_der_serializer_t
 //
 VSCF_PUBLIC vscf_status_t
 vscf_pkcs8_der_serializer_serialize_private_key(vscf_pkcs8_der_serializer_t *self, const vscf_impl_t *private_key,
-        vsc_buffer_t *out);
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

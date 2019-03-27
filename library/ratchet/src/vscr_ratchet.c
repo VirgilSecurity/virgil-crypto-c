@@ -123,7 +123,7 @@ vscr_ratchet_cleanup_ctx(vscr_ratchet_t *self);
 //
 //  This method is called when interface 'random' was setup.
 //
-static vscr_status_t
+static void
 vscr_ratchet_did_setup_rng(vscr_ratchet_t *self);
 
 //
@@ -134,13 +134,15 @@ vscr_ratchet_did_release_rng(vscr_ratchet_t *self);
 
 static vscr_status_t
 vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet_chain_key_t *chain_key,
-        const RegularMessage *message, vsc_buffer_t *buffer);
+        const RegularMessage *message, vsc_buffer_t *buffer) VSCR_NODISCARD;
 
 static vscr_status_t
-vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const RegularMessage *message, vsc_buffer_t *buffer);
+vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const RegularMessage *message,
+        vsc_buffer_t *buffer) VSCR_NODISCARD;
 
 static vscr_status_t
-vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self, vscr_ratchet_sender_chain_t *sender_chain);
+vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self,
+        vscr_ratchet_sender_chain_t *sender_chain) VSCR_NODISCARD;
 
 //
 //  Return size of 'vscr_ratchet_t'.
@@ -256,7 +258,7 @@ vscr_ratchet_shallow_copy(vscr_ratchet_t *self) {
 //
 //  Setup dependency to the interface 'random' with shared ownership.
 //
-VSCR_PUBLIC vscr_status_t
+VSCR_PUBLIC void
 vscr_ratchet_use_rng(vscr_ratchet_t *self, vscf_impl_t *rng) {
 
     VSCR_ASSERT_PTR(self);
@@ -267,14 +269,14 @@ vscr_ratchet_use_rng(vscr_ratchet_t *self, vscf_impl_t *rng) {
 
     self->rng = vscf_impl_shallow_copy(rng);
 
-    return vscr_ratchet_did_setup_rng(self);
+    vscr_ratchet_did_setup_rng(self);
 }
 
 //
 //  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCR_PUBLIC vscr_status_t
+VSCR_PUBLIC void
 vscr_ratchet_take_rng(vscr_ratchet_t *self, vscf_impl_t *rng) {
 
     VSCR_ASSERT_PTR(self);
@@ -285,7 +287,7 @@ vscr_ratchet_take_rng(vscr_ratchet_t *self, vscf_impl_t *rng) {
 
     self->rng = rng;
 
-    return vscr_ratchet_did_setup_rng(self);
+    vscr_ratchet_did_setup_rng(self);
 }
 
 //
@@ -343,14 +345,12 @@ vscr_ratchet_cleanup_ctx(vscr_ratchet_t *self) {
 //
 //  This method is called when interface 'random' was setup.
 //
-static vscr_status_t
+static void
 vscr_ratchet_did_setup_rng(vscr_ratchet_t *self) {
 
     if (self->rng) {
         vscr_ratchet_cipher_use_rng(self->cipher, self->rng);
     }
-
-    return vscr_status_SUCCESS;
 }
 
 //

@@ -123,7 +123,7 @@ vsce_error_has_error(const vsce_error_t *self);
 //  Return error code.
 //
 VSCE_PUBLIC vsce_status_t
-vsce_error_status(const vsce_error_t *self);
+vsce_error_status(const vsce_error_t *self) VSCE_NODISCARD;
 
 
 // --------------------------------------------------------------------------

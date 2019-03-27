@@ -161,7 +161,7 @@ vscf_asn1rd_has_error(const vscf_asn1rd_t *self);
 //  Return error code.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_asn1rd_status(const vscf_asn1rd_t *self);
+vscf_asn1rd_status(const vscf_asn1rd_t *self) VSCF_NODISCARD;
 
 //
 //  Get tag of the current ASN.1 element.

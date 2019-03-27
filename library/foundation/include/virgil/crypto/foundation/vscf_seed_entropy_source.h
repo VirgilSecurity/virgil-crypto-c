@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -46,15 +47,27 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains common functionality for all 'implementation' object.
-//  It is also enumerate all available implementations within crypto libary.
+//  This module contains 'seed entropy source' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCP_IMPL_H_INCLUDED
-#define VSCP_IMPL_H_INCLUDED
+#ifndef VSCF_SEED_ENTROPY_SOURCE_H_INCLUDED
+#define VSCF_SEED_ENTROPY_SOURCE_H_INCLUDED
 
-#include "vscp_library.h"
-#include "vscp_api.h"
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
+
+// clang-format on
 //  @end
 
 
@@ -70,57 +83,81 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible implementations within crypto library.
+//  Handles implementation details.
 //
-enum vscp_impl_tag_t {
-    vscp_impl_tag_BEGIN = 0,
-    vscp_impl_tag_END
-};
-typedef enum vscp_impl_tag_t vscp_impl_tag_t;
+typedef struct vscf_seed_entropy_source_t vscf_seed_entropy_source_t;
 
 //
-//  Generic type for any 'implementation'.
+//  Return size of 'vscf_seed_entropy_source_t' type.
 //
-typedef struct vscp_impl_t vscp_impl_t;
+VSCF_PUBLIC size_t
+vscf_seed_entropy_source_impl_size(void);
 
 //
-//  Return 'API' object that is fulfiled with a meta information
-//  specific to the given implementation object.
-//  Or NULL if object does not implement requested 'API'.
+//  Cast to the 'vscf_impl_t' type.
 //
-VSCP_PUBLIC const vscp_api_t *
-vscp_impl_api(vscp_impl_t *impl, vscp_api_tag_t api_tag);
+VSCF_PUBLIC vscf_impl_t *
+vscf_seed_entropy_source_impl(vscf_seed_entropy_source_t *self);
 
 //
-//  Return unique 'Implementation TAG'.
+//  Perform initialization of preallocated implementation context.
 //
-VSCP_PUBLIC vscp_impl_tag_t
-vscp_impl_tag(vscp_impl_t *impl);
+VSCF_PUBLIC void
+vscf_seed_entropy_source_init(vscf_seed_entropy_source_t *self);
 
 //
-//  Cleanup implementation object and it's dependencies.
+//  Cleanup implementation context and release dependencies.
+//  This is a reverse action of the function 'vscf_seed_entropy_source_init()'.
 //
-VSCP_PUBLIC void
-vscp_impl_cleanup(vscp_impl_t *impl);
+VSCF_PUBLIC void
+vscf_seed_entropy_source_cleanup(vscf_seed_entropy_source_t *self);
 
 //
-//  Delete implementation object and it's dependencies.
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
 //
-VSCP_PUBLIC void
-vscp_impl_delete(vscp_impl_t *impl);
+VSCF_PUBLIC vscf_seed_entropy_source_t *
+vscf_seed_entropy_source_new(void);
 
 //
-//  Destroy implementation object and it's dependencies.
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_seed_entropy_source_new()'.
 //
-VSCP_PUBLIC void
-vscp_impl_destroy(vscp_impl_t **impl_ref);
+VSCF_PUBLIC void
+vscf_seed_entropy_source_delete(vscf_seed_entropy_source_t *self);
 
 //
-//  Copy implementation object by increasing reference counter.
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_seed_entropy_source_new()'.
+//  Given reference is nullified.
+//
+VSCF_PUBLIC void
+vscf_seed_entropy_source_destroy(vscf_seed_entropy_source_t **self_ref);
+
+//
+//  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCP_PUBLIC vscp_impl_t *
-vscp_impl_shallow_copyvscp_impl_t *impl);
+VSCF_PUBLIC vscf_seed_entropy_source_t *
+vscf_seed_entropy_source_shallow_copy(vscf_seed_entropy_source_t *self);
+
+//
+//  Set a new seed as an entropy source.
+//
+VSCF_PUBLIC void
+vscf_seed_entropy_source_reset_seed(vscf_seed_entropy_source_t *self, vsc_data_t seed);
+
+//
+//  Defines that implemented source is strong.
+//
+VSCF_PUBLIC bool
+vscf_seed_entropy_source_is_strong(vscf_seed_entropy_source_t *self);
+
+//
+//  Gather entropy of the requested length.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_seed_entropy_source_gather(vscf_seed_entropy_source_t *self, size_t len, vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------
@@ -136,5 +173,5 @@ vscp_impl_shallow_copyvscp_impl_t *impl);
 
 
 //  @footer
-#endif // VSCP_IMPL_H_INCLUDED
+#endif // VSCF_SEED_ENTROPY_SOURCE_H_INCLUDED
 //  @end

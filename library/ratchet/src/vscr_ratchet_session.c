@@ -133,7 +133,7 @@ vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *self);
 //
 //  This method is called when interface 'random' was setup.
 //
-static vscr_status_t
+static void
 vscr_ratchet_session_did_setup_rng(vscr_ratchet_session_t *self);
 
 //
@@ -258,7 +258,7 @@ vscr_ratchet_session_shallow_copy(vscr_ratchet_session_t *self) {
 //
 //  Note, ownership is shared.
 //
-VSCR_PUBLIC vscr_status_t
+VSCR_PUBLIC void
 vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) {
 
     VSCR_ASSERT_PTR(self);
@@ -269,7 +269,7 @@ vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) {
 
     self->rng = vscf_impl_shallow_copy(rng);
 
-    return vscr_ratchet_session_did_setup_rng(self);
+    vscr_ratchet_session_did_setup_rng(self);
 }
 
 //
@@ -278,7 +278,7 @@ vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) {
 //  Note, ownership is transfered.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCR_PUBLIC vscr_status_t
+VSCR_PUBLIC void
 vscr_ratchet_session_take_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) {
 
     VSCR_ASSERT_PTR(self);
@@ -289,7 +289,7 @@ vscr_ratchet_session_take_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) {
 
     self->rng = rng;
 
-    return vscr_ratchet_session_did_setup_rng(self);
+    vscr_ratchet_session_did_setup_rng(self);
 }
 
 //
@@ -345,14 +345,12 @@ vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *self) {
 //
 //  This method is called when interface 'random' was setup.
 //
-static vscr_status_t
+static void
 vscr_ratchet_session_did_setup_rng(vscr_ratchet_session_t *self) {
 
     if (self->rng != NULL) {
         vscr_ratchet_use_rng(self->ratchet, self->rng);
     }
-
-    return vscr_status_SUCCESS;
 }
 
 //
@@ -370,15 +368,23 @@ vscr_ratchet_session_did_release_rng(vscr_ratchet_session_t *self) {
 //      - Key serialization: DER PKCS8
 //      - Symmetric cipher: AES256-GCM
 //
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *self) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(self->rng == NULL);
 
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng);
+    vscf_status_t status = vscf_ctr_drbg_setup_defaults(rng);
+
+    if (status != vscf_status_SUCCESS) {
+        vscf_ctr_drbg_destroy(&rng);
+        return vscr_status_ERROR_RNG_FAILED;
+    }
+
     vscr_ratchet_session_take_rng(self, vscf_ctr_drbg_impl(rng));
+
+    return vscr_status_SUCCESS;
 }
 
 //

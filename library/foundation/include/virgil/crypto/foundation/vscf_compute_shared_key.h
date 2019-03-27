@@ -92,7 +92,7 @@ typedef struct vscf_compute_shared_key_api_t vscf_compute_shared_key_api_t;
 //  Note, shared key can be used only for symmetric cryptography.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_compute_shared_key(vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_buffer_t *shared_key);
+vscf_compute_shared_key(vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_buffer_t *shared_key) VSCF_NODISCARD;
 
 //
 //  Return number of bytes required to hold shared key.

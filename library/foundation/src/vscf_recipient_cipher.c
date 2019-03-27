@@ -101,34 +101,35 @@ vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self);
 //  Note, this method change decryption state.
 //
 static vscf_status_t
-vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self, vsc_data_t decryption_key);
+vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self,
+        vsc_data_t decryption_key) VSCF_NODISCARD;
 
 //
 //  Decrypt data encryption key with a password.
 //
 static vscf_status_t
-vscf_recipient_cipher_decrypt_data_encryption_key_with_password(vscf_recipient_cipher_t *self);
+vscf_recipient_cipher_decrypt_data_encryption_key_with_password(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
 
 //
 //  Decrypt data encryption key with a private key.
 //
 static vscf_status_t
-vscf_recipient_cipher_decrypt_data_encryption_key_with_private_key(vscf_recipient_cipher_t *self);
+vscf_recipient_cipher_decrypt_data_encryption_key_with_private_key(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
 
 //
 //  Decrypt data encryption key and configure underlying cipher.
 //
 static vscf_status_t
-vscf_recipient_cipher_decrypt_data_encryption_key(vscf_recipient_cipher_t *self);
+vscf_recipient_cipher_decrypt_data_encryption_key(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
 
 //
 //  Read given message info from the given data or extracted data.
 //
 static vscf_status_t
-vscf_recipient_cipher_unpack_message_info(vscf_recipient_cipher_t *self, vsc_data_t message_info);
+vscf_recipient_cipher_unpack_message_info(vscf_recipient_cipher_t *self, vsc_data_t message_info) VSCF_NODISCARD;
 
 static vscf_status_t
-vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_data_t data);
+vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_data_t data) VSCF_NODISCARD;
 
 //
 //  Return size of 'vscf_recipient_cipher_t'.

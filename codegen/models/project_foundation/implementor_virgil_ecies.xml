@@ -4,7 +4,6 @@
     <implementation name="ecies">
         Virgil implementation of the ECIES algorithm.
 
-        <interface name="defaults"/>
         <interface name="encrypt"/>
         <interface name="decrypt"/>
 
@@ -49,6 +48,12 @@
         </dependency>
 
         <property name="envelope" class="ecies envelope"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
 
         <method name="configure defaults">
             Configure ECIES with default algorithms.

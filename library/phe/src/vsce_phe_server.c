@@ -120,12 +120,12 @@ vsce_phe_server_cleanup_ctx(vsce_phe_server_t *self);
 static vsce_status_t
 vsce_phe_server_prove_success(vsce_phe_server_t *self, mbedtls_ecp_group *op_group, vsc_data_t server_private_key,
         vsc_data_t server_public_key, const mbedtls_ecp_point *hs0, const mbedtls_ecp_point *hs1,
-        const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, ProofOfSuccess *success_proof);
+        const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, ProofOfSuccess *success_proof) VSCE_NODISCARD;
 
 static vsce_status_t
 vsce_phe_server_prove_failure(vsce_phe_server_t *self, mbedtls_ecp_group *op_group, vsc_data_t server_private_key,
         vsc_data_t server_public_key, const mbedtls_ecp_point *c0, const mbedtls_ecp_point *hs0, mbedtls_ecp_point *c1,
-        ProofOfFail *failure_proof);
+        ProofOfFail *failure_proof) VSCE_NODISCARD;
 
 static mbedtls_ecp_group *
 vsce_phe_server_get_op_group(vsce_phe_server_t *self);
@@ -357,15 +357,6 @@ vsce_phe_server_init_ctx(vsce_phe_server_t *self) {
 
     self->phe_hash = vsce_phe_hash_new();
 
-    vscf_ctr_drbg_t *rng1, *rng2;
-    rng1 = vscf_ctr_drbg_new();
-    rng2 = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng1);
-    vscf_ctr_drbg_setup_defaults(rng2);
-
-    vsce_phe_server_take_random(self, vscf_ctr_drbg_impl(rng1));
-    vsce_phe_server_take_operation_random(self, vscf_ctr_drbg_impl(rng2));
-
     mbedtls_ecp_group_init(&self->group);
     int status = mbedtls_ecp_group_load(&self->group, MBEDTLS_ECP_DP_SECP256R1);
     VSCE_ASSERT(status == 0);
@@ -383,6 +374,34 @@ vsce_phe_server_cleanup_ctx(vsce_phe_server_t *self) {
 
     vsce_phe_hash_destroy(&self->phe_hash);
     mbedtls_ecp_group_free(&self->group);
+}
+
+VSCE_PUBLIC vsce_status_t
+vsce_phe_server_setup_defaults(vsce_phe_server_t *self) {
+
+    VSCE_ASSERT_PTR(self);
+
+    vscf_ctr_drbg_t *rng1 = vscf_ctr_drbg_new();
+    vscf_status_t status = vscf_ctr_drbg_setup_defaults(rng1);
+
+    if (status != vscf_status_SUCCESS) {
+        vscf_ctr_drbg_destroy(&rng1);
+        return vsce_status_ERROR_RNG_FAILED;
+    }
+
+    vsce_phe_server_take_random(self, vscf_ctr_drbg_impl(rng1));
+
+    vscf_ctr_drbg_t *rng2 = vscf_ctr_drbg_new();
+    status = vscf_ctr_drbg_setup_defaults(rng2);
+
+    if (status != vscf_status_SUCCESS) {
+        vscf_ctr_drbg_destroy(&rng2);
+        return vsce_status_ERROR_RNG_FAILED;
+    }
+
+    vsce_phe_server_take_operation_random(self, vscf_ctr_drbg_impl(rng2));
+
+    return vsce_status_SUCCESS;
 }
 
 //
@@ -612,7 +631,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_priva
 
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &c0, request.c0, sizeof(request.c0));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &c0) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto ecp_err;
     }
 
@@ -850,7 +869,7 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *self, mbedtls_ecp_group *op_gro
     mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &X, server_public_key.bytes, server_public_key.len);
 
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &X) != 0) {
-        status = vsce_status_ERROR_INVALID_ECP;
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto ecp_err;
     }
 

@@ -72,7 +72,7 @@ test__sign__with_sha384_and_ed25519_private_key__returns_valid_signature(void) {
 
     vscf_signer_reset(signer);
     vscf_signer_update(signer, test_signer_DATA);
-    vscf_signer_sign(signer, private_key, signature);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_signer_sign(signer, private_key, signature));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_signer_ED25519_SHA384_SIGNATURE_V2_COMPAT, signature);
 
@@ -104,7 +104,7 @@ test__sign__with_sha384_and_rsa2048_private_key__returns_valid_signature(void) {
 
     vscf_signer_reset(signer);
     vscf_signer_update(signer, test_signer_DATA);
-    vscf_signer_sign(signer, private_key, signature);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_signer_sign(signer, private_key, signature));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_signer_RSA2048_SHA384_SIGNATURE_V2_COMPAT, signature);
 

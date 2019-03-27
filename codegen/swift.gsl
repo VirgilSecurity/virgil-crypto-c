@@ -1171,7 +1171,21 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Setup and check default and automatically resolved attributes.
 # ---------------------------------------------------------------------------
-function swift_resolve (project, wrapper, projects_api)
+function swift_resolve_toplevel (wrapper, license)
+    check_arguments (my, "wrapper, license", my)
+
+    echo_info ("Resolve <wrapper lang=\"$(my.wrapper.lang:)\"/> for toplevel", my)
+
+    assert_attribute (my.wrapper, "lang", my)
+
+    my.wrapper.source_dir = cat_path ("../wrappers/$(my.wrapper.lang:c,lower)", "VirgilCrypto")
+    copy my.license to my.wrapper
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Setup and check default and automatically resolved attributes.
+# ---------------------------------------------------------------------------
+function swift_resolve_project (project, wrapper, projects_api)
     check_arguments (my, "project, wrapper, projects_api", my)
 
     echo_info ("Resolve <wrapper lang=\"$(my.wrapper.lang:)\"/> for project: '$(my.project.name:)'", my)
@@ -1984,7 +1998,7 @@ function swift_create_method_from_dependency (dependency, impl, destination, wra
         . = swift_format_description (my.dependency) ?
         .name = swift_derive_method_name_str (cat ("set", my.dependency.name))
         .visibility = "public"
-        .throws = my.dependency.has_observers
+        .throws = my.dependency.has_observers & my.dependency.is_observers_return_status
         .objc = "1"
 
         my.arg_name = swift_derive_argument_name (my.dependency)
@@ -1995,7 +2009,7 @@ function swift_create_method_from_dependency (dependency, impl, destination, wra
         endnew
 
         new swift_code to swift_method
-            if my.dependency.has_observers
+            if my.dependency.has_observers & my.dependency.is_observers_return_status
                 my.result_var = "let proxyResult = "
                 my.enum_status = swift_derive_enum_status_name (my.wrapper.project)
                 my.impl_handle_status = "try $(my.enum_status:).handleStatus(fromC: proxyResult)"
@@ -2024,6 +2038,7 @@ function swift_create_class_constant (constant, swift_class, wrapper, meta)
     new swift_constant to my.swift_class
         . = swift_format_description (my.constant) ?
         .name = swift_derive_constant_name (my.constant, my.wrapper)
+        .type = swift_derive_constant_type (my.constant, my.wrapper)
         .value = my.constant.value
         .visibility = "public"
     endnew
@@ -2145,7 +2160,6 @@ endfunction
 # ===========================================================================
 #   Create modules.
 # ===========================================================================
-
 
 # ---------------------------------------------------------------------------
 #   Create module that contains Swift specific project information.
@@ -2292,7 +2306,7 @@ function swift_create_implementation_module (implementation, destination, wrappe
             swift_create_inherit_nsobject (swift_class)
 
             for my.implementation.constant
-                swift_create_property_from_constant (constant, swift_class, my.wrapper, my.meta)
+                swift_create_class_constant (constant, swift_class, my.wrapper, my.meta)
             endfor
 
             for my.implementation.dependency

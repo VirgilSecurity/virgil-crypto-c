@@ -202,13 +202,13 @@ vscf_pkcs5_pbes2_produce_alg_info(const vscf_pkcs5_pbes2_t *self);
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_pkcs5_pbes2_restore_alg_info(vscf_pkcs5_pbes2_t *self, const vscf_impl_t *alg_info);
+vscf_pkcs5_pbes2_restore_alg_info(vscf_pkcs5_pbes2_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
 
 //
 //  Encrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_pkcs5_pbes2_encrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t *out);
+vscf_pkcs5_pbes2_encrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Calculate required buffer length to hold the encrypted data.
@@ -220,7 +220,7 @@ vscf_pkcs5_pbes2_encrypted_len(vscf_pkcs5_pbes2_t *self, size_t data_len);
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_pkcs5_pbes2_decrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t *out);
+vscf_pkcs5_pbes2_decrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Calculate required buffer length to hold the decrypted data.

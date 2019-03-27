@@ -22,7 +22,12 @@
         <dependency name="random" interface="random"/>
         <dependency name="ecies" impl="ecies"/>
 
-        <interface name="defaults"/>
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
         <interface name="alg"/>
         <interface name="key"/>
         <interface name="encrypt"/>
@@ -56,7 +61,12 @@
         <dependency name="random" interface="random"/>
         <dependency name="ecies" impl="ecies"/>
 
-        <interface name="defaults"/>
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
         <interface name="alg"/>
         <interface name="key"/>
         <interface name="generate key"/>
@@ -90,7 +100,12 @@
         <dependency name="random" interface="random"/>
         <dependency name="ecies" impl="ecies"/>
 
-        <interface name="defaults"/>
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
         <interface name="alg"/>
         <interface name="key"/>
         <interface name="encrypt"/>
@@ -123,7 +138,12 @@
         <dependency name="random" interface="random"/>
         <dependency name="ecies" impl="ecies"/>
 
-        <interface name="defaults"/>
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
         <interface name="alg"/>
         <interface name="key"/>
         <interface name="generate key"/>

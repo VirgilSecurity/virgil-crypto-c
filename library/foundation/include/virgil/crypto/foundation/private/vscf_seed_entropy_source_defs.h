@@ -34,12 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
-
-
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'hash stream' API.
-// --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -49,8 +44,38 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscp_hash_stream_api.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'seed entropy source' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_SEED_ENTROPY_SOURCE_DEFS_H_INCLUDED
+#define VSCF_SEED_ENTROPY_SOURCE_DEFS_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_seed_entropy_source.h"
+#include "vscf_impl.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
+
+// clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -59,9 +84,53 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handles implementation details.
+//
+struct vscf_seed_entropy_source_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Implementation specific context.
+    //
+    vsc_buffer_t *entropy;
+    //
+    //  Implementation specific context.
+    //
+    size_t counter;
+    //
+    //  Implementation specific context.
+    //
+    size_t used_len;
+    //
+    //  Implementation specific context.
+    //
+    vscf_impl_t *hash;
+    //
+    //  Implementation specific context.
+    //
+    vscf_impl_t *kdf;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_SEED_ENTROPY_SOURCE_DEFS_H_INCLUDED
 //  @end

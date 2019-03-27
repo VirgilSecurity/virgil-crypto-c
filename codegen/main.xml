@@ -38,6 +38,7 @@
     <library name="mbedtls"/>
     <library name="ed25519"/>
     <library name="nanopb"/>
+    <library name="relic"/>
 
     <project name="common" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
     <project name="foundation" skip_codegen="0" skip_codegen_c="1" skip_codegen_wrappers="0"/>

@@ -79,31 +79,31 @@ enum vsce_status_t {
     //
     //  Success proof check failed.
     //
-    vsce_status_ERROR_INVALID_SUCCESS_PROOF,
+    vsce_status_ERROR_INVALID_SUCCESS_PROOF = -1,
     //
     //  Failure proof check failed.
     //
-    vsce_status_ERROR_INVALID_FAIL_PROOF,
+    vsce_status_ERROR_INVALID_FAIL_PROOF = -2,
     //
     //  RNG returned error.
     //
-    vsce_status_ERROR_RNG_FAILED,
+    vsce_status_ERROR_RNG_FAILED = -3,
     //
     //  Protobuf decode failed.
     //
-    vsce_status_ERROR_PROTOBUF_DECODE_FAILED,
+    vsce_status_ERROR_PROTOBUF_DECODE_FAILED = -4,
     //
-    //  Invalid ECP.
+    //  Invalid public key.
     //
-    vsce_status_ERROR_INVALID_ECP,
+    vsce_status_ERROR_INVALID_PUBLIC_KEY = -5,
     //
     //  Invalid private key.
     //
-    vsce_status_ERROR_INVALID_PRIVATE_KEY,
+    vsce_status_ERROR_INVALID_PRIVATE_KEY = -6,
     //
     //  AES error occurred.
     //
-    vsce_status_ERROR_AES_FAILED
+    vsce_status_ERROR_AES_FAILED = -7
 };
 typedef enum vsce_status_t vsce_status_t;
 

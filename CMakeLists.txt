@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto VERSION 0.3.0 LANGUAGES C)
+project(virgil_crypto VERSION 0.6.0 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
@@ -153,10 +153,10 @@ if(VIRGIL_LIB_FOUNDATION OR VIRGIL_LIB_PYTHIA)
 endif()
 
 #
-# Pythia
+# Relic
 #
 if(VIRGIL_LIB_PYTHIA)
-    add_subdirectory("thirdparty/pythia")
+    add_subdirectory("thirdparty/relic")
 endif()
 
 #
@@ -294,6 +294,7 @@ set(VIRGIL_PACKAGE_PLATFORM_ARCH "" CACHE STRING "[CPack] Platform architecture 
 #
 set(VIRGIL_PACKAGE_NAME "virgil-crypto-c")
 list(APPEND VIRGIL_PACKAGE_NAME ${virgil_crypto_VERSION})
+list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_CRYPTO_VERSION_LABEL})
 list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_LANGUAGE})
 list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_LANGUAGE_VERSION})
 list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM})

@@ -57,7 +57,6 @@
 #include "vscf_message_info.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -153,14 +152,14 @@ vscf_message_info_der_serializer_shallow_copy(vscf_message_info_der_serializer_t
 //
 //  Setup dependency to the interface 'asn1 reader' with shared ownership.
 //
-VSCF_PUBLIC vscf_status_t
+VSCF_PUBLIC void
 vscf_message_info_der_serializer_use_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader);
 
 //
 //  Setup dependency to the interface 'asn1 reader' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCF_PUBLIC vscf_status_t
+VSCF_PUBLIC void
 vscf_message_info_der_serializer_take_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader);
 
 //
@@ -172,14 +171,14 @@ vscf_message_info_der_serializer_release_asn1_reader(vscf_message_info_der_seria
 //
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
-VSCF_PUBLIC vscf_status_t
+VSCF_PUBLIC void
 vscf_message_info_der_serializer_use_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
 
 //
 //  Setup dependency to the interface 'asn1 writer' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCF_PUBLIC vscf_status_t
+VSCF_PUBLIC void
 vscf_message_info_der_serializer_take_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
 
 //
@@ -191,7 +190,7 @@ vscf_message_info_der_serializer_release_asn1_writer(vscf_message_info_der_seria
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_status_t
+VSCF_PUBLIC void
 vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer_t *self);
 
 //

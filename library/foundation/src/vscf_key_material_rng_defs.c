@@ -34,6 +34,16 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
+
+
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'key material rng' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
 
 
 //  @warning
@@ -43,23 +53,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#include "vscf_key_material_rng_defs.h"
 
-//  @description
-// --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
-// --------------------------------------------------------------------------
-
-#ifndef VSCP_API_H_INCLUDED
-#define VSCP_API_H_INCLUDED
-
-#include "vscp_library.h"
+// clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -68,35 +65,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Enumerates all possible interfaces within crypto library.
-//
-enum vscp_api_tag_t {
-    vscp_api_tag_BEGIN = 0,
-    vscp_api_tag_HASH_INFO,
-    vscp_api_tag_HASH_STREAM,
-    vscp_api_tag_END
-};
-typedef enum vscp_api_tag_t vscp_api_tag_t;
-
-//
-//  Generic type for any 'API' object.
-//
-typedef struct vscp_api_t vscp_api_t;
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCP_API_H_INCLUDED
 //  @end

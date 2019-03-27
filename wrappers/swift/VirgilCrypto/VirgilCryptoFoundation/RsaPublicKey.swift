@@ -36,7 +36,7 @@
 import Foundation
 import VSCFoundation
 
-@objc(VSCFRsaPublicKey) public class RsaPublicKey: NSObject, Defaults, Alg, Key, Encrypt, VerifyHash, PublicKey, GenerateEphemeralKey {
+@objc(VSCFRsaPublicKey) public class RsaPublicKey: NSObject, Alg, Key, Encrypt, VerifyHash, PublicKey, GenerateEphemeralKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer

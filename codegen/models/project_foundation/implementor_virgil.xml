@@ -115,7 +115,6 @@
     <implementation name="pkcs5 pbkdf2">
         Virgil Security implementation of the PBKDF2 (RFC 8018) algorithm.
 
-        <interface name="defaults"/>
         <interface name="alg"/>
         <interface name="kdf"/>
         <interface name="salted kdf"/>
@@ -131,6 +130,10 @@
 
         <property name="salt" class="buffer"/>
         <property name="iteration count" type="size"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+        </method>
     </implementation>
 
 
@@ -157,6 +160,67 @@
             Configure cipher with a new password.
 
             <argument name="pwd" class="data"/>
+        </method>
+    </implementation>
+
+
+    <implementation name="seed entropy source">
+        Deterministic entropy source that is based only on the given seed.
+
+        <interface name="entropy source"/>
+
+        <require impl="kdf2"/>
+        <require impl="sha512"/>
+        <require interface="hash"/>
+        <require interface="kdf"/>
+
+        <constant name="gather len max" value="48" definition="private">
+            The maximum length of the entropy requested at once.
+        </constant>
+
+        <property name="entropy" class="buffer"/>
+        <property name="counter" type="size"/>
+        <property name="used len" type="size"/>
+        <property name="hash" interface="hash"/>
+        <property name="kdf" interface="kdf"/>
+
+        <method name="reset seed" declaration="public">
+            Set a new seed as an entropy source.
+
+            <argument name="seed" class="data"/>
+        </method>
+
+        <method name="move forward">
+            Current source is exhausted and must be refreshed.
+        </method>
+    </implementation>
+
+
+    <implementation name="key material rng">
+        Random number generator that generate deterministic sequence based
+        on a given seed.
+        This RNG can be used to transform key material rial to the private key.
+
+        <interface name="random"/>
+
+        <require impl="ctr drbg"/>
+        <require impl="seed entropy source"/>
+
+        <constant name="key material len min" value="32" definition="public">
+            Minimum length in bytes for the key material.
+        </constant>
+
+        <constant name="key material len max" value="512" definition="public">
+            Maximum length in bytes for the key material.
+        </constant>
+
+        <property name="ctr drbg" impl="ctr drbg"/>
+        <property name="seed entropy source" impl="seed entropy source"/>
+
+        <method name="reset key material" declaration="public">
+            Set a new key material.
+
+            <argument name="key material" class="data"/>
         </method>
     </implementation>
 </implementor>

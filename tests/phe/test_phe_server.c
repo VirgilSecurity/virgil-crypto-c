@@ -61,6 +61,7 @@ int suiteTearDown(int num_failures) { return num_failures; }
 void
 test__get_enrollment__mocked_rnd__should_match(void) {
     vsce_phe_server_t *server = vsce_phe_server_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_server_setup_defaults(server));
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vsce_phe_server_enrollment_response_len(server));
 
@@ -84,6 +85,7 @@ test__get_enrollment__mocked_rnd__should_match(void) {
 void
 test__verify_password__valid_password__should_match(void) {
     vsce_phe_server_t *server = vsce_phe_server_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_server_setup_defaults(server));
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vsce_phe_server_verify_password_response_len(server));
 
@@ -108,6 +110,7 @@ test__verify_password__valid_password__should_match(void) {
 void
 test__verify_password__invalid_password__should_match(void) {
     vsce_phe_server_t *server = vsce_phe_server_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_server_setup_defaults(server));
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vsce_phe_server_verify_password_response_len(server));
 
@@ -132,6 +135,7 @@ test__verify_password__invalid_password__should_match(void) {
 void
 test__rotate_keys__mocked_rnd__should_match(void) {
     vsce_phe_server_t *server = vsce_phe_server_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_server_setup_defaults(server));
 
     vsc_buffer_t *buffer1, *buffer2, *buffer3;
     buffer1 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);

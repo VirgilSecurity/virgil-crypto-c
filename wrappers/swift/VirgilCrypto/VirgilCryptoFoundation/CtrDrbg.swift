@@ -39,13 +39,12 @@ import VSCFoundation
 /// Implementation of the RNG using deterministic random bit generators
 /// based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
 /// This class is thread-safe if the build option VSCF_MULTI_THREAD was enabled.
-@objc(VSCFCtrDrbg) public class CtrDrbg: NSObject, Defaults, Random {
+@objc(VSCFCtrDrbg) public class CtrDrbg: NSObject, Random {
 
     /// The interval before reseed is performed by default.
-    @objc public let reseedInterval: Int = 10000
-
+    @objc public static let reseedInterval: Int = 10000
     /// The amount of entropy used per seed by default.
-    @objc public let entropyLen: Int = 48
+    @objc public static let entropyLen: Int = 48
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -81,6 +80,13 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: proxyResult)
     }
 
+    /// Setup predefined values to the uninitialized class dependencies.
+    @objc public func setupDefaults() throws {
+        let proxyResult = vscf_ctr_drbg_setup_defaults(self.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+    }
+
     /// Force entropy to be gathered at the beginning of every call to
     /// the random() method.
     /// Note, use this if your entropy source has sufficient throughput.
@@ -98,13 +104,6 @@ import VSCFoundation
     /// The default value is entropy len.
     @objc public func setEntropyLen(len: Int) {
         vscf_ctr_drbg_set_entropy_len(self.c_ctx, len)
-    }
-
-    /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_ctr_drbg_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Generate random bytes.

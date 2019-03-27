@@ -4,7 +4,6 @@
     <implementation name="alg info der serializer">
         Provide DER serializer of algorithm information.
 
-        <interface name="defaults"/>
         <interface name="alg info serializer"/>
 
         <require class="asn1wr"/>
@@ -20,6 +19,9 @@
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
 
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+        </method>
 
         <method name="is alg require null params" is_static="1">
             Return true if algorithm identifier requires that optional
@@ -172,7 +174,6 @@
     <implementation name="alg info der deserializer">
         Provide DER deserializer of algorithm information.
 
-        <interface name="defaults"/>
         <interface name="alg info deserializer"/>
 
         <require class="asn1rd"/>
@@ -186,6 +187,10 @@
         <require interface="alg info"/>
 
         <dependency name="asn1 reader" interface="asn1 reader"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+        </method>
 
         <method name="deserialize simple alg info">
             Parse ASN.1 structure "AlgorithmIdentifier" with optional NULL parameter.

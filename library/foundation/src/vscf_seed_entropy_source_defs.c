@@ -34,11 +34,15 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface Private API.
+//  Types of the 'seed entropy source' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
 
@@ -49,7 +53,9 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscp_api_private.h"
+#include "vscf_seed_entropy_source_defs.h"
+
+// clang-format on
 //  @end
 
 
