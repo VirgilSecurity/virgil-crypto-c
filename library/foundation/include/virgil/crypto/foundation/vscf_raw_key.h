@@ -111,6 +111,15 @@ VSCF_PUBLIC vscf_raw_key_t *
 vscf_raw_key_new(void);
 
 //
+//  Perform initialization of pre-allocated context.
+//  Creates raw key defined with algorithm and data.
+//  Note, data is copied.
+//
+VSCF_PUBLIC void
+vscf_raw_key_init_with_data(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_data_t raw_key_data);
+
+//
+//  Allocate class context and perform it's initialization.
 //  Creates raw key defined with algorithm and data.
 //  Note, data is copied.
 //
@@ -118,6 +127,14 @@ VSCF_PUBLIC vscf_raw_key_t *
 vscf_raw_key_new_with_data(vscf_alg_id_t alg_id, vsc_data_t raw_key_data);
 
 //
+//  Perform initialization of pre-allocated context.
+//  Creates raw key defined with algorithm and buffer.
+//
+VSCF_PRIVATE void
+vscf_raw_key_init_with_buffer(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_buffer_t *buffer);
+
+//
+//  Allocate class context and perform it's initialization.
 //  Creates raw key defined with algorithm and buffer.
 //
 VSCF_PRIVATE vscf_raw_key_t *

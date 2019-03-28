@@ -56,6 +56,15 @@
 
 #include "vscf_library.h"
 #include "vscf_cipher_alg_info.h"
+#include "vscf_alg_id.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
@@ -87,6 +96,12 @@ vscf_cipher_alg_info_init_ctx(vscf_cipher_alg_info_t *self);
 //
 VSCF_PRIVATE void
 vscf_cipher_alg_info_cleanup_ctx(vscf_cipher_alg_info_t *self);
+
+//
+//  Create symmetric cipher algorithm info with identificator and input vector.
+//
+VSCF_PUBLIC void
+vscf_cipher_alg_info_init_ctx_with_members(vscf_cipher_alg_info_t *self, vscf_alg_id_t alg_id, vsc_data_t nonce);
 
 
 // --------------------------------------------------------------------------

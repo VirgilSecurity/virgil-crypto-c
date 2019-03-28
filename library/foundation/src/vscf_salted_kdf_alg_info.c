@@ -106,24 +106,21 @@ vscf_salted_kdf_alg_info_cleanup_ctx(vscf_salted_kdf_alg_info_t *self) {
 //  Create algorithm info with identificator, HASH algorithm info,
 //  salt and iteration count.
 //
-VSCF_PUBLIC vscf_salted_kdf_alg_info_t *
-vscf_salted_kdf_alg_info_new_with_members(
-        vscf_alg_id_t alg_id, vscf_impl_t **hash_alg_info_ref, vsc_data_t salt, size_t iteration_count) {
+VSCF_PUBLIC void
+vscf_salted_kdf_alg_info_init_ctx_with_members(vscf_salted_kdf_alg_info_t *self, vscf_alg_id_t alg_id,
+        vscf_impl_t **hash_alg_info_ref, vsc_data_t salt, size_t iteration_count) {
 
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
     VSCF_ASSERT_PTR(hash_alg_info_ref);
     VSCF_ASSERT_PTR(*hash_alg_info_ref);
     VSCF_ASSERT(vsc_data_is_valid(salt));
-
-    vscf_salted_kdf_alg_info_t *self = vscf_salted_kdf_alg_info_new();
 
     self->alg_id = alg_id;
     self->hash_alg_info = *hash_alg_info_ref;
     *hash_alg_info_ref = NULL;
     self->salt = vsc_buffer_new_with_data(salt);
     self->iteration_count = iteration_count;
-
-    return self;
 }
 
 //

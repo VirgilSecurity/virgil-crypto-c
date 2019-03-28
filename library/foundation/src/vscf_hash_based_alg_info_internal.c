@@ -57,7 +57,6 @@
 #include "vscf_hash_based_alg_info_defs.h"
 #include "vscf_alg_info.h"
 #include "vscf_alg_info_api.h"
-#include "vscf_impl.h"
 #include "vscf_api.h"
 
 // clang-format on
@@ -209,6 +208,38 @@ vscf_hash_based_alg_info_shallow_copy(vscf_hash_based_alg_info_t *self) {
 
     // Proxy to the parent implementation.
     return (vscf_hash_based_alg_info_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
+}
+
+//
+//  Perform initialization of pre-allocated context.
+//  Create algorithm info with identificator and HASH algorithm info.
+//
+VSCF_PUBLIC void
+vscf_hash_based_alg_info_init_with_members(vscf_hash_based_alg_info_t *self, vscf_alg_id_t alg_id,
+        vscf_impl_t **hash_alg_info_ref) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_zeroize(self, sizeof(vscf_hash_based_alg_info_t));
+
+    self->info = &info;
+    self->refcnt = 1;
+
+    vscf_hash_based_alg_info_init_ctx_with_members(self, alg_id, hash_alg_info_ref);
+}
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Create algorithm info with identificator and HASH algorithm info.
+//
+VSCF_PUBLIC vscf_hash_based_alg_info_t *
+vscf_hash_based_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t **hash_alg_info_ref) {
+
+    vscf_hash_based_alg_info_t *self = vscf_hash_based_alg_info_new();
+
+    vscf_hash_based_alg_info_init_with_members(self, alg_id, hash_alg_info_ref);
+
+    return self;
 }
 
 //

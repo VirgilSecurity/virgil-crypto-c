@@ -82,6 +82,13 @@ static void
 vscf_password_recipient_info_cleanup_ctx(vscf_password_recipient_info_t *self);
 
 //
+//  Create object and define all properties.
+//
+static void
+vscf_password_recipient_info_init_ctx_with_members(vscf_password_recipient_info_t *self,
+        vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key);
+
+//
 //  Return size of 'vscf_password_recipient_info_t'.
 //
 VSCF_PUBLIC size_t
@@ -138,6 +145,37 @@ vscf_password_recipient_info_new(void) {
     vscf_password_recipient_info_init(self);
 
     self->self_dealloc_cb = vscf_dealloc;
+
+    return self;
+}
+
+//
+//  Perform initialization of pre-allocated context.
+//  Create object and define all properties.
+//
+VSCF_PUBLIC void
+vscf_password_recipient_info_init_with_members(vscf_password_recipient_info_t *self,
+        vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_zeroize(self, sizeof(vscf_password_recipient_info_t));
+
+    self->refcnt = 1;
+
+    vscf_password_recipient_info_init_ctx_with_members(self, key_encryption_algorithm_ref, encrypted_key);
+}
+
+//
+//  Allocate class context and perform it's initialization.
+//  Create object and define all properties.
+//
+VSCF_PUBLIC vscf_password_recipient_info_t *
+vscf_password_recipient_info_new_with_members(vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key) {
+
+    vscf_password_recipient_info_t *self = vscf_password_recipient_info_new();
+
+    vscf_password_recipient_info_init_with_members(self, key_encryption_algorithm_ref, encrypted_key);
 
     return self;
 }
@@ -226,23 +264,19 @@ vscf_password_recipient_info_cleanup_ctx(vscf_password_recipient_info_t *self) {
 //
 //  Create object and define all properties.
 //
-VSCF_PUBLIC vscf_password_recipient_info_t *
-vscf_password_recipient_info_new_with_members(vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key) {
+static void
+vscf_password_recipient_info_init_ctx_with_members(
+        vscf_password_recipient_info_t *self, vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key) {
 
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(key_encryption_algorithm_ref);
     VSCF_ASSERT_PTR(*key_encryption_algorithm_ref);
     VSCF_ASSERT(vsc_data_is_valid(encrypted_key));
     VSCF_ASSERT(encrypted_key.len > 0);
 
-    vscf_impl_t *key_encryption_algorithm = *key_encryption_algorithm_ref;
+    self->key_encryption_algorithm = *key_encryption_algorithm_ref;
     *key_encryption_algorithm_ref = NULL;
-
-    vscf_password_recipient_info_t *self = vscf_password_recipient_info_new();
-
-    self->key_encryption_algorithm = key_encryption_algorithm;
     self->encrypted_key = vsc_buffer_new_with_data(encrypted_key);
-
-    return self;
 }
 
 //
