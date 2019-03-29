@@ -62,11 +62,13 @@
 // clang-format on
 //  @end
 
+
 #include <iotelic_sp_interface.h>
 #include <vsc_buffer.h>
 #include <iotelic/keypair.h>
 #include <iotelic/ecdsa.h>
 #include <common/iot_errno.h>
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -136,6 +138,7 @@ vscf_iotelic_private_key_generate_key(vscf_iotelic_private_key_t *self, size_t s
     // Fill request to SP
     vs_keypair_cmd_t cmd;
     cmd.slot = slot_id;
+
     // Fill algorithm type
     switch (alg_id) {
     case vscf_alg_id_CURVE25519:

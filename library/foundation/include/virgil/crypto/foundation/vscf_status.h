@@ -212,7 +212,11 @@ enum vscf_status_t {
     //
     //  Signature format is corrupted.
     //
-    vscf_status_ERROR_BAD_SIGNATURE = -308
+    vscf_status_ERROR_BAD_SIGNATURE = -308,
+    //
+    //  Operation on HSM failed.
+    //
+    vscf_status_ERROR_HSM_FAILED = -401
 };
 typedef enum vscf_status_t vscf_status_t;
 

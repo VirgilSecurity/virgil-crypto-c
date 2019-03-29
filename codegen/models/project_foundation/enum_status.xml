@@ -141,4 +141,8 @@
     <constant name="error bad signature" value="-308">
         Signature format is corrupted.
     </constant>
+
+    <constant name="error hsm failed" value="-401">
+        Operation on HSM failed.
+    </constant>
 </enum>

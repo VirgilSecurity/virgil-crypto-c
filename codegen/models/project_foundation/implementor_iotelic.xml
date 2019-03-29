@@ -86,14 +86,15 @@
         <dependency name="hash" interface="hash"/>
     </implementation>
 
-
     <implementation name="public key">
         This is implementation of the public key
 
         <require library="iotelic" feature="library"/>
         <require header="iotelic_sp_interface.h" library="iotelic"/>
+        <require header="iotelic/keypair.h" library="iotelic" scope="context"/>
 
-        <property name="slot id" type="size"/>
+        <property name="public key" class="buffer"/>
+        <property name="keypair type" enum="KEYPAIR_TYPE" library="iotelic"/>
 
         <interface name="alg"/>
         <interface name="key"/>
@@ -103,13 +104,13 @@
             <constant name="can export public key" value="false"/>
         </interface>
 
-        <constructor name="with slot id">
-            Create public key with specific slot id.
-
+        <method name="import from slot id" declaration="public">
+            Import public key by using slot id.
             <argument name="slot id" type="size"/>
-        </constructor>
-    </implementation>
+            <return enum="status"/>
+        </method>
 
+    </implementation>
 
     <implementation name="private key">
         This is implementation of ED25519 private key

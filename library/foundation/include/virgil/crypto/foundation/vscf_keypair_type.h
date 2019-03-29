@@ -47,28 +47,11 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'iotelic public key' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
+//  Define keypair type.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_IOTELIC_PUBLIC_KEY_DEFS_H_INCLUDED
-#define VSCF_IOTELIC_PUBLIC_KEY_DEFS_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_iotelic_public_key.h"
-
-#include <iotelic/keypair.h>
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#ifndef VSCF_KEYPAIR_TYPE_H_INCLUDED
+#define VSCF_KEYPAIR_TYPE_H_INCLUDED
 
 // clang-format on
 //  @end
@@ -86,26 +69,26 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Define keypair type.
 //
-struct vscf_iotelic_public_key_t {
-    //
-    //  Compile-time known information about this implementation.
-    //
-    const vscf_impl_info_t *info;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Implementation specific context.
-    //
-    vsc_buffer_t *public_key;
-    //
-    //  Implementation specific context.
-    //
-    KEYPAIR_TYPE keypair_type;
+enum vscf_keypair_type_t {
+    vscf_keypair_type_UNKNOWN,
+    vscf_keypair_type_INVALID,
+    vscf_keypair_type_EC_SECP192R1,
+    vscf_keypair_type_EC_SECP224R1,
+    vscf_keypair_type_EC_SECP256R1,
+    vscf_keypair_type_EC_SECP384R1,
+    vscf_keypair_type_EC_SECP521R1,
+    vscf_keypair_type_EC_SECP192K1,
+    vscf_keypair_type_EC_SECP224K1,
+    vscf_keypair_type_EC_SECP256K1,
+    vscf_keypair_type_EC_CURVE25519,
+    vscf_keypair_type_EC_ED25519,
+    vscf_keypair_type_RSA_2048,
+    vscf_keypair_type_RSA_3072,
+    vscf_keypair_type_RSA_4096
 };
+typedef enum vscf_keypair_type_t vscf_keypair_type_t;
 
 
 // --------------------------------------------------------------------------
@@ -121,5 +104,5 @@ struct vscf_iotelic_public_key_t {
 
 
 //  @footer
-#endif // VSCF_IOTELIC_PUBLIC_KEY_DEFS_H_INCLUDED
+#endif // VSCF_KEYPAIR_TYPE_H_INCLUDED
 //  @end

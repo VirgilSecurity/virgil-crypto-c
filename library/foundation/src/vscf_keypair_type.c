@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Define keypair type.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,39 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Types of the 'iotelic public key' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_IOTELIC_PUBLIC_KEY_DEFS_H_INCLUDED
-#define VSCF_IOTELIC_PUBLIC_KEY_DEFS_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_iotelic_public_key.h"
-
-#include <iotelic/keypair.h>
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#include "vscf_keypair_type.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -85,41 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handles implementation details.
-//
-struct vscf_iotelic_public_key_t {
-    //
-    //  Compile-time known information about this implementation.
-    //
-    const vscf_impl_info_t *info;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Implementation specific context.
-    //
-    vsc_buffer_t *public_key;
-    //
-    //  Implementation specific context.
-    //
-    KEYPAIR_TYPE keypair_type;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_IOTELIC_PUBLIC_KEY_DEFS_H_INCLUDED
 //  @end

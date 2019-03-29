@@ -47,28 +47,11 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'iotelic public key' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
+//  Define signature type.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_IOTELIC_PUBLIC_KEY_DEFS_H_INCLUDED
-#define VSCF_IOTELIC_PUBLIC_KEY_DEFS_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_iotelic_public_key.h"
-
-#include <iotelic/keypair.h>
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#ifndef VSCF_SIGN_TYPE_H_INCLUDED
+#define VSCF_SIGN_TYPE_H_INCLUDED
 
 // clang-format on
 //  @end
@@ -86,26 +69,15 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Define signature type.
 //
-struct vscf_iotelic_public_key_t {
-    //
-    //  Compile-time known information about this implementation.
-    //
-    const vscf_impl_info_t *info;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Implementation specific context.
-    //
-    vsc_buffer_t *public_key;
-    //
-    //  Implementation specific context.
-    //
-    KEYPAIR_TYPE keypair_type;
+enum vscf_sign_type_t {
+    vscf_sign_type_UNKNOWN,
+    vscf_sign_type_INVALID,
+    vscf_sign_type_COMMON,
+    vscf_sign_type_PSS
 };
+typedef enum vscf_sign_type_t vscf_sign_type_t;
 
 
 // --------------------------------------------------------------------------
@@ -121,5 +93,5 @@ struct vscf_iotelic_public_key_t {
 
 
 //  @footer
-#endif // VSCF_IOTELIC_PUBLIC_KEY_DEFS_H_INCLUDED
+#endif // VSCF_SIGN_TYPE_H_INCLUDED
 //  @end
