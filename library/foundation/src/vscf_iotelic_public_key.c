@@ -57,16 +57,12 @@
 #include "vscf_iotelic_public_key_internal.h"
 
 #include <iotelic_sp_interface.h>
+#include <iotelic/ecdsa.h>
+#include <common/iot_errno.h>
+#include <iotelic/keystorage_slots.h>
 
 // clang-format on
 //  @end
-
-
-#include <limits.h>
-#include <vsc_buffer.h>
-#include <iotelic/ecdsa.h>
-#include <iotelic/keypair.h>
-#include <common/iot_errno.h>
 
 
 //  @generated
@@ -74,6 +70,17 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Private integral constants.
+//
+enum {
+    //
+    //  Maximum inner iotelic public key size in bytes.
+    //  Maximum size of RSA 4096 in PKCS#8 DER format.
+    //
+    vscf_iotelic_public_key_SIZE_MAX = 2350
+};
 
 
 // --------------------------------------------------------------------------
@@ -94,7 +101,6 @@ vscf_iotelic_public_key_init_ctx(vscf_iotelic_public_key_t *self) {
     VSCF_ASSERT_PTR(self);
 
     self->keypair_type = KEYPAIR_INVALID;
-    self->public_key = NULL;
 }
 
 //
@@ -117,26 +123,28 @@ VSCF_PUBLIC vscf_status_t
 vscf_iotelic_public_key_import_from_slot_id(vscf_iotelic_public_key_t *self, size_t slot_id) {
 
     VSCF_ASSERT_PTR(self);
-    if (self->public_key)
-        vsc_buffer_destroy(&self->public_key);
+    VSCF_ASSERT(slot_id >= KEY_SLOT_OTP_0);
+    VSCF_ASSERT(slot_id <= KEY_SLOT_TMP_MAX);
+
+    vsc_buffer_destroy(&self->public_key);
 
     vs_keypair_cmd_t cmd;
-    memset(&cmd, 0, sizeof(cmd));
+    vscf_zeroize(&cmd, sizeof(cmd));
     cmd.slot = slot_id;
 
-    size_t sz;
-    static const size_t MAX_PUBKEY_BUF = 128;
-    self->public_key = vsc_buffer_new_with_capacity(MAX_PUBKEY_BUF);
+    size_t sz = 0;
+    self->public_key = vsc_buffer_new_with_capacity(vscf_iotelic_public_key_SIZE_MAX);
+    int32_t status = vs_iot_execute_crypto_op(VS_IOT_KEYPAIR_GET_PUBLIC, (void *)&cmd, sizeof(cmd),
+            vsc_buffer_unused_bytes(self->public_key), vsc_buffer_unused_len(self->public_key), &sz);
 
-    if (ERR_OK != vs_iot_execute_crypto_op(VS_IOT_KEYPAIR_GET_PUBLIC, (void *)&cmd, sizeof(cmd),
-                          vsc_buffer_unused_bytes(self->public_key), vsc_buffer_capacity(self->public_key), &sz)) {
+    VSCF_ASSERT(sz <= vsc_buffer_unused_len(self->public_key));
+
+    if (status != ERR_OK) {
         vsc_buffer_destroy(&self->public_key);
-
         return vscf_status_ERROR_HSM_FAILED;
     }
 
     vsc_buffer_inc_used(self->public_key, sz);
-
     self->keypair_type = cmd.keypair_type;
 
     return vscf_status_SUCCESS;
@@ -189,11 +197,35 @@ VSCF_PUBLIC size_t
 vscf_iotelic_public_key_key_len(const vscf_iotelic_public_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->keypair_type != KEYPAIR_INVALID);
 
-    if (self->public_key && vsc_buffer_is_valid(self->public_key))
-        return vsc_buffer_len(self->public_key);
-
-    return 0;
+    switch (self->keypair_type) {
+    case KEYPAIR_EC_SECP192K1:
+    case KEYPAIR_EC_SECP192R1:
+        return 24;
+    case KEYPAIR_EC_SECP224K1:
+    case KEYPAIR_EC_SECP224R1:
+        return 28;
+    case KEYPAIR_EC_SECP256K1:
+    case KEYPAIR_EC_SECP256R1:
+        return 32;
+    case KEYPAIR_EC_SECP384R1:
+        return 48;
+    case KEYPAIR_EC_SECP521R1:
+        return 66;
+    case KEYPAIR_EC_CURVE25519:
+    case KEYPAIR_EC_ED25519:
+        return 32;
+    case KEYPAIR_RSA_2048:
+        return 256;
+    case KEYPAIR_RSA_3072:
+        return 384;
+    case KEYPAIR_RSA_4096:
+        return 512;
+    default:
+        VSCF_ASSERT(false && "Unsupported keypair type");
+        return 0;
+    }
 }
 
 //
@@ -202,7 +234,15 @@ vscf_iotelic_public_key_key_len(const vscf_iotelic_public_key_t *self) {
 VSCF_PUBLIC size_t
 vscf_iotelic_public_key_key_bitlen(const vscf_iotelic_public_key_t *self) {
 
-    return vscf_iotelic_public_key_key_len(self) * CHAR_BIT;
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->keypair_type != KEYPAIR_INVALID);
+
+    switch (self->keypair_type) {
+    case KEYPAIR_EC_SECP521R1:
+        return 521;
+    default:
+        return 8 * vscf_iotelic_public_key_key_len(self);
+    }
 }
 
 //
@@ -213,17 +253,14 @@ vscf_iotelic_public_key_verify_hash(
         vscf_iotelic_public_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id, vsc_data_t signature) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_UNUSED(hash_digest);
-    VSCF_UNUSED(hash_id);
-    VSCF_UNUSED(signature);
-
-    if (!self->public_key) {
-        VSCF_ASSERT(false && "public key must be initialized before this call");
-        return false;
-    }
+    VSCF_ASSERT_PTR(self->public_key);
+    VSCF_ASSERT_PTR(self->keypair_type != KEYPAIR_INVALID);
+    VSCF_ASSERT(vsc_data_is_valid(hash_digest));
+    VSCF_ASSERT(hash_id != vscf_alg_id_NONE);
+    VSCF_ASSERT(vsc_data_is_valid(signature));
 
     vs_ecdsa_verify_cmd_t cmd;
-    memset(&cmd, 0, sizeof(cmd));
+    vscf_zeroize(&cmd, sizeof(cmd));
 
     cmd.keypair_type = self->keypair_type;
 
@@ -247,42 +284,26 @@ vscf_iotelic_public_key_verify_hash(
         cmd.hash_type = HASH_SHA_512;
         break;
     default:
-        VSCF_ASSERT(false && "unsupported hash algorithm has been used");
+        VSCF_ASSERT(false && "Unsupported hash algorithm");
         cmd.hash_type = HASH_SHA_INVALID;
-        break;
+        return false;
     }
 
     switch (cmd.keypair_type) {
-    case KEYPAIR_EC_SECP192R1:
-    case KEYPAIR_EC_SECP224R1:
-    case KEYPAIR_EC_SECP256R1:
-    case KEYPAIR_EC_SECP384R1:
-    case KEYPAIR_EC_SECP521R1:
-    case KEYPAIR_EC_SECP192K1:
-    case KEYPAIR_EC_SECP224K1:
-    case KEYPAIR_EC_SECP256K1:
-    case KEYPAIR_EC_CURVE25519:
-    case KEYPAIR_EC_ED25519:
-        cmd.sign_type = SIGN_COMMON;
-        break;
-
     case KEYPAIR_RSA_2048:
     case KEYPAIR_RSA_3072:
     case KEYPAIR_RSA_4096:
         cmd.sign_type = SIGN_PSS;
         break;
-
-    case KEYPAIR_INVALID:
-    case KEYPAIR_MAX:
-        VSCF_ASSERT(false && "incorrect keypair type");
+    default:
+        cmd.sign_type = SIGN_COMMON;
         break;
     }
 
-    bool res;
-    size_t olen;
-    res = vs_iot_execute_crypto_op(VS_IOT_ECDSA_VERIFY, (void *)&cmd, sizeof(cmd), NULL, 0, &olen) == ECDSA_VERIFY_OK;
+    size_t olen = 0;
+    int32_t status = vs_iot_execute_crypto_op(VS_IOT_ECDSA_VERIFY, (void *)&cmd, sizeof(cmd), NULL, 0, &olen);
 
-    return res;
+    return status == ECDSA_VERIFY_OK;
 }
 
 //
@@ -298,15 +319,9 @@ vscf_iotelic_public_key_export_public_key(const vscf_iotelic_public_key_t *self,
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(out);
 
-    if (self->public_key) {
-        VSCF_ASSERT(vsc_buffer_unused_len(out) >= vsc_buffer_len(self->public_key));
+    //  TODO: This is STUB. Implement me.
 
-        vsc_buffer_write_data(out, vsc_buffer_data(self->public_key));
-
-        return vscf_status_SUCCESS;
-    } else {
-        return vscf_status_ERROR_UNINITIALIZED;
-    }
+    return vscf_status_ERROR_BAD_ARGUMENTS;
 }
 
 //
@@ -315,7 +330,11 @@ vscf_iotelic_public_key_export_public_key(const vscf_iotelic_public_key_t *self,
 VSCF_PUBLIC size_t
 vscf_iotelic_public_key_exported_public_key_len(const vscf_iotelic_public_key_t *self) {
 
-    return vscf_iotelic_public_key_key_len(self);
+    VSCF_ASSERT_PTR(self);
+
+    //  TODO: This is STUB. Implement me.
+
+    return 0;
 }
 
 //

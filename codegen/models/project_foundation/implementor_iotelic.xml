@@ -92,6 +92,14 @@
         <require library="iotelic" feature="library"/>
         <require header="iotelic_sp_interface.h" library="iotelic"/>
         <require header="iotelic/keypair.h" library="iotelic" scope="context"/>
+        <require header="iotelic/ecdsa.h" library="iotelic"/>
+        <require header="common/iot_errno.h" library="iotelic"/>
+        <require header="iotelic/keystorage_slots.h" library="iotelic"/>
+
+        <constant name = "size max" value="2350">
+            Maximum inner iotelic public key size in bytes.
+            Maximum size of RSA 4096 in PKCS#8 DER format.
+        </constant>
 
         <property name="public key" class="buffer"/>
         <property name="keypair type" enum="KEYPAIR_TYPE" library="iotelic"/>
