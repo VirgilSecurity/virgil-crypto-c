@@ -346,6 +346,7 @@ vscr_ratchet_group_session_cleanup_ctx(vscr_ratchet_group_session_t *self) {
 
     vscr_ratchet_key_utils_destroy(&self->key_utils);
     vscr_ratchet_cipher_destroy(&self->cipher);
+    vscr_ratchet_group_participant_data_destroy(&self->me);
 }
 
 //

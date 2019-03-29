@@ -235,6 +235,12 @@ static void
 vscr_ratchet_group_message_cleanup_ctx(vscr_ratchet_group_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
+
+    if (self->message_pb.has_regular_message) {
+        if (self->message_pb.regular_message.cipher_text.arg) {
+            vsc_buffer_destroy((vsc_buffer_t **)&self->message_pb.regular_message.cipher_text.arg);
+        }
+    }
 }
 
 //

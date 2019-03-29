@@ -65,6 +65,7 @@ test__initialize__fixed_values__should_not_fail(void) {
     initialize(&session_alice, &session_bob, true, false);
 
     vscr_ratchet_session_destroy(&session_alice);
+    vscr_ratchet_session_destroy(&session_bob);
 }
 
 void

@@ -59,7 +59,7 @@ int suiteTearDown(int num_failures) { return num_failures; }
 //  Test functions.
 // --------------------------------------------------------------------------
 void
-test__initialize__fixed_values__should_not_fail(void) {
+test__encrypt_decrypt__random_msg__should_match(void) {
     vscr_ratchet_group_ticket_t *ticket = vscr_ratchet_group_ticket_new();
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_ticket_setup_defaults(ticket));
@@ -77,7 +77,6 @@ test__initialize__fixed_values__should_not_fail(void) {
     generate_random_participant_id(&id3);
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_ticket_set_credentials(ticket, vsc_buffer_data(id1)));
-
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_ticket_add_participant(ticket, vsc_buffer_data(id2)));
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_ticket_add_participant(ticket, vsc_buffer_data(id3)));
 
@@ -108,7 +107,7 @@ test__initialize__fixed_values__should_not_fail(void) {
     TEST_ASSERT(!vscr_ratchet_group_session_is_owner(session2));
     TEST_ASSERT(!vscr_ratchet_group_session_is_owner(session3));
 
-    vsc_buffer_t *text1, *text2, *text3;
+    vsc_buffer_t *text1 = NULL, *text2 = NULL, *text3 = NULL;
 
     generate_random_data(&text1);
     generate_random_data(&text2);
@@ -194,7 +193,7 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__initialize__fixed_values__should_not_fail);
+    RUN_TEST(test__encrypt_decrypt__random_msg__should_match);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

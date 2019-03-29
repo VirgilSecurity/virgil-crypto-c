@@ -200,8 +200,6 @@ static void
 vscr_ratchet_group_participant_data_init_ctx(vscr_ratchet_group_participant_data_t *self) {
 
     VSCR_ASSERT_PTR(self);
-
-    //  TODO: Perform additional context initialization.
 }
 
 //
@@ -214,5 +212,5 @@ vscr_ratchet_group_participant_data_cleanup_ctx(vscr_ratchet_group_participant_d
 
     VSCR_ASSERT_PTR(self);
 
-    //  TODO: Release all inner resources.
+    vscr_ratchet_chain_key_destroy(&self->chain_key);
 }
