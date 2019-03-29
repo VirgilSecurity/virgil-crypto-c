@@ -93,6 +93,15 @@ import VSCRatchet
     /// Invalid padding.
     case errorInvalidPadding = -18
 
+    /// Too many participants.
+    case errorTooManyParticipants = -19
+
+    /// Too few participants.
+    case errorTooFewParticipants = -20
+
+    /// Sender not found.
+    case errorSenderNotFound = -21
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscr_status_t) {
         self.init(rawValue: Int(status.rawValue))!

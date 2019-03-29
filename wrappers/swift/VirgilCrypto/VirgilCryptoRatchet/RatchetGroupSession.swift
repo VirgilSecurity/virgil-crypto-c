@@ -67,9 +67,94 @@ import VirgilCryptoFoundation
         vscr_ratchet_group_session_delete(self.c_ctx)
     }
 
-    @objc public func updateGroupInfo(message: RatchetMessage) throws {
-        let proxyResult = vscr_ratchet_group_session_update_group_info(self.c_ctx, message.c_ctx)
+    /// Random used to generate keys
+    @objc public func setRng(rng: Random) {
+        vscr_ratchet_group_session_release_rng(self.c_ctx)
+        vscr_ratchet_group_session_use_rng(self.c_ctx, rng.c_ctx)
+    }
+
+    @objc public func isInitialized() -> Bool {
+        let proxyResult = vscr_ratchet_group_session_is_initialized(self.c_ctx)
+
+        return proxyResult
+    }
+
+    @objc public func isOwner() -> Bool {
+        let proxyResult = vscr_ratchet_group_session_is_owner(self.c_ctx)
+
+        return proxyResult
+    }
+
+    @objc public func ownerId() -> Data {
+        let proxyResult = vscr_ratchet_group_session_owner_id(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
+    /// Setups default dependencies:
+    /// - RNG: CTR DRBG
+    /// - Key serialization: DER PKCS8
+    /// - Symmetric cipher: AES256-GCM
+    @objc public func setupDefaults() throws {
+        let proxyResult = vscr_ratchet_group_session_setup_defaults(self.c_ctx)
 
         try RatchetError.handleStatus(fromC: proxyResult)
+    }
+
+    @objc public func setupSession(participantId: Data, myPrivateKey: Data, ownerId: Data, message: RatchetGroupMessage) throws {
+        let proxyResult = participantId.withUnsafeBytes({ (participantIdPointer: UnsafePointer<byte>) -> vscr_status_t in
+            myPrivateKey.withUnsafeBytes({ (myPrivateKeyPointer: UnsafePointer<byte>) -> vscr_status_t in
+                ownerId.withUnsafeBytes({ (ownerIdPointer: UnsafePointer<byte>) -> vscr_status_t in
+
+                    return vscr_ratchet_group_session_setup_session(self.c_ctx, vsc_data(participantIdPointer, participantId.count), vsc_data(myPrivateKeyPointer, myPrivateKey.count), vsc_data(ownerIdPointer, ownerId.count), message.c_ctx)
+                })
+            })
+        })
+
+        try RatchetError.handleStatus(fromC: proxyResult)
+    }
+
+    /// Encrypts data
+    @objc public func encrypt(plainText: Data) throws -> RatchetGroupMessage {
+        var error: vscr_error_t = vscr_error_t()
+        vscr_error_reset(&error)
+
+        let proxyResult = plainText.withUnsafeBytes({ (plainTextPointer: UnsafePointer<byte>) in
+
+            return vscr_ratchet_group_session_encrypt(self.c_ctx, vsc_data(plainTextPointer, plainText.count), &error)
+        })
+
+        try RatchetError.handleStatus(fromC: error.status)
+
+        return RatchetGroupMessage.init(take: proxyResult!)
+    }
+
+    /// Calculates size of buffer sufficient to store decrypted message
+    @objc public func decryptLen(message: RatchetGroupMessage) -> Int {
+        let proxyResult = vscr_ratchet_group_session_decrypt_len(self.c_ctx, message.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Decrypts message
+    @objc public func decrypt(message: RatchetGroupMessage) throws -> Data {
+        let plainTextCount = self.decryptLen(message: message)
+        var plainText = Data(count: plainTextCount)
+        var plainTextBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(plainTextBuf)
+        }
+
+        let proxyResult = plainText.withUnsafeMutableBytes({ (plainTextPointer: UnsafeMutablePointer<byte>) -> vscr_status_t in
+            vsc_buffer_init(plainTextBuf)
+            vsc_buffer_use(plainTextBuf, plainTextPointer, plainTextCount)
+
+            return vscr_ratchet_group_session_decrypt(self.c_ctx, message.c_ctx, plainTextBuf)
+        })
+        plainText.count = vsc_buffer_len(plainTextBuf)
+
+        try RatchetError.handleStatus(fromC: proxyResult)
+
+        return plainText
     }
 }

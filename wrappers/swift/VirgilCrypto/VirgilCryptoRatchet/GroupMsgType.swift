@@ -36,17 +36,15 @@
 import Foundation
 import VSCRatchet
 
-/// Represents message type
-@objc(VSCRMsgType) public enum MsgType: Int {
+/// Represents group message type
+@objc(VSCRGroupMsgType) public enum GroupMsgType: Int {
 
-    /// Regular message. This message is used all the time except case described in prekey message section.
-    case regular = 0
+    case groupInfo = 0
 
-    /// Prekey message. This message is sent by initiator till first response is received.
-    case prekey = 1
+    case regular = 1
 
     /// Create enumeration value from the correspond C enumeration value.
-    internal init(fromC msgType: vscr_msg_type_t) {
-        self.init(rawValue: Int(msgType.rawValue))!
+    internal init(fromC groupMsgType: vscr_group_msg_type_t) {
+        self.init(rawValue: Int(groupMsgType.rawValue))!
     }
 }

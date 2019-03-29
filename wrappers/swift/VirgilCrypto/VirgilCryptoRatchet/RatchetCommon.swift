@@ -49,4 +49,6 @@ import VirgilCryptoFoundation
     /// Key pair id length
     @objc public static let keyIdLen: Int = 8
     @objc public static let participantIdLen: Int = 32
+    @objc public static let maxParticipantsCount: Int = 100
+    @objc public static let minParticipantsCount: Int = 1
 }
