@@ -103,6 +103,13 @@ option(VIRGIL_WRAP_ALL "Build all available wrappers on the given platform" OFF)
 option(VIRGIL_WRAP_GO "Build 'Golang' wrapper" OFF)
 option(VIRGIL_WRAP_PHP "Build 'PHP' wrapper" OFF)
 
+# ---------------------------------------------------------------------------
+#   Platfrom specific.
+# ---------------------------------------------------------------------------
+set(VIRGIL_PLATFORM_HDR "" CACHE STRING "Name or path to the header file that contains platform specific definitions.")
+set(VIRGIL_PLATFORM_INC_DIR "" CACHE STRING "Path to the platform specific include directory.")
+set(VIRGIL_PLATFORM_ALLOC "" CACHE STRING "Platform specific allocation function, takes 1 argument with a size.")
+set(VIRGIL_PLATFORM_DEALLOC "" CACHE STRING "Platform specific de-allocation function, takes 1 argument with a pointer.")
 
 # ---------------------------------------------------------------------------
 #   Install options
@@ -174,6 +181,8 @@ add_subdirectory("thirdparty/nanopb")
 # ---------------------------------------------------------------------------
 #   Library core libraries
 # ---------------------------------------------------------------------------
+
+add_subdirectory("library/platform")
 
 if(VIRGIL_LIB_COMMON)
     add_subdirectory("library/common")
