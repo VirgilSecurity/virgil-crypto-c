@@ -37,16 +37,39 @@ import Foundation
 import VSCRatchet
 import VirgilCryptoFoundation
 
-/// Class with public constants
-@objc(VSCRRatchetCommon) public class RatchetCommon: NSObject {
+@objc(VSCRRatchetGroupSession) public class RatchetGroupSession: NSObject {
 
-    /// Max plain text length allowed to be encrypted
-    @objc public static let maxPlainTextLen: Int = 30000
-    /// Max cipher text length allowed to be decrypted
-    @objc public static let maxCipherTextLen: Int = 32768
-    /// Max message length
-    @objc public static let maxMessageLen: Int = 32964
-    /// Key pair id length
-    @objc public static let keyIdLen: Int = 8
-    @objc public static let participantIdLen: Int = 32
+    /// Handle underlying C context.
+    @objc public let c_ctx: OpaquePointer
+
+    /// Create underlying C context.
+    public override init() {
+        self.c_ctx = vscr_ratchet_group_session_new()
+        super.init()
+    }
+
+    /// Acquire C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(take c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Acquire retained C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(use c_ctx: OpaquePointer) {
+        self.c_ctx = vscr_ratchet_group_session_shallow_copy(c_ctx)
+        super.init()
+    }
+
+    /// Release underlying C context.
+    deinit {
+        vscr_ratchet_group_session_delete(self.c_ctx)
+    }
+
+    @objc public func updateGroupInfo(message: RatchetMessage) throws {
+        let proxyResult = vscr_ratchet_group_session_update_group_info(self.c_ctx, message.c_ctx)
+
+        try RatchetError.handleStatus(fromC: proxyResult)
+    }
 }

@@ -85,6 +85,21 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_group_message.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_group_session.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_group_ticket.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_key_utils.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -109,6 +124,11 @@ set_property(
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_group_msg_type.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
 target_sources(ratchet
     PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_assert.h"
@@ -121,6 +141,12 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_RATCHET_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/private/vscr_ratchet_cipher.h>"
             "$<$<BOOL:${VSCR_RATCHET_COMMON}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_common.h>"
             "$<$<BOOL:${VSCR_RATCHET_COMMON_HIDDEN}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/private/vscr_ratchet_common_hidden.h>"
+            "$<$<BOOL:${VSCR_RATCHET_GROUP_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_group_message.h>"
+            "$<$<BOOL:${VSCR_RATCHET_GROUP_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/private/vscr_ratchet_group_message_defs.h>"
+            "$<$<BOOL:${VSCR_RATCHET_GROUP_PARTICIPANT_DATA}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_group_participant_data.h>"
+            "$<$<BOOL:${VSCR_RATCHET_GROUP_PARTICIPANT_DATA_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_group_participant_data_node.h>"
+            "$<$<BOOL:${VSCR_RATCHET_GROUP_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_group_session.h>"
+            "$<$<BOOL:${VSCR_RATCHET_GROUP_TICKET}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_group_ticket.h>"
             "$<$<BOOL:${VSCR_RATCHET_KEY_UTILS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_key_utils.h>"
             "$<$<BOOL:${VSCR_RATCHET_KEYS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_keys.h>"
             "$<$<BOOL:${VSCR_RATCHET_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_message.h>"
@@ -137,6 +163,7 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_RATCHET_X3DH}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_x3dh.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_status.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_msg_type.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_group_msg_type.h"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_library.c"
@@ -147,6 +174,12 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_RATCHET_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_cipher.c>"
             "$<$<BOOL:${VSCR_RATCHET_COMMON}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_common.c>"
             "$<$<BOOL:${VSCR_RATCHET_COMMON_HIDDEN}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_common_hidden.c>"
+            "$<$<BOOL:${VSCR_RATCHET_GROUP_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_group_message.c>"
+            "$<$<BOOL:${VSCR_RATCHET_GROUP_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_group_message_defs.c>"
+            "$<$<BOOL:${VSCR_RATCHET_GROUP_PARTICIPANT_DATA}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_group_participant_data.c>"
+            "$<$<BOOL:${VSCR_RATCHET_GROUP_PARTICIPANT_DATA_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_group_participant_data_node.c>"
+            "$<$<BOOL:${VSCR_RATCHET_GROUP_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_group_session.c>"
+            "$<$<BOOL:${VSCR_RATCHET_GROUP_TICKET}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_group_ticket.c>"
             "$<$<BOOL:${VSCR_RATCHET_KEY_UTILS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_key_utils.c>"
             "$<$<BOOL:${VSCR_RATCHET_KEYS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_keys.c>"
             "$<$<BOOL:${VSCR_RATCHET_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_message.c>"
@@ -163,6 +196,7 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_RATCHET_X3DH}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_x3dh.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_status.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_msg_type.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscr_group_msg_type.c"
         )
 
 target_include_directories(ratchet

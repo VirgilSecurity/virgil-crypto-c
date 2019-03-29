@@ -45,6 +45,8 @@ import VSCRatchet
     /// Prekey message. This message is sent by initiator till first response is received.
     case prekey = 1
 
+    case groupInfo = 2
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC msgType: vscr_msg_type_t) {
         self.init(rawValue: Int(msgType.rawValue))!

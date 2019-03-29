@@ -44,14 +44,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#ifndef VSCR_RATCHET_GROUP_PARTICIPANT_DATA_NODE_H_INCLUDED
+#define VSCR_RATCHET_GROUP_PARTICIPANT_DATA_NODE_H_INCLUDED
 
-//  @description
-// --------------------------------------------------------------------------
-//  Defines the library status codes.
-// --------------------------------------------------------------------------
-
-#ifndef VSCR_STATUS_H_INCLUDED
-#define VSCR_STATUS_H_INCLUDED
+#include "vscr_library.h"
+#include "vscr_ratchet_group_participant_data_node.h"
+#include "vscr_ratchet_group_participant_data.h"
 
 // clang-format on
 //  @end
@@ -69,99 +67,67 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines the library status codes.
+//  Handle 'ratchet group participant data node' context.
 //
-enum vscr_status_t {
+typedef struct vscr_ratchet_group_participant_data_node_t vscr_ratchet_group_participant_data_node_t;
+struct vscr_ratchet_group_participant_data_node_t {
     //
-    //  No errors was occurred.
+    //  Function do deallocate self context.
     //
-    vscr_status_SUCCESS = 0,
+    vscr_dealloc_fn self_dealloc_cb;
     //
-    //  Error during protobuf deserialization.
+    //  Reference counter.
     //
-    vscr_status_ERROR_PROTOBUF_DECODE = -1,
-    //
-    //  Message version doesn't match.
-    //
-    vscr_status_ERROR_MESSAGE_VERSION_DOESN_T_MATCH = -2,
-    //
-    //  Bad message type.
-    //
-    vscr_status_ERROR_BAD_MESSAGE_TYPE = -3,
-    //
-    //  AES error.
-    //
-    vscr_status_ERROR_AES = -4,
-    //
-    //  RNG failed.
-    //
-    vscr_status_ERROR_RNG_FAILED = -5,
-    //
-    //  Curve25519 error.
-    //
-    vscr_status_ERROR_CURVE25519 = -6,
-    //
-    //  Key deserialization failed.
-    //
-    vscr_status_ERROR_KEY_DESERIALIZATION_FAILED = -7,
-    //
-    //  Invalid key type.
-    //
-    vscr_status_ERROR_INVALID_KEY_TYPE = -8,
-    //
-    //  Identity key doesn't match.
-    //
-    vscr_status_ERROR_IDENTITY_KEY_DOESNT_MATCH = -9,
-    //
-    //  Message already decrypted.
-    //
-    vscr_status_ERROR_MESSAGE_ALREADY_DECRYPTED = -10,
-    //
-    //  Too many lost messages.
-    //
-    vscr_status_ERROR_TOO_MANY_LOST_MESSAGES = -11,
-    //
-    //  Sender chain missing.
-    //
-    vscr_status_ERROR_SENDER_CHAIN_MISSING = -12,
-    //
-    //  Skipped message missing.
-    //
-    vscr_status_ERROR_SKIPPED_MESSAGE_MISSING = -13,
-    //
-    //  Can't encrypt yet.
-    //
-    vscr_status_ERROR_CAN_T_ENCRYPT_YET = -14,
-    //
-    //  Exceeded max plain text len.
-    //
-    vscr_status_ERROR_EXCEEDED_MAX_PLAIN_TEXT_LEN = -15,
-    //
-    //  Too many messages for sender chain.
-    //
-    vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_SENDER_CHAIN = -16,
-    //
-    //  Too many messages for receiver chain.
-    //
-    vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN = -17,
-    //
-    //  Invalid padding.
-    //
-    vscr_status_ERROR_INVALID_PADDING = -18,
-    //
-    //  Too many participants.
-    //
-    vscr_status_ERROR_TOO_MANY_PARTICIPANTS = -19,
-    //
-    //  Too few participants.
-    //
-    vscr_status_ERROR_TOO_FEW_PARTICIPANTS = -20,
-    //
-    //  Sender not found.
-    //
-    vscr_status_ERROR_SENDER_NOT_FOUND = -21
+    size_t refcnt;
+
+    vscr_ratchet_group_participant_data_t *value;
+
+    vscr_ratchet_group_participant_data_node_t *next;
 };
-typedef enum vscr_status_t vscr_status_t;
+
+//
+//  Return size of 'vscr_ratchet_group_participant_data_node_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_group_participant_data_node_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_data_node_init(vscr_ratchet_group_participant_data_node_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_data_node_cleanup(vscr_ratchet_group_participant_data_node_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCR_PUBLIC vscr_ratchet_group_participant_data_node_t *
+vscr_ratchet_group_participant_data_node_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if context was allocated by the caller.
+//
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_data_node_delete(vscr_ratchet_group_participant_data_node_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscr_ratchet_group_participant_data_node_new ()'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_data_node_destroy(vscr_ratchet_group_participant_data_node_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCR_PUBLIC vscr_ratchet_group_participant_data_node_t *
+vscr_ratchet_group_participant_data_node_shallow_copy(vscr_ratchet_group_participant_data_node_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -177,5 +143,5 @@ typedef enum vscr_status_t vscr_status_t;
 
 
 //  @footer
-#endif // VSCR_STATUS_H_INCLUDED
+#endif // VSCR_RATCHET_GROUP_PARTICIPANT_DATA_NODE_H_INCLUDED
 //  @end

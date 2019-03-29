@@ -1,4 +1,4 @@
-<class name="ratchet message" context="private">
+<class name="ratchet group message" context="private">
     Class represents ratchet message
 
     <require class="ratchet common hidden" scope="private"/>
@@ -7,33 +7,17 @@
     <require impl="sha512" project="foundation" scope="private"/>
     <require module="buffer defs" scope="private" project="common"/>
 
-    <require header="RatchetMessage.pb.h" scope="context"/>
+    <require header="RatchetGroupMessage.pb.h" scope="context"/>
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
-    <property name="message pb" class="Message" library="nanopb" access="readwrite" is_reference="0"/>
+    <property name="message pb" class="GroupMessage" library="nanopb" access="readwrite" is_reference="0"/>
 
     <method name="get type" is_const="1">
         Returns message type.
 
-        <return enum="msg type">
+        <return enum="group msg type">
             Message type.
-        </return>
-    </method>
-
-    <method name="get long-term public key">
-        Returns long-term public key, if message is prekey message.
-
-        <return class="data">
-            Long-term public key, if message is prekey message.
-        </return>
-    </method>
-
-    <method name="get one-time public key">
-        Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
-
-        <return class="data">
-            One-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
         </return>
     </method>
 

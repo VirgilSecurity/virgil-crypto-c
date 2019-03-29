@@ -42,6 +42,7 @@
 #include "virgil/crypto/foundation/private/vscf_pkcs8_der_serializer_defs.h"
 #include "virgil/crypto/foundation/private/vscf_ed25519_private_key_defs.h"
 #include "virgil/crypto/foundation/vscf_ed25519_public_key.h"
+#include "virgil/crypto/ratchet/vscr_ratchet_group_session.h"
 #include "test_utils_ratchet.h"
 #include "unreliable_msg_producer.h"
 #include "privateAPI.h"
@@ -107,6 +108,18 @@ generate_PKCS8_keypair(vsc_buffer_t **priv, vsc_buffer_t **pub) {
 
     vscf_ed25519_public_key_destroy((vscf_ed25519_public_key_t **)&public_key);
     vscf_ed25519_private_key_destroy((vscf_ed25519_private_key_t **)&private_key);
+}
+
+void
+generate_random_participant_id(vsc_buffer_t **id) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
+    *id = vsc_buffer_new_with_capacity(vscr_ratchet_common_PARTICIPANT_ID_LEN);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, vscr_ratchet_common_PARTICIPANT_ID_LEN, *id));
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 void

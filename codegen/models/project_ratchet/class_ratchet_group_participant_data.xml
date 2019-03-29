@@ -1,0 +1,13 @@
+<class name="ratchet group participant data" context="public" scope="internal">
+
+    <require class="ratchet common hidden" scope="public"/>
+    <require class="ratchet common" scope="public"/>
+    <require class="ratchet common" scope="public"/>
+
+    <property name="participant id" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
+    </property>
+
+    <property name="chain key" class="ratchet chain key"/>
+
+</class>

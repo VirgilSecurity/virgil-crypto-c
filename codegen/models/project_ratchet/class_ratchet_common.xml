@@ -16,4 +16,8 @@
     <constant name="key id len" value="8">
         Key pair id length
     </constant>
+
+    <constant name="participant id len" value="32"/>
+    <constant name="max participants count" value="100"/>
+    <constant name="min participants count" value="1"/>
 </class>

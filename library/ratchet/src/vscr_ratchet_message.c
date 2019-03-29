@@ -246,8 +246,9 @@ vscr_ratchet_message_init_ctx(vscr_ratchet_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    self->message_pb.has_regular_message = false;
-    self->message_pb.has_prekey_message = false;
+    Message msg = Message_init_zero;
+
+    self->message_pb = msg;
 }
 
 //
@@ -277,7 +278,7 @@ vscr_ratchet_message_cleanup_ctx(vscr_ratchet_message_t *self) {
 //  Returns message type.
 //
 VSCR_PUBLIC vscr_msg_type_t
-vscr_ratchet_message_get_type(vscr_ratchet_message_t *self) {
+vscr_ratchet_message_get_type(const vscr_ratchet_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
 

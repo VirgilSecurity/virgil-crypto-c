@@ -374,6 +374,7 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(
 
         result = vsc_buffer_new_with_data(
                 vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH));
+        vsc_buffer_make_secure(result);
     } else if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_ED25519) {
         if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH + 2) {
             VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
@@ -382,6 +383,7 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(
         }
 
         result = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+        vsc_buffer_make_secure(result);
 
         int curve25519_status = ed25519_key_to_curve25519(vsc_buffer_unused_bytes(result),
                 vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH).bytes);

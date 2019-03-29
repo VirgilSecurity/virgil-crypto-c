@@ -1,0 +1,55 @@
+<class name="ratchet group ticket" context="internal">
+
+    <require class="ratchet common" scope="public"/>
+    <require class="ratchet common hidden" scope="context"/>
+
+    <require module="ratchet message defs" scope="private"/>
+
+    <require module="buffer defs" project="common" scope="private"/>
+    <require module="ratchet group message defs" scope="private"/>
+
+    <require header="RatchetGroupMessage.pb.h" scope="private"/>
+    <require header="pb_decode.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
+
+    <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
+
+    <require impl="ctr drbg" project="foundation" scope="private"/>
+
+    <dependency name="rng" interface="random" project="foundation">
+        Random used to generate keys
+    </dependency>
+
+    <property name="msg" class="ratchet group message" access="readwrite"/>
+
+    <method name="setup defaults">
+        Setups default dependencies:
+        - RNG: CTR DRBG
+        - Key serialization: DER PKCS8
+        - Symmetric cipher: AES256-GCM
+
+        <return enum="status"/>
+    </method>
+
+    <method name="set credentials">
+        <argument name="participant id" class="data"/>
+
+        <return enum="status">
+            Error
+        </return>
+    </method>
+
+    <method name="add participant">
+        <argument name="participant id" class="data"/>
+
+        <return enum="status">
+            Error
+        </return>
+    </method>
+
+    <method name="generate ticket" is_const="1">
+        <property name="participant id" class="data"/>
+
+        <return class="ratchet group message" access="readonly"/>
+    </method>
+</class>

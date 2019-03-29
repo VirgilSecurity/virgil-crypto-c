@@ -58,14 +58,13 @@ int suiteTearDown(int num_failures) { return num_failures; }
 //  Test functions.
 // --------------------------------------------------------------------------
 void
-test__encrypt_decrypt__fixed_plain_text__decrypted_should_match(void) {
+test__initialize__fixed_values__should_not_fail(void) {
     vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
     vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
 
     initialize(&session_alice, &session_bob, true, false);
 
     vscr_ratchet_session_destroy(&session_alice);
-    vscr_ratchet_session_destroy(&session_bob);
 }
 
 void
@@ -220,7 +219,7 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__encrypt_decrypt__fixed_plain_text__decrypted_should_match);
+    RUN_TEST(test__initialize__fixed_values__should_not_fail);
     RUN_TEST(test__encrypt_decrypt_back_and_forth__fixed_plain_text__decrypted_should_match);
     RUN_TEST(test__encrypt_decrypt__100_plain_texts_random_order__decrypted_should_match);
     RUN_TEST(test__encrypt_decrypt__100_plain_texts_random_order_no_one_time__decrypted_should_match);

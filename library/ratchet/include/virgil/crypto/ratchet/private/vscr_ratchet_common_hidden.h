@@ -71,6 +71,7 @@ enum {
     vscr_ratchet_common_hidden_RATCHET_REGULAR_MESSAGE_VERSION = 1,
     vscr_ratchet_common_hidden_RATCHET_PROTOCOL_VERSION = 1,
     vscr_ratchet_common_hidden_RATCHET_MESSAGE_VERSION = 1,
+    vscr_ratchet_common_hidden_RATCHET_GROUP_INFO_VERSION = 1,
     vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH = 32,
     vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH = 32,
     vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES = 40,

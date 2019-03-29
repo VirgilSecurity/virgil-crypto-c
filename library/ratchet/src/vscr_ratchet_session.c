@@ -348,6 +348,8 @@ vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *self) {
 static void
 vscr_ratchet_session_did_setup_rng(vscr_ratchet_session_t *self) {
 
+    VSCR_ASSERT_PTR(self);
+
     if (self->rng != NULL) {
         vscr_ratchet_use_rng(self->ratchet, self->rng);
     }

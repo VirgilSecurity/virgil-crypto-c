@@ -76,4 +76,16 @@
     <constant name="error invalid padding" value="-18">
         Invalid padding.
     </constant>
+
+    <constant name="error too many participants" value="-19">
+        Too many participants.
+    </constant>
+
+    <constant name="error too few participants" value="-20">
+        Too few participants.
+    </constant>
+
+    <constant name="error sender not found" value="-21">
+        Sender not found.
+    </constant>
 </enum>

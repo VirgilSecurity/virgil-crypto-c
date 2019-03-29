@@ -89,7 +89,10 @@ enum {
     //
     //  Key pair id length
     //
-    vscr_ratchet_common_KEY_ID_LEN = 8
+    vscr_ratchet_common_KEY_ID_LEN = 8,
+    vscr_ratchet_common_PARTICIPANT_ID_LEN = 32,
+    vscr_ratchet_common_MAX_PARTICIPANTS_COUNT = 100,
+    vscr_ratchet_common_MIN_PARTICIPANTS_COUNT = 1
 };
 
 

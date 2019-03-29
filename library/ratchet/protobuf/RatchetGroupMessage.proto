@@ -1,0 +1,26 @@
+syntax = "proto2";
+
+message ParticipantInfo {
+    required uint32 version = 1;
+    required bytes id = 2;
+    required bytes key = 3;
+}
+
+message GroupInfo {
+    required uint32 version = 1;
+    repeated ParticipantInfo participants = 2;
+}
+
+message RegularGroupMessage {
+    required uint32 version = 1;
+    required uint32 counter = 2;
+    required bytes sender_id = 3;
+    required bytes signature = 4;
+    required bytes cipher_text = 5;
+}
+
+message GroupMessage {
+    required uint32 version = 1;
+    optional GroupInfo group_info = 2;
+    optional RegularGroupMessage regular_message = 3;
+}
