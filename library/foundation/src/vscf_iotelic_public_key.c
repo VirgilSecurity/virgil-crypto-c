@@ -124,7 +124,7 @@ vscf_iotelic_public_key_import_from_slot_id(vscf_iotelic_public_key_t *self, siz
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(slot_id >= KEY_SLOT_OTP_0);
-    VSCF_ASSERT(slot_id <= KEY_SLOT_TMP_MAX);
+    VSCF_ASSERT(slot_id < KEY_SLOT_TMP_MAX);
 
     vsc_buffer_destroy(&self->public_key);
 
@@ -316,12 +316,13 @@ vscf_iotelic_public_key_verify_hash(
 VSCF_PUBLIC vscf_status_t
 vscf_iotelic_public_key_export_public_key(const vscf_iotelic_public_key_t *self, vsc_buffer_t *out) {
 
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(out);
+    if (self->public_key) {
+        VSCF_ASSERT(vsc_buffer_unused_len(out) >= vsc_buffer_len(self->public_key));
+        vsc_buffer_write_data(out, vsc_buffer_data(self->public_key));
+        return vscf_status_SUCCESS;
+    }
 
-    //  TODO: This is STUB. Implement me.
-
-    return vscf_status_ERROR_BAD_ARGUMENTS;
+    return vscf_status_ERROR_UNINITIALIZED;
 }
 
 //

@@ -150,7 +150,9 @@ vscf_iotelic_private_key_generate_key(vscf_iotelic_private_key_t *self, size_t s
     case KEYPAIR_EC_ED25519:
         cmd.keypair_type = KEYPAIR_EC_ED25519;
         break;
-    default: { return vscf_status_ERROR_BAD_ARGUMENTS; }
+    default: {
+        return vscf_status_ERROR_BAD_ARGUMENTS;
+    }
     }
 
     if (ERR_OK != vs_iot_execute_crypto_op(VS_IOT_KEYPAIR_CREATE, (void *)&cmd, sizeof(cmd), 0, 0, &sz)) {
