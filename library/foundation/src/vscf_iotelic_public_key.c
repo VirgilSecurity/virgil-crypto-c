@@ -123,7 +123,6 @@ VSCF_PUBLIC vscf_status_t
 vscf_iotelic_public_key_import_from_slot_id(vscf_iotelic_public_key_t *self, size_t slot_id) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(slot_id >= KEY_SLOT_OTP_0);
     VSCF_ASSERT(slot_id < KEY_SLOT_TMP_MAX);
 
     vsc_buffer_destroy(&self->public_key);
