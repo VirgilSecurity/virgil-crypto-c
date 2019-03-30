@@ -64,6 +64,31 @@
 // --------------------------------------------------------------------------
 
 //
+//  Include external platform header if defined.
+//
+#ifdef VIRGIL_PLATFORM_INCLUDE_STATEMENT
+#   include VIRGIL_PLATFORM_INCLUDE_STATEMENT
+#endif
+
+//
+//  Compile-time configuration of the default alloc function.
+//
+#ifdef VIRGIL_PLATFORM_ALLOC
+#   define VSCF_ALLOC_DEFAULT(size) VIRGIL_PLATFORM_ALLOC((size))
+#else
+#   define VSCF_ALLOC_DEFAULT(size) calloc(1, (size))
+#endif
+
+//
+//  Compile-time configuration of the default dealloc function.
+//
+#ifdef VIRGIL_PLATFORM_DEALLOC
+#   define VSCF_DEALLOC_DEFAULT(mem) VIRGIL_PLATFORM_DEALLOC(mem)
+#else
+#   define VSCF_DEALLOC_DEFAULT(mem) free((mem))
+#endif
+
+//
 //  Default allocation function, that is configured during compilation.
 //
 static void *
@@ -91,7 +116,7 @@ static vscf_dealloc_fn inner_dealloc = vscf_default_dealloc;
 static void *
 vscf_default_alloc(size_t size) {
 
-    return VSCF_ALLOC_DEFAULT (size);
+    return VSCF_ALLOC_DEFAULT(size);
 }
 
 //
@@ -100,7 +125,7 @@ vscf_default_alloc(size_t size) {
 static void
 vscf_default_dealloc(void *mem) {
 
-    VSCF_DEALLOC_DEFAULT (mem);
+    VSCF_DEALLOC_DEFAULT(mem);
 }
 
 //
@@ -110,7 +135,17 @@ vscf_default_dealloc(void *mem) {
 VSCF_PUBLIC void *
 vscf_alloc(size_t size) {
 
-    return inner_alloc (size);
+    return inner_alloc(size);
+}
+
+//
+//  Allocate required amount of memory by usging current allocation function.
+//  Returns NULL if memory allocation fails.
+//
+VSCF_PUBLIC void *
+vscf_calloc(size_t count, size_t size) {
+
+    return inner_alloc(count * size);
 }
 
 //
@@ -119,7 +154,7 @@ vscf_alloc(size_t size) {
 VSCF_PUBLIC void
 vscf_dealloc(void *mem) {
 
-    inner_dealloc (mem);
+    inner_dealloc(mem);
 }
 
 //
@@ -128,8 +163,8 @@ vscf_dealloc(void *mem) {
 VSCF_PUBLIC void
 vscf_set_allocators(vscf_alloc_fn alloc_cb, vscf_dealloc_fn dealloc_cb) {
 
-    VSCF_ASSERT_PTR (alloc_cb);
-    VSCF_ASSERT_PTR (dealloc_cb);
+    VSCF_ASSERT_PTR(alloc_cb);
+    VSCF_ASSERT_PTR(dealloc_cb);
 
     inner_alloc = alloc_cb;
     inner_dealloc = dealloc_cb;
@@ -138,13 +173,13 @@ vscf_set_allocators(vscf_alloc_fn alloc_cb, vscf_dealloc_fn dealloc_cb) {
 //
 //  Zeroize memory.
 //  Note, this function can be reduced by compiler during optimization step.
-//  For sensitive data erasing use vscf_erase ().
+//  For sensitive data erasing use vscf_erase().
 //
 VSCF_PUBLIC void
 vscf_zeroize(void *mem, size_t size) {
 
-    VSCF_ASSERT_PTR (mem);
-    memset (mem, 0, size);
+    VSCF_ASSERT_PTR(mem);
+    memset(mem, 0, size);
 }
 
 //
@@ -154,7 +189,7 @@ vscf_zeroize(void *mem, size_t size) {
 VSCF_PUBLIC void
 vscf_erase(void *mem, size_t size) {
 
-    VSCF_ASSERT_PTR (mem);
+    VSCF_ASSERT_PTR(mem);
 
     volatile uint8_t* p = (uint8_t*)mem;
     while (size--) { *p++ = 0; }
