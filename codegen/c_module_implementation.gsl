@@ -370,6 +370,7 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
             . = "Compile-time known information about this implementation."
             .name = my.names.property_info
             .class = my.refs.class_impl_struct_info
+            .access = "readonly"
         endnew
 
         new property to struct
