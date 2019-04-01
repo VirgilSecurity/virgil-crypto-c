@@ -32,26 +32,37 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H
-#define VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H
+#ifndef VIRGIL_CRYPTO_MSG_CHANNEL_H
+#define VIRGIL_CRYPTO_MSG_CHANNEL_H
 
-#include "virgil/crypto/common/vsc_buffer.h"
-#include "virgil/crypto/foundation/vscf_ctr_drbg.h"
-#include "vscr_ratchet_session.h"
-#include "vscr_ratchet_group_session.h"
 
-size_t pick_element_uniform(vscf_ctr_drbg_t *rng, size_t size);
-size_t pick_element_queue(vscf_ctr_drbg_t *rng, size_t size);
-size_t generate_number(vscf_ctr_drbg_t *rng, size_t min, size_t max);
-size_t generate_size(vscf_ctr_drbg_t *rng);
-void generate_random_data(vscf_ctr_drbg_t *rng, vsc_buffer_t **buffer);
-void generate_PKCS8_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub);
-void generate_random_participant_id(vscf_ctr_drbg_t *rng, vsc_buffer_t **id);
-void generate_raw_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub);
-void initialize(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool enable_one_time, bool should_restore);
-void encrypt_decrypt__100_plain_texts_random_order(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *session_bob);
-void encrypt_decrypt__100_plain_texts_random_order_with_producers(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool should_restore);
-void restore_session(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session);
-void initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratchet_group_session_t ***sessions);
+#include <virgil/crypto/common/vsc_buffer.h>
+#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 
-#endif //VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H
+typedef struct channel_msg {
+    vsc_buffer_t *plain_text;
+    vsc_buffer_t *cipher_text;
+} channel_msg_t;
+
+typedef struct channel_msg_node channel_msg_node_t;
+
+struct channel_msg_node {
+    channel_msg_t *msg;
+    channel_msg_node_t *next;
+};
+
+typedef struct msg_channel {
+    vscf_ctr_drbg_t *rng;
+    channel_msg_node_t *msg_list;
+    size_t msg_count;
+} msg_channel_t;
+
+void deinit_msg(channel_msg_t *msg);
+void deinit_node(channel_msg_node_t *node);
+void init_channel(msg_channel_t *self, vscf_ctr_drbg_t *rng);
+void deinit_channel(msg_channel_t *self);
+void push_msg(msg_channel_t *self, vsc_data_t plain_text, vsc_data_t msg);
+bool has_msg(msg_channel_t *self);
+channel_msg_t *pop_msg(msg_channel_t *self);
+
+#endif //VIRGIL_CRYPTO_MSG_CHANNEL_H

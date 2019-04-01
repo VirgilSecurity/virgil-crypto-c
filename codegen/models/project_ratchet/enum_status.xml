@@ -88,4 +88,8 @@
     <constant name="error sender not found" value="-21">
         Sender not found.
     </constant>
+
+    <constant name="error cannot decrypt own messages" value="-22">
+        Cannot decrypt own messages.
+    </constant>
 </enum>

@@ -3,9 +3,6 @@
     <require header="RatchetSession.pb.h" scope="public"/>
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
-
-    <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
-
     <require class="ratchet common hidden" scope="context"/>
 
     <property name="public key" type="byte" access="readwrite">

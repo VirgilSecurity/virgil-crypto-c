@@ -1,0 +1,10 @@
+<class name="ratchet skipped group message key root node" context="public" scope="internal">
+
+    <require class="ratchet common" scope="public"/>
+
+    <property name="id" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
+    </property>
+    <property name="begin" class="ratchet skipped group message key node" access="readwrite"/>
+
+</class>

@@ -20,4 +20,9 @@
     <constant name="participant id len" value="32"/>
     <constant name="max participants count" value="100"/>
     <constant name="min participants count" value="1"/>
+
+    <constant name="max group message len" value="32964">
+        FIXME
+    </constant>
+
 </class>

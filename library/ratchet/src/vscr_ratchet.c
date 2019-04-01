@@ -647,6 +647,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
         vscr_ratchet_skipped_message_key_t *skipped_message_key = vscr_ratchet_skipped_message_key_new();
         skipped_message_key->message_key = vscr_ratchet_keys_create_message_key(&receiver_chain->chain_key);
         memcpy(skipped_message_key->public_key, receiver_chain->public_key, sizeof(receiver_chain->public_key));
+        // FIXME: Add overflow check
         vscr_ratchet_keys_advance_chain_key(&receiver_chain->chain_key);
         vscr_ratchet_skipped_messages_add_key(self->skipped_messages, skipped_message_key);
     }

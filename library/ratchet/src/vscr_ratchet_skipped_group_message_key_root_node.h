@@ -44,13 +44,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_COMMON_HIDDEN_H_INCLUDED
-#define VSCR_RATCHET_COMMON_HIDDEN_H_INCLUDED
+#ifndef VSCR_RATCHET_SKIPPED_GROUP_MESSAGE_KEY_ROOT_NODE_H_INCLUDED
+#define VSCR_RATCHET_SKIPPED_GROUP_MESSAGE_KEY_ROOT_NODE_H_INCLUDED
 
 #include "vscr_library.h"
-
-#include <pb_decode.h>
-#include <pb_encode.h>
+#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_skipped_group_message_key_node.h"
 
 // clang-format on
 //  @end
@@ -68,29 +67,69 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
+//  Handle 'ratchet skipped group message key root node' context.
 //
-enum {
-    vscr_ratchet_common_hidden_RATCHET_REGULAR_MESSAGE_VERSION = 1,
-    vscr_ratchet_common_hidden_RATCHET_PROTOCOL_VERSION = 1,
-    vscr_ratchet_common_hidden_RATCHET_MESSAGE_VERSION = 1,
-    vscr_ratchet_common_hidden_RATCHET_GROUP_INFO_VERSION = 1,
-    vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH = 32,
-    vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH = 32,
-    vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES = 40,
-    vscr_ratchet_common_hidden_MAX_RECEIVERS_CHAINS = 5,
-    vscr_ratchet_common_hidden_MAX_MESSAGE_GAP = 2000,
-    vscr_ratchet_common_hidden_MAX_REGULAR_MESSAGE_LEN = 32818,
-    vscr_ratchet_common_hidden_MAX_PREKEY_MESSAGE_LEN = 32964,
-    vscr_ratchet_common_hidden_PADDING_FACTOR = 160,
-    vscr_ratchet_common_hidden_PADDING_SIZE_LEN = 4
+typedef struct vscr_ratchet_skipped_group_message_key_root_node_t vscr_ratchet_skipped_group_message_key_root_node_t;
+struct vscr_ratchet_skipped_group_message_key_root_node_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+
+    byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN];
+
+    vscr_ratchet_skipped_group_message_key_node_t *begin;
 };
 
-VSCR_PUBLIC bool
-vscr_ratchet_common_hidden_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void**arg);
+//
+//  Return size of 'vscr_ratchet_skipped_group_message_key_root_node_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_skipped_group_message_key_root_node_ctx_size(void);
 
-VSCR_PUBLIC bool
-vscr_ratchet_common_hidden_buffer_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg);
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_message_key_root_node_init(vscr_ratchet_skipped_group_message_key_root_node_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_message_key_root_node_cleanup(vscr_ratchet_skipped_group_message_key_root_node_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCR_PUBLIC vscr_ratchet_skipped_group_message_key_root_node_t *
+vscr_ratchet_skipped_group_message_key_root_node_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if context was allocated by the caller.
+//
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_message_key_root_node_delete(vscr_ratchet_skipped_group_message_key_root_node_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscr_ratchet_skipped_group_message_key_root_node_new ()'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_message_key_root_node_destroy(
+        vscr_ratchet_skipped_group_message_key_root_node_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCR_PUBLIC vscr_ratchet_skipped_group_message_key_root_node_t *
+vscr_ratchet_skipped_group_message_key_root_node_shallow_copy(
+        vscr_ratchet_skipped_group_message_key_root_node_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -106,5 +145,5 @@ vscr_ratchet_common_hidden_buffer_encode_callback(pb_ostream_t *stream, const pb
 
 
 //  @footer
-#endif // VSCR_RATCHET_COMMON_HIDDEN_H_INCLUDED
+#endif // VSCR_RATCHET_SKIPPED_GROUP_MESSAGE_KEY_ROOT_NODE_H_INCLUDED
 //  @end

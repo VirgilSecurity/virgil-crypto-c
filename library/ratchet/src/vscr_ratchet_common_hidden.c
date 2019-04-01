@@ -48,6 +48,8 @@
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 
+#include <virgil/crypto/common/vsc_buffer.h>
+
 // clang-format on
 //  @end
 
@@ -64,3 +66,30 @@
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
+
+VSCR_PUBLIC bool
+vscr_ratchet_common_hidden_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void **arg) {
+
+    VSCR_ASSERT_PTR(stream);
+    VSCR_ASSERT_PTR(arg);
+    VSCR_UNUSED(field);
+
+    *arg = vsc_buffer_new_with_data(vsc_data(stream->state, stream->bytes_left));
+    stream->bytes_left = 0;
+
+    return true;
+}
+
+VSCR_PUBLIC bool
+vscr_ratchet_common_hidden_buffer_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg) {
+
+    VSCR_ASSERT_PTR(stream);
+    VSCR_ASSERT_PTR(arg);
+    VSCR_ASSERT_PTR(field);
+
+    if (!pb_encode_tag_for_field(stream, field))
+        return false;
+
+    return pb_encode_string(stream, vsc_buffer_bytes(*arg), vsc_buffer_len(*arg));
+}

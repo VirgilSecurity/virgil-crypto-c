@@ -121,17 +121,20 @@ test__responder_x3dh__fixed_keys_weak__should_match(void) {
 
 void
 test__x3dh__random_keys__should_match(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
     vsc_buffer_t *sender_identity_private_key, *sender_identity_public_key;
     vsc_buffer_t *sender_ephemeral_private_key, *sender_ephemeral_public_key;
     vsc_buffer_t *receiver_identity_private_key, *receiver_identity_public_key;
     vsc_buffer_t *receiver_long_term_private_key, *receiver_long_term_public_key;
     vsc_buffer_t *receiver_one_time_private_key, *receiver_one_time_public_key;
 
-    generate_raw_keypair(&sender_identity_private_key, &sender_identity_public_key);
-    generate_raw_keypair(&sender_ephemeral_private_key, &sender_ephemeral_public_key);
-    generate_raw_keypair(&receiver_identity_private_key, &receiver_identity_public_key);
-    generate_raw_keypair(&receiver_long_term_private_key, &receiver_long_term_public_key);
-    generate_raw_keypair(&receiver_one_time_private_key, &receiver_one_time_public_key);
+    generate_raw_keypair(rng, &sender_identity_private_key, &sender_identity_public_key);
+    generate_raw_keypair(rng, &sender_ephemeral_private_key, &sender_ephemeral_public_key);
+    generate_raw_keypair(rng, &receiver_identity_private_key, &receiver_identity_public_key);
+    generate_raw_keypair(rng, &receiver_long_term_private_key, &receiver_long_term_public_key);
+    generate_raw_keypair(rng, &receiver_one_time_private_key, &receiver_one_time_public_key);
 
     vsc_buffer_t *shared_secret_sender = vsc_buffer_new_with_capacity(4 * ED25519_DH_LEN);
     vsc_buffer_t *shared_secret_receiver = vsc_buffer_new_with_capacity(4 * ED25519_DH_LEN);
@@ -167,19 +170,24 @@ test__x3dh__random_keys__should_match(void) {
     vsc_buffer_destroy(&receiver_long_term_public_key);
     vsc_buffer_destroy(&receiver_one_time_private_key);
     vsc_buffer_destroy(&receiver_one_time_public_key);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 void
 test__x3dh__random_keys_weak__should_match(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
     vsc_buffer_t *sender_identity_private_key, *sender_identity_public_key;
     vsc_buffer_t *sender_ephemeral_private_key, *sender_ephemeral_public_key;
     vsc_buffer_t *receiver_identity_private_key, *receiver_identity_public_key;
     vsc_buffer_t *receiver_long_term_private_key, *receiver_long_term_public_key;
 
-    generate_raw_keypair(&sender_identity_private_key, &sender_identity_public_key);
-    generate_raw_keypair(&sender_ephemeral_private_key, &sender_ephemeral_public_key);
-    generate_raw_keypair(&receiver_identity_private_key, &receiver_identity_public_key);
-    generate_raw_keypair(&receiver_long_term_private_key, &receiver_long_term_public_key);
+    generate_raw_keypair(rng, &sender_identity_private_key, &sender_identity_public_key);
+    generate_raw_keypair(rng, &sender_ephemeral_private_key, &sender_ephemeral_public_key);
+    generate_raw_keypair(rng, &receiver_identity_private_key, &receiver_identity_public_key);
+    generate_raw_keypair(rng, &receiver_long_term_private_key, &receiver_long_term_public_key);
 
     vsc_buffer_t *shared_secret_sender = vsc_buffer_new_with_capacity(3 * ED25519_DH_LEN);
     vsc_buffer_t *shared_secret_receiver = vsc_buffer_new_with_capacity(3 * ED25519_DH_LEN);
@@ -211,6 +219,8 @@ test__x3dh__random_keys_weak__should_match(void) {
     vsc_buffer_destroy(&receiver_identity_public_key);
     vsc_buffer_destroy(&receiver_long_term_private_key);
     vsc_buffer_destroy(&receiver_long_term_public_key);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 #endif

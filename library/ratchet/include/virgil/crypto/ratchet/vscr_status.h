@@ -159,7 +159,11 @@ enum vscr_status_t {
     //
     //  Sender not found.
     //
-    vscr_status_ERROR_SENDER_NOT_FOUND = -21
+    vscr_status_ERROR_SENDER_NOT_FOUND = -21,
+    //
+    //  Cannot decrypt own messages.
+    //
+    vscr_status_ERROR_CANNOT_DECRYPT_OWN_MESSAGES = -22
 };
 typedef enum vscr_status_t vscr_status_t;
 

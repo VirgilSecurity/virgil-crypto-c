@@ -270,7 +270,8 @@ vscr_ratchet_group_message_serialize_len(vscr_ratchet_group_message_t *self) {
 
     // FIXME
     VSCR_UNUSED(self);
-    return 0;
+
+    return 10000;
 }
 
 //
@@ -280,13 +281,16 @@ VSCR_PUBLIC void
 vscr_ratchet_group_message_serialize(vscr_ratchet_group_message_t *self, vsc_buffer_t *output) {
 
     VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(output);
     VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_group_message_serialize_len(self));
-
-    vscr_ratchet_group_message_set_pb_encode_callback(self);
+    VSCR_ASSERT(self->message_pb.has_regular_message != self->message_pb.has_group_info);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_unused_len(output));
 
-    VSCR_ASSERT(pb_encode(&ostream, GroupInfo_fields, &self->message_pb));
+    vscr_ratchet_group_message_set_pb_encode_callback(self);
+
+    VSCR_ASSERT(pb_encode(&ostream, GroupMessage_fields, &self->message_pb));
+    vsc_buffer_inc_used(output, ostream.bytes_written);
 }
 
 //
@@ -295,25 +299,40 @@ vscr_ratchet_group_message_serialize(vscr_ratchet_group_message_t *self, vsc_buf
 VSCR_PUBLIC vscr_ratchet_group_message_t *
 vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
-    VSCR_UNUSED(input);
-    VSCR_UNUSED(error);
+    VSCR_ASSERT(vsc_data_is_valid(input));
 
-    vscr_ratchet_group_message_set_pb_decode_callback(NULL);
+    if (input.len > vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN) {
+        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
 
-    return NULL;
+        return NULL;
+    }
+
+    vscr_ratchet_group_message_t *message = vscr_ratchet_group_message_new();
+
+    pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
+
+    vscr_ratchet_group_message_set_pb_decode_callback(message);
+
+    bool status = pb_decode(&istream, GroupMessage_fields, &message->message_pb);
+
+    if (!status || message->message_pb.has_group_info == message->message_pb.has_regular_message) {
+        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+        vscr_ratchet_group_message_destroy(&message);
+
+        return NULL;
+    }
+
+    return message;
 }
 
 static void
 vscr_ratchet_group_message_set_pb_encode_callback(vscr_ratchet_group_message_t *self) {
 
-    //  TODO: This is STUB. Implement me.
-    VSCR_UNUSED(self);
+    self->message_pb.regular_message.cipher_text.funcs.encode = vscr_ratchet_common_hidden_buffer_encode_callback;
 }
 
 static void
 vscr_ratchet_group_message_set_pb_decode_callback(vscr_ratchet_group_message_t *self) {
 
-    //  TODO: This is STUB. Implement me.
-    VSCR_UNUSED(self);
+    self->message_pb.regular_message.cipher_text.funcs.decode = vscr_ratchet_common_hidden_buffer_decode_callback;
 }

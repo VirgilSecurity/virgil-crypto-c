@@ -53,6 +53,7 @@
 #include "vscr_ratchet_group_participant_data.h"
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet_cipher.h"
+#include "vscr_ratchet_skipped_group_messages.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <RatchetGroupMessage.pb.h>
@@ -91,15 +92,17 @@ struct vscr_ratchet_group_session_t {
 
     vscr_ratchet_cipher_t *cipher;
 
+    vscr_ratchet_skipped_group_messages_t *skipped_messages;
+
     bool is_owner;
 
     bool is_initialized;
 
-    byte my_id[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte my_id[vscr_ratchet_common_PARTICIPANT_ID_LEN];
 
     byte my_private_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
-    byte owner_id[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte owner_id[vscr_ratchet_common_PARTICIPANT_ID_LEN];
 
     vscr_ratchet_group_participant_data_t **participants;
 
@@ -138,7 +141,7 @@ vscr_ratchet_group_session_did_release_rng(vscr_ratchet_group_session_t *self);
 
 static vscr_ratchet_group_participant_data_t *
 vscr_ratchet_group_session_find_participant(vscr_ratchet_group_session_t *self,
-        const byte id[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH]);
+        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN]);
 
 //
 //  Return size of 'vscr_ratchet_group_session_t'.
@@ -321,6 +324,7 @@ vscr_ratchet_group_session_init_ctx(vscr_ratchet_group_session_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
+    self->skipped_messages = vscr_ratchet_skipped_group_messages_new();
     self->key_utils = vscr_ratchet_key_utils_new();
     self->cipher = vscr_ratchet_cipher_new();
     self->is_initialized = false;
@@ -347,6 +351,7 @@ vscr_ratchet_group_session_cleanup_ctx(vscr_ratchet_group_session_t *self) {
     vscr_ratchet_key_utils_destroy(&self->key_utils);
     vscr_ratchet_cipher_destroy(&self->cipher);
     vscr_ratchet_group_participant_data_destroy(&self->me);
+    vscr_ratchet_skipped_group_messages_destroy(&self->skipped_messages);
 }
 
 //
@@ -462,8 +467,14 @@ vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self, vsc
 
     bool handled_myself = false;
 
+    vscr_ratchet_skipped_group_messages_setup(
+            self->skipped_messages, message->message_pb.group_info.participants_count);
+
     for (size_t i = 0; i < message->message_pb.group_info.participants_count; i++) {
         const ParticipantInfo *info = &message->message_pb.group_info.participants[i];
+
+        vscr_ratchet_skipped_group_messages_add_participant(
+                self->skipped_messages, message->message_pb.group_info.participants[i].id, i);
 
         vscr_ratchet_group_participant_data_t *data = vscr_ratchet_group_participant_data_new();
 
@@ -580,11 +591,15 @@ vscr_ratchet_group_session_decrypt(
     VSCR_ASSERT_PTR(plain_text);
     VSCR_ASSERT(vscr_ratchet_group_message_get_type(message) == vscr_group_msg_type_REGULAR);
 
-    // TODO: Skip own messages
+    const RegularGroupMessage *group_message = &message->message_pb.regular_message;
+
+    // TODO: Check version
+
+    if (memcmp(group_message->sender_id, self->my_id, sizeof(self->my_id)) == 0) {
+        return vscr_status_ERROR_CANNOT_DECRYPT_OWN_MESSAGES;
+    }
 
     // TODO: Check signature
-
-    const RegularGroupMessage *group_message = &message->message_pb.regular_message;
 
     vscr_ratchet_group_participant_data_t *participant =
             vscr_ratchet_group_session_find_participant(self, group_message->sender_id);
@@ -593,9 +608,26 @@ vscr_ratchet_group_session_decrypt(
         return vscr_status_ERROR_SENDER_NOT_FOUND;
     }
 
-    // This message should be already decrypted
-    if (group_message->counter < participant->chain_key->index) {
-        return vscr_status_ERROR_MESSAGE_ALREADY_DECRYPTED;
+    if (participant->chain_key->index > group_message->counter) {
+        vscr_ratchet_message_key_t *skipped_message_key = vscr_ratchet_skipped_group_messages_find_key(
+                self->skipped_messages, group_message->sender_id, group_message->counter);
+
+        if (!skipped_message_key) {
+            return vscr_status_ERROR_SKIPPED_MESSAGE_MISSING;
+        } else {
+            vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher,
+                    vsc_data(skipped_message_key->key, sizeof(skipped_message_key->key)),
+                    vsc_buffer_data(group_message->cipher_text.arg), plain_text);
+
+            if (result != vscr_status_SUCCESS) {
+                return result;
+            }
+
+            vscr_ratchet_skipped_group_messages_delete_key(
+                    self->skipped_messages, group_message->sender_id, skipped_message_key);
+
+            return vscr_status_SUCCESS;
+        }
     }
 
     // Too many lost messages
@@ -619,15 +651,29 @@ vscr_ratchet_group_session_decrypt(
     vscr_ratchet_chain_key_destroy(&new_chain_key);
     vscr_ratchet_message_key_destroy(&message_key);
 
-    // TODO: Advance chain key
-    // TODO: Add skipped keys
+    while (participant->chain_key->index < group_message->counter) {
+        vscr_ratchet_message_key_t *skipped_message_key = vscr_ratchet_keys_create_message_key(participant->chain_key);
+        if (participant->chain_key->index == UINT32_MAX) {
+            vscr_ratchet_message_key_destroy(&skipped_message_key);
+            return vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN;
+        }
+        vscr_ratchet_keys_advance_chain_key(participant->chain_key);
+        vscr_ratchet_skipped_group_messages_add_key(
+                self->skipped_messages, group_message->sender_id, skipped_message_key);
+    }
+
+    if (participant->chain_key->index == UINT32_MAX) {
+        return vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN;
+    }
+
+    vscr_ratchet_keys_advance_chain_key(participant->chain_key);
 
     return result;
 }
 
 static vscr_ratchet_group_participant_data_t *
 vscr_ratchet_group_session_find_participant(
-        vscr_ratchet_group_session_t *self, const byte id[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH]) {
+        vscr_ratchet_group_session_t *self, const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN]) {
 
     VSCR_ASSERT_PTR(self);
 

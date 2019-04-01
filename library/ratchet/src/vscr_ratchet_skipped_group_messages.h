@@ -44,11 +44,14 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_COMMON_HIDDEN_H_INCLUDED
-#define VSCR_RATCHET_COMMON_HIDDEN_H_INCLUDED
+#ifndef VSCR_RATCHET_SKIPPED_GROUP_MESSAGES_H_INCLUDED
+#define VSCR_RATCHET_SKIPPED_GROUP_MESSAGES_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_message_key.h"
 
+#include <RatchetSession.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 
@@ -68,29 +71,72 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
+//  Handle 'ratchet skipped group messages' context.
 //
-enum {
-    vscr_ratchet_common_hidden_RATCHET_REGULAR_MESSAGE_VERSION = 1,
-    vscr_ratchet_common_hidden_RATCHET_PROTOCOL_VERSION = 1,
-    vscr_ratchet_common_hidden_RATCHET_MESSAGE_VERSION = 1,
-    vscr_ratchet_common_hidden_RATCHET_GROUP_INFO_VERSION = 1,
-    vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH = 32,
-    vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH = 32,
-    vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES = 40,
-    vscr_ratchet_common_hidden_MAX_RECEIVERS_CHAINS = 5,
-    vscr_ratchet_common_hidden_MAX_MESSAGE_GAP = 2000,
-    vscr_ratchet_common_hidden_MAX_REGULAR_MESSAGE_LEN = 32818,
-    vscr_ratchet_common_hidden_MAX_PREKEY_MESSAGE_LEN = 32964,
-    vscr_ratchet_common_hidden_PADDING_FACTOR = 160,
-    vscr_ratchet_common_hidden_PADDING_SIZE_LEN = 4
-};
+typedef struct vscr_ratchet_skipped_group_messages_t vscr_ratchet_skipped_group_messages_t;
 
-VSCR_PUBLIC bool
-vscr_ratchet_common_hidden_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void**arg);
+//
+//  Return size of 'vscr_ratchet_skipped_group_messages_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_skipped_group_messages_ctx_size(void);
 
-VSCR_PUBLIC bool
-vscr_ratchet_common_hidden_buffer_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg);
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_messages_init(vscr_ratchet_skipped_group_messages_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_messages_cleanup(vscr_ratchet_skipped_group_messages_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCR_PUBLIC vscr_ratchet_skipped_group_messages_t *
+vscr_ratchet_skipped_group_messages_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if context was allocated by the caller.
+//
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_messages_delete(vscr_ratchet_skipped_group_messages_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscr_ratchet_skipped_group_messages_new ()'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_messages_destroy(vscr_ratchet_skipped_group_messages_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCR_PUBLIC vscr_ratchet_skipped_group_messages_t *
+vscr_ratchet_skipped_group_messages_shallow_copy(vscr_ratchet_skipped_group_messages_t *self);
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_messages_setup(vscr_ratchet_skipped_group_messages_t *self, size_t group_size);
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_messages_add_participant(vscr_ratchet_skipped_group_messages_t *self,
+        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN], size_t counter);
+
+VSCR_PUBLIC vscr_ratchet_message_key_t *
+vscr_ratchet_skipped_group_messages_find_key(vscr_ratchet_skipped_group_messages_t *self,
+        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN], size_t counter);
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_messages_delete_key(vscr_ratchet_skipped_group_messages_t *self,
+        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN], vscr_ratchet_message_key_t *skipped_message_key);
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_messages_add_key(vscr_ratchet_skipped_group_messages_t *self,
+        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN], vscr_ratchet_message_key_t *skipped_message_key);
 
 
 // --------------------------------------------------------------------------
@@ -106,5 +152,5 @@ vscr_ratchet_common_hidden_buffer_encode_callback(pb_ostream_t *stream, const pb
 
 
 //  @footer
-#endif // VSCR_RATCHET_COMMON_HIDDEN_H_INCLUDED
+#endif // VSCR_RATCHET_SKIPPED_GROUP_MESSAGES_H_INCLUDED
 //  @end
