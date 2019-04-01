@@ -144,11 +144,9 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1generateServe
     vsc_buffer_t *server_public_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
     vsce_status_t status = vsce_phe_server_generate_server_key_pair((vsce_phe_server_t /*2*/ *) c_ctx /*1*/, server_private_key /*1*/, server_public_key /*1*/);
-
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
     }
-
     jclass cls = (*jenv)->FindClass(jenv, "virgil/crypto/phe/PheServerGenerateServerKeyPairResult");
     if (NULL == cls) {
         printf("Class PheServerGenerateServerKeyPairResult not found.");
