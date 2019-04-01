@@ -15,20 +15,20 @@ endfunction
 function js_create_interface_module(source, destination, wrapper, meta)
   echo_info("Create interface module: $(my.source.name)", my)
   my.js_module = js_append_js_module_model(my.destination, my.source)
-  js_append_js_interface_module_model(my.js_module, my.source)
+  js_append_js_interface_module_model(my.js_module, my.source, my.wrapper)
 endfunction
 
 function js_create_implementation_module(source, destination, wrapper, meta)
   echo_info("Create implementation module: $(my.source.name)", my)
   my.js_module = js_append_js_module_model(my.destination, my.source)
-  js_append_js_class_module_model(my.js_module, my.source)
+  js_append_js_class_module_model(my.js_module, my.source, my.wrapper)
 endfunction
 
 function js_create_class_module(source, destination, wrapper, meta)
   echo_info("Create class module: $(my.source.name)", my)
   if my.source.scope = "public" & !(my.source.name = "error")
     my.js_module = js_append_js_module_model(my.destination, my.source)
-    js_append_js_class_module_model(my.js_module, my.source)
+    js_append_js_class_module_model(my.js_module, my.source, my.wrapper)
   endif
 endfunction
 
