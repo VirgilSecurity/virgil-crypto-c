@@ -839,11 +839,13 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Resolve attribute: instance.is_reference.
 #   Rules:
-#       For 'type'     - default is '0'.
-#       For 'enum'     - default is '0'.
-#       For 'callback' - default is '0'.
-#       For 'class'    - default is '1'.
-#       For 'struct'   - default is '1'.
+#       For 'type'      - default is '0'.
+#       For 'enum'      - default is '0'.
+#       For 'callback'  - default is '0'.
+#       For 'class'     - default is '1'.
+#       For 'interface' - default is '1'.
+#       For 'api'       - default is '1'.
+#       For 'impl'      - default is '1'.
 # ---------------------------------------------------------------------------
 function component_resolve_instance_attr_is_reference (instance, parent)
     check_arguments (my, "instance, parent")
@@ -1290,6 +1292,8 @@ function component_resolve_property (property, parent)
     component_require_lineage (my.parent, my)
 
     component_add_lineage (my.property, my.parent)
+
+    my.property.access ?= "readwrite"
 
     component_resolve_property_attr_bits (my.property, my.parent)
 
