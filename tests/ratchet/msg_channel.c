@@ -58,9 +58,14 @@ deinit_node(channel_msg_node_t *node) {
 }
 
 void
-init_channel(msg_channel_t *self, vscf_ctr_drbg_t *rng) {
+init_channel(msg_channel_t *self, vscf_ctr_drbg_t *rng, double lost_rate, double distribution_factor) {
     self->rng = rng;
     self->msg_count = 0;
+    self->lost_rate = lost_rate;
+
+    TEST_ASSERT(distribution_factor >= 0);
+
+    self->distribution_factor = distribution_factor;
 }
 
 void
@@ -76,8 +81,15 @@ deinit_channel(msg_channel_t *self) {
     }
 }
 
-void
+bool
 push_msg(msg_channel_t *self, vsc_data_t plain_text, vsc_data_t msg) {
+    double prob = generate_prob(self->rng);
+
+    if (prob < self->lost_rate) {
+        // Lost message
+        return false;
+    }
+
     channel_msg_node_t *new_node = vscr_alloc(sizeof(channel_msg_node_t));
 
     new_node->msg = vscr_alloc(sizeof(channel_msg_t));
@@ -98,6 +110,8 @@ push_msg(msg_channel_t *self, vsc_data_t plain_text, vsc_data_t msg) {
     }
 
     self->msg_count++;
+
+    return true;
 }
 
 bool
@@ -107,7 +121,7 @@ has_msg(msg_channel_t *self) {
 
 channel_msg_t *
 pop_msg(msg_channel_t *self) {
-    size_t number = pick_element_queue(self->rng, self->msg_count);
+    size_t number = pick_element_queue(self->rng, self->msg_count, self->distribution_factor);
 
     channel_msg_node_t **prev = &self->msg_list;
     channel_msg_node_t *node = self->msg_list;

@@ -180,136 +180,18 @@ test__encrypt_decrypt__random_group_chat_bad_network__decrypt_should_succeed(voi
 
     vscr_ratchet_group_session_t **sessions = NULL;
 
-    size_t group_size = generate_number(rng, 1, 100);
+    size_t group_size = 10;
 
     initialize_random_group_chat(rng, group_size, &sessions);
 
-    size_t number_of_iterations = generate_number(rng, 100, 10000);
+    size_t number_of_iterations = 10000;
 
-    msg_channel_t **channels = vscr_alloc(group_size * sizeof(msg_channel_t *));
-
-    for (size_t i = 0; i < group_size; i++) {
-        msg_channel_t *channel = vscr_alloc(sizeof(msg_channel_t));
-
-        init_channel(channel, rng);
-        channels[i] = channel;
-    }
-
-    size_t number_of_msgs = 0;
-    size_t number_of_picks = 0;
-
-    for (size_t i = 0; i < number_of_iterations; i++) {
-        size_t event;
-
-        if (number_of_msgs * (group_size - 1) < number_of_picks) {
-            TEST_ASSERT(false);
-        }
-
-        if (number_of_msgs * (group_size - 1) == number_of_picks) {
-            // Need to produce new msg
-            event = group_size;
-        } else {
-            event = generate_number(rng, 0, group_size);
-        }
-
-        // New message produced
-        if (event == group_size) {
-            size_t sender = pick_element_uniform(rng, group_size);
-
-            vscr_ratchet_group_session_t *session = sessions[sender];
-
-            vsc_buffer_t *text = NULL;
-            generate_random_data(rng, &text);
-
-            vscr_error_t error_ctx;
-            vscr_error_reset(&error_ctx);
-
-            vscr_ratchet_group_message_t *group_msg =
-                    vscr_ratchet_group_session_encrypt(session, vsc_buffer_data(text), &error_ctx);
-            TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
-
-            size_t len = vscr_ratchet_group_message_serialize_len(group_msg);
-            vsc_buffer_t *msg_buff = vsc_buffer_new_with_capacity(len);
-
-            vscr_ratchet_group_message_serialize(group_msg, msg_buff);
-
-            for (size_t receiver = 0; receiver < group_size; receiver++) {
-                if (receiver == sender) {
-                    continue;
-                }
-
-                push_msg(channels[receiver], vsc_buffer_data(text), vsc_buffer_data(msg_buff));
-            }
-
-            vsc_buffer_destroy(&text);
-            vsc_buffer_destroy(&msg_buff);
-            vscr_ratchet_group_message_destroy(&group_msg);
-
-            number_of_msgs++;
-        }
-        // Old message pick
-        else {
-            size_t number_of_active_channels = 0;
-            for (size_t j = 0; j < group_size; j++) {
-                if (has_msg(channels[j])) {
-                    number_of_active_channels++;
-                }
-            }
-
-            TEST_ASSERT(number_of_active_channels > 0);
-
-            size_t receiver_queue_num = generate_number(rng, 0, number_of_active_channels - 1);
-            size_t receiver = 0;
-
-            for (size_t j = 0; j < group_size; j++) {
-                if (has_msg(channels[j])) {
-                    if (receiver_queue_num == 0) {
-                        receiver = j;
-                        break;
-                    } else {
-                        receiver_queue_num--;
-                    }
-                }
-            }
-
-            TEST_ASSERT(receiver_queue_num == 0);
-            TEST_ASSERT(has_msg(channels[receiver]));
-
-            channel_msg_t *channel_msg = pop_msg(channels[receiver]);
-
-            vscr_error_t error_ctx;
-            vscr_error_reset(&error_ctx);
-
-            vscr_ratchet_group_message_t *ratchet_msg =
-                    vscr_ratchet_group_message_deserialize(vsc_buffer_data(channel_msg->cipher_text), &error_ctx);
-
-            TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
-
-            size_t len = vscr_ratchet_group_session_decrypt_len(sessions[receiver], ratchet_msg);
-
-            vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(len);
-
-            TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
-                    vscr_ratchet_group_session_decrypt(sessions[receiver], ratchet_msg, plain_text));
-
-            TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(channel_msg->plain_text), plain_text);
-
-            vsc_buffer_destroy(&plain_text);
-            vscr_ratchet_group_message_destroy(&ratchet_msg);
-
-            deinit_msg(channel_msg);
-
-            number_of_picks++;
-        }
-    }
+    encrypt_decrypt(rng, group_size, number_of_iterations, sessions, 0.75, 1.25, 0.25);
 
     for (size_t i = 0; i < group_size; i++) {
         vscr_ratchet_group_session_destroy(&sessions[i]);
-        deinit_channel(channels[i]);
-        vscr_dealloc(channels[i]);
     }
 
-    vscr_dealloc(channels);
     vscr_dealloc(sessions);
 
     vscf_ctr_drbg_destroy(&rng);

@@ -48,6 +48,7 @@
 #include "test_utils_ratchet.h"
 #include "unreliable_msg_producer.h"
 #include "privateAPI.h"
+#include "msg_channel.h"
 
 size_t
 pick_element_uniform(vscf_ctr_drbg_t *rng, size_t size) {
@@ -55,9 +56,28 @@ pick_element_uniform(vscf_ctr_drbg_t *rng, size_t size) {
 }
 
 size_t
-pick_element_queue(vscf_ctr_drbg_t *rng, size_t size) {
-    // TODO: Replace uniform distribution with something better
-    return pick_element_uniform(rng, size);
+pick_element_queue(vscf_ctr_drbg_t *rng, size_t size, double distribution_factor) {
+    if (distribution_factor == 0) {
+        return 0;
+    }
+
+    double r = generate_prob(rng);
+
+    double f_n = distribution_factor;
+    for (size_t j = 1; j < size; j++) {
+        f_n *= distribution_factor;
+    }
+
+    double p = (1 - distribution_factor) / (1 - f_n);
+    double p_sum = p;
+
+    size_t i = 0;
+    for (; i < size - i && r > p_sum; i++) {
+        p *= distribution_factor;
+        p_sum += p;
+    }
+
+    return i;
 }
 
 size_t
@@ -76,6 +96,14 @@ generate_number(vscf_ctr_drbg_t *rng, size_t min, size_t max) {
     size += min;
 
     return size;
+}
+
+double
+generate_prob(vscf_ctr_drbg_t *rng) {
+    size_t max = 1000000;
+    double num = (double)generate_number(rng, 0, max);
+
+    return num / (double)max;
 }
 
 size_t
@@ -554,6 +582,156 @@ initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratch
     vscr_dealloc(ids);
 
     vscr_ratchet_group_ticket_destroy(&ticket);
+}
+
+void
+encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterations,
+        vscr_ratchet_group_session_t **sessions, double lost_rate, double distribution_factor,
+        double generate_distribution) {
+    msg_channel_t **channels = vscr_alloc(group_size * sizeof(msg_channel_t *));
+
+    for (size_t i = 0; i < group_size; i++) {
+        msg_channel_t *channel = vscr_alloc(sizeof(msg_channel_t));
+
+        init_channel(channel, rng, lost_rate, distribution_factor);
+        channels[i] = channel;
+    }
+
+    size_t number_of_msgs = 0;
+    size_t number_of_picks = 0;
+
+    bool is_empty = false;
+
+    for (size_t i = 0; i < number_of_iterations || !is_empty; i++) {
+        size_t event;
+
+        if (number_of_msgs < number_of_picks) {
+            TEST_ASSERT(false);
+        }
+
+        bool generate_msg;
+        if (i >= number_of_iterations) {
+            generate_msg = false;
+        } else if (number_of_msgs == number_of_picks) {
+            generate_msg = true;
+        } else {
+            double prob = generate_prob(rng);
+
+            if (prob > 1 - generate_distribution) {
+                // Produce new msg
+                generate_msg = true;
+            } else {
+                generate_msg = false;
+            }
+        }
+
+        if (generate_msg) {
+            event = group_size;
+        } else {
+            event = generate_number(rng, 0, group_size - 1);
+        }
+
+        // New message produced
+        if (event == group_size) {
+            size_t sender = pick_element_uniform(rng, group_size);
+
+            vscr_ratchet_group_session_t *session = sessions[sender];
+
+            vsc_buffer_t *text = NULL;
+            generate_random_data(rng, &text);
+
+            vscr_error_t error_ctx;
+            vscr_error_reset(&error_ctx);
+
+            vscr_ratchet_group_message_t *group_msg =
+                    vscr_ratchet_group_session_encrypt(session, vsc_buffer_data(text), &error_ctx);
+            TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
+
+            size_t len = vscr_ratchet_group_message_serialize_len(group_msg);
+            vsc_buffer_t *msg_buff = vsc_buffer_new_with_capacity(len);
+
+            vscr_ratchet_group_message_serialize(group_msg, msg_buff);
+
+            for (size_t receiver = 0; receiver < group_size; receiver++) {
+                if (receiver == sender) {
+                    continue;
+                }
+
+                if (push_msg(channels[receiver], vsc_buffer_data(text), vsc_buffer_data(msg_buff))) {
+                    number_of_msgs++;
+                }
+            }
+
+            vsc_buffer_destroy(&text);
+            vsc_buffer_destroy(&msg_buff);
+            vscr_ratchet_group_message_destroy(&group_msg);
+        }
+        // Old message pick
+        else {
+            size_t number_of_active_channels = 0;
+            for (size_t j = 0; j < group_size; j++) {
+                if (has_msg(channels[j])) {
+                    number_of_active_channels++;
+                }
+            }
+
+            TEST_ASSERT(number_of_active_channels > 0);
+
+            size_t receiver_queue_num = generate_number(rng, 0, number_of_active_channels - 1);
+            size_t receiver = 0;
+
+            for (size_t j = 0; j < group_size; j++) {
+                if (has_msg(channels[j])) {
+                    if (receiver_queue_num == 0) {
+                        receiver = j;
+                        break;
+                    } else {
+                        receiver_queue_num--;
+                    }
+                }
+            }
+
+            TEST_ASSERT(receiver_queue_num == 0);
+            TEST_ASSERT(has_msg(channels[receiver]));
+
+            channel_msg_t *channel_msg = pop_msg(channels[receiver]);
+
+            vscr_error_t error_ctx;
+            vscr_error_reset(&error_ctx);
+
+            vscr_ratchet_group_message_t *ratchet_msg =
+                    vscr_ratchet_group_message_deserialize(vsc_buffer_data(channel_msg->cipher_text), &error_ctx);
+
+            TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
+
+            size_t len = vscr_ratchet_group_session_decrypt_len(sessions[receiver], ratchet_msg);
+
+            vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(len);
+
+            TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+                    vscr_ratchet_group_session_decrypt(sessions[receiver], ratchet_msg, plain_text));
+
+            TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(channel_msg->plain_text), plain_text);
+
+            vsc_buffer_destroy(&plain_text);
+            vscr_ratchet_group_message_destroy(&ratchet_msg);
+
+            deinit_msg(channel_msg);
+
+            if (number_of_active_channels == 1 && has_msg(channels[receiver])) {
+                is_empty = true;
+            }
+
+            number_of_picks++;
+        }
+    }
+
+    for (size_t i = 0; i < group_size; i++) {
+        deinit_channel(channels[i]);
+        vscr_dealloc(channels[i]);
+    }
+
+    vscr_dealloc(channels);
 }
 
 #endif
