@@ -122,14 +122,15 @@ function java_derive_c_type (instance)
 
         endif
 
-    elsif defined (my.instance.interface) | defined (my.instance.impl)
+    elsif defined (my.instance.interface)
         my.project_uid = c_component_derive_instance_project_uid (my.instance)
         my.type_uid = c_component_derive_instance_type_uid ("struct", "impl", "impl")
         return "$(make_ref_c (make_id(my.project_uid, my.type_uid)):) */*6*/"
-
+    elsif defined (my.instance.impl)
+        return "$(make_ref_c (make_id ("class", my.instance.impl, "struct", my.instance.impl))) * /*7*/"
     endif
 
-    return "$(make_ref_c (make_id ("class", my.instance.name, "struct", my.instance.name))) /*7*/"
+    return "$(make_ref_c (make_id ("class", my.instance.name, "struct", my.instance.name))) /*8*/"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -917,7 +918,6 @@ function java_create_c_class_method_call (class, method, java_class, java_method
                     ")
                 elsif is_true (my.java_method->java_return.is_interface)
                     my.prepare_result = format_left("\
-                        // TDB interface
                         jobject ret = wrap$(my.java_return_class_name:)(jenv, jobj, proxyResult);
                     ")
                 elsif is_true (my.java_method->java_return.is_enum)
@@ -1273,7 +1273,7 @@ function java_get_c_implementation_helper_interface_method (interface, wrappers_
     endif
     
     my.interface_name = java_derive_interface_name (my.interface, my.wrapper)
-    
+    my.ctx_type = "$(java_derive_c_type(my.interface):)*"
 
     new c_method to my.c_module
         
@@ -1286,7 +1286,7 @@ function java_get_c_implementation_helper_interface_method (interface, wrappers_
 
         new c_argument to c_method
             .name = "c_ctx"
-            .type = "jlong"
+            .type = my.ctx_type
         endnew
 
         new c_return to c_method
@@ -1322,7 +1322,7 @@ function java_get_c_implementation_helper_interface_method (interface, wrappers_
 
         new c_argument to c_method
             .name = "c_ctx"
-            .type = "jlong"
+            .type = my.ctx_type
         endnew
 
         new c_return to c_method
@@ -1404,7 +1404,7 @@ function java_create_c_method_from_dependency (dependency, impl, destination, wr
 
     my.c_method_name = java_derive_c_method_name_str (java_derive_method_name_str (cat ("set", my.dependency.name)), my.impl, my.wrapper)
     my.arg_name = "j$(java_derive_argument_name (my.dependency):)"
-    my.arg_ctx_type = java_derive_c_type (my.dependency)
+    my.arg_ctx_type = java_derive_c_type (my.impl)
 
     if ! defined (my.h_module->c_method(c_method.name = my.c_method_name)?)
         # Define destructor method header

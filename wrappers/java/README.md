@@ -15,18 +15,7 @@ Build native libraries. See [readme](https://github.com/VirgilSecurity/virgil-cr
 Build Java JNI library for your platform
 
 ```bash
-mvn clean package -P <platform>
-```
-
-where `platform` is:
-  - linux
-  - macos
-  - windows
-
-Build Java wrapper
-
-```bash
-mvn clean package -P crypto
+mvn clean package
 ```
 
 ## License

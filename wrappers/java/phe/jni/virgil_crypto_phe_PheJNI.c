@@ -111,8 +111,8 @@ JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1setRandom (JNIEn
     }
     vscf_impl_t */*6*/ random = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
 
-    vsce_phe_server_release_random((vscf_impl_t */*6*/ *) c_ctx);
-    vsce_phe_server_use_random((vscf_impl_t */*6*/ *) c_ctx, random);
+    vsce_phe_server_release_random((vsce_phe_server_t /*2*/ *) c_ctx);
+    vsce_phe_server_use_random((vsce_phe_server_t /*2*/ *) c_ctx, random);
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1setOperationRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joperationRandom) {
@@ -126,8 +126,8 @@ JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1setOperationRand
     }
     vscf_impl_t */*6*/ operation_random = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, joperationRandom, operation_random_fidCtx);
 
-    vsce_phe_server_release_operation_random((vscf_impl_t */*6*/ *) c_ctx);
-    vsce_phe_server_use_operation_random((vscf_impl_t */*6*/ *) c_ctx, operation_random);
+    vsce_phe_server_release_operation_random((vsce_phe_server_t /*2*/ *) c_ctx);
+    vsce_phe_server_use_operation_random((vsce_phe_server_t /*2*/ *) c_ctx, operation_random);
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -144,11 +144,9 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1generateServe
     vsc_buffer_t *server_public_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
     vsce_status_t status = vsce_phe_server_generate_server_key_pair((vsce_phe_server_t /*2*/ *) c_ctx /*1*/, server_private_key /*1*/, server_public_key /*1*/);
-
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
     }
-
     jclass cls = (*jenv)->FindClass(jenv, "virgil/crypto/phe/PheServerGenerateServerKeyPairResult");
     if (NULL == cls) {
         printf("Class PheServerGenerateServerKeyPairResult not found.");
@@ -301,8 +299,8 @@ JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1setRandom (JNIEn
     }
     vscf_impl_t */*6*/ random = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
 
-    vsce_phe_client_release_random((vscf_impl_t */*6*/ *) c_ctx);
-    vsce_phe_client_use_random((vscf_impl_t */*6*/ *) c_ctx, random);
+    vsce_phe_client_release_random((vsce_phe_client_t /*2*/ *) c_ctx);
+    vsce_phe_client_use_random((vsce_phe_client_t /*2*/ *) c_ctx, random);
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1setOperationRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joperationRandom) {
@@ -316,8 +314,8 @@ JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1setOperationRand
     }
     vscf_impl_t */*6*/ operation_random = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, joperationRandom, operation_random_fidCtx);
 
-    vsce_phe_client_release_operation_random((vscf_impl_t */*6*/ *) c_ctx);
-    vsce_phe_client_use_operation_random((vscf_impl_t */*6*/ *) c_ctx, operation_random);
+    vsce_phe_client_release_operation_random((vsce_phe_client_t /*2*/ *) c_ctx);
+    vsce_phe_client_use_operation_random((vsce_phe_client_t /*2*/ *) c_ctx, operation_random);
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -540,8 +538,8 @@ JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheCipher_1setRandom (JNIEn
     }
     vscf_impl_t */*6*/ random = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
 
-    vsce_phe_cipher_release_random((vscf_impl_t */*6*/ *) c_ctx);
-    vsce_phe_cipher_use_random((vscf_impl_t */*6*/ *) c_ctx, random);
+    vsce_phe_cipher_release_random((vsce_phe_cipher_t /*2*/ *) c_ctx);
+    vsce_phe_cipher_use_random((vsce_phe_cipher_t /*2*/ *) c_ctx, random);
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheCipher_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
