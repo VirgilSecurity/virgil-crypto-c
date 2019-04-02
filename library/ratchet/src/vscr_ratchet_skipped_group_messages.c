@@ -241,7 +241,7 @@ vscr_ratchet_skipped_group_messages_cleanup_ctx(vscr_ratchet_skipped_group_messa
         vscr_ratchet_skipped_group_message_key_root_node_destroy(&self->keys[i]);
     }
 
-    free(self->keys);
+    vscr_dealloc(self->keys);
 }
 
 VSCR_PUBLIC void

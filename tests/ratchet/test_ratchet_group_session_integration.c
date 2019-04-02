@@ -114,7 +114,7 @@ test__encrypt_decrypt__random_group_chat__decrypt_should_succeed(void) {
         vscr_ratchet_group_session_destroy(&sessions[i]);
     }
 
-    free(sessions);
+    vscr_dealloc(sessions);
 
     vscf_ctr_drbg_destroy(&rng);
 }
@@ -168,7 +168,7 @@ test__encrypt_decrypt__out_of_order__decrypt_should_succeed(void) {
     vscr_ratchet_group_session_destroy(&sessions[0]);
     vscr_ratchet_group_session_destroy(&sessions[1]);
 
-    free(sessions);
+    vscr_dealloc(sessions);
 
     vscf_ctr_drbg_destroy(&rng);
 }
@@ -294,6 +294,9 @@ test__encrypt_decrypt__random_group_chat_bad_network__decrypt_should_succeed(voi
 
             TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(channel_msg->plain_text), plain_text);
 
+            vsc_buffer_destroy(&plain_text);
+            vscr_ratchet_group_message_destroy(&ratchet_msg);
+
             deinit_msg(channel_msg);
 
             number_of_picks++;
@@ -302,9 +305,12 @@ test__encrypt_decrypt__random_group_chat_bad_network__decrypt_should_succeed(voi
 
     for (size_t i = 0; i < group_size; i++) {
         vscr_ratchet_group_session_destroy(&sessions[i]);
+        deinit_channel(channels[i]);
+        vscr_dealloc(channels[i]);
     }
 
-    free(sessions);
+    vscr_dealloc(channels);
+    vscr_dealloc(sessions);
 
     vscf_ctr_drbg_destroy(&rng);
 }

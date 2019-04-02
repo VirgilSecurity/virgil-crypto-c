@@ -48,17 +48,18 @@ deinit_msg(channel_msg_t *msg) {
 
     vsc_buffer_destroy(&msg->cipher_text);
     vsc_buffer_destroy(&msg->plain_text);
+    vscr_dealloc(msg);
 }
 
 void
 deinit_node(channel_msg_node_t *node) {
     deinit_msg(node->msg);
-    free(node);
+    vscr_dealloc(node);
 }
 
 void
 init_channel(msg_channel_t *self, vscf_ctr_drbg_t *rng) {
-    self->rng = vscf_ctr_drbg_shallow_copy(rng);
+    self->rng = rng;
     self->msg_count = 0;
 }
 
@@ -73,8 +74,6 @@ deinit_channel(msg_channel_t *self) {
             node = next;
         }
     }
-
-    vscf_ctr_drbg_destroy(&self->rng);
 }
 
 void

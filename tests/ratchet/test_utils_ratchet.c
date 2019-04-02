@@ -69,6 +69,8 @@ generate_number(vscf_ctr_drbg_t *rng, size_t min, size_t max) {
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, sizeof(size), size_buf));
 
+    vsc_buffer_destroy(&size_buf);
+
     // Do not exceed maximum value
     size %= max - min + 1;
     size += min;
@@ -549,7 +551,7 @@ initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratch
         vsc_buffer_destroy(&ids[i]);
     }
 
-    free(ids);
+    vscr_dealloc(ids);
 
     vscr_ratchet_group_ticket_destroy(&ticket);
 }

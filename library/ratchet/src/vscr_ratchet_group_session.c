@@ -345,7 +345,7 @@ vscr_ratchet_group_session_cleanup_ctx(vscr_ratchet_group_session_t *self) {
             vscr_ratchet_group_participant_data_destroy(&self->participants[i]);
         }
 
-        free(self->participants);
+        vscr_dealloc(self->participants);
     }
 
     vscr_ratchet_key_utils_destroy(&self->key_utils);
