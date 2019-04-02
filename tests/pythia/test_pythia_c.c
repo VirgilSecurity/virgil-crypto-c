@@ -262,6 +262,7 @@ test3_UpdateDelta() {
     gt_free(deblinded0);
     g2_free(tTilde);
     bn_free(kw);
+    g1_free(pi_p);
     gt_free(y);
     bn_free(rInv);
     g1_free(blinded);

@@ -91,18 +91,39 @@ configure_file(
         "${CMAKE_CURRENT_BINARY_DIR}/relic-targets-release.cmake"
         @ONLY)
 
+#
+# Install headers.
+#
+if(VIRGIL_INSTALL_DEPS_HDRS)
+    install(
+        DIRECTORY
+            "${RELIC_LOCATION}/include/"
+        DESTINATION
+            "${CMAKE_INSTALL_INCLUDEDIR}"
+        COMPONENT dev
+        FILES_MATCHING PATTERN "*.h"
+        )
+endif()
 
-install(FILES ${RELIC_LOCATION}/lib/librelic_s.a DESTINATION ${CMAKE_INSTALL_LIBDIR})
+#
+# Install libraries.
+#
+if(VIRGIL_INSTALL_DEPS_LIBS)
+    install(FILES ${RELIC_LOCATION}/lib/librelic_s.a DESTINATION ${CMAKE_INSTALL_LIBDIR})
+endif()
 
-install(FILES
+#
+# Install CMake configuration files.
+#
+if(VIRGIL_INSTALL_DEPS_CMAKE)
+    install(
+        FILES
             "${CMAKE_CURRENT_BINARY_DIR}/relic-config.cmake"
             "${CMAKE_CURRENT_BINARY_DIR}/relic-config-version.cmake"
             "${CMAKE_CURRENT_BINARY_DIR}/relic-targets-release.cmake"
             "${CMAKE_CURRENT_LIST_DIR}/relic-targets.cmake"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/relic"
-        COMPONENT dev)
-
-install(DIRECTORY "${RELIC_LOCATION}/include/"
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+        DESTINATION
+            "${CMAKE_INSTALL_LIBDIR}/cmake/relic"
         COMPONENT dev
-        FILES_MATCHING PATTERN "*.h")
+        )
+endif()

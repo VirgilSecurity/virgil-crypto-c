@@ -154,6 +154,15 @@ function string_in (str, list)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return true if given XML item name is equal to the given string.
+# ---------------------------------------------------------------------------
+function item_equal (item, str)
+    check_arguments (my, "item, str", my)
+
+    return string_equal (name (my.item), my.str)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return true if given XML item name is in the list.
 #   List is as a comma separated string with an item names.
 #   i.e "public, private".
