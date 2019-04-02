@@ -133,7 +133,8 @@ function js_append_js_dependency(parent, source, dependency)
           js_interface_call_argument.index = 0
           js_interface_call_argument.cpp_name = "$(my.dependency.name:c)"
           js_interface_call_argument.js_name = "$(my.dependency.name:camel)"
-          js_interface_call_argument.cpp_interface_name = make_ref_js(make_id(my.project_uid, "interface", "module", "$(my.dependency.interface:pascal)"))
+          js_interface_call_argument.interface_name = make_ref_js(make_id(my.project_uid, "interface", "module", "$(my.dependency.interface:pascal)"))
+          js_interface_call_argument.c_implementation_type = "$(make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl")))*"
         endnew
       else
         if defined(my.dependency.impl)
@@ -145,7 +146,9 @@ function js_append_js_dependency(parent, source, dependency)
           js_class_call_argument.index = 0
           js_class_call_argument.cpp_name = "$(my.dependency.name:c)"
           js_class_call_argument.js_name = "$(my.dependency.name:camel)"
-          js_class_call_argument.cpp_class_name = make_ref_js(make_id(my.project_uid, "class" , "module", "$(my.class_name:pascal)"))
+          js_class_call_argument.class_name = make_ref_js(make_id(my.project_uid, "class", "module", "$(my.class_name:pascal)"))
+          js_class_call_argument.c_context_name = "$(my.class_name:c)"
+          js_class_call_argument.c_context_type = "$(make_ref_c(make_id(my.project_uid, "class", my.class_name, "struct", my.class_name)))*"
         endnew
       endif
     endnew
@@ -290,7 +293,9 @@ function js_append_js_class_call_argument(parent, source, method, argument, inde
     js_class_call_argument.index = my.index
     js_class_call_argument.cpp_name = "$(my.argument.name:c)"
     js_class_call_argument.js_name = "$(my.argument.name:camel)"
-    js_class_call_argument.cpp_class_name = make_ref_js(make_id(my.project_uid, "class", "module", "$(my.argument.class:pascal)"))
+    js_class_call_argument.class_name = make_ref_js(make_id(my.project_uid, "class", "module", "$(my.argument.class:pascal)"))
+    js_class_call_argument.c_context_name = "$(my.argument.class:c)"
+    js_class_call_argument.c_context_type = "$(make_ref_c(make_id(my.project_uid, "class", my.argument.class, "struct", my.argument.class)))*"
     return js_class_call_argument
   endnew
 endfunction
@@ -304,7 +309,8 @@ function js_append_js_interface_call_argument(parent, source, method, argument, 
     js_interface_call_argument.index = my.index
     js_interface_call_argument.cpp_name = "$(my.argument.name:c)"
     js_interface_call_argument.js_name = "$(my.argument.name:camel)"
-    js_interface_call_argument.cpp_interface_name = make_ref_js(make_id(my.project_uid, "interface", "module", "$(my.argument.interface:pascal)"))
+    js_interface_call_argument.interface_name = make_ref_js(make_id(my.project_uid, "interface", "module", "$(my.argument.interface:pascal)"))
+    js_interface_call_argument.c_implementation_type = "$(make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl")))*"
     return js_interface_call_argument
   endnew
 endfunction
