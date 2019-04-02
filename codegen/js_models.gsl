@@ -47,12 +47,13 @@ function js_append_js_class_module_model(parent, source, wrapper)
     js_class_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
     js_class_module.c_header = make_ref_c(make_id("header", my.source.name))
     js_class_module.c_header_path = "$(my.wrapper.namespace:no)/$(js_class_module.c_header:no)"
+    js_class_module.instance_name = "$(my.source.name:c)_instance"
     js_class_module.has_context = defined(my.source.context) & my.source.context <> "none"
     if js_class_module.has_context
-      js_class_module.c_name = "$(my.source.name:c)"
-      js_class_module.c_type = "$(make_ref_c(make_id("class", my.source.name, "struct", my.source.name)))*"
-      js_class_module.c_constructor = make_ref_c(make_id("class", my.source.name, "method", "new"))
-      js_class_module.c_destructor = make_ref_c(make_id("class", my.source.name, "method", "destroy"))
+      js_class_module.c_context_name = "$(my.source.name:c)"
+      js_class_module.c_context_type = "$(make_ref_c(make_id("class", my.source.name, "struct", my.source.name)))*"
+      js_class_module.c_context_constructor = make_ref_c(make_id("class", my.source.name, "method", "new"))
+      js_class_module.c_context_destructor = make_ref_c(make_id("class", my.source.name, "method", "destroy"))
     endif
     new js_cpp_header to js_class_module
       js_cpp_header.name = "$(my.source.name:c).h"
@@ -75,6 +76,10 @@ function js_append_js_class_module_model(parent, source, wrapper)
         js_append_js_method(js_class_module, my.source, method)
       endfor
     endfor
+    if count(js_class_module.js_interface_implementation) > 0
+      js_class_module.c_implementation_type = "$(make_ref_c(make_id("class", "impl", "struct", "impl")))*"
+      js_class_module.c_implementation_method_name = make_ref_c(make_id("class", my.source.name, "method", "impl"))
+    endif
     for my.source.dependency
       js_append_js_dependency(js_class_module, my.source, dependency)
     endfor
