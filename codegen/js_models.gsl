@@ -18,7 +18,7 @@ function js_append_js_interface_module_model(parent, source, wrapper)
   new js_interface_module to my.parent
     js_interface_module.name = "$(my.source.name:pascal)"
     js_interface_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
-    js_interface_module.c_implementation_type = make_ref_c(make_id("class", "impl", "struct", "impl"))
+    js_interface_module.c_implementation_type = "$(make_ref_c(make_id("class", "impl", "struct", "impl")))*"
     js_interface_module.c_implementation_header = make_ref_c(make_id("header", "impl"))
     js_interface_module.c_implementation_header_path = "$(my.wrapper.namespace:no)/$(js_interface_module.c_implementation_header:no)"
     new js_cpp_header to js_interface_module
@@ -50,7 +50,7 @@ function js_append_js_class_module_model(parent, source, wrapper)
     js_class_module.has_context = defined(my.source.context) & my.source.context <> "none"
     if js_class_module.has_context
       js_class_module.c_name = "$(my.source.name:c)"
-      js_class_module.c_type = make_ref_c(make_id("class", my.source.name, "struct", my.source.name))
+      js_class_module.c_type = "$(make_ref_c(make_id("class", my.source.name, "struct", my.source.name)))*"
       js_class_module.c_constructor = make_ref_c(make_id("class", my.source.name, "method", "new"))
       js_class_module.c_destructor = make_ref_c(make_id("class", my.source.name, "method", "destroy"))
     endif
@@ -67,9 +67,7 @@ function js_append_js_class_module_model(parent, source, wrapper)
       js_source.path = cat_path(my.wrapper.project_source_dir, js_source.name)
     endnew
     for my.source.interface
-      new js_interface_implementation to js_class_module
-        js_interface_implementation.name = interface.name
-      endnew
+      js_append_js_interface_implementation(js_class_module, interface)
       for interface.constant
         js_append_js_constant(js_class_module, my.source, constant)
       endfor
@@ -87,6 +85,14 @@ function js_append_js_class_module_model(parent, source, wrapper)
       js_append_js_method(js_class_module, my.source, method)
     endfor
     return js_class_module
+  endnew
+endfunction
+
+function js_append_js_interface_implementation(parent, interface)
+  new js_interface_implementation to my.parent
+    js_interface_implementation.class_name = make_ref_js(make_id("interface", "module", "$(my.interface.name:pascal)"))
+    js_interface_implementation.c_implementation_type = "$(make_ref_c(make_id("class", "impl", "struct", "impl")))*"
+    return js_interface_implementation
   endnew
 endfunction
 
