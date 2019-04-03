@@ -443,8 +443,11 @@ vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self, vsc
         return vscr_status_ERROR_TOO_FEW_PARTICIPANTS;
     }
 
-    self->participants = vscr_alloc(
-            (message->message_pb.group_info.participants_count - 1) * sizeof(vscr_ratchet_group_participant_data_t *));
+    if (message->message_pb.group_info.participants_count > 0) {
+        self->participants = vscr_alloc(
+                (message->message_pb.group_info.participants_count - 1) *
+                sizeof(vscr_ratchet_group_participant_data_t *));
+    }
 
     bool handled_myself = false;
 
