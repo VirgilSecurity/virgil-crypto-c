@@ -36,8 +36,7 @@ function js_create_enum_module(source, destination, wrapper, meta)
   echo_info("Create enum module: $(my.source.name)", my)
   if !(my.source.name = "status")
     my.js_module = js_append_js_module_model(my.destination, my.source)
-    /* my.js_enum_module = js_append_js_enum_module_model(my.js_module, my.source)
-    js_append_js_wrapped_enum_model(my.wrapper, my.js_enum_module, my.wrapper) */
+    js_append_js_enum_module_model(my.js_module, my.source, my.wrapper)
   else
     /* for my.source.constant
       js_append_js_status_model(my.wrapper, constant, my.wrapper)

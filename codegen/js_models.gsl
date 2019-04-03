@@ -16,7 +16,8 @@ endfunction
 
 function js_append_js_interface_module_model(parent, source, wrapper)
   new js_interface_module to my.parent
-    js_interface_module.name = "$(my.source.name:pascal)"
+    js_interface_module.name = my.source.name
+    js_interface_module.cpp_name = "$(my.source.name:pascal)"
     js_interface_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
     js_interface_module.c_implementation_type = "$(make_ref_c(make_id("class", "impl", "struct", "impl")))*"
     js_interface_module.c_implementation_header = make_ref_c(make_id("header", "impl"))
@@ -29,12 +30,15 @@ function js_append_js_interface_module_model(parent, source, wrapper)
   endnew
 endfunction
 
-function js_append_js_enum_module_model(parent, source)
+function js_append_js_enum_module_model(parent, source, wrapper)
   new js_enum_module to my.parent
-    js_enum_module.name = my.source.name
-    js_enum_module.variable_name = "$(my.source.name:pascal)"
+    js_enum_module.js_name = "$(my.source.name:pascal)"
+    new js_source to js_enum_module
+      js_source.name = "$(my.source.name:cobol).js"
+      js_source.path = cat_path(my.wrapper.project_source_dir, js_source.name)
+    endnew
     for my.source.constant
-      js_append_js_enum_value_model(js_enum_module, constant, index(constant) - 1)
+      js_append_js_enum_value(js_enum_module, constant, index(constant) - 1)
     endfor
     return js_enum_module
   endnew
@@ -42,8 +46,10 @@ endfunction
 
 function js_append_js_class_module_model(parent, source, wrapper)
   new js_class_module to my.parent
-    js_class_module.name = "$(my.source.name:pascal)"
+    js_class_module.name = my.source.name
     js_class_module.binding_name = "$(my.source.name:pascal)Binding"
+    js_class_module.js_name = "$(my.source.name:pascal)"
+    js_class_module.cpp_name = "$(my.source.name:pascal)"
     js_class_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
     js_class_module.c_header = make_ref_c(make_id("header", my.source.name))
     js_class_module.c_header_path = "$(my.wrapper.namespace:no)/$(js_class_module.c_header:no)"
@@ -95,7 +101,7 @@ endfunction
 
 function js_append_js_interface_implementation(parent, interface)
   new js_interface_implementation to my.parent
-    js_interface_implementation.class_name = make_ref_js(make_id("interface", "module", "$(my.interface.name:pascal)"))
+    js_interface_implementation.interface_name = make_ref_js(make_id("interface", "module", my.interface.name))
     js_interface_implementation.c_implementation_type = "$(make_ref_c(make_id("class", "impl", "struct", "impl")))*"
     return js_interface_implementation
   endnew
@@ -262,7 +268,7 @@ function js_append_js_class_call_argument(parent, source, argument, index)
     js_class_call_argument.index = my.index
     js_class_call_argument.cpp_name = "$(my.argument.name:c)"
     js_class_call_argument.js_name = "$(my.argument.name:camel)"
-    js_class_call_argument.class_name = make_ref_js(make_id(my.project_uid, "class", "module", "$(my.class_name:pascal)"))
+    js_class_call_argument.class_name = make_ref_js(make_id(my.project_uid, "class", "module", my.class_name))
     js_class_call_argument.c_context_name = "$(my.class_name:c)"
     js_class_call_argument.c_context_type = "$(make_ref_c(make_id(my.project_uid, "class", my.class_name, "struct", my.class_name)))*"
     return js_class_call_argument
@@ -275,7 +281,7 @@ function js_append_js_interface_call_argument(parent, source, argument, index)
     js_interface_call_argument.index = my.index
     js_interface_call_argument.cpp_name = "$(my.argument.name:c)"
     js_interface_call_argument.js_name = "$(my.argument.name:camel)"
-    js_interface_call_argument.interface_name = make_ref_js(make_id(my.project_uid, "interface", "module", "$(my.argument.interface:pascal)"))
+    js_interface_call_argument.interface_name = make_ref_js(make_id(my.project_uid, "interface", "module", my.argument.interface))
     js_interface_call_argument.c_implementation_type = "$(make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl")))*"
     return js_interface_call_argument
   endnew
@@ -419,7 +425,7 @@ function js_append_js_class_method_return(parent, argument)
     js_class_method_return.cpp_name = "$(my.argument.name:c)"
     js_class_method_return.js_name = "$(my.argument.name:camel)"
     js_class_method_return.c_context_type = make_ref_c(make_id(my.project_uid, "class", my.class_name, "struct", my.class_name))
-    js_class_method_return.class_name = make_ref_js(make_id(my.project_uid, "class" , "module", "$(my.class_name:pascal)"))
+    js_class_method_return.class_name = make_ref_js(make_id(my.project_uid, "class" , "module", my.class_name))
     return js_class_method_return
   endnew
 endfunction
@@ -429,7 +435,7 @@ function js_append_js_interface_method_return(parent, argument)
     my.project_uid = js_get_project_uid(my.argument)
     js_interface_method_return.cpp_name = "$(my.argument.name:c)"
     js_interface_method_return.js_name = "$(my.argument.name:camel)"
-    js_interface_method_return.interface_name = make_ref_js(make_id(my.project_uid, "interface", "module", "$(my.argument.interface:pascal)"))
+    js_interface_method_return.interface_name = make_ref_js(make_id(my.project_uid, "interface", "module", my.argument.interface))
     js_interface_method_return.c_implementation_type = "$(make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl")))*"
     return js_interface_method_return
   endnew
@@ -577,11 +583,11 @@ endfunction
 # JavaScript
 # --------------------------------------------------------------------------------------------------
 
-function js_append_js_enum_value_model(parent, source_enum_constant, index)
+function js_append_js_enum_value(parent, constant, index)
   new js_enum_value to my.parent
-    js_enum_value.name = "$(my.source_enum_constant.name:c,upper)"
-    if defined(my.source_enum_constant.value)
-      js_enum_value.value = my.source_enum_constant.value
+    js_enum_value.js_name = "$(my.constant.name:c,upper)"
+    if defined(my.constant.value)
+      js_enum_value.value = my.constant.value
     else
       js_enum_value.value = my.index
     endif
