@@ -147,9 +147,6 @@ vscf_iotelic_private_key_generate_key(vscf_iotelic_private_key_t *self, size_t s
     case vscf_alg_id_ED25519:
         cmd.keypair_type = KEYPAIR_EC_ED25519;
         break;
-    case KEYPAIR_EC_ED25519:
-        cmd.keypair_type = KEYPAIR_EC_ED25519;
-        break;
     default: {
         return vscf_status_ERROR_BAD_ARGUMENTS;
     }

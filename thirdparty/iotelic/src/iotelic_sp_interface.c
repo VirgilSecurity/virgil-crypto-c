@@ -66,7 +66,6 @@ init_safe_op_id_counter() {
     if(obj->blocked == NULL){
         IOT_ASSERT(0);
         os_mem_free(obj);
-        obj = NULL;
         return NULL;
     }
 
@@ -178,7 +177,7 @@ iotelic_version(void) {
 }
 
 int32_t
-vs_iot_init_crypto_interface(){
+vs_iot_init_crypto_interface() {
     if(NULL != exch_ctx) {
         return -ERR_EXIST;
     }
@@ -206,7 +205,7 @@ vs_iot_init_crypto_interface(){
     }
 
     exch_ctx->op_id_counter = init_safe_op_id_counter();
-    if(NULL !=exch_ctx->op_id_counter ){
+    if(NULL != exch_ctx->op_id_counter ){
         return ERR_OK;
     }
 
