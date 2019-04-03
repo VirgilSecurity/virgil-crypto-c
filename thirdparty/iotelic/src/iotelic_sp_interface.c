@@ -205,7 +205,7 @@ vs_iot_init_crypto_interface() {
     }
 
     exch_ctx->op_id_counter = init_safe_op_id_counter();
-    if(NULL != exch_ctx->op_id_counter ){
+    if(NULL != exch_ctx->op_id_counter ){  //-V547
         return ERR_OK;
     }
 
