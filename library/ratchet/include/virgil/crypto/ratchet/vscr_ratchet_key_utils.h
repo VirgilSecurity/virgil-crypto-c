@@ -140,11 +140,12 @@ vscr_ratchet_key_utils_compute_public_key_id(vscr_ratchet_key_utils_t *self, vsc
         vsc_buffer_t *key_id) VSCR_NODISCARD;
 
 VSCR_PUBLIC vsc_buffer_t *
-vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, vscr_error_t *error);
+vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519,
+        bool curve25519, vscr_error_t *error);
 
 VSCR_PUBLIC vsc_buffer_t *
-vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *self, vsc_data_t data,
-        vscr_error_t *error);
+vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519,
+        bool curve25519, vscr_error_t *error);
 
 
 // --------------------------------------------------------------------------

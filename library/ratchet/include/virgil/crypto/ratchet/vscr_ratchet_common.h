@@ -96,7 +96,8 @@ enum {
     //
     //  FIXME
     //
-    vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN = 32964
+    vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN = 32964,
+    vscr_ratchet_common_SIGNATURE_LEN = 64
 };
 
 

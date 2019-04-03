@@ -262,6 +262,32 @@ vscr_ratchet_group_message_get_type(const vscr_ratchet_group_message_t *self) {
     return 0;
 }
 
+VSCR_PUBLIC size_t
+vscr_ratchet_group_message_get_pub_key_count(const vscr_ratchet_group_message_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->message_pb.has_group_info);
+
+    return self->message_pb.group_info.participants_count;
+}
+
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_group_message_get_pub_key(const vscr_ratchet_group_message_t *self, vsc_data_t id) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->message_pb.has_group_info);
+    VSCR_ASSERT(id.len == vscr_ratchet_common_PARTICIPANT_ID_LEN);
+
+    for (size_t i = 0; i < self->message_pb.group_info.participants_count; i++) {
+        if (memcmp(self->message_pb.group_info.participants[i].id, id.bytes, id.len) == 0) {
+            return vsc_data(self->message_pb.group_info.participants[i].pub_key,
+                    sizeof(self->message_pb.group_info.participants[i].pub_key));
+        }
+    }
+
+    return vsc_data_empty();
+}
+
 //
 //  Buffer len to serialize this class.
 //

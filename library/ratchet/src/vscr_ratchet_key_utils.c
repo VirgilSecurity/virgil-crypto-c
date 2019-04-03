@@ -277,7 +277,8 @@ vscr_ratchet_key_utils_compute_public_key_id(
     vscr_error_t error_ctx;
     vscr_error_reset(&error_ctx);
 
-    vsc_buffer_t *raw_public_key = vscr_ratchet_key_utils_extract_ratchet_public_key(self, public_key, &error_ctx);
+    vsc_buffer_t *raw_public_key =
+            vscr_ratchet_key_utils_extract_ratchet_public_key(self, public_key, true, true, &error_ctx);
 
     if (vscr_error_has_error(&error_ctx)) {
         return vscr_error_status(&error_ctx);
@@ -292,7 +293,7 @@ vscr_ratchet_key_utils_compute_public_key_id(
 
 VSCR_PUBLIC vsc_buffer_t *
 vscr_ratchet_key_utils_extract_ratchet_public_key(
-        vscr_ratchet_key_utils_t *self, vsc_data_t data, vscr_error_t *error) {
+        vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519, bool curve25519, vscr_error_t *error) {
 
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
@@ -307,7 +308,7 @@ vscr_ratchet_key_utils_extract_ratchet_public_key(
         goto err;
     }
 
-    if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_CURVE25519) {
+    if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_CURVE25519 && curve25519) {
         if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH) {
             VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
 
@@ -315,7 +316,7 @@ vscr_ratchet_key_utils_extract_ratchet_public_key(
         }
 
         result = vsc_buffer_new_with_data(vscf_raw_key_data(raw_key));
-    } else if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_ED25519) {
+    } else if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_ED25519 && ed25519) {
         if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH) {
             VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
 
@@ -350,7 +351,7 @@ err:
 
 VSCR_PUBLIC vsc_buffer_t *
 vscr_ratchet_key_utils_extract_ratchet_private_key(
-        vscr_ratchet_key_utils_t *self, vsc_data_t data, vscr_error_t *error) {
+        vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519, bool curve25519, vscr_error_t *error) {
 
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
@@ -365,7 +366,7 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(
         goto err;
     }
 
-    if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_CURVE25519) {
+    if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_CURVE25519 && curve25519) {
         if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH + 2) {
             VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_INVALID_KEY_TYPE);
 
@@ -375,7 +376,7 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(
         result = vsc_buffer_new_with_data(
                 vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH));
         vsc_buffer_make_secure(result);
-    } else if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_ED25519) {
+    } else if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_ED25519 && ed25519) {
         if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH + 2) {
             VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
 

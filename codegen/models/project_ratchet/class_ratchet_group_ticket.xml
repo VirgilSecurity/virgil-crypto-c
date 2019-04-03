@@ -20,6 +20,7 @@
         Random used to generate keys
     </dependency>
 
+    <property name="key utils" class="ratchet key utils"/>
     <property name="msg" class="ratchet group message" access="readwrite"/>
 
     <method name="setup defaults">
@@ -31,16 +32,9 @@
         <return enum="status"/>
     </method>
 
-    <method name="set credentials">
-        <argument name="participant id" class="data"/>
-
-        <return enum="status">
-            Error
-        </return>
-    </method>
-
     <method name="add participant">
         <argument name="participant id" class="data"/>
+        <argument name="public key" class="data"/>
 
         <return enum="status">
             Error
@@ -48,8 +42,6 @@
     </method>
 
     <method name="generate ticket" is_const="1">
-        <property name="participant id" class="data"/>
-
         <return class="ratchet group message" access="readonly"/>
     </method>
 </class>

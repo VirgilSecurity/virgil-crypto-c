@@ -9,6 +9,8 @@
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
+    <require header="ed25519/ed25519.h" scope="private"/>
+
     <require class="ratchet keys" scope="private"/>
 
     <require impl="ctr drbg" project="foundation" scope="private"/>
@@ -21,7 +23,6 @@
     <property name="cipher" class="ratchet cipher" access="readwrite"/>
     <property name="skipped messages" class="ratchet skipped group messages" access="readwrite"/>
 
-    <property name="is owner" type="boolean" access="readwrite"/>
     <property name="is initialized" type="boolean" access="readwrite"/>
     <property name="my id" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
@@ -29,26 +30,16 @@
     <property name="my private key" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
     </property>
-    <property name="owner id" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
-    </property>
 
     <property name="participants" class="ratchet group participant data" access="readwrite">
         <array/>
     </property>
     <property name="participants count" type="size" access="readwrite"/>
     <property name="me" class="ratchet group participant data" access="readwrite"/>
+    <property name="public keys count" type="size" access="readwrite"/>
 
     <method name="is initialized" is_const="1">
         <return type="boolean"/>
-    </method>
-
-    <method name="is owner" is_const="1">
-        <return type="boolean"/>
-    </method>
-
-    <method name="owner id" is_const="1">
-        <return class="data"/>
     </method>
 
     <method name="setup defaults">
@@ -61,9 +52,8 @@
     </method>
 
     <method name="setup session">
-        <argument name="participant id" class="data"/>
+        <argument name="my id" class="data"/>
         <argument name="my private key" class="data"/>
-        <argument name="owner id" class="data"/>
         <argument name="message" class="ratchet group message"/>
 
         <return enum="status"/>

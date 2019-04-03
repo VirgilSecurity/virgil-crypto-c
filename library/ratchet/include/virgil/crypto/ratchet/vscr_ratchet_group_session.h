@@ -161,12 +161,6 @@ vscr_ratchet_group_session_release_rng(vscr_ratchet_group_session_t *self);
 VSCR_PUBLIC bool
 vscr_ratchet_group_session_is_initialized(const vscr_ratchet_group_session_t *self);
 
-VSCR_PUBLIC bool
-vscr_ratchet_group_session_is_owner(const vscr_ratchet_group_session_t *self);
-
-VSCR_PUBLIC vsc_data_t
-vscr_ratchet_group_session_owner_id(const vscr_ratchet_group_session_t *self);
-
 //
 //  Setups default dependencies:
 //  - RNG: CTR DRBG
@@ -177,8 +171,8 @@ VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_session_setup_defaults(vscr_ratchet_group_session_t *self) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self, vsc_data_t participant_id,
-        vsc_data_t my_private_key, vsc_data_t owner_id, const vscr_ratchet_group_message_t *message) VSCR_NODISCARD;
+vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self, vsc_data_t my_id,
+        vsc_data_t my_private_key, const vscr_ratchet_group_message_t *message) VSCR_NODISCARD;
 
 //
 //  Encrypts data

@@ -59,13 +59,13 @@
 #include "vscr_group_msg_type.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -137,6 +137,12 @@ vscr_ratchet_group_message_shallow_copy(vscr_ratchet_group_message_t *self);
 //
 VSCR_PUBLIC vscr_group_msg_type_t
 vscr_ratchet_group_message_get_type(const vscr_ratchet_group_message_t *self);
+
+VSCR_PUBLIC size_t
+vscr_ratchet_group_message_get_pub_key_count(const vscr_ratchet_group_message_t *self);
+
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_group_message_get_pub_key(const vscr_ratchet_group_message_t *self, vsc_data_t id);
 
 //
 //  Buffer len to serialize this class.

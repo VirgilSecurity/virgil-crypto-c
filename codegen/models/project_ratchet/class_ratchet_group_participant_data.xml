@@ -4,8 +4,11 @@
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common" scope="public"/>
 
-    <property name="participant id" type="byte" access="readwrite">
+    <property name="id" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
+    </property>
+    <property name="pub key" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
     </property>
 
     <property name="chain key" class="ratchet chain key"/>

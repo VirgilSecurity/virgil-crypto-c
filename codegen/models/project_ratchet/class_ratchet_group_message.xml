@@ -21,6 +21,17 @@
         </return>
     </method>
 
+    <method name="get pub key count" is_const="1">
+
+        <return type="size"/>
+    </method>
+
+    <method name="get pub key" is_const="1">
+        <argument name="id" class="data"/>
+
+        <return class="data"/>
+    </method>
+
     <method name="serialize len">
         Buffer len to serialize this class.
 

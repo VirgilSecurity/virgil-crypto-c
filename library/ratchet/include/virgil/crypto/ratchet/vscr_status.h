@@ -163,7 +163,15 @@ enum vscr_status_t {
     //
     //  Cannot decrypt own messages.
     //
-    vscr_status_ERROR_CANNOT_DECRYPT_OWN_MESSAGES = -22
+    vscr_status_ERROR_CANNOT_DECRYPT_OWN_MESSAGES = -22,
+    //
+    //  Duplicate id.
+    //
+    vscr_status_ERROR_DUPLICATE_ID = -23,
+    //
+    //  Invalid signature.
+    //
+    vscr_status_ERROR_INVALID_SIGNATURE = -24
 };
 typedef enum vscr_status_t vscr_status_t;
 

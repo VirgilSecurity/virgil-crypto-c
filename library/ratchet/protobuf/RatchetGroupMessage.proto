@@ -4,6 +4,7 @@ message ParticipantInfo {
     required uint32 version = 1;
     required bytes id = 2;
     required bytes key = 3;
+    required bytes pub_key = 4;
 }
 
 message GroupInfo {

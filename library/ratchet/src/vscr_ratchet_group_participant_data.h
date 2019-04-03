@@ -82,7 +82,9 @@ struct vscr_ratchet_group_participant_data_t {
     //
     size_t refcnt;
 
-    byte participant_id[vscr_ratchet_common_PARTICIPANT_ID_LEN];
+    byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN];
+
+    byte pub_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
     vscr_ratchet_chain_key_t *chain_key;
 };

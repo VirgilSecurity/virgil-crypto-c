@@ -54,11 +54,13 @@
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet_skipped_group_messages.h"
+#include "../../../tests/test_utils/test_utils.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <RatchetGroupMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
+#include <ed25519/ed25519.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 
 // clang-format on
@@ -94,21 +96,19 @@ struct vscr_ratchet_group_session_t {
 
     vscr_ratchet_skipped_group_messages_t *skipped_messages;
 
-    bool is_owner;
-
     bool is_initialized;
 
     byte my_id[vscr_ratchet_common_PARTICIPANT_ID_LEN];
 
     byte my_private_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
-    byte owner_id[vscr_ratchet_common_PARTICIPANT_ID_LEN];
-
     vscr_ratchet_group_participant_data_t **participants;
 
     size_t participants_count;
 
     vscr_ratchet_group_participant_data_t *me;
+
+    size_t public_keys_count;
 };
 
 //
@@ -350,7 +350,6 @@ vscr_ratchet_group_session_cleanup_ctx(vscr_ratchet_group_session_t *self) {
 
     vscr_ratchet_key_utils_destroy(&self->key_utils);
     vscr_ratchet_cipher_destroy(&self->cipher);
-    vscr_ratchet_group_participant_data_destroy(&self->me);
     vscr_ratchet_skipped_group_messages_destroy(&self->skipped_messages);
 }
 
@@ -384,20 +383,6 @@ vscr_ratchet_group_session_is_initialized(const vscr_ratchet_group_session_t *se
     return self->is_initialized;
 }
 
-VSCR_PUBLIC bool
-vscr_ratchet_group_session_is_owner(const vscr_ratchet_group_session_t *self) {
-
-    VSCR_ASSERT(self);
-
-    return self->is_owner;
-}
-
-VSCR_PUBLIC vsc_data_t
-vscr_ratchet_group_session_owner_id(const vscr_ratchet_group_session_t *self) {
-
-    return vsc_data(self->owner_id, sizeof(self->owner_id));
-}
-
 //
 //  Setups default dependencies:
 //  - RNG: CTR DRBG
@@ -424,26 +409,24 @@ vscr_ratchet_group_session_setup_defaults(vscr_ratchet_group_session_t *self) {
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self, vsc_data_t participant_id,
-        vsc_data_t my_private_key, vsc_data_t owner_id, const vscr_ratchet_group_message_t *message) {
+vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self, vsc_data_t my_id,
+        vsc_data_t my_private_key, const vscr_ratchet_group_message_t *message) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->key_utils);
     VSCR_ASSERT_PTR(message);
     VSCR_ASSERT(message->message_pb.has_group_info);
-    VSCR_ASSERT(participant_id.len == vscr_ratchet_common_PARTICIPANT_ID_LEN);
-    VSCR_ASSERT(owner_id.len == vscr_ratchet_common_PARTICIPANT_ID_LEN);
+    VSCR_ASSERT(my_id.len == vscr_ratchet_common_PARTICIPANT_ID_LEN);
 
-    memcpy(self->my_id, participant_id.bytes, sizeof(self->my_id));
-    memcpy(self->owner_id, owner_id.bytes, sizeof(self->owner_id));
+    memcpy(self->my_id, my_id.bytes, sizeof(self->my_id));
 
     vscr_status_t status = vscr_status_SUCCESS;
 
     vscr_error_t error_ctx;
     vscr_error_reset(&error_ctx);
 
-    vsc_buffer_t *my_private_key_raw =
-            vscr_ratchet_key_utils_extract_ratchet_private_key(self->key_utils, my_private_key, &error_ctx);
+    vsc_buffer_t *my_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
+            self->key_utils, my_private_key, true, false, &error_ctx);
 
     if (vscr_error_has_error(&error_ctx)) {
         status = vscr_error_status(&error_ctx);
@@ -459,8 +442,6 @@ vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self, vsc
     if (message->message_pb.group_info.participants_count < vscr_ratchet_common_MIN_PARTICIPANTS_COUNT) {
         return vscr_status_ERROR_TOO_FEW_PARTICIPANTS;
     }
-
-    self->is_owner = (memcmp(self->my_id, owner_id.bytes, sizeof(self->my_id)) == 0);
 
     self->participants = vscr_alloc(
             (message->message_pb.group_info.participants_count - 1) * sizeof(vscr_ratchet_group_participant_data_t *));
@@ -481,9 +462,10 @@ vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self, vsc
         data->chain_key = vscr_ratchet_chain_key_new();
         data->chain_key->index = 0;
         memcpy(data->chain_key->key, info->key, sizeof(data->chain_key->key));
-        memcpy(data->participant_id, info->id, sizeof(data->participant_id));
+        memcpy(data->id, info->id, sizeof(data->id));
+        memcpy(data->pub_key, info->pub_key, sizeof(data->pub_key));
 
-        if (memcmp(data->participant_id, self->my_id, sizeof(data->participant_id)) == 0) {
+        if (memcmp(data->id, self->my_id, sizeof(data->id)) == 0) {
             if (handled_myself) {
                 status = vscr_status_ERROR_RNG_FAILED; // FIXME: Check for duplicates
                 vscr_ratchet_group_participant_data_destroy(&data);
@@ -533,7 +515,16 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
 
     msg->message_pb.has_regular_message = true;
     msg->message_pb.regular_message.version = 1;
-    // TODO: Sign message
+
+    curve25519_sign(msg->message_pb.regular_message.signature, self->my_private_key, plain_text.bytes, plain_text.len);
+
+    print_bytes(self->my_private_key, sizeof(self->my_private_key));
+    print_bytes(msg->message_pb.regular_message.signature, sizeof(msg->message_pb.regular_message.signature));
+    print_data(plain_text);
+    byte pub_key[32];
+    curve25519_get_pubkey(pub_key, self->my_private_key);
+    print_bytes(pub_key, sizeof(pub_key));
+
     msg->message_pb.regular_message.counter = self->me->chain_key->index;
     memcpy(msg->message_pb.regular_message.sender_id, self->my_id, sizeof(self->my_id));
 
@@ -599,8 +590,6 @@ vscr_ratchet_group_session_decrypt(
         return vscr_status_ERROR_CANNOT_DECRYPT_OWN_MESSAGES;
     }
 
-    // TODO: Check signature
-
     vscr_ratchet_group_participant_data_t *participant =
             vscr_ratchet_group_session_find_participant(self, group_message->sender_id);
 
@@ -648,8 +637,21 @@ vscr_ratchet_group_session_decrypt(
             vscr_ratchet_cipher_decrypt(self->cipher, vsc_data(message_key->key, sizeof(message_key->key)),
                     vsc_buffer_data(group_message->cipher_text.arg), plain_text);
 
-    vscr_ratchet_chain_key_destroy(&new_chain_key);
-    vscr_ratchet_message_key_destroy(&message_key);
+    if (result != vscr_status_SUCCESS) {
+        goto err;
+    }
+
+    print_bytes(group_message->signature, sizeof(group_message->signature));
+    print_buffer(plain_text);
+    print_bytes(participant->pub_key, sizeof(participant->pub_key));
+
+    int curve_result = curve25519_verify(
+            group_message->signature, participant->pub_key, vsc_buffer_bytes(plain_text), vsc_buffer_len(plain_text));
+
+    if (curve_result != 0) {
+        result = vscr_status_ERROR_INVALID_SIGNATURE;
+        goto err;
+    }
 
     while (participant->chain_key->index < group_message->counter) {
         vscr_ratchet_message_key_t *skipped_message_key = vscr_ratchet_keys_create_message_key(participant->chain_key);
@@ -668,6 +670,10 @@ vscr_ratchet_group_session_decrypt(
 
     vscr_ratchet_keys_advance_chain_key(participant->chain_key);
 
+err:
+    vscr_ratchet_chain_key_destroy(&new_chain_key);
+    vscr_ratchet_message_key_destroy(&message_key);
+
     return result;
 }
 
@@ -680,7 +686,7 @@ vscr_ratchet_group_session_find_participant(
     for (size_t i = 0; i < self->participants_count; i++) {
         vscr_ratchet_group_participant_data_t *participant = self->participants[i];
 
-        if (memcmp(participant->participant_id, id, sizeof(participant->participant_id)) == 0) {
+        if (memcmp(participant->id, id, sizeof(participant->id)) == 0) {
             return participant;
         }
     }

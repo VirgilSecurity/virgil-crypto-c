@@ -165,10 +165,8 @@ VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_ticket_setup_defaults(vscr_ratchet_group_ticket_t *self) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_ticket_set_credentials(vscr_ratchet_group_ticket_t *self, vsc_data_t participant_id) VSCR_NODISCARD;
-
-VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_ticket_add_participant(vscr_ratchet_group_ticket_t *self, vsc_data_t participant_id) VSCR_NODISCARD;
+vscr_ratchet_group_ticket_add_participant(vscr_ratchet_group_ticket_t *self, vsc_data_t participant_id,
+        vsc_data_t public_key) VSCR_NODISCARD;
 
 VSCR_PUBLIC const vscr_ratchet_group_message_t *
 vscr_ratchet_group_ticket_generate_ticket(const vscr_ratchet_group_ticket_t *self);

@@ -36,6 +36,9 @@
 #include <test_utils.h>
 #include <virgil/crypto/ratchet/vscr_ratchet_group_ticket.h>
 #include <virgil/crypto/ratchet/vscr_memory.h>
+#include <virgil/crypto/foundation/vscf_curve25519_private_key.h>
+#include <virgil/crypto/foundation/vscf_curve25519_public_key.h>
+#include <virgil/crypto/ratchet/vscr_ratchet_key_utils.h>
 
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
@@ -123,7 +126,7 @@ generate_random_data(vscf_ctr_drbg_t *rng, vsc_buffer_t **buffer) {
 }
 
 void
-generate_PKCS8_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub) {
+generate_PKCS8_ed_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub) {
     vscf_pkcs8_der_serializer_t *pkcs8 = vscf_pkcs8_der_serializer_new();
     vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
 
@@ -154,6 +157,37 @@ generate_PKCS8_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t *
 }
 
 void
+generate_PKCS8_curve_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub) {
+    vscf_pkcs8_der_serializer_t *pkcs8 = vscf_pkcs8_der_serializer_new();
+    vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
+
+    vscf_curve25519_private_key_t *curve25519_private_key = vscf_curve25519_private_key_new();
+    vscf_impl_t *private_key = vscf_curve25519_private_key_impl(curve25519_private_key);
+    vscf_curve25519_private_key_use_random(curve25519_private_key, vscf_ctr_drbg_impl(rng));
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_curve25519_private_key_generate_key(curve25519_private_key));
+
+    size_t len_private = vscf_pkcs8_der_serializer_serialized_private_key_len(pkcs8, private_key);
+
+    *priv = vsc_buffer_new_with_capacity(len_private);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_der_serializer_serialize_private_key(pkcs8, private_key, *priv));
+
+    vscf_impl_t *public_key = vscf_curve25519_private_key_extract_public_key(curve25519_private_key);
+
+    size_t len_public = vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8, public_key);
+
+    *pub = vsc_buffer_new_with_capacity(len_public);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_der_serializer_serialize_public_key(pkcs8, public_key, *pub));
+
+    vscf_pkcs8_der_serializer_destroy(&pkcs8);
+
+    vscf_curve25519_public_key_destroy((vscf_curve25519_public_key_t **)&public_key);
+    vscf_curve25519_private_key_destroy((vscf_curve25519_private_key_t **)&private_key);
+}
+
+void
 generate_random_participant_id(vscf_ctr_drbg_t *rng, vsc_buffer_t **id) {
     *id = vsc_buffer_new_with_capacity(vscr_ratchet_common_PARTICIPANT_ID_LEN);
 
@@ -161,14 +195,18 @@ generate_random_participant_id(vscf_ctr_drbg_t *rng, vsc_buffer_t **id) {
 }
 
 void
-generate_raw_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub) {
+generate_raw_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub, bool curve25519) {
     *priv = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, ED25519_KEY_LEN, *priv));
 
     *pub = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
 
-    TEST_ASSERT_EQUAL(0, curve25519_get_pubkey(vsc_buffer_unused_bytes(*pub), vsc_buffer_bytes(*priv)));
+    if (curve25519) {
+        TEST_ASSERT_EQUAL(0, curve25519_get_pubkey(vsc_buffer_unused_bytes(*pub), vsc_buffer_bytes(*priv)));
+    } else {
+        TEST_ASSERT_EQUAL(0, ed25519_get_pubkey(vsc_buffer_unused_bytes(*pub), vsc_buffer_bytes(*priv)));
+    }
     vsc_buffer_inc_used(*pub, ED25519_KEY_LEN);
 }
 
@@ -184,16 +222,16 @@ initialize(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session_alice, vscr_ra
     }
 
     vsc_buffer_t *alice_priv, *alice_pub;
-    generate_PKCS8_keypair(rng, &alice_priv, &alice_pub);
+    generate_PKCS8_ed_keypair(rng, &alice_priv, &alice_pub);
 
     vsc_buffer_t *bob_priv, *bob_pub;
-    generate_PKCS8_keypair(rng, &bob_priv, &bob_pub);
+    generate_PKCS8_ed_keypair(rng, &bob_priv, &bob_pub);
 
     vsc_buffer_t *bob_lt_priv, *bob_lt_pub;
-    generate_PKCS8_keypair(rng, &bob_lt_priv, &bob_lt_pub);
+    generate_PKCS8_curve_keypair(rng, &bob_lt_priv, &bob_lt_pub);
 
     vsc_buffer_t *bob_ot_priv, *bob_ot_pub;
-    generate_PKCS8_keypair(rng, &bob_ot_priv, &bob_ot_pub);
+    generate_PKCS8_curve_keypair(rng, &bob_ot_priv, &bob_ot_pub);
 
     TEST_ASSERT_EQUAL_INT(vscr_status_SUCCESS,
             vscr_ratchet_session_initiate(*session_alice, vsc_buffer_data(alice_priv), vsc_buffer_data(bob_pub),
@@ -539,18 +577,17 @@ initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratch
 
     *sessions = vscr_alloc(group_size * sizeof(vscr_ratchet_group_session_t *));
     vsc_buffer_t **ids = vscr_alloc(group_size * sizeof(vsc_buffer_t *));
+    vsc_buffer_t **priv = vscr_alloc(group_size * sizeof(vsc_buffer_t *));
 
     for (size_t i = 0; i < group_size; i++) {
+        vsc_buffer_t *pub;
+        generate_PKCS8_ed_keypair(rng, &priv[i], &pub);
+
         vsc_buffer_t *id;
         generate_random_participant_id(rng, &id);
 
-        if (i == 0) {
-            TEST_ASSERT_EQUAL(
-                    vscr_status_SUCCESS, vscr_ratchet_group_ticket_set_credentials(ticket, vsc_buffer_data(id)));
-        } else {
-            TEST_ASSERT_EQUAL(
-                    vscr_status_SUCCESS, vscr_ratchet_group_ticket_add_participant(ticket, vsc_buffer_data(id)));
-        }
+        TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+                vscr_ratchet_group_ticket_add_participant(ticket, vsc_buffer_data(id), vsc_buffer_data(pub)));
 
         ids[i] = id;
     }
@@ -558,19 +595,14 @@ initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratch
     const vscr_ratchet_group_message_t *msg = vscr_ratchet_group_ticket_generate_ticket(ticket);
 
     for (size_t i = 0; i < group_size; i++) {
-        vsc_buffer_t *priv, *pub;
-        generate_PKCS8_keypair(rng, &priv, &pub);
-
         vscr_ratchet_group_session_t *session = vscr_ratchet_group_session_new();
 
         TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_defaults(session));
 
-        TEST_ASSERT_EQUAL(
-                vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(session, vsc_buffer_data(ids[i]),
-                                             vsc_buffer_data(priv), vsc_buffer_data(ids[0]), msg));
+        TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(session,
+                                                       vsc_buffer_data(ids[i]), vsc_buffer_data(priv[i]), msg));
 
-        vsc_buffer_destroy(&priv);
-        vsc_buffer_destroy(&pub);
+        vsc_buffer_destroy(&priv[i]);
 
         (*sessions)[i] = session;
     }

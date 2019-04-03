@@ -50,6 +50,7 @@
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_message_defs.h"
 #include "vscr_ratchet_group_message_defs.h"
+#include "vscr_ratchet_key_utils.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
@@ -85,6 +86,8 @@ struct vscr_ratchet_group_ticket_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *rng;
+
+    vscr_ratchet_key_utils_t *key_utils;
 
     vscr_ratchet_group_message_t *msg;
 };
@@ -279,6 +282,8 @@ static void
 vscr_ratchet_group_ticket_init_ctx(vscr_ratchet_group_ticket_t *self) {
 
     VSCR_ASSERT_PTR(self);
+    self->key_utils = vscr_ratchet_key_utils_new();
+
 
     self->msg = vscr_ratchet_group_message_new();
     GroupMessage msg = GroupMessage_init_zero;
@@ -299,6 +304,7 @@ vscr_ratchet_group_ticket_cleanup_ctx(vscr_ratchet_group_ticket_t *self) {
     VSCR_ASSERT_PTR(self);
 
     vscr_ratchet_group_message_destroy(&self->msg);
+    vscr_ratchet_key_utils_destroy(&self->key_utils);
 }
 
 //
@@ -327,25 +333,29 @@ vscr_ratchet_group_ticket_setup_defaults(vscr_ratchet_group_ticket_t *self) {
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_ticket_set_credentials(vscr_ratchet_group_ticket_t *self, vsc_data_t participant_id) {
-
-    VSCR_ASSERT_PTR(self);
-
-    return vscr_ratchet_group_ticket_add_participant(self, participant_id);
-}
-
-VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_ticket_add_participant(vscr_ratchet_group_ticket_t *self, vsc_data_t participant_id) {
+vscr_ratchet_group_ticket_add_participant(
+        vscr_ratchet_group_ticket_t *self, vsc_data_t participant_id, vsc_data_t public_key) {
 
     VSCR_ASSERT_PTR(self);
 
     VSCR_ASSERT(participant_id.len == vscr_ratchet_common_PARTICIPANT_ID_LEN);
+
+    vscr_error_t error_ctx;
+    vscr_error_reset(&error_ctx);
+
+    vsc_buffer_t *pub_key =
+            vscr_ratchet_key_utils_extract_ratchet_public_key(self->key_utils, public_key, true, false, &error_ctx);
+
+    if (error_ctx.status != vscr_status_SUCCESS) {
+        return error_ctx.status;
+    }
 
     ParticipantInfo *info =
             &self->msg->message_pb.group_info.participants[self->msg->message_pb.group_info.participants_count];
 
     info->version = 1;
     memcpy(info->id, participant_id.bytes, sizeof(info->id));
+    memcpy(info->pub_key, vsc_buffer_bytes(pub_key), sizeof(info->pub_key));
 
     vsc_buffer_t key;
     vsc_buffer_init(&key);
