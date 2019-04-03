@@ -343,8 +343,8 @@ vscr_ratchet_group_ticket_add_participant(
     vscr_error_t error_ctx;
     vscr_error_reset(&error_ctx);
 
-    vsc_buffer_t *pub_key =
-            vscr_ratchet_key_utils_extract_ratchet_public_key(self->key_utils, public_key, true, false, &error_ctx);
+    vsc_buffer_t *pub_key = vscr_ratchet_key_utils_extract_ratchet_public_key(
+            self->key_utils, public_key, true, false, false, &error_ctx);
 
     if (error_ctx.status != vscr_status_SUCCESS) {
         return error_ctx.status;

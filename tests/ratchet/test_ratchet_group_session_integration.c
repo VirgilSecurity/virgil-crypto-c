@@ -67,114 +67,6 @@ int suiteTearDown(int num_failures) { return num_failures; }
 // --------------------------------------------------------------------------
 
 void
-test__signature__ed_pair__should_verify(void) {
-    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
-
-    vsc_buffer_t *ed_priv = NULL;
-    vsc_buffer_t *ed_pub = NULL;
-
-    generate_raw_keypair(rng, &ed_priv, &ed_pub, false);
-
-    vsc_buffer_t *data = NULL;
-    generate_random_data(rng, &data);
-
-    byte signature[64];
-    ed25519_sign(signature, vsc_buffer_bytes(ed_priv), vsc_buffer_bytes(data), vsc_buffer_len(data));
-
-    int res = ed25519_verify(signature, vsc_buffer_bytes(ed_pub), vsc_buffer_bytes(data), vsc_buffer_len(data));
-
-    TEST_ASSERT_EQUAL(0, res);
-
-    vscf_ctr_drbg_destroy(&rng);
-}
-
-void
-test__signature__curve_pair__should_verify(void) {
-    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
-
-    vsc_buffer_t *curve_priv = NULL;
-    vsc_buffer_t *curve_pub = NULL;
-
-    generate_raw_keypair(rng, &curve_priv, &curve_pub, true);
-
-    vsc_buffer_t *data = NULL;
-    generate_random_data(rng, &data);
-
-    byte signature[64];
-    curve25519_sign(signature, vsc_buffer_bytes(curve_priv), vsc_buffer_bytes(data), vsc_buffer_len(data));
-
-    int res = curve25519_verify(signature, vsc_buffer_bytes(curve_pub), vsc_buffer_bytes(data), vsc_buffer_len(data));
-
-    TEST_ASSERT_EQUAL(0, res);
-
-    vscf_ctr_drbg_destroy(&rng);
-}
-
-void
-test__signature__curve_pkcs__should_verify(void) {
-    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
-
-    vsc_buffer_t *curve_priv = NULL, *curve_pub = NULL;
-
-    generate_PKCS8_curve_keypair(rng, &curve_priv, &curve_pub);
-
-    vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
-    vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
-
-    vscf_raw_key_t *raw_priv_key =
-            vscf_pkcs8_der_deserializer_deserialize_private_key(pkcs8, vsc_buffer_data(curve_priv), NULL);
-    vscf_raw_key_t *raw_pub_key =
-            vscf_pkcs8_der_deserializer_deserialize_public_key(pkcs8, vsc_buffer_data(curve_pub), NULL);
-
-    vsc_data_t curve_priv_raw = vsc_data_slice_beg(vscf_raw_key_data(raw_priv_key), 2, 32);
-    vsc_data_t curve_pub_raw = vscf_raw_key_data(raw_pub_key);
-
-    vsc_buffer_t *data = NULL;
-    generate_random_data(rng, &data);
-
-    byte signature[64];
-    curve25519_sign(signature, curve_priv_raw.bytes, vsc_buffer_bytes(data), vsc_buffer_len(data));
-
-    int res = curve25519_verify(signature, curve_pub_raw.bytes, vsc_buffer_bytes(data), vsc_buffer_len(data));
-
-    TEST_ASSERT_EQUAL(0, res);
-
-    vscf_ctr_drbg_destroy(&rng);
-}
-
-void
-test__signature__ed_pkcs_to_curve_pair__should_verify(void) {
-    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
-
-    vsc_buffer_t *ed_priv = NULL, *ed_pub = NULL;
-
-    generate_PKCS8_ed_keypair(rng, &ed_priv, &ed_pub);
-
-    vscr_ratchet_key_utils_t *key_utils = vscr_ratchet_key_utils_new();
-
-    vsc_buffer_t *curve_priv =
-            vscr_ratchet_key_utils_extract_ratchet_private_key(key_utils, vsc_buffer_data(ed_priv), true, false, NULL);
-    vsc_buffer_t *curve_pub =
-            vscr_ratchet_key_utils_extract_ratchet_public_key(key_utils, vsc_buffer_data(ed_pub), true, false, NULL);
-
-    vsc_buffer_t *data = NULL;
-    generate_random_data(rng, &data);
-
-    byte signature[64];
-    curve25519_sign(signature, vsc_buffer_bytes(curve_priv), vsc_buffer_bytes(data), vsc_buffer_len(data));
-
-    int res = curve25519_verify(signature, vsc_buffer_bytes(curve_pub), vsc_buffer_bytes(data), vsc_buffer_len(data));
-
-    TEST_ASSERT_EQUAL(0, res);
-
-    vscf_ctr_drbg_destroy(&rng);
-}
-
-void
 test__encrypt_decrypt__1_msg__decrypt_should_succeed(void) {
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
@@ -363,14 +255,10 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__signature__ed_pair__should_verify);
-    RUN_TEST(test__signature__curve_pair__should_verify);
-    RUN_TEST(test__signature__curve_pkcs__should_verify);
-    RUN_TEST(test__signature__ed_pkcs_to_curve_pair__should_verify);
-//    RUN_TEST(test__encrypt_decrypt__1_msg__decrypt_should_succeed);
-//    RUN_TEST(test__encrypt_decrypt__random_group_chat__decrypt_should_succeed);
-//    RUN_TEST(test__encrypt_decrypt__out_of_order__decrypt_should_succeed);
-//    RUN_TEST(test__encrypt_decrypt__random_group_chat_bad_network__decrypt_should_succeed);
+    RUN_TEST(test__encrypt_decrypt__1_msg__decrypt_should_succeed);
+    RUN_TEST(test__encrypt_decrypt__random_group_chat__decrypt_should_succeed);
+    RUN_TEST(test__encrypt_decrypt__out_of_order__decrypt_should_succeed);
+    RUN_TEST(test__encrypt_decrypt__random_group_chat_bad_network__decrypt_should_succeed);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

@@ -65,9 +65,9 @@ test__receiver_chains__adding_chains__should_be_correct(void) {
     vsc_buffer_t *priv2, *pub2;
     vsc_buffer_t *priv3, *pub3;
 
-    generate_raw_keypair(rng, &priv1, &pub1);
-    generate_raw_keypair(rng, &priv2, &pub2);
-    generate_raw_keypair(rng, &priv3, &pub3);
+    generate_raw_keypair(rng, &priv1, &pub1, true);
+    generate_raw_keypair(rng, &priv2, &pub2, true);
+    generate_raw_keypair(rng, &priv3, &pub3, true);
 
     TEST_ASSERT_EQUAL(NULL, vscr_ratchet_receiver_chains_first_chain(chains));
     TEST_ASSERT_EQUAL(NULL, vscr_ratchet_receiver_chains_find_chain(chains, vsc_buffer_data(pub1)));
@@ -117,9 +117,9 @@ test__delete_next__adding_chains__should_be_correct(void) {
     vsc_buffer_t *priv2, *pub2;
     vsc_buffer_t *priv3, *pub3;
 
-    generate_raw_keypair(rng, &priv1, &pub1);
-    generate_raw_keypair(rng, &priv2, &pub2);
-    generate_raw_keypair(rng, &priv3, &pub3);
+    generate_raw_keypair(rng, &priv1, &pub1, true);
+    generate_raw_keypair(rng, &priv2, &pub2, true);
+    generate_raw_keypair(rng, &priv3, &pub3, true);
 
     vscr_ratchet_receiver_chain_t *chain1 = vscr_ratchet_receiver_chain_new();
     vscr_ratchet_receiver_chain_t *chain2 = vscr_ratchet_receiver_chain_new();
@@ -171,7 +171,7 @@ test__add_chain__many_chains__chains_number_should_be_limited(void) {
     for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_RECEIVERS_CHAINS; i++) {
         vsc_buffer_t *priv;
 
-        generate_raw_keypair(rng, &priv, &pub[i]);
+        generate_raw_keypair(rng, &priv, &pub[i], true);
 
         vsc_buffer_destroy(&priv);
 
@@ -190,7 +190,7 @@ test__add_chain__many_chains__chains_number_should_be_limited(void) {
 
     vsc_buffer_t *priv;
 
-    generate_raw_keypair(rng, &priv, &pub[vscr_ratchet_common_hidden_MAX_RECEIVERS_CHAINS]);
+    generate_raw_keypair(rng, &priv, &pub[vscr_ratchet_common_hidden_MAX_RECEIVERS_CHAINS], true);
 
     vsc_buffer_destroy(&priv);
 

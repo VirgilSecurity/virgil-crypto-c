@@ -255,7 +255,7 @@ vscr_ratchet_key_utils_cleanup_ctx(vscr_ratchet_key_utils_t *self) {
 //
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_key_utils_compute_public_key_id(
-        vscr_ratchet_key_utils_t *self, vsc_data_t public_key, vsc_buffer_t *key_id) {
+        vscr_ratchet_key_utils_t *self, vsc_data_t public_key, bool convert_to_curve25519, vsc_buffer_t *key_id) {
 
     if (public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH) {
         byte digest[vscf_sha512_DIGEST_LEN];
@@ -277,14 +277,15 @@ vscr_ratchet_key_utils_compute_public_key_id(
     vscr_error_t error_ctx;
     vscr_error_reset(&error_ctx);
 
-    vsc_buffer_t *raw_public_key =
-            vscr_ratchet_key_utils_extract_ratchet_public_key(self, public_key, true, true, &error_ctx);
+    vsc_buffer_t *raw_public_key = vscr_ratchet_key_utils_extract_ratchet_public_key(
+            self, public_key, true, true, convert_to_curve25519, &error_ctx);
 
     if (vscr_error_has_error(&error_ctx)) {
         return vscr_error_status(&error_ctx);
     }
 
-    vscr_status_t result = vscr_ratchet_key_utils_compute_public_key_id(self, vsc_buffer_data(raw_public_key), key_id);
+    vscr_status_t result =
+            vscr_ratchet_key_utils_compute_public_key_id(self, vsc_buffer_data(raw_public_key), false, key_id);
 
     vsc_buffer_destroy(&raw_public_key);
 
@@ -292,8 +293,8 @@ vscr_ratchet_key_utils_compute_public_key_id(
 }
 
 VSCR_PUBLIC vsc_buffer_t *
-vscr_ratchet_key_utils_extract_ratchet_public_key(
-        vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519, bool curve25519, vscr_error_t *error) {
+vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519,
+        bool curve25519, bool convert_to_curve25519, vscr_error_t *error) {
 
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
@@ -323,20 +324,24 @@ vscr_ratchet_key_utils_extract_ratchet_public_key(
             goto err;
         }
 
-        result = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+        if (convert_to_curve25519) {
+            result = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
 
-        int curve25519_status =
-                ed25519_pubkey_to_curve25519(vsc_buffer_unused_bytes(result), vscf_raw_key_data(raw_key).bytes);
+            int curve25519_status =
+                    ed25519_pubkey_to_curve25519(vsc_buffer_unused_bytes(result), vscf_raw_key_data(raw_key).bytes);
 
-        if (curve25519_status != 0) {
-            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_CURVE25519);
+            if (curve25519_status != 0) {
+                VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_CURVE25519);
 
-            vsc_buffer_destroy(&result);
+                vsc_buffer_destroy(&result);
 
-            goto err;
+                goto err;
+            }
+
+            vsc_buffer_inc_used(result, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+        } else {
+            result = vsc_buffer_new_with_data(vscf_raw_key_data(raw_key));
         }
-
-        vsc_buffer_inc_used(result, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
     } else {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_INVALID_KEY_TYPE);
 
@@ -350,8 +355,8 @@ err:
 }
 
 VSCR_PUBLIC vsc_buffer_t *
-vscr_ratchet_key_utils_extract_ratchet_private_key(
-        vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519, bool curve25519, vscr_error_t *error) {
+vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519,
+        bool curve25519, bool convert_to_curve25519, vscr_error_t *error) {
 
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
@@ -383,21 +388,27 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(
             goto err;
         }
 
-        result = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
-        vsc_buffer_make_secure(result);
+        if (convert_to_curve25519) {
+            result = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+            vsc_buffer_make_secure(result);
 
-        int curve25519_status = ed25519_key_to_curve25519(vsc_buffer_unused_bytes(result),
-                vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH).bytes);
+            int curve25519_status = ed25519_key_to_curve25519(vsc_buffer_unused_bytes(result),
+                    vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH)
+                            .bytes);
 
-        if (curve25519_status != 0) {
-            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_CURVE25519);
+            if (curve25519_status != 0) {
+                VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_CURVE25519);
 
-            vsc_buffer_destroy(&result);
+                vsc_buffer_destroy(&result);
 
-            goto err;
+                goto err;
+            }
+
+            vsc_buffer_inc_used(result, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+        } else {
+            result = vsc_buffer_new_with_data(
+                    vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH));
         }
-
-        vsc_buffer_inc_used(result, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
     } else {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_INVALID_KEY_TYPE);
 

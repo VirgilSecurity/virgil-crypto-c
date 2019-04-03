@@ -44,6 +44,7 @@
 #include "vscr_ratchet_skipped_message_key_list_node.h"
 #include "vscr_ratchet_receiver_chains.h"
 #include "vscr_ratchet_skipped_messages.h"
+#include "vscr_ratchet_key_utils.h"
 
 struct vscr_ratchet_skipped_messages_t {
     //

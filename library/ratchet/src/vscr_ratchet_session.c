@@ -408,7 +408,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
     vscr_error_reset(&error_ctx);
 
     vsc_buffer_t *sender_identity_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
-            self->key_utils, sender_identity_private_key, true, false, &error_ctx);
+            self->key_utils, sender_identity_private_key, true, false, true, &error_ctx);
 
     if (vscr_error_has_error(&error_ctx)) {
         status = vscr_error_status(&error_ctx);
@@ -416,7 +416,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
     }
 
     vsc_buffer_t *receiver_identity_public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
-            self->key_utils, receiver_identity_public_key, true, false, &error_ctx);
+            self->key_utils, receiver_identity_public_key, true, false, true, &error_ctx);
 
     if (vscr_error_has_error(&error_ctx)) {
         status = vscr_error_status(&error_ctx);
@@ -432,7 +432,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
     }
 
     vsc_buffer_t *receiver_long_term_public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
-            self->key_utils, receiver_long_term_public_key, false, true, &error_ctx);
+            self->key_utils, receiver_long_term_public_key, false, true, false, &error_ctx);
 
     if (vscr_error_has_error(&error_ctx)) {
         status = vscr_error_status(&error_ctx);
@@ -448,7 +448,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
 
     if (receiver_one_time_public_key.len != 0) {
         receiver_one_time_public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
-                self->key_utils, receiver_one_time_public_key, false, true, &error_ctx);
+                self->key_utils, receiver_one_time_public_key, false, true, false, &error_ctx);
 
         if (vscr_error_has_error(&error_ctx)) {
             status = vscr_error_status(&error_ctx);
@@ -544,7 +544,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_ide
     vscr_error_reset(&error_ctx);
 
     vsc_buffer_t *sender_identity_public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
-            self->key_utils, sender_identity_public_key, true, false, &error_ctx);
+            self->key_utils, sender_identity_public_key, true, false, true, &error_ctx);
 
     if (vscr_error_has_error(&error_ctx)) {
         status = vscr_error_status(&error_ctx);
@@ -563,7 +563,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_ide
     }
 
     vsc_buffer_t *receiver_identity_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
-            self->key_utils, receiver_identity_private_key, true, false, &error_ctx);
+            self->key_utils, receiver_identity_private_key, true, false, true, &error_ctx);
 
     if (vscr_error_has_error(&error_ctx)) {
         status = vscr_error_status(&error_ctx);
@@ -571,7 +571,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_ide
     }
 
     vsc_buffer_t *receiver_long_term_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
-            self->key_utils, receiver_long_term_private_key, false, true, &error_ctx);
+            self->key_utils, receiver_long_term_private_key, false, true, false, &error_ctx);
 
     if (vscr_error_has_error(&error_ctx)) {
         status = vscr_error_status(&error_ctx);
@@ -591,7 +591,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_ide
     size_t shared_secret_count = 3;
     if (receiver_one_time_private_key.len != 0) {
         receiver_one_time_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
-                self->key_utils, receiver_one_time_private_key, false, true, &error_ctx);
+                self->key_utils, receiver_one_time_private_key, false, true, false, &error_ctx);
 
         if (vscr_error_has_error(&error_ctx)) {
             status = vscr_error_status(&error_ctx);

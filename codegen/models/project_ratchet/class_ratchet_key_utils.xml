@@ -17,6 +17,8 @@
             Public key
         </argument>
 
+        <argument name="convert to curve25519" type="boolean"/>
+
         <argument name="key id" class="buffer">
             Key pair id
 
@@ -32,6 +34,7 @@
         <argument name="data" class="data"/>
         <argument name="ed25519" type="boolean"/>
         <argument name="curve25519" type="boolean"/>
+        <argument name="convert to curve25519" type="boolean"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="buffer"/>
@@ -41,6 +44,7 @@
         <argument name="data" class="data"/>
         <argument name="ed25519" type="boolean"/>
         <argument name="curve25519" type="boolean"/>
+        <argument name="convert to curve25519" type="boolean"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="buffer"/>

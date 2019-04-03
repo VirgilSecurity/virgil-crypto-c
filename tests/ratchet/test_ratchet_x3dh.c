@@ -130,11 +130,11 @@ test__x3dh__random_keys__should_match(void) {
     vsc_buffer_t *receiver_long_term_private_key, *receiver_long_term_public_key;
     vsc_buffer_t *receiver_one_time_private_key, *receiver_one_time_public_key;
 
-    generate_raw_keypair(rng, &sender_identity_private_key, &sender_identity_public_key);
-    generate_raw_keypair(rng, &sender_ephemeral_private_key, &sender_ephemeral_public_key);
-    generate_raw_keypair(rng, &receiver_identity_private_key, &receiver_identity_public_key);
-    generate_raw_keypair(rng, &receiver_long_term_private_key, &receiver_long_term_public_key);
-    generate_raw_keypair(rng, &receiver_one_time_private_key, &receiver_one_time_public_key);
+    generate_raw_keypair(rng, &sender_identity_private_key, &sender_identity_public_key, true);
+    generate_raw_keypair(rng, &sender_ephemeral_private_key, &sender_ephemeral_public_key, true);
+    generate_raw_keypair(rng, &receiver_identity_private_key, &receiver_identity_public_key, true);
+    generate_raw_keypair(rng, &receiver_long_term_private_key, &receiver_long_term_public_key, true);
+    generate_raw_keypair(rng, &receiver_one_time_private_key, &receiver_one_time_public_key, true);
 
     vsc_buffer_t *shared_secret_sender = vsc_buffer_new_with_capacity(4 * ED25519_DH_LEN);
     vsc_buffer_t *shared_secret_receiver = vsc_buffer_new_with_capacity(4 * ED25519_DH_LEN);
@@ -184,10 +184,10 @@ test__x3dh__random_keys_weak__should_match(void) {
     vsc_buffer_t *receiver_identity_private_key, *receiver_identity_public_key;
     vsc_buffer_t *receiver_long_term_private_key, *receiver_long_term_public_key;
 
-    generate_raw_keypair(rng, &sender_identity_private_key, &sender_identity_public_key);
-    generate_raw_keypair(rng, &sender_ephemeral_private_key, &sender_ephemeral_public_key);
-    generate_raw_keypair(rng, &receiver_identity_private_key, &receiver_identity_public_key);
-    generate_raw_keypair(rng, &receiver_long_term_private_key, &receiver_long_term_public_key);
+    generate_raw_keypair(rng, &sender_identity_private_key, &sender_identity_public_key, true);
+    generate_raw_keypair(rng, &sender_ephemeral_private_key, &sender_ephemeral_public_key, true);
+    generate_raw_keypair(rng, &receiver_identity_private_key, &receiver_identity_public_key, true);
+    generate_raw_keypair(rng, &receiver_long_term_private_key, &receiver_long_term_public_key, true);
 
     vsc_buffer_t *shared_secret_sender = vsc_buffer_new_with_capacity(3 * ED25519_DH_LEN);
     vsc_buffer_t *shared_secret_receiver = vsc_buffer_new_with_capacity(3 * ED25519_DH_LEN);

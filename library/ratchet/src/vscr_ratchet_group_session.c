@@ -54,7 +54,6 @@
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet_skipped_group_messages.h"
-#include "../../../tests/test_utils/test_utils.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <RatchetGroupMessage.pb.h>
@@ -426,7 +425,7 @@ vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self, vsc
     vscr_error_reset(&error_ctx);
 
     vsc_buffer_t *my_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
-            self->key_utils, my_private_key, true, false, &error_ctx);
+            self->key_utils, my_private_key, true, false, false, &error_ctx);
 
     if (vscr_error_has_error(&error_ctx)) {
         status = vscr_error_status(&error_ctx);
@@ -516,14 +515,7 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     msg->message_pb.has_regular_message = true;
     msg->message_pb.regular_message.version = 1;
 
-    curve25519_sign(msg->message_pb.regular_message.signature, self->my_private_key, plain_text.bytes, plain_text.len);
-
-    print_bytes(self->my_private_key, sizeof(self->my_private_key));
-    print_bytes(msg->message_pb.regular_message.signature, sizeof(msg->message_pb.regular_message.signature));
-    print_data(plain_text);
-    byte pub_key[32];
-    curve25519_get_pubkey(pub_key, self->my_private_key);
-    print_bytes(pub_key, sizeof(pub_key));
+    ed25519_sign(msg->message_pb.regular_message.signature, self->my_private_key, plain_text.bytes, plain_text.len);
 
     msg->message_pb.regular_message.counter = self->me->chain_key->index;
     memcpy(msg->message_pb.regular_message.sender_id, self->my_id, sizeof(self->my_id));
@@ -641,14 +633,10 @@ vscr_ratchet_group_session_decrypt(
         goto err;
     }
 
-    print_bytes(group_message->signature, sizeof(group_message->signature));
-    print_buffer(plain_text);
-    print_bytes(participant->pub_key, sizeof(participant->pub_key));
-
-    int curve_result = curve25519_verify(
+    int ed_result = ed25519_verify(
             group_message->signature, participant->pub_key, vsc_buffer_bytes(plain_text), vsc_buffer_len(plain_text));
 
-    if (curve_result != 0) {
+    if (ed_result != 0) {
         result = vscr_status_ERROR_INVALID_SIGNATURE;
         goto err;
     }
