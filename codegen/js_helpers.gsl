@@ -36,10 +36,6 @@ function js_method_is_private(method)
   return (defined(my.method.visibility) & my.method.visibility = "private") | (defined(my.method.declaration) & my.method.declaration = "private")
 endfunction
 
-function js_method_is_static(method)
-  return defined(my.method.is_static) & my.method.is_static = "1"
-endfunction
-
 function js_value_is_size(value)
   return defined(my.value.type) & my.value.type = "size"
 endfunction
@@ -110,6 +106,14 @@ endfunction
 
 function js_value_is_return_argument(value)
   return js_value_is_buffer(my.value) | ((js_value_is_byte(my.value) | js_value_is_char(my.value) | js_value_is_error_context(my.value)) & (defined(my.value.access) & (my.value.access = "writeonly" | my.value.access = "readwrite")))
+endfunction
+
+function js_get_project_uid(argument)
+  my.project_uid = ""
+  if defined(my.argument.project)
+    my.project_uid = make_id("project", my.argument.project)
+  endif
+  return my.project_uid
 endfunction
 
 # --------------------------------------------------------------------------------------------------

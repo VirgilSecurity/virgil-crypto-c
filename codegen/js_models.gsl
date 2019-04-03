@@ -112,52 +112,19 @@ endfunction
 function js_append_js_dependency(parent, source, dependency)
   new js_dependency to my.parent
     new js_method to js_dependency
+      js_method.is_static = "0" <> "0"
       js_method.c_name = make_ref_c(make_id("class", my.source.name, "method", "use", my.dependency.name))
       js_method.js_name = "set$(my.dependency.name:pascal)"
       js_method.cpp_name = "Set$(my.dependency.name:pascal)"
-      new js_argument to js_method
-        js_argument.cpp_name = "$(my.dependency.name:c)"
-        js_argument.js_name = "$(my.dependency.name:camel)"
-        if defined(my.dependency.interface)
-          js_argument.type = "interface"
-        else
-          js_argument.type = "class"
-        endif
-      endnew
-      my.project_uid = ""
-      if defined(my.dependency.project)
-        my.project_uid = make_id("project", my.dependency.project)
-      endif
-      if defined(my.dependency.interface)
-        new js_interface_call_argument to js_method
-          js_interface_call_argument.index = 0
-          js_interface_call_argument.cpp_name = "$(my.dependency.name:c)"
-          js_interface_call_argument.js_name = "$(my.dependency.name:camel)"
-          js_interface_call_argument.interface_name = make_ref_js(make_id(my.project_uid, "interface", "module", "$(my.dependency.interface:pascal)"))
-          js_interface_call_argument.c_implementation_type = "$(make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl")))*"
-        endnew
-      else
-        if defined(my.dependency.impl)
-          my.class_name = my.dependency.impl
-        else
-          my.class_name = my.dependency.class
-        endif
-        new js_class_call_argument to js_method
-          js_class_call_argument.index = 0
-          js_class_call_argument.cpp_name = "$(my.dependency.name:c)"
-          js_class_call_argument.js_name = "$(my.dependency.name:camel)"
-          js_class_call_argument.class_name = make_ref_js(make_id(my.project_uid, "class", "module", "$(my.class_name:pascal)"))
-          js_class_call_argument.c_context_name = "$(my.class_name:c)"
-          js_class_call_argument.c_context_type = "$(make_ref_c(make_id(my.project_uid, "class", my.class_name, "struct", my.class_name)))*"
-        endnew
-      endif
+      js_append_js_argument(js_method, my.dependency)
+      js_append_resolved_argument(js_method, my.source, my.dependency, 0)
     endnew
   endnew
 endfunction
 
 function js_append_js_method(parent, source, method)
   new js_method to my.parent
-    js_method.is_static = my.method.is_static
+    js_method.is_static = defined(my.method.is_static) & my.method.is_static <> "0"
     if string_equal(my.method.of_class, "global") | string_equal(my.source.of_class, "global")
       js_method.c_name = make_ref_c(make_id("global method", my.method.name))
     else
@@ -168,12 +135,12 @@ function js_append_js_method(parent, source, method)
     js_method.js_name = "$(my.method.name:camel)"
     for my.method.argument
       js_append_js_argument(js_method, argument)
-      js_append_resolved_argument(js_method, my.source, my.method, argument, index(argument) - 1)
+      js_append_resolved_argument(js_method, my.source, argument, index(argument) - 1)
     endfor
     if defined(my.method->return)
       my.method->return.name = "method return"
       js_append_js_method_call_return(js_method, my.method->return)
-      js_append_resolved_return(js_method, my.source, my.method, my.method->return)
+      js_append_resolved_return(js_method, my.source, my.method->return)
     endif
     return js_method
   endnew
@@ -196,11 +163,11 @@ function js_append_js_argument(parent, argument)
   endnew
 endfunction
 
-function js_append_resolved_argument(parent, source, method, argument, index)
+function js_append_resolved_argument(parent, source, argument, index)
   if js_value_is_return_argument(my.argument)
-    return js_append_resolved_return(my.parent, my.source, my.method, my.argument)
+    return js_append_resolved_return(my.parent, my.source, my.argument)
   endif
-  return js_append_resolved_call_argument(my.parent, my.source, my.method, my.argument, my.index)
+  return js_append_resolved_call_argument(my.parent, my.source, my.argument, my.index)
 endfunction
 
 function js_append_js_call_argument(parent, argument)
@@ -274,7 +241,7 @@ function js_append_js_data_call_argument(parent, argument, index)
   endnew
 endfunction
 
-function js_append_js_enum_call_argument(parent, source, method, argument, index)
+function js_append_js_enum_call_argument(parent, source, argument, index)
   new js_enum_call_argument to my.parent
     js_enum_call_argument.index = my.index
     js_enum_call_argument.cpp_name = "$(my.argument.name:c)"
@@ -284,28 +251,27 @@ function js_append_js_enum_call_argument(parent, source, method, argument, index
   endnew
 endfunction
 
-function js_append_js_class_call_argument(parent, source, method, argument, index)
+function js_append_js_class_call_argument(parent, source, argument, index)
   new js_class_call_argument to my.parent
-    my.project_uid = ""
-    if defined(my.argument.project)
-      my.project_uid = make_id("project", my.argument.project)
+    if defined(my.argument.class)
+      my.class_name = my.argument.class
+    else
+      my.class_name = my.argument.impl
     endif
+    my.project_uid = js_get_project_uid(my.argument)
     js_class_call_argument.index = my.index
     js_class_call_argument.cpp_name = "$(my.argument.name:c)"
     js_class_call_argument.js_name = "$(my.argument.name:camel)"
-    js_class_call_argument.class_name = make_ref_js(make_id(my.project_uid, "class", "module", "$(my.argument.class:pascal)"))
-    js_class_call_argument.c_context_name = "$(my.argument.class:c)"
-    js_class_call_argument.c_context_type = "$(make_ref_c(make_id(my.project_uid, "class", my.argument.class, "struct", my.argument.class)))*"
+    js_class_call_argument.class_name = make_ref_js(make_id(my.project_uid, "class", "module", "$(my.class_name:pascal)"))
+    js_class_call_argument.c_context_name = "$(my.class_name:c)"
+    js_class_call_argument.c_context_type = "$(make_ref_c(make_id(my.project_uid, "class", my.class_name, "struct", my.class_name)))*"
     return js_class_call_argument
   endnew
 endfunction
 
-function js_append_js_interface_call_argument(parent, source, method, argument, index)
+function js_append_js_interface_call_argument(parent, source, argument, index)
   new js_interface_call_argument to my.parent
-    my.project_uid = ""
-    if defined(my.argument.project)
-      my.project_uid = make_id("project", my.argument.project)
-    endif
+    my.project_uid = js_get_project_uid(my.argument)
     js_interface_call_argument.index = my.index
     js_interface_call_argument.cpp_name = "$(my.argument.name:c)"
     js_interface_call_argument.js_name = "$(my.argument.name:camel)"
@@ -315,7 +281,7 @@ function js_append_js_interface_call_argument(parent, source, method, argument, 
   endnew
 endfunction
 
-function js_append_resolved_call_argument(parent, source, method, argument, index)
+function js_append_resolved_call_argument(parent, source, argument, index)
   js_append_js_call_argument(my.parent, my.argument)
   if defined(my.argument.type) & my.argument.type = "size"
     return js_append_js_size_call_argument(my.parent, my.argument, my.index)
@@ -332,11 +298,11 @@ function js_append_resolved_call_argument(parent, source, method, argument, inde
   elsif defined(my.argument.class) & my.argument.class = "data"
     return js_append_js_data_call_argument(my.parent, my.argument, my.index)
   elsif defined(my.argument.enum)
-    return js_append_js_enum_call_argument(my.parent, my.source, my.method, my.argument, my.index)
-  elsif defined(my.argument.class)
-    return js_append_js_class_call_argument(my.parent, my.source, my.method, my.argument, my.index)
+    return js_append_js_enum_call_argument(my.parent, my.source, my.argument, my.index)
+  elsif (defined(my.argument.class) & my.argument.class <> "buffer") | defined(my.argument.impl)
+    return js_append_js_class_call_argument(my.parent, my.source, my.argument, my.index)
   elsif defined(my.argument.interface)
-    return js_append_js_interface_call_argument(my.parent, my.source, my.method, my.argument, my.index)
+    return js_append_js_interface_call_argument(my.parent, my.source, my.argument, my.index)
   endif
 endfunction
 
@@ -348,12 +314,23 @@ function js_append_js_method_call_return(parent, argument)
   endnew
 endfunction
 
-function js_append_js_error_method_return(parent, source, argument)
-  new js_error_method_return to my.parent
-    js_error_method_return.cpp_name = "$(my.argument.name:c)"
-    js_error_method_return.js_name = "$(my.argument.name:camel)"
-    js_error_method_return.c_type = make_ref_c(make_id("class", "status", "enum", "status"))
-    return js_error_method_return
+function js_append_js_error_status_method_return(parent, source, argument)
+  new js_error_status_method_return to my.parent
+    my.project_uid = js_get_project_uid(my.argument)
+    js_error_status_method_return.cpp_name = "$(my.argument.name:c)"
+    js_error_status_method_return.js_name = "$(my.argument.name:camel)"
+    js_error_status_method_return.c_type = make_ref_c(make_id(my.project_uid, "class", "status", "enum", "status"))
+  endnew
+endfunction
+
+function js_append_js_error_context_method_return(parent, source, argument)
+  new js_error_context_method_return to my.parent
+    my.project_uid = js_get_project_uid(my.argument)
+    js_error_context_method_return.cpp_name = "$(my.argument.name:c)"
+    js_error_context_method_return.js_name = "$(my.argument.name:camel)"
+    js_error_context_method_return.c_type = make_ref_c(make_id(my.project_uid, "class", "error", "struct", "error"))
+    js_error_context_method_return.c_reset_method_name = make_ref_c(make_id(my.project_uid, "class", "error", "method", "reset"))
+    return js_error_context_method_return
   endnew
 endfunction
 
@@ -423,54 +400,67 @@ endfunction
 
 function js_append_js_enum_method_return(parent, argument)
   new js_enum_method_return to my.parent
+    my.project_uid = js_get_project_uid(my.argument)
     js_enum_method_return.cpp_name = "$(my.argument.name:c)"
     js_enum_method_return.js_name = "$(my.argument.name:camel)"
+    js_enum_method_return.c_type = make_ref_c(make_id(my.project_uid, "class", my.argument.enum, "enum", my.argument.enum))
     return js_enum_method_return
   endnew
 endfunction
 
 function js_append_js_class_method_return(parent, argument)
   new js_class_method_return to my.parent
+    my.project_uid = js_get_project_uid(my.argument)
+    if defined(my.argument.class)
+      my.class_name = my.argument.class
+    else
+      my.class_name = my.argument.impl
+    endif
     js_class_method_return.cpp_name = "$(my.argument.name:c)"
     js_class_method_return.js_name = "$(my.argument.name:camel)"
-    js_class_method_return.cpp_class_name = make_ref_js(make_id("class" , "module", "$(my.argument.class:pascal)"))
+    js_class_method_return.c_context_type = make_ref_c(make_id(my.project_uid, "class", my.class_name, "struct", my.class_name))
+    js_class_method_return.class_name = make_ref_js(make_id(my.project_uid, "class" , "module", "$(my.class_name:pascal)"))
     return js_class_method_return
   endnew
 endfunction
 
 function js_append_js_interface_method_return(parent, argument)
   new js_interface_method_return to my.parent
+    my.project_uid = js_get_project_uid(my.argument)
     js_interface_method_return.cpp_name = "$(my.argument.name:c)"
     js_interface_method_return.js_name = "$(my.argument.name:camel)"
-    js_interface_method_return.cpp_interface_name = make_ref_js(make_id("interface", "module", "$(my.argument.interface:pascal)"))
+    js_interface_method_return.interface_name = make_ref_js(make_id(my.project_uid, "interface", "module", "$(my.argument.interface:pascal)"))
+    js_interface_method_return.c_implementation_type = "$(make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl")))*"
     return js_interface_method_return
   endnew
 endfunction
 
-function js_append_resolved_return(parent, source, method, argument)
-  if defined(my.value.enum) & my.value.enum = "status"
-    return js_append_js_error_method_return(my.parent, my.source, my.argument)
+function js_append_resolved_return(parent, source, argument)
+  if defined(my.argument.enum) & my.argument.enum = "status"
+    return js_append_js_error_status_method_return(my.parent, my.source, my.argument)
+  elsif defined(my.argument.class) & my.argument.class = "error"
+    return js_append_js_error_context_method_return(my.parent, my.source, my.argument)
   endif
   js_append_js_method_return(my.parent, my.argument)
-  if defined(my.value.type) & my.value.type = "size"
+  if defined(my.argument.type) & my.argument.type = "size"
     return js_append_js_size_method_return(my.parent, my.argument)
-  elsif defined(my.value.type) & my.value.type = "integer"
+  elsif defined(my.argument.type) & my.argument.type = "integer"
     return js_append_js_integer_method_return(my.parent, my.argument)
-  elsif defined(my.value.type) & my.value.type = "unsigned"
+  elsif defined(my.argument.type) & my.argument.type = "unsigned"
     return js_append_js_unsigned_method_return(my.parent, my.argument)
-  elsif defined(my.value.type) & my.value.type = "boolean"
+  elsif defined(my.argument.type) & my.argument.type = "boolean"
     return js_append_js_boolean_method_return(my.parent, my.argument)
-  elsif defined(my.value.type) & my.value.type = "byte"
+  elsif defined(my.argument.type) & my.argument.type = "byte"
     return js_append_js_byte_method_return(my.parent, my.argument)
-  elsif defined(my.value.class) & my.value.class = "data"
+  elsif defined(my.argument.class) & my.argument.class = "data"
     return js_append_js_data_method_return(my.parent, my.argument)
-  elsif defined(my.value.class) & my.value.class = "buffer"
+  elsif defined(my.argument.class) & my.argument.class = "buffer"
     return js_append_js_buffer_method_return(my.parent, my.argument)
-  elsif defined(my.value.enum)
+  elsif defined(my.argument.enum)
     return js_append_js_enum_method_return(my.parent, my.argument)
-  elsif defined(my.value.class)
+  elsif defined(my.argument.class)
     return js_append_js_class_method_return(my.parent, my.argument)
-  elsif defined(my.value.interface)
+  elsif defined(my.argument.interface)
     return js_append_js_interface_method_return(my.parent, my.argument)
   endif
 endfunction
