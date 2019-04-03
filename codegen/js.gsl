@@ -38,9 +38,7 @@ function js_create_enum_module(source, destination, wrapper, meta)
     my.js_module = js_append_js_module_model(my.destination, my.source)
     js_append_js_enum_module_model(my.js_module, my.source, my.wrapper)
   else
-    /* for my.source.constant
-      js_append_js_status_model(my.wrapper, constant, my.wrapper)
-    endfor */
+    /* TODO: error status enum */
   endif
 endfunction
 
