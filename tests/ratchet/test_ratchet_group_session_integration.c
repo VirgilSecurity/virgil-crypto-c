@@ -115,7 +115,7 @@ test__encrypt_decrypt__random_group_chat__decrypt_should_succeed(void) {
 
     vscr_ratchet_group_session_t **sessions = NULL;
 
-    size_t group_size = generate_number(rng, 1, 100);
+    size_t group_size = generate_number(rng, 1, 10);
 
     initialize_random_group_chat(rng, group_size, &sessions);
 
@@ -231,7 +231,7 @@ test__encrypt_decrypt__random_group_chat_bad_network__decrypt_should_succeed(voi
 
     initialize_random_group_chat(rng, group_size, &sessions);
 
-    size_t number_of_iterations = 10000;
+    size_t number_of_iterations = 1000;
 
     encrypt_decrypt(rng, group_size, number_of_iterations, sessions, 0.75, 1.25, 0.25);
 
