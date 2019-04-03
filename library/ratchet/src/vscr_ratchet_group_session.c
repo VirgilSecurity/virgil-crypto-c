@@ -347,6 +347,7 @@ vscr_ratchet_group_session_cleanup_ctx(vscr_ratchet_group_session_t *self) {
         vscr_dealloc(self->participants);
     }
 
+    vscr_ratchet_group_participant_data_destroy(&self->me);
     vscr_ratchet_key_utils_destroy(&self->key_utils);
     vscr_ratchet_cipher_destroy(&self->cipher);
     vscr_ratchet_skipped_group_messages_destroy(&self->skipped_messages);
@@ -456,25 +457,33 @@ vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self, vsc
         vscr_ratchet_skipped_group_messages_add_participant(
                 self->skipped_messages, message->message_pb.group_info.participants[i].id, i);
 
-        vscr_ratchet_group_participant_data_t *data = vscr_ratchet_group_participant_data_new();
+        for (size_t j = 0; j < self->participants_count; j++) {
+            if (memcmp(self->participants[j]->id, info->id, sizeof(self->participants[j]->id)) == 0) {
+                status = vscr_status_ERROR_DUPLICATE_ID;
+                goto err;
+            }
+        }
 
-        data->chain_key = vscr_ratchet_chain_key_new();
-        data->chain_key->index = 0;
-        memcpy(data->chain_key->key, info->key, sizeof(data->chain_key->key));
-        memcpy(data->id, info->id, sizeof(data->id));
-        memcpy(data->pub_key, info->pub_key, sizeof(data->pub_key));
+        vscr_ratchet_group_participant_data_t **target;
 
-        if (memcmp(data->id, self->my_id, sizeof(data->id)) == 0) {
+        if (memcmp(info->id, self->my_id, sizeof(self->my_id)) == 0) {
             if (handled_myself) {
-                status = vscr_status_ERROR_RNG_FAILED; // FIXME: Check for duplicates
-                vscr_ratchet_group_participant_data_destroy(&data);
+                status = vscr_status_ERROR_DUPLICATE_ID;
                 goto err;
             }
             handled_myself = true;
-            self->me = data;
+            target = &self->me;
         } else {
-            self->participants[self->participants_count++] = data;
+            target = &self->participants[self->participants_count++];
         }
+
+        *target = vscr_ratchet_group_participant_data_new();
+
+        (*target)->chain_key = vscr_ratchet_chain_key_new();
+        (*target)->chain_key->index = 0;
+        memcpy((*target)->chain_key->key, info->key, sizeof((*target)->chain_key->key));
+        memcpy((*target)->id, info->id, sizeof((*target)->id));
+        memcpy((*target)->pub_key, info->pub_key, sizeof((*target)->pub_key));
     }
 
 err:

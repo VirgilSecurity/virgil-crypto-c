@@ -51,4 +51,7 @@ import VirgilCryptoFoundation
     @objc public static let participantIdLen: Int = 32
     @objc public static let maxParticipantsCount: Int = 100
     @objc public static let minParticipantsCount: Int = 1
+    /// FIXME
+    @objc public static let maxGroupMessageLen: Int = 32964
+    @objc public static let signatureLen: Int = 64
 }

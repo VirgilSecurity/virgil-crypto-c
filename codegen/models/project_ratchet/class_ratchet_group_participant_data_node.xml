@@ -1,8 +1,0 @@
-<class name="ratchet group participant data node" context="public" scope="internal">
-
-    <require class="ratchet group participant data node" scope="public"/>
-
-    <property name="value" class="ratchet group participant data" access="readwrite"/>
-    <property name="next" class="ratchet group participant data node" access="readwrite"/>
-
-</class>

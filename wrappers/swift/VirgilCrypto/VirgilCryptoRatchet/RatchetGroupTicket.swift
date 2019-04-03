@@ -83,19 +83,12 @@ import VirgilCryptoFoundation
         try RatchetError.handleStatus(fromC: proxyResult)
     }
 
-    @objc public func setCredentials(participantId: Data) throws {
+    @objc public func addParticipant(participantId: Data, publicKey: Data) throws {
         let proxyResult = participantId.withUnsafeBytes({ (participantIdPointer: UnsafePointer<byte>) -> vscr_status_t in
+            publicKey.withUnsafeBytes({ (publicKeyPointer: UnsafePointer<byte>) -> vscr_status_t in
 
-            return vscr_ratchet_group_ticket_set_credentials(self.c_ctx, vsc_data(participantIdPointer, participantId.count))
-        })
-
-        try RatchetError.handleStatus(fromC: proxyResult)
-    }
-
-    @objc public func addParticipant(participantId: Data) throws {
-        let proxyResult = participantId.withUnsafeBytes({ (participantIdPointer: UnsafePointer<byte>) -> vscr_status_t in
-
-            return vscr_ratchet_group_ticket_add_participant(self.c_ctx, vsc_data(participantIdPointer, participantId.count))
+                return vscr_ratchet_group_ticket_add_participant(self.c_ctx, vsc_data(participantIdPointer, participantId.count), vsc_data(publicKeyPointer, publicKey.count))
+            })
         })
 
         try RatchetError.handleStatus(fromC: proxyResult)

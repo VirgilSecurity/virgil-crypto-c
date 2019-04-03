@@ -340,6 +340,8 @@ vscr_ratchet_group_ticket_add_participant(
 
     VSCR_ASSERT(participant_id.len == vscr_ratchet_common_PARTICIPANT_ID_LEN);
 
+    vscr_status_t status = vscr_status_SUCCESS;
+
     vscr_error_t error_ctx;
     vscr_error_reset(&error_ctx);
 
@@ -347,7 +349,8 @@ vscr_ratchet_group_ticket_add_participant(
             self->key_utils, public_key, true, false, false, &error_ctx);
 
     if (error_ctx.status != vscr_status_SUCCESS) {
-        return error_ctx.status;
+        status = error_ctx.status;
+        goto err;
     }
 
     ParticipantInfo *info =
@@ -362,17 +365,21 @@ vscr_ratchet_group_ticket_add_participant(
 
     vsc_buffer_use(&key, info->key, sizeof(info->key));
 
-    vscf_status_t status = vscf_random(self->rng, sizeof(info->key), &key);
+    vscf_status_t f_status = vscf_random(self->rng, sizeof(info->key), &key);
 
     vsc_buffer_cleanup(&key);
 
-    if (status != vscf_status_SUCCESS) {
-        return vscr_status_ERROR_RNG_FAILED;
+    if (f_status != vscf_status_SUCCESS) {
+        status = vscr_status_ERROR_RNG_FAILED;
+        goto err;
     }
 
     self->msg->message_pb.group_info.participants_count++;
 
-    return vscr_status_SUCCESS;
+err:
+    vsc_buffer_destroy(&pub_key);
+
+    return status;
 }
 
 VSCR_PUBLIC const vscr_ratchet_group_message_t *

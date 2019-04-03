@@ -590,6 +590,8 @@ initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratch
                 vscr_ratchet_group_ticket_add_participant(ticket, vsc_buffer_data(id), vsc_buffer_data(pub)));
 
         ids[i] = id;
+
+        vsc_buffer_destroy(&pub);
     }
 
     const vscr_ratchet_group_message_t *msg = vscr_ratchet_group_ticket_generate_ticket(ticket);
@@ -609,9 +611,11 @@ initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratch
 
     for (size_t i = 0; i < group_size; i++) {
         vsc_buffer_destroy(&ids[i]);
+        vsc_buffer_destroy(&priv[i]);
     }
 
     vscr_dealloc(ids);
+    vscr_dealloc(priv);
 
     vscr_ratchet_group_ticket_destroy(&ticket);
 }

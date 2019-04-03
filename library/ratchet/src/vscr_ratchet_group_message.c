@@ -294,7 +294,7 @@ vscr_ratchet_group_message_get_pub_key(const vscr_ratchet_group_message_t *self,
 VSCR_PUBLIC size_t
 vscr_ratchet_group_message_serialize_len(vscr_ratchet_group_message_t *self) {
 
-    // FIXME
+    // TODO
     VSCR_UNUSED(self);
 
     return 10000;

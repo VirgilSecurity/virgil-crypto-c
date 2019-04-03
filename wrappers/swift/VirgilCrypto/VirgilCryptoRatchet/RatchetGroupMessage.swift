@@ -75,6 +75,21 @@ import VirgilCryptoFoundation
         return GroupMsgType.init(fromC: proxyResult)
     }
 
+    @objc public func getPubKeyCount() -> Int {
+        let proxyResult = vscr_ratchet_group_message_get_pub_key_count(self.c_ctx)
+
+        return proxyResult
+    }
+
+    @objc public func getPubKey(id: Data) -> Data {
+        let proxyResult = id.withUnsafeBytes({ (idPointer: UnsafePointer<byte>) in
+
+            return vscr_ratchet_group_message_get_pub_key(self.c_ctx, vsc_data(idPointer, id.count))
+        })
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
     /// Buffer len to serialize this class.
     @objc public func serializeLen() -> Int {
         let proxyResult = vscr_ratchet_group_message_serialize_len(self.c_ctx)

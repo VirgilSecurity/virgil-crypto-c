@@ -102,6 +102,15 @@ import VSCRatchet
     /// Sender not found.
     case errorSenderNotFound = -21
 
+    /// Cannot decrypt own messages.
+    case errorCannotDecryptOwnMessages = -22
+
+    /// Duplicate id.
+    case errorDuplicateId = -23
+
+    /// Invalid signature.
+    case errorInvalidSignature = -24
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscr_status_t) {
         self.init(rawValue: Int(status.rawValue))!

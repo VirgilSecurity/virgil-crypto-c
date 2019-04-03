@@ -79,18 +79,6 @@ import VirgilCryptoFoundation
         return proxyResult
     }
 
-    @objc public func isOwner() -> Bool {
-        let proxyResult = vscr_ratchet_group_session_is_owner(self.c_ctx)
-
-        return proxyResult
-    }
-
-    @objc public func ownerId() -> Data {
-        let proxyResult = vscr_ratchet_group_session_owner_id(self.c_ctx)
-
-        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
-    }
-
     /// Setups default dependencies:
     /// - RNG: CTR DRBG
     /// - Key serialization: DER PKCS8
@@ -101,13 +89,11 @@ import VirgilCryptoFoundation
         try RatchetError.handleStatus(fromC: proxyResult)
     }
 
-    @objc public func setupSession(participantId: Data, myPrivateKey: Data, ownerId: Data, message: RatchetGroupMessage) throws {
-        let proxyResult = participantId.withUnsafeBytes({ (participantIdPointer: UnsafePointer<byte>) -> vscr_status_t in
+    @objc public func setupSession(myId: Data, myPrivateKey: Data, message: RatchetGroupMessage) throws {
+        let proxyResult = myId.withUnsafeBytes({ (myIdPointer: UnsafePointer<byte>) -> vscr_status_t in
             myPrivateKey.withUnsafeBytes({ (myPrivateKeyPointer: UnsafePointer<byte>) -> vscr_status_t in
-                ownerId.withUnsafeBytes({ (ownerIdPointer: UnsafePointer<byte>) -> vscr_status_t in
 
-                    return vscr_ratchet_group_session_setup_session(self.c_ctx, vsc_data(participantIdPointer, participantId.count), vsc_data(myPrivateKeyPointer, myPrivateKey.count), vsc_data(ownerIdPointer, ownerId.count), message.c_ctx)
-                })
+                return vscr_ratchet_group_session_setup_session(self.c_ctx, vsc_data(myIdPointer, myId.count), vsc_data(myPrivateKeyPointer, myPrivateKey.count), message.c_ctx)
             })
         })
 

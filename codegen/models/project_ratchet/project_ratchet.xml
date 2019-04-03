@@ -78,7 +78,6 @@
     <class name="ratchet"/>
     <class name="ratchet session"/>
     <class name="ratchet group participant data"/>
-    <class name="ratchet group participant data node"/>
     <class name="ratchet group message"/>
     <class name="ratchet skipped group message key node"/>
     <class name="ratchet skipped group message key root node"/>
