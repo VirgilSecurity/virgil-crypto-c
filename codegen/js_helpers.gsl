@@ -141,9 +141,9 @@ endfunction
 global.js_cpp_argument_type_variable = "variable"
 global.js_cpp_argument_type_constant = "constant"
 
-global.js_cpp_buffer_size_type_constant = "constant"
-global.js_cpp_buffer_size_type_method = "method"
-global.js_cpp_buffer_size_type_argument = "argument"
+global.js_js_buffer_size_type_constant = "js_buffer_size_constant"
+global.js_js_buffer_size_type_method = "js_buffer_size_method"
+global.js_js_buffer_size_type_argument = "js_buffer_size_argument"
 
 global.js_cpp_method_return_name = "method_return"
 
