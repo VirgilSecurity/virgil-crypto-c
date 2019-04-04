@@ -66,6 +66,7 @@ gsl from "c_module_api.gsl"
 gsl from "c_module_api_private.gsl"
 gsl from "c_module_impl.gsl"
 gsl from "c_module_impl_private.gsl"
+gsl from "c_module_umbrella_headers.gsl"
 
 gsl from "c_module_interface.gsl"
 gsl from "c_module_implementation.gsl"
@@ -206,6 +207,10 @@ function process_project (project, features_list, projects_api, wrappers, echo_l
         #   Create modules from the classes.
         c_module_class_create (my.root, my.root, my.meta)
         c_module_enum_create (my.root, my.root, my.meta)
+
+        #   Create public and private umbrella headers.
+        c_module_umbrella_headers_create (my.root, my.root, my.meta)
+
 
         #   Process modules.
         foreach_module_resolve (my.root, my.project)

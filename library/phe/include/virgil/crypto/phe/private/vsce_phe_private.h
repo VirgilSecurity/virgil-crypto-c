@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Encapsulates fixed byte array.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,12 +44,22 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsc_data.h"
-#include "vsc_memory.h"
-#include "vsc_assert.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  This is an umbrella header that includes library private headers.
+// --------------------------------------------------------------------------
+
+#ifndef VSCE_PHE_PRIVATE_H_INCLUDED
+#define VSCE_PHE_PRIVATE_H_INCLUDED
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -63,22 +67,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Byte array that is used as "empty array" mark.
-//
-static const byte empty_data[] = {
-    0x00
-};
-
-//
-//  Return size of 'vsc_data_t'.
-//
-VSC_PUBLIC size_t
-vsc_data_ctx_size(void) {
-
-    return sizeof(vsc_data_t);
-}
 
 
 // --------------------------------------------------------------------------
@@ -88,103 +76,11 @@ vsc_data_ctx_size(void) {
 //  @end
 
 
-//
-//  Creates data from the preallocated bytes.
-//
-VSC_PUBLIC vsc_data_t
-vsc_data(const byte *bytes, size_t len) {
-
-    VSC_ASSERT_PTR(bytes);
-
-    return (vsc_data_t){bytes, len};
+#ifdef __cplusplus
 }
+#endif
 
-//
-//  Creates data from the preallocated string.
-//
-VSC_PUBLIC vsc_data_t
-vsc_data_from_str(const char *str, size_t len) {
 
-    VSC_ASSERT_PTR(str);
-
-    return (vsc_data_t){(const byte *)str, len};
-}
-
-//
-//  Creates empty data.
-//
-VSC_PUBLIC vsc_data_t
-vsc_data_empty(void) {
-
-    return (vsc_data_t){empty_data, 0};
-}
-
-//
-//  Returns true if underlying byte array is defined.
-//
-VSC_PUBLIC bool
-vsc_data_is_valid(vsc_data_t self) {
-
-    return self.bytes != NULL;
-}
-
-//
-//  Returns true if underlying byte array contains only zeros.
-//
-VSC_PUBLIC bool
-vsc_data_is_zero(vsc_data_t self) {
-
-    VSC_ASSERT(vsc_data_is_valid(self));
-
-    for (size_t pos = 0; pos < self.len; ++pos) {
-        if (self.bytes[pos] != 0) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-//
-//  Returns true if underlying byte array is empty.
-//
-VSC_PUBLIC bool
-vsc_data_is_empty(vsc_data_t self) {
-
-    return 0 == self.len;
-}
-
-//
-//  Return true if given datas are equal.
-//
-VSC_PUBLIC bool
-vsc_data_equal(vsc_data_t self, vsc_data_t rhs) {
-
-    VSC_ASSERT(vsc_data_is_valid(self));
-    VSC_ASSERT(vsc_data_is_valid(rhs));
-
-    if (self.len != rhs.len) {
-        return false;
-    }
-
-    bool is_equal = memcmp(self.bytes, rhs.bytes, rhs.len) == 0;
-    return is_equal;
-}
-
-//
-//  Return underlying data slice starting from beginning.
-//
-VSC_PUBLIC vsc_data_t
-vsc_data_slice_beg(vsc_data_t self, size_t offset, size_t len) {
-
-    //  TODO: This is STUB. Implement me.
-}
-
-//
-//  Return underlying data slice starting from ending.
-//
-VSC_PUBLIC vsc_data_t
-vsc_data_slice_end(vsc_data_t self, size_t offset, size_t len) {
-
-    //  TODO: This is STUB. Implement me.
-}
+//  @footer
+#endif // VSCE_PHE_PRIVATE_H_INCLUDED
+//  @end
