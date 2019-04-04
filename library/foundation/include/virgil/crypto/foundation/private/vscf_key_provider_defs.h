@@ -94,8 +94,6 @@ struct vscf_key_provider_t {
     vscf_ecies_t *ecies;
 
     size_t rsa_bitlen;
-
-    size_t rsa_exponent;
 };
 
 

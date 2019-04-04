@@ -303,8 +303,7 @@ vscf_key_provider_init_ctx(vscf_key_provider_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    self->rsa_bitlen = 4096;
-    self->rsa_exponent = 65537;
+    self->rsa_bitlen = 2048;
 }
 
 //
@@ -354,15 +353,13 @@ vscf_key_provider_setup_defaults(vscf_key_provider_t *self) {
 //  Setup parameters that is used during RSA key generation.
 //
 VSCF_PUBLIC void
-vscf_key_provider_set_rsa_params(vscf_key_provider_t *self, size_t bitlen, size_t exponent) {
+vscf_key_provider_set_rsa_params(vscf_key_provider_t *self, size_t bitlen) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(bitlen >= 128 && bitlen <= 16384);
+    VSCF_ASSERT(bitlen >= 2048 && bitlen <= 16384);
     VSCF_ASSERT(bitlen % 2 == 0);
-    VSCF_ASSERT(exponent >= 3 && exponent <= 65537);
 
     self->rsa_bitlen = bitlen;
-    self->rsa_exponent = exponent;
 }
 
 //
@@ -382,7 +379,7 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
         vscf_rsa_private_key_t *private_key = vscf_rsa_private_key_new();
         key = vscf_rsa_private_key_impl(private_key);
         vscf_rsa_private_key_use_random(private_key, self->random);
-        vscf_rsa_private_key_set_keygen_params(private_key, self->rsa_bitlen, self->rsa_exponent);
+        vscf_rsa_private_key_set_keygen_params(private_key, self->rsa_bitlen);
 
         status = vscf_rsa_private_key_setup_defaults(private_key);
         if (status != vscf_status_SUCCESS) {
@@ -465,7 +462,7 @@ vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8
     case vscf_alg_id_RSA: {
         vscf_rsa_private_key_t *rsa_private_key = vscf_rsa_private_key_new();
         vscf_rsa_private_key_use_random(rsa_private_key, self->random);
-        vscf_rsa_private_key_set_keygen_params(rsa_private_key, self->rsa_bitlen, self->rsa_exponent);
+        vscf_rsa_private_key_set_keygen_params(rsa_private_key, self->rsa_bitlen);
         status = vscf_rsa_private_key_setup_defaults(rsa_private_key);
         if (status != vscf_status_SUCCESS) {
             break;

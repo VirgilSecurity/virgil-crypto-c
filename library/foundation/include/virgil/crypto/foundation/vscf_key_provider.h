@@ -181,7 +181,7 @@ vscf_key_provider_setup_defaults(vscf_key_provider_t *self) VSCF_NODISCARD;
 //  Setup parameters that is used during RSA key generation.
 //
 VSCF_PUBLIC void
-vscf_key_provider_set_rsa_params(vscf_key_provider_t *self, size_t bitlen, size_t exponent);
+vscf_key_provider_set_rsa_params(vscf_key_provider_t *self, size_t bitlen);
 
 //
 //  Generate new private key from the given id.

@@ -86,8 +86,8 @@ import VSCFoundation
     }
 
     /// Setup parameters that is used during RSA key generation.
-    @objc public func setRsaParams(bitlen: Int, exponent: Int) {
-        vscf_key_provider_set_rsa_params(self.c_ctx, bitlen, exponent)
+    @objc public func setRsaParams(bitlen: Int) {
+        vscf_key_provider_set_rsa_params(self.c_ctx, bitlen)
     }
 
     /// Generate new private key from the given id.

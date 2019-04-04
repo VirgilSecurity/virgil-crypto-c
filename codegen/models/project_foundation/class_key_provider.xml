@@ -17,7 +17,6 @@
     <dependency name="ecies" class="ecies"/>
 
     <property name="rsa bitlen" type="size"/>
-    <property name="rsa exponent" type="size"/>
 
     <method name="setup defaults">
         Setup predefined values to the uninitialized class dependencies.
@@ -29,7 +28,6 @@
         Setup parameters that is used during RSA key generation.
 
         <argument name="bitlen" type="size"/>
-        <argument name="exponent" type="size"/>
     </method>
 
     <method name="generate private key">
