@@ -272,9 +272,6 @@ def build_LangJava_Windows(slave) {
                           -Cconfigs/java-config.cmake ^
                           -DVIRGIL_LIB_PYTHIA=OFF ^
                           -DCMAKE_BUILD_TYPE=Release ^
-                          -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
-                          -DVIRGIL_PACKAGE_LANGUAGE_VERSION=1.8 ^
-                          -DCPACK_OUTPUT_FILE_PREFIX=java ^
                           -DCMAKE_INSTALL_PREFIX="wrappers\\java\\binaries\\windows" ^
                           -Bbuild -H.
                     cmake --build build --target install
@@ -301,7 +298,7 @@ def build_LangJava_Android(slave) {
                 cmake -Cconfigs/java-config.cmake \
                       -DANDROID_ABI="armeabi-v7a" \
                       -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}" \
-                      -DCMAKE_INSTALL_PREFIX="../wrappers/java/binaries/linux" \
+                      -DCMAKE_INSTALL_PREFIX="../wrappers/java/binaries/android" \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
