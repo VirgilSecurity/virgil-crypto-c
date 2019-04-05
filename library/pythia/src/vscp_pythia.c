@@ -108,44 +108,44 @@ VSCP_PUBLIC vscp_status_t
 vscp_pythia_configure(void) {
 
     if (g_globally_inited) {
-            return vscp_status_SUCCESS;
-        }
-
-        g_globally_inited = true;
-        pythia_init_args_t init_args;
-        init_args.callback = vscp_pythia_random_handler;
-        init_args.args = NULL;
-
-        VSCP_ASSERT_OPT(0 == pythia_init(&init_args));
-
-        mbedtls_entropy_init(&g_entropy);
-        mbedtls_ctr_drbg_init(&g_rng);
-
-    #if !defined(MBEDTLS_NO_PLATFORM_ENTROPY)
-        mbedtls_entropy_add_source(&g_entropy, mbedtls_platform_entropy_poll, NULL, MBEDTLS_ENTROPY_MIN_PLATFORM,
-                MBEDTLS_ENTROPY_SOURCE_STRONG);
-    #endif
-
-    #if defined(MBEDTLS_TIMING_C)
-        mbedtls_entropy_add_source(
-                &g_entropy, mbedtls_hardclock_poll, NULL, MBEDTLS_ENTROPY_MIN_HARDCLOCK, MBEDTLS_ENTROPY_SOURCE_WEAK);
-    #endif
-
-    #if defined(MBEDTLS_HAVEGE_C)
-        mbedtls_entropy_add_source(&g_entropy, mbedtls_havege_poll, &g_entropy.havege_data, MBEDTLS_ENTROPY_MIN_HAVEGE,
-                MBEDTLS_ENTROPY_SOURCE_STRONG);
-    #endif
-
-        const unsigned char pers[] = "vscp_pythia";
-        size_t pers_len = sizeof(pers);
-        int status = mbedtls_ctr_drbg_seed(&g_rng, mbedtls_entropy_func, &g_entropy, pers, pers_len);
-
-        if (status != 0) {
-            pythia_deinit();
-            return vscp_status_ERROR_RNG_FAILED;
-        }
-
         return vscp_status_SUCCESS;
+    }
+
+    g_globally_inited = true;
+    pythia_init_args_t init_args;
+    init_args.callback = vscp_pythia_random_handler;
+    init_args.args = NULL;
+
+    VSCP_ASSERT_OPT(0 == pythia_init(&init_args));
+
+    mbedtls_entropy_init(&g_entropy);
+    mbedtls_ctr_drbg_init(&g_rng);
+
+#if !defined(MBEDTLS_NO_PLATFORM_ENTROPY)
+    mbedtls_entropy_add_source(&g_entropy, mbedtls_platform_entropy_poll, NULL, MBEDTLS_ENTROPY_MIN_PLATFORM,
+            MBEDTLS_ENTROPY_SOURCE_STRONG);
+#endif
+
+#if defined(MBEDTLS_TIMING_C)
+    mbedtls_entropy_add_source(
+            &g_entropy, mbedtls_hardclock_poll, NULL, MBEDTLS_ENTROPY_MIN_HARDCLOCK, MBEDTLS_ENTROPY_SOURCE_WEAK);
+#endif
+
+#if defined(MBEDTLS_HAVEGE_C)
+    mbedtls_entropy_add_source(&g_entropy, mbedtls_havege_poll, &g_entropy.havege_data, MBEDTLS_ENTROPY_MIN_HAVEGE,
+            MBEDTLS_ENTROPY_SOURCE_STRONG);
+#endif
+
+    const unsigned char pers[] = "vscp_pythia";
+    size_t pers_len = sizeof(pers);
+    int status = mbedtls_ctr_drbg_seed(&g_rng, mbedtls_entropy_func, &g_entropy, pers, pers_len);
+
+    if (status != 0) {
+        pythia_deinit();
+        return vscp_status_ERROR_RNG_FAILED;
+    }
+
+    return vscp_status_SUCCESS;
 }
 
 //
@@ -493,8 +493,8 @@ vscp_pythia_get_password_update_token(vsc_data_t previous_transformation_private
 //  After this call, 'transform()' called with new arguments will return corresponding values.
 //
 VSCP_PUBLIC vscp_status_t
-vscp_pythia_update_deblinded_with_token(vsc_data_t deblinded_password, vsc_data_t password_update_token,
-        vsc_buffer_t *updated_deblinded_password) {
+vscp_pythia_update_deblinded_with_token(
+        vsc_data_t deblinded_password, vsc_data_t password_update_token, vsc_buffer_t *updated_deblinded_password) {
 
     VSCP_ASSERT_PTR(deblinded_password.bytes);
     VSCP_ASSERT_PTR(password_update_token.bytes);

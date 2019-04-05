@@ -295,50 +295,50 @@ vscr_ratchet_keys_derive_initial_keys(vsc_data_t shared_secret,
 
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_keys_create_chain_key(const byte root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH],
-        vsc_data_t private_key, vsc_data_t public_key,
-        byte new_root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH], vscr_ratchet_chain_key_t *chain_key) {
+        vsc_data_t private_key, vsc_data_t public_key, byte new_root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH],
+        vscr_ratchet_chain_key_t *chain_key) {
 
     VSCR_ASSERT_PTR(chain_key);
 
-        VSCR_ASSERT(private_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
-        VSCR_ASSERT(public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+    VSCR_ASSERT(private_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+    VSCR_ASSERT(public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
 
-        vscr_status_t status = vscr_status_SUCCESS;
+    vscr_status_t status = vscr_status_SUCCESS;
 
-        byte secret[ED25519_DH_LEN];
-        int curve_status = curve25519_key_exchange(secret, public_key.bytes, private_key.bytes);
-        if (curve_status != 0) {
-            status = vscr_status_ERROR_CURVE25519;
-            goto c_err;
-        }
+    byte secret[ED25519_DH_LEN];
+    int curve_status = curve25519_key_exchange(secret, public_key.bytes, private_key.bytes);
+    if (curve_status != 0) {
+        status = vscr_status_ERROR_CURVE25519;
+        goto c_err;
+    }
 
-        vscf_hkdf_t *hkdf = vscf_hkdf_new();
+    vscf_hkdf_t *hkdf = vscf_hkdf_new();
 
-        vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
+    vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
 
-        byte derived_secret[2 * vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
-        vsc_buffer_t buffer;
-        vsc_buffer_init(&buffer);
-        vsc_buffer_use(&buffer, derived_secret, sizeof(derived_secret));
+    byte derived_secret[2 * vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    vsc_buffer_t buffer;
+    vsc_buffer_init(&buffer);
+    vsc_buffer_use(&buffer, derived_secret, sizeof(derived_secret));
 
-        vscf_hkdf_reset(hkdf, vsc_data(root_key, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH), 0);
-        vscf_hkdf_set_info(hkdf, vsc_data(ratchet_kdf_ratchet_info, sizeof(ratchet_kdf_ratchet_info)));
-        vscf_hkdf_derive(hkdf, vsc_data(secret, sizeof(secret)), sizeof(derived_secret), &buffer);
+    vscf_hkdf_reset(hkdf, vsc_data(root_key, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH), 0);
+    vscf_hkdf_set_info(hkdf, vsc_data(ratchet_kdf_ratchet_info, sizeof(ratchet_kdf_ratchet_info)));
+    vscf_hkdf_derive(hkdf, vsc_data(secret, sizeof(secret)), sizeof(derived_secret), &buffer);
 
-        memcpy(new_root_key, derived_secret, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+    memcpy(new_root_key, derived_secret, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
 
-        memcpy(chain_key->key, derived_secret + vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH,
-                vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
-        chain_key->index = 0;
+    memcpy(chain_key->key, derived_secret + vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH,
+            vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+    chain_key->index = 0;
 
-        vscf_hkdf_destroy(&hkdf);
-        vsc_buffer_delete(&buffer);
-        vscr_zeroize(derived_secret, sizeof(derived_secret));
+    vscf_hkdf_destroy(&hkdf);
+    vsc_buffer_delete(&buffer);
+    vscr_zeroize(derived_secret, sizeof(derived_secret));
 
-    c_err:
-        vscr_zeroize(secret, sizeof(secret));
+c_err:
+    vscr_zeroize(secret, sizeof(secret));
 
-        return status;
+    return status;
 }
 
 VSCR_PUBLIC void
