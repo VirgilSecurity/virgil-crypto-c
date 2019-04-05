@@ -218,8 +218,8 @@ vscr_ratchet_skipped_message_key_cleanup_ctx(vscr_ratchet_skipped_message_key_t 
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_message_key_serialize(vscr_ratchet_skipped_message_key_t *self,
-        SkippedMessageKey *skipped_message_key_pb) {
+vscr_ratchet_skipped_message_key_serialize(
+        vscr_ratchet_skipped_message_key_t *self, SkippedMessageKey *skipped_message_key_pb) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(skipped_message_key_pb);
@@ -230,8 +230,8 @@ vscr_ratchet_skipped_message_key_serialize(vscr_ratchet_skipped_message_key_t *s
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_message_key_deserialize(const SkippedMessageKey *skipped_message_key_pb,
-        vscr_ratchet_skipped_message_key_t *skipped_message_key) {
+vscr_ratchet_skipped_message_key_deserialize(
+        const SkippedMessageKey *skipped_message_key_pb, vscr_ratchet_skipped_message_key_t *skipped_message_key) {
 
     VSCR_ASSERT_PTR(skipped_message_key_pb);
     VSCR_ASSERT_PTR(skipped_message_key);
