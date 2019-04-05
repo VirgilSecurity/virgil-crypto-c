@@ -409,9 +409,9 @@ node('master') {
 stage 'Build and deploy Java libraries'
 // --------------------------------------------------------------------------
 
-timeout(time: 3, unit: "MINUTES") {
-    input message: 'Deploy Java artifacts?', ok: 'Yes'
-}
+// timeout(time: 3, unit: "MINUTES") {
+//     input message: 'Deploy Java artifacts?', ok: 'Yes'
+// }
 
 node('master') {
     def branchSubPath =  env.BRANCH_NAME ? '/branches/' + env.BRANCH_NAME : ''
