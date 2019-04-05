@@ -219,7 +219,7 @@ def build_LangJava_Linux(slave) {
             sh '''
                 cmake -DCMAKE_BUILD_TYPE=Release \
                       -Cconfigs/java-config.cmake \
-                      -DCMAKE_INSTALL_PREFIX="../wrappers/java/binaries/linux" \
+                      -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/linux" \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
@@ -243,7 +243,7 @@ def build_LangJava_MacOS(slave) {
             sh '''
                 cmake -DCMAKE_BUILD_TYPE=Release \
                       -Cconfigs/java-config.cmake \
-                      -DCMAKE_INSTALL_PREFIX="../wrappers/java/binaries/macos" \
+                      -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/macos" \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
@@ -298,7 +298,7 @@ def build_LangJava_Android(slave) {
                 cmake -Cconfigs/java-config.cmake \
                       -DANDROID_ABI="armeabi-v7a" \
                       -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}" \
-                      -DCMAKE_INSTALL_PREFIX="../wrappers/java/binaries/android" \
+                      -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android/armeabi-v7a" \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
