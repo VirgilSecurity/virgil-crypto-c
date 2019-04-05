@@ -42,7 +42,10 @@ nodes['lang-php-platform-windows'] = build_LangPHP_Windows('build-win8')
 nodes['lang-java-platform-linux'] = build_LangJava_Linux('build-centos7')
 nodes['lang-java-platform-macos'] = build_LangJava_MacOS('build-os-x')
 nodes['lang-java-platform-windows'] = build_LangJava_Windows('build-win8')
-nodes['lang-java-platform-android'] = build_LangJava_Android('build-os-x')
+nodes['lang-java-platform-android-x86'] = build_LangJava_Android_x86('build-os-x')
+nodes['lang-java-platform-android-x86_64'] = build_LangJava_Android_x86_64('build-os-x')
+nodes['lang-java-platform-android-armeabi-v7a'] = build_LangJava_Android_armeabi_v7a('build-os-x')
+nodes['lang-java-platform-android-arm64-v8a'] = build_LangJava_Android_arm64_v8a('build-os-x')
 
 parallel nodes
 
@@ -287,7 +290,57 @@ def build_LangJava_Windows(slave) {
     }}
 }
 
-def build_LangJava_Android(slave) {
+def build_LangJava_Android_x86(slave) {
+    return { node(slave) {
+        def jobPath = pathFromJobName(env.JOB_NAME)
+        ws("workspace/${jobPath}") {
+            clearContentUnix()
+            unstash 'src'
+            withEnv(['ANDROID_NDK=/Users/virgil/Library/VirgilEnviroment/android-ndk-r19c']) {
+                sh '''
+                cmake -Cconfigs/java-config.cmake \
+                      -DANDROID_ABI="x86" \
+                      -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" \
+                      -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
+                      -DCMAKE_INSTALL_LIBDIR="lib/x86" \
+                      -Bbuild -H.
+
+                cmake --build build --target install -- -j10
+                '''
+            }
+            dir('wrappers') {
+                archiveArtifacts('java/binaries/**')
+            }
+        }
+    }}
+}
+
+def build_LangJava_Android_x86_64(slave) {
+    return { node(slave) {
+        def jobPath = pathFromJobName(env.JOB_NAME)
+        ws("workspace/${jobPath}") {
+            clearContentUnix()
+            unstash 'src'
+            withEnv(['ANDROID_NDK=/Users/virgil/Library/VirgilEnviroment/android-ndk-r19c']) {
+                sh '''
+                cmake -Cconfigs/java-config.cmake \
+                      -DANDROID_ABI="x86_64" \
+                      -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" \
+                      -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
+                      -DCMAKE_INSTALL_LIBDIR="lib/x86_64" \
+                      -Bbuild -H.
+
+                cmake --build build --target install -- -j10
+                '''
+            }
+            dir('wrappers') {
+                archiveArtifacts('java/binaries/**')
+            }
+        }
+    }}
+}
+
+def build_LangJava_Android_armeabi_v7a(slave) {
     return { node(slave) {
         def jobPath = pathFromJobName(env.JOB_NAME)
         ws("workspace/${jobPath}") {
@@ -298,18 +351,45 @@ def build_LangJava_Android(slave) {
                 cmake -Cconfigs/java-config.cmake \
                       -DANDROID_ABI="armeabi-v7a" \
                       -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" \
-                      -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android/armeabi-v7a" \
+                      -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
+                      -DCMAKE_INSTALL_LIBDIR="lib/armeabi-v7a" \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
                 '''
             }
             dir('wrappers') {
-                archiveArtifacts('java/**')
+                archiveArtifacts('java/binaries/**')
             }
         }
     }}
 }
+
+def build_LangJava_Android_arm64_v8a(slave) {
+    return { node(slave) {
+        def jobPath = pathFromJobName(env.JOB_NAME)
+        ws("workspace/${jobPath}") {
+            clearContentUnix()
+            unstash 'src'
+            withEnv(['ANDROID_NDK=/Users/virgil/Library/VirgilEnviroment/android-ndk-r19c']) {
+                sh '''
+                cmake -Cconfigs/java-config.cmake \
+                      -DANDROID_ABI="arm64-v8a" \
+                      -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" \
+                      -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
+                      -DCMAKE_INSTALL_LIBDIR="lib/arm64-v8a" \
+                      -Bbuild -H.
+
+                cmake --build build --target install -- -j10
+                '''
+            }
+            dir('wrappers') {
+                archiveArtifacts('java/binaries/**')
+            }
+        }
+    }}
+}
+
 
 // --------------------------------------------------------------------------
 stage 'Calculate Checksum'
