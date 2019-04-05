@@ -94,6 +94,10 @@ struct vscf_key_provider_t {
     vscf_ecies_t *ecies;
 
     size_t rsa_bitlen;
+
+    vscf_impl_t *pkcs8_serializer;
+
+    vscf_impl_t *pkcs8_deserializer;
 };
 
 
