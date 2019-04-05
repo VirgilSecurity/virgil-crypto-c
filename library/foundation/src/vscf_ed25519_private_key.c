@@ -273,8 +273,8 @@ vscf_ed25519_private_key_signature_len(const vscf_ed25519_private_key_t *self) {
 //  Sign data given private key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ed25519_private_key_sign_hash(vscf_ed25519_private_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id,
-        vsc_buffer_t *signature) {
+vscf_ed25519_private_key_sign_hash(
+        vscf_ed25519_private_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id, vsc_buffer_t *signature) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_buffer_is_valid(signature));
@@ -390,8 +390,8 @@ vscf_ed25519_private_key_import_private_key(vscf_ed25519_private_key_t *self, vs
 //  Note, shared key can be used only for symmetric cryptography.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ed25519_private_key_compute_shared_key(vscf_ed25519_private_key_t *self, const vscf_impl_t *public_key,
-        vsc_buffer_t *shared_key) {
+vscf_ed25519_private_key_compute_shared_key(
+        vscf_ed25519_private_key_t *self, const vscf_impl_t *public_key, vsc_buffer_t *shared_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);

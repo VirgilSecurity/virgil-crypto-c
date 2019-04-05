@@ -358,8 +358,8 @@ vscf_message_info_custom_params_find_int(vscf_message_info_custom_params_t *self
 //  Return custom parameter with UTF8 string value.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_message_info_custom_params_find_string(vscf_message_info_custom_params_t *self, vsc_data_t key,
-        vscf_error_t *error) {
+vscf_message_info_custom_params_find_string(
+        vscf_message_info_custom_params_t *self, vsc_data_t key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(key));
@@ -380,8 +380,8 @@ vscf_message_info_custom_params_find_string(vscf_message_info_custom_params_t *s
 //  Return custom parameter with octet string value.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_message_info_custom_params_find_data(vscf_message_info_custom_params_t *self, vsc_data_t key,
-        vscf_error_t *error) {
+vscf_message_info_custom_params_find_data(
+        vscf_message_info_custom_params_t *self, vsc_data_t key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(key));
@@ -402,8 +402,8 @@ vscf_message_info_custom_params_find_data(vscf_message_info_custom_params_t *sel
 //  Add given node to the list ending.
 //
 static void
-vscf_message_info_custom_params_add_node(vscf_message_info_custom_params_t *self,
-        vscf_list_key_value_node_t **node_ref) {
+vscf_message_info_custom_params_add_node(
+        vscf_message_info_custom_params_t *self, vscf_list_key_value_node_t **node_ref) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(node_ref);
@@ -432,8 +432,8 @@ vscf_message_info_custom_params_add_node(vscf_message_info_custom_params_t *self
 //  Add given node to the list ending.
 //
 static const vscf_list_key_value_node_t *
-vscf_message_info_custom_params_find_node(vscf_message_info_custom_params_t *self, vsc_data_t key, int value_tag,
-        vscf_error_t *error) {
+vscf_message_info_custom_params_find_node(
+        vscf_message_info_custom_params_t *self, vsc_data_t key, int value_tag, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(key));

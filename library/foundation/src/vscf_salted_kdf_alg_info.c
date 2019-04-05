@@ -107,8 +107,8 @@ vscf_salted_kdf_alg_info_cleanup_ctx(vscf_salted_kdf_alg_info_t *self) {
 //  salt and iteration count.
 //
 VSCF_PUBLIC vscf_salted_kdf_alg_info_t *
-vscf_salted_kdf_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t **hash_alg_info_ref, vsc_data_t salt,
-        size_t iteration_count) {
+vscf_salted_kdf_alg_info_new_with_members(
+        vscf_alg_id_t alg_id, vscf_impl_t **hash_alg_info_ref, vsc_data_t salt, size_t iteration_count) {
 
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
     VSCF_ASSERT_PTR(hash_alg_info_ref);

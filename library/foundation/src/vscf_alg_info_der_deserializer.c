@@ -155,8 +155,8 @@ vscf_alg_info_der_deserializer_setup_defaults(vscf_alg_info_der_deserializer_t *
 //  Parse ASN.1 structure "AlgorithmIdentifier" with optional NULL parameter.
 //
 static vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_simple_alg_info(vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid,
-        vscf_error_t *error) {
+vscf_alg_info_der_deserializer_deserialize_simple_alg_info(
+        vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid, vscf_error_t *error) {
 
     //  AlgorithmIdentifier ::= SEQUENCE {
     //          algorithm OBJECT IDENTIFIER,
@@ -187,8 +187,8 @@ vscf_alg_info_der_deserializer_deserialize_simple_alg_info(vscf_alg_info_der_des
 //  Parse ASN.1 structure "KeyDerivationFunction" from the ISO/IEC 18033-2.
 //
 static vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid,
-        vscf_error_t *error) {
+vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(
+        vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid, vscf_error_t *error) {
 
     //  -- From ISO/IEC 18033-2 --
     //  KeyDerivationFunction ::= AlgorithmIdentifier {{ KDFAlgorithms }}
@@ -235,8 +235,8 @@ vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(vscf_alg_info_der_deseri
 //  https://tools.ietf.org/html/draft-housley-hkdf-oids-00.
 //
 static vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid,
-        vscf_error_t *error) {
+vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(
+        vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid, vscf_error_t *error) {
 
     //  KeyDevAlgs KEY-DERIVATION ::= {
     //       kda-hkdf-with-sha256 |
@@ -301,8 +301,8 @@ vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(vscf_alg_info_der_deser
 //  Parse ASN.1 structure "DigestAlgorithm" from the RFC 4231.
 //
 static vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid,
-        vscf_error_t *error) {
+vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(
+        vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid, vscf_error_t *error) {
 
     //  DigestAlgorithms ALGORITHM ::= {
     //       id-hmacWithSHA224 |
@@ -362,8 +362,8 @@ vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(vscf_alg_info_der_deser
 //      - defined in the RFC 5084.
 //
 static vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid,
-        vscf_error_t *error) {
+vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(
+        vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid, vscf_error_t *error) {
 
     //  SymmetricAlgorithms ALGORITHM ::= {
     //          { OID id-aes256-GCM parameters GCMParameters } ,
@@ -413,8 +413,8 @@ vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(vscf_alg_info_der_des
 //  defined in the RFC 8018.
 //
 static vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid,
-        vscf_error_t *error) {
+vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(
+        vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid, vscf_error_t *error) {
 
     //  PBKDF2Algorithms ALGORITHM-IDENTIFIER ::= {
     //      {PBKDF2-params IDENTIFIED BY id-PBKDF2},
@@ -473,8 +473,8 @@ vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(vscf_alg_info_der_des
 //  defined in the RFC 8018.
 //
 static vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid,
-        vscf_error_t *error) {
+vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(
+        vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid, vscf_error_t *error) {
 
     //  PBES2Algorithms ALGORITHM-IDENTIFIER ::= {
     //      {PBES2-params IDENTIFIED BY id-PBES2},
@@ -589,8 +589,8 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
 //  Deserialize algorithm from the data.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize(vscf_alg_info_der_deserializer_t *self, vsc_data_t data,
-        vscf_error_t *error) {
+vscf_alg_info_der_deserializer_deserialize(
+        vscf_alg_info_der_deserializer_t *self, vsc_data_t data, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(data));

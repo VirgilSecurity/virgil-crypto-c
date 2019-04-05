@@ -228,8 +228,8 @@ vscf_key_recipient_info_cleanup_ctx(vscf_key_recipient_info_t *self) {
 //  Create object and define all properties.
 //
 VSCF_PUBLIC vscf_key_recipient_info_t *
-vscf_key_recipient_info_new_with_members(vsc_data_t recipient_id, vscf_impl_t **key_encryption_algorithm_ref,
-        vsc_data_t encrypted_key) {
+vscf_key_recipient_info_new_with_members(
+        vsc_data_t recipient_id, vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key) {
 
     VSCF_ASSERT_PTR(key_encryption_algorithm_ref);
     VSCF_ASSERT_PTR(*key_encryption_algorithm_ref);
