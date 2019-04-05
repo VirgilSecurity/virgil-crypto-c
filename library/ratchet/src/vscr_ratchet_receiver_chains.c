@@ -266,8 +266,8 @@ vscr_ratchet_receiver_chains_find_chain(vscr_ratchet_receiver_chains_t *self, vs
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chains_add_chain(
-        vscr_ratchet_receiver_chains_t *self, vscr_ratchet_receiver_chain_t *receiver_chain) {
+vscr_ratchet_receiver_chains_add_chain(vscr_ratchet_receiver_chains_t *self,
+        vscr_ratchet_receiver_chain_t *receiver_chain) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(receiver_chain);
@@ -295,8 +295,8 @@ vscr_ratchet_receiver_chains_add_chain(
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chains_delete_next_chain_if_possible(
-        vscr_ratchet_receiver_chains_t *self, vscr_ratchet_receiver_chain_t *chain, size_t prev_chain_count) {
+vscr_ratchet_receiver_chains_delete_next_chain_if_possible(vscr_ratchet_receiver_chains_t *self,
+        vscr_ratchet_receiver_chain_t *chain, size_t prev_chain_count) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(chain);
@@ -343,8 +343,8 @@ vscr_ratchet_receiver_chains_serialize(vscr_ratchet_receiver_chains_t *self, Rec
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chains_deserialize(
-        ReceiverChains *receiver_chains_pb, vscr_ratchet_receiver_chains_t *receiver_chains) {
+vscr_ratchet_receiver_chains_deserialize(ReceiverChains *receiver_chains_pb,
+        vscr_ratchet_receiver_chains_t *receiver_chains) {
 
     VSCR_ASSERT_PTR(receiver_chains_pb);
     VSCR_ASSERT_PTR(receiver_chains);

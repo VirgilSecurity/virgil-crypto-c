@@ -247,8 +247,8 @@ vscf_message_info_add_key_recipient(vscf_message_info_t *self, vscf_key_recipien
 //  Add recipient that is defined by password.
 //
 VSCF_PUBLIC void
-vscf_message_info_add_password_recipient(
-        vscf_message_info_t *self, vscf_password_recipient_info_t **password_recipient_ref) {
+vscf_message_info_add_password_recipient(vscf_message_info_t *self,
+        vscf_password_recipient_info_t **password_recipient_ref) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(password_recipient_ref);

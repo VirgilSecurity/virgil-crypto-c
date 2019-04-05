@@ -230,8 +230,8 @@ vscf_key_recipient_list_cleanup_ctx(vscf_key_recipient_list_t *self) {
 //  Note, ownership is transfered.
 //
 VSCF_PUBLIC void
-vscf_key_recipient_list_add(
-        vscf_key_recipient_list_t *self, vsc_data_t recipient_id, vscf_impl_t *recipient_public_key) {
+vscf_key_recipient_list_add(vscf_key_recipient_list_t *self, vsc_data_t recipient_id,
+        vscf_impl_t *recipient_public_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(recipient_id));

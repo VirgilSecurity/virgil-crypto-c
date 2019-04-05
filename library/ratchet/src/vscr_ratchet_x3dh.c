@@ -75,63 +75,63 @@ vscr_ratchet_x3dh_compute_initiator_x3dh_secret(vsc_data_t sender_identity_priva
         vsc_buffer_t *shared_secret) {
 
     VSCR_ASSERT(sender_identity_private_key.len == ED25519_KEY_LEN);
-    VSCR_ASSERT(sender_ephemeral_private_key.len == ED25519_KEY_LEN);
-    VSCR_ASSERT(receiver_identity_public_key.len == ED25519_KEY_LEN);
-    VSCR_ASSERT(receiver_long_term_public_key.len == ED25519_KEY_LEN);
+        VSCR_ASSERT(sender_ephemeral_private_key.len == ED25519_KEY_LEN);
+        VSCR_ASSERT(receiver_identity_public_key.len == ED25519_KEY_LEN);
+        VSCR_ASSERT(receiver_long_term_public_key.len == ED25519_KEY_LEN);
 
-    size_t shared_secret_count = 4;
+        size_t shared_secret_count = 4;
 
-    if (receiver_one_time_public_key.len == 0) {
-        shared_secret_count = 3;
-    } else {
-        VSCR_ASSERT(receiver_one_time_public_key.len == ED25519_KEY_LEN);
-    }
+        if (receiver_one_time_public_key.len == 0) {
+            shared_secret_count = 3;
+        } else {
+            VSCR_ASSERT(receiver_one_time_public_key.len == ED25519_KEY_LEN);
+        }
 
-    VSCR_ASSERT(vsc_buffer_capacity(shared_secret) >= shared_secret_count * ED25519_DH_LEN);
+        VSCR_ASSERT(vsc_buffer_capacity(shared_secret) >= shared_secret_count * ED25519_DH_LEN);
 
-    vscr_status_t status = vscr_status_SUCCESS;
+        vscr_status_t status = vscr_status_SUCCESS;
 
-    int curve_status = 0;
-    curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), receiver_long_term_public_key.bytes,
-            sender_identity_private_key.bytes);
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-
-    if (curve_status != 0) {
-        status = vscr_status_ERROR_CURVE25519;
-        goto curve_err;
-    }
-
-    curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), receiver_identity_public_key.bytes,
-            sender_ephemeral_private_key.bytes);
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-
-    if (curve_status != 0) {
-        status = vscr_status_ERROR_CURVE25519;
-        goto curve_err;
-    }
-
-    curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), receiver_long_term_public_key.bytes,
-            sender_ephemeral_private_key.bytes);
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-
-    if (curve_status != 0) {
-        status = vscr_status_ERROR_CURVE25519;
-        goto curve_err;
-    }
-
-    if (receiver_one_time_public_key.len != 0) {
-        curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret),
-                receiver_one_time_public_key.bytes, sender_ephemeral_private_key.bytes);
+        int curve_status = 0;
+        curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), receiver_long_term_public_key.bytes,
+                sender_identity_private_key.bytes);
         vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
         if (curve_status != 0) {
             status = vscr_status_ERROR_CURVE25519;
             goto curve_err;
         }
-    }
 
-curve_err:
-    return status;
+        curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), receiver_identity_public_key.bytes,
+                sender_ephemeral_private_key.bytes);
+        vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
+
+        if (curve_status != 0) {
+            status = vscr_status_ERROR_CURVE25519;
+            goto curve_err;
+        }
+
+        curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), receiver_long_term_public_key.bytes,
+                sender_ephemeral_private_key.bytes);
+        vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
+
+        if (curve_status != 0) {
+            status = vscr_status_ERROR_CURVE25519;
+            goto curve_err;
+        }
+
+        if (receiver_one_time_public_key.len != 0) {
+            curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret),
+                    receiver_one_time_public_key.bytes, sender_ephemeral_private_key.bytes);
+            vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
+
+            if (curve_status != 0) {
+                status = vscr_status_ERROR_CURVE25519;
+                goto curve_err;
+            }
+        }
+
+    curve_err:
+        return status;
 }
 
 VSCR_PUBLIC vscr_status_t
@@ -141,60 +141,60 @@ vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_data_t sender_identity_publi
         vsc_buffer_t *shared_secret) {
 
     VSCR_ASSERT(sender_identity_public_key.len == ED25519_KEY_LEN);
-    VSCR_ASSERT(sender_ephemeral_public_key.len == ED25519_KEY_LEN);
-    VSCR_ASSERT(receiver_identity_private_key.len == ED25519_KEY_LEN);
-    VSCR_ASSERT(receiver_long_term_private_key.len == ED25519_KEY_LEN);
+        VSCR_ASSERT(sender_ephemeral_public_key.len == ED25519_KEY_LEN);
+        VSCR_ASSERT(receiver_identity_private_key.len == ED25519_KEY_LEN);
+        VSCR_ASSERT(receiver_long_term_private_key.len == ED25519_KEY_LEN);
 
-    size_t shared_secret_count = 4;
+        size_t shared_secret_count = 4;
 
-    if (receiver_one_time_private_key.len == 0) {
-        shared_secret_count = 3;
-    } else {
-        VSCR_ASSERT(receiver_one_time_private_key.len == ED25519_KEY_LEN);
-    }
+        if (receiver_one_time_private_key.len == 0) {
+            shared_secret_count = 3;
+        } else {
+            VSCR_ASSERT(receiver_one_time_private_key.len == ED25519_KEY_LEN);
+        }
 
-    VSCR_ASSERT(vsc_buffer_capacity(shared_secret) >= shared_secret_count * ED25519_DH_LEN);
+        VSCR_ASSERT(vsc_buffer_capacity(shared_secret) >= shared_secret_count * ED25519_DH_LEN);
 
-    vscr_status_t status = vscr_status_SUCCESS;
+        vscr_status_t status = vscr_status_SUCCESS;
 
-    int curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), sender_identity_public_key.bytes,
-            receiver_long_term_private_key.bytes);
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-
-    if (curve_status != 0) {
-        status = vscr_status_ERROR_CURVE25519;
-        goto curve_err;
-    }
-
-    curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), sender_ephemeral_public_key.bytes,
-            receiver_identity_private_key.bytes);
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-
-    if (curve_status != 0) {
-        status = vscr_status_ERROR_CURVE25519;
-        goto curve_err;
-    }
-
-    curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), sender_ephemeral_public_key.bytes,
-            receiver_long_term_private_key.bytes);
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-
-    if (curve_status != 0) {
-        status = vscr_status_ERROR_CURVE25519;
-        goto curve_err;
-    }
-
-    if (receiver_one_time_private_key.len != 0) {
-        curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret),
-                sender_ephemeral_public_key.bytes, receiver_one_time_private_key.bytes);
+        int curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), sender_identity_public_key.bytes,
+                receiver_long_term_private_key.bytes);
         vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
         if (curve_status != 0) {
             status = vscr_status_ERROR_CURVE25519;
             goto curve_err;
         }
-    }
 
-curve_err:
-    return status;
+        curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), sender_ephemeral_public_key.bytes,
+                receiver_identity_private_key.bytes);
+        vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
+
+        if (curve_status != 0) {
+            status = vscr_status_ERROR_CURVE25519;
+            goto curve_err;
+        }
+
+        curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), sender_ephemeral_public_key.bytes,
+                receiver_long_term_private_key.bytes);
+        vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
+
+        if (curve_status != 0) {
+            status = vscr_status_ERROR_CURVE25519;
+            goto curve_err;
+        }
+
+        if (receiver_one_time_private_key.len != 0) {
+            curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret),
+                    sender_ephemeral_public_key.bytes, receiver_one_time_private_key.bytes);
+            vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
+
+            if (curve_status != 0) {
+                status = vscr_status_ERROR_CURVE25519;
+                goto curve_err;
+            }
+        }
+
+    curve_err:
+        return status;
 }

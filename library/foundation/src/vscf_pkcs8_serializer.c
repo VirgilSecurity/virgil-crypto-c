@@ -129,8 +129,8 @@ vscf_pkcs8_serializer_serialized_public_key_len(vscf_pkcs8_serializer_t *self, c
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_pkcs8_serializer_serialize_public_key(
-        vscf_pkcs8_serializer_t *self, const vscf_impl_t *public_key, vsc_buffer_t *out) {
+vscf_pkcs8_serializer_serialize_public_key(vscf_pkcs8_serializer_t *self, const vscf_impl_t *public_key,
+        vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->der_serializer);
@@ -184,8 +184,8 @@ vscf_pkcs8_serializer_serialized_private_key_len(vscf_pkcs8_serializer_t *self, 
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_pkcs8_serializer_serialize_private_key(
-        vscf_pkcs8_serializer_t *self, const vscf_impl_t *private_key, vsc_buffer_t *out) {
+vscf_pkcs8_serializer_serialize_private_key(vscf_pkcs8_serializer_t *self, const vscf_impl_t *private_key,
+        vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->der_serializer);

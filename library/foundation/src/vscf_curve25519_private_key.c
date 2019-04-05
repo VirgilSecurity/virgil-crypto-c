@@ -360,8 +360,8 @@ vscf_curve25519_private_key_import_private_key(vscf_curve25519_private_key_t *se
 //  Note, shared key can be used only for symmetric cryptography.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_curve25519_private_key_compute_shared_key(
-        vscf_curve25519_private_key_t *self, const vscf_impl_t *public_key, vsc_buffer_t *shared_key) {
+vscf_curve25519_private_key_compute_shared_key(vscf_curve25519_private_key_t *self, const vscf_impl_t *public_key,
+        vsc_buffer_t *shared_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);

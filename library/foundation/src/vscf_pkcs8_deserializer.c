@@ -106,8 +106,8 @@ vscf_pkcs8_deserializer_setup_defaults(vscf_pkcs8_deserializer_t *self) {
 //  Deserialize given public key as an interchangeable format to the object.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_pkcs8_deserializer_deserialize_public_key(
-        vscf_pkcs8_deserializer_t *self, vsc_data_t public_key_data, vscf_error_t *error) {
+vscf_pkcs8_deserializer_deserialize_public_key(vscf_pkcs8_deserializer_t *self, vsc_data_t public_key_data,
+        vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->der_deserializer);
@@ -150,8 +150,8 @@ vscf_pkcs8_deserializer_deserialize_public_key(
 //  Deserialize given private key as an interchangeable format to the object.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_pkcs8_deserializer_deserialize_private_key(
-        vscf_pkcs8_deserializer_t *self, vsc_data_t private_key_data, vscf_error_t *error) {
+vscf_pkcs8_deserializer_deserialize_private_key(vscf_pkcs8_deserializer_t *self, vsc_data_t private_key_data,
+        vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->der_deserializer);

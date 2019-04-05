@@ -235,8 +235,8 @@ vscr_ratchet_skipped_messages_cleanup_ctx(vscr_ratchet_skipped_messages_t *self)
 }
 
 VSCR_PUBLIC vscr_ratchet_skipped_message_key_t *
-vscr_ratchet_skipped_messages_find_key(
-        vscr_ratchet_skipped_messages_t *self, size_t counter, vsc_data_t ratchet_public_key) {
+vscr_ratchet_skipped_messages_find_key(vscr_ratchet_skipped_messages_t *self, size_t counter,
+        vsc_data_t ratchet_public_key) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(ratchet_public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
@@ -256,8 +256,8 @@ vscr_ratchet_skipped_messages_find_key(
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_delete_key(
-        vscr_ratchet_skipped_messages_t *self, vscr_ratchet_skipped_message_key_t *skipped_message_key) {
+vscr_ratchet_skipped_messages_delete_key(vscr_ratchet_skipped_messages_t *self,
+        vscr_ratchet_skipped_message_key_t *skipped_message_key) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(skipped_message_key);
@@ -288,8 +288,8 @@ vscr_ratchet_skipped_messages_delete_key(
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_add_key(
-        vscr_ratchet_skipped_messages_t *self, vscr_ratchet_skipped_message_key_t *skipped_message_key) {
+vscr_ratchet_skipped_messages_add_key(vscr_ratchet_skipped_messages_t *self,
+        vscr_ratchet_skipped_message_key_t *skipped_message_key) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(skipped_message_key);
@@ -338,8 +338,8 @@ vscr_ratchet_skipped_messages_serialize(vscr_ratchet_skipped_messages_t *self, S
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_deserialize(
-        SkippedMessages *skipped_messages_pb, vscr_ratchet_skipped_messages_t *skipped_messages) {
+vscr_ratchet_skipped_messages_deserialize(SkippedMessages *skipped_messages_pb,
+        vscr_ratchet_skipped_messages_t *skipped_messages) {
 
     VSCR_ASSERT_PTR(skipped_messages_pb);
     VSCR_ASSERT_PTR(skipped_messages);

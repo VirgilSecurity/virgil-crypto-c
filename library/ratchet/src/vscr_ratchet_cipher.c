@@ -428,32 +428,32 @@ VSCR_PUBLIC vscr_status_t
 vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t plain_text, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(self->aes256_gcm);
+        VSCR_ASSERT_PTR(self->aes256_gcm);
 
-    VSCR_ASSERT(vsc_buffer_unused_len(buffer) >= vscr_ratchet_cipher_encrypt_len(self, plain_text.len));
+        VSCR_ASSERT(vsc_buffer_unused_len(buffer) >= vscr_ratchet_cipher_encrypt_len(self, plain_text.len));
 
-    vscr_ratchet_cipher_setup_cipher(self, key);
+        vscr_ratchet_cipher_setup_cipher(self, key);
 
-    vscr_error_t error;
-    vscr_error_reset(&error);
+        vscr_error_t error;
+        vscr_error_reset(&error);
 
-    vsc_buffer_t *padded_text = vscr_ratchet_cipher_add_padding(self, plain_text, &error);
+        vsc_buffer_t *padded_text = vscr_ratchet_cipher_add_padding(self, plain_text, &error);
 
-    if (vscr_error_has_error(&error)) {
-        goto err;
-    }
+        if (vscr_error_has_error(&error)) {
+            goto err;
+        }
 
-    vscf_status_t result = vscf_aes256_gcm_encrypt(self->aes256_gcm, vsc_buffer_data(padded_text), buffer);
+        vscf_status_t result = vscf_aes256_gcm_encrypt(self->aes256_gcm, vsc_buffer_data(padded_text), buffer);
 
-    if (result != vscf_status_SUCCESS) {
-        error.status = vscr_status_ERROR_AES;
-        goto err;
-    }
+        if (result != vscf_status_SUCCESS) {
+            error.status = vscr_status_ERROR_AES;
+            goto err;
+        }
 
-err:
-    vsc_buffer_destroy(&padded_text);
+    err:
+        vsc_buffer_destroy(&padded_text);
 
-    return error.status;
+        return error.status;
 }
 
 static vscr_status_t
@@ -488,29 +488,29 @@ VSCR_PUBLIC vscr_status_t
 vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t cipher_text, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(self->aes256_gcm);
+        VSCR_ASSERT_PTR(self->aes256_gcm);
 
-    VSCR_ASSERT(vsc_buffer_unused_len(buffer) >= vscr_ratchet_cipher_decrypt_len(self, cipher_text.len));
+        VSCR_ASSERT(vsc_buffer_unused_len(buffer) >= vscr_ratchet_cipher_decrypt_len(self, cipher_text.len));
 
-    vscr_status_t result = vscr_status_SUCCESS;
+        vscr_status_t result = vscr_status_SUCCESS;
 
-    vscr_ratchet_cipher_setup_cipher(self, key);
+        vscr_ratchet_cipher_setup_cipher(self, key);
 
-    size_t padded_text_len = vscf_aes256_gcm_decrypted_len(self->aes256_gcm, cipher_text.len);
-    vsc_buffer_t *padded_text = vsc_buffer_new_with_capacity(padded_text_len);
-    vsc_buffer_make_secure(padded_text);
+        size_t padded_text_len = vscf_aes256_gcm_decrypted_len(self->aes256_gcm, cipher_text.len);
+        vsc_buffer_t *padded_text = vsc_buffer_new_with_capacity(padded_text_len);
+        vsc_buffer_make_secure(padded_text);
 
-    vscf_status_t f_result = vscf_aes256_gcm_decrypt(self->aes256_gcm, cipher_text, padded_text);
+        vscf_status_t f_result = vscf_aes256_gcm_decrypt(self->aes256_gcm, cipher_text, padded_text);
 
-    if (f_result != vscf_status_SUCCESS) {
-        result = vscr_status_ERROR_AES;
-        goto err;
-    }
+        if (f_result != vscf_status_SUCCESS) {
+            result = vscr_status_ERROR_AES;
+            goto err;
+        }
 
-    result = vscr_ratchet_cipher_remove_padding(vsc_buffer_data(padded_text), buffer);
+        result = vscr_ratchet_cipher_remove_padding(vsc_buffer_data(padded_text), buffer);
 
-err:
-    vsc_buffer_destroy(&padded_text);
+    err:
+        vsc_buffer_destroy(&padded_text);
 
-    return result;
+        return result;
 }
