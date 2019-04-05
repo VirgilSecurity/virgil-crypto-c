@@ -297,7 +297,7 @@ def build_LangJava_Android(slave) {
                 sh '''
                 cmake -Cconfigs/java-config.cmake \
                       -DANDROID_ABI="armeabi-v7a" \
-                      -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}" \
+                      -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android/armeabi-v7a" \
                       -Bbuild -H.
 
