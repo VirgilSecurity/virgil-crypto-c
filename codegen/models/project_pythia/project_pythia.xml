@@ -6,7 +6,7 @@
         prefix="vscp"
         path="../library/pythia/"
         work_path="generated/pythia/"
-        wrappers="swift"
+        wrappers="java,swift"
         >
 
     <version major="0" minor="6" patch="0"/>

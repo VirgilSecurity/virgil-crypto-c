@@ -34,59 +34,63 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-package virgil.crypto.phe;
+package virgil.crypto.ratchet;
 
 import virgil.crypto.foundation.*;
 
 /*
-* Error context.
-* Can be used for sequential operations, i.e. parsers, to accumulate error.
-* In this way operation is successful if all steps are successful, otherwise
-* last occurred error code can be obtained.
+* Defines the library status codes.
 */
-public class Error implements AutoCloseable {
+public class RatchetException extends RuntimeException {
 
-    public long cCtx;
+    public static final int SUCCESS = 0;
 
-    /* Create underlying C context. */
-    public Error() {
+    public static final int ERROR_PROTOBUF_DECODE = -1;
+
+    public static final int ERROR_MESSAGE_VERSION_DOESN_T_MATCH = -2;
+
+    public static final int ERROR_BAD_MESSAGE_TYPE = -3;
+
+    public static final int ERROR_AES = -4;
+
+    public static final int ERROR_RNG_FAILED = -5;
+
+    public static final int ERROR_CURVE25519 = -6;
+
+    public static final int ERROR_KEY_DESERIALIZATION_FAILED = -7;
+
+    public static final int ERROR_INVALID_KEY_TYPE = -8;
+
+    public static final int ERROR_IDENTITY_KEY_DOESNT_MATCH = -9;
+
+    public static final int ERROR_MESSAGE_ALREADY_DECRYPTED = -10;
+
+    public static final int ERROR_TOO_MANY_LOST_MESSAGES = -11;
+
+    public static final int ERROR_SENDER_CHAIN_MISSING = -12;
+
+    public static final int ERROR_SKIPPED_MESSAGE_MISSING = -13;
+
+    public static final int ERROR_CAN_T_ENCRYPT_YET = -14;
+
+    public static final int ERROR_EXCEEDED_MAX_PLAIN_TEXT_LEN = -15;
+
+    public static final int ERROR_TOO_MANY_MESSAGES_FOR_SENDER_CHAIN = -16;
+
+    public static final int ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN = -17;
+
+    public static final int ERROR_INVALID_PADDING = -18;
+
+    private int statusCode;
+
+    /* Create new instance. */
+    public RatchetException(int statusCode) {
         super();
-        this.cCtx = PheJNI.INSTANCE.error_new();
+        this.statusCode = statusCode;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public Error(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
-    /* Close resource. */
-    public void close() {
-        PheJNI.INSTANCE.error_close(this.cCtx);
-    }
-
-    /*
-    * Reset context to the "no error" state.
-    */
-    public void reset() {
-        PheJNI.INSTANCE.error_reset(this.cCtx);
-    }
-
-    /*
-    * Return true if status is not "success".
-    */
-    public boolean hasError() {
-        return PheJNI.INSTANCE.error_hasError(this.cCtx);
-    }
-
-    /*
-    * Return error code.
-    */
-    public void status() throws PheException {
-        PheJNI.INSTANCE.error_status(this.cCtx);
+    public int getStatusCode() {
+        return this.statusCode;
     }
 }
 

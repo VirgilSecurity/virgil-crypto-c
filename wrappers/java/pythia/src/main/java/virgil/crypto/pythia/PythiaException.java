@@ -34,57 +34,33 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-package virgil.crypto.foundation;
+package virgil.crypto.pythia;
 
 /*
-* Error context.
-* Can be used for sequential operations, i.e. parsers, to accumulate error.
-* In this way operation is successful if all steps are successful, otherwise
-* last occurred error code can be obtained.
+* Defines the library status codes.
 */
-public class Error implements AutoCloseable {
+public class PythiaException extends RuntimeException {
 
-    public long cCtx;
+    public static final int SUCCESS = 0;
 
-    /* Create underlying C context. */
-    public Error() {
+    public static final int ERROR_BAD_ARGUMENTS = -1;
+
+    public static final int ERROR_PYTHIA_INNER_FAIL = -200;
+
+    public static final int ERROR_VERIFICATION_FAIL = -201;
+
+    public static final int ERROR_RNG_FAILED = -202;
+
+    private int statusCode;
+
+    /* Create new instance. */
+    public PythiaException(int statusCode) {
         super();
-        this.cCtx = FoundationJNI.INSTANCE.error_new();
+        this.statusCode = statusCode;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public Error(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
-    /* Close resource. */
-    public void close() {
-        FoundationJNI.INSTANCE.error_close(this.cCtx);
-    }
-
-    /*
-    * Reset context to the "no error" state.
-    */
-    public void reset() {
-        FoundationJNI.INSTANCE.error_reset(this.cCtx);
-    }
-
-    /*
-    * Return true if status is not "success".
-    */
-    public boolean hasError() {
-        return FoundationJNI.INSTANCE.error_hasError(this.cCtx);
-    }
-
-    /*
-    * Return error code.
-    */
-    public void status() throws FoundationException {
-        FoundationJNI.INSTANCE.error_status(this.cCtx);
+    public int getStatusCode() {
+        return this.statusCode;
     }
 }
 

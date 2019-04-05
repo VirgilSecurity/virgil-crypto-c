@@ -238,7 +238,11 @@ function java_format_h_arguments (c_method)
     my.args = "JNIEnv *, jobject"
 
     for my.c_method.c_argument
-        my.args += ", $(c_argument.type:)"
+        if is_true (c_argument.is_const)
+            my.args += ", const $(c_argument.type:)"
+        else
+            my.args += ", $(c_argument.type:)"
+        endif
     endfor
     
     return my.args ? ""
@@ -253,7 +257,11 @@ function java_format_c_arguments (c_method)
 
     my.args = "JNIEnv *jenv, jobject jobj"
     for my.c_method.c_argument
-        my.args += ", $(c_argument.type:) $(c_argument.name:)"
+        if is_true (c_argument.is_const)
+            my.args += ", const $(c_argument.type:) $(c_argument.name:)"
+        else
+            my.args += ", $(c_argument.type:) $(c_argument.name:)"
+        endif
     endfor
 
     return my.args

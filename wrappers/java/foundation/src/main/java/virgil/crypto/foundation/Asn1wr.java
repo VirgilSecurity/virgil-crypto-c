@@ -66,7 +66,7 @@ public class Asn1wr implements AutoCloseable, Asn1Writer {
     /*
     * Reset all internal states and prepare to new ASN.1 writing operations.
     */
-    public void reset(byte out, int outLen) {
+    public void reset(byte[] out, int outLen) {
         FoundationJNI.INSTANCE.asn1wr_reset(this.cCtx, out, outLen);
     }
 

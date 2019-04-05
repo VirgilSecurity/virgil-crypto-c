@@ -52,25 +52,6 @@ public class PheJNI {
     private PheJNI() {
     }
 
-    public native long error_new();
-
-    public native void error_close(long cCtx);
-
-    /*
-    * Reset context to the "no error" state.
-    */
-    public native void error_reset(long cCtx);
-
-    /*
-    * Return true if status is not "success".
-    */
-    public native boolean error_hasError(long cCtx);
-
-    /*
-    * Return error code.
-    */
-    public native void error_status(long cCtx) throws PheException;
-
     public native long pheServer_new();
 
     public native void pheServer_close(long cCtx);

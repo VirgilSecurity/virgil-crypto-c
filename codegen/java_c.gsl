@@ -118,8 +118,9 @@ function java_derive_c_type (instance)
             return "$(make_ref_c (make_id ("class", my.instance.class, "struct", my.instance.class))) /*4*/"
 
         else
-            return "$(make_ref_c (make_id ("class", my.instance.class, "struct", my.instance.class))) * /*5*/"
-
+            my.project_uid = c_component_derive_instance_project_uid (my.instance)
+            my.type_uid = c_component_derive_instance_type_uid ("struct", my.instance.class, my.instance.class)
+            return "$(make_ref_c (make_id(my.project_uid, my.type_uid)):) */*5*/"
         endif
 
     elsif defined (my.instance.interface)
@@ -128,9 +129,19 @@ function java_derive_c_type (instance)
         return "$(make_ref_c (make_id(my.project_uid, my.type_uid)):) */*6*/"
     elsif defined (my.instance.impl)
         return "$(make_ref_c (make_id ("class", my.instance.impl, "struct", my.instance.impl))) * /*7*/"
+    elsif defined (my.instance.type)
+        if count (my.instance.array)
+            return "$(my.instance.type:) *"
+        else
+            return my.instance.type
+        endif
+    elsif defined (my.instance.enum)
+        my.project_uid = c_component_derive_instance_project_uid (my.instance)
+        my.type_uid = make_id ("class", my.instance.enum, "enum", my.instance.enum)
+        return "$(make_ref_c (make_id(my.project_uid, my.type_uid)):) /*8*/"
     endif
 
-    return "$(make_ref_c (make_id ("class", my.instance.name, "struct", my.instance.name))) /*8*/"
+    return "$(make_ref_c (make_id ("class", my.instance.name, "struct", my.instance.name))) /*9*/"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -140,27 +151,33 @@ function java_derive_c_instance_type (instance)
     check_arguments (my, "instance", my)
 
     if defined (my.instance.type)
-        if my.instance.type = "byte"
-            return "jbyte"
-
-        elsif my.instance.type = "integer"
-            return "jint"
-
-        elsif my.instance.type = "unsigned"
+        if is_true (my.instance.is_reference)
             return "jlong"
-
-        elsif my.instance.type = "size"
-            return "jint"
-
-        elsif string_in (my.instance.type, "char, string")
-            return "jstring"
-
-        elsif my.instance.type = "boolean"
-            return "jboolean"
-
+        elsif count (my.instance.array)
+            return "jbyteArray"
         else
-            return "jbyte /*$(my.instance.type:)*/"
-            #echo_fatal ("Unsupported instance type '$(my.instance.type)' for Java language.", my)
+            if my.instance.type = "byte"
+                return "jbyte"
+
+            elsif my.instance.type = "integer"
+                return "jint"
+
+            elsif my.instance.type = "unsigned"
+                return "jlong"
+
+            elsif my.instance.type = "size"
+                return "jint"
+
+            elsif string_in (my.instance.type, "char, string")
+                return "jstring"
+
+            elsif my.instance.type = "boolean"
+                return "jboolean"
+
+            else
+                return "jbyte /*$(my.instance.type:)*/"
+                #echo_fatal ("Unsupported instance type '$(my.instance.type)' for Java language.", my)
+            endif
         endif
 
     elsif defined (my.instance.interface)
@@ -302,6 +319,15 @@ function java_derive_c_real_constant_name (constant, proxy_name, wrapper)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return formatted class context variable name.
+# ---------------------------------------------------------------------------
+function java_derive_c_context_variable_name (class)
+    check_arguments (my, "class", my)
+
+    return "$(my.class.name:c)_ctx"
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return path to the package directory.
 # ---------------------------------------------------------------------------
 function java_derive_c_package_dir (wrapper)
@@ -317,17 +343,19 @@ endfunction
 # ---------------------------------------------------------------------------
 function java_format_c_args (class, method)
     check_arguments (my, "class, method", my)
+    
+    my.class_ctx = java_derive_c_context_variable_name (my.class)
 
     if string_in (my.class.context, "none")
         my.jni_args = ""
     elsif is_false (my.method.is_static)
         my.ctx_type = java_derive_c_type (my.class)
-        my.jni_args = "($(my.ctx_type:) *) c_ctx /*1*/"
+        my.jni_args = "$(my.class_ctx:) /*a1*/"
     elsif defined (my.method.implementation)
         my.jni_args = ""
     elsif defined (my.method.interface)
         my.ctx_type = java_derive_c_type (my.class)
-        my.jni_args = "$(interface_derive_c_api_method_from_name(my.method.interface))(($(my.ctx_type:)) c_ctx /*2*/)"
+        my.jni_args = "$(interface_derive_c_api_method_from_name(my.method.interface))(($(my.ctx_type:)) $(my.class_ctx:) /*a2*/)"
     endif
 
     for my.method.argument
@@ -340,21 +368,29 @@ function java_format_c_args (class, method)
 
         my.jni_arg = # undefined
 
-        if string_in (argument.class, "data, buffer")
-            my.jni_arg = "$(my.arg_name) /*1*/"
+        if string_in (argument.class, "data, buffer") | count (argument.array)
+            my.jni_arg = "$(my.arg_name) /*a3*/"
 
         elsif java_is_error (argument)
-            my.jni_arg = "&$(my.arg_name:) /*2*/"
+            my.jni_arg = "&$(my.arg_name:) /*a4*/"
 
         elsif has_one_of_attribute (argument, "class, api, interface, impl")
-            my.jni_arg = "$(my.arg_name:c) /*3*/"
+            if argument.access = "disown"
+                my.jni_arg = "$(my.arg_name:c)_copy /*a5*/"
+            else
+                my.jni_arg = "$(my.arg_name:c) /*a6*/"
+            endif
 
         elsif defined (argument.enum)
-            #my.enum_type = class_derive_c_instance_type (argument)
-            my.jni_arg = "/* !enum! */ 1"
-
+            my.jni_arg = "$(my.arg_name:c) /*a7*/"
+        elsif string_in (argument.type, "char, string")
+            my.jni_arg = "$(java_derive_instance_name (argument)) /*a8*/"
         else
-            my.jni_arg = "j$(java_derive_instance_name (argument)) /*4*/"
+            my.jni_arg = "j$(java_derive_instance_name (argument)) /*a9*/"
+        endif
+        
+        if defined (my.jni_arg) & argument.access = "disown"
+            my.jni_arg = "&" + my.jni_arg
         endif
 
         my.jni_args += my.jni_arg ? ""
@@ -373,6 +409,20 @@ function java_remove_c_error_arguments (c_method)
     for my.c_method.c_argument where is_true (c_argument.is_error)
         delete c_argument
     endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C instance shallow copy method.
+# ---------------------------------------------------------------------------
+function java_derive_c_method_shallow_copy (instance)
+    check_arguments (my, "instance", my)
+
+    if has_one_of_attribute(my.instance, "interface")
+        return make_ref_c (make_id ("class", "impl", "method", "shallow copy"))
+
+    elsif has_one_of_attribute(my.instance, "class, impl")
+        return make_ref_c (make_id ("class", my.instance.class ? my.instance.impl, "method", "shallow copy"))
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -555,7 +605,7 @@ function java_create_c_class_constructor (class, constructor, destination, wrapp
     
     java_create_c_include (my.class, my.wrappers_destination, my.wrapper, my.meta)
 
-    #if ! defined (my.h_module->c_method(c_method.name = my.c_method_name)?)
+    if ! defined (my.h_module->c_method(c_method.name = my.c_method_name)?)
 
         # Define method header
         new c_method to my.h_module
@@ -573,6 +623,7 @@ function java_create_c_class_constructor (class, constructor, destination, wrapp
         endnew
 
         # Define method implementation
+        
         #   Wrap proxy call
         my.proxy_args = java_format_c_args (my.class, my.constructor)
         my.proxy_call = "$(class_derive_c_constructor (my.class, my.constructor))($(my.proxy_args:))"
@@ -591,13 +642,14 @@ function java_create_c_class_constructor (class, constructor, destination, wrapp
             
             new c_code to c_method
                 . = "return (jlong) $(my.ctor_invocation:);"
+                #. = java_create_c_class_method_call (my.class, my.method, my.java_class, my.java_method, c_method, my.wrappers_destination, my.wrapper, my.meta)
             endnew
 
             new c_return to c_method
                 .type = "jlong"
             endnew
         endnew
-    #endif
+    endif
 
 endfunction
 
@@ -672,14 +724,14 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Create entity <c_method/> of from the class entity <method/>.
+#   Create entity <c_method/> of from the instance entity <method/>.
 # ---------------------------------------------------------------------------
-function java_create_c_include (class, wrappers_destination, wrapper, meta)
-    check_arguments (my, "class, wrappers_destination, wrapper, meta", my)
+function java_create_c_include (instance, wrappers_destination, wrapper, meta)
+    check_arguments (my, "instance, wrappers_destination, wrapper, meta", my)
     
     my.c_module = java_obtain_c_module(my.wrappers_destination, my.wrapper)
     my.include_path = java_derive_c_package_dir (my.wrapper)
-    my.include = "$(my.include_path:)/$(my.wrapper.prefix:)_$(my.class.name:c).h"
+    my.include = "$(my.include_path:)/$(my.wrapper.prefix:)_$(my.instance.name:c).h"
     
     if ! defined (my.c_module->c_include(c_include.include = my.include)?)
     
@@ -695,7 +747,7 @@ function java_wrap_c_method_arguments (method, wrapper, meta)
         my.init_strings ?= "// Wrap Java strings"
 
         my.init_strings += format_left("\
-            char *$(argument.name:c) = (*jenv)->GetStringUTFChars(jenv, j$(argument.name:Camel), NULL);
+            const char *$(argument.name:c) = (*jenv)->GetStringUTFChars(jenv, j$(argument.name:Camel), NULL);
         ") + terminator
     endfor
 
@@ -748,6 +800,47 @@ endfunction
 
 function java_create_c_class_method_call (class, method, java_class, java_method, c_method, wrappers_destination, wrapper, meta)
 
+    # Cast context
+    if ! string_equal (my.class.context, "none") & ! is_true (my.method.is_static)
+        my.init_context ?= terminator + "// Cast class context"
+        my.ctx_type = java_derive_c_type (my.class)
+        my.ctx_name = java_derive_c_context_variable_name (my.class)
+        my.init_context += format_left("\
+            $(my.ctx_type:)* $(my.ctx_name:) = ($(my.ctx_type:)*) c_ctx;
+        ") + terminator
+    endif
+    
+    # Wrap arrays
+    for my.method.argument where count (0.array)
+        my.wrap_array ?= terminator + "// Wrap arrays"
+        my.arr_jni_name = "j$(java_derive_c_instance_name (argument))"
+        my.arr_name = java_derive_c_instance_name (argument)
+        my.arr_type = java_derive_c_type (argument)
+
+        my.wrap_array += format_left("\
+            $(my.arr_type:) $(my.arr_name:) = (*jenv)->GetByteArrayElements(jenv, $(my.arr_jni_name:), NULL);
+        ") + terminator
+        
+        my.free_resources ?= terminator + "// Free resources"
+        my.free_resources += format_left("\
+            //TODO: Fix $(my.arr_name:) memory leak
+            //(*jenv)->ReleaseByteArrayElements(jenv, $(my.arr_jni_name:), $(my.arr_name:), 0);
+        ") + terminator
+    endfor
+
+    # Wrap enums
+    for my.method.argument where defined (0.enum)
+        my.wrap_enum ?= terminator + "// Wrap enums"
+        my.enum_name = java_derive_c_instance_name (argument)
+        my.enum_jni_name = "j$(argument.name:Camel)"
+        my.enum_type = java_derive_c_type (argument)
+        my.wrap_enum += format_left("\
+            jclass $(my.enum_name:)_cls = (*jenv)->GetObjectClass(jenv, $(my.enum_jni_name:));
+            jmethodID $(my.enum_name:)_methodID = (*jenv)->GetMethodID(jenv, $(my.enum_name:)_cls, \"getCode\", \"()I\");
+            $(my.enum_type:) $(my.enum_name:) = ($(my.enum_type:)) (*jenv)->CallDoubleMethod(jenv, $(my.enum_jni_name:), $(my.enum_name:)_methodID);
+        ") + terminator
+    endfor
+
     # Wrap input data.
     my.struct_data = ".(c_project_common_class_data_struct_data)"
     my.method_data_init = ".(c_project_common_class_data_method_data)"
@@ -755,10 +848,14 @@ function java_create_c_class_method_call (class, method, java_class, java_method
     for my.method.argument where defined (0.class) & 0.class = "data"
         my.init_data ?= terminator + "// Wrap input data"
         my.data_name = java_derive_c_instance_name (argument)
+        my.data_jni_name = "j$(argument.name:Camel)"
         my.init_data += format_left("\
-        $(my.struct_data:) $(my.data_name:) = $(my.method_data_init:)(
-            (*jenv)->GetByteArrayElements(jenv, j$(argument.name:Camel), NULL),
-            (*jenv)->GetArrayLength(jenv, j$(argument.name:Camel)));
+            byte* $(my.data_name:)_arr = (*jenv)->GetByteArrayElements(jenv, $(my.data_jni_name:), NULL);
+            $(my.struct_data:) $(my.data_name:) = $(my.method_data_init:)($(my.data_name:)_arr, (*jenv)->GetArrayLength(jenv, $(my.data_jni_name:)));
+        ") + terminator
+        my.free_resources ?= terminator + "// Free resources"
+        my.free_resources += format_left("\
+            (*jenv)->ReleaseByteArrayElements(jenv, $(my.data_jni_name:), $(my.data_name:)_arr, 0);
         ") + terminator
     endfor
 
@@ -782,7 +879,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
         ") + terminator
     endfor
 
-    #   Wrap errors.
+    # Wrap errors
     my.exception = java_derive_default_exception_name (my.wrapper)
     my.error_method_reset = make_ref_c (make_id ("class error method reset"))
     my.success_constant = \
@@ -814,6 +911,17 @@ function java_create_c_class_method_call (class, method, java_class, java_method
     for my.method.return where string_in (return.enum, "error, status")
         my.throws = "1"
     endfor
+    
+    # Create shallow copies for objects that is passed as "disown" argument.
+    for my.method.argument where argument.access = "disown"
+        my.method_shallow_copy = java_derive_c_method_shallow_copy (argument)
+        my.class_type = java_derive_c_type (argument)
+
+        my.shallow_copies ?= terminator + "//Shallow copy"
+        my.shallow_copies += format_left("\
+            $(my.class_type:) $(argument.name:c)_copy = $(my.method_shallow_copy:)($(argument.name:c));
+        ", my.scope_count)
+    endfor
 
     my.operation_call = "// Make call"
     if defined (my.throws)
@@ -829,7 +937,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
     else
         my.proxy_return_type = java_derive_c_return_type (my.method)
         if my.proxy_return_type <> "void"
-            my.proxy_result = "$(my.proxy_return_type:) proxyResult = "
+            my.proxy_result = "const $(my.proxy_return_type:) proxyResult = "
         else
             my.proxy_result = ""
         endif
@@ -879,7 +987,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
             if string_in (my.c_return_type, "jbyte, jint, jlong, jboolean, jstring")
                 # Just return the value
                 my.operation_call = format_left("\
-                    $(my.c_return_type:) ret = $(my.proxy_call:);
+                    $(my.c_return_type:) ret = ($(my.c_return_type:)) $(my.proxy_call:);
                 ")
             elsif string_in (my.c_return_type, "jbyteArray")
                 # Create and fill a byte array
@@ -947,8 +1055,12 @@ function java_create_c_class_method_call (class, method, java_class, java_method
     endif
 
     my.c_code = "$(my.errors_instantiation?:)"
+    my.c_code += "$(my.init_context?:)"
+    my.c_code += "$(my.wrap_array?:)"
+    my.c_code += "$(my.wrap_enum?:)"
     my.c_code += "$(my.init_objects?:)"
     my.c_code += "$(my.init_data?:)"
+    my.c_code += "$(my.shallow_copies?:)"
     my.c_code += "$(my.operation_call?:)"
     my.c_code += "$(my.errors_handling?:)"
     my.c_code += "$(my.prepare_result?:)"
@@ -1287,6 +1399,7 @@ function java_get_c_implementation_helper_interface_method (interface, wrappers_
         new c_argument to c_method
             .name = "c_ctx"
             .type = my.ctx_type
+            .is_const = "1"
         endnew
 
         new c_return to c_method
@@ -1323,6 +1436,7 @@ function java_get_c_implementation_helper_interface_method (interface, wrappers_
         new c_argument to c_method
             .name = "c_ctx"
             .type = my.ctx_type
+            .is_const = "1"
         endnew
 
         new c_return to c_method
@@ -1359,6 +1473,9 @@ function java_update_c_implementation_helper_module (implementation, destination
     my.refs = meta_refs (my.meta)
 
     for my.implementation.interface
+
+        java_create_c_include (interface, my.destination, my.wrapper, my.meta)
+
         my.wrap_interface_method = \
                 java_get_c_implementation_helper_interface_method (interface, my.destination, my.wrapper)
 

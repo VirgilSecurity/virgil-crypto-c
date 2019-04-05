@@ -25,13 +25,18 @@
 	"ed25519": {
 		"private_key": "BCC7jU3FE57s4k+DVN3G/QphrGMQ4WrHIogTBcBHQuPIRg==",
 		"public_key": "4eO0V6xoGEyBlqEVX4YckF+YmDDH99Zjm2cY1y3+A4E=",
-		"signature":"CauBQA1rLw55f5Fo6VvkoglA8/EhQDtWc6nNxCxXtdoIs5M5cJVfuM30JWAIDzUj735uo98ovg/mizXFNt0fCQ==",
-		"wrong_signature":"ziuGneVnQ9isQQIl6nSkOlrqNH0QUaeAWISeXAuepMCpBsY4ORYwR6ZtVGaIs8U63n4FLuiz3Q31Uzfdv15gAg==",
+		"signature": "CauBQA1rLw55f5Fo6VvkoglA8/EhQDtWc6nNxCxXtdoIs5M5cJVfuM30JWAIDzUj735uo98ovg/mizXFNt0fCQ==",
+		"wrong_signature": "ziuGneVnQ9isQQIl6nSkOlrqNH0QUaeAWISeXAuepMCpBsY4ORYwR6ZtVGaIs8U63n4FLuiz3Q31Uzfdv15gAg==",
 		"key_len": 32,
 		"key_bit_len": 256,
 		"signature_len": 64
 	},
 	"rsa": {
+		"private_key": "MIGpAgEAAiEAirmfOoOF9us9NInUoEN5BaU5YE3ECnTACLT8IZv77v8CAQMCIBce798V66knNN4W+MVglCtctY7Z1H4r2zlbGQTYK5NPAhEAwA5qaAdi5SBYDGI1l7gRvQIRALjpnMrBsoh8WIYDzvM+aWsCEQCACZxFWkHuFZAIQXkP0AvTAhB7RmiHK8xa/ZBZV99M1EZHAhEAnxb+lrl31vRualFHf8K1VQ==",
+		"public_key": "MCYCIQCKuZ86g4X26z00idSgQ3kFpTlgTcQKdMAItPwhm/vu/wIBAw==",
+		"signature": "",
+		"wrong_signature": "",
+		"encrypted_data": "",
 		"key_len": 32,
 		"key_bit_len": 256
 	},
@@ -54,5 +59,8 @@
 		"digest_len": 64,
 		"block_len": 128,
 		"hash": "dwQYglm3VdtcqhlYW/szvTdYwu1KbdHqllyL7G20u8aZeVNtHWmfp1Vd+AcKVymfIFFLQRrG7lSHF3HfePQDLg=="
+	},
+	"asn1": {
+		"asn1_encoded_INT_2_BYTES": ""
 	}
 }

@@ -41,16 +41,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_error_1new (JNIEnv *, jobject);
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_error_1close (JNIEnv *, jobject, jlong);
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_error_1reset (JNIEnv *, jobject, jlong);
-
-JNIEXPORT jboolean JNICALL Java_virgil_crypto_foundation_FoundationJNI_error_1hasError (JNIEnv *, jobject, jlong);
-
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_error_1status (JNIEnv *, jobject, jlong);
-
 JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_rawKey_1new (JNIEnv *, jobject);
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rawKey_1close (JNIEnv *, jobject, jlong);
@@ -497,11 +487,11 @@ JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1wr_1new 
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1wr_1close (JNIEnv *, jobject, jlong);
 
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1wr_1reset (JNIEnv *, jobject, jlong, jbyte, jint);
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1wr_1reset (JNIEnv *, jobject, jlong, jbyteArray, jint);
 
 JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1wr_1finish (JNIEnv *, jobject, jlong, jboolean);
 
-JNIEXPORT jbyte JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1wr_1bytes (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1wr_1bytes (JNIEnv *, jobject, jlong);
 
 JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1wr_1len (JNIEnv *, jobject, jlong);
 
@@ -513,7 +503,7 @@ JNIEXPORT jboolean JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1wr_1h
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1wr_1status (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jbyte JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1wr_1reserve (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1wr_1reserve (JNIEnv *, jobject, jlong, jint);
 
 JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1wr_1writeTag (JNIEnv *, jobject, jlong, jint);
 

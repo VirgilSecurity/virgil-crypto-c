@@ -46,7 +46,7 @@ public interface Asn1Writer {
     /*
     * Reset all internal states and prepare to new ASN.1 writing operations.
     */
-    void reset(byte out, int outLen);
+    void reset(byte[] out, int outLen);
 
     /*
     * Finalize writing and forbid further operations.

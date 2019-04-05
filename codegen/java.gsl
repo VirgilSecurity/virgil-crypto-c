@@ -413,7 +413,9 @@ function java_derive_instance_type (instance)
     check_arguments (my, "instance", my)
 
     if defined (my.instance.type)
-        if my.instance.type = "nothing"
+        if count (my.instance.array)
+            my.primitive_type = "byte[]"
+        elsif my.instance.type = "nothing"
             my.primitive_type = "void"
 
         elsif my.instance.type = "boolean"
@@ -1195,8 +1197,8 @@ function java_create_class_constructor (class, constructor, destination, wrapper
         endnew
 
         java_create_jni_class_constructor (my.class, my.constructor, my.destination, my.wrappers_destination, my.wrapper, my.meta)
-#TODO        java_create_c_class_constructor (my.class, my.constructor, my.destination, my.wrappers_destination, my.wrapper, my.meta)
-        
+        #java_create_c_class_constructor (my.class, my.constructor, my.destination, my.wrappers_destination, my.wrapper, my.meta)
+
         return java_constructor
     endnew
 endfunction
@@ -1619,7 +1621,7 @@ function java_create_class_module (class, destination, wrapper, meta)
 
     assert_attribute (my.class, "name", my)
 
-    if string_in (my.class.name, "data, buffer")
+    if string_in (my.class.name, "data, buffer, error")
         #   Do not generate classes that can be mapped to the built-in types.
         return
     endif

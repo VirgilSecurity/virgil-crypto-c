@@ -41,16 +41,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-JNIEXPORT jlong JNICALL Java_virgil_crypto_phe_PheJNI_error_1new (JNIEnv *, jobject);
-
-JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_error_1close (JNIEnv *, jobject, jlong);
-
-JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_error_1reset (JNIEnv *, jobject, jlong);
-
-JNIEXPORT jboolean JNICALL Java_virgil_crypto_phe_PheJNI_error_1hasError (JNIEnv *, jobject, jlong);
-
-JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_error_1status (JNIEnv *, jobject, jlong);
-
 JNIEXPORT jlong JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1new (JNIEnv *, jobject);
 
 JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1close (JNIEnv *, jobject, jlong);

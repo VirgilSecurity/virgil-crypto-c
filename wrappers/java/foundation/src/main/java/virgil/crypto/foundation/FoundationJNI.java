@@ -50,25 +50,6 @@ public class FoundationJNI {
     private FoundationJNI() {
     }
 
-    public native long error_new();
-
-    public native void error_close(long cCtx);
-
-    /*
-    * Reset context to the "no error" state.
-    */
-    public native void error_reset(long cCtx);
-
-    /*
-    * Return true if status is not "success".
-    */
-    public native boolean error_hasError(long cCtx);
-
-    /*
-    * Return error code.
-    */
-    public native void error_status(long cCtx) throws FoundationException;
-
     public native long rawKey_new();
 
     public native void rawKey_close(long cCtx);
@@ -1103,7 +1084,7 @@ public class FoundationJNI {
     /*
     * Reset all internal states and prepare to new ASN.1 writing operations.
     */
-    public native void asn1wr_reset(long cCtx, byte out, int outLen);
+    public native void asn1wr_reset(long cCtx, byte[] out, int outLen);
 
     /*
     * Finalize writing and forbid further operations.
