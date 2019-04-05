@@ -62,6 +62,17 @@
     </method>
 
 
+    <method name="secure equal" is_const="1">
+        Perform constant-time buffers comparison.
+        The time depends on the given length but not on the buffer data.
+        Return true if given buffers are equal.
+
+        <argument name="rhs" class="self" access="readonly"/>
+
+        <return type="boolean"/>
+    </method>
+
+
     <constructor name="with capacity">
         Allocate context and underlying byte array.
 

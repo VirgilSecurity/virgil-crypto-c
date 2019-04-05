@@ -152,6 +152,14 @@ VSC_PUBLIC bool
 vsc_buffer_equal(const vsc_buffer_t *self, const vsc_buffer_t *rhs);
 
 //
+//  Perform constant-time buffers comparison.
+//  The time depends on the given length but not on the buffer data.
+//  Return true if given buffers are equal.
+//
+VSC_PUBLIC bool
+vsc_buffer_secure_equal(const vsc_buffer_t *self, const vsc_buffer_t *rhs);
+
+//
 //  Allocates inner buffer with a given capacity.
 //  Precondition: buffer is initialized.
 //  Precondition: buffer does not hold any bytes.
