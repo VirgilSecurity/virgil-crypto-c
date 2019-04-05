@@ -10,6 +10,7 @@
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jni.binaries.dir>${project.basedir}/../binaries</jni.binaries.dir>
 	</properties>
 
@@ -56,6 +57,10 @@
 	<build>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>3.1.0</version>
+				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
