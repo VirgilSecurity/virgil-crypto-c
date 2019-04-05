@@ -155,8 +155,6 @@ int32_t create_mb_iot_task(vscf_iot_crypto_result_cb cb) {
         goto out;
     }
 
-    iot_printf("[AP]mailbox iot_task is created...\n");
-
     exch_ctx->user_result_cb = cb;
 
     return ERR_OK;
