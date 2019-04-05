@@ -79,7 +79,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetKeyUti
     vscr_ratchet_key_utils_t /*2*/* ratchet_key_utils_ctx = (vscr_ratchet_key_utils_t /*2*/*) c_ctx;
 
     // Wrap input data
-    byte* public_key_arr = (*jenv)->GetByteArrayElements(jenv, jpublicKey, NULL);
+    byte* public_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpublicKey, NULL);
     vsc_data_t public_key = vsc_data(public_key_arr, (*jenv)->GetArrayLength(jenv, jpublicKey));
 
     vsc_buffer_t *key_id = vsc_buffer_new_with_capacity(vscr_ratchet_common_KEY_ID_LEN);
@@ -89,9 +89,9 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetKeyUti
         throwRatchetException(jenv, jobj, status);
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(key_id));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(key_id), vsc_buffer_bytes(key_id));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(key_id), (jbyte*) vsc_buffer_bytes(key_id));
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jpublicKey, public_key_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jpublicKey, (jbyte*) public_key_arr, 0);
 
     vsc_buffer_delete(key_id);
 
@@ -106,7 +106,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetKeyUti
     vscr_ratchet_key_utils_t /*2*/* ratchet_key_utils_ctx = (vscr_ratchet_key_utils_t /*2*/*) c_ctx;
 
     // Wrap input data
-    byte* data_arr = (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
     vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
 
     const vsc_buffer_t */*5*/ proxyResult = vscr_ratchet_key_utils_extract_ratchet_public_key(ratchet_key_utils_ctx /*a1*/, data /*a3*/, &error /*a4*/);
@@ -115,9 +115,9 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetKeyUti
         throwRatchetException(jenv, jobj, error.status);
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, proxyResult.bytes);
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jdata, data_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
 
     return ret;
 }
@@ -130,7 +130,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetKeyUti
     vscr_ratchet_key_utils_t /*2*/* ratchet_key_utils_ctx = (vscr_ratchet_key_utils_t /*2*/*) c_ctx;
 
     // Wrap input data
-    byte* data_arr = (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
     vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
 
     const vsc_buffer_t */*5*/ proxyResult = vscr_ratchet_key_utils_extract_ratchet_private_key(ratchet_key_utils_ctx /*a1*/, data /*a3*/, &error /*a4*/);
@@ -139,9 +139,9 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetKeyUti
         throwRatchetException(jenv, jobj, error.status);
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, proxyResult.bytes);
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jdata, data_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
 
     return ret;
 }
@@ -178,7 +178,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetMessag
 
     const vsc_data_t /*3*/ proxyResult = vscr_ratchet_message_get_long_term_public_key(ratchet_message_ctx /*a1*/);
     jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, proxyResult.bytes);
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     return ret;
 }
 
@@ -188,7 +188,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetMessag
 
     const vsc_data_t /*3*/ proxyResult = vscr_ratchet_message_get_one_time_public_key(ratchet_message_ctx /*a1*/);
     jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, proxyResult.bytes);
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     return ret;
 }
 
@@ -209,7 +209,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetMessag
 
     vscr_ratchet_message_serialize(ratchet_message_ctx /*a1*/, output /*a3*/);
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(output));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(output), vsc_buffer_bytes(output));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(output), (jbyte*) vsc_buffer_bytes(output));
     // Free resources
     vsc_buffer_delete(output);
 
@@ -221,7 +221,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetMessage_1
     struct vscr_error_t /*4*/ error;
     vscr_error_reset(&error);
     // Wrap input data
-    byte* input_arr = (*jenv)->GetByteArrayElements(jenv, jinput, NULL);
+    byte* input_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jinput, NULL);
     vsc_data_t input = vsc_data(input_arr, (*jenv)->GetArrayLength(jenv, jinput));
 
     const vscr_ratchet_message_t */*5*/ proxyResult = vscr_ratchet_message_deserialize(input /*a3*/, &error /*a4*/);
@@ -239,7 +239,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetMessage_1
     }
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jinput, input_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jinput, (jbyte*) input_arr, 0);
 
     return ret;
 }
@@ -282,16 +282,16 @@ JNIEXPORT void JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSession_1ini
     vscr_ratchet_session_t /*2*/* ratchet_session_ctx = (vscr_ratchet_session_t /*2*/*) c_ctx;
 
     // Wrap input data
-    byte* sender_identity_private_key_arr = (*jenv)->GetByteArrayElements(jenv, jsenderIdentityPrivateKey, NULL);
+    byte* sender_identity_private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jsenderIdentityPrivateKey, NULL);
     vsc_data_t sender_identity_private_key = vsc_data(sender_identity_private_key_arr, (*jenv)->GetArrayLength(jenv, jsenderIdentityPrivateKey));
 
-    byte* receiver_identity_public_key_arr = (*jenv)->GetByteArrayElements(jenv, jreceiverIdentityPublicKey, NULL);
+    byte* receiver_identity_public_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jreceiverIdentityPublicKey, NULL);
     vsc_data_t receiver_identity_public_key = vsc_data(receiver_identity_public_key_arr, (*jenv)->GetArrayLength(jenv, jreceiverIdentityPublicKey));
 
-    byte* receiver_long_term_public_key_arr = (*jenv)->GetByteArrayElements(jenv, jreceiverLongTermPublicKey, NULL);
+    byte* receiver_long_term_public_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jreceiverLongTermPublicKey, NULL);
     vsc_data_t receiver_long_term_public_key = vsc_data(receiver_long_term_public_key_arr, (*jenv)->GetArrayLength(jenv, jreceiverLongTermPublicKey));
 
-    byte* receiver_one_time_public_key_arr = (*jenv)->GetByteArrayElements(jenv, jreceiverOneTimePublicKey, NULL);
+    byte* receiver_one_time_public_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jreceiverOneTimePublicKey, NULL);
     vsc_data_t receiver_one_time_public_key = vsc_data(receiver_one_time_public_key_arr, (*jenv)->GetArrayLength(jenv, jreceiverOneTimePublicKey));
 
     vscr_status_t status = vscr_ratchet_session_initiate(ratchet_session_ctx /*a1*/, sender_identity_private_key /*a3*/, receiver_identity_public_key /*a3*/, receiver_long_term_public_key /*a3*/, receiver_one_time_public_key /*a3*/);
@@ -299,13 +299,13 @@ JNIEXPORT void JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSession_1ini
         throwRatchetException(jenv, jobj, status);
     }
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jsenderIdentityPrivateKey, sender_identity_private_key_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jsenderIdentityPrivateKey, (jbyte*) sender_identity_private_key_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverIdentityPublicKey, receiver_identity_public_key_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverIdentityPublicKey, (jbyte*) receiver_identity_public_key_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverLongTermPublicKey, receiver_long_term_public_key_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverLongTermPublicKey, (jbyte*) receiver_long_term_public_key_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverOneTimePublicKey, receiver_one_time_public_key_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverOneTimePublicKey, (jbyte*) receiver_one_time_public_key_arr, 0);
 }
 
 JNIEXPORT void JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSession_1respond (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jsenderIdentityPublicKey, jbyteArray jreceiverIdentityPrivateKey, jbyteArray jreceiverLongTermPrivateKey, jbyteArray jreceiverOneTimePrivateKey, jobject jmessage) {
@@ -323,16 +323,16 @@ JNIEXPORT void JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSession_1res
     vscr_ratchet_message_t */*5*/ message = (vscr_ratchet_message_t */*5*/) (*jenv)->GetLongField(jenv, jmessage, message_fidCtx);
 
     // Wrap input data
-    byte* sender_identity_public_key_arr = (*jenv)->GetByteArrayElements(jenv, jsenderIdentityPublicKey, NULL);
+    byte* sender_identity_public_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jsenderIdentityPublicKey, NULL);
     vsc_data_t sender_identity_public_key = vsc_data(sender_identity_public_key_arr, (*jenv)->GetArrayLength(jenv, jsenderIdentityPublicKey));
 
-    byte* receiver_identity_private_key_arr = (*jenv)->GetByteArrayElements(jenv, jreceiverIdentityPrivateKey, NULL);
+    byte* receiver_identity_private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jreceiverIdentityPrivateKey, NULL);
     vsc_data_t receiver_identity_private_key = vsc_data(receiver_identity_private_key_arr, (*jenv)->GetArrayLength(jenv, jreceiverIdentityPrivateKey));
 
-    byte* receiver_long_term_private_key_arr = (*jenv)->GetByteArrayElements(jenv, jreceiverLongTermPrivateKey, NULL);
+    byte* receiver_long_term_private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jreceiverLongTermPrivateKey, NULL);
     vsc_data_t receiver_long_term_private_key = vsc_data(receiver_long_term_private_key_arr, (*jenv)->GetArrayLength(jenv, jreceiverLongTermPrivateKey));
 
-    byte* receiver_one_time_private_key_arr = (*jenv)->GetByteArrayElements(jenv, jreceiverOneTimePrivateKey, NULL);
+    byte* receiver_one_time_private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jreceiverOneTimePrivateKey, NULL);
     vsc_data_t receiver_one_time_private_key = vsc_data(receiver_one_time_private_key_arr, (*jenv)->GetArrayLength(jenv, jreceiverOneTimePrivateKey));
 
     vscr_status_t status = vscr_ratchet_session_respond(ratchet_session_ctx /*a1*/, sender_identity_public_key /*a3*/, receiver_identity_private_key /*a3*/, receiver_long_term_private_key /*a3*/, receiver_one_time_private_key /*a3*/, message /*a6*/);
@@ -340,13 +340,13 @@ JNIEXPORT void JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSession_1res
         throwRatchetException(jenv, jobj, status);
     }
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jsenderIdentityPublicKey, sender_identity_public_key_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jsenderIdentityPublicKey, (jbyte*) sender_identity_public_key_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverIdentityPrivateKey, receiver_identity_private_key_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverIdentityPrivateKey, (jbyte*) receiver_identity_private_key_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverLongTermPrivateKey, receiver_long_term_private_key_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverLongTermPrivateKey, (jbyte*) receiver_long_term_private_key_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverOneTimePrivateKey, receiver_one_time_private_key_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverOneTimePrivateKey, (jbyte*) receiver_one_time_private_key_arr, 0);
 }
 
 JNIEXPORT jboolean JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSession_1isInitiator (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -381,7 +381,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSession_1
     vscr_ratchet_session_t /*2*/* ratchet_session_ctx = (vscr_ratchet_session_t /*2*/*) c_ctx;
 
     // Wrap input data
-    byte* plain_text_arr = (*jenv)->GetByteArrayElements(jenv, jplainText, NULL);
+    byte* plain_text_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jplainText, NULL);
     vsc_data_t plain_text = vsc_data(plain_text_arr, (*jenv)->GetArrayLength(jenv, jplainText));
 
     const vscr_ratchet_message_t */*5*/ proxyResult = vscr_ratchet_session_encrypt(ratchet_session_ctx /*a1*/, plain_text /*a3*/, &error /*a4*/);
@@ -399,7 +399,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSession_1
     }
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jplainText, plain_text_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jplainText, (jbyte*) plain_text_arr, 0);
 
     return ret;
 }
@@ -444,7 +444,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSessio
         throwRatchetException(jenv, jobj, status);
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(plain_text));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(plain_text), vsc_buffer_bytes(plain_text));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(plain_text), (jbyte*) vsc_buffer_bytes(plain_text));
     // Free resources
     vsc_buffer_delete(plain_text);
 
@@ -468,7 +468,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSessio
 
     vscr_ratchet_session_serialize(ratchet_session_ctx /*a1*/, output /*a3*/);
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(output));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(output), vsc_buffer_bytes(output));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(output), (jbyte*) vsc_buffer_bytes(output));
     // Free resources
     vsc_buffer_delete(output);
 
@@ -480,7 +480,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSession_1
     struct vscr_error_t /*4*/ error;
     vscr_error_reset(&error);
     // Wrap input data
-    byte* input_arr = (*jenv)->GetByteArrayElements(jenv, jinput, NULL);
+    byte* input_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jinput, NULL);
     vsc_data_t input = vsc_data(input_arr, (*jenv)->GetArrayLength(jenv, jinput));
 
     const vscr_ratchet_session_t */*5*/ proxyResult = vscr_ratchet_session_deserialize(input /*a3*/, &error /*a4*/);
@@ -498,7 +498,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSession_1
     }
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jinput, input_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jinput, (jbyte*) input_arr, 0);
 
     return ret;
 }

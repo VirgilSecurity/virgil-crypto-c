@@ -818,7 +818,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
         my.arr_type = java_derive_c_type (argument)
 
         my.wrap_array += format_left("\
-            $(my.arr_type:) $(my.arr_name:) = (*jenv)->GetByteArrayElements(jenv, $(my.arr_jni_name:), NULL);
+            $(my.arr_type:) $(my.arr_name:) = ($(my.arr_type:)) (*jenv)->GetByteArrayElements(jenv, $(my.arr_jni_name:), NULL);
         ") + terminator
         
         my.free_resources ?= terminator + "// Free resources"
@@ -850,12 +850,12 @@ function java_create_c_class_method_call (class, method, java_class, java_method
         my.data_name = java_derive_c_instance_name (argument)
         my.data_jni_name = "j$(argument.name:Camel)"
         my.init_data += format_left("\
-            byte* $(my.data_name:)_arr = (*jenv)->GetByteArrayElements(jenv, $(my.data_jni_name:), NULL);
+            byte* $(my.data_name:)_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, $(my.data_jni_name:), NULL);
             $(my.struct_data:) $(my.data_name:) = $(my.method_data_init:)($(my.data_name:)_arr, (*jenv)->GetArrayLength(jenv, $(my.data_jni_name:)));
         ") + terminator
         my.free_resources ?= terminator + "// Free resources"
         my.free_resources += format_left("\
-            (*jenv)->ReleaseByteArrayElements(jenv, $(my.data_jni_name:), $(my.data_name:)_arr, 0);
+            (*jenv)->ReleaseByteArrayElements(jenv, $(my.data_jni_name:), (jbyte*) $(my.data_name:)_arr, 0);
         ") + terminator
     endfor
 
@@ -972,7 +972,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
                     my.prepare_result += format_left("\
                         jfieldID $(my.field_id:) = (*jenv)->GetFieldID(jenv, cls, \"$(my.java_field_name:)\", \"[B\");
                         jbyteArray $(my.field_arr:) = (*jenv)->NewByteArray(jenv, $(my.method_buffer_len:)($(my.result_buffer_name:)));
-                        (*jenv)->SetByteArrayRegion (jenv, $(my.field_arr:), 0, $(my.method_buffer_len:)($(my.result_buffer_name:)), $(my.method_buffer_bytes:)($(my.result_buffer_name:)));
+                        (*jenv)->SetByteArrayRegion (jenv, $(my.field_arr:), 0, $(my.method_buffer_len:)($(my.result_buffer_name:)), (jbyte*) $(my.method_buffer_bytes:)($(my.result_buffer_name:)));
                         (*jenv)->SetObjectField(jenv, newObj, $(my.field_id:), $(my.field_arr:));
                     ")
                 endif
@@ -1001,13 +1001,13 @@ function java_create_c_class_method_call (class, method, java_class, java_method
                     # Buffer
                     my.prepare_result = format_left("\
                         jbyteArray ret = (*jenv)->NewByteArray(jenv, .(c_project_common_class_buffer_method_len)($(my.result_buffer_name:)));
-                        (*jenv)->SetByteArrayRegion (jenv, ret, 0, .(c_project_common_class_buffer_method_len)($(my.result_buffer_name:)), .(c_project_common_class_buffer_method_bytes)($(my.result_buffer_name:)));
+                        (*jenv)->SetByteArrayRegion (jenv, ret, 0, .(c_project_common_class_buffer_method_len)($(my.result_buffer_name:)), (jbyte*) .(c_project_common_class_buffer_method_bytes)($(my.result_buffer_name:)));
                     ")
                 else
                     # Data
                     my.prepare_result = format_left("\
                         jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-                        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, proxyResult.bytes);
+                        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
                     ")
                 endif
             elsif string_in (my.c_return_type, "jobject")

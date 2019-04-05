@@ -120,7 +120,7 @@ JNIEXPORT jint JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1passwordUpdat
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1blind (JNIEnv *jenv, jobject jobj, jbyteArray jpassword) {
     // Wrap input data
-    byte* password_arr = (*jenv)->GetByteArrayElements(jenv, jpassword, NULL);
+    byte* password_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpassword, NULL);
     vsc_data_t password = vsc_data(password_arr, (*jenv)->GetArrayLength(jenv, jpassword));
 
     vsc_buffer_t *blinded_password = vsc_buffer_new_with_capacity(vscp_pythia_blinded_password_buf_len());
@@ -139,14 +139,14 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1blind (JNI
     jobject newObj = (*jenv)->NewObject(jenv, cls, methodID);
     jfieldID fidBlindedPassword = (*jenv)->GetFieldID(jenv, cls, "blindedPassword", "[B");
     jbyteArray jBlindedPasswordArr = (*jenv)->NewByteArray(jenv, vsc_buffer_len(blinded_password));
-    (*jenv)->SetByteArrayRegion (jenv, jBlindedPasswordArr, 0, vsc_buffer_len(blinded_password), vsc_buffer_bytes(blinded_password));
+    (*jenv)->SetByteArrayRegion (jenv, jBlindedPasswordArr, 0, vsc_buffer_len(blinded_password), (jbyte*) vsc_buffer_bytes(blinded_password));
     (*jenv)->SetObjectField(jenv, newObj, fidBlindedPassword, jBlindedPasswordArr);
     jfieldID fidBlindingSecret = (*jenv)->GetFieldID(jenv, cls, "blindingSecret", "[B");
     jbyteArray jBlindingSecretArr = (*jenv)->NewByteArray(jenv, vsc_buffer_len(blinding_secret));
-    (*jenv)->SetByteArrayRegion (jenv, jBlindingSecretArr, 0, vsc_buffer_len(blinding_secret), vsc_buffer_bytes(blinding_secret));
+    (*jenv)->SetByteArrayRegion (jenv, jBlindingSecretArr, 0, vsc_buffer_len(blinding_secret), (jbyte*) vsc_buffer_bytes(blinding_secret));
     (*jenv)->SetObjectField(jenv, newObj, fidBlindingSecret, jBlindingSecretArr);
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jpassword, password_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jpassword, (jbyte*) password_arr, 0);
 
     vsc_buffer_delete(blinded_password);
 
@@ -157,10 +157,10 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1blind (JNI
 
 JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1deblind (JNIEnv *jenv, jobject jobj, jbyteArray jtransformedPassword, jbyteArray jblindingSecret) {
     // Wrap input data
-    byte* transformed_password_arr = (*jenv)->GetByteArrayElements(jenv, jtransformedPassword, NULL);
+    byte* transformed_password_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jtransformedPassword, NULL);
     vsc_data_t transformed_password = vsc_data(transformed_password_arr, (*jenv)->GetArrayLength(jenv, jtransformedPassword));
 
-    byte* blinding_secret_arr = (*jenv)->GetByteArrayElements(jenv, jblindingSecret, NULL);
+    byte* blinding_secret_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jblindingSecret, NULL);
     vsc_data_t blinding_secret = vsc_data(blinding_secret_arr, (*jenv)->GetArrayLength(jenv, jblindingSecret));
 
     vsc_buffer_t *deblinded_password = vsc_buffer_new_with_capacity(vscp_pythia_deblinded_password_buf_len());
@@ -170,11 +170,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1deblind
         throwPythiaException(jenv, jobj, status);
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(deblinded_password));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(deblinded_password), vsc_buffer_bytes(deblinded_password));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(deblinded_password), (jbyte*) vsc_buffer_bytes(deblinded_password));
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jtransformedPassword, transformed_password_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jtransformedPassword, (jbyte*) transformed_password_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jblindingSecret, blinding_secret_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jblindingSecret, (jbyte*) blinding_secret_arr, 0);
 
     vsc_buffer_delete(deblinded_password);
 
@@ -183,13 +183,13 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1deblind
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1computeTransformationKeyPair (JNIEnv *jenv, jobject jobj, jbyteArray jtransformationKeyId, jbyteArray jpythiaSecret, jbyteArray jpythiaScopeSecret) {
     // Wrap input data
-    byte* transformation_key_id_arr = (*jenv)->GetByteArrayElements(jenv, jtransformationKeyId, NULL);
+    byte* transformation_key_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jtransformationKeyId, NULL);
     vsc_data_t transformation_key_id = vsc_data(transformation_key_id_arr, (*jenv)->GetArrayLength(jenv, jtransformationKeyId));
 
-    byte* pythia_secret_arr = (*jenv)->GetByteArrayElements(jenv, jpythiaSecret, NULL);
+    byte* pythia_secret_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpythiaSecret, NULL);
     vsc_data_t pythia_secret = vsc_data(pythia_secret_arr, (*jenv)->GetArrayLength(jenv, jpythiaSecret));
 
-    byte* pythia_scope_secret_arr = (*jenv)->GetByteArrayElements(jenv, jpythiaScopeSecret, NULL);
+    byte* pythia_scope_secret_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpythiaScopeSecret, NULL);
     vsc_data_t pythia_scope_secret = vsc_data(pythia_scope_secret_arr, (*jenv)->GetArrayLength(jenv, jpythiaScopeSecret));
 
     vsc_buffer_t *transformation_private_key = vsc_buffer_new_with_capacity(vscp_pythia_transformation_private_key_buf_len());
@@ -208,18 +208,18 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1computeTra
     jobject newObj = (*jenv)->NewObject(jenv, cls, methodID);
     jfieldID fidTransformationPrivateKey = (*jenv)->GetFieldID(jenv, cls, "transformationPrivateKey", "[B");
     jbyteArray jTransformationPrivateKeyArr = (*jenv)->NewByteArray(jenv, vsc_buffer_len(transformation_private_key));
-    (*jenv)->SetByteArrayRegion (jenv, jTransformationPrivateKeyArr, 0, vsc_buffer_len(transformation_private_key), vsc_buffer_bytes(transformation_private_key));
+    (*jenv)->SetByteArrayRegion (jenv, jTransformationPrivateKeyArr, 0, vsc_buffer_len(transformation_private_key), (jbyte*) vsc_buffer_bytes(transformation_private_key));
     (*jenv)->SetObjectField(jenv, newObj, fidTransformationPrivateKey, jTransformationPrivateKeyArr);
     jfieldID fidTransformationPublicKey = (*jenv)->GetFieldID(jenv, cls, "transformationPublicKey", "[B");
     jbyteArray jTransformationPublicKeyArr = (*jenv)->NewByteArray(jenv, vsc_buffer_len(transformation_public_key));
-    (*jenv)->SetByteArrayRegion (jenv, jTransformationPublicKeyArr, 0, vsc_buffer_len(transformation_public_key), vsc_buffer_bytes(transformation_public_key));
+    (*jenv)->SetByteArrayRegion (jenv, jTransformationPublicKeyArr, 0, vsc_buffer_len(transformation_public_key), (jbyte*) vsc_buffer_bytes(transformation_public_key));
     (*jenv)->SetObjectField(jenv, newObj, fidTransformationPublicKey, jTransformationPublicKeyArr);
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jtransformationKeyId, transformation_key_id_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jtransformationKeyId, (jbyte*) transformation_key_id_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jpythiaSecret, pythia_secret_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jpythiaSecret, (jbyte*) pythia_secret_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jpythiaScopeSecret, pythia_scope_secret_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jpythiaScopeSecret, (jbyte*) pythia_scope_secret_arr, 0);
 
     vsc_buffer_delete(transformation_private_key);
 
@@ -230,13 +230,13 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1computeTra
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1transform (JNIEnv *jenv, jobject jobj, jbyteArray jblindedPassword, jbyteArray jtweak, jbyteArray jtransformationPrivateKey) {
     // Wrap input data
-    byte* blinded_password_arr = (*jenv)->GetByteArrayElements(jenv, jblindedPassword, NULL);
+    byte* blinded_password_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jblindedPassword, NULL);
     vsc_data_t blinded_password = vsc_data(blinded_password_arr, (*jenv)->GetArrayLength(jenv, jblindedPassword));
 
-    byte* tweak_arr = (*jenv)->GetByteArrayElements(jenv, jtweak, NULL);
+    byte* tweak_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jtweak, NULL);
     vsc_data_t tweak = vsc_data(tweak_arr, (*jenv)->GetArrayLength(jenv, jtweak));
 
-    byte* transformation_private_key_arr = (*jenv)->GetByteArrayElements(jenv, jtransformationPrivateKey, NULL);
+    byte* transformation_private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jtransformationPrivateKey, NULL);
     vsc_data_t transformation_private_key = vsc_data(transformation_private_key_arr, (*jenv)->GetArrayLength(jenv, jtransformationPrivateKey));
 
     vsc_buffer_t *transformed_password = vsc_buffer_new_with_capacity(vscp_pythia_transformed_password_buf_len());
@@ -255,18 +255,18 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1transform 
     jobject newObj = (*jenv)->NewObject(jenv, cls, methodID);
     jfieldID fidTransformedPassword = (*jenv)->GetFieldID(jenv, cls, "transformedPassword", "[B");
     jbyteArray jTransformedPasswordArr = (*jenv)->NewByteArray(jenv, vsc_buffer_len(transformed_password));
-    (*jenv)->SetByteArrayRegion (jenv, jTransformedPasswordArr, 0, vsc_buffer_len(transformed_password), vsc_buffer_bytes(transformed_password));
+    (*jenv)->SetByteArrayRegion (jenv, jTransformedPasswordArr, 0, vsc_buffer_len(transformed_password), (jbyte*) vsc_buffer_bytes(transformed_password));
     (*jenv)->SetObjectField(jenv, newObj, fidTransformedPassword, jTransformedPasswordArr);
     jfieldID fidTransformedTweak = (*jenv)->GetFieldID(jenv, cls, "transformedTweak", "[B");
     jbyteArray jTransformedTweakArr = (*jenv)->NewByteArray(jenv, vsc_buffer_len(transformed_tweak));
-    (*jenv)->SetByteArrayRegion (jenv, jTransformedTweakArr, 0, vsc_buffer_len(transformed_tweak), vsc_buffer_bytes(transformed_tweak));
+    (*jenv)->SetByteArrayRegion (jenv, jTransformedTweakArr, 0, vsc_buffer_len(transformed_tweak), (jbyte*) vsc_buffer_bytes(transformed_tweak));
     (*jenv)->SetObjectField(jenv, newObj, fidTransformedTweak, jTransformedTweakArr);
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jblindedPassword, blinded_password_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jblindedPassword, (jbyte*) blinded_password_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jtweak, tweak_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jtweak, (jbyte*) tweak_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jtransformationPrivateKey, transformation_private_key_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jtransformationPrivateKey, (jbyte*) transformation_private_key_arr, 0);
 
     vsc_buffer_delete(transformed_password);
 
@@ -277,19 +277,19 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1transform 
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1prove (JNIEnv *jenv, jobject jobj, jbyteArray jtransformedPassword, jbyteArray jblindedPassword, jbyteArray jtransformedTweak, jbyteArray jtransformationPrivateKey, jbyteArray jtransformationPublicKey) {
     // Wrap input data
-    byte* transformed_password_arr = (*jenv)->GetByteArrayElements(jenv, jtransformedPassword, NULL);
+    byte* transformed_password_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jtransformedPassword, NULL);
     vsc_data_t transformed_password = vsc_data(transformed_password_arr, (*jenv)->GetArrayLength(jenv, jtransformedPassword));
 
-    byte* blinded_password_arr = (*jenv)->GetByteArrayElements(jenv, jblindedPassword, NULL);
+    byte* blinded_password_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jblindedPassword, NULL);
     vsc_data_t blinded_password = vsc_data(blinded_password_arr, (*jenv)->GetArrayLength(jenv, jblindedPassword));
 
-    byte* transformed_tweak_arr = (*jenv)->GetByteArrayElements(jenv, jtransformedTweak, NULL);
+    byte* transformed_tweak_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jtransformedTweak, NULL);
     vsc_data_t transformed_tweak = vsc_data(transformed_tweak_arr, (*jenv)->GetArrayLength(jenv, jtransformedTweak));
 
-    byte* transformation_private_key_arr = (*jenv)->GetByteArrayElements(jenv, jtransformationPrivateKey, NULL);
+    byte* transformation_private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jtransformationPrivateKey, NULL);
     vsc_data_t transformation_private_key = vsc_data(transformation_private_key_arr, (*jenv)->GetArrayLength(jenv, jtransformationPrivateKey));
 
-    byte* transformation_public_key_arr = (*jenv)->GetByteArrayElements(jenv, jtransformationPublicKey, NULL);
+    byte* transformation_public_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jtransformationPublicKey, NULL);
     vsc_data_t transformation_public_key = vsc_data(transformation_public_key_arr, (*jenv)->GetArrayLength(jenv, jtransformationPublicKey));
 
     vsc_buffer_t *proof_value_c = vsc_buffer_new_with_capacity(vscp_pythia_proof_value_buf_len());
@@ -308,22 +308,22 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1prove (JNI
     jobject newObj = (*jenv)->NewObject(jenv, cls, methodID);
     jfieldID fidProofValueC = (*jenv)->GetFieldID(jenv, cls, "proofValueC", "[B");
     jbyteArray jProofValueCArr = (*jenv)->NewByteArray(jenv, vsc_buffer_len(proof_value_c));
-    (*jenv)->SetByteArrayRegion (jenv, jProofValueCArr, 0, vsc_buffer_len(proof_value_c), vsc_buffer_bytes(proof_value_c));
+    (*jenv)->SetByteArrayRegion (jenv, jProofValueCArr, 0, vsc_buffer_len(proof_value_c), (jbyte*) vsc_buffer_bytes(proof_value_c));
     (*jenv)->SetObjectField(jenv, newObj, fidProofValueC, jProofValueCArr);
     jfieldID fidProofValueU = (*jenv)->GetFieldID(jenv, cls, "proofValueU", "[B");
     jbyteArray jProofValueUArr = (*jenv)->NewByteArray(jenv, vsc_buffer_len(proof_value_u));
-    (*jenv)->SetByteArrayRegion (jenv, jProofValueUArr, 0, vsc_buffer_len(proof_value_u), vsc_buffer_bytes(proof_value_u));
+    (*jenv)->SetByteArrayRegion (jenv, jProofValueUArr, 0, vsc_buffer_len(proof_value_u), (jbyte*) vsc_buffer_bytes(proof_value_u));
     (*jenv)->SetObjectField(jenv, newObj, fidProofValueU, jProofValueUArr);
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jtransformedPassword, transformed_password_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jtransformedPassword, (jbyte*) transformed_password_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jblindedPassword, blinded_password_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jblindedPassword, (jbyte*) blinded_password_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jtransformedTweak, transformed_tweak_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jtransformedTweak, (jbyte*) transformed_tweak_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jtransformationPrivateKey, transformation_private_key_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jtransformationPrivateKey, (jbyte*) transformation_private_key_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jtransformationPublicKey, transformation_public_key_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jtransformationPublicKey, (jbyte*) transformation_public_key_arr, 0);
 
     vsc_buffer_delete(proof_value_c);
 
@@ -334,22 +334,22 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1prove (JNI
 
 JNIEXPORT void JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1verify (JNIEnv *jenv, jobject jobj, jbyteArray jtransformedPassword, jbyteArray jblindedPassword, jbyteArray jtweak, jbyteArray jtransformationPublicKey, jbyteArray jproofValueC, jbyteArray jproofValueU) {
     // Wrap input data
-    byte* transformed_password_arr = (*jenv)->GetByteArrayElements(jenv, jtransformedPassword, NULL);
+    byte* transformed_password_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jtransformedPassword, NULL);
     vsc_data_t transformed_password = vsc_data(transformed_password_arr, (*jenv)->GetArrayLength(jenv, jtransformedPassword));
 
-    byte* blinded_password_arr = (*jenv)->GetByteArrayElements(jenv, jblindedPassword, NULL);
+    byte* blinded_password_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jblindedPassword, NULL);
     vsc_data_t blinded_password = vsc_data(blinded_password_arr, (*jenv)->GetArrayLength(jenv, jblindedPassword));
 
-    byte* tweak_arr = (*jenv)->GetByteArrayElements(jenv, jtweak, NULL);
+    byte* tweak_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jtweak, NULL);
     vsc_data_t tweak = vsc_data(tweak_arr, (*jenv)->GetArrayLength(jenv, jtweak));
 
-    byte* transformation_public_key_arr = (*jenv)->GetByteArrayElements(jenv, jtransformationPublicKey, NULL);
+    byte* transformation_public_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jtransformationPublicKey, NULL);
     vsc_data_t transformation_public_key = vsc_data(transformation_public_key_arr, (*jenv)->GetArrayLength(jenv, jtransformationPublicKey));
 
-    byte* proof_value_c_arr = (*jenv)->GetByteArrayElements(jenv, jproofValueC, NULL);
+    byte* proof_value_c_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jproofValueC, NULL);
     vsc_data_t proof_value_c = vsc_data(proof_value_c_arr, (*jenv)->GetArrayLength(jenv, jproofValueC));
 
-    byte* proof_value_u_arr = (*jenv)->GetByteArrayElements(jenv, jproofValueU, NULL);
+    byte* proof_value_u_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jproofValueU, NULL);
     vsc_data_t proof_value_u = vsc_data(proof_value_u_arr, (*jenv)->GetArrayLength(jenv, jproofValueU));
 
     vscp_status_t status = vscp_pythia_verify(transformed_password /*a3*/, blinded_password /*a3*/, tweak /*a3*/, transformation_public_key /*a3*/, proof_value_c /*a3*/, proof_value_u /*a3*/);
@@ -357,25 +357,25 @@ JNIEXPORT void JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1verify (JNIEn
         throwPythiaException(jenv, jobj, status);
     }
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jtransformedPassword, transformed_password_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jtransformedPassword, (jbyte*) transformed_password_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jblindedPassword, blinded_password_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jblindedPassword, (jbyte*) blinded_password_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jtweak, tweak_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jtweak, (jbyte*) tweak_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jtransformationPublicKey, transformation_public_key_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jtransformationPublicKey, (jbyte*) transformation_public_key_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jproofValueC, proof_value_c_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jproofValueC, (jbyte*) proof_value_c_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jproofValueU, proof_value_u_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jproofValueU, (jbyte*) proof_value_u_arr, 0);
 }
 
 JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1getPasswordUpdateToken (JNIEnv *jenv, jobject jobj, jbyteArray jpreviousTransformationPrivateKey, jbyteArray jnewTransformationPrivateKey) {
     // Wrap input data
-    byte* previous_transformation_private_key_arr = (*jenv)->GetByteArrayElements(jenv, jpreviousTransformationPrivateKey, NULL);
+    byte* previous_transformation_private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpreviousTransformationPrivateKey, NULL);
     vsc_data_t previous_transformation_private_key = vsc_data(previous_transformation_private_key_arr, (*jenv)->GetArrayLength(jenv, jpreviousTransformationPrivateKey));
 
-    byte* new_transformation_private_key_arr = (*jenv)->GetByteArrayElements(jenv, jnewTransformationPrivateKey, NULL);
+    byte* new_transformation_private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jnewTransformationPrivateKey, NULL);
     vsc_data_t new_transformation_private_key = vsc_data(new_transformation_private_key_arr, (*jenv)->GetArrayLength(jenv, jnewTransformationPrivateKey));
 
     vsc_buffer_t *password_update_token = vsc_buffer_new_with_capacity(vscp_pythia_password_update_token_buf_len());
@@ -385,11 +385,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1getPass
         throwPythiaException(jenv, jobj, status);
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(password_update_token));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(password_update_token), vsc_buffer_bytes(password_update_token));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(password_update_token), (jbyte*) vsc_buffer_bytes(password_update_token));
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jpreviousTransformationPrivateKey, previous_transformation_private_key_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jpreviousTransformationPrivateKey, (jbyte*) previous_transformation_private_key_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jnewTransformationPrivateKey, new_transformation_private_key_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jnewTransformationPrivateKey, (jbyte*) new_transformation_private_key_arr, 0);
 
     vsc_buffer_delete(password_update_token);
 
@@ -398,10 +398,10 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1getPass
 
 JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1updateDeblindedWithToken (JNIEnv *jenv, jobject jobj, jbyteArray jdeblindedPassword, jbyteArray jpasswordUpdateToken) {
     // Wrap input data
-    byte* deblinded_password_arr = (*jenv)->GetByteArrayElements(jenv, jdeblindedPassword, NULL);
+    byte* deblinded_password_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdeblindedPassword, NULL);
     vsc_data_t deblinded_password = vsc_data(deblinded_password_arr, (*jenv)->GetArrayLength(jenv, jdeblindedPassword));
 
-    byte* password_update_token_arr = (*jenv)->GetByteArrayElements(jenv, jpasswordUpdateToken, NULL);
+    byte* password_update_token_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpasswordUpdateToken, NULL);
     vsc_data_t password_update_token = vsc_data(password_update_token_arr, (*jenv)->GetArrayLength(jenv, jpasswordUpdateToken));
 
     vsc_buffer_t *updated_deblinded_password = vsc_buffer_new_with_capacity(vscp_pythia_deblinded_password_buf_len());
@@ -411,11 +411,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1updateD
         throwPythiaException(jenv, jobj, status);
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(updated_deblinded_password));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(updated_deblinded_password), vsc_buffer_bytes(updated_deblinded_password));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(updated_deblinded_password), (jbyte*) vsc_buffer_bytes(updated_deblinded_password));
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jdeblindedPassword, deblinded_password_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jdeblindedPassword, (jbyte*) deblinded_password_arr, 0);
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jpasswordUpdateToken, password_update_token_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jpasswordUpdateToken, (jbyte*) password_update_token_arr, 0);
 
     vsc_buffer_delete(updated_deblinded_password);
 
