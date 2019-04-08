@@ -82,6 +82,18 @@ static void
 vsc_buffer_cleanup_ctx(vsc_buffer_t *self);
 
 //
+//  Allocate inner buffer of given capacity.
+//
+static void
+vsc_buffer_init_ctx_with_capacity(vsc_buffer_t *self, size_t capacity);
+
+//
+//  Allocate inner buffer buffer as copy of given data.
+//
+static void
+vsc_buffer_init_ctx_with_data(vsc_buffer_t *self, vsc_data_t data);
+
+//
 //  Return size of 'vsc_buffer_t'.
 //
 VSC_PUBLIC size_t
@@ -138,6 +150,66 @@ vsc_buffer_new(void) {
     vsc_buffer_init(self);
 
     self->self_dealloc_cb = vsc_dealloc;
+
+    return self;
+}
+
+//
+//  Perform initialization of pre-allocated context.
+//  Allocate inner buffer of given capacity.
+//
+VSC_PUBLIC void
+vsc_buffer_init_with_capacity(vsc_buffer_t *self, size_t capacity) {
+
+    VSC_ASSERT_PTR(self);
+
+    vsc_zeroize(self, sizeof(vsc_buffer_t));
+
+    self->refcnt = 1;
+
+    vsc_buffer_init_ctx_with_capacity(self, capacity);
+}
+
+//
+//  Allocate class context and perform it's initialization.
+//  Allocate inner buffer of given capacity.
+//
+VSC_PUBLIC vsc_buffer_t *
+vsc_buffer_new_with_capacity(size_t capacity) {
+
+    vsc_buffer_t *self = vsc_buffer_new();
+
+    vsc_buffer_init_with_capacity(self, capacity);
+
+    return self;
+}
+
+//
+//  Perform initialization of pre-allocated context.
+//  Allocate inner buffer buffer as copy of given data.
+//
+VSC_PUBLIC void
+vsc_buffer_init_with_data(vsc_buffer_t *self, vsc_data_t data) {
+
+    VSC_ASSERT_PTR(self);
+
+    vsc_zeroize(self, sizeof(vsc_buffer_t));
+
+    self->refcnt = 1;
+
+    vsc_buffer_init_ctx_with_data(self, data);
+}
+
+//
+//  Allocate class context and perform it's initialization.
+//  Allocate inner buffer buffer as copy of given data.
+//
+VSC_PUBLIC vsc_buffer_t *
+vsc_buffer_new_with_data(vsc_data_t data) {
+
+    vsc_buffer_t *self = vsc_buffer_new();
+
+    vsc_buffer_init_with_data(self, data);
 
     return self;
 }
@@ -230,38 +302,33 @@ vsc_buffer_cleanup_ctx(vsc_buffer_t *self) {
 }
 
 //
-//  Allocate context and underlying byte array.
+//  Allocate inner buffer of given capacity.
 //
-VSC_PUBLIC vsc_buffer_t *
-vsc_buffer_new_with_capacity(size_t capacity) {
+static void
+vsc_buffer_init_ctx_with_capacity(vsc_buffer_t *self, size_t capacity) {
 
-    vsc_buffer_t *self = (vsc_buffer_t *)vsc_alloc(sizeof(vsc_buffer_t) + capacity);
-    VSC_ASSERT_ALLOC(self);
+    VSC_ASSERT_PTR(self);
 
-    vsc_buffer_init(self);
+    self->bytes = (byte *)vsc_alloc(capacity);
+    VSC_ASSERT_ALLOC(self->bytes);
 
-    self->bytes = (byte *)(self) + sizeof(vsc_buffer_t);
     self->capacity = capacity;
-    self->self_dealloc_cb = vsc_dealloc;
+    self->bytes_dealloc_cb = vsc_dealloc;
     self->is_owner = true;
-
-    return self;
 }
 
 //
-//  Create buffer with copied bytes from given data.
+//  Allocate inner buffer buffer as copy of given data.
 //
-VSC_PUBLIC vsc_buffer_t *
-vsc_buffer_new_with_data(vsc_data_t data) {
+static void
+vsc_buffer_init_ctx_with_data(vsc_buffer_t *self, vsc_data_t data) {
 
-    VSC_ASSERT_PTR(vsc_data_is_valid(data));
+    VSC_ASSERT_PTR(self);
 
-    vsc_buffer_t *self = vsc_buffer_new_with_capacity(data.len);
+    vsc_buffer_init_ctx_with_capacity(self, data.len);
     memcpy(self->bytes, data.bytes, data.len);
     self->len = data.len;
     self->is_owner = true;
-
-    return self;
 }
 
 //
@@ -337,6 +404,27 @@ vsc_buffer_alloc(vsc_buffer_t *self, size_t capacity) {
     self->capacity = capacity;
     self->len = 0;
     self->bytes_dealloc_cb = vsc_dealloc;
+}
+
+//
+//  Release inner buffer.
+//
+VSC_PUBLIC void
+vsc_buffer_release(vsc_buffer_t *self) {
+
+    VSC_ASSERT_PTR(self);
+
+    if (self->is_secure && self->is_owner) {
+        vsc_buffer_erase(self);
+    }
+
+    if (self->bytes != NULL && self->bytes_dealloc_cb != NULL) {
+        self->bytes_dealloc_cb(self->bytes);
+    }
+
+    self->bytes = NULL;
+    self->bytes_dealloc_cb = NULL;
+    self->is_owner = 0;
 }
 
 //
