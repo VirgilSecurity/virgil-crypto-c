@@ -8,10 +8,16 @@
     <constant name="max skipped messages" value="40"/>
     <constant name="max receivers chains" value="5"/>
     <constant name="max message gap" value="2000"/>
-    <constant name="max regular message len" value="32818"/>
-    <constant name="max prekey message len" value="32964"/>
     <constant name="padding factor" value="160"/>
     <constant name="padding size len" value="4"/>
+    <constant name="signature len" value="64"/>
+
+    <constant name="max regular message len" value="32818"/>
+    <constant name="max prekey message len" value="32960"/>
+    <constant name="max group regular message len" value="32882"/>
+    <constant name="max group info message len" value="10607"/>
+    <constant name="participant len" value="106"/>
+    <constant name="max cipher text len" value="32768"/>
 
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
@@ -22,6 +28,7 @@
         <argument name="stream" class="pb_istream_t" library="nanopb" access="readwrite"/>
         <argument name="field" class="pb_field_t" library="nanopb"/>
         <argument name="arg" class="void*" library="nanopb" access="readwrite"/>
+        <argument name="max size" type="size"/>
 
         <return type="boolean"/>
     </method>

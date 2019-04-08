@@ -24,9 +24,9 @@
     <property name="skipped messages" class="ratchet skipped group messages" access="readwrite"/>
 
     <property name="is initialized" type="boolean" access="readwrite"/>
-    <property name="my id" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
-    </property>
+    <property name="is private key set" type="boolean" access="readwrite"/>
+
+    <property name="me" class="ratchet group participant data" access="readwrite"/>
     <property name="my private key" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
     </property>
@@ -35,8 +35,6 @@
         <array/>
     </property>
     <property name="participants count" type="size" access="readwrite"/>
-    <property name="me" class="ratchet group participant data" access="readwrite"/>
-    <property name="public keys count" type="size" access="readwrite"/>
 
     <method name="is initialized" is_const="1">
         <return type="boolean"/>
@@ -51,9 +49,14 @@
         <return enum="status"/>
     </method>
 
+    <method name="set private key">
+        <argument name="my private key" class="data"/>
+
+        <return enum="status"/>
+    </method>
+
     <method name="setup session">
         <argument name="my id" class="data"/>
-        <argument name="my private key" class="data"/>
         <argument name="message" class="ratchet group message"/>
 
         <return enum="status"/>
@@ -113,6 +116,42 @@
         </argument>
 
         <return class="ratchet group participant data" access="readwrite"/>
+    </method>
+
+    <method name="serialize len">
+        Calculates size of buffer sufficient to store session
+
+        <return type="size">
+            Size of buffer sufficient to store session
+        </return>
+    </method>
+
+    <method name="serialize">
+        Serializes session to buffer
+
+        <argument name="output" class="buffer">
+            Buffer to store session
+
+            <length method="serialize len"/>
+        </argument>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        Deserializes session from buffer.
+        NOTE: Deserialized session needs dependencies to be set. Check setup defaults
+
+        <argument name="input" class="data">
+            Serialized session data
+        </argument>
+
+        <argument name="error" class="error" access="readwrite">
+            Error context to return error
+        </argument>
+
+        <return class="self" access="disown">
+            Deserialized session.
+            NOTE: Deserialized session needs dependencies to be set. Check setup defaults
+        </return>
     </method>
 
 </class>

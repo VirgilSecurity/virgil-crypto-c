@@ -13,4 +13,13 @@
 
     <property name="chain key" class="ratchet chain key"/>
 
+    <method name="serialize">
+        <argument name="data pb" class="ParticipantData" library="nanopb" access="readwrite"/>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        <argument name="data pb" class="ParticipantData" library="nanopb" access="readwrite"/>
+        <argument name="data" class="self" access="readwrite"/>
+    </method>
+
 </class>

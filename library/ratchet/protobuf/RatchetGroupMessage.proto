@@ -1,15 +1,15 @@
 syntax = "proto2";
 
-message ParticipantInfo {
+message MessageParticipantInfo {
     required uint32 version = 1;
     required bytes id = 2;
     required bytes key = 3;
     required bytes pub_key = 4;
 }
 
-message GroupInfo {
+message MessageGroupInfo {
     required uint32 version = 1;
-    repeated ParticipantInfo participants = 2;
+    repeated MessageParticipantInfo participants = 2;
 }
 
 message RegularGroupMessage {
@@ -22,6 +22,6 @@ message RegularGroupMessage {
 
 message GroupMessage {
     required uint32 version = 1;
-    optional GroupInfo group_info = 2;
+    optional MessageGroupInfo group_info = 2;
     optional RegularGroupMessage regular_message = 3;
 }

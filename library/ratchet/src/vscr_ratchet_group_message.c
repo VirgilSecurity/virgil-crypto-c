@@ -88,6 +88,9 @@ vscr_ratchet_group_message_init_ctx(vscr_ratchet_group_message_t *self);
 static void
 vscr_ratchet_group_message_cleanup_ctx(vscr_ratchet_group_message_t *self);
 
+static bool
+vscr_ratchet_group_message_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void**arg);
+
 static void
 vscr_ratchet_group_message_set_pb_encode_callback(vscr_ratchet_group_message_t *self);
 
@@ -294,10 +297,24 @@ vscr_ratchet_group_message_get_pub_key(const vscr_ratchet_group_message_t *self,
 VSCR_PUBLIC size_t
 vscr_ratchet_group_message_serialize_len(vscr_ratchet_group_message_t *self) {
 
-    // TODO
-    VSCR_UNUSED(self);
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->message_pb.has_group_info != self->message_pb.has_regular_message);
 
-    return 10000;
+    if (self->message_pb.has_group_info) {
+        return vscr_ratchet_common_hidden_MAX_GROUP_INFO_MESSAGE_LEN -
+               (vscr_ratchet_common_MAX_PARTICIPANTS_COUNT - self->message_pb.group_info.participants_count) *
+                       vscr_ratchet_common_hidden_PARTICIPANT_LEN;
+    } else if (self->message_pb.has_regular_message) {
+        VSCR_ASSERT(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN >=
+                    vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg));
+        return vscr_ratchet_common_hidden_MAX_GROUP_REGULAR_MESSAGE_LEN -
+               vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN +
+               vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg);
+    }
+
+    VSCR_ASSERT(false);
+
+    return 0;
 }
 
 //
@@ -351,6 +368,13 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
     return message;
 }
 
+static bool
+vscr_ratchet_group_message_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void **arg) {
+
+    return vscr_ratchet_common_hidden_buffer_decode_callback(
+            stream, field, arg, vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
+}
+
 static void
 vscr_ratchet_group_message_set_pb_encode_callback(vscr_ratchet_group_message_t *self) {
 
@@ -360,5 +384,5 @@ vscr_ratchet_group_message_set_pb_encode_callback(vscr_ratchet_group_message_t *
 static void
 vscr_ratchet_group_message_set_pb_decode_callback(vscr_ratchet_group_message_t *self) {
 
-    self->message_pb.regular_message.cipher_text.funcs.decode = vscr_ratchet_common_hidden_buffer_decode_callback;
+    self->message_pb.regular_message.cipher_text.funcs.decode = vscr_ratchet_group_message_buffer_decode_callback;
 }

@@ -78,8 +78,8 @@ import VSCRatchet
     /// Skipped message missing.
     case errorSkippedMessageMissing = -13
 
-    /// Can't encrypt yet.
-    case errorCanTEncryptYet = -14
+    /// Session is not initialized.
+    case errorSessionIsNotInitialized = -14
 
     /// Exceeded max plain text len.
     case errorExceededMaxPlainTextLen = -15

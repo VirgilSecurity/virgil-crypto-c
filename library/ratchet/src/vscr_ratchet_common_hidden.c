@@ -69,11 +69,15 @@
 
 
 VSCR_PUBLIC bool
-vscr_ratchet_common_hidden_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void **arg) {
+vscr_ratchet_common_hidden_buffer_decode_callback(
+        pb_istream_t *stream, const pb_field_t *field, void **arg, size_t max_size) {
 
     VSCR_ASSERT_PTR(stream);
     VSCR_ASSERT_PTR(arg);
     VSCR_UNUSED(field);
+
+    if (stream->bytes_left > max_size)
+        return false;
 
     *arg = vsc_buffer_new_with_data(vsc_data(stream->state, stream->bytes_left));
     stream->bytes_left = 0;

@@ -51,6 +51,7 @@
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_common.h"
+#include "vscr_ratchet_group_participant_data.h"
 #include "vscr_ratchet_chain_key.h"
 
 // clang-format on
@@ -132,6 +133,12 @@ vscr_ratchet_group_participant_data_destroy(vscr_ratchet_group_participant_data_
 //
 VSCR_PUBLIC vscr_ratchet_group_participant_data_t *
 vscr_ratchet_group_participant_data_shallow_copy(vscr_ratchet_group_participant_data_t *self);
+
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_data_serialize(vscr_ratchet_group_participant_data_t *self, ParticipantData *data_pb);
+
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_data_deserialize(ParticipantData *data_pb, vscr_ratchet_group_participant_data_t *data);
 
 
 // --------------------------------------------------------------------------

@@ -366,3 +366,33 @@ vscr_ratchet_skipped_group_messages_find_root_node(
 
     return NULL;
 }
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_messages_serialize(
+        vscr_ratchet_skipped_group_messages_t *self, SkippedGroupMessages *skipped_messages_pb) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(skipped_messages_pb);
+
+    skipped_messages_pb->messages_roots_count = self->group_size;
+
+    for (size_t i = 0; i < self->group_size; i++) {
+        vscr_ratchet_skipped_group_message_key_root_node_serialize(
+                self->keys[i], &skipped_messages_pb->messages_roots[i]);
+    }
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_messages_deserialize(
+        SkippedGroupMessages *skipped_messages_pb, vscr_ratchet_skipped_group_messages_t *skipped_messages) {
+
+    skipped_messages->group_size = skipped_messages_pb->messages_roots_count;
+    skipped_messages->keys =
+            vscr_alloc(skipped_messages->group_size * sizeof(vscr_ratchet_skipped_group_message_key_root_node_t));
+
+    for (size_t i = 0; i < skipped_messages->group_size; i++) {
+        skipped_messages->keys[i] = vscr_ratchet_skipped_group_message_key_root_node_new();
+        vscr_ratchet_skipped_group_message_key_root_node_deserialize(
+                &skipped_messages_pb->messages_roots[i], skipped_messages->keys[i]);
+    }
+}

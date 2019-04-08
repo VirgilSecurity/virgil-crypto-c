@@ -73,7 +73,7 @@ test__encrypt_decrypt__1_msg__decrypt_should_succeed(void) {
 
     vscr_ratchet_group_session_t **sessions = NULL;
 
-    initialize_random_group_chat(rng, 2, &sessions);
+    initialize_random_group_chat(rng, 2, &sessions, NULL);
 
     vscr_ratchet_group_session_t *session1 = sessions[0];
     vscr_ratchet_group_session_t *session2 = sessions[1];
@@ -117,7 +117,7 @@ test__encrypt_decrypt__random_group_chat__decrypt_should_succeed(void) {
 
     size_t group_size = generate_number(rng, 1, 10);
 
-    initialize_random_group_chat(rng, group_size, &sessions);
+    initialize_random_group_chat(rng, group_size, &sessions, NULL);
 
     size_t number_of_msgs = generate_number(rng, 1, 1000);
 
@@ -173,7 +173,7 @@ test__encrypt_decrypt__out_of_order__decrypt_should_succeed(void) {
 
     vscr_ratchet_group_session_t **sessions = NULL;
 
-    initialize_random_group_chat(rng, 2, &sessions);
+    initialize_random_group_chat(rng, 2, &sessions, NULL);
 
     vscr_ratchet_group_session_t *session1 = sessions[0];
     vscr_ratchet_group_session_t *session2 = sessions[1];
@@ -229,11 +229,11 @@ test__encrypt_decrypt__random_group_chat_bad_network__decrypt_should_succeed(voi
 
     size_t group_size = 10;
 
-    initialize_random_group_chat(rng, group_size, &sessions);
+    initialize_random_group_chat(rng, group_size, &sessions, NULL);
 
     size_t number_of_iterations = 1000;
 
-    encrypt_decrypt(rng, group_size, number_of_iterations, sessions, 0.75, 1.25, 0.25);
+    encrypt_decrypt(rng, group_size, number_of_iterations, sessions, 0.75, 1.25, 0.25, NULL);
 
     for (size_t i = 0; i < group_size; i++) {
         vscr_ratchet_group_session_destroy(&sessions[i]);

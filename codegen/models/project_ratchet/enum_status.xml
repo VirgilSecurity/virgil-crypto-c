@@ -57,8 +57,8 @@
         Skipped message missing.
     </constant>
 
-    <constant name="error can't encrypt yet" value="-14">
-        Can't encrypt yet.
+    <constant name="error session is not initialized" value="-14">
+        Session is not initialized.
     </constant>
 
     <constant name="error exceeded max plain text len" value="-15">

@@ -49,6 +49,7 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
+#include "vscr_ratchet_skipped_group_message_key_root_node.h"
 #include "vscr_ratchet_skipped_group_message_key_node.h"
 
 // clang-format on
@@ -130,6 +131,14 @@ vscr_ratchet_skipped_group_message_key_root_node_destroy(
 VSCR_PUBLIC vscr_ratchet_skipped_group_message_key_root_node_t *
 vscr_ratchet_skipped_group_message_key_root_node_shallow_copy(
         vscr_ratchet_skipped_group_message_key_root_node_t *self);
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_message_key_root_node_serialize(vscr_ratchet_skipped_group_message_key_root_node_t *self,
+        SkippedGroupMessagesRoot *root_node_pb);
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_message_key_root_node_deserialize(SkippedGroupMessagesRoot *root_node_pb,
+        vscr_ratchet_skipped_group_message_key_root_node_t *root_node);
 
 
 // --------------------------------------------------------------------------

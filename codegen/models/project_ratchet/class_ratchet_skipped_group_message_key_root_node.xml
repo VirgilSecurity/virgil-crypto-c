@@ -7,4 +7,13 @@
     </property>
     <property name="begin" class="ratchet skipped group message key node" access="readwrite"/>
 
+    <method name="serialize">
+        <argument name="root node pb" class="SkippedGroupMessagesRoot" library="nanopb" access="readwrite"/>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        <argument name="root node pb" class="SkippedGroupMessagesRoot" library="nanopb" access="readwrite"/>
+        <argument name="root node" class="self" access="readwrite"/>
+    </method>
+
 </class>

@@ -44,6 +44,7 @@ target_sources(test_data_ratchet
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_message.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_x3dh.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_keys.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_group_message.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_key_utils.c"
@@ -51,6 +52,7 @@ target_sources(test_data_ratchet
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_message.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_x3dh.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_keys.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_group_message.c"
         )
 
 target_include_directories(test_data_ratchet

@@ -568,7 +568,8 @@ restore_session(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session) {
 }
 
 void
-initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratchet_group_session_t ***sessions) {
+initialize_random_group_chat(
+        vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratchet_group_session_t ***sessions, vsc_buffer_t ***priv) {
     TEST_ASSERT(*sessions == NULL);
 
     vscr_ratchet_group_ticket_t *ticket = vscr_ratchet_group_ticket_new();
@@ -577,11 +578,12 @@ initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratch
 
     *sessions = vscr_alloc(group_size * sizeof(vscr_ratchet_group_session_t *));
     vsc_buffer_t **ids = vscr_alloc(group_size * sizeof(vsc_buffer_t *));
-    vsc_buffer_t **priv = vscr_alloc(group_size * sizeof(vsc_buffer_t *));
+
+    vsc_buffer_t **private_keys = vscr_alloc(group_size * sizeof(vsc_buffer_t *));
 
     for (size_t i = 0; i < group_size; i++) {
         vsc_buffer_t *pub;
-        generate_PKCS8_ed_keypair(rng, &priv[i], &pub);
+        generate_PKCS8_ed_keypair(rng, &private_keys[i], &pub);
 
         vsc_buffer_t *id;
         generate_random_participant_id(rng, &id);
@@ -601,21 +603,30 @@ initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratch
 
         TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_defaults(session));
 
-        TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(session,
-                                                       vsc_buffer_data(ids[i]), vsc_buffer_data(priv[i]), msg));
+        TEST_ASSERT_EQUAL(
+                vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(session, vsc_buffer_data(ids[i]), msg));
 
-        vsc_buffer_destroy(&priv[i]);
+        TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+                vscr_ratchet_group_session_set_private_key(session, vsc_buffer_data(private_keys[i])));
 
         (*sessions)[i] = session;
     }
 
     for (size_t i = 0; i < group_size; i++) {
         vsc_buffer_destroy(&ids[i]);
-        vsc_buffer_destroy(&priv[i]);
+        if (!priv) {
+            vsc_buffer_destroy(&private_keys[i]);
+        }
     }
 
     vscr_dealloc(ids);
-    vscr_dealloc(priv);
+
+    if (priv) {
+        *priv = private_keys;
+    } else {
+        vscr_dealloc(private_keys);
+    }
+
 
     vscr_ratchet_group_ticket_destroy(&ticket);
 }
@@ -623,7 +634,7 @@ initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratch
 void
 encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterations,
         vscr_ratchet_group_session_t **sessions, double lost_rate, double distribution_factor,
-        double generate_distribution) {
+        double generate_distribution, vsc_buffer_t **priv) {
     msg_channel_t **channels = vscr_alloc(group_size * sizeof(msg_channel_t *));
 
     for (size_t i = 0; i < group_size; i++) {
@@ -667,10 +678,13 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterat
             event = generate_number(rng, 0, group_size - 1);
         }
 
+        size_t active_session;
+
         // New message produced
         if (event == group_size) {
             size_t sender = pick_element_uniform(rng, group_size);
 
+            active_session = sender;
             vscr_ratchet_group_session_t *session = sessions[sender];
 
             vsc_buffer_t *text = NULL;
@@ -740,12 +754,15 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterat
 
             TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
 
-            size_t len = vscr_ratchet_group_session_decrypt_len(sessions[receiver], ratchet_msg);
+            active_session = receiver;
+            vscr_ratchet_group_session_t *session = sessions[receiver];
+
+            size_t len = vscr_ratchet_group_session_decrypt_len(session, ratchet_msg);
 
             vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(len);
 
-            TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
-                    vscr_ratchet_group_session_decrypt(sessions[receiver], ratchet_msg, plain_text));
+            TEST_ASSERT_EQUAL(
+                    vscr_status_SUCCESS, vscr_ratchet_group_session_decrypt(session, ratchet_msg, plain_text));
 
             TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(channel_msg->plain_text), plain_text);
 
@@ -759,6 +776,33 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterat
             }
 
             number_of_picks++;
+        }
+
+        if (priv) {
+            vscr_ratchet_group_session_t **session_ref = &sessions[active_session];
+
+            size_t len = vscr_ratchet_group_session_serialize_len(*session_ref);
+
+            vsc_buffer_t *buf = vsc_buffer_new_with_capacity(len);
+
+            vscr_ratchet_group_session_serialize(*session_ref, buf);
+
+            vscr_ratchet_group_session_delete(*session_ref);
+
+            vscr_error_t err_ctx;
+            vscr_error_reset(&err_ctx);
+
+            *session_ref = vscr_ratchet_group_session_deserialize(vsc_buffer_data(buf), &err_ctx);
+
+            TEST_ASSERT_EQUAL(vscr_status_SUCCESS, err_ctx.status);
+
+            vscr_ratchet_group_session_use_rng(*session_ref, vscf_ctr_drbg_impl(rng));
+            vscr_status_t status =
+                    vscr_ratchet_group_session_set_private_key(*session_ref, vsc_buffer_data(priv[active_session]));
+
+            TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
+
+            vsc_buffer_destroy(&buf);
         }
     }
 

@@ -50,6 +50,7 @@
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_message_key.h"
+#include "vscr_ratchet_skipped_group_messages.h"
 
 #include <RatchetSession.pb.h>
 #include <pb_decode.h>
@@ -137,6 +138,14 @@ vscr_ratchet_skipped_group_messages_delete_key(vscr_ratchet_skipped_group_messag
 VSCR_PUBLIC void
 vscr_ratchet_skipped_group_messages_add_key(vscr_ratchet_skipped_group_messages_t *self,
         const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN], vscr_ratchet_message_key_t *skipped_message_key);
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_messages_serialize(vscr_ratchet_skipped_group_messages_t *self,
+        SkippedGroupMessages *skipped_messages_pb);
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_messages_deserialize(SkippedGroupMessages *skipped_messages_pb,
+        vscr_ratchet_skipped_group_messages_t *skipped_messages);
 
 
 // --------------------------------------------------------------------------

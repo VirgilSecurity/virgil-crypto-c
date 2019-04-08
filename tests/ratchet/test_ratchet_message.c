@@ -34,6 +34,7 @@
 
 #define UNITY_BEGIN() UnityBegin(__FILENAME__)
 
+#include <virgil/crypto/ratchet/private/vscr_ratchet_common_hidden.h>
 #include "unity.h"
 #include "test_utils.h"
 
@@ -310,6 +311,66 @@ test__methods__fixed_regular_msg__should_return_correct_values(void) {
     vscr_ratchet_message_destroy(&msg1);
 }
 
+void
+test__serialize_deserialize__prekey_msg_overflow__should_be_equal(void) {
+    vscr_ratchet_message_t *msg1 = vscr_ratchet_message_new();
+
+    msg1->message_pb.has_prekey_message = true;
+    msg1->message_pb.prekey_message.has_receiver_one_time_key = true;
+
+
+    vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
+    vsc_buffer_inc_used(cipher_text, vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
+
+    msg1->message_pb.prekey_message.regular_message.cipher_text.arg = cipher_text;
+
+    size_t len = vscr_ratchet_message_serialize_len(msg1);
+    vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);
+    vscr_ratchet_message_serialize(msg1, buff);
+
+    vscr_error_t error;
+    vscr_error_reset(&error);
+
+    vscr_ratchet_message_t *msg2 = vscr_ratchet_message_deserialize(vsc_buffer_data(buff), &error);
+    TEST_ASSERT(msg2 != NULL);
+    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
+
+    TEST_ASSERT(msg_cmp(msg1, msg2));
+
+    vscr_ratchet_message_destroy(&msg1);
+    vscr_ratchet_message_destroy(&msg2);
+    vsc_buffer_destroy(&buff);
+}
+
+void
+test__serialize_deserialize__regular_msg_overflow__should_be_equal(void) {
+    vscr_ratchet_message_t *msg1 = vscr_ratchet_message_new();
+
+    msg1->message_pb.has_regular_message = true;
+
+    vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
+    vsc_buffer_inc_used(cipher_text, vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
+
+    msg1->message_pb.regular_message.cipher_text.arg = cipher_text;
+
+    size_t len = vscr_ratchet_message_serialize_len(msg1);
+    vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);
+    vscr_ratchet_message_serialize(msg1, buff);
+
+    vscr_error_t error;
+    vscr_error_reset(&error);
+
+    vscr_ratchet_message_t *msg2 = vscr_ratchet_message_deserialize(vsc_buffer_data(buff), &error);
+    TEST_ASSERT(msg2 != NULL);
+    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
+
+    TEST_ASSERT(msg_cmp(msg1, msg2));
+
+    vscr_ratchet_message_destroy(&msg1);
+    vscr_ratchet_message_destroy(&msg2);
+    vsc_buffer_destroy(&buff);
+}
+
 #endif
 
 // --------------------------------------------------------------------------
@@ -326,6 +387,8 @@ main(void) {
     RUN_TEST(test__methods__fixed_prekey_msg__should_return_correct_values);
     RUN_TEST(test__methods__fixed_prekey_msg_no_one_time__should_return_correct_values);
     RUN_TEST(test__methods__fixed_regular_msg__should_return_correct_values);
+    RUN_TEST(test__serialize_deserialize__prekey_msg_overflow__should_be_equal);
+    RUN_TEST(test__serialize_deserialize__regular_msg_overflow__should_be_equal);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

@@ -216,3 +216,45 @@ vscr_ratchet_skipped_group_message_key_root_node_cleanup_ctx(vscr_ratchet_skippe
 
     vscr_ratchet_skipped_group_message_key_node_destroy(&self->begin);
 }
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_message_key_root_node_serialize(
+        vscr_ratchet_skipped_group_message_key_root_node_t *self, SkippedGroupMessagesRoot *root_node_pb) {
+
+    VSCR_ASSERT(self);
+    VSCR_ASSERT(root_node_pb);
+
+    memcpy(root_node_pb->id, self->id, sizeof(self->id));
+
+    vscr_ratchet_skipped_group_message_key_node_t *node = self->begin;
+
+    size_t i = 0;
+    while (node) {
+        vscr_ratchet_message_key_serialize(node->value, &root_node_pb->message_keys[i++]);
+        node = node->next;
+    }
+
+    root_node_pb->message_keys_count = i;
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_message_key_root_node_deserialize(
+        SkippedGroupMessagesRoot *root_node_pb, vscr_ratchet_skipped_group_message_key_root_node_t *root_node) {
+
+    VSCR_ASSERT_PTR(root_node_pb);
+    VSCR_ASSERT_PTR(root_node);
+
+    memcpy(root_node->id, root_node_pb->id, sizeof(root_node->id));
+
+    vscr_ratchet_skipped_group_message_key_node_t **node = &root_node->begin;
+
+    for (size_t i = 0; i < root_node_pb->message_keys_count; i++) {
+        vscr_ratchet_skipped_group_message_key_node_t *new_node = vscr_ratchet_skipped_group_message_key_node_new();
+
+        new_node->value = vscr_ratchet_message_key_new();
+        vscr_ratchet_message_key_deserialize(&root_node_pb->message_keys[i], new_node->value);
+
+        *node = new_node;
+        node = &new_node->next;
+    }
+}

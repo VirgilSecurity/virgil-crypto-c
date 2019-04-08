@@ -51,6 +51,7 @@
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_group_message.h"
 #include "vscr_error.h"
+#include "vscr_ratchet_group_session.h"
 #include "vscr_status.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -171,8 +172,12 @@ VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_session_setup_defaults(vscr_ratchet_group_session_t *self) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
+vscr_ratchet_group_session_set_private_key(vscr_ratchet_group_session_t *self,
+        vsc_data_t my_private_key) VSCR_NODISCARD;
+
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self, vsc_data_t my_id,
-        vsc_data_t my_private_key, const vscr_ratchet_group_message_t *message) VSCR_NODISCARD;
+        const vscr_ratchet_group_message_t *message) VSCR_NODISCARD;
 
 //
 //  Encrypts data
@@ -192,6 +197,25 @@ vscr_ratchet_group_session_decrypt_len(vscr_ratchet_group_session_t *self, const
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_session_decrypt(vscr_ratchet_group_session_t *self, const vscr_ratchet_group_message_t *message,
         vsc_buffer_t *plain_text) VSCR_NODISCARD;
+
+//
+//  Calculates size of buffer sufficient to store session
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_group_session_serialize_len(vscr_ratchet_group_session_t *self);
+
+//
+//  Serializes session to buffer
+//
+VSCR_PUBLIC void
+vscr_ratchet_group_session_serialize(vscr_ratchet_group_session_t *self, vsc_buffer_t *output);
+
+//
+//  Deserializes session from buffer.
+//  NOTE: Deserialized session needs dependencies to be set. Check setup defaults
+//
+VSCR_PUBLIC vscr_ratchet_group_session_t *
+vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error);
 
 
 // --------------------------------------------------------------------------

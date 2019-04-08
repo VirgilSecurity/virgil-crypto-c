@@ -5,11 +5,7 @@
         Max plain text length allowed to be encrypted
     </constant>
 
-    <constant name="max cipher text len" value="32768">
-        Max cipher text length allowed to be decrypted
-    </constant>
-
-    <constant name="max message len" value="32964">
+    <constant name="max message len" value="32960">
         Max message length
     </constant>
 
@@ -17,14 +13,19 @@
         Key pair id length
     </constant>
 
-    <constant name="participant id len" value="32"/>
-    <constant name="max participants count" value="100"/>
-    <constant name="min participants count" value="1"/>
-
-    <constant name="max group message len" value="32964">
-        FIXME
+    <constant name="participant id len" value="32">
+        Participant id length
     </constant>
 
-    <constant name="signature len" value="64"/>
+    <constant name="max participants count" value="100">
+        Max number of group chat participants
+    </constant>
 
+    <constant name="min participants count" value="1">
+        Min number of group chat participants
+    </constant>
+
+    <constant name="max group message len" value="32882">
+        Max group message length
+    </constant>
 </class>

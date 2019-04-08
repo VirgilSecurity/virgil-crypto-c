@@ -353,7 +353,7 @@ vscr_ratchet_group_ticket_add_participant(
         goto err;
     }
 
-    ParticipantInfo *info =
+    MessageParticipantInfo *info =
             &self->msg->message_pb.group_info.participants[self->msg->message_pb.group_info.participants_count];
 
     info->version = 1;

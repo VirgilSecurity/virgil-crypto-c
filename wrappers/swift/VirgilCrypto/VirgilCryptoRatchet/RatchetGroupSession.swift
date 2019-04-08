@@ -89,12 +89,19 @@ import VirgilCryptoFoundation
         try RatchetError.handleStatus(fromC: proxyResult)
     }
 
-    @objc public func setupSession(myId: Data, myPrivateKey: Data, message: RatchetGroupMessage) throws {
-        let proxyResult = myId.withUnsafeBytes({ (myIdPointer: UnsafePointer<byte>) -> vscr_status_t in
-            myPrivateKey.withUnsafeBytes({ (myPrivateKeyPointer: UnsafePointer<byte>) -> vscr_status_t in
+    @objc public func setPrivateKey(myPrivateKey: Data) throws {
+        let proxyResult = myPrivateKey.withUnsafeBytes({ (myPrivateKeyPointer: UnsafePointer<byte>) -> vscr_status_t in
 
-                return vscr_ratchet_group_session_setup_session(self.c_ctx, vsc_data(myIdPointer, myId.count), vsc_data(myPrivateKeyPointer, myPrivateKey.count), message.c_ctx)
-            })
+            return vscr_ratchet_group_session_set_private_key(self.c_ctx, vsc_data(myPrivateKeyPointer, myPrivateKey.count))
+        })
+
+        try RatchetError.handleStatus(fromC: proxyResult)
+    }
+
+    @objc public func setupSession(myId: Data, message: RatchetGroupMessage) throws {
+        let proxyResult = myId.withUnsafeBytes({ (myIdPointer: UnsafePointer<byte>) -> vscr_status_t in
+
+            return vscr_ratchet_group_session_setup_session(self.c_ctx, vsc_data(myIdPointer, myId.count), message.c_ctx)
         })
 
         try RatchetError.handleStatus(fromC: proxyResult)
@@ -142,5 +149,48 @@ import VirgilCryptoFoundation
         try RatchetError.handleStatus(fromC: proxyResult)
 
         return plainText
+    }
+
+    /// Calculates size of buffer sufficient to store session
+    @objc public func serializeLen() -> Int {
+        let proxyResult = vscr_ratchet_group_session_serialize_len(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Serializes session to buffer
+    @objc public func serialize() -> Data {
+        let outputCount = self.serializeLen()
+        var output = Data(count: outputCount)
+        var outputBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(outputBuf)
+        }
+
+        output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutablePointer<byte>) -> Void in
+            vsc_buffer_init(outputBuf)
+            vsc_buffer_use(outputBuf, outputPointer, outputCount)
+
+            vscr_ratchet_group_session_serialize(self.c_ctx, outputBuf)
+        })
+        output.count = vsc_buffer_len(outputBuf)
+
+        return output
+    }
+
+    /// Deserializes session from buffer.
+    /// NOTE: Deserialized session needs dependencies to be set. Check setup defaults
+    @objc public static func deserialize(input: Data) throws -> RatchetGroupSession {
+        var error: vscr_error_t = vscr_error_t()
+        vscr_error_reset(&error)
+
+        let proxyResult = input.withUnsafeBytes({ (inputPointer: UnsafePointer<byte>) in
+
+            return vscr_ratchet_group_session_deserialize(vsc_data(inputPointer, input.count), &error)
+        })
+
+        try RatchetError.handleStatus(fromC: error.status)
+
+        return RatchetGroupSession.init(take: proxyResult!)
     }
 }

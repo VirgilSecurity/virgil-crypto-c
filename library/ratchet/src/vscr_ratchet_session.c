@@ -694,7 +694,7 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *self, vsc_data_t plain_text
     }
 
     if (!self->is_initiator && !self->received_first_response) {
-        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_CAN_T_ENCRYPT_YET);
+        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_SESSION_IS_NOT_INITIALIZED);
         goto err;
     }
 
@@ -765,7 +765,7 @@ vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *self, const vscr_ratche
         cipher_text_len = vsc_buffer_len(message->message_pb.prekey_message.regular_message.cipher_text.arg);
     }
 
-    VSCR_ASSERT(cipher_text_len <= vscr_ratchet_common_MAX_CIPHER_TEXT_LEN);
+    VSCR_ASSERT(cipher_text_len <= vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
 
     return vscr_ratchet_decrypt_len(self->ratchet, cipher_text_len);
 }
@@ -870,6 +870,7 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
         return NULL;
     }
 
+    vscr_ratchet_session_t *session = NULL;
     Session session_pb = Session_init_zero;
 
     pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
@@ -879,10 +880,10 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     if (!status) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
 
-        return NULL;
+        goto err;
     }
 
-    vscr_ratchet_session_t *session = vscr_ratchet_session_new();
+    session = vscr_ratchet_session_new();
 
     session->received_first_response = session_pb.received_first_response;
     session->is_initiator = session_pb.is_initiator;
@@ -903,6 +904,7 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     vscr_ratchet_deserialize(&session_pb.ratchet, session->ratchet);
 
+err:
     vscr_zeroize(&session_pb, sizeof(Session));
 
     return session;

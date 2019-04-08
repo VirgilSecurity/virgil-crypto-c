@@ -79,25 +79,29 @@ enum {
     //
     vscr_ratchet_common_MAX_PLAIN_TEXT_LEN = 30000,
     //
-    //  Max cipher text length allowed to be decrypted
-    //
-    vscr_ratchet_common_MAX_CIPHER_TEXT_LEN = 32768,
-    //
     //  Max message length
     //
-    vscr_ratchet_common_MAX_MESSAGE_LEN = 32964,
+    vscr_ratchet_common_MAX_MESSAGE_LEN = 32960,
     //
     //  Key pair id length
     //
     vscr_ratchet_common_KEY_ID_LEN = 8,
+    //
+    //  Participant id length
+    //
     vscr_ratchet_common_PARTICIPANT_ID_LEN = 32,
+    //
+    //  Max number of group chat participants
+    //
     vscr_ratchet_common_MAX_PARTICIPANTS_COUNT = 100,
+    //
+    //  Min number of group chat participants
+    //
     vscr_ratchet_common_MIN_PARTICIPANTS_COUNT = 1,
     //
-    //  FIXME
+    //  Max group message length
     //
-    vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN = 32964,
-    vscr_ratchet_common_SIGNATURE_LEN = 64
+    vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN = 32882
 };
 
 

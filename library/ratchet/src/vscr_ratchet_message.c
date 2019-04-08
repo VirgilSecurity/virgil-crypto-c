@@ -88,6 +88,9 @@ vscr_ratchet_message_init_ctx(vscr_ratchet_message_t *self);
 static void
 vscr_ratchet_message_cleanup_ctx(vscr_ratchet_message_t *self);
 
+static bool
+vscr_ratchet_message_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void**arg);
+
 static void
 vscr_ratchet_message_set_pb_encode_callback(vscr_ratchet_message_t *self);
 
@@ -311,10 +314,14 @@ vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *self) {
     VSCR_ASSERT(self->message_pb.has_prekey_message != self->message_pb.has_regular_message);
 
     if (self->message_pb.has_prekey_message) {
-        return vscr_ratchet_common_hidden_MAX_PREKEY_MESSAGE_LEN - vscr_ratchet_common_MAX_CIPHER_TEXT_LEN +
+        VSCR_ASSERT(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN >=
+                    vsc_buffer_len(self->message_pb.prekey_message.regular_message.cipher_text.arg));
+        return vscr_ratchet_common_hidden_MAX_PREKEY_MESSAGE_LEN - vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN +
                vsc_buffer_len(self->message_pb.prekey_message.regular_message.cipher_text.arg);
     } else if (self->message_pb.has_regular_message) {
-        return vscr_ratchet_common_hidden_MAX_REGULAR_MESSAGE_LEN - vscr_ratchet_common_MAX_CIPHER_TEXT_LEN +
+        VSCR_ASSERT(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN >=
+                    vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg));
+        return vscr_ratchet_common_hidden_MAX_REGULAR_MESSAGE_LEN - vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN +
                vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg);
     }
 
@@ -374,6 +381,13 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_t *error) {
     return message;
 }
 
+static bool
+vscr_ratchet_message_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void **arg) {
+
+    return vscr_ratchet_common_hidden_buffer_decode_callback(
+            stream, field, arg, vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
+}
+
 static void
 vscr_ratchet_message_set_pb_encode_callback(vscr_ratchet_message_t *self) {
 
@@ -386,6 +400,6 @@ static void
 vscr_ratchet_message_set_pb_decode_callback(vscr_ratchet_message_t *self) {
 
     self->message_pb.prekey_message.regular_message.cipher_text.funcs.decode =
-            vscr_ratchet_common_hidden_buffer_decode_callback;
-    self->message_pb.regular_message.cipher_text.funcs.decode = vscr_ratchet_common_hidden_buffer_decode_callback;
+            vscr_ratchet_message_buffer_decode_callback;
+    self->message_pb.regular_message.cipher_text.funcs.decode = vscr_ratchet_message_buffer_decode_callback;
 }

@@ -214,3 +214,28 @@ vscr_ratchet_group_participant_data_cleanup_ctx(vscr_ratchet_group_participant_d
 
     vscr_ratchet_chain_key_destroy(&self->chain_key);
 }
+
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_data_serialize(vscr_ratchet_group_participant_data_t *self, ParticipantData *data_pb) {
+
+    VSCR_ASSERT(self);
+    VSCR_ASSERT(data_pb);
+
+    memcpy(data_pb->id, self->id, sizeof(self->id));
+    memcpy(data_pb->pub_key, self->pub_key, sizeof(self->pub_key));
+
+    vscr_ratchet_chain_key_serialize(self->chain_key, &data_pb->chain_key);
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_data_deserialize(ParticipantData *data_pb, vscr_ratchet_group_participant_data_t *data) {
+
+    VSCR_ASSERT(data_pb);
+    VSCR_ASSERT(data);
+
+    data->chain_key = vscr_ratchet_chain_key_new();
+    vscr_ratchet_chain_key_deserialize(&data_pb->chain_key, data->chain_key);
+
+    memcpy(data->pub_key, data_pb->pub_key, sizeof(data->pub_key));
+    memcpy(data->id, data_pb->id, sizeof(data->id));
+}

@@ -129,9 +129,9 @@ enum vscr_status_t {
     //
     vscr_status_ERROR_SKIPPED_MESSAGE_MISSING = -13,
     //
-    //  Can't encrypt yet.
+    //  Session is not initialized.
     //
-    vscr_status_ERROR_CAN_T_ENCRYPT_YET = -14,
+    vscr_status_ERROR_SESSION_IS_NOT_INITIALIZED = -14,
     //
     //  Exceeded max plain text len.
     //

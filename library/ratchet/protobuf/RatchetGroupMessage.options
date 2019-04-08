@@ -1,8 +1,8 @@
-GroupInfo.participants max_count:100 fixed_count:false
+MessageGroupInfo.participants max_count:100 fixed_count:false
 
-ParticipantInfo.id max_size:32 fixed_length:true
-ParticipantInfo.key max_size:32 fixed_length:true
-ParticipantInfo.pub_key max_size:32 fixed_length:true
+MessageParticipantInfo.id max_size:32 fixed_length:true
+MessageParticipantInfo.key max_size:32 fixed_length:true
+MessageParticipantInfo.pub_key max_size:32 fixed_length:true
 
 RegularGroupMessage.sender_id max_size:32 fixed_length:true
 RegularGroupMessage.signature max_size:64 fixed_length:true

@@ -55,4 +55,13 @@
         <return class="ratchet skipped group message key root node" access="readwrite"/>
     </method>
 
+    <method name="serialize">
+        <argument name="skipped messages pb" class="SkippedGroupMessages" library="nanopb" access="readwrite"/>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        <argument name="skipped messages pb" class="SkippedGroupMessages" library="nanopb" access="readwrite"/>
+        <argument name="skipped messages" class="self" access="readwrite"/>
+    </method>
+
 </class>
