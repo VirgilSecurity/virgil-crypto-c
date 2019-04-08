@@ -72,14 +72,14 @@ reg_msg_cmp(RegularGroupMessage *msg1, RegularGroupMessage *msg2) {
 }
 
 static bool
-participant_cmp(ParticipantInfo *msg1, ParticipantInfo *msg2) {
+participant_cmp(MessageParticipantInfo *msg1, MessageParticipantInfo *msg2) {
     return msg1->version == msg2->version && memcmp(msg1->id, msg2->id, sizeof(msg1->id)) == 0 &&
            memcmp(msg1->key, msg2->key, sizeof(msg1->key)) == 0 &&
            memcmp(msg1->pub_key, msg2->pub_key, sizeof(msg1->pub_key)) == 0;
 }
 
 static bool
-grp_info_msg_cmp(GroupInfo *msg1, GroupInfo *msg2) {
+grp_info_msg_cmp(MessageGroupInfo *msg1, MessageGroupInfo *msg2) {
 
     if (msg1->version != msg2->version || msg1->participants_count != msg2->participants_count)
         return false;
