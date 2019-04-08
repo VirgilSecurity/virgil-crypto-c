@@ -24,7 +24,7 @@
     <method name="get long-term public key">
         Returns long-term public key, if message is prekey message.
 
-        <return class="data">
+        <return class="data" access="readwrite">
             Long-term public key, if message is prekey message.
         </return>
     </method>
@@ -32,7 +32,7 @@
     <method name="get one-time public key">
         Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
 
-        <return class="data">
+        <return class="data" access="readwrite">
             One-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
         </return>
     </method>

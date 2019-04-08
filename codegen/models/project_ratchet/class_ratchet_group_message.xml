@@ -29,7 +29,7 @@
     <method name="get pub key" is_const="1">
         <argument name="id" class="data"/>
 
-        <return class="data"/>
+        <return class="data" access="readwrite"/>
     </method>
 
     <method name="serialize len">
