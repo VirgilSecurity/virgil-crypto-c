@@ -76,8 +76,6 @@ import VirgilCryptoFoundation
 
     /// Setups default dependencies:
     ///     - RNG: CTR DRBG
-    ///     - Key serialization: DER PKCS8
-    ///     - Symmetric cipher: AES256-GCM
     @objc public func setupDefaults() throws {
         let proxyResult = vscr_ratchet_session_setup_defaults(self.c_ctx)
 

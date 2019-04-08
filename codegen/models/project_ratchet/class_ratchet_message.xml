@@ -13,7 +13,7 @@
 
     <property name="message pb" class="Message" library="nanopb" access="readwrite" is_reference="0"/>
 
-    <method name="get type">
+    <method name="get type" is_const="1">
         Returns message type.
 
         <return enum="msg type">
@@ -24,7 +24,7 @@
     <method name="get long-term public key">
         Returns long-term public key, if message is prekey message.
 
-        <return class="data">
+        <return class="data" access="readwrite">
             Long-term public key, if message is prekey message.
         </return>
     </method>
@@ -32,7 +32,7 @@
     <method name="get one-time public key">
         Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
 
-        <return class="data">
+        <return class="data" access="readwrite">
             One-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
         </return>
     </method>
@@ -70,9 +70,18 @@
         </return>
     </method>
 
+    <method name="buffer decode callback" declaration="private" is_static="1">
+        <argument name="stream" class="pb_istream_t" library="nanopb" access="readwrite"/>
+        <argument name="field" class="pb_field_t" library="nanopb"/>
+        <argument name="arg" class="void*" library="nanopb" access="readwrite"/>
+
+        <return type="boolean"/>
+    </method>
+
     <method name="set pb encode callback" declaration="private">
     </method>
 
     <method name="set pb decode callback" declaration="private">
     </method>
+
 </class>

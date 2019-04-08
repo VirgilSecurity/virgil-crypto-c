@@ -1,0 +1,56 @@
+<class name="ratchet group ticket" context="internal">
+    Group ticket used to start group session.
+
+    <require class="ratchet common" scope="public"/>
+    <require class="ratchet common hidden" scope="context"/>
+
+    <require module="ratchet message defs" scope="private"/>
+
+    <require module="buffer defs" project="common" scope="private"/>
+    <require module="ratchet group message defs" scope="private"/>
+
+    <require header="RatchetGroupMessage.pb.h" scope="private"/>
+    <require header="pb_decode.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
+
+    <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
+
+    <require impl="ctr drbg" project="foundation" scope="private"/>
+
+    <dependency name="rng" interface="random" project="foundation">
+        Random used to generate keys
+    </dependency>
+
+    <property name="key utils" class="ratchet key utils"/>
+    <property name="msg" class="ratchet group message" access="readwrite"/>
+
+    <method name="setup defaults">
+        Setups default dependencies:
+        - RNG: CTR DRBG
+
+        <return enum="status"/>
+    </method>
+
+    <method name="add participant">
+        Adds participant to chat.
+
+        <argument name="participant id" class="data">
+            Participant's 32-byte identifier.
+        </argument>
+        <argument name="public key" class="data">
+            Participant's Ed25518 identity public key in PKCS8.
+        </argument>
+
+        <return enum="status">
+            Error
+        </return>
+    </method>
+
+    <method name="generate ticket" is_const="1">
+        Generates message that should be sent to all participants using secure channel.
+
+        <return class="ratchet group message" access="readonly">
+            Ratchet group message.
+        </return>
+    </method>
+</class>

@@ -44,6 +44,7 @@
 #include "vscr_ratchet_skipped_message_key_list_node.h"
 #include "vscr_ratchet_receiver_chains.h"
 #include "vscr_ratchet_skipped_messages.h"
+#include "vscr_ratchet_key_utils.h"
 
 struct vscr_ratchet_skipped_messages_t {
     //
@@ -99,21 +100,6 @@ struct vscr_ratchet_t {
 
     byte root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
 };
-
-struct vscr_ratchet_key_utils_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscf_pkcs8_der_deserializer_t *pkcs8;
-};
-
-typedef struct vscr_ratchet_key_utils_t vscr_ratchet_key_utils_t;
 
 struct vscr_ratchet_session_t {
     //
