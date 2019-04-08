@@ -111,6 +111,14 @@ vsc_zeroize(void *mem, size_t size);
 VSC_PUBLIC void
 vsc_erase(void *mem, size_t size);
 
+//
+//  Perform constant-time memory comparison.
+//  The time depends on the given length but not on the compared memory.
+//  Return true of given memory chunks are equal.
+//
+VSC_PUBLIC bool
+vsc_memory_secure_equal(const void *a, const void *b, size_t len);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -155,7 +155,7 @@ vsc_data_is_empty(vsc_data_t self) {
 }
 
 //
-//  Return true if given datas are equal.
+//  Return true if given data are equal.
 //
 VSC_PUBLIC bool
 vsc_data_equal(vsc_data_t self, vsc_data_t rhs) {
@@ -168,6 +168,25 @@ vsc_data_equal(vsc_data_t self, vsc_data_t rhs) {
     }
 
     bool is_equal = memcmp(self.bytes, rhs.bytes, rhs.len) == 0;
+    return is_equal;
+}
+
+//
+//  Perform constant-time data comparison.
+//  The time depends on the given length but not on the data itself.
+//  Return true if given data are equal.
+//
+VSC_PUBLIC bool
+vsc_data_secure_equal(vsc_data_t self, vsc_data_t rhs) {
+
+    VSC_ASSERT(vsc_data_is_valid(self));
+    VSC_ASSERT(vsc_data_is_valid(rhs));
+
+    if (self.len != rhs.len) {
+        return false;
+    }
+
+    bool is_equal = vsc_memory_secure_equal(self.bytes, rhs.bytes, rhs.len);
     return is_equal;
 }
 
