@@ -173,9 +173,12 @@ vscf_password_recipient_info_init_with_members(vscf_password_recipient_info_t *s
 VSCF_PUBLIC vscf_password_recipient_info_t *
 vscf_password_recipient_info_new_with_members(vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key) {
 
-    vscf_password_recipient_info_t *self = vscf_password_recipient_info_new();
+    vscf_password_recipient_info_t *self = (vscf_password_recipient_info_t *) vscf_alloc(sizeof (vscf_password_recipient_info_t));
+    VSCF_ASSERT_ALLOC(self);
 
     vscf_password_recipient_info_init_with_members(self, key_encryption_algorithm_ref, encrypted_key);
+
+    self->self_dealloc_cb = vscf_dealloc;
 
     return self;
 }
