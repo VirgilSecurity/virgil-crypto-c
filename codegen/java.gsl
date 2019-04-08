@@ -105,7 +105,7 @@ function java_derive_dependency_type (dependency)
         echo_debug_item (my.dependency, my)
         echo_fatal ("Unhanded dependency type.", my)
     endif
-    
+
     return make_ref_java (make_id(my.project_uid, my.type_uid))
 endfunction
 
@@ -154,7 +154,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted constant name.
 # ---------------------------------------------------------------------------
-function java_derive_constant_name (constant, wrapper)
+function java_derive_constant_name (constant, java_project)
     check_arguments (my, "constant", my)
 
     assert_attribute (my.constant, "name", my)
@@ -194,7 +194,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted getter name by constant.
 # ---------------------------------------------------------------------------
-function java_derive_getter_name_by_constant (constant, wrapper)
+function java_derive_getter_name_by_constant (constant, java_project)
     check_arguments (my, "constant", my)
 
     assert_attribute (my.constant, "name", my)
@@ -205,8 +205,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return mapped constant type.
 # ---------------------------------------------------------------------------
-function java_derive_constant_type (instance, wrapper)
-    check_arguments (my, "instance, wrapper", my)
+function java_derive_constant_type (instance, java_project)
+    check_arguments (my, "instance, java_project", my)
 
     if my.instance.type = "boolean"
         return "boolean"
@@ -289,7 +289,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted method name.
 # ---------------------------------------------------------------------------
-function java_derive_method_name (method, wrapper)
+function java_derive_method_name (method, java_project)
     check_arguments (my, "method", my)
 
     return java_derive_method_name_str (my.method.name)
@@ -298,8 +298,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted method name from raw name.
 # ---------------------------------------------------------------------------
-function java_derive_jni_method_name_str (method, interface, wrapper)
-    check_arguments (my, "method, interface, wrapper", my)
+function java_derive_jni_method_name_str (method, interface, java_project)
+    check_arguments (my, "method, interface, java_project", my)
 
     return "$(my.interface.name:Camel)_$(my.method.name:Camel)"
 endfunction
@@ -307,8 +307,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted name of the Java interface.
 # ---------------------------------------------------------------------------
-function java_derive_interface_name (interface, wrapper)
-    check_arguments (my, "interface, wrapper", my)
+function java_derive_interface_name (interface, java_project)
+    check_arguments (my, "interface, java_project", my)
 
     assert_attribute_one_of (my.interface, "name, interface", my)
 
@@ -329,7 +329,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted name of the Java class.
 # ---------------------------------------------------------------------------
-function java_derive_class_name (class, wrapper)
+function java_derive_class_name (class, java_project)
     check_arguments (my, "class", my)
 
     assert_attribute_one_of (my.class, "name", my)
@@ -340,22 +340,22 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted name of the Java enum.
 # ---------------------------------------------------------------------------
-function java_derive_enum_status_name (wrapper)
-    check_arguments (my, "wrapper", my)
+function java_derive_enum_status_name (java_project)
+    check_arguments (my, "java_project", my)
 
-    return "$(my.wrapper.project:Pascal)Error"
+    return "$(my.java_project.name:Pascal)Error"
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Return formatted name of the Java enum.
 # ---------------------------------------------------------------------------
-function java_derive_enum_name (enum, wrapper)
-    check_arguments (my, "enum, wrapper", my)
+function java_derive_enum_name (enum, java_project)
+    check_arguments (my, "enum, java_project", my)
 
     assert_attribute_one_of (my.enum, "name", my)
 
     if my.enum.name = "status"
-        return java_derive_enum_status_name (my.wrapper)
+        return java_derive_enum_status_name (my.java_project)
     else
         return "$(my.enum.name:Pascal)"
     endif
@@ -365,13 +365,13 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted name of the Java exception.
 # ---------------------------------------------------------------------------
-function java_derive_exception_name (enum, wrapper)
-    check_arguments (my, "enum, wrapper", my)
+function java_derive_exception_name (enum, java_project)
+    check_arguments (my, "enum, java_project", my)
 
     assert_attribute_one_of (my.enum, "name", my)
 
     if my.enum.name = "status"
-        return java_derive_default_exception_name (my.wrapper)
+        return java_derive_default_exception_name (my.java_project)
     else
         return "$(my.enum.name:Pascal)Exception"
     endif
@@ -381,17 +381,17 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted name of the Java exception.
 # ---------------------------------------------------------------------------
-function java_derive_default_exception_name (wrapper)
-    check_arguments (my, "wrapper", my)
+function java_derive_default_exception_name (java_project)
+    check_arguments (my, "java_project", my)
 
-    return "$(my.wrapper.project:Pascal)Exception"
+    return "$(my.java_project.name:Pascal)Exception"
 
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Return formatted argument name from raw name.
 # ---------------------------------------------------------------------------
-function java_derive_argument_name_str (name, wrapper)
+function java_derive_argument_name_str (name, java_project)
     check_arguments (my, "name", my)
 
     return "$(my.name:Camel)"
@@ -400,7 +400,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted argument name.
 # ---------------------------------------------------------------------------
-function java_derive_argument_name (argument, wrapper)
+function java_derive_argument_name (argument, java_project)
     check_arguments (my, "argument", my)
 
     return java_derive_argument_name_str (my.argument.name)
@@ -498,10 +498,10 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return name of the class that handles multiple method's return values.
 # ---------------------------------------------------------------------------
-function java_derive_jni_context_class_name (wrapper)
-    check_arguments (my, "wrapper", my)
+function java_derive_jni_context_class_name (java_project)
+    check_arguments (my, "java_project", my)
 
-    return "$(my.wrapper.project:Pascal)JNI"
+    return "$(my.java_project.name:Pascal)JNI"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -521,7 +521,7 @@ function java_format_jni_args (class, method)
 
     for my.method.argument where ! string_in (argument.class, "error")
         my.jni_args ?= ""
-        
+
         if argument.access <> "writeonly"
             if my.jni_args <> ""
                 my.jni_args += ", "
@@ -574,13 +574,13 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return true if java method must throws.
 # ---------------------------------------------------------------------------
-function java_derive_method_throws (method, wrapper)
-    check_arguments (my, "method, wrapper", my)
+function java_derive_method_throws (method, java_project)
+    check_arguments (my, "method, java_project", my)
 
     if count (my.method.return, string_in (return.enum, "error, status"))
-        return java_derive_default_exception_name (my.wrapper)
+        return java_derive_default_exception_name (my.java_project)
     elsif count (my.method.argument, string_equal (argument.class, "error") & argument.access = "readwrite")
-        return java_derive_default_exception_name (my.wrapper)
+        return java_derive_default_exception_name (my.java_project)
     endif
 endfunction
 
@@ -667,59 +667,11 @@ endfunction
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
-#   Setup and check default and automatically resolved attributes.
-# ---------------------------------------------------------------------------
-function java_resolve_toplevel (wrapper, license)
-    check_arguments (my, "wrapper, license", my)
-
-    echo_info ("Resolve <wrapper lang=\"$(my.wrapper.lang:)\"/> for toplevel", my)
-
-    assert_attribute (my.wrapper, "lang", my)
-
-    my.wrapper.source_dir = cat_path ("../wrappers/$(my.wrapper.lang:c,lower)")
-    copy my.license to my.wrapper
-endfunction
-
-
-# ---------------------------------------------------------------------------
-#   Setup and check default and automatically resolved attributes.
-# ---------------------------------------------------------------------------
-function java_resolve_project (project, wrapper, projects_api)
-    check_arguments (my, "project, wrapper, projects_api", my)
-
-    echo_info ("Resolve <wrapper lang=\"$(my.wrapper.lang:)\"/> for project: '$(my.project.name:)'", my)
-
-    assert_attribute (my.wrapper, "lang", my)
-    assert_attributes (my.project, "name, prefix, framework", my)
-    assert_item (my.project, "license", my)
-
-    my.wrapper.project = my.project.name
-    my.wrapper.prefix = my.project.prefix
-    my.wrapper.framework = my.project.framework
-    my.wrapper.namespace = my.project.namespace
-    my.wrapper.package = java_derive_package_name(my.project)
-    my.wrapper.package_dir = java_derive_package_dir(my.project)
-    my.wrapper.source_dir = \
-            cat_path ("../wrappers/$(my.wrapper.lang:c,lower)", my.project.name, "src/main/java", my.wrapper.package_dir)
-    copy my.project->license to my.wrapper
-
-    for my.project.require where defined (0.project) & string_equal (0.feature, "library")
-        my.required_project = projects_api_find_project (my.projects_api, require.project)
-
-        if my.required_project.wrappers = "all" | string_in (my.wrapper.lang, my.required_project.wrappers)
-            new java_import to my.wrapper
-                .import = make_ref_java (make_id ("project", require.project, "import name")) + ".*"
-            endnew
-        endif
-    endfor
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Add auto-resoving attributes:
 #       - uid.
 # ---------------------------------------------------------------------------
-function java_module_resolve (java_module, wrapper)
-    check_arguments (my, "java_module, wrapper", my)
+function java_module_resolve (java_module, java_project)
+    check_arguments (my, "java_module, java_project", my)
 
     echo_trace ("Resolving <$(name (my.java_module)) name=\"$(my.java_module.name:)\"/>", my)
 
@@ -749,11 +701,11 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <java_implement/> from the entity <inherit/>.
 # ---------------------------------------------------------------------------
-function java_create_implement (inherit, destination, wrapper, meta)
-    check_arguments (my, "inherit, destination, wrapper, meta", my)
+function java_create_implement (inherit, destination, java_project, meta)
+    check_arguments (my, "inherit, destination, java_project, meta", my)
 
     new java_implement to my.destination
-        .type = java_derive_interface_name (my.inherit, my.wrapper)
+        .type = java_derive_interface_name (my.inherit, my.java_project)
 
         return java_implement
     endnew
@@ -762,11 +714,11 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <java_extend/> from the entity <inherit/>.
 # ---------------------------------------------------------------------------
-function java_create_extend (inherit, destination, wrapper, meta)
-    check_arguments (my, "inherit, destination, wrapper, meta", my)
+function java_create_extend (inherit, destination, java_project, meta)
+    check_arguments (my, "inherit, destination, java_project, meta", my)
 
     new java_extend to my.destination
-        .type = java_derive_interface_name (my.inherit, my.wrapper)
+        .type = java_derive_interface_name (my.inherit, my.java_project)
 
         return java_extend
     endnew
@@ -776,8 +728,8 @@ endfunction
 #   Add new <java_class/> that encapsulate multiple objects returned by
 #   method.
 # ---------------------------------------------------------------------------
-function java_create_result_class (parent, java_method, destination, wrapper, meta)
-    check_arguments (my, "parent, java_method, destination, wrapper, meta", my)
+function java_create_result_class (parent, java_method, java_project, meta)
+    check_arguments (my, "parent, java_method, java_project, meta", my)
 
     assert_attributes (my.parent, "name, visibility", my)
     assert_attribute (my.java_method, "name", my)
@@ -793,19 +745,19 @@ function java_create_result_class (parent, java_method, destination, wrapper, me
 
         return
     endif
-    
-    new java_module to my.destination
+
+    new java_module to my.java_project
         .name = java_derive_result_class_name (my.parent, my.java_method)
-        .package = my.wrapper.package
-        .package_dir = my.wrapper.package_dir
+        .package = my.java_project.package
+        .package_dir = my.java_project.package_dir
         .source_file_name = 0.name + ".java"
-        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+        .source_file_path = cat_path (my.java_project.source_dir, 0.source_file_name)
 
         new java_license to java_module
-            . = java_format_license (my.wrapper->license) ?
+            . = java_format_license (my.java_project->license) ?
         endnew
 
-        for my.wrapper.java_import
+        for my.java_project.java_import
             copy java_import to java_module
         endfor
 
@@ -828,7 +780,7 @@ function java_create_result_class (parent, java_method, destination, wrapper, me
             new java_return to my.java_method
                 .type = java_class.name
             endnew
-            
+
             # Default constructor
             new java_constructor to java_class
                 . = "/* Create new instance of $(java_class.name:). */"
@@ -870,14 +822,14 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <java_field/> from the entity <instance/>.
 # ---------------------------------------------------------------------------
-function java_create_field_from_instance (instance, destination, wrapper, meta)
-    check_arguments (my, "instance, destination, wrapper, meta", my)
+function java_create_field_from_instance (instance, destination, java_project, meta)
+    check_arguments (my, "instance, destination, java_project, meta", my)
 
     assert_attribute (my.instance, "access", my)
 
     new java_field to my.destination
         . = java_format_description (my.instance) ?
-        .name = java_derive_instance_name (my.instance, my.wrapper)
+        .name = java_derive_instance_name (my.instance, my.java_project)
 
         java_map_instance (java_field, my.instance)
 
@@ -896,8 +848,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <java_argument/> from the entity <argument/>.
 # ---------------------------------------------------------------------------
-function java_create_argument (argument, destination, wrapper, meta)
-    check_arguments (my, "argument, destination, wrapper, meta", my)
+function java_create_argument (argument, destination, java_project, meta)
+    check_arguments (my, "argument, destination, java_project, meta", my)
 
     assert_attributes (my.argument, "name", my)
 
@@ -913,8 +865,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <java_argument/> from C context.
 # ---------------------------------------------------------------------------
-function java_create_jni_context_argument (destination, wrapper, meta)
-    check_arguments (my, "destination, wrapper, meta", my)
+function java_create_jni_context_argument (destination, java_project, meta)
+    check_arguments (my, "destination, java_project, meta", my)
 
     new java_argument to my.destination
         .name = "cCtx"
@@ -929,8 +881,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <java_return/> from the entity <argument/>.
 # ---------------------------------------------------------------------------
-function java_create_return_from_argument (class, method, argument, destination, wrapper, meta)
-    check_arguments (my, "class, method, argument, destination, wrapper, meta", my)
+function java_create_return_from_argument (class, method, argument, destination, java_project, meta)
+    check_arguments (my, "class, method, argument, destination, java_project, meta", my)
 
     assert_attributes (my.argument, "name", my)
 
@@ -947,8 +899,8 @@ endfunction
 #   Create entity <java_return/> from the entity <return/>if it is not
 #   an error, otherwise nothing is created.
 # ---------------------------------------------------------------------------
-function java_create_return (return, destination, wrapper, meta)
-    check_arguments (my, "return, destination, wrapper, meta", my)
+function java_create_return (return, destination, java_project, meta)
+    check_arguments (my, "return, destination, java_project, meta", my)
 
     new java_return to my.destination
         java_map_instance (java_return, my.return)
@@ -986,13 +938,13 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <java_method/> with <method/> declaration.
 # ---------------------------------------------------------------------------
-function java_create_method_declaration (class, method, destination, wrapper, meta)
-    check_arguments (my, "class, method, destination, wrapper, meta", my)
+function java_create_method_declaration (class, method, destination, java_project, meta)
+    check_arguments (my, "class, method, destination, java_project, meta", my)
 
     new java_method to my.destination
         . = java_format_description (my.method) ?
-        .name = java_derive_method_name (method, my.wrapper)
-        .throws = java_derive_method_throws (my.method, my.wrapper) ?
+        .name = java_derive_method_name (method, my.java_project)
+        .throws = java_derive_method_throws (my.method, my.java_project) ?
         .interface = my.method.interface ?
 
         if ! defined (my.method.interface)
@@ -1003,16 +955,16 @@ function java_create_method_declaration (class, method, destination, wrapper, me
 
         for my.method.argument
             if argument.access <> "writeonly"
-                java_create_argument (argument, java_method, my.wrapper, my.meta)
+                java_create_argument (argument, java_method, my.java_project, my.meta)
             endif
 
             if string_in (argument.class, "buffer") & string_in (argument.access, "readwrite, writeonly")
-                java_create_return_from_argument (my.class, my.method, argument, java_method, my.wrapper, my.meta)
+                java_create_return_from_argument (my.class, my.method, argument, java_method, my.java_project, my.meta)
             endif
         endfor
 
         for my.method.return where ! string_equal (return.enum, "status")
-            java_create_return (return, java_method, my.wrapper, my.meta)
+            java_create_return (return, java_method, my.java_project, my.meta)
         endfor
 
         return java_method
@@ -1022,12 +974,12 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <java_method/> of from the interface entity <method/>.
 # ---------------------------------------------------------------------------
-function java_create_interface_method (interface, method, destination, wrapper, meta)
-    check_arguments (my, "interface, method, destination, wrapper, meta", my)
+function java_create_interface_method (interface, method, destination, java_project, meta)
+    check_arguments (my, "interface, method, destination, java_project, meta", my)
 
     echo_debug ("Create method $(my.method.name:) for interface $(my.interface.name:)", my)
-    
-    my.java_method = java_create_method_declaration (my.interface, my.method, my.destination, my.wrapper, my.meta)
+
+    my.java_method = java_create_method_declaration (my.interface, my.method, my.destination, my.java_project, my.meta)
     java_remove_error_arguments (my.java_method)
     return my.java_method
 endfunction
@@ -1035,18 +987,18 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add all components related to the interface.
 # ---------------------------------------------------------------------------
-function java_create_interface_implementation (implementation, java_class, wrappers_destination, wrapper, meta)
-    check_arguments (my, "implementation, java_class, wrappers_destination, wrapper, meta", my)
+function java_create_interface_implementation (implementation, java_class, java_project, meta)
+    check_arguments (my, "implementation, java_class, java_project, meta", my)
 
     for my.implementation.interface
-        java_create_implement (interface, my.java_class, my.wrapper, my.meta)
+        java_create_implement (interface, my.java_class, my.java_project, my.meta)
 
         for interface.constant
-            java_create_class_method_from_constant (constant, my.java_class, my.wrapper, my.meta)
+            java_create_class_method_from_constant (constant, my.java_class, my.java_project, my.meta)
         endfor
 
         for interface.method
-            java_create_class_method (my.implementation, method, my.java_class, my.wrappers_destination, my.wrapper, my.meta)
+            java_create_class_method (my.implementation, method, my.java_class, my.java_project, my.meta)
         endfor
     endfor
 endfunction
@@ -1071,8 +1023,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create <java_constructor/> that takes underlying C context.
 # ---------------------------------------------------------------------------
-function java_create_class_constructor_context (destination, wrapper, meta)
-    check_arguments (my, "destination, wrapper, meta", my)
+function java_create_class_constructor_context (destination, java_project, meta)
+    check_arguments (my, "destination, java_project, meta", my)
 
     new java_constructor to my.destination
         . = "/* Take C context that implements this interface */"
@@ -1097,8 +1049,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create enumeration <java_constant/> from the entity <constant/>
 # ---------------------------------------------------------------------------
-function java_create_enum_constant (constant, java_enum, wrapper, meta)
-    check_arguments (my, "constant, java_enum, wrapper, meta", my)
+function java_create_enum_constant (constant, java_enum, java_project, meta)
+    check_arguments (my, "constant, java_enum, java_project, meta", my)
 
     assert_attribute (my.constant, "name", my)
 
@@ -1110,10 +1062,10 @@ function java_create_enum_constant (constant, java_enum, wrapper, meta)
         the_value = 0
     endif
     my.java_enum.last_value = the_value
-    
+
     new java_constant to my.java_enum
         . = java_format_description (my.constant) ?
-        .name = java_derive_constant_name (my.constant, my.wrapper)
+        .name = java_derive_constant_name (my.constant, my.java_project)
         .value = the_value
     endnew
 endfunction
@@ -1121,19 +1073,19 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add entities for regular enum (not error codes).
 # ---------------------------------------------------------------------------
-function java_map_enum_default (java_interface, enum, wrapper, meta)
-    check_arguments (my, "java_interface, enum, wrapper, meta")
+function java_map_enum_default (java_interface, enum, java_project, meta)
+    check_arguments (my, "java_interface, enum, java_project, meta")
 
     for my.enum.constant
-        java_create_enum_constant (constant, my.java_interface, my.wrapper, my.meta)
+        java_create_enum_constant (constant, my.java_interface, my.java_project, my.meta)
     endfor
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Create default <java_constructor/> that initialize underlying C context.
 # ---------------------------------------------------------------------------
-function java_create_class_default_constructor (java_class, class, wrappers_destination, wrapper, meta)
-    check_arguments (my, "java_class, class, wrappers_destination, wrapper, meta", my)
+function java_create_class_default_constructor (java_class, class, java_project, meta)
+    check_arguments (my, "java_class, class, java_project, meta", my)
 
     new java_constructor to my.java_class
         . = "/* Create underlying C context. */"
@@ -1142,7 +1094,7 @@ function java_create_class_default_constructor (java_class, class, wrappers_dest
         new java_code to java_constructor
             . = "\
                 super();
-                this.cCtx = $(java_derive_jni_context_class_name(my.wrapper):).INSTANCE.$(my.class.name:Camel)_new();
+                this.cCtx = $(java_derive_jni_context_class_name(my.java_project)).INSTANCE.$(my.class.name:Camel)_new();
             "
         endnew
     endnew
@@ -1169,22 +1121,22 @@ function java_create_class_default_constructor (java_class, class, wrappers_dest
         endnew
     endnew
 
-    java_create_class_c_default_constructor (my.java_class, my.class, my.wrappers_destination, my.wrapper, my.meta)
-    java_create_class_jni_default_constructor (my.java_class, my.class, my.wrappers_destination, my.wrapper, my.meta)
+    java_create_class_c_default_constructor (my.java_class, my.class, my.java_project, my.meta)
+    java_create_class_jni_default_constructor (my.java_class, my.class, my.java_project, my.meta)
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Create <java_constructor/> from abstract entity <constructor/>.
 # ---------------------------------------------------------------------------
-function java_create_class_constructor (class, constructor, destination, wrappers_destination, wrapper, meta)
-    check_arguments (my, "class, constructor, destination, wrapper, meta", my)
+function java_create_class_constructor (class, constructor, destination, java_project, meta)
+    check_arguments (my, "class, constructor, destination, java_project, meta", my)
 
     new java_constructor to my.destination
         . = java_format_description (my.constructor) ?
         .visibility = "public"
 
         for my.constructor.argument
-            java_create_argument (argument, java_constructor, my.wrapper, my.meta)
+            java_create_argument (argument, java_constructor, my.java_project, my.meta)
         endfor
 
         my.proxy_args = java_format_jni_args (my.class, my.constructor)
@@ -1192,12 +1144,12 @@ function java_create_class_constructor (class, constructor, destination, wrapper
         new java_code to java_constructor
             . = "\
                 super();
-                this.cCtx = $(java_derive_jni_context_class_name(my.wrapper):).INSTANCE.$(my.class.name:Camel)_new($(my.proxy_args:));
+                this.cCtx = $(java_derive_jni_context_class_name(my.java_project)).INSTANCE.$(my.class.name:Camel)_new($(my.proxy_args:));
             "
         endnew
 
-        java_create_jni_class_constructor (my.class, my.constructor, my.destination, my.wrappers_destination, my.wrapper, my.meta)
-        #java_create_c_class_constructor (my.class, my.constructor, my.destination, my.wrappers_destination, my.wrapper, my.meta)
+        java_create_jni_class_constructor (my.class, my.constructor,  my.java_project, my.meta)
+        #java_create_c_class_constructor (my.class, my.constructor,  my.java_project, my.meta)
 
         return java_constructor
     endnew
@@ -1206,11 +1158,11 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create <java_close/>.
 # ---------------------------------------------------------------------------
-function java_create_class_close (java_class, class, wrappers_destination, wrapper, meta)
-    check_arguments (my, "java_class, class, wrappers_destination, wrapper, meta", my)
+function java_create_class_close (java_class, class, java_project, meta)
+    check_arguments (my, "java_class, class, java_project, meta", my)
 
-    java_create_c_class_close (my.class, my.wrappers_destination, my.wrapper, my.meta)
-    java_create_jni_class_close (my.class, my.wrappers_destination, my.wrapper, my.meta)
+    java_create_c_class_close (my.class, my.java_project, my.meta)
+    java_create_jni_class_close (my.class, my.java_project, my.meta)
 
     new java_implement to my.java_class
         .type = "AutoCloseable"
@@ -1222,7 +1174,7 @@ function java_create_class_close (java_class, class, wrappers_destination, wrapp
         .visibility = "public"
 
         new java_code to java_method
-            . = "$(java_derive_jni_context_class_name(my.wrapper):).INSTANCE.$(my.class.name:Camel)_$(java_method.name:)(this.cCtx);"
+            . = "$(java_derive_jni_context_class_name(my.java_project)).INSTANCE.$(my.class.name:Camel)_$(java_method.name:)(this.cCtx);"
         endnew
 
         return java_method
@@ -1232,18 +1184,18 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create Java computed constant that makes proxy to retrieve constant.
 # ---------------------------------------------------------------------------
-function java_create_jni_method_from_constant (constant, interface, destination, wrappers_destination, wrapper, meta)
-    check_arguments (my, "constant, interface, destination, wrapper, meta", my)
-    
+function java_create_jni_method_from_constant (constant, interface, destination, java_project, meta)
+    check_arguments (my, "constant, interface, destination, java_project, meta", my)
+
     # Obtain JNI class
-    my.jni_context_class_name = java_derive_jni_context_class_name(my.wrapper)
-    my.jni_module = my.wrappers_destination->java_module(java_module.name = my.jni_context_class_name)?
+    my.jni_context_class_name = java_derive_jni_context_class_name(my.java_project)
+    my.jni_module = my.java_projects_destination->java_module(java_module.name = my.jni_context_class_name)?
     my.jni_context_class = my.jni_module->java_class
 
     # Build Java method
-    my.getter_method_name = java_derive_getter_name_by_constant (my.constant, my.wrapper)
+    my.getter_method_name = java_derive_getter_name_by_constant (my.constant, my.java_project)
     my.jni_method_name = "$(my.interface.name:Camel)_$(my.getter_method_name:Camel)"
-    
+
     # Create method if it doesn't exist
     if ! defined (my.jni_context_class->java_method(java_method.name = my.jni_method_name)?)
 
@@ -1253,11 +1205,11 @@ function java_create_jni_method_from_constant (constant, interface, destination,
             .name = my.jni_method_name
             .visibility = "public"
             .native = "native"
-        
-            java_create_jni_context_argument (java_method, my.wrapper, my.meta)
+
+            java_create_jni_context_argument (java_method, my.java_project, my.meta)
 
             new java_return to java_method
-                .type = java_derive_constant_type (my.constant, my.wrapper)
+                .type = java_derive_constant_type (my.constant, my.java_project)
                 .access = "readonly"
                 .is_enum = "0"
                 .is_reference = "0"
@@ -1265,7 +1217,7 @@ function java_create_jni_method_from_constant (constant, interface, destination,
 
             return java_method
         endnew
-    
+
     endif
 
 endfunction
@@ -1274,8 +1226,8 @@ endfunction
 #   Add <java_method/> with setter only that proxy dependency to the
 #   C context.
 # ---------------------------------------------------------------------------
-function java_create_method_from_dependency (dependency, impl, destination, wrappers_destination, wrapper, meta)
-    check_arguments (my, "dependency, impl, destination, wrappers_destination, wrapper, meta", my)
+function java_create_method_from_dependency (dependency, impl, destination, java_project, meta)
+    check_arguments (my, "dependency, impl, destination, java_project, meta", my)
 
     echo_info ("Create method from dependency '$(my.dependency.name)' for class: '$(my.impl.name:)'", my)
 
@@ -1285,7 +1237,7 @@ function java_create_method_from_dependency (dependency, impl, destination, wrap
         .visibility = "public"
 
         if is_true (my.dependency.has_observers) & is_true (my.dependency.is_observers_return_status)
-            .throws = java_derive_default_exception_name (my.wrapper)
+            .throws = java_derive_default_exception_name (my.java_project)
         endif
 
         my.arg_name = java_derive_argument_name (my.dependency)
@@ -1297,13 +1249,13 @@ function java_create_method_from_dependency (dependency, impl, destination, wrap
 
         new java_code to java_method
             . = format_left("\
-                $(java_derive_jni_context_class_name(my.wrapper):).INSTANCE.$(my.impl.name:Camel)_$(java_method.name:)(this.cCtx, $(my.arg_name:));
+                $(java_derive_jni_context_class_name(my.java_project)).INSTANCE.$(my.impl.name:Camel)_$(java_method.name:)(this.cCtx, $(my.arg_name:));
             ")
         endnew
     endnew
-    
-    java_create_jni_method_from_dependency (my.dependency, my.impl, my.destination, my.wrappers_destination, my.wrapper, my.meta)
-    java_create_c_method_from_dependency (my.dependency, my.impl, my.destination, my.wrappers_destination, my.wrapper, my.meta)
+
+    java_create_jni_method_from_dependency (my.dependency, my.impl, my.destination, my.java_project, my.meta)
+    java_create_c_method_from_dependency (my.dependency, my.impl, my.destination, my.java_project, my.meta)
 
 endfunction
 
@@ -1312,47 +1264,75 @@ endfunction
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
-#   Create module that contains Java specific project information.
+#   Create module that contains Swift specific project information.
 # ---------------------------------------------------------------------------
-function java_create_project_module (project, destination, wrapper)
-    check_arguments (my, "wrapper, destination, wrapper", my)
+function java_create_project_module (project, wrapper)
+    check_arguments (my, "project, wrapper", my)
 
-    new java_project to my.destination
+    assert_attribute (my.wrapper, "lang", my)
+    assert_attributes (my.project, "name, prefix, framework", my)
+    assert_item (my.project, "license", my)
+
+    echo_info ("Create Java project for project: '$(my.project.name:)'", my)
+
+    new java_project to my.wrapper
         . = my.project. ?
+        .name = my.project.name
+        .prefix = my.project.prefix
+        .framework = my.project.framework
+        .namespace = my.project.namespace
+        .package = java_derive_package_name(my.project)
+        .package_dir = java_derive_package_dir(my.project)
+        .source_dir = cat_path (my.wrapper.source_dir, my.project.name, "src/main/java", java_project.package_dir)
+
+        copy my.project->license to java_project
 
         new java_uid to java_project
-            .name = my.wrapper.package
+            .name = java_project.package
             .uid = "java_import_name"
         endnew
+
+        for my.project.require where defined (require.project) & string_equal (require.feature, "library")
+            my.required_java_project = my.wrapper->java_project (name = require.project) ?
+
+            if defined (my.required_java_project)
+                new java_import to java_project
+                    .import = make_ref_java (make_id ("project", require.project, "import name")) + ".*"
+                endnew
+            endif
+        endfor
+
+        return java_project
     endnew
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Create module with JNI context.
+#   TODO: This method is not used, maybe deleted?
 # ---------------------------------------------------------------------------
-function java_create_jni_context_module (destination, wrapper, meta)
-    check_arguments (my, "destination, wrapper, meta", my)
+function java_create_jni_context_module (java_project, meta)
+    check_arguments (my, "java_project, meta", my)
 
-    echo_info ("Create JNI <java_module/>: '$(my.wrapper:)'", my)
-    my.name = java_derive_jni_context_class_name(my.wrapper)
-    
-    new java_module to my.destination
+    echo_info ("Create JNI <java_module/>: '$(my.java_project:)'", my)
+    my.name = java_derive_jni_context_class_name(my.java_project)
+
+    new java_module to my.java_project
         . = "// This is JNI class."
         .name = my.name
-        .package = my.wrapper.package
-        .package_dir = my.wrapper.package_dir
+        .package = my.java_project.package
+        .package_dir = my.java_project.package_dir
         .source_file_name = 0.name + ".java"
-        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+        .source_file_path = cat_path (my.java_project.source_dir, 0.source_file_name)
 
         new java_license to java_module
-            . = java_format_license (my.wrapper->license) ?
+            . = java_format_license (my.java_project->license) ?
         endnew
-        
+
         new java_import to java_module
             .import = "virgil.crypto.common.utils.NativeUtils"
         endnew
-        
-        for my.wrapper.java_import
+
+        for my.java_project.java_import
             copy java_import to java_module
         endfor
 
@@ -1360,8 +1340,8 @@ function java_create_jni_context_module (destination, wrapper, meta)
             .name = my.name
             .visibility = "public"
             .jni = "1"
-            .jni_library = "$(my.wrapper.prefix:)_$(my.wrapper.project:)"
-            
+            .jni_library = "$(my.java_project.prefix:)_$(my.java_project.name:)"
+
             new java_field to java_class
                 .name = "INSTANCE"
                 .type = my.name
@@ -1377,41 +1357,41 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create module with Java enum from the abstract 'enum' notion.
 # ---------------------------------------------------------------------------
-function java_create_enum_module (enum, destination, wrapper, meta)
-    check_arguments (my, "enum, destination, wrapper, meta", my)
+function java_create_enum_module (enum, java_project, meta)
+    check_arguments (my, "enum, java_project, meta", my)
 
     if my.enum.name = "status"
-        java_create_exception_module (my.enum, my.destination, my.wrapper, my.meta)
+        java_create_exception_module (my.enum, my.java_project, my.meta)
     else
 
     echo_info ("Create <java_module/> from enum: '$(my.enum.name:)'", my)
 
     assert_attribute (my.enum, "name", my)
 
-    new java_module to my.destination
-        .name = java_derive_enum_name (my.enum, my.wrapper)
-        .package = my.wrapper.package
-        .package_dir = my.wrapper.package_dir
+    new java_module to my.java_project
+        .name = java_derive_enum_name (my.enum, my.java_project)
+        .package = my.java_project.package
+        .package_dir = my.java_project.package_dir
         .source_file_name = 0.name + ".java"
-        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+        .source_file_path = cat_path (my.java_project.source_dir, 0.source_file_name)
 
         new java_license to java_module
-            . = java_format_license (my.wrapper->license) ?
+            . = java_format_license (my.java_project->license) ?
         endnew
 
-        for my.wrapper.java_import
+        for my.java_project.java_import
             copy java_import to java_module
         endfor
 
         new java_enum to java_module
             . = java_format_description (my.enum) ?
-            .name = java_derive_enum_name (my.enum, my.wrapper)
+            .name = java_derive_enum_name (my.enum, my.java_project)
 
             java_map_attr_visibility (java_enum, my.enum)
             java_map_attr_scope (java_enum, my.enum)
 
-            java_map_enum_default (java_enum, my.enum, my.wrapper, my.meta)
-            
+            java_map_enum_default (java_enum, my.enum, my.java_project, my.meta)
+
             new java_method to java_enum
                 .name = "fromCode"
                 .visibility = "public"
@@ -1421,7 +1401,7 @@ function java_create_enum_module (enum, destination, wrapper, meta)
                     .name = "code"
                     .type = "int"
                 endnew
-                
+
                 new java_code to java_method
                     . = "\
                         for ($(java_enum.name:) a : $(java_enum.name:).values()) {
@@ -1458,31 +1438,31 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create module with Java exception from the abstract 'enum' notion.
 # ---------------------------------------------------------------------------
-function java_create_exception_module (enum, destination, wrapper, meta)
-    check_arguments (my, "enum, destination, wrapper, meta", my)
+function java_create_exception_module (enum, java_project, meta)
+    check_arguments (my, "enum, java_project, meta", my)
 
     echo_info ("Create <java_module/> from enum: '$(my.enum.name:)'", my)
 
     assert_attribute (my.enum, "name", my)
 
-    new java_module to my.destination
-        .name = java_derive_exception_name (my.enum, my.wrapper)
-        .package = my.wrapper.package
-        .package_dir = my.wrapper.package_dir
+    new java_module to my.java_project
+        .name = java_derive_exception_name (my.enum, my.java_project)
+        .package = my.java_project.package
+        .package_dir = my.java_project.package_dir
         .source_file_name = 0.name + ".java"
-        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+        .source_file_path = cat_path (my.java_project.source_dir, 0.source_file_name)
 
         new java_license to java_module
-            . = java_format_license (my.wrapper->license) ?
+            . = java_format_license (my.java_project->license) ?
         endnew
 
-        for my.wrapper.java_import
+        for my.java_project.java_import
             copy java_import to java_module
         endfor
 
         new java_class to java_module
             . = java_format_description (my.enum) ?
-            .name = java_derive_exception_name (my.enum, my.wrapper)
+            .name = java_derive_exception_name (my.enum, my.java_project)
 
             java_map_attr_visibility (java_class, my.enum)
             java_map_attr_scope (java_class, my.enum)
@@ -1503,8 +1483,8 @@ function java_create_exception_module (enum, destination, wrapper, meta)
 
                 new java_field to java_class
                     . = java_format_description (constant) ?
-                    .name = java_derive_constant_name (constant, my.wrapper)
-                    .type = java_derive_constant_type (constant, my.wrapper)
+                    .name = java_derive_constant_name (constant, my.java_project)
+                    .type = java_derive_constant_type (constant, my.java_project)
                     .value = my.the_value
                     .access = "readonly"
                     .visibility = "public"
@@ -1519,7 +1499,7 @@ function java_create_exception_module (enum, destination, wrapper, meta)
                 .type = "int"
                 .visibility = "private"
             endnew
-            
+
             new java_constructor to java_class
                 . = "/* Create new instance. */"
                 .visibility = "public"
@@ -1555,7 +1535,7 @@ function java_create_exception_module (enum, destination, wrapper, meta)
         endnew
     endnew
 
-    java_create_c_exception_throw_method (my.enum, my.destination, my.wrapper, my.meta)
+    java_create_c_exception_throw_method (my.enum, my.java_project, my.meta)
 
     echo_debug ("Done", my)
 endfunction
@@ -1563,46 +1543,46 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create module with Java interface from the abstract 'interface' notion.
 # ---------------------------------------------------------------------------
-function java_create_interface_module (interface, destination, wrapper, meta)
-    check_arguments (my, "interface, destination, wrapper, meta", my)
+function java_create_interface_module (interface, java_project, meta)
+    check_arguments (my, "interface, java_project, meta", my)
 
     echo_info ("Create <java_module/> from interface: '$(my.interface.name:)'", my)
 
-    new java_module to my.destination
+    new java_module to my.java_project
         .name = java_derive_module_name (my.interface)
-        .package = my.wrapper.package
-        .package_dir = my.wrapper.package_dir
+        .package = my.java_project.package
+        .package_dir = my.java_project.package_dir
         .source_file_name = 0.name + ".java"
-        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+        .source_file_path = cat_path (my.java_project.source_dir, 0.source_file_name)
 
         new java_license to java_module
-            . = java_format_license (my.wrapper->license) ?
+            . = java_format_license (my.java_project->license) ?
         endnew
 
-        for my.wrapper.java_import
+        for my.java_project.java_import
             copy java_import to java_module
         endfor
 
         new java_interface to java_module
             . = java_format_description (my.interface) ?
-            .name = java_derive_interface_name (my.interface, my.wrapper)
+            .name = java_derive_interface_name (my.interface, my.java_project)
 
             java_map_attr_visibility (java_interface, my.interface)
 
             for my.interface.inherit
-                java_create_extend (inherit, java_interface, my.wrapper, my.meta)
+                java_create_extend (inherit, java_interface, my.java_project, my.meta)
             endfor
 
             for my.interface.constant
-                java_create_class_method_from_constant (constant, java_interface, my.wrapper, my.meta)
+                java_create_class_method_from_constant (constant, java_interface, my.java_project, my.meta)
             endfor
 
             for my.interface.method
-                java_create_interface_method (my.interface, method, java_interface, my.wrapper, my.meta)
+                java_create_interface_method (my.interface, method, java_interface, my.java_project, my.meta)
             endfor
 
             for java_interface.java_method where count (0.java_return) > 1
-                java_create_result_class (java_interface, java_method, my.destination, my.wrapper, my.meta)
+                java_create_result_class (java_interface, java_method, my.java_project, my.meta)
             endfor
         endnew
 
@@ -1614,8 +1594,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create module with Java class from the abstract 'class' notion.
 # ---------------------------------------------------------------------------
-function java_create_class_module (class, destination, wrapper, meta)
-    check_arguments (my, "class, destination, wrapper, meta", my)
+function java_create_class_module (class, java_project, meta)
+    check_arguments (my, "class, java_project, meta", my)
 
     echo_info ("Create <java_module/> from class: '$(my.class.name:)'", my)
 
@@ -1626,53 +1606,53 @@ function java_create_class_module (class, destination, wrapper, meta)
         return
     endif
 
-    new java_module to my.destination
+    new java_module to my.java_project
         .name = java_derive_module_name (my.class)
-        .package = my.wrapper.package
-        .package_dir = my.wrapper.package_dir
+        .package = my.java_project.package
+        .package_dir = my.java_project.package_dir
         .source_file_name = 0.name + ".java"
-        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+        .source_file_path = cat_path (my.java_project.source_dir, 0.source_file_name)
 
         new java_license to java_module
-            . = java_format_license (my.wrapper->license) ?
+            . = java_format_license (my.java_project->license) ?
         endnew
 
-        for my.wrapper.java_import
+        for my.java_project.java_import
             copy java_import to java_module
         endfor
 
         new java_class to java_module
             . = java_format_description (my.class) ?
-            .name = java_derive_class_name (my.class, my.wrapper)
+            .name = java_derive_class_name (my.class, my.java_project)
 
             java_map_attr_visibility (java_class, my.class)
 
             for my.class.constant
-                java_create_class_method_from_constant (constant, java_class, my.wrapper, my.meta)
+                java_create_class_method_from_constant (constant, java_class, my.java_project, my.meta)
             endfor
 
             if my.class.context <> "none"
                 java_create_class_field_context (java_class, my.class)
-                java_create_class_default_constructor (java_class, my.class, my.destination, my.wrapper, my.meta)
-                java_create_class_close (java_class, my.class, my.destination, my.wrapper, my.meta)
+                java_create_class_default_constructor (java_class, my.class, my.java_project, my.meta)
+                java_create_class_close (java_class, my.class, my.java_project, my.meta)
 
                 if ! string_in (my.class.lifecycle, "none")
                     for my.class.constructor where constructor.visibility <> "private"
-                        java_create_class_constructor (my.class, constructor, java_class, my.destination, my.wrapper, my.meta)
+                        java_create_class_constructor (my.class, constructor, java_class, my.java_project, my.meta)
                     endfor
                 endif
             endif
 
             for my.class.dependency
-                java_create_method_from_dependency (dependency, my.class, java_class, my.destination, my.wrapper, my.meta)
+                java_create_method_from_dependency (dependency, my.class, java_class, my.java_project, my.meta)
             endfor
 
             for my.class.method where method.declaration = "public" & method.visibility = "public"
-                java_create_class_method (my.class, method, java_class, my.destination, my.wrapper, my.meta)
+                java_create_class_method (my.class, method, java_class, my.java_project, my.meta)
             endfor
 
             for java_class.java_method where count (0.java_return) > 1
-                java_create_result_class (my.class, java_method, my.destination, my.wrapper, my.meta)
+                java_create_result_class (my.class, java_method, my.java_project, my.meta)
             endfor
         endnew
     endnew
@@ -1683,8 +1663,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create module with Java class from the abstract 'implementation' notion.
 # ---------------------------------------------------------------------------
-function java_create_implementation_module (implementation, destination, wrapper, meta)
-    check_arguments (my, "implementation, destination, wrapper, meta", my)
+function java_create_implementation_module (implementation, java_project, meta)
+    check_arguments (my, "implementation, java_project, meta", my)
 
     if my.implementation.scope <> "internal"
         echo_info ("Create <java_module/> from implementation: '$(my.implementation.name:)'", my)
@@ -1692,59 +1672,59 @@ function java_create_implementation_module (implementation, destination, wrapper
         echo_info ("Skip creating <java_module/> from internal implementation: '$(my.implementation.name:)'", my)
     endif
 
-    new java_module to my.destination
+    new java_module to my.java_project
         .name = java_derive_module_name (my.implementation)
-        .package = my.wrapper.package
-        .package_dir = my.wrapper.package_dir
+        .package = my.java_project.package
+        .package_dir = my.java_project.package_dir
         .source_file_name = 0.name + ".java"
-        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+        .source_file_path = cat_path (my.java_project.source_dir, 0.source_file_name)
 
         new java_license to java_module
-            . = java_format_license (my.wrapper->license) ?
+            . = java_format_license (my.java_project->license) ?
         endnew
 
-        for my.wrapper.java_import
+        for my.java_project.java_import
             copy java_import to java_module
         endfor
 
         new java_class to java_module
             . = java_format_description (my.implementation) ?
-            .name = java_derive_class_name (my.implementation, my.wrapper)
+            .name = java_derive_class_name (my.implementation, my.java_project)
 
             java_map_attr_visibility (java_class, my.implementation)
 
             #java_create_class_field_context (java_class)
 
             for my.implementation.constant
-                java_create_class_method_from_constant (constant, java_class, my.wrapper, my.meta)
+                java_create_class_method_from_constant (constant, java_class, my.java_project, my.meta)
             endfor
 
             for my.implementation.dependency
-                java_create_method_from_dependency (dependency, my.implementation, java_class, my.destination, my.wrapper, my.meta)
+                java_create_method_from_dependency (dependency, my.implementation, java_class, my.java_project, my.meta)
             endfor
 
             for my.implementation.method where method.declaration = "public" & method.visibility = "public"
-                java_create_class_method (my.implementation, method, java_class, my.destination, my.wrapper, my.meta)
+                java_create_class_method (my.implementation, method, java_class, my.java_project, my.meta)
             endfor
 
             if my.implementation.context <> "none"
                 java_create_class_field_context (java_class, my.implementation)
 
-                java_create_class_default_constructor (java_class, my.implementation, my.destination, my.wrapper, my.meta)
-                java_create_class_close (java_class, my.implementation, my.destination, my.wrapper, my.meta)
+                java_create_class_default_constructor (java_class, my.implementation, my.java_project, my.meta)
+                java_create_class_close (java_class, my.implementation, my.java_project, my.meta)
 
                 if my.implementation.lifecycle <> "none"
                     for my.implementation.constructor where 0.declaration = "public" & 0.visibility = "public"
-                        java_create_class_constructor (my.implementation, constructor, java_class, my.destination, my.wrapper, my.meta)
+                        java_create_class_constructor (my.implementation, constructor, java_class, my.java_project, my.meta)
                     endfor
                 endif
             endif
 
-            java_create_interface_implementation (my.implementation, java_class, my.destination, my.wrapper, my.meta)
-            java_update_c_implementation_helper_module (my.implementation, my.destination, my.wrapper, my.meta)
+            java_create_interface_implementation (my.implementation, java_class, my.java_project, my.meta)
+            java_update_c_implementation_helper_module (my.implementation, my.java_project, my.meta)
 
             for java_class.java_method where count (0.java_return) > 1
-                java_create_result_class (java_class, java_method, my.destination, my.wrapper, my.meta)
+                java_create_result_class (java_class, java_method, my.java_project, my.meta)
             endfor
         endnew
     endnew
@@ -1755,10 +1735,10 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Perform finalization for custom modules.
 # ---------------------------------------------------------------------------
-function java_finalize_custom_modules (source, destination, wrapper, meta)
-    check_arguments (my, "source, destination, wrapper, meta", my)
-    
-    java_finalize_c_implementation_helper_modules (my.destination, my.wrapper, my.meta)
+function java_finalize_custom_modules (source, java_project, meta)
+    check_arguments (my, "source, java_project, meta", my)
+
+    java_finalize_c_implementation_helper_modules (my.java_project, my.meta)
 endfunction
 
 .endtemplate

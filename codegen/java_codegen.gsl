@@ -165,7 +165,7 @@ function java_format_visibility (visibility)
     elsif my.visibility = "internal"
         my.result = ""
     endif
-    
+
     return my.result
 endfunction
 
@@ -244,7 +244,7 @@ function java_format_h_arguments (c_method)
             my.args += ", $(c_argument.type:)"
         endif
     endfor
-    
+
     return my.args ? ""
 
 endfunction
@@ -295,7 +295,7 @@ function java_h_insert_method (c_method)
     check_arguments (my, "c_method", my)
 
     assert_attribute (my, "c_method", my)
-    
+
     my.args = java_format_h_arguments (my.c_method)
     my.return_type = java_format_c_return (my.c_method)
 
@@ -316,7 +316,7 @@ function java_c_insert_method (c_method)
     check_arguments (my, "c_method", my)
 
     assert_attribute (my, "c_method", my)
-    
+
     my.args = java_format_c_arguments (my.c_method)
     my.return_type = java_format_c_return (my.c_method)
 
@@ -372,13 +372,13 @@ function java_format_description (obj)
     if ! defined (my.obj.)
         return
     endif
-  
+
     my.str = my.obj.
     my.str = string_indent (my.str)
     my.str = "* $(my.str:left, block, no)$(terminator)"
     my.str = string_multi_rtrim (my.str)
     my.str = "/*$(terminator)$(my.str:)$(terminator)*/"
-  
+
     return my.str
 endfunction
 
@@ -431,9 +431,9 @@ function java_insert_interface_field (java_field)
     check_arguments (my, "java_field", my)
 
     assert_attributes (my.java_field, "name, type, visibility", my)
-    
+
     my.value = defined (my.java_field.value) ?? " = $(my.java_field.value:)" ? ""
-    
+
     java_insert_description (my.java_field, 1)
 
     java_insert_code("\
@@ -511,7 +511,7 @@ endfunction
 function java_insert_class_field (java_field)
     check_arguments (my, "java_field", my)
     assert_attributes (my.java_field, "name, type, visibility", my)
-    
+
     my.access_modifier = java_format_visibility(my.java_field.visibility)
     my.access_modifier += "$(my.java_field.static?:) "
     my.access_modifier += "$(my.java_field.final?:) "
@@ -556,7 +556,7 @@ function java_insert_class_method (java_method)
     check_arguments (my, "java_method", my)
 
     assert_attributes (my.java_method, "name", my)
-    
+
     echo_info("Insert class method $(java_method.name:)")
 
     my.method_args = java_format_argument_list(my.java_method) ?
@@ -565,7 +565,7 @@ function java_insert_class_method (java_method)
     my.visibility = java_format_visibility(my.java_method.visibility)
 
     java_insert_description (my.java_method, 1)
-    
+
     if is_true (my.java_method.abstract)
         echo_trace("Abstract method")
         java_insert_code("$(my.visibility:) abstract $(my.java_method.static?:) $(my.method_return?:) $(my.java_method.name:)($(my.method_args?:))$(my.method_throws?:); \
@@ -581,7 +581,7 @@ function java_insert_class_method (java_method)
             ", 1)
 
         java_insert_code (my.java_method->java_code., 2)
-    
+
         java_insert_code ("}", 1)
     endif
     echo_trace("Done")
@@ -652,7 +652,7 @@ function java_insert_class (java_class)
     echo_trace ("Generate Java class: " + my.java_class.name)
 
     assert_attributes (my.java_class, "name, visibility", my)
-    
+
     my.java_extends_list = java_format_extends_list (my.java_class) ?
     my.java_implements_list = java_format_implements_list (my.java_class) ?
     my.visibility = java_format_visibility (my.java_class.visibility)
@@ -667,7 +667,7 @@ function java_insert_class (java_class)
         newline ()
         java_insert_class_field (java_field)
     endfor
-    
+
     if is_true (my.java_class.jni)
         newline ()
         java_insert_jni_class_initialization (my.java_class)
@@ -720,7 +720,7 @@ function java_insert_enum (java_enum)
             return code;
         }
     ", 1)
-    
+
     for my.java_enum.java_method
         newline ()
         java_insert_enum_method (java_method)
@@ -733,17 +733,15 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Generate project files.
 # ---------------------------------------------------------------------------
-function java_generate_project (source, wrapper)
-    check_arguments (my, "source, wrapper", my)
+function java_generate_project (swift_project)
+    check_arguments (my, "swift_project", my)
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Generate source files from <java_module/> entities.
 # ---------------------------------------------------------------------------
-function java_generate_java_sources (java_module, wrapper)
-    check_arguments (my, "java_module, wrapper", my)
-    
-    assert_attribute (my.wrapper, "source_dir", my)
+function java_generate_java_sources (java_module)
+    check_arguments (my, "java_module", my)
 
     echo_trace ("Generate Java files from <$(name (my.java_module)) name = \"$(my.java_module.name:)\"/>", my)
 
@@ -751,7 +749,7 @@ function java_generate_java_sources (java_module, wrapper)
 
     java_insert_prologue (my.java_module)
     newline()
-        
+
     java_insert_package (my.java_module)
     newline()
 
@@ -777,10 +775,8 @@ function java_generate_java_sources (java_module, wrapper)
 
 endfunction
 
-function java_generate_h_sources (java_module, wrapper)
-    check_arguments (my, "java_module, wrapper", my)
-
-    assert_attribute (my.wrapper, "source_dir", my)
+function java_generate_h_sources (java_module)
+    check_arguments (my, "java_module", my)
 
     echo_trace ("Generate H files from <$(name (java_module)) name = \"$(my.java_module.name:)\"/>", my)
 
@@ -809,10 +805,8 @@ function java_generate_h_sources (java_module, wrapper)
 
 endfunction
 
-function java_generate_c_sources (java_module, wrapper)
-    check_arguments (my, "java_module, wrapper", my)
-    
-    assert_attribute (my.wrapper, "source_dir", my)
+function java_generate_c_sources (java_module)
+    check_arguments (my, "java_module", my)
 
     echo_trace ("Generate C files from <$(name (java_module)) name = \"$(my.java_module.name:)\"/>", my)
 
@@ -841,27 +835,26 @@ function java_generate_c_sources (java_module, wrapper)
     endfor
 endfunction
 
-function java_generate_sources (source, wrapper)
+function java_generate_sources (java_project)
+    check_arguments (my, "java_project", my)
 
-    check_arguments (my, "source, wrapper", my)
+    assert_attribute (my.java_project, "source_dir", my)
 
-    assert_attribute (my.wrapper, "source_dir", my)
-
-    if -1 = directory.create (my.wrapper.source_dir)
-        echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
+    if -1 = directory.create (my.java_project.source_dir)
+        echo_fatal ("Can not create directory: $(my.java_project.source_dir:)")
     endif
 
-    for my.source.java_module
+    for my.java_project.java_module
         if defined (java_module.source_type)
             if java_module.source_type = "H"
-                java_generate_h_sources (java_module, my.wrapper)
+                java_generate_h_sources (java_module)
             elsif java_module.source_type = "C"
-                java_generate_c_sources (java_module, my.wrapper)
+                java_generate_c_sources (java_module)
             else
-                java_generate_java_sources (java_module, my.wrapper)
+                java_generate_java_sources (java_module)
             endif
         else
-            java_generate_java_sources (java_module, my.wrapper)
+            java_generate_java_sources (java_module)
         endif
     endfor
 

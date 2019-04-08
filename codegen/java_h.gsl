@@ -45,25 +45,25 @@ gsl from "common.gsl"
 # ---------------------------------------------------------------------------
 #   Return name of the C headers context module
 # ---------------------------------------------------------------------------
-function java_derive_h_context_module_name (wrapper)
-    check_arguments (my, "wrapper", my)
+function java_derive_h_context_module_name (java_project)
+    check_arguments (my, "java_project", my)
 
-    return "$(my.wrapper.project:Pascal)JNI_h"
+    return "$(my.java_project.name:Pascal)JNI_h"
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Obtain H module.
 # ---------------------------------------------------------------------------
-function java_obtain_h_module (wrappers_destination, wrapper)
-    my.h_module_name = java_derive_h_context_module_name (my.wrapper)
-    return my.wrappers_destination->java_module(java_module.name = my.h_module_name)?
+function java_obtain_h_module (java_project)
+    my.h_module_name = java_derive_h_context_module_name (my.java_project)
+    return my.java_project->java_module(java_module.name = my.h_module_name)?
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Create entity <c_return/> from the entity <argument/>.
 # ---------------------------------------------------------------------------
-function java_create_h_return_from_argument (class, method, argument, destination, wrapper, meta)
-    check_arguments (my, "class, method, argument, destination, wrapper, meta", my)
+function java_create_h_return_from_argument (class, method, argument, destination, java_project, meta)
+    check_arguments (my, "class, method, argument, destination, java_project, meta", my)
 
     assert_attributes (my.argument, "name", my)
 

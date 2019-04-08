@@ -2684,11 +2684,11 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1
     }
 }
 
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1setRsaParams (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jbitlen, jint jexponent) {
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1setRsaParams (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jbitlen) {
     // Cast class context
     vscf_key_provider_t /*2*/* key_provider_ctx = (vscf_key_provider_t /*2*/*) c_ctx;
 
-    vscf_key_provider_set_rsa_params(key_provider_ctx /*a1*/, jbitlen /*a9*/, jexponent /*a9*/);
+    vscf_key_provider_set_rsa_params(key_provider_ctx /*a1*/, jbitlen /*a9*/);
 }
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1generatePrivateKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgId) {
@@ -2754,6 +2754,100 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvide
     jobject ret = wrapPublicKey(jenv, jobj, proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jpkcs8Data, (jbyte*) pkcs8_data_arr, 0);
+
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1exportedPublicKeyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
+    // Cast class context
+    vscf_key_provider_t /*2*/* key_provider_ctx = (vscf_key_provider_t /*2*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass public_key_cls = (*jenv)->GetObjectClass(jenv, jpublicKey);
+    if (NULL == public_key_cls) {
+        printf("Class PublicKey not found.");
+    }
+    jfieldID public_key_fidCtx = (*jenv)->GetFieldID(jenv, public_key_cls, "cCtx", "J");
+    if (NULL == public_key_fidCtx) {
+        printf("Class 'PublicKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ public_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
+
+    jint ret = (jint) vscf_key_provider_exported_public_key_len(key_provider_ctx /*a1*/, public_key /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1exportPublicKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
+    // Cast class context
+    vscf_key_provider_t /*2*/* key_provider_ctx = (vscf_key_provider_t /*2*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass public_key_cls = (*jenv)->GetObjectClass(jenv, jpublicKey);
+    if (NULL == public_key_cls) {
+        printf("Class PublicKey not found.");
+    }
+    jfieldID public_key_fidCtx = (*jenv)->GetFieldID(jenv, public_key_cls, "cCtx", "J");
+    if (NULL == public_key_fidCtx) {
+        printf("Class 'PublicKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ public_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
+
+    // Wrap input buffers
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_key_provider_exported_public_key_len((vscf_key_provider_t /*2*/ *) c_ctx /*3*/, public_key/*a*/));
+
+    vscf_status_t status = vscf_key_provider_export_public_key(key_provider_ctx /*a1*/, public_key /*a6*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    vsc_buffer_delete(out);
+
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1exportedPrivateKeyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jprivateKey) {
+    // Cast class context
+    vscf_key_provider_t /*2*/* key_provider_ctx = (vscf_key_provider_t /*2*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass private_key_cls = (*jenv)->GetObjectClass(jenv, jprivateKey);
+    if (NULL == private_key_cls) {
+        printf("Class PrivateKey not found.");
+    }
+    jfieldID private_key_fidCtx = (*jenv)->GetFieldID(jenv, private_key_cls, "cCtx", "J");
+    if (NULL == private_key_fidCtx) {
+        printf("Class 'PrivateKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ private_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
+
+    jint ret = (jint) vscf_key_provider_exported_private_key_len(key_provider_ctx /*a1*/, private_key /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1exportPrivateKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jprivateKey) {
+    // Cast class context
+    vscf_key_provider_t /*2*/* key_provider_ctx = (vscf_key_provider_t /*2*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass private_key_cls = (*jenv)->GetObjectClass(jenv, jprivateKey);
+    if (NULL == private_key_cls) {
+        printf("Class PrivateKey not found.");
+    }
+    jfieldID private_key_fidCtx = (*jenv)->GetFieldID(jenv, private_key_cls, "cCtx", "J");
+    if (NULL == private_key_fidCtx) {
+        printf("Class 'PrivateKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ private_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
+
+    // Wrap input buffers
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_key_provider_exported_private_key_len((vscf_key_provider_t /*2*/ *) c_ctx /*3*/, private_key/*a*/));
+
+    vscf_status_t status = vscf_key_provider_export_private_key(key_provider_ctx /*a1*/, private_key /*a6*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    vsc_buffer_delete(out);
 
     return ret;
 }
@@ -4760,11 +4854,11 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey
     }
 }
 
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey_1setKeygenParams (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jbitlen, jint jexponent) {
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey_1setKeygenParams (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jbitlen) {
     // Cast class context
     vscf_rsa_private_key_t /*9*/* rsa_private_key_ctx = (vscf_rsa_private_key_t /*9*/*) c_ctx;
 
-    vscf_rsa_private_key_set_keygen_params(rsa_private_key_ctx /*a1*/, jbitlen /*a9*/, jexponent /*a9*/);
+    vscf_rsa_private_key_set_keygen_params(rsa_private_key_ctx /*a1*/, jbitlen /*a9*/);
 }
 
 JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey_1new (JNIEnv *jenv, jobject jobj) {

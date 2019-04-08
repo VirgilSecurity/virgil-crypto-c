@@ -55,7 +55,7 @@ public class RsaPrivateKeyTest extends SampleBasedTest {
 	public void init() {
 		this.privateKey = new RsaPrivateKey();
 		this.privateKey.setupDefaults();
-		this.privateKey.setKeygenParams(256, 3);
+		this.privateKey.setKeygenParams(2048);
 	}
 
 	@Test

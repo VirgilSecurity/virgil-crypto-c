@@ -121,7 +121,7 @@ public class RsaPublicKeyTest extends SampleBasedTest {
 	@Test
 	public void export_import() {
 		try (RsaPrivateKey privateKey = new RsaPrivateKey()) {
-			privateKey.setKeygenParams(256, 3);
+			privateKey.setKeygenParams(2048);
 			privateKey.setupDefaults();
 			privateKey.generateKey();
 			byte[] keyData = privateKey.extractPublicKey().exportPublicKey();

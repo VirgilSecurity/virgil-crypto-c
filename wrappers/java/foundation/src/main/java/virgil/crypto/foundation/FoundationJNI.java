@@ -502,7 +502,7 @@ public class FoundationJNI {
     /*
     * Setup parameters that is used during RSA key generation.
     */
-    public native void keyProvider_setRsaParams(long cCtx, int bitlen, int exponent);
+    public native void keyProvider_setRsaParams(long cCtx, int bitlen);
 
     /*
     * Generate new private key from the given id.
@@ -518,6 +518,34 @@ public class FoundationJNI {
     * Import public key from the PKCS#8 format.
     */
     public native PublicKey keyProvider_importPublicKey(long cCtx, byte[] pkcs8Data) throws FoundationException;
+
+    /*
+    * Calculate buffer size enough to hold exported public key.
+    *
+    * Precondition: public key must be exportable.
+    */
+    public native int keyProvider_exportedPublicKeyLen(long cCtx, PublicKey publicKey);
+
+    /*
+    * Export given public key to the PKCS#8 DER format.
+    *
+    * Precondition: public key must be exportable.
+    */
+    public native byte[] keyProvider_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    /*
+    * Calculate buffer size enough to hold exported private key.
+    *
+    * Precondition: private key must be exportable.
+    */
+    public native int keyProvider_exportedPrivateKeyLen(long cCtx, PrivateKey privateKey);
+
+    /*
+    * Export given private key to the PKCS#8 DER format.
+    *
+    * Precondition: private key must be exportable.
+    */
+    public native byte[] keyProvider_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
 
     public native long signer_new();
 
@@ -1363,9 +1391,9 @@ public class FoundationJNI {
     public native void rsaPrivateKey_setupDefaults(long cCtx) throws FoundationException;
 
     /*
-    * Setup parameters that is used during key generation.
+    * Setup key length in bits that is used for key generation.
     */
-    public native void rsaPrivateKey_setKeygenParams(long cCtx, int bitlen, int exponent);
+    public native void rsaPrivateKey_setKeygenParams(long cCtx, int bitlen);
 
     public native long rsaPrivateKey_new();
 

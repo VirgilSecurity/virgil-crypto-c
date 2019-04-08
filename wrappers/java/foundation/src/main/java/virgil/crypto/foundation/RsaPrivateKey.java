@@ -75,10 +75,10 @@ public class RsaPrivateKey implements AutoCloseable, Alg, Key, GenerateKey, Decr
     }
 
     /*
-    * Setup parameters that is used during key generation.
+    * Setup key length in bits that is used for key generation.
     */
-    public void setKeygenParams(int bitlen, int exponent) {
-        FoundationJNI.INSTANCE.rsaPrivateKey_setKeygenParams(this.cCtx, bitlen, exponent);
+    public void setKeygenParams(int bitlen) {
+        FoundationJNI.INSTANCE.rsaPrivateKey_setKeygenParams(this.cCtx, bitlen);
     }
 
     /* Close resource. */

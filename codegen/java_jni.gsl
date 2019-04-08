@@ -45,14 +45,14 @@ gsl from "common.gsl"
 # ---------------------------------------------------------------------------
 #   Create entity <java_method/> of from the class entity <method/>.
 # ---------------------------------------------------------------------------
-function java_create_class_jni_default_constructor (java_class, class, wrappers_destination, wrapper, meta)
-    check_arguments (my, "java_class, class, wrappers_destination, wrapper, meta", my)
-    
+function java_create_class_jni_default_constructor (java_class, class, java_project, meta)
+    check_arguments (my, "java_class, class, java_project, meta", my)
+
     echo_debug ("Create JNI constructor '$(my.java_class.name:)'", my)
-    
+
     # Obtain JNI class
-    my.jni_context_class_name = java_derive_jni_context_class_name(my.wrapper)
-    my.jni_module = my.wrappers_destination->java_module(java_module.name = my.jni_context_class_name)?
+    my.jni_context_class_name = java_derive_jni_context_class_name(my.java_project)
+    my.jni_module = my.java_project->java_module(java_module.name = my.jni_context_class_name)?
     my.jni_context_class = my.jni_module->java_class
 
     # Build Java method
@@ -68,7 +68,7 @@ function java_create_class_jni_default_constructor (java_class, class, wrappers_
             .name = my.jni_method_name
             .visibility = "public"
             .native = "1"
-            
+
             new java_return to java_method
                 .type = java_derive_class_context_type (my.class)
             endnew
@@ -80,14 +80,14 @@ function java_create_class_jni_default_constructor (java_class, class, wrappers_
 
 endfunction
 
-function java_create_jni_class_constructor (class, constructor, destination, wrappers_destination, wrapper, meta)
-    check_arguments (my, "class, constructor, destination, wrappers_destination, wrapper, meta", my)
-    
+function java_create_jni_class_constructor (class, constructor, java_project, meta)
+    check_arguments (my, "class, constructor, java_project, meta", my)
+
     echo_debug ("Create JNI constructor for '$(my.class.name:)'", my)
-    
+
     # Obtain JNI class
-    my.jni_context_class_name = java_derive_jni_context_class_name(my.wrapper)
-    my.jni_module = my.wrappers_destination->java_module(java_module.name = my.jni_context_class_name)?
+    my.jni_context_class_name = java_derive_jni_context_class_name(my.java_project)
+    my.jni_module = my.java_project->java_module(java_module.name = my.jni_context_class_name)?
     my.jni_context_class = my.jni_module->java_class
 
     # Build Java method
@@ -103,11 +103,11 @@ function java_create_jni_class_constructor (class, constructor, destination, wra
             .name = my.jni_method_name
             .visibility = "public"
             .native = "1"
-            
+
             for my.constructor.argument
-                java_create_argument (argument, java_method, my.wrapper, my.meta)
+                java_create_argument (argument, java_method, my.java_project, my.meta)
             endfor
-            
+
             new java_return to java_method
                 .type = java_derive_class_context_type (my.class)
             endnew
@@ -118,19 +118,19 @@ function java_create_jni_class_constructor (class, constructor, destination, wra
     #endif
 endfunction
 
-function java_create_jni_class_close (class, wrappers_destination, wrapper, meta)
-    check_arguments (my, "class, wrappers_destination, wrapper, meta", my)
-    
+function java_create_jni_class_close (class, java_project, meta)
+    check_arguments (my, "class, java_project, meta", my)
+
     echo_debug ("Create JNI method 'close' for class '$(my.class.name:Camel)'", my)
-    
+
     # Obtain JNI class
-    my.jni_context_class_name = java_derive_jni_context_class_name(my.wrapper)
-    my.jni_module = my.wrappers_destination->java_module(java_module.name = my.jni_context_class_name)?
+    my.jni_context_class_name = java_derive_jni_context_class_name(my.java_project)
+    my.jni_module = my.java_project->java_module(java_module.name = my.jni_context_class_name)?
     my.jni_context_class = my.jni_module->java_class
 
     # Build Java method
     my.jni_method_name = "$(my.class.name:Camel)_close"
-    
+
     # Create method if it doesn't exist
     if ! defined (my.jni_context_class->java_method(java_method.name = my.jni_method_name)?)
 
@@ -141,8 +141,8 @@ function java_create_jni_class_close (class, wrappers_destination, wrapper, meta
             .name = my.jni_method_name
             .visibility = "public"
             .native = "1"
-        
-            java_create_jni_context_argument (java_method, my.wrapper, my.meta)
+
+            java_create_jni_context_argument (java_method, my.java_project, my.meta)
 
             return java_method
         endnew
@@ -153,20 +153,20 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create Java method that makes proxy to retrieve constant.
 # ---------------------------------------------------------------------------
-function java_create_jni_proxy_method_from_constant (constant, interface, destination, wrappers_destination, wrapper, meta)
-    check_arguments (my, "constant, destination, wrappers_destination, wrapper, meta", my)
-    
+function java_create_jni_proxy_method_from_constant (constant, interface, destination, java_project, meta)
+    check_arguments (my, "constant, destination, java_project, meta", my)
+
     echo_debug ("Create JNI method for interface '$(my.interface.name:Pascal)' constant '$(my.constant.name:Pascal)", my)
-    
+
     # Obtain JNI class
-    my.jni_context_class_name = java_derive_jni_context_class_name(my.wrapper)
-    my.jni_module = my.wrappers_destination->java_module(java_module.name = my.jni_context_class_name)?
+    my.jni_context_class_name = java_derive_jni_context_class_name(my.java_project)
+    my.jni_module = my.java_project->java_module(java_module.name = my.jni_context_class_name)?
     my.jni_context_class = my.jni_module->java_class
-    
+
     # Build Java method
-    my.getter_name = java_derive_getter_name_by_constant (my.constant, my.wrapper)
+    my.getter_name = java_derive_getter_name_by_constant (my.constant, my.java_project)
     my.jni_method_name = "$(my.interface.name:Camel)_$(my.getter_name:)"
-    
+
     # Create method if it doesn't exist
     if ! defined (my.jni_context_class->java_method(java_method.name = my.jni_method_name)?)
 
@@ -177,15 +177,15 @@ function java_create_jni_proxy_method_from_constant (constant, interface, destin
             .name = my.jni_method_name
             .visibility = "public"
             .native = "1"
-            
+
             new java_return to java_method
-                .type = java_derive_constant_type (my.constant, my.wrapper)
+                .type = java_derive_constant_type (my.constant, my.java_project)
                 .access = "readonly"
                 .is_enum = "0"
                 .is_reference = "0"
             endnew
-        
-            java_create_jni_context_argument (java_method, my.wrapper, my.meta)
+
+            java_create_jni_context_argument (java_method, my.java_project, my.meta)
         endnew
 
     endif
@@ -194,19 +194,19 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <java_method/> of from the class entity <method/>.
 # ---------------------------------------------------------------------------
-function java_create_jni_class_method (interface, method, java_method, class, wrappers_destination, wrapper, meta)
-    check_arguments (my, "interface, java_method, class, wrappers_destination, wrapper, meta", my)
-    
+function java_create_jni_class_method (interface, method, java_method, class, java_project, meta)
+    check_arguments (my, "interface, java_method, class, java_project, meta", my)
+
     echo_debug ("Create JNI method '$(my.java_method.name:)' for interface '$(my.interface.name:Camel)'", my)
-    
+
     # Obtain JNI class
-    my.jni_context_class_name = java_derive_jni_context_class_name(my.wrapper)
-    my.jni_module = my.wrappers_destination->java_module(java_module.name = my.jni_context_class_name)?
+    my.jni_context_class_name = java_derive_jni_context_class_name(my.java_project)
+    my.jni_module = my.java_project->java_module(java_module.name = my.jni_context_class_name)?
     my.jni_context_class = my.jni_module->java_class
 
     # Build Java method
     my.jni_method_name = "$(my.interface.name:Camel)_$(my.java_method.name:)"
-    
+
     # Create method if it doesn't exist
     if ! defined (my.jni_context_class->java_method(java_method.name = my.jni_method_name)?)
 
@@ -218,11 +218,11 @@ function java_create_jni_class_method (interface, method, java_method, class, wr
             .name = my.jni_method_name
             .visibility = "public"
             .native = "1"
-        
+
             if (! string_in (my.class.context, "none")) & is_false (my.method.is_static)
-                java_create_jni_context_argument (java_method, my.wrapper, my.meta)
+                java_create_jni_context_argument (java_method, my.java_project, my.meta)
             endif
-            
+
             for my.java_method.java_argument
                 copy java_argument to java_method
             endfor
@@ -245,16 +245,16 @@ endfunction
 #   Add JNI <java_method/> with setter only that proxy dependency to the
 #   C context.
 # ---------------------------------------------------------------------------
-function java_create_jni_method_from_dependency (dependency, impl, destination, wrappers_destination, wrapper, meta)
-    check_arguments (my, "dependency, impl, destination, wrappers_destination, wrapper, meta", my)
-    
+function java_create_jni_method_from_dependency (dependency, impl, destination, java_project, meta)
+    check_arguments (my, "dependency, impl, destination, java_project, meta", my)
+
     # Obtain JNI class
-    my.jni_context_class_name = java_derive_jni_context_class_name(my.wrapper)
-    my.jni_module = my.wrappers_destination->java_module(java_module.name = my.jni_context_class_name)?
+    my.jni_context_class_name = java_derive_jni_context_class_name(my.java_project)
+    my.jni_module = my.java_project->java_module(java_module.name = my.jni_context_class_name)?
     my.jni_context_class = my.jni_module->java_class
-    
+
     # Build Java method
-    
+
     my.jni_method_name = "$(my.impl.name:Camel)_$(java_derive_method_name_str (cat ("set", my.dependency.name)))"
 
     new java_method to my.jni_context_class
@@ -264,12 +264,12 @@ function java_create_jni_method_from_dependency (dependency, impl, destination, 
         .native = "1"
 
         if is_true (my.dependency.has_observers)
-            .throws = java_derive_default_exception_name (my.wrapper)
+            .throws = java_derive_default_exception_name (my.java_project)
         endif
 
         my.arg_name = java_derive_argument_name (my.dependency)
 
-        java_create_jni_context_argument (java_method, my.wrapper, my.meta)
+        java_create_jni_context_argument (java_method, my.java_project, my.meta)
 
         new java_argument to java_method
             .name = my.arg_name

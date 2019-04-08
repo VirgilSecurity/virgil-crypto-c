@@ -237,13 +237,21 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1setupDefaults (JNIEnv *, jobject, jlong);
 
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1setRsaParams (JNIEnv *, jobject, jlong, jint, jint);
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1setRsaParams (JNIEnv *, jobject, jlong, jint);
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1generatePrivateKey (JNIEnv *, jobject, jlong, jobject);
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1importPrivateKey (JNIEnv *, jobject, jlong, jbyteArray);
 
 JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1importPublicKey (JNIEnv *, jobject, jlong, jbyteArray);
+
+JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1exportedPublicKeyLen (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1exportPublicKey (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1exportedPrivateKeyLen (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1exportPrivateKey (JNIEnv *, jobject, jlong, jobject);
 
 JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_signer_1new (JNIEnv *, jobject);
 
@@ -595,7 +603,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey
 
 JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey_1setupDefaults (JNIEnv *, jobject, jlong);
 
-JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey_1setKeygenParams (JNIEnv *, jobject, jlong, jint, jint);
+JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey_1setKeygenParams (JNIEnv *, jobject, jlong, jint);
 
 JNIEXPORT jlong JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey_1new (JNIEnv *, jobject);
 

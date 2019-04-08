@@ -82,8 +82,8 @@ public class KeyProvider implements AutoCloseable {
     /*
     * Setup parameters that is used during RSA key generation.
     */
-    public void setRsaParams(int bitlen, int exponent) {
-        FoundationJNI.INSTANCE.keyProvider_setRsaParams(this.cCtx, bitlen, exponent);
+    public void setRsaParams(int bitlen) {
+        FoundationJNI.INSTANCE.keyProvider_setRsaParams(this.cCtx, bitlen);
     }
 
     /*
@@ -105,6 +105,42 @@ public class KeyProvider implements AutoCloseable {
     */
     public PublicKey importPublicKey(byte[] pkcs8Data) throws FoundationException {
         return FoundationJNI.INSTANCE.keyProvider_importPublicKey(this.cCtx, pkcs8Data);
+    }
+
+    /*
+    * Calculate buffer size enough to hold exported public key.
+    *
+    * Precondition: public key must be exportable.
+    */
+    public int exportedPublicKeyLen(PublicKey publicKey) {
+        return FoundationJNI.INSTANCE.keyProvider_exportedPublicKeyLen(this.cCtx, publicKey);
+    }
+
+    /*
+    * Export given public key to the PKCS#8 DER format.
+    *
+    * Precondition: public key must be exportable.
+    */
+    public byte[] exportPublicKey(PublicKey publicKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_exportPublicKey(this.cCtx, publicKey);
+    }
+
+    /*
+    * Calculate buffer size enough to hold exported private key.
+    *
+    * Precondition: private key must be exportable.
+    */
+    public int exportedPrivateKeyLen(PrivateKey privateKey) {
+        return FoundationJNI.INSTANCE.keyProvider_exportedPrivateKeyLen(this.cCtx, privateKey);
+    }
+
+    /*
+    * Export given private key to the PKCS#8 DER format.
+    *
+    * Precondition: private key must be exportable.
+    */
+    public byte[] exportPrivateKey(PrivateKey privateKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_exportPrivateKey(this.cCtx, privateKey);
     }
 }
 
