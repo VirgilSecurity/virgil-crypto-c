@@ -991,11 +991,15 @@ function java_create_c_class_method_call (class, method, java_class, java_method
                 ")
             elsif string_in (my.c_return_type, "jbyteArray")
                 # Create and fill a byte array
-                for my.method.argument
-                    if string_in (argument.class, "buffer") & string_in (argument.access, "readwrite, writeonly")
-                        my.result_buffer_name = java_derive_c_instance_name (argument)
-                    endif
-                endfor
+                if defined (my.method->return) & string_equal (my.method->return.class, "buffer")
+                    my.result_buffer_name = "proxyResult"
+                else
+                    for my.method.argument
+                        if string_in (argument.class, "buffer") & string_in (argument.access, "readwrite, writeonly")
+                            my.result_buffer_name = java_derive_c_instance_name (argument)
+                        endif
+                    endfor
+                endif
                 
                 if defined (my.result_buffer_name)
                     # Buffer
@@ -1006,8 +1010,11 @@ function java_create_c_class_method_call (class, method, java_class, java_method
                 else
                     # Data
                     my.prepare_result = format_left("\
-                        jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-                        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+                        jbyteArray ret = NULL;
+                        if (proxyResult.len > 0) {
+                            (*jenv)->NewByteArray(jenv, proxyResult.len);
+                            (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+                        }
                     ")
                 endif
             elsif string_in (my.c_return_type, "jobject")

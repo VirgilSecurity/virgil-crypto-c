@@ -52,7 +52,7 @@ add_library(ratchet_java SHARED "")
 set_target_properties(ratchet_java PROPERTIES
         C_STANDARD 99
         DEBUG_POSTFIX "_d"
-        OUTPUT_NAME vsce_ratchet_java
+        OUTPUT_NAME vscr_ratchet_java
         )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")

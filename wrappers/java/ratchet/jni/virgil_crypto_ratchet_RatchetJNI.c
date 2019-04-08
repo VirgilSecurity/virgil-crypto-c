@@ -114,8 +114,8 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetKeyUti
     if (error.status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, error.status);
     }
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(proxyResult));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(proxyResult), (jbyte*) vsc_buffer_bytes(proxyResult));
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
 
@@ -138,8 +138,8 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetKeyUti
     if (error.status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, error.status);
     }
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(proxyResult));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(proxyResult), (jbyte*) vsc_buffer_bytes(proxyResult));
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
 
@@ -177,8 +177,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetMessag
     vscr_ratchet_message_t /*2*/* ratchet_message_ctx = (vscr_ratchet_message_t /*2*/*) c_ctx;
 
     const vsc_data_t /*3*/ proxyResult = vscr_ratchet_message_get_long_term_public_key(ratchet_message_ctx /*a1*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     return ret;
 }
 
@@ -187,8 +190,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetMessag
     vscr_ratchet_message_t /*2*/* ratchet_message_ctx = (vscr_ratchet_message_t /*2*/*) c_ctx;
 
     const vsc_data_t /*3*/ proxyResult = vscr_ratchet_message_get_one_time_public_key(ratchet_message_ctx /*a1*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     return ret;
 }
 

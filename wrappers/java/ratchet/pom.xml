@@ -20,6 +20,14 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -38,7 +46,7 @@
 								<resource>
 									<directory>${jni.binaries.dir}/linux/lib</directory>
 									<includes>
-										<include>libvsce_ratchet_java.so</include>
+										<include>libvscr_ratchet_java.so</include>
 									</includes>
 									<filtering>false</filtering>
 								</resource>
@@ -57,7 +65,7 @@
 								<resource>
 									<directory>${jni.binaries.dir}/macos/lib</directory>
 									<includes>
-										<include>libvsce_ratchet_java.so</include>
+										<include>libvscr_ratchet_java.so</include>
 									</includes>
 									<filtering>false</filtering>
 								</resource>
@@ -76,7 +84,7 @@
 								<resource>
 									<directory>${jni.binaries.dir}/windows/lib</directory>
 									<includes>
-										<include>vsce_ratchet_java.dll</include>
+										<include>vscr_ratchet_java.dll</include>
 									</includes>
 									<filtering>false</filtering>
 								</resource>

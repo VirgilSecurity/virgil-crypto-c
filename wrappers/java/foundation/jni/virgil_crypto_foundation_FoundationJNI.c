@@ -1445,8 +1445,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_rawKey_
     vscf_raw_key_t /*2*/* raw_key_ctx = (vscf_raw_key_t /*2*/*) c_ctx;
 
     const vsc_data_t /*3*/ proxyResult = vscf_raw_key_data(raw_key_ctx /*a1*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     return ret;
 }
 
@@ -1457,8 +1460,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_oid_1fr
     vscf_alg_id_t /*8*/ alg_id = (vscf_alg_id_t /*8*/) (*jenv)->CallDoubleMethod(jenv, jalgId, alg_id_methodID);
 
     const vsc_data_t /*3*/ proxyResult = vscf_oid_from_alg_id(alg_id /*a7*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     return ret;
 }
 
@@ -1491,8 +1497,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_oid_1fr
     vscf_oid_id_t /*8*/ oid_id = (vscf_oid_id_t /*8*/) (*jenv)->CallDoubleMethod(jenv, joidId, oid_id_methodID);
 
     const vsc_data_t /*3*/ proxyResult = vscf_oid_from_id(oid_id /*a7*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     return ret;
 }
 
@@ -1645,8 +1654,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_pem_1ti
     vsc_data_t pem = vsc_data(pem_arr, (*jenv)->GetArrayLength(jenv, jpem));
 
     const vsc_data_t /*3*/ proxyResult = vscf_pem_title(pem /*a3*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jpem, (jbyte*) pem_arr, 0);
 
@@ -1815,8 +1827,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyReci
     vscf_key_recipient_info_t /*2*/* key_recipient_info_ctx = (vscf_key_recipient_info_t /*2*/*) c_ctx;
 
     const vsc_data_t /*3*/ proxyResult = vscf_key_recipient_info_recipient_id(key_recipient_info_ctx /*a1*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     return ret;
 }
 
@@ -1834,8 +1849,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyReci
     vscf_key_recipient_info_t /*2*/* key_recipient_info_ctx = (vscf_key_recipient_info_t /*2*/*) c_ctx;
 
     const vsc_data_t /*3*/ proxyResult = vscf_key_recipient_info_encrypted_key(key_recipient_info_ctx /*a1*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     return ret;
 }
 
@@ -1970,8 +1988,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_passwor
     vscf_password_recipient_info_t /*2*/* password_recipient_info_ctx = (vscf_password_recipient_info_t /*2*/*) c_ctx;
 
     const vsc_data_t /*3*/ proxyResult = vscf_password_recipient_info_encrypted_key(password_recipient_info_ctx /*a1*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     return ret;
 }
 
@@ -2577,8 +2598,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_message
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
     }
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jkey, (jbyte*) key_arr, 0);
 
@@ -2601,8 +2625,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_message
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
     }
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jkey, (jbyte*) key_arr, 0);
 
@@ -4047,8 +4074,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1rd_
     vscf_asn1rd_t /*9*/* asn1rd_ctx = (vscf_asn1rd_t /*9*/*) c_ctx;
 
     const vsc_data_t /*3*/ proxyResult = vscf_asn1rd_read_octet_str(asn1rd_ctx /*a1*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     return ret;
 }
 
@@ -4057,8 +4087,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1rd_
     vscf_asn1rd_t /*9*/* asn1rd_ctx = (vscf_asn1rd_t /*9*/*) c_ctx;
 
     const vsc_data_t /*3*/ proxyResult = vscf_asn1rd_read_bitstring_as_octet_str(asn1rd_ctx /*a1*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     return ret;
 }
 
@@ -4067,8 +4100,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1rd_
     vscf_asn1rd_t /*9*/* asn1rd_ctx = (vscf_asn1rd_t /*9*/*) c_ctx;
 
     const vsc_data_t /*3*/ proxyResult = vscf_asn1rd_read_utf8_str(asn1rd_ctx /*a1*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     return ret;
 }
 
@@ -4077,8 +4113,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1rd_
     vscf_asn1rd_t /*9*/* asn1rd_ctx = (vscf_asn1rd_t /*9*/*) c_ctx;
 
     const vsc_data_t /*3*/ proxyResult = vscf_asn1rd_read_oid(asn1rd_ctx /*a1*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     return ret;
 }
 
@@ -4087,8 +4126,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1rd_
     vscf_asn1rd_t /*9*/* asn1rd_ctx = (vscf_asn1rd_t /*9*/*) c_ctx;
 
     const vsc_data_t /*3*/ proxyResult = vscf_asn1rd_read_data(asn1rd_ctx /*a1*/, jlen /*a9*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     return ret;
 }
 
@@ -7755,8 +7797,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_cipherA
     vscf_cipher_alg_info_t /*9*/* cipher_alg_info_ctx = (vscf_cipher_alg_info_t /*9*/*) c_ctx;
 
     const vsc_data_t /*3*/ proxyResult = vscf_cipher_alg_info_nonce(cipher_alg_info_ctx /*a1*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     return ret;
 }
 
@@ -7800,8 +7845,11 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_saltedK
     vscf_salted_kdf_alg_info_t /*9*/* salted_kdf_alg_info_ctx = (vscf_salted_kdf_alg_info_t /*9*/*) c_ctx;
 
     const vsc_data_t /*3*/ proxyResult = vscf_salted_kdf_alg_info_salt(salted_kdf_alg_info_ctx /*a1*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     return ret;
 }
 

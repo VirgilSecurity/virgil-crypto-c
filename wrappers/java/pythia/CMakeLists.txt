@@ -52,7 +52,7 @@ add_library(pythia_java SHARED "")
 set_target_properties(pythia_java PROPERTIES
         C_STANDARD 99
         DEBUG_POSTFIX "_d"
-        OUTPUT_NAME vsce_pythia_java
+        OUTPUT_NAME vscp_pythia_java
         )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
