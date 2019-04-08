@@ -108,7 +108,7 @@ struct vsc_buffer_t {
     //
     bool is_owner;
     //
-    //  Defines that buffer is in the revese mode.
+    //  Defines that buffer is in the reverse mode.
     //  This means that written data is located from the buffer ending.
     //
     bool is_reverse;

@@ -178,4 +178,30 @@
         </code>
     </method>
 
+
+    <method name="secure equal" of_class="memory">
+        Perform constant-time memory comparison.
+        The time depends on the given length but not on the compared memory.
+        Return true of given memory chunks are equal.
+
+        <argument name="a" class="any"/>
+        <argument name="b" class="any"/>
+        <argument name="len" type="size"/>
+        <return type="boolean"/>
+
+        <code>
+            .(c_class_assert_macros_ptr)(.(_argument_a));
+            .(c_class_assert_macros_ptr)(.(_argument_b));
+
+            const volatile uint8_t *in_a = a;
+            const volatile uint8_t *in_b = b;
+            volatile uint8_t c = 0x00;
+
+            for (size_t i = 0; i &lt; len; ++i) {
+                c |= in_a[i] ^ in_b[i];
+            }
+
+            return c == 0;
+        </code>
+    </method>
 </module>

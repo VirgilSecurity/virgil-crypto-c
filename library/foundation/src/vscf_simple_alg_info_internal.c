@@ -212,6 +212,37 @@ vscf_simple_alg_info_shallow_copy(vscf_simple_alg_info_t *self) {
 }
 
 //
+//  Perform initialization of pre-allocated context.
+//  Create algorithm info with identificator.
+//
+VSCF_PUBLIC void
+vscf_simple_alg_info_init_with_alg_id(vscf_simple_alg_info_t *self, vscf_alg_id_t alg_id) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_zeroize(self, sizeof(vscf_simple_alg_info_t));
+
+    self->info = &info;
+    self->refcnt = 1;
+
+    vscf_simple_alg_info_init_ctx_with_alg_id(self, alg_id);
+}
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Create algorithm info with identificator.
+//
+VSCF_PUBLIC vscf_simple_alg_info_t *
+vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_t alg_id) {
+
+    vscf_simple_alg_info_t *self = vscf_simple_alg_info_new();
+
+    vscf_simple_alg_info_init_with_alg_id(self, alg_id);
+
+    return self;
+}
+
+//
 //  Return size of 'vscf_simple_alg_info_t' type.
 //
 VSCF_PUBLIC size_t

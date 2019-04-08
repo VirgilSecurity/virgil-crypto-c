@@ -195,6 +195,28 @@ vscf_erase(void *mem, size_t size) {
     while (size--) { *p++ = 0; }
 }
 
+//
+//  Perform constant-time memory comparison.
+//  The time depends on the given length but not on the compared memory.
+//  Return true of given memory chunks are equal.
+//
+VSCF_PUBLIC bool
+vscf_memory_secure_equal(const void *a, const void *b, size_t len) {
+
+    VSCF_ASSERT_PTR(a);
+    VSCF_ASSERT_PTR(b);
+
+    const volatile uint8_t *in_a = a;
+    const volatile uint8_t *in_b = b;
+    volatile uint8_t c = 0x00;
+
+    for (size_t i = 0; i < len; ++i) {
+        c |= in_a[i] ^ in_b[i];
+    }
+
+    return c == 0;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

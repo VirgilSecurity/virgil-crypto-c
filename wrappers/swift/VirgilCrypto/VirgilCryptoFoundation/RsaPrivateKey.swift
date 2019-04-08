@@ -94,9 +94,9 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: proxyResult)
     }
 
-    /// Setup parameters that is used during key generation.
-    @objc public func setKeygenParams(bitlen: Int, exponent: Int) {
-        vscf_rsa_private_key_set_keygen_params(self.c_ctx, bitlen, exponent)
+    /// Setup key length in bits that is used for key generation.
+    @objc public func setKeygenParams(bitlen: Int) {
+        vscf_rsa_private_key_set_keygen_params(self.c_ctx, bitlen)
     }
 
     /// Provide algorithm identificator.

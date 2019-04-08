@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  This module contains 'hash based alg info' implementation.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,14 +44,22 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_hash_based_alg_info.h"
-#include "vscf_assert.h"
-#include "vscf_memory.h"
-#include "vscf_hash_based_alg_info_defs.h"
-#include "vscf_hash_based_alg_info_internal.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  This is an umbrella header that includes library private headers.
+// --------------------------------------------------------------------------
+
+#ifndef VSCE_PHE_PRIVATE_H_INCLUDED
+#define VSCE_PHE_PRIVATE_H_INCLUDED
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -74,66 +76,11 @@
 //  @end
 
 
-//
-//  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_hash_based_alg_info_init() is called.
-//  Note, that context is already zeroed.
-//
-VSCF_PRIVATE void
-vscf_hash_based_alg_info_init_ctx(vscf_hash_based_alg_info_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    self->alg_id = vscf_alg_id_NONE;
+#ifdef __cplusplus
 }
+#endif
 
-//
-//  Release resources of the implementation specific context.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-VSCF_PRIVATE void
-vscf_hash_based_alg_info_cleanup_ctx(vscf_hash_based_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(self);
-    self->alg_id = vscf_alg_id_NONE;
-    vscf_impl_destroy(&self->hash_alg_info);
-}
-
-//
-//  Create algorithm info with identificator and HASH algorithm info.
-//
-VSCF_PUBLIC void
-vscf_hash_based_alg_info_init_ctx_with_members(
-        vscf_hash_based_alg_info_t *self, vscf_alg_id_t alg_id, vscf_impl_t **hash_alg_info_ref) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
-    VSCF_ASSERT_PTR(hash_alg_info_ref);
-    VSCF_ASSERT_PTR(*hash_alg_info_ref);
-
-    self->alg_id = alg_id;
-
-    self->hash_alg_info = *hash_alg_info_ref;
-    *hash_alg_info_ref = NULL;
-}
-
-//
-//  Return hash algorithm information.
-//
-VSCF_PUBLIC const vscf_impl_t *
-vscf_hash_based_alg_info_hash_alg_info(const vscf_hash_based_alg_info_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->hash_alg_info);
-    return self->hash_alg_info;
-}
-
-//
-//  Provide algorithm identificator.
-//
-VSCF_PUBLIC vscf_alg_id_t
-vscf_hash_based_alg_info_alg_id(const vscf_hash_based_alg_info_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    return self->alg_id;
-}
+//  @footer
+#endif // VSCE_PHE_PRIVATE_H_INCLUDED
+//  @end

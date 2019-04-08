@@ -129,6 +129,11 @@ set_property(
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_public.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
 target_sources(ratchet
     PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_assert.h"
@@ -166,6 +171,8 @@ target_sources(ratchet
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_status.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_msg_type.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_group_msg_type.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_public.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/private/vscr_ratchet_private.h"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_library.c"

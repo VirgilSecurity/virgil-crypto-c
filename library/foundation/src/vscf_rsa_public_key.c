@@ -419,7 +419,8 @@ vscf_rsa_public_key_generate_ephemeral_key(vscf_rsa_public_key_t *self, vscf_err
     const size_t bitlen = vscf_rsa_public_key_key_bitlen(self);
     const size_t exponent = vscf_rsa_public_key_key_exponent(self);
 
-    vscf_rsa_private_key_set_keygen_params(private_key, bitlen, exponent);
+    vscf_rsa_private_key_set_keygen_params(private_key, bitlen);
+    vscf_rsa_private_key_set_keygen_exponent(private_key, exponent);
     vscf_status_t status = vscf_rsa_private_key_generate_key(private_key);
     if (status != vscf_status_SUCCESS) {
         vscf_rsa_private_key_destroy(&private_key);
