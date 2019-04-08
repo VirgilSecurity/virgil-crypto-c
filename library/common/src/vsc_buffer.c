@@ -364,11 +364,24 @@ vsc_buffer_equal(const vsc_buffer_t *self, const vsc_buffer_t *rhs) {
     VSC_ASSERT(vsc_buffer_is_valid(self));
     VSC_ASSERT(vsc_buffer_is_valid(rhs));
 
-    if (self->len != rhs->len) {
-        return false;
-    }
-
     bool is_equal = vsc_data_equal(vsc_buffer_data(self), vsc_buffer_data(rhs));
+    return is_equal;
+}
+
+//
+//  Perform constant-time buffers comparison.
+//  The time depends on the given length but not on the buffer data.
+//  Return true if given buffers are equal.
+//
+VSC_PUBLIC bool
+vsc_buffer_secure_equal(const vsc_buffer_t *self, const vsc_buffer_t *rhs) {
+
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT_PTR(rhs);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
+    VSC_ASSERT(vsc_buffer_is_valid(rhs));
+
+    bool is_equal = vsc_data_secure_equal(vsc_buffer_data(self), vsc_buffer_data(rhs));
     return is_equal;
 }
 
