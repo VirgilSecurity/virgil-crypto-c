@@ -177,9 +177,12 @@ vsc_buffer_init_with_capacity(vsc_buffer_t *self, size_t capacity) {
 VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_new_with_capacity(size_t capacity) {
 
-    vsc_buffer_t *self = vsc_buffer_new();
+    vsc_buffer_t *self = (vsc_buffer_t *) vsc_alloc(sizeof (vsc_buffer_t));
+    VSC_ASSERT_ALLOC(self);
 
     vsc_buffer_init_with_capacity(self, capacity);
+
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }
@@ -207,9 +210,12 @@ vsc_buffer_init_with_data(vsc_buffer_t *self, vsc_data_t data) {
 VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_new_with_data(vsc_data_t data) {
 
-    vsc_buffer_t *self = vsc_buffer_new();
+    vsc_buffer_t *self = (vsc_buffer_t *) vsc_alloc(sizeof (vsc_buffer_t));
+    VSC_ASSERT_ALLOC(self);
 
     vsc_buffer_init_with_data(self, data);
+
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }

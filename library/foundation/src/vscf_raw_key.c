@@ -180,9 +180,12 @@ vscf_raw_key_init_with_data(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_data
 VSCF_PUBLIC vscf_raw_key_t *
 vscf_raw_key_new_with_data(vscf_alg_id_t alg_id, vsc_data_t raw_key_data) {
 
-    vscf_raw_key_t *self = vscf_raw_key_new();
+    vscf_raw_key_t *self = (vscf_raw_key_t *) vscf_alloc(sizeof (vscf_raw_key_t));
+    VSCF_ASSERT_ALLOC(self);
 
     vscf_raw_key_init_with_data(self, alg_id, raw_key_data);
+
+    self->self_dealloc_cb = vscf_dealloc;
 
     return self;
 }
@@ -210,9 +213,12 @@ vscf_raw_key_init_with_buffer(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_bu
 VSCF_PRIVATE vscf_raw_key_t *
 vscf_raw_key_new_with_buffer(vscf_alg_id_t alg_id, vsc_buffer_t *buffer) {
 
-    vscf_raw_key_t *self = vscf_raw_key_new();
+    vscf_raw_key_t *self = (vscf_raw_key_t *) vscf_alloc(sizeof (vscf_raw_key_t));
+    VSCF_ASSERT_ALLOC(self);
 
     vscf_raw_key_init_with_buffer(self, alg_id, buffer);
+
+    self->self_dealloc_cb = vscf_dealloc;
 
     return self;
 }

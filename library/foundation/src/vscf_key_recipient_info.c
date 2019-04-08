@@ -174,9 +174,12 @@ VSCF_PUBLIC vscf_key_recipient_info_t *
 vscf_key_recipient_info_new_with_members(vsc_data_t recipient_id, vscf_impl_t **key_encryption_algorithm_ref,
         vsc_data_t encrypted_key) {
 
-    vscf_key_recipient_info_t *self = vscf_key_recipient_info_new();
+    vscf_key_recipient_info_t *self = (vscf_key_recipient_info_t *) vscf_alloc(sizeof (vscf_key_recipient_info_t));
+    VSCF_ASSERT_ALLOC(self);
 
     vscf_key_recipient_info_init_with_members(self, recipient_id, key_encryption_algorithm_ref, encrypted_key);
+
+    self->self_dealloc_cb = vscf_dealloc;
 
     return self;
 }
