@@ -200,6 +200,8 @@ static void
 vscr_ratchet_group_participant_data_init_ctx(vscr_ratchet_group_participant_data_t *self) {
 
     VSCR_ASSERT_PTR(self);
+
+    self->chain_key = vscr_ratchet_chain_key_new();
 }
 
 //
@@ -233,7 +235,6 @@ vscr_ratchet_group_participant_data_deserialize(ParticipantData *data_pb, vscr_r
     VSCR_ASSERT(data_pb);
     VSCR_ASSERT(data);
 
-    data->chain_key = vscr_ratchet_chain_key_new();
     vscr_ratchet_chain_key_deserialize(&data_pb->chain_key, data->chain_key);
 
     memcpy(data->pub_key, data_pb->pub_key, sizeof(data->pub_key));

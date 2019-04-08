@@ -252,6 +252,7 @@ vscr_ratchet_skipped_group_message_key_root_node_deserialize(
         vscr_ratchet_skipped_group_message_key_node_t *new_node = vscr_ratchet_skipped_group_message_key_node_new();
 
         new_node->value = vscr_ratchet_message_key_new();
+
         vscr_ratchet_message_key_deserialize(&root_node_pb->message_keys[i], new_node->value);
 
         *node = new_node;

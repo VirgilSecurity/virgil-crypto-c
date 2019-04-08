@@ -324,6 +324,7 @@ vscr_ratchet_group_session_init_ctx(vscr_ratchet_group_session_t *self) {
     self->skipped_messages = vscr_ratchet_skipped_group_messages_new();
     self->key_utils = vscr_ratchet_key_utils_new();
     self->cipher = vscr_ratchet_cipher_new();
+    self->me = vscr_ratchet_group_participant_data_new();
     self->is_initialized = false;
     self->is_private_key_set = false;
 }
@@ -486,11 +487,9 @@ vscr_ratchet_group_session_setup_session(
             target = &self->me;
         } else {
             target = &self->participants[self->participants_count++];
+            *target = vscr_ratchet_group_participant_data_new();
         }
 
-        *target = vscr_ratchet_group_participant_data_new();
-
-        (*target)->chain_key = vscr_ratchet_chain_key_new();
         (*target)->chain_key->index = 0;
         memcpy((*target)->chain_key->key, info->key, sizeof((*target)->chain_key->key));
         memcpy((*target)->id, info->id, sizeof((*target)->id));
@@ -772,7 +771,6 @@ vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     session = vscr_ratchet_group_session_new();
 
     session->is_initialized = true;
-    session->me = vscr_ratchet_group_participant_data_new();
 
     vscr_ratchet_group_participant_data_deserialize(&session_pb.me, session->me);
     session->participants_count = session_pb.participants_count;
@@ -782,8 +780,6 @@ vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error) {
         session->participants[i] = vscr_ratchet_group_participant_data_new();
         vscr_ratchet_group_participant_data_deserialize(&session_pb.participants[i], session->participants[i]);
     }
-
-    session->skipped_messages = vscr_ratchet_skipped_group_messages_new();
 
     vscr_ratchet_skipped_group_messages_deserialize(&session_pb.skipped_messages, session->skipped_messages);
 
