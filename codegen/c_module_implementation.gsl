@@ -637,19 +637,84 @@ function _Z19_add_method_new (impl, declaration, definition, destination, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-function _Z19_add_constructor (constructor, destination, meta)
-    check_arguments (my, "constructor, destination, meta", my)
+function _Z19_format_proxy_arguments (method)
+    check_arguments (my, "method", my)
+
+    for my.method.argument
+        my.proxy_args ?= ""
+        my.proxy_args += make_ref("_argument_$(make_id (argument.name))")
+        if ! last()
+            my.proxy_args += ", "
+        endif
+    endfor
+
+    return my.proxy_args
+endfunction
+
+# ---------------------------------------------------------------------------
+function _Z19_add_method_custom_init (impl, constructor, declaration, definition, destination, meta)
+    check_arguments (my, "impl, constructor, declaration, definition, destination, meta", my)
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
     new method to my.destination
-        .name = cat (my.names.method_new, my.constructor.name)
+        if defined (my.constructor.)
+            my.comment = format_left (my.constructor.)
+        endif
+        my.comment = format_left("Perform initialization of pre-allocated context.") + (my.comment ? "")
+        . = my.comment
 
-        . = my.constructor. ? "\
-        Allocate implementation context and perform it's initialization.
-        Postcondition: check memory allocation result.
-        "
+        .name = cat (my.names.method_init, my.constructor.name)
+        .declaration = my.declaration
+        .definition = my.definition
+        .visibility ?= my.constructor.visibility ?
+
+        _Z19_add_argument_impl (my.impl, method, my.meta)
+
+        for my.constructor.argument
+            component_clean_copy (argument, method)
+        endfor
+
+        new code to method
+            my.type_impl = my.refs.c_implementation_struct_impl
+            my.arg_impl = my.names.c_implementation_argument_impl
+            my.method_init_ctx = make_ref_c (make_id ("class", my.impl.name, "method init ctx", my.constructor.name))
+            my.proxy_args = _Z19_format_proxy_arguments (my.constructor)
+
+            . = "\
+                .(c_class_assert_macros_ptr)($(my.arg_impl));
+
+                .(c_global_method_zeroize)($(my.arg_impl), sizeof($(my.type_impl)));
+
+                $(my.arg_impl)->$(my.names.c_property_info:) = &$(my.refs.c_implementation_variable_info);
+                $(my.arg_impl)->$(my.names.c_property_ref_counter:) = 1;
+
+                $(my.method_init_ctx)($(my.arg_impl), $(my.proxy_args:));
+            "
+        endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _Z19_add_method_custom_new (impl, constructor, declaration, definition, destination, meta)
+    check_arguments (my, "impl, constructor, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        if defined (my.constructor.)
+            my.comment = format_left (my.constructor.)
+        endif
+        my.comment = format_left("Allocate implementation context and perform it's initialization.") + (my.comment ? "")
+        . = my.comment
+
+        .name = cat (my.names.method_new, my.constructor.name)
+        .declaration = my.declaration
+        .definition = my.definition
+        .visibility = my.constructor.visibility ?
 
         _Z19_add_return_impl (method, my.meta)
 
@@ -657,26 +722,44 @@ function _Z19_add_constructor (constructor, destination, meta)
             component_clean_copy (argument, method)
         endfor
 
-        for my.constructor.return
-            component_clean_copy (return, method)
-        endfor
-
         new code to method
-            my.type_impl = my.refs.c_implementation_struct_impl
-            my.arg_impl = my.names.c_implementation_argument_impl
-
-            .type = "stub"
+            my.type_ctx = my.refs.c_implementation_struct_impl
+            my.arg_ctx = my.names.c_implementation_argument_impl
+            my.method_init = make_ref_c (make_id ("class", my.impl.name, "method init", my.constructor.name))
+            my.proxy_args = _Z19_format_proxy_arguments (my.constructor)
 
             . = "\
-            $(my.type_impl) *$(my.arg_impl:) = $(my.refs.c_implementation_method_new)();
+                $(my.type_ctx) *$(my.arg_ctx:) = $(my.refs.c_implementation_method_new)();
 
-            //   TODO: Perform initialization.
+                $(my.method_init)($(my.arg_ctx:), $(my.proxy_args:));
 
-            return $(my.arg_impl:);
+                return $(my.arg_ctx:);
             "
         endnew
     endnew
 endfunction
+
+
+# ---------------------------------------------------------------------------
+function _Z19_add_constructor (impl, constructor, declaration, definition, destination, meta)
+    check_arguments (my, "impl, constructor, declaration, definition, destination, meta", my)
+
+    _Z19_add_method_custom_init(my.impl, my.constructor, my.declaration, my.definition, my.destination, my.meta)
+    _Z19_add_method_custom_new(my.impl, my.constructor, my.declaration, my.definition, my.destination, my.meta)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add overloaded constructors.
+# ---------------------------------------------------------------------------
+function _Z19_add_constructors (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
+
+    for my.impl.constructor
+        _Z19_add_constructor (my.impl, constructor, my.declaration, my.definition, my.destination, my.meta)
+    endfor
+endfunction
+
 
 # ---------------------------------------------------------------------------
 function _Z19_add_method_delete (impl, declaration, definition, destination, meta)
@@ -887,6 +970,27 @@ function _Z19_add_method_cleanup_ctx (impl, declaration, definition, destination
     endnew
 endfunction
 
+# ---------------------------------------------------------------------------
+function _Z19_add_method_custom_init_ctx (impl, constructor, declaration, definition, destination, meta)
+    check_arguments (my, "impl, constructor, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        . = my.constructor. ?
+        .name = cat (my.names.method_init_ctx, my.constructor.name)
+        .declaration = my.declaration
+        .definition = my.definition
+
+        _Z19_add_argument_impl (my.impl, method, my.meta)
+
+        for my.constructor.argument
+            component_clean_copy (argument, method)
+        endfor
+    endnew
+endfunction
+
 
 # ---------------------------------------------------------------------------
 function _Z19_add_ctx_lifecycle_methods (impl, declaration, definition, destination, meta)
@@ -894,6 +998,10 @@ function _Z19_add_ctx_lifecycle_methods (impl, declaration, definition, destinat
 
     _Z19_add_method_init_ctx (my.impl, my.declaration, my.definition, my.destination, my.meta)
     _Z19_add_method_cleanup_ctx (my.impl, my.declaration, my.definition, my.destination, my.meta)
+
+    for my.impl.constructor
+        _Z19_add_method_custom_init_ctx (my.impl, constructor, my.declaration, my.definition, my.destination, my.meta)
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1010,28 +1118,6 @@ function _Z19_add_macroses (impl, destination, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Add overloaded constructors.
-# ---------------------------------------------------------------------------
-function _Z19_add_constructors (impl, destination, meta)
-    check_arguments (my, "impl, destination, meta", my)
-
-    for my.impl.constructor
-        _Z19_add_constructors (constructor, my.destination, my.meta)
-    endfor
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Add overloaded constructors.
-# ---------------------------------------------------------------------------
-function _Z19_add_constructors (impl, destination, meta)
-    check_arguments (my, "impl, destination, meta", my)
-
-    for my.impl.constructor
-        _Z19_add_constructor (constructor, my.destination, my.meta)
-    endfor
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Add functions that are defined in the implementation itself.
 # ---------------------------------------------------------------------------
 function _Z19_add_methods (impl, destination, meta)
@@ -1082,12 +1168,13 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
             _Z19_add_method_impl_type_size (my.impl, "public", "external", module, my.meta)
             _Z19_add_method_impl_type_cast (my.impl, "public", "external", module, my.meta)
 
+            _Z19_add_lifecycle_methods (my.impl, "public", "external", module, my.meta)
+
             if _Z19_has_underlying_context (my.impl)
                 _Z19_add_ctx_lifecycle_methods (my.impl, "external", "private", module, my.meta)
+                _Z19_add_constructors(my.impl, "public", "external", module, my.meta)
             endif
 
-            _Z19_add_constructors(my.impl, module, my.meta)
-            _Z19_add_lifecycle_methods (my.impl, "public", "external", module, my.meta)
             c_dependency_add_lifecycle_methods (my.impl, "public", "external", module, my.meta)
             c_dependency_add_observer_methods (my.impl, "external", "private", module, my.meta)
         endif
@@ -1173,11 +1260,13 @@ function c_module_implementation_create_module_internal (impl, source, destinati
             _Z19_add_includes_for_module_internal (my.impl, module, my.meta)
             _Z19_add_instances (my.impl, my.source, module, my.meta)
 
+            _Z19_add_lifecycle_methods (my.impl, "external", "private", module, my.meta)
+
             if _Z19_has_underlying_context (my.impl)
                 _Z19_add_ctx_lifecycle_methods (my.impl, "public", "external", module, my.meta)
+                _Z19_add_constructors(my.impl, "external", "private", module, my.meta)
             endif
 
-            _Z19_add_lifecycle_methods (my.impl, "external", "private", module, my.meta)
             _Z19_add_interface_api_methods (my.impl, "external", "private", module, my.meta)
             _Z19_add_method_impl_type_size (my.impl, "external", "private", module, my.meta)
             _Z19_add_method_impl_type_cast (my.impl, "external", "private", module, my.meta)
