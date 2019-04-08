@@ -47,7 +47,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Class represents ratchet message
+//  Class represents ratchet group message
 // --------------------------------------------------------------------------
 
 #ifndef VSCR_RATCHET_GROUP_MESSAGE_H_INCLUDED

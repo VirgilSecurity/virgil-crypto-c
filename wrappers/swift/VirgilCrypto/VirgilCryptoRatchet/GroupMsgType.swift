@@ -39,8 +39,11 @@ import VSCRatchet
 /// Represents group message type
 @objc(VSCRGroupMsgType) public enum GroupMsgType: Int {
 
+    /// Group info used to create group chat, or change group chat.
+    /// Should be distributed only using secure channels.
     case groupInfo = 0
 
+    /// Regular group ratchet message with cipher text.
     case regular = 1
 
     /// Create enumeration value from the correspond C enumeration value.

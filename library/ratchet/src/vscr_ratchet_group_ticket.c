@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Group ticket used to start group session.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -310,8 +316,6 @@ vscr_ratchet_group_ticket_cleanup_ctx(vscr_ratchet_group_ticket_t *self) {
 //
 //  Setups default dependencies:
 //  - RNG: CTR DRBG
-//  - Key serialization: DER PKCS8
-//  - Symmetric cipher: AES256-GCM
 //
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_ticket_setup_defaults(vscr_ratchet_group_ticket_t *self) {
@@ -332,6 +336,9 @@ vscr_ratchet_group_ticket_setup_defaults(vscr_ratchet_group_ticket_t *self) {
     return vscr_status_SUCCESS;
 }
 
+//
+//  Adds participant to chat.
+//
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_ticket_add_participant(
         vscr_ratchet_group_ticket_t *self, vsc_data_t participant_id, vsc_data_t public_key) {
@@ -382,6 +389,9 @@ err:
     return status;
 }
 
+//
+//  Generates message that should be sent to all participants using secure channel.
+//
 VSCR_PUBLIC const vscr_ratchet_group_message_t *
 vscr_ratchet_group_ticket_generate_ticket(const vscr_ratchet_group_ticket_t *self) {
 

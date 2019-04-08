@@ -37,6 +37,7 @@ import Foundation
 import VSCRatchet
 import VirgilCryptoFoundation
 
+/// Ratchet group session.
 @objc(VSCRRatchetGroupSession) public class RatchetGroupSession: NSObject {
 
     /// Handle underlying C context.
@@ -73,22 +74,29 @@ import VirgilCryptoFoundation
         vscr_ratchet_group_session_use_rng(self.c_ctx, rng.c_ctx)
     }
 
+    /// Shows whether session was initialized.
     @objc public func isInitialized() -> Bool {
         let proxyResult = vscr_ratchet_group_session_is_initialized(self.c_ctx)
 
         return proxyResult
     }
 
+    /// Shows whether identity private key was set.
+    @objc public func isPrivateKeySet() -> Bool {
+        let proxyResult = vscr_ratchet_group_session_is_private_key_set(self.c_ctx)
+
+        return proxyResult
+    }
+
     /// Setups default dependencies:
     /// - RNG: CTR DRBG
-    /// - Key serialization: DER PKCS8
-    /// - Symmetric cipher: AES256-GCM
     @objc public func setupDefaults() throws {
         let proxyResult = vscr_ratchet_group_session_setup_defaults(self.c_ctx)
 
         try RatchetError.handleStatus(fromC: proxyResult)
     }
 
+    /// Sets identity private key.
     @objc public func setPrivateKey(myPrivateKey: Data) throws {
         let proxyResult = myPrivateKey.withUnsafeBytes({ (myPrivateKeyPointer: UnsafePointer<byte>) -> vscr_status_t in
 
@@ -98,6 +106,7 @@ import VirgilCryptoFoundation
         try RatchetError.handleStatus(fromC: proxyResult)
     }
 
+    /// Sets up session. Identity private key should be set separately.
     @objc public func setupSession(myId: Data, message: RatchetGroupMessage) throws {
         let proxyResult = myId.withUnsafeBytes({ (myIdPointer: UnsafePointer<byte>) -> vscr_status_t in
 

@@ -37,6 +37,7 @@ import Foundation
 import VSCRatchet
 import VirgilCryptoFoundation
 
+/// Group ticket used to start group session.
 @objc(VSCRRatchetGroupTicket) public class RatchetGroupTicket: NSObject {
 
     /// Handle underlying C context.
@@ -75,14 +76,13 @@ import VirgilCryptoFoundation
 
     /// Setups default dependencies:
     /// - RNG: CTR DRBG
-    /// - Key serialization: DER PKCS8
-    /// - Symmetric cipher: AES256-GCM
     @objc public func setupDefaults() throws {
         let proxyResult = vscr_ratchet_group_ticket_setup_defaults(self.c_ctx)
 
         try RatchetError.handleStatus(fromC: proxyResult)
     }
 
+    /// Adds participant to chat.
     @objc public func addParticipant(participantId: Data, publicKey: Data) throws {
         let proxyResult = participantId.withUnsafeBytes({ (participantIdPointer: UnsafePointer<byte>) -> vscr_status_t in
             publicKey.withUnsafeBytes({ (publicKeyPointer: UnsafePointer<byte>) -> vscr_status_t in
@@ -94,6 +94,7 @@ import VirgilCryptoFoundation
         try RatchetError.handleStatus(fromC: proxyResult)
     }
 
+    /// Generates message that should be sent to all participants using secure channel.
     @objc public func generateTicket() -> RatchetGroupMessage {
         let proxyResult = vscr_ratchet_group_ticket_generate_ticket(self.c_ctx)
 

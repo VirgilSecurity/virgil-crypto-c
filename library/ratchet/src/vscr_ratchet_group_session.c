@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Ratchet group session.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -375,6 +381,9 @@ vscr_ratchet_group_session_did_release_rng(vscr_ratchet_group_session_t *self) {
     VSCR_UNUSED(self);
 }
 
+//
+//  Shows whether session was initialized.
+//
 VSCR_PUBLIC bool
 vscr_ratchet_group_session_is_initialized(const vscr_ratchet_group_session_t *self) {
 
@@ -384,10 +393,19 @@ vscr_ratchet_group_session_is_initialized(const vscr_ratchet_group_session_t *se
 }
 
 //
+//  Shows whether identity private key was set.
+//
+VSCR_PUBLIC bool
+vscr_ratchet_group_session_is_private_key_set(const vscr_ratchet_group_session_t *self) {
+
+    VSCR_ASSERT(self);
+
+    return self->is_private_key_set;
+}
+
+//
 //  Setups default dependencies:
 //  - RNG: CTR DRBG
-//  - Key serialization: DER PKCS8
-//  - Symmetric cipher: AES256-GCM
 //
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_session_setup_defaults(vscr_ratchet_group_session_t *self) {
@@ -408,6 +426,9 @@ vscr_ratchet_group_session_setup_defaults(vscr_ratchet_group_session_t *self) {
     return vscr_status_SUCCESS;
 }
 
+//
+//  Sets identity private key.
+//
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_session_set_private_key(vscr_ratchet_group_session_t *self, vsc_data_t my_private_key) {
 
@@ -433,6 +454,9 @@ err:
     return vscr_error_status(&error_ctx);
 }
 
+//
+//  Sets up session. Identity private key should be set separately.
+//
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_session_setup_session(
         vscr_ratchet_group_session_t *self, vsc_data_t my_id, const vscr_ratchet_group_message_t *message) {

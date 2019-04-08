@@ -1,5 +1,5 @@
 <class name="ratchet group message" context="private">
-    Class represents ratchet message
+    Class represents ratchet group message
 
     <require class="ratchet common hidden" scope="private"/>
     <require class="ratchet common" scope="private"/>

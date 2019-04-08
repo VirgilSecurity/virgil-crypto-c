@@ -44,6 +44,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Ratchet group session.
+// --------------------------------------------------------------------------
+
 #ifndef VSCR_RATCHET_GROUP_SESSION_H_INCLUDED
 #define VSCR_RATCHET_GROUP_SESSION_H_INCLUDED
 
@@ -159,22 +165,35 @@ vscr_ratchet_group_session_take_rng(vscr_ratchet_group_session_t *self, vscf_imp
 VSCR_PUBLIC void
 vscr_ratchet_group_session_release_rng(vscr_ratchet_group_session_t *self);
 
+//
+//  Shows whether session was initialized.
+//
 VSCR_PUBLIC bool
 vscr_ratchet_group_session_is_initialized(const vscr_ratchet_group_session_t *self);
 
 //
+//  Shows whether identity private key was set.
+//
+VSCR_PUBLIC bool
+vscr_ratchet_group_session_is_private_key_set(const vscr_ratchet_group_session_t *self);
+
+//
 //  Setups default dependencies:
 //  - RNG: CTR DRBG
-//  - Key serialization: DER PKCS8
-//  - Symmetric cipher: AES256-GCM
 //
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_session_setup_defaults(vscr_ratchet_group_session_t *self) VSCR_NODISCARD;
 
+//
+//  Sets identity private key.
+//
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_session_set_private_key(vscr_ratchet_group_session_t *self,
         vsc_data_t my_private_key) VSCR_NODISCARD;
 
+//
+//  Sets up session. Identity private key should be set separately.
+//
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self, vsc_data_t my_id,
         const vscr_ratchet_group_message_t *message) VSCR_NODISCARD;

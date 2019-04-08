@@ -1,5 +1,7 @@
 <class name="ratchet group session" context="internal">
 
+    Ratchet group session.
+
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
 
@@ -37,29 +39,49 @@
     <property name="participants count" type="size" access="readwrite"/>
 
     <method name="is initialized" is_const="1">
+        Shows whether session was initialized.
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="is private key set" is_const="1">
+        Shows whether identity private key was set.
+
         <return type="boolean"/>
     </method>
 
     <method name="setup defaults">
         Setups default dependencies:
         - RNG: CTR DRBG
-        - Key serialization: DER PKCS8
-        - Symmetric cipher: AES256-GCM
 
         <return enum="status"/>
     </method>
 
     <method name="set private key">
-        <argument name="my private key" class="data"/>
+        Sets identity private key.
 
-        <return enum="status"/>
+        <argument name="my private key" class="data">
+            Ed25519 PKCS8 identity private key
+        </argument>
+
+        <return enum="status">
+            Error
+        </return>
     </method>
 
     <method name="setup session">
-        <argument name="my id" class="data"/>
-        <argument name="message" class="ratchet group message"/>
+        Sets up session. Identity private key should be set separately.
 
-        <return enum="status"/>
+        <argument name="my id" class="data">
+            User's 32-byte identifier.
+        </argument>
+        <argument name="message" class="ratchet group message">
+            Message with group info obtained through secure channel.
+        </argument>
+
+        <return enum="status">
+            Error
+        </return>
     </method>
 
     <method name="encrypt">
