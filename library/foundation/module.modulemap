@@ -95,5 +95,6 @@ framework module VSCFoundation {
     header "vscf_asn1_tag.h"
     header "vscf_alg_id.h"
     header "vscf_oid_id.h"
+    header "vscf_foundation_public.h"
     export *
 }

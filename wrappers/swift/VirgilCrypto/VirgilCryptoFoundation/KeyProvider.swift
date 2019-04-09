@@ -86,8 +86,8 @@ import VSCFoundation
     }
 
     /// Setup parameters that is used during RSA key generation.
-    @objc public func setRsaParams(bitlen: Int, exponent: Int) {
-        vscf_key_provider_set_rsa_params(self.c_ctx, bitlen, exponent)
+    @objc public func setRsaParams(bitlen: Int) {
+        vscf_key_provider_set_rsa_params(self.c_ctx, bitlen)
     }
 
     /// Generate new private key from the given id.
@@ -130,5 +130,71 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: error.status)
 
         return FoundationImplementation.wrapPublicKey(take: proxyResult!)
+    }
+
+    /// Calculate buffer size enough to hold exported public key.
+    ///
+    /// Precondition: public key must be exportable.
+    @objc public func exportedPublicKeyLen(publicKey: PublicKey) -> Int {
+        let proxyResult = vscf_key_provider_exported_public_key_len(self.c_ctx, publicKey.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Export given public key to the PKCS#8 DER format.
+    ///
+    /// Precondition: public key must be exportable.
+    @objc public func exportPublicKey(publicKey: PublicKey) throws -> Data {
+        let outCount = self.exportedPublicKeyLen(publicKey: publicKey)
+        var out = Data(count: outCount)
+        var outBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(outBuf)
+        }
+
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+            vsc_buffer_init(outBuf)
+            vsc_buffer_use(outBuf, outPointer, outCount)
+
+            return vscf_key_provider_export_public_key(self.c_ctx, publicKey.c_ctx, outBuf)
+        })
+        out.count = vsc_buffer_len(outBuf)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+
+        return out
+    }
+
+    /// Calculate buffer size enough to hold exported private key.
+    ///
+    /// Precondition: private key must be exportable.
+    @objc public func exportedPrivateKeyLen(privateKey: PrivateKey) -> Int {
+        let proxyResult = vscf_key_provider_exported_private_key_len(self.c_ctx, privateKey.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Export given private key to the PKCS#8 DER format.
+    ///
+    /// Precondition: private key must be exportable.
+    @objc public func exportPrivateKey(privateKey: PrivateKey) throws -> Data {
+        let outCount = self.exportedPrivateKeyLen(privateKey: privateKey)
+        var out = Data(count: outCount)
+        var outBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(outBuf)
+        }
+
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+            vsc_buffer_init(outBuf)
+            vsc_buffer_use(outBuf, outPointer, outCount)
+
+            return vscf_key_provider_export_private_key(self.c_ctx, privateKey.c_ctx, outBuf)
+        })
+        out.count = vsc_buffer_len(outBuf)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+
+        return out
     }
 }

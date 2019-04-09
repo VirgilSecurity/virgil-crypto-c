@@ -290,7 +290,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted constant name.
 # ---------------------------------------------------------------------------
-function swift_derive_constant_name (constant, wrapper)
+function swift_derive_constant_name (constant, swift_project)
     check_arguments (my, "constant", my)
 
     assert_attribute (my.constant, "name", my)
@@ -321,8 +321,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return mapped constant type.
 # ---------------------------------------------------------------------------
-function swift_derive_constant_type (constant, wrapper)
-    check_arguments (my, "constant, wrapper", my)
+function swift_derive_constant_type (constant, swift_project)
+    check_arguments (my, "constant, swift_project", my)
 
     assert_attribute (my.constant, "type", my)
 
@@ -406,7 +406,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted method name.
 # ---------------------------------------------------------------------------
-function swift_derive_method_name (method, wrapper)
+function swift_derive_method_name (method, swift_project)
     check_arguments (my, "method", my)
 
     return swift_derive_method_name_str (my.method.name)
@@ -415,8 +415,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted name of the Swift protocol.
 # ---------------------------------------------------------------------------
-function swift_derive_protocol_name (interface, wrapper)
-    check_arguments (my, "interface, wrapper", my)
+function swift_derive_protocol_name (interface, swift_project)
+    check_arguments (my, "interface, swift_project", my)
 
     assert_attribute_one_of (my.interface, "name, interface", my)
 
@@ -435,7 +435,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted name of the Swift class.
 # ---------------------------------------------------------------------------
-function swift_derive_class_name (class, wrapper)
+function swift_derive_class_name (class, swift_project)
     check_arguments (my, "class", my)
 
     assert_attribute_one_of (my.class, "name", my)
@@ -455,13 +455,13 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted name of the Swift enum.
 # ---------------------------------------------------------------------------
-function swift_derive_enum_name (enum, wrapper)
-    check_arguments (my, "enum, wrapper", my)
+function swift_derive_enum_name (enum, swift_project)
+    check_arguments (my, "enum, swift_project", my)
 
     assert_attribute_one_of (my.enum, "name", my)
 
     if my.enum.name = "status"
-        return swift_derive_enum_status_name (my.wrapper.project)
+        return swift_derive_enum_status_name (my.swift_project.name)
     else
         return "$(my.enum.name:Pascal)"
     endif
@@ -471,34 +471,34 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted name of the Objective-C protocol.
 # ---------------------------------------------------------------------------
-function swift_derive_protocol_objc_name (swift_protocol, wrapper)
-    check_arguments (my, "swift_protocol, wrapper", my)
+function swift_derive_protocol_objc_name (swift_protocol, swift_project)
+    check_arguments (my, "swift_protocol, swift_project", my)
 
-    return "$(my.wrapper.prefix:UPPER)$(my.swift_protocol.name:)"
+    return "$(my.swift_project.prefix:UPPER)$(my.swift_protocol.name:)"
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Return formatted name of the Objective-C class.
 # ---------------------------------------------------------------------------
-function swift_derive_class_objc_name (swift_class, wrapper)
-    check_arguments (my, "swift_class, wrapper", my)
+function swift_derive_class_objc_name (swift_class, swift_project)
+    check_arguments (my, "swift_class, swift_project", my)
 
-    return "$(my.wrapper.prefix:UPPER)$(my.swift_class.name:)"
+    return "$(my.swift_project.prefix:UPPER)$(my.swift_class.name:)"
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Return formatted name of the Objective-C enum.
 # ---------------------------------------------------------------------------
-function swift_derive_enum_objc_name (swift_enum, wrapper)
-    check_arguments (my, "swift_enum, wrapper", my)
+function swift_derive_enum_objc_name (swift_enum, swift_project)
+    check_arguments (my, "swift_enum, swift_project", my)
 
-    return "$(my.wrapper.prefix:UPPER)$(my.swift_enum.name:)"
+    return "$(my.swift_project.prefix:UPPER)$(my.swift_enum.name:)"
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Return formatted argument name from raw name.
 # ---------------------------------------------------------------------------
-function swift_derive_argument_name_str (name, wrapper)
+function swift_derive_argument_name_str (name, swift_project)
     check_arguments (my, "name", my)
 
     return "$(my.name:Camel)"
@@ -507,7 +507,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted argument name.
 # ---------------------------------------------------------------------------
-function swift_derive_argument_name (argument, wrapper)
+function swift_derive_argument_name (argument, swift_project)
     check_arguments (my, "argument", my)
 
     return swift_derive_argument_name_str (my.argument.name)
@@ -650,7 +650,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return C type wrapped to the Swift type.
 # ---------------------------------------------------------------------------
-function swift_wrap_c_returned_value (swift_return, wrapper)
+function swift_wrap_c_returned_value (swift_return, swift_project)
     check_arguments (my, "swift_return", my)
 
     my.name = my.swift_return.name ? "proxyResult"
@@ -669,7 +669,7 @@ function swift_wrap_c_returned_value (swift_return, wrapper)
         return "$(my.name:)!"
 
     elsif is_true (0.is_interface)
-        my.impl_helper_class = "$(my.wrapper.project:Pascal)Implementation"
+        my.impl_helper_class = "$(my.swift_project.name:Pascal)Implementation"
         return "$(my.impl_helper_class:).wrap$(my.swift_return.type:)(take: $(my.name:)!)"
 
     elsif is_true (0.is_class) & is_false (0.is_buffer)
@@ -693,8 +693,8 @@ endfunction
 #       - proxy call
 #       - finalizing
 # ---------------------------------------------------------------------------
-function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type, wrapper)
-    check_arguments (my, "swift_method, proxy_call, proxy_return_type, wrapper", my)
+function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type, swift_project)
+    check_arguments (my, "swift_method, proxy_call, proxy_return_type, swift_project", my)
 
     #   Wrap errors.
     for my.swift_method.swift_argument where is_true (swift_argument.is_error)
@@ -705,7 +705,7 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type, w
         ")
 
         my.errors_handling ?= terminator
-        my.enum_status = swift_derive_enum_status_name (my.swift_argument.project ? my.wrapper.project)
+        my.enum_status = swift_derive_enum_status_name (my.swift_argument.project ? my.swift_project.name)
         my.errors_handling += format_left("\
             try $(my.enum_status:).handleStatus(fromC: $(swift_argument.name:).status)
         ")
@@ -838,7 +838,7 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type, w
     #   Handle returned status.
     if is_true (my.swift_method.handle_proxy_status)
         my.errors_handling ?= ""
-        my.enum_status = swift_derive_enum_status_name (my.wrapper.project)
+        my.enum_status = swift_derive_enum_status_name (my.swift_project.name)
         my.errors_handling += terminator + format_left("\
             try $(my.enum_status:).handleStatus(fromC: proxyResult)
         ")
@@ -872,13 +872,13 @@ endfunction
 #   Return formatted arguments list that is used to proxy returned
 #   "result class".
 # ---------------------------------------------------------------------------
-function swift_format_result_class_init_args (swift_method, wrapper)
-    check_arguments (my, "swift_method, wrapper", my)
+function swift_format_result_class_init_args (swift_method, swift_project)
+    check_arguments (my, "swift_method, swift_project", my)
 
     my.init_args = ""
 
     for my.swift_method.swift_return
-        my.init_args += "$(swift_return.name:): $(swift_wrap_c_returned_value (swift_return, my.wrapper))"
+        my.init_args += "$(swift_return.name:): $(swift_wrap_c_returned_value (swift_return, my.swift_project))"
         if ! last ()
             my.init_args += ", "
         endif
@@ -1169,51 +1169,11 @@ endfunction
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
-#   Setup and check default and automatically resolved attributes.
-# ---------------------------------------------------------------------------
-function swift_resolve (project, wrapper, projects_api)
-    check_arguments (my, "project, wrapper, projects_api", my)
-
-    echo_info ("Resolve <wrapper lang=\"$(my.wrapper.lang:)\"/> for project: '$(my.project.name:)'", my)
-
-    assert_attribute (my.wrapper, "lang", my)
-    assert_attributes (my.project, "name, prefix, framework", my)
-    assert_item (my.project, "license", my)
-
-    my.wrapper.project = my.project.name
-    my.wrapper.prefix = my.project.prefix
-    my.wrapper.framework = my.project.framework
-    my.wrapper.namespace = "$(my.project.namespace:Pascal)"
-    my.wrapper.namespace_dir = my.wrapper.namespace
-    my.wrapper.source_dir = \
-            cat_path ("../wrappers/$(my.wrapper.lang:c,lower)", "VirgilCrypto", my.wrapper.namespace_dir)
-    copy my.project->license to my.wrapper
-
-    new swift_import to my.wrapper
-        .framework = "Foundation"
-    endnew
-
-    new swift_import to my.wrapper
-        .framework = my.wrapper.framework
-    endnew
-
-    for my.project.require where defined (0.project) & string_equal (0.feature, "library")
-        my.required_project = projects_api_find_project (my.projects_api, require.project)
-
-        if my.required_project.wrappers = "all" | string_in (my.wrapper.lang, my.required_project.wrappers)
-            new swift_import to my.wrapper
-                .framework = make_ref_swift (make_id ("project", require.project, "framework name"))
-            endnew
-        endif
-    endfor
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Add auto-resolving attributes:
 #       - uid.
 # ---------------------------------------------------------------------------
-function swift_module_resolve (swift_module, wrapper)
-    check_arguments (my, "swift_module, wrapper", my)
+function swift_module_resolve (swift_module, swift_project)
+    check_arguments (my, "swift_module, swift_project", my)
 
     echo_trace ("Resolving <$(name (my.swift_module)) name=\"$(my.swift_module.name:)\"/>", my)
 
@@ -1258,11 +1218,11 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <swift_inherit/> from the entity <inherit/>.
 # ---------------------------------------------------------------------------
-function swift_create_inherit (inherit, destination, wrapper, meta)
-    check_arguments (my, "inherit, destination, wrapper, meta", my)
+function swift_create_inherit (inherit, destination, swift_project, meta)
+    check_arguments (my, "inherit, destination, swift_project, meta", my)
 
     new swift_inherit to my.destination
-        .type = swift_derive_protocol_name (my.inherit, my.wrapper)
+        .type = swift_derive_protocol_name (my.inherit, my.swift_project)
 
         return swift_inherit
     endnew
@@ -1272,8 +1232,8 @@ endfunction
 #   Add new <swift_class/> that encapsulate multiple objects returned by
 #   method.
 # ---------------------------------------------------------------------------
-function swift_create_result_class (parent, swift_method, destination, wrapper, meta)
-    check_arguments (my, "parent, swift_method, destination, wrapper, meta", my)
+function swift_create_result_class (parent, swift_method, destination, swift_project, meta)
+    check_arguments (my, "parent, swift_method, destination, swift_project, meta", my)
 
     assert_attributes (my.parent, "name, visibility", my)
     assert_attribute (my.swift_method, "name", my)
@@ -1293,7 +1253,7 @@ function swift_create_result_class (parent, swift_method, destination, wrapper, 
     new swift_class to my.destination
         . = "/// Encapsulate result of method $(my.parent.name:).$(my.swift_method.name:)()"
         .name = swift_derive_result_class_name (my.parent, my.swift_method)
-        .objc_name = swift_derive_class_objc_name (swift_class, my.wrapper)
+        .objc_name = swift_derive_class_objc_name (swift_class, my.swift_project)
         .visibility = my.parent.visibility
 
         swift_create_inherit_nsobject (swift_class)
@@ -1343,13 +1303,13 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <swift_property/> from the entity <instance/>.
 # ---------------------------------------------------------------------------
-function swift_create_property_from_constant (constant, destination, wrapper, meta)
-    check_arguments (my, "constant, destination, wrapper, meta", my)
+function swift_create_property_from_constant (constant, destination, swift_project, meta)
+    check_arguments (my, "constant, destination, swift_project, meta", my)
 
     new swift_property to my.destination
         . = swift_format_description (my.constant) ?
-        .name = swift_derive_constant_name (my.constant, my.wrapper)
-        .type = swift_derive_constant_type (my.constant, my.wrapper)
+        .name = swift_derive_constant_name (my.constant, my.swift_project)
+        .type = swift_derive_constant_type (my.constant, my.swift_project)
         .value = my.constant.value ?
         .visibility = "public"
         .access = "readonly"
@@ -1361,14 +1321,14 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <swift_property/> from the entity <instance/>.
 # ---------------------------------------------------------------------------
-function swift_create_property_from_instance (instance, destination, wrapper, meta)
-    check_arguments (my, "instance, destination, wrapper, meta", my)
+function swift_create_property_from_instance (instance, destination, swift_project, meta)
+    check_arguments (my, "instance, destination, swift_project, meta", my)
 
     assert_attribute (my.instance, "access", my)
 
     new swift_property to my.destination
         . = swift_format_description (my.instance) ?
-        .name = swift_derive_instance_name (my.instance, my.wrapper)
+        .name = swift_derive_instance_name (my.instance, my.swift_project)
 
         swift_map_instance (swift_property, my.instance)
 
@@ -1387,8 +1347,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <swift_argument/> from the entity <argument/>.
 # ---------------------------------------------------------------------------
-function swift_create_argument (argument, destination, wrapper, meta)
-    check_arguments (my, "argument, destination, wrapper, meta", my)
+function swift_create_argument (argument, destination, swift_project, meta)
+    check_arguments (my, "argument, destination, swift_project, meta", my)
 
     assert_attributes (my.argument, "name", my)
 
@@ -1404,8 +1364,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <swift_return/> from the entity <argument/>.
 # ---------------------------------------------------------------------------
-function swift_create_return_from_argument (class, method, argument, destination, wrapper, meta)
-    check_arguments (my, "class, method, argument, destination, wrapper, meta", my)
+function swift_create_return_from_argument (class, method, argument, destination, swift_project, meta)
+    check_arguments (my, "class, method, argument, destination, swift_project, meta", my)
 
     assert_attributes (my.argument, "name", my)
 
@@ -1426,8 +1386,8 @@ endfunction
 #   Create entity <swift_return/> from the entity <return/> if it is not
 #   a status, otherwise nothing is created.
 # ---------------------------------------------------------------------------
-function swift_create_return (return, destination, wrapper, meta)
-    check_arguments (my, "return, destination, wrapper, meta", my)
+function swift_create_return (return, destination, swift_project, meta)
+    check_arguments (my, "return, destination, swift_project, meta", my)
 
     new swift_return to my.destination
         swift_map_instance (swift_return, my.return)
@@ -1451,12 +1411,12 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <swift_method/> with <method/> declaration.
 # ---------------------------------------------------------------------------
-function swift_create_method_declaration (class, method, destination, wrapper, meta)
-    check_arguments (my, "class, method, destination, wrapper, meta", my)
+function swift_create_method_declaration (class, method, destination, swift_project, meta)
+    check_arguments (my, "class, method, destination, swift_project, meta", my)
 
     new swift_method to my.destination
         . = swift_format_description (my.method) ?
-        .name = swift_derive_method_name (method, my.wrapper)
+        .name = swift_derive_method_name (method, my.swift_project)
         .throws = swift_derive_method_throws (my.method)
         .handle_proxy_status = swift_derive_handle_proxy_status (my.method)
         .interface = my.method.interface ?
@@ -1470,16 +1430,16 @@ function swift_create_method_declaration (class, method, destination, wrapper, m
 
         for my.method.argument
             if argument.access <> "writeonly"
-                swift_create_argument (argument, swift_method, my.wrapper, my.meta)
+                swift_create_argument (argument, swift_method, my.swift_project, my.meta)
             endif
 
             if string_in (argument.class, "buffer") & string_in (argument.access, "readwrite, writeonly")
-                swift_create_return_from_argument (my.class, my.method, argument, swift_method, my.wrapper, my.meta)
+                swift_create_return_from_argument (my.class, my.method, argument, swift_method, my.swift_project, my.meta)
             endif
         endfor
 
         for my.method.return where ! string_equal (return.enum, "status")
-            swift_create_return (return, swift_method, my.wrapper, my.meta)
+            swift_create_return (return, swift_method, my.swift_project, my.meta)
         endfor
 
         return swift_method
@@ -1610,10 +1570,10 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <swift_method/> of from the interface entity <method/>.
 # ---------------------------------------------------------------------------
-function swift_create_interface_method (interface, method, destination, wrapper, meta)
-    check_arguments (my, "interface, method, destination, wrapper, meta", my)
+function swift_create_interface_method (interface, method, destination, swift_project, meta)
+    check_arguments (my, "interface, method, destination, swift_project, meta", my)
 
-    my.swift_method = swift_create_method_declaration (my.interface, my.method, my.destination, my.wrapper, my.meta)
+    my.swift_method = swift_create_method_declaration (my.interface, my.method, my.destination, my.swift_project, my.meta)
     swift_remove_error_arguments (my.swift_method)
     return my.swift_method
 endfunction
@@ -1621,28 +1581,28 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <swift_method/> of from the class entity <method/>.
 # ---------------------------------------------------------------------------
-function swift_create_class_method (class, method, destination, wrapper, meta)
-    check_arguments (my, "class, method, destination, wrapper, meta", my)
+function swift_create_class_method (class, method, destination, swift_project, meta)
+    check_arguments (my, "class, method, destination, swift_project, meta", my)
 
     #   Create declaration
-    my.swift_method = swift_create_method_declaration (my.class, my.method, my.destination, my.wrapper, my.meta)
+    my.swift_method = swift_create_method_declaration (my.class, my.method, my.destination, my.swift_project, my.meta)
 
     #   Wrap proxy call
     my.proxy_args = swift_format_c_proxy_args (my.class, my.method)
     my.proxy_call = "$(class_derive_c_method (my.class, my.method))($(my.proxy_args:))"
     my.proxy_return_type = swift_derive_proxy_return_type (my.method)
-    my.proxy_invocation = swift_wrap_c_proxy_call (my.swift_method, my.proxy_call, my.proxy_return_type, my.wrapper)
+    my.proxy_invocation = swift_wrap_c_proxy_call (my.swift_method, my.proxy_call, my.proxy_return_type, my.swift_project)
 
     #   Return result
     if count (my.swift_method.swift_return) = 1
         my.swift_return = my.swift_method->swift_return
 
         my.return_result = terminator + \
-                format_left ("return $(swift_wrap_c_returned_value (my.swift_method->swift_return, my.wrapper))")
+                format_left ("return $(swift_wrap_c_returned_value (my.swift_method->swift_return, my.swift_project))")
 
     elsif count (my.swift_method.swift_return) > 1
         my.result_class = swift_derive_result_class_name (my.destination, my.swift_method)
-        my.result_class_init_args = swift_format_result_class_init_args (my.swift_method, my.wrapper)
+        my.result_class_init_args = swift_format_result_class_init_args (my.swift_method, my.swift_project)
 
         my.return_result = terminator + \
                 format_left ("return $(my.result_class:)($(my.result_class_init_args:))")
@@ -1671,10 +1631,10 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create Swift computed property that makes proxy to retrieve constant.
 # ---------------------------------------------------------------------------
-function swift_create_proxy_property_from_constant (constant, interface, destination, wrapper, meta)
-    check_arguments (my, "constant, interface, destination, wrapper, meta", my)
+function swift_create_proxy_property_from_constant (constant, interface, destination, swift_project, meta)
+    check_arguments (my, "constant, interface, destination, swift_project, meta", my)
 
-    my.swift_constant = swift_create_property_from_constant (my.constant, my.destination, my.wrapper, my.meta)
+    my.swift_constant = swift_create_property_from_constant (my.constant, my.destination, my.swift_project, my.meta)
 
     my.api_getter = interface_derive_c_api_method (my.interface)
     my.constant_getter = interface_derive_c_constant_method (my.interface, my.constant)
@@ -1689,18 +1649,18 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add all components related to the interface.
 # ---------------------------------------------------------------------------
-function swift_create_interface_implementation (implementation, swift_class, wrapper, meta)
-    check_arguments (my, "implementation, swift_class, wrapper, meta", my)
+function swift_create_interface_implementation (implementation, swift_class, swift_project, meta)
+    check_arguments (my, "implementation, swift_class, swift_project, meta", my)
 
     for my.implementation.interface
-        swift_create_inherit (interface, my.swift_class, my.wrapper, my.meta)
+        swift_create_inherit (interface, my.swift_class, my.swift_project, my.meta)
 
         for interface.constant
-            swift_create_property_from_constant (constant, my.swift_class, my.wrapper, my.meta)
+            swift_create_property_from_constant (constant, my.swift_class, my.swift_project, my.meta)
         endfor
 
         for interface.method
-            swift_create_class_method (my.implementation, method, my.swift_class, my.wrapper, my.meta)
+            swift_create_class_method (my.implementation, method, my.swift_class, my.swift_project, my.meta)
         endfor
     endfor
 endfunction
@@ -1723,42 +1683,16 @@ function swift_create_class_property_context (destination, class)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create <swift_constructor/> that takes underlying C context.
-# ---------------------------------------------------------------------------
-function swift_create_class_constructor_context (destination, wrapper, meta)
-    check_arguments (my, "destination, wrapper, meta", my)
-
-    new swift_constructor to my.destination
-        . = "/// Take C context that implements this interface"
-        .visibility = "public"
-
-        new swift_argument to swift_constructor
-            .name = "c_ctx"
-            .type = "OpaquePointer"
-        endnew
-
-        new swift_code
-            . = "
-                self.c_ctx = c_ctx
-                super.init()
-            "
-        endnew
-
-        return swift_constructor
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Create enumeration <swift_constant/> from the entity <constant/>
 # ---------------------------------------------------------------------------
-function swift_create_enum_constant (constant, swift_enum, wrapper, meta)
-    check_arguments (my, "constant, swift_enum, wrapper, meta", my)
+function swift_create_enum_constant (constant, swift_enum, swift_project, meta)
+    check_arguments (my, "constant, swift_enum, swift_project, meta", my)
 
     assert_attribute (my.constant, "name", my)
 
     new swift_constant to my.swift_enum
         . = swift_format_description (my.constant) ?
-        .name = swift_derive_constant_name (my.constant, my.wrapper)
+        .name = swift_derive_constant_name (my.constant, my.swift_project)
         .value = my.constant.value ?
     endnew
 endfunction
@@ -1766,15 +1700,15 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add entities specific for "status" enum.
 # ---------------------------------------------------------------------------
-function swift_map_enum_status (swift_enum, enum, wrapper, meta)
-    check_arguments (my, "swift_enum, enum, wrapper, meta")
+function swift_map_enum_status (swift_enum, enum, swift_project, meta)
+    check_arguments (my, "swift_enum, enum, swift_project, meta")
 
     new swift_inherit to my.swift_enum
         .type = "Error"
     endnew
 
     for my.enum.constant where 0.name <> "success"
-        swift_create_enum_constant (constant, my.swift_enum, my.wrapper, my.meta)
+        swift_create_enum_constant (constant, my.swift_enum, my.swift_project, my.meta)
     endfor
 
     new swift_method to my.swift_enum
@@ -1807,25 +1741,25 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add entities for regular enum (not status codes).
 # ---------------------------------------------------------------------------
-function swift_map_enum_default (swift_enum, enum, wrapper, meta)
-    check_arguments (my, "swift_enum, enum, wrapper, meta")
+function swift_map_enum_default (swift_enum, enum, swift_project, meta)
+    check_arguments (my, "swift_enum, enum, swift_project, meta")
 
     for my.enum.constant
-        swift_create_enum_constant (constant, my.swift_enum, my.wrapper, my.meta)
+        swift_create_enum_constant (constant, my.swift_enum, my.swift_project, my.meta)
     endfor
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Add constructor init(fromC: c_enum_type)
 # ---------------------------------------------------------------------------
-function swift_create_enum_constructor (swift_enum, enum, wrapper, meta)
-    check_arguments (my, "swift_enum, enum, wrapper, meta")
+function swift_create_enum_constructor (swift_enum, enum, swift_project, meta)
+    check_arguments (my, "swift_enum, enum, swift_project, meta")
 
     new swift_constructor to my.swift_enum
         . = "/// Create enumeration value from the correspond C enumeration value."
         .visibility = "internal"
 
-        my.arg_enum_name = swift_derive_argument_name (my.enum, my.wrapper)
+        my.arg_enum_name = swift_derive_argument_name (my.enum, my.swift_project)
 
         new swift_argument to swift_constructor
             .name = my.arg_enum_name
@@ -1844,8 +1778,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create default <swift_constructor/> that initialize underlying C context.
 # ---------------------------------------------------------------------------
-function swift_create_class_default_constructor (swift_class, class, wrapper, meta)
-    check_arguments (my, "swift_class, class, wrapper, meta", my)
+function swift_create_class_default_constructor (swift_class, class, swift_project, meta)
+    check_arguments (my, "swift_class, class, swift_project, meta", my)
 
     if string_in (my.class.context, "public") & string_in (my.class.lifecycle, "none")
         my.ctx_size_invocation = "$(class_derive_class_c_method_ctx_size (my.class))()"
@@ -1916,22 +1850,22 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create <swift_constructor/> from abstract entity <constructor/>.
 # ---------------------------------------------------------------------------
-function swift_create_class_constructor (class, constructor, destination, wrapper, meta)
-    check_arguments (my, "class, constructor, destination, wrapper, meta", my)
+function swift_create_class_constructor (class, constructor, destination, swift_project, meta)
+    check_arguments (my, "class, constructor, destination, swift_project, meta", my)
 
     new swift_constructor to my.destination
         . = swift_format_description (my.constructor) ?
         .visibility = "public"
 
         for my.constructor.argument
-            swift_create_argument (argument, swift_constructor, my.wrapper, my.meta)
+            swift_create_argument (argument, swift_constructor, my.swift_project, my.meta)
         endfor
 
         #   Wrap proxy call
         my.proxy_args = swift_format_c_proxy_args (my.class, my.constructor)
         my.proxy_call = "$(class_derive_c_constructor (my.class, my.constructor))($(my.proxy_args:))"
         my.proxy_return_type = swift_derive_class_context_type (my.class) + "?"
-        my.proxy_invocation = swift_wrap_c_proxy_call (swift_constructor, my.proxy_call, my.proxy_return_type, my.wrapper)
+        my.proxy_invocation = swift_wrap_c_proxy_call (swift_constructor, my.proxy_call, my.proxy_return_type, my.swift_project)
 
         my.context_assignment = format_left ("self.c_ctx = proxyResult!")
 
@@ -1950,8 +1884,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create <swift_destructor/>.
 # ---------------------------------------------------------------------------
-function swift_create_class_destructor (swift_class, class, wrapper, meta)
-    check_arguments (my, "swift_class, class, wrapper, meta", my)
+function swift_create_class_destructor (swift_class, class, swift_project, meta)
+    check_arguments (my, "swift_class, class, swift_project, meta", my)
 
     my.self_ctx = "self.c_ctx"
 
@@ -1977,8 +1911,8 @@ endfunction
 #   Add <swift_method/> with setter only that proxy dependency to the
 #   C context.
 # ---------------------------------------------------------------------------
-function swift_create_method_from_dependency (dependency, impl, destination, wrapper, meta)
-    check_arguments (my, "dependency, impl, destination, wrapper, meta", my)
+function swift_create_method_from_dependency (dependency, impl, destination, swift_project, meta)
+    check_arguments (my, "dependency, impl, destination, swift_project, meta", my)
 
     new swift_method to my.destination
         . = swift_format_description (my.dependency) ?
@@ -1997,7 +1931,7 @@ function swift_create_method_from_dependency (dependency, impl, destination, wra
         new swift_code to swift_method
             if my.dependency.has_observers & my.dependency.is_observers_return_status
                 my.result_var = "let proxyResult = "
-                my.enum_status = swift_derive_enum_status_name (my.wrapper.project)
+                my.enum_status = swift_derive_enum_status_name (my.swift_project.name)
                 my.impl_handle_status = "try $(my.enum_status:).handleStatus(fromC: proxyResult)"
             endif
 
@@ -2015,16 +1949,16 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create class <swift_constant/> from the entity <constant/>
 # ---------------------------------------------------------------------------
-function swift_create_class_constant (constant, swift_class, wrapper, meta)
-    check_arguments (my, "constant, swift_class, wrapper, meta", my)
+function swift_create_class_constant (constant, swift_class, swift_project, meta)
+    check_arguments (my, "constant, swift_class, swift_project, meta", my)
 
     assert_attribute (my.constant, "name", my)
     assert_attribute (my.constant, "value", my)
 
     new swift_constant to my.swift_class
         . = swift_format_description (my.constant) ?
-        .name = swift_derive_constant_name (my.constant, my.wrapper)
-        .type = swift_derive_constant_type (my.constant, my.wrapper)
+        .name = swift_derive_constant_name (my.constant, my.swift_project)
+        .type = swift_derive_constant_type (my.constant, my.swift_project)
         .value = my.constant.value
         .visibility = "public"
     endnew
@@ -2033,34 +1967,34 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create module and return it's class that handles implementation helper.
 # ---------------------------------------------------------------------------
-function swift_get_implementation_helper_class (destination, wrapper, meta)
-    check_arguments (my, "destination, wrapper, meta", my)
+function swift_get_implementation_helper_class (swift_project, meta)
+    check_arguments (my, "swift_project, meta", my)
 
-    my.name = "$(my.wrapper.project:Pascal)Implementation"
+    my.name = "$(my.swift_project.name:Pascal)Implementation"
 
-    my.implementation_helper_module = my.destination->swift_module(name = my.name) ?
+    my.implementation_helper_module = my.swift_project->swift_module(name = my.name) ?
 
     if defined (my.implementation_helper_module)
         return my.implementation_helper_module->swift_class
     endif
 
-    new swift_module to my.destination
+    new swift_module to my.swift_project
         . = "/// Create factory that turns C implementation object to the Swift implementation object."
         .name = my.name
         .source_file_name = 0.name + ".swift"
-        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+        .source_file_path = cat_path (my.swift_project.source_dir, 0.source_file_name)
 
         new swift_license to swift_module
-            . = swift_format_license (my.wrapper->license) ?
+            . = swift_format_license (my.swift_project->license) ?
         endnew
 
-        for my.wrapper.swift_import
+        for my.swift_project.swift_import
             copy swift_import to swift_module
         endfor
 
         new swift_class to swift_module
             .name = my.name
-            .objc_name = swift_derive_class_objc_name (swift_class, my.wrapper)
+            .objc_name = swift_derive_class_objc_name (swift_class, my.swift_project)
             .visibility = "public"
 
             swift_create_inherit_nsobject (swift_class)
@@ -2074,8 +2008,8 @@ endfunction
 #   Return interface method that wraps C implementation object to the
 #   Swift object.
 # ---------------------------------------------------------------------------
-function swift_get_implementation_helper_interface_method (swift_class, interface, wrapper)
-    check_arguments (my, "swift_class, interface, wrapper", my)
+function swift_get_implementation_helper_interface_method (swift_class, interface, swift_project)
+    check_arguments (my, "swift_class, interface, swift_project", my)
 
     my.interface_method_name = "wrap$(my.interface.name:Pascal)"
 
@@ -2086,7 +2020,7 @@ function swift_get_implementation_helper_interface_method (swift_class, interfac
     endif
 
     new swift_method to my.swift_class
-        my.protocol_name = swift_derive_protocol_name (my.interface, my.wrapper)
+        my.protocol_name = swift_derive_protocol_name (my.interface, my.swift_project)
         . = "\
             /// Wrap C implementation object to the Swift object that implements protocol $(my.protocol_name:).
         "
@@ -2101,7 +2035,7 @@ function swift_get_implementation_helper_interface_method (swift_class, interfac
         endnew
 
         new swift_return to swift_method
-            .type = swift_derive_protocol_name (my.interface, my.wrapper)
+            .type = swift_derive_protocol_name (my.interface, my.swift_project)
         endnew
 
         new swift_code to swift_method
@@ -2125,19 +2059,19 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add wrapper "case" statement for implementation/interface pair.
 # ---------------------------------------------------------------------------
-function swift_update_implementation_helper_module (implementation, destination, wrapper, meta)
-    check_arguments (my, "implementation, destination, wrapper, meta", my)
+function swift_update_implementation_helper_module (implementation, swift_project, meta)
+    check_arguments (my, "implementation, swift_project, meta", my)
 
-    my.helper_class = swift_get_implementation_helper_class(my.destination, my.wrapper, my.meta)
+    my.helper_class = swift_get_implementation_helper_class(my.swift_project, my.meta)
     my.refs = meta_refs (my.meta)
 
     for my.implementation.interface
         my.wrap_interface_method = \
-                swift_get_implementation_helper_interface_method (my.helper_class, interface, my.wrapper)
+                swift_get_implementation_helper_interface_method (my.helper_class, interface, my.swift_project)
 
         my.wrap_interface_method->swift_code.temp_code += format_left("\
             case $(my.refs.c_implementation_constant_tag):
-                return $(swift_derive_class_name (my.implementation, my.wrapper))(take: c_ctx)
+                return $(swift_derive_class_name (my.implementation, my.swift_project))(take: c_ctx)
         ")
     endfor
 endfunction
@@ -2147,20 +2081,53 @@ endfunction
 #   Create modules.
 # ===========================================================================
 
-
 # ---------------------------------------------------------------------------
 #   Create module that contains Swift specific project information.
 # ---------------------------------------------------------------------------
-function swift_create_project_module (project, destination, wrapper)
-    check_arguments (my, "wrapper, destination, wrapper", my)
+function swift_create_project_module (project, wrapper)
+    check_arguments (my, "project, wrapper", my)
 
-    new swift_project to my.destination
+    assert_attribute (my.wrapper, "lang", my)
+    assert_attributes (my.project, "name, prefix, framework", my)
+    assert_item (my.project, "license", my)
+
+    echo_info ("Create Swift project for project: '$(my.project.name:)'", my)
+
+    new swift_project to my.wrapper
         . = my.project. ?
+        .name = my.project.name
+        .prefix = my.project.prefix
+        .framework = my.project.framework
+        .namespace = "$(my.project.namespace:Pascal)"
+        .namespace_dir = swift_project.namespace
+        .source_dir = cat_path (my.wrapper.source_dir, 0.namespace_dir)
+
+        copy my.project->license to swift_project
 
         new swift_uid to swift_project
-            .name = my.wrapper.namespace
+            .name = swift_project.namespace
             .uid = "swift_framework_name"
         endnew
+
+        new swift_import to swift_project
+            .framework = "Foundation"
+        endnew
+
+        new swift_import to swift_project
+            .framework = swift_project.framework
+        endnew
+
+        for my.project.require where defined (require.project) & string_equal (require.feature, "library")
+            my.required_swift_project = my.wrapper->swift_project (name = require.project) ?
+
+            if defined (my.required_swift_project)
+                new swift_import to swift_project
+                    .framework = my.required_swift_project.namespace
+                endnew
+            endif
+        endfor
+
+        return swift_project
     endnew
 endfunction
 
@@ -2168,8 +2135,8 @@ endfunction
 #   Create custom modules:
 #       - module with base protocol that handles C context.
 # ---------------------------------------------------------------------------
-function swift_create_custom_modules (source, destination, wrapper, meta)
-    check_arguments (my, "source, destination, wrapper, meta", my)
+function swift_create_custom_modules (source, swift_project, meta)
+    check_arguments (my, "source, swift_project, meta", my)
 
     if !count (my.source.class, scope = "public" & !string_in (name, "data, buffer")) & \
             !count (my.source.interface, scope = "public")
@@ -2178,14 +2145,14 @@ function swift_create_custom_modules (source, destination, wrapper, meta)
 
     my.name = "CContext"
 
-    new swift_module to my.destination
+    new swift_module to my.swift_project
         . = "/// This is base protocol for all types that wrap C interfaces."
         .name = my.name
         .source_file_name = 0.name + ".swift"
-        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+        .source_file_path = cat_path (my.swift_project.source_dir, 0.source_file_name)
 
         new swift_license to swift_module
-            . = swift_format_license (my.wrapper->license) ?
+            . = swift_format_license (my.swift_project->license) ?
         endnew
 
         new swift_import to swift_module
@@ -2194,7 +2161,7 @@ function swift_create_custom_modules (source, destination, wrapper, meta)
 
         new swift_protocol to swift_module
             .name = my.name
-            .objc_name = swift_derive_protocol_objc_name (swift_protocol, my.wrapper)
+            .objc_name = swift_derive_protocol_objc_name (swift_protocol, my.swift_project)
             .visibility = "public"
 
             swift_create_class_property_context (swift_protocol)
@@ -2205,44 +2172,44 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create module with Swift protocol from the abstract 'interface' notion.
 # ---------------------------------------------------------------------------
-function swift_create_interface_module (interface, destination, wrapper, meta)
-    check_arguments (my, "interface, destination, wrapper, meta", my)
+function swift_create_interface_module (interface, swift_project, meta)
+    check_arguments (my, "interface, swift_project, meta", my)
 
     echo_info ("Create <swift_module/> from interface: '$(my.interface.name:)'", my)
 
-    new swift_module to my.destination
+    new swift_module to my.swift_project
         .name = swift_derive_module_name (my.interface)
         .source_file_name = 0.name + ".swift"
-        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+        .source_file_path = cat_path (my.swift_project.source_dir, 0.source_file_name)
 
         new swift_license to swift_module
-            . = swift_format_license (my.wrapper->license) ?
+            . = swift_format_license (my.swift_project->license) ?
         endnew
 
-        for my.wrapper.swift_import
+        for my.swift_project.swift_import
             copy swift_import to swift_module
         endfor
 
         new swift_protocol to swift_module
             . = swift_format_description (my.interface) ?
-            .name = swift_derive_protocol_name (my.interface, my.wrapper)
-            .objc_name = swift_derive_protocol_objc_name (swift_protocol, my.wrapper)
+            .name = swift_derive_protocol_name (my.interface, my.swift_project)
+            .objc_name = swift_derive_protocol_objc_name (swift_protocol, my.swift_project)
 
             swift_map_attr_visibility (swift_protocol, my.interface)
 
             for my.interface.inherit
-                swift_create_inherit (inherit, swift_protocol, my.wrapper, my.meta)
+                swift_create_inherit (inherit, swift_protocol, my.swift_project, my.meta)
             else
                 swift_create_inherit_c_context (swift_protocol)
             endfor
 
             for my.interface.constant
-                swift_create_property_from_constant (constant, swift_protocol, my.wrapper, my.meta)
+                swift_create_property_from_constant (constant, swift_protocol, my.swift_project, my.meta)
             endfor
 
             for my.interface.method
                 my.swift_method = \
-                        swift_create_interface_method (my.interface, method, swift_protocol, my.wrapper, my.meta)
+                        swift_create_interface_method (my.interface, method, swift_protocol, my.swift_project, my.meta)
 
                 if swift_method_is_objc_incompatible (my.swift_method)
                     swift_create_objc_compatible_method_declaration (my.swift_method, swift_protocol)
@@ -2250,7 +2217,7 @@ function swift_create_interface_module (interface, destination, wrapper, meta)
             endfor
 
             for swift_protocol.swift_method where count (0.swift_return) > 1
-                swift_create_result_class (swift_protocol, swift_method, swift_module, my.wrapper, my.meta)
+                swift_create_result_class (swift_protocol, swift_method, swift_module, my.swift_project, my.meta)
             endfor
         endnew
     endnew
@@ -2261,8 +2228,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create module with Swift class from the abstract 'implementation' notion.
 # ---------------------------------------------------------------------------
-function swift_create_implementation_module (implementation, destination, wrapper, meta)
-    check_arguments (my, "implementation, destination, wrapper, meta", my)
+function swift_create_implementation_module (implementation, swift_project, meta)
+    check_arguments (my, "implementation, swift_project, meta", my)
 
     if my.implementation.scope <> "internal"
         echo_info ("Create <swift_module/> from implementation: '$(my.implementation.name:)'", my)
@@ -2270,59 +2237,59 @@ function swift_create_implementation_module (implementation, destination, wrappe
         echo_info ("Skip creating <swift_module/> from internal implementation: '$(my.implementation.name:)'", my)
     endif
 
-    new swift_module to my.destination
+    new swift_module to my.swift_project
         .name = swift_derive_module_name (my.implementation)
         .source_file_name = 0.name + ".swift"
-        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+        .source_file_path = cat_path (my.swift_project.source_dir, 0.source_file_name)
 
         new swift_license to swift_module
-            . = swift_format_license (my.wrapper->license) ?
+            . = swift_format_license (my.swift_project->license) ?
         endnew
 
-        for my.wrapper.swift_import
+        for my.swift_project.swift_import
             copy swift_import to swift_module
         endfor
 
         new swift_class to swift_module
             . = swift_format_description (my.implementation) ?
-            .name = swift_derive_class_name (my.implementation, my.wrapper)
-            .objc_name = swift_derive_class_objc_name (swift_class, my.wrapper)
+            .name = swift_derive_class_name (my.implementation, my.swift_project)
+            .objc_name = swift_derive_class_objc_name (swift_class, my.swift_project)
 
             swift_map_attr_visibility (swift_class, my.implementation)
 
             swift_create_inherit_nsobject (swift_class)
 
             for my.implementation.constant
-                swift_create_class_constant (constant, swift_class, my.wrapper, my.meta)
+                swift_create_class_constant (constant, swift_class, my.swift_project, my.meta)
             endfor
 
             for my.implementation.dependency
-                swift_create_method_from_dependency (dependency, my.implementation, swift_class, my.wrapper, my.meta)
+                swift_create_method_from_dependency (dependency, my.implementation, swift_class, my.swift_project, my.meta)
             endfor
 
             for my.implementation.method where method.declaration = "public" & method.visibility = "public"
-                swift_create_class_method (my.implementation, method, swift_class, my.wrapper, my.meta)
+                swift_create_class_method (my.implementation, method, swift_class, my.swift_project, my.meta)
             endfor
 
             if my.implementation.context <> "none"
                 swift_create_class_property_context (swift_class, my.implementation)
 
-                swift_create_class_default_constructor (swift_class, my.implementation, my.wrapper, my.meta)
-                swift_create_class_destructor (swift_class, my.implementation, my.wrapper, my.meta)
+                swift_create_class_default_constructor (swift_class, my.implementation, my.swift_project, my.meta)
+                swift_create_class_destructor (swift_class, my.implementation, my.swift_project, my.meta)
 
                 if my.implementation.lifecycle <> "none"
                     for my.implementation.constructor where 0.declaration = "public" & 0.visibility = "public"
                         swift_create_class_constructor (\
-                            my.implementation, constructor, swift_class, my.wrapper, my.meta)
+                            my.implementation, constructor, swift_class, my.swift_project, my.meta)
                     endfor
                 endif
             endif
 
-            swift_create_interface_implementation (my.implementation, swift_class, my.wrapper, my.meta)
-            swift_update_implementation_helper_module (my.implementation, my.destination, my.wrapper, my.meta)
+            swift_create_interface_implementation (my.implementation, swift_class, my.swift_project, my.meta)
+            swift_update_implementation_helper_module (my.implementation, my.swift_project, my.meta)
 
             for swift_class.swift_method where count (0.swift_return) > 1
-                swift_create_result_class (swift_class, swift_method, swift_module, my.wrapper, my.meta)
+                swift_create_result_class (swift_class, swift_method, swift_module, my.swift_project, my.meta)
             endfor
         endnew
     endnew
@@ -2333,10 +2300,10 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add methods ending within implementation helper class.
 # ---------------------------------------------------------------------------
-function swift_finalize_implementation_helper_modules (destination, wrapper, meta)
-    check_arguments (my, "destination, wrapper, meta", my)
+function swift_finalize_implementation_helper_modules (swift_project, meta)
+    check_arguments (my, "swift_project, meta", my)
 
-    my.helper_class = swift_get_implementation_helper_class(my.destination, my.wrapper, my.meta)
+    my.helper_class = swift_get_implementation_helper_class(my.swift_project, my.meta)
 
     for my.helper_class.swift_method
         swift_method->swift_code.temp_code += format_left ("\
@@ -2354,17 +2321,17 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Perform finalization for custom modules.
 # ---------------------------------------------------------------------------
-function swift_finalize_custom_modules (source, destination, wrapper, meta)
-    check_arguments (my, "source, destination, wrapper, meta", my)
+function swift_finalize_custom_modules (source, swift_project, meta)
+    check_arguments (my, "source, swift_project, meta", my)
 
-    swift_finalize_implementation_helper_modules (my.destination, my.wrapper, my.meta)
+    swift_finalize_implementation_helper_modules (my.swift_project, my.meta)
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Create module with Swift class from the abstract 'class' notion.
 # ---------------------------------------------------------------------------
-function swift_create_class_module (class, destination, wrapper, meta)
-    check_arguments (my, "class, destination, wrapper, meta", my)
+function swift_create_class_module (class, swift_project, meta)
+    check_arguments (my, "class, swift_project, meta", my)
 
     echo_info ("Create <swift_module/> from class: '$(my.class.name:)'", my)
 
@@ -2375,23 +2342,23 @@ function swift_create_class_module (class, destination, wrapper, meta)
         return
     endif
 
-    new swift_module to my.destination
+    new swift_module to my.swift_project
         .name = swift_derive_module_name (my.class)
         .source_file_name = 0.name + ".swift"
-        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+        .source_file_path = cat_path (my.swift_project.source_dir, 0.source_file_name)
 
         new swift_license to swift_module
-            . = swift_format_license (my.wrapper->license) ?
+            . = swift_format_license (my.swift_project->license) ?
         endnew
 
-        for my.wrapper.swift_import
+        for my.swift_project.swift_import
             copy swift_import to swift_module
         endfor
 
         new swift_class to swift_module
             . = swift_format_description (my.class) ?
-            .name = swift_derive_class_name (my.class, my.wrapper)
-            .objc_name = swift_derive_class_objc_name (swift_class, my.wrapper)
+            .name = swift_derive_class_name (my.class, my.swift_project)
+            .objc_name = swift_derive_class_objc_name (swift_class, my.swift_project)
 
             swift_map_attr_visibility (swift_class, my.class)
 
@@ -2400,30 +2367,30 @@ function swift_create_class_module (class, destination, wrapper, meta)
             if my.class.context <> "none"
                 swift_create_class_property_context (swift_class, my.class)
 
-                swift_create_class_default_constructor (swift_class, my.class, my.wrapper, my.meta)
-                swift_create_class_destructor (swift_class, my.class, my.wrapper, my.meta)
+                swift_create_class_default_constructor (swift_class, my.class, my.swift_project, my.meta)
+                swift_create_class_destructor (swift_class, my.class, my.swift_project, my.meta)
 
                 if my.class.lifecycle <> "none"
                     for my.class.constructor where 0.declaration = "public" & 0.visibility = "public"
-                        swift_create_class_constructor (my.class, constructor, swift_class, my.wrapper, my.meta)
+                        swift_create_class_constructor (my.class, constructor, swift_class, my.swift_project, my.meta)
                     endfor
                 endif
             endif
 
             for my.class.constant where constant.definition = "public"
-                swift_create_class_constant (constant, swift_class, my.wrapper, my.meta)
+                swift_create_class_constant (constant, swift_class, my.swift_project, my.meta)
             endfor
 
             for my.class.dependency
-                swift_create_method_from_dependency (dependency, my.class, swift_class, my.wrapper, my.meta)
+                swift_create_method_from_dependency (dependency, my.class, swift_class, my.swift_project, my.meta)
             endfor
 
             for my.class.method where method.declaration = "public" & method.visibility = "public"
-                swift_create_class_method (my.class, method, swift_class, my.wrapper, my.meta)
+                swift_create_class_method (my.class, method, swift_class, my.swift_project, my.meta)
             endfor
 
             for swift_class.swift_method where count (0.swift_return) > 1
-                swift_create_result_class (swift_class, swift_method, swift_module, my.wrapper, my.meta)
+                swift_create_result_class (swift_class, swift_method, swift_module, my.swift_project, my.meta)
             endfor
         endnew
     endnew
@@ -2434,20 +2401,20 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create module with Swift enum from the abstract 'enum' notion.
 # ---------------------------------------------------------------------------
-function swift_create_enum_module (enum, destination, wrapper, meta)
-    check_arguments (my, "enum, destination, wrapper, meta", my)
+function swift_create_enum_module (enum, swift_project, meta)
+    check_arguments (my, "enum, swift_project, meta", my)
 
     echo_info ("Create <swift_module/> from enum: '$(my.enum.name:)'", my)
 
     assert_attribute (my.enum, "name", my)
 
-    new swift_module to my.destination
-        .name = swift_derive_enum_name (my.enum, my.wrapper)
+    new swift_module to my.swift_project
+        .name = swift_derive_enum_name (my.enum, my.swift_project)
         .source_file_name = 0.name + ".swift"
-        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+        .source_file_path = cat_path (my.swift_project.source_dir, 0.source_file_name)
 
         new swift_license to swift_module
-            . = swift_format_license (my.wrapper->license) ?
+            . = swift_format_license (my.swift_project->license) ?
         endnew
 
         new swift_import to swift_module
@@ -2455,13 +2422,13 @@ function swift_create_enum_module (enum, destination, wrapper, meta)
         endnew
 
         new swift_import to swift_module
-            .framework = my.wrapper.framework
+            .framework = my.swift_project.framework
         endnew
 
         new swift_enum to swift_module
             . = swift_format_description (my.enum) ?
-            .name = swift_derive_enum_name (my.enum, my.wrapper)
-            .objc_name = swift_derive_enum_objc_name (swift_enum, my.wrapper)
+            .name = swift_derive_enum_name (my.enum, my.swift_project)
+            .objc_name = swift_derive_enum_objc_name (swift_enum, my.swift_project)
 
             swift_map_attr_visibility (swift_enum, my.enum)
             swift_map_attr_scope (swift_enum, my.enum)
@@ -2471,12 +2438,12 @@ function swift_create_enum_module (enum, destination, wrapper, meta)
             endnew
 
             if my.enum.name = "status"
-                swift_map_enum_status (swift_enum, my.enum, my.wrapper, my.meta)
+                swift_map_enum_status (swift_enum, my.enum, my.swift_project, my.meta)
             else
-                swift_map_enum_default (swift_enum, my.enum, my.wrapper, my.meta)
+                swift_map_enum_default (swift_enum, my.enum, my.swift_project, my.meta)
             endif
 
-            swift_create_enum_constructor (swift_enum, my.enum, my.wrapper, my.meta)
+            swift_create_enum_constructor (swift_enum, my.enum, my.swift_project, my.meta)
         endnew
     endnew
 

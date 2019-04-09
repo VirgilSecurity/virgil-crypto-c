@@ -106,17 +106,16 @@ vscf_pbe_alg_info_cleanup_ctx(vscf_pbe_alg_info_t *self) {
 //  Create algorithm info with identificator, KDF algorithm info and
 //  cipher alg info.
 //
-VSCF_PUBLIC vscf_pbe_alg_info_t *
-vscf_pbe_alg_info_new_with_members(
-        vscf_alg_id_t alg_id, vscf_impl_t **kdf_alg_info_ref, vscf_impl_t **cipher_alg_info_ref) {
+VSCF_PUBLIC void
+vscf_pbe_alg_info_init_ctx_with_members(vscf_pbe_alg_info_t *self, vscf_alg_id_t alg_id, vscf_impl_t **kdf_alg_info_ref,
+        vscf_impl_t **cipher_alg_info_ref) {
 
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
     VSCF_ASSERT_PTR(kdf_alg_info_ref);
     VSCF_ASSERT_PTR(*kdf_alg_info_ref);
     VSCF_ASSERT_PTR(cipher_alg_info_ref);
     VSCF_ASSERT_PTR(*cipher_alg_info_ref);
-
-    vscf_pbe_alg_info_t *self = vscf_pbe_alg_info_new();
 
     self->alg_id = alg_id;
 
@@ -125,8 +124,6 @@ vscf_pbe_alg_info_new_with_members(
 
     self->cipher_alg_info = *cipher_alg_info_ref;
     *cipher_alg_info_ref = NULL;
-
-    return self;
 }
 
 //

@@ -51,7 +51,7 @@
 // --------------------------------------------------------------------------
 //  Constants
 // --------------------------------------------------------------------------
-const char VSCE_PHE_PHP_VERSION[] = "0.5.0";
+const char VSCE_PHE_PHP_VERSION[] = "0.6.0";
 const char VSCE_PHE_PHP_EXTNAME[] = "vsce_phe_php";
 
 const char VSCE_PHE_CLIENT_PHP_RES_NAME[] = "vsce_phe_client_t";

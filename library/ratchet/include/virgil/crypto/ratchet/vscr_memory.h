@@ -71,25 +71,18 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Compile-time configuration of the default alloc function.
+//  Allocate required amount of memory by usging current allocation function.
+//  Returns NULL if memory allocation fails.
 //
-#ifndef VSCR_ALLOC_DEFAULT
-#   define VSCR_ALLOC_DEFAULT(size) calloc (1, (size))
-#endif
-
-//
-//  Compile-time configuration of the default dealloc function.
-//
-#ifndef VSCR_DEALLOC_DEFAULT
-#   define VSCR_DEALLOC_DEFAULT(mem) free ((mem))
-#endif
+VSCR_PUBLIC void *
+vscr_alloc(size_t size);
 
 //
 //  Allocate required amount of memory by usging current allocation function.
 //  Returns NULL if memory allocation fails.
 //
 VSCR_PUBLIC void *
-vscr_alloc(size_t size);
+vscr_calloc(size_t count, size_t size);
 
 //
 //  Deallocate given memory by usging current de-allocation function.
@@ -106,7 +99,7 @@ vscr_set_allocators(vscr_alloc_fn alloc_cb, vscr_dealloc_fn dealloc_cb);
 //
 //  Zeroize memory.
 //  Note, this function can be reduced by compiler during optimization step.
-//  For sensitive data erasing use vscr_erase ().
+//  For sensitive data erasing use vscr_erase().
 //
 VSCR_PUBLIC void
 vscr_zeroize(void *mem, size_t size);
@@ -117,6 +110,14 @@ vscr_zeroize(void *mem, size_t size);
 //
 VSCR_PUBLIC void
 vscr_erase(void *mem, size_t size);
+
+//
+//  Perform constant-time memory comparison.
+//  The time depends on the given length but not on the compared memory.
+//  Return true of given memory chunks are equal.
+//
+VSCR_PUBLIC bool
+vscr_memory_secure_equal(const void *a, const void *b, size_t len);
 
 
 // --------------------------------------------------------------------------

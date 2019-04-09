@@ -123,6 +123,7 @@ function  _A12_add_struct_impl (meta, destination)
             "
             .name = my.names.property_info
             .class = ".(class_impl_struct_info)"
+            .access = "readonly"
         endnew
 
         new property

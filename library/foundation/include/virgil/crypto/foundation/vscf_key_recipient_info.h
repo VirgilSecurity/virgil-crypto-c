@@ -109,6 +109,15 @@ VSCF_PUBLIC vscf_key_recipient_info_t *
 vscf_key_recipient_info_new(void);
 
 //
+//  Perform initialization of pre-allocated context.
+//  Create object and define all properties.
+//
+VSCF_PUBLIC void
+vscf_key_recipient_info_init_with_members(vscf_key_recipient_info_t *self, vsc_data_t recipient_id,
+        vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key);
+
+//
+//  Allocate class context and perform it's initialization.
 //  Create object and define all properties.
 //
 VSCF_PUBLIC vscf_key_recipient_info_t *

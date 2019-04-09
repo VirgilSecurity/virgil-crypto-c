@@ -98,9 +98,15 @@
         </interface>
 
         <method name="set keygen params" visibility="public" declaration="public">
-            Setup parameters that is used during key generation.
+            Setup key length in bits that is used for key generation.
 
             <argument name="bitlen" type="size"/>
+        </method>
+
+        <method name="set keygen exponent" visibility="private" declaration="public">
+            Setup key exponent that is used for key generation.
+            Note, this method is used internally.
+
             <argument name="exponent" type="size"/>
         </method>
     </implementation>

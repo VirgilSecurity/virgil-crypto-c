@@ -348,6 +348,8 @@ vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *self) {
 static void
 vscr_ratchet_session_did_setup_rng(vscr_ratchet_session_t *self) {
 
+    VSCR_ASSERT_PTR(self);
+
     if (self->rng != NULL) {
         vscr_ratchet_use_rng(self->ratchet, self->rng);
     }
@@ -365,8 +367,6 @@ vscr_ratchet_session_did_release_rng(vscr_ratchet_session_t *self) {
 //
 //  Setups default dependencies:
 //      - RNG: CTR DRBG
-//      - Key serialization: DER PKCS8
-//      - Symmetric cipher: AES256-GCM
 //
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *self) {
@@ -406,7 +406,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
     vscr_error_reset(&error_ctx);
 
     vsc_buffer_t *sender_identity_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
-            self->key_utils, sender_identity_private_key, &error_ctx);
+            self->key_utils, sender_identity_private_key, true, false, true, &error_ctx);
 
     if (vscr_error_has_error(&error_ctx)) {
         status = vscr_error_status(&error_ctx);
@@ -414,7 +414,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
     }
 
     vsc_buffer_t *receiver_identity_public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
-            self->key_utils, receiver_identity_public_key, &error_ctx);
+            self->key_utils, receiver_identity_public_key, true, false, true, &error_ctx);
 
     if (vscr_error_has_error(&error_ctx)) {
         status = vscr_error_status(&error_ctx);
@@ -430,7 +430,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
     }
 
     vsc_buffer_t *receiver_long_term_public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
-            self->key_utils, receiver_long_term_public_key, &error_ctx);
+            self->key_utils, receiver_long_term_public_key, false, true, false, &error_ctx);
 
     if (vscr_error_has_error(&error_ctx)) {
         status = vscr_error_status(&error_ctx);
@@ -446,7 +446,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
 
     if (receiver_one_time_public_key.len != 0) {
         receiver_one_time_public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
-                self->key_utils, receiver_one_time_public_key, &error_ctx);
+                self->key_utils, receiver_one_time_public_key, false, true, false, &error_ctx);
 
         if (vscr_error_has_error(&error_ctx)) {
             status = vscr_error_status(&error_ctx);
@@ -541,8 +541,8 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_ide
     vscr_error_t error_ctx;
     vscr_error_reset(&error_ctx);
 
-    vsc_buffer_t *sender_identity_public_key_raw =
-            vscr_ratchet_key_utils_extract_ratchet_public_key(self->key_utils, sender_identity_public_key, &error_ctx);
+    vsc_buffer_t *sender_identity_public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
+            self->key_utils, sender_identity_public_key, true, false, true, &error_ctx);
 
     if (vscr_error_has_error(&error_ctx)) {
         status = vscr_error_status(&error_ctx);
@@ -561,7 +561,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_ide
     }
 
     vsc_buffer_t *receiver_identity_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
-            self->key_utils, receiver_identity_private_key, &error_ctx);
+            self->key_utils, receiver_identity_private_key, true, false, true, &error_ctx);
 
     if (vscr_error_has_error(&error_ctx)) {
         status = vscr_error_status(&error_ctx);
@@ -569,7 +569,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_ide
     }
 
     vsc_buffer_t *receiver_long_term_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
-            self->key_utils, receiver_long_term_private_key, &error_ctx);
+            self->key_utils, receiver_long_term_private_key, false, true, false, &error_ctx);
 
     if (vscr_error_has_error(&error_ctx)) {
         status = vscr_error_status(&error_ctx);
@@ -589,7 +589,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_ide
     size_t shared_secret_count = 3;
     if (receiver_one_time_private_key.len != 0) {
         receiver_one_time_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
-                self->key_utils, receiver_one_time_private_key, &error_ctx);
+                self->key_utils, receiver_one_time_private_key, false, true, false, &error_ctx);
 
         if (vscr_error_has_error(&error_ctx)) {
             status = vscr_error_status(&error_ctx);
@@ -692,7 +692,7 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *self, vsc_data_t plain_text
     }
 
     if (!self->is_initiator && !self->received_first_response) {
-        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_CAN_T_ENCRYPT_YET);
+        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_SESSION_IS_NOT_INITIALIZED);
         goto err;
     }
 
@@ -763,7 +763,7 @@ vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *self, const vscr_ratche
         cipher_text_len = vsc_buffer_len(message->message_pb.prekey_message.regular_message.cipher_text.arg);
     }
 
-    VSCR_ASSERT(cipher_text_len <= vscr_ratchet_common_MAX_CIPHER_TEXT_LEN);
+    VSCR_ASSERT(cipher_text_len <= vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
 
     return vscr_ratchet_decrypt_len(self->ratchet, cipher_text_len);
 }
@@ -868,6 +868,7 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
         return NULL;
     }
 
+    vscr_ratchet_session_t *session = NULL;
     Session session_pb = Session_init_zero;
 
     pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
@@ -877,10 +878,10 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     if (!status) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
 
-        return NULL;
+        goto err;
     }
 
-    vscr_ratchet_session_t *session = vscr_ratchet_session_new();
+    session = vscr_ratchet_session_new();
 
     session->received_first_response = session_pb.received_first_response;
     session->is_initiator = session_pb.is_initiator;
@@ -901,6 +902,7 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     vscr_ratchet_deserialize(&session_pb.ratchet, session->ratchet);
 
+err:
     vscr_zeroize(&session_pb, sizeof(Session));
 
     return session;

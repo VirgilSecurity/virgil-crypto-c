@@ -9,7 +9,7 @@
         wrappers="swift"
         >
 
-    <version major="0" minor="5" patch="0"/>
+    <version major="0" minor="6" patch="0"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.
@@ -56,6 +56,7 @@
 
     <enum name="status"/>
     <enum name="msg type"/>
+    <enum name="group msg type"/>
 
     <class name="ratchet common"/>
     <class name="ratchet common hidden"/>
@@ -76,4 +77,11 @@
     <class name="ratchet keys"/>
     <class name="ratchet"/>
     <class name="ratchet session"/>
+    <class name="ratchet group participant data"/>
+    <class name="ratchet group message"/>
+    <class name="ratchet skipped group message key node"/>
+    <class name="ratchet skipped group message key root node"/>
+    <class name="ratchet skipped group messages"/>
+    <class name="ratchet group session"/>
+    <class name="ratchet group ticket"/>
 </project>

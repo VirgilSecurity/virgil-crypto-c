@@ -43,8 +43,6 @@
     <method name="setup defaults">
         Setups default dependencies:
             - RNG: CTR DRBG
-            - Key serialization: DER PKCS8
-            - Symmetric cipher: AES256-GCM
 
         <return enum="status"/>
     </method>
