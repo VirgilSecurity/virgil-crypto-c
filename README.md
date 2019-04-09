@@ -44,6 +44,11 @@ Cryptographic background for the [Password-Hardened Encryption (PHE) protocol](h
 
 Cryptographic background for the  [Pythia PRF Service](http://pages.cs.wisc.edu/~ace/papers/pythia-full.pdf).
 
+### Library: Ratchet
+
+Implementation of the [Double Ratchet Algorithm](https://en.wikipedia.org/wiki/Double_Ratchet_Algorithm).
+
+
 ## Platforms & languages
 
 | Library    | Platforms    | Languages / Binaries                                         |
