@@ -46,7 +46,7 @@ project(virgil_crypto_java VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 # Find Java JNI
 #
 if(ANDROID)
-    find_path(JNI_INCLUDE_DIRS jni.h)
+    find_path(JNI_INCLUDE_DIRS jni.h HINTS "${ANDROID_SYSROOT}/usr/include")
 else()
     find_host_package(JNI REQUIRED)
 endif()
