@@ -19,9 +19,6 @@ Session.receiver_long_term_key max_size:32 fixed_length:true
 Session.receiver_one_time_key max_size:32 fixed_length:true
 Session.ratchet max_size:32 fixed_length:true
 
-SkippedGroupMessages.id max_size:32 fixed_length:true
-SkippedGroupMessages.keys max_count:40 fixed_count:false
-
 ParticipantData.id max_size:32 fixed_length:true
 ParticipantData.pub_key max_size:32 fixed_length:true
 
