@@ -65,9 +65,9 @@ import VSCFoundation
     /// Creates raw key defined with algorithm and data.
     /// Note, data is copied.
     public init(algId: AlgId, rawKeyData: Data) {
-        let proxyResult = rawKeyData.withUnsafeBytes({ (rawKeyDataPointer: UnsafePointer<byte>) -> OpaquePointer? in
+        let proxyResult = rawKeyData.withUnsafeBytes({ (rawKeyDataPointer: UnsafeRawBufferPointer) -> OpaquePointer? in
 
-            return vscf_raw_key_new_with_data(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), vsc_data(rawKeyDataPointer, rawKeyData.count))
+            return vscf_raw_key_new_with_data(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), vsc_data(rawKeyDataPointer.bindMemory(to: byte.self).baseAddress, rawKeyData.count))
         })
 
         self.c_ctx = proxyResult!

@@ -104,6 +104,11 @@ set_property(
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_public.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
 target_sources(phe
     PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_assert.h"
@@ -119,6 +124,8 @@ target_sources(phe
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_server.h>"
             "$<$<BOOL:${VSCE_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_simple_swu.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_status.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_public.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/private/vsce_phe_private.h"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_library.c"

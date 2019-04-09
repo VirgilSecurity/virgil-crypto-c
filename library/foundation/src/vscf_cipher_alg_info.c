@@ -100,19 +100,16 @@ vscf_cipher_alg_info_cleanup_ctx(vscf_cipher_alg_info_t *self) {
 //
 //  Create symmetric cipher algorithm info with identificator and input vector.
 //
-VSCF_PUBLIC vscf_cipher_alg_info_t *
-vscf_cipher_alg_info_new_with_members(vscf_alg_id_t alg_id, vsc_data_t nonce) {
+VSCF_PUBLIC void
+vscf_cipher_alg_info_init_ctx_with_members(vscf_cipher_alg_info_t *self, vscf_alg_id_t alg_id, vsc_data_t nonce) {
 
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
     VSCF_ASSERT(vsc_data_is_valid(nonce));
     VSCF_ASSERT(nonce.len > 0);
 
-    vscf_cipher_alg_info_t *self = vscf_cipher_alg_info_new();
-
     self->alg_id = alg_id;
     self->nonce = vsc_buffer_new_with_data(nonce);
-
-    return self;
 }
 
 //

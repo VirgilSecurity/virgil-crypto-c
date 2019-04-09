@@ -70,9 +70,9 @@ import VSCFoundation
 
     /// Start verifying a signature.
     @objc public func reset(signature: Data) throws {
-        let proxyResult = signature.withUnsafeBytes({ (signaturePointer: UnsafePointer<byte>) -> vscf_status_t in
+        let proxyResult = signature.withUnsafeBytes({ (signaturePointer: UnsafeRawBufferPointer) -> vscf_status_t in
 
-            return vscf_verifier_reset(self.c_ctx, vsc_data(signaturePointer, signature.count))
+            return vscf_verifier_reset(self.c_ctx, vsc_data(signaturePointer.bindMemory(to: byte.self).baseAddress, signature.count))
         })
 
         try FoundationError.handleStatus(fromC: proxyResult)
@@ -80,9 +80,9 @@ import VSCFoundation
 
     /// Add given data to the signed data.
     @objc public func update(data: Data) {
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
+        data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
 
-            vscf_verifier_update(self.c_ctx, vsc_data(dataPointer, data.count))
+            vscf_verifier_update(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count))
         })
     }
 

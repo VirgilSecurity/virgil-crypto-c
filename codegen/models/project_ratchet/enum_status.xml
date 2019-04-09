@@ -57,8 +57,8 @@
         Skipped message missing.
     </constant>
 
-    <constant name="error can't encrypt yet" value="-14">
-        Can't encrypt yet.
+    <constant name="error session is not initialized" value="-14">
+        Session is not initialized.
     </constant>
 
     <constant name="error exceeded max plain text len" value="-15">
@@ -76,4 +76,29 @@
     <constant name="error invalid padding" value="-18">
         Invalid padding.
     </constant>
+
+    <constant name="error too many participants" value="-19">
+        Too many participants.
+    </constant>
+
+    <constant name="error too few participants" value="-20">
+        Too few participants.
+    </constant>
+
+    <constant name="error sender not found" value="-21">
+        Sender not found.
+    </constant>
+
+    <constant name="error cannot decrypt own messages" value="-22">
+        Cannot decrypt own messages.
+    </constant>
+
+    <constant name="error duplicate id" value="-23">
+        Duplicate id.
+    </constant>
+
+    <constant name="error invalid signature" value="-24">
+        Invalid signature.
+    </constant>
+
 </enum>
