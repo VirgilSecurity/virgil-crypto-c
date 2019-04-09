@@ -84,10 +84,10 @@ import VirgilCryptoFoundation
 
     /// Adds participant to chat.
     @objc public func addParticipant(participantId: Data, publicKey: Data) throws {
-        let proxyResult = participantId.withUnsafeBytes({ (participantIdPointer: UnsafePointer<byte>) -> vscr_status_t in
-            publicKey.withUnsafeBytes({ (publicKeyPointer: UnsafePointer<byte>) -> vscr_status_t in
+        let proxyResult = participantId.withUnsafeBytes({ (participantIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
+            publicKey.withUnsafeBytes({ (publicKeyPointer: UnsafeRawBufferPointer) -> vscr_status_t in
 
-                return vscr_ratchet_group_ticket_add_participant(self.c_ctx, vsc_data(participantIdPointer, participantId.count), vsc_data(publicKeyPointer, publicKey.count))
+                return vscr_ratchet_group_ticket_add_participant(self.c_ctx, vsc_data(participantIdPointer.bindMemory(to: byte.self).baseAddress, participantId.count), vsc_data(publicKeyPointer.bindMemory(to: byte.self).baseAddress, publicKey.count))
             })
         })
 

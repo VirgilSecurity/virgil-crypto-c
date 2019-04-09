@@ -98,9 +98,9 @@ import VirgilCryptoFoundation
 
     /// Sets identity private key.
     @objc public func setPrivateKey(myPrivateKey: Data) throws {
-        let proxyResult = myPrivateKey.withUnsafeBytes({ (myPrivateKeyPointer: UnsafePointer<byte>) -> vscr_status_t in
+        let proxyResult = myPrivateKey.withUnsafeBytes({ (myPrivateKeyPointer: UnsafeRawBufferPointer) -> vscr_status_t in
 
-            return vscr_ratchet_group_session_set_private_key(self.c_ctx, vsc_data(myPrivateKeyPointer, myPrivateKey.count))
+            return vscr_ratchet_group_session_set_private_key(self.c_ctx, vsc_data(myPrivateKeyPointer.bindMemory(to: byte.self).baseAddress, myPrivateKey.count))
         })
 
         try RatchetError.handleStatus(fromC: proxyResult)
@@ -108,9 +108,9 @@ import VirgilCryptoFoundation
 
     /// Sets up session. Identity private key should be set separately.
     @objc public func setupSession(myId: Data, message: RatchetGroupMessage) throws {
-        let proxyResult = myId.withUnsafeBytes({ (myIdPointer: UnsafePointer<byte>) -> vscr_status_t in
+        let proxyResult = myId.withUnsafeBytes({ (myIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
 
-            return vscr_ratchet_group_session_setup_session(self.c_ctx, vsc_data(myIdPointer, myId.count), message.c_ctx)
+            return vscr_ratchet_group_session_setup_session(self.c_ctx, vsc_data(myIdPointer.bindMemory(to: byte.self).baseAddress, myId.count), message.c_ctx)
         })
 
         try RatchetError.handleStatus(fromC: proxyResult)
@@ -121,9 +121,9 @@ import VirgilCryptoFoundation
         var error: vscr_error_t = vscr_error_t()
         vscr_error_reset(&error)
 
-        let proxyResult = plainText.withUnsafeBytes({ (plainTextPointer: UnsafePointer<byte>) in
+        let proxyResult = plainText.withUnsafeBytes({ (plainTextPointer: UnsafeRawBufferPointer) in
 
-            return vscr_ratchet_group_session_encrypt(self.c_ctx, vsc_data(plainTextPointer, plainText.count), &error)
+            return vscr_ratchet_group_session_encrypt(self.c_ctx, vsc_data(plainTextPointer.bindMemory(to: byte.self).baseAddress, plainText.count), &error)
         })
 
         try RatchetError.handleStatus(fromC: error.status)
@@ -147,9 +147,9 @@ import VirgilCryptoFoundation
             vsc_buffer_delete(plainTextBuf)
         }
 
-        let proxyResult = plainText.withUnsafeMutableBytes({ (plainTextPointer: UnsafeMutablePointer<byte>) -> vscr_status_t in
+        let proxyResult = plainText.withUnsafeMutableBytes({ (plainTextPointer: UnsafeMutableRawBufferPointer) -> vscr_status_t in
             vsc_buffer_init(plainTextBuf)
-            vsc_buffer_use(plainTextBuf, plainTextPointer, plainTextCount)
+            vsc_buffer_use(plainTextBuf, plainTextPointer.bindMemory(to: byte.self).baseAddress, plainTextCount)
 
             return vscr_ratchet_group_session_decrypt(self.c_ctx, message.c_ctx, plainTextBuf)
         })
@@ -176,9 +176,9 @@ import VirgilCryptoFoundation
             vsc_buffer_delete(outputBuf)
         }
 
-        output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutablePointer<byte>) -> Void in
+        output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutableRawBufferPointer) -> Void in
             vsc_buffer_init(outputBuf)
-            vsc_buffer_use(outputBuf, outputPointer, outputCount)
+            vsc_buffer_use(outputBuf, outputPointer.bindMemory(to: byte.self).baseAddress, outputCount)
 
             vscr_ratchet_group_session_serialize(self.c_ctx, outputBuf)
         })
@@ -193,9 +193,9 @@ import VirgilCryptoFoundation
         var error: vscr_error_t = vscr_error_t()
         vscr_error_reset(&error)
 
-        let proxyResult = input.withUnsafeBytes({ (inputPointer: UnsafePointer<byte>) in
+        let proxyResult = input.withUnsafeBytes({ (inputPointer: UnsafeRawBufferPointer) in
 
-            return vscr_ratchet_group_session_deserialize(vsc_data(inputPointer, input.count), &error)
+            return vscr_ratchet_group_session_deserialize(vsc_data(inputPointer.bindMemory(to: byte.self).baseAddress, input.count), &error)
         })
 
         try RatchetError.handleStatus(fromC: error.status)

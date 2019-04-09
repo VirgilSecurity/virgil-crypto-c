@@ -79,9 +79,9 @@ import VSCFoundation
 
     /// Add given data to the signed data.
     @objc public func update(data: Data) {
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
+        data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
 
-            vscf_signer_update(self.c_ctx, vsc_data(dataPointer, data.count))
+            vscf_signer_update(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count))
         })
     }
 
@@ -101,9 +101,9 @@ import VSCFoundation
             vsc_buffer_delete(signatureBuf)
         }
 
-        let proxyResult = signature.withUnsafeMutableBytes({ (signaturePointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = signature.withUnsafeMutableBytes({ (signaturePointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
             vsc_buffer_init(signatureBuf)
-            vsc_buffer_use(signatureBuf, signaturePointer, signatureCount)
+            vsc_buffer_use(signatureBuf, signaturePointer.bindMemory(to: byte.self).baseAddress, signatureCount)
 
             return vscf_signer_sign(self.c_ctx, privateKey.c_ctx, signatureBuf)
         })

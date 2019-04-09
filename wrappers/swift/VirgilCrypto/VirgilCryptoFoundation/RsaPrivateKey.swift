@@ -151,12 +151,12 @@ import VSCFoundation
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
-                vsc_buffer_use(outBuf, outPointer, outCount)
+                vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
-                return vscf_rsa_private_key_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
+                return vscf_rsa_private_key_decrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
             })
         })
         out.count = vsc_buffer_len(outBuf)
@@ -189,12 +189,12 @@ import VSCFoundation
             vsc_buffer_delete(signatureBuf)
         }
 
-        let proxyResult = hashDigest.withUnsafeBytes({ (hashDigestPointer: UnsafePointer<byte>) -> vscf_status_t in
-            signature.withUnsafeMutableBytes({ (signaturePointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = hashDigest.withUnsafeBytes({ (hashDigestPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            signature.withUnsafeMutableBytes({ (signaturePointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_init(signatureBuf)
-                vsc_buffer_use(signatureBuf, signaturePointer, signatureCount)
+                vsc_buffer_use(signatureBuf, signaturePointer.bindMemory(to: byte.self).baseAddress, signatureCount)
 
-                return vscf_rsa_private_key_sign_hash(self.c_ctx, vsc_data(hashDigestPointer, hashDigest.count), vscf_alg_id_t(rawValue: UInt32(hashId.rawValue)), signatureBuf)
+                return vscf_rsa_private_key_sign_hash(self.c_ctx, vsc_data(hashDigestPointer.bindMemory(to: byte.self).baseAddress, hashDigest.count), vscf_alg_id_t(rawValue: UInt32(hashId.rawValue)), signatureBuf)
             })
         })
         signature.count = vsc_buffer_len(signatureBuf)
@@ -224,9 +224,9 @@ import VSCFoundation
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
             vsc_buffer_init(outBuf)
-            vsc_buffer_use(outBuf, outPointer, outCount)
+            vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             return vscf_rsa_private_key_export_private_key(self.c_ctx, outBuf)
         })
@@ -250,9 +250,9 @@ import VSCFoundation
     /// For instance, RSA private key must be imported from the format defined in
     /// RFC 3447 Appendix A.1.2.
     @objc public func importPrivateKey(data: Data) throws {
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
 
-            return vscf_rsa_private_key_import_private_key(self.c_ctx, vsc_data(dataPointer, data.count))
+            return vscf_rsa_private_key_import_private_key(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count))
         })
 
         try FoundationError.handleStatus(fromC: proxyResult)
