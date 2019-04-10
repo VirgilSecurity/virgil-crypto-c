@@ -395,19 +395,10 @@ node('master') {
 stage 'Build and deploy Java libraries'
 // --------------------------------------------------------------------------
 
-// timeout(time: 3, unit: "MINUTES") {
-//     input message: 'Deploy Java artifacts?', ok: 'Yes'
-// }
-
 node('master') {
-    def branchSubPath =  env.BRANCH_NAME ? '/branches/' + env.BRANCH_NAME : ''
-    def shortJobName = env.BRANCH_NAME ? env.JOB_NAME.replace('/' + env.BRANCH_NAME, '') : env.JOB_NAME
-    def artifactsDir =
-            env.JENKINS_HOME + '/jobs/' + shortJobName + branchSubPath + '/builds/' + env.BUILD_NUMBER + '/archive'
-
-    unstash java_linux
-    unstash java_macos
-    unstash java_windows
+    unstash "java_linux"
+    unstash "java_macos"
+    unstash "java_windows"
 
     sh 'tree wrappers/java/binaries'
 
