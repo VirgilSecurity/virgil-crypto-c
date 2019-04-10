@@ -114,12 +114,12 @@ import VSCFoundation
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
-                vsc_buffer_use(outBuf, outPointer, outCount)
+                vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
-                return vscf_aes256_gcm_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
+                return vscf_aes256_gcm_encrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
             })
         })
         out.count = vsc_buffer_len(outBuf)
@@ -145,12 +145,12 @@ import VSCFoundation
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
-                vsc_buffer_use(outBuf, outPointer, outCount)
+                vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
-                return vscf_aes256_gcm_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
+                return vscf_aes256_gcm_decrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
             })
         })
         out.count = vsc_buffer_len(outBuf)
@@ -169,17 +169,17 @@ import VSCFoundation
 
     /// Setup IV or nonce.
     @objc public func setNonce(nonce: Data) {
-        nonce.withUnsafeBytes({ (noncePointer: UnsafePointer<byte>) -> Void in
+        nonce.withUnsafeBytes({ (noncePointer: UnsafeRawBufferPointer) -> Void in
 
-            vscf_aes256_gcm_set_nonce(self.c_ctx, vsc_data(noncePointer, nonce.count))
+            vscf_aes256_gcm_set_nonce(self.c_ctx, vsc_data(noncePointer.bindMemory(to: byte.self).baseAddress, nonce.count))
         })
     }
 
     /// Set cipher encryption / decryption key.
     @objc public func setKey(key: Data) {
-        key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Void in
+        key.withUnsafeBytes({ (keyPointer: UnsafeRawBufferPointer) -> Void in
 
-            vscf_aes256_gcm_set_key(self.c_ctx, vsc_data(keyPointer, key.count))
+            vscf_aes256_gcm_set_key(self.c_ctx, vsc_data(keyPointer.bindMemory(to: byte.self).baseAddress, key.count))
         })
     }
 
@@ -202,12 +202,12 @@ import VSCFoundation
             vsc_buffer_delete(outBuf)
         }
 
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> Void in
+        data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> Void in
                 vsc_buffer_init(outBuf)
-                vsc_buffer_use(outBuf, outPointer, outCount)
+                vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
-                vscf_aes256_gcm_update(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
+                vscf_aes256_gcm_update(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
             })
         })
         out.count = vsc_buffer_len(outBuf)
@@ -251,9 +251,9 @@ import VSCFoundation
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
             vsc_buffer_init(outBuf)
-            vsc_buffer_use(outBuf, outPointer, outCount)
+            vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             return vscf_aes256_gcm_finish(self.c_ctx, outBuf)
         })
@@ -281,17 +281,17 @@ import VSCFoundation
             vsc_buffer_delete(tagBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
-            authData.withUnsafeBytes({ (authDataPointer: UnsafePointer<byte>) -> vscf_status_t in
-                out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
-                    tag.withUnsafeMutableBytes({ (tagPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            authData.withUnsafeBytes({ (authDataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+                    tag.withUnsafeMutableBytes({ (tagPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                         vsc_buffer_init(outBuf)
-                        vsc_buffer_use(outBuf, outPointer, outCount)
+                        vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
                         vsc_buffer_init(tagBuf)
-                        vsc_buffer_use(tagBuf, tagPointer, tagCount)
+                        vsc_buffer_use(tagBuf, tagPointer.bindMemory(to: byte.self).baseAddress, tagCount)
 
-                        return vscf_aes256_gcm_auth_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), vsc_data(authDataPointer, authData.count), outBuf, tagBuf)
+                        return vscf_aes256_gcm_auth_encrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), vsc_data(authDataPointer.bindMemory(to: byte.self).baseAddress, authData.count), outBuf, tagBuf)
                     })
                 })
             })
@@ -321,14 +321,14 @@ import VSCFoundation
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
-            authData.withUnsafeBytes({ (authDataPointer: UnsafePointer<byte>) -> vscf_status_t in
-                tag.withUnsafeBytes({ (tagPointer: UnsafePointer<byte>) -> vscf_status_t in
-                    out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            authData.withUnsafeBytes({ (authDataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                tag.withUnsafeBytes({ (tagPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                    out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                         vsc_buffer_init(outBuf)
-                        vsc_buffer_use(outBuf, outPointer, outCount)
+                        vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
-                        return vscf_aes256_gcm_auth_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), vsc_data(authDataPointer, authData.count), vsc_data(tagPointer, tag.count), outBuf)
+                        return vscf_aes256_gcm_auth_decrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), vsc_data(authDataPointer.bindMemory(to: byte.self).baseAddress, authData.count), vsc_data(tagPointer.bindMemory(to: byte.self).baseAddress, tag.count), outBuf)
                     })
                 })
             })

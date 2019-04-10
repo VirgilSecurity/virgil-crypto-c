@@ -82,9 +82,9 @@ import VirgilCryptoFoundation
     }
 
     @objc public func getPubKey(id: Data) -> Data {
-        let proxyResult = id.withUnsafeBytes({ (idPointer: UnsafePointer<byte>) in
+        let proxyResult = id.withUnsafeBytes({ (idPointer: UnsafeRawBufferPointer) in
 
-            return vscr_ratchet_group_message_get_pub_key(self.c_ctx, vsc_data(idPointer, id.count))
+            return vscr_ratchet_group_message_get_pub_key(self.c_ctx, vsc_data(idPointer.bindMemory(to: byte.self).baseAddress, id.count))
         })
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
@@ -106,9 +106,9 @@ import VirgilCryptoFoundation
             vsc_buffer_delete(outputBuf)
         }
 
-        output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutablePointer<byte>) -> Void in
+        output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutableRawBufferPointer) -> Void in
             vsc_buffer_init(outputBuf)
-            vsc_buffer_use(outputBuf, outputPointer, outputCount)
+            vsc_buffer_use(outputBuf, outputPointer.bindMemory(to: byte.self).baseAddress, outputCount)
 
             vscr_ratchet_group_message_serialize(self.c_ctx, outputBuf)
         })
@@ -122,9 +122,9 @@ import VirgilCryptoFoundation
         var error: vscr_error_t = vscr_error_t()
         vscr_error_reset(&error)
 
-        let proxyResult = input.withUnsafeBytes({ (inputPointer: UnsafePointer<byte>) in
+        let proxyResult = input.withUnsafeBytes({ (inputPointer: UnsafeRawBufferPointer) in
 
-            return vscr_ratchet_group_message_deserialize(vsc_data(inputPointer, input.count), &error)
+            return vscr_ratchet_group_message_deserialize(vsc_data(inputPointer.bindMemory(to: byte.self).baseAddress, input.count), &error)
         })
 
         try RatchetError.handleStatus(fromC: error.status)

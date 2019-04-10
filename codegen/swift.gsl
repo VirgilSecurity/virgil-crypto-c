@@ -734,7 +734,7 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type, s
         my.buffers_init += terminator + format_left("\
                 .(c_project_common_class_buffer_method_init)($(my.buffer_name:)Buf)
                 .(c_project_common_class_buffer_method_use)($(my.buffer_name:)Buf, \
-                        $(my.buffer_name:)Pointer, $(my.buffer_name:)Count)
+                        $(my.buffer_name:)Pointer.bindMemory(to: byte.self).baseAddress, $(my.buffer_name:)Count)
         ")
 
         my.buffers_shrink ?= ""
@@ -777,7 +777,7 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type, s
         my.opened_scope ?= terminator
         my.opened_scope += format_left("\
             $(my.result_statement?:)$(swift_argument.name:).withUnsafeBytes({ \
-                ($(swift_argument.name:)Pointer: UnsafePointer<byte>) $(my.proxy_return_statement:)in
+                ($(swift_argument.name:)Pointer: UnsafeRawBufferPointer) $(my.proxy_return_statement:)in
 
         ", my.scope_count)
         my.result_statement = # undefined
@@ -788,7 +788,7 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type, s
         my.opened_scope ?= terminator
         my.opened_scope += format_left("\
             $(my.result_statement?:)$(swift_return.name:).withUnsafeMutableBytes({ \
-                ($(swift_return.name:)Pointer: UnsafeMutablePointer<byte>) $(my.proxy_return_statement:)in
+                ($(swift_return.name:)Pointer: UnsafeMutableRawBufferPointer) $(my.proxy_return_statement:)in
 
         ", my.scope_count)
 
@@ -914,7 +914,8 @@ function swift_format_c_proxy_args (class, method)
         my.proxy_arg = # undefined
 
         if string_equal (argument.class, "data")
-            my.proxy_arg = ".(c_project_common_class_data_method_data)($(my.arg_name:)Pointer, $(my.arg_name:).count)"
+            my.proxy_arg = ".(c_project_common_class_data_method_data)($(my.arg_name:)Pointer.bindMemory(to:\
+                     byte.self).baseAddress, $(my.arg_name:).count)"
 
         elsif string_equal (argument.class, "buffer")
             my.proxy_arg = "$(my.arg_name:)Buf"

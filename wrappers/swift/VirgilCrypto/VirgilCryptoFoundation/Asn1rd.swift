@@ -69,9 +69,9 @@ import VSCFoundation
 
     /// Reset all internal states and prepare to new ASN.1 reading operations.
     @objc public func reset(data: Data) {
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
+        data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
 
-            vscf_asn1rd_reset(self.c_ctx, vsc_data(dataPointer, data.count))
+            vscf_asn1rd_reset(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count))
         })
     }
 

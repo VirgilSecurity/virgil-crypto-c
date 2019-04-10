@@ -109,13 +109,13 @@ import VSCFoundation
             vsc_buffer_delete(macBuf)
         }
 
-        key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Void in
-            data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
-                mac.withUnsafeMutableBytes({ (macPointer: UnsafeMutablePointer<byte>) -> Void in
+        key.withUnsafeBytes({ (keyPointer: UnsafeRawBufferPointer) -> Void in
+            data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
+                mac.withUnsafeMutableBytes({ (macPointer: UnsafeMutableRawBufferPointer) -> Void in
                     vsc_buffer_init(macBuf)
-                    vsc_buffer_use(macBuf, macPointer, macCount)
+                    vsc_buffer_use(macBuf, macPointer.bindMemory(to: byte.self).baseAddress, macCount)
 
-                    vscf_hmac_mac(self.c_ctx, vsc_data(keyPointer, key.count), vsc_data(dataPointer, data.count), macBuf)
+                    vscf_hmac_mac(self.c_ctx, vsc_data(keyPointer.bindMemory(to: byte.self).baseAddress, key.count), vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), macBuf)
                 })
             })
         })
@@ -126,17 +126,17 @@ import VSCFoundation
 
     /// Start a new MAC.
     @objc public func start(key: Data) {
-        key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Void in
+        key.withUnsafeBytes({ (keyPointer: UnsafeRawBufferPointer) -> Void in
 
-            vscf_hmac_start(self.c_ctx, vsc_data(keyPointer, key.count))
+            vscf_hmac_start(self.c_ctx, vsc_data(keyPointer.bindMemory(to: byte.self).baseAddress, key.count))
         })
     }
 
     /// Add given data to the MAC.
     @objc public func update(data: Data) {
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
+        data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
 
-            vscf_hmac_update(self.c_ctx, vsc_data(dataPointer, data.count))
+            vscf_hmac_update(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count))
         })
     }
 
@@ -149,9 +149,9 @@ import VSCFoundation
             vsc_buffer_delete(macBuf)
         }
 
-        mac.withUnsafeMutableBytes({ (macPointer: UnsafeMutablePointer<byte>) -> Void in
+        mac.withUnsafeMutableBytes({ (macPointer: UnsafeMutableRawBufferPointer) -> Void in
             vsc_buffer_init(macBuf)
-            vsc_buffer_use(macBuf, macPointer, macCount)
+            vsc_buffer_use(macBuf, macPointer.bindMemory(to: byte.self).baseAddress, macCount)
 
             vscf_hmac_finish(self.c_ctx, macBuf)
         })

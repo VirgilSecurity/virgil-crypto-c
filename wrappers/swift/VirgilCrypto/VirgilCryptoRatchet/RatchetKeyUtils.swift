@@ -77,12 +77,12 @@ import VirgilCryptoFoundation
             vsc_buffer_delete(keyIdBuf)
         }
 
-        let proxyResult = publicKey.withUnsafeBytes({ (publicKeyPointer: UnsafePointer<byte>) -> vscr_status_t in
-            keyId.withUnsafeMutableBytes({ (keyIdPointer: UnsafeMutablePointer<byte>) -> vscr_status_t in
+        let proxyResult = publicKey.withUnsafeBytes({ (publicKeyPointer: UnsafeRawBufferPointer) -> vscr_status_t in
+            keyId.withUnsafeMutableBytes({ (keyIdPointer: UnsafeMutableRawBufferPointer) -> vscr_status_t in
                 vsc_buffer_init(keyIdBuf)
-                vsc_buffer_use(keyIdBuf, keyIdPointer, keyIdCount)
+                vsc_buffer_use(keyIdBuf, keyIdPointer.bindMemory(to: byte.self).baseAddress, keyIdCount)
 
-                return vscr_ratchet_key_utils_compute_public_key_id(self.c_ctx, vsc_data(publicKeyPointer, publicKey.count), convertToCurve25519, keyIdBuf)
+                return vscr_ratchet_key_utils_compute_public_key_id(self.c_ctx, vsc_data(publicKeyPointer.bindMemory(to: byte.self).baseAddress, publicKey.count), convertToCurve25519, keyIdBuf)
             })
         })
         keyId.count = vsc_buffer_len(keyIdBuf)
@@ -96,9 +96,9 @@ import VirgilCryptoFoundation
         var error: vscr_error_t = vscr_error_t()
         vscr_error_reset(&error)
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) in
 
-            return vscr_ratchet_key_utils_extract_ratchet_public_key(self.c_ctx, vsc_data(dataPointer, data.count), ed25519, curve25519, convertToCurve25519, &error)
+            return vscr_ratchet_key_utils_extract_ratchet_public_key(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), ed25519, curve25519, convertToCurve25519, &error)
         })
 
         defer {
@@ -114,9 +114,9 @@ import VirgilCryptoFoundation
         var error: vscr_error_t = vscr_error_t()
         vscr_error_reset(&error)
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) in
 
-            return vscr_ratchet_key_utils_extract_ratchet_private_key(self.c_ctx, vsc_data(dataPointer, data.count), ed25519, curve25519, convertToCurve25519, &error)
+            return vscr_ratchet_key_utils_extract_ratchet_private_key(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), ed25519, curve25519, convertToCurve25519, &error)
         })
 
         defer {
