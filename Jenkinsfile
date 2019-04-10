@@ -2,19 +2,21 @@
 
 
 // --------------------------------------------------------------------------
-stage 'Grab SCM'
+//  Grab SCM
 // --------------------------------------------------------------------------
 
 node('master') {
-    clearContentUnix()
-    checkout scm
-    stash includes: '**', name: 'src'
-    archiveArtifacts('VERSION')
+    stage('Grab SCM') {
+        clearContentUnix()
+        checkout scm
+        stash includes: '**', name: 'src'
+        archiveArtifacts('VERSION')
+    }
 }
 
 
 // --------------------------------------------------------------------------
-stage 'Build'
+//  Build
 // --------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------
@@ -47,7 +49,9 @@ nodes['lang-java-platform-android-x86_64'] = build_LangJava_Android_x86_64('buil
 nodes['lang-java-platform-android-armeabi-v7a'] = build_LangJava_Android_armeabi_v7a('build-os-x')
 nodes['lang-java-platform-android-arm64-v8a'] = build_LangJava_Android_arm64_v8a('build-os-x')
 
-parallel nodes
+stage('Build') {
+    parallel(nodes)
+}
 
 
 // --------------------------------------------------------------------------
@@ -378,36 +382,39 @@ def build_LangJava_Android_arm64_v8a(slave) {
 
 
 // --------------------------------------------------------------------------
-stage 'Calculate Checksum'
+//  Calculate Checksum
 // --------------------------------------------------------------------------
 
 node('master') {
-    def branchSubPath =  env.BRANCH_NAME ? '/branches/' + env.BRANCH_NAME : ''
-    def shortJobName = env.BRANCH_NAME ? env.JOB_NAME.replace('/' + env.BRANCH_NAME, '') : env.JOB_NAME
-    def artifactsDir =
-            env.JENKINS_HOME + '/jobs/' + shortJobName + branchSubPath + '/builds/' + env.BUILD_NUMBER + '/archive'
-    dir(artifactsDir) {
-        sh 'find . -type f -name "virgil-crypto-c-*" -exec sh -c "sha256sum {} | cut -d\' \' -f1-1 > {}.sha256" \\;'
+    stage('Calculate Checksum') {
+        def branchSubPath =  env.BRANCH_NAME ? '/branches/' + env.BRANCH_NAME : ''
+        def shortJobName = env.BRANCH_NAME ? env.JOB_NAME.replace('/' + env.BRANCH_NAME, '') : env.JOB_NAME
+        def artifactsDir =
+                env.JENKINS_HOME + '/jobs/' + shortJobName + branchSubPath + '/builds/' + env.BUILD_NUMBER + '/archive'
+        dir(artifactsDir) {
+            sh 'find . -type f -name "virgil-crypto-c-*" -exec sh -c "sha256sum {} | cut -d\' \' -f1-1 > {}.sha256" \\;'
+        }
     }
 }
 
 // --------------------------------------------------------------------------
-stage 'Build and deploy Java libraries'
+//  Build and deploy Java libraries
 // --------------------------------------------------------------------------
-
 node('master') {
-    unstash "java_linux"
-    unstash "java_macos"
-    unstash "java_windows"
+    stage('Build and deploy Java libraries') {
+        unstash "java_linux"
+        unstash "java_macos"
+        unstash "java_windows"
 
-    sh 'tree wrappers/java/binaries'
+        sh 'ls -R wrappers/java/binaries'
 
-    // sh """
-    //     pwd
-    //     source /var/lib/jenkins/.bashrc
-    //     env
-    //     cp -r ${artifactsDir}/java/binaries wrappers/java/
-    //     cd wrappers/java
-    //     mvn clean deploy -Dgpg.keyname=${gpg_keyname}
-    // """
+        // sh """
+        //     pwd
+        //     source /var/lib/jenkins/.bashrc
+        //     env
+        //     cp -r ${artifactsDir}/java/binaries wrappers/java/
+        //     cd wrappers/java
+        //     mvn clean deploy -Dgpg.keyname=${gpg_keyname}
+        // """
+    }
 }
