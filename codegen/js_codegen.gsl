@@ -138,6 +138,14 @@ function js_cpp_header_create_interface(js_interface_module, indent_level)
   js_out("};", my.indent_levels.first)
 endfunction
 
+function js_cpp_header_create_error_status_module(js_error_status_module, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("class $(my.js_error_status_module.cpp_name:no) {", my.indent_levels.first)
+  js_cpp_header_create_public_access_specifier(my.indent_levels.first)
+  js_out("static void $(global.js_cpp_handle_error_status_method_name:no)($(my.js_error_status_module.c_type:no) $(global.js_cpp_handle_error_status_method_parameter_name:no));", my.indent_levels.second)
+  js_out("};", my.indent_levels.first)
+endfunction
+
 # --------------------------------------------------------------------------------------------------
 # C++ - Source
 # --------------------------------------------------------------------------------------------------
@@ -654,10 +662,11 @@ endfunction
 function js_cpp_create_method_error_handing(js_method, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   for my.js_method.js_error_context_method_return
-    js_out("// TODO: handle error context's status", my.indent_levels.first)
+    js_out("$(js_error_context_method_return.c_status_type:no) $(js_error_context_method_return.cpp_status_name:no) = $(js_error_context_method_return.c_status_method_name:no)(&$(js_error_context_method_return.cpp_name:no));", my.indent_levels.first)
+    js_out("$(js_error_context_method_return.cpp_class_name:no)::$(global.js_cpp_handle_error_status_method_name:no)($(js_error_context_method_return.cpp_status_name:no));", my.indent_levels.first)
   endfor
   for my.js_method.js_error_status_method_return
-    js_out("// TODO: handle error status", my.indent_levels.first)
+    js_out("$(js_error_status_method_return.cpp_class_name:no)::$(global.js_cpp_handle_error_status_method_name:no)($(js_error_status_method_return.cpp_name:no));", my.indent_levels.first)
   endfor
 endfunction
 
@@ -922,6 +931,19 @@ function js_cpp_create_class(js_class_module, wrapper, indent_level)
   js_cpp_create_persistent_constructor(my.js_class_module, my.indent_levels.firsts.first)
 endfunction
 
+function js_cpp_create_error_status_module(js_error_status_module, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("static void $(my.js_error_status_module.cpp_name:no)::$(global.js_cpp_handle_error_status_method_name:no)($(my.js_error_status_module.c_type:no) $(global.js_cpp_handle_error_status_method_parameter_name:no)) {", my.indent_levels.first)
+  js_out("switch ($(global.js_cpp_handle_error_status_method_parameter_name:no)) {", my.indent_levels.second)
+  for my.js_error_status_module.js_error_status
+    js_out("case $(js_error_status.c_name:no):", my.indent_levels.third)
+    js_out("Nan::ThrowError(\"$(js_error_status.message:no)\")", my.indent_levels.fourth)
+    js_out("break;", my.indent_levels.fourth)
+  endfor
+  js_out("}")
+  js_out("}", my.indent_levels.first)
+endfunction
+
 # --------------------------------------------------------------------------------------------------
 /* # JavaScript - Source
 # --------------------------------------------------------------------------------------------------
@@ -1090,6 +1112,19 @@ function js_create_js_enum_module_file(js_enum_module)
   close
 endfunction
 
+function js_create_js_error_status_module(js_error_status_module)
+  my.indent_levels = js_create_indent_levels()
+  output my.js_error_status_module->js_cpp_header.path
+    js_cpp_header_create_ifndef(my.js_error_status_module.cpp_header_guard, my.indent_levels.first)
+    js_cpp_header_create_define(my.js_error_status_module.cpp_header_guard, my.indent_levels.first)
+    js_cpp_header_create_error_status_module(my.js_error_status_module, my.indent_levels.first)
+    js_cpp_header_create_endif(my.indent_levels.first)
+  close
+  output my.js_error_status_module->js_cpp_source.path
+    js_cpp_create_error_status_module(my.js_error_status_module, my.indent_levels.first)
+  close
+endfunction
+
 function js_create_js_interface_module_file(js_interface_module)
   my.indent_levels = js_create_indent_levels()
   output my.js_interface_module->js_cpp_header.path
@@ -1107,6 +1142,8 @@ function js_create_js_module_files(source, wrapper)
       js_create_js_interface_module_file(js_module->js_interface_module)
     elsif defined(js_module->js_enum_module)
       js_create_js_enum_module_file(js_module->js_enum_module)
+    elsif defined(js_module->js_error_status_module)
+      js_create_js_error_status_module(js_module->js_error_status_module)
     elsif defined(js_module->js_class_module)
       js_create_js_class_module_file(js_module->js_class_module, my.wrapper)
     else

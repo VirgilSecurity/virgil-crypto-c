@@ -29,6 +29,7 @@ function js_create_indent_levels(indent_level)
   my.indent_levels.first = my.custom_indent_level
   my.indent_levels.second = my.custom_indent_level + 1
   my.indent_levels.third = my.custom_indent_level + 2
+  my.indent_levels.fourth = my.custom_indent_level + 3
   return my.indent_levels
 endfunction
 
@@ -137,6 +138,9 @@ endfunction
 # --------------------------------------------------------------------------------------------------
 # C++
 # --------------------------------------------------------------------------------------------------
+
+global.js_cpp_handle_error_status_method_name = "HandleErrorStatus"
+global.js_cpp_handle_error_status_method_parameter_name = "status"
 
 global.js_cpp_argument_type_variable = "variable"
 global.js_cpp_argument_type_constant = "constant"

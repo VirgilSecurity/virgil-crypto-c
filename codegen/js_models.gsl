@@ -44,6 +44,32 @@ function js_append_js_enum_module_model(parent, source, wrapper)
   endnew
 endfunction
 
+function js_append_js_error_status_module_model(parent, source, wrapper)
+  new js_error_status_module to my.parent
+    js_error_status_module.cpp_name = "$(my.source.name:pascal)"
+    js_error_status_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
+    js_error_status_module.c_type = make_ref_c(make_id("class", "status", "enum", "status"))
+    new js_cpp_header to js_error_status_module
+      js_cpp_header.name = "$(my.source.name:c).h"
+      js_cpp_header.path = cat_path(my.wrapper.project_source_dir, js_cpp_header.name)
+    endnew
+    new js_cpp_source to js_error_status_module
+      js_cpp_source.name = "$(my.source.name:c).cc"
+      js_cpp_source.path = cat_path(my.wrapper.project_source_dir, js_cpp_source.name)
+    endnew
+    for my.source.constant where constant.name <> "success"
+      new js_error_status to js_error_status_module
+        js_error_status.message = string_trim(code_collapse_spaces(string.replace("$(constant:no)", "\n| ")))
+        js_error_status.c_name = make_ref_c(make_id("class", "status", "enum", "status", "constant", constant.name))
+      endnew
+    endfor
+    new js_error_status_module_cpp_name to js_error_status_module
+      js_error_status_module_cpp_name.name = js_error_status_module.cpp_name
+      js_error_status_module_cpp_name.uid = make_id("js", "error", "status", "module", "cpp name")
+    endnew
+  endnew
+endfunction
+
 function js_append_js_class_module_model(parent, source, wrapper)
   new js_class_module to my.parent
     js_class_module.name = my.source.name
@@ -324,8 +350,8 @@ function js_append_js_error_status_method_return(parent, source, argument)
   new js_error_status_method_return to my.parent
     my.project_uid = js_get_project_uid(my.argument)
     js_error_status_method_return.cpp_name = "$(my.argument.name:c)"
-    js_error_status_method_return.js_name = "$(my.argument.name:camel)"
     js_error_status_method_return.c_type = make_ref_c(make_id(my.project_uid, "class", "status", "enum", "status"))
+    js_error_status_method_return.cpp_class_name = make_ref_js(make_id("error", "status", "module", "cpp name"))
   endnew
 endfunction
 
@@ -333,9 +359,12 @@ function js_append_js_error_context_method_return(parent, source, argument)
   new js_error_context_method_return to my.parent
     my.project_uid = js_get_project_uid(my.argument)
     js_error_context_method_return.cpp_name = "$(my.argument.name:c)"
-    js_error_context_method_return.js_name = "$(my.argument.name:camel)"
+    js_error_context_method_return.cpp_status_name = "$(my.argument.name:c)_status"
     js_error_context_method_return.c_type = make_ref_c(make_id(my.project_uid, "class", "error", "struct", "error"))
+    js_error_context_method_return.c_status_type = make_ref_c(make_id(my.project_uid, "class", "status", "enum", "status"))
     js_error_context_method_return.c_reset_method_name = make_ref_c(make_id(my.project_uid, "class", "error", "method", "reset"))
+    js_error_context_method_return.c_status_method_name = make_ref_c(make_id(my.project_uid, "class", "error", "method", "status"))
+    js_error_context_method_return.cpp_class_name = make_ref_js(make_id("error", "status", "module", "cpp name"))
     return js_error_context_method_return
   endnew
 endfunction

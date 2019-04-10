@@ -34,11 +34,11 @@ endfunction
 
 function js_create_enum_module(source, destination, wrapper, meta)
   echo_info("Create enum module: $(my.source.name)", my)
+  my.js_module = js_append_js_module_model(my.destination, my.source)
   if !(my.source.name = "status")
-    my.js_module = js_append_js_module_model(my.destination, my.source)
     js_append_js_enum_module_model(my.js_module, my.source, my.wrapper)
   else
-    /* TODO: error status enum */
+    js_append_js_error_status_module_model(my.js_module, my.source, my.wrapper)
   endif
 endfunction
 
