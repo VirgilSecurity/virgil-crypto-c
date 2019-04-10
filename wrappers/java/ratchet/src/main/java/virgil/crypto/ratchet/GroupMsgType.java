@@ -39,45 +39,37 @@ package virgil.crypto.ratchet;
 import virgil.crypto.foundation.*;
 
 /*
-* Utils class for working with keys formats
+* Represents group message type
 */
-public class RatchetKeyUtils implements AutoCloseable {
-
-    public long cCtx;
-
-    /* Create underlying C context. */
-    public RatchetKeyUtils() {
-        super();
-        this.cCtx = RatchetJNI.INSTANCE.ratchetKeyUtils_new();
-    }
+public enum GroupMsgType {
 
     /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    * Group info used to create group chat, or change group chat.
+    * Should be distributed only using secure channels.
     */
-    public RatchetKeyUtils(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
-    /* Close resource. */
-    public void close() {
-        RatchetJNI.INSTANCE.ratchetKeyUtils_close(this.cCtx);
-    }
-
+    GROUP_INFO(0),
     /*
-    * Computes 8 bytes key pair id from public key
+    * Regular group ratchet message with cipher text.
     */
-    public byte[] computePublicKeyId(byte[] publicKey, boolean convertToCurve25519) throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetKeyUtils_computePublicKeyId(this.cCtx, publicKey, convertToCurve25519);
+    REGULAR(1);
+
+    private final int code;
+
+    private GroupMsgType(int code) {
+        this.code = code;
     }
 
-    public byte[] extractRatchetPublicKey(byte[] data, boolean ed25519, boolean curve25519, boolean convertToCurve25519) throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetKeyUtils_extractRatchetPublicKey(this.cCtx, data, ed25519, curve25519, convertToCurve25519);
+    public int getCode() {
+        return code;
     }
 
-    public byte[] extractRatchetPrivateKey(byte[] data, boolean ed25519, boolean curve25519, boolean convertToCurve25519) throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetKeyUtils_extractRatchetPrivateKey(this.cCtx, data, ed25519, curve25519, convertToCurve25519);
+    public static GroupMsgType fromCode(int code) {
+        for (GroupMsgType a : GroupMsgType.values()) {
+            if (a.code == code) {
+                return a;
+            }
+        }
+        return null;
     }
 }
 

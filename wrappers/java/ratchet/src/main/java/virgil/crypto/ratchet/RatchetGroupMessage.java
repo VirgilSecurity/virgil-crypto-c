@@ -39,45 +39,66 @@ package virgil.crypto.ratchet;
 import virgil.crypto.foundation.*;
 
 /*
-* Utils class for working with keys formats
+* Class represents ratchet group message
 */
-public class RatchetKeyUtils implements AutoCloseable {
+public class RatchetGroupMessage implements AutoCloseable {
 
     public long cCtx;
 
     /* Create underlying C context. */
-    public RatchetKeyUtils() {
+    public RatchetGroupMessage() {
         super();
-        this.cCtx = RatchetJNI.INSTANCE.ratchetKeyUtils_new();
+        this.cCtx = RatchetJNI.INSTANCE.ratchetGroupMessage_new();
     }
 
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public RatchetKeyUtils(long cCtx) {
+    public RatchetGroupMessage(long cCtx) {
         super();
         this.cCtx = cCtx;
     }
 
     /* Close resource. */
     public void close() {
-        RatchetJNI.INSTANCE.ratchetKeyUtils_close(this.cCtx);
+        RatchetJNI.INSTANCE.ratchetGroupMessage_close(this.cCtx);
     }
 
     /*
-    * Computes 8 bytes key pair id from public key
+    * Returns message type.
     */
-    public byte[] computePublicKeyId(byte[] publicKey, boolean convertToCurve25519) throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetKeyUtils_computePublicKeyId(this.cCtx, publicKey, convertToCurve25519);
+    public GroupMsgType getType() {
+        return RatchetJNI.INSTANCE.ratchetGroupMessage_getType(this.cCtx);
     }
 
-    public byte[] extractRatchetPublicKey(byte[] data, boolean ed25519, boolean curve25519, boolean convertToCurve25519) throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetKeyUtils_extractRatchetPublicKey(this.cCtx, data, ed25519, curve25519, convertToCurve25519);
+    public int getPubKeyCount() {
+        return RatchetJNI.INSTANCE.ratchetGroupMessage_getPubKeyCount(this.cCtx);
     }
 
-    public byte[] extractRatchetPrivateKey(byte[] data, boolean ed25519, boolean curve25519, boolean convertToCurve25519) throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetKeyUtils_extractRatchetPrivateKey(this.cCtx, data, ed25519, curve25519, convertToCurve25519);
+    public byte[] getPubKey(byte[] id) {
+        return RatchetJNI.INSTANCE.ratchetGroupMessage_getPubKey(this.cCtx, id);
+    }
+
+    /*
+    * Buffer len to serialize this class.
+    */
+    public int serializeLen() {
+        return RatchetJNI.INSTANCE.ratchetGroupMessage_serializeLen(this.cCtx);
+    }
+
+    /*
+    * Serializes instance.
+    */
+    public byte[] serialize() {
+        return RatchetJNI.INSTANCE.ratchetGroupMessage_serialize(this.cCtx);
+    }
+
+    /*
+    * Deserializes instance.
+    */
+    public static RatchetGroupMessage deserialize(byte[] input) throws RatchetException {
+        return RatchetJNI.INSTANCE.ratchetGroupMessage_deserialize(input);
     }
 }
 

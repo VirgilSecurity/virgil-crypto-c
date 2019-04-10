@@ -39,45 +39,59 @@ package virgil.crypto.ratchet;
 import virgil.crypto.foundation.*;
 
 /*
-* Utils class for working with keys formats
+* Group ticket used to start group session.
 */
-public class RatchetKeyUtils implements AutoCloseable {
+public class RatchetGroupTicket implements AutoCloseable {
 
     public long cCtx;
 
     /* Create underlying C context. */
-    public RatchetKeyUtils() {
+    public RatchetGroupTicket() {
         super();
-        this.cCtx = RatchetJNI.INSTANCE.ratchetKeyUtils_new();
+        this.cCtx = RatchetJNI.INSTANCE.ratchetGroupTicket_new();
     }
 
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public RatchetKeyUtils(long cCtx) {
+    public RatchetGroupTicket(long cCtx) {
         super();
         this.cCtx = cCtx;
     }
 
     /* Close resource. */
     public void close() {
-        RatchetJNI.INSTANCE.ratchetKeyUtils_close(this.cCtx);
+        RatchetJNI.INSTANCE.ratchetGroupTicket_close(this.cCtx);
     }
 
     /*
-    * Computes 8 bytes key pair id from public key
+    * Random used to generate keys
     */
-    public byte[] computePublicKeyId(byte[] publicKey, boolean convertToCurve25519) throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetKeyUtils_computePublicKeyId(this.cCtx, publicKey, convertToCurve25519);
+    public void setRng(Random rng) {
+        RatchetJNI.INSTANCE.ratchetGroupTicket_setRng(this.cCtx, rng);
     }
 
-    public byte[] extractRatchetPublicKey(byte[] data, boolean ed25519, boolean curve25519, boolean convertToCurve25519) throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetKeyUtils_extractRatchetPublicKey(this.cCtx, data, ed25519, curve25519, convertToCurve25519);
+    /*
+    * Setups default dependencies:
+    * - RNG: CTR DRBG
+    */
+    public void setupDefaults() throws RatchetException {
+        RatchetJNI.INSTANCE.ratchetGroupTicket_setupDefaults(this.cCtx);
     }
 
-    public byte[] extractRatchetPrivateKey(byte[] data, boolean ed25519, boolean curve25519, boolean convertToCurve25519) throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetKeyUtils_extractRatchetPrivateKey(this.cCtx, data, ed25519, curve25519, convertToCurve25519);
+    /*
+    * Adds participant to chat.
+    */
+    public void addParticipant(byte[] participantId, byte[] publicKey) throws RatchetException {
+        RatchetJNI.INSTANCE.ratchetGroupTicket_addParticipant(this.cCtx, participantId, publicKey);
+    }
+
+    /*
+    * Generates message that should be sent to all participants using secure channel.
+    */
+    public RatchetGroupMessage generateTicket() {
+        return RatchetJNI.INSTANCE.ratchetGroupTicket_generateTicket(this.cCtx);
     }
 }
 
