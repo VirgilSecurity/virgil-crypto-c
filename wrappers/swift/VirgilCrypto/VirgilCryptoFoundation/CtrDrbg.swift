@@ -39,13 +39,12 @@ import VSCFoundation
 /// Implementation of the RNG using deterministic random bit generators
 /// based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
 /// This class is thread-safe if the build option VSCF_MULTI_THREAD was enabled.
-@objc(VSCFCtrDrbg) public class CtrDrbg: NSObject, Defaults, Random {
+@objc(VSCFCtrDrbg) public class CtrDrbg: NSObject, Random {
 
     /// The interval before reseed is performed by default.
-    @objc public let reseedInterval: Int = 10000
-
+    @objc public static let reseedInterval: Int = 10000
     /// The amount of entropy used per seed by default.
-    @objc public let entropyLen: Int = 48
+    @objc public static let entropyLen: Int = 48
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -81,6 +80,13 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: proxyResult)
     }
 
+    /// Setup predefined values to the uninitialized class dependencies.
+    @objc public func setupDefaults() throws {
+        let proxyResult = vscf_ctr_drbg_setup_defaults(self.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+    }
+
     /// Force entropy to be gathered at the beginning of every call to
     /// the random() method.
     /// Note, use this if your entropy source has sufficient throughput.
@@ -100,13 +106,6 @@ import VSCFoundation
         vscf_ctr_drbg_set_entropy_len(self.c_ctx, len)
     }
 
-    /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_ctr_drbg_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
-    }
-
     /// Generate random bytes.
     @objc public func random(dataLen: Int) throws -> Data {
         let dataCount = dataLen
@@ -116,9 +115,9 @@ import VSCFoundation
             vsc_buffer_delete(dataBuf)
         }
 
-        let proxyResult = data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
             vsc_buffer_init(dataBuf)
-            vsc_buffer_use(dataBuf, dataPointer, dataCount)
+            vsc_buffer_use(dataBuf, dataPointer.bindMemory(to: byte.self).baseAddress, dataCount)
 
             return vscf_ctr_drbg_random(self.c_ctx, dataLen, dataBuf)
         })

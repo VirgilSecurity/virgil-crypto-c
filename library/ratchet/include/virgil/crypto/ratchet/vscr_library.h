@@ -87,30 +87,6 @@ extern "C" {
     typedef uint8_t byte;
 #endif // BYTE_DEFINED
 
-#define VSCR_VERSION_MAJOR 0
-
-#define VSCR_VERSION_MINOR 3
-
-#define VSCR_VERSION_PATCH 0
-
-#define VSCR_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
-
-#define VSCR_VERSION                \
-        VSCR_VERSION_MAKE (         \
-                VSCR_VERSION_MAJOR, \
-                VSCR_VERSION_MINOR, \
-                VSCR_VERSION_PATCH)
-
-//
-//  Custom implementation of the number ceil algorithm.
-//
-#define VSCR_CEIL(x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
-
-//
-//  Mark argument or function return value as "unused".
-//
-#define VSCR_UNUSED(x) (void)(x)
-
 #if defined(_WIN32) || defined(__CYGWIN__)
 #   ifdef VSCR_BUILD_SHARED_LIBS
 #       ifdef __GNUC__
@@ -136,6 +112,36 @@ extern "C" {
 #       define VSCR_PRIVATE
 #   endif
 #endif
+
+#define VSCR_VERSION_MAJOR 0
+
+#define VSCR_VERSION_MINOR 6
+
+#define VSCR_VERSION_PATCH 1
+
+#define VSCR_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
+
+#define VSCR_VERSION                \
+        VSCR_VERSION_MAKE (         \
+                VSCR_VERSION_MAJOR, \
+                VSCR_VERSION_MINOR, \
+                VSCR_VERSION_PATCH)
+
+#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
+#   define VSCR_NODISCARD __attribute__ ((warn_unused_result))
+#else
+#   define VSCR_NODISCARD
+#endif
+
+//
+//  Custom implementation of the number ceil algorithm.
+//
+#define VSCR_CEIL(x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
+
+//
+//  Mark argument or function return value as "unused".
+//
+#define VSCR_UNUSED(x) (void)(x)
 
 //
 //  Public integral constants.

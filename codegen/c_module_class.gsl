@@ -285,16 +285,6 @@ function _X13_add_method_init_ctx (class, destination, meta)
 
 
         _X13_add_argument_ctx (my.class, method, my.meta)
-
-        new code to method
-            .type = "stub"
-
-            . = "\
-                .(c_class_assert_macros_ptr)($(my.refs.class_argument_ctx));
-
-                //  TODO: Perform additional context initialization.
-            "
-        endnew
     endnew
 endfunction
 
@@ -368,9 +358,68 @@ function _X13_add_method_new (class, destination, meta)
     endnew
 endfunction
 
+# ---------------------------------------------------------------------------
+function _X13_format_proxy_arguments (method)
+    check_arguments (my, "method", my)
+
+    for my.method.argument
+        my.proxy_args ?= ""
+        my.proxy_args += make_ref("_argument_$(make_id (argument.name))")
+        if ! last()
+            my.proxy_args += ", "
+        endif
+    endfor
+
+    return my.proxy_args
+endfunction
 
 # ---------------------------------------------------------------------------
-function _X13_add_constructor (class, constructor, destination, meta)
+function _X13_add_method_custom_init (class, constructor, destination, meta)
+    check_arguments (my, "class, constructor, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        if defined (my.constructor.)
+            my.comment = format_left (my.constructor.)
+        endif
+        my.comment = format_left("Perform initialization of pre-allocated context.") + (my.comment ? "")
+        . = my.comment
+
+        .name = cat (my.names.method_init, my.constructor.name)
+        .declaration ?= my.constructor.declaration ?
+        .definition ?= my.constructor.definition ?
+        .visibility ?= my.constructor.visibility ?
+
+        _X13_add_argument_ctx (my.class, method, my.meta)
+
+        for my.constructor.argument
+            component_clean_copy (argument, method)
+        endfor
+
+        new code to method
+            my.type_ctx = my.refs.c_class_struct_ctx
+            my.arg_ctx = my.names.c_class_argument_ctx
+            my.method_init_ctx = make_ref_c (make_id ("class", my.class.name, "method init ctx", my.constructor.name))
+            my.proxy_args = _X13_format_proxy_arguments (my.constructor)
+
+            . = "\
+                .(c_class_assert_macros_ptr)($(my.arg_ctx));
+
+                .(c_global_method_zeroize)($(my.arg_ctx), sizeof($(my.type_ctx)));
+
+                $(my.arg_ctx)->$(my.names.c_property_ref_counter:) = 1;
+
+                $(my.method_init_ctx)($(my.arg_ctx), $(my.proxy_args:));
+            "
+        endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _X13_add_method_custom_init_ctx (class, constructor, destination, meta)
     check_arguments (my, "class, constructor, destination, meta", my)
 
     my.names = meta_names (my.meta)
@@ -378,7 +427,82 @@ function _X13_add_constructor (class, constructor, destination, meta)
 
     new method to my.destination
         . = my.constructor. ?
-        .name = cat (! my.class.is_value_type ?? my.names.method_new ? "", my.constructor.name)
+        .name = cat (my.names.method_init_ctx, my.constructor.name)
+        .declaration = "private"
+        .definition = "private"
+
+        _X13_add_argument_ctx (my.class, method, my.meta)
+
+        for my.constructor.argument
+            component_clean_copy (argument, method)
+        endfor
+
+        new code to method
+            .type = "stub"
+            . = "\
+                //   TODO: Perform initialization.
+            "
+        endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _X13_add_custom_new (class, constructor, destination, meta)
+    check_arguments (my, "class, constructor, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        if defined (my.constructor.)
+            my.comment = format_left (my.constructor.)
+        endif
+        my.comment = format_left("Allocate class context and perform it's initialization.") + (my.comment ? "")
+        . = my.comment
+
+        .name = cat (my.names.method_new, my.constructor.name)
+        .declaration ?= my.constructor.declaration ?
+        .definition ?= my.constructor.definition ?
+        .visibility ?= my.constructor.visibility ?
+
+        _X13_add_return_ctx (my.class, method, my.meta)
+
+        for my.constructor.argument
+            component_clean_copy (argument, method)
+        endfor
+
+        new code to method
+            my.type_ctx = my.refs.c_class_struct_ctx
+            my.arg_ctx = my.names.c_class_argument_ctx
+            my.method_init = make_ref_c (make_id ("class", my.class.name, "method init", my.constructor.name))
+            my.proxy_args = _X13_format_proxy_arguments (my.constructor)
+
+            . = "\
+                $(my.type_ctx) *$(my.arg_ctx:) = ($(my.type_ctx) *) .(c_global_method_alloc)(sizeof ($(my.type_ctx)));
+                .(c_class_assert_macros_alloc)($(my.arg_ctx:));
+
+                $(my.method_init)($(my.arg_ctx:), $(my.proxy_args:));
+
+                $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc) = .(c_global_method_dealloc);
+
+                return $(my.arg_ctx:);
+            "
+        endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _X13_add_value_type_constructor (class, constructor, destination, meta)
+    check_arguments (my, "class, constructor, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        . = my.constructor. ?
+        .name = my.constructor.name
         .declaration ?= my.constructor.declaration ?
         .definition ?= my.constructor.definition ?
         .visibility ?= my.constructor.visibility ?
@@ -390,35 +514,41 @@ function _X13_add_constructor (class, constructor, destination, meta)
         _X13_add_return_ctx (my.class, method, my.meta)
 
         new code to method
-            .type = "stub"
-
             my.type_ctx = my.refs.c_class_struct_ctx
             my.arg_ctx = my.names.c_class_argument_ctx
 
-            if my.class.is_value_type
-                my.object_init = "\
-                    $(my.type_ctx) $(my.arg_ctx:);
-                "
+            .type = "stub"
+            . = "\
+                $(my.type_ctx) $(my.arg_ctx:);
 
-            else
-                my.object_init = "\
-                    $(my.type_ctx) *$(my.arg_ctx:) = $(my.refs.c_class_method_new)();
-                "
-            endif
-
-            my.object_return = "\
-                //   TODO: Perform initialization.
+                //  TODO: Perform initialization.
 
                 return $(my.arg_ctx:);
             "
-
-            my.method_body = ""
-            my.method_body += format_left (my.object_init) + terminator
-            my.method_body += format_left (my.object_return)
-
-            . = my.method_body
         endnew
     endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _X13_add_object_type_constructor (class, constructor, destination, meta)
+    check_arguments (my, "class, constructor, destination, meta", my)
+
+    _X13_add_method_custom_init(my.class, my.constructor, my.destination, my.meta)
+    _X13_add_method_custom_init_ctx(my.class, my.constructor, my.destination, my.meta)
+    _X13_add_custom_new(my.class, my.constructor, my.destination, my.meta)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _X13_add_constructor (class, constructor, destination, meta)
+    check_arguments (my, "class, constructor, destination, meta", my)
+
+    if my.class.is_value_type
+        _X13_add_value_type_constructor (my.class, my.constructor, my.destination, my.meta)
+    else
+        _X13_add_object_type_constructor (my.class, my.constructor, my.destination, my.meta)
+    endif
 endfunction
 
 

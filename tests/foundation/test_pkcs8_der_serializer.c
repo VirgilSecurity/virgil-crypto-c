@@ -70,7 +70,8 @@ test__serialized_public_key_len__rsa2048__greater_then_293(void) {
 
     vscf_rsa_public_key_t *rsa_public_key = vscf_rsa_public_key_new();
     vscf_rsa_public_key_take_asn1rd(rsa_public_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
-    vscf_rsa_public_key_import_public_key(rsa_public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_rsa_public_key_import_public_key(rsa_public_key, test_rsa_2048_PUBLIC_KEY_PKCS1));
 
     size_t len = vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8, vscf_rsa_public_key_impl(rsa_public_key));
 
@@ -92,12 +93,14 @@ test__serialize_public_key__rsa2048__equals_to_rsa_2048_public_key_pkcs8_der(voi
     vscf_rsa_public_key_t *rsa_public_key = vscf_rsa_public_key_new();
     vscf_rsa_public_key_take_asn1rd(rsa_public_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
     vscf_rsa_public_key_take_asn1wr(rsa_public_key, vscf_asn1wr_impl(vscf_asn1wr_new()));
-    vscf_rsa_public_key_import_public_key(rsa_public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_rsa_public_key_import_public_key(rsa_public_key, test_rsa_2048_PUBLIC_KEY_PKCS1));
 
     size_t len = vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8, vscf_rsa_public_key_impl(rsa_public_key));
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
 
-    vscf_pkcs8_der_serializer_serialize_public_key(pkcs8, vscf_rsa_public_key_impl(rsa_public_key), out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_pkcs8_der_serializer_serialize_public_key(pkcs8, vscf_rsa_public_key_impl(rsa_public_key), out));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_rsa_2048_PUBLIC_KEY_PKCS8_DER, out);
 
@@ -117,7 +120,8 @@ test__serialized_private_key_len__rsa2048__greater_then_1214(void) {
 
     vscf_rsa_private_key_t *rsa_private_key = vscf_rsa_private_key_new();
     vscf_rsa_private_key_take_asn1rd(rsa_private_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
-    vscf_rsa_private_key_import_private_key(rsa_private_key, test_rsa_2048_PRIVATE_KEY_PKCS1);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_rsa_private_key_import_private_key(rsa_private_key, test_rsa_2048_PRIVATE_KEY_PKCS1));
 
     size_t len =
             vscf_pkcs8_der_serializer_serialized_private_key_len(pkcs8, vscf_rsa_private_key_impl(rsa_private_key));
@@ -140,13 +144,15 @@ test__serialize_private_key__rsa2048__equals_to_rsa_2048_private_key_pkcs8_der(v
     vscf_rsa_private_key_t *rsa_private_key = vscf_rsa_private_key_new();
     vscf_rsa_private_key_take_asn1rd(rsa_private_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
     vscf_rsa_private_key_take_asn1wr(rsa_private_key, vscf_asn1wr_impl(vscf_asn1wr_new()));
-    vscf_rsa_private_key_import_private_key(rsa_private_key, test_rsa_2048_PRIVATE_KEY_PKCS1);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_rsa_private_key_import_private_key(rsa_private_key, test_rsa_2048_PRIVATE_KEY_PKCS1));
 
     size_t len =
             vscf_pkcs8_der_serializer_serialized_private_key_len(pkcs8, vscf_rsa_private_key_impl(rsa_private_key));
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
 
-    vscf_pkcs8_der_serializer_serialize_private_key(pkcs8, vscf_rsa_private_key_impl(rsa_private_key), out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_pkcs8_der_serializer_serialize_private_key(pkcs8, vscf_rsa_private_key_impl(rsa_private_key), out));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_rsa_2048_PRIVATE_KEY_PKCS8_DER, out);
 
@@ -169,7 +175,8 @@ test__serialized_public_key_len__ed25519__greater_then_44(void) {
     vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
 
     vscf_ed25519_public_key_t *public_key = vscf_ed25519_public_key_new();
-    vscf_ed25519_public_key_import_public_key(public_key, test_ed25519_PUBLIC_KEY);
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_ed25519_public_key_import_public_key(public_key, test_ed25519_PUBLIC_KEY));
 
     size_t len = vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8, vscf_ed25519_public_key_impl(public_key));
 
@@ -189,12 +196,14 @@ test__serialize_public_key__ed25519__equals_to_ed25519_public_key_pkcs8_der(void
     vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
 
     vscf_ed25519_public_key_t *public_key = vscf_ed25519_public_key_new();
-    vscf_ed25519_public_key_import_public_key(public_key, test_ed25519_PUBLIC_KEY);
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_ed25519_public_key_import_public_key(public_key, test_ed25519_PUBLIC_KEY));
 
     size_t len = vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8, vscf_ed25519_public_key_impl(public_key));
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
 
-    vscf_pkcs8_der_serializer_serialize_public_key(pkcs8, vscf_ed25519_public_key_impl(public_key), out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_pkcs8_der_serializer_serialize_public_key(pkcs8, vscf_ed25519_public_key_impl(public_key), out));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ed25519_PUBLIC_KEY_PKCS8_DER, out);
 
@@ -213,7 +222,8 @@ test__serialized_private_key_len__ed25519__greater_then_48(void) {
     vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
 
     vscf_ed25519_private_key_t *private_key = vscf_ed25519_private_key_new();
-    vscf_ed25519_private_key_import_private_key(private_key, test_ed25519_PRIVATE_KEY);
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_ed25519_private_key_import_private_key(private_key, test_ed25519_PRIVATE_KEY));
 
     size_t len =
             vscf_pkcs8_der_serializer_serialized_private_key_len(pkcs8, vscf_ed25519_private_key_impl(private_key));
@@ -234,13 +244,15 @@ test__serialize_private_key__ed25519__equals_to_ed25519_private_key_pkcs8_der(vo
     vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
 
     vscf_ed25519_private_key_t *private_key = vscf_ed25519_private_key_new();
-    vscf_ed25519_private_key_import_private_key(private_key, test_ed25519_PRIVATE_KEY);
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_ed25519_private_key_import_private_key(private_key, test_ed25519_PRIVATE_KEY));
 
     size_t len =
             vscf_pkcs8_der_serializer_serialized_private_key_len(pkcs8, vscf_ed25519_private_key_impl(private_key));
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
 
-    vscf_pkcs8_der_serializer_serialize_private_key(pkcs8, vscf_ed25519_private_key_impl(private_key), out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_pkcs8_der_serializer_serialize_private_key(pkcs8, vscf_ed25519_private_key_impl(private_key), out));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ed25519_PRIVATE_KEY_PKCS8_DER, out);
 
@@ -263,7 +275,8 @@ test__serialized_public_key_len__curve25519__greater_then_44(void) {
     vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
 
     vscf_curve25519_public_key_t *public_key = vscf_curve25519_public_key_new();
-    vscf_curve25519_public_key_import_public_key(public_key, test_curve25519_PUBLIC_KEY);
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_curve25519_public_key_import_public_key(public_key, test_curve25519_PUBLIC_KEY));
 
     size_t len =
             vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8, vscf_curve25519_public_key_impl(public_key));
@@ -284,13 +297,15 @@ test__serialize_public_key__curve25519__equals_to_curve25519_public_key_pkcs8_de
     vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
 
     vscf_curve25519_public_key_t *public_key = vscf_curve25519_public_key_new();
-    vscf_curve25519_public_key_import_public_key(public_key, test_curve25519_PUBLIC_KEY);
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_curve25519_public_key_import_public_key(public_key, test_curve25519_PUBLIC_KEY));
 
     size_t len =
             vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8, vscf_curve25519_public_key_impl(public_key));
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
 
-    vscf_pkcs8_der_serializer_serialize_public_key(pkcs8, vscf_curve25519_public_key_impl(public_key), out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_pkcs8_der_serializer_serialize_public_key(pkcs8, vscf_curve25519_public_key_impl(public_key), out));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_curve25519_PUBLIC_KEY_PKCS8_DER, out);
 
@@ -309,7 +324,8 @@ test__serialized_private_key_len__curve25519__greater_then_48(void) {
     vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
 
     vscf_curve25519_private_key_t *private_key = vscf_curve25519_private_key_new();
-    vscf_curve25519_private_key_import_private_key(private_key, test_curve25519_PRIVATE_KEY);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_curve25519_private_key_import_private_key(private_key, test_curve25519_PRIVATE_KEY));
 
     size_t len =
             vscf_pkcs8_der_serializer_serialized_private_key_len(pkcs8, vscf_curve25519_private_key_impl(private_key));
@@ -330,13 +346,15 @@ test__serialize_private_key__curve25519__equals_to_curve25519_private_key_pkcs8_
     vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
 
     vscf_curve25519_private_key_t *private_key = vscf_curve25519_private_key_new();
-    vscf_curve25519_private_key_import_private_key(private_key, test_curve25519_PRIVATE_KEY);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_curve25519_private_key_import_private_key(private_key, test_curve25519_PRIVATE_KEY));
 
     size_t len =
             vscf_pkcs8_der_serializer_serialized_private_key_len(pkcs8, vscf_curve25519_private_key_impl(private_key));
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
 
-    vscf_pkcs8_der_serializer_serialize_private_key(pkcs8, vscf_curve25519_private_key_impl(private_key), out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_pkcs8_der_serializer_serialize_private_key(pkcs8, vscf_curve25519_private_key_impl(private_key), out));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_curve25519_PRIVATE_KEY_PKCS8_DER, out);
 

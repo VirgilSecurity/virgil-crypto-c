@@ -123,32 +123,6 @@ vscf_rsa_public_key_cleanup_ctx(vscf_rsa_public_key_t *self) {
 }
 
 //
-//  Return public key exponent.
-//
-static size_t
-vscf_rsa_public_key_key_exponent(vscf_rsa_public_key_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->asn1wr);
-    VSCF_ASSERT_PTR(self->asn1rd);
-
-    vscf_error_t error;
-    vscf_error_reset(&error);
-
-    byte exponent_asn1[10] = {0x00};
-    vscf_asn1_writer_reset(self->asn1wr, exponent_asn1, sizeof(exponent_asn1));
-    vscf_mbedtls_bignum_write_asn1(self->asn1wr, &self->rsa_ctx.E, &error);
-    VSCF_ASSERT(!vscf_asn1_writer_has_error(self->asn1wr));
-    VSCF_ASSERT(!vscf_error_has_error(&error));
-
-    vscf_asn1_reader_reset(self->asn1rd, vsc_data(exponent_asn1, sizeof(exponent_asn1)));
-    const size_t exponent = vscf_asn1_reader_read_uint(self->asn1rd);
-    VSCF_ASSERT(!vscf_asn1_reader_has_error(self->asn1rd));
-
-    return exponent;
-}
-
-//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
@@ -175,6 +149,32 @@ vscf_rsa_public_key_setup_defaults(vscf_rsa_public_key_t *self) {
     }
 
     return vscf_status_SUCCESS;
+}
+
+//
+//  Return public key exponent.
+//
+static size_t
+vscf_rsa_public_key_key_exponent(vscf_rsa_public_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->asn1wr);
+    VSCF_ASSERT_PTR(self->asn1rd);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    byte exponent_asn1[10] = {0x00};
+    vscf_asn1_writer_reset(self->asn1wr, exponent_asn1, sizeof(exponent_asn1));
+    vscf_mbedtls_bignum_write_asn1(self->asn1wr, &self->rsa_ctx.E, &error);
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(self->asn1wr));
+    VSCF_ASSERT(!vscf_error_has_error(&error));
+
+    vscf_asn1_reader_reset(self->asn1rd, vsc_data(exponent_asn1, sizeof(exponent_asn1)));
+    const size_t exponent = vscf_asn1_reader_read_uint(self->asn1rd);
+    VSCF_ASSERT(!vscf_asn1_reader_has_error(self->asn1rd));
+
+    return exponent;
 }
 
 //
@@ -419,7 +419,8 @@ vscf_rsa_public_key_generate_ephemeral_key(vscf_rsa_public_key_t *self, vscf_err
     const size_t bitlen = vscf_rsa_public_key_key_bitlen(self);
     const size_t exponent = vscf_rsa_public_key_key_exponent(self);
 
-    vscf_rsa_private_key_set_keygen_params(private_key, bitlen, exponent);
+    vscf_rsa_private_key_set_keygen_params(private_key, bitlen);
+    vscf_rsa_private_key_set_keygen_exponent(private_key, exponent);
     vscf_status_t status = vscf_rsa_private_key_generate_key(private_key);
     if (status != vscf_status_SUCCESS) {
         vscf_rsa_private_key_destroy(&private_key);

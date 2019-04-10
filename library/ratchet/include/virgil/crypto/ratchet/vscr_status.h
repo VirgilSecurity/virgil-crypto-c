@@ -129,9 +129,9 @@ enum vscr_status_t {
     //
     vscr_status_ERROR_SKIPPED_MESSAGE_MISSING = -13,
     //
-    //  Can't encrypt yet.
+    //  Session is not initialized.
     //
-    vscr_status_ERROR_CAN_T_ENCRYPT_YET = -14,
+    vscr_status_ERROR_SESSION_IS_NOT_INITIALIZED = -14,
     //
     //  Exceeded max plain text len.
     //
@@ -147,7 +147,31 @@ enum vscr_status_t {
     //
     //  Invalid padding.
     //
-    vscr_status_ERROR_INVALID_PADDING = -18
+    vscr_status_ERROR_INVALID_PADDING = -18,
+    //
+    //  Too many participants.
+    //
+    vscr_status_ERROR_TOO_MANY_PARTICIPANTS = -19,
+    //
+    //  Too few participants.
+    //
+    vscr_status_ERROR_TOO_FEW_PARTICIPANTS = -20,
+    //
+    //  Sender not found.
+    //
+    vscr_status_ERROR_SENDER_NOT_FOUND = -21,
+    //
+    //  Cannot decrypt own messages.
+    //
+    vscr_status_ERROR_CANNOT_DECRYPT_OWN_MESSAGES = -22,
+    //
+    //  Duplicate id.
+    //
+    vscr_status_ERROR_DUPLICATE_ID = -23,
+    //
+    //  Invalid signature.
+    //
+    vscr_status_ERROR_INVALID_SIGNATURE = -24
 };
 typedef enum vscr_status_t vscr_status_t;
 

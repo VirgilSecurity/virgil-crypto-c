@@ -262,25 +262,21 @@ vscr_ratchet_skipped_messages_delete_key(
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(skipped_message_key);
 
-    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key_list_node_prev = NULL;
-    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key_list_node = self->keys;
+    vscr_ratchet_skipped_message_key_list_node_t **prev = &self->keys;
+    vscr_ratchet_skipped_message_key_list_node_t *node = self->keys;
 
-    while (skipped_message_key_list_node) {
-        if (skipped_message_key_list_node->value == skipped_message_key) {
-            if (skipped_message_key_list_node_prev) {
-                skipped_message_key_list_node_prev->next = skipped_message_key_list_node->next;
-            } else {
-                self->keys = skipped_message_key_list_node->next;
-            }
+    while (node) {
+        if (node->value == skipped_message_key) {
+            (*prev) = node->next;
 
-            skipped_message_key_list_node->next = NULL;
-            vscr_ratchet_skipped_message_key_list_node_destroy(&skipped_message_key_list_node);
+            node->next = NULL;
+            vscr_ratchet_skipped_message_key_list_node_destroy(&node);
 
             return;
         }
 
-        skipped_message_key_list_node_prev = skipped_message_key_list_node;
-        skipped_message_key_list_node = skipped_message_key_list_node->next;
+        prev = &node->next;
+        node = node->next;
     }
 
     // Element not found

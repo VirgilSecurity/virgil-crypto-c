@@ -99,7 +99,8 @@ vscf_sign_hash_signature_len(const vscf_impl_t *impl);
 //  Sign data given private key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_sign_hash(vscf_impl_t *impl, vsc_data_t hash_digest, vscf_alg_id_t hash_id, vsc_buffer_t *signature);
+vscf_sign_hash(vscf_impl_t *impl, vsc_data_t hash_digest, vscf_alg_id_t hash_id,
+        vsc_buffer_t *signature) VSCF_NODISCARD;
 
 //
 //  Return sign hash API, or NULL if it is not implemented.

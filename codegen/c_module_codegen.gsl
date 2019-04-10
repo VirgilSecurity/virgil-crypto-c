@@ -64,14 +64,14 @@ function c_module_generate_header (c_module)
         c_insert_alias (c_alias)
     endfor
 
-    for my.c_module.c_macros where definition = "public"
-        newline ()
-        c_insert_macros (c_macros)
-    endfor
-
     for my.c_module.c_macroses where definition = "public"
         newline ()
         c_insert_macros (c_macroses)
+    endfor
+
+    for my.c_module.c_macros where definition = "public"
+        newline ()
+        c_insert_macros (c_macros)
     endfor
 
     for my.c_module.c_enum where declaration = "public" & definition = "public"
@@ -136,14 +136,14 @@ function c_module_generate_source (c_module)
         c_insert_alias (c_alias)
     endfor
 
-    for my.c_module.c_macros where definition = "private"
-        newline ()
-        c_insert_macros (c_macros)
-    endfor
-
     for my.c_module.c_macroses where definition = "private"
         newline ()
         c_insert_macros (c_macroses)
+    endfor
+
+    for my.c_module.c_macros where definition = "private"
+        newline ()
+        c_insert_macros (c_macros)
     endfor
 
     for my.c_module.c_enum where definition = "private" & declaration = "private"

@@ -38,8 +38,8 @@
 //
 //  PKCS#1 binary format
 //
-extern const vsc_data_t test_rsa_RANDOM;
-extern const vsc_data_t test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1;
+extern const vsc_data_t test_rsa_DETERMINISTIC_KEY_MATERIAL;
+extern const vsc_data_t test_rsa_2048_GENERATED_PRIVATE_KEY_PKCS1;
 extern const vsc_data_t test_rsa_2048_PUBLIC_KEY_PKCS1;
 extern const vsc_data_t test_rsa_2048_PRIVATE_KEY_PKCS1;
 

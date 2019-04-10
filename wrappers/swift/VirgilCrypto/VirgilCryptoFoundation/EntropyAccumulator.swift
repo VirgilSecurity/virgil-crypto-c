@@ -37,9 +37,9 @@ import Foundation
 import VSCFoundation
 
 /// Implementation based on a simple entropy accumulator.
-@objc(VSCFEntropyAccumulator) public class EntropyAccumulator: NSObject, Defaults, EntropySource {
+@objc(VSCFEntropyAccumulator) public class EntropyAccumulator: NSObject, EntropySource {
 
-    @objc public let sourcesMax: Int = 15
+    @objc public static let sourcesMax: Int = 15
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -69,18 +69,16 @@ import VSCFoundation
         vscf_entropy_accumulator_delete(self.c_ctx)
     }
 
+    /// Setup predefined values to the uninitialized class dependencies.
+    @objc public func setupDefaults() {
+        vscf_entropy_accumulator_setup_defaults(self.c_ctx)
+    }
+
     /// Add given entropy source to the accumulator.
     /// Threshold defines minimum number of bytes that must be gathered
     /// from the source during accumulation.
     @objc public func addSource(source: EntropySource, threshold: Int) {
         vscf_entropy_accumulator_add_source(self.c_ctx, source.c_ctx, threshold)
-    }
-
-    /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_entropy_accumulator_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Defines that implemented source is strong.
@@ -99,9 +97,9 @@ import VSCFoundation
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
             vsc_buffer_init(outBuf)
-            vsc_buffer_use(outBuf, outPointer, outCount)
+            vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             return vscf_entropy_accumulator_gather(self.c_ctx, len, outBuf)
         })

@@ -14,28 +14,28 @@ function js_append_js_module_model(parent, source)
   endnew
 endfunction
 
-function js_append_js_interface_module_model(parent, source, wrapper)
+function js_append_js_interface_module_model(parent, source, wrapper_project)
   new js_interface_module to my.parent
     js_interface_module.name = my.source.name
     js_interface_module.cpp_name = "$(my.source.name:pascal)"
     js_interface_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
     js_interface_module.c_implementation_type = "$(make_ref_c(make_id("class", "impl", "struct", "impl")))*"
     js_interface_module.c_implementation_header = make_ref_c(make_id("header", "impl"))
-    js_interface_module.c_implementation_header_path = "$(my.wrapper.namespace:no)/$(js_interface_module.c_implementation_header:no)"
+    js_interface_module.c_implementation_header_path = "$(my.wrapper_project.namespace:no)/$(js_interface_module.c_implementation_header:no)"
     new js_cpp_header to js_interface_module
       js_cpp_header.name = "$(my.source.name:c).h"
-      js_cpp_header.path = cat_path(my.wrapper.project_source_dir, js_cpp_header.name)
+      js_cpp_header.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_header.name)
     endnew
     return js_interface_module
   endnew
 endfunction
 
-function js_append_js_enum_module_model(parent, source, wrapper)
+function js_append_js_enum_module_model(parent, source, wrapper_project)
   new js_enum_module to my.parent
     js_enum_module.js_name = "$(my.source.name:pascal)"
     new js_source to js_enum_module
       js_source.name = "$(my.source.name:cobol).js"
-      js_source.path = cat_path(my.wrapper.project_source_dir, js_source.name)
+      js_source.path = cat_path(my.wrapper_project.project_source_dir, js_source.name)
     endnew
     for my.source.constant
       js_append_js_enum_value(js_enum_module, constant, index(constant) - 1)
@@ -44,18 +44,18 @@ function js_append_js_enum_module_model(parent, source, wrapper)
   endnew
 endfunction
 
-function js_append_js_error_status_module_model(parent, source, wrapper)
+function js_append_js_error_status_module_model(parent, source, wrapper_project)
   new js_error_status_module to my.parent
     js_error_status_module.cpp_name = "$(my.source.name:pascal)"
     js_error_status_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
     js_error_status_module.c_type = make_ref_c(make_id("class", "status", "enum", "status"))
     new js_cpp_header to js_error_status_module
       js_cpp_header.name = "$(my.source.name:c).h"
-      js_cpp_header.path = cat_path(my.wrapper.project_source_dir, js_cpp_header.name)
+      js_cpp_header.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_header.name)
     endnew
     new js_cpp_source to js_error_status_module
       js_cpp_source.name = "$(my.source.name:c).cc"
-      js_cpp_source.path = cat_path(my.wrapper.project_source_dir, js_cpp_source.name)
+      js_cpp_source.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_source.name)
     endnew
     for my.source.constant where constant.name <> "success"
       new js_error_status to js_error_status_module
@@ -70,7 +70,7 @@ function js_append_js_error_status_module_model(parent, source, wrapper)
   endnew
 endfunction
 
-function js_append_js_class_module_model(parent, source, wrapper)
+function js_append_js_class_module_model(parent, source, wrapper_project)
   new js_class_module to my.parent
     js_class_module.name = my.source.name
     js_class_module.binding_name = "$(my.source.name:pascal)Binding"
@@ -78,7 +78,7 @@ function js_append_js_class_module_model(parent, source, wrapper)
     js_class_module.cpp_name = "$(my.source.name:pascal)"
     js_class_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
     js_class_module.c_header = make_ref_c(make_id("header", my.source.name))
-    js_class_module.c_header_path = "$(my.wrapper.namespace:no)/$(js_class_module.c_header:no)"
+    js_class_module.c_header_path = "$(my.wrapper_project.namespace:no)/$(js_class_module.c_header:no)"
     js_class_module.instance_name = "$(my.source.name:c)_instance"
     js_class_module.has_context = defined(my.source.context) & my.source.context <> "none"
     if js_class_module.has_context
@@ -89,15 +89,15 @@ function js_append_js_class_module_model(parent, source, wrapper)
     endif
     new js_cpp_header to js_class_module
       js_cpp_header.name = "$(my.source.name:c).h"
-      js_cpp_header.path = cat_path(my.wrapper.project_source_dir, js_cpp_header.name)
+      js_cpp_header.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_header.name)
     endnew
     new js_cpp_source to js_class_module
       js_cpp_source.name = "$(my.source.name:c).cc"
-      js_cpp_source.path = cat_path(my.wrapper.project_source_dir, js_cpp_source.name)
+      js_cpp_source.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_source.name)
     endnew
     new js_source to js_class_module
       js_source.name = "$(my.source.name:cobol).js"
-      js_source.path = cat_path(my.wrapper.project_source_dir, js_source.name)
+      js_source.path = cat_path(my.wrapper_project.project_source_dir, js_source.name)
     endnew
     for my.source.interface
       js_append_js_interface_implementation(js_class_module, interface)

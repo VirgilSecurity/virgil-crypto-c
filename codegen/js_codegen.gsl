@@ -785,7 +785,7 @@ function js_cpp_create_method_return_multiple_item(argument, method_return, inde
   js_out("js_result_object->Set(Nan::New<v8::String>(\"$(my.argument.js_name:no)\").ToLocalChecked(), $(my.method_return:no));", my.indent_levels.first)
 endfunction
 
-function js_cpp_create_method_return_multiple(js_method, js_class_module, wrapper, indent_level)
+function js_cpp_create_method_return_multiple(js_method, js_class_module, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   js_out("Nan::EscapableHandleScope scope;", my.indent_levels.first)
   js_out("v8::Local<v8::Object> js_result_object = Nan::New<v8::Object>();", my.indent_levels.first)
@@ -832,7 +832,7 @@ function js_cpp_create_method_return_multiple(js_method, js_class_module, wrappe
   js_out("$(global.js_cpp_callback_info_name:no).GetReturnValue().Set(scope.Escape(js_result_object));", my.indent_levels.first)
 endfunction
 
-function js_cpp_create_method_return_one(js_method, js_class_module, wrapper, indent_level)
+function js_cpp_create_method_return_one(js_method, js_class_module, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   if defined(my.js_method->js_size_method_return)
     my.method_return = js_cpp_create_js_size_method_return_result(my.js_method->js_size_method_return, my.indent_levels.first)
@@ -858,15 +858,15 @@ function js_cpp_create_method_return_one(js_method, js_class_module, wrapper, in
   js_out("$(global.js_cpp_callback_info_name:no).GetReturnValue().Set($(my.method_return:no));", my.indent_levels.first)
 endfunction
 
-function js_cpp_create_method_return(js_method, js_class_module, wrapper, indent_level)
+function js_cpp_create_method_return(js_method, js_class_module, indent_level)
   if count(my.js_method.js_method_return) > 1
-    js_cpp_create_method_return_multiple(my.js_method, my.js_class_module, my.wrapper, my.indent_level)
+    js_cpp_create_method_return_multiple(my.js_method, my.js_class_module, my.indent_level)
   elsif count(my.js_method.js_method_return) = 1
-    js_cpp_create_method_return_one(my.js_method, my.js_class_module, my.wrapper, my.indent_level)
+    js_cpp_create_method_return_one(my.js_method, my.js_class_module, my.indent_level)
   endif
 endfunction
 
-function js_cpp_create_method(js_method, js_class_module, wrapper, indent_level)
+function js_cpp_create_method(js_method, js_class_module, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   js_out("void $(my.js_class_module.cpp_name:no)::$(my.js_method.cpp_name:no)($(global.js_cpp_callback_info_type:no) $(global.js_cpp_callback_info_name:no)) {", my.indent_levels.first)
   if !my.js_method.is_static
@@ -876,7 +876,7 @@ function js_cpp_create_method(js_method, js_class_module, wrapper, indent_level)
   js_cpp_create_js_method_returns(my.js_method, my.js_class_module, my.indent_levels.second)
   js_cpp_create_method_call(my.js_method, my.js_class_module, my.indent_levels.second)
   js_cpp_create_method_error_handing(my.js_method, my.indent_levels.second)
-  js_cpp_create_method_return(my.js_method, my.js_class_module, my.wrapper, my.indent_levels.second)
+  js_cpp_create_method_return(my.js_method, my.js_class_module, my.indent_levels.second)
   js_out("}", my.indent_levels.first)
 endfunction
 
@@ -911,7 +911,7 @@ function js_cpp_create_persistent_constructor(js_class_module, indent_level)
   js_out("Nan::Persistent<v8::Function> $(my.js_class_module.cpp_name:no)::$(global.js_cpp_persistent_constructor_name:no);", my.indent_levels.first)
 endfunction
 
-function js_cpp_create_class(js_class_module, wrapper, indent_level)
+function js_cpp_create_class(js_class_module, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   js_cpp_create_init(my.js_class_module, my.indent_levels.first)
   if my.js_class_module.has_context
@@ -923,10 +923,10 @@ function js_cpp_create_class(js_class_module, wrapper, indent_level)
     js_cpp_create_get_implementation_method(my.js_class_module, my.indent_levels.first)
   endif
   for my.js_class_module.js_dependency
-    js_cpp_create_method(js_dependency->js_method, my.js_class_module, my.wrapper, my.indent_levels.first)
+    js_cpp_create_method(js_dependency->js_method, my.js_class_module, my.indent_levels.first)
   endfor
   for my.js_class_module.js_method
-    js_cpp_create_method(js_method, my.js_class_module, my.wrapper, my.indent_levels.first)
+    js_cpp_create_method(js_method, my.js_class_module, my.indent_levels.first)
   endfor
   js_cpp_create_persistent_constructor(my.js_class_module, my.indent_levels.firsts.first)
 endfunction
@@ -937,10 +937,10 @@ function js_cpp_create_error_status_module(js_error_status_module, indent_level)
   js_out("switch ($(global.js_cpp_handle_error_status_method_parameter_name:no)) {", my.indent_levels.second)
   for my.js_error_status_module.js_error_status
     js_out("case $(js_error_status.c_name:no):", my.indent_levels.third)
-    js_out("Nan::ThrowError(\"$(js_error_status.message:no)\")", my.indent_levels.fourth)
+    js_out("Nan::ThrowError(\"$(js_error_status.message:no)\");", my.indent_levels.fourth)
     js_out("break;", my.indent_levels.fourth)
   endfor
-  js_out("}")
+  js_out("}", my.indent_levels.second)
   js_out("}", my.indent_levels.first)
 endfunction
 
@@ -974,9 +974,9 @@ function js_format_js_arguments(js_method)
   return arguments
 endfunction
 
-function js_create_requires(js_class_module, wrapper, indent_level)
+function js_create_requires(js_class_module, wrapper_project, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("const { $(my.js_class_module.binding_name:no) } = require('bindings')('$(my.wrapper.name:no)');", my.indent_levels.first)
+  js_out("const { $(my.js_class_module.binding_name:no) } = require('bindings')('$(my.wrapper_project.name:no)');", my.indent_levels.first)
 endfunction
 
 function js_create_constant(js_constant, indent_level)
@@ -1015,7 +1015,7 @@ function js_create_static_create_method(js_class_module, indent_level)
   js_out("}", my.indent_levels.first)
 endfunction
 
-function js_create_method_return(js_method, js_class_module, wrapper, indent_level)
+function js_create_method_return(js_method, js_class_module, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   my.binding = my.js_method.is_static ?? "$(my.js_class_module.binding_name:no)" ? "this.$(global.js_binding_property_name:no)"
   js_out("return $(my.binding:no).$(my.js_method.js_name:no)($(js_format_js_arguments(my.js_method)));", my.indent_levels.first)
@@ -1027,19 +1027,19 @@ function js_create_method_return(js_method, js_class_module, wrapper, indent_lev
   /* endif */
 endfunction
 
-function js_create_method(js_method, js_class_module, wrapper, indent_level)
+function js_create_method(js_method, js_class_module, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   if my.js_method.is_static
     js_out("static $(my.js_method.js_name:no)($(js_format_method_paraments(my.js_method))) {", my.indent_levels.first)
-    js_create_method_return(my.js_method, my.js_class_module, my.wrapper, my.indent_levels.second)
+    js_create_method_return(my.js_method, my.js_class_module, my.indent_levels.second)
   else
     js_out("$(my.js_method.js_name:no)($(js_format_method_paraments(my.js_method))) {", my.indent_levels.first)
-    js_create_method_return(my.js_method, my.js_class_module, my.wrapper, my.indent_levels.second)
+    js_create_method_return(my.js_method, my.js_class_module, my.indent_levels.second)
   endif
   js_out("}", my.indent_levels.first)
 endfunction
 
-function js_create_class(js_class_module, wrapper, indent_level)
+function js_create_class(js_class_module, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   js_out("class $(my.js_class_module.js_name:no) {", my.indent_levels.first)
   for my.js_class_module.js_constant
@@ -1050,10 +1050,10 @@ function js_create_class(js_class_module, wrapper, indent_level)
     js_create_static_create_method(my.js_class_module, my.indent_levels.second)
   endif
   for my.js_class_module.js_dependency
-    js_create_method(js_dependency->js_method, my.js_class_module, my.wrapper, my.indent_levels.second)
+    js_create_method(js_dependency->js_method, my.js_class_module, my.indent_levels.second)
   endfor
   for my.js_class_module.js_method
-    js_create_method(js_method, my.js_class_module, my.wrapper, my.indent_levels.second)
+    js_create_method(js_method, my.js_class_module, my.indent_levels.second)
   endfor
   js_out("}", my.indent_levels.first)
 endfunction
@@ -1085,7 +1085,7 @@ endfunction
 # Generate files
 # --------------------------------------------------------------------------------------------------
 
-function js_create_js_class_module_file(js_class_module, wrapper)
+function js_create_js_class_module_file(js_class_module, wrapper_project)
   my.indent_levels = js_create_indent_levels()
   output my.js_class_module->js_cpp_header.path
     js_cpp_header_create_ifndef(my.js_class_module.cpp_header_guard, my.indent_levels.first)
@@ -1096,11 +1096,11 @@ function js_create_js_class_module_file(js_class_module, wrapper)
   close
   output my.js_class_module->js_cpp_source.path
     js_cpp_create_header_include(my.js_class_module, my.indent_levels.first)
-    js_cpp_create_class(my.js_class_module, my.wrapper, my.indent_levels.first)
+    js_cpp_create_class(my.js_class_module, my.indent_levels.first)
   close
   output my.js_class_module->js_source.path
-    js_create_requires(my.js_class_module, my.wrapper, my.indent_levels.first)
-    js_create_class(my.js_class_module, my.wrapper, my.indent_levels.first)
+    js_create_requires(my.js_class_module, my.wrapper_project, my.indent_levels.first)
+    js_create_class(my.js_class_module, my.indent_levels.first)
     js_create_export_class(my.js_class_module, my.indent_levels.first)
   close
 endfunction
@@ -1136,8 +1136,8 @@ function js_create_js_interface_module_file(js_interface_module)
   close
 endfunction
 
-function js_create_js_module_files(source, wrapper)
-  for my.source.js_module
+function js_create_js_module_files(wrapper_project)
+  for my.wrapper_project.js_module
     if defined(js_module->js_interface_module)
       js_create_js_interface_module_file(js_module->js_interface_module)
     elsif defined(js_module->js_enum_module)
@@ -1145,22 +1145,22 @@ function js_create_js_module_files(source, wrapper)
     elsif defined(js_module->js_error_status_module)
       js_create_js_error_status_module(js_module->js_error_status_module)
     elsif defined(js_module->js_class_module)
-      js_create_js_class_module_file(js_module->js_class_module, my.wrapper)
+      js_create_js_class_module_file(js_module->js_class_module, my.wrapper_project)
     else
       echo_fatal("Unknown 'js_module'", my)
     endif
   endfor
 endfunction
 
-function js_create_index_cpp_file(source, wrapper)
+function js_create_index_cpp_file(wrapper_project)
   my.indent_levels = js_create_indent_levels()
-  output my.wrapper.index_cpp_file_path
+  output my.wrapper_project.index_cpp_file_path
     js_out("#include <nan.h>", my.indent_levels.first)
-    for my.source.js_module where defined(js_module->js_class_module)
+    for my.wrapper_project.js_module where defined(js_module->js_class_module)
       js_out("#include \"$(js_module->js_class_module->js_cpp_header.name:no)\"", my.indent_levels.first)
     endfor
     js_out("void InitAll(v8::Local<v8::Object> exports) {", my.indent_levels.first)
-    for my.source.js_module where defined(js_module->js_class_module)
+    for my.wrapper_project.js_module where defined(js_module->js_class_module)
       js_out("$(js_module->js_class_module.cpp_name:no)::$(global.js_cpp_init_function_name:no)(exports);", my.indent_levels.second)
     endfor
     js_out("}", my.indent_levels.first)
@@ -1168,12 +1168,12 @@ function js_create_index_cpp_file(source, wrapper)
   close
 endfunction
 
-function js_create_index_js_file(source, wrapper)
+function js_create_index_js_file(wrapper_project)
   my.indent_levels = js_create_indent_levels()
-  output my.wrapper.index_js_file_path
+  output my.wrapper_project.index_js_file_path
     js_out("module.exports = Object.assign(", my.indent_levels.first)
     js_out("{},", my.indent_levels.second)
-    for my.source.js_module where !defined(js_module->js_interface_module)
+    for my.wrapper_project.js_module where !defined(js_module->js_interface_module)
       if defined(js_module->js_class_module)
         my.require = "require('./$(js_module->js_class_module->js_source.name:no)')"
       else

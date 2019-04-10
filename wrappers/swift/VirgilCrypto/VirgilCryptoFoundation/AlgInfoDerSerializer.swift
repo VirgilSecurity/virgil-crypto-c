@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// Provide DER serializer of algorithm information.
-@objc(VSCFAlgInfoDerSerializer) public class AlgInfoDerSerializer: NSObject, Defaults, AlgInfoSerializer {
+@objc(VSCFAlgInfoDerSerializer) public class AlgInfoDerSerializer: NSObject, AlgInfoSerializer {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -72,6 +72,11 @@ import VSCFoundation
         vscf_alg_info_der_serializer_use_asn1_writer(self.c_ctx, asn1Writer.c_ctx)
     }
 
+    /// Setup predefined values to the uninitialized class dependencies.
+    @objc public func setupDefaults() {
+        vscf_alg_info_der_serializer_setup_defaults(self.c_ctx)
+    }
+
     /// Serialize by using internal ASN.1 writer.
     /// Note, that caller code is responsible to reset ASN.1 writer with
     /// an output buffer.
@@ -79,13 +84,6 @@ import VSCFoundation
         let proxyResult = vscf_alg_info_der_serializer_serialize_inplace(self.c_ctx, algInfo.c_ctx)
 
         return proxyResult
-    }
-
-    /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_alg_info_der_serializer_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Return buffer size enough to hold serialized algorithm.
@@ -104,9 +102,9 @@ import VSCFoundation
             vsc_buffer_delete(outBuf)
         }
 
-        out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> Void in
+        out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> Void in
             vsc_buffer_init(outBuf)
-            vsc_buffer_use(outBuf, outPointer, outCount)
+            vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             vscf_alg_info_der_serializer_serialize(self.c_ctx, algInfo.c_ctx, outBuf)
         })

@@ -54,7 +54,7 @@
     <method name="create message key" is_static="1">
         <argument name="chain key" class="ratchet chain key"/>
 
-        <return class="ratchet message key" access="readwrite"/>
+        <return class="ratchet message key" access="disown"/>
     </method>
 
 </class>

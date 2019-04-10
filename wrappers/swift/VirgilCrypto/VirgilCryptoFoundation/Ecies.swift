@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// Virgil implementation of the ECIES algorithm.
-@objc(VSCFEcies) public class Ecies: NSObject, Defaults, Encrypt, Decrypt {
+@objc(VSCFEcies) public class Ecies: NSObject, Encrypt, Decrypt {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -131,12 +131,12 @@ import VSCFoundation
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
-                vsc_buffer_use(outBuf, outPointer, outCount)
+                vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
-                return vscf_ecies_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
+                return vscf_ecies_encrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
             })
         })
         out.count = vsc_buffer_len(outBuf)
@@ -162,12 +162,12 @@ import VSCFoundation
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_status_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_init(outBuf)
-                vsc_buffer_use(outBuf, outPointer, outCount)
+                vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
-                return vscf_ecies_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
+                return vscf_ecies_decrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
             })
         })
         out.count = vsc_buffer_len(outBuf)

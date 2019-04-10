@@ -4,41 +4,50 @@ gsl from "common.gsl"
 gsl from "js_codegen.gsl"
 gsl from "js_models.gsl"
 
-function js_create_project_module(project, destination, wrapper)
+function js_create_project_module(project, wrapper)
   echo_info("Create project module", my)
+  new js_project to my.wrapper
+    js_project.name = my.project.name
+    js_project.prefix = my.project.prefix
+    js_project.namespace = string.replace(my.project.namespace, " |/")
+    js_project.root_dir = cat_path("../wrappers/$(my.wrapper.lang:no)", "crypto")
+    js_project.source_dir = cat_path(js_project.root_dir, "src")
+    js_project.project_source_dir = cat_path(js_project.source_dir, js_project.name)
+    js_project.index_cpp_file = "index.cc"
+    js_project.index_cpp_file_path = cat_path(js_project.project_source_dir, js_project.index_cpp_file)
+    js_project.index_js_file = "index.js"
+    js_project.index_js_file_path = cat_path(js_project.project_source_dir, js_project.index_js_file)
+    return js_project
+  endnew
 endfunction
 
-function js_create_c_context_module(source, destination, wrapper, meta)
-  echo_info("Create c context module", my)
-endfunction
-
-function js_create_interface_module(source, destination, wrapper, meta)
+function js_create_interface_module(source, wrapper_project, meta)
   echo_info("Create interface module: $(my.source.name)", my)
-  my.js_module = js_append_js_module_model(my.destination, my.source)
-  js_append_js_interface_module_model(my.js_module, my.source, my.wrapper)
+  my.js_module = js_append_js_module_model(my.wrapper_project, my.source)
+  js_append_js_interface_module_model(my.js_module, my.source, my.wrapper_project)
 endfunction
 
-function js_create_implementation_module(source, destination, wrapper, meta)
+function js_create_implementation_module(source, wrapper_project, meta)
   echo_info("Create implementation module: $(my.source.name)", my)
-  my.js_module = js_append_js_module_model(my.destination, my.source)
-  js_append_js_class_module_model(my.js_module, my.source, my.wrapper)
+  my.js_module = js_append_js_module_model(my.wrapper_project, my.source)
+  js_append_js_class_module_model(my.js_module, my.source, my.wrapper_project)
 endfunction
 
-function js_create_class_module(source, destination, wrapper, meta)
+function js_create_class_module(source, wrapper_project, meta)
   echo_info("Create class module: $(my.source.name)", my)
   if my.source.scope = "public" & !(my.source.name = "error")
-    my.js_module = js_append_js_module_model(my.destination, my.source)
-    js_append_js_class_module_model(my.js_module, my.source, my.wrapper)
+    my.js_module = js_append_js_module_model(my.wrapper_project, my.source)
+    js_append_js_class_module_model(my.js_module, my.source, my.wrapper_project)
   endif
 endfunction
 
-function js_create_enum_module(source, destination, wrapper, meta)
+function js_create_enum_module(source, wrapper_project, meta)
   echo_info("Create enum module: $(my.source.name)", my)
-  my.js_module = js_append_js_module_model(my.destination, my.source)
+  my.js_module = js_append_js_module_model(my.wrapper_project, my.source)
   if !(my.source.name = "status")
-    js_append_js_enum_module_model(my.js_module, my.source, my.wrapper)
+    js_append_js_enum_module_model(my.js_module, my.source, my.wrapper_project)
   else
-    js_append_js_error_status_module_model(my.js_module, my.source, my.wrapper)
+    js_append_js_error_status_module_model(my.js_module, my.source, my.wrapper_project)
   endif
 endfunction
 
@@ -56,37 +65,25 @@ function js_module_resolve_uids(js_component, parent_uid)
   endfor
 endfunction
 
-function js_module_resolve(source, wrapper)
+function js_module_resolve(source, wrapper_project)
   echo_info("Resolve module: $(my.source.name)", my)
   js_module_resolve_uids(my.source)
 endfunction
 
-function js_resolve(project, wrapper, projects_api)
-  echo_info("Resolve", my)
-  my.wrapper.name = my.project.name
-  my.wrapper.prefix = my.project.prefix
-  my.wrapper.namespace = string.replace(my.project.namespace, " |/")
-  my.wrapper.root_dir = cat_path("../wrappers/$(my.wrapper.lang:no)", "crypto")
-  my.wrapper.source_dir = cat_path(my.wrapper.root_dir, "src")
-  my.wrapper.project_source_dir = cat_path(my.wrapper.source_dir, my.wrapper.name)
-  my.wrapper.index_cpp_file = "index.cc"
-  my.wrapper.index_cpp_file_path = cat_path(my.wrapper.project_source_dir, my.wrapper.index_cpp_file)
-  my.wrapper.index_js_file = "index.js"
-  my.wrapper.index_js_file_path = cat_path(my.wrapper.project_source_dir, my.wrapper.index_js_file)
-endfunction
-
-function js_generate_project(source, wrapper)
+function js_generate_project(wrapper_project)
   echo_info("Generate project", my)
-  if -1 = directory.create(my.wrapper.project_source_dir)
-    echo_fatal("Can't create directory '$(my.wrapper.project_source_dir)'", my)
+  if -1 = directory.create(my.wrapper_project.project_source_dir)
+    echo_fatal("Can't create directory '$(my.wrapper_project.project_source_dir)'", my)
   endif
 endfunction
 
-function js_generate_sources(source, wrapper)
+function js_generate_sources(wrapper_project)
   echo_info("Generate sources", my)
-  js_create_index_js_file(my.source, my.wrapper)
-  js_create_index_cpp_file(my.source, my.wrapper)
-  js_create_js_module_files(my.source, my.wrapper)
+  if defined(my.wrapper_project->js_module)
+    js_create_index_js_file(my.wrapper_project)
+    js_create_index_cpp_file(my.wrapper_project)
+    js_create_js_module_files(my.wrapper_project)
+  endif
 endfunction
 
 endtemplate

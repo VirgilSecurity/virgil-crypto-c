@@ -63,10 +63,12 @@
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -175,13 +177,13 @@ vscf_key_provider_release_ecies(vscf_key_provider_t *self);
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_provider_setup_defaults(vscf_key_provider_t *self);
+vscf_key_provider_setup_defaults(vscf_key_provider_t *self) VSCF_NODISCARD;
 
 //
 //  Setup parameters that is used during RSA key generation.
 //
 VSCF_PUBLIC void
-vscf_key_provider_set_rsa_params(vscf_key_provider_t *self, size_t bitlen, size_t exponent);
+vscf_key_provider_set_rsa_params(vscf_key_provider_t *self, size_t bitlen);
 
 //
 //  Generate new private key from the given id.
@@ -200,6 +202,40 @@ vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t pkcs8_data, vscf_error_t *error);
+
+//
+//  Calculate buffer size enough to hold exported public key.
+//
+//  Precondition: public key must be exportable.
+//
+VSCF_PUBLIC size_t
+vscf_key_provider_exported_public_key_len(vscf_key_provider_t *self, const vscf_impl_t *public_key);
+
+//
+//  Export given public key to the PKCS#8 DER format.
+//
+//  Precondition: public key must be exportable.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_key_provider_export_public_key(vscf_key_provider_t *self, const vscf_impl_t *public_key,
+        vsc_buffer_t *out) VSCF_NODISCARD;
+
+//
+//  Calculate buffer size enough to hold exported private key.
+//
+//  Precondition: private key must be exportable.
+//
+VSCF_PUBLIC size_t
+vscf_key_provider_exported_private_key_len(vscf_key_provider_t *self, const vscf_impl_t *private_key);
+
+//
+//  Export given private key to the PKCS#8 DER format.
+//
+//  Precondition: private key must be exportable.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_key_provider_export_private_key(vscf_key_provider_t *self, const vscf_impl_t *private_key,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

@@ -64,9 +64,9 @@ import VSCFoundation
 
     /// Create symmetric cipher algorithm info with identificator and input vector.
     public init(algId: AlgId, nonce: Data) {
-        let proxyResult = nonce.withUnsafeBytes({ (noncePointer: UnsafePointer<byte>) -> OpaquePointer? in
+        let proxyResult = nonce.withUnsafeBytes({ (noncePointer: UnsafeRawBufferPointer) -> OpaquePointer? in
 
-            return vscf_cipher_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), vsc_data(noncePointer, nonce.count))
+            return vscf_cipher_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), vsc_data(noncePointer.bindMemory(to: byte.self).baseAddress, nonce.count))
         })
 
         self.c_ctx = proxyResult!

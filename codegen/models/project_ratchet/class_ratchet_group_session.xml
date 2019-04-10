@@ -1,0 +1,179 @@
+<class name="ratchet group session" context="internal">
+
+    Ratchet group session.
+
+    <require class="ratchet common" scope="public"/>
+    <require class="ratchet common hidden" scope="context"/>
+
+    <require module="ratchet group message defs" scope="private"/>
+
+    <require header="RatchetGroupMessage.pb.h" scope="private"/>
+    <require header="pb_decode.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
+
+    <require header="ed25519/ed25519.h" scope="private"/>
+
+    <require class="ratchet keys" scope="private"/>
+
+    <require impl="ctr drbg" project="foundation" scope="private"/>
+
+    <dependency name="rng" interface="random" project="foundation" has_observers="1">
+        Random used to generate keys
+    </dependency>
+
+    <property name="key utils" class="ratchet key utils"/>
+    <property name="cipher" class="ratchet cipher" access="readwrite"/>
+    <property name="skipped messages" class="ratchet skipped group messages" access="readwrite"/>
+
+    <property name="is initialized" type="boolean" access="readwrite"/>
+    <property name="is private key set" type="boolean" access="readwrite"/>
+
+    <property name="me" class="ratchet group participant data" access="readwrite"/>
+    <property name="my private key" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+    </property>
+
+    <property name="participants" class="ratchet group participant data" access="readwrite">
+        <array/>
+    </property>
+    <property name="participants count" type="size" access="readwrite"/>
+
+    <method name="is initialized" is_const="1">
+        Shows whether session was initialized.
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="is private key set" is_const="1">
+        Shows whether identity private key was set.
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="setup defaults">
+        Setups default dependencies:
+        - RNG: CTR DRBG
+
+        <return enum="status"/>
+    </method>
+
+    <method name="set private key">
+        Sets identity private key.
+
+        <argument name="my private key" class="data">
+            Ed25519 PKCS8 identity private key
+        </argument>
+
+        <return enum="status">
+            Error
+        </return>
+    </method>
+
+    <method name="setup session">
+        Sets up session. Identity private key should be set separately.
+
+        <argument name="my id" class="data">
+            User's 32-byte identifier.
+        </argument>
+        <argument name="message" class="ratchet group message">
+            Message with group info obtained through secure channel.
+        </argument>
+
+        <return enum="status">
+            Error
+        </return>
+    </method>
+
+    <method name="encrypt">
+        Encrypts data
+
+        <argument name="plain text" class="data">
+            Data to encrypt
+        </argument>
+
+        <argument name="error" class="error" access="readwrite">
+            Error context to return error
+        </argument>
+
+        <return class="ratchet group message" access="disown">
+            Result message. Use serialize to send this over the wire.
+        </return>
+    </method>
+
+    <method name="decrypt len">
+        Calculates size of buffer sufficient to store decrypted message
+
+        <argument name="message" class="ratchet group message">
+            Message to decrypt
+        </argument>
+
+        <return type="size">
+            Size of buffer sufficient to store decrypted message
+        </return>
+    </method>
+
+    <method name="decrypt">
+        Decrypts message
+
+        <argument name="message" class="ratchet group message">
+            Message to decrypt. Use deserialize to obtain message from data
+        </argument>
+
+        <argument name="plain text" class="buffer">
+            Decrypted data
+
+            <length method="decrypt len">
+                <proxy argument="message" to="message"/>
+            </length>
+        </argument>
+
+        <return enum="status">
+            Error
+        </return>
+    </method>
+
+    <method name="find participant" declaration="private">
+        <argument name="id" type="byte">
+            <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
+        </argument>
+
+        <return class="ratchet group participant data" access="readwrite"/>
+    </method>
+
+    <method name="serialize len">
+        Calculates size of buffer sufficient to store session
+
+        <return type="size">
+            Size of buffer sufficient to store session
+        </return>
+    </method>
+
+    <method name="serialize">
+        Serializes session to buffer
+
+        <argument name="output" class="buffer">
+            Buffer to store session
+
+            <length method="serialize len"/>
+        </argument>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        Deserializes session from buffer.
+        NOTE: Deserialized session needs dependencies to be set. Check setup defaults
+
+        <argument name="input" class="data">
+            Serialized session data
+        </argument>
+
+        <argument name="error" class="error" access="readwrite">
+            Error context to return error
+        </argument>
+
+        <return class="self" access="disown">
+            Deserialized session.
+            NOTE: Deserialized session needs dependencies to be set. Check setup defaults
+        </return>
+    </method>
+
+</class>

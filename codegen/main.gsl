@@ -66,6 +66,7 @@ gsl from "c_module_api.gsl"
 gsl from "c_module_api_private.gsl"
 gsl from "c_module_impl.gsl"
 gsl from "c_module_impl_private.gsl"
+gsl from "c_module_umbrella_headers.gsl"
 
 gsl from "c_module_interface.gsl"
 gsl from "c_module_implementation.gsl"
@@ -113,8 +114,8 @@ function load_lang_wrapper (wrapper, destination)
 endfunction
 
 
-function process_project (project, features_list, projects_api, echo_level)
-    check_arguments (my, "project, features_list, projects_api, echo_level", my)
+function process_project (project, features_list, projects_api, wrappers, echo_level)
+    check_arguments (my, "project, features_list, projects_api, wrappers, echo_level", my)
 
     #  Expects resolved project.
 
@@ -207,6 +208,10 @@ function process_project (project, features_list, projects_api, echo_level)
         c_module_class_create (my.root, my.root, my.meta)
         c_module_enum_create (my.root, my.root, my.meta)
 
+        #   Create public and private umbrella headers.
+        c_module_umbrella_headers_create (my.root, my.root, my.meta)
+
+
         #   Process modules.
         foreach_module_resolve (my.root, my.project)
         foreach_dump ("module", my.root, my.project.work_path)
@@ -223,7 +228,6 @@ function process_project (project, features_list, projects_api, echo_level)
         #   Perform cross projects name resolution.
         projects_api_cleanup_lang (my.projects_api, "c")
         projects_api_collect_info (my.projects_api, "c", my.root)
-        projects_api_save (my.projects_api, main.work_path)
 
         #   Resolve modules.
         my.type_resolution_map = projects_api_build_type_resolution_map (my.projects_api)
@@ -263,41 +267,34 @@ function process_project (project, features_list, projects_api, echo_level)
         for my.project.wrapper as wrapper_link
             echo_info ("Processing wrapper <wrapper lang=\"$(wrapper_link.lang:)\"/>")
 
-            my.wrapper = load_lang_wrapper (wrapper_link)
-            my.wrappers_destination = XML.new(make_id(my.wrapper.lang, "wrapper", project.name))
+            my.wrapper = my.wrappers->wrapper(lang = wrapper_link.lang)
 
-            wrapper_resolve (my.project, my.wrapper, my.projects_api)
-            wrapper_create_project_module (my.project, my.wrappers_destination, my.wrapper)
-            wrapper_create_custom_modules (my.root, my.wrappers_destination, my.wrapper, my.meta)
-            wrapper_foreach_enum_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
-            wrapper_foreach_class_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
-            wrapper_foreach_interface_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
-            wrapper_foreach_implementation_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
-            wrapper_finalize_custom_modules (my.root, my.wrappers_destination, my.wrapper, my.meta)
-            wrapper_foreach_module_resolve(my.wrappers_destination, my.wrapper)
-            projects_api_cleanup_lang (my.projects_api, "swift")
-            projects_api_cleanup_lang (my.projects_api, "js")
-            projects_api_collect_info (my.projects_api, "swift", my.wrappers_destination)
-            projects_api_collect_info (my.projects_api, "js", my.wrappers_destination)
-            projects_api_save (my.projects_api, main.work_path)
+            my.wrapper_project = wrapper_create_project_module (my.project, my.wrapper)
+            my.wrapper_project.lang ?= wrapper_link.lang
+            wrapper_create_custom_modules (my.root, my.wrapper_project, my.meta)
+            wrapper_foreach_enum_create_module (my.root, my.wrapper_project, my.meta)
+            wrapper_foreach_class_create_module (my.root, my.wrapper_project, my.meta)
+            wrapper_foreach_interface_create_module (my.root, my.wrapper_project, my.meta)
+            wrapper_foreach_implementation_create_module (my.root, my.wrapper_project, my.meta)
+            wrapper_finalize_custom_modules (my.root, my.wrapper_project, my.meta)
+            wrapper_foreach_module_resolve(my.wrapper_project)
+            projects_api_cleanup_lang (my.projects_api, wrapper_link.lang)
+            projects_api_collect_info (my.projects_api, wrapper_link.lang, my.wrapper_project)
 
-            my.type_resolution_map = projects_api_build_type_resolution_map (my.projects_api, my.wrapper.lang)
+            my.type_resolution_map = projects_api_build_type_resolution_map (my.projects_api, wrapper_link.lang)
             if my.echo_level = "debug"
                 item_save_to_file (my.type_resolution_map, "type_resolution_map.xml", my.project.work_path)
             endif
 
-            for my.wrappers_destination.$(make_id (my.wrapper.lang, "module")) as wrapper_module
+            for my.wrapper_project.$(make_id (wrapper_link.lang, "module")) as wrapper_module
                 my.wrapper_module_resolved = \
                         resolution_map_apply_to_lang_module (my.type_resolution_map, wrapper_module, my.project.work_path)
                 move my.wrapper_module_resolved before wrapper_module
                 delete wrapper_module
             endfor
 
-            wrapper_generate_project (my.wrappers_destination, my.wrapper)
-            wrapper_generate_sources (my.wrappers_destination, my.wrapper)
-
-            delete my.wrapper
-            delete my.wrappers_destination
+            wrapper_generate_project (my.wrapper_project)
+            wrapper_generate_sources (my.wrapper_project)
         endfor
     endif
 endfunction
@@ -355,6 +352,14 @@ function run_main ()
         process_library (my.loaded_library, my.features_list, my.projects_api, main.echo_level)
     endfor
 
+    my.wrappers = XML.new("wrappers")
+    for main.wrapper
+        my.loaded_wrapper = load_lang_wrapper (wrapper)
+        my.loaded_wrapper.source_dir ?= cat_path ("../wrappers", wrapper.lang)
+        copy main->license to my.loaded_wrapper
+        move my.loaded_wrapper to my.wrappers
+    endfor
+
     for main.project where is_false (project.skip_codegen)
         my.loaded_project = load_project_model (project, project)
         my.loaded_project.skip_codegen_c = is_true (project.skip_codegen_c)
@@ -365,8 +370,27 @@ function run_main ()
             copy wrapper to my.loaded_project
         endfor
 
-        process_project (my.loaded_project, my.features_list, my.projects_api, main.echo_level)
+        process_project (my.loaded_project, my.features_list, my.projects_api, my.wrappers, main.echo_level)
+        projects_api_save (my.projects_api, main.work_path)
     endfor
+
+    my.type_resolution_map = projects_api_build_type_resolution_map (my.projects_api, wrapper.lang)
+
+    for my.wrappers.wrapper
+        wrapper_create_toplevel_modules (wrapper)
+
+        my.wrapper_work_path = cat_path(main.work_path, wrapper.lang)
+
+        for wrapper.$(make_id (wrapper.lang, "module")) as wrapper_module
+            my.wrapper_module_resolved = \
+                    resolution_map_apply_to_lang_module (my.type_resolution_map, wrapper_module, my.wrapper_work_path)
+            move my.wrapper_module_resolved before wrapper_module
+            delete wrapper_module
+        endfor
+
+        wrapper_generate_sources (wrapper)
+    endfor
+    delete my.wrappers
 
     #   Create context and populate it with features.
     foreach_features_resolve (my.features_list)

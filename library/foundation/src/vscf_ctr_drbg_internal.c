@@ -55,8 +55,6 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_ctr_drbg_defs.h"
-#include "vscf_defaults.h"
-#include "vscf_defaults_api.h"
 #include "vscf_random.h"
 #include "vscf_random_api.h"
 #include "vscf_entropy_source.h"
@@ -78,7 +76,7 @@
 //  This method is called when interface 'entropy source' was setup.
 //
 VSCF_PRIVATE vscf_status_t
-vscf_ctr_drbg_did_setup_entropy_source(vscf_ctr_drbg_t *self);
+vscf_ctr_drbg_did_setup_entropy_source(vscf_ctr_drbg_t *self) VSCF_NODISCARD;
 
 //
 //  This method is called when interface 'entropy source' was released.
@@ -88,25 +86,6 @@ vscf_ctr_drbg_did_release_entropy_source(vscf_ctr_drbg_t *self);
 
 static const vscf_api_t *
 vscf_ctr_drbg_find_api(vscf_api_tag_t api_tag);
-
-//
-//  Configuration of the interface API 'defaults api'.
-//
-static const vscf_defaults_api_t defaults_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'defaults' MUST be equal to the 'vscf_api_tag_DEFAULTS'.
-    //
-    vscf_api_tag_DEFAULTS,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_CTR_DRBG,
-    //
-    //  Setup predefined values to the uninitialized class dependencies.
-    //
-    (vscf_defaults_api_setup_defaults_fn)vscf_ctr_drbg_setup_defaults
-};
 
 //
 //  Configuration of the interface API 'random api'.
@@ -323,8 +302,6 @@ static const vscf_api_t *
 vscf_ctr_drbg_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
-        case vscf_api_tag_DEFAULTS:
-            return (const vscf_api_t *) &defaults_api;
         case vscf_api_tag_RANDOM:
             return (const vscf_api_t *) &random_api;
         default:

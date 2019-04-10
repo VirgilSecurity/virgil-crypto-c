@@ -103,7 +103,7 @@ vscf_private_key_extract_public_key(const vscf_impl_t *impl);
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_private_key_export_private_key(const vscf_impl_t *impl, vsc_buffer_t *out);
+vscf_private_key_export_private_key(const vscf_impl_t *impl, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Return length in bytes required to hold exported private key.
@@ -119,7 +119,7 @@ vscf_private_key_exported_private_key_len(const vscf_impl_t *impl);
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_private_key_import_private_key(vscf_impl_t *impl, vsc_data_t data);
+vscf_private_key_import_private_key(vscf_impl_t *impl, vsc_data_t data) VSCF_NODISCARD;
 
 //
 //  Returns constant 'can export private key'.

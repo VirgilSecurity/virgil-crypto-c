@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// CMS based implementation of the class "message info" serialization.
-@objc(VSCFMessageInfoDerSerializer) public class MessageInfoDerSerializer: NSObject, Defaults, MessageInfoSerializer {
+@objc(VSCFMessageInfoDerSerializer) public class MessageInfoDerSerializer: NSObject, MessageInfoSerializer {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -69,23 +69,19 @@ import VSCFoundation
         vscf_message_info_der_serializer_delete(self.c_ctx)
     }
 
-    @objc public func setAsn1Reader(asn1Reader: Asn1Reader) throws {
+    @objc public func setAsn1Reader(asn1Reader: Asn1Reader) {
         vscf_message_info_der_serializer_release_asn1_reader(self.c_ctx)
-        let proxyResult = vscf_message_info_der_serializer_use_asn1_reader(self.c_ctx, asn1Reader.c_ctx)
-        try FoundationError.handleStatus(fromC: proxyResult)
+        vscf_message_info_der_serializer_use_asn1_reader(self.c_ctx, asn1Reader.c_ctx)
     }
 
-    @objc public func setAsn1Writer(asn1Writer: Asn1Writer) throws {
+    @objc public func setAsn1Writer(asn1Writer: Asn1Writer) {
         vscf_message_info_der_serializer_release_asn1_writer(self.c_ctx)
-        let proxyResult = vscf_message_info_der_serializer_use_asn1_writer(self.c_ctx, asn1Writer.c_ctx)
-        try FoundationError.handleStatus(fromC: proxyResult)
+        vscf_message_info_der_serializer_use_asn1_writer(self.c_ctx, asn1Writer.c_ctx)
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_message_info_der_serializer_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
+    @objc public func setupDefaults() {
+        vscf_message_info_der_serializer_setup_defaults(self.c_ctx)
     }
 
     /// Return buffer size enough to hold serialized message info.
@@ -104,9 +100,9 @@ import VSCFoundation
             vsc_buffer_delete(outBuf)
         }
 
-        out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> Void in
+        out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> Void in
             vsc_buffer_init(outBuf)
-            vsc_buffer_use(outBuf, outPointer, outCount)
+            vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             vscf_message_info_der_serializer_serialize(self.c_ctx, messageInfo.c_ctx, outBuf)
         })
@@ -121,9 +117,9 @@ import VSCFoundation
     /// Zero returned if length can not be determined from the given data,
     /// and this means that there is no message info at the data beginning.
     @objc public func readPrefix(data: Data) -> Int {
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Int in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Int in
 
-            return vscf_message_info_der_serializer_read_prefix(self.c_ctx, vsc_data(dataPointer, data.count))
+            return vscf_message_info_der_serializer_read_prefix(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count))
         })
 
         return proxyResult
@@ -134,9 +130,9 @@ import VSCFoundation
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) in
 
-            return vscf_message_info_der_serializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count), &error)
+            return vscf_message_info_der_serializer_deserialize(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), &error)
         })
 
         try FoundationError.handleStatus(fromC: error.status)

@@ -87,30 +87,6 @@ extern "C" {
     typedef uint8_t byte;
 #endif // BYTE_DEFINED
 
-#define VSCP_VERSION_MAJOR 0
-
-#define VSCP_VERSION_MINOR 3
-
-#define VSCP_VERSION_PATCH 0
-
-#define VSCP_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
-
-#define VSCP_VERSION                \
-        VSCP_VERSION_MAKE (         \
-                VSCP_VERSION_MAJOR, \
-                VSCP_VERSION_MINOR, \
-                VSCP_VERSION_PATCH)
-
-//
-//  Custom implementation of the number ceil algorithm.
-//
-#define VSCP_CEIL(x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
-
-//
-//  Mark argument or function return value as "unused".
-//
-#define VSCP_UNUSED(x) (void)(x)
-
 #if defined(_WIN32) || defined(__CYGWIN__)
 #   ifdef VSCP_BUILD_SHARED_LIBS
 #       ifdef __GNUC__
@@ -136,6 +112,36 @@ extern "C" {
 #       define VSCP_PRIVATE
 #   endif
 #endif
+
+#define VSCP_VERSION_MAJOR 0
+
+#define VSCP_VERSION_MINOR 6
+
+#define VSCP_VERSION_PATCH 1
+
+#define VSCP_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
+
+#define VSCP_VERSION                \
+        VSCP_VERSION_MAKE (         \
+                VSCP_VERSION_MAJOR, \
+                VSCP_VERSION_MINOR, \
+                VSCP_VERSION_PATCH)
+
+#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
+#   define VSCP_NODISCARD __attribute__ ((warn_unused_result))
+#else
+#   define VSCP_NODISCARD
+#endif
+
+//
+//  Custom implementation of the number ceil algorithm.
+//
+#define VSCP_CEIL(x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
+
+//
+//  Mark argument or function return value as "unused".
+//
+#define VSCP_UNUSED(x) (void)(x)
 
 //
 //  Public integral constants.

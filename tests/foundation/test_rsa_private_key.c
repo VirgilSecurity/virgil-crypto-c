@@ -40,7 +40,7 @@
 
 
 #define TEST_DEPENDENCIES_AVAILABLE                                                                                    \
-    (VSCF_RSA_PRIVATE_KEY && VSCF_ASN1RD && VSCF_ASN1WR && VSCF_FAKE_RANDOM && VSCF_SHA512)
+    (VSCF_RSA_PRIVATE_KEY && VSCF_ASN1RD && VSCF_ASN1WR && VSCF_FAKE_RANDOM && VSCF_SHA512 && VSCF_KEY_MATERIAL_RNG)
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_assert.h"
@@ -52,6 +52,7 @@
 #include "vscf_asn1wr.h"
 #include "vscf_fake_random.h"
 #include "vscf_sha512.h"
+#include "vscf_key_material_rng.h"
 
 #include "test_data_rsa.h"
 
@@ -117,7 +118,8 @@ test__rsa_private_key_decrypt__with_imported_2048_PRIVATE_KEY_PKCS1_and_2048_ENC
     //  Decrypt
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(
             vscf_rsa_private_key_decrypted_len(private_key, test_rsa_2048_ENCRYPTED_DATA_1.len));
-    vscf_rsa_private_key_decrypt(private_key, test_rsa_2048_ENCRYPTED_DATA_1, out);
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_rsa_private_key_decrypt(private_key, test_rsa_2048_ENCRYPTED_DATA_1, out));
 
     //  Check
     TEST_ASSERT_EQUAL(test_rsa_DATA_1.len, vsc_buffer_len(out));
@@ -198,19 +200,18 @@ test__rsa_private_key_sign_hash__with_imported_2048_PRIVATE_KEY_PKCS1_and_random
 }
 
 void
-test__rsa_private_key_generate_key__bitlen_256_and_exponent_3__exported_equals_256_GENERATED_PRIVATE_KEY_PKCS1(void) {
+test__rsa_private_key_generate_key__bitlen_2048_and_exponent_3__exported_equals_2048_GENERATED_PRIVATE_KEY_PKCS1(void) {
 
     //  Setup dependencies
     vscf_rsa_private_key_t *private_key = vscf_rsa_private_key_new();
-
     vscf_rsa_private_key_take_asn1wr(private_key, vscf_asn1wr_impl(vscf_asn1wr_new()));
 
-    vscf_fake_random_t *fake_random = vscf_fake_random_new();
-    vscf_fake_random_setup_source_data(fake_random, test_rsa_RANDOM);
-    vscf_rsa_private_key_take_random(private_key, vscf_fake_random_impl(fake_random));
+    vscf_key_material_rng_t *key_material_rng = vscf_key_material_rng_new();
+    vscf_key_material_rng_reset_key_material(key_material_rng, test_rsa_DETERMINISTIC_KEY_MATERIAL);
+    vscf_rsa_private_key_take_random(private_key, vscf_key_material_rng_impl(key_material_rng));
 
     //  Generate
-    vscf_rsa_private_key_set_keygen_params(private_key, 256, 3);
+    vscf_rsa_private_key_set_keygen_params(private_key, 2048);
     vscf_status_t gen_res = vscf_rsa_private_key_generate_key(private_key);
 
     //  Check
@@ -222,9 +223,7 @@ test__rsa_private_key_generate_key__bitlen_256_and_exponent_3__exported_equals_2
     vscf_status_t export_res = vscf_rsa_private_key_export_private_key(private_key, exported_key_buf);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, export_res);
-    TEST_ASSERT_EQUAL(test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1.len, vsc_buffer_len(exported_key_buf));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1.bytes, vsc_buffer_bytes(exported_key_buf),
-            vsc_buffer_len(exported_key_buf));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_rsa_2048_GENERATED_PRIVATE_KEY_PKCS1, exported_key_buf);
 
     //  Cleanup
     vsc_buffer_destroy(&exported_key_buf);
@@ -248,7 +247,7 @@ main(void) {
     RUN_TEST(test__rsa_private_key_decrypt__with_imported_2048_PRIVATE_KEY_PKCS1_and_2048_ENCRYPTED_DATA_1_and_random_AB_and_hash_sha512__returns_DATA_1);
     RUN_TEST(test__rsa_private_key_extract_public_key__from_imported_2048_PRIVATE_KEY_PKCS1__when_exported_equals_2048_PUBLIC_KEY_PKCS1);
     RUN_TEST(test__rsa_private_key_sign_hash__with_imported_2048_PRIVATE_KEY_PKCS1_and_random_AB_and_hash_sha512_and_DATA_1__equals_2048_DATA_1_SIGNATURE);
-    RUN_TEST(test__rsa_private_key_generate_key__bitlen_256_and_exponent_3__exported_equals_256_GENERATED_PRIVATE_KEY_PKCS1);
+    RUN_TEST(test__rsa_private_key_generate_key__bitlen_2048_and_exponent_3__exported_equals_2048_GENERATED_PRIVATE_KEY_PKCS1);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

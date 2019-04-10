@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// Implements PKCS#8 key deserialization from PEM format.
-@objc(VSCFPkcs8Deserializer) public class Pkcs8Deserializer: NSObject, Defaults, KeyDeserializer {
+@objc(VSCFPkcs8Deserializer) public class Pkcs8Deserializer: NSObject, KeyDeserializer {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -78,10 +78,8 @@ import VSCFoundation
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_pkcs8_deserializer_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
+    @objc public func setupDefaults() {
+        vscf_pkcs8_deserializer_setup_defaults(self.c_ctx)
     }
 
     /// Deserialize given public key as an interchangeable format to the object.
@@ -89,9 +87,9 @@ import VSCFoundation
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = publicKeyData.withUnsafeBytes({ (publicKeyDataPointer: UnsafePointer<byte>) in
+        let proxyResult = publicKeyData.withUnsafeBytes({ (publicKeyDataPointer: UnsafeRawBufferPointer) in
 
-            return vscf_pkcs8_deserializer_deserialize_public_key(self.c_ctx, vsc_data(publicKeyDataPointer, publicKeyData.count), &error)
+            return vscf_pkcs8_deserializer_deserialize_public_key(self.c_ctx, vsc_data(publicKeyDataPointer.bindMemory(to: byte.self).baseAddress, publicKeyData.count), &error)
         })
 
         try FoundationError.handleStatus(fromC: error.status)
@@ -104,9 +102,9 @@ import VSCFoundation
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = privateKeyData.withUnsafeBytes({ (privateKeyDataPointer: UnsafePointer<byte>) in
+        let proxyResult = privateKeyData.withUnsafeBytes({ (privateKeyDataPointer: UnsafeRawBufferPointer) in
 
-            return vscf_pkcs8_deserializer_deserialize_private_key(self.c_ctx, vsc_data(privateKeyDataPointer, privateKeyData.count), &error)
+            return vscf_pkcs8_deserializer_deserialize_private_key(self.c_ctx, vsc_data(privateKeyDataPointer.bindMemory(to: byte.self).baseAddress, privateKeyData.count), &error)
         })
 
         try FoundationError.handleStatus(fromC: error.status)

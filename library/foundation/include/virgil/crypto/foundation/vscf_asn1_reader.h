@@ -110,7 +110,7 @@ vscf_asn1_reader_has_error(const vscf_impl_t *impl);
 //  Return error code.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_asn1_reader_status(const vscf_impl_t *impl);
+vscf_asn1_reader_status(const vscf_impl_t *impl) VSCF_NODISCARD;
 
 //
 //  Get tag of the current ASN.1 element.

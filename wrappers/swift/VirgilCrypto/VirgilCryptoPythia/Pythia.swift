@@ -39,44 +39,18 @@ import VSCPythia
 /// Provide Pythia implementation based on the Virgil Security.
 @objc(VSCPPythia) public class Pythia: NSObject {
 
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Create underlying C context.
-    public override init() {
-        self.c_ctx = vscp_pythia_new()
-        super.init()
-    }
-
-    /// Acquire C context.
-    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    public init(take c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Acquire retained C context.
-    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscp_pythia_shallow_copy(c_ctx)
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscp_pythia_delete(self.c_ctx)
-    }
-
     /// Performs global initialization of the pythia library.
     /// Must be called once for entire application at startup.
-    @objc public static func globalInit() {
-        vscp_global_init()
+    @objc public static func configure() throws {
+        let proxyResult = vscp_pythia_configure()
+
+        try PythiaError.handleStatus(fromC: proxyResult)
     }
 
     /// Performs global cleanup of the pythia library.
     /// Must be called once for entire application before exit.
-    @objc public static func globalCleanup() {
-        vscp_global_cleanup()
+    @objc public static func cleanup() {
+        vscp_pythia_cleanup()
     }
 
     /// Return length of the buffer needed to hold 'blinded password'.
@@ -144,7 +118,7 @@ import VSCPythia
 
     /// Blinds password. Turns password into a pseudo-random string.
     /// This step is necessary to prevent 3rd-parties from knowledge of end user's password.
-    @objc public func blind(password: Data) throws -> PythiaBlindResult {
+    @objc public static func blind(password: Data) throws -> PythiaBlindResult {
         let blindedPasswordCount = Pythia.blindedPasswordBufLen()
         var blindedPassword = Data(count: blindedPasswordCount)
         var blindedPasswordBuf = vsc_buffer_new()
@@ -159,16 +133,16 @@ import VSCPythia
             vsc_buffer_delete(blindingSecretBuf)
         }
 
-        let proxyResult = password.withUnsafeBytes({ (passwordPointer: UnsafePointer<byte>) -> vscp_status_t in
-            blindedPassword.withUnsafeMutableBytes({ (blindedPasswordPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
-                blindingSecret.withUnsafeMutableBytes({ (blindingSecretPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
+        let proxyResult = password.withUnsafeBytes({ (passwordPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+            blindedPassword.withUnsafeMutableBytes({ (blindedPasswordPointer: UnsafeMutableRawBufferPointer) -> vscp_status_t in
+                blindingSecret.withUnsafeMutableBytes({ (blindingSecretPointer: UnsafeMutableRawBufferPointer) -> vscp_status_t in
                     vsc_buffer_init(blindedPasswordBuf)
-                    vsc_buffer_use(blindedPasswordBuf, blindedPasswordPointer, blindedPasswordCount)
+                    vsc_buffer_use(blindedPasswordBuf, blindedPasswordPointer.bindMemory(to: byte.self).baseAddress, blindedPasswordCount)
 
                     vsc_buffer_init(blindingSecretBuf)
-                    vsc_buffer_use(blindingSecretBuf, blindingSecretPointer, blindingSecretCount)
+                    vsc_buffer_use(blindingSecretBuf, blindingSecretPointer.bindMemory(to: byte.self).baseAddress, blindingSecretCount)
 
-                    return vscp_pythia_blind(self.c_ctx, vsc_data(passwordPointer, password.count), blindedPasswordBuf, blindingSecretBuf)
+                    return vscp_pythia_blind(vsc_data(passwordPointer.bindMemory(to: byte.self).baseAddress, password.count), blindedPasswordBuf, blindingSecretBuf)
                 })
             })
         })
@@ -181,7 +155,7 @@ import VSCPythia
     }
 
     /// Deblinds 'transformed password' value with previously returned 'blinding secret' from blind().
-    @objc public func deblind(transformedPassword: Data, blindingSecret: Data) throws -> Data {
+    @objc public static func deblind(transformedPassword: Data, blindingSecret: Data) throws -> Data {
         let deblindedPasswordCount = Pythia.deblindedPasswordBufLen()
         var deblindedPassword = Data(count: deblindedPasswordCount)
         var deblindedPasswordBuf = vsc_buffer_new()
@@ -189,13 +163,13 @@ import VSCPythia
             vsc_buffer_delete(deblindedPasswordBuf)
         }
 
-        let proxyResult = transformedPassword.withUnsafeBytes({ (transformedPasswordPointer: UnsafePointer<byte>) -> vscp_status_t in
-            blindingSecret.withUnsafeBytes({ (blindingSecretPointer: UnsafePointer<byte>) -> vscp_status_t in
-                deblindedPassword.withUnsafeMutableBytes({ (deblindedPasswordPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
+        let proxyResult = transformedPassword.withUnsafeBytes({ (transformedPasswordPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+            blindingSecret.withUnsafeBytes({ (blindingSecretPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+                deblindedPassword.withUnsafeMutableBytes({ (deblindedPasswordPointer: UnsafeMutableRawBufferPointer) -> vscp_status_t in
                     vsc_buffer_init(deblindedPasswordBuf)
-                    vsc_buffer_use(deblindedPasswordBuf, deblindedPasswordPointer, deblindedPasswordCount)
+                    vsc_buffer_use(deblindedPasswordBuf, deblindedPasswordPointer.bindMemory(to: byte.self).baseAddress, deblindedPasswordCount)
 
-                    return vscp_pythia_deblind(self.c_ctx, vsc_data(transformedPasswordPointer, transformedPassword.count), vsc_data(blindingSecretPointer, blindingSecret.count), deblindedPasswordBuf)
+                    return vscp_pythia_deblind(vsc_data(transformedPasswordPointer.bindMemory(to: byte.self).baseAddress, transformedPassword.count), vsc_data(blindingSecretPointer.bindMemory(to: byte.self).baseAddress, blindingSecret.count), deblindedPasswordBuf)
                 })
             })
         })
@@ -207,7 +181,7 @@ import VSCPythia
     }
 
     /// Computes transformation private and public key.
-    @objc public func computeTransformationKeyPair(transformationKeyId: Data, pythiaSecret: Data, pythiaScopeSecret: Data) throws -> PythiaComputeTransformationKeyPairResult {
+    @objc public static func computeTransformationKeyPair(transformationKeyId: Data, pythiaSecret: Data, pythiaScopeSecret: Data) throws -> PythiaComputeTransformationKeyPairResult {
         let transformationPrivateKeyCount = Pythia.transformationPrivateKeyBufLen()
         var transformationPrivateKey = Data(count: transformationPrivateKeyCount)
         var transformationPrivateKeyBuf = vsc_buffer_new()
@@ -222,18 +196,18 @@ import VSCPythia
             vsc_buffer_delete(transformationPublicKeyBuf)
         }
 
-        let proxyResult = transformationKeyId.withUnsafeBytes({ (transformationKeyIdPointer: UnsafePointer<byte>) -> vscp_status_t in
-            pythiaSecret.withUnsafeBytes({ (pythiaSecretPointer: UnsafePointer<byte>) -> vscp_status_t in
-                pythiaScopeSecret.withUnsafeBytes({ (pythiaScopeSecretPointer: UnsafePointer<byte>) -> vscp_status_t in
-                    transformationPrivateKey.withUnsafeMutableBytes({ (transformationPrivateKeyPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
-                        transformationPublicKey.withUnsafeMutableBytes({ (transformationPublicKeyPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
+        let proxyResult = transformationKeyId.withUnsafeBytes({ (transformationKeyIdPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+            pythiaSecret.withUnsafeBytes({ (pythiaSecretPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+                pythiaScopeSecret.withUnsafeBytes({ (pythiaScopeSecretPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+                    transformationPrivateKey.withUnsafeMutableBytes({ (transformationPrivateKeyPointer: UnsafeMutableRawBufferPointer) -> vscp_status_t in
+                        transformationPublicKey.withUnsafeMutableBytes({ (transformationPublicKeyPointer: UnsafeMutableRawBufferPointer) -> vscp_status_t in
                             vsc_buffer_init(transformationPrivateKeyBuf)
-                            vsc_buffer_use(transformationPrivateKeyBuf, transformationPrivateKeyPointer, transformationPrivateKeyCount)
+                            vsc_buffer_use(transformationPrivateKeyBuf, transformationPrivateKeyPointer.bindMemory(to: byte.self).baseAddress, transformationPrivateKeyCount)
 
                             vsc_buffer_init(transformationPublicKeyBuf)
-                            vsc_buffer_use(transformationPublicKeyBuf, transformationPublicKeyPointer, transformationPublicKeyCount)
+                            vsc_buffer_use(transformationPublicKeyBuf, transformationPublicKeyPointer.bindMemory(to: byte.self).baseAddress, transformationPublicKeyCount)
 
-                            return vscp_pythia_compute_transformation_key_pair(self.c_ctx, vsc_data(transformationKeyIdPointer, transformationKeyId.count), vsc_data(pythiaSecretPointer, pythiaSecret.count), vsc_data(pythiaScopeSecretPointer, pythiaScopeSecret.count), transformationPrivateKeyBuf, transformationPublicKeyBuf)
+                            return vscp_pythia_compute_transformation_key_pair(vsc_data(transformationKeyIdPointer.bindMemory(to: byte.self).baseAddress, transformationKeyId.count), vsc_data(pythiaSecretPointer.bindMemory(to: byte.self).baseAddress, pythiaSecret.count), vsc_data(pythiaScopeSecretPointer.bindMemory(to: byte.self).baseAddress, pythiaScopeSecret.count), transformationPrivateKeyBuf, transformationPublicKeyBuf)
                         })
                     })
                 })
@@ -248,7 +222,7 @@ import VSCPythia
     }
 
     /// Transforms blinded password using transformation private key.
-    @objc public func transform(blindedPassword: Data, tweak: Data, transformationPrivateKey: Data) throws -> PythiaTransformResult {
+    @objc public static func transform(blindedPassword: Data, tweak: Data, transformationPrivateKey: Data) throws -> PythiaTransformResult {
         let transformedPasswordCount = Pythia.transformedPasswordBufLen()
         var transformedPassword = Data(count: transformedPasswordCount)
         var transformedPasswordBuf = vsc_buffer_new()
@@ -263,18 +237,18 @@ import VSCPythia
             vsc_buffer_delete(transformedTweakBuf)
         }
 
-        let proxyResult = blindedPassword.withUnsafeBytes({ (blindedPasswordPointer: UnsafePointer<byte>) -> vscp_status_t in
-            tweak.withUnsafeBytes({ (tweakPointer: UnsafePointer<byte>) -> vscp_status_t in
-                transformationPrivateKey.withUnsafeBytes({ (transformationPrivateKeyPointer: UnsafePointer<byte>) -> vscp_status_t in
-                    transformedPassword.withUnsafeMutableBytes({ (transformedPasswordPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
-                        transformedTweak.withUnsafeMutableBytes({ (transformedTweakPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
+        let proxyResult = blindedPassword.withUnsafeBytes({ (blindedPasswordPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+            tweak.withUnsafeBytes({ (tweakPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+                transformationPrivateKey.withUnsafeBytes({ (transformationPrivateKeyPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+                    transformedPassword.withUnsafeMutableBytes({ (transformedPasswordPointer: UnsafeMutableRawBufferPointer) -> vscp_status_t in
+                        transformedTweak.withUnsafeMutableBytes({ (transformedTweakPointer: UnsafeMutableRawBufferPointer) -> vscp_status_t in
                             vsc_buffer_init(transformedPasswordBuf)
-                            vsc_buffer_use(transformedPasswordBuf, transformedPasswordPointer, transformedPasswordCount)
+                            vsc_buffer_use(transformedPasswordBuf, transformedPasswordPointer.bindMemory(to: byte.self).baseAddress, transformedPasswordCount)
 
                             vsc_buffer_init(transformedTweakBuf)
-                            vsc_buffer_use(transformedTweakBuf, transformedTweakPointer, transformedTweakCount)
+                            vsc_buffer_use(transformedTweakBuf, transformedTweakPointer.bindMemory(to: byte.self).baseAddress, transformedTweakCount)
 
-                            return vscp_pythia_transform(self.c_ctx, vsc_data(blindedPasswordPointer, blindedPassword.count), vsc_data(tweakPointer, tweak.count), vsc_data(transformationPrivateKeyPointer, transformationPrivateKey.count), transformedPasswordBuf, transformedTweakBuf)
+                            return vscp_pythia_transform(vsc_data(blindedPasswordPointer.bindMemory(to: byte.self).baseAddress, blindedPassword.count), vsc_data(tweakPointer.bindMemory(to: byte.self).baseAddress, tweak.count), vsc_data(transformationPrivateKeyPointer.bindMemory(to: byte.self).baseAddress, transformationPrivateKey.count), transformedPasswordBuf, transformedTweakBuf)
                         })
                     })
                 })
@@ -289,7 +263,7 @@ import VSCPythia
     }
 
     /// Generates proof that server possesses secret values that were used to transform password.
-    @objc public func prove(transformedPassword: Data, blindedPassword: Data, transformedTweak: Data, transformationPrivateKey: Data, transformationPublicKey: Data) throws -> PythiaProveResult {
+    @objc public static func prove(transformedPassword: Data, blindedPassword: Data, transformedTweak: Data, transformationPrivateKey: Data, transformationPublicKey: Data) throws -> PythiaProveResult {
         let proofValueCCount = Pythia.proofValueBufLen()
         var proofValueC = Data(count: proofValueCCount)
         var proofValueCBuf = vsc_buffer_new()
@@ -304,20 +278,20 @@ import VSCPythia
             vsc_buffer_delete(proofValueUBuf)
         }
 
-        let proxyResult = transformedPassword.withUnsafeBytes({ (transformedPasswordPointer: UnsafePointer<byte>) -> vscp_status_t in
-            blindedPassword.withUnsafeBytes({ (blindedPasswordPointer: UnsafePointer<byte>) -> vscp_status_t in
-                transformedTweak.withUnsafeBytes({ (transformedTweakPointer: UnsafePointer<byte>) -> vscp_status_t in
-                    transformationPrivateKey.withUnsafeBytes({ (transformationPrivateKeyPointer: UnsafePointer<byte>) -> vscp_status_t in
-                        transformationPublicKey.withUnsafeBytes({ (transformationPublicKeyPointer: UnsafePointer<byte>) -> vscp_status_t in
-                            proofValueC.withUnsafeMutableBytes({ (proofValueCPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
-                                proofValueU.withUnsafeMutableBytes({ (proofValueUPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
+        let proxyResult = transformedPassword.withUnsafeBytes({ (transformedPasswordPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+            blindedPassword.withUnsafeBytes({ (blindedPasswordPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+                transformedTweak.withUnsafeBytes({ (transformedTweakPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+                    transformationPrivateKey.withUnsafeBytes({ (transformationPrivateKeyPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+                        transformationPublicKey.withUnsafeBytes({ (transformationPublicKeyPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+                            proofValueC.withUnsafeMutableBytes({ (proofValueCPointer: UnsafeMutableRawBufferPointer) -> vscp_status_t in
+                                proofValueU.withUnsafeMutableBytes({ (proofValueUPointer: UnsafeMutableRawBufferPointer) -> vscp_status_t in
                                     vsc_buffer_init(proofValueCBuf)
-                                    vsc_buffer_use(proofValueCBuf, proofValueCPointer, proofValueCCount)
+                                    vsc_buffer_use(proofValueCBuf, proofValueCPointer.bindMemory(to: byte.self).baseAddress, proofValueCCount)
 
                                     vsc_buffer_init(proofValueUBuf)
-                                    vsc_buffer_use(proofValueUBuf, proofValueUPointer, proofValueUCount)
+                                    vsc_buffer_use(proofValueUBuf, proofValueUPointer.bindMemory(to: byte.self).baseAddress, proofValueUCount)
 
-                                    return vscp_pythia_prove(self.c_ctx, vsc_data(transformedPasswordPointer, transformedPassword.count), vsc_data(blindedPasswordPointer, blindedPassword.count), vsc_data(transformedTweakPointer, transformedTweak.count), vsc_data(transformationPrivateKeyPointer, transformationPrivateKey.count), vsc_data(transformationPublicKeyPointer, transformationPublicKey.count), proofValueCBuf, proofValueUBuf)
+                                    return vscp_pythia_prove(vsc_data(transformedPasswordPointer.bindMemory(to: byte.self).baseAddress, transformedPassword.count), vsc_data(blindedPasswordPointer.bindMemory(to: byte.self).baseAddress, blindedPassword.count), vsc_data(transformedTweakPointer.bindMemory(to: byte.self).baseAddress, transformedTweak.count), vsc_data(transformationPrivateKeyPointer.bindMemory(to: byte.self).baseAddress, transformationPrivateKey.count), vsc_data(transformationPublicKeyPointer.bindMemory(to: byte.self).baseAddress, transformationPublicKey.count), proofValueCBuf, proofValueUBuf)
                                 })
                             })
                         })
@@ -335,15 +309,15 @@ import VSCPythia
 
     /// This operation allows client to verify that the output of transform() is correct,
     /// assuming that client has previously stored transformation public key.
-    @objc public func verify(transformedPassword: Data, blindedPassword: Data, tweak: Data, transformationPublicKey: Data, proofValueC: Data, proofValueU: Data) throws {
-        let proxyResult = transformedPassword.withUnsafeBytes({ (transformedPasswordPointer: UnsafePointer<byte>) -> vscp_status_t in
-            blindedPassword.withUnsafeBytes({ (blindedPasswordPointer: UnsafePointer<byte>) -> vscp_status_t in
-                tweak.withUnsafeBytes({ (tweakPointer: UnsafePointer<byte>) -> vscp_status_t in
-                    transformationPublicKey.withUnsafeBytes({ (transformationPublicKeyPointer: UnsafePointer<byte>) -> vscp_status_t in
-                        proofValueC.withUnsafeBytes({ (proofValueCPointer: UnsafePointer<byte>) -> vscp_status_t in
-                            proofValueU.withUnsafeBytes({ (proofValueUPointer: UnsafePointer<byte>) -> vscp_status_t in
+    @objc public static func verify(transformedPassword: Data, blindedPassword: Data, tweak: Data, transformationPublicKey: Data, proofValueC: Data, proofValueU: Data) throws {
+        let proxyResult = transformedPassword.withUnsafeBytes({ (transformedPasswordPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+            blindedPassword.withUnsafeBytes({ (blindedPasswordPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+                tweak.withUnsafeBytes({ (tweakPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+                    transformationPublicKey.withUnsafeBytes({ (transformationPublicKeyPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+                        proofValueC.withUnsafeBytes({ (proofValueCPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+                            proofValueU.withUnsafeBytes({ (proofValueUPointer: UnsafeRawBufferPointer) -> vscp_status_t in
 
-                                return vscp_pythia_verify(self.c_ctx, vsc_data(transformedPasswordPointer, transformedPassword.count), vsc_data(blindedPasswordPointer, blindedPassword.count), vsc_data(tweakPointer, tweak.count), vsc_data(transformationPublicKeyPointer, transformationPublicKey.count), vsc_data(proofValueCPointer, proofValueC.count), vsc_data(proofValueUPointer, proofValueU.count))
+                                return vscp_pythia_verify(vsc_data(transformedPasswordPointer.bindMemory(to: byte.self).baseAddress, transformedPassword.count), vsc_data(blindedPasswordPointer.bindMemory(to: byte.self).baseAddress, blindedPassword.count), vsc_data(tweakPointer.bindMemory(to: byte.self).baseAddress, tweak.count), vsc_data(transformationPublicKeyPointer.bindMemory(to: byte.self).baseAddress, transformationPublicKey.count), vsc_data(proofValueCPointer.bindMemory(to: byte.self).baseAddress, proofValueC.count), vsc_data(proofValueUPointer.bindMemory(to: byte.self).baseAddress, proofValueU.count))
                             })
                         })
                     })
@@ -358,7 +332,7 @@ import VSCPythia
     /// that can update 'deblinded password'(s).
     ///
     /// This action should increment version of the 'pythia scope secret'.
-    @objc public func getPasswordUpdateToken(previousTransformationPrivateKey: Data, newTransformationPrivateKey: Data) throws -> Data {
+    @objc public static func getPasswordUpdateToken(previousTransformationPrivateKey: Data, newTransformationPrivateKey: Data) throws -> Data {
         let passwordUpdateTokenCount = Pythia.passwordUpdateTokenBufLen()
         var passwordUpdateToken = Data(count: passwordUpdateTokenCount)
         var passwordUpdateTokenBuf = vsc_buffer_new()
@@ -366,13 +340,13 @@ import VSCPythia
             vsc_buffer_delete(passwordUpdateTokenBuf)
         }
 
-        let proxyResult = previousTransformationPrivateKey.withUnsafeBytes({ (previousTransformationPrivateKeyPointer: UnsafePointer<byte>) -> vscp_status_t in
-            newTransformationPrivateKey.withUnsafeBytes({ (newTransformationPrivateKeyPointer: UnsafePointer<byte>) -> vscp_status_t in
-                passwordUpdateToken.withUnsafeMutableBytes({ (passwordUpdateTokenPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
+        let proxyResult = previousTransformationPrivateKey.withUnsafeBytes({ (previousTransformationPrivateKeyPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+            newTransformationPrivateKey.withUnsafeBytes({ (newTransformationPrivateKeyPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+                passwordUpdateToken.withUnsafeMutableBytes({ (passwordUpdateTokenPointer: UnsafeMutableRawBufferPointer) -> vscp_status_t in
                     vsc_buffer_init(passwordUpdateTokenBuf)
-                    vsc_buffer_use(passwordUpdateTokenBuf, passwordUpdateTokenPointer, passwordUpdateTokenCount)
+                    vsc_buffer_use(passwordUpdateTokenBuf, passwordUpdateTokenPointer.bindMemory(to: byte.self).baseAddress, passwordUpdateTokenCount)
 
-                    return vscp_pythia_get_password_update_token(self.c_ctx, vsc_data(previousTransformationPrivateKeyPointer, previousTransformationPrivateKey.count), vsc_data(newTransformationPrivateKeyPointer, newTransformationPrivateKey.count), passwordUpdateTokenBuf)
+                    return vscp_pythia_get_password_update_token(vsc_data(previousTransformationPrivateKeyPointer.bindMemory(to: byte.self).baseAddress, previousTransformationPrivateKey.count), vsc_data(newTransformationPrivateKeyPointer.bindMemory(to: byte.self).baseAddress, newTransformationPrivateKey.count), passwordUpdateTokenBuf)
                 })
             })
         })
@@ -385,7 +359,7 @@ import VSCPythia
 
     /// Updates previously stored 'deblinded password' with 'password update token'.
     /// After this call, 'transform()' called with new arguments will return corresponding values.
-    @objc public func updateDeblindedWithToken(deblindedPassword: Data, passwordUpdateToken: Data) throws -> Data {
+    @objc public static func updateDeblindedWithToken(deblindedPassword: Data, passwordUpdateToken: Data) throws -> Data {
         let updatedDeblindedPasswordCount = Pythia.deblindedPasswordBufLen()
         var updatedDeblindedPassword = Data(count: updatedDeblindedPasswordCount)
         var updatedDeblindedPasswordBuf = vsc_buffer_new()
@@ -393,13 +367,13 @@ import VSCPythia
             vsc_buffer_delete(updatedDeblindedPasswordBuf)
         }
 
-        let proxyResult = deblindedPassword.withUnsafeBytes({ (deblindedPasswordPointer: UnsafePointer<byte>) -> vscp_status_t in
-            passwordUpdateToken.withUnsafeBytes({ (passwordUpdateTokenPointer: UnsafePointer<byte>) -> vscp_status_t in
-                updatedDeblindedPassword.withUnsafeMutableBytes({ (updatedDeblindedPasswordPointer: UnsafeMutablePointer<byte>) -> vscp_status_t in
+        let proxyResult = deblindedPassword.withUnsafeBytes({ (deblindedPasswordPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+            passwordUpdateToken.withUnsafeBytes({ (passwordUpdateTokenPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+                updatedDeblindedPassword.withUnsafeMutableBytes({ (updatedDeblindedPasswordPointer: UnsafeMutableRawBufferPointer) -> vscp_status_t in
                     vsc_buffer_init(updatedDeblindedPasswordBuf)
-                    vsc_buffer_use(updatedDeblindedPasswordBuf, updatedDeblindedPasswordPointer, updatedDeblindedPasswordCount)
+                    vsc_buffer_use(updatedDeblindedPasswordBuf, updatedDeblindedPasswordPointer.bindMemory(to: byte.self).baseAddress, updatedDeblindedPasswordCount)
 
-                    return vscp_pythia_update_deblinded_with_token(self.c_ctx, vsc_data(deblindedPasswordPointer, deblindedPassword.count), vsc_data(passwordUpdateTokenPointer, passwordUpdateToken.count), updatedDeblindedPasswordBuf)
+                    return vscp_pythia_update_deblinded_with_token(vsc_data(deblindedPasswordPointer.bindMemory(to: byte.self).baseAddress, deblindedPassword.count), vsc_data(passwordUpdateTokenPointer.bindMemory(to: byte.self).baseAddress, passwordUpdateToken.count), updatedDeblindedPasswordBuf)
                 })
             })
         })

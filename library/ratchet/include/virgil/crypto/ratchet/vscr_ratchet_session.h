@@ -147,7 +147,7 @@ vscr_ratchet_session_shallow_copy(vscr_ratchet_session_t *self);
 //
 //  Note, ownership is shared.
 //
-VSCR_PUBLIC vscr_status_t
+VSCR_PUBLIC void
 vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng);
 
 //
@@ -156,7 +156,7 @@ vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng);
 //  Note, ownership is transfered.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCR_PUBLIC vscr_status_t
+VSCR_PUBLIC void
 vscr_ratchet_session_take_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng);
 
 //
@@ -168,11 +168,9 @@ vscr_ratchet_session_release_rng(vscr_ratchet_session_t *self);
 //
 //  Setups default dependencies:
 //      - RNG: CTR DRBG
-//      - Key serialization: DER PKCS8
-//      - Symmetric cipher: AES256-GCM
 //
-VSCR_PUBLIC void
-vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *self);
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *self) VSCR_NODISCARD;
 
 //
 //  Initiates session
@@ -180,7 +178,7 @@ vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *self);
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_identity_private_key,
         vsc_data_t receiver_identity_public_key, vsc_data_t receiver_long_term_public_key,
-        vsc_data_t receiver_one_time_public_key);
+        vsc_data_t receiver_one_time_public_key) VSCR_NODISCARD;
 
 //
 //  Responds to session initiation
@@ -188,7 +186,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_identity_public_key,
         vsc_data_t receiver_identity_private_key, vsc_data_t receiver_long_term_private_key,
-        vsc_data_t receiver_one_time_private_key, const vscr_ratchet_message_t *message);
+        vsc_data_t receiver_one_time_private_key, const vscr_ratchet_message_t *message) VSCR_NODISCARD;
 
 //
 //  Returns flag that indicates is this session was initiated or responded
@@ -225,7 +223,7 @@ vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *self, const vscr_ratche
 //
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_decrypt(vscr_ratchet_session_t *self, const vscr_ratchet_message_t *message,
-        vsc_buffer_t *plain_text);
+        vsc_buffer_t *plain_text) VSCR_NODISCARD;
 
 //
 //  Calculates size of buffer sufficient to store session

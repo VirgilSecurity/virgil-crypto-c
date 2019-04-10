@@ -78,8 +78,8 @@ import VSCRatchet
     /// Skipped message missing.
     case errorSkippedMessageMissing = -13
 
-    /// Can't encrypt yet.
-    case errorCanTEncryptYet = -14
+    /// Session is not initialized.
+    case errorSessionIsNotInitialized = -14
 
     /// Exceeded max plain text len.
     case errorExceededMaxPlainTextLen = -15
@@ -92,6 +92,24 @@ import VSCRatchet
 
     /// Invalid padding.
     case errorInvalidPadding = -18
+
+    /// Too many participants.
+    case errorTooManyParticipants = -19
+
+    /// Too few participants.
+    case errorTooFewParticipants = -20
+
+    /// Sender not found.
+    case errorSenderNotFound = -21
+
+    /// Cannot decrypt own messages.
+    case errorCannotDecryptOwnMessages = -22
+
+    /// Duplicate id.
+    case errorDuplicateId = -23
+
+    /// Invalid signature.
+    case errorInvalidSignature = -24
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscr_status_t) {

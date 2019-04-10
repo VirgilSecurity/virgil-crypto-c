@@ -103,7 +103,7 @@ vscf_rsa_private_key_init_ctx(vscf_rsa_private_key_t *self) {
 
     mbedtls_rsa_init(&self->rsa_ctx, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_NONE);
 
-    self->gen_bitlen = 4096;
+    self->gen_bitlen = 2048;
     self->gen_exponent = 65537;
 }
 
@@ -118,21 +118,6 @@ vscf_rsa_private_key_cleanup_ctx(vscf_rsa_private_key_t *self) {
     VSCF_ASSERT_PTR(self);
 
     mbedtls_rsa_free(&self->rsa_ctx);
-}
-
-//
-//  Setup parameters that is used during key generation.
-//
-VSCF_PUBLIC void
-vscf_rsa_private_key_set_keygen_params(vscf_rsa_private_key_t *self, size_t bitlen, size_t exponent) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(bitlen >= 128 && bitlen <= 16384);
-    VSCF_ASSERT(bitlen % 2 == 0);
-    VSCF_ASSERT(exponent >= 3 && exponent <= 65537);
-
-    self->gen_bitlen = bitlen;
-    self->gen_exponent = exponent;
 }
 
 //
@@ -162,6 +147,32 @@ vscf_rsa_private_key_setup_defaults(vscf_rsa_private_key_t *self) {
     }
 
     return vscf_status_SUCCESS;
+}
+
+//
+//  Setup key length in bits that is used for key generation.
+//
+VSCF_PUBLIC void
+vscf_rsa_private_key_set_keygen_params(vscf_rsa_private_key_t *self, size_t bitlen) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(bitlen >= 2048 && bitlen <= 16384);
+    VSCF_ASSERT(bitlen % 2 == 0);
+
+    self->gen_bitlen = bitlen;
+}
+
+//
+//  Setup key exponent that is used for key generation.
+//  Note, this method is used internally.
+//
+VSCF_PRIVATE void
+vscf_rsa_private_key_set_keygen_exponent(vscf_rsa_private_key_t *self, size_t exponent) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(exponent >= 3 && exponent <= 65537);
+
+    self->gen_exponent = exponent;
 }
 
 //

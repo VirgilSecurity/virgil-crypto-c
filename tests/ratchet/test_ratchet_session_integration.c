@@ -58,30 +58,38 @@ int suiteTearDown(int num_failures) { return num_failures; }
 //  Test functions.
 // --------------------------------------------------------------------------
 void
-test__encrypt_decrypt__fixed_plain_text__decrypted_should_match(void) {
+test__initialize__fixed_values__should_not_fail(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
     vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
     vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
 
-    initialize(&session_alice, &session_bob, true, false);
+    initialize(rng, &session_alice, &session_bob, true, false);
 
     vscr_ratchet_session_destroy(&session_alice);
     vscr_ratchet_session_destroy(&session_bob);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 void
 test__encrypt_decrypt_back_and_forth__fixed_plain_text__decrypted_should_match(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
     vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
     vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
 
-    initialize(&session_alice, &session_bob, true, false);
+    initialize(rng, &session_alice, &session_bob, true, false);
 
     vscr_error_t error;
     vscr_error_reset(&error);
 
     vsc_buffer_t *text1 = NULL, *text2 = NULL;
 
-    generate_random_data(&text1);
-    generate_random_data(&text2);
+    generate_random_data(rng, &text1);
+    generate_random_data(rng, &text2);
 
     vscr_ratchet_message_t *ratchet_message1 =
             vscr_ratchet_session_encrypt(session_alice, vsc_buffer_data(text1), &error);
@@ -117,48 +125,63 @@ test__encrypt_decrypt_back_and_forth__fixed_plain_text__decrypted_should_match(v
     vscr_ratchet_session_destroy(&session_bob);
     vscr_ratchet_message_destroy(&ratchet_message1);
     vscr_ratchet_message_destroy(&ratchet_message2);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 void
 test__encrypt_decrypt__100_plain_texts_random_order__decrypted_should_match(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
     vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
     vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
 
-    initialize(&session_alice, &session_bob, true, false);
+    initialize(rng, &session_alice, &session_bob, true, false);
 
-    encrypt_decrypt__100_plain_texts_random_order(session_alice, session_bob);
+    encrypt_decrypt__100_plain_texts_random_order(rng, session_alice, session_bob);
 
     vscr_ratchet_session_destroy(&session_alice);
     vscr_ratchet_session_destroy(&session_bob);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 void
 test__encrypt_decrypt__100_plain_texts_random_order_no_one_time__decrypted_should_match(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
     vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
     vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
 
-    initialize(&session_alice, &session_bob, false, false);
+    initialize(rng, &session_alice, &session_bob, false, false);
 
-    encrypt_decrypt__100_plain_texts_random_order(session_alice, session_bob);
+    encrypt_decrypt__100_plain_texts_random_order(rng, session_alice, session_bob);
 
     vscr_ratchet_session_destroy(&session_alice);
     vscr_ratchet_session_destroy(&session_bob);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 void
 test__encrypt_decrypt__1_out_of_order_msg__decrypted_should_match(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
     vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
     vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
 
-    initialize(&session_alice, &session_bob, true, false);
+    initialize(rng, &session_alice, &session_bob, true, false);
 
     vscr_error_t error;
     vscr_error_reset(&error);
 
     vsc_buffer_t *text1 = NULL, *text2 = NULL;
 
-    generate_random_data(&text1);
-    generate_random_data(&text2);
+    generate_random_data(rng, &text1);
+    generate_random_data(rng, &text2);
 
     vscr_ratchet_message_t *ratchet_message1 =
             vscr_ratchet_session_encrypt(session_alice, vsc_buffer_data(text1), &error);
@@ -194,19 +217,26 @@ test__encrypt_decrypt__1_out_of_order_msg__decrypted_should_match(void) {
     vscr_ratchet_session_destroy(&session_bob);
     vscr_ratchet_message_destroy(&ratchet_message1);
     vscr_ratchet_message_destroy(&ratchet_message2);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 void
 test__encrypt_decrypt__randomly_skipped_messages__decrypt_should_succeed(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
     vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
     vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
 
-    initialize(&session_alice, &session_bob, true, false);
+    initialize(rng, &session_alice, &session_bob, true, false);
 
-    encrypt_decrypt__100_plain_texts_random_order_with_producers(&session_alice, &session_bob, false);
+    encrypt_decrypt__100_plain_texts_random_order_with_producers(rng, &session_alice, &session_bob, false);
 
     vscr_ratchet_session_destroy(&session_alice);
     vscr_ratchet_session_destroy(&session_bob);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
@@ -220,7 +250,7 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__encrypt_decrypt__fixed_plain_text__decrypted_should_match);
+    RUN_TEST(test__initialize__fixed_values__should_not_fail);
     RUN_TEST(test__encrypt_decrypt_back_and_forth__fixed_plain_text__decrypted_should_match);
     RUN_TEST(test__encrypt_decrypt__100_plain_texts_random_order__decrypted_should_match);
     RUN_TEST(test__encrypt_decrypt__100_plain_texts_random_order_no_one_time__decrypted_should_match);

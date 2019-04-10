@@ -170,9 +170,9 @@ vscf_aes256_cbc_encrypt(vscf_aes256_cbc_t *self, vsc_data_t data, vsc_buffer_t *
 
     vscf_aes256_cbc_start_encryption(self);
     vscf_aes256_cbc_update(self, data, out);
-    vscf_aes256_cbc_finish(self, out);
+    vscf_status_t status = vscf_aes256_cbc_finish(self, out);
 
-    return vscf_status_SUCCESS;
+    return status;
 }
 
 //

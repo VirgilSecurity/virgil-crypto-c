@@ -60,13 +60,18 @@ test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
     vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
     vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
 
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
     vscf_raw_key_t *raw_public_key = vscf_pkcs8_der_deserializer_deserialize_public_key(
             pkcs8, test_data_recipient_cipher_ED25519_PUBLIC_KEY, NULL);
-    vscf_impl_t *public_key = vscf_alg_factory_create_public_key_from_raw_key(raw_public_key);
+    vscf_impl_t *public_key = vscf_alg_factory_create_public_key_from_raw_key(raw_public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error.status);
 
     vscf_raw_key_t *raw_private_key = vscf_pkcs8_der_deserializer_deserialize_private_key(
             pkcs8, test_data_recipient_cipher_ED25519_PRIVATE_KEY, NULL);
-    vscf_impl_t *private_key = vscf_alg_factory_create_private_key_from_raw_key(raw_private_key);
+    vscf_impl_t *private_key = vscf_alg_factory_create_private_key_from_raw_key(raw_private_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error.status);
 
     vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
 
@@ -135,9 +140,13 @@ test__decrypt__with_ed25519_public_key__success(void) {
     vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
     vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
 
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
     vscf_raw_key_t *raw_private_key = vscf_pkcs8_der_deserializer_deserialize_private_key(
             pkcs8, test_data_recipient_cipher_ED25519_PRIVATE_KEY, NULL);
-    vscf_impl_t *private_key = vscf_alg_factory_create_private_key_from_raw_key(raw_private_key);
+    vscf_impl_t *private_key = vscf_alg_factory_create_private_key_from_raw_key(raw_private_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error.status);
 
     vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
 

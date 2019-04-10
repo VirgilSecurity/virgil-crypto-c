@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// Virgil Security implementation of the PBKDF2 (RFC 8018) algorithm.
-@objc(VSCFPkcs5Pbkdf2) public class Pkcs5Pbkdf2: NSObject, Defaults, Alg, Kdf, SaltedKdf {
+@objc(VSCFPkcs5Pbkdf2) public class Pkcs5Pbkdf2: NSObject, Alg, Kdf, SaltedKdf {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -73,10 +73,8 @@ import VSCFoundation
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_pkcs5_pbkdf2_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
+    @objc public func setupDefaults() {
+        vscf_pkcs5_pbkdf2_setup_defaults(self.c_ctx)
     }
 
     /// Provide algorithm identificator.
@@ -109,12 +107,12 @@ import VSCFoundation
             vsc_buffer_delete(keyBuf)
         }
 
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
-            key.withUnsafeMutableBytes({ (keyPointer: UnsafeMutablePointer<byte>) -> Void in
+        data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
+            key.withUnsafeMutableBytes({ (keyPointer: UnsafeMutableRawBufferPointer) -> Void in
                 vsc_buffer_init(keyBuf)
-                vsc_buffer_use(keyBuf, keyPointer, keyCount)
+                vsc_buffer_use(keyBuf, keyPointer.bindMemory(to: byte.self).baseAddress, keyCount)
 
-                vscf_pkcs5_pbkdf2_derive(self.c_ctx, vsc_data(dataPointer, data.count), keyLen, keyBuf)
+                vscf_pkcs5_pbkdf2_derive(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), keyLen, keyBuf)
             })
         })
         key.count = vsc_buffer_len(keyBuf)
@@ -124,18 +122,18 @@ import VSCFoundation
 
     /// Prepare algorithm to derive new key.
     @objc public func reset(salt: Data, iterationCount: Int) {
-        salt.withUnsafeBytes({ (saltPointer: UnsafePointer<byte>) -> Void in
+        salt.withUnsafeBytes({ (saltPointer: UnsafeRawBufferPointer) -> Void in
 
-            vscf_pkcs5_pbkdf2_reset(self.c_ctx, vsc_data(saltPointer, salt.count), iterationCount)
+            vscf_pkcs5_pbkdf2_reset(self.c_ctx, vsc_data(saltPointer.bindMemory(to: byte.self).baseAddress, salt.count), iterationCount)
         })
     }
 
     /// Setup application specific information (optional).
     /// Can be empty.
     @objc public func setInfo(info: Data) {
-        info.withUnsafeBytes({ (infoPointer: UnsafePointer<byte>) -> Void in
+        info.withUnsafeBytes({ (infoPointer: UnsafeRawBufferPointer) -> Void in
 
-            vscf_pkcs5_pbkdf2_set_info(self.c_ctx, vsc_data(infoPointer, info.count))
+            vscf_pkcs5_pbkdf2_set_info(self.c_ctx, vsc_data(infoPointer.bindMemory(to: byte.self).baseAddress, info.count))
         })
     }
 }

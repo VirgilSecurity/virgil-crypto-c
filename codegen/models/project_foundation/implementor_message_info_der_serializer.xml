@@ -4,7 +4,6 @@
     <implementation name="message info der serializer">
         CMS based implementation of the class "message info" serialization.
 
-        <interface name="defaults"/>
         <interface name="message info serializer">
             <constant name="prefix len" value="32"/>
         </interface>
@@ -25,6 +24,10 @@
             <property name="alg info serializer" class="alg info der serializer"/>
             <property name="alg info deserializer" class="alg info der deserializer"/>
         </context>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+        </method>
 
         <method name="serialized custom params len" is_const="1">
             <argument name="message info" class="message info"/>

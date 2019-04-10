@@ -150,7 +150,7 @@ vscf_kdf2_derive(vscf_kdf2_t *self, vsc_data_t data, size_t key_len, vsc_buffer_
     for (size_t counter = 1; counter <= counter_len; ++counter) {
         counter_string[0] = (unsigned char)((counter >> 24) & 255);
         counter_string[1] = (unsigned char)((counter >> 16) & 255);
-        counter_string[2] = (unsigned char)((counter >> 8)) & 255;
+        counter_string[2] = (unsigned char)((counter >> 8) & 255);
         counter_string[3] = (unsigned char)(counter & 255);
 
         vscf_hash_start(self->hash);

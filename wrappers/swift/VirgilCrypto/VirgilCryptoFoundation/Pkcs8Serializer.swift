@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// Implements PKCS#8 key serialization to PEM format.
-@objc(VSCFPkcs8Serializer) public class Pkcs8Serializer: NSObject, Defaults, KeySerializer {
+@objc(VSCFPkcs8Serializer) public class Pkcs8Serializer: NSObject, KeySerializer {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -78,10 +78,8 @@ import VSCFoundation
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_pkcs8_serializer_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
+    @objc public func setupDefaults() {
+        vscf_pkcs8_serializer_setup_defaults(self.c_ctx)
     }
 
     /// Calculate buffer size enough to hold serialized public key.
@@ -104,9 +102,9 @@ import VSCFoundation
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
             vsc_buffer_init(outBuf)
-            vsc_buffer_use(outBuf, outPointer, outCount)
+            vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             return vscf_pkcs8_serializer_serialize_public_key(self.c_ctx, publicKey.c_ctx, outBuf)
         })
@@ -137,9 +135,9 @@ import VSCFoundation
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
             vsc_buffer_init(outBuf)
-            vsc_buffer_use(outBuf, outPointer, outCount)
+            vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             return vscf_pkcs8_serializer_serialize_private_key(self.c_ctx, privateKey.c_ctx, outBuf)
         })
