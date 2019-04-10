@@ -114,6 +114,11 @@ show_info "New version is: ${VERSION_FULL}"
 show_info "Change verion within VERSION file."
 echo "${VERSION_FULL}" > "${ROOT_DIR}/VERSION"
 
+# ###########################################################################
+show_info "Change verion within CMakeLists.txt file."
+sed_replace "VERSION *[0-9]*\.[0-9]*\.[0-9]" "VERSION ${VERSION}" "${ROOT_DIR}/CMakeLists.txt"
+sed_replace "\(VIRGIL_CRYPTO_VERSION_LABEL\) *\"[a-zA-Z0-9_]*\"" "\1 \"${VERSION_LABEL}\"" "${ROOT_DIR}/CMakeLists.txt"
+
 
 # ###########################################################################
 show_info "Change verion within XML project files."

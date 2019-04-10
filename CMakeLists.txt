@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto VERSION 0.6.0 LANGUAGES C)
+project(virgil_crypto VERSION 0.6.1 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
@@ -57,16 +57,7 @@ include("cmake/protobuf.cmake")
 # ---------------------------------------------------------------------------
 #   Version options
 # ---------------------------------------------------------------------------
-set(VIRGIL_CRYPTO_VERSION_LABEL "" CACHE STRING "Version label, i.e. beta, rc1.")
-
-file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "${virgil_crypto_VERSION}")
-
-if(VIRGIL_CRYPTO_VERSION_LABEL)
-    file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "-${VIRGIL_CRYPTO_VERSION_LABEL}")
-endif()
-
-file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "\n")
-
+set(VIRGIL_CRYPTO_VERSION_LABEL "dev" CACHE STRING "Version label, i.e. beta, rc1.")
 
 # ---------------------------------------------------------------------------
 #   Build options
