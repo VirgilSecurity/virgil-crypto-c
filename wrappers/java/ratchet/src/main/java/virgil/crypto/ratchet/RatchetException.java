@@ -71,7 +71,7 @@ public class RatchetException extends RuntimeException {
 
     public static final int ERROR_SKIPPED_MESSAGE_MISSING = -13;
 
-    public static final int ERROR_CAN_T_ENCRYPT_YET = -14;
+    public static final int ERROR_SESSION_IS_NOT_INITIALIZED = -14;
 
     public static final int ERROR_EXCEEDED_MAX_PLAIN_TEXT_LEN = -15;
 
@@ -80,6 +80,18 @@ public class RatchetException extends RuntimeException {
     public static final int ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN = -17;
 
     public static final int ERROR_INVALID_PADDING = -18;
+
+    public static final int ERROR_TOO_MANY_PARTICIPANTS = -19;
+
+    public static final int ERROR_TOO_FEW_PARTICIPANTS = -20;
+
+    public static final int ERROR_SENDER_NOT_FOUND = -21;
+
+    public static final int ERROR_CANNOT_DECRYPT_OWN_MESSAGES = -22;
+
+    public static final int ERROR_DUPLICATE_ID = -23;
+
+    public static final int ERROR_INVALID_SIGNATURE = -24;
 
     private int statusCode;
 

@@ -1,4 +1,10 @@
 framework module VSCPythia {
+    header "vscp_assert.h"
+    header "vscp_library.h"
+    header "vscp_memory.h"
+    header "vscp_platform.h"
+    header "vscp_pythia.h"
+    header "vscp_status.h"
     header "vscp_pythia_public.h"
     export *
 }

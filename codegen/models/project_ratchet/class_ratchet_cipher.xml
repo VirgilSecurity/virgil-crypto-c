@@ -41,7 +41,7 @@
         <argument name="plain text" class="data"/>
         <argument name="error" class="error" access="readwrite"/>
 
-        <return class="buffer"/>
+        <return class="buffer" access="disown"/>
     </method>
 
     <method name="encrypt">

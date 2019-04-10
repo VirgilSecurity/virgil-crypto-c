@@ -75,8 +75,6 @@ public class RatchetSession implements AutoCloseable {
     /*
     * Setups default dependencies:
     * - RNG: CTR DRBG
-    * - Key serialization: DER PKCS8
-    * - Symmetric cipher: AES256-GCM
     */
     public void setupDefaults() throws RatchetException {
         RatchetJNI.INSTANCE.ratchetSession_setupDefaults(this.cCtx);

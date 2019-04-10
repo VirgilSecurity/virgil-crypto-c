@@ -230,9 +230,7 @@ def build_LangJava_Linux(slave) {
                 cd wrappers/java
                 ./mvnw clean test
             '''
-            dir('wrappers') {
-                archiveArtifacts('java/binaries/**')
-            }
+            stash includes: 'wrappers/java/binaries/**', name: 'java_linux'
         }
     }}
 }
@@ -254,9 +252,7 @@ def build_LangJava_MacOS(slave) {
                 cd wrappers/java
                 ./mvnw clean test
             '''
-            dir('wrappers') {
-                archiveArtifacts('java/binaries/**')
-            }
+            stash includes: 'wrappers/java/binaries/**', name: 'java_macos'
         }
     }}
 }
@@ -283,9 +279,7 @@ def build_LangJava_Windows(slave) {
                     mvnw.cmd clean test
                 '''
             }
-            dir('wrappers') {
-                archiveArtifacts('java/binaries/**')
-            }
+            stash includes: 'wrappers/java/binaries/**', name: 'java_windows'
         }
     }}
 }
@@ -308,9 +302,7 @@ def build_LangJava_Android_x86(slave) {
                 cmake --build build --target install -- -j10
                 '''
             }
-            dir('wrappers') {
-                archiveArtifacts('java/binaries/**')
-            }
+            stash includes: 'wrappers/java/binaries/**', name: 'java_android_x86'
         }
     }}
 }
@@ -333,9 +325,7 @@ def build_LangJava_Android_x86_64(slave) {
                 cmake --build build --target install -- -j10
                 '''
             }
-            dir('wrappers') {
-                archiveArtifacts('java/binaries/**')
-            }
+            stash includes: 'wrappers/java/binaries/**', name: 'java_android_x86_64'
         }
     }}
 }
@@ -358,9 +348,7 @@ def build_LangJava_Android_armeabi_v7a(slave) {
                 cmake --build build --target install -- -j10
                 '''
             }
-            dir('wrappers') {
-                archiveArtifacts('java/binaries/**')
-            }
+            stash includes: 'wrappers/java/binaries/**', name: 'java_android_armeabi_v7a'
         }
     }}
 }
@@ -383,9 +371,7 @@ def build_LangJava_Android_arm64_v8a(slave) {
                 cmake --build build --target install -- -j10
                 '''
             }
-            dir('wrappers') {
-                archiveArtifacts('java/binaries/**')
-            }
+            stash includes: 'wrappers/java/binaries/**', name: 'java_android_arm64_v8a'
         }
     }}
 }
@@ -418,12 +404,19 @@ node('master') {
     def shortJobName = env.BRANCH_NAME ? env.JOB_NAME.replace('/' + env.BRANCH_NAME, '') : env.JOB_NAME
     def artifactsDir =
             env.JENKINS_HOME + '/jobs/' + shortJobName + branchSubPath + '/builds/' + env.BUILD_NUMBER + '/archive'
-    sh """
-        pwd
-        source /var/lib/jenkins/.bashrc
-        env
-        cp -r ${artifactsDir}/java/binaries wrappers/java/
-        cd wrappers/java
-        mvn clean deploy -Dgpg.keyname=${gpg_keyname}
-    """
+
+    unstash java_linux
+    unstash java_macos
+    unstash java_windows
+
+    sh 'tree wrappers/java/binaries'
+
+    // sh """
+    //     pwd
+    //     source /var/lib/jenkins/.bashrc
+    //     env
+    //     cp -r ${artifactsDir}/java/binaries wrappers/java/
+    //     cd wrappers/java
+    //     mvn clean deploy -Dgpg.keyname=${gpg_keyname}
+    // """
 }

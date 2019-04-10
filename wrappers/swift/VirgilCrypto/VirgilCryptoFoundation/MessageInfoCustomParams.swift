@@ -68,28 +68,28 @@ import VSCFoundation
 
     /// Add custom parameter with integer value.
     @objc public func addInt(key: Data, value: Int32) {
-        key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Void in
+        key.withUnsafeBytes({ (keyPointer: UnsafeRawBufferPointer) -> Void in
 
-            vscf_message_info_custom_params_add_int(self.c_ctx, vsc_data(keyPointer, key.count), value)
+            vscf_message_info_custom_params_add_int(self.c_ctx, vsc_data(keyPointer.bindMemory(to: byte.self).baseAddress, key.count), value)
         })
     }
 
     /// Add custom parameter with UTF8 string value.
     @objc public func addString(key: Data, value: Data) {
-        key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Void in
-            value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Void in
+        key.withUnsafeBytes({ (keyPointer: UnsafeRawBufferPointer) -> Void in
+            value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) -> Void in
 
-                vscf_message_info_custom_params_add_string(self.c_ctx, vsc_data(keyPointer, key.count), vsc_data(valuePointer, value.count))
+                vscf_message_info_custom_params_add_string(self.c_ctx, vsc_data(keyPointer.bindMemory(to: byte.self).baseAddress, key.count), vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
             })
         })
     }
 
     /// Add custom parameter with octet string value.
     @objc public func addData(key: Data, value: Data) {
-        key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Void in
-            value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Void in
+        key.withUnsafeBytes({ (keyPointer: UnsafeRawBufferPointer) -> Void in
+            value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) -> Void in
 
-                vscf_message_info_custom_params_add_data(self.c_ctx, vsc_data(keyPointer, key.count), vsc_data(valuePointer, value.count))
+                vscf_message_info_custom_params_add_data(self.c_ctx, vsc_data(keyPointer.bindMemory(to: byte.self).baseAddress, key.count), vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
             })
         })
     }
@@ -104,9 +104,9 @@ import VSCFoundation
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Int32 in
+        let proxyResult = key.withUnsafeBytes({ (keyPointer: UnsafeRawBufferPointer) -> Int32 in
 
-            return vscf_message_info_custom_params_find_int(self.c_ctx, vsc_data(keyPointer, key.count), &error)
+            return vscf_message_info_custom_params_find_int(self.c_ctx, vsc_data(keyPointer.bindMemory(to: byte.self).baseAddress, key.count), &error)
         })
 
         try FoundationError.handleStatus(fromC: error.status)
@@ -124,9 +124,9 @@ import VSCFoundation
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) in
+        let proxyResult = key.withUnsafeBytes({ (keyPointer: UnsafeRawBufferPointer) in
 
-            return vscf_message_info_custom_params_find_string(self.c_ctx, vsc_data(keyPointer, key.count), &error)
+            return vscf_message_info_custom_params_find_string(self.c_ctx, vsc_data(keyPointer.bindMemory(to: byte.self).baseAddress, key.count), &error)
         })
 
         try FoundationError.handleStatus(fromC: error.status)
@@ -139,9 +139,9 @@ import VSCFoundation
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) in
+        let proxyResult = key.withUnsafeBytes({ (keyPointer: UnsafeRawBufferPointer) in
 
-            return vscf_message_info_custom_params_find_data(self.c_ctx, vsc_data(keyPointer, key.count), &error)
+            return vscf_message_info_custom_params_find_data(self.c_ctx, vsc_data(keyPointer.bindMemory(to: byte.self).baseAddress, key.count), &error)
         })
 
         try FoundationError.handleStatus(fromC: error.status)

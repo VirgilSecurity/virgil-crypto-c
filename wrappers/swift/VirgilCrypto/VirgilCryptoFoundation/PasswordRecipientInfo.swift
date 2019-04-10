@@ -64,11 +64,11 @@ import VSCFoundation
 
     /// Create object and define all properties.
     public init(keyEncryptionAlgorithm: AlgInfo, encryptedKey: Data) {
-        let proxyResult = encryptedKey.withUnsafeBytes({ (encryptedKeyPointer: UnsafePointer<byte>) -> OpaquePointer? in
+        let proxyResult = encryptedKey.withUnsafeBytes({ (encryptedKeyPointer: UnsafeRawBufferPointer) -> OpaquePointer? in
 
             var keyEncryptionAlgorithmCopy = vscf_impl_shallow_copy(keyEncryptionAlgorithm.c_ctx)
 
-            return vscf_password_recipient_info_new_with_members(&keyEncryptionAlgorithmCopy, vsc_data(encryptedKeyPointer, encryptedKey.count))
+            return vscf_password_recipient_info_new_with_members(&keyEncryptionAlgorithmCopy, vsc_data(encryptedKeyPointer.bindMemory(to: byte.self).baseAddress, encryptedKey.count))
         })
 
         self.c_ctx = proxyResult!

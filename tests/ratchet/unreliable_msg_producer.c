@@ -117,7 +117,7 @@ produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr
     }
 
     vsc_buffer_t *plain_text_local = NULL;
-    generate_random_data(&plain_text_local);
+    generate_random_data(producer->rng, &plain_text_local);
 
     vscr_error_t error;
     vscr_error_reset(&error);
@@ -127,7 +127,7 @@ produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr
     TEST_ASSERT_FALSE(vscr_error_has_error(&error));
 
     if (should_restore) {
-        restore_session(producer->session);
+        restore_session(producer->rng, producer->session);
     }
 
     byte late_level;

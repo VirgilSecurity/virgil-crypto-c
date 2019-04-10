@@ -59,11 +59,11 @@ public class RatchetJNI {
     /*
     * Computes 8 bytes key pair id from public key
     */
-    public native byte[] ratchetKeyUtils_computePublicKeyId(long cCtx, byte[] publicKey) throws RatchetException;
+    public native byte[] ratchetKeyUtils_computePublicKeyId(long cCtx, byte[] publicKey, boolean convertToCurve25519) throws RatchetException;
 
-    public native byte[] ratchetKeyUtils_extractRatchetPublicKey(long cCtx, byte[] data) throws RatchetException;
+    public native byte[] ratchetKeyUtils_extractRatchetPublicKey(long cCtx, byte[] data, boolean ed25519, boolean curve25519, boolean convertToCurve25519) throws RatchetException;
 
-    public native byte[] ratchetKeyUtils_extractRatchetPrivateKey(long cCtx, byte[] data) throws RatchetException;
+    public native byte[] ratchetKeyUtils_extractRatchetPrivateKey(long cCtx, byte[] data, boolean ed25519, boolean curve25519, boolean convertToCurve25519) throws RatchetException;
 
     public native long ratchetMessage_new();
 
@@ -111,8 +111,6 @@ public class RatchetJNI {
     /*
     * Setups default dependencies:
     * - RNG: CTR DRBG
-    * - Key serialization: DER PKCS8
-    * - Symmetric cipher: AES256-GCM
     */
     public native void ratchetSession_setupDefaults(long cCtx) throws RatchetException;
 
@@ -171,5 +169,124 @@ public class RatchetJNI {
     * NOTE: Deserialized session needs dependencies to be set. Check setup defaults
     */
     public native RatchetSession ratchetSession_deserialize(byte[] input) throws RatchetException;
+
+    public native long ratchetGroupMessage_new();
+
+    public native void ratchetGroupMessage_close(long cCtx);
+
+    /*
+    * Returns message type.
+    */
+    public native GroupMsgType ratchetGroupMessage_getType(long cCtx);
+
+    public native int ratchetGroupMessage_getPubKeyCount(long cCtx);
+
+    public native byte[] ratchetGroupMessage_getPubKey(long cCtx, byte[] id);
+
+    /*
+    * Buffer len to serialize this class.
+    */
+    public native int ratchetGroupMessage_serializeLen(long cCtx);
+
+    /*
+    * Serializes instance.
+    */
+    public native byte[] ratchetGroupMessage_serialize(long cCtx);
+
+    /*
+    * Deserializes instance.
+    */
+    public native RatchetGroupMessage ratchetGroupMessage_deserialize(byte[] input) throws RatchetException;
+
+    public native long ratchetGroupSession_new();
+
+    public native void ratchetGroupSession_close(long cCtx);
+
+    /*
+    * Random used to generate keys
+    */
+    public native void ratchetGroupSession_setRng(long cCtx, Random rng) throws RatchetException;
+
+    /*
+    * Shows whether session was initialized.
+    */
+    public native boolean ratchetGroupSession_isInitialized(long cCtx);
+
+    /*
+    * Shows whether identity private key was set.
+    */
+    public native boolean ratchetGroupSession_isPrivateKeySet(long cCtx);
+
+    /*
+    * Setups default dependencies:
+    * - RNG: CTR DRBG
+    */
+    public native void ratchetGroupSession_setupDefaults(long cCtx) throws RatchetException;
+
+    /*
+    * Sets identity private key.
+    */
+    public native void ratchetGroupSession_setPrivateKey(long cCtx, byte[] myPrivateKey) throws RatchetException;
+
+    /*
+    * Sets up session. Identity private key should be set separately.
+    */
+    public native void ratchetGroupSession_setupSession(long cCtx, byte[] myId, RatchetGroupMessage message) throws RatchetException;
+
+    /*
+    * Encrypts data
+    */
+    public native RatchetGroupMessage ratchetGroupSession_encrypt(long cCtx, byte[] plainText) throws RatchetException;
+
+    /*
+    * Calculates size of buffer sufficient to store decrypted message
+    */
+    public native int ratchetGroupSession_decryptLen(long cCtx, RatchetGroupMessage message);
+
+    /*
+    * Decrypts message
+    */
+    public native byte[] ratchetGroupSession_decrypt(long cCtx, RatchetGroupMessage message) throws RatchetException;
+
+    /*
+    * Calculates size of buffer sufficient to store session
+    */
+    public native int ratchetGroupSession_serializeLen(long cCtx);
+
+    /*
+    * Serializes session to buffer
+    */
+    public native byte[] ratchetGroupSession_serialize(long cCtx);
+
+    /*
+    * Deserializes session from buffer.
+    * NOTE: Deserialized session needs dependencies to be set. Check setup defaults
+    */
+    public native RatchetGroupSession ratchetGroupSession_deserialize(byte[] input) throws RatchetException;
+
+    public native long ratchetGroupTicket_new();
+
+    public native void ratchetGroupTicket_close(long cCtx);
+
+    /*
+    * Random used to generate keys
+    */
+    public native void ratchetGroupTicket_setRng(long cCtx, Random rng);
+
+    /*
+    * Setups default dependencies:
+    * - RNG: CTR DRBG
+    */
+    public native void ratchetGroupTicket_setupDefaults(long cCtx) throws RatchetException;
+
+    /*
+    * Adds participant to chat.
+    */
+    public native void ratchetGroupTicket_addParticipant(long cCtx, byte[] participantId, byte[] publicKey) throws RatchetException;
+
+    /*
+    * Generates message that should be sent to all participants using secure channel.
+    */
+    public native RatchetGroupMessage ratchetGroupTicket_generateTicket(long cCtx);
 }
 
