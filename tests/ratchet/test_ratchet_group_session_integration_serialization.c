@@ -37,7 +37,6 @@
 #include <virgil/crypto/ratchet/vscr_memory.h>
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/ratchet/private/vscr_ratchet_group_message_defs.h>
-#include <virgil/crypto/ratchet/vscr_ratchet_key_utils.h>
 #include <virgil/crypto/foundation/vscf_raw_key.h>
 #include <vscf_pkcs8_der_deserializer_internal.h>
 #include "unity.h"

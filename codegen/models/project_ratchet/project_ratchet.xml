@@ -61,6 +61,7 @@
     <class name="ratchet common"/>
     <class name="ratchet common hidden"/>
     <class name="ratchet key utils"/>
+    <class name="ratchet key id"/>
     <class name="error"/>
     <class name="ratchet x3dh"/>
     <class name="ratchet skipped messages"/>

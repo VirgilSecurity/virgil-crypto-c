@@ -49,6 +49,7 @@ option(VSCR_LIBRARY "Enable build of the 'ratchet' library" ON)
 option(VSCR_RATCHET_COMMON "Enable class 'ratchet common'." ON)
 option(VSCR_RATCHET_COMMON_HIDDEN "Enable class 'ratchet common hidden'." ON)
 option(VSCR_RATCHET_KEY_UTILS "Enable class 'ratchet key utils'." ON)
+option(VSCR_RATCHET_KEY_ID "Enable class 'ratchet key id'." ON)
 option(VSCR_ERROR "Enable class 'error'." ON)
 option(VSCR_RATCHET_X3DH "Enable class 'ratchet x3dh'." ON)
 option(VSCR_RATCHET_SKIPPED_MESSAGES "Enable class 'ratchet skipped messages'." ON)
@@ -77,6 +78,7 @@ mark_as_advanced(
         VSCR_RATCHET_COMMON
         VSCR_RATCHET_COMMON_HIDDEN
         VSCR_RATCHET_KEY_UTILS
+        VSCR_RATCHET_KEY_ID
         VSCR_ERROR
         VSCR_RATCHET_X3DH
         VSCR_RATCHET_SKIPPED_MESSAGES
@@ -138,10 +140,28 @@ if(VSCR_RATCHET_KEY_UTILS AND NOT VSCF_PKCS8_DER_DESERIALIZER)
     message(FATAL_ERROR)
 endif()
 
-if(VSCR_RATCHET_KEY_UTILS AND NOT VSCF_SHA512)
+if(VSCR_RATCHET_KEY_ID AND NOT VSCR_RATCHET_COMMON)
     message("-- error --")
     message("--")
-    message("Feature VSCR_RATCHET_KEY_UTILS depends on the feature:")
+    message("Feature VSCR_RATCHET_KEY_ID depends on the feature:")
+    message("     VSCR_RATCHET_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_KEY_ID AND NOT VSCR_RATCHET_COMMON_HIDDEN)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_KEY_ID depends on the feature:")
+    message("     VSCR_RATCHET_COMMON_HIDDEN - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_KEY_ID AND NOT VSCF_SHA512)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_KEY_ID depends on the feature:")
     message("     VSCF_SHA512 - which is disabled.")
     message("--")
     message(FATAL_ERROR)

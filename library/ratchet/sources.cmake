@@ -100,7 +100,7 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_key_utils.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_key_id.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -151,7 +151,8 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_RATCHET_GROUP_PARTICIPANT_DATA}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_group_participant_data.h>"
             "$<$<BOOL:${VSCR_RATCHET_GROUP_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_group_session.h>"
             "$<$<BOOL:${VSCR_RATCHET_GROUP_TICKET}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_group_ticket.h>"
-            "$<$<BOOL:${VSCR_RATCHET_KEY_UTILS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_key_utils.h>"
+            "$<$<BOOL:${VSCR_RATCHET_KEY_ID}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_key_id.h>"
+            "$<$<BOOL:${VSCR_RATCHET_KEY_UTILS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_key_utils.h>"
             "$<$<BOOL:${VSCR_RATCHET_KEYS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_keys.h>"
             "$<$<BOOL:${VSCR_RATCHET_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_message.h>"
             "$<$<BOOL:${VSCR_RATCHET_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/private/vscr_ratchet_message_defs.h>"
@@ -188,6 +189,7 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_RATCHET_GROUP_PARTICIPANT_DATA}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_group_participant_data.c>"
             "$<$<BOOL:${VSCR_RATCHET_GROUP_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_group_session.c>"
             "$<$<BOOL:${VSCR_RATCHET_GROUP_TICKET}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_group_ticket.c>"
+            "$<$<BOOL:${VSCR_RATCHET_KEY_ID}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_key_id.c>"
             "$<$<BOOL:${VSCR_RATCHET_KEY_UTILS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_key_utils.c>"
             "$<$<BOOL:${VSCR_RATCHET_KEYS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_keys.c>"
             "$<$<BOOL:${VSCR_RATCHET_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_message.c>"

@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Utils class for working with keys formats
+//  Utils class for working with keys formats.
 // --------------------------------------------------------------------------
 
 
@@ -56,7 +56,6 @@
 #include "vscr_ratchet_common_hidden.h"
 
 #include <virgil/crypto/foundation/vscf_pkcs8_der_deserializer.h>
-#include <virgil/crypto/foundation/vscf_sha512.h>
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
@@ -250,48 +249,6 @@ vscr_ratchet_key_utils_cleanup_ctx(vscr_ratchet_key_utils_t *self) {
     vscf_pkcs8_der_deserializer_destroy(&self->pkcs8);
 }
 
-//
-//  Computes 8 bytes key pair id from public key
-//
-VSCR_PUBLIC vscr_status_t
-vscr_ratchet_key_utils_compute_public_key_id(
-        vscr_ratchet_key_utils_t *self, vsc_data_t public_key, bool convert_to_curve25519, vsc_buffer_t *key_id) {
-
-    if (public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH) {
-        byte digest[vscf_sha512_DIGEST_LEN];
-
-        vsc_buffer_t digest_buf;
-        vsc_buffer_init(&digest_buf);
-        vsc_buffer_use(&digest_buf, digest, sizeof(digest));
-
-        vscf_sha512_hash(public_key, &digest_buf);
-
-        vsc_buffer_delete(&digest_buf);
-
-        memcpy(vsc_buffer_unused_bytes(key_id), digest, vscr_ratchet_common_KEY_ID_LEN);
-        vsc_buffer_inc_used(key_id, vscr_ratchet_common_KEY_ID_LEN);
-
-        return vscr_status_SUCCESS;
-    }
-
-    vscr_error_t error_ctx;
-    vscr_error_reset(&error_ctx);
-
-    vsc_buffer_t *raw_public_key = vscr_ratchet_key_utils_extract_ratchet_public_key(
-            self, public_key, true, true, convert_to_curve25519, &error_ctx);
-
-    if (vscr_error_has_error(&error_ctx)) {
-        return vscr_error_status(&error_ctx);
-    }
-
-    vscr_status_t result =
-            vscr_ratchet_key_utils_compute_public_key_id(self, vsc_buffer_data(raw_public_key), false, key_id);
-
-    vsc_buffer_destroy(&raw_public_key);
-
-    return result;
-}
-
 VSCR_PUBLIC vsc_buffer_t *
 vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519,
         bool curve25519, bool convert_to_curve25519, vscr_error_t *error) {
@@ -360,6 +317,9 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *sel
 
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
+
+    VSCR_ASSERT(ed25519 || curve25519);
+    VSCR_ASSERT(ed25519 || !(curve25519 && convert_to_curve25519));
 
     vsc_buffer_t *result = NULL;
 

@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCRatchet
-import VirgilCryptoFoundation
 
 /// Class represents ratchet group message
 @objc(VSCRRatchetGroupMessage) public class RatchetGroupMessage: NSObject {

@@ -38,7 +38,6 @@
 #include <virgil/crypto/ratchet/vscr_memory.h>
 #include <virgil/crypto/foundation/vscf_curve25519_private_key.h>
 #include <virgil/crypto/foundation/vscf_curve25519_public_key.h>
-#include <virgil/crypto/ratchet/vscr_ratchet_key_utils.h>
 
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
