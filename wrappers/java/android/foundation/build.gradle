@@ -89,7 +89,7 @@ publishing {
     publications {
         mavenAar(MavenPublication) {
 
-            artifactId = 'foundation'
+            artifactId = 'foundation-android'
             from components.android
             artifact sourcesJar
             artifact javadocJar

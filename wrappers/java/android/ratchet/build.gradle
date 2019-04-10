@@ -90,7 +90,7 @@ publishing {
     publications {
         mavenAar(MavenPublication) {
 
-            artifactId = 'ratchet'
+            artifactId = 'ratchet-android'
             from components.android
             artifact sourcesJar
             artifact javadocJar

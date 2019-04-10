@@ -90,7 +90,7 @@ publishing {
     publications {
         mavenAar(MavenPublication) {
 
-            artifactId = 'phe'
+            artifactId = 'phe-android'
             from components.android
             artifact sourcesJar
             artifact javadocJar

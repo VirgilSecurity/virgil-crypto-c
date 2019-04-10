@@ -51,7 +51,7 @@ publishing {
     publications {
         mavenAar(MavenPublication) {
 
-            artifactId = 'common'
+            artifactId = 'common-android'
             from components.android
             artifact sourcesJar
             artifact javadocJar

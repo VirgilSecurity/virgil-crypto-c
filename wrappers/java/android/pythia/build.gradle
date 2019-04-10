@@ -89,7 +89,7 @@ publishing {
     publications {
         mavenAar(MavenPublication) {
 
-            artifactId = 'pythia'
+            artifactId = 'pythia-android'
             from components.android
             artifact sourcesJar
             artifact javadocJar
