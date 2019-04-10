@@ -2585,7 +2585,7 @@ JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_messageInfoCu
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
-        return NULL;
+        return 0;
     }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jkey, (jbyte*) key_arr, 0);
@@ -6239,7 +6239,7 @@ JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerSeria
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
-        return NULL;
+        return 0;
     }
     return ret;
 }
@@ -6265,7 +6265,7 @@ JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerSeria
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
-        return NULL;
+        return 0;
     }
     return ret;
 }
