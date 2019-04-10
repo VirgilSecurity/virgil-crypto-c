@@ -883,11 +883,15 @@ function java_create_c_class_method_call (class, method, java_class, java_method
 
     # Wrap errors
     if count (my.java_method.java_return) > 0
-        my.throw_return = "return NULL"
+        if is_true (my.java_method->java_return.is_primitive_type)
+            my.throw_return = "return 0"
+        else
+            my.throw_return = "return NULL"
+        endif
     else
         my.throw_return = "return"
     endif
-    
+
     my.exception = java_derive_default_exception_name (my.java_project)
     my.error_method_reset = make_ref_c (make_id ("class error method reset"))
     my.success_constant = \
