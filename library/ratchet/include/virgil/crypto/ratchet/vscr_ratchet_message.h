@@ -136,7 +136,7 @@ vscr_ratchet_message_shallow_copy(vscr_ratchet_message_t *self);
 //  Returns message type.
 //
 VSCR_PUBLIC vscr_msg_type_t
-vscr_ratchet_message_get_type(vscr_ratchet_message_t *self);
+vscr_ratchet_message_get_type(const vscr_ratchet_message_t *self);
 
 //
 //  Returns long-term public key, if message is prekey message.

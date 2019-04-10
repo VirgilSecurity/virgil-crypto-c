@@ -1,0 +1,12 @@
+<enum name="group msg type" definition="public">
+    Represents group message type
+
+    <constant name="group info" value="0">
+        Group info used to create group chat, or change group chat.
+        Should be distributed only using secure channels.
+    </constant>
+
+    <constant name="regular" value="1">
+        Regular group ratchet message with cipher text.
+    </constant>
+</enum>

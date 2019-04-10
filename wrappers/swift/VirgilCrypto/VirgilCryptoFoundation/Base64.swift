@@ -56,12 +56,12 @@ import VSCFoundation
             vsc_buffer_delete(strBuf)
         }
 
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
-            str.withUnsafeMutableBytes({ (strPointer: UnsafeMutablePointer<byte>) -> Void in
+        data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
+            str.withUnsafeMutableBytes({ (strPointer: UnsafeMutableRawBufferPointer) -> Void in
                 vsc_buffer_init(strBuf)
-                vsc_buffer_use(strBuf, strPointer, strCount)
+                vsc_buffer_use(strBuf, strPointer.bindMemory(to: byte.self).baseAddress, strCount)
 
-                vscf_base64_encode(vsc_data(dataPointer, data.count), strBuf)
+                vscf_base64_encode(vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), strBuf)
             })
         })
         str.count = vsc_buffer_len(strBuf)
@@ -85,12 +85,12 @@ import VSCFoundation
             vsc_buffer_delete(dataBuf)
         }
 
-        let proxyResult = str.withUnsafeBytes({ (strPointer: UnsafePointer<byte>) -> vscf_status_t in
-            data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = str.withUnsafeBytes({ (strPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_init(dataBuf)
-                vsc_buffer_use(dataBuf, dataPointer, dataCount)
+                vsc_buffer_use(dataBuf, dataPointer.bindMemory(to: byte.self).baseAddress, dataCount)
 
-                return vscf_base64_decode(vsc_data(strPointer, str.count), dataBuf)
+                return vscf_base64_decode(vsc_data(strPointer.bindMemory(to: byte.self).baseAddress, str.count), dataBuf)
             })
         })
         data.count = vsc_buffer_len(dataBuf)

@@ -1,6 +1,20 @@
 # virgil-crypto-c ChangeLog (Sorted per date)
 
 
+## Version 0.6.0 released 2019-04-09
+
+### Features
+
+- All: Add constant-time memory, data and buffer comparison
+- Foundation: Add ability to export keys to the PKCS#8 format with a class "Key Provider"
+- Foundation: Add umbrella headers
+- Ratchet: Add group chats
+
+### Changes
+
+- Foundation: Remove ability to specify RSA public exponent for key generation
+
+
 ## Version 0.5.0 released 2019-03-20
 
 ### Features

@@ -72,9 +72,9 @@ import VSCFoundation
 
     /// Set a new seed as an entropy source.
     @objc public func resetSeed(seed: Data) {
-        seed.withUnsafeBytes({ (seedPointer: UnsafePointer<byte>) -> Void in
+        seed.withUnsafeBytes({ (seedPointer: UnsafeRawBufferPointer) -> Void in
 
-            vscf_seed_entropy_source_reset_seed(self.c_ctx, vsc_data(seedPointer, seed.count))
+            vscf_seed_entropy_source_reset_seed(self.c_ctx, vsc_data(seedPointer.bindMemory(to: byte.self).baseAddress, seed.count))
         })
     }
 
@@ -94,9 +94,9 @@ import VSCFoundation
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
             vsc_buffer_init(outBuf)
-            vsc_buffer_use(outBuf, outPointer, outCount)
+            vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             return vscf_seed_entropy_source_gather(self.c_ctx, len, outBuf)
         })

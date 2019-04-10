@@ -76,9 +76,9 @@ import VSCFoundation
 
     /// Set a new key material.
     @objc public func resetKeyMaterial(keyMaterial: Data) {
-        keyMaterial.withUnsafeBytes({ (keyMaterialPointer: UnsafePointer<byte>) -> Void in
+        keyMaterial.withUnsafeBytes({ (keyMaterialPointer: UnsafeRawBufferPointer) -> Void in
 
-            vscf_key_material_rng_reset_key_material(self.c_ctx, vsc_data(keyMaterialPointer, keyMaterial.count))
+            vscf_key_material_rng_reset_key_material(self.c_ctx, vsc_data(keyMaterialPointer.bindMemory(to: byte.self).baseAddress, keyMaterial.count))
         })
     }
 
@@ -91,9 +91,9 @@ import VSCFoundation
             vsc_buffer_delete(dataBuf)
         }
 
-        let proxyResult = data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
             vsc_buffer_init(dataBuf)
-            vsc_buffer_use(dataBuf, dataPointer, dataCount)
+            vsc_buffer_use(dataBuf, dataPointer.bindMemory(to: byte.self).baseAddress, dataCount)
 
             return vscf_key_material_rng_random(self.c_ctx, dataLen, dataBuf)
         })

@@ -407,11 +407,17 @@ function cmake_generate_modulemap (source, project)
 
     output my.modulemap_file
 
-    my.public_umbrella_header = my.source->c_module (id = cat (my.project.name, "public"))
-
     cmake_insert ("\
         framework module $(my.project.framework:) {
-            header \"$(my.public_umbrella_header.c_include_file:)\"
+    ")
+
+    for my.source.c_module where c_module.scope = "public"
+        cmake_insert ("\
+            header \"$(c_module.c_include_file:)\"
+        ", 1)
+    endfor
+
+    cmake_insert ("\
             export *
         }
     ")

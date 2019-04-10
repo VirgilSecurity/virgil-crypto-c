@@ -48,8 +48,6 @@
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 
-#include <ed25519/ed25519.h>
-
 // clang-format on
 //  @end
 

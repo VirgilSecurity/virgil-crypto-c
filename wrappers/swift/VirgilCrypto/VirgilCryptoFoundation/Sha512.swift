@@ -103,12 +103,12 @@ import VSCFoundation
             vsc_buffer_delete(digestBuf)
         }
 
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
-            digest.withUnsafeMutableBytes({ (digestPointer: UnsafeMutablePointer<byte>) -> Void in
+        data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
+            digest.withUnsafeMutableBytes({ (digestPointer: UnsafeMutableRawBufferPointer) -> Void in
                 vsc_buffer_init(digestBuf)
-                vsc_buffer_use(digestBuf, digestPointer, digestCount)
+                vsc_buffer_use(digestBuf, digestPointer.bindMemory(to: byte.self).baseAddress, digestCount)
 
-                vscf_sha512_hash(vsc_data(dataPointer, data.count), digestBuf)
+                vscf_sha512_hash(vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), digestBuf)
             })
         })
         digest.count = vsc_buffer_len(digestBuf)
@@ -123,9 +123,9 @@ import VSCFoundation
 
     /// Add given data to the hash.
     @objc public func update(data: Data) {
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
+        data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
 
-            vscf_sha512_update(self.c_ctx, vsc_data(dataPointer, data.count))
+            vscf_sha512_update(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count))
         })
     }
 
@@ -138,9 +138,9 @@ import VSCFoundation
             vsc_buffer_delete(digestBuf)
         }
 
-        digest.withUnsafeMutableBytes({ (digestPointer: UnsafeMutablePointer<byte>) -> Void in
+        digest.withUnsafeMutableBytes({ (digestPointer: UnsafeMutableRawBufferPointer) -> Void in
             vsc_buffer_init(digestBuf)
-            vsc_buffer_use(digestBuf, digestPointer, digestCount)
+            vsc_buffer_use(digestBuf, digestPointer.bindMemory(to: byte.self).baseAddress, digestCount)
 
             vscf_sha512_finish(self.c_ctx, digestBuf)
         })

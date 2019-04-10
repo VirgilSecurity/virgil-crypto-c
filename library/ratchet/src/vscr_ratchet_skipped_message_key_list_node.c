@@ -199,7 +199,7 @@ vscr_ratchet_skipped_message_key_list_node_shallow_copy(vscr_ratchet_skipped_mes
 static void
 vscr_ratchet_skipped_message_key_list_node_init_ctx(vscr_ratchet_skipped_message_key_list_node_t *self) {
 
-    VSCR_UNUSED(self);
+    VSCR_ASSERT_PTR(self);
 }
 
 //
