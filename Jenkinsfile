@@ -276,7 +276,7 @@ def build_LangJava_Windows(slave) {
                     cmake --build build --target install
 
                     cd wrappers/java
-                    mvnw.cmd clean test
+                    mvnw.cmd clean test -P foundation,phe,ratchet
                 '''
             }
             stash includes: 'wrappers/java/binaries/**', name: 'java_windows'
