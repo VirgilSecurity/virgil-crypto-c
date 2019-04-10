@@ -400,8 +400,9 @@ node('master') {
 // --------------------------------------------------------------------------
 //  Deploy Java libraries
 // --------------------------------------------------------------------------
+stage 'Deploy Java libraries'
+
 node('master') {
-    stage('Deploy Java libraries') {
         unstash "java_linux"
         unstash "java_macos"
         unstash "java_windows"
@@ -413,5 +414,4 @@ node('master') {
             cd wrappers/java
             mvn clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${gpg_keyname}
         """
-    }
 }
