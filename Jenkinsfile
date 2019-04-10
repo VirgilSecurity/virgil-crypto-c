@@ -406,15 +406,12 @@ node('master') {
         unstash "java_macos"
         unstash "java_windows"
 
-        sh 'ls -R wrappers/java/binaries'
-
-        // sh """
-        //     pwd
-        //     source /var/lib/jenkins/.bashrc
-        //     env
-        //     cp -r ${artifactsDir}/java/binaries wrappers/java/
-        //     cd wrappers/java
-        //     mvn clean deploy -Dgpg.keyname=${gpg_keyname}
-        // """
+        sh """
+            pwd
+            source /var/lib/jenkins/.bashrc
+            env
+            cd wrappers/java
+            ./mvnw clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${gpg_keyname}
+        """
     }
 }
