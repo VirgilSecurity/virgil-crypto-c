@@ -111,6 +111,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1setupDefaults (J
     vsce_status_t status = vsce_phe_server_setup_defaults(phe_server_ctx /*a1*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -126,6 +127,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1generateServe
     vsce_status_t status = vsce_phe_server_generate_server_key_pair(phe_server_ctx /*a1*/, server_private_key /*a3*/, server_public_key /*a3*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
+        return NULL;
     }
     jclass cls = (*jenv)->FindClass(jenv, "virgil/crypto/phe/PheServerGenerateServerKeyPairResult");
     if (NULL == cls) {
@@ -173,6 +175,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1getEnrollm
     vsce_status_t status = vsce_phe_server_get_enrollment(phe_server_ctx /*a1*/, server_private_key /*a3*/, server_public_key /*a3*/, enrollment_response /*a3*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(enrollment_response));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(enrollment_response), (jbyte*) vsc_buffer_bytes(enrollment_response));
@@ -213,6 +216,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1verifyPass
     vsce_status_t status = vsce_phe_server_verify_password(phe_server_ctx /*a1*/, server_private_key /*a3*/, server_public_key /*a3*/, verify_password_request /*a3*/, verify_password_response /*a3*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(verify_password_response));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(verify_password_response), (jbyte*) vsc_buffer_bytes(verify_password_response));
@@ -253,6 +257,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_phe_PheJNI_pheServer_1rotateKeys (J
     vsce_status_t status = vsce_phe_server_rotate_keys(phe_server_ctx /*a1*/, server_private_key /*a3*/, new_server_private_key /*a3*/, new_server_public_key /*a3*/, update_token /*a3*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
+        return NULL;
     }
     jclass cls = (*jenv)->FindClass(jenv, "virgil/crypto/phe/PheServerRotateKeysResult");
     if (NULL == cls) {
@@ -329,6 +334,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1setupDefaults (J
     vsce_status_t status = vsce_phe_client_setup_defaults(phe_client_ctx /*a1*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -346,6 +352,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1setKeys (JNIEnv 
     vsce_status_t status = vsce_phe_client_set_keys(phe_client_ctx /*a1*/, client_private_key /*a3*/, server_public_key /*a3*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
+        return;
     }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jclientPrivateKey, (jbyte*) client_private_key_arr, 0);
@@ -363,6 +370,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1generateCl
     vsce_status_t status = vsce_phe_client_generate_client_private_key(phe_client_ctx /*a1*/, client_private_key /*a3*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(client_private_key));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(client_private_key), (jbyte*) vsc_buffer_bytes(client_private_key));
@@ -398,6 +406,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1enrollAccount
     vsce_status_t status = vsce_phe_client_enroll_account(phe_client_ctx /*a1*/, enrollment_response /*a3*/, password /*a3*/, enrollment_record /*a3*/, account_key /*a3*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
+        return NULL;
     }
     jclass cls = (*jenv)->FindClass(jenv, "virgil/crypto/phe/PheClientEnrollAccountResult");
     if (NULL == cls) {
@@ -449,6 +458,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1createVeri
     vsce_status_t status = vsce_phe_client_create_verify_password_request(phe_client_ctx /*a1*/, password /*a3*/, enrollment_record /*a3*/, verify_password_request /*a3*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(verify_password_request));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(verify_password_request), (jbyte*) vsc_buffer_bytes(verify_password_request));
@@ -481,6 +491,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1checkRespo
     vsce_status_t status = vsce_phe_client_check_response_and_decrypt(phe_client_ctx /*a1*/, password /*a3*/, enrollment_record /*a3*/, verify_password_response /*a3*/, account_key /*a3*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(account_key));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(account_key), (jbyte*) vsc_buffer_bytes(account_key));
@@ -511,6 +522,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1rotateKeys (J
     vsce_status_t status = vsce_phe_client_rotate_keys(phe_client_ctx /*a1*/, update_token /*a3*/, new_client_private_key /*a3*/, new_server_public_key /*a3*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
+        return NULL;
     }
     jclass cls = (*jenv)->FindClass(jenv, "virgil/crypto/phe/PheClientRotateKeysResult");
     if (NULL == cls) {
@@ -552,6 +564,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_phe_PheJNI_pheClient_1updateEnro
     vsce_status_t status = vsce_phe_client_update_enrollment_record(phe_client_ctx /*a1*/, enrollment_record /*a3*/, update_token /*a3*/, new_enrollment_record /*a3*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(new_enrollment_record));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(new_enrollment_record), (jbyte*) vsc_buffer_bytes(new_enrollment_record));
@@ -595,6 +608,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_phe_PheJNI_pheCipher_1setupDefaults (J
     vsce_status_t status = vsce_phe_cipher_setup_defaults(phe_cipher_ctx /*a1*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -630,6 +644,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_phe_PheJNI_pheCipher_1encrypt (J
     vsce_status_t status = vsce_phe_cipher_encrypt(phe_cipher_ctx /*a1*/, plain_text /*a3*/, account_key /*a3*/, cipher_text /*a3*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(cipher_text));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(cipher_text), (jbyte*) vsc_buffer_bytes(cipher_text));
@@ -659,6 +674,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_phe_PheJNI_pheCipher_1decrypt (J
     vsce_status_t status = vsce_phe_cipher_decrypt(phe_cipher_ctx /*a1*/, cipher_text /*a3*/, account_key /*a3*/, plain_text /*a3*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(plain_text));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(plain_text), (jbyte*) vsc_buffer_bytes(plain_text));

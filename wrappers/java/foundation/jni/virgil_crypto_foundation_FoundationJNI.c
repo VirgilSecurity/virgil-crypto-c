@@ -1457,7 +1457,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_oid_1fr
     // Wrap enums
     jclass alg_id_cls = (*jenv)->GetObjectClass(jenv, jalgId);
     jmethodID alg_id_methodID = (*jenv)->GetMethodID(jenv, alg_id_cls, "getCode", "()I");
-    vscf_alg_id_t /*8*/ alg_id = (vscf_alg_id_t /*8*/) (*jenv)->CallDoubleMethod(jenv, jalgId, alg_id_methodID);
+    vscf_alg_id_t /*8*/ alg_id = (vscf_alg_id_t /*8*/) (*jenv)->CallIntMethod(jenv, jalgId, alg_id_methodID);
 
     const vsc_data_t /*3*/ proxyResult = vscf_oid_from_alg_id(alg_id /*a7*/);
     jbyteArray ret = NULL;
@@ -1494,7 +1494,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_oid_1fr
     // Wrap enums
     jclass oid_id_cls = (*jenv)->GetObjectClass(jenv, joidId);
     jmethodID oid_id_methodID = (*jenv)->GetMethodID(jenv, oid_id_cls, "getCode", "()I");
-    vscf_oid_id_t /*8*/ oid_id = (vscf_oid_id_t /*8*/) (*jenv)->CallDoubleMethod(jenv, joidId, oid_id_methodID);
+    vscf_oid_id_t /*8*/ oid_id = (vscf_oid_id_t /*8*/) (*jenv)->CallIntMethod(jenv, joidId, oid_id_methodID);
 
     const vsc_data_t /*3*/ proxyResult = vscf_oid_from_id(oid_id /*a7*/);
     jbyteArray ret = NULL;
@@ -1582,6 +1582,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_base64_
     vscf_status_t status = vscf_base64_decode(str /*a3*/, data /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(data));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(data), (jbyte*) vsc_buffer_bytes(data));
@@ -1637,6 +1638,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_pem_1un
     vscf_status_t status = vscf_pem_unwrap(pem /*a3*/, data /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(data));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(data), (jbyte*) vsc_buffer_bytes(data));
@@ -2208,6 +2210,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_algFactory
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jobject ret = wrapPublicKey(jenv, jobj, proxyResult);
     return ret;
@@ -2231,6 +2234,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_algFactory
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jobject ret = wrapPrivateKey(jenv, jobj, proxyResult);
     return ret;
@@ -2336,6 +2340,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_recipientCiph
     vscf_status_t status = vscf_recipient_cipher_start_encryption(recipient_cipher_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -2376,6 +2381,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_recipie
     vscf_status_t status = vscf_recipient_cipher_process_encryption(recipient_cipher_ctx /*a1*/, data /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -2397,6 +2403,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_recipie
     vscf_status_t status = vscf_recipient_cipher_finish_encryption(recipient_cipher_ctx /*a1*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -2430,6 +2437,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_recipientCiph
     vscf_status_t status = vscf_recipient_cipher_start_decryption_with_key(recipient_cipher_ctx /*a1*/, recipient_id /*a3*/, private_key /*a6*/, message_info /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jrecipientId, (jbyte*) recipient_id_arr, 0);
@@ -2458,6 +2466,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_recipie
     vscf_status_t status = vscf_recipient_cipher_process_decryption(recipient_cipher_ctx /*a1*/, data /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -2479,6 +2488,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_recipie
     vscf_status_t status = vscf_recipient_cipher_finish_decryption(recipient_cipher_ctx /*a1*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -2575,6 +2585,7 @@ JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_messageInfoCu
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jkey, (jbyte*) key_arr, 0);
@@ -2597,6 +2608,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_message
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
@@ -2624,6 +2636,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_message
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
@@ -2681,6 +2694,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvider_1
     vscf_status_t status = vscf_key_provider_setup_defaults(key_provider_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -2701,12 +2715,13 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvide
     // Wrap enums
     jclass alg_id_cls = (*jenv)->GetObjectClass(jenv, jalgId);
     jmethodID alg_id_methodID = (*jenv)->GetMethodID(jenv, alg_id_cls, "getCode", "()I");
-    vscf_alg_id_t /*8*/ alg_id = (vscf_alg_id_t /*8*/) (*jenv)->CallDoubleMethod(jenv, jalgId, alg_id_methodID);
+    vscf_alg_id_t /*8*/ alg_id = (vscf_alg_id_t /*8*/) (*jenv)->CallIntMethod(jenv, jalgId, alg_id_methodID);
 
     const vscf_impl_t */*6*/ proxyResult = vscf_key_provider_generate_private_key(key_provider_ctx /*a1*/, alg_id /*a7*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jobject ret = wrapPrivateKey(jenv, jobj, proxyResult);
     return ret;
@@ -2727,6 +2742,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvide
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jobject ret = wrapPrivateKey(jenv, jobj, proxyResult);
     // Free resources
@@ -2750,6 +2766,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProvide
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jobject ret = wrapPublicKey(jenv, jobj, proxyResult);
     // Free resources
@@ -2796,6 +2813,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProv
     vscf_status_t status = vscf_key_provider_export_public_key(key_provider_ctx /*a1*/, public_key /*a6*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -2843,6 +2861,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyProv
     vscf_status_t status = vscf_key_provider_export_private_key(key_provider_ctx /*a1*/, private_key /*a6*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -2933,6 +2952,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_signer_
     vscf_status_t status = vscf_signer_sign(signer_ctx /*a1*/, private_key /*a6*/, signature /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(signature));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(signature), (jbyte*) vsc_buffer_bytes(signature));
@@ -2961,6 +2981,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_verifier_1res
     vscf_status_t status = vscf_verifier_reset(verifier_ctx /*a1*/, signature /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jsignature, (jbyte*) signature_arr, 0);
@@ -3049,6 +3070,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_sha224_1resto
     vscf_status_t status = vscf_sha224_restore_alg_info(sha224_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -3158,6 +3180,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_sha256_1resto
     vscf_status_t status = vscf_sha256_restore_alg_info(sha256_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -3267,6 +3290,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_sha384_1resto
     vscf_status_t status = vscf_sha384_restore_alg_info(sha384_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -3376,6 +3400,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_sha512_1resto
     vscf_status_t status = vscf_sha512_restore_alg_info(sha512_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -3485,6 +3510,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_aes256Gcm_1re
     vscf_status_t status = vscf_aes256_gcm_restore_alg_info(aes256_gcm_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -3501,6 +3527,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_aes256G
     vscf_status_t status = vscf_aes256_gcm_encrypt(aes256_gcm_ctx /*a1*/, data /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -3533,6 +3560,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_aes256G
     vscf_status_t status = vscf_aes256_gcm_decrypt(aes256_gcm_ctx /*a1*/, data /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -3647,6 +3675,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_aes256G
     vscf_status_t status = vscf_aes256_gcm_finish(aes256_gcm_ctx /*a1*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -3674,6 +3703,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_aes256Gcm_
     vscf_status_t status = vscf_aes256_gcm_auth_encrypt(aes256_gcm_ctx /*a1*/, data /*a3*/, auth_data /*a3*/, out /*a3*/, tag /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jclass cls = (*jenv)->FindClass(jenv, "virgil/crypto/foundation/AuthEncryptAuthEncryptResult");
     if (NULL == cls) {
@@ -3728,6 +3758,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_aes256G
     vscf_status_t status = vscf_aes256_gcm_auth_decrypt(aes256_gcm_ctx /*a1*/, data /*a3*/, auth_data /*a3*/, tag /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -3803,6 +3834,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_aes256Cbc_1re
     vscf_status_t status = vscf_aes256_cbc_restore_alg_info(aes256_cbc_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -3819,6 +3851,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_aes256C
     vscf_status_t status = vscf_aes256_cbc_encrypt(aes256_cbc_ctx /*a1*/, data /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -3851,6 +3884,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_aes256C
     vscf_status_t status = vscf_aes256_cbc_decrypt(aes256_cbc_ctx /*a1*/, data /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -3965,6 +3999,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_aes256C
     vscf_status_t status = vscf_aes256_cbc_finish(aes256_cbc_ctx /*a1*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -4018,6 +4053,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1rd_1statu
     vscf_status_t status = vscf_asn1rd_status(asn1rd_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -4320,6 +4356,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_asn1wr_1statu
     vscf_status_t status = vscf_asn1wr_status(asn1wr_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -4609,6 +4646,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPublicKey_
     vscf_status_t status = vscf_rsa_public_key_setup_defaults(rsa_public_key_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -4664,6 +4702,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPublicKey_
     vscf_status_t status = vscf_rsa_public_key_restore_alg_info(rsa_public_key_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -4696,6 +4735,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPubl
     vscf_status_t status = vscf_rsa_public_key_encrypt(rsa_public_key_ctx /*a1*/, data /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -4722,7 +4762,7 @@ JNIEXPORT jboolean JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPublic
     // Wrap enums
     jclass hash_id_cls = (*jenv)->GetObjectClass(jenv, jhashId);
     jmethodID hash_id_methodID = (*jenv)->GetMethodID(jenv, hash_id_cls, "getCode", "()I");
-    vscf_alg_id_t /*8*/ hash_id = (vscf_alg_id_t /*8*/) (*jenv)->CallDoubleMethod(jenv, jhashId, hash_id_methodID);
+    vscf_alg_id_t /*8*/ hash_id = (vscf_alg_id_t /*8*/) (*jenv)->CallIntMethod(jenv, jhashId, hash_id_methodID);
 
     // Wrap input data
     byte* hash_digest_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jhashDigest, NULL);
@@ -4750,6 +4790,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPubl
     vscf_status_t status = vscf_rsa_public_key_export_public_key(rsa_public_key_ctx /*a1*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -4778,6 +4819,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPublicKey_
     vscf_status_t status = vscf_rsa_public_key_import_public_key(rsa_public_key_ctx /*a1*/, data /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
@@ -4794,6 +4836,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPublicK
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jobject ret = wrapPrivateKey(jenv, jobj, proxyResult);
     return ret;
@@ -4851,6 +4894,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey
     vscf_status_t status = vscf_rsa_private_key_setup_defaults(rsa_private_key_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -4913,6 +4957,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey
     vscf_status_t status = vscf_rsa_private_key_restore_alg_info(rsa_private_key_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -4939,6 +4984,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey
     vscf_status_t status = vscf_rsa_private_key_generate_key(rsa_private_key_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -4955,6 +5001,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPriv
     vscf_status_t status = vscf_rsa_private_key_decrypt(rsa_private_key_ctx /*a1*/, data /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -4989,7 +5036,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPriv
     // Wrap enums
     jclass hash_id_cls = (*jenv)->GetObjectClass(jenv, jhashId);
     jmethodID hash_id_methodID = (*jenv)->GetMethodID(jenv, hash_id_cls, "getCode", "()I");
-    vscf_alg_id_t /*8*/ hash_id = (vscf_alg_id_t /*8*/) (*jenv)->CallDoubleMethod(jenv, jhashId, hash_id_methodID);
+    vscf_alg_id_t /*8*/ hash_id = (vscf_alg_id_t /*8*/) (*jenv)->CallIntMethod(jenv, jhashId, hash_id_methodID);
 
     // Wrap input data
     byte* hash_digest_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jhashDigest, NULL);
@@ -5000,6 +5047,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPriv
     vscf_status_t status = vscf_rsa_private_key_sign_hash(rsa_private_key_ctx /*a1*/, hash_digest /*a3*/, hash_id /*a7*/, signature /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(signature));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(signature), (jbyte*) vsc_buffer_bytes(signature));
@@ -5030,6 +5078,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPriv
     vscf_status_t status = vscf_rsa_private_key_export_private_key(rsa_private_key_ctx /*a1*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -5058,6 +5107,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_rsaPrivateKey
     vscf_status_t status = vscf_rsa_private_key_import_private_key(rsa_private_key_ctx /*a1*/, data /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
@@ -5113,6 +5163,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_entropy
     vscf_status_t status = vscf_entropy_accumulator_gather(entropy_accumulator_ctx /*a1*/, jlen /*a9*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -5147,6 +5198,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ctrDrbg_1setu
     vscf_status_t status = vscf_ctr_drbg_setup_defaults(ctr_drbg_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -5189,6 +5241,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_ctrDrbg
     vscf_status_t status = vscf_ctr_drbg_random(ctr_drbg_ctx /*a1*/, jdataLen /*a9*/, data /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(data));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(data), (jbyte*) vsc_buffer_bytes(data));
@@ -5205,6 +5258,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ctrDrbg_1rese
     vscf_status_t status = vscf_ctr_drbg_reseed(ctr_drbg_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -5275,6 +5329,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_hmac_1restore
     vscf_status_t status = vscf_hmac_restore_alg_info(hmac_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -5428,6 +5483,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_hkdf_1restore
     vscf_status_t status = vscf_hkdf_restore_alg_info(hkdf_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -5545,6 +5601,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_kdf1_1restore
     vscf_status_t status = vscf_kdf1_restore_alg_info(kdf1_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -5636,6 +5693,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_kdf2_1restore
     vscf_status_t status = vscf_kdf2_restore_alg_info(kdf2_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -5698,6 +5756,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_fakeRan
     vscf_status_t status = vscf_fake_random_random(fake_random_ctx /*a1*/, jdataLen /*a9*/, data /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(data));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(data), (jbyte*) vsc_buffer_bytes(data));
@@ -5714,6 +5773,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_fakeRandom_1r
     vscf_status_t status = vscf_fake_random_reseed(fake_random_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -5735,6 +5795,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_fakeRan
     vscf_status_t status = vscf_fake_random_gather(fake_random_ctx /*a1*/, jlen /*a9*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -5818,6 +5879,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1
     vscf_status_t status = vscf_pkcs5_pbkdf2_restore_alg_info(pkcs5_pbkdf2_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -5963,6 +6025,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs5Pbes2_1r
     vscf_status_t status = vscf_pkcs5_pbes2_restore_alg_info(pkcs5_pbes2_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -5979,6 +6042,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs5Pb
     vscf_status_t status = vscf_pkcs5_pbes2_encrypt(pkcs5_pbes2_ctx /*a1*/, data /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -6011,6 +6075,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs5Pb
     vscf_status_t status = vscf_pkcs5_pbes2_decrypt(pkcs5_pbes2_ctx /*a1*/, data /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -6069,6 +6134,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_seedEnt
     vscf_status_t status = vscf_seed_entropy_source_gather(seed_entropy_source_ctx /*a1*/, jlen /*a9*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -6109,6 +6175,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyMate
     vscf_status_t status = vscf_key_material_rng_random(key_material_rng_ctx /*a1*/, jdataLen /*a9*/, data /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(data));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(data), (jbyte*) vsc_buffer_bytes(data));
@@ -6125,6 +6192,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_keyMaterialRn
     vscf_status_t status = vscf_key_material_rng_reseed(key_material_rng_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -6171,6 +6239,7 @@ JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerSeria
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     return ret;
 }
@@ -6196,6 +6265,7 @@ JNIEXPORT jint JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerSeria
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     return ret;
 }
@@ -6246,6 +6316,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8De
     vscf_status_t status = vscf_pkcs8_der_serializer_serialize_public_key(pkcs8_der_serializer_ctx /*a1*/, public_key /*a6*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -6293,6 +6364,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8De
     vscf_status_t status = vscf_pkcs8_der_serializer_serialize_private_key(pkcs8_der_serializer_ctx /*a1*/, private_key /*a6*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -6335,6 +6407,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerDe
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jclass result_cls = (*jenv)->FindClass(jenv, "virgil/crypto/foundation/RawKey");
     if (NULL == result_cls) {
@@ -6359,6 +6432,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerDe
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jclass result_cls = (*jenv)->FindClass(jenv, "virgil/crypto/foundation/RawKey");
     if (NULL == result_cls) {
@@ -6395,6 +6469,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerDe
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jclass result_cls = (*jenv)->FindClass(jenv, "virgil/crypto/foundation/RawKey");
     if (NULL == result_cls) {
@@ -6426,6 +6501,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8DerDe
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jclass result_cls = (*jenv)->FindClass(jenv, "virgil/crypto/foundation/RawKey");
     if (NULL == result_cls) {
@@ -6525,6 +6601,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8Se
     vscf_status_t status = vscf_pkcs8_serializer_serialize_public_key(pkcs8_serializer_ctx /*a1*/, public_key /*a6*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -6572,6 +6649,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8Se
     vscf_status_t status = vscf_pkcs8_serializer_serialize_private_key(pkcs8_serializer_ctx /*a1*/, private_key /*a6*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -6641,6 +6719,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8Deser
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jclass result_cls = (*jenv)->FindClass(jenv, "virgil/crypto/foundation/RawKey");
     if (NULL == result_cls) {
@@ -6672,6 +6751,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_pkcs8Deser
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jclass result_cls = (*jenv)->FindClass(jenv, "virgil/crypto/foundation/RawKey");
     if (NULL == result_cls) {
@@ -6725,6 +6805,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519Public
     vscf_status_t status = vscf_ed25519_public_key_setup_defaults(ed25519_public_key_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -6780,6 +6861,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519Public
     vscf_status_t status = vscf_ed25519_public_key_restore_alg_info(ed25519_public_key_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -6812,6 +6894,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519
     vscf_status_t status = vscf_ed25519_public_key_encrypt(ed25519_public_key_ctx /*a1*/, data /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -6838,7 +6921,7 @@ JNIEXPORT jboolean JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519Pu
     // Wrap enums
     jclass hash_id_cls = (*jenv)->GetObjectClass(jenv, jhashId);
     jmethodID hash_id_methodID = (*jenv)->GetMethodID(jenv, hash_id_cls, "getCode", "()I");
-    vscf_alg_id_t /*8*/ hash_id = (vscf_alg_id_t /*8*/) (*jenv)->CallDoubleMethod(jenv, jhashId, hash_id_methodID);
+    vscf_alg_id_t /*8*/ hash_id = (vscf_alg_id_t /*8*/) (*jenv)->CallIntMethod(jenv, jhashId, hash_id_methodID);
 
     // Wrap input data
     byte* hash_digest_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jhashDigest, NULL);
@@ -6866,6 +6949,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519
     vscf_status_t status = vscf_ed25519_public_key_export_public_key(ed25519_public_key_ctx /*a1*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -6894,6 +6978,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519Public
     vscf_status_t status = vscf_ed25519_public_key_import_public_key(ed25519_public_key_ctx /*a1*/, data /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
@@ -6910,6 +6995,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519Pub
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jobject ret = wrapPrivateKey(jenv, jobj, proxyResult);
     return ret;
@@ -6952,6 +7038,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519Privat
     vscf_status_t status = vscf_ed25519_private_key_setup_defaults(ed25519_private_key_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -7007,6 +7094,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519Privat
     vscf_status_t status = vscf_ed25519_private_key_restore_alg_info(ed25519_private_key_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -7033,6 +7121,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519Privat
     vscf_status_t status = vscf_ed25519_private_key_generate_key(ed25519_private_key_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -7049,6 +7138,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519
     vscf_status_t status = vscf_ed25519_private_key_decrypt(ed25519_private_key_ctx /*a1*/, data /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -7083,7 +7173,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519
     // Wrap enums
     jclass hash_id_cls = (*jenv)->GetObjectClass(jenv, jhashId);
     jmethodID hash_id_methodID = (*jenv)->GetMethodID(jenv, hash_id_cls, "getCode", "()I");
-    vscf_alg_id_t /*8*/ hash_id = (vscf_alg_id_t /*8*/) (*jenv)->CallDoubleMethod(jenv, jhashId, hash_id_methodID);
+    vscf_alg_id_t /*8*/ hash_id = (vscf_alg_id_t /*8*/) (*jenv)->CallIntMethod(jenv, jhashId, hash_id_methodID);
 
     // Wrap input data
     byte* hash_digest_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jhashDigest, NULL);
@@ -7094,6 +7184,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519
     vscf_status_t status = vscf_ed25519_private_key_sign_hash(ed25519_private_key_ctx /*a1*/, hash_digest /*a3*/, hash_id /*a7*/, signature /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(signature));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(signature), (jbyte*) vsc_buffer_bytes(signature));
@@ -7124,6 +7215,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519
     vscf_status_t status = vscf_ed25519_private_key_export_private_key(ed25519_private_key_ctx /*a1*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -7152,6 +7244,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519Privat
     vscf_status_t status = vscf_ed25519_private_key_import_private_key(ed25519_private_key_ctx /*a1*/, data /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
@@ -7177,6 +7270,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_ed25519
     vscf_status_t status = vscf_ed25519_private_key_compute_shared_key(ed25519_private_key_ctx /*a1*/, public_key /*a6*/, shared_key /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(shared_key));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(shared_key), (jbyte*) vsc_buffer_bytes(shared_key));
@@ -7231,6 +7325,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519Pub
     vscf_status_t status = vscf_curve25519_public_key_setup_defaults(curve25519_public_key_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -7286,6 +7381,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519Pub
     vscf_status_t status = vscf_curve25519_public_key_restore_alg_info(curve25519_public_key_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -7318,6 +7414,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25
     vscf_status_t status = vscf_curve25519_public_key_encrypt(curve25519_public_key_ctx /*a1*/, data /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -7347,6 +7444,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25
     vscf_status_t status = vscf_curve25519_public_key_export_public_key(curve25519_public_key_ctx /*a1*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -7375,6 +7473,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519Pub
     vscf_status_t status = vscf_curve25519_public_key_import_public_key(curve25519_public_key_ctx /*a1*/, data /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
@@ -7391,6 +7490,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jobject ret = wrapPrivateKey(jenv, jobj, proxyResult);
     return ret;
@@ -7433,6 +7533,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519Pri
     vscf_status_t status = vscf_curve25519_private_key_setup_defaults(curve25519_private_key_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -7488,6 +7589,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519Pri
     vscf_status_t status = vscf_curve25519_private_key_restore_alg_info(curve25519_private_key_ctx /*a1*/, alg_info /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -7514,6 +7616,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519Pri
     vscf_status_t status = vscf_curve25519_private_key_generate_key(curve25519_private_key_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -7530,6 +7633,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25
     vscf_status_t status = vscf_curve25519_private_key_decrypt(curve25519_private_key_ctx /*a1*/, data /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -7568,6 +7672,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25
     vscf_status_t status = vscf_curve25519_private_key_export_private_key(curve25519_private_key_ctx /*a1*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -7596,6 +7701,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25519Pri
     vscf_status_t status = vscf_curve25519_private_key_import_private_key(curve25519_private_key_ctx /*a1*/, data /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
@@ -7621,6 +7727,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_curve25
     vscf_status_t status = vscf_curve25519_private_key_compute_shared_key(curve25519_private_key_ctx /*a1*/, public_key /*a6*/, shared_key /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(shared_key));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(shared_key), (jbyte*) vsc_buffer_bytes(shared_key));
@@ -7750,6 +7857,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_foundation_FoundationJNI_ecies_1setupD
     vscf_status_t status = vscf_ecies_setup_defaults(ecies_ctx /*a1*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -7774,6 +7882,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_ecies_1
     vscf_status_t status = vscf_ecies_encrypt(ecies_ctx /*a1*/, data /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -7806,6 +7915,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_foundation_FoundationJNI_ecies_1
     vscf_status_t status = vscf_ecies_decrypt(ecies_ctx /*a1*/, data /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
@@ -8150,6 +8260,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_algInfoDer
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
     return ret;
@@ -8178,6 +8289,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_algInfoDer
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
     // Free resources
@@ -8305,6 +8417,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_foundation_FoundationJNI_messageInf
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
+        return NULL;
     }
     jclass result_cls = (*jenv)->FindClass(jenv, "virgil/crypto/foundation/MessageInfo");
     if (NULL == result_cls) {

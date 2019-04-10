@@ -66,6 +66,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1configure (JN
     vscp_status_t status = vscp_pythia_configure();
     if (status != vscp_status_SUCCESS) {
         throwPythiaException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -130,6 +131,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1blind (JNI
     vscp_status_t status = vscp_pythia_blind(password /*a3*/, blinded_password /*a3*/, blinding_secret /*a3*/);
     if (status != vscp_status_SUCCESS) {
         throwPythiaException(jenv, jobj, status);
+        return NULL;
     }
     jclass cls = (*jenv)->FindClass(jenv, "virgil/crypto/pythia/PythiaBlindResult");
     if (NULL == cls) {
@@ -168,6 +170,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1deblind
     vscp_status_t status = vscp_pythia_deblind(transformed_password /*a3*/, blinding_secret /*a3*/, deblinded_password /*a3*/);
     if (status != vscp_status_SUCCESS) {
         throwPythiaException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(deblinded_password));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(deblinded_password), (jbyte*) vsc_buffer_bytes(deblinded_password));
@@ -199,6 +202,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1computeTra
     vscp_status_t status = vscp_pythia_compute_transformation_key_pair(transformation_key_id /*a3*/, pythia_secret /*a3*/, pythia_scope_secret /*a3*/, transformation_private_key /*a3*/, transformation_public_key /*a3*/);
     if (status != vscp_status_SUCCESS) {
         throwPythiaException(jenv, jobj, status);
+        return NULL;
     }
     jclass cls = (*jenv)->FindClass(jenv, "virgil/crypto/pythia/PythiaComputeTransformationKeyPairResult");
     if (NULL == cls) {
@@ -246,6 +250,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1transform 
     vscp_status_t status = vscp_pythia_transform(blinded_password /*a3*/, tweak /*a3*/, transformation_private_key /*a3*/, transformed_password /*a3*/, transformed_tweak /*a3*/);
     if (status != vscp_status_SUCCESS) {
         throwPythiaException(jenv, jobj, status);
+        return NULL;
     }
     jclass cls = (*jenv)->FindClass(jenv, "virgil/crypto/pythia/PythiaTransformResult");
     if (NULL == cls) {
@@ -299,6 +304,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1prove (JNI
     vscp_status_t status = vscp_pythia_prove(transformed_password /*a3*/, blinded_password /*a3*/, transformed_tweak /*a3*/, transformation_private_key /*a3*/, transformation_public_key /*a3*/, proof_value_c /*a3*/, proof_value_u /*a3*/);
     if (status != vscp_status_SUCCESS) {
         throwPythiaException(jenv, jobj, status);
+        return NULL;
     }
     jclass cls = (*jenv)->FindClass(jenv, "virgil/crypto/pythia/PythiaProveResult");
     if (NULL == cls) {
@@ -355,6 +361,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1verify (JNIEn
     vscp_status_t status = vscp_pythia_verify(transformed_password /*a3*/, blinded_password /*a3*/, tweak /*a3*/, transformation_public_key /*a3*/, proof_value_c /*a3*/, proof_value_u /*a3*/);
     if (status != vscp_status_SUCCESS) {
         throwPythiaException(jenv, jobj, status);
+        return;
     }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jtransformedPassword, (jbyte*) transformed_password_arr, 0);
@@ -383,6 +390,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1getPass
     vscp_status_t status = vscp_pythia_get_password_update_token(previous_transformation_private_key /*a3*/, new_transformation_private_key /*a3*/, password_update_token /*a3*/);
     if (status != vscp_status_SUCCESS) {
         throwPythiaException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(password_update_token));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(password_update_token), (jbyte*) vsc_buffer_bytes(password_update_token));
@@ -409,6 +417,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_pythia_PythiaJNI_pythia_1updateD
     vscp_status_t status = vscp_pythia_update_deblinded_with_token(deblinded_password /*a3*/, password_update_token /*a3*/, updated_deblinded_password /*a3*/);
     if (status != vscp_status_SUCCESS) {
         throwPythiaException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(updated_deblinded_password));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(updated_deblinded_password), (jbyte*) vsc_buffer_bytes(updated_deblinded_password));

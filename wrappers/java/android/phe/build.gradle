@@ -1,0 +1,144 @@
+plugins {
+    id 'com.android.library'
+    id 'digital.wup.android-maven-publish' version '3.6.2'
+    id 'signing'
+}
+
+android {
+    compileSdkVersion 28
+
+
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs 'src/main/java'
+            java.srcDirs 'src/generated/java'
+            jniLibs.srcDirs 'src/main/jniLibs'
+            jniLibs.srcDirs 'src/generated/jniLibs'
+            res.srcDirs "src/main/res"
+        }
+    }
+
+}
+
+dependencies {
+    implementation project(':common')
+    implementation project(':foundation')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+
+// Copy *.java files from generated Java folder
+task copySources(type: Copy) {
+    from ('../../phe/src/main/java/'){
+        include '**/*.java'
+    }
+    into 'src/generated/java'
+}
+
+// Copy *.so files from binaries/ folder to native-libs folder
+task copyNativeLibs(type: Copy) {
+    from ('../../binaries/android/lib/'){
+        include '**/*phe*.so'
+    }
+    into 'src/generated/jniLibs'
+    rename { filename ->
+        filename.replace '_java', ''
+    }
+}
+
+preBuild.dependsOn 'copySources'
+preBuild.dependsOn 'copyNativeLibs'
+
+// On "gradle clean" also reverse the copying of the native libraries
+clean.dependsOn 'cleanCopyNativeLibs'
+
+// Build a jar with source files
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    failOnError false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
+}
+// Build a jar with javadoc
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+publishing {
+    publications {
+        mavenAar(MavenPublication) {
+
+            artifactId = 'phe'
+            from components.android
+            artifact sourcesJar
+            artifact javadocJar
+            pom {
+                name = 'Implementation of the phe (password-hardened encryption) protocol'
+                description = 'Virgil Security introduces an implementation of the Password-Hardened Encryption (PHE) protocol that provides developers with a technology to protect users passwords from offline/online attacks and make stolen passwords useless even if your database has been compromised.'
+                url = 'https://www.virgilsecurity.com/'
+                licenses {
+                    license {
+                        name = 'Virgil Security, Inc. license'
+                        url = 'https://github.com/VirgilSecurity/virgil-crypto-c/blob/master/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'andrii-iakovenko'
+                        name = 'Andrii Iakovenko'
+                        email = 'iakovenko.andrii@gmail.com'
+                        organizationUrl = 'https://www.virgilsecurity.com/'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/virgilsecurity/virgil-passw0rd-kotlin.git'
+                    developerConnection = 'scm:git:git@github.com:VirgilSecurity/virgil-crypto-c.git'
+                    url = 'https://github.com/VirgilSecurity/virgil-crypto-c'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username "${authentication_username}"
+                password "${authentication_password}"
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenAar
+}

@@ -839,7 +839,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
         my.wrap_enum += format_left("\
             jclass $(my.enum_name:)_cls = (*jenv)->GetObjectClass(jenv, $(my.enum_jni_name:));
             jmethodID $(my.enum_name:)_methodID = (*jenv)->GetMethodID(jenv, $(my.enum_name:)_cls, \"getCode\", \"()I\");
-            $(my.enum_type:) $(my.enum_name:) = ($(my.enum_type:)) (*jenv)->CallDoubleMethod(jenv, $(my.enum_jni_name:), $(my.enum_name:)_methodID);
+            $(my.enum_type:) $(my.enum_name:) = ($(my.enum_type:)) (*jenv)->CallIntMethod(jenv, $(my.enum_jni_name:), $(my.enum_name:)_methodID);
         ") + terminator
     endfor
 
@@ -882,6 +882,12 @@ function java_create_c_class_method_call (class, method, java_class, java_method
     endfor
 
     # Wrap errors
+    if count (my.java_method.java_return) > 0
+        my.throw_return = "return NULL"
+    else
+        my.throw_return = "return"
+    endif
+    
     my.exception = java_derive_default_exception_name (my.java_project)
     my.error_method_reset = make_ref_c (make_id ("class error method reset"))
     my.success_constant = \
@@ -899,6 +905,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
         my.errors_handling += format_left("\
             if ($(argument.name:).status != $(my.success_constant:)) {
                 throw$(my.exception:)(jenv, jobj, $(argument.name:).status);
+                $(my.throw_return:);
             }
         ")
     endfor
@@ -934,6 +941,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
             $(my.error_type:) status = $(my.proxy_call:);
             if (status != $(my.success_constant:)) {
                 throw$(my.exception:)(jenv, jobj, status);
+                $(my.throw_return:);
             }
         ")
     else

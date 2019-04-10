@@ -87,6 +87,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetKeyUti
     vscr_status_t status = vscr_ratchet_key_utils_compute_public_key_id(ratchet_key_utils_ctx /*a1*/, public_key /*a3*/, key_id /*a3*/);
     if (status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(key_id));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(key_id), (jbyte*) vsc_buffer_bytes(key_id));
@@ -113,6 +114,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetKeyUti
 
     if (error.status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, error.status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(proxyResult));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(proxyResult), (jbyte*) vsc_buffer_bytes(proxyResult));
@@ -137,6 +139,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetKeyUti
 
     if (error.status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, error.status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(proxyResult));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(proxyResult), (jbyte*) vsc_buffer_bytes(proxyResult));
@@ -234,6 +237,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetMessage_1
 
     if (error.status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, error.status);
+        return NULL;
     }
     jclass result_cls = (*jenv)->FindClass(jenv, "virgil/crypto/ratchet/RatchetMessage");
     if (NULL == result_cls) {
@@ -280,6 +284,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSession_1set
     vscr_status_t status = vscr_ratchet_session_setup_defaults(ratchet_session_ctx /*a1*/);
     if (status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, status);
+        return;
     }
 }
 
@@ -303,6 +308,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSession_1ini
     vscr_status_t status = vscr_ratchet_session_initiate(ratchet_session_ctx /*a1*/, sender_identity_private_key /*a3*/, receiver_identity_public_key /*a3*/, receiver_long_term_public_key /*a3*/, receiver_one_time_public_key /*a3*/);
     if (status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, status);
+        return;
     }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jsenderIdentityPrivateKey, (jbyte*) sender_identity_private_key_arr, 0);
@@ -344,6 +350,7 @@ JNIEXPORT void JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSession_1res
     vscr_status_t status = vscr_ratchet_session_respond(ratchet_session_ctx /*a1*/, sender_identity_public_key /*a3*/, receiver_identity_private_key /*a3*/, receiver_long_term_private_key /*a3*/, receiver_one_time_private_key /*a3*/, message /*a6*/);
     if (status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, status);
+        return;
     }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jsenderIdentityPublicKey, (jbyte*) sender_identity_public_key_arr, 0);
@@ -394,6 +401,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSession_1
 
     if (error.status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, error.status);
+        return NULL;
     }
     jclass result_cls = (*jenv)->FindClass(jenv, "virgil/crypto/ratchet/RatchetMessage");
     if (NULL == result_cls) {
@@ -448,6 +456,7 @@ JNIEXPORT jbyteArray JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSessio
     vscr_status_t status = vscr_ratchet_session_decrypt(ratchet_session_ctx /*a1*/, message /*a6*/, plain_text /*a3*/);
     if (status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, status);
+        return NULL;
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(plain_text));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(plain_text), (jbyte*) vsc_buffer_bytes(plain_text));
@@ -493,6 +502,7 @@ JNIEXPORT jobject JNICALL Java_virgil_crypto_ratchet_RatchetJNI_ratchetSession_1
 
     if (error.status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, error.status);
+        return NULL;
     }
     jclass result_cls = (*jenv)->FindClass(jenv, "virgil/crypto/ratchet/RatchetSession");
     if (NULL == result_cls) {
