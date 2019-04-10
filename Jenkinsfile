@@ -411,7 +411,7 @@ node('master') {
             source /var/lib/jenkins/.bashrc
             env
             cd wrappers/java
-            ./mvnw clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${gpg_keyname}
+            mvn clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${gpg_keyname}
         """
     }
 }
