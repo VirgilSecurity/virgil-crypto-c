@@ -398,10 +398,10 @@ node('master') {
 }
 
 // --------------------------------------------------------------------------
-//  Build and deploy Java libraries
+//  Deploy Java libraries
 // --------------------------------------------------------------------------
 node('master') {
-    stage('Build and deploy Java libraries') {
+    stage('Deploy Java libraries') {
         unstash "java_linux"
         unstash "java_macos"
         unstash "java_windows"
