@@ -14,6 +14,10 @@
 		<jni.binaries.dir>${project.basedir}/../binaries</jni.binaries.dir>
 	</properties>
 
+	<modules>
+		<module>common</module>
+	</modules>
+
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
@@ -47,14 +51,6 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
-	<modules>
-		<module>common</module>
-		<module>foundation</module>
-		<module>phe</module>
-		<module>pythia</module>
-		<module>ratchet</module>
-	</modules>
 
 	<build>
 		<pluginManagement>
@@ -146,10 +142,40 @@
 			</build>
 		</profile>
 		<profile>
-			<id>default</id>
+			<id>all</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
+			<modules>
+				<module>foundation</module>
+				<module>phe</module>
+				<module>pythia</module>
+				<module>ratchet</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>foundation</id>
+			<modules>
+				<module>foundation</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>phe</id>
+			<modules>
+				<module>phe</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>pythia</id>
+			<modules>
+				<module>pythia</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>ratchet</id>
+			<modules>
+				<module>ratchet</module>
+			</modules>
 		</profile>
 	</profiles>
 </project>
