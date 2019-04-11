@@ -27,31 +27,31 @@ def nodes = [:]
 //
 //  Language: C
 //
-// nodes['lang-c-platform-linux'] = build_LangC_Unix('build-centos7')
-// nodes['lang-c-platform-macos'] = build_LangC_Unix('build-os-x')
-// nodes['lang-c-platform-windows'] = build_LangC_Windows('build-win8')
+nodes['lang-c-platform-linux'] = build_LangC_Unix('build-centos7')
+nodes['lang-c-platform-macos'] = build_LangC_Unix('build-os-x')
+nodes['lang-c-platform-windows'] = build_LangC_Windows('build-win8')
 
 //
 //  Language: PHP
 //
-// nodes['lang-php-platform-linux'] = build_LangPHP_Linux('build-centos7')
-// nodes['lang-php-platform-macos'] = build_LangPHP_MacOS('build-os-x')
-// nodes['lang-php-platform-windows'] = build_LangPHP_Windows('build-win8')
+nodes['lang-php-platform-linux'] = build_LangPHP_Linux('build-centos7')
+nodes['lang-php-platform-macos'] = build_LangPHP_MacOS('build-os-x')
+nodes['lang-php-platform-windows'] = build_LangPHP_Windows('build-win8')
 
 //
 //  Language: Java
 //
-// nodes['lang-java-platform-linux'] = build_LangJava_Linux('build-centos7')
-// nodes['lang-java-platform-macos'] = build_LangJava_MacOS('build-os-x')
-// nodes['lang-java-platform-windows'] = build_LangJava_Windows('build-win8')
-// nodes['lang-java-platform-android-x86'] = build_LangJava_Android_x86('build-os-x')
-// nodes['lang-java-platform-android-x86_64'] = build_LangJava_Android_x86_64('build-os-x')
-// nodes['lang-java-platform-android-armeabi-v7a'] = build_LangJava_Android_armeabi_v7a('build-os-x')
-// nodes['lang-java-platform-android-arm64-v8a'] = build_LangJava_Android_arm64_v8a('build-os-x')
+nodes['lang-java-platform-linux'] = build_LangJava_Linux('build-centos7')
+nodes['lang-java-platform-macos'] = build_LangJava_MacOS('build-os-x')
+nodes['lang-java-platform-windows'] = build_LangJava_Windows('build-win8')
+nodes['lang-java-platform-android-x86'] = build_LangJava_Android_x86('build-os-x')
+nodes['lang-java-platform-android-x86_64'] = build_LangJava_Android_x86_64('build-os-x')
+nodes['lang-java-platform-android-armeabi-v7a'] = build_LangJava_Android_armeabi_v7a('build-os-x')
+nodes['lang-java-platform-android-arm64-v8a'] = build_LangJava_Android_arm64_v8a('build-os-x')
 
-// stage('Build') {
-//     parallel(nodes)
-// }
+stage('Build') {
+    parallel(nodes)
+}
 
 
 // --------------------------------------------------------------------------
@@ -425,10 +425,10 @@ def deployJavaArtifacts() {
 def deployAndroidArtifacts() {
     return { node('master') { stage('Deploy Android artifacts') {
         unstash "src"
-        // unstash "java_android_x86"
-        // unstash "java_android_x86_64"
-        // unstash "java_android_armeabi_v7a"
-        // unstash "java_android_arm64_v8a"
+        unstash "java_android_x86"
+        unstash "java_android_x86_64"
+        unstash "java_android_armeabi_v7a"
+        unstash "java_android_arm64_v8a"
 
         withEnv(['ANDROID_HOME=/srv/apps/asdk']) {
             sh '''
@@ -437,17 +437,14 @@ def deployAndroidArtifacts() {
                 ${ANDROID_HOME}/emulator \
                         -avd armeabi-v7a -netdelay none -netspeed full -no-window -no-audio -gpu off &
                 ${ANDROID_HOME}/../platform-tools/adb wait-for-device
+                ./gradlew clean publish
             '''
-                // ./gradlew clean publish
         }
     }}}
 }
 
 def deploy_nodes = [:]
-// deploy_nodes['calculate-artifacts-checksum'] = calculateArtifactsChecksum()
-// deploy_nodes['deploy-java-artifacts'] = deployJavaArtifacts()
+deploy_nodes['calculate-artifacts-checksum'] = calculateArtifactsChecksum()
+deploy_nodes['deploy-java-artifacts'] = deployJavaArtifacts()
 deploy_nodes['deploy-android-artifacts'] = deployAndroidArtifacts()
-
-stage('Deploy') {
-    parallel(deploy_nodes)
-}
+parallel(deploy_nodes)
