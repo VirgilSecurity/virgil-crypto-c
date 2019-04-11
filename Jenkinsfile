@@ -396,19 +396,40 @@ node('master') {
 }
 
 // --------------------------------------------------------------------------
-//  Deploy Java libraries
+//  Deploy Java artifacts
 // --------------------------------------------------------------------------
 node('master') {
-    stage('Deploy Java libraries') {
+    stage('Deploy Java artifacts') {
         unstash "java_linux"
         unstash "java_macos"
         unstash "java_windows"
 
+        withEnv(['MAVEN_HOME=/srv/apps/apache-maven',
+                 'M2_HOME=/srv/apps/apache-maven',
+                 'PATH=${MAVEN_HOME}/bin:${PATH}']) {
+            sh """
+                env
+                cd wrappers/java
+                mvn clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${gpg_keyname}
+            """
+        }
+    }
+}
+
+// --------------------------------------------------------------------------
+//  Deploy Android artifacts
+// --------------------------------------------------------------------------
+node('master') {
+    stage('Deploy Android artifacts') {
+        unstash "java_android_x86"
+        unstash "java_android_x86_64"
+        unstash "java_android_armeabi_v7a"
+        unstash "java_android_arm64_v8a"
+
         sh """
-            source /var/lib/jenkins/.bashrc
             env
-            cd wrappers/java
-            mvn clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${gpg_keyname}
+            cd wrappers/java/android
+            ./gradlew clean publish
         """
     }
 }
