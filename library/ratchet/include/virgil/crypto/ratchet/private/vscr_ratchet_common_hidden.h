@@ -85,9 +85,9 @@ enum {
     vscr_ratchet_common_hidden_SIGNATURE_LEN = 64,
     vscr_ratchet_common_hidden_MAX_REGULAR_MESSAGE_LEN = 32818,
     vscr_ratchet_common_hidden_MAX_PREKEY_MESSAGE_LEN = 32960,
-    vscr_ratchet_common_hidden_MAX_GROUP_REGULAR_MESSAGE_LEN = 32882,
-    vscr_ratchet_common_hidden_MAX_GROUP_INFO_MESSAGE_LEN = 10607,
-    vscr_ratchet_common_hidden_PARTICIPANT_LEN = 106,
+    vscr_ratchet_common_hidden_MAX_GROUP_REGULAR_MESSAGE_LEN = 32886,
+    vscr_ratchet_common_hidden_MAX_GROUP_INFO_MESSAGE_LEN = 10809,
+    vscr_ratchet_common_hidden_PARTICIPANT_LEN = 108,
     vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN = 32768
 };
 

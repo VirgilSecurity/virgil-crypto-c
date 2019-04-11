@@ -70,9 +70,8 @@ option(VSCR_RATCHET_GROUP_PARTICIPANT_DATA "Enable class 'ratchet group particip
 option(VSCR_RATCHET_GROUP_MESSAGE "Enable class 'ratchet group message'." ON)
 option(VSCR_RATCHET_SKIPPED_GROUP_MESSAGE_KEY_NODE "Enable class 'ratchet skipped group message key node'." ON)
 option(VSCR_RATCHET_SKIPPED_GROUP_MESSAGE_KEY_ROOT_NODE "Enable class 'ratchet skipped group message key root node'." ON)
-option(VSCR_RATCHET_SKIPPED_GROUP_MESSAGES "Enable class 'ratchet skipped group messages'." ON)
-option(VSCR_RATCHET_GROUP_SESSION "Enable class 'ratchet group session'." ON)
 option(VSCR_RATCHET_GROUP_TICKET "Enable class 'ratchet group ticket'." ON)
+option(VSCR_RATCHET_GROUP_SESSION "Enable class 'ratchet group session'." ON)
 mark_as_advanced(
         VSCR_LIBRARY
         VSCR_RATCHET_COMMON
@@ -99,9 +98,8 @@ mark_as_advanced(
         VSCR_RATCHET_GROUP_MESSAGE
         VSCR_RATCHET_SKIPPED_GROUP_MESSAGE_KEY_NODE
         VSCR_RATCHET_SKIPPED_GROUP_MESSAGE_KEY_ROOT_NODE
-        VSCR_RATCHET_SKIPPED_GROUP_MESSAGES
-        VSCR_RATCHET_GROUP_SESSION
         VSCR_RATCHET_GROUP_TICKET
+        VSCR_RATCHET_GROUP_SESSION
         )
 
 if(VSCR_RATCHET_COMMON_HIDDEN AND NOT VSC_BUFFER)
@@ -527,29 +525,29 @@ if(VSCR_RATCHET_SKIPPED_GROUP_MESSAGE_KEY_ROOT_NODE AND NOT VSCR_RATCHET_COMMON)
     message(FATAL_ERROR)
 endif()
 
-if(VSCR_RATCHET_SKIPPED_GROUP_MESSAGES AND NOT VSCR_RATCHET_COMMON)
+if(VSCR_RATCHET_GROUP_TICKET AND NOT VSCR_RATCHET_COMMON)
     message("-- error --")
     message("--")
-    message("Feature VSCR_RATCHET_SKIPPED_GROUP_MESSAGES depends on the feature:")
+    message("Feature VSCR_RATCHET_GROUP_TICKET depends on the feature:")
     message("     VSCR_RATCHET_COMMON - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
 
-if(VSCR_RATCHET_SKIPPED_GROUP_MESSAGES AND NOT VSCR_RATCHET_COMMON_HIDDEN)
+if(VSCR_RATCHET_GROUP_TICKET AND NOT VSCR_RATCHET_COMMON_HIDDEN)
     message("-- error --")
     message("--")
-    message("Feature VSCR_RATCHET_SKIPPED_GROUP_MESSAGES depends on the feature:")
+    message("Feature VSCR_RATCHET_GROUP_TICKET depends on the feature:")
     message("     VSCR_RATCHET_COMMON_HIDDEN - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
 
-if(VSCR_RATCHET_SKIPPED_GROUP_MESSAGES AND NOT VSCR_RATCHET_CHAIN_KEY)
+if(VSCR_RATCHET_GROUP_TICKET AND NOT VSCF_CTR_DRBG)
     message("-- error --")
     message("--")
-    message("Feature VSCR_RATCHET_SKIPPED_GROUP_MESSAGES depends on the feature:")
-    message("     VSCR_RATCHET_CHAIN_KEY - which is disabled.")
+    message("Feature VSCR_RATCHET_GROUP_TICKET depends on the feature:")
+    message("     VSCF_CTR_DRBG - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -585,33 +583,6 @@ if(VSCR_RATCHET_GROUP_SESSION AND NOT VSCF_CTR_DRBG)
     message("-- error --")
     message("--")
     message("Feature VSCR_RATCHET_GROUP_SESSION depends on the feature:")
-    message("     VSCF_CTR_DRBG - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCR_RATCHET_GROUP_TICKET AND NOT VSCR_RATCHET_COMMON)
-    message("-- error --")
-    message("--")
-    message("Feature VSCR_RATCHET_GROUP_TICKET depends on the feature:")
-    message("     VSCR_RATCHET_COMMON - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCR_RATCHET_GROUP_TICKET AND NOT VSCR_RATCHET_COMMON_HIDDEN)
-    message("-- error --")
-    message("--")
-    message("Feature VSCR_RATCHET_GROUP_TICKET depends on the feature:")
-    message("     VSCR_RATCHET_COMMON_HIDDEN - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCR_RATCHET_GROUP_TICKET AND NOT VSCF_CTR_DRBG)
-    message("-- error --")
-    message("--")
-    message("Feature VSCR_RATCHET_GROUP_TICKET depends on the feature:")
     message("     VSCF_CTR_DRBG - which is disabled.")
     message("--")
     message(FATAL_ERROR)

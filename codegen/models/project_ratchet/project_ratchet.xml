@@ -82,7 +82,6 @@
     <class name="ratchet group message"/>
     <class name="ratchet skipped group message key node"/>
     <class name="ratchet skipped group message key root node"/>
-    <class name="ratchet skipped group messages"/>
-    <class name="ratchet group session"/>
     <class name="ratchet group ticket"/>
+    <class name="ratchet group session"/>
 </project>

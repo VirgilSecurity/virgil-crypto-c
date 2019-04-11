@@ -172,14 +172,27 @@ vscr_ratchet_group_ticket_setup_defaults(vscr_ratchet_group_ticket_t *self) VSCR
 //  Adds participant to chat.
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_ticket_add_participant(vscr_ratchet_group_ticket_t *self, vsc_data_t participant_id,
+vscr_ratchet_group_ticket_add_new_participant(vscr_ratchet_group_ticket_t *self, vsc_data_t participant_id,
         vsc_data_t public_key) VSCR_NODISCARD;
+
+//
+//  Remove participant from chat.
+//
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_group_ticket_remove_participant(vscr_ratchet_group_ticket_t *self,
+        vsc_data_t participant_id) VSCR_NODISCARD;
 
 //
 //  Generates message that should be sent to all participants using secure channel.
 //
 VSCR_PUBLIC const vscr_ratchet_group_message_t *
-vscr_ratchet_group_ticket_generate_ticket(const vscr_ratchet_group_ticket_t *self);
+vscr_ratchet_group_ticket_get_start_ticket(const vscr_ratchet_group_ticket_t *self);
+
+//
+//  Generates message that should be sent to all participants using secure channel.
+//
+VSCR_PUBLIC const vscr_ratchet_group_message_t *
+vscr_ratchet_group_ticket_get_add_ticket(const vscr_ratchet_group_ticket_t *self);
 
 
 // --------------------------------------------------------------------------

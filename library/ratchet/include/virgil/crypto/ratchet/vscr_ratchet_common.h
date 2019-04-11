@@ -97,11 +97,11 @@ enum {
     //
     //  Min number of group chat participants
     //
-    vscr_ratchet_common_MIN_PARTICIPANTS_COUNT = 1,
+    vscr_ratchet_common_MIN_PARTICIPANTS_COUNT = 2,
     //
     //  Max group message length
     //
-    vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN = 32882
+    vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN = 32886
 };
 
 

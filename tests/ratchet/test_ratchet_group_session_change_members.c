@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -33,77 +31,85 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
+#include <virgil/crypto/ratchet/vscr_memory.h>
+#include <ed25519/ed25519.h>
+#include <virgil/crypto/ratchet/private/vscr_ratchet_group_message_defs.h>
+#include <virgil/crypto/foundation/vscf_raw_key.h>
+#include <vscf_pkcs8_der_deserializer_internal.h>
+#include "unity.h"
+#include "test_utils.h"
+
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage errors in MSVC.
 // --------------------------------------------------------------------------
 // clang-format off
-
-
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
-
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'ratchet group message' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSCR_RATCHET_GROUP_MESSAGE_DEFS_H_INCLUDED
-#define VSCR_RATCHET_GROUP_MESSAGE_DEFS_H_INCLUDED
-
-#include "vscr_library.h"
-#include "vscr_ratchet_key_id.h"
-
-#include <RatchetGroupMessage.pb.h>
-
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
 // clang-format on
-//  @end
 
+#define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET_GROUP_SESSION
+#if TEST_DEPENDENCIES_AVAILABLE
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-//  @generated
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated section start.
-// --------------------------------------------------------------------------
-
-//
-//  Handle 'ratchet group message' context.
-//
-struct vscr_ratchet_group_message_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscr_ratchet_key_id_t *key_id;
-
-    GroupMessage message_pb;
-};
-
+#include "vscr_ratchet_message_defs.h"
+#include "vscr_ratchet_group_session.h"
+#include "vscr_ratchet_group_ticket.h"
+#include "test_utils_ratchet.h"
+#include "msg_channel.h"
 
 // --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
+//  Test functions.
 // --------------------------------------------------------------------------
-//  @end
 
+void
+test__add_members__random_chat__should_continue_working(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
-#ifdef __cplusplus
+    vscr_ratchet_group_session_t **sessions = NULL;
+
+    size_t group_size = generate_number(rng, 10, 50);
+
+    initialize_random_group_chat(rng, group_size, &sessions, NULL);
+
+    size_t number_of_iterations = 1000;
+
+    encrypt_decrypt(rng, group_size, number_of_iterations, sessions, 0.75, 1.25, 0.25, NULL);
+
+    size_t add_members_size = generate_number(rng, 10, 50);
+
+    add_random_members(rng, group_size, add_members_size, &sessions);
+
+    encrypt_decrypt(rng, group_size + add_members_size, number_of_iterations, sessions, 0.75, 1.25, 0.25, NULL);
+
+    for (size_t i = 0; i < group_size; i++) {
+        vscr_ratchet_group_session_destroy(&sessions[i]);
+    }
+
+    vscr_dealloc(sessions);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
+
+#endif // TEST_DEPENDENCIES_AVAILABLE
+
+
+// --------------------------------------------------------------------------
+// Entrypoint.
+// --------------------------------------------------------------------------
+int
+main(void) {
+    UNITY_BEGIN();
+
+#if TEST_DEPENDENCIES_AVAILABLE
+    RUN_TEST(test__add_members__random_chat__should_continue_working);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
 
-
-//  @footer
-#endif // VSCR_RATCHET_GROUP_MESSAGE_DEFS_H_INCLUDED
-//  @end
+    return UNITY_END();
+}

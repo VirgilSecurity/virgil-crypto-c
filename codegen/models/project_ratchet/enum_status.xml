@@ -101,4 +101,12 @@
         Invalid signature.
     </constant>
 
+    <constant name="error invalid group message" value="-25">
+        Invalid group message.
+    </constant>
+
+    <constant name="error user is not present in group message" value="-25">
+        User is not present in group message.
+    </constant>
+
 </enum>

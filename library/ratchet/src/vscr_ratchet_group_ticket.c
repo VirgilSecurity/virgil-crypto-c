@@ -53,10 +53,8 @@
 #include "vscr_ratchet_group_ticket.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_message_defs.h"
+#include "vscr_ratchet_group_ticket_defs.h"
 #include "vscr_ratchet_group_message_defs.h"
-#include "vscr_ratchet_key_utils.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
@@ -77,28 +75,6 @@
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet group ticket' context.
-//
-struct vscr_ratchet_group_ticket_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *rng;
-
-    vscr_ratchet_key_utils_t *key_utils;
-
-    vscr_ratchet_group_message_t *msg;
-};
-
-//
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscr_ratchet_group_ticket_init() is called.
 //  Note, that context is already zeroed.
@@ -113,6 +89,10 @@ vscr_ratchet_group_ticket_init_ctx(vscr_ratchet_group_ticket_t *self);
 //
 static void
 vscr_ratchet_group_ticket_cleanup_ctx(vscr_ratchet_group_ticket_t *self);
+
+static void
+vscr_ratchet_group_ticket_add_new_participant_to_msg(MessageGroupInfo *msg_info, vsc_data_t participant_id,
+        vsc_data_t public_key, vsc_data_t key);
 
 //
 //  Return size of 'vscr_ratchet_group_ticket_t'.
@@ -288,15 +268,19 @@ static void
 vscr_ratchet_group_ticket_init_ctx(vscr_ratchet_group_ticket_t *self) {
 
     VSCR_ASSERT_PTR(self);
+
     self->key_utils = vscr_ratchet_key_utils_new();
 
+    self->msg_start = vscr_ratchet_group_message_new();
+    self->msg_add = vscr_ratchet_group_message_new();
 
-    self->msg = vscr_ratchet_group_message_new();
     GroupMessage msg = GroupMessage_init_zero;
-    self->msg->message_pb = msg;
-    self->msg->message_pb.has_group_info = true;
-    self->msg->message_pb.version = 1;
-    self->msg->message_pb.group_info.version = 1;
+
+    self->msg_start->message_pb = msg;
+    self->msg_start->message_pb.has_start_group_info = true;
+
+    self->msg_add->message_pb = msg;
+    self->msg_add->message_pb.has_add_members_info = true;
 }
 
 //
@@ -309,7 +293,8 @@ vscr_ratchet_group_ticket_cleanup_ctx(vscr_ratchet_group_ticket_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    vscr_ratchet_group_message_destroy(&self->msg);
+    vscr_ratchet_group_message_destroy(&self->msg_add);
+    vscr_ratchet_group_message_destroy(&self->msg_start);
     vscr_ratchet_key_utils_destroy(&self->key_utils);
 }
 
@@ -340,7 +325,7 @@ vscr_ratchet_group_ticket_setup_defaults(vscr_ratchet_group_ticket_t *self) {
 //  Adds participant to chat.
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_ticket_add_participant(
+vscr_ratchet_group_ticket_add_new_participant(
         vscr_ratchet_group_ticket_t *self, vsc_data_t participant_id, vsc_data_t public_key) {
 
     VSCR_ASSERT_PTR(self);
@@ -357,45 +342,86 @@ vscr_ratchet_group_ticket_add_participant(
 
     if (error_ctx.status != vscr_status_SUCCESS) {
         status = error_ctx.status;
-        goto err;
+        goto err1;
     }
 
-    MessageParticipantInfo *info =
-            &self->msg->message_pb.group_info.participants[self->msg->message_pb.group_info.participants_count];
 
-    info->version = 1;
-    memcpy(info->id, participant_id.bytes, sizeof(info->id));
-    memcpy(info->pub_key, vsc_buffer_bytes(pub_key), sizeof(info->pub_key));
+    vsc_buffer_t *key = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH);
+    vsc_buffer_make_secure(key);
 
-    vsc_buffer_t key;
-    vsc_buffer_init(&key);
-
-    vsc_buffer_use(&key, info->key, sizeof(info->key));
-
-    vscf_status_t f_status = vscf_random(self->rng, sizeof(info->key), &key);
-
-    vsc_buffer_cleanup(&key);
+    vscf_status_t f_status = vscf_random(self->rng, vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH, key);
 
     if (f_status != vscf_status_SUCCESS) {
         status = vscr_status_ERROR_RNG_FAILED;
-        goto err;
+        goto err2;
     }
 
-    self->msg->message_pb.group_info.participants_count++;
+    vscr_ratchet_group_ticket_add_new_participant_to_msg(&self->msg_start->message_pb.start_group_info, participant_id,
+            vsc_buffer_data(pub_key), vsc_buffer_data(key));
+    vscr_ratchet_group_ticket_add_new_participant_to_msg(&self->msg_add->message_pb.add_members_info, participant_id,
+            vsc_buffer_data(pub_key), vsc_buffer_data(key));
 
-err:
+err2:
+    vsc_buffer_destroy(&key);
+
+err1:
     vsc_buffer_destroy(&pub_key);
 
     return status;
+}
+
+static void
+vscr_ratchet_group_ticket_add_new_participant_to_msg(
+        MessageGroupInfo *msg_info, vsc_data_t participant_id, vsc_data_t public_key, vsc_data_t key) {
+
+    VSCR_ASSERT_PTR(msg_info);
+    VSCR_ASSERT(participant_id.len == vscr_ratchet_common_PARTICIPANT_ID_LEN);
+    VSCR_ASSERT(public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+    VSCR_ASSERT(key.len == vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH);
+
+    MessageParticipantInfo *info = &msg_info->participants[msg_info->participants_count];
+
+    info->version = 1;
+    info->index = 0;
+    memcpy(info->id, participant_id.bytes, sizeof(info->id));
+    memcpy(info->pub_key, public_key.bytes, sizeof(info->pub_key));
+    memcpy(info->key, key.bytes, sizeof(info->key));
+
+    msg_info->participants_count++;
+}
+
+//
+//  Remove participant from chat.
+//
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_group_ticket_remove_participant(vscr_ratchet_group_ticket_t *self, vsc_data_t participant_id) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(participant_id.len == vscr_ratchet_common_PARTICIPANT_ID_LEN);
+
+    // TODO
+
+    return vscr_status_SUCCESS;
 }
 
 //
 //  Generates message that should be sent to all participants using secure channel.
 //
 VSCR_PUBLIC const vscr_ratchet_group_message_t *
-vscr_ratchet_group_ticket_generate_ticket(const vscr_ratchet_group_ticket_t *self) {
+vscr_ratchet_group_ticket_get_start_ticket(const vscr_ratchet_group_ticket_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    return self->msg;
+    return self->msg_start;
+}
+
+//
+//  Generates message that should be sent to all participants using secure channel.
+//
+VSCR_PUBLIC const vscr_ratchet_group_message_t *
+vscr_ratchet_group_ticket_get_add_ticket(const vscr_ratchet_group_ticket_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+
+    return self->msg_add;
 }

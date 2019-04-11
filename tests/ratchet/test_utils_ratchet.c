@@ -588,25 +588,26 @@ initialize_random_group_chat(
         generate_random_participant_id(rng, &id);
 
         TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
-                vscr_ratchet_group_ticket_add_participant(ticket, vsc_buffer_data(id), vsc_buffer_data(pub)));
+                vscr_ratchet_group_ticket_add_new_participant(ticket, vsc_buffer_data(id), vsc_buffer_data(pub)));
 
         ids[i] = id;
 
         vsc_buffer_destroy(&pub);
     }
 
-    const vscr_ratchet_group_message_t *msg = vscr_ratchet_group_ticket_generate_ticket(ticket);
+    const vscr_ratchet_group_message_t *msg_start = vscr_ratchet_group_ticket_get_start_ticket(ticket);
 
     for (size_t i = 0; i < group_size; i++) {
         vscr_ratchet_group_session_t *session = vscr_ratchet_group_session_new();
 
-        TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_defaults(session));
-
-        TEST_ASSERT_EQUAL(
-                vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(session, vsc_buffer_data(ids[i]), msg));
+        vscr_ratchet_group_session_use_rng(session, vscf_ctr_drbg_impl(rng));
 
         TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
                 vscr_ratchet_group_session_set_private_key(session, vsc_buffer_data(private_keys[i])));
+
+        vscr_ratchet_group_session_set_id(session, vsc_buffer_data(ids[i]));
+
+        TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(session, msg_start));
 
         (*sessions)[i] = session;
     }
@@ -631,9 +632,76 @@ initialize_random_group_chat(
 }
 
 void
+add_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t add_size, vscr_ratchet_group_session_t ***sessions) {
+    vscr_ratchet_group_session_t **old_sessions = *sessions;
+
+    *sessions = vscr_alloc((size + add_size) * sizeof(vscr_ratchet_group_session_t *));
+
+    for (size_t i = 0; i < size; i++) {
+        (*sessions)[i] = old_sessions[i];
+    }
+
+    size_t admin = generate_number(rng, 0, size - 1);
+
+    vscr_ratchet_group_ticket_t *ticket =
+            vscr_ratchet_group_session_create_group_ticket_for_adding_members((*sessions)[admin]);
+    vscr_ratchet_group_ticket_use_rng(ticket, vscf_ctr_drbg_impl(rng));
+
+    vsc_buffer_t **ids = vscr_alloc(add_size * sizeof(vsc_buffer_t *));
+
+    for (size_t i = 0; i < add_size; i++) {
+        vscr_ratchet_group_session_t *session = vscr_ratchet_group_session_new();
+
+        vsc_buffer_t *priv, *pub;
+        generate_PKCS8_ed_keypair(rng, &priv, &pub);
+
+        vsc_buffer_t *id;
+        generate_random_participant_id(rng, &id);
+
+        vscr_ratchet_group_session_use_rng(session, vscf_ctr_drbg_impl(rng));
+        TEST_ASSERT_EQUAL(
+                vscr_status_SUCCESS, vscr_ratchet_group_session_set_private_key(session, vsc_buffer_data(priv)));
+
+        vscr_ratchet_group_session_set_id(session, vsc_buffer_data(id));
+
+        TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+                vscr_ratchet_group_ticket_add_new_participant(ticket, vsc_buffer_data(id), vsc_buffer_data(pub)));
+
+        vsc_buffer_destroy(&priv);
+        vsc_buffer_destroy(&pub);
+
+        ids[i] = id;
+        (*sessions)[size + i] = session;
+    }
+
+    const vscr_ratchet_group_message_t *msg_start = vscr_ratchet_group_ticket_get_start_ticket(ticket);
+    const vscr_ratchet_group_message_t *msg_add = vscr_ratchet_group_ticket_get_add_ticket(ticket);
+
+    for (size_t i = 0; i < size + add_size; i++) {
+        vscr_ratchet_group_session_t *session = (*sessions)[i];
+
+        const vscr_ratchet_group_message_t *msg = i >= size ? msg_start : msg_add;
+
+        TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(session, msg));
+    }
+
+    for (size_t i = 0; i < add_size; i++) {
+        vsc_buffer_destroy(&ids[i]);
+    }
+
+    vscr_dealloc(ids);
+    vscr_dealloc(old_sessions);
+    vscr_ratchet_group_ticket_destroy(&ticket);
+}
+
+void
 encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterations,
         vscr_ratchet_group_session_t **sessions, double lost_rate, double distribution_factor,
         double generate_distribution, vsc_buffer_t **priv) {
+    if (group_size < 2) {
+        TEST_ASSERT(false);
+    }
+
     msg_channel_t **channels = vscr_alloc(group_size * sizeof(msg_channel_t *));
 
     for (size_t i = 0; i < group_size; i++) {
@@ -706,7 +774,7 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterat
                     continue;
                 }
 
-                if (push_msg(channels[receiver], vsc_buffer_data(text), vsc_buffer_data(msg_buff))) {
+                if (push_msg(channels[receiver], vsc_buffer_data(text), vsc_buffer_data(msg_buff), sender)) {
                     number_of_msgs++;
                 }
             }
@@ -724,7 +792,9 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterat
                 }
             }
 
-            TEST_ASSERT(number_of_active_channels > 0);
+            if (number_of_active_channels <= 0) {
+                TEST_ASSERT(false);
+            }
 
             size_t receiver_queue_num = generate_number(rng, 0, number_of_active_channels - 1);
             size_t receiver = 0;
@@ -740,8 +810,12 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterat
                 }
             }
 
-            TEST_ASSERT(receiver_queue_num == 0);
-            TEST_ASSERT(has_msg(channels[receiver]));
+            if (receiver_queue_num != 0) {
+                TEST_ASSERT(false);
+            }
+            if (!has_msg(channels[receiver])) {
+                TEST_ASSERT(false);
+            }
 
             channel_msg_t *channel_msg = pop_msg(channels[receiver]);
 
@@ -770,11 +844,9 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterat
 
             deinit_msg(channel_msg);
 
-            if (number_of_active_channels == 1 && has_msg(channels[receiver])) {
-                is_empty = true;
-            }
-
             number_of_picks++;
+
+            is_empty = number_of_msgs == number_of_picks;
         }
 
         if (priv) {

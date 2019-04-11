@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'ratchet group ticket' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,28 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
-// --------------------------------------------------------------------------
-
-#ifndef VSCR_RATCHET_PRIVATE_H_INCLUDED
-#define VSCR_RATCHET_PRIVATE_H_INCLUDED
-
-#include "vscr_ratchet_cipher.h"
-#include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_group_message_defs.h"
 #include "vscr_ratchet_group_ticket_defs.h"
-#include "vscr_ratchet_message_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -79,14 +67,4 @@ extern "C" {
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCR_RATCHET_PRIVATE_H_INCLUDED
 //  @end

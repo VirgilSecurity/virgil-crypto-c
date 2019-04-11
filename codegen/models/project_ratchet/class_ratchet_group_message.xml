@@ -11,6 +11,7 @@
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
+    <property name="key id" impl="ratchet key id"/>
     <property name="message pb" class="GroupMessage" library="nanopb" access="readwrite" is_reference="0"/>
 
     <method name="get type" is_const="1">
@@ -22,12 +23,26 @@
     </method>
 
     <method name="get pub key count" is_const="1">
+        Returns number of public keys.
+        This method should be called only for start group info message type.
 
         <return type="size"/>
     </method>
 
-    <method name="get pub key" is_const="1">
-        <argument name="id" class="data"/>
+    <method name="get pub key id" is_const="1">
+        Returns public key id for some participant id.
+        This method should be called only for start group info message type.
+
+        <argument name="participant id" class="data">
+            Participant id
+        </argument>
+
+        <return class="buffer" access="disown"/>
+    </method>
+
+    <method name="get sender id" is_const="1">
+        Returns message sender id.
+        This method should be called only for regular message type.
 
         <return class="data" access="readwrite"/>
     </method>

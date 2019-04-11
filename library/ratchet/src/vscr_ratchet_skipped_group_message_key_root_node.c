@@ -217,6 +217,88 @@ vscr_ratchet_skipped_group_message_key_root_node_cleanup_ctx(vscr_ratchet_skippe
     vscr_ratchet_skipped_group_message_key_node_destroy(&self->begin);
 }
 
+VSCR_PUBLIC vscr_ratchet_message_key_t *
+vscr_ratchet_skipped_group_message_key_root_node_find_key(
+        vscr_ratchet_skipped_group_message_key_root_node_t *self, size_t counter) {
+
+    VSCR_ASSERT_PTR(self);
+
+    vscr_ratchet_skipped_group_message_key_node_t *skipped_message_key_list_node = self->begin;
+
+    if (!skipped_message_key_list_node) {
+        return NULL;
+    }
+
+    while (skipped_message_key_list_node) {
+        if (counter == skipped_message_key_list_node->value->index) {
+            return skipped_message_key_list_node->value;
+        }
+        skipped_message_key_list_node = skipped_message_key_list_node->next;
+    }
+
+    return NULL;
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_message_key_root_node_delete_key(
+        vscr_ratchet_skipped_group_message_key_root_node_t *self, vscr_ratchet_message_key_t *skipped_message_key) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(skipped_message_key);
+    VSCR_ASSERT_PTR(self->begin);
+
+    vscr_ratchet_skipped_group_message_key_node_t **prev = &self->begin;
+    vscr_ratchet_skipped_group_message_key_node_t *node = self->begin;
+
+    while (node) {
+        if (node->value == skipped_message_key) {
+            (*prev) = node->next;
+
+            node->next = NULL;
+            vscr_ratchet_skipped_group_message_key_node_destroy(&node);
+
+            return;
+        }
+
+        prev = &node->next;
+        node = node->next;
+    }
+
+    // Element not found
+    VSCR_ASSERT(false);
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_group_message_key_root_node_add_key(
+        vscr_ratchet_skipped_group_message_key_root_node_t *self, vscr_ratchet_message_key_t *skipped_message_key) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(skipped_message_key);
+
+    vscr_ratchet_skipped_group_message_key_node_t *skipped_message_key_list_node =
+            vscr_ratchet_skipped_group_message_key_node_new();
+    skipped_message_key_list_node->value = skipped_message_key;
+    skipped_message_key_list_node->next = self->begin;
+    self->begin = skipped_message_key_list_node;
+
+    if (!self->begin->next) {
+
+        return;
+    }
+
+    size_t msgs_count = 2;
+    while (skipped_message_key_list_node->next->next) {
+        msgs_count += 1;
+        skipped_message_key_list_node = skipped_message_key_list_node->next;
+    }
+
+    VSCR_ASSERT(msgs_count <= vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES + 1);
+
+    if (msgs_count == vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES + 1) {
+        vscr_ratchet_skipped_group_message_key_node_destroy(&skipped_message_key_list_node->next);
+    }
+}
+
 VSCR_PUBLIC void
 vscr_ratchet_skipped_group_message_key_root_node_serialize(
         vscr_ratchet_skipped_group_message_key_root_node_t *self, SkippedGroupMessagesRoot *root_node_pb) {

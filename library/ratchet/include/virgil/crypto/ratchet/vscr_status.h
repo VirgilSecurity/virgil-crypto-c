@@ -171,7 +171,15 @@ enum vscr_status_t {
     //
     //  Invalid signature.
     //
-    vscr_status_ERROR_INVALID_SIGNATURE = -24
+    vscr_status_ERROR_INVALID_SIGNATURE = -24,
+    //
+    //  Invalid group message.
+    //
+    vscr_status_ERROR_INVALID_GROUP_MESSAGE = -25,
+    //
+    //  User is not present in group message.
+    //
+    vscr_status_ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE = -25
 };
 typedef enum vscr_status_t vscr_status_t;
 

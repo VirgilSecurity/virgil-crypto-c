@@ -23,6 +23,7 @@ ParticipantData.id max_size:32 fixed_length:true
 ParticipantData.pub_key max_size:32 fixed_length:true
 
 GroupSession.participants max_count:100 fixed_count:false
+GroupSession.skipped_messages max_count:100 fixed_count:false
 
 SkippedGroupMessages.messages_roots max_count:100 fixed_count:false
 

@@ -63,12 +63,8 @@ message SkippedGroupMessagesRoot {
 	repeated MessageKey message_keys = 2;
 }
 
-message SkippedGroupMessages {
-	repeated SkippedGroupMessagesRoot messages_roots = 1;
-}
-
 message GroupSession {
 	required ParticipantData me = 1;
 	repeated ParticipantData participants = 2;
-	required SkippedGroupMessages skipped_messages = 3;
+	repeated SkippedGroupMessagesRoot skipped_messages = 3;
 }
