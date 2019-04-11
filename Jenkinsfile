@@ -189,7 +189,7 @@ def build_LangPHP_Windows(slave) {
             clearContentWindows()
             unstash 'src'
             withEnv(["PHP_HOME=C:\\php-7.2.6",
-                     "PHP_DEVEL_HOME=C:\\php-7.2.6-devel",\
+                     "PHP_DEVEL_HOME=C:\\php-7.2.6-devel",
                      "PHPUNIT_HOME=C:\\phpunit-7.2.4"]) {
                 bat '''
                     set PATH=%PATH:"=%
@@ -267,22 +267,20 @@ def build_LangJava_Windows(slave) {
         ws("workspace\\${jobPath}") {
             clearContentWindows()
             unstash 'src'
-            withEnv([]) {
-                bat '''
-                    set PATH=%PATH:"=%
-                    call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
-                    cmake -G"NMake Makefiles" ^
-                          -Cconfigs/java-config.cmake ^
-                          -DVIRGIL_LIB_PYTHIA=OFF ^
-                          -DCMAKE_BUILD_TYPE=Release ^
-                          -DCMAKE_INSTALL_PREFIX="wrappers\\java\\binaries\\windows" ^
-                          -Bbuild -H.
-                    cmake --build build --target install
+            bat '''
+                set PATH=%PATH:"=%
+                call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
+                cmake -G"NMake Makefiles" ^
+                      -Cconfigs/java-config.cmake ^
+                      -DVIRGIL_LIB_PYTHIA=OFF ^
+                      -DCMAKE_BUILD_TYPE=Release ^
+                      -DCMAKE_INSTALL_PREFIX="wrappers\\java\\binaries\\windows" ^
+                      -Bbuild -H.
+                cmake --build build --target install
 
-                    cd wrappers/java
-                    mvnw.cmd clean test -P foundation,phe,ratchet
-                '''
-            }
+                cd wrappers/java
+                mvnw.cmd clean test -P foundation,phe,ratchet
+            '''
             stash includes: 'wrappers/java/binaries/**', name: 'java_windows'
         }
     }}
