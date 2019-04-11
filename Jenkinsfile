@@ -422,6 +422,7 @@ node('master') {
         unstash "java_android_armeabi_v7a"
         unstash "java_android_arm64_v8a"
 
+        withEnv(['ANDROID_HOME=/srv/apps/asdk'])
         sh """
             env
             cd wrappers/java/android
