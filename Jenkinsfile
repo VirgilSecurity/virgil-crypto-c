@@ -430,7 +430,8 @@ def deployAndroidArtifacts() {
         unstash "java_android_armeabi_v7a"
         unstash "java_android_arm64_v8a"
 
-        withEnv(['ANDROID_SDK_ROOT=/srv/apps/asdk']) {
+        withEnv(['ANDROID_SDK_ROOT=/srv/apps/asdk',
+                 'ANDROID_AVD_HOME=${HOME}/.android/avd']) {
             sh '''
                 env
                 cd wrappers/java/android
