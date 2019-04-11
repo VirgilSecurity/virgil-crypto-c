@@ -404,14 +404,11 @@ node('master') {
         unstash "java_macos"
         unstash "java_windows"
 
-        withEnv(["MAVEN_HOME=/srv/apps/apache-maven",
-                 "M2_HOME=/srv/apps/apache-maven",
-                 "PATH=${MAVEN_HOME}/bin:${PATH}"]) {
-            sh """
-                env
-                cd wrappers/java
-                mvn clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${gpg_keyname}
-            """
-        }
+        sh """
+            source /var/lib/jenkins/.bashrc
+            env
+            cd wrappers/java
+            mvn clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${gpg_keyname}
+        """
     }
 }
