@@ -438,10 +438,10 @@ def deployAndroidArtifacts() {
     }}}
 }
 
-def deploy_nodes = []
-deploy_nodes.add(calculateArtifactsChecksum())
-deploy_nodes.add(deployJavaArtifacts())
-deploy_nodes.add(deployAndroidArtifacts())
+def deploy_nodes = [:]
+deploy_nodes['calculate-artifacts-checksum'] = calculateArtifactsChecksum()
+deploy_nodes['deploy-java-artifacts'] = deployJavaArtifacts()
+deploy_nodes['deploy-android-artifacts'] = deployAndroidArtifacts()
 
 stage('Deploy') {
     parallel(deploy_nodes)
