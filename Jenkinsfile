@@ -392,11 +392,10 @@ def build_LangJava_Android_arm64_v8a(slave) {
 
 
 // --------------------------------------------------------------------------
-//  Calculate Checksum
+//  Deploy
 // --------------------------------------------------------------------------
-
-node('master') {
-    stage('Calculate Checksum') {
+def calculateArtifactsChecksum() {
+    return { node('master') { stage('Calculate Checksum') {
         def branchSubPath =  env.BRANCH_NAME ? '/branches/' + env.BRANCH_NAME : ''
         def shortJobName = env.BRANCH_NAME ? env.JOB_NAME.replace('/' + env.BRANCH_NAME, '') : env.JOB_NAME
         def artifactsDir =
@@ -404,14 +403,12 @@ node('master') {
         dir(artifactsDir) {
             sh 'find . -type f -name "virgil-crypto-c-*" -exec sh -c "sha256sum {} | cut -d\' \' -f1-1 > {}.sha256" \\;'
         }
-    }
+    }}}
 }
 
-// --------------------------------------------------------------------------
-//  Deploy Java artifacts
-// --------------------------------------------------------------------------
-node('master') {
-    stage('Deploy Java artifacts') {
+
+def deployJavaArtifacts() {
+    return { node('master') { stage('Deploy Java artifacts') {
         unstash "java_linux"
         unstash "java_macos"
         unstash "java_windows"
@@ -421,24 +418,31 @@ node('master') {
             cd wrappers/java
             ./mvnw clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${gpg_keyname}
         """
-    }
+    }}}
 }
 
-// --------------------------------------------------------------------------
-//  Deploy Android artifacts
-// --------------------------------------------------------------------------
-node('master') {
-    stage('Deploy Android artifacts') {
+def deployAndroidArtifacts() {
+    return { node('master') { stage('Deploy Android artifacts') {
         unstash "java_android_x86"
         unstash "java_android_x86_64"
         unstash "java_android_armeabi_v7a"
         unstash "java_android_arm64_v8a"
 
-        withEnv(['ANDROID_HOME=/srv/apps/asdk'])
-        sh """
-            env
-            cd wrappers/java/android
-            ./gradlew clean publish
-        """
-    }
+        withEnv(['ANDROID_HOME=/srv/apps/asdk']) {
+            sh """
+                env
+                cd wrappers/java/android
+                ./gradlew clean publish
+            """
+        }
+    }}}
+}
+
+def deploy_nodes = []
+deploy_nodes.add(calculateArtifactsChecksum())
+deploy_nodes.add(deployJavaArtifacts())
+deploy_nodes.add(deployAndroidArtifacts())
+
+stage('Deploy') {
+    parallel(deploy_nodes)
 }
