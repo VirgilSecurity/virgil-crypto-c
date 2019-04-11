@@ -86,6 +86,7 @@ def build_LangC_Unix(slave) {
                 cmake -DCMAKE_BUILD_TYPE=Release \
                       -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
                       -DCPACK_OUTPUT_FILE_PREFIX=c \
+                      -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -113,6 +114,7 @@ def build_LangC_Windows(slave) {
                       -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
                       -DVIRGIL_LIB_PYTHIA=OFF ^
                       -DCPACK_OUTPUT_FILE_PREFIX=c ^
+                      -DENABLE_CLANGFORMAT=OFF ^
                       -Bbuild -H.
                 cmake --build build
                 cd build
@@ -142,6 +144,7 @@ def build_LangPHP_Linux(slave) {
                       -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
+                      -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -169,6 +172,7 @@ def build_LangPHP_MacOS(slave) {
                       -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
+                      -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -200,6 +204,7 @@ def build_LangPHP_Windows(slave) {
                           -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
                           -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 ^
                           -DCPACK_OUTPUT_FILE_PREFIX=php ^
+                          -DENABLE_CLANGFORMAT=OFF ^
                           -Bbuild -H.
                     cmake --build build
                     cd build
@@ -227,6 +232,7 @@ def build_LangJava_Linux(slave) {
                 cmake -DCMAKE_BUILD_TYPE=Release \
                       -Cconfigs/java-config.cmake \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/linux" \
+                      -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
@@ -249,6 +255,7 @@ def build_LangJava_MacOS(slave) {
                 cmake -DCMAKE_BUILD_TYPE=Release \
                       -Cconfigs/java-config.cmake \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/macos" \
+                      -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
@@ -275,6 +282,7 @@ def build_LangJava_Windows(slave) {
                       -DVIRGIL_LIB_PYTHIA=OFF ^
                       -DCMAKE_BUILD_TYPE=Release ^
                       -DCMAKE_INSTALL_PREFIX="wrappers\\java\\binaries\\windows" ^
+                      -DENABLE_CLANGFORMAT=OFF ^
                       -Bbuild -H.
                 cmake --build build --target install
 
@@ -299,6 +307,7 @@ def build_LangJava_Android_x86(slave) {
                       -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
                       -DCMAKE_INSTALL_LIBDIR="lib/x86" \
+                      -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
@@ -322,6 +331,7 @@ def build_LangJava_Android_x86_64(slave) {
                       -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
                       -DCMAKE_INSTALL_LIBDIR="lib/x86_64" \
+                      -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
@@ -345,6 +355,7 @@ def build_LangJava_Android_armeabi_v7a(slave) {
                       -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
                       -DCMAKE_INSTALL_LIBDIR="lib/armeabi-v7a" \
+                      -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
@@ -368,6 +379,7 @@ def build_LangJava_Android_arm64_v8a(slave) {
                       -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
                       -DCMAKE_INSTALL_LIBDIR="lib/arm64-v8a" \
+                      -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
