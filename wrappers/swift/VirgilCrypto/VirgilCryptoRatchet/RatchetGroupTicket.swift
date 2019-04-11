@@ -82,20 +82,37 @@ import VSCRatchet
     }
 
     /// Adds participant to chat.
-    @objc public func addParticipant(participantId: Data, publicKey: Data) throws {
+    @objc public func addNewParticipant(participantId: Data, publicKey: Data) throws {
         let proxyResult = participantId.withUnsafeBytes({ (participantIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
             publicKey.withUnsafeBytes({ (publicKeyPointer: UnsafeRawBufferPointer) -> vscr_status_t in
 
-                return vscr_ratchet_group_ticket_add_participant(self.c_ctx, vsc_data(participantIdPointer.bindMemory(to: byte.self).baseAddress, participantId.count), vsc_data(publicKeyPointer.bindMemory(to: byte.self).baseAddress, publicKey.count))
+                return vscr_ratchet_group_ticket_add_new_participant(self.c_ctx, vsc_data(participantIdPointer.bindMemory(to: byte.self).baseAddress, participantId.count), vsc_data(publicKeyPointer.bindMemory(to: byte.self).baseAddress, publicKey.count))
             })
         })
 
         try RatchetError.handleStatus(fromC: proxyResult)
     }
 
+    /// Remove participant from chat.
+    @objc public func removeParticipant(participantId: Data) throws {
+        let proxyResult = participantId.withUnsafeBytes({ (participantIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
+
+            return vscr_ratchet_group_ticket_remove_participant(self.c_ctx, vsc_data(participantIdPointer.bindMemory(to: byte.self).baseAddress, participantId.count))
+        })
+
+        try RatchetError.handleStatus(fromC: proxyResult)
+    }
+
     /// Generates message that should be sent to all participants using secure channel.
-    @objc public func generateTicket() -> RatchetGroupMessage {
-        let proxyResult = vscr_ratchet_group_ticket_generate_ticket(self.c_ctx)
+    @objc public func getStartTicket() -> RatchetGroupMessage {
+        let proxyResult = vscr_ratchet_group_ticket_get_start_ticket(self.c_ctx)
+
+        return RatchetGroupMessage.init(use: proxyResult!)
+    }
+
+    /// Generates message that should be sent to all participants using secure channel.
+    @objc public func getAddTicket() -> RatchetGroupMessage {
+        let proxyResult = vscr_ratchet_group_ticket_get_add_ticket(self.c_ctx)
 
         return RatchetGroupMessage.init(use: proxyResult!)
     }

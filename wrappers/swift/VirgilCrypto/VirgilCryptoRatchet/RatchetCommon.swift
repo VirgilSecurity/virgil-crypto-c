@@ -50,7 +50,7 @@ import VSCRatchet
     /// Max number of group chat participants
     @objc public static let maxParticipantsCount: Int = 100
     /// Min number of group chat participants
-    @objc public static let minParticipantsCount: Int = 1
+    @objc public static let minParticipantsCount: Int = 2
     /// Max group message length
-    @objc public static let maxGroupMessageLen: Int = 32882
+    @objc public static let maxGroupMessageLen: Int = 32886
 }
