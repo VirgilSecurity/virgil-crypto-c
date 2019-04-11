@@ -431,11 +431,12 @@ def deployAndroidArtifacts() {
         unstash "java_android_arm64_v8a"
 
         withEnv(['ANDROID_HOME=/srv/apps/asdk']) {
-            sh """
+            sh '''
                 env
+                yes | ${ANDROID_HOME}/bin/sdkmanager --licenses
                 cd wrappers/java/android
                 ./gradlew clean publish
-            """
+            '''
         }
     }}}
 }
