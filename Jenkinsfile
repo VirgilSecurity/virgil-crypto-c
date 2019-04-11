@@ -27,16 +27,16 @@ def nodes = [:]
 //
 //  Language: C
 //
-nodes['lang-c-platform-linux'] = build_LangC_Unix('build-centos7')
-nodes['lang-c-platform-macos'] = build_LangC_Unix('build-os-x')
-nodes['lang-c-platform-windows'] = build_LangC_Windows('build-win8')
+// nodes['lang-c-platform-linux'] = build_LangC_Unix('build-centos7')
+// nodes['lang-c-platform-macos'] = build_LangC_Unix('build-os-x')
+// nodes['lang-c-platform-windows'] = build_LangC_Windows('build-win8')
 
 //
 //  Language: PHP
 //
-nodes['lang-php-platform-linux'] = build_LangPHP_Linux('build-centos7')
-nodes['lang-php-platform-macos'] = build_LangPHP_MacOS('build-os-x')
-nodes['lang-php-platform-windows'] = build_LangPHP_Windows('build-win8')
+// nodes['lang-php-platform-linux'] = build_LangPHP_Linux('build-centos7')
+// nodes['lang-php-platform-macos'] = build_LangPHP_MacOS('build-os-x')
+// nodes['lang-php-platform-windows'] = build_LangPHP_Windows('build-win8')
 
 //
 //  Language: Java
@@ -409,6 +409,7 @@ def calculateArtifactsChecksum() {
 
 def deployJavaArtifacts() {
     return { node('master') { stage('Deploy Java artifacts') {
+        unstash "src"
         unstash "java_linux"
         unstash "java_macos"
         unstash "java_windows"
@@ -424,6 +425,7 @@ def deployJavaArtifacts() {
 
 def deployAndroidArtifacts() {
     return { node('master') { stage('Deploy Android artifacts') {
+        unstash "src"
         unstash "java_android_x86"
         unstash "java_android_x86_64"
         unstash "java_android_armeabi_v7a"
