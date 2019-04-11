@@ -41,9 +41,9 @@ def nodes = [:]
 //
 //  Language: Java
 //
-// nodes['lang-java-platform-linux'] = build_LangJava_Linux('build-centos7')
-// nodes['lang-java-platform-macos'] = build_LangJava_MacOS('build-os-x')
-// nodes['lang-java-platform-windows'] = build_LangJava_Windows('build-win8')
+nodes['lang-java-platform-linux'] = build_LangJava_Linux('build-centos7')
+nodes['lang-java-platform-macos'] = build_LangJava_MacOS('build-os-x')
+nodes['lang-java-platform-windows'] = build_LangJava_Windows('build-win8')
 nodes['lang-java-platform-android-x86'] = build_LangJava_Android_x86('build-os-x')
 nodes['lang-java-platform-android-x86_64'] = build_LangJava_Android_x86_64('build-os-x')
 nodes['lang-java-platform-android-armeabi-v7a'] = build_LangJava_Android_armeabi_v7a('build-os-x')
@@ -444,7 +444,7 @@ def deployAndroidArtifacts() {
 }
 
 def deploy_nodes = [:]
-// deploy_nodes['calculate-artifacts-checksum'] = calculateArtifactsChecksum()
-// deploy_nodes['deploy-java-artifacts'] = deployJavaArtifacts()
+deploy_nodes['calculate-artifacts-checksum'] = calculateArtifactsChecksum()
+deploy_nodes['deploy-java-artifacts'] = deployJavaArtifacts()
 deploy_nodes['deploy-android-artifacts'] = deployAndroidArtifacts()
 parallel(deploy_nodes)
