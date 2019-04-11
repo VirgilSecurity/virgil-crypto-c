@@ -416,6 +416,7 @@ def deployJavaArtifacts() {
         sh """
             env
             cd wrappers/java
+            ls -R
             ./mvnw clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${gpg_keyname}
         """
     }}}
@@ -431,6 +432,7 @@ def deployAndroidArtifacts() {
         withEnv(['ANDROID_HOME=/srv/apps/asdk']) {
             sh """
                 env
+                ls -R
                 cd wrappers/java/android
                 ./gradlew clean publish
             """
