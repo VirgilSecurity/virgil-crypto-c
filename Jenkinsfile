@@ -435,7 +435,7 @@ def deployAndroidArtifacts() {
                 env
                 cd wrappers/java/android
                 ${ANDROID_HOME}/emulator \
-                        -avd armeabi-v7a -netdelay none -netspeed full -no-window -no-audio -gpu off
+                        -avd armeabi-v7a -netdelay none -netspeed full -no-window -no-audio -gpu off &
             '''
                 // ./gradlew clean publish
         }
