@@ -430,12 +430,11 @@ def deployAndroidArtifacts() {
         unstash "java_android_armeabi_v7a"
         unstash "java_android_arm64_v8a"
 
-        withEnv(['ANDROID_SDK_ROOT=/srv/apps/asdk',
-                 'ANDROID_AVD_HOME=${HOME}/.android/avd']) {
+        withEnv(['ANDROID_SDK_ROOT=/srv/apps/asdk']) {
             sh '''
                 env
                 cd wrappers/java/android
-                ${ANDROID_SDK_ROOT}/emulator \
+                ${ANDROID_SDK_ROOT}/bin/emulator \
                         -avd armeabi-v7a -netdelay none -netspeed full -no-window -no-audio -gpu off &
                 ${ANDROID_SDK_ROOT}/platform-tools/adb wait-for-device
                 ./gradlew clean publish
