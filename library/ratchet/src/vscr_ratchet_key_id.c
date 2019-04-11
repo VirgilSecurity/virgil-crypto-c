@@ -271,7 +271,7 @@ vscr_ratchet_key_id_compute_public_key_id(vscr_ratchet_key_id_t *self, vsc_data_
     vscr_error_reset(&error_ctx);
 
     vsc_buffer_t *raw_public_key = vscr_ratchet_key_utils_extract_ratchet_public_key(
-            self->key_utils, public_key, true, false, false, &error_ctx);
+            self->key_utils, public_key, true, true, false, &error_ctx);
 
     if (vscr_error_has_error(&error_ctx)) {
         return vscr_error_status(&error_ctx);
