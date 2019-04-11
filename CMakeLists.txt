@@ -75,6 +75,11 @@ option(ENABLE_TESTING "On/Off integration tests." ON)
 option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
 option(ENABLE_PROFILING "On/Off GProf compilation options." OFF)
 
+#
+# Code formatting
+#
+option(ENABLE_CLANGFORMAT "On/Off formatting source code with clangformat." ON)
+
 option(VIRGIL_C_TESTING "On/Off C library integration tests." ON)
 option(VIRGIL_PHP_TESTING "On/Off PHP wrapper integration tests." ON)
 
