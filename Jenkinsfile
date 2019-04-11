@@ -404,7 +404,7 @@ node('master') {
         unstash "java_macos"
         unstash "java_windows"
 
-        withEnv(["MAVEN_HOME=/srv/apps/apache-maven ",
+        withEnv(["MAVEN_HOME=/srv/apps/apache-maven",
                  "M2_HOME=/srv/apps/apache-maven",
                  "PATH=${MAVEN_HOME}/bin:${PATH}"]) {
             sh """
