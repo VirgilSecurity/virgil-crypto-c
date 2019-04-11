@@ -433,9 +433,8 @@ def deployAndroidArtifacts() {
         withEnv(['ANDROID_HOME=/srv/apps/asdk']) {
             sh '''
                 env
-                yes | ${ANDROID_HOME}/bin/sdkmanager --licenses
                 cd wrappers/java/android
-                yes | ./gradlew clean publish
+                ./gradlew clean publish
             '''
         }
     }}}
