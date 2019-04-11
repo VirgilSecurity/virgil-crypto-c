@@ -41,17 +41,17 @@ def nodes = [:]
 //
 //  Language: Java
 //
-nodes['lang-java-platform-linux'] = build_LangJava_Linux('build-centos7')
-nodes['lang-java-platform-macos'] = build_LangJava_MacOS('build-os-x')
-nodes['lang-java-platform-windows'] = build_LangJava_Windows('build-win8')
-nodes['lang-java-platform-android-x86'] = build_LangJava_Android_x86('build-os-x')
-nodes['lang-java-platform-android-x86_64'] = build_LangJava_Android_x86_64('build-os-x')
-nodes['lang-java-platform-android-armeabi-v7a'] = build_LangJava_Android_armeabi_v7a('build-os-x')
-nodes['lang-java-platform-android-arm64-v8a'] = build_LangJava_Android_arm64_v8a('build-os-x')
+// nodes['lang-java-platform-linux'] = build_LangJava_Linux('build-centos7')
+// nodes['lang-java-platform-macos'] = build_LangJava_MacOS('build-os-x')
+// nodes['lang-java-platform-windows'] = build_LangJava_Windows('build-win8')
+// nodes['lang-java-platform-android-x86'] = build_LangJava_Android_x86('build-os-x')
+// nodes['lang-java-platform-android-x86_64'] = build_LangJava_Android_x86_64('build-os-x')
+// nodes['lang-java-platform-android-armeabi-v7a'] = build_LangJava_Android_armeabi_v7a('build-os-x')
+// nodes['lang-java-platform-android-arm64-v8a'] = build_LangJava_Android_arm64_v8a('build-os-x')
 
-stage('Build') {
-    parallel(nodes)
-}
+// stage('Build') {
+//     parallel(nodes)
+// }
 
 
 // --------------------------------------------------------------------------
@@ -425,26 +425,26 @@ def deployJavaArtifacts() {
 def deployAndroidArtifacts() {
     return { node('master') { stage('Deploy Android artifacts') {
         unstash "src"
-        unstash "java_android_x86"
-        unstash "java_android_x86_64"
-        unstash "java_android_armeabi_v7a"
-        unstash "java_android_arm64_v8a"
+        // unstash "java_android_x86"
+        // unstash "java_android_x86_64"
+        // unstash "java_android_armeabi_v7a"
+        // unstash "java_android_arm64_v8a"
 
-        withEnv(['ANDROID_HOME=/srv/apps/asdk',
-                 'PATH=${ANDROID_HOME}:${ANDROID_HOME}/bin:${PATH}']) {
+        withEnv(['ANDROID_HOME=/srv/apps/asdk']) {
             sh '''
                 env
                 cd wrappers/java/android
-                emulator -avd armeabi-v7a -netdelay none -netspeed full -no-window -no-audio -gpu off &
-                ./gradlew clean publish
+                ${ANDROID_HOME}/emulator \
+                        -avd arm-v7 -netdelay none -netspeed full -no-window -no-audio -gpu off
             '''
+                // ./gradlew clean publish
         }
     }}}
 }
 
 def deploy_nodes = [:]
-deploy_nodes['calculate-artifacts-checksum'] = calculateArtifactsChecksum()
-deploy_nodes['deploy-java-artifacts'] = deployJavaArtifacts()
+// deploy_nodes['calculate-artifacts-checksum'] = calculateArtifactsChecksum()
+// deploy_nodes['deploy-java-artifacts'] = deployJavaArtifacts()
 deploy_nodes['deploy-android-artifacts'] = deployAndroidArtifacts()
 
 stage('Deploy') {
