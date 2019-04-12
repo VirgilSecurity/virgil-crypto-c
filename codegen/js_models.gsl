@@ -7,6 +7,34 @@ gsl from "js_helpers.gsl"
 # General
 # --------------------------------------------------------------------------------------------------
 
+function js_append_js_project_model(parent, project, wrapper)
+  new js_project to my.parent
+    js_project.name = my.project.name
+    js_project.prefix = my.project.prefix
+    js_project.root_dir = cat_path("../wrappers/$(my.wrapper.lang:no)", "crypto")
+    js_project.source_dir = cat_path(js_project.root_dir, "src")
+    js_project.project_source_dir = cat_path(js_project.source_dir, js_project.name)
+    js_project.umbrella_header_file = "index.h"
+    js_project.umbrella_header_guard = js_cpp_header_guard(my.project.name)
+    js_project.umbrella_header_file_path = cat_path(js_project.project_source_dir, js_project.umbrella_header_file)
+    js_project.index_cpp_file = "index.cc"
+    js_project.index_cpp_file_path = cat_path(js_project.project_source_dir, js_project.index_cpp_file)
+    js_project.index_js_file = "index.js"
+    js_project.index_js_file_path = cat_path(js_project.project_source_dir, js_project.index_js_file)
+    for my.project.require where defined(require.project) & require.project <> "common"
+      new js_project_require to js_project
+        js_project_require.c_namespace_dir = ""
+        js_project_require.c_umbrella_header = make_ref_c(make_id("project", require.project, "header", require.project, "public"))
+      endnew
+    endfor
+    new js_project_require to js_project
+      js_project_require.c_namespace_dir = "$(my.project.namespace_dir)/"
+      js_project_require.c_umbrella_header = make_ref_c(make_id("header", my.project.name, "public"))
+    endnew
+    return js_project
+  endnew
+endfunction
+
 function js_append_js_module_model(parent, source)
   new js_module to my.parent
     js_module.name = my.source.name
@@ -23,12 +51,13 @@ function js_append_js_interface_module_model(parent, source, wrapper_project)
     endnew
     js_interface_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
     js_interface_module.c_implementation_type = "$(make_ref_c(make_id("class", "impl", "struct", "impl")))*"
-    js_interface_module.c_implementation_header = make_ref_c(make_id("header", "impl"))
-    js_interface_module.c_implementation_header_path = "$(my.wrapper_project.namespace:no)/$(js_interface_module.c_implementation_header:no)"
     new js_cpp_header to js_interface_module
       js_cpp_header.name = "$(my.source.name:c).h"
       js_cpp_header.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_header.name)
     endnew
+    for my.wrapper_project.js_project_require
+      copy js_project_require to js_interface_module
+    endfor
     return js_interface_module
   endnew
 endfunction
@@ -52,6 +81,9 @@ function js_append_js_error_status_module_model(parent, source, wrapper_project)
     js_error_status_module.cpp_name = "$(my.source.name:pascal)"
     js_error_status_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
     js_error_status_module.c_type = make_ref_c(make_id("class", "status", "enum", "status"))
+    for my.wrapper_project.js_project_require
+      copy js_project_require to js_error_status_module
+    endfor
     new js_cpp_header to js_error_status_module
       js_cpp_header.name = "$(my.source.name:c).h"
       js_cpp_header.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_header.name)
@@ -87,8 +119,6 @@ function js_append_js_class_module_model(parent, source, wrapper_project)
       js_cpp_name.uid = make_id("js", "class", "module", my.source.name, "cpp", "name")
     endnew
     js_class_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
-    js_class_module.c_header = make_ref_c(make_id("header", my.source.name))
-    js_class_module.c_header_path = "$(my.wrapper_project.namespace:no)/$(js_class_module.c_header:no)"
     js_class_module.instance_name = "$(my.source.name:c)_instance"
     js_class_module.has_context = defined(my.source.context) & my.source.context <> "none"
     if js_class_module.has_context
@@ -97,6 +127,9 @@ function js_append_js_class_module_model(parent, source, wrapper_project)
       js_class_module.c_context_constructor = make_ref_c(make_id("class", my.source.name, "method", "new"))
       js_class_module.c_context_destructor = make_ref_c(make_id("class", my.source.name, "method", "destroy"))
     endif
+    for my.wrapper_project.js_project_require
+      copy js_project_require to js_class_module
+    endfor
     new js_cpp_header to js_class_module
       js_cpp_header.name = "$(my.source.name:c).h"
       js_cpp_header.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_header.name)

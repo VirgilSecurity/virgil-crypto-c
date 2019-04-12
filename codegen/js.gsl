@@ -5,24 +5,12 @@ gsl from "js_codegen.gsl"
 gsl from "js_models.gsl"
 
 function js_create_project_module(project, wrapper)
-  echo_info("Create project module", my)
-  new js_project to my.wrapper
-    js_project.name = my.project.name
-    js_project.prefix = my.project.prefix
-    js_project.namespace = string.replace(my.project.namespace, " |/")
-    js_project.root_dir = cat_path("../wrappers/$(my.wrapper.lang:no)", "crypto")
-    js_project.source_dir = cat_path(js_project.root_dir, "src")
-    js_project.project_source_dir = cat_path(js_project.source_dir, js_project.name)
-    js_project.index_cpp_file = "index.cc"
-    js_project.index_cpp_file_path = cat_path(js_project.project_source_dir, js_project.index_cpp_file)
-    js_project.index_js_file = "index.js"
-    js_project.index_js_file_path = cat_path(js_project.project_source_dir, js_project.index_js_file)
-    return js_project
-  endnew
+  echo_info("Create project module: $(my.project.name:no)", my)
+  return js_append_js_project_model(my.wrapper, my.project, my.wrapper)
 endfunction
 
 function js_create_interface_module(source, wrapper_project, meta)
-  echo_info("Create interface module: $(my.source.name)", my)
+  echo_info("Create interface module: $(my.source.name:no)", my)
   my.js_module = js_append_js_module_model(my.wrapper_project, my.source)
   js_append_js_interface_module_model(my.js_module, my.source, my.wrapper_project)
 endfunction
@@ -34,7 +22,7 @@ function js_create_implementation_module(source, wrapper_project, meta)
 endfunction
 
 function js_create_class_module(source, wrapper_project, meta)
-  echo_info("Create class module: $(my.source.name)", my)
+  echo_info("Create class module: $(my.source.name:no)", my)
   if my.source.scope = "public" & !(my.source.name = "error")
     my.js_module = js_append_js_module_model(my.wrapper_project, my.source)
     js_append_js_class_module_model(my.js_module, my.source, my.wrapper_project)
@@ -42,7 +30,7 @@ function js_create_class_module(source, wrapper_project, meta)
 endfunction
 
 function js_create_enum_module(source, wrapper_project, meta)
-  echo_info("Create enum module: $(my.source.name)", my)
+  echo_info("Create enum module: $(my.source.name:no)", my)
   my.js_module = js_append_js_module_model(my.wrapper_project, my.source)
   if !(my.source.name = "status")
     js_append_js_enum_module_model(my.js_module, my.source, my.wrapper_project)
@@ -66,20 +54,21 @@ function js_module_resolve_uids(js_component, parent_uid)
 endfunction
 
 function js_module_resolve(source, wrapper_project)
-  echo_info("Resolve module: $(my.source.name)", my)
+  echo_info("Resolve module: $(my.source.name:no)", my)
   js_module_resolve_uids(my.source)
 endfunction
 
 function js_generate_project(wrapper_project)
-  echo_info("Generate project", my)
+  echo_info("Generate project: $(my.wrapper_project.name:no)", my)
   if -1 = directory.create(my.wrapper_project.project_source_dir)
     echo_fatal("Can't create directory '$(my.wrapper_project.project_source_dir)'", my)
   endif
 endfunction
 
 function js_generate_sources(wrapper_project)
-  echo_info("Generate sources", my)
+  echo_info("Generate sources for project: $(my.wrapper_project.name:no)", my)
   if defined(my.wrapper_project->js_module)
+    js_create_umbrella_header_file(my.wrapper_project)
     js_create_index_js_file(my.wrapper_project)
     js_create_index_cpp_file(my.wrapper_project)
     js_create_js_module_files(my.wrapper_project)

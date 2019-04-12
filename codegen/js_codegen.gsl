@@ -17,20 +17,13 @@ function js_cpp_header_create_define(name, indent_level)
   js_out("#define $(my.name:no)", my.indent_levels.first)
 endfunction
 
-function js_cpp_header_create_js_include_module(js_include_module, indent_level)
-  my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("#include \"$(my.js_include_module.cpp_header_file:no)\"", my.indent_levels.first)
-endfunction
-
-function js_cpp_header_create_cpp_include_module(cpp_include_module, indent_level)
-  my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("#include \"$(my.cpp_include_module.cpp_header_file:no)\"", my.indent_levels.first)
-endfunction
-
-function js_cpp_header_create_includes(js_class_module, indent_level)
+function js_cpp_header_create_includes(parent, wrapper_project, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   js_out("#include <nan.h>", my.indent_levels.first)
-  js_out("#include <$(my.js_class_module.c_header_path:no)>", my.indent_levels.first)
+  for my.parent.js_project_require
+    js_out("#include <$(js_project_require.c_namespace_dir:no)$(js_project_require.c_umbrella_header:no)>", my.indent_levels.first)
+  endfor
+  js_out("#include \"$(my.wrapper_project.umbrella_header_file:no)\"")
 endfunction
 
 function js_cpp_header_create_endif(indent_level)
@@ -122,12 +115,6 @@ function js_cpp_header_create_class(js_class_module, indent_level)
   endif
   js_cpp_header_create_private_properties(my.indent_levels.second)
   js_out("};", my.indent_levels.first)
-endfunction
-
-function js_cpp_header_create_interface_includes(js_interface_module, indent_level)
-  my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("#include <nan.h>", my.indent_levels.first)
-  js_out("#include <$(my.js_interface_module.c_implementation_header_path:no)>", my.indent_levels.first)
 endfunction
 
 function js_cpp_header_create_interface(js_interface_module, indent_level)
@@ -1089,7 +1076,7 @@ function js_create_js_class_module_file(js_class_module, wrapper_project)
   output my.js_class_module->js_cpp_header.path
     js_cpp_header_create_ifndef(my.js_class_module.cpp_header_guard, my.indent_levels.first)
     js_cpp_header_create_define(my.js_class_module.cpp_header_guard, my.indent_levels.first)
-    js_cpp_header_create_includes(my.js_class_module, my.indent_levels.first)
+    js_cpp_header_create_includes(my.js_class_module, my.wrapper_project, my.indent_levels.first)
     js_cpp_header_create_class(my.js_class_module, my.indent_levels.first)
     js_cpp_header_create_endif(my.indent_levels.first)
   close
@@ -1111,11 +1098,12 @@ function js_create_js_enum_module_file(js_enum_module)
   close
 endfunction
 
-function js_create_js_error_status_module(js_error_status_module)
+function js_create_js_error_status_module(js_error_status_module, wrapper_project)
   my.indent_levels = js_create_indent_levels()
   output my.js_error_status_module->js_cpp_header.path
     js_cpp_header_create_ifndef(my.js_error_status_module.cpp_header_guard, my.indent_levels.first)
     js_cpp_header_create_define(my.js_error_status_module.cpp_header_guard, my.indent_levels.first)
+    js_cpp_header_create_includes(my.js_error_status_module, my.wrapper_project, my.indent_levels.first)
     js_cpp_header_create_error_status_module(my.js_error_status_module, my.indent_levels.first)
     js_cpp_header_create_endif(my.indent_levels.first)
   close
@@ -1124,12 +1112,12 @@ function js_create_js_error_status_module(js_error_status_module)
   close
 endfunction
 
-function js_create_js_interface_module_file(js_interface_module)
+function js_create_js_interface_module_file(js_interface_module, wrapper_project)
   my.indent_levels = js_create_indent_levels()
   output my.js_interface_module->js_cpp_header.path
     js_cpp_header_create_ifndef(my.js_interface_module.cpp_header_guard, my.indent_levels.first)
     js_cpp_header_create_define(my.js_interface_module.cpp_header_guard, my.indent_levels.first)
-    js_cpp_header_create_interface_includes(my.js_interface_module, my.indent_levels.first)
+    js_cpp_header_create_includes(my.js_interface_module, my.wrapper_project, my.indent_levels.first)
     js_cpp_header_create_interface(my.js_interface_module, my.indent_levels.first)
     js_cpp_header_create_endif(my.indent_levels.first)
   close
@@ -1138,11 +1126,11 @@ endfunction
 function js_create_js_module_files(wrapper_project)
   for my.wrapper_project.js_module
     if defined(js_module->js_interface_module)
-      js_create_js_interface_module_file(js_module->js_interface_module)
+      js_create_js_interface_module_file(js_module->js_interface_module, my.wrapper_project)
     elsif defined(js_module->js_enum_module)
       js_create_js_enum_module_file(js_module->js_enum_module)
     elsif defined(js_module->js_error_status_module)
-      js_create_js_error_status_module(js_module->js_error_status_module)
+      js_create_js_error_status_module(js_module->js_error_status_module, my.wrapper_project)
     elsif defined(js_module->js_class_module)
       js_create_js_class_module_file(js_module->js_class_module, my.wrapper_project)
     else
@@ -1151,13 +1139,26 @@ function js_create_js_module_files(wrapper_project)
   endfor
 endfunction
 
+function js_create_umbrella_header_file(wrapper_project)
+  my.indent_levels = js_create_indent_levels()
+  output my.wrapper_project.umbrella_header_file_path
+    js_cpp_header_create_ifndef(my.wrapper_project.umbrella_header_guard, my.indent_levels.first)
+    js_cpp_header_create_define(my.wrapper_project.umbrella_header_guard, my.indent_levels.first)
+    for my.wrapper_project.js_module where defined(js_module->js_class_module)
+      js_out("#include \"$(js_module->js_class_module->js_cpp_header.name:no)\"", my.indent_levels.first)
+    endfor
+    for my.wrapper_project.js_module where defined(js_module->js_interface_module)
+      js_out("#include \"$(js_module->js_interface_module->js_cpp_header.name:no)\"", my.indent_levels.first)
+    endfor
+    js_cpp_header_create_endif(my.indent_levels.first)
+  close
+endfunction
+
 function js_create_index_cpp_file(wrapper_project)
   my.indent_levels = js_create_indent_levels()
   output my.wrapper_project.index_cpp_file_path
     js_out("#include <nan.h>", my.indent_levels.first)
-    for my.wrapper_project.js_module where defined(js_module->js_class_module)
-      js_out("#include \"$(js_module->js_class_module->js_cpp_header.name:no)\"", my.indent_levels.first)
-    endfor
+    js_out("#include \"$(my.wrapper_project.umbrella_header_file:no)\"", my.indent_levels.first)
     js_out("void InitAll(v8::Local<v8::Object> exports) {", my.indent_levels.first)
     for my.wrapper_project.js_module where defined(js_module->js_class_module)
       js_out("$(js_module->js_class_module.cpp_name:no)::$(global.js_cpp_init_function_name:no)(exports);", my.indent_levels.second)
