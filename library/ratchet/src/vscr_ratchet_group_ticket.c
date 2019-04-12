@@ -392,23 +392,23 @@ err1:
 }
 
 VSCR_PRIVATE vscr_status_t
-vscr_ratchet_group_ticket_add_existing_participant(
-        vscr_ratchet_group_ticket_t *self, const vscr_ratchet_group_participant_data_t *participant) {
+vscr_ratchet_group_ticket_add_existing_participant(vscr_ratchet_group_ticket_t *self,
+        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN],
+        const byte pub_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH], const vscr_ratchet_chain_key_t *chain_key) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->rng);
-    VSCR_ASSERT_PTR(participant);
 
     vscr_status_t status = vscr_status_SUCCESS;
 
     const vscr_ratchet_chain_key_t *chain_key_ref;
-    vscr_ratchet_chain_key_t chain_key;
-    vscr_ratchet_chain_key_init(&chain_key);
+    vscr_ratchet_chain_key_t new_chain_key;
+    vscr_ratchet_chain_key_init(&new_chain_key);
 
     if (self->epoch_change) {
         vsc_buffer_t key;
         vsc_buffer_init(&key);
-        vsc_buffer_use(&key, chain_key.key, sizeof(chain_key.key));
+        vsc_buffer_use(&key, new_chain_key.key, sizeof(new_chain_key.key));
 
         vscf_status_t f_status = vscf_random(self->rng, vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH, &key);
         vsc_buffer_delete(&key);
@@ -418,19 +418,19 @@ vscr_ratchet_group_ticket_add_existing_participant(
             goto err;
         }
 
-        chain_key_ref = &chain_key;
+        chain_key_ref = &new_chain_key;
     } else {
-        VSCR_UNUSED(chain_key);
-        chain_key_ref = participant->epoches[participant->epoch_count - 1]->chain_key;
+        VSCR_UNUSED(new_chain_key);
+        chain_key_ref = chain_key;
     }
 
     vscr_ratchet_group_ticket_add_participant_to_msg(&self->full_msg->message_pb.group_info,
-            vsc_data(participant->id, sizeof(participant->id)),
-            vsc_data(participant->pub_key, sizeof(participant->pub_key)),
+            vsc_data(id, vscr_ratchet_common_PARTICIPANT_ID_LEN),
+            vsc_data(pub_key, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH),
             vsc_data(chain_key_ref->key, sizeof(chain_key_ref->key)), chain_key_ref->index);
 
 err:
-    vscr_ratchet_chain_key_delete(&chain_key);
+    vscr_ratchet_chain_key_delete(&new_chain_key);
 
     return status;
 }

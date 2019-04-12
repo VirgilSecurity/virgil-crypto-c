@@ -52,7 +52,13 @@
     </method>
 
     <method name="add existing participant" visibility="private">
-        <argument name="participant" class="ratchet group participant data"/>
+        <argument name="id" type="byte">
+            <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
+        </argument>
+        <argument name="pub key" type="byte">
+            <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+        </argument>
+        <argument name="chain key" class="ratchet chain key"/>
 
         <return enum="status">
             Error

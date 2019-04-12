@@ -31,12 +31,14 @@
     <property name="is initialized" type="boolean" access="readwrite"/>
     <property name="is private key set" type="boolean" access="readwrite"/>
     <property name="is id set" type="boolean" access="readwrite"/>
-    <property name="current epoch" type="size" access="readwrite"/>
 
     <property name="my id" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
     </property>
-    <property name="me" class="ratchet group participant data" access="readwrite"/>
+    <property name="my epoch" class="ratchet group participant epoch" access="readwrite"/>
+    <property name="my public key" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+    </property>
     <property name="my private key" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
     </property>

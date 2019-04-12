@@ -229,6 +229,7 @@ vscr_ratchet_group_participant_data_add_epoch(vscr_ratchet_group_participant_dat
         for (size_t i = 1; i < vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT; i++) {
             self->epoches[i - 1] = self->epoches[i];
         }
+        self->epoches[--self->epoch_count] = NULL;
     }
 
     vscr_ratchet_group_participant_epoch_t *new_epoch = vscr_ratchet_group_participant_epoch_new();

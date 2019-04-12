@@ -55,7 +55,7 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
-#include "vscr_ratchet_group_participant_data.h"
+#include "vscr_ratchet_chain_key.h"
 #include "vscr_ratchet_group_message.h"
 #include "vscr_status.h"
 
@@ -181,7 +181,9 @@ vscr_ratchet_group_ticket_add_new_participant(vscr_ratchet_group_ticket_t *self,
 
 VSCR_PRIVATE vscr_status_t
 vscr_ratchet_group_ticket_add_existing_participant(vscr_ratchet_group_ticket_t *self,
-        const vscr_ratchet_group_participant_data_t *participant) VSCR_NODISCARD;
+        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN],
+        const byte pub_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH],
+        const vscr_ratchet_chain_key_t *chain_key) VSCR_NODISCARD;
 
 //
 //  Remove participant from chat.
