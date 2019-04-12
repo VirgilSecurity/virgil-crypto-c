@@ -140,7 +140,7 @@ jobject wrapAlg (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getHashClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -181,7 +181,7 @@ jobject wrapHash (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getEncryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -231,7 +231,7 @@ jobject wrapEncrypt (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx)
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getDecryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -281,7 +281,7 @@ jobject wrapDecrypt (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx)
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getCipherInfoClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -316,7 +316,7 @@ jobject wrapCipherInfo (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_c
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getCipherClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -351,7 +351,7 @@ jobject wrapCipher (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) 
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getCipherAuthInfoClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -383,7 +383,7 @@ jobject wrapCipherAuthInfo (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/*
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getAuthEncryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -415,7 +415,7 @@ jobject wrapAuthEncrypt (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getAuthDecryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -447,7 +447,7 @@ jobject wrapAuthDecrypt (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getCipherAuthClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -479,7 +479,7 @@ jobject wrapCipherAuth (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_c
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getAsn1ReaderClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -511,7 +511,7 @@ jobject wrapAsn1Reader (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_c
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getAsn1WriterClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -543,7 +543,7 @@ jobject wrapAsn1Writer (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_c
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -590,7 +590,7 @@ jobject wrapKey (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getVerifyHashClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -625,7 +625,7 @@ jobject wrapVerifyHash (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_c
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getPublicKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -663,7 +663,7 @@ jobject wrapPublicKey (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ct
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getGenerateEphemeralKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -701,7 +701,7 @@ jobject wrapGenerateEphemeralKey (JNIEnv *jenv, jobject jobj, const vscf_impl_t 
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getGenerateKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -739,7 +739,7 @@ jobject wrapGenerateKey (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getSignHashClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -774,7 +774,7 @@ jobject wrapSignHash (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getPrivateKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -812,7 +812,7 @@ jobject wrapPrivateKey (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_c
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getEntropySourceClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -850,7 +850,7 @@ jobject wrapEntropySource (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* 
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getRandomClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -888,7 +888,7 @@ jobject wrapRandom (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) 
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getMacClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -920,7 +920,7 @@ jobject wrapMac (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getKdfClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -961,7 +961,7 @@ jobject wrapKdf (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getSaltedKdfClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -996,7 +996,7 @@ jobject wrapSaltedKdf (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ct
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getKeySerializerClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -1031,7 +1031,7 @@ jobject wrapKeySerializer (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* 
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getKeyDeserializerClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -1066,7 +1066,7 @@ jobject wrapKeyDeserializer (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getComputeSharedKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -1101,7 +1101,7 @@ jobject wrapComputeSharedKey (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getAlgInfoClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -1145,7 +1145,7 @@ jobject wrapAlgInfo (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx)
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getAlgInfoSerializerClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -1177,7 +1177,7 @@ jobject wrapAlgInfoSerializer (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getAlgInfoDeserializerClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -1209,7 +1209,7 @@ jobject wrapAlgInfoDeserializer (JNIEnv *jenv, jobject jobj, const vscf_impl_t /
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getMessageInfoSerializerClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -1241,7 +1241,7 @@ jobject wrapMessageInfoSerializer (JNIEnv *jenv, jobject jobj, const vscf_impl_t
     if (NULL == methodID) {
         VSCF_ASSERT("Class has no constructor with C context parameter.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawKey_1new (JNIEnv *jenv, jobject jobj) {

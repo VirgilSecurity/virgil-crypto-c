@@ -1441,7 +1441,7 @@ function java_get_c_implementation_helper_interface_method (interface, java_proj
                 if (NULL == methodID) {
                     .(c_class_assert_macros_assert)(\"Class has no constructor with C context parameter.\");
                 }
-                return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
+                return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
             ")
         endnew
 
