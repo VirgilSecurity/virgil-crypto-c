@@ -75,6 +75,7 @@ message SkippedGroupMessagesRoot {
 
 message GroupSession {
 	required ParticipantEpoch my_epoch = 1;
-	repeated ParticipantData participants = 2;
-	repeated SkippedGroupMessagesRoot skipped_messages = 3;
+	required bytes my_id = 2;
+	repeated ParticipantData participants = 3;
+	repeated SkippedGroupMessagesRoot skipped_messages = 4;
 }

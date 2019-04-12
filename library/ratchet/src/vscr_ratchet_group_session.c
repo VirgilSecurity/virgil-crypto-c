@@ -938,15 +938,17 @@ vscr_ratchet_group_session_serialize_len(vscr_ratchet_group_session_t *self) {
 VSCR_PUBLIC void
 vscr_ratchet_group_session_serialize(vscr_ratchet_group_session_t *self, vsc_buffer_t *output) {
 
-    VSCR_ASSERT(self);
-    VSCR_ASSERT(self->my_epoch);
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(self->my_epoch);
     VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_group_session_serialize_len(self));
     VSCR_ASSERT(self->is_initialized);
+    VSCR_ASSERT(self->is_id_set);
 
     GroupSession session_pb = GroupSession_init_zero;
 
     session_pb.participants_count = self->participants_count;
     session_pb.skipped_messages_count = self->participants_count;
+    memcpy(session_pb.my_id, self->my_id, sizeof(session_pb.my_id));
 
     for (size_t i = 0; i < self->participants_count; i++) {
         vscr_ratchet_group_participant_data_serialize(self->participants[i], &session_pb.participants[i]);
@@ -997,6 +999,9 @@ vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     session->is_initialized = true;
     session->is_id_set = true;
 
+    memcpy(session->my_id, session_pb.my_id, sizeof(session->my_id));
+
+    session->my_epoch = vscr_ratchet_group_participant_epoch_new();
     vscr_ratchet_group_participant_epoch_deserialize(&session_pb.my_epoch, session->my_epoch);
     session->participants_count = session_pb.participants_count;
     session->participants = vscr_alloc(session_pb.participants_count * sizeof(vscr_ratchet_group_participant_data_t *));
