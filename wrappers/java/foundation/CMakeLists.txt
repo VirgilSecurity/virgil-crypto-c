@@ -61,8 +61,8 @@ endif()
 
 target_sources(foundation_java
         PRIVATE
-            "${CMAKE_CURRENT_LIST_DIR}/jni/virgil_crypto_foundation_FoundationJNI.h"
-            "${CMAKE_CURRENT_LIST_DIR}/jni/virgil_crypto_foundation_FoundationJNI.c"
+            "${CMAKE_CURRENT_LIST_DIR}/jni/FoundationJNI.h"
+            "${CMAKE_CURRENT_LIST_DIR}/jni/FoundationJNI.c"
         )
 
 target_link_libraries(foundation_java

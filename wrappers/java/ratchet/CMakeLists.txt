@@ -61,8 +61,8 @@ endif()
 
 target_sources(ratchet_java
         PRIVATE
-            "${CMAKE_CURRENT_LIST_DIR}/jni/virgil_crypto_ratchet_RatchetJNI.h"
-            "${CMAKE_CURRENT_LIST_DIR}/jni/virgil_crypto_ratchet_RatchetJNI.c"
+            "${CMAKE_CURRENT_LIST_DIR}/jni/RatchetJNI.h"
+            "${CMAKE_CURRENT_LIST_DIR}/jni/RatchetJNI.c"
         )
 
 target_link_libraries(ratchet_java

@@ -61,8 +61,8 @@ endif()
 
 target_sources(pythia_java
         PRIVATE
-            "${CMAKE_CURRENT_LIST_DIR}/jni/virgil_crypto_pythia_PythiaJNI.h"
-            "${CMAKE_CURRENT_LIST_DIR}/jni/virgil_crypto_pythia_PythiaJNI.c"
+            "${CMAKE_CURRENT_LIST_DIR}/jni/PythiaJNI.h"
+            "${CMAKE_CURRENT_LIST_DIR}/jni/PythiaJNI.c"
         )
 
 target_link_libraries(pythia_java

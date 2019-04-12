@@ -61,8 +61,8 @@ endif()
 
 target_sources(phe_java
         PRIVATE
-            "${CMAKE_CURRENT_LIST_DIR}/jni/virgil_crypto_phe_PheJNI.h"
-            "${CMAKE_CURRENT_LIST_DIR}/jni/virgil_crypto_phe_PheJNI.c"
+            "${CMAKE_CURRENT_LIST_DIR}/jni/PheJNI.h"
+            "${CMAKE_CURRENT_LIST_DIR}/jni/PheJNI.c"
         )
 
 target_link_libraries(phe_java

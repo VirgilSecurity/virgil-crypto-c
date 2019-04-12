@@ -296,7 +296,7 @@ function java_derive_c_method_name_str (method_name, interface, java_project)
 
     my.jniClassName = java_derive_jni_context_class_name (my.java_project)
 
-    return "Java_$(my.java_project.namespace:c)_$(my.jniClassName:)_$(my.interface.name:Camel)_1$(my.method_name:Camel)"
+    return "Java_$(my.java_project.package:c)_$(my.jniClassName:)_$(my.interface.name:Camel)_1$(my.method_name:Camel)"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -325,17 +325,6 @@ function java_derive_c_context_variable_name (class)
     check_arguments (my, "class", my)
 
     return "$(my.class.name:c)_ctx"
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return path to the package directory.
-# ---------------------------------------------------------------------------
-function java_derive_c_package_dir (java_project)
-    check_arguments (my, "java_project", my)
-
-    assert_attribute (my.java_project, "namespace", my)
-
-    return string.replace ("$(my.java_project.namespace:c,lower)", "_|/")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -554,8 +543,6 @@ function java_create_class_c_default_constructor (java_class, class, java_projec
     my.c_module = java_obtain_c_module(my.java_project)
     my.c_method_name = java_derive_c_method_name_str ("new", my.class, my.java_project)
 
-    java_create_c_include (my.class, my.java_project, my.meta)
-
     if ! defined (my.h_module->c_method(c_method.name = my.c_method_name)?)
 
         # Define method header
@@ -604,8 +591,6 @@ function java_create_c_class_constructor (class, constructor, java_project, meta
     my.h_module = java_obtain_h_module(my.java_project)
     my.c_module = java_obtain_c_module(my.java_project)
     my.c_method_name = java_derive_c_method_name_str ("new", my.class, my.java_project)
-
-    java_create_c_include (my.class, my.java_project, my.meta)
 
     if ! defined (my.h_module->c_method(c_method.name = my.c_method_name)?)
 
@@ -678,8 +663,8 @@ function java_create_custom_modules (source, java_project, meta)
         .name = java_derive_h_context_module_name (my.java_project)
         .package = my.java_project.package
         .source_type = "H"
-        .source_dir = cat_path ("../wrappers/$(my.java_project.lang:c,lower)", my.java_project.name, "jni")
-        .source_file_name = "$(my.java_project.namespace:c)_$(my.name:).h"
+        .source_dir = my.java_project.jni_source_dir
+        .source_file_name = "$(my.name:).h"
         .source_file_path = cat_path (.source_dir, 0.source_file_name)
 
         new c_license to java_module
@@ -699,8 +684,8 @@ function java_create_custom_modules (source, java_project, meta)
         .name = java_derive_c_context_module_name (my.java_project)
         .package = my.java_project.package
         .source_type = "C"
-        .source_dir = cat_path ("../wrappers/$(my.java_project.lang:c,lower)", my.java_project.name, "jni")
-        .source_file_name = "$(my.java_project.namespace:c)_$(my.name:).c"
+        .source_dir = my.java_project.jni_source_dir
+        .source_file_name = "$(my.name:).c"
         .source_file_path = cat_path (.source_dir, 0.source_file_name)
 
         new c_license to java_module
@@ -708,18 +693,18 @@ function java_create_custom_modules (source, java_project, meta)
         endnew
 
         new c_include to java_module
-            .include = "stdio.h"
+            .include = "$(my.name:).h"
+            .same_directory = "1"
+        endnew
+
+        new c_include to java_module
+            .include = my.java_project.c_umbrella_header
+            .same_directory = "1"
         endnew
 
         new c_include to java_module
             .include = "string.h"
         endnew
-
-        new c_include to java_module
-            .include = "$(my.java_project.namespace:c)_$(my.name:).h"
-            .same_directory = "1"
-        endnew
-
     endnew
 
 endfunction
@@ -728,21 +713,6 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <c_method/> of from the instance entity <method/>.
 # ---------------------------------------------------------------------------
-function java_create_c_include (instance, java_project, meta)
-    check_arguments (my, "instance, java_project, meta", my)
-
-    my.c_module = java_obtain_c_module(my.java_project)
-    my.include_path = java_derive_c_package_dir (my.java_project)
-    my.include = "$(my.include_path:)/$(my.java_project.prefix:)_$(my.instance.name:c).h"
-
-    if ! defined (my.c_module->c_include(c_include.include = my.include)?)
-
-        new c_include to my.c_module
-             .include = "$(my.include:)"
-        endnew
-    endif
-endfunction
-
 function java_wrap_c_method_arguments (method, java_project, meta)
     # Wrap Java strings
     for my.method.argument where defined (0.type) & string_in (0.type, "char, string")
@@ -756,7 +726,7 @@ function java_wrap_c_method_arguments (method, java_project, meta)
     # Wrap Java interfaces
     for my.method.argument where defined (0.interface) & ! string_in (0.class, "data, buffer, error")
         my.init_interfaces ?= "// Wrap Java interfaces"
-        my.class_path = string.replace ("$(my.java_project.namespace:c,lower)", "_|/")
+        my.class_path = my.java_project.package_dir
         #TODO get class name by ctx
         my.class_name = java_derive_class_name_str (argument.interface)
         my.class_type = java_derive_c_type (argument)
@@ -764,31 +734,32 @@ function java_wrap_c_method_arguments (method, java_project, meta)
         my.init_interfaces += format_left("\
             jclass $(argument.name:c)_cls = (*jenv)->GetObjectClass(jenv, j$(argument.name:Camel));
             if (NULL == $(argument.name:c)_cls) {
-                printf(\"Class $(my.class_name:) not found.\");
+                .(c_class_assert_macros_assert)(\"Class $(my.class_name:) not found.\");
             }
             jfieldID $(argument.name:c)_fidCtx = (*jenv)->GetFieldID(jenv, $(argument.name:c)_cls, \"cCtx\", \"J\");
             if (NULL == $(argument.name:c)_fidCtx) {
-                printf(\"Class '$(my.class_name:)' has no field 'cCtx'.\");
+                .(c_class_assert_macros_assert)(\"Class '$(my.class_name:)' has no field 'cCtx'.\");
             }
-            $(my.class_type:) $(argument.name:c) = ($(my.class_type:)) (*jenv)->GetLongField(jenv, j$(argument.name:Camel), $(argument.name:c)_fidCtx);
+            $(my.class_type:) $(argument.name:c) =\
+                    ($(my.class_type:)) (*jenv)->GetLongField(jenv, j$(argument.name:Camel), $(argument.name:c)_fidCtx);
         ") + terminator
     endfor
 
     # Wrap Java classes
     for my.method.argument where defined (0.class) & ! string_in (0.class, "data, buffer, error")
         my.init_classes ?= "// Wrap Java classes"
-        my.class_path = string.replace ("$(my.java_project.namespace:c,lower)", "_|/")
+        my.class_path = my.java_project.package_dir
         my.class_name = java_derive_class_name_str(argument.class)
         my.class_type = java_derive_c_type (argument)
 
         my.init_classes += format_left("\
             jclass $(argument.name:c)_cls = (*jenv)->FindClass(jenv, \"$(my.class_path:)/$(my.class_name:)\");
             if (NULL == $(argument.name:c)_cls) {
-                printf(\"Class $(my.class_name:) not found.\");
+                .(c_class_assert_macros_assert)(\"Class $(my.class_name:) not found.\");
             }
             jfieldID $(argument.name:c)_fidCtx = (*jenv)->GetFieldID(jenv, $(argument.name:c)_cls, \"cCtx\", \"J\");
             if (NULL == $(argument.name:c)_fidCtx) {
-                printf(\"Class '$(my.class_name:)' has no field 'cCtx'.\");
+                .(c_class_assert_macros_assert)(\"Class '$(my.class_name:)' has no field 'cCtx'.\");
             }
             $(my.class_type:) $(argument.name:c) = ($(my.class_type:)) (*jenv)->GetLongField(jenv, j$(argument.name:Camel), $(argument.name:c)_fidCtx);
         ") + terminator
@@ -962,7 +933,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
 
     # Build return
     if count (my.java_method.java_return) > 0
-        my.java_return_class_path = string.replace ("$(my.java_project.namespace:c,lower)", "_|/")
+        my.java_return_class_path = my.java_project.package_dir
         my.java_return_class_name = my.java_method->java_return.type
 
         if count (my.c_method.c_return) > 1
@@ -970,7 +941,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
             my.prepare_result = format_left("\
                 jclass cls = (*jenv)->FindClass(jenv, \"$(my.java_return_class_path:)/$(my.java_return_class_name:)\");
                 if (NULL == cls) {
-                    printf(\"Class $(my.java_return_class_name:) not found.\");
+                    .(c_class_assert_macros_assert)(\"Class $(my.java_return_class_name:) not found.\");
                 }
                 jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, \"<init>\", \"()V\");
                 jobject newObj = (*jenv)->NewObject(jenv, cls, methodID);
@@ -1037,11 +1008,11 @@ function java_create_c_class_method_call (class, method, java_class, java_method
                     my.prepare_result = format_left("\
                         jclass result_cls = (*jenv)->FindClass(jenv, \"$(my.java_return_class_path:)/$(my.java_return_class_name:)\");
                         if (NULL == result_cls) {
-                            printf(\"Class $(my.java_return_class_name:) not found.\");
+                            .(c_class_assert_macros_assert)(\"Class $(my.java_return_class_name:) not found.\");
                         }
                         jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, \"<init>\", \"(J)V\");
                         if (NULL == result_methodID) {
-                            printf(\"Class $(my.java_return_class_name:) has no constructor with C context parameter.\");
+                            .(c_class_assert_macros_assert)(\"Class $(my.java_return_class_name:) has no constructor with C context parameter.\");
                         }
                         jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
                     ")
@@ -1053,12 +1024,12 @@ function java_create_c_class_method_call (class, method, java_class, java_method
                     my.prepare_result = format_left("\
                         jclass cls = (*jenv)->FindClass(jenv, \"$(my.java_return_class_path:)/$(my.java_return_class_name:)\");
                         if (NULL == cls) {
-                            printf(\"Enum $(my.java_return_class_name:) not found.\");
+                            .(c_class_assert_macros_assert)(\"Enum $(my.java_return_class_name:) not found.\");
                         }
 
                         jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, \"fromCode\", \"(I)L$(my.java_return_class_path:)/$(my.java_return_class_name:);\");
                         if (NULL == methodID) {
-                            printf(\"Enum $(my.java_return_class_name:) has no method 'fromCode'.\");
+                            .(c_class_assert_macros_assert)(\"Enum $(my.java_return_class_name:) has no method 'fromCode'.\");
                         }
                         jobject ret = (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, proxyResult);
                     ")
@@ -1133,7 +1104,7 @@ function java_create_c_exception_throw_method (enum, java_project, meta)
 
     my.c_module = java_obtain_c_module (my.java_project)
 
-    my.exception_path = string.replace ("$(my.java_project.namespace:c,lower)", "_|/")
+    my.exception_path = my.java_project.package_dir
     my.exception_name = java_derive_exception_name (my.enum, my.java_project)
     my.exception = "$(my.exception_path:)/$(my.exception_name:)"
 
@@ -1155,18 +1126,18 @@ function java_create_c_exception_throw_method (enum, java_project, meta)
             . = "\
                 jclass cls = (*jenv)->FindClass(jenv, \"$(my.exception:)\");
                 if (NULL == cls) {
-                    printf(\"Class PheException not found.\");
+                    .(c_class_assert_macros_assert)(\"Class PheException not found.\");
                     return 0;
                 }
 
                 jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, \"<init>\", \"(I)V\");
                 if (NULL == methodID) {
-                    printf(\"Class $(my.exception:) has no constructor.\");
+                    .(c_class_assert_macros_assert)(\"Class $(my.exception:) has no constructor.\");
                     return 0;
                 }
                 jthrowable obj = (*jenv)->NewObject(jenv, cls, methodID, statusCode);
                 if (NULL == obj) {
-                    printf(\"Can't instantiate $(my.exception:).\");
+                    .(c_class_assert_macros_assert)(\"Can't instantiate $(my.exception:).\");
                     return 0;
                 }
                 return (*jenv)->Throw(jenv, obj);
@@ -1187,8 +1158,6 @@ function java_create_c_class_method (class, method, java_class, java_method, jav
 
     my.h_module = java_obtain_h_module (my.java_project)
     my.c_module = java_obtain_c_module (my.java_project)
-
-    java_create_c_include (my.class, my.java_project, my.meta)
 
     new c_method to my.h_module
         .name = java_derive_c_method_name (my.method, my.class, my.java_project)
@@ -1298,8 +1267,6 @@ function java_create_c_class_close (class, java_project, meta)
     my.h_module = java_obtain_h_module (my.java_project)
     my.c_module = java_obtain_c_module (my.java_project)
 
-    java_create_c_include (my.class, my.java_project, my.meta)
-
     my.c_method_name = java_derive_c_method_name_str ("close", my.class, my.java_project)
 
     if ! defined (my.h_module->c_method(c_method.name = my.c_method_name)?)
@@ -1348,8 +1315,6 @@ function java_create_c_proxy_method_from_constant (constant, interface, destinat
     my.h_module = java_obtain_h_module(my.java_project)
     my.c_module = java_obtain_c_module(my.java_project)
     my.c_method_name = java_derive_c_method_name_str ("new", my.interface, my.java_project)
-
-    java_create_c_include (my.interface, my.java_project, my.meta)
 
     my.c_method_name = java_derive_c_method_name_str (java_derive_getter_name_by_constant (my.constant, my.java_project), my.interface, my.java_project)
 
@@ -1428,12 +1393,12 @@ function java_get_c_implementation_helper_interface_method (interface, java_proj
         endnew
 
         new c_code to c_method
-            my.class_path = string.replace ("$(my.java_project.namespace:c,lower)", "_|/")
+            my.class_path = my.java_project.package_dir
             my.method_of_class = my.interface.of_class ? my.interface.name
             my.method_is_implemented = make_ref_c (make_id ("class", my.method_of_class, "method", "is_implemented"))
             .temp_code = format_left("\
                 if (!$(my.method_is_implemented:)(c_ctx)) {
-                    printf(\"Given C implementation does not implement interface $(my.interface_name:).\");
+                    .(c_class_assert_macros_assert)(\"Given C implementation does not implement interface $(my.interface_name:).\");
                 }
                 char *classFullName = malloc(200);
                 strcpy (classFullName, \"$(my.class_path:)/\");
@@ -1470,11 +1435,11 @@ function java_get_c_implementation_helper_interface_method (interface, java_proj
                 jclass cls = (*jenv)->FindClass(jenv, classFullName);
                 free(classFullName);
                 if (NULL == cls) {
-                    printf(\"Class not found.\");
+                    .(c_class_assert_macros_assert)(\"Class not found.\");
                 }
                 jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, \"<init>\", \"(J)V\");
                 if (NULL == methodID) {
-                    printf(\"Class has no constructor with C context parameter.\");
+                    .(c_class_assert_macros_assert)(\"Class has no constructor with C context parameter.\");
                 }
                 return (*jenv)->NewObject(jenv, cls, methodID, c_ctx);
             ")
@@ -1494,8 +1459,6 @@ function java_update_c_implementation_helper_module (implementation, java_projec
     my.refs = meta_refs (my.meta)
 
     for my.implementation.interface
-
-        java_create_c_include (interface, my.java_project, my.meta)
 
         my.wrap_interface_method = java_get_c_implementation_helper_interface_method (interface, my.java_project)
 
@@ -1519,7 +1482,7 @@ function java_finalize_c_implementation_helper_modules (java_project, meta)
         c_method->c_code.temp_code += format_left ("\
             default:
                 free(classFullName);
-                printf(\"Unexpected C implementation cast to the Java implementation.\");
+                .(c_class_assert_macros_assert)(\"Unexpected C implementation cast to the Java implementation.\");
             }
             return classFullName;
         ")
@@ -1586,18 +1549,18 @@ function java_create_c_method_from_dependency (dependency, impl, destination, ja
                         }
                         ")
                 endif
-                my.class_path = string.replace ("$(my.java_project.namespace:c,lower)", "_|/")
+                my.class_path = my.java_project.package_dir
                 my.class_name = java_derive_dependency_type (my.dependency)
                 my.class_type = java_derive_c_type (my.dependency)
 
                 . = format_left("\
                     jclass $(my.dependency.name:c)_cls = (*jenv)->GetObjectClass(jenv, $(my.arg_name:));
                     if (NULL == $(my.dependency.name:c)_cls) {
-                        printf(\"Class $(my.class_name:) not found.\");
+                        .(c_class_assert_macros_assert)(\"Class $(my.class_name:) not found.\");
                     }
                     jfieldID $(my.dependency.name:c)_fidCtx = (*jenv)->GetFieldID(jenv, $(my.dependency.name:c)_cls, \"cCtx\", \"J\");
                     if (NULL == $(my.dependency.name:c)_fidCtx) {
-                        printf(\"Class '$(my.class_name:)' has no field 'cCtx'.\");
+                        .(c_class_assert_macros_assert)(\"Class '$(my.class_name:)' has no field 'cCtx'.\");
                     }
                     $(my.class_type:) $(my.dependency.name:c) = ($(my.class_type:)) (*jenv)->GetLongField(jenv, j$(my.dependency.name:Camel), $(my.dependency.name:c)_fidCtx);
 

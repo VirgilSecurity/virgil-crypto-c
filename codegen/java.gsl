@@ -123,23 +123,27 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted package name.
 # ---------------------------------------------------------------------------
-function java_derive_package_name (project)
-    check_arguments (my, "project", my)
+function java_derive_package_name (project, wrapper)
+    check_arguments (my, "project, wrapper", my)
 
-    assert_attribute (my.project, "namespace", my)
+    assert_attribute (my.project, "name", my)
+    assert_attribute (my.wrapper, "package", my)
 
-    return string.replace ("$(my.project.namespace:c,lower)", "_|.")
+    return my.wrapper.package + "." + string.replace ("$(my.project.name:c,lower)", "_|.")
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Return path to the package directory.
 # ---------------------------------------------------------------------------
-function java_derive_package_dir (project)
-    check_arguments (my, "project", my)
+function java_derive_package_dir (project, wrapper)
+    check_arguments (my, "project, wrapper", my)
 
-    assert_attribute (my.project, "namespace", my)
+    assert_attribute (my.project, "name", my)
+    assert_attribute (my.wrapper, "package", my)
 
-    return string.replace ("$(my.project.namespace:c,lower)", "_|/")
+    my.package = java_derive_package_name (my.project, my.wrapper)
+
+    return string.replace (my.package, ".|/")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1279,11 +1283,12 @@ function java_create_project_module (project, wrapper)
         . = my.project. ?
         .name = my.project.name
         .prefix = my.project.prefix
-        .framework = my.project.framework
-        .namespace = my.project.namespace
-        .package = java_derive_package_name(my.project)
-        .package_dir = java_derive_package_dir(my.project)
+        .package = java_derive_package_name(my.project, my.wrapper)
+        .package_dir = java_derive_package_dir(my.project, my.wrapper)
         .source_dir = cat_path (my.wrapper.source_dir, my.project.name, "src/main/java", java_project.package_dir)
+        .jni_source_dir = cat_path (my.wrapper.source_dir, my.project.name, "jni")
+        .class_native_utils = "com.virgilsecurity.crypto.common.utils.NativeUtils"
+        .c_umbrella_header = make_ref_c (make_id ("header", my.project.name, "public"))
 
         copy my.project->license to java_project
 
@@ -1329,7 +1334,7 @@ function java_create_jni_context_module (java_project, meta)
         endnew
 
         new java_import to java_module
-            .import = "virgil.crypto.common.utils.NativeUtils"
+            .import = my.java_project.class_native_utils
         endnew
 
         for my.java_project.java_import
