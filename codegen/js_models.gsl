@@ -16,8 +16,11 @@ endfunction
 
 function js_append_js_interface_module_model(parent, source, wrapper_project)
   new js_interface_module to my.parent
-    js_interface_module.name = my.source.name
     js_interface_module.cpp_name = "$(my.source.name:pascal)"
+    new js_cpp_name to js_interface_module
+      js_cpp_name.name = js_interface_module.cpp_name
+      js_cpp_name.uid = make_id("js", "interface", "module", my.source.name, "cpp", "name")
+    endnew
     js_interface_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
     js_interface_module.c_implementation_type = "$(make_ref_c(make_id("class", "impl", "struct", "impl")))*"
     js_interface_module.c_implementation_header = make_ref_c(make_id("header", "impl"))
@@ -72,10 +75,17 @@ endfunction
 
 function js_append_js_class_module_model(parent, source, wrapper_project)
   new js_class_module to my.parent
-    js_class_module.name = my.source.name
     js_class_module.binding_name = "$(my.source.name:pascal)Binding"
     js_class_module.js_name = "$(my.source.name:pascal)"
+    new js_name to js_class_module
+      js_name.name = js_class_module.js_name
+      js_name.uid = make_id("js", "class", "module", my.source.name, "js", "name")
+    endnew
     js_class_module.cpp_name = "$(my.source.name:pascal)"
+    new js_cpp_name to js_class_module
+      js_cpp_name.name = js_class_module.cpp_name
+      js_cpp_name.uid = make_id("js", "class", "module", my.source.name, "cpp", "name")
+    endnew
     js_class_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
     js_class_module.c_header = make_ref_c(make_id("header", my.source.name))
     js_class_module.c_header_path = "$(my.wrapper_project.namespace:no)/$(js_class_module.c_header:no)"
@@ -127,7 +137,7 @@ endfunction
 
 function js_append_js_interface_implementation(parent, interface)
   new js_interface_implementation to my.parent
-    js_interface_implementation.interface_name = make_ref_js(make_id("interface", "module", my.interface.name))
+    js_interface_implementation.cpp_class_name = make_ref_js(make_id("interface", "module", my.interface.name, "cpp", "name"))
     js_interface_implementation.c_implementation_type = "$(make_ref_c(make_id("class", "impl", "struct", "impl")))*"
     return js_interface_implementation
   endnew
@@ -294,7 +304,7 @@ function js_append_js_class_call_argument(parent, source, argument, index)
     js_class_call_argument.index = my.index
     js_class_call_argument.cpp_name = "$(my.argument.name:c)"
     js_class_call_argument.js_name = "$(my.argument.name:camel)"
-    js_class_call_argument.class_module_name = make_ref_js(make_id(my.project_uid, "class", "module", my.class_name))
+    js_class_call_argument.cpp_class_name = make_ref_js(make_id(my.project_uid, "class", "module", my.class_name, "cpp", "name"))
     js_class_call_argument.c_context_name = "$(my.class_name:c)"
     js_class_call_argument.c_context_type = "$(make_ref_c(make_id(my.project_uid, "class", my.class_name, "struct", my.class_name)))*"
     return js_class_call_argument
@@ -307,7 +317,7 @@ function js_append_js_interface_call_argument(parent, source, argument, index)
     js_interface_call_argument.index = my.index
     js_interface_call_argument.cpp_name = "$(my.argument.name:c)"
     js_interface_call_argument.js_name = "$(my.argument.name:camel)"
-    js_interface_call_argument.interface_module_name = make_ref_js(make_id(my.project_uid, "interface", "module", my.argument.interface))
+    js_interface_call_argument.cpp_class_name = make_ref_js(make_id(my.project_uid, "interface", "module", my.argument.interface, "cpp", "name"))
     js_interface_call_argument.c_implementation_type = "$(make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl")))*"
     return js_interface_call_argument
   endnew
@@ -340,8 +350,16 @@ endfunction
 
 function js_append_js_method_call_return(parent, argument)
   new js_method_call_return to my.parent
+    my.project_uid = js_get_project_uid(my.argument)
+    if defined(my.argument.class) & my.argument.class <> "data" & my.argument.class <> "buffer"
+      js_method_call_return.type = global.js_js_method_call_return_type_class
+      js_method_call_return.js_class_name = make_ref_js(make_id(my.project_uid, "class", "module", my.argument.class, "js", "name"))
+    elsif defined(my.argument.interface)
+      js_method_call_return.type = global.js_js_method_call_return_type_interface
+    else
+      js_method_call_return.type = global.js_js_method_call_return_type_other
+    endif
     js_method_call_return.cpp_name = "$(my.argument.name:c)"
-    js_method_call_return.js_name = "$(my.argument.name:camel)"
     return js_method_call_return
   endnew
 endfunction
@@ -496,7 +514,8 @@ function js_append_js_class_method_return(parent, argument)
     js_class_method_return.cpp_name = "$(my.argument.name:c)"
     js_class_method_return.js_name = "$(my.argument.name:camel)"
     js_class_method_return.c_context_type = make_ref_c(make_id(my.project_uid, "class", my.class_name, "struct", my.class_name))
-    js_class_method_return.class_module_name = make_ref_js(make_id(my.project_uid, "class" , "module", my.class_name))
+    js_class_method_return.js_class_name = make_ref_js(make_id(my.project_uid, "class", "module", my.class_name, "js", "name"))
+    js_class_method_return.cpp_class_name = make_ref_js(make_id(my.project_uid, "class" , "module", my.class_name, "cpp", "name"))
     return js_class_method_return
   endnew
 endfunction
@@ -506,7 +525,7 @@ function js_append_js_interface_method_return(parent, argument)
     my.project_uid = js_get_project_uid(my.argument)
     js_interface_method_return.cpp_name = "$(my.argument.name:c)"
     js_interface_method_return.js_name = "$(my.argument.name:camel)"
-    js_interface_method_return.interface_module_name = make_ref_js(make_id(my.project_uid, "interface", "module", my.argument.interface))
+    js_interface_method_return.cpp_class_name = make_ref_js(make_id(my.project_uid, "interface", "module", my.argument.interface, "cpp", "name"))
     js_interface_method_return.c_implementation_type = "$(make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl")))*"
     return js_interface_method_return
   endnew

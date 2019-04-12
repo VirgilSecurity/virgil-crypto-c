@@ -149,6 +149,10 @@ global.js_js_buffer_size_type_constant = "js_buffer_size_constant"
 global.js_js_buffer_size_type_method = "js_buffer_size_method"
 global.js_js_buffer_size_type_argument = "js_buffer_size_argument"
 
+global.js_js_method_call_return_type_class = "js_method_call_return_class"
+global.js_js_method_call_return_type_interface = "js_method_call_return_interface"
+global.js_js_method_call_return_type_other = "js_method_call_return_other"
+
 global.js_cpp_method_return_name = "method_return"
 
 global.js_cpp_init_function_name = "Init"
