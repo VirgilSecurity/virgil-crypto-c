@@ -97,20 +97,14 @@ grp_info_msg_cmp(MessageGroupInfo *msg1, MessageGroupInfo *msg2) {
 static bool
 msg_cmp(vscr_ratchet_group_message_t *msg1, vscr_ratchet_group_message_t *msg2) {
     if (msg1->message_pb.version != msg2->message_pb.version ||
-            msg1->message_pb.has_remove_members_info != msg2->message_pb.has_remove_members_info ||
-            msg1->message_pb.has_regular_message != msg2->message_pb.has_regular_message ||
-            msg1->message_pb.has_add_members_info != msg2->message_pb.has_add_members_info ||
-            msg1->message_pb.has_start_group_info != msg2->message_pb.has_start_group_info)
+            msg1->message_pb.has_group_info != msg2->message_pb.has_group_info ||
+            msg1->message_pb.has_regular_message != msg2->message_pb.has_regular_message)
         return false;
 
     if (msg1->message_pb.has_regular_message) {
         return reg_msg_cmp(&msg1->message_pb.regular_message, &msg2->message_pb.regular_message);
-    } else if (msg1->message_pb.has_add_members_info) {
-        return grp_info_msg_cmp(&msg1->message_pb.add_members_info, &msg2->message_pb.add_members_info);
-    } else if (msg1->message_pb.has_start_group_info) {
-        return grp_info_msg_cmp(&msg1->message_pb.start_group_info, &msg2->message_pb.start_group_info);
-    } else if (msg1->message_pb.has_remove_members_info) {
-        return grp_info_msg_cmp(&msg1->message_pb.remove_members_info, &msg2->message_pb.remove_members_info);
+    } else if (msg1->message_pb.has_group_info) {
+        return grp_info_msg_cmp(&msg1->message_pb.group_info, &msg2->message_pb.group_info);
     } else {
         TEST_ASSERT(false);
     }
@@ -155,24 +149,24 @@ void
 test__serialize_deserialize__fixed_group_info_msg__should_be_equal(void) {
     vscr_ratchet_group_message_t *msg1 = vscr_ratchet_group_message_new();
 
-    msg1->message_pb.has_start_group_info = true;
+    msg1->message_pb.has_group_info = true;
     msg1->message_pb.version = 5;
-    msg1->message_pb.start_group_info.version = 11;
-    msg1->message_pb.start_group_info.participants_count = 2;
+    msg1->message_pb.group_info.version = 11;
+    msg1->message_pb.group_info.participants_count = 2;
 
-    msg1->message_pb.start_group_info.participants[0].version = 2;
-    msg1->message_pb.start_group_info.participants[1].version = 2;
-    memcpy(msg1->message_pb.start_group_info.participants[0].pub_key, test_data_ratchet_group_message_pub_key1.bytes,
+    msg1->message_pb.group_info.participants[0].version = 2;
+    msg1->message_pb.group_info.participants[1].version = 2;
+    memcpy(msg1->message_pb.group_info.participants[0].pub_key, test_data_ratchet_group_message_pub_key1.bytes,
             test_data_ratchet_group_message_pub_key1.len);
-    memcpy(msg1->message_pb.start_group_info.participants[1].pub_key, test_data_ratchet_group_message_pub_key2.bytes,
+    memcpy(msg1->message_pb.group_info.participants[1].pub_key, test_data_ratchet_group_message_pub_key2.bytes,
             test_data_ratchet_group_message_pub_key2.len);
-    memcpy(msg1->message_pb.start_group_info.participants[0].key, test_data_ratchet_group_message_pub_key1.bytes,
+    memcpy(msg1->message_pb.group_info.participants[0].key, test_data_ratchet_group_message_pub_key1.bytes,
             test_data_ratchet_group_message_pub_key1.len);
-    memcpy(msg1->message_pb.start_group_info.participants[1].key, test_data_ratchet_group_message_pub_key2.bytes,
+    memcpy(msg1->message_pb.group_info.participants[1].key, test_data_ratchet_group_message_pub_key2.bytes,
             test_data_ratchet_group_message_pub_key2.len);
-    memcpy(msg1->message_pb.start_group_info.participants[0].id, test_data_ratchet_group_message_id1.bytes,
+    memcpy(msg1->message_pb.group_info.participants[0].id, test_data_ratchet_group_message_id1.bytes,
             test_data_ratchet_group_message_id1.len);
-    memcpy(msg1->message_pb.start_group_info.participants[1].id, test_data_ratchet_group_message_id2.bytes,
+    memcpy(msg1->message_pb.group_info.participants[1].id, test_data_ratchet_group_message_id2.bytes,
             test_data_ratchet_group_message_id2.len);
 
     size_t len = vscr_ratchet_group_message_serialize_len(msg1);
@@ -202,13 +196,13 @@ test__serialize_deserialize__group_info_overflow__should_be_equal(void) {
 
     size_t number_of_participants = vscr_ratchet_common_MAX_PARTICIPANTS_COUNT;
 
-    msg1->message_pb.has_start_group_info = true;
-    msg1->message_pb.start_group_info.participants_count = number_of_participants;
+    msg1->message_pb.has_group_info = true;
+    msg1->message_pb.group_info.participants_count = number_of_participants;
 
     for (size_t i = 0; i < number_of_participants; i++) {
         vsc_buffer_t *id;
         generate_random_participant_id(rng, &id);
-        memcpy(msg1->message_pb.start_group_info.participants[i].id, vsc_buffer_bytes(id), vsc_buffer_len(id));
+        memcpy(msg1->message_pb.group_info.participants[i].id, vsc_buffer_bytes(id), vsc_buffer_len(id));
         vsc_buffer_destroy(&id);
     }
 
@@ -279,9 +273,9 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    //        RUN_TEST(test__serialize_deserialize__fixed_regular_msg__should_be_equal);
-    //        RUN_TEST(test__serialize_deserialize__fixed_group_info_msg__should_be_equal);
-    //    RUN_TEST(test__serialize_deserialize__group_info_overflow__should_be_equal);
+    RUN_TEST(test__serialize_deserialize__fixed_regular_msg__should_be_equal);
+    RUN_TEST(test__serialize_deserialize__fixed_group_info_msg__should_be_equal);
+    RUN_TEST(test__serialize_deserialize__group_info_overflow__should_be_equal);
     RUN_TEST(test__serialize_deserialize__regular_overflow__should_be_equal);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);

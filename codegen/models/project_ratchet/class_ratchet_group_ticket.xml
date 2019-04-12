@@ -20,14 +20,20 @@
     </dependency>
 
     <property name="key utils" class="ratchet key utils"/>
-    <property name="msg start" class="ratchet group message" access="readwrite"/>
-    <property name="msg add" class="ratchet group message" access="readwrite"/>
+    <property name="complementary msg" class="ratchet group message" access="readwrite"/>
+    <property name="full msg" class="ratchet group message" access="readwrite"/>
+    <property name="epoch change" type="boolean" access="readwrite"/>
 
     <method name="setup defaults">
         Setups default dependencies:
         - RNG: CTR DRBG
 
         <return enum="status"/>
+    </method>
+
+    <method name="setup ticket" visibility="private">
+        <argument name="epoch" type="size"/>
+        <argument name="epoch change" type="boolean"/>
     </method>
 
     <method name="add new participant">
@@ -45,11 +51,20 @@
         </return>
     </method>
 
-    <method name="add new participant to msg" declaration="private" is_static="1">
+    <method name="add existing participant" visibility="private">
+        <argument name="participant" class="ratchet group participant data"/>
+
+        <return enum="status">
+            Error
+        </return>
+    </method>
+
+    <method name="add participant to msg" declaration="private" is_static="1">
         <argument name="msg info" class="MessageGroupInfo" library="nanopb" access="readwrite"/>
         <argument name="participant id" class="data"/>
         <argument name="public key" class="data"/>
         <argument name="key" class="data"/>
+        <argument name="index" type="size"/>
     </method>
 
     <method name="remove participant">
@@ -64,7 +79,7 @@
         </return>
     </method>
 
-    <method name="get start ticket" is_const="1">
+    <method name="get complementary ticket message" is_const="1">
         Generates message that should be sent to all participants using secure channel.
 
         <return class="ratchet group message" access="readonly">
@@ -72,7 +87,7 @@
         </return>
     </method>
 
-    <method name="get add ticket" is_const="1">
+    <method name="get full ticket message" is_const="1">
         Generates message that should be sent to all participants using secure channel.
 
         <return class="ratchet group message" access="readonly">

@@ -52,15 +52,25 @@ message Session {
 	required Ratchet ratchet = 7;
 }
 
+message ParticipantEpoch {
+	required uint32 epoch = 1;
+	required ChainKey chain_key = 2;
+}
+
 message ParticipantData {
 	required bytes id = 1;
 	required bytes pub_key = 2;
-	required ChainKey chain_key = 3;
+	repeated ParticipantEpoch epochs = 3;
+}
+
+message SkippedGroupMessageKey {
+	required uint32 epoch = 1;
+	required MessageKey message_key = 2;
 }
 
 message SkippedGroupMessagesRoot {
 	required bytes id = 1;
-	repeated MessageKey message_keys = 2;
+	repeated SkippedGroupMessageKey skipped_message_keys = 2;
 }
 
 message GroupSession {

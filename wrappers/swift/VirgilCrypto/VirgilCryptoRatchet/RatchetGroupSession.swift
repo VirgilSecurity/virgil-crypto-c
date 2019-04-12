@@ -94,6 +94,12 @@ import VSCRatchet
         return proxyResult
     }
 
+    @objc public func getCurrentEpoch() -> Int {
+        let proxyResult = vscr_ratchet_group_session_get_current_epoch(self.c_ctx)
+
+        return proxyResult
+    }
+
     /// Setups default dependencies:
     /// - RNG: CTR DRBG
     @objc public func setupDefaults() throws {
@@ -118,6 +124,12 @@ import VSCRatchet
 
             vscr_ratchet_group_session_set_id(self.c_ctx, vsc_data(myIdPointer.bindMemory(to: byte.self).baseAddress, myId.count))
         })
+    }
+
+    @objc public func getId() -> Data {
+        let proxyResult = vscr_ratchet_group_session_get_id(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
     /// Sets up session. Identity private key should be set separately.
@@ -220,8 +232,13 @@ import VSCRatchet
         return RatchetGroupTicket.init(take: proxyResult!)
     }
 
-    @objc public func createGroupTicketForAddingOrRemovingMembers() -> RatchetGroupTicket {
-        let proxyResult = vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_members(self.c_ctx)
+    @objc public func createGroupTicketForAddingOrRemovingMembers() throws -> RatchetGroupTicket {
+        var error: vscr_error_t = vscr_error_t()
+        vscr_error_reset(&error)
+
+        let proxyResult = vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_members(self.c_ctx, &error)
+
+        try RatchetError.handleStatus(fromC: error.status)
 
         return RatchetGroupTicket.init(take: proxyResult!)
     }

@@ -46,6 +46,7 @@ size_t generate_number(vscf_ctr_drbg_t *rng, size_t min, size_t max);
 double generate_prob(vscf_ctr_drbg_t *rng);
 size_t generate_size(vscf_ctr_drbg_t *rng);
 void generate_random_data(vscf_ctr_drbg_t *rng, vsc_buffer_t **buffer);
+void generate_permutation(vscf_ctr_drbg_t *rng, size_t n, size_t *buffer);
 void generate_PKCS8_ed_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub);
 void generate_PKCS8_curve_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub);
 void generate_random_participant_id(vscf_ctr_drbg_t *rng, vsc_buffer_t **id);
@@ -56,6 +57,7 @@ void encrypt_decrypt__100_plain_texts_random_order_with_producers(vscf_ctr_drbg_
 void restore_session(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session);
 void initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratchet_group_session_t ***sessions, vsc_buffer_t ***priv);
 void add_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t add_size, vscr_ratchet_group_session_t ***sessions);
+void remove_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t remove_size, vscr_ratchet_group_session_t ***sessions);
 void encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterations, vscr_ratchet_group_session_t **sessions, double lost_rate, double distribution_factor, double generate_distribution, vsc_buffer_t **priv);
 
 #endif //VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H

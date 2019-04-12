@@ -125,6 +125,17 @@ generate_random_data(vscf_ctr_drbg_t *rng, vsc_buffer_t **buffer) {
 }
 
 void
+generate_permutation(vscf_ctr_drbg_t *rng, size_t n, size_t *buffer) {
+
+    for (size_t i = 0; i < n - 1; i++) {
+        size_t j = generate_number(rng, i, n - 1);
+        size_t t = buffer[i];
+        buffer[i] = buffer[j];
+        buffer[j] = t;
+    }
+}
+
+void
 generate_PKCS8_ed_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub) {
     vscf_pkcs8_der_serializer_t *pkcs8 = vscf_pkcs8_der_serializer_new();
     vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
@@ -595,7 +606,7 @@ initialize_random_group_chat(
         vsc_buffer_destroy(&pub);
     }
 
-    const vscr_ratchet_group_message_t *msg_start = vscr_ratchet_group_ticket_get_start_ticket(ticket);
+    const vscr_ratchet_group_message_t *msg_start = vscr_ratchet_group_ticket_get_full_ticket_message(ticket);
 
     for (size_t i = 0; i < group_size; i++) {
         vscr_ratchet_group_session_t *session = vscr_ratchet_group_session_new();
@@ -645,7 +656,6 @@ add_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t add_size, vscr_ratc
 
     vscr_ratchet_group_ticket_t *ticket =
             vscr_ratchet_group_session_create_group_ticket_for_adding_members((*sessions)[admin]);
-    vscr_ratchet_group_ticket_use_rng(ticket, vscf_ctr_drbg_impl(rng));
 
     vsc_buffer_t **ids = vscr_alloc(add_size * sizeof(vsc_buffer_t *));
 
@@ -674,8 +684,8 @@ add_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t add_size, vscr_ratc
         (*sessions)[size + i] = session;
     }
 
-    const vscr_ratchet_group_message_t *msg_start = vscr_ratchet_group_ticket_get_start_ticket(ticket);
-    const vscr_ratchet_group_message_t *msg_add = vscr_ratchet_group_ticket_get_add_ticket(ticket);
+    const vscr_ratchet_group_message_t *msg_start = vscr_ratchet_group_ticket_get_full_ticket_message(ticket);
+    const vscr_ratchet_group_message_t *msg_add = vscr_ratchet_group_ticket_get_complementary_ticket_message(ticket);
 
     for (size_t i = 0; i < size + add_size; i++) {
         vscr_ratchet_group_session_t *session = (*sessions)[i];
@@ -690,6 +700,64 @@ add_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t add_size, vscr_ratc
     }
 
     vscr_dealloc(ids);
+    vscr_dealloc(old_sessions);
+    vscr_ratchet_group_ticket_destroy(&ticket);
+}
+
+void
+remove_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t remove_size, vscr_ratchet_group_session_t ***sessions) {
+    vscr_ratchet_group_session_t **old_sessions = *sessions;
+
+    *sessions = vscr_alloc((size - remove_size) * sizeof(vscr_ratchet_group_session_t *));
+
+    size_t *permut = vscr_alloc(size * sizeof(size_t));
+
+    for (size_t i = 0; i < size; i++) {
+        permut[i] = i;
+    }
+
+    generate_permutation(rng, size, permut);
+
+    size_t admin = permut[remove_size];
+
+    vscr_ratchet_group_session_t *admin_session = old_sessions[admin];
+
+    vscr_error_t error;
+    vscr_error_reset(&error);
+
+    vscr_ratchet_group_ticket_t *ticket =
+            vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_members(admin_session, &error);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error.status);
+
+    size_t counter = 0;
+    for (size_t i = 0; i < size; i++) {
+        bool remove = false;
+        for (size_t j = 0; j < remove_size; j++) {
+            if (i == permut[j]) {
+                remove = true;
+                break;
+            }
+        }
+
+        vscr_ratchet_group_session_t *session = old_sessions[i];
+
+        if (remove) {
+            vscr_status_t status =
+                    vscr_ratchet_group_ticket_remove_participant(ticket, vscr_ratchet_group_session_get_id(session));
+            TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
+            vscr_ratchet_group_session_destroy(&session);
+        } else {
+            (*sessions)[counter++] = session;
+        }
+    }
+
+    for (size_t i = 0; i < counter; i++) {
+        vscr_status_t status = vscr_ratchet_group_session_setup_session(
+                (*sessions)[i], vscr_ratchet_group_ticket_get_full_ticket_message(ticket));
+        TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
+    }
+
+    vscr_dealloc(permut);
     vscr_dealloc(old_sessions);
     vscr_ratchet_group_ticket_destroy(&ticket);
 }

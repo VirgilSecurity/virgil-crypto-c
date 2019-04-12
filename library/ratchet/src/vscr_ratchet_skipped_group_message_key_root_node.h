@@ -50,6 +50,7 @@
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_message_key.h"
+#include "vscr_ratchet_skipped_group_message_key.h"
 #include "vscr_ratchet_skipped_group_message_key_root_node.h"
 #include "vscr_ratchet_skipped_group_message_key_node.h"
 
@@ -135,7 +136,7 @@ vscr_ratchet_skipped_group_message_key_root_node_shallow_copy(
 
 VSCR_PUBLIC vscr_ratchet_message_key_t *
 vscr_ratchet_skipped_group_message_key_root_node_find_key(vscr_ratchet_skipped_group_message_key_root_node_t *self,
-        size_t counter);
+        size_t epoch, size_t counter);
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_group_message_key_root_node_delete_key(vscr_ratchet_skipped_group_message_key_root_node_t *self,
@@ -143,7 +144,7 @@ vscr_ratchet_skipped_group_message_key_root_node_delete_key(vscr_ratchet_skipped
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_group_message_key_root_node_add_key(vscr_ratchet_skipped_group_message_key_root_node_t *self,
-        vscr_ratchet_message_key_t *skipped_message_key);
+        vscr_ratchet_skipped_group_message_key_t *skipped_group_message_key);
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_group_message_key_root_node_serialize(vscr_ratchet_skipped_group_message_key_root_node_t *self,

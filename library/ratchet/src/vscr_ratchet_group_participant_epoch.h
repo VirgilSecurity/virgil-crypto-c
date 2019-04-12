@@ -44,14 +44,15 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#ifndef VSCR_RATCHET_GROUP_PARTICIPANT_EPOCH_H_INCLUDED
+#define VSCR_RATCHET_GROUP_PARTICIPANT_EPOCH_H_INCLUDED
 
-//  @description
-// --------------------------------------------------------------------------
-//  Represents group message type
-// --------------------------------------------------------------------------
-
-#ifndef VSCR_GROUP_MSG_TYPE_H_INCLUDED
-#define VSCR_GROUP_MSG_TYPE_H_INCLUDED
+#include "vscr_library.h"
+#include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_group_participant_epoch.h"
+#include "vscr_ratchet_chain_key.h"
 
 // clang-format on
 //  @end
@@ -69,30 +70,74 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Represents group message type
+//  Handle 'ratchet group participant epoch' context.
 //
-enum vscr_group_msg_type_t {
+typedef struct vscr_ratchet_group_participant_epoch_t vscr_ratchet_group_participant_epoch_t;
+struct vscr_ratchet_group_participant_epoch_t {
     //
-    //  Group info used to create group chat, or change group chat.
-    //  Should be distributed only using secure channels.
+    //  Function do deallocate self context.
     //
-    vscr_group_msg_type_START_GROUP = 1,
+    vscr_dealloc_fn self_dealloc_cb;
     //
-    //  Add members message.
-    //  Should be distributed only using secure channels.
+    //  Reference counter.
     //
-    vscr_group_msg_type_ADD_MEMBERS = 2,
-    //
-    //  Remove members message.
-    //  Should be distributed only using secure channels.
-    //
-    vscr_group_msg_type_EPOCH_CHANGE = 3,
-    //
-    //  Regular group ratchet message with cipher text.
-    //
-    vscr_group_msg_type_REGULAR = 4
+    size_t refcnt;
+
+    size_t epoch;
+
+    vscr_ratchet_chain_key_t *chain_key;
 };
-typedef enum vscr_group_msg_type_t vscr_group_msg_type_t;
+
+//
+//  Return size of 'vscr_ratchet_group_participant_epoch_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_group_participant_epoch_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_epoch_init(vscr_ratchet_group_participant_epoch_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_epoch_cleanup(vscr_ratchet_group_participant_epoch_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCR_PUBLIC vscr_ratchet_group_participant_epoch_t *
+vscr_ratchet_group_participant_epoch_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if context was allocated by the caller.
+//
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_epoch_delete(vscr_ratchet_group_participant_epoch_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscr_ratchet_group_participant_epoch_new ()'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_epoch_destroy(vscr_ratchet_group_participant_epoch_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCR_PUBLIC vscr_ratchet_group_participant_epoch_t *
+vscr_ratchet_group_participant_epoch_shallow_copy(vscr_ratchet_group_participant_epoch_t *self);
+
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_epoch_serialize(vscr_ratchet_group_participant_epoch_t *self, ParticipantEpoch *data_pb);
+
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_epoch_deserialize(ParticipantEpoch *data_pb,
+        vscr_ratchet_group_participant_epoch_t *data);
 
 
 // --------------------------------------------------------------------------
@@ -108,5 +153,5 @@ typedef enum vscr_group_msg_type_t vscr_group_msg_type_t;
 
 
 //  @footer
-#endif // VSCR_GROUP_MSG_TYPE_H_INCLUDED
+#endif // VSCR_RATCHET_GROUP_PARTICIPANT_EPOCH_H_INCLUDED
 //  @end

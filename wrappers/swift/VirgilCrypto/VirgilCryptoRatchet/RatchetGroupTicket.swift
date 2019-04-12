@@ -104,15 +104,15 @@ import VSCRatchet
     }
 
     /// Generates message that should be sent to all participants using secure channel.
-    @objc public func getStartTicket() -> RatchetGroupMessage {
-        let proxyResult = vscr_ratchet_group_ticket_get_start_ticket(self.c_ctx)
+    @objc public func getComplementaryTicketMessage() -> RatchetGroupMessage {
+        let proxyResult = vscr_ratchet_group_ticket_get_complementary_ticket_message(self.c_ctx)
 
         return RatchetGroupMessage.init(use: proxyResult!)
     }
 
     /// Generates message that should be sent to all participants using secure channel.
-    @objc public func getAddTicket() -> RatchetGroupMessage {
-        let proxyResult = vscr_ratchet_group_ticket_get_add_ticket(self.c_ctx)
+    @objc public func getFullTicketMessage() -> RatchetGroupMessage {
+        let proxyResult = vscr_ratchet_group_ticket_get_full_ticket_message(self.c_ctx)
 
         return RatchetGroupMessage.init(use: proxyResult!)
     }

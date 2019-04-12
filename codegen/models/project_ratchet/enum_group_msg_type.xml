@@ -1,17 +1,17 @@
 <enum name="group msg type" definition="public">
     Represents group message type
 
-    <constant name="start group info" value="1">
+    <constant name="start group" value="1">
         Group info used to create group chat, or change group chat.
         Should be distributed only using secure channels.
     </constant>
 
-    <constant name="add members info" value="2">
+    <constant name="add members" value="2">
         Add members message.
         Should be distributed only using secure channels.
     </constant>
 
-    <constant name="remove members info" value="3">
+    <constant name="epoch change" value="3">
         Remove members message.
         Should be distributed only using secure channels.
     </constant>

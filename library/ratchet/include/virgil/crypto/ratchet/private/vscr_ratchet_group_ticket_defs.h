@@ -100,9 +100,11 @@ struct vscr_ratchet_group_ticket_t {
 
     vscr_ratchet_key_utils_t *key_utils;
 
-    vscr_ratchet_group_message_t *msg_start;
+    vscr_ratchet_group_message_t *complementary_msg;
 
-    vscr_ratchet_group_message_t *msg_add;
+    vscr_ratchet_group_message_t *full_msg;
+
+    bool epoch_change;
 };
 
 

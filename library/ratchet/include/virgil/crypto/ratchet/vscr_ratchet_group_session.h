@@ -184,6 +184,9 @@ vscr_ratchet_group_session_is_private_key_set(const vscr_ratchet_group_session_t
 VSCR_PUBLIC bool
 vscr_ratchet_group_session_is_id_set(const vscr_ratchet_group_session_t *self);
 
+VSCR_PUBLIC size_t
+vscr_ratchet_group_session_get_current_epoch(const vscr_ratchet_group_session_t *self);
+
 //
 //  Setups default dependencies:
 //  - RNG: CTR DRBG
@@ -203,6 +206,9 @@ vscr_ratchet_group_session_set_private_key(vscr_ratchet_group_session_t *self,
 //
 VSCR_PUBLIC void
 vscr_ratchet_group_session_set_id(vscr_ratchet_group_session_t *self, vsc_data_t my_id);
+
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_group_session_get_id(const vscr_ratchet_group_session_t *self);
 
 //
 //  Sets up session. Identity private key should be set separately.
@@ -253,8 +259,8 @@ VSCR_PUBLIC vscr_ratchet_group_ticket_t *
 vscr_ratchet_group_session_create_group_ticket_for_adding_members(const vscr_ratchet_group_session_t *self);
 
 VSCR_PUBLIC vscr_ratchet_group_ticket_t *
-vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_members(
-        const vscr_ratchet_group_session_t *self);
+vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_members(const vscr_ratchet_group_session_t *self,
+        vscr_error_t *error);
 
 
 // --------------------------------------------------------------------------

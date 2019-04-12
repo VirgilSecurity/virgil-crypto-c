@@ -108,6 +108,8 @@ struct vscr_ratchet_group_session_t {
 
     bool is_id_set;
 
+    size_t current_epoch;
+
     byte my_id[vscr_ratchet_common_PARTICIPANT_ID_LEN];
 
     vscr_ratchet_group_participant_data_t *me;
@@ -152,12 +154,8 @@ vscr_ratchet_group_session_find_participant(vscr_ratchet_group_session_t *self,
         const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN]);
 
 static void
-vscr_ratchet_group_session_copy_data_from_participant_pb(vscr_ratchet_group_participant_data_t *participant,
+vscr_ratchet_group_session_update_participant(vscr_ratchet_group_participant_data_t *participant, size_t epoch,
         const MessageParticipantInfo *info);
-
-static void
-vscr_ratchet_group_session_copy_data_from_participant_class(MessageParticipantInfo *info,
-        const vscr_ratchet_group_participant_data_t *participant);
 
 //
 //  Return size of 'vscr_ratchet_group_session_t'.
@@ -346,6 +344,7 @@ vscr_ratchet_group_session_init_ctx(vscr_ratchet_group_session_t *self) {
     self->is_initialized = false;
     self->is_private_key_set = false;
     self->is_id_set = false;
+    self->current_epoch = 0;
 }
 
 //
@@ -428,6 +427,15 @@ vscr_ratchet_group_session_is_id_set(const vscr_ratchet_group_session_t *self) {
     return self->is_id_set;
 }
 
+VSCR_PUBLIC size_t
+vscr_ratchet_group_session_get_current_epoch(const vscr_ratchet_group_session_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->is_initialized);
+
+    return self->current_epoch;
+}
+
 //
 //  Setups default dependencies:
 //  - RNG: CTR DRBG
@@ -493,6 +501,15 @@ vscr_ratchet_group_session_set_id(vscr_ratchet_group_session_t *self, vsc_data_t
     self->is_id_set = true;
 }
 
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_group_session_get_id(const vscr_ratchet_group_session_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->is_id_set);
+
+    return vsc_data(self->my_id, sizeof(self->my_id));
+}
+
 //
 //  Sets up session. Identity private key should be set separately.
 //
@@ -503,25 +520,46 @@ vscr_ratchet_group_session_setup_session(
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->key_utils);
     VSCR_ASSERT_PTR(message);
-    VSCR_ASSERT(!message->message_pb.has_regular_message);
-    VSCR_ASSERT(!message->message_pb.has_remove_members_info); // TODO
+    VSCR_ASSERT(message->message_pb.has_group_info);
 
     VSCR_ASSERT(self->is_id_set);
     VSCR_ASSERT(self->is_private_key_set);
 
-    bool first_setup = message->message_pb.has_start_group_info;
+    const MessageGroupInfo *msg_info = &message->message_pb.group_info;
 
-    const MessageGroupInfo *msg_info;
+    vscr_group_msg_type_t type = vscr_ratchet_group_message_get_type(message);
 
-    if (first_setup) {
-        msg_info = &message->message_pb.start_group_info;
-    } else {
+    if (type == MessageGroupInfo_Type_ADD) {
         VSCR_ASSERT(self->is_initialized);
-        msg_info = &message->message_pb.add_members_info;
+        if (msg_info->epoch != self->current_epoch) {
+            return vscr_status_ERROR_EPOCH_MISMATCH;
+        }
+    } else if (self->is_initialized && self->current_epoch + 1 != msg_info->epoch) {
+        return vscr_status_ERROR_EPOCH_MISMATCH;
     }
 
-    if (self->participants_count + msg_info->participants_count > vscr_ratchet_common_MAX_PARTICIPANTS_COUNT) {
+    size_t new_size = 0;
+
+    switch (type) {
+    case MessageGroupInfo_Type_ADD:
+        new_size = self->participants_count + msg_info->participants_count;
+        break;
+
+    case MessageGroupInfo_Type_START:
+    case MessageGroupInfo_Type_CHANGE:
+        new_size = msg_info->participants_count;
+        break;
+
+    default:
+        VSCR_ASSERT(false);
+    }
+
+    if (new_size > vscr_ratchet_common_MAX_PARTICIPANTS_COUNT) {
         return vscr_status_ERROR_TOO_MANY_PARTICIPANTS;
+    }
+
+    if (new_size < vscr_ratchet_common_MIN_PARTICIPANTS_COUNT) {
+        return vscr_status_ERROR_TOO_FEW_PARTICIPANTS;
     }
 
     bool i_participate = false;
@@ -534,33 +572,76 @@ vscr_ratchet_group_session_setup_session(
         }
     }
 
-    if (first_setup && !i_participate) {
+    if (!self->is_initialized && !i_participate) {
         return vscr_status_ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE;
     }
 
-    VSCR_ASSERT(msg_info->participants_count > 1);
+    VSCR_ASSERT(type == MessageGroupInfo_Type_ADD || msg_info->participants_count > 1);
 
-    vscr_ratchet_group_participant_data_t **old_participants = self->participants;
-    vscr_ratchet_skipped_group_message_key_root_node_t **old_skipped = self->skipped_messages;
+    if (type == MessageGroupInfo_Type_ADD) {
+        for (size_t i = 0; i < msg_info->participants_count; i++) {
+            const MessageParticipantInfo *info = &msg_info->participants[i];
 
-    size_t len = self->participants_count + msg_info->participants_count;
+            for (size_t j = 0; j < self->participants_count; j++) {
+                // Previously existed participant
+                if (memcmp(info->id, self->participants[j]->id, sizeof(info->id)) == 0) {
+                    return vscr_status_ERROR_DUPLICATE_ID;
+                }
+            }
+        }
+    }
 
-    if (first_setup) {
+    self->current_epoch = msg_info->epoch;
+    size_t len = new_size;
+
+    if (!self->is_initialized) {
         // Except me
         len--;
     }
 
-    self->participants = vscr_alloc(len * sizeof(vscr_ratchet_group_participant_data_t *));
-    self->skipped_messages = vscr_alloc(len * sizeof(vscr_ratchet_skipped_group_message_key_root_node_t *));
+    if (type == MessageGroupInfo_Type_ADD || (type == MessageGroupInfo_Type_CHANGE && self->participants_count > 0)) {
+        vscr_ratchet_group_participant_data_t **old_participants = self->participants;
+        vscr_ratchet_skipped_group_message_key_root_node_t **old_skipped = self->skipped_messages;
+        size_t old_count = self->participants_count;
+        self->participants_count = 0;
 
-    if (old_participants) {
-        for (size_t i = 0; i < self->participants_count; i++) {
-            self->participants[i] = old_participants[i];
-            self->skipped_messages[i] = old_skipped[i];
+        self->participants = vscr_alloc(len * sizeof(vscr_ratchet_group_participant_data_t *));
+        self->skipped_messages = vscr_alloc(len * sizeof(vscr_ratchet_skipped_group_message_key_root_node_t *));
+
+        if (type == MessageGroupInfo_Type_ADD) {
+            for (size_t i = 0; i < old_count; i++, self->participants_count++) {
+                self->participants[i] = old_participants[i];
+                old_participants[i] = NULL;
+                self->skipped_messages[i] = old_skipped[i];
+                old_skipped[i] = NULL;
+            }
+        } else {
+            for (size_t i = 0; i < old_count; i++) {
+                for (size_t j = 0; j < msg_info->participants_count; j++) {
+                    const MessageParticipantInfo *info = &msg_info->participants[i];
+
+                    if (memcmp(info->id, old_participants[i], sizeof(info->id)) == 0) {
+                        self->participants[self->participants_count] = old_participants[i];
+                        old_participants[i] = NULL;
+                        self->skipped_messages[self->participants_count] = old_skipped[i];
+                        old_skipped[i] = NULL;
+
+                        vscr_ratchet_group_session_update_participant(
+                                self->participants[self->participants_count], msg_info->epoch, info);
+
+                        self->participants_count++;
+
+                        break;
+                    }
+                }
+            }
         }
 
         vscr_dealloc(old_participants);
         vscr_dealloc(old_skipped);
+    } else {
+        self->participants = vscr_alloc(len * sizeof(vscr_ratchet_group_participant_data_t *));
+        self->skipped_messages = vscr_alloc(len * sizeof(vscr_ratchet_skipped_group_message_key_root_node_t *));
     }
 
     for (size_t i = 0; i < msg_info->participants_count; i++) {
@@ -569,18 +650,34 @@ vscr_ratchet_group_session_setup_session(
         vscr_ratchet_group_participant_data_t **target;
 
         if (memcmp(info->id, self->my_id, sizeof(self->my_id)) == 0) {
+            VSCR_ASSERT(type != MessageGroupInfo_Type_ADD);
             target = &self->me;
         } else {
-            target = &self->participants[self->participants_count];
-            *target = vscr_ratchet_group_participant_data_new();
+            bool should_add = true;
+            if (type == MessageGroupInfo_Type_CHANGE) {
+                for (size_t j = 0; j < self->participants_count; j++) {
+                    // Previously existed participant
+                    if (memcmp(info->id, self->participants[j]->id, sizeof(info->id)) == 0) {
+                        should_add = false;
+                    }
+                }
+            }
 
-            self->skipped_messages[self->participants_count] = vscr_ratchet_skipped_group_message_key_root_node_new();
-            memcpy(self->skipped_messages[self->participants_count]->id, info->id,
-                    sizeof(self->skipped_messages[self->participants_count]->id));
-            self->participants_count++;
+            if (should_add) {
+                target = &self->participants[self->participants_count];
+                *target = vscr_ratchet_group_participant_data_new();
+
+                self->skipped_messages[self->participants_count] =
+                        vscr_ratchet_skipped_group_message_key_root_node_new();
+                memcpy(self->skipped_messages[self->participants_count]->id, info->id,
+                        sizeof(self->skipped_messages[self->participants_count]->id));
+                self->participants_count++;
+            } else {
+                continue;
+            }
         }
 
-        vscr_ratchet_group_session_copy_data_from_participant_pb(*target, info);
+        vscr_ratchet_group_session_update_participant(*target, msg_info->epoch, info);
     }
 
     self->is_initialized = true;
@@ -615,11 +712,17 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
 
     ed25519_sign(msg->message_pb.regular_message.signature, self->my_private_key, plain_text.bytes, plain_text.len);
 
-    msg->message_pb.regular_message.counter = self->me->chain_key->index;
+    vscr_ratchet_group_participant_epoch_t *my_epoch =
+            vscr_ratchet_group_participant_data_find_epoch(self->me, self->current_epoch);
+    VSCR_ASSERT_PTR(my_epoch);
+
+    msg->message_pb.regular_message.epoch = my_epoch->epoch;
+
+    msg->message_pb.regular_message.counter = my_epoch->chain_key->index;
     memcpy(msg->message_pb.regular_message.sender_id, self->me->id, sizeof(self->me->id));
 
-    vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(self->me->chain_key);
-    vscr_ratchet_keys_advance_chain_key(self->me->chain_key);
+    vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(my_epoch->chain_key);
+    vscr_ratchet_keys_advance_chain_key(my_epoch->chain_key);
 
     msg->message_pb.regular_message.cipher_text.arg =
             vsc_buffer_new_with_capacity(vscr_ratchet_cipher_encrypt_len(self->cipher, plain_text.len));
@@ -696,9 +799,18 @@ vscr_ratchet_group_session_decrypt(
     VSCR_ASSERT(participant);
     VSCR_ASSERT(skipped_root);
 
-    if (participant->chain_key->index > group_message->counter) {
-        vscr_ratchet_message_key_t *skipped_message_key =
-                vscr_ratchet_skipped_group_message_key_root_node_find_key(skipped_root, group_message->counter);
+    vscr_ratchet_group_participant_epoch_t *epoch =
+            vscr_ratchet_group_participant_data_find_epoch(participant, group_message->epoch);
+
+    if (!epoch) {
+        return vscr_status_ERROR_EPOCH_NOT_FOUND;
+    }
+
+    // TODO: Add old epoches removal
+
+    if (epoch->chain_key->index > group_message->counter) {
+        vscr_ratchet_message_key_t *skipped_message_key = vscr_ratchet_skipped_group_message_key_root_node_find_key(
+                skipped_root, group_message->epoch, group_message->counter);
 
         if (!skipped_message_key) {
             return vscr_status_ERROR_SKIPPED_MESSAGE_MISSING;
@@ -718,12 +830,12 @@ vscr_ratchet_group_session_decrypt(
     }
 
     // Too many lost messages
-    if (group_message->counter - participant->chain_key->index > vscr_ratchet_common_hidden_MAX_MESSAGE_GAP) {
+    if (group_message->counter - epoch->chain_key->index > vscr_ratchet_common_hidden_MAX_MESSAGE_GAP) {
         return vscr_status_ERROR_TOO_MANY_LOST_MESSAGES;
     }
 
     vscr_ratchet_chain_key_t *new_chain_key = vscr_ratchet_chain_key_new();
-    vscr_ratchet_chain_key_clone(participant->chain_key, new_chain_key);
+    vscr_ratchet_chain_key_clone(epoch->chain_key, new_chain_key);
 
     while (new_chain_key->index < group_message->counter) {
         vscr_ratchet_keys_advance_chain_key(new_chain_key);
@@ -747,21 +859,23 @@ vscr_ratchet_group_session_decrypt(
         goto err;
     }
 
-    while (participant->chain_key->index < group_message->counter) {
-        vscr_ratchet_message_key_t *skipped_message_key = vscr_ratchet_keys_create_message_key(participant->chain_key);
-        if (participant->chain_key->index == UINT32_MAX) {
-            vscr_ratchet_message_key_destroy(&skipped_message_key);
+    while (epoch->chain_key->index < group_message->counter) {
+        vscr_ratchet_skipped_group_message_key_t *skipped_message_key = vscr_ratchet_skipped_group_message_key_new();
+        skipped_message_key->epoch = group_message->epoch;
+        skipped_message_key->message_key = vscr_ratchet_keys_create_message_key(epoch->chain_key);
+        if (epoch->chain_key->index == UINT32_MAX) {
+            vscr_ratchet_skipped_group_message_key_destroy(&skipped_message_key);
             return vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN;
         }
-        vscr_ratchet_keys_advance_chain_key(participant->chain_key);
+        vscr_ratchet_keys_advance_chain_key(epoch->chain_key);
         vscr_ratchet_skipped_group_message_key_root_node_add_key(skipped_root, skipped_message_key);
     }
 
-    if (participant->chain_key->index == UINT32_MAX) {
+    if (epoch->chain_key->index == UINT32_MAX) {
         return vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN;
     }
 
-    vscr_ratchet_keys_advance_chain_key(participant->chain_key);
+    vscr_ratchet_keys_advance_chain_key(epoch->chain_key);
 
 err:
     vscr_ratchet_chain_key_destroy(&new_chain_key);
@@ -885,23 +999,20 @@ err:
 }
 
 static void
-vscr_ratchet_group_session_copy_data_from_participant_pb(
-        vscr_ratchet_group_participant_data_t *participant, const MessageParticipantInfo *info) {
+vscr_ratchet_group_session_update_participant(
+        vscr_ratchet_group_participant_data_t *participant, size_t epoch, const MessageParticipantInfo *info) {
+
+    // FIXME
+    VSCR_ASSERT(vscr_ratchet_group_participant_data_find_epoch(participant, epoch) == NULL);
+
+    vscr_ratchet_group_participant_epoch_t *new_epoch =
+            vscr_ratchet_group_participant_data_add_epoch(participant, epoch);
+    VSCR_ASSERT_PTR(new_epoch);
 
     memcpy(participant->id, info->id, sizeof(participant->id));
     memcpy(participant->pub_key, info->pub_key, sizeof(participant->pub_key));
-    memcpy(participant->chain_key->key, info->key, sizeof(participant->chain_key->key));
-    participant->chain_key->index = info->index;
-}
-
-static void
-vscr_ratchet_group_session_copy_data_from_participant_class(
-        MessageParticipantInfo *info, const vscr_ratchet_group_participant_data_t *participant) {
-
-    memcpy(info->id, participant->id, sizeof(info->id));
-    memcpy(info->pub_key, participant->pub_key, sizeof(info->pub_key));
-    memcpy(info->key, participant->chain_key->key, sizeof(info->key));
-    info->index = participant->chain_key->index;
+    memcpy(new_epoch->chain_key->key, info->key, sizeof(new_epoch->chain_key->key));
+    new_epoch->chain_key->index = info->index;
 }
 
 VSCR_PUBLIC vscr_ratchet_group_ticket_t *
@@ -911,13 +1022,17 @@ vscr_ratchet_group_session_create_group_ticket_for_adding_members(const vscr_rat
     VSCR_ASSERT(self->is_initialized);
 
     vscr_ratchet_group_ticket_t *ticket = vscr_ratchet_group_ticket_new();
+    vscr_ratchet_group_ticket_use_rng(ticket, self->rng);
 
-    MessageGroupInfo *info = &ticket->msg_start->message_pb.start_group_info;
-    info->participants_count = self->participants_count + 1;
+    vscr_ratchet_group_ticket_setup_ticket(ticket, self->current_epoch, false);
 
-    vscr_ratchet_group_session_copy_data_from_participant_class(&info->participants[0], self->me);
+    vscr_status_t status = vscr_ratchet_group_ticket_add_existing_participant(ticket, self->me);
+    VSCR_ASSERT(status == vscr_status_SUCCESS);
+
     for (size_t i = 0; i < self->participants_count; i++) {
-        vscr_ratchet_group_session_copy_data_from_participant_class(&info->participants[i + 1], self->participants[i]);
+        status = vscr_ratchet_group_ticket_add_existing_participant(ticket, self->participants[i]);
+        // Should not return errors here
+        VSCR_ASSERT(status == vscr_status_SUCCESS);
     }
 
     return ticket;
@@ -925,10 +1040,35 @@ vscr_ratchet_group_session_create_group_ticket_for_adding_members(const vscr_rat
 
 VSCR_PUBLIC vscr_ratchet_group_ticket_t *
 vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_members(
-        const vscr_ratchet_group_session_t *self) {
+        const vscr_ratchet_group_session_t *self, vscr_error_t *error) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(self->is_initialized);
 
-    return NULL;
+    vscr_ratchet_group_ticket_t *ticket = vscr_ratchet_group_ticket_new();
+
+    vscr_ratchet_group_ticket_use_rng(ticket, self->rng);
+    vscr_ratchet_group_ticket_setup_ticket(ticket, self->current_epoch + 1, true);
+
+    vscr_status_t status = vscr_ratchet_group_ticket_add_existing_participant(ticket, self->me);
+
+    if (status != vscr_status_SUCCESS) {
+        goto err;
+    }
+
+    for (size_t i = 0; i < self->participants_count; i++) {
+        status = vscr_ratchet_group_ticket_add_existing_participant(ticket, self->participants[i]);
+
+        if (status != vscr_status_SUCCESS) {
+            goto err;
+        }
+    }
+
+err:
+    if (status != vscr_status_SUCCESS) {
+        VSCR_ERROR_SAFE_UPDATE(error, status);
+        vscr_ratchet_group_ticket_destroy(&ticket);
+    }
+
+    return ticket;
 }

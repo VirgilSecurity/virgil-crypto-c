@@ -11,7 +11,26 @@
         <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
     </property>
 
-    <property name="chain key" class="ratchet chain key"/>
+    <property name="epoch count" type="size" access="readwrite"/>
+    <property name="epoches" class="ratchet group participant epoch">
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_max_epoches_count)"/>
+    </property>
+
+    <method name="add epoch">
+        <argument name="epoch" type="size"/>
+
+        <return class="ratchet group participant epoch" access="readwrite"/>
+    </method>
+
+    <method name="delete epoch">
+        <argument name="epoch" type="size"/>
+    </method>
+
+    <method name="find epoch">
+        <argument name="epoch" type="size"/>
+
+        <return class="ratchet group participant epoch" access="readwrite"/>
+    </method>
 
     <method name="serialize">
         <argument name="data pb" class="ParticipantData" library="nanopb" access="readwrite"/>

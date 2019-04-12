@@ -41,15 +41,15 @@ import VSCRatchet
 
     /// Group info used to create group chat, or change group chat.
     /// Should be distributed only using secure channels.
-    case startGroupInfo = 1
+    case startGroup = 1
 
     /// Add members message.
     /// Should be distributed only using secure channels.
-    case addMembersInfo = 2
+    case addMembers = 2
 
     /// Remove members message.
     /// Should be distributed only using secure channels.
-    case removeMembersInfo = 3
+    case epochChange = 3
 
     /// Regular group ratchet message with cipher text.
     case regular = 4

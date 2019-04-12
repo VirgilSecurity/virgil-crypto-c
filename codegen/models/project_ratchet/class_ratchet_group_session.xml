@@ -31,6 +31,7 @@
     <property name="is initialized" type="boolean" access="readwrite"/>
     <property name="is private key set" type="boolean" access="readwrite"/>
     <property name="is id set" type="boolean" access="readwrite"/>
+    <property name="current epoch" type="size" access="readwrite"/>
 
     <property name="my id" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
@@ -63,6 +64,10 @@
         <return type="boolean"/>
     </method>
 
+    <method name="get current epoch" is_const="1">
+        <return type="size"/>
+    </method>
+
     <method name="setup defaults">
         Setups default dependencies:
         - RNG: CTR DRBG
@@ -86,6 +91,10 @@
         Sets identity private key.
 
         <argument name="my id" class="data"/>
+    </method>
+
+    <method name="get id" is_const="1">
+        <return class="data"/>
     </method>
 
     <method name="setup session">
@@ -192,14 +201,10 @@
         </return>
     </method>
 
-    <method name="copy data from participant pb" declaration="private" is_static="1">
+    <method name="update participant" declaration="private" is_static="1">
         <argument name="participant" class="ratchet group participant data" access="readwrite"/>
+        <argument name="epoch" type="size"/>
         <argument name="info" class="MessageParticipantInfo" library="nanopb"/>
-    </method>
-
-    <method name="copy data from participant class" declaration="private" is_static="1">
-        <argument name="info" class="MessageParticipantInfo" library="nanopb" access="readwrite"/>
-        <argument name="participant" class="ratchet group participant data"/>
     </method>
 
     <method name="create group ticket for adding members" is_const="1">
@@ -207,6 +212,10 @@
     </method>
 
     <method name="create group ticket for adding or removing members" is_const="1">
+        <argument name="error" class="error" access="readwrite">
+            Error context to return error
+        </argument>
+
         <return class="ratchet group ticket" access="disown"/>
     </method>
 

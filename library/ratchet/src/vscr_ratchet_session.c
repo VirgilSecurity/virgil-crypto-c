@@ -782,6 +782,8 @@ vscr_ratchet_session_decrypt(
     VSCR_ASSERT_PTR(message);
     VSCR_ASSERT_PTR(plain_text);
 
+    // TODO: Enhance old chains removal
+
     const RegularMessage *regular_message = NULL;
 
     if (message->message_pb.has_regular_message) {
