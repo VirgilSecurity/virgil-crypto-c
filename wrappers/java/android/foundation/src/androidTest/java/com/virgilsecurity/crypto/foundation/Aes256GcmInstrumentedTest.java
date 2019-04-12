@@ -38,12 +38,12 @@ package com.virgilsecurity.crypto.foundation;
 
 import android.support.test.runner.AndroidJUnit4;
 
+import com.virgilsecurity.crypto.TestData;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import com.virgilsecurity.crypto.TestData;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;

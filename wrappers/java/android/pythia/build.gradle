@@ -61,6 +61,12 @@ task copyNativeLibs(type: Copy) {
     }
 }
 
+task clearSources(type: Delete) {
+    delete 'src/generated/java', '*'
+    followSymlinks = true
+}
+
+preBuild.dependsOn 'clearSources'
 preBuild.dependsOn 'copySources'
 preBuild.dependsOn 'copyNativeLibs'
 
