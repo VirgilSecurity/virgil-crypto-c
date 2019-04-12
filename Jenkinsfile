@@ -409,6 +409,7 @@ def calculateArtifactsChecksum() {
 
 def deployJavaArtifacts() {
     return { node('master') { stage('Deploy Java artifacts') {
+        clearContentUnix()
         unstash "src"
         unstash "java_linux"
         unstash "java_macos"
@@ -424,6 +425,7 @@ def deployJavaArtifacts() {
 
 def deployAndroidArtifacts() {
     return { node('master') { stage('Deploy Android artifacts') {
+        clearContentUnix()
         unstash "src"
         unstash "java_android_x86"
         unstash "java_android_x86_64"
