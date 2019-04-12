@@ -84,9 +84,11 @@ test__add_members__random_chat__should_continue_working(void) {
 
     add_random_members(rng, group_size, add_members_size, &sessions);
 
-    encrypt_decrypt(rng, group_size + add_members_size, number_of_iterations, sessions, 0.75, 1.25, 0.25, NULL);
+    size_t new_size = group_size + add_members_size;
 
-    for (size_t i = 0; i < group_size; i++) {
+    encrypt_decrypt(rng, new_size, number_of_iterations, sessions, 0.75, 1.25, 0.25, NULL);
+
+    for (size_t i = 0; i < new_size; i++) {
         vscr_ratchet_group_session_destroy(&sessions[i]);
     }
 

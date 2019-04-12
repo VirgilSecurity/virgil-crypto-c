@@ -114,7 +114,7 @@ test__encrypt_decrypt__random_group_chat__decrypt_should_succeed(void) {
 
     vscr_ratchet_group_session_t **sessions = NULL;
 
-    size_t group_size = generate_number(rng, 1, 10);
+    size_t group_size = generate_number(rng, 2, 10);
 
     initialize_random_group_chat(rng, group_size, &sessions, NULL);
 

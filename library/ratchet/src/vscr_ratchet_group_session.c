@@ -503,6 +503,7 @@ vscr_ratchet_group_session_setup_session(
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->key_utils);
     VSCR_ASSERT_PTR(message);
+    VSCR_ASSERT(!message->message_pb.has_regular_message);
     VSCR_ASSERT(!message->message_pb.has_remove_members_info); // TODO
 
     VSCR_ASSERT(self->is_id_set);
@@ -541,10 +542,16 @@ vscr_ratchet_group_session_setup_session(
 
     vscr_ratchet_group_participant_data_t **old_participants = self->participants;
     vscr_ratchet_skipped_group_message_key_root_node_t **old_skipped = self->skipped_messages;
-    self->participants = vscr_alloc((self->participants_count + msg_info->participants_count - 1) *
-                                    sizeof(vscr_ratchet_group_participant_data_t *));
-    self->skipped_messages = vscr_alloc((self->participants_count + msg_info->participants_count - 1) *
-                                        sizeof(vscr_ratchet_skipped_group_message_key_root_node_t *));
+
+    size_t len = self->participants_count + msg_info->participants_count;
+
+    if (first_setup) {
+        // Except me
+        len--;
+    }
+
+    self->participants = vscr_alloc(len * sizeof(vscr_ratchet_group_participant_data_t *));
+    self->skipped_messages = vscr_alloc(len * sizeof(vscr_ratchet_skipped_group_message_key_root_node_t *));
 
     if (old_participants) {
         for (size_t i = 0; i < self->participants_count; i++) {
