@@ -527,7 +527,7 @@ vscr_ratchet_group_session_setup_session(
 
     const MessageGroupInfo *msg_info = &message->message_pb.group_info;
 
-    vscr_group_msg_type_t type = vscr_ratchet_group_message_get_type(message);
+    MessageGroupInfo_Type type = message->message_pb.group_info.type;
 
     if (type == MessageGroupInfo_Type_ADD) {
         VSCR_ASSERT(self->is_initialized);
