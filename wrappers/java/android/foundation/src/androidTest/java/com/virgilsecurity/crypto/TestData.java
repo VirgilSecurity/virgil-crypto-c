@@ -1,4 +1,4 @@
-package virgil.crypto;
+package com.virgilsecurity.crypto;
 
 import android.util.Base64;
 
