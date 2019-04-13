@@ -424,25 +424,45 @@ def deployJavaArtifacts() {
 }
 
 def deployAndroidArtifacts() {
-    return { node('master') { stage('Deploy Android artifacts') {
-        clearContentUnix()
-        unstash "src"
-        unstash "java_android_x86"
-        unstash "java_android_x86_64"
-        unstash "java_android_armeabi_v7a"
-        unstash "java_android_arm64_v8a"
+    return {
+        node('build-os-x') {
+            stage('Test Android artifacts') {
+                clearContentUnix()
+                unstash "src"
+                unstash "java_android_x86"
+                unstash "java_android_x86_64"
+                unstash "java_android_armeabi_v7a"
+                unstash "java_android_arm64_v8a"
 
-        withEnv(['ANDROID_HOME=/srv/apps/android-sdk']) {
-            sh '''
-                env
-                cd wrappers/java/android
-                ${ANDROID_HOME}/tools/emulator \
-                        -avd armeabi-v7a -netdelay none -netspeed full -no-window -no-audio -gpu off &
-                ${ANDROID_HOME}/platform-tools/adb wait-for-device
-                ./gradlew clean publish
-            '''
+                withEnv(['ANDROID_HOME=/Users/virgil//Library/VirgilEnviroment/android-sdk']) {
+                    sh '''
+                        env
+                        cd wrappers/java/android
+                        ${ANDROID_HOME}/tools/emulator \
+                            -avd armeabi-v7a -netdelay none -netspeed full -no-window -no-audio -gpu off &
+                        ${ANDROID_HOME}/platform-tools/adb wait-for-device
+                        ./gradlew clean connectedAndroidTest
+                    '''
+                }
+            }
+            stage('Deploy Android artifacts') {
+                //clearContentUnix()
+                //unstash "src"
+                //unstash "java_android_x86"
+                //unstash "java_android_x86_64"
+                //unstash "java_android_armeabi_v7a"
+                //unstash "java_android_arm64_v8a"
+
+                withEnv(['ANDROID_HOME=/Users/virgil//Library/VirgilEnviroment/android-sdk']) {
+                    sh '''
+                        env
+                        cd wrappers/java/android
+                        ./gradlew clean publish
+                    '''
+                }
+            }
         }
-    }}}
+    }
 }
 
 def deploy_nodes = [:]
