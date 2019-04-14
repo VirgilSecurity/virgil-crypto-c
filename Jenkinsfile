@@ -434,17 +434,39 @@ def deployAndroidArtifacts() {
                 unstash "java_android_armeabi_v7a"
                 unstash "java_android_arm64_v8a"
 
-                withEnv(['ANDROID_HOME=/Users/virgil//Library/VirgilEnviroment/android-sdk']) {
+                withEnv(['ANDROID_HOME=/Users/virgil/Library/VirgilEnviroment/android-sdk']) {
                     sh '''
-                        env
+                        export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
+                        adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+                    '''
+                    sh '''
+                        export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
+                        emulator -avd test_x86_64 -netdelay none -netspeed full -no-window -no-audio -gpu off &
+                        android-wait-for-emulator.sh
                         cd wrappers/java/android
-                        ${ANDROID_HOME}/tools/emulator \
-                            -avd armeabi-v7a -netdelay none -netspeed full -no-window -no-audio -gpu off &
-                        ${ANDROID_HOME}/platform-tools/adb wait-for-device
                         ./gradlew clean connectedAndroidTest
+                        adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+                    '''
+                    sh '''
+                        export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
+                        emulator -avd test_x86 -netdelay none -netspeed full -no-window -no-audio -gpu off &
+                        android-wait-for-emulator.sh
+                        cd wrappers/java/android
+                        ./gradlew clean connectedAndroidTest
+                        adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+                    '''
+                    sh '''
+                        export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
+                        emulator -avd test_v7a -netdelay none -netspeed full -no-window -no-audio -gpu off &
+                        android-wait-for-emulator.sh
+                        cd wrappers/java/android
+                        ./gradlew clean connectedAndroidTest
+                        adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
                     '''
                 }
             }
+        }
+        node('master') {
             stage('Deploy Android artifacts') {
                 //clearContentUnix()
                 //unstash "src"
