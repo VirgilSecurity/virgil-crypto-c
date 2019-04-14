@@ -468,14 +468,14 @@ def deployAndroidArtifacts() {
         }
         node('master') {
             stage('Deploy Android artifacts') {
-                //clearContentUnix()
-                //unstash "src"
-                //unstash "java_android_x86"
-                //unstash "java_android_x86_64"
-                //unstash "java_android_armeabi_v7a"
-                //unstash "java_android_arm64_v8a"
+                clearContentUnix()
+                unstash "src"
+                unstash "java_android_x86"
+                unstash "java_android_x86_64"
+                unstash "java_android_armeabi_v7a"
+                unstash "java_android_arm64_v8a"
 
-                withEnv(['ANDROID_HOME=/Users/virgil//Library/VirgilEnviroment/android-sdk']) {
+                withEnv(['ANDROID_HOME=/srv/apps/android-sdk']) {
                     sh '''
                         env
                         cd wrappers/java/android
