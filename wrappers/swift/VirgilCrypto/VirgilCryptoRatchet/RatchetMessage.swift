@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCRatchet
+import VirgilCryptoFoundation
 
 /// Class represents ratchet message
 @objc(VSCRRatchetMessage) public class RatchetMessage: NSObject {

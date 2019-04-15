@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCRatchet
+import VirgilCryptoFoundation
 
 /// Utils class for working with keys formats.
 @objc(VSCRRatchetKeyId) public class RatchetKeyId: NSObject {

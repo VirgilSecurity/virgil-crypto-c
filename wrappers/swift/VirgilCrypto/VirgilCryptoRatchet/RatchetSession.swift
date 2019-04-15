@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCRatchet
+import VirgilCryptoFoundation
 
 /// Class for ratchet session between 2 participants
 @objc(VSCRRatchetSession) public class RatchetSession: NSObject {

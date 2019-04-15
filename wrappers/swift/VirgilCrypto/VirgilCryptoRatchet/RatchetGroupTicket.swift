@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCRatchet
+import VirgilCryptoFoundation
 
 /// Group ticket used to start group session.
 @objc(VSCRRatchetGroupTicket) public class RatchetGroupTicket: NSObject {

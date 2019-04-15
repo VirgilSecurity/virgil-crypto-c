@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCRatchet
+import VirgilCryptoFoundation
 
 @objc(VSCRRatchetImplementation) public class RatchetImplementation: NSObject {
 }
