@@ -3,6 +3,7 @@
 
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
+    <require class="ratchet chain key" scope="private"/>
 
     <require module="buffer defs" project="common" scope="private"/>
     <require module="ratchet group message defs" scope="private"/>
@@ -56,9 +57,11 @@
             <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
         </argument>
         <argument name="pub key" type="byte">
-            <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+            <!--        FIXME-->
+            <array length="fixed" length_constant="32"/>
         </argument>
-        <argument name="chain key" class="ratchet chain key"/>
+        <!--        FIXME-->
+        <argument name="chain key" class="any"/>
 
         <return enum="status">
             Error
