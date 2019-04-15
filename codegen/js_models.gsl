@@ -14,11 +14,7 @@ function js_append_js_project_model(parent, project, wrapper)
     js_project.root_dir = cat_path("../wrappers/$(my.wrapper.lang:no)", "crypto")
     js_project.source_dir = cat_path(js_project.root_dir, "src")
     js_project.project_source_dir = cat_path(js_project.source_dir, js_project.name)
-    js_project.implementation_resolver_header_file = "implementation_resolver.h"
-    js_project.implementation_resolver_header_file_path = cat_path(js_project.project_source_dir, js_project.implementation_resolver_header_file)
-    js_project.implementation_resolver_header_guard = js_cpp_header_guard("implementation resolver")
-    js_project.implementation_resolver_source_file = "implementation_resolver.cc"
-    js_project.implementation_resolver_source_file_path = cat_path(js_project.project_source_dir, js_project.implementation_resolver_source_file)
+    js_project.has_implementation_resolver = 0
     js_project.umbrella_header_file = "index.h"
     js_project.umbrella_header_guard = js_cpp_header_guard(my.project.name)
     js_project.umbrella_header_file_path = cat_path(js_project.project_source_dir, js_project.umbrella_header_file)
@@ -40,10 +36,41 @@ function js_append_js_project_model(parent, project, wrapper)
   endnew
 endfunction
 
-function js_append_js_module_model(parent, source)
+function js_append_js_module_model(parent, name)
   new js_module to my.parent
-    js_module.name = my.source.name
+    js_module.name = my.name
     return js_module
+  endnew
+endfunction
+
+function js_append_js_implementation_resolver_module_model(parent, wrapped_project, name)
+  new js_implementation_resolver_module to my.parent
+    js_implementation_resolver_module.cpp_name = "$(my.name:pascal)"
+    new js_cpp_name to js_implementation_resolver_module
+      js_cpp_name.name = js_implementation_resolver_module.cpp_name
+      js_cpp_name.uid = make_id("js", "implementation resolver", "module", "cpp name")
+    endnew
+    js_implementation_resolver_module.cpp_header_guard = js_cpp_header_guard(my.name)
+    js_implementation_resolver_module.cpp_resolve_implementation_method_name = "ResolveImplementation"
+    js_implementation_resolver_module.cpp_resolve_implementation_parameter_name = "implementation"
+    js_implementation_resolver_module.c_implementation_type = make_ref_c(make_id("class", "impl", "struct", "impl"))
+    js_implementation_resolver_module.c_method_tag = make_ref_c(make_id("class", "impl", "method", "tag"))
+    js_implementation_resolver_module.method_name = "resolve implementation"
+    js_implementation_resolver_module.cpp_method_name = "$(js_implementation_resolver_module.method_name:pascal)"
+    new js_cpp_method_name to js_implementation_resolver_module
+      js_cpp_method_name.name = js_implementation_resolver_module.cpp_method_name
+      js_cpp_method_name.uid = make_id("js", "implementation resolver", "module", "cpp method name")
+    endnew
+    js_implementation_resolver_module.cpp_method_parameter_name = "implementation"
+    new js_cpp_header to js_implementation_resolver_module
+      js_cpp_header.name = "$(my.name:c).h"
+      js_cpp_header.path = cat_path(my.wrapped_project.project_source_dir, js_cpp_header.name)
+    endnew
+    new js_cpp_source to js_implementation_resolver_module
+      js_cpp_source.name = "$(my.name:c).cc"
+      js_cpp_source.path = cat_path(my.wrapped_project.project_source_dir, js_cpp_source.name)
+    endnew
+    return js_implementation_resolver_module
   endnew
 endfunction
 
@@ -52,7 +79,7 @@ function js_append_js_interface_module_model(parent, source, wrapper_project)
     js_interface_module.cpp_name = "$(my.source.name:pascal)"
     new js_cpp_name to js_interface_module
       js_cpp_name.name = js_interface_module.cpp_name
-      js_cpp_name.uid = make_id("js", "interface", "module", my.source.name, "cpp", "name")
+      js_cpp_name.uid = make_id("js", "interface", "module", my.source.name, "cpp name")
     endnew
     js_interface_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
     js_interface_module.c_implementation_type = "$(make_ref_c(make_id("class", "impl", "struct", "impl")))*"
@@ -110,7 +137,7 @@ function js_append_js_error_status_module_model(parent, source, wrapper_project)
   endnew
 endfunction
 
-function js_append_js_class_module_model(parent, source, wrapper_project)
+function js_append_js_class_module_model(parent, source, wrapper_project, meta)
   new js_class_module to my.parent
     js_class_module.binding_name = "$(my.source.name:pascal)Binding"
     js_class_module.js_name = "$(my.source.name:pascal)"
@@ -147,7 +174,11 @@ function js_append_js_class_module_model(parent, source, wrapper_project)
       js_source.name = "$(my.source.name:cobol).js"
       js_source.path = cat_path(my.wrapper_project.project_source_dir, js_source.name)
     endnew
+    my.has_algorithm_interface = 0
     for my.source.interface
+      if interface.name = "alg"
+        my.has_algorithm_interface = 1
+      endif
       js_append_js_interface_implementation(js_class_module, interface)
       for interface.constant
         js_append_js_constant(js_class_module, my.source, constant)
@@ -156,6 +187,11 @@ function js_append_js_class_module_model(parent, source, wrapper_project)
         js_append_js_method(js_class_module, my.source, method)
       endfor
     endfor
+    if my.has_algorithm_interface
+      my.refs = meta_refs(my.meta)
+      js_class_module.c_implementation_tag = my.refs.c_implementation_constant_tag
+      js_class_module.c_restore_alg_info = make_ref_c(make_id("class", my.source.name, "method", "restore alg info"))
+    endif
     if count(js_class_module.js_interface_implementation) > 0
       js_class_module.c_implementation_type = "$(make_ref_c(make_id("class", "impl", "struct", "impl")))*"
       js_class_module.c_implementation_method_name = make_ref_c(make_id("class", my.source.name, "method", "impl"))
@@ -563,6 +599,8 @@ function js_append_js_interface_method_return(parent, argument)
     my.project_uid = js_get_project_uid(my.argument)
     js_interface_method_return.cpp_name = "$(my.argument.name:c)"
     js_interface_method_return.js_name = "$(my.argument.name:camel)"
+    js_interface_method_return.cpp_implementation_resolver_name = make_ref_js(make_id(my.project_uid, "implementation resolver", "module", "cpp name"))
+    js_interface_method_return.cpp_implementation_resolver_method_name = make_ref_js(make_id(my.project_uid, "implementation resolver", "module", "cpp method name"))
     js_interface_method_return.cpp_class_name = make_ref_js(make_id(my.project_uid, "interface", "module", my.argument.interface, "cpp name"))
     js_interface_method_return.c_implementation_type = "$(make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl")))*"
     return js_interface_method_return

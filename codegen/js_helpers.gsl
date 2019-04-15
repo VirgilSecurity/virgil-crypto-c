@@ -139,6 +139,9 @@ endfunction
 # C++
 # --------------------------------------------------------------------------------------------------
 
+global.js_cpp_resolve_implementation_method_name = "ResolveImplementation"
+global.js_cpp_resolve_implementation_method_parameter_name = "implementation"
+
 global.js_cpp_handle_error_status_method_name = "HandleErrorStatus"
 global.js_cpp_handle_error_status_method_parameter_name = "status"
 

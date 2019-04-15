@@ -11,27 +11,33 @@ endfunction
 
 function js_create_interface_module(source, wrapper_project, meta)
   echo_info("Create interface module: $(my.source.name:no)", my)
-  my.js_module = js_append_js_module_model(my.wrapper_project, my.source)
+  my.js_module = js_append_js_module_model(my.wrapper_project, my.source.name)
   js_append_js_interface_module_model(my.js_module, my.source, my.wrapper_project)
 endfunction
 
 function js_create_implementation_module(source, wrapper_project, meta)
   echo_info("Create implementation module: $(my.source.name)", my)
-  my.js_module = js_append_js_module_model(my.wrapper_project, my.source)
-  js_append_js_class_module_model(my.js_module, my.source, my.wrapper_project)
+  if !my.wrapper_project.has_implementation_resolver
+    my.wrapper_project.has_implementation_resolver = 1
+    my.name = "$(my.wrapper_project.name:no) implementation resolver"
+    my.js_module = js_append_js_module_model(my.wrapper_project, my.name)
+    js_append_js_implementation_resolver_module_model(my.js_module, my.wrapper_project, my.name)
+  endif
+  my.js_module = js_append_js_module_model(my.wrapper_project, my.source.name)
+  js_append_js_class_module_model(my.js_module, my.source, my.wrapper_project, my.meta)
 endfunction
 
 function js_create_class_module(source, wrapper_project, meta)
   echo_info("Create class module: $(my.source.name:no)", my)
   if my.source.scope = "public" & my.source.name <> "error"
-    my.js_module = js_append_js_module_model(my.wrapper_project, my.source)
-    js_append_js_class_module_model(my.js_module, my.source, my.wrapper_project)
+    my.js_module = js_append_js_module_model(my.wrapper_project, my.source.name)
+    js_append_js_class_module_model(my.js_module, my.source, my.wrapper_project, my.meta)
   endif
 endfunction
 
 function js_create_enum_module(source, wrapper_project, meta)
   echo_info("Create enum module: $(my.source.name:no)", my)
-  my.js_module = js_append_js_module_model(my.wrapper_project, my.source)
+  my.js_module = js_append_js_module_model(my.wrapper_project, my.source.name)
   if !(my.source.name = "status")
     js_append_js_enum_module_model(my.js_module, my.source, my.wrapper_project)
   else
@@ -39,7 +45,7 @@ function js_create_enum_module(source, wrapper_project, meta)
   endif
 endfunction
 
-function js_module_resolve_uids(js_component, parent_uid)
+/* function js_module_resolve_uids(js_component, parent_uid)
   if defined(my.parent_uid) & string.prefixed(my.parent_uid, "js_module")
     my.parent_uid = # Undefined
   endif
@@ -51,11 +57,11 @@ function js_module_resolve_uids(js_component, parent_uid)
   for my.js_component. as inner_component where is_item(inner_component) & defined(inner_component.name)
     js_module_resolve_uids(inner_component, my.js_component.uid)
   endfor
-endfunction
+endfunction */
 
 function js_module_resolve(source, wrapper_project)
   echo_info("Resolve module: $(my.source.name:no)", my)
-  js_module_resolve_uids(my.source)
+  /* js_module_resolve_uids(my.source) */
 endfunction
 
 function js_generate_project(wrapper_project)

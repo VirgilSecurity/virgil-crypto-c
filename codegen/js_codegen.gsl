@@ -763,7 +763,7 @@ endfunction
 
 function js_cpp_create_js_interface_method_return_result(js_interface_method_return, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  return "/* TODO: js_interface_method_return */"
+  return "$(my.js_interface_method_return.cpp_implementation_resolver_name:no)::$(my.js_interface_method_return.cpp_implementation_resolver_method_name:no)($(my.js_interface_method_return.cpp_name:no))"
 endfunction
 
 function js_cpp_create_method_return_multiple_item(argument, method_return, indent_level)
@@ -1122,6 +1122,34 @@ function js_create_js_interface_module_file(js_interface_module, wrapper_project
   close
 endfunction
 
+function js_create_js_implementation_resolver_module_file(js_implementation_resolver_module, wrapper_project)
+  my.indent_levels = js_create_indent_levels()
+  output my.js_implementation_resolver_module->js_cpp_header.path
+    js_cpp_header_create_ifndef(my.js_implementation_resolver_module.cpp_header_guard, my.indent_levels.first)
+    js_cpp_header_create_define(my.js_implementation_resolver_module.cpp_header_guard, my.indent_levels.first)
+    js_out("class $(my.js_implementation_resolver_module.cpp_name:no) {", my.indent_levels.first)
+    js_cpp_header_create_public_access_specifier(my.indent_levels.first)
+    js_out("static v8::Local<v8::Object> $(my.js_implementation_resolver_module.cpp_method_name:no)($(my.js_implementation_resolver_module.c_implementation_type:no)* $(my.js_implementation_resolver_module.cpp_method_parameter_name:no));", my.indent_levels.second)
+    js_out("};", my.indent_levels.first)
+    js_cpp_header_create_endif(my.indent_levels.first)
+  close
+  output my.js_implementation_resolver_module->js_cpp_source.path
+    js_out("static v8::Local<v8::Object> $(my.js_implementation_resolver_module.cpp_name:no)::$(my.js_implementation_resolver_module.cpp_method_name:no)($(my.js_implementation_resolver_module.c_implementation_type:no)* $(my.js_implementation_resolver_module.cpp_method_parameter_name:no)) {", my.indent_levels.first)
+    js_out("switch ($(my.js_implementation_resolver_module.c_method_tag:no)($(my.js_implementation_resolver_module.cpp_method_parameter_name:no))) {", my.indent_levels.second)
+    for my.wrapper_project.js_module where defined(js_module->js_class_module) & defined(js_module->js_class_module.c_implementation_tag)
+      my.class_module = js_module->js_class_module
+      my.instance_name = "instance"
+      js_out("case $(my.class_module.c_implementation_tag:no):", my.indent_levels.third)
+      js_out("$(my.class_module.c_context_type:no) $(my.class_module.c_context_name:no) = $(my.class_module.c_context_constructor:no)();", my.indent_levels.fourth)
+      js_out("$(my.class_module.c_restore_alg_info:no)($(my.class_module.c_context_name:no), $(global.js_cpp_resolve_implementation_method_parameter_name:no));", my.indent_levels.fourth)
+      js_out("$(my.class_module.cpp_name:no)* $(my.instance_name:no) = new $(my.class_module.cpp_name:no)($(my.class_module.c_context_name:no));", my.indent_levels.fourth)
+      js_out("return $(my.instance_name:no)->handle();", my.indent_levels.fourth)
+    endfor
+    js_out("}", my.indent_levels.second)
+    js_out("}", my.indent_levels.first)
+  close
+endfunction
+
 function js_create_js_module_files(wrapper_project)
   for my.wrapper_project.js_module
     if defined(js_module->js_interface_module)
@@ -1132,6 +1160,8 @@ function js_create_js_module_files(wrapper_project)
       js_create_js_error_status_module(js_module->js_error_status_module, my.wrapper_project)
     elsif defined(js_module->js_class_module)
       js_create_js_class_module_file(js_module->js_class_module, my.wrapper_project)
+    elsif defined(js_module->js_implementation_resolver_module)
+      js_create_js_implementation_resolver_module_file(js_module->js_implementation_resolver_module, my.wrapper_project)
     else
       echo_fatal("Unknown 'js_module'", my)
     endif
