@@ -408,25 +408,37 @@ def calculateArtifactsChecksum() {
 
 
 def deployJavaArtifacts() {
-    return { node('master') { stage('Deploy Java artifacts') {
-        clearContentUnix()
-        unstash "src"
-        unstash "java_linux"
-        unstash "java_macos"
-        unstash "java_windows"
+    return {
+        node('master') {
+            stage('Deploy Java artifacts') {
+                if (env.DEPLOY_JAVA_ARTIFACTS == 'false') {
+                    echo "Skippied due to the false paramter: DEPLOY_JAVA_ARTIFACTS"
+                    return
+                }
+                clearContentUnix()
+                unstash "src"
+                unstash "java_linux"
+                unstash "java_macos"
+                unstash "java_windows"
 
-        sh """
-            env
-            cd wrappers/java
-            ./mvnw clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${gpg_keyname}
-        """
-    }}}
+                sh """
+                    env
+                    cd wrappers/java
+                    ./mvnw clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${gpg_keyname}
+                """
+            }
+        }
+    }
 }
 
-def deployAndroidArtifacts() {
+def runAndroidInstrumentalTests() {
     return {
         node('build-os-x') {
             stage('Test Android artifacts') {
+                if ((env.RUN_ANDROID_TESTS == 'false') && (env.DEPLOY_ANDROID_ARTIFACTS == 'false')) {
+                    echo "Skippied due to the false paramter: RUN_ANDROID_TESTS"
+                    return
+                }
                 clearContentUnix()
                 unstash "src"
                 unstash "java_android_x86"
@@ -466,8 +478,17 @@ def deployAndroidArtifacts() {
                 }
             }
         }
+    }
+}
+
+def deployAndroidArtifacts() {
+    return {
         node('master') {
             stage('Deploy Android artifacts') {
+                if (env.DEPLOY_ANDROID_ARTIFACTS == 'false') {
+                    echo "Skippied due to the false paramter: DEPLOY_ANDROID_ARTIFACTS"
+                    return
+                }
                 clearContentUnix()
                 unstash "src"
                 unstash "java_android_x86"
@@ -490,5 +511,6 @@ def deployAndroidArtifacts() {
 def deploy_nodes = [:]
 deploy_nodes['calculate-artifacts-checksum'] = calculateArtifactsChecksum()
 deploy_nodes['deploy-java-artifacts'] = deployJavaArtifacts()
+deploy_nodes['run-android-instrumental-tests'] = runAndroidInstrumentalTests()
 deploy_nodes['deploy-android-artifacts'] = deployAndroidArtifacts()
 parallel(deploy_nodes)
