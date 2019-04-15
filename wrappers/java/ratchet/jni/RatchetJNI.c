@@ -60,7 +60,7 @@ jint throwRatchetException (JNIEnv *jenv, jobject jobj, jint statusCode) {
     return (*jenv)->Throw(jenv, obj);
 }
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetKeyUtils_1new (JNIEnv *jenv, jobject jobj) {
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetKeyUtils_1new__ (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscr_ratchet_key_utils_new();
 }
 
@@ -143,7 +143,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_r
     return ret;
 }
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetMessage_1new (JNIEnv *jenv, jobject jobj) {
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetMessage_1new__ (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscr_ratchet_message_new();
 }
 
@@ -248,7 +248,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     return ret;
 }
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1new (JNIEnv *jenv, jobject jobj) {
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1new__ (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscr_ratchet_session_new();
 }
 
@@ -513,7 +513,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     return ret;
 }
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupMessage_1new (JNIEnv *jenv, jobject jobj) {
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupMessage_1new__ (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscr_ratchet_group_message_new();
 }
 
@@ -620,7 +620,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     return ret;
 }
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1new (JNIEnv *jenv, jobject jobj) {
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1new__ (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscr_ratchet_group_session_new();
 }
 
@@ -847,7 +847,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     return ret;
 }
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupTicket_1new (JNIEnv *jenv, jobject jobj) {
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupTicket_1new__ (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscr_ratchet_group_ticket_new();
 }
 

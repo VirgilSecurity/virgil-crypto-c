@@ -60,7 +60,7 @@ jint throwPheException (JNIEnv *jenv, jobject jobj, jint statusCode) {
     return (*jenv)->Throw(jenv, obj);
 }
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1new (JNIEnv *jenv, jobject jobj) {
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1new__ (JNIEnv *jenv, jobject jobj) {
     return (jlong) vsce_phe_server_new();
 }
 
@@ -283,7 +283,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1r
     return newObj;
 }
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1new (JNIEnv *jenv, jobject jobj) {
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1new__ (JNIEnv *jenv, jobject jobj) {
     return (jlong) vsce_phe_client_new();
 }
 
@@ -572,7 +572,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient
     return ret;
 }
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1new (JNIEnv *jenv, jobject jobj) {
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1new__ (JNIEnv *jenv, jobject jobj) {
     return (jlong) vsce_phe_cipher_new();
 }
 

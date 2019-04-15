@@ -1153,7 +1153,7 @@ function java_create_class_constructor (class, constructor, destination, java_pr
         endnew
 
         java_create_jni_class_constructor (my.class, my.constructor,  my.java_project, my.meta)
-        #java_create_c_class_constructor (my.class, my.constructor,  my.java_project, my.meta)
+        java_create_c_class_constructor (my.class, my.constructor, my.destination, java_constructor, my.java_project, my.meta)
 
         return java_constructor
     endnew

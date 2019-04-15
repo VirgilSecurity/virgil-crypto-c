@@ -1,10 +1,10 @@
 package com.virgilsecurity.crypto.foundation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class SimpleAlgInfoTest {
@@ -27,9 +27,9 @@ public class SimpleAlgInfoTest {
 	}
 
 	@Test
-	@Ignore
 	public void instantiate() {
 		try (SimpleAlgInfo algInfo = new SimpleAlgInfo(AlgId.AES256_CBC)) {
+			assertTrue(algInfo.cCtx > 0);
 			assertEquals(AlgId.AES256_CBC, algInfo.algId());
 		}
 	}

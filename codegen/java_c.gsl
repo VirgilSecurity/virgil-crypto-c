@@ -216,6 +216,72 @@ function java_derive_c_instance_type (instance)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Derive JNI field descriptor from the <instance/> type attributes.
+# ---------------------------------------------------------------------------
+function java_derive_c_field_descriptor (instance, java_project)
+    check_arguments (my, "instance", my)
+
+    if defined (my.instance.type)
+        if is_true (my.instance.is_reference)
+            return "J"
+        elsif count (my.instance.array)
+            return "_3B"
+        else
+            if my.instance.type = "byte"
+                return "B"
+
+            elsif my.instance.type = "integer"
+                return "I"
+
+            elsif my.instance.type = "unsigned"
+                return "J"
+
+            elsif my.instance.type = "size"
+                return "I"
+
+            elsif string_in (my.instance.type, "char, string")
+                return "Ljava_lang_String_2"
+
+            elsif my.instance.type = "boolean"
+                return "Z"
+
+            else
+                return "B"
+            endif
+        endif
+
+    elsif defined (my.instance.interface)
+
+        return "L$(my.java_project.package:c)_$(my.instance.interface:Pascal)_2"
+
+    elsif defined (my.instance.class)
+
+        if my.instance.class = "data"
+            return "_3B"
+
+        elsif my.instance.class = "buffer"
+            return "_3B"
+
+        else
+            return "L$(my.java_project.package:c)_$(my.instance.class:Pascal)_2"
+
+        endif
+
+    elsif defined (my.instance.enum)
+
+        return "L$(my.java_project.package:c)_$(my.instance.enum:Pascal)_2"
+
+    elsif defined (my.instance.impl)
+
+        return "L$(my.java_project.package:c)_$(my.instance.impl:Pascal)_2"
+
+    endif
+
+   return "D"
+
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return proxy type of the method return value.
 # ---------------------------------------------------------------------------
 function java_derive_c_return_type (method)
@@ -280,12 +346,44 @@ function java_derive_c_instance_name (instance)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C class method.
+# ---------------------------------------------------------------------------
+function java_class_derive_c_method (class, method)
+    check_arguments (my, "class, method", my)
+
+    my.method_name = my.method.name
+    if item_in (my.method, "constructor")
+        my.method_name = "new $(my.method.name:)"
+    endif
+
+    if string_equal (my.method.of_class, "global") | string_equal (my.class.of_class, "global")
+        return make_ref_c (make_id ("global method", my.method_name))
+
+    else
+        my.of_class = my.method.of_class ? my.class.of_class ? my.class.name
+        return make_ref_c (make_id ("class", my.of_class, "method", my.method_name))
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return formatted method name.
 # ---------------------------------------------------------------------------
 function java_derive_c_method_name (method, interface, java_project)
     check_arguments (my, "method, interface, java_project", my)
 
-    return java_derive_c_method_name_str (my.method.name, my.interface, my.java_project)
+    if item_in (my.method, "constructor")
+        my.c_method_name = java_derive_c_method_name_str ("new", my.interface, my.java_project)
+
+        for my.method.argument
+            my.field_descriptor = java_derive_c_field_descriptor (argument, my.java_project)
+            my.c_method_name = "$(my.c_method_name:)$(my.field_descriptor:)"
+        endfor
+    else
+        my.c_method_name = java_derive_c_method_name_str (my.method.name, my.interface, my.java_project)
+    endif
+
+    return my.c_method_name
+
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -295,8 +393,13 @@ function java_derive_c_method_name_str (method_name, interface, java_project)
     check_arguments (my, "method_name, interface, java_project", my)
 
     my.jniClassName = java_derive_jni_context_class_name (my.java_project)
+    my.h_module = java_obtain_h_module(my.java_project)
+    
+    if string_equal (my.method_name, "new")
+        my.suffix = "__"
+    endif
 
-    return "Java_$(my.java_project.package:c)_$(my.jniClassName:)_$(my.interface.name:Camel)_1$(my.method_name:Camel)"
+    return "Java_$(my.java_project.package:c)_$(my.jniClassName:)_$(my.interface.name:Camel)_1$(my.method_name:Camel)$(my.suffix?:)"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -583,60 +686,49 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <c_method/> of from the class entity <method/>.
 # ---------------------------------------------------------------------------
-function java_create_c_class_constructor (class, constructor, java_project, meta)
-    check_arguments (my, "class, constructor, java_project, meta", my)
+function java_create_c_class_constructor (class, constructor, java_class, java_method, java_project, meta)
+    check_arguments (my, "class, constructor, java_class, java_method, java_project, meta", my)
 
     echo_debug ("Create C constructor for '$(my.class.name:)'", my)
 
     my.h_module = java_obtain_h_module(my.java_project)
     my.c_module = java_obtain_c_module(my.java_project)
-    my.c_method_name = java_derive_c_method_name_str ("new", my.class, my.java_project)
+    my.c_method_name = java_derive_c_method_name (my.constructor, my.class, my.java_project)
 
-    if ! defined (my.h_module->c_method(c_method.name = my.c_method_name)?)
+    # Define method header
+    new c_method to my.h_module
+        .name = my.c_method_name
+        .declaration = "1"
+        .is_jni = "1"
 
-        # Define method header
-        new c_method to my.h_module
-            .name = my.c_method_name
-            .declaration = "1"
-            .is_jni = "1"
+        for my.constructor.argument
+            java_create_c_argument (argument, c_method, my.java_project, my.meta)
+        endfor
 
-            for my.method.argument
-                java_create_c_argument (argument, c_method, my.java_project, my.meta)
-            endfor
+        new c_return to c_method
+            .type = "jlong"
+        endnew
+    endnew
 
-            new c_return to c_method
-                .type = "jlong"
-            endnew
+    # Define method implementation
+
+    #   Wrap proxy call
+    new c_method to my.c_module
+        .name = my.c_method_name
+        .is_jni = "1"
+
+        for my.constructor.argument
+            java_create_c_argument (argument, c_method, my.java_project, my.meta)
+        endfor
+
+        new c_code to c_method
+            . = java_create_c_class_method_call (my.class, my.constructor, my.java_class, my.java_method, c_method, my.java_project, my.meta)
         endnew
 
-        # Define method implementation
-
-        #   Wrap proxy call
-        my.proxy_args = java_format_c_args (my.class, my.constructor)
-        my.proxy_call = "$(class_derive_c_constructor (my.class, my.constructor))($(my.proxy_args:))"
-        my.proxy_return_type = java_derive_class_context_type (my.class) + "?"
-        my.proxy_invocation = java_wrap_c_proxy_call (java_constructor, my.proxy_call, my.proxy_return_type)
-
-        my.context_assignment = format_left ("self.c_ctx = proxyResult!")
-
-        new c_method to my.c_module
-            .name = my.c_method_name
-            .is_jni = "1"
-
-            for my.method.argument
-                java_create_c_argument (argument, c_method, my.java_project, my.meta)
-            endfor
-
-            new c_code to c_method
-                . = "return (jlong) $(my.ctor_invocation:);"
-                #. = java_create_c_class_method_call (my.class, my.method, my.java_class, my.java_method, c_method, my.java_project, my.meta)
-            endnew
-
-            new c_return to c_method
-                .type = "jlong"
-            endnew
+        new c_return to c_method
+            .type = "jlong"
         endnew
-    endif
+    endnew
 
 endfunction
 
@@ -889,7 +981,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
 
     # Make call
     my.proxy_args = java_format_c_args (my.class, my.method)
-    my.proxy_call = "$(class_derive_c_method (my.class, my.method))($(my.proxy_args:))"
+    my.proxy_call = "$(java_class_derive_c_method (my.class, my.method))($(my.proxy_args:))"
 
     # Handle an error
     for my.method.return where string_in (return.enum, "error, status")
@@ -923,6 +1015,8 @@ function java_create_c_class_method_call (class, method, java_class, java_method
         my.proxy_return_type = java_derive_c_return_type (my.method)
         if my.proxy_return_type <> "void"
             my.proxy_result = "const $(my.proxy_return_type:) proxyResult = "
+        elsif item_in (my.method, "constructor")
+            my.proxy_result = "jlong proxyResult = (jlong) "
         else
             my.proxy_result = ""
         endif
@@ -1044,6 +1138,10 @@ function java_create_c_class_method_call (class, method, java_class, java_method
                 return ret;
             ")
         endif
+    elsif item_in (my.method, "constructor")
+        my.return_result = format_left("\
+            return proxyResult;
+        ")
     endif
 
     my.c_code = "$(my.errors_instantiation?:)"
@@ -1158,9 +1256,11 @@ function java_create_c_class_method (class, method, java_class, java_method, jav
 
     my.h_module = java_obtain_h_module (my.java_project)
     my.c_module = java_obtain_c_module (my.java_project)
+    
+    my.c_method_name = java_derive_c_method_name (my.method, my.class, my.java_project)
 
     new c_method to my.h_module
-        .name = java_derive_c_method_name (my.method, my.class, my.java_project)
+        .name = my.c_method_name
         .declaration = "1"
         .is_jni = "1"
 
@@ -1186,7 +1286,7 @@ function java_create_c_class_method (class, method, java_class, java_method, jav
     endnew
 
     new c_method to my.c_module
-        .name = java_derive_c_method_name (my.method, my.class, my.java_project)
+        .name = my.c_method_name
         .declaration = "1"
         .is_jni = "1"
 
@@ -1314,8 +1414,6 @@ function java_create_c_proxy_method_from_constant (constant, interface, destinat
 
     my.h_module = java_obtain_h_module(my.java_project)
     my.c_module = java_obtain_c_module(my.java_project)
-    my.c_method_name = java_derive_c_method_name_str ("new", my.interface, my.java_project)
-
     my.c_method_name = java_derive_c_method_name_str (java_derive_getter_name_by_constant (my.constant, my.java_project), my.interface, my.java_project)
 
     if ! defined (my.h_module->c_method(c_method.name = my.c_method_name)?)
