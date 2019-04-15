@@ -5,19 +5,29 @@ message MessageParticipantInfo {
     required bytes id = 2;
     required bytes key = 3;
     required bytes pub_key = 4;
+    required uint32 index = 5;
 }
 
 message MessageGroupInfo {
     required uint32 version = 1;
-    repeated MessageParticipantInfo participants = 2;
+    enum Type {
+        START = 1;
+        ADD = 2;
+        CHANGE = 3;
+    }
+    required Type type = 2;
+    required uint32 epoch = 3;
+    repeated MessageParticipantInfo participants = 4;
 }
 
 message RegularGroupMessage {
     required uint32 version = 1;
-    required uint32 counter = 2;
-    required bytes sender_id = 3;
-    required bytes signature = 4;
-    required bytes cipher_text = 5;
+    required uint32 epoch = 2;
+    required uint32 prev_epoch_msgs = 3;
+    required uint32 counter = 4;
+    required bytes sender_id = 5;
+    required bytes signature = 6;
+    required bytes cipher_text = 7;
 }
 
 message GroupMessage {

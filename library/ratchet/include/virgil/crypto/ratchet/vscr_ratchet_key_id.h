@@ -47,27 +47,25 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This ia an umbrella header that includes library public headers.
+//  Utils class for working with keys formats.
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_PUBLIC_H_INCLUDED
-#define VSCR_RATCHET_PUBLIC_H_INCLUDED
+#ifndef VSCR_RATCHET_KEY_ID_H_INCLUDED
+#define VSCR_RATCHET_KEY_ID_H_INCLUDED
 
-#include "vscr_assert.h"
-#include "vscr_error.h"
-#include "vscr_group_msg_type.h"
 #include "vscr_library.h"
-#include "vscr_memory.h"
-#include "vscr_msg_type.h"
-#include "vscr_platform.h"
 #include "vscr_ratchet_common.h"
-#include "vscr_ratchet_group_message.h"
-#include "vscr_ratchet_group_session.h"
-#include "vscr_ratchet_group_ticket.h"
-#include "vscr_ratchet_key_id.h"
-#include "vscr_ratchet_message.h"
-#include "vscr_ratchet_session.h"
 #include "vscr_status.h"
+
+#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -84,6 +82,62 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handle 'ratchet key id' context.
+//
+typedef struct vscr_ratchet_key_id_t vscr_ratchet_key_id_t;
+
+//
+//  Return size of 'vscr_ratchet_key_id_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_key_id_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCR_PUBLIC void
+vscr_ratchet_key_id_init(vscr_ratchet_key_id_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCR_PUBLIC void
+vscr_ratchet_key_id_cleanup(vscr_ratchet_key_id_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCR_PUBLIC vscr_ratchet_key_id_t *
+vscr_ratchet_key_id_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if context was allocated by the caller.
+//
+VSCR_PUBLIC void
+vscr_ratchet_key_id_delete(vscr_ratchet_key_id_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscr_ratchet_key_id_new ()'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_key_id_destroy(vscr_ratchet_key_id_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCR_PUBLIC vscr_ratchet_key_id_t *
+vscr_ratchet_key_id_shallow_copy(vscr_ratchet_key_id_t *self);
+
+//
+//  Computes 8 bytes key pair id from Curve25519 (in PKCS8 or raw format) public key
+//
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_key_id_compute_public_key_id(vscr_ratchet_key_id_t *self, vsc_data_t public_key,
+        vsc_buffer_t *key_id) VSCR_NODISCARD;
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -98,5 +152,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSCR_RATCHET_PUBLIC_H_INCLUDED
+#endif // VSCR_RATCHET_KEY_ID_H_INCLUDED
 //  @end

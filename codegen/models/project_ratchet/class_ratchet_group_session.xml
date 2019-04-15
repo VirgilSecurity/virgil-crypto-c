@@ -6,6 +6,7 @@
     <require class="ratchet common hidden" scope="context"/>
 
     <require module="ratchet group message defs" scope="private"/>
+    <require module="ratchet group ticket defs" scope="private"/>
 
     <require header="RatchetGroupMessage.pb.h" scope="private"/>
     <require header="pb_decode.h" scope="private"/>
@@ -23,12 +24,21 @@
 
     <property name="key utils" class="ratchet key utils"/>
     <property name="cipher" class="ratchet cipher" access="readwrite"/>
-    <property name="skipped messages" class="ratchet skipped group messages" access="readwrite"/>
+    <property name="skipped messages" class="ratchet skipped group message key root node" access="readwrite">
+        <array/>
+    </property>
 
     <property name="is initialized" type="boolean" access="readwrite"/>
     <property name="is private key set" type="boolean" access="readwrite"/>
+    <property name="is id set" type="boolean" access="readwrite"/>
 
-    <property name="me" class="ratchet group participant data" access="readwrite"/>
+    <property name="my id" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
+    </property>
+    <property name="my epoch" class="ratchet group participant epoch" access="readwrite"/>
+    <property name="my public key" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+    </property>
     <property name="my private key" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
     </property>
@@ -50,6 +60,16 @@
         <return type="boolean"/>
     </method>
 
+    <method name="is id set" is_const="1">
+        Shows whether identity private key was set.
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="get current epoch" is_const="1">
+        <return type="size"/>
+    </method>
+
     <method name="setup defaults">
         Setups default dependencies:
         - RNG: CTR DRBG
@@ -69,12 +89,19 @@
         </return>
     </method>
 
+    <method name="set id">
+        Sets identity private key.
+
+        <argument name="my id" class="data"/>
+    </method>
+
+    <method name="get id" is_const="1">
+        <return class="data"/>
+    </method>
+
     <method name="setup session">
         Sets up session. Identity private key should be set separately.
 
-        <argument name="my id" class="data">
-            User's 32-byte identifier.
-        </argument>
         <argument name="message" class="ratchet group message">
             Message with group info obtained through secure channel.
         </argument>
@@ -137,7 +164,7 @@
             <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
         </argument>
 
-        <return class="ratchet group participant data" access="readwrite"/>
+        <return type="size"/>
     </method>
 
     <method name="serialize len">
@@ -174,6 +201,24 @@
             Deserialized session.
             NOTE: Deserialized session needs dependencies to be set. Check setup defaults
         </return>
+    </method>
+
+    <method name="update participant" declaration="private" is_static="1">
+        <argument name="participant" class="ratchet group participant data" access="readwrite"/>
+        <argument name="epoch" type="size"/>
+        <argument name="info" class="MessageParticipantInfo" library="nanopb"/>
+    </method>
+
+    <method name="create group ticket for adding members" is_const="1">
+        <return class="ratchet group ticket" access="disown"/>
+    </method>
+
+    <method name="create group ticket for adding or removing members" is_const="1">
+        <argument name="error" class="error" access="readwrite">
+            Error context to return error
+        </argument>
+
+        <return class="ratchet group ticket" access="disown"/>
     </method>
 
 </class>

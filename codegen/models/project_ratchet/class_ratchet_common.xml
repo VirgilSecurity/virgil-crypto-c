@@ -21,11 +21,11 @@
         Max number of group chat participants
     </constant>
 
-    <constant name="min participants count" value="1">
+    <constant name="min participants count" value="2">
         Min number of group chat participants
     </constant>
 
-    <constant name="max group message len" value="32882">
+    <constant name="max group message len" value="32886">
         Max group message length
     </constant>
 </class>

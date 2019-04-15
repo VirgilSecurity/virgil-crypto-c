@@ -101,4 +101,20 @@
         Invalid signature.
     </constant>
 
+    <constant name="error user is not present in group message" value="-25">
+        User is not present in group message.
+    </constant>
+
+    <constant name="error epoch mismatch" value="-26">
+        Epoch mismatch.
+    </constant>
+
+    <constant name="error participant not found" value="-27">
+        Participant not found.
+    </constant>
+
+    <constant name="error epoch not found" value="-28">
+        Epoch not found.
+    </constant>
+
 </enum>

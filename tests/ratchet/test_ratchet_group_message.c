@@ -34,6 +34,7 @@
 
 #define UNITY_BEGIN() UnityBegin(__FILENAME__)
 
+#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "unity.h"
@@ -55,6 +56,7 @@ int suiteTearDown(int num_failures) { return num_failures; }
 #include "test_data_ratchet_group_message.h"
 #include "vscr_ratchet_group_message.h"
 #include "vscr_ratchet_group_message_defs.h"
+#include "test_utils_ratchet.h"
 
 // --------------------------------------------------------------------------
 //  Test functions.
@@ -187,10 +189,22 @@ test__serialize_deserialize__fixed_group_info_msg__should_be_equal(void) {
 
 void
 test__serialize_deserialize__group_info_overflow__should_be_equal(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
     vscr_ratchet_group_message_t *msg1 = vscr_ratchet_group_message_new();
 
+    size_t number_of_participants = vscr_ratchet_common_MAX_PARTICIPANTS_COUNT;
+
     msg1->message_pb.has_group_info = true;
-    msg1->message_pb.group_info.participants_count = vscr_ratchet_common_MAX_PARTICIPANTS_COUNT;
+    msg1->message_pb.group_info.participants_count = number_of_participants;
+
+    for (size_t i = 0; i < number_of_participants; i++) {
+        vsc_buffer_t *id;
+        generate_random_participant_id(rng, &id);
+        memcpy(msg1->message_pb.group_info.participants[i].id, vsc_buffer_bytes(id), vsc_buffer_len(id));
+        vsc_buffer_destroy(&id);
+    }
 
     size_t len = vscr_ratchet_group_message_serialize_len(msg1);
     vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);
@@ -208,6 +222,8 @@ test__serialize_deserialize__group_info_overflow__should_be_equal(void) {
     vscr_ratchet_group_message_destroy(&msg1);
     vscr_ratchet_group_message_destroy(&msg2);
     vsc_buffer_destroy(&buff);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 void

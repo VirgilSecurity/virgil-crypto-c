@@ -14,10 +14,12 @@
 
     <constant name="max regular message len" value="32818"/>
     <constant name="max prekey message len" value="32960"/>
-    <constant name="max group regular message len" value="32882"/>
-    <constant name="max group info message len" value="10607"/>
-    <constant name="participant len" value="106"/>
+
+    <constant name="max group regular message len" value="32886"/>
+    <constant name="max group info message len" value="10811"/>
+    <constant name="participant len" value="108"/>
     <constant name="max cipher text len" value="32768"/>
+    <constant name="max epoches count" value="5"/>
 
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>

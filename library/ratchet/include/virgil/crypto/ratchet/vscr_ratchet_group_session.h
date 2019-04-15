@@ -58,6 +58,7 @@
 #include "vscr_ratchet_group_message.h"
 #include "vscr_error.h"
 #include "vscr_ratchet_group_session.h"
+#include "vscr_ratchet_group_ticket.h"
 #include "vscr_status.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -178,6 +179,15 @@ VSCR_PUBLIC bool
 vscr_ratchet_group_session_is_private_key_set(const vscr_ratchet_group_session_t *self);
 
 //
+//  Shows whether identity private key was set.
+//
+VSCR_PUBLIC bool
+vscr_ratchet_group_session_is_id_set(const vscr_ratchet_group_session_t *self);
+
+VSCR_PUBLIC size_t
+vscr_ratchet_group_session_get_current_epoch(const vscr_ratchet_group_session_t *self);
+
+//
 //  Setups default dependencies:
 //  - RNG: CTR DRBG
 //
@@ -192,10 +202,19 @@ vscr_ratchet_group_session_set_private_key(vscr_ratchet_group_session_t *self,
         vsc_data_t my_private_key) VSCR_NODISCARD;
 
 //
+//  Sets identity private key.
+//
+VSCR_PUBLIC void
+vscr_ratchet_group_session_set_id(vscr_ratchet_group_session_t *self, vsc_data_t my_id);
+
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_group_session_get_id(const vscr_ratchet_group_session_t *self);
+
+//
 //  Sets up session. Identity private key should be set separately.
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self, vsc_data_t my_id,
+vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self,
         const vscr_ratchet_group_message_t *message) VSCR_NODISCARD;
 
 //
@@ -235,6 +254,13 @@ vscr_ratchet_group_session_serialize(vscr_ratchet_group_session_t *self, vsc_buf
 //
 VSCR_PUBLIC vscr_ratchet_group_session_t *
 vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error);
+
+VSCR_PUBLIC vscr_ratchet_group_ticket_t *
+vscr_ratchet_group_session_create_group_ticket_for_adding_members(const vscr_ratchet_group_session_t *self);
+
+VSCR_PUBLIC vscr_ratchet_group_ticket_t *
+vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_members(const vscr_ratchet_group_session_t *self,
+        vscr_error_t *error);
 
 
 // --------------------------------------------------------------------------

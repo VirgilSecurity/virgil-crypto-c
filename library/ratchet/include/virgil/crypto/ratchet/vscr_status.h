@@ -171,7 +171,23 @@ enum vscr_status_t {
     //
     //  Invalid signature.
     //
-    vscr_status_ERROR_INVALID_SIGNATURE = -24
+    vscr_status_ERROR_INVALID_SIGNATURE = -24,
+    //
+    //  User is not present in group message.
+    //
+    vscr_status_ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE = -25,
+    //
+    //  Epoch mismatch.
+    //
+    vscr_status_ERROR_EPOCH_MISMATCH = -26,
+    //
+    //  Participant not found.
+    //
+    vscr_status_ERROR_PARTICIPANT_NOT_FOUND = -27,
+    //
+    //  Epoch not found.
+    //
+    vscr_status_ERROR_EPOCH_NOT_FOUND = -28
 };
 typedef enum vscr_status_t vscr_status_t;
 

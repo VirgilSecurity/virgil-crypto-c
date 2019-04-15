@@ -111,6 +111,18 @@ import VSCRatchet
     /// Invalid signature.
     case errorInvalidSignature = -24
 
+    /// User is not present in group message.
+    case errorUserIsNotPresentInGroupMessage = -25
+
+    /// Epoch mismatch.
+    case errorEpochMismatch = -26
+
+    /// Participant not found.
+    case errorParticipantNotFound = -27
+
+    /// Epoch not found.
+    case errorEpochNotFound = -28
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscr_status_t) {
         self.init(rawValue: Int(status.rawValue))!
