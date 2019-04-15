@@ -6,7 +6,14 @@ gsl from "js_models.gsl"
 
 function js_create_project_module(project, wrapper)
   echo_info("Create project module: $(my.project.name:no)", my)
-  return js_append_js_project_model(my.wrapper, my.project, my.wrapper)
+  my.js_project = js_append_js_project_model(my.wrapper, my.project, my.wrapper)
+  my.name = "$(my.js_project.name:no) umbrella"
+  my.js_module = js_append_js_module_model(my.js_project, my.name)
+  js_append_js_umbrella_module_model(my.js_module, my.js_project, my.project, my.name)
+  my.name = my.js_project.name
+  my.js_module = js_append_js_module_model(my.js_project, my.name)
+  js_append_js_root_module_model(my.js_module, my.js_project, my.name)
+  return my.js_project
 endfunction
 
 function js_create_interface_module(source, wrapper_project, meta)
@@ -37,11 +44,13 @@ endfunction
 
 function js_create_enum_module(source, wrapper_project, meta)
   echo_info("Create enum module: $(my.source.name:no)", my)
-  my.js_module = js_append_js_module_model(my.wrapper_project, my.source.name)
   if !(my.source.name = "status")
+    my.js_module = js_append_js_module_model(my.wrapper_project, my.source.name)
     js_append_js_enum_module_model(my.js_module, my.source, my.wrapper_project)
   else
-    js_append_js_error_status_module_model(my.js_module, my.source, my.wrapper_project)
+    my.name = "$(my.wrapper_project.name:no) error handler"
+    my.js_module = js_append_js_module_model(my.wrapper_project, my.name)
+    js_append_js_error_status_module_model(my.js_module, my.source, my.wrapper_project, my.name)
   endif
 endfunction
 
@@ -73,12 +82,25 @@ endfunction
 
 function js_generate_sources(wrapper_project)
   echo_info("Generate sources for project: $(my.wrapper_project.name:no)", my)
-  if defined(my.wrapper_project->js_module)
-    js_create_umbrella_header_file(my.wrapper_project)
-    js_create_index_js_file(my.wrapper_project)
-    js_create_index_cpp_file(my.wrapper_project)
-    js_create_js_module_files(my.wrapper_project)
-  endif
+  for my.wrapper_project.js_module
+    if defined(js_module->js_interface_module)
+      js_create_js_interface_module_file(js_module->js_interface_module, my.wrapper_project)
+    elsif defined(js_module->js_enum_module)
+      js_create_js_enum_module_file(js_module->js_enum_module)
+    elsif defined(js_module->js_error_status_module)
+      js_create_js_error_status_module(js_module->js_error_status_module, my.wrapper_project)
+    elsif defined(js_module->js_class_module)
+      js_create_js_class_module_file(js_module->js_class_module, my.wrapper_project)
+    elsif defined(js_module->js_implementation_resolver_module)
+      js_create_js_implementation_resolver_module_file(js_module->js_implementation_resolver_module, my.wrapper_project)
+    elsif defined(js_module->js_umbrella_module)
+      js_create_js_umbrella_module(js_module->js_umbrella_module, my.wrapper_project)
+    elsif defined(js_module->js_root_module)
+      js_create_js_root_module(js_module->js_root_module, my.wrapper_project)
+    else
+      echo_fatal("Unknown 'js_module'", my)
+    endif
+  endfor
 endfunction
 
 endtemplate

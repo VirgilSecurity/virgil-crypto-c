@@ -15,23 +15,6 @@ function js_append_js_project_model(parent, project, wrapper)
     js_project.source_dir = cat_path(js_project.root_dir, "src")
     js_project.project_source_dir = cat_path(js_project.source_dir, js_project.name)
     js_project.has_implementation_resolver = 0
-    js_project.umbrella_header_file = "index.h"
-    js_project.umbrella_header_guard = js_cpp_header_guard(my.project.name)
-    js_project.umbrella_header_file_path = cat_path(js_project.project_source_dir, js_project.umbrella_header_file)
-    js_project.index_cpp_file = "index.cc"
-    js_project.index_cpp_file_path = cat_path(js_project.project_source_dir, js_project.index_cpp_file)
-    js_project.index_js_file = "index.js"
-    js_project.index_js_file_path = cat_path(js_project.project_source_dir, js_project.index_js_file)
-    for my.project.require where defined(require.project) & require.project <> "common"
-      new js_project_require to js_project
-        js_project_require.c_namespace_dir = ""
-        js_project_require.c_umbrella_header = make_ref_c(make_id("project", require.project, "header", require.project, "public"))
-      endnew
-    endfor
-    new js_project_require to js_project
-      js_project_require.c_namespace_dir = "$(my.project.namespace_dir)/"
-      js_project_require.c_umbrella_header = make_ref_c(make_id("header", my.project.name, "public"))
-    endnew
     return js_project
   endnew
 endfunction
@@ -43,13 +26,48 @@ function js_append_js_module_model(parent, name)
   endnew
 endfunction
 
-function js_append_js_implementation_resolver_module_model(parent, wrapped_project, name)
+function js_append_js_root_module_model(parent, wrapper_project, name)
+  new js_root_module to my.parent
+    new js_cpp_source to js_root_module
+      js_cpp_source.name = "$(my.name:c).cc"
+      js_cpp_source.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_source.name)
+    endnew
+    new js_source to js_root_module
+      js_source.name = "$(my.name:cobol).js"
+      js_source.path = cat_path(my.wrapper_project.project_source_dir, js_source.name)
+    endnew
+  endnew
+endfunction
+
+function js_append_js_umbrella_module_model(parent, wrapper_project, project, name)
+  new js_umbrella_module to my.parent
+    js_umbrella_module.cpp_header_guard = js_cpp_header_guard(my.name)
+    new js_cpp_header to js_umbrella_module
+      js_cpp_header.name = "$(my.name:c).h"
+      js_cpp_header.uid = make_id("js", "umbrella", "module", "cpp header")
+      js_cpp_header.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_header.name)
+    endnew
+    for my.project.require where defined(require.project) & require.project <> "common"
+      new js_project_require to js_umbrella_module
+        js_project_require.c_namespace_dir = ""
+        js_project_require.c_umbrella_header = make_ref_c(make_id("project", require.project, "header", require.project, "public"))
+      endnew
+    endfor
+    new js_project_require to js_umbrella_module
+      js_project_require.c_namespace_dir = "$(my.project.namespace_dir)/"
+      js_project_require.c_umbrella_header = make_ref_c(make_id("header", my.project.name, "public"))
+    endnew
+  endnew
+endfunction
+
+function js_append_js_implementation_resolver_module_model(parent, wrapper_project, name)
   new js_implementation_resolver_module to my.parent
     js_implementation_resolver_module.cpp_name = "$(my.name:pascal)"
     new js_cpp_name to js_implementation_resolver_module
       js_cpp_name.name = js_implementation_resolver_module.cpp_name
       js_cpp_name.uid = make_id("js", "implementation resolver", "module", "cpp name")
     endnew
+    js_implementation_resolver_module.cpp_umbrella_header = make_ref_js(make_id("umbrella", "module", "cpp header"))
     js_implementation_resolver_module.cpp_header_guard = js_cpp_header_guard(my.name)
     js_implementation_resolver_module.cpp_resolve_implementation_method_name = "ResolveImplementation"
     js_implementation_resolver_module.cpp_resolve_implementation_parameter_name = "implementation"
@@ -64,11 +82,12 @@ function js_append_js_implementation_resolver_module_model(parent, wrapped_proje
     js_implementation_resolver_module.cpp_method_parameter_name = "implementation"
     new js_cpp_header to js_implementation_resolver_module
       js_cpp_header.name = "$(my.name:c).h"
-      js_cpp_header.path = cat_path(my.wrapped_project.project_source_dir, js_cpp_header.name)
+      js_cpp_header.uid = make_id("js", "implementation resolver", "module", "cpp header")
+      js_cpp_header.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_header.name)
     endnew
     new js_cpp_source to js_implementation_resolver_module
       js_cpp_source.name = "$(my.name:c).cc"
-      js_cpp_source.path = cat_path(my.wrapped_project.project_source_dir, js_cpp_source.name)
+      js_cpp_source.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_source.name)
     endnew
     return js_implementation_resolver_module
   endnew
@@ -81,15 +100,13 @@ function js_append_js_interface_module_model(parent, source, wrapper_project)
       js_cpp_name.name = js_interface_module.cpp_name
       js_cpp_name.uid = make_id("js", "interface", "module", my.source.name, "cpp name")
     endnew
+    js_interface_module.cpp_umbrella_header = make_ref_js(make_id("umbrella", "module", "cpp header"))
     js_interface_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
     js_interface_module.c_implementation_type = "$(make_ref_c(make_id("class", "impl", "struct", "impl")))*"
     new js_cpp_header to js_interface_module
       js_cpp_header.name = "$(my.source.name:c).h"
       js_cpp_header.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_header.name)
     endnew
-    for my.wrapper_project.js_project_require
-      copy js_project_require to js_interface_module
-    endfor
     return js_interface_module
   endnew
 endfunction
@@ -108,20 +125,19 @@ function js_append_js_enum_module_model(parent, source, wrapper_project)
   endnew
 endfunction
 
-function js_append_js_error_status_module_model(parent, source, wrapper_project)
+function js_append_js_error_status_module_model(parent, source, wrapper_project, name)
   new js_error_status_module to my.parent
-    js_error_status_module.cpp_name = "$(my.source.name:pascal)"
-    js_error_status_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
+    js_error_status_module.cpp_name = "$(my.name:pascal)"
+    js_error_status_module.cpp_header_guard = js_cpp_header_guard(my.name)
     js_error_status_module.c_type = make_ref_c(make_id("class", "status", "enum", "status"))
-    for my.wrapper_project.js_project_require
-      copy js_project_require to js_error_status_module
-    endfor
+    js_error_status_module.cpp_umbrella_header = make_ref_js(make_id("umbrella", "module", "cpp header"))
     new js_cpp_header to js_error_status_module
-      js_cpp_header.name = "$(my.source.name:c).h"
+      js_cpp_header.name = "$(my.name:c).h"
+      js_cpp_header.uid = make_id("js", "error status", "module", "cpp header")
       js_cpp_header.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_header.name)
     endnew
     new js_cpp_source to js_error_status_module
-      js_cpp_source.name = "$(my.source.name:c).cc"
+      js_cpp_source.name = "$(my.name:c).cc"
       js_cpp_source.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_source.name)
     endnew
     for my.source.constant where constant.name <> "success"
@@ -150,6 +166,7 @@ function js_append_js_class_module_model(parent, source, wrapper_project, meta)
       js_cpp_name.name = js_class_module.cpp_name
       js_cpp_name.uid = make_id("js", "class", "module", my.source.name, "cpp name")
     endnew
+    js_class_module.cpp_umbrella_header = make_ref_js(make_id("umbrella", "module", "cpp header"))
     js_class_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
     js_class_module.instance_name = "$(my.source.name:c)_instance"
     js_class_module.has_context = defined(my.source.context) & my.source.context <> "none"
