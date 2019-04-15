@@ -23,7 +23,7 @@ endfunction
 
 function js_create_class_module(source, wrapper_project, meta)
   echo_info("Create class module: $(my.source.name:no)", my)
-  if my.source.scope = "public" & !(my.source.name = "error")
+  if my.source.scope = "public" & my.source.name <> "error"
     my.js_module = js_append_js_module_model(my.wrapper_project, my.source)
     js_append_js_class_module_model(my.js_module, my.source, my.wrapper_project)
   endif

@@ -304,7 +304,7 @@ endfunction
 
 function js_cpp_create_js_class_call_argument(js_class_call_argument, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("$(my.js_class_call_argument.c_context_type) $(my.js_class_call_argument.cpp_name:no) = Nan::ObjectWrap::Unwrap<$(my.js_class_call_argument.cpp_name:no)>($(global.js_cpp_callback_info_name:no)[$(my.js_class_call_argument.index:no)])->$(my.js_class_call_argument.c_context_name:no);", my.indent_levels.first)
+  js_out("$(my.js_class_call_argument.c_context_type) $(my.js_class_call_argument.cpp_name:no) = Nan::ObjectWrap::Unwrap<$(my.js_class_call_argument.cpp_class_name:no)>($(global.js_cpp_callback_info_name:no)[$(my.js_class_call_argument.index:no)])->$(my.js_class_call_argument.c_context_name:no);", my.indent_levels.first)
 endfunction
 
 function js_cpp_create_js_interface_call_argument(js_interface_call_argument, indent_level)
@@ -751,15 +751,14 @@ endfunction
 
 function js_cpp_create_js_enum_method_return_result(js_enum_method_return, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  return "Nan::New<v8::Number>((int)$(my.js_enum_method_return.cpp_name:no)"
+  return "Nan::New<v8::Number>((int)$(my.js_enum_method_return.cpp_name:no))"
 endfunction
 
 function js_cpp_create_js_class_method_return_result(js_class_method_return, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
   my.instance_name = "$(my.js_class_method_return.cpp_name:no)_instance"
   js_out("$(my.js_class_method_return.cpp_class_name:no)* $(my.instance_name:no) = new $(my.js_class_method_return.cpp_class_name:no)($(my.js_class_method_return.cpp_name:no));", my.indent_levels.first)
-  js_out("$(my.instance_name:no)->Wrap($(global.js_cpp_callback_info_name:no).This());", my.indent_levels.first)
-  return "info.This()"
+  return "$(my.instance_name:no)->handle()"
 endfunction
 
 function js_cpp_create_js_interface_method_return_result(js_interface_method_return, indent_level)
