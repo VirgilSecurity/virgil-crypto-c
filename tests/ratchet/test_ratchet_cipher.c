@@ -108,6 +108,7 @@ test__encrypt_decrypt__rnd_data__should_match(void) {
         vsc_buffer_destroy(&key);
         vscr_ratchet_cipher_destroy(&cipher);
         vsc_buffer_destroy(&plain_text);
+        vsc_buffer_destroy(&add_data);
         vsc_buffer_destroy(&plain_text2);
         vsc_buffer_destroy(&cipher_text);
     }
