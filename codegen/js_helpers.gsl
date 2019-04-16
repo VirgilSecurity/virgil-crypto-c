@@ -139,6 +139,9 @@ endfunction
 # C++
 # --------------------------------------------------------------------------------------------------
 
+global.js_project_require_type_library = "js_require_library"
+global.js_project_require_type_relative = "js_require_relative"
+
 global.js_cpp_resolve_implementation_method_name = "ResolveImplementation"
 global.js_cpp_resolve_implementation_method_parameter_name = "implementation"
 

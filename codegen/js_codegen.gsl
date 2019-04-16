@@ -1155,8 +1155,11 @@ function js_create_js_umbrella_module(js_umbrella_module, wrapper_project)
     js_cpp_header_create_ifndef(my.js_umbrella_module.cpp_header_guard, my.indent_levels.first)
     js_cpp_header_create_define(my.js_umbrella_module.cpp_header_guard, my.indent_levels.first)
     js_out("#include <nan.h>", my.indent_levels.first)
-    for my.js_umbrella_module.js_project_require
+    for my.js_umbrella_module.js_project_require where js_project_require.type = global.js_project_require_type_library
       js_out("#include <$(js_project_require.c_namespace_dir:no)$(js_project_require.c_umbrella_header:no)>", my.indent_levels.first)
+    endfor
+    for my.js_umbrella_module.js_project_require where js_project_require.type = global.js_project_require_type_relative
+      js_out("#include \"$(js_project_require.cpp_dir:no)/$(js_project_require.cpp_umbrella_header:no)\"", my.indent_levels.first)
     endfor
     for my.wrapper_project.js_module where defined(js_module->js_class_module)
       js_out("#include \"$(js_module->js_class_module->js_cpp_header.name:no)\"", my.indent_levels.first)

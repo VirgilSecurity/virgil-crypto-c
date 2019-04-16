@@ -49,11 +49,18 @@ function js_append_js_umbrella_module_model(parent, wrapper_project, project, na
     endnew
     for my.project.require where defined(require.project) & require.project <> "common"
       new js_project_require to js_umbrella_module
+        js_project_require.type = global.js_project_require_type_library
         js_project_require.c_namespace_dir = ""
         js_project_require.c_umbrella_header = make_ref_c(make_id("project", require.project, "header", require.project, "public"))
       endnew
+      new js_project_require to js_umbrella_module
+        js_project_require.type = global.js_project_require_type_relative
+        js_project_require.cpp_dir = cat_path("..", require.project)
+        js_project_require.cpp_umbrella_header = make_ref_js(make_id("project", require.project, "umbrella", "module", "cpp header"))
+      endnew
     endfor
     new js_project_require to js_umbrella_module
+      js_project_require.type = global.js_project_require_type_library
       js_project_require.c_namespace_dir = "$(my.project.namespace_dir)/"
       js_project_require.c_umbrella_header = make_ref_c(make_id("header", my.project.name, "public"))
     endnew
