@@ -55,12 +55,25 @@ function component_derive_project_uid (instance)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C type of the class.
+#   Return .(UID) that refers to the C type:
+#       - enum
+#       - class
+#       - interface
+#       - implementation
 # ---------------------------------------------------------------------------
-function class_derive_c_type (class)
-    check_arguments (my, "class", my)
+function class_derive_c_type (type)
+    check_arguments (my, "type", my)
 
-    return make_ref_c (make_id ("class", my.class.name, "struct", my.class.name))
+    my.item_name = name (my.type)
+
+    if my.item_name = "enum"
+        return make_ref_c (make_id ("enum", my.type.name))
+
+    elsif my.item_name = "interface"
+        return make_ref_c (make_id ("class impl struct impl"))
+    else
+        return make_ref_c (make_id ("class", my.type.name, "struct", my.type.name))
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------

@@ -6,7 +6,7 @@
         prefix="vscp"
         path="../library/pythia/"
         work_path="generated/pythia/"
-        wrappers="swift"
+        wrappers="swift, python"
         >
 
     <version major="0" minor="6" patch="0"/>
@@ -65,7 +65,4 @@
         char error_message[48] = {0x00};
         snprintf(error_message, sizeof(error_message), "Unhandled vsc::pythia error -0x%04x", error);
     </error_message_getter>
-
-    <!-- <wrapper lang="swift"/> -->
-    <wrapper lang="python"/>
 </project>

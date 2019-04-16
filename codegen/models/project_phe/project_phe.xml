@@ -6,7 +6,7 @@
         prefix="vsce"
         path="../library/phe"
         work_path = "generated/phe/"
-        wrappers="none"
+        wrappers="python"
         >
 
     <version major="0" minor="6" patch="0"/>
@@ -70,6 +70,4 @@
     <class name="phe server"/>
     <class name="phe client"/>
     <class name="phe cipher"/>
-
-    <wrapper lang="python"/>
 </project>

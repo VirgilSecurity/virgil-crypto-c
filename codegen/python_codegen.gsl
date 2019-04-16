@@ -54,7 +54,11 @@ function python_format_argument_list (python_method)
     check_arguments (my, "python_method", my)
 
     for my.python_method.python_argument
-        my.arg_list ?= "self, "
+        if is_true (my.python_method.is_classmethod)
+            my.arg_list ?= "cls, "
+        else
+            my.arg_list ?= "self, "
+        endif
         my.arg_list += "$(python_argument.name:c)"
         if ! last()
             my.arg_list += ", "
@@ -260,6 +264,31 @@ function python_insert_enum_constant (python_constant)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Insert statement: enum.dict
+# ---------------------------------------------------------------------------
+function python_insert_dict (python_dict)
+    check_arguments (my, "python_dict", my)
+
+    python_insert_code("\
+        $(my.python_dict.name:) = {
+    ", 1)
+
+    for python_dict.entry
+        dict_entry = "$(entry.key:): \"$(entry.value:)\""
+
+        if ! last()
+            dict_entry += ","
+        endif
+
+        python_insert_code (dict_entry, 2)
+    endfor
+
+    python_insert_code("\
+        }
+    ", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Insert statement: constructor / init
 # ---------------------------------------------------------------------------
 function python_insert_constructor (python_constructor)
@@ -369,13 +398,22 @@ function python_insert_class_method (python_method)
 
     assert_attributes (my.python_method, "name", my)
 
-    my.method_args = python_format_argument_list(my.python_method) ? "self"
+    if is_true (my.python_method.is_classmethod)
+        my.method_args = python_format_argument_list(my.python_method) ? "cls"
+    else
+        my.method_args = python_format_argument_list(my.python_method) ? "self"
+    endif
     my.method_return = python_format_return_list(my.python_method) ?
     my.override = is_true (my.python_method.override) ?? "override" ?
 
     if ! count (my.python_method.python_code)
         python_insert_code("\
             @abstractmethod
+        ", 1)
+    endif
+    if is_true (my.python_method.is_classmethod)
+        python_insert_code("\
+            @classmethod
         ", 1)
     endif
     python_insert_code("\
@@ -431,7 +469,7 @@ function python_insert_abstract_class (python_abstract_class)
     newline ()
     python_insert_code ("\
         class $(my.python_abstract_class.name:)$(my.python_inheritance_list?:):
-            __metaclass__ = ABCmeta
+            __metaclass__ = ABCMeta
     ")
     python_insert_description(my.python_abstract_class, 1)
 
@@ -466,12 +504,17 @@ function python_insert_class (python_class)
     python_insert_description(my.python_class, 1)
 
     if is_true (python_class.is_abstract)
-        python_insert_code(terminator + format_left("__metaclass__ = ABCmeta"), 1)
+        python_insert_code(terminator + format_left("__metaclass__ = ABCMeta"), 1)
     endif
 
     for my.python_class.python_constant
         newline_if (first ())
         python_insert_class_constant (python_constant)
+    endfor
+
+    for my.python_class.python_dict
+        newline ()
+        python_insert_dict (python_dict)
     endfor
 
     for my.python_class.python_constructor
@@ -484,7 +527,7 @@ function python_insert_class (python_class)
         python_insert_destructor (python_destructor)
     endfor
 
-    for my.python_class.python_method
+    for my.python_class.python_method by is_false (python_method.is_specific_method)
         newline ()
         python_insert_class_method (python_method)
     endfor
@@ -492,6 +535,13 @@ function python_insert_class (python_class)
     for my.python_class.python_property
         newline ()
         python_insert_class_property (python_property)
+    endfor
+
+    for my.python_class.python_code
+        if is_true(python_code.leadeing_new_line)
+            newline ()
+        endif
+        python_insert_code(python_code., 1)
     endfor
 endfunction
 
@@ -518,6 +568,11 @@ function python_insert_enum (python_enum)
         python_insert_enum_constant (python_constant)
     endfor
 
+    for my.python_enum.python_dict
+        newline ()
+        python_insert_dict (python_dict)
+    endfor
+
     for my.python_enum.python_constructor
         newline ()
         python_insert_constructor (python_constructor)
@@ -535,7 +590,6 @@ endfunction
 # ---------------------------------------------------------------------------
 function python_generate_project (source, wrapper)
     check_arguments (my, "source, wrapper", my)
-
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -567,6 +621,11 @@ function python_generate_sources (source, wrapper)
         for python_module.python_import
             newline_if (first ())
             python_insert_import (python_import)
+        endfor
+
+        for python_module.python_code
+            newline_if (first ())
+            python_insert_code (python_code)
         endfor
 
         for python_module.python_enum

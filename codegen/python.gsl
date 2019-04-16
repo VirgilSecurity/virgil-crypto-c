@@ -176,7 +176,7 @@ function python_derive_instance_type (instance)
             my.primitive_type = "c_byte"
 
         elsif my.instance.type = "size"
-            my.primitive_type = "c_int"
+            my.primitive_type = "c_size_t"
 
         elsif my.instance.type = "char"
             if count(my.instance.string)
@@ -211,20 +211,18 @@ function python_derive_instance_type (instance)
 
         elsif is_ref (my.instance.class) | defined (my.instance.library)
             return python_lang_ref (my.instance.class)
-
         else
-            return "class_$(my.instance.class:c)"
+            if my.instance.class = "error"
+                .is_error_type = "1"
+            endif
+            return class_derive_c_instance_type (my.instance)
         endif
 
     elsif defined (my.instance.impl)
-        my.project_uid = component_derive_project_uid (my.instance)
-        my.type_uid = make_id ("class", "$(my.instance.impl:Pascal,lower)")
-        return make_ref_python (make_id(my.project_uid, my.type_uid))
+        return class_derive_c_instance_type (my.instance)
 
     elsif defined (my.instance.interface)
-        my.project_uid = component_derive_project_uid (my.instance)
-        my.type_uid = make_id ("class", "$(my.instance.interface:Pascal,lower)")
-        return make_ref_python (make_id(my.project_uid, my.type_uid))
+        return class_derive_c_instance_type (my.instance)
 
     elsif defined (my.instance.enum)
         return "enum_$(my.instance.enum:c)"
@@ -350,13 +348,9 @@ function python_class_derive_buffer_length_getter (class, method, argument, wrap
         endif
 
         if defined (proxy.argument)
-
             my.proxy_args += python_derive_argument_name_str (proxy.[to])
-            my.proxy_args += "=" + python_derive_argument_name_str (proxy.argument)
+            my.proxy_args += "=len(" + python_derive_argument_name_str (proxy.argument) + ")"
 
-            if string_in (proxy.cast, "data_length")
-                my.proxy_args += ".count"
-            endif
 
         elsif defined (proxy.constant)
 
@@ -370,9 +364,6 @@ function python_class_derive_buffer_length_getter (class, method, argument, wrap
 
     my.specified_proxy_object = get_one_of_attribute (my.length, "class, interface, impl") ?
     if defined (my.specified_proxy_object)
-        if my.specified_proxy_object = "self"
-            my.specified_proxy_object = my.class.name
-        endif
         my.proxy_object = python_derive_class_name_str (my.specified_proxy_object, my.wrapper)
     else
         my.proxy_object = "self"
@@ -410,6 +401,11 @@ function python_derive_proxy_return_type (python_method)
             my.c_proxy_return_type_list += ", "
         endif
     endfor
+
+    if is_true (my.python_method.have_status_return)
+        my.c_proxy_return_type_list += "c_int"
+    endif
+
     if string_empty (my.c_proxy_return_type_list)
         my.c_proxy_return_type_list = "None"
     endif
@@ -522,7 +518,7 @@ endfunction
 #   Module resolution.
 # ===========================================================================
 
-function python_resolve (project, wrapper, projects_api)
+function python_resolve_project (project, wrapper, projects_api)
     check_arguments (my, "project, wrapper, projects_api", my)
 
     echo_info ("Resolve <wrapper lang=\"$(my.wrapper.lang:)\"/> for project: '$(my.project.name:)'", my)
@@ -550,9 +546,44 @@ function python_resolve (project, wrapper, projects_api)
     for my.project.require where defined (0.project) & string_equal (0.feature, "library")
         new python_import to my.wrapper
             .framework = "virgil_crypto.$(require.project:c)"
+            if require.project = "common"
+                .framework += "._c_bridge"
+            endif
             .import_all = "1"
         endnew
     endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+# Top level module resolution.
+# ---------------------------------------------------------------------------
+function python_resolve_toplevel (wrapper, license)
+    check_arguments (my, "wrapper, license", my)
+
+    assert_attribute (my.wrapper, "lang", my)
+
+    my.wrapper.main_package_dir = cat_path ("../wrappers/$(my.wrapper.lang:c,lower)", "virgil_crypto")
+    my.wrapper.c_context_source_dir = cat_path ("$(my.wrapper.main_package_dir:)", "_libs")
+    my.wrapper.source_dir = \
+            cat_path ("$(my.wrapper.main_package_dir:)", "_libs")
+    my.wrapper.utils_source_dir = \
+            cat_path ("$(my.wrapper.main_package_dir:)", "utils")
+    my.wrapper.common_source_dir = \
+            cat_path ("$(my.wrapper.main_package_dir:)", "common", "_c_bridge")
+    copy my.license to my.wrapper
+
+    if directory.create (my.wrapper.source_dir) = -1
+        echo_fatal ("Can not create directory: $(.source_dir_path:). ", my)
+    endif
+
+    if directory.create (my.wrapper.utils_source_dir) = -1
+        echo_fatal ("Can not create directory: $(.utils_source_dir:). ", my)
+    endif
+
+    if directory.create (my.wrapper.common_source_dir) = -1
+        echo_fatal ("Can not create directory: $(.common_source_dir:). ", my)
+    endif
+
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -590,8 +621,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <python_inherit/> from the entity <inherit/>.
 # ---------------------------------------------------------------------------
-function python_create_custom_inherit (inherit, destination, wrapper, meta)
-    check_arguments (my, "inherit, destination, wrapper, meta", my)
+function python_create_custom_inherit (inherit, destination, wrapper)
+    check_arguments (my, "inherit, destination, wrapper", my)
 
     new python_inherit to my.destination
         .type = my.inherit
@@ -639,16 +670,16 @@ function python_create_class_default_constructor (python_class, class, wrapper, 
             my.constructor_body = ""
             my.constructor_body += format_left ("self._lib_$(my.python_class.low_level_name_c_format:c) = $(my.python_class.low_level_name:)()")
 
-            if string_in (my.class.lifecycle, "default")
+            if string_in (my.class.lifecycle, "default") & my.class.context <> "none"
                 if string_equal (python_class.name, "data")
-                    my.constructor_body += format_left ("self.$(python_class.name:c) = self._lib_$(my.python_class.low_level_name_c_format:c).$(my.python_class.low_level_name_c_format:c)_new()")
+                    my.constructor_body += format_left ("self.$(my.class.name:c) = self._lib_$(my.python_class.low_level_name_c_format:c).$(my.python_class.low_level_name_c_format:c)_new()")
                 else
-                    my.constructor_body += format_left ("self._$(python_class.name:c) = self._lib_$(my.python_class.low_level_name_c_format:c).$(my.python_class.low_level_name_c_format:c)_new()")
+                    my.constructor_body += format_left ("self.ctx = self._lib_$(my.python_class.low_level_name_c_format:c).$(my.python_class.low_level_name_c_format:c)_new()")
                 endif
             endif
 
             if is_true (my.python_class.is_implementation)
-                my.constructor_body += format_left ("self._c_impl = self._lib_$(my.python_class.low_level_name_c_format:c).$(my.python_class.low_level_name_c_format:c)_impl(self._$(python_class.name:c))")
+                my.constructor_body += format_left ("self.c_impl = self._lib_$(my.python_class.low_level_name_c_format:c).$(my.python_class.low_level_name_c_format:c)_impl(self.ctx)")
             endif
 
             . = my.constructor_body
@@ -702,17 +733,17 @@ function python_create_c_destructor_mapping (class, destination)
         .name = "$(class_name:)_delete"
 
         new python_argument to python_method
-            .name = "$(my.class.name:c)"
-            .type = "$(class_name:)_t"
+            .name = "ctx"
+            .type = class_derive_c_type(my.class)
             .is_reference = "1"
         endnew
 
         new python_code to python_method
             my.method_body = format_left("\
             $(python_method.name) = self._lib.$(python_method.name)
-            $(python_method.name).argtypes = [POINTER($(class_name:)_t)]
+            $(python_method.name).argtypes = [POINTER($(python_method->python_argument.type:))]
             $(python_method.name).restype = None
-            return $(python_method.name)($(my.class.name:c))
+            return $(python_method.name)($(python_method->python_argument.name))
             ")
 
             . = my.method_body
@@ -735,7 +766,7 @@ function python_create_class_default_destructor (python_class, class, wrapper, m
 
         new python_code to python_destructor
             my.destructor_body = ""
-            my.destructor_body += format_left ("self._lib_$(my.python_class.low_level_name_c_format:c).$(my.python_class.low_level_name_c_format:c)_delete(self._$(python_class.name:c))")
+            my.destructor_body += format_left ("self._lib_$(python_class.low_level_name_c_format:c).$(my.python_class.low_level_name_c_format:c)_delete(self.ctx)")
 
             . = my.destructor_body
         endnew
@@ -757,13 +788,21 @@ function python_create_method_from_dependency (dependency, impl, destination, wr
 
         my.arg_name = python_derive_argument_name_str (my.dependency.name, my.wrapper)
 
+        my.arg_ctx = ""
         new python_argument to python_method
             .name = my.arg_name
-            # .type = python_derive_dependency_type (my.dependency)
+            
+            my.arg_ctx += "$(my.arg_name:)"
+            
+            if defined (my.dependency.interface)
+                my.arg_ctx += ".c_impl"
+            else
+                my.arg_ctx += ".ctx"
+            endif
         endnew
 
         new python_code to python_method
-            . = "self._lib_$(my.destination.low_level_name_c_format:).$(python_method.low_level_name:)(self._$(my.impl.name:c), $(my.arg_name:).c_impl)"
+            . = "self._lib_$(my.destination.low_level_name_c_format:).$(python_method.low_level_name:)(self.ctx, $(my.arg_ctx:))"
         endnew
     endnew
 endfunction
@@ -782,11 +821,13 @@ function python_create_low_level_method_from_dependency (dependency, impl, desti
 
         my.arg_name = python_derive_argument_name_str (my.dependency.name, my.wrapper)
 
-        new python_argument to python_method
-            .name = "$(my.impl.name:c)"
-            .type = "$(my.wrapper.prefix)_$(my.impl.name:c)_t"
-            .is_reference = "1"
-        endnew
+        if my.impl.context <> "none"
+            new python_argument to python_method
+                .name = "ctx"
+                .type = class_derive_c_type (my.impl)
+                .is_reference = "1"
+            endnew
+        endif
 
         new python_argument to python_method
             .name = my.arg_name
@@ -820,13 +861,15 @@ function python_create_class_constant (constant, python_class, wrapper, meta, in
     check_arguments (my, "constant, python_class, wrapper, meta", my)
 
     assert_attribute (my.constant, "name", my)
-    # assert_attribute (my.constant, "value", my)
-
     new python_constant to my.python_class
         . = python_format_comment (my.constant) ?
         .name = python_derive_constant_name (my.constant, my.wrapper)
         if defined (my.constant.value)
-            .value = my.constant.value
+            if constant.type = "boolean" 
+                .value = "$(my.constant.value:Pascal)"
+            else
+                .value = my.constant.value
+            endif
         else
             .value = my.index - 1
         endif
@@ -906,6 +949,7 @@ function python_create_method_declaration (class, method, destination, wrapper, 
         . = python_format_description (my.method) ?
         .name = python_derive_method_name (my.method, my.wrapper)
         .low_level_name = class_derive_c_method (my.class, my.method)
+        .have_status_return = count (my.method.return, string_equal (return.enum, "status"))
 
         python_map_attr_visibility (python_method, my.method)
 
@@ -919,7 +963,7 @@ function python_create_method_declaration (class, method, destination, wrapper, 
             endif
         endfor
 
-        for my.method.return where ! string_equal (return.enum, "error")
+        for my.method.return where ! string_equal (return.enum, "status")
             python_create_return (return, python_method, my.wrapper, my.meta)
         endfor
 
@@ -936,21 +980,24 @@ function python_create_low_level_method_declaration (class, method, destination,
     new python_method to my.destination
         . = python_format_description (my.method) ?
         .name = class_derive_c_method (my.class, my.method)
+        .have_status_return = count (my.method.return, string_equal (return.enum, "status"))
 
         python_map_attr_visibility (python_method, my.method)
 
 
-        new python_argument to python_method
-            .name = "$(my.class.name:c)"
-            .type = "$(my.wrapper.prefix)_$(my.class.name:c)_t"
-            .is_reference = "1"
-        endnew
+        if my.class.context <> "none" & is_false (my.method.is_static)
+            new python_argument to python_method
+                .name = "ctx"
+                .type = class_derive_c_type(my.class)
+                .is_reference = "1"
+            endnew
+        endif
 
         for my.method.argument
             python_create_argument (argument, python_method, my.wrapper, my.meta)
         endfor
 
-        for my.method.return where ! string_equal (return.enum, "error")
+        for my.method.return where ! string_equal (return.enum, "status")
             python_create_return (return, python_method, my.wrapper, my.meta)
         endfor
 
@@ -971,7 +1018,9 @@ function python_create_abstract_method_declaration (interface, method, destinati
         python_map_attr_visibility (python_method, my.method)
 
         for my.method.argument
-            python_create_argument (argument, python_method, my.wrapper, my.meta)
+            if ! string_in (argument.class?, "buffer, error")
+                python_create_argument (argument, python_method, my.wrapper, my.meta)
+            endif
         endfor
 
         return python_method
@@ -989,8 +1038,10 @@ function python_create_class_method (class, method, destination, wrapper, meta)
 
     new python_code to my.python_method
         my.method_body = ""
-
         my.low_level_arguments = ""
+        my.statuses = XML.new()
+        
+        
 
         if string_equal (my.python_method.name, "len") | string_equal (my.python_method.name, "equal") | string_equal (my.python_method.name, "bytes")
             if string_equal (my.python_method.name, "equal")
@@ -998,6 +1049,8 @@ function python_create_class_method (class, method, destination, wrapper, meta)
             else
                 my.python_method.name = "__$(my.python_method.name:)__"
             endif
+
+            my.python_method.is_specific_method = "1"
 
             for my.python_method.python_argument
                 my.low_level_arguments += "$(python_argument.name:)"
@@ -1010,6 +1063,17 @@ function python_create_class_method (class, method, destination, wrapper, meta)
                 if python_argument.type = "vsc_data_t"
                     my.method_body += format_left ("d_$(python_argument.name:) = Data($(python_argument.name:))")
                     my.low_level_arguments += "d_$(python_argument.name:).data"
+                elsif is_true (python_argument.is_error_type)
+                    my.method_body += format_left ("\
+                        $(python_argument.name:) = $(python_argument.type:)()
+                    ")
+                    my.low_level_arguments += "$(python_argument.name:)"
+
+                    new status to my.statuses
+                        .name = python_argument.name
+                    endnew
+                    
+                    delete python_argument
                 else
                     my.low_level_arguments += "$(python_argument.name:)"
                 endif
@@ -1027,25 +1091,29 @@ function python_create_class_method (class, method, destination, wrapper, meta)
 
                     my.method_body += format_left ("$(python_return.name:) = Buffer($(python_return.length_getter:))")
                     my.low_level_arguments += "$(python_return.name:).c_buffer"
-                    
-                    if ! last()
-                        my.low_level_arguments += ", "
-                    endif
+                endif
+                
+                if ! last()
+                    my.low_level_arguments += ", "
                 endif
             endfor    
         endif
 
         if string_empty (my.low_level_arguments)
             if string_equal (my.class.name, "data")
-                my.low_level_arguments = "self.$(python_class.name:c)"
+                my.low_level_arguments = "self.$(my.class.name:c)"
             else
-                my.low_level_arguments = "self._$(python_class.name:c)"
+                if is_false (my.method.is_static)
+                    my.low_level_arguments = "self.ctx"
+                endif
             endif
         else
             if string_equal (my.class.name, "data")
-                my.low_level_arguments = "self.$(python_class.name:c), " + my.low_level_arguments
+                my.low_level_arguments = "self.$(my.class.name:c), " + my.low_level_arguments
             else
-                my.low_level_arguments = "self._$(python_class.name:c), " + my.low_level_arguments
+                if is_false (my.method.is_static)
+                    my.low_level_arguments = "self.ctx, " + my.low_level_arguments
+                endif
             endif
         endif
 
@@ -1064,10 +1132,22 @@ function python_create_class_method (class, method, destination, wrapper, meta)
             endif
         endfor
 
-        if my.return_result = "result"
+        if string_in (my.return_result, "result")
             my.method_body += format_left ("result = $(my.low_level_call)")
         else
-            my.method_body += format_left ("$(my.low_level_call)")
+            if is_true (my.python_method.have_status_return)
+                my.method_body += format_left ("status = $(my.low_level_call)")
+            else
+                my.method_body += format_left ("$(my.low_level_call)")
+            endif
+        endif
+
+        for my.statuses.status
+            my.method_body += format_left ("$(my.wrapper.prefix:Pascal)Status.handle_status($(status.name:).status)")
+        endfor
+
+        if is_true (my.python_method.have_status_return)
+            my.method_body += format_left ("$(my.wrapper.prefix:Pascal)Status.handle_status(status)")
         endif
 
         if ! string_empty (my.return_result)
@@ -1122,6 +1202,101 @@ function python_create_abstract_class_method (interface, method, destination, wr
 endfunction
 
 # ---------------------------------------------------------------------------
+# Create status dictionary for Python Exception messages.
+# ---------------------------------------------------------------------------
+function python_create_status_dict(enum, destination)
+    check_arguments (my, "enum, destination", my)
+
+    new python_dict to my.destination
+        .name = "STATUS_DICT"
+
+        for my.enum.constant
+            new entry to python_dict
+                .key = constant.value
+                .value = string_multi_rtrim (string_trim (constant.)) # FIXME multiline to one line
+                .value = string.search_replace(0.value, terminator, " ")
+            endnew
+        endfor
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+# Create status handle function.
+# ---------------------------------------------------------------------------
+function python_create_status_handle_method(destination, wrapper)
+    check_arguments (my, "destination, wrapper", my)
+
+    new python_method to my.destination
+        .name = "handle_status"
+        . = "Handle low level lib status"
+        . = python_format_description (python_method)
+        .is_classmethod = "1"
+
+        new python_argument to python_method
+            .name = "status"
+            .type = "c_int"
+        endnew
+
+        new python_code to python_method
+            . = format_left ("\
+                if status != 0:
+                    try:
+                        raise VirgilCrypto$(my.wrapper.project:Pascal)Error(cls.STATUS_DICT[status])
+                    except KeyError:
+                        raise VirgilCrypto$(my.wrapper.project:Pascal)Error(\"Unknown error\")
+            ")
+        endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Create low level function for casting implementation class to implementation type.
+# ---------------------------------------------------------------------------
+function python_create_cast_to_implementation_low_level_method(implementation, destination, wrapper, meta)
+    check_arguments (my, "implementation, destination, wrapper, meta", my)
+
+    
+    new python_method to my.destination
+        .name = "$(my.destination.low_level_name_c_format)_impl"
+
+        new python_argument to python_method
+            .name = "ctx"
+            .type = class_derive_c_type(my.implementation)
+            .is_reference = "1"
+        endnew
+
+        new python_code to python_method
+            . = format_left ("\
+                        $(python_method.name:) = self._lib.$(python_method.name:)
+                        $(python_method.name:).argtypes = [POINTER($(python_method->python_argument.type))]
+                        $(python_method.name:).restype = POINTER($(my.wrapper.prefix)_impl_t)
+                        return $(python_method.name:)($(python_method->python_argument.name:))
+                        ")
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+# Write import statement to end of __init__ module
+# ---------------------------------------------------------------------------
+function python_append_import_to_custom_module (python_module, python_class, destination)
+    check_arguments (my, "python_module, python_class, destination", my)
+    
+    if ! string_in (python_class.name, "data, buffer")
+        my.module_name = my.python_module.name
+    else
+        my.module_name = "_$(my.python_module.name)"
+    endif
+
+    new python_code to my.destination
+        . = format_left ("\
+            from .$(my.module_name) import $(my.python_class.name:)
+        ")
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Add all components related to the interface.
 # ---------------------------------------------------------------------------
 function python_create_interface_implementation (implementation, python_class, wrapper, meta)
@@ -1160,6 +1335,396 @@ function python_create_low_level_interface_implementation (implementation, pytho
 endfunction
 
 
+
+function python_create_data_class (class, destination, wrapper, meta)
+    check_arguments (my, "class, destination, wrapper, meta", my)
+
+    # Low Level
+    new python_module to my.destination
+        echo_debug ("Generate low level module $(python_derive_module_low_level_name (my.class, my.wrapper))")
+        .name = python_derive_module_low_level_name (my.class, my.wrapper)
+        .source_file_name = 0.name + ".py"
+        .source_dir = cat_path (my.wrapper.source_dir, "_c_bridge")
+        .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+
+        new python_license to python_module
+            . = python_format_license (my.wrapper->license) ?
+        endnew
+
+        new python_import to python_module
+            .framework = "virgil_crypto._libs"
+            .import_all = "1"
+        endnew
+
+        for my.wrapper.python_import
+            copy python_import to python_module
+        endfor
+
+        new python_class to python_module
+            .name = class_derive_c_type (my.class)
+            python_create_custom_inherit ("Structure", python_class, my.wrapper)
+
+            python_map_attr_visibility (python_class, my.class)
+
+            new python_code to python_class
+                . = format_left ("\
+                    _fields_ = [
+                        (\"bytes\", POINTER(c_byte)),
+                        (\"len\", c_size_t)
+                    ]
+                ")
+            endnew
+        endnew
+
+        new python_class to python_module
+            . = python_format_description (my.class) ?
+            .name = python_derive_class_low_level_name (my.class, my.wrapper)
+            .name_c_format = python_derive_class_low_level_name_c_formated (my.class, my.wrapper)
+
+            python_create_custom_inherit ("object", python_class, my.wrapper)
+
+            python_map_attr_visibility (python_class, my.class)
+
+            python_create_low_level_class_default_constructor (python_class, my.class, my.wrapper, my.meta)
+
+            new python_code to python_class
+                .leadeing_new_line = "1"
+                . = format_left ("\
+                    def vsc_data(self, bytes_, len_):
+                        vsc_data = self._lib.vsc_data
+                        vsc_data.argtypes = [POINTER(c_byte), c_size_t]
+                        vsc_data.restype = vsc_data_t
+                        return vsc_data(bytes_, len_)
+
+                    def vsc_data_from_str(self, str_):
+                        vsc_data_from_str = self._lib.vsc_data_from_str
+                        vsc_data_from_str.argtypes = [c_char_p, c_size_t]
+                        vsc_data_from_str.restype = vsc_data_t
+                        return vsc_data_from_str(str_)
+
+                    def vsc_data_empty(self):
+                        vsc_data_empty = self._lib.vsc_data_empty
+                        vsc_data_empty.restype = vsc_data_t
+                        return vsc_data_empty()
+
+                    def vsc_data_equal(self, data, rhs):
+                        # type: (vsc_data_t, vsc_data_t)->bool
+                        vsc_data_equal = self._lib.vsc_data_equal
+                        vsc_data_equal.argtypes = [vsc_data_t, vsc_data_t]
+                        vsc_data_equal.restype = c_bool
+                        return vsc_data_equal(data, rhs)
+                ")
+            endnew
+        endnew
+
+        for python_module.python_class
+            my.init_module = my.destination->python_module (python_module.name = "__init__" & is_true (python_module.is_c_bridge))
+            python_append_import_to_custom_module (python_module, python_class, my.init_module)
+        endfor
+    endnew
+
+    # High level
+    new python_module to my.destination
+        .name = python_derive_module_name (my.class, my.wrapper)
+        if ! string_in (my.class.name, "data, buffer")
+            .source_file_name = 0.name + ".py"
+            .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+        else
+            .source_file_name = "_" + 0.name + ".py"
+            .source_dir = cat_path (my.wrapper.source_dir, "_c_bridge")
+            .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+        endif
+
+        new python_license to python_module
+            . = python_format_license (my.wrapper->license) ?
+        endnew
+
+        if ! string_in (my.class.name, "data, buffer")
+            # Add C wrapper import to high level
+            new python_import to python_module
+                .framework = "._c_bridge"
+                .import_all = "1"
+            endnew
+        elsif string_in (my.class.name, "data")
+            new python_import
+                low_level_name_c_format = python_derive_class_low_level_name_c_formated (my.class, my.wrapper)
+                .framework = "._$(low_level_name_c_format:)"
+                .import_all = "1"
+            endnew
+        else
+            new python_import
+                low_level_name_c_format = python_derive_class_low_level_name_c_formated (my.class, my.wrapper)
+                .framework = "._$(low_level_name_c_format:)"
+                .import_all = "1"
+            endnew
+            new python_import
+                .framework = "._data"
+                .import_all = "1"
+            endnew
+        endif
+
+        for my.wrapper.python_import
+            copy python_import to python_module
+        endfor
+
+        new python_import
+            .framework = "virgil_crypto.$(my.wrapper.project:c)"
+            .import_all = "1"
+        endnew
+
+        new python_class to python_module
+            .name = python_derive_class_name (my.class, my.wrapper)
+            .low_level_name = python_derive_class_low_level_name (my.class, my.wrapper)
+            .low_level_name_c_format = python_derive_class_low_level_name_c_formated (my.class, my.wrapper)
+
+            python_create_custom_inherit ("object", python_class, my.wrapper)
+
+            python_map_attr_visibility (python_class, my.class)
+
+            new python_code to python_class
+                .leadeing_new_line = "1"
+                . = format_left ("\
+                        def __init__(self, predefined_value=None):
+                            self._lib_vsc_data = VscData()
+                            if predefined_value is None:
+                                self._bytes_ = (c_byte * 0)()
+                            if isinstance(predefined_value, bytes) or isinstance(predefined_value, bytearray):
+                                self._bytes_ = (c_byte * len(predefined_value))(*predefined_value)
+                            elif isinstance(predefined_value, str) or Utils.check_unicode(predefined_value):
+                                str_bytes = bytearray(Utils.strtobytes(predefined_value))
+                                self._bytes_ = (c_byte * len(str_bytes))(*str_bytes)
+                            else:
+                                raise TypeError(\"Wrong type for instantiate Data\")
+                            self.data = self._lib_vsc_data.vsc_data(self._bytes_, len(self._bytes_))
+
+                        def __eq__(self, other):
+                            return self._lib_vsc_data.vsc_data_equal(self.data, other.data)
+
+                        def __len__(self):
+                            return len(self._bytes_)
+
+                        def __bytes__(self):
+                            return bytearray(self._bytes_)
+                ")
+            endnew
+        endnew
+
+        for python_module.python_class
+            if ! string_in (my.class.name, "data, buffer")
+                my.init_module = my.destination->python_module (python_module.name = "__init__" & is_false (python_module.is_c_bridge))
+            else
+                my.init_module = my.destination->python_module (python_module.name = "__init__" & is_true (python_module.is_c_bridge))
+            endif
+            python_append_import_to_custom_module (python_module, python_class, my.init_module)
+        endfor
+    endnew
+endfunction
+
+function python_create_buffer_class (class, destination, wrapper, meta)
+    check_arguments (my, "class, destination, wrapper, meta", my)
+
+    # Low Level
+    new python_module to my.destination
+        echo_debug ("Generate low level module $(python_derive_module_low_level_name (my.class, my.wrapper))")
+        .name = python_derive_module_low_level_name (my.class, my.wrapper)
+        .source_file_name = 0.name + ".py"
+        .source_dir = cat_path (my.wrapper.source_dir, "_c_bridge")
+        .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+
+        new python_license to python_module
+            . = python_format_license (my.wrapper->license) ?
+        endnew
+
+        new python_import to python_module
+            .framework = "virgil_crypto._libs"
+            .import_all = "1"
+        endnew
+
+        new python_import to python_module
+            .framework = "virgil_crypto.common._c_bridge"
+            .import_all = "1"
+        endnew
+
+        for my.wrapper.python_import
+            copy python_import to python_module
+        endfor
+
+        new python_class to python_module
+            .name = class_derive_c_type (my.class)
+            python_create_custom_inherit ("Structure", python_class, my.wrapper)
+
+            python_map_attr_visibility (python_class, my.class)
+
+            new python_code to python_class
+                . = format_left ("pass")
+            endnew
+        endnew
+
+        new python_class to python_module
+            . = python_format_description (my.class) ?
+            .name = python_derive_class_low_level_name (my.class, my.wrapper)
+            .name_c_format = python_derive_class_low_level_name_c_formated (my.class, my.wrapper)
+
+            python_create_custom_inherit ("object", python_class, my.wrapper)
+
+            python_map_attr_visibility (python_class, my.class)
+
+            python_create_low_level_class_default_constructor (python_class, my.class, my.wrapper, my.meta)
+
+            new python_code to python_class
+                .leadeing_new_line = "1"
+                . = format_left ("\
+                    def vsc_buffer_new(self):
+                        # vsc_buffer_new C function wrapper
+                        vsc_buffer_new = self._lib.vsc_buffer_new
+                        vsc_buffer_new.restype = POINTER(vsc_buffer_t)
+                        return vsc_buffer_new()
+
+                    def vsc_buffer_new_with_data(self, data):
+                        # vsc_buffer_new_with_data C function wrapper
+                        vsc_buffer_new_with_data = self._lib.vsc_buffer_new_with_data
+                        vsc_buffer_new_with_data.argtypes = [vsc_data_t]
+                        vsc_buffer_new_with_data.restype = POINTER(vsc_buffer_t)
+                        return vsc_buffer_new_with_data(data)
+
+                    def vsc_buffer_destroy(self, buffer):
+                        # vsc_buffer_destroy C function wrapper
+                        vsc_buffer_destroy = self._lib.vsc_buffer_destroy
+                        vsc_buffer_destroy.argtypes = [POINTER(POINTER(vsc_buffer_t))]
+                        return vsc_buffer_destroy(buffer)
+                    
+                    def vsc_buffer_equal(self, buffer, rhs):
+                        vsc_buffer_equal = self._lib.vsc_buffer_equal
+                        vsc_buffer_equal.argtypes = [POINTER(vsc_buffer_t), POINTER(vsc_buffer_t)]
+                        vsc_buffer_equal.restype = c_bool
+                        return vsc_buffer_equal(buffer, rhs)
+
+                    def vsc_buffer_use(self, buffer, bytes_, bytes_len):
+                        # vsc_buffer_use C function wrapper
+                        vsc_buffer_use = self._lib.vsc_buffer_use
+                        vsc_buffer_use.argtypes = [
+                            POINTER(vsc_buffer_t),
+                            POINTER(c_byte),
+                            c_size_t
+                        ]
+                        return vsc_buffer_use(buffer, bytes_, bytes_len)
+                    
+                    def vsc_buffer_len(self, buffer):
+                        vsc_buffer_len = self._lib.vsc_buffer_len
+                        vsc_buffer_len.argtypes = [POINTER(vsc_buffer_t)]
+                        vsc_buffer_len.restype = c_size_t
+                        return vsc_buffer_len(buffer)
+                ")
+            endnew
+        endnew
+
+        for python_module.python_class
+            my.init_module = my.destination->python_module (python_module.name = "__init__" & is_true (python_module.is_c_bridge))
+            python_append_import_to_custom_module (python_module, python_class, my.init_module)
+        endfor
+    endnew
+
+    # High level
+    new python_module to my.destination
+        .name = python_derive_module_name (my.class, my.wrapper)
+        if ! string_in (my.class.name, "data, buffer")
+            .source_file_name = 0.name + ".py"
+            .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+        else
+            .source_file_name = "_" + 0.name + ".py"
+            .source_dir = cat_path (my.wrapper.source_dir, "_c_bridge")
+            .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+        endif
+
+        new python_license to python_module
+            . = python_format_license (my.wrapper->license) ?
+        endnew
+
+        if ! string_in (my.class.name, "data, buffer")
+            # Add C wrapper import to high level
+            new python_import to python_module
+                .framework = "._c_bridge"
+                .import_all = "1"
+            endnew
+        elsif string_in (my.class.name, "data")
+            new python_import
+                low_level_name_c_format = python_derive_class_low_level_name_c_formated (my.class, my.wrapper)
+                .framework = "._$(low_level_name_c_format:)"
+                .import_all = "1"
+            endnew
+        else
+            new python_import
+                low_level_name_c_format = python_derive_class_low_level_name_c_formated (my.class, my.wrapper)
+                .framework = "._$(low_level_name_c_format:)"
+                .import_all = "1"
+            endnew
+            new python_import
+                .framework = "._data"
+                .import_all = "1"
+            endnew
+        endif
+
+        for my.wrapper.python_import
+            copy python_import to python_module
+        endfor
+
+        new python_import
+            .framework = "virgil_crypto.$(my.wrapper.project:c)"
+            .import_all = "1"
+        endnew
+
+        new python_class to python_module
+            .name = python_derive_class_name (my.class, my.wrapper)
+            .low_level_name = python_derive_class_low_level_name (my.class, my.wrapper)
+            .low_level_name_c_format = python_derive_class_low_level_name_c_formated (my.class, my.wrapper)
+
+            python_create_custom_inherit ("object", python_class, my.wrapper)
+
+            python_map_attr_visibility (python_class, my.class)
+
+            new python_code to python_class
+                .leadeing_new_line = "1"
+                . = format_left ("\
+                            def __init__(self, capacity):
+                                self._lib_vsc_buffer = VscBuffer()
+                                self._bytes_ = (c_byte * capacity)()
+                                self.c_buffer = self._lib_vsc_buffer.vsc_buffer_new()
+                                self._lib_vsc_buffer.vsc_buffer_use(
+                                    self.c_buffer,
+                                    self._bytes_,
+                                    c_size_t(capacity)
+                                )
+
+                            def __len__(self):
+                                return self._lib_vsc_buffer.vsc_buffer_len(self.c_buffer)
+
+                            def __eq__(self, other):
+                                return self._lib_vsc_buffer.vsc_buffer_equal(self.c_buffer, other.c_buffer)
+
+                            def __bytes__(self):
+                                return self.get_bytes()
+
+                            def __delete__(self, instance):
+                                self._lib_vsc_buffer.vsc_buffer_destroy(self.c_buffer)
+                            
+                            def get_bytes(self):
+                                return bytearray(self._bytes_)[:self._lib_vsc_buffer.vsc_buffer_len(self.c_buffer)]
+                ")
+            endnew
+        endnew
+
+        for python_module.python_class
+            if ! string_in (my.class.name, "data, buffer")
+                my.init_module = my.destination->python_module (python_module.name = "__init__" & is_false (python_module.is_c_bridge))
+            else
+                my.init_module = my.destination->python_module (python_module.name = "__init__" & is_true (python_module.is_c_bridge))
+            endif
+            python_append_import_to_custom_module (python_module, python_class, my.init_module)
+        endfor
+    endnew
+endfunction
+
+
 # ===========================================================================
 #   Create modules.
 # ===========================================================================
@@ -1178,14 +1743,95 @@ function python_create_project_module (project, destination, wrapper)
             .name = my.wrapper.namespace
             .uid = "python_framework_name"
         endnew
+
+        return python_project
     endnew
+    
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Create python specific import metadata
 # ---------------------------------------------------------------------------
-function python_create_c_context_module (destination, wrapper, meta)
-    # FIXME Temporary place it here need find more suitable function for __init__ generation
+function python_create_custom_modules (source, destination, wrapper, meta)
+    check_arguments (my, "source, destination, wrapper, meta", my)
+    new python_module to my.destination
+        .name = "__init__"
+        .source_file_name = 0.name + ".py"
+        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+
+        new python_license to python_module
+            . = python_format_license (my.wrapper->license) ?
+        endnew
+    endnew
+
+    new python_module to my.destination
+        .name = "__init__"
+        .source_file_name = 0.name + ".py"
+        .source_dir = cat_path (my.wrapper.source_dir, "_c_bridge")
+        .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+        .is_c_bridge = "1"
+
+        if directory.create (my.wrapper.source_dir) = -1
+            echo_fatal ("Can not create directory: $(.source_dir_path:). ", my)
+        endif
+
+        new python_license to python_module
+            . = python_format_license (my.wrapper->license) ?
+        endnew
+    endnew
+
+    # Skip generation of implementation module for project common
+    if my.wrapper.project = "common"
+        return
+    endif
+    
+    new python_module to my.destination
+        .name = "_$(my.wrapper.prefix)_impl"
+        .source_file_name = 0.name + ".py"
+        .source_dir = cat_path (my.wrapper.source_dir, "_c_bridge")
+        .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+
+        new python_license to python_module
+            . = python_format_license (my.wrapper->license) ?
+        endnew
+
+        new python_import to python_module
+            .framework = "ctypes"
+            .import_all = "1"
+        endnew
+
+        new python_class to python_module
+            .name = "$(my.wrapper.prefix)_impl_t"
+            python_create_custom_inherit ("Structure", python_class, my.wrapper)
+            .visibility = "public"
+            
+            new python_code to python_class
+                . = format_left ("pass")
+            endnew
+            my.init_module = my.destination->python_module (python_module.name = "__init__" & is_true (python_module.is_c_bridge))
+            python_append_import_to_custom_module (python_module, python_class, my.init_module)
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create module with low level shared object loader that handles C context.
+# ---------------------------------------------------------------------------
+function python_create_toplevel_modules (destination, wrapper, projects_api)
+    check_arguments (my, "destination, wrapper, projects_api", my)
+
+    echo_info ("Create python low level shared object loader")
+
+    new python_module to my.destination
+        .name = "__init__"
+        .source_file_name = 0.name + ".py"
+        .source_file_path = cat_path (my.wrapper.main_package_dir, 0.source_file_name)
+
+        new python_license to python_module
+            . = python_format_license (my.wrapper->license) ?
+        endnew
+    endnew
+
     new python_module to my.destination
         .name = "__init__"
         .source_file_name = 0.name + ".py"
@@ -1195,40 +1841,17 @@ function python_create_c_context_module (destination, wrapper, meta)
             . = python_format_license (my.wrapper->license) ?
         endnew
 
-        new python_import to python_module
-            .framework = "os.path"
-            .import_all = "1"
-        endnew
-
-        new python_import to python_module
-            .framework = "glob"
-        endnew
-
         new python_code to python_module
             . = format_left ("\
-                modules = glob.glob(dirname(__file__)+\"/*.py\")
-                __all__ = [ basename(f)[:-3] for f in modules if isfile(f) and not f.endswith('__init__.py')]
+                from .low_level_libs import LowLevelLibs
             ")
         endnew
     endnew
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Create module with low level shared object loader that handles C context.
-# ---------------------------------------------------------------------------
-function python_create_custom_modules (source, destination, wrapper, meta)
-    check_arguments (my, "source, destination, wrapper, meta", my)
-
-    echo_info ("Create python low level shared object loader")
 
     new python_module to my.destination
         .name = "low_level_libs"
         .source_file_name = 0.name + ".py"
         .source_dir_path = my.wrapper.c_context_source_dir
-        
-        if directory.create (.source_dir_path) = -1
-            echo_fatal ("Can not create directory: $(.source_dir_path:). ", my)
-        endif
         .source_file_path = cat_path (.source_dir_path, .source_file_name)
         .visibility = "public"
 
@@ -1249,7 +1872,7 @@ function python_create_custom_modules (source, destination, wrapper, meta)
             .name = "LowLevelLibs"
             .visibility = "public"
 
-            python_create_custom_inherit ("object", python_class, my.wrapper, my.meta)
+            python_create_custom_inherit ("object", python_class, my.wrapper)
 
             new python_constructor to python_class
         
@@ -1267,6 +1890,165 @@ function python_create_custom_modules (source, destination, wrapper, meta)
                     "
                 endnew
             endnew
+        endnew
+    endnew
+
+    new python_module to my.destination
+        .name = "__init__"
+        .source_file_name = 0.name + ".py"
+        .source_file_path = cat_path (my.wrapper.utils_source_dir, 0.source_file_name)
+
+        new python_license to python_module
+            . = python_format_license (my.wrapper->license) ?
+        endnew
+
+        new python_code to python_module
+            . = format_left ("\
+                from .utils import Utils
+            ")
+        endnew
+    endnew
+
+    new python_module to my.destination
+        .name = "utils"
+        .source_file_name = 0.name + ".py"
+        .source_file_path = cat_path (my.wrapper.utils_source_dir, 0.source_file_name)
+
+        new python_license to python_module
+            . = python_format_license (my.wrapper->license) ?
+        endnew
+
+        new python_code to python_module
+            . = format_left ("\
+                import base64
+                import binascii
+                import datetime
+                import json
+                import sys
+
+                if sys.version_info[0] == 2:
+                    from __builtin__ import unicode
+
+                    def normalize_string(data_str):
+                        if isinstance(data_str, unicode):
+                            return bytearray(data_str, \"utf-8\")
+
+                    def check_unicode(source):
+                        return isinstance(source, unicode)
+                else:
+                    def normalize_string(data_str):
+                        return data_str
+
+                    def check_unicode(source):
+                        return False
+
+
+                class Utils(object):
+
+                    @staticmethod
+                    def b64_decode(source):
+                        \"\"\"Decode base64, padding being optional.
+
+                        Args:
+                            source: Base64 data as an ASCII byte string
+
+                        Returns:
+                            The decoded byte string.
+
+                        \"\"\"
+                        try:
+                            if isinstance(source, bytes):
+                                return base64.urlsafe_b64decode(source)
+                            return base64.urlsafe_b64decode(bytearray(source, \"utf-8\"))
+                        except (binascii.Error, TypeError) as e:
+                            missing_padding = len(source) % 4
+                            if missing_padding != 0:
+                                if isinstance(source, str) or isinstance(source, unicode):
+                                    source += '=' * (4 - missing_padding)
+                                if isinstance(source, bytes) or isinstance(source, bytearray):
+                                    source += b'=' * (4 - missing_padding)
+                            if isinstance(source, bytes):
+                                return base64.urlsafe_b64decode(source)
+                            return base64.urlsafe_b64decode(bytearray(source, \"utf-8\"))
+
+                    @staticmethod
+                    def b64_encode(source):
+                        \"\"\"
+                        Removes any `=` used as padding from the encoded string.
+
+                        Args:
+                            Data for encoding.
+
+                        Returns:
+                            Encoded data without '=' sign
+                        \"\"\"
+                        if isinstance(source, bytes):
+                            encoded = base64.urlsafe_b64encode(source)
+                        else:
+                            encoded = base64.urlsafe_b64encode(bytearray(source, \"utf-8\"))
+                        return bytearray(encoded).decode().rstrip(\"=\")
+
+                    @staticmethod
+                    def strtobytes(source):
+                        # type: (str) -> Tuple[*int]
+                        \"\"\"Convert string to bytes tuple used for all crypto methods.\"\"\"
+                        return tuple(bytearray(source))
+
+                    @classmethod
+                    def b64tobytes(cls, source):
+                        # type: (str) -> Tuple[*int]
+                        \"\"\"Convert source to bytearray and encode using base64.\"\"\"
+                        return cls.strtobytes(cls.b64decode(source))
+
+                    @staticmethod
+                    def b64encode(source):
+                        # type: (Union[str, bytes]) -> str
+                        \"\"\"Convert source to bytearray and encode using base64.\"\"\"
+                        return base64.b64encode(bytearray(source)).decode(\"utf-8\", \"ignore\")
+
+                    @staticmethod
+                    def b64decode(source):
+                        # type: (Union[str, bytes]) -> str
+                        \"\"\"Convert source to bytearray and decode using base64.\"\"\"
+                        if isinstance(source, bytes):
+                            return base64.b64decode(source)
+                        return base64.b64decode(bytearray(source, \"utf-8\"))
+
+                    @staticmethod
+                    def json_loads(source):
+                        # type: (Union[str, bytes, bytearray]) -> dict
+                        \"\"\"Convert source to bytearray and deserialize from json to python dict object.\"\"\"
+                        if isinstance(source, bytes):
+                            return json.loads(bytearray(source).decode())
+                        return json.loads(bytearray(source, \"utf-8\").decode())
+
+                    @staticmethod
+                    def json_dumps(source, *args, **kwargs):
+                        # type: (object) -> str
+                        \"\"\"Convert python dict to json string\"\"\"
+                        return json.dumps(source, *args, **kwargs)
+
+                    @staticmethod
+                    def to_timestamp(date):
+                        # type: (datetime) -> Union[int, str]
+                        epoch = datetime.datetime(1970, 1, 1)
+                        return int((date - epoch).total_seconds())
+
+                    @staticmethod
+                    def raise_from(exception):
+                        \"\"\"Supress long traceback for custom exceptions Python 3, show only important exception.\"\"\"
+                        exception.__cause__ = None
+                        raise exception
+
+                    @staticmethod
+                    def normalize_string(source):
+                        return normalize_string(source)
+
+                    @staticmethod
+                    def check_unicode(source):
+                        return check_unicode(source)
+
+            ")
         endnew
     endnew
 endfunction
@@ -1316,9 +2098,14 @@ function python_create_interface_module (interface, destination, wrapper, meta)
             endfor
 
             if count (python_class.python_inherit) = 0
-                python_create_custom_inherit ("object", python_class, my.wrapper, my.meta)
+                python_create_custom_inherit ("object", python_class, my.wrapper)
             endif
         endnew
+
+        for python_module.python_class
+            my.init_module = my.destination->python_module (python_module.name = "__init__" & is_false (python_module.is_c_bridge))
+            python_append_import_to_custom_module (python_module, python_class, my.init_module)
+        endfor
     endnew
     echo_debug ("Done", my)
 endfunction
@@ -1350,6 +2137,11 @@ function python_create_implementation_module (implementation, destination, wrapp
             .import_all = "1"
         endnew
 
+        new python_import
+            .framework = "virgil_crypto.$(my.wrapper.project:c)._c_bridge"
+            .import_all = "1"
+        endnew
+
         for my.wrapper.python_import
             copy python_import to python_module
         endfor
@@ -1361,7 +2153,7 @@ function python_create_implementation_module (implementation, destination, wrapp
                 . = "\
                     pass
                 "
-                python_create_custom_inherit ("Structure", python_class, my.wrapper, my.meta)
+                python_create_custom_inherit ("Structure", python_class, my.wrapper)
                 python_map_attr_visibility (python_class, my.implementation)
             endnew
         endif
@@ -1379,7 +2171,7 @@ function python_create_implementation_module (implementation, destination, wrapp
             for my.implementation.constant
                 python_create_class_constant (constant, python_class, my.wrapper, my.meta)
             endfor
-
+            
             python_create_low_level_class_default_constructor (python_class, my.implementation, my.wrapper, my.meta)
 
             if my.implementation.lifecycle <> "none"
@@ -1397,9 +2189,21 @@ function python_create_implementation_module (implementation, destination, wrapp
                 python_create_low_level_class_method (my.implementation, method, python_class, my.wrapper, my.meta)
             endfor
 
+            python_create_cast_to_implementation_low_level_method(my.implementation, python_class, my.wrapper, my.meta)
+
             if count (python_class.python_inherit) = 0
-                python_create_custom_inherit ("object", python_class, my.wrapper, my.meta)
+                python_create_custom_inherit ("object", python_class, my.wrapper)
+            else
+                for python_class.python_inherit
+                    delete python_inherit
+                endfor
+                python_create_custom_inherit ("object", python_class, my.wrapper)
             endif
+
+            for python_module.python_class
+                my.init_module = my.destination->python_module (python_module.name = "__init__" & is_true (python_module.is_c_bridge))
+                python_append_import_to_custom_module (python_module, python_class, my.init_module)
+            endfor
         endnew
     endnew
 
@@ -1423,6 +2227,11 @@ function python_create_implementation_module (implementation, destination, wrapp
             copy python_import to python_module
         endfor
 
+        new python_import
+            .framework = "virgil_crypto.$(my.wrapper.project:c)"
+            .import_all = "1"
+        endnew
+
         new python_class to python_module
             . = python_format_description (my.implementation) ?
             .name = python_derive_class_name (my.implementation, my.wrapper)
@@ -1437,6 +2246,7 @@ function python_create_implementation_module (implementation, destination, wrapp
             endfor
 
             python_create_class_default_constructor (python_class, my.implementation, my.wrapper, my.meta)
+
             if my.implementation.lifecycle <> "none" & my.implementation.context <> "none"
                 python_create_class_default_destructor (python_class, my.implementation, my.wrapper, my.meta)
             endif
@@ -1453,9 +2263,14 @@ function python_create_implementation_module (implementation, destination, wrapp
             endfor
 
             if count (python_class.python_inherit) = 0
-                python_create_custom_inherit ("object", python_class, my.wrapper, my.meta)
+                python_create_custom_inherit ("object", python_class, my.wrapper)
             endif
         endnew
+
+        for python_module.python_class
+            my.init_module = my.destination->python_module (python_module.name = "__init__" & is_false (python_module.is_c_bridge))
+            python_append_import_to_custom_module (python_module, python_class, my.init_module)
+        endfor
     endnew
     echo_debug ("Done", my)
 endfunction
@@ -1469,6 +2284,17 @@ function python_create_class_module (class, destination, wrapper, meta)
     echo_info ("Create <python_module/> from class: '$(my.class.name:)'", my)
     
     assert_attribute (my.class, "name", my)
+
+    if string_in (my.class.name, "data, buffer")
+        if string_in (my.class.name, "data")
+            echo_info ("Generating custom Data module")
+            python_create_data_class (my.class, my.destination, my.wrapper, my.meta)
+        else
+            echo_info ("Generating custom Buffer module")
+            python_create_buffer_class (my.class, my.destination, my.wrapper, my.meta)
+        endif
+        return
+    endif
 
     # Low level modules
     new python_module to my.destination
@@ -1491,14 +2317,46 @@ function python_create_class_module (class, destination, wrapper, meta)
             copy python_import to python_module
         endfor
 
-        if my.class.context <> "none" & class.visibility = "public"
+        new python_import
+            .framework = "virgil_crypto.$(my.wrapper.project:c)._c_bridge"
+            .import_all = "1"
+        endnew
+
+        if my.class.context <> "none" & my.class.context <> "public" & class.visibility = "public"
         # Low level structure mapping
             new python_class to python_module
                 .name = class_derive_c_type (my.class)
                 . = "\
                     pass
                 "
-                python_create_custom_inherit ("Structure", python_class, my.wrapper, my.meta)
+                python_create_custom_inherit ("Structure", python_class, my.wrapper)
+                python_map_attr_visibility (python_class, my.class)
+            endnew
+        elsif my.class.context = "public"
+            new python_class to python_module
+                .name = class_derive_c_type (my.class)
+                class_body = format_left ("\
+                    _fields_ = [
+                ")
+                for my.class.property
+                    if defined (property.type)
+                        prop_body = "$(property.type)"
+                    elsif defined (property.enum)
+                        prop_body = "c_int"
+                    endif
+                    class_body += format_left ("\
+                        (\"$(property.name)\", $(prop_body))
+                    ", 1)
+
+                    if ! last ()
+                        class_body += ","
+                    endif
+                endfor
+                class_body += format_left ("\
+                    ]
+                ")
+                . = class_body
+                python_create_custom_inherit ("Structure", python_class, my.wrapper)
                 python_map_attr_visibility (python_class, my.class)
             endnew
         endif
@@ -1516,7 +2374,9 @@ function python_create_class_module (class, destination, wrapper, meta)
                 python_create_class_constant (constant, python_class, my.wrapper, my.meta)
             endfor
 
-            python_create_low_level_class_default_constructor (python_class, my.class, my.wrapper, my.meta)
+            if count(my.class.method) > 0
+                python_create_low_level_class_default_constructor (python_class, my.class, my.wrapper, my.meta)
+            endif
 
             if my.class.lifecycle <> "none" & my.class.context <> "none"
                 python_create_c_constructor_mapping (python_class)
@@ -1528,9 +2388,19 @@ function python_create_class_module (class, destination, wrapper, meta)
             endfor
 
             if count (python_class.python_inherit) = 0
-                python_create_custom_inherit ("object", python_class, my.wrapper, my.meta)
+                python_create_custom_inherit ("object", python_class, my.wrapper)
+            else
+                for python_class.python_inherit
+                    delete python_inherit
+                endfor
+                python_create_custom_inherit ("object", python_class, my.wrapper)
             endif
         endnew
+
+        for python_module.python_class
+            my.init_module = my.destination->python_module (python_module.name = "__init__" & is_true (python_module.is_c_bridge))
+            python_append_import_to_custom_module (python_module, python_class, my.init_module)
+        endfor
     endnew
 
     # High level modules 
@@ -1577,6 +2447,11 @@ function python_create_class_module (class, destination, wrapper, meta)
             copy python_import to python_module
         endfor
 
+        new python_import
+            .framework = "virgil_crypto.$(my.wrapper.project:c)"
+            .import_all = "1"
+        endnew
+
         new python_class to python_module
             . = python_format_description (my.class) ?
             .name = python_derive_class_name (my.class, my.wrapper)
@@ -1589,12 +2464,14 @@ function python_create_class_module (class, destination, wrapper, meta)
                 python_create_class_constant (constant, python_class, my.wrapper, my.meta)
             endfor
 
-            python_create_class_default_constructor (python_class, my.class, my.wrapper, my.meta)
+            if count(my.class.method) > 0
+                python_create_class_default_constructor (python_class, my.class, my.wrapper, my.meta)
+            endif
+
             if my.class.context <> "none"
                 if ! string_in (my.class.name, "data")
                     python_create_class_default_destructor (python_class, my.class, my.wrapper, my.meta)
                 endif
-                # TODO add custom constructors
             endif
 
             for my.class.method where method.declaration = "public" & method.visibility = "public"
@@ -1602,9 +2479,19 @@ function python_create_class_module (class, destination, wrapper, meta)
             endfor
 
             if count (python_class.python_inherit) = 0
-                python_create_custom_inherit ("object", python_class, my.wrapper, my.meta)
+                python_create_custom_inherit ("object", python_class, my.wrapper)
             endif
         endnew
+
+        for python_module.python_class
+            if ! string_in (my.class.name, "data, buffer")
+                my.init_module = my.destination->python_module (python_module.name = "__init__" & is_false (python_module.is_c_bridge))
+            else
+                my.init_module = my.destination->python_module (python_module.name = "__init__" & is_true (python_module.is_c_bridge))
+            endif
+            python_append_import_to_custom_module (python_module, python_class, my.init_module)
+        endfor
+        
     endnew
     echo_debug ("Done", my)
 endfunction
@@ -1620,10 +2507,10 @@ function python_create_enum_module (enum, destination, wrapper, meta)
     assert_attribute (my.enum, "name", my)
 
     # FIXME temporary disable error
-    if string_in (my.enum.name, "error") | string_equal (my.enum.name, "error")
-        echo_debug ("Module Enum generation SKIPPED! $(my.enum.name:c)")
-        return
-    endif
+    # if string_in (my.enum.name, "status") | string_equal (my.enum.name, "status")
+    #     echo_debug ("Module Enum generation SKIPPED! $(my.enum.name:c)")
+    #     return
+    # endif
 
     # Low level modules
     new python_module to my.destination
@@ -1640,20 +2527,43 @@ function python_create_enum_module (enum, destination, wrapper, meta)
         for my.wrapper.python_import
             copy python_import to python_module
         endfor
+        
+        if string_in (my.enum.name, "status")
+            new python_class to python_module   
+                .name = "VirgilCrypto$(my.wrapper.project:Pascal)Error"
+                .visibility = "public"
+
+                python_create_custom_inherit ("Exception", python_class, my.wrapper)
+                
+                new python_code to python_class
+                    . = format_left ("pass")
+                endnew
+            endnew
+        endif
 
         new python_class to python_module
             . = python_format_description (my.enum) ?
             .name = python_derive_class_low_level_name (my.enum, my.wrapper)
             echo_debug ("Generate low level ENUM class: $(.name:)")
 
-            python_create_custom_inherit ("object", python_class, my.wrapper, my.meta)
+            python_create_custom_inherit ("object", python_class, my.wrapper)
 
             python_map_attr_visibility (python_class, my.enum)
 
             for my.enum.constant
                 python_create_class_constant (constant, python_class, my.wrapper, my.meta, index(constant))
             endfor
+
+            if string_in (my.enum.name, "status")
+                python_create_status_dict (my.enum, python_class)
+                python_create_status_handle_method (python_class, my.wrapper)
+            endif
         endnew
+
+        for python_module.python_class
+            my.init_module = my.destination->python_module (python_module.name = "__init__" & is_true (python_module.is_c_bridge))
+            python_append_import_to_custom_module (python_module, python_class, my.init_module)
+        endfor
     endnew
 endfunction
 

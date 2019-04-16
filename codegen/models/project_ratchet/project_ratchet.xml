@@ -6,7 +6,7 @@
         prefix="vscr"
         path="../library/ratchet"
         work_path = "generated/ratchet/"
-        wrappers="swift"
+        wrappers="swift, python"
         >
 
     <version major="0" minor="6" patch="0"/>
@@ -76,7 +76,4 @@
     <class name="ratchet keys"/>
     <class name="ratchet"/>
     <class name="ratchet session"/>
-
-    <!-- <wrapper lang="swift"/> -->
-    <wrapper lang="python"/>
 </project>
