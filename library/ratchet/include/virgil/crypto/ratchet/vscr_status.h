@@ -187,7 +187,11 @@ enum vscr_status_t {
     //
     //  Epoch not found.
     //
-    vscr_status_ERROR_EPOCH_NOT_FOUND = -28
+    vscr_status_ERROR_EPOCH_NOT_FOUND = -28,
+    //
+    //  Session id mismatch.
+    //
+    vscr_status_ERROR_SESSION_ID_MISMATCH = -29
 };
 typedef enum vscr_status_t vscr_status_t;
 

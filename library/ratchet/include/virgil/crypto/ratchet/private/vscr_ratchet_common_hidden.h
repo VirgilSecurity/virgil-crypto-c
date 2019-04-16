@@ -84,7 +84,7 @@ enum {
     vscr_ratchet_common_hidden_MAX_REGULAR_MESSAGE_LEN = 32834,
     vscr_ratchet_common_hidden_MAX_PREKEY_MESSAGE_LEN = 32975,
     vscr_ratchet_common_hidden_MAX_GROUP_REGULAR_MESSAGE_LEN = 32975,
-    vscr_ratchet_common_hidden_MAX_GROUP_INFO_MESSAGE_LEN = 10811,
+    vscr_ratchet_common_hidden_MAX_GROUP_INFO_MESSAGE_LEN = 10845,
     vscr_ratchet_common_hidden_PARTICIPANT_LEN = 108,
     vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN = 32768,
     vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT = 5

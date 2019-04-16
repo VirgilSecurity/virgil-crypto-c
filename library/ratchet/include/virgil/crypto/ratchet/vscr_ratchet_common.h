@@ -91,6 +91,10 @@ enum {
     //
     vscr_ratchet_common_PARTICIPANT_ID_LEN = 32,
     //
+    //  Session id length
+    //
+    vscr_ratchet_common_SESSION_ID_LEN = 32,
+    //
     //  Max number of group chat participants
     //
     vscr_ratchet_common_MAX_PARTICIPANTS_COUNT = 100,

@@ -112,6 +112,8 @@ struct vscr_ratchet_group_session_t {
 
     bool is_id_set;
 
+    byte session_id[vscr_ratchet_common_SESSION_ID_LEN];
+
     byte my_id[vscr_ratchet_common_PARTICIPANT_ID_LEN];
 
     vscr_ratchet_group_participant_epoch_t *my_epoch;
@@ -511,12 +513,21 @@ vscr_ratchet_group_session_set_id(vscr_ratchet_group_session_t *self, vsc_data_t
 }
 
 VSCR_PUBLIC vsc_data_t
-vscr_ratchet_group_session_get_id(const vscr_ratchet_group_session_t *self) {
+vscr_ratchet_group_session_get_my_id(const vscr_ratchet_group_session_t *self) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(self->is_id_set);
 
     return vsc_data(self->my_id, sizeof(self->my_id));
+}
+
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_group_session_get_id(const vscr_ratchet_group_session_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->is_initialized);
+
+    return vsc_data(self->session_id, sizeof(self->session_id));
 }
 
 //
@@ -535,6 +546,14 @@ vscr_ratchet_group_session_setup_session(
     VSCR_ASSERT(self->is_private_key_set);
 
     const MessageGroupInfo *msg_info = &message->message_pb.group_info;
+
+    if (self->is_initialized) {
+        if (memcmp(self->session_id, msg_info->session_id, sizeof(self->session_id)) != 0) {
+            return vscr_status_ERROR_SESSION_ID_MISMATCH;
+        }
+    } else {
+        memcpy(self->session_id, msg_info->session_id, sizeof(self->session_id));
+    }
 
     MessageGroupInfo_Type type = message->message_pb.group_info.type;
 
@@ -955,6 +974,7 @@ vscr_ratchet_group_session_serialize(vscr_ratchet_group_session_t *self, vsc_buf
 
     session_pb.participants_count = self->participants_count;
     session_pb.skipped_messages_count = self->participants_count;
+    memcpy(session_pb.session_id, self->session_id, sizeof(session_pb.session_id));
     memcpy(session_pb.my_id, self->my_id, sizeof(session_pb.my_id));
 
     for (size_t i = 0; i < self->participants_count; i++) {
@@ -1006,6 +1026,7 @@ vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     session->is_initialized = true;
     session->is_id_set = true;
 
+    memcpy(session->session_id, session_pb.session_id, sizeof(session->session_id));
     memcpy(session->my_id, session_pb.my_id, sizeof(session->my_id));
 
     session->my_epoch = vscr_ratchet_group_participant_epoch_new();
@@ -1057,7 +1078,8 @@ vscr_ratchet_group_session_create_group_ticket_for_adding_members(const vscr_rat
     vscr_ratchet_group_ticket_t *ticket = vscr_ratchet_group_ticket_new();
     vscr_ratchet_group_ticket_use_rng(ticket, self->rng);
 
-    vscr_ratchet_group_ticket_setup_ticket(ticket, self->my_epoch->epoch, false);
+    vscr_ratchet_group_ticket_setup_ticket_internal(
+            ticket, self->my_epoch->epoch, false, vsc_data(self->session_id, sizeof(self->session_id)));
 
     vscr_status_t status = vscr_ratchet_group_ticket_add_existing_participant(
             ticket, self->my_id, self->my_public_key, self->my_epoch->chain_key);
@@ -1086,7 +1108,8 @@ vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_members(
     vscr_ratchet_group_ticket_t *ticket = vscr_ratchet_group_ticket_new();
 
     vscr_ratchet_group_ticket_use_rng(ticket, self->rng);
-    vscr_ratchet_group_ticket_setup_ticket(ticket, self->my_epoch->epoch + 1, true);
+    vscr_ratchet_group_ticket_setup_ticket_internal(
+            ticket, self->my_epoch->epoch + 1, true, vsc_data(self->session_id, sizeof(self->session_id)));
 
     vscr_status_t status =
             vscr_ratchet_group_ticket_add_existing_participant(ticket, self->my_id, self->my_public_key, NULL);

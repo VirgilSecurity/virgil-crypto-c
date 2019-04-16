@@ -32,9 +32,14 @@
         <return enum="status"/>
     </method>
 
-    <method name="setup ticket" visibility="private">
+    <method name="setup ticket internal" visibility="private">
         <argument name="epoch" type="size"/>
         <argument name="epoch change" type="boolean"/>
+        <argument name="session id" class="data"/>
+    </method>
+
+    <method name="setup ticket as new">
+        <return enum="status"/>
     </method>
 
     <method name="add new participant">

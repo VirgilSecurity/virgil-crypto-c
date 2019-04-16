@@ -379,6 +379,19 @@ vscr_ratchet_group_message_get_sender_id(const vscr_ratchet_group_message_t *sel
 }
 
 //
+//  Returns message sender id.
+//  This method should be called only for regular message type.
+//
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_group_message_get_session_id(const vscr_ratchet_group_message_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->message_pb.has_group_info);
+
+    return vsc_data(self->message_pb.group_info.session_id, sizeof(self->message_pb.group_info.session_id));
+}
+
+//
 //  Buffer len to serialize this class.
 //
 VSCR_PUBLIC size_t

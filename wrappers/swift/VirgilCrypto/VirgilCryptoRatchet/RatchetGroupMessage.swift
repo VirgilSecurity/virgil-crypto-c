@@ -106,6 +106,14 @@ import VirgilCryptoFoundation
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
+    /// Returns message sender id.
+    /// This method should be called only for regular message type.
+    @objc public func getSessionId() -> Data {
+        let proxyResult = vscr_ratchet_group_message_get_session_id(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
     /// Buffer len to serialize this class.
     @objc public func serializeLen() -> Int {
         let proxyResult = vscr_ratchet_group_message_serialize_len(self.c_ctx)

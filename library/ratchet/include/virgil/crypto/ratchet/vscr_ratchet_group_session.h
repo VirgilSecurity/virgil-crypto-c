@@ -208,6 +208,9 @@ VSCR_PUBLIC void
 vscr_ratchet_group_session_set_id(vscr_ratchet_group_session_t *self, vsc_data_t my_id);
 
 VSCR_PUBLIC vsc_data_t
+vscr_ratchet_group_session_get_my_id(const vscr_ratchet_group_session_t *self);
+
+VSCR_PUBLIC vsc_data_t
 vscr_ratchet_group_session_get_id(const vscr_ratchet_group_session_t *self);
 
 //

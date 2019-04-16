@@ -52,6 +52,13 @@
         <return class="data" access="readwrite"/>
     </method>
 
+    <method name="get session id" is_const="1">
+        Returns message sender id.
+        This method should be called only for regular message type.
+
+        <return class="data" access="readwrite"/>
+    </method>
+
     <method name="serialize len">
         Buffer len to serialize this class.
 

@@ -117,4 +117,8 @@
         Epoch not found.
     </constant>
 
+    <constant name="error session id mismatch" value="-29">
+        Session id mismatch.
+    </constant>
+
 </enum>

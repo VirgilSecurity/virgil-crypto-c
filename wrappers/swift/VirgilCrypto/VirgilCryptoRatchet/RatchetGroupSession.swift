@@ -127,6 +127,12 @@ import VirgilCryptoFoundation
         })
     }
 
+    @objc public func getMyId() -> Data {
+        let proxyResult = vscr_ratchet_group_session_get_my_id(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
     @objc public func getId() -> Data {
         let proxyResult = vscr_ratchet_group_session_get_id(self.c_ctx)
 

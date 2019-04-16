@@ -33,6 +33,9 @@
     <property name="is private key set" type="boolean" access="readwrite"/>
     <property name="is id set" type="boolean" access="readwrite"/>
 
+    <property name="session id" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_session_id_len)"/>
+    </property>
     <property name="my id" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
     </property>
@@ -94,6 +97,10 @@
         Sets identity private key.
 
         <argument name="my id" class="data"/>
+    </method>
+
+    <method name="get my id" is_const="1">
+        <return class="data"/>
     </method>
 
     <method name="get id" is_const="1">

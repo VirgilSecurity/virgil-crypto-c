@@ -17,6 +17,10 @@
         Participant id length
     </constant>
 
+    <constant name="session id len" value="32">
+        Session id length
+    </constant>
+
     <constant name="max participants count" value="100">
         Max number of group chat participants
     </constant>

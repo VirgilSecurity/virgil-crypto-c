@@ -169,7 +169,11 @@ VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_ticket_setup_defaults(vscr_ratchet_group_ticket_t *self) VSCR_NODISCARD;
 
 VSCR_PRIVATE void
-vscr_ratchet_group_ticket_setup_ticket(vscr_ratchet_group_ticket_t *self, size_t epoch, bool epoch_change);
+vscr_ratchet_group_ticket_setup_ticket_internal(vscr_ratchet_group_ticket_t *self, size_t epoch, bool epoch_change,
+        vsc_data_t session_id);
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_group_ticket_setup_ticket_as_new(vscr_ratchet_group_ticket_t *self) VSCR_NODISCARD;
 
 //
 //  Adds participant to chat.

@@ -123,6 +123,9 @@ import VSCRatchet
     /// Epoch not found.
     case errorEpochNotFound = -28
 
+    /// Session id mismatch.
+    case errorSessionIdMismatch = -29
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscr_status_t) {
         self.init(rawValue: Int(status.rawValue))!

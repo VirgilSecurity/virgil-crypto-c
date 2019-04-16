@@ -117,8 +117,6 @@ test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
 
     memcpy(msg1->header_pb->commitment, test_data_ratchet_group_message_commitment.bytes,
             test_data_ratchet_group_message_commitment.len);
-    memcpy(msg1->header_pb->session_id, test_data_ratchet_group_message_id.bytes,
-            test_data_ratchet_group_message_id.len);
     memcpy(msg1->header_pb->signature, test_data_ratchet_group_message_signature.bytes,
             test_data_ratchet_group_message_signature.len);
     memcpy(msg1->header_pb->sender_id, test_data_ratchet_group_message_sender_id.bytes,
@@ -152,6 +150,9 @@ test__serialize_deserialize__fixed_group_info_msg__should_be_equal(void) {
     msg1->message_pb.version = 5;
     msg1->message_pb.group_info.version = 11;
     msg1->message_pb.group_info.participants_count = 2;
+
+    memcpy(msg1->message_pb.group_info.session_id, test_data_ratchet_group_message_id.bytes,
+            test_data_ratchet_group_message_id.len);
 
     msg1->message_pb.group_info.participants[0].version = 2;
     msg1->message_pb.group_info.participants[1].version = 2;
@@ -241,8 +242,6 @@ test__serialize_deserialize__regular_overflow__should_be_equal(void) {
 
     memcpy(msg1->header_pb->commitment, test_data_ratchet_group_message_commitment.bytes,
             test_data_ratchet_group_message_commitment.len);
-    memcpy(msg1->header_pb->session_id, test_data_ratchet_group_message_id.bytes,
-            test_data_ratchet_group_message_id.len);
     memcpy(msg1->header_pb->signature, test_data_ratchet_group_message_signature.bytes,
             test_data_ratchet_group_message_signature.len);
     memcpy(msg1->header_pb->sender_id, test_data_ratchet_group_message_sender_id.bytes,
