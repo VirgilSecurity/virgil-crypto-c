@@ -53,15 +53,12 @@
 #include "vscr_ratchet_group_session.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_group_session_defs.h"
 #include "vscr_ratchet_group_message_defs.h"
 #include "vscr_ratchet_group_ticket_defs.h"
+#include "vscr_ratchet_group_ticket_private.h"
 #include "vscr_ratchet_keys.h"
 #include "vscr_ratchet_group_participant_data.h"
-#include "vscr_ratchet_key_utils.h"
-#include "vscr_ratchet_cipher.h"
-#include "vscr_ratchet_skipped_group_message_key_root_node.h"
-#include "vscr_ratchet_group_participant_epoch.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <RatchetGroupMessage.pb.h>
@@ -79,48 +76,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Handle 'ratchet group session' context.
-//
-struct vscr_ratchet_group_session_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *rng;
-
-    vscr_ratchet_key_utils_t *key_utils;
-
-    vscr_ratchet_cipher_t *cipher;
-
-    vscr_ratchet_skipped_group_message_key_root_node_t **skipped_messages;
-
-    bool is_initialized;
-
-    bool is_private_key_set;
-
-    bool is_id_set;
-
-    byte my_id[vscr_ratchet_common_PARTICIPANT_ID_LEN];
-
-    vscr_ratchet_group_participant_epoch_t *my_epoch;
-
-    byte my_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
-
-    byte my_private_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
-
-    vscr_ratchet_group_participant_data_t **participants;
-
-    size_t participants_count;
-};
 
 //
 //  Perform context specific initialization.

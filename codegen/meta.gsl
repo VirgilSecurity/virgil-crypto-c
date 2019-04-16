@@ -449,6 +449,7 @@ function _X17_add_entity_implementation (meta, implementation)
 
         _X17_add_name (entity, "implementation module", my.name)
         _X17_add_name (entity, "implementation module defs", cat (my.name, "defs"))
+        _X17_add_name (entity, "implementation module private", cat (my.name, "private"))
         _X17_add_name (entity, "implementation module internal", cat (my.name, "internal"))
 
         _X17_add_name (entity, "implementation argument impl", "self")
@@ -532,6 +533,8 @@ function _X17_add_entity_class (meta, class)
         _X17_add_smart_name (entity, "class method", "ctx size")
 
         _X17_add_name (entity, "class module", my.class.name)
+        _X17_add_name (entity, "class module private", cat (my.class.name, "private"))
+        _X17_add_name (entity, "class module internal", cat (my.class.name, "internal"))
         _X17_add_name (entity, "class module defs", cat (my.class.name, "defs"))
         _X17_add_name (entity, "class argument ctx", "self")
         _X17_add_link (entity, "class argument ctx", "_argument_self")

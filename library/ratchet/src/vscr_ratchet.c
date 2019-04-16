@@ -47,15 +47,11 @@
 #include "vscr_ratchet.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_keys.h"
+#include "vscr_ratchet_defs.h"
 #include "vscr_ratchet_chain_key.h"
 #include "vscr_ratchet_receiver_chain.h"
 #include "vscr_ratchet_message_defs.h"
 #include "vscr_ratchet_sender_chain.h"
-#include "vscr_ratchet_cipher.h"
-#include "vscr_ratchet_receiver_chains.h"
-#include "vscr_ratchet_skipped_messages.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
@@ -73,36 +69,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Handle 'ratchet' context.
-//
-struct vscr_ratchet_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *rng;
-
-    vscr_ratchet_cipher_t *cipher;
-
-    vscr_ratchet_sender_chain_t *sender_chain;
-
-    uint32_t prev_sender_chain_count;
-
-    vscr_ratchet_receiver_chains_t *receiver_chains;
-
-    vscr_ratchet_skipped_messages_t *skipped_messages;
-
-    byte root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
-};
 
 //
 //  Perform context specific initialization.

@@ -38,7 +38,7 @@
 #
 #   To add new supported language do next:
 #       1. Create file `<lang>.gsl` with methods:
-#           - <lang>_create_project_module (project, wrappers, wrapper, destination)
+#           - <lang>_create_project_module (project, wrapper)
 #           - <lang>_create_custom_modules (source, wrapper_project, meta) [optional]
 #           - <lang>_create_interface_module (source, wrapper_project, meta)
 #           - <lang>_create_implementation_module (source, wrapper_project, meta)

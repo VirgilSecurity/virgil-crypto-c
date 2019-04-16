@@ -8,9 +8,9 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <interface [c_prefix] [uid] [full_uid] [visibility] [scope]>
-       <constant name [c_prefix] [of_class] [uid] [full_uid] [feature] [definition] [value]/>
+       <constant name [c_prefix] [of_class] [uid] [full_uid] [feature] [scope] [definition] [value]/>
        <method name [declaration] [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature]
-            [definition] [is_static] [nodiscard]>
+            [scope] [definition] [is_static] [nodiscard]>
           <return is_reference [project] [access] [type] [class] [enum] [callback] [interface]
                [api] [impl] [size] [library] [require_definition]>
              <string [access] [length] [length_constant]/>
@@ -22,10 +22,10 @@ attribute names are case-sensitive and we use only lower-case names.
              <string .../>
              <array .../>
           </argument>
-          <variable name is_reference [access] [type] [project] [enum] [callback] [interface] [api]
+          <variable name is_reference [access] [type] [class] [project] [callback] [interface] [api]
                [impl] [size] [library] [require_definition] [definition] [declaration]
                [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature]
-               [class]>
+               [scope] [enum]>
              <value is_reference value [library] [type] [class] [enum] [callback] [interface] [api]
                   [impl] [size] [project] [require_definition] [access]>
                 <cast is_reference [project] [access] [type] [class] [enum] [callback] [interface]
@@ -102,13 +102,15 @@ scope:
 Value: Meaning:
 public: Component is visible for outside world.
 private: Component is visible for outside world via private interface.
-internal: Component is visible only within library or a specific source file.
+internal: Component is visible only within library.
 
 
 The 'constant' item
 -------------------
 
-Groups common attributes for the component. Defines integral constant.
+Groups common attributes for the component. Groups common attributes for a
+scoped component. Scoped component is a component that more precisely can
+specify the scope where it can be used. Defines integral constant.
 
     <constant
         name = "..."
@@ -117,6 +119,7 @@ Groups common attributes for the component. Defines integral constant.
       [ uid = "..." ]
       [ full_uid = "..." ]
       [ feature = "..." ]
+      [ scope = "public | private | internal | hidden"  ("public") ]
       [ definition = "public | private | external"  ("private") ]
       [ value = "..." ]
         />
@@ -153,6 +156,18 @@ feature:
     In-project feature name that is implemented. This attribute is used for
     feature-based compilation. The feature attribute is optional.
 
+scope:
+    Defines component visibility for outside world. This attribute must not
+    be inherited. This attributed can be defined only within entities: -
+    'class' - 'implementation'. The scope attribute is optional. Its default
+    value is "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library.
+hidden: Component is visible only within related source file.
+
 name:
     Constant name. The name attribute is required.
 
@@ -164,8 +179,10 @@ value:
 The 'method' item
 -----------------
 
-Groups common attributes for the component. Defines the method signature
-and optionally implementation.
+Groups common attributes for the component. Groups common attributes for a
+scoped component. Scoped component is a component that more precisely can
+specify the scope where it can be used. Defines the method signature and
+optionally implementation.
 
     <method
         name = "..."
@@ -176,6 +193,7 @@ and optionally implementation.
       [ uid = "..." ]
       [ full_uid = "..." ]
       [ feature = "..." ]
+      [ scope = "public | private | internal | hidden"  ("public") ]
       [ definition = "public | private | external"  ("private") ]
       [ is_static = "0 | 1"  ("0") ]
       [ nodiscard = "0 | 1"  ("0") ]
@@ -236,6 +254,18 @@ full_uid:
 feature:
     In-project feature name that is implemented. This attribute is used for
     feature-based compilation. The feature attribute is optional.
+
+scope:
+    Defines component visibility for outside world. This attribute must not
+    be inherited. This attributed can be defined only within entities: -
+    'class' - 'implementation'. The scope attribute is optional. Its default
+    value is "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library.
+hidden: Component is visible only within related source file.
 
 name:
     Method name. The name attribute is required.
@@ -615,15 +645,17 @@ The 'variable' item
 -------------------
 
 Defines attributes that related to the instance type. Groups common
-attributes for the component. Defines global variable.
+attributes for the component. Groups common attributes for a scoped
+component. Scoped component is a component that more precisely can specify
+the scope where it can be used. Defines global variable.
 
     <variable
         name = "..."
         is_reference = "0 | 1"
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | string | char | varargs" ]
+      [ class = "..." ]
       [ project = "..." ]
-      [ enum = "..." ]
       [ callback = "..." ]
       [ interface = "..." ]
       [ api = "..." ]
@@ -639,7 +671,8 @@ attributes for the component. Defines global variable.
       [ uid = "..." ]
       [ full_uid = "..." ]
       [ feature = "..." ]
-      [ class = "..." ]
+      [ scope = "public | private | internal | hidden"  ("public") ]
+      [ enum = "..." ]
         >
         <value>, 1 or more
         <string>, optional
@@ -799,6 +832,18 @@ full_uid:
 feature:
     In-project feature name that is implemented. This attribute is used for
     feature-based compilation. The feature attribute is optional.
+
+scope:
+    Defines component visibility for outside world. This attribute must not
+    be inherited. This attributed can be defined only within entities: -
+    'class' - 'implementation'. The scope attribute is optional. Its default
+    value is "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library.
+hidden: Component is visible only within related source file.
 
 name:
     Object name. The name attribute is required.

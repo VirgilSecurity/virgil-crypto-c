@@ -95,6 +95,10 @@ endfunction
 function c_module_need_source (c_module)
     check_arguments (my, "c_module", my)
 
+    if is_true (my.c_module.is_header_only)
+        return "0"
+    endif
+
     if count (my.c_module.c_enum)
         return "1"
     endif
@@ -148,6 +152,7 @@ function c_module_create (source, destination, project)
             .class = c_format_name (module.class)
             .scope = module.scope
             .has_cmakedefine = module.has_cmakedefine
+            .is_header_only = module.is_header_only ?
 
             c_component_map_attr_uid (c_module, module)
             c_component_map_attr_feature (c_module, module)

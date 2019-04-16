@@ -104,7 +104,7 @@ scope:
 Value: Meaning:
 public: Component is visible for outside world.
 private: Component is visible for outside world via private interface.
-internal: Component is visible only within library or a specific source file.
+internal: Component is visible only within library.
 
 id:
     Short module name. The id attribute is required.
@@ -166,7 +166,7 @@ scope:
 Value: Meaning:
 public: Component is visible for outside world.
 private: Component is visible for outside world via private interface.
-internal: Component is visible only within library or a specific source file.
+internal: Component is visible only within library.
 
 feature:
     Defines feature name. Component that holds this attribute should be
