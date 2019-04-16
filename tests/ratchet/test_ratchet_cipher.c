@@ -37,16 +37,6 @@
 #include "unity.h"
 #include "test_utils.h"
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage errors in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
@@ -69,8 +59,6 @@ test__encrypt__fixed_data__should_match(void) {
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_cipher_encrypt(cipher, test_data_ratchet_cipher_key,
                                                    test_data_ratchet_cipher_plain_text, cipher_text));
-
-    //    print_buffer(cipher_text);
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ratchet_cipher_cipher_text, cipher_text);
 
@@ -140,33 +128,44 @@ test__padding__growing_data_size__should_add_padding(void) {
     size_t max_size = 320;
 
     vscr_ratchet_padding_t *padding = vscr_ratchet_padding_new();
-    vscr_ratchet_padding_use_rng(padding, vscf_ctr_drbg_impl(rng));
 
     for (size_t size = 0; size <= max_size; size++) {
+        vscf_fake_random_t *fake_rng = vscf_fake_random_new();
+        vscf_fake_random_setup_source_data(fake_rng, test_data_ratchet_cipher_fake_rng);
+
+        vscr_ratchet_padding_release_rng(padding);
+        vscr_ratchet_padding_use_rng(padding, vscf_fake_random_impl(fake_rng));
+
         size_t len = vscr_ratchet_padding_padded_len(size);
         size_t expected_size = ((size + 4) / 160 + 1) * 160;
 
         TEST_ASSERT_EQUAL(expected_size, len);
 
-        vsc_buffer_t *text1 = vsc_buffer_new_with_capacity(len);
+        vsc_buffer_t *text1 = vsc_buffer_new_with_capacity(size);
 
-        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, size, text1));
+        if (size > 0) {
+            TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, size, text1));
+        }
 
         vsc_buffer_t *text2 = vsc_buffer_new_with_capacity(len);
         memcpy(vsc_buffer_unused_bytes(text2), vsc_buffer_bytes(text1), size);
         vsc_buffer_inc_used(text2, size);
 
-        TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_padding_add_padding(padding, text1));
         TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_padding_add_padding(padding, text2));
 
-        TEST_ASSERT_EQUAL(vsc_buffer_len(text1), expected_size);
         TEST_ASSERT_EQUAL(vsc_buffer_len(text2), expected_size);
 
-        TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(text1), vsc_buffer_bytes(text2), size);
-        TEST_ASSERT(memcmp(vsc_buffer_bytes(text1) + size, vsc_buffer_bytes(text2) + size, len - size) != 0);
+        TEST_ASSERT_EQUAL_DATA(vsc_buffer_data(text1), vsc_data_slice_beg(vsc_buffer_data(text2), 0, size));
+
+        vsc_data_t data1 = vsc_data_slice_beg(test_data_ratchet_cipher_fake_rng, 0, len - size - 4);
+        vsc_data_t data2 = vsc_data_slice_beg(vsc_buffer_data(text2), size, len - size - 4);
+
+        TEST_ASSERT_EQUAL_DATA(data1, data2);
 
         vsc_buffer_destroy(&text1);
         vsc_buffer_destroy(&text2);
+
+        vscf_fake_random_destroy(&fake_rng);
     }
 
     vscr_ratchet_padding_destroy(&padding);
