@@ -88,7 +88,9 @@ struct vscr_ratchet_t {
     //
     //  Dependency to the class 'ratchet cipher'.
     //
-    vscr_ratchet_cipher_t *cipher;
+    void *cipher;
+
+    void *padding;
 
     vscr_ratchet_sender_chain_t *sender_chain;
 
