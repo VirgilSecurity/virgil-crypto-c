@@ -40,7 +40,7 @@ import VSCFoundation
 @objc(VSCFAuthEncrypt) public protocol AuthEncrypt : CipherAuthInfo {
 
     /// Encrypt given data.
-    /// If 'tag' is not give, then it will written to the 'enc'.
+    /// If 'tag' is not given, then it will written to the 'enc'.
     @objc func authEncrypt(data: Data, authData: Data) throws -> AuthEncryptAuthEncryptResult
 
     /// Calculate required buffer length to hold the authenticated encrypted data.
