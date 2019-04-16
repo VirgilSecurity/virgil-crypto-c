@@ -44,8 +44,8 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_CIPHER_H_INCLUDED
-#define VSCR_RATCHET_CIPHER_H_INCLUDED
+#ifndef VSCR_RATCHET_PADDING_H_INCLUDED
+#define VSCR_RATCHET_PADDING_H_INCLUDED
 
 #include "vscr_library.h"
 #include "vscr_status.h"
@@ -59,9 +59,17 @@
 #   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
+#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
 #endif
 
 // clang-format on
@@ -80,67 +88,89 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet cipher' context.
+//  Public integral constants.
 //
-typedef struct vscr_ratchet_cipher_t vscr_ratchet_cipher_t;
+enum {
+    vscr_ratchet_padding_PADDING_SIZE_LEN = 4,
+    vscr_ratchet_padding_PADDING_FACTOR = 160
+};
 
 //
-//  Return size of 'vscr_ratchet_cipher_t'.
+//  Handle 'ratchet padding' context.
+//
+typedef struct vscr_ratchet_padding_t vscr_ratchet_padding_t;
+
+//
+//  Return size of 'vscr_ratchet_padding_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_cipher_ctx_size(void);
+vscr_ratchet_padding_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_init(vscr_ratchet_cipher_t *self);
+vscr_ratchet_padding_init(vscr_ratchet_padding_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_cleanup(vscr_ratchet_cipher_t *self);
+vscr_ratchet_padding_cleanup(vscr_ratchet_padding_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_cipher_t *
-vscr_ratchet_cipher_new(void);
+VSCR_PUBLIC vscr_ratchet_padding_t *
+vscr_ratchet_padding_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_delete(vscr_ratchet_cipher_t *self);
+vscr_ratchet_padding_delete(vscr_ratchet_padding_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_cipher_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_padding_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_destroy(vscr_ratchet_cipher_t **self_ref);
+vscr_ratchet_padding_destroy(vscr_ratchet_padding_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_cipher_t *
-vscr_ratchet_cipher_shallow_copy(vscr_ratchet_cipher_t *self);
+VSCR_PUBLIC vscr_ratchet_padding_t *
+vscr_ratchet_padding_shallow_copy(vscr_ratchet_padding_t *self);
+
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_padding_use_rng(vscr_ratchet_padding_t *self, vscf_impl_t *rng);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_padding_take_rng(vscr_ratchet_padding_t *self, vscf_impl_t *rng);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_padding_release_rng(vscr_ratchet_padding_t *self);
 
 VSCR_PUBLIC size_t
-vscr_ratchet_cipher_encrypt_len(vscr_ratchet_cipher_t *self, size_t plain_text_len);
-
-VSCR_PUBLIC size_t
-vscr_ratchet_cipher_decrypt_len(vscr_ratchet_cipher_t *self, size_t cipher_text_len);
+vscr_ratchet_padding_padded_len(size_t plain_text_len);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t plain_text,
-        vsc_buffer_t *buffer) VSCR_NODISCARD;
+vscr_ratchet_padding_add_padding(vscr_ratchet_padding_t *self, vsc_buffer_t *plain_text) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t cipher_text,
-        vsc_buffer_t *buffer) VSCR_NODISCARD;
+vscr_ratchet_padding_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buffer) VSCR_NODISCARD;
 
 
 // --------------------------------------------------------------------------
@@ -156,5 +186,5 @@ vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_dat
 
 
 //  @footer
-#endif // VSCR_RATCHET_CIPHER_H_INCLUDED
+#endif // VSCR_RATCHET_PADDING_H_INCLUDED
 //  @end

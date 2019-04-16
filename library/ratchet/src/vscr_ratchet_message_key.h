@@ -86,7 +86,7 @@ struct vscr_ratchet_message_key_t {
 
     uint32_t index;
 
-    byte key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
+    byte key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LEN];
 };
 
 //

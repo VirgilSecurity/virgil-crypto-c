@@ -85,7 +85,7 @@ struct vscr_ratchet_group_participant_data_t {
 
     byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN];
 
-    byte pub_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte pub_key[vscr_ratchet_common_hidden_RATCHET_KEY_LEN];
 
     size_t epoch_count;
 

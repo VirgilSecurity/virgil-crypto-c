@@ -13,6 +13,7 @@
 
     <property name="key id" impl="ratchet key id"/>
     <property name="message pb" class="GroupMessage" library="nanopb" access="readwrite" is_reference="0"/>
+    <property name="header pb" class="RegularGroupMessageHeader" library="nanopb" access="readwrite"/>
 
     <method name="get type" is_const="1">
         Returns message type.
@@ -20,6 +21,10 @@
         <return enum="group msg type">
             Message type.
         </return>
+    </method>
+
+    <method name="set type" visibility="private">
+        <argument name="type" enum="group msg type"/>
     </method>
 
     <method name="get pub key count" is_const="1">

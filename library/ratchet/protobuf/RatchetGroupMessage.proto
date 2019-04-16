@@ -20,14 +20,21 @@ message MessageGroupInfo {
     repeated MessageParticipantInfo participants = 4;
 }
 
+message RegularGroupMessageHeader {
+    required uint32 version = 1;
+    required bytes session_id = 2;
+    required uint32 epoch = 3;
+    required uint32 prev_epoch_msgs = 4;
+    required uint32 counter = 5;
+    required bytes sender_id = 6;
+    required bytes commitment = 7;
+    required bytes signature = 8;
+}
+
 message RegularGroupMessage {
     required uint32 version = 1;
-    required uint32 epoch = 2;
-    required uint32 prev_epoch_msgs = 3;
-    required uint32 counter = 4;
-    required bytes sender_id = 5;
-    required bytes signature = 6;
-    required bytes cipher_text = 7;
+    required bytes header = 2;
+    required bytes cipher_text = 3;
 }
 
 message GroupMessage {

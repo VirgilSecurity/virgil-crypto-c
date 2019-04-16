@@ -24,6 +24,7 @@
 
     <property name="key utils" class="ratchet key utils"/>
     <property name="cipher" class="ratchet cipher" access="readwrite"/>
+    <property name="padding" class="ratchet padding" access="readwrite"/>
     <property name="skipped messages" class="ratchet skipped group message key root node" access="readwrite">
         <array/>
     </property>
@@ -37,10 +38,10 @@
     </property>
     <property name="my epoch" class="ratchet group participant epoch" access="readwrite"/>
     <property name="my public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_len)"/>
     </property>
     <property name="my private key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_len)"/>
     </property>
 
     <property name="participants" class="ratchet group participant data" access="readwrite">

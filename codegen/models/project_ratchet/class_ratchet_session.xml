@@ -27,17 +27,17 @@
     <property name="received first response" type="boolean"/>
 
     <property name="sender identity public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_len)"/>
     </property>
     <property name="sender ephemeral public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_len)"/>
     </property>
     <property name="receiver long term public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_len)"/>
     </property>
     <property name="receiver has one time public key" type="boolean" access="readwrite"/>
     <property name="receiver one time public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_len)"/>
     </property>
 
     <method name="setup defaults">

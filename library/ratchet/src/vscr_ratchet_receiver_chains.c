@@ -250,13 +250,13 @@ VSCR_PUBLIC vscr_ratchet_receiver_chain_t *
 vscr_ratchet_receiver_chains_find_chain(vscr_ratchet_receiver_chains_t *self, vsc_data_t ratchet_public_key) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(ratchet_public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+    VSCR_ASSERT(ratchet_public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LEN);
 
     vscr_ratchet_receiver_chain_list_node_t *chain_list_node = self->chains;
 
     while (chain_list_node) {
         if (!memcmp(ratchet_public_key.bytes, chain_list_node->value->public_key,
-                    vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH)) {
+                    vscr_ratchet_common_hidden_RATCHET_KEY_LEN)) {
             return chain_list_node->value;
         }
         chain_list_node = chain_list_node->next;

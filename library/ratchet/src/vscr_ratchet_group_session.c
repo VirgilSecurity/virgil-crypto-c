@@ -60,6 +60,7 @@
 #include "vscr_ratchet_group_participant_data.h"
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet_cipher.h"
+#include "vscr_ratchet_padding.h"
 #include "vscr_ratchet_skipped_group_message_key_root_node.h"
 #include "vscr_ratchet_group_participant_epoch.h"
 
@@ -101,6 +102,8 @@ struct vscr_ratchet_group_session_t {
 
     vscr_ratchet_cipher_t *cipher;
 
+    vscr_ratchet_padding_t *padding;
+
     vscr_ratchet_skipped_group_message_key_root_node_t **skipped_messages;
 
     bool is_initialized;
@@ -113,9 +116,9 @@ struct vscr_ratchet_group_session_t {
 
     vscr_ratchet_group_participant_epoch_t *my_epoch;
 
-    byte my_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte my_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LEN];
 
-    byte my_private_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte my_private_key[vscr_ratchet_common_hidden_RATCHET_KEY_LEN];
 
     vscr_ratchet_group_participant_data_t **participants;
 
@@ -341,6 +344,7 @@ vscr_ratchet_group_session_init_ctx(vscr_ratchet_group_session_t *self) {
 
     self->key_utils = vscr_ratchet_key_utils_new();
     self->cipher = vscr_ratchet_cipher_new();
+    self->padding = vscr_ratchet_padding_new();
     self->is_initialized = false;
     self->is_private_key_set = false;
     self->is_id_set = false;
@@ -369,6 +373,7 @@ vscr_ratchet_group_session_cleanup_ctx(vscr_ratchet_group_session_t *self) {
     vscr_ratchet_group_participant_epoch_destroy(&self->my_epoch);
     vscr_ratchet_key_utils_destroy(&self->key_utils);
     vscr_ratchet_cipher_destroy(&self->cipher);
+    vscr_ratchet_padding_destroy(&self->padding);
 }
 
 //
@@ -380,7 +385,7 @@ vscr_ratchet_group_session_did_setup_rng(vscr_ratchet_group_session_t *self) {
     VSCR_ASSERT_PTR(self);
 
     if (self->rng) {
-        vscr_ratchet_cipher_use_rng(self->cipher, self->rng);
+        vscr_ratchet_padding_use_rng(self->padding, self->rng);
     }
 }
 
@@ -730,16 +735,16 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     }
 
     vscr_ratchet_group_message_t *msg = vscr_ratchet_group_message_new();
+    vscr_ratchet_group_message_set_type(msg, vscr_group_msg_type_REGULAR);
 
-    msg->message_pb.has_regular_message = true;
     msg->message_pb.regular_message.version = 1;
 
-    ed25519_sign(msg->message_pb.regular_message.signature, self->my_private_key, plain_text.bytes, plain_text.len);
+    ed25519_sign(msg->header_pb->signature, self->my_private_key, plain_text.bytes, plain_text.len);
 
-    msg->message_pb.regular_message.epoch = self->my_epoch->epoch;
+    msg->header_pb->epoch = self->my_epoch->epoch;
 
-    msg->message_pb.regular_message.counter = self->my_epoch->chain_key->index;
-    memcpy(msg->message_pb.regular_message.sender_id, self->my_id, sizeof(self->my_id));
+    msg->header_pb->counter = self->my_epoch->chain_key->index;
+    memcpy(msg->header_pb->sender_id, self->my_id, sizeof(self->my_id));
 
     vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(self->my_epoch->chain_key);
     vscr_ratchet_keys_advance_chain_key(self->my_epoch->chain_key);
@@ -800,14 +805,16 @@ vscr_ratchet_group_session_decrypt(
     VSCR_ASSERT(self->is_private_key_set);
 
     const RegularGroupMessage *group_message = &message->message_pb.regular_message;
+    const RegularGroupMessageHeader *header = message->header_pb;
 
     // TODO: Check version
 
-    if (memcmp(group_message->sender_id, self->my_id, sizeof(self->my_id)) == 0) {
+
+    if (memcmp(header->sender_id, self->my_id, sizeof(self->my_id)) == 0) {
         return vscr_status_ERROR_CANNOT_DECRYPT_OWN_MESSAGES;
     }
 
-    size_t sender = vscr_ratchet_group_session_find_participant(self, group_message->sender_id);
+    size_t sender = vscr_ratchet_group_session_find_participant(self, header->sender_id);
 
     if (sender == self->participants_count) {
         return vscr_status_ERROR_SENDER_NOT_FOUND;
@@ -820,7 +827,7 @@ vscr_ratchet_group_session_decrypt(
     VSCR_ASSERT(skipped_root);
 
     vscr_ratchet_group_participant_epoch_t *epoch =
-            vscr_ratchet_group_participant_data_find_epoch(participant, group_message->epoch);
+            vscr_ratchet_group_participant_data_find_epoch(participant, header->epoch);
 
     if (!epoch) {
         return vscr_status_ERROR_EPOCH_NOT_FOUND;
@@ -828,9 +835,9 @@ vscr_ratchet_group_session_decrypt(
 
     // TODO: Add old epoches removal
 
-    if (epoch->chain_key->index > group_message->counter) {
-        vscr_ratchet_message_key_t *skipped_message_key = vscr_ratchet_skipped_group_message_key_root_node_find_key(
-                skipped_root, group_message->epoch, group_message->counter);
+    if (epoch->chain_key->index > header->counter) {
+        vscr_ratchet_message_key_t *skipped_message_key =
+                vscr_ratchet_skipped_group_message_key_root_node_find_key(skipped_root, header->epoch, header->counter);
 
         if (!skipped_message_key) {
             return vscr_status_ERROR_SKIPPED_MESSAGE_MISSING;
@@ -850,14 +857,14 @@ vscr_ratchet_group_session_decrypt(
     }
 
     // Too many lost messages
-    if (group_message->counter - epoch->chain_key->index > vscr_ratchet_common_hidden_MAX_MESSAGE_GAP) {
+    if (header->counter - epoch->chain_key->index > vscr_ratchet_common_hidden_MAX_MESSAGE_GAP) {
         return vscr_status_ERROR_TOO_MANY_LOST_MESSAGES;
     }
 
     vscr_ratchet_chain_key_t *new_chain_key = vscr_ratchet_chain_key_new();
     vscr_ratchet_chain_key_clone(epoch->chain_key, new_chain_key);
 
-    while (new_chain_key->index < group_message->counter) {
+    while (new_chain_key->index < header->counter) {
         vscr_ratchet_keys_advance_chain_key(new_chain_key);
     }
 
@@ -872,16 +879,16 @@ vscr_ratchet_group_session_decrypt(
     }
 
     int ed_result = ed25519_verify(
-            group_message->signature, participant->pub_key, vsc_buffer_bytes(plain_text), vsc_buffer_len(plain_text));
+            header->signature, participant->pub_key, vsc_buffer_bytes(plain_text), vsc_buffer_len(plain_text));
 
     if (ed_result != 0) {
         result = vscr_status_ERROR_INVALID_SIGNATURE;
         goto err;
     }
 
-    while (epoch->chain_key->index < group_message->counter) {
+    while (epoch->chain_key->index < header->counter) {
         vscr_ratchet_skipped_group_message_key_t *skipped_message_key = vscr_ratchet_skipped_group_message_key_new();
-        skipped_message_key->epoch = group_message->epoch;
+        skipped_message_key->epoch = header->epoch;
         skipped_message_key->message_key = vscr_ratchet_keys_create_message_key(epoch->chain_key);
         if (epoch->chain_key->index == UINT32_MAX) {
             vscr_ratchet_skipped_group_message_key_destroy(&skipped_message_key);

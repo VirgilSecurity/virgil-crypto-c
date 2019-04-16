@@ -1,11 +1,16 @@
 syntax = "proto2";
 
-message RegularMessage {
+message RegularMessageHeader {
     required uint32 version = 1;
     required uint32 counter = 2;
     required uint32 prev_chain_count = 3;
     required bytes public_key = 4;
-    required bytes cipher_text = 5;
+}
+
+message RegularMessage {
+    required uint32 version = 1;
+    required bytes header = 2;
+    required bytes cipher_text = 3;
 }
 
 message PrekeyMessage {

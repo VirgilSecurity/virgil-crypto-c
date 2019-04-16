@@ -9,10 +9,10 @@
     <require class="ratchet common hidden" scope="context"/>
 
     <property name="private key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_len)"/>
     </property>
     <property name="public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_len)"/>
     </property>
     <property name="chain key" class="ratchet chain key" access="readwrite" is_reference="0"/>
 

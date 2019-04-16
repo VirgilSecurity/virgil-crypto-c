@@ -98,7 +98,7 @@ struct vscr_ratchet_t {
 
     vscr_ratchet_skipped_messages_t *skipped_messages;
 
-    byte root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
+    byte root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LEN];
 };
 
 struct vscr_ratchet_session_t {
@@ -123,15 +123,15 @@ struct vscr_ratchet_session_t {
 
     bool received_first_response;
 
-    byte sender_identity_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte sender_identity_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LEN];
 
-    byte sender_ephemeral_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte sender_ephemeral_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LEN];
 
-    byte receiver_long_term_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte receiver_long_term_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LEN];
 
     bool receiver_has_one_time_public_key;
 
-    byte receiver_one_time_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte receiver_one_time_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LEN];
 };
 
 #endif //VIRGIL_CRYPTO_PRIVATEAPI_H

@@ -12,6 +12,7 @@
     <require header="pb_encode.h" scope="private"/>
 
     <property name="message pb" class="Message" library="nanopb" access="readwrite" is_reference="0"/>
+    <property name="header pb" class="RegularMessageHeader" library="nanopb" access="readwrite"/>
 
     <method name="get type" is_const="1">
         Returns message type.

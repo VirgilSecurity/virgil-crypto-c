@@ -227,7 +227,6 @@ vscr_ratchet_group_message_init_ctx(vscr_ratchet_group_message_t *self) {
     GroupMessage msg = GroupMessage_init_zero;
 
     self->message_pb = msg;
-
     self->key_id = vscr_ratchet_key_id_new();
 }
 
@@ -246,6 +245,8 @@ vscr_ratchet_group_message_cleanup_ctx(vscr_ratchet_group_message_t *self) {
             vsc_buffer_destroy((vsc_buffer_t **)&self->message_pb.regular_message.cipher_text.arg);
         }
     }
+
+    vscr_dealloc(self->header_pb);
 
     vscr_ratchet_key_id_destroy(&self->key_id);
 }
@@ -274,6 +275,47 @@ vscr_ratchet_group_message_get_type(const vscr_ratchet_group_message_t *self) {
     }
 
     return vscr_group_msg_type_REGULAR;
+}
+
+VSCR_PRIVATE void
+vscr_ratchet_group_message_set_type(vscr_ratchet_group_message_t *self, vscr_group_msg_type_t type) {
+
+    VSCR_ASSERT_PTR(self);
+
+    GroupMessage msg = GroupMessage_init_zero;
+    self->message_pb = msg;
+
+    switch (type) {
+    case vscr_group_msg_type_REGULAR:
+        self->message_pb.has_regular_message = true;
+        self->message_pb.has_group_info = false;
+        self->header_pb = vscr_alloc(sizeof(RegularGroupMessageHeader));
+        RegularGroupMessageHeader hdr = RegularGroupMessageHeader_init_zero;
+        *self->header_pb = hdr;
+        break;
+
+    case vscr_group_msg_type_START_GROUP:
+    case vscr_group_msg_type_ADD_MEMBERS:
+    case vscr_group_msg_type_EPOCH_CHANGE:
+        self->message_pb.has_regular_message = false;
+        self->message_pb.has_group_info = true;
+        break;
+    }
+
+    switch (type) {
+    case vscr_group_msg_type_REGULAR:
+        break;
+
+    case vscr_group_msg_type_START_GROUP:
+        self->message_pb.group_info.type = MessageGroupInfo_Type_START;
+        break;
+    case vscr_group_msg_type_ADD_MEMBERS:
+        self->message_pb.group_info.type = MessageGroupInfo_Type_ADD;
+        break;
+    case vscr_group_msg_type_EPOCH_CHANGE:
+        self->message_pb.group_info.type = MessageGroupInfo_Type_CHANGE;
+        break;
+    }
 }
 
 //
@@ -331,8 +373,9 @@ vscr_ratchet_group_message_get_sender_id(const vscr_ratchet_group_message_t *sel
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(self->message_pb.has_regular_message);
+    VSCR_ASSERT_PTR(self->header_pb);
 
-    return vsc_data(self->message_pb.regular_message.sender_id, sizeof(self->message_pb.regular_message.sender_id));
+    return vsc_data(self->header_pb->sender_id, sizeof(self->header_pb->sender_id));
 }
 
 //
@@ -373,6 +416,15 @@ vscr_ratchet_group_message_serialize(vscr_ratchet_group_message_t *self, vsc_buf
     VSCR_ASSERT_PTR(output);
     VSCR_ASSERT(self->message_pb.has_group_info != self->message_pb.has_regular_message);
     VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_group_message_serialize_len(self));
+
+    if (self->message_pb.has_regular_message) {
+        VSCR_ASSERT_PTR(self->header_pb);
+
+        pb_ostream_t sub_ostream = pb_ostream_from_buffer(
+                self->message_pb.regular_message.header, sizeof(self->message_pb.regular_message.header));
+
+        VSCR_ASSERT(pb_encode(&sub_ostream, RegularGroupMessageHeader_fields, self->header_pb));
+    }
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_unused_len(output));
 
@@ -422,6 +474,17 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
                     goto err;
                 }
             }
+        }
+    } else {
+        pb_istream_t sub_istream = pb_istream_from_buffer(
+                message->message_pb.regular_message.header, sizeof(message->message_pb.regular_message.header));
+
+        message->header_pb = vscr_alloc(sizeof(RegularGroupMessageHeader));
+        pb_status = pb_decode(&sub_istream, RegularGroupMessageHeader_fields, message->header_pb);
+
+        if (!pb_status) {
+            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+            goto err;
         }
     }
 

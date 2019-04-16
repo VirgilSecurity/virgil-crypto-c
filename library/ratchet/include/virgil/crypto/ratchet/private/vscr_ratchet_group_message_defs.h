@@ -89,6 +89,8 @@ struct vscr_ratchet_group_message_t {
     vscr_ratchet_key_id_t *key_id;
 
     GroupMessage message_pb;
+
+    RegularGroupMessageHeader *header_pb;
 };
 
 

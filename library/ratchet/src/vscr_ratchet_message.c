@@ -225,8 +225,11 @@ vscr_ratchet_message_init_ctx(vscr_ratchet_message_t *self) {
     VSCR_ASSERT_PTR(self);
 
     Message msg = Message_init_zero;
+    RegularMessageHeader hdr = RegularMessageHeader_init_zero;
 
     self->message_pb = msg;
+    self->header_pb = vscr_alloc(sizeof(RegularMessageHeader));
+    *self->header_pb = hdr;
 }
 
 //
@@ -250,6 +253,8 @@ vscr_ratchet_message_cleanup_ctx(vscr_ratchet_message_t *self) {
     if (msg && msg->cipher_text.arg) {
         vsc_buffer_destroy((vsc_buffer_t **)&msg->cipher_text.arg);
     }
+
+    vscr_dealloc(self->header_pb);
 }
 
 //

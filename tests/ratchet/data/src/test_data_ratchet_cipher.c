@@ -165,7 +165,7 @@ const byte test_data_ratchet_cipher_plain_text_BYTES[] = {
         0x0c, 0xc3, 0x46, 0x8c, 0xf4, 0x82, 0x68, 0xcb,
 };
 
-const size_t test_data_ratchet_cipher_cipher_text_len = 1152;
+const size_t test_data_ratchet_cipher_cipher_text_len = 1056;
 
 const byte test_data_ratchet_cipher_cipher_text_BYTES[] = {
         0xCD, 0x0E, 0x23, 0x29, 0x86, 0x80, 0x08, 0xCD,

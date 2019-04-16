@@ -35,6 +35,7 @@
 #define UNITY_BEGIN() UnityBegin(__FILENAME__)
 
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
+#include <virgil/crypto/ratchet/vscr_memory.h>
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "unity.h"
@@ -65,10 +66,9 @@ int suiteTearDown(int num_failures) { return num_failures; }
 static bool
 reg_msg_cmp(RegularGroupMessage *msg1, RegularGroupMessage *msg2) {
 
-    return msg1->version == msg2->version && msg1->counter == msg2->counter &&
-           memcmp(msg1->sender_id, msg2->sender_id, sizeof(msg1->sender_id)) == 0 &&
-           memcmp(msg1->signature, msg2->signature, sizeof(msg1->signature)) == 0 &&
+    return msg1->version == msg2->version &&
            vsc_buffer_len(msg1->cipher_text.arg) == vsc_buffer_len(msg2->cipher_text.arg) &&
+           memcmp(&msg1->header, &msg2->header, sizeof(msg1->header)) == 0 &&
            memcmp(vsc_buffer_bytes(msg1->cipher_text.arg), vsc_buffer_bytes(msg2->cipher_text.arg),
                    vsc_buffer_len(msg1->cipher_text.arg)) == 0;
 }
@@ -116,14 +116,22 @@ void
 test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
     vscr_ratchet_group_message_t *msg1 = vscr_ratchet_group_message_new();
 
-    msg1->message_pb.has_regular_message = true;
+    vscr_ratchet_group_message_set_type(msg1, vscr_group_msg_type_REGULAR);
+
     msg1->message_pb.version = 5;
     msg1->message_pb.regular_message.version = 11;
-    msg1->message_pb.regular_message.counter = 17;
+    msg1->header_pb->version = 3;
+    msg1->header_pb->counter = 17;
+    msg1->header_pb->prev_epoch_msgs = 24;
+    msg1->header_pb->epoch = 3;
 
-    memcpy(msg1->message_pb.regular_message.signature, test_data_ratchet_group_message_signature.bytes,
+    memcpy(msg1->header_pb->commitment, test_data_ratchet_group_message_commitment.bytes,
+            test_data_ratchet_group_message_commitment.len);
+    memcpy(msg1->header_pb->session_id, test_data_ratchet_group_message_id.bytes,
+            test_data_ratchet_group_message_id.len);
+    memcpy(msg1->header_pb->signature, test_data_ratchet_group_message_signature.bytes,
             test_data_ratchet_group_message_signature.len);
-    memcpy(msg1->message_pb.regular_message.sender_id, test_data_ratchet_group_message_sender_id.bytes,
+    memcpy(msg1->header_pb->sender_id, test_data_ratchet_group_message_sender_id.bytes,
             test_data_ratchet_group_message_sender_id.len);
     msg1->message_pb.regular_message.cipher_text.arg = vsc_buffer_new_with_data(test_data_ratchet_group_message_data);
 
@@ -149,7 +157,8 @@ void
 test__serialize_deserialize__fixed_group_info_msg__should_be_equal(void) {
     vscr_ratchet_group_message_t *msg1 = vscr_ratchet_group_message_new();
 
-    msg1->message_pb.has_group_info = true;
+    vscr_ratchet_group_message_set_type(msg1, vscr_group_msg_type_EPOCH_CHANGE);
+
     msg1->message_pb.version = 5;
     msg1->message_pb.group_info.version = 11;
     msg1->message_pb.group_info.participants_count = 2;
@@ -194,9 +203,10 @@ test__serialize_deserialize__group_info_overflow__should_be_equal(void) {
 
     vscr_ratchet_group_message_t *msg1 = vscr_ratchet_group_message_new();
 
+    vscr_ratchet_group_message_set_type(msg1, vscr_group_msg_type_EPOCH_CHANGE);
+
     size_t number_of_participants = vscr_ratchet_common_MAX_PARTICIPANTS_COUNT;
 
-    msg1->message_pb.has_group_info = true;
     msg1->message_pb.group_info.participants_count = number_of_participants;
 
     for (size_t i = 0; i < number_of_participants; i++) {
@@ -230,14 +240,22 @@ void
 test__serialize_deserialize__regular_overflow__should_be_equal(void) {
     vscr_ratchet_group_message_t *msg1 = vscr_ratchet_group_message_new();
 
-    msg1->message_pb.has_regular_message = true;
+    vscr_ratchet_group_message_set_type(msg1, vscr_group_msg_type_REGULAR);
+
     msg1->message_pb.version = 5;
     msg1->message_pb.regular_message.version = 11;
-    msg1->message_pb.regular_message.counter = 17;
+    msg1->header_pb->version = 3;
+    msg1->header_pb->counter = 17;
+    msg1->header_pb->prev_epoch_msgs = 24;
+    msg1->header_pb->epoch = 3;
 
-    memcpy(msg1->message_pb.regular_message.signature, test_data_ratchet_group_message_signature.bytes,
+    memcpy(msg1->header_pb->commitment, test_data_ratchet_group_message_commitment.bytes,
+            test_data_ratchet_group_message_commitment.len);
+    memcpy(msg1->header_pb->session_id, test_data_ratchet_group_message_id.bytes,
+            test_data_ratchet_group_message_id.len);
+    memcpy(msg1->header_pb->signature, test_data_ratchet_group_message_signature.bytes,
             test_data_ratchet_group_message_signature.len);
-    memcpy(msg1->message_pb.regular_message.sender_id, test_data_ratchet_group_message_sender_id.bytes,
+    memcpy(msg1->header_pb->sender_id, test_data_ratchet_group_message_sender_id.bytes,
             test_data_ratchet_group_message_sender_id.len);
 
     vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);

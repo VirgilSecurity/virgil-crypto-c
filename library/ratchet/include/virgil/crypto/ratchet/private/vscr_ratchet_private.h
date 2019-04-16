@@ -58,6 +58,7 @@
 #include "vscr_ratchet_group_message_defs.h"
 #include "vscr_ratchet_group_ticket_defs.h"
 #include "vscr_ratchet_message_defs.h"
+#include "vscr_ratchet_padding.h"
 
 // clang-format on
 //  @end
