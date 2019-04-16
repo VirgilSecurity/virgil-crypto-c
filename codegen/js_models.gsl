@@ -72,11 +72,13 @@ endfunction
 
 function js_append_js_implementation_resolver_module_model(parent, wrapper_project, name)
   new js_implementation_resolver_module to my.parent
+    js_implementation_resolver_module.js_name = "$(my.name:pascal)"
     js_implementation_resolver_module.cpp_name = "$(my.name:pascal)"
     new js_cpp_name to js_implementation_resolver_module
       js_cpp_name.name = js_implementation_resolver_module.cpp_name
       js_cpp_name.uid = make_id("js", "implementation resolver", "module", "cpp name")
     endnew
+    js_implementation_resolver_module.umbrella_js_source = make_ref_js(make_id("umbrella", "module", "js source"))
     js_implementation_resolver_module.cpp_umbrella_header = make_ref_js(make_id("umbrella", "module", "cpp header"))
     js_implementation_resolver_module.cpp_header_guard = js_cpp_header_guard(my.name)
     js_implementation_resolver_module.cpp_resolve_implementation_method_name = "ResolveImplementation"
@@ -84,11 +86,13 @@ function js_append_js_implementation_resolver_module_model(parent, wrapper_proje
     js_implementation_resolver_module.c_implementation_type = make_ref_c(make_id("class", "impl", "struct", "impl"))
     js_implementation_resolver_module.c_method_tag = make_ref_c(make_id("class", "impl", "method", "tag"))
     js_implementation_resolver_module.method_name = "resolve implementation"
+    js_implementation_resolver_module.js_method_name = "$(js_implementation_resolver_module.method_name:camel)"
     js_implementation_resolver_module.cpp_method_name = "$(js_implementation_resolver_module.method_name:pascal)"
     new js_cpp_method_name to js_implementation_resolver_module
       js_cpp_method_name.name = js_implementation_resolver_module.cpp_method_name
       js_cpp_method_name.uid = make_id("js", "implementation resolver", "module", "cpp method name")
     endnew
+    js_implementation_resolver_module.js_method_parameter_name = "binding"
     js_implementation_resolver_module.cpp_method_parameter_name = "implementation"
     new js_cpp_header to js_implementation_resolver_module
       js_cpp_header.name = "$(my.name:c).h"
@@ -98,6 +102,11 @@ function js_append_js_implementation_resolver_module_model(parent, wrapper_proje
     new js_cpp_source to js_implementation_resolver_module
       js_cpp_source.name = "$(my.name:c).cc"
       js_cpp_source.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_source.name)
+    endnew
+    new js_source to js_implementation_resolver_module
+      js_source.name = "$(my.name:cobol).js"
+      js_source.uid = make_id("js", "implementation resolver", "module", "js source")
+      js_source.path = cat_path(my.wrapper_project.project_source_dir, js_source.name)
     endnew
     return js_implementation_resolver_module
   endnew
