@@ -265,7 +265,7 @@ import VSCFoundation
     }
 
     /// Encrypt given data.
-    /// If 'tag' is not give, then it will written to the 'enc'.
+    /// If 'tag' is not given, then it will written to the 'enc'.
     @objc public func authEncrypt(data: Data, authData: Data) throws -> AuthEncryptAuthEncryptResult {
         let outCount = self.authEncryptedLen(dataLen: data.count)
         var out = Data(count: outCount)
@@ -312,7 +312,7 @@ import VSCFoundation
     }
 
     /// Decrypt given data.
-    /// If 'tag' is not give, then it will be taken from the 'enc'.
+    /// If 'tag' is not given, then it will be taken from the 'enc'.
     @objc public func authDecrypt(data: Data, authData: Data, tag: Data) throws -> Data {
         let outCount = self.authDecryptedLen(dataLen: data.count)
         var out = Data(count: outCount)
