@@ -771,9 +771,15 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     msg->message_pb.regular_message.cipher_text.arg =
             vsc_buffer_new_with_capacity(vscr_ratchet_cipher_encrypt_len(self->cipher, plain_text.len));
 
+    pb_ostream_t ostream = pb_ostream_from_buffer(
+            msg->message_pb.regular_message.header, sizeof(msg->message_pb.regular_message.header));
+
+    VSCR_ASSERT(pb_encode(&ostream, RegularGroupMessageHeader_fields, msg->header_pb));
+
     vscr_status_t status =
             vscr_ratchet_cipher_encrypt(self->cipher, vsc_data(message_key->key, sizeof(message_key->key)), plain_text,
-                    /* FIXME */ vsc_data_empty(), msg->message_pb.regular_message.cipher_text.arg);
+                    vsc_data(msg->message_pb.regular_message.header, sizeof(msg->message_pb.regular_message.header)),
+                    msg->message_pb.regular_message.cipher_text.arg);
 
     if (status != vscr_status_SUCCESS) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_SESSION_IS_NOT_INITIALIZED);
@@ -863,7 +869,8 @@ vscr_ratchet_group_session_decrypt(
         } else {
             vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher,
                     vsc_data(skipped_message_key->key, sizeof(skipped_message_key->key)),
-                    vsc_buffer_data(group_message->cipher_text.arg), /* FIXME */ vsc_data_empty(), plain_text);
+                    vsc_buffer_data(group_message->cipher_text.arg),
+                    vsc_data(group_message->header, sizeof(group_message->header)), plain_text);
 
             if (result != vscr_status_SUCCESS) {
                 return result;
@@ -889,9 +896,9 @@ vscr_ratchet_group_session_decrypt(
 
     vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(new_chain_key);
 
-    vscr_status_t result =
-            vscr_ratchet_cipher_decrypt(self->cipher, vsc_data(message_key->key, sizeof(message_key->key)),
-                    vsc_buffer_data(group_message->cipher_text.arg), /* FIXME */ vsc_data_empty(), plain_text);
+    vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher,
+            vsc_data(message_key->key, sizeof(message_key->key)), vsc_buffer_data(group_message->cipher_text.arg),
+            vsc_data(group_message->header, sizeof(group_message->header)), plain_text);
 
     if (result != vscr_status_SUCCESS) {
         goto err;

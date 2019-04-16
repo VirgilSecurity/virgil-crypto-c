@@ -430,15 +430,6 @@ vscr_ratchet_group_message_serialize(vscr_ratchet_group_message_t *self, vsc_buf
     VSCR_ASSERT(self->message_pb.has_group_info != self->message_pb.has_regular_message);
     VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_group_message_serialize_len(self));
 
-    if (self->message_pb.has_regular_message) {
-        VSCR_ASSERT_PTR(self->header_pb);
-
-        pb_ostream_t sub_ostream = pb_ostream_from_buffer(
-                self->message_pb.regular_message.header, sizeof(self->message_pb.regular_message.header));
-
-        VSCR_ASSERT(pb_encode(&sub_ostream, RegularGroupMessageHeader_fields, self->header_pb));
-    }
-
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_unused_len(output));
 
     vscr_ratchet_group_message_set_pb_encode_callback(self);

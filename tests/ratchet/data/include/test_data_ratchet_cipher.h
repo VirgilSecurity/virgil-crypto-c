@@ -38,6 +38,7 @@
 #include "vsc_data.h"
 
 extern const vsc_data_t test_data_ratchet_cipher_plain_text;
+extern const vsc_data_t test_data_ratchet_cipher_add_data;
 extern const size_t test_data_ratchet_cipher_cipher_text_len;
 extern const vsc_data_t test_data_ratchet_cipher_cipher_text;
 extern const vsc_data_t test_data_ratchet_cipher_key;
