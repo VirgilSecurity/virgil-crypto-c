@@ -419,9 +419,9 @@ vscf_aes256_gcm_auth_encrypt(
     VSCF_ASSERT(vsc_buffer_is_valid(out));
 
     if (NULL == tag) {
-        VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_encrypted_len(self, data.len));
-    } else {
         VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_auth_encrypted_len(self, data.len));
+    } else {
+        VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_encrypted_len(self, data.len));
         VSCF_ASSERT(vsc_buffer_is_valid(tag));
         VSCF_ASSERT(vsc_buffer_unused_len(tag) >= vscf_aes256_gcm_AUTH_TAG_LEN);
     }
