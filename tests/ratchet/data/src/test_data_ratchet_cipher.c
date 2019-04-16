@@ -172,7 +172,7 @@ const byte test_data_ratchet_cipher_add_data_BYTES[] = {
         0x4c, 0x68, 0xa0, 0x2d, 0xa8, 0x9c, 0xf8, 0x87,
 };
 
-const size_t test_data_ratchet_cipher_cipher_text_len = 1040;
+const size_t test_data_ratchet_cipher_cipher_text_len = 1056;
 
 const byte test_data_ratchet_cipher_cipher_text_BYTES[] = {
         0xD9, 0xDC, 0x9D, 0x6D, 0xED, 0xDA, 0x7B, 0x15,
