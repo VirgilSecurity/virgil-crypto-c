@@ -2,10 +2,6 @@
 
 gsl from "common.gsl"
 
-# --------------------------------------------------------------------------------------------------
-# General
-# --------------------------------------------------------------------------------------------------
-
 global.js_indent_size = 2
 
 function js_out(str, indent_level, indent_size)
@@ -117,10 +113,6 @@ function js_get_project_uid(argument)
   return my.project_uid
 endfunction
 
-# --------------------------------------------------------------------------------------------------
-# JavaScript
-# --------------------------------------------------------------------------------------------------
-
 global.js_binding_property_name = "binding"
 
 function js_constant_is_private(constant)
@@ -134,10 +126,6 @@ endfunction
 function js_binding_method_name(method)
   return "$(my.method.name:Camel)"
 endfunction
-
-# --------------------------------------------------------------------------------------------------
-# C++
-# --------------------------------------------------------------------------------------------------
 
 global.js_js_umbrella_module = "umbrella"
 

@@ -54,23 +54,8 @@ function js_create_enum_module(source, wrapper_project, meta)
   endif
 endfunction
 
-/* function js_module_resolve_uids(js_component, parent_uid)
-  if defined(my.parent_uid) & string.prefixed(my.parent_uid, "js_module")
-    my.parent_uid = # Undefined
-  endif
-  my.component_name = name(my.js_component)
-  if defined(my.parent_uid) & string.prefixed(my.component_name, "js_")
-    regexp.match("js_(.+)", my.component_name, my.component_name)
-  endif
-  my.js_component.uid = make_id(my.parent_uid, my.component_name, my.js_component.name)
-  for my.js_component. as inner_component where is_item(inner_component) & defined(inner_component.name)
-    js_module_resolve_uids(inner_component, my.js_component.uid)
-  endfor
-endfunction */
-
 function js_module_resolve(source, wrapper_project)
   echo_info("Resolve module: $(my.source.name:no)", my)
-  /* js_module_resolve_uids(my.source) */
 endfunction
 
 function js_generate_project(wrapper_project)
