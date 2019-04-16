@@ -756,7 +756,7 @@ remove_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t remove_size, vsc
 
         if (remove) {
             vscr_status_t status =
-                    vscr_ratchet_group_ticket_remove_participant(ticket, vscr_ratchet_group_session_get_id(session));
+                    vscr_ratchet_group_ticket_remove_participant(ticket, vscr_ratchet_group_session_get_my_id(session));
             TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
             vscr_ratchet_group_session_destroy(&session);
         } else {

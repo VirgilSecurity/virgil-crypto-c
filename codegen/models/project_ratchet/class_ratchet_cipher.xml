@@ -31,6 +31,7 @@
     <method name="encrypt">
         <argument name="key" class="data"/>
         <argument name="plain text" class="data"/>
+        <argument name="additional data" class="data"/>
 
         <argument name="buffer" class="buffer">
             <length method="encrypt len">
@@ -44,6 +45,7 @@
     <method name="decrypt">
         <argument name="key" class="data"/>
         <argument name="cipher text" class="data"/>
+        <argument name="additional data" class="data"/>
 
         <argument name="buffer" class="buffer">
             <length method="decrypt len">

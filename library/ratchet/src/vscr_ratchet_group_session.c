@@ -773,7 +773,7 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
 
     vscr_status_t status =
             vscr_ratchet_cipher_encrypt(self->cipher, vsc_data(message_key->key, sizeof(message_key->key)), plain_text,
-                    msg->message_pb.regular_message.cipher_text.arg);
+                    /* FIXME */ vsc_data_empty(), msg->message_pb.regular_message.cipher_text.arg);
 
     if (status != vscr_status_SUCCESS) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_SESSION_IS_NOT_INITIALIZED);
@@ -863,7 +863,7 @@ vscr_ratchet_group_session_decrypt(
         } else {
             vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher,
                     vsc_data(skipped_message_key->key, sizeof(skipped_message_key->key)),
-                    vsc_buffer_data(group_message->cipher_text.arg), plain_text);
+                    vsc_buffer_data(group_message->cipher_text.arg), /* FIXME */ vsc_data_empty(), plain_text);
 
             if (result != vscr_status_SUCCESS) {
                 return result;
@@ -891,7 +891,7 @@ vscr_ratchet_group_session_decrypt(
 
     vscr_status_t result =
             vscr_ratchet_cipher_decrypt(self->cipher, vsc_data(message_key->key, sizeof(message_key->key)),
-                    vsc_buffer_data(group_message->cipher_text.arg), plain_text);
+                    vsc_buffer_data(group_message->cipher_text.arg), /* FIXME */ vsc_data_empty(), plain_text);
 
     if (result != vscr_status_SUCCESS) {
         goto err;
