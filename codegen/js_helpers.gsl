@@ -139,6 +139,8 @@ endfunction
 # C++
 # --------------------------------------------------------------------------------------------------
 
+global.js_js_umbrella_module = "umbrella"
+
 global.js_project_require_type_library = "js_require_library"
 global.js_project_require_type_relative = "js_require_relative"
 

@@ -47,6 +47,11 @@ function js_append_js_umbrella_module_model(parent, wrapper_project, project, na
       js_cpp_header.uid = make_id("js", "umbrella", "module", "cpp header")
       js_cpp_header.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_header.name)
     endnew
+    new js_source to js_umbrella_module
+      js_source.name = "$(my.name:cobol).js"
+      js_source.uid = make_id("js", "umbrella", "module", "js source")
+      js_source.path = cat_path(my.wrapper_project.project_source_dir, js_source.name)
+    endnew
     for my.project.require where defined(require.project) & require.project <> "common"
       new js_project_require to js_umbrella_module
         js_project_require.type = global.js_project_require_type_library
@@ -55,8 +60,10 @@ function js_append_js_umbrella_module_model(parent, wrapper_project, project, na
       endnew
       new js_project_require to js_umbrella_module
         js_project_require.type = global.js_project_require_type_relative
-        js_project_require.cpp_dir = cat_path("..", require.project)
-        js_project_require.cpp_umbrella_header = make_ref_js(make_id("project", require.project, "umbrella", "module", "cpp header"))
+        js_project_require.js_project_name = "$(require.project:camel)"
+        js_project_require.project_dir = cat_path("..", require.project)
+        js_project_require.umbrella_js_source = make_ref_js(make_id("project", require.project, "umbrella", "module", "js source"))
+        js_project_require.umbrella_cpp_header = make_ref_js(make_id("project", require.project, "umbrella", "module", "cpp header"))
       endnew
     endfor
     new js_project_require to js_umbrella_module
@@ -173,6 +180,7 @@ function js_append_js_class_module_model(parent, source, wrapper_project, meta)
       js_cpp_name.name = js_class_module.cpp_name
       js_cpp_name.uid = make_id("js", "class", "module", my.source.name, "cpp name")
     endnew
+    js_class_module.umbrella_js_source = make_ref_js(make_id("umbrella", "module", "js source"))
     js_class_module.cpp_umbrella_header = make_ref_js(make_id("umbrella", "module", "cpp header"))
     js_class_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
     js_class_module.instance_name = "$(my.source.name:c)_instance"
