@@ -19,11 +19,10 @@ message PrekeyMessage {
     required bytes sender_ephemeral_key = 3;
     required bytes receiver_long_term_key = 4;
     optional bytes receiver_one_time_key = 5;
-    required RegularMessage regular_message = 6;
 }
 
 message Message {
     required uint32 version = 1;
-    optional RegularMessage regular_message = 2;
+    required RegularMessage regular_message = 2;
     optional PrekeyMessage prekey_message = 3;
 }

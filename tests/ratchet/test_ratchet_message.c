@@ -34,13 +34,13 @@
 
 #define UNITY_BEGIN() UnityBegin(__FILENAME__)
 
-#include <virgil/crypto/ratchet/private/vscr_ratchet_common_hidden.h>
 #include "unity.h"
 #include "test_utils.h"
 
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
+#include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_message_defs.h"
 #include "vscr_ratchet_message.h"
 #include "test_data_ratchet_message.h"
@@ -66,33 +66,27 @@ prekey_msg_cmp(PrekeyMessage *msg1, PrekeyMessage *msg2) {
            memcmp(msg1->sender_ephemeral_key, msg2->sender_ephemeral_key, sizeof(msg1->sender_ephemeral_key)) == 0 &&
            memcmp(msg1->receiver_long_term_key, msg2->receiver_long_term_key, sizeof(msg1->receiver_long_term_key)) ==
                    0 &&
-           memcmp(msg1->receiver_one_time_key, msg2->receiver_one_time_key, sizeof(msg1->receiver_one_time_key)) == 0 &&
-           reg_msg_cmp(&msg1->regular_message, &msg2->regular_message);
+           memcmp(msg1->receiver_one_time_key, msg2->receiver_one_time_key, sizeof(msg1->receiver_one_time_key)) == 0;
 }
 
 static bool
 msg_cmp(vscr_ratchet_message_t *msg1, vscr_ratchet_message_t *msg2) {
     if (msg1->message_pb.version != msg2->message_pb.version ||
-            msg1->message_pb.has_prekey_message != msg2->message_pb.has_prekey_message ||
-            msg1->message_pb.has_regular_message != msg2->message_pb.has_regular_message)
+            msg1->message_pb.has_prekey_message != msg2->message_pb.has_prekey_message)
         return false;
 
-    if (msg1->message_pb.has_regular_message) {
-        return reg_msg_cmp(&msg1->message_pb.regular_message, &msg2->message_pb.regular_message);
-    } else if (msg1->message_pb.has_prekey_message) {
-        return prekey_msg_cmp(&msg1->message_pb.prekey_message, &msg2->message_pb.prekey_message);
-    } else {
-        TEST_ASSERT(false);
+    if (!reg_msg_cmp(&msg1->message_pb.regular_message, &msg2->message_pb.regular_message)) {
+        return false;
     }
 
-    return false;
+    return prekey_msg_cmp(&msg1->message_pb.prekey_message, &msg2->message_pb.prekey_message);
 }
 
 void
 test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
     vscr_ratchet_message_t *msg1 = vscr_ratchet_message_new();
 
-    msg1->message_pb.has_regular_message = true;
+    msg1->message_pb.has_prekey_message = false;
     msg1->message_pb.version = 5;
     msg1->message_pb.regular_message.version = 11;
     msg1->header_pb->counter = 17;
@@ -126,7 +120,7 @@ test__serialize_deserialize__fixed_prekey_msg__should_be_equal(void) {
     msg1->message_pb.has_prekey_message = true;
     msg1->message_pb.version = 5;
     msg1->message_pb.prekey_message.version = 11;
-    msg1->message_pb.prekey_message.regular_message.version = 10;
+    msg1->message_pb.regular_message.version = 10;
     msg1->header_pb->counter = 17;
 
     memcpy(msg1->message_pb.prekey_message.receiver_one_time_key, test_data_ratchet_message_raw_key1.bytes,
@@ -144,8 +138,7 @@ test__serialize_deserialize__fixed_prekey_msg__should_be_equal(void) {
 
     memcpy(msg1->header_pb->public_key, test_data_ratchet_message_raw_key5.bytes,
             test_data_ratchet_message_raw_key5.len);
-    msg1->message_pb.prekey_message.regular_message.cipher_text.arg =
-            vsc_buffer_new_with_data(test_data_ratchet_message_data);
+    msg1->message_pb.regular_message.cipher_text.arg = vsc_buffer_new_with_data(test_data_ratchet_message_data);
 
     size_t len = vscr_ratchet_message_serialize_len(msg1);
     vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);
@@ -172,7 +165,7 @@ test__serialize_deserialize__fixed_prekey_msg_no_one_time__should_be_equal(void)
     msg1->message_pb.has_prekey_message = true;
     msg1->message_pb.version = 5;
     msg1->message_pb.prekey_message.version = 11;
-    msg1->message_pb.prekey_message.regular_message.version = 10;
+    msg1->message_pb.regular_message.version = 10;
     msg1->header_pb->counter = 17;
 
     msg1->message_pb.prekey_message.has_receiver_one_time_key = false;
@@ -188,8 +181,7 @@ test__serialize_deserialize__fixed_prekey_msg_no_one_time__should_be_equal(void)
 
     memcpy(msg1->header_pb->public_key, test_data_ratchet_message_raw_key4.bytes,
             test_data_ratchet_message_raw_key4.len);
-    msg1->message_pb.prekey_message.regular_message.cipher_text.arg =
-            vsc_buffer_new_with_data(test_data_ratchet_message_data);
+    msg1->message_pb.regular_message.cipher_text.arg = vsc_buffer_new_with_data(test_data_ratchet_message_data);
 
     size_t len = vscr_ratchet_message_serialize_len(msg1);
     vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);
@@ -216,7 +208,7 @@ test__methods__fixed_prekey_msg__should_return_correct_values(void) {
     msg1->message_pb.has_prekey_message = true;
     msg1->message_pb.version = 5;
     msg1->message_pb.prekey_message.version = 11;
-    msg1->message_pb.prekey_message.regular_message.version = 10;
+    msg1->message_pb.regular_message.version = 10;
     msg1->header_pb->counter = 17;
 
     memcpy(msg1->message_pb.prekey_message.receiver_one_time_key, test_data_ratchet_message_raw_key1.bytes,
@@ -234,8 +226,7 @@ test__methods__fixed_prekey_msg__should_return_correct_values(void) {
 
     memcpy(msg1->header_pb->public_key, test_data_ratchet_message_raw_key5.bytes,
             test_data_ratchet_message_raw_key5.len);
-    msg1->message_pb.prekey_message.regular_message.cipher_text.arg =
-            vsc_buffer_new_with_data(test_data_ratchet_message_data);
+    msg1->message_pb.regular_message.cipher_text.arg = vsc_buffer_new_with_data(test_data_ratchet_message_data);
 
     TEST_ASSERT_EQUAL(vscr_msg_type_PREKEY, vscr_ratchet_message_get_type(msg1));
 
@@ -252,7 +243,7 @@ test__methods__fixed_prekey_msg_no_one_time__should_return_correct_values(void) 
     msg1->message_pb.has_prekey_message = true;
     msg1->message_pb.version = 5;
     msg1->message_pb.prekey_message.version = 11;
-    msg1->message_pb.prekey_message.regular_message.version = 10;
+    msg1->message_pb.regular_message.version = 10;
     msg1->header_pb->counter = 17;
 
     msg1->message_pb.prekey_message.has_receiver_one_time_key = false;
@@ -268,8 +259,7 @@ test__methods__fixed_prekey_msg_no_one_time__should_return_correct_values(void) 
 
     memcpy(msg1->header_pb->public_key, test_data_ratchet_message_raw_key4.bytes,
             test_data_ratchet_message_raw_key4.len);
-    msg1->message_pb.prekey_message.regular_message.cipher_text.arg =
-            vsc_buffer_new_with_data(test_data_ratchet_message_data);
+    msg1->message_pb.regular_message.cipher_text.arg = vsc_buffer_new_with_data(test_data_ratchet_message_data);
 
     TEST_ASSERT_EQUAL(vscr_msg_type_PREKEY, vscr_ratchet_message_get_type(msg1));
 
@@ -284,7 +274,7 @@ void
 test__methods__fixed_regular_msg__should_return_correct_values(void) {
     vscr_ratchet_message_t *msg1 = vscr_ratchet_message_new();
 
-    msg1->message_pb.has_regular_message = true;
+    msg1->message_pb.has_prekey_message = false;
     msg1->message_pb.version = 5;
     msg1->message_pb.regular_message.version = 11;
     msg1->header_pb->counter = 17;
@@ -310,7 +300,7 @@ test__serialize_deserialize__prekey_msg_overflow__should_be_equal(void) {
     vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
     vsc_buffer_inc_used(cipher_text, vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
 
-    msg1->message_pb.prekey_message.regular_message.cipher_text.arg = cipher_text;
+    msg1->message_pb.regular_message.cipher_text.arg = cipher_text;
 
     size_t len = vscr_ratchet_message_serialize_len(msg1);
     vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);
@@ -334,7 +324,7 @@ void
 test__serialize_deserialize__regular_msg_overflow__should_be_equal(void) {
     vscr_ratchet_message_t *msg1 = vscr_ratchet_message_new();
 
-    msg1->message_pb.has_regular_message = true;
+    msg1->message_pb.has_prekey_message = false;
 
     vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
     vsc_buffer_inc_used(cipher_text, vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);

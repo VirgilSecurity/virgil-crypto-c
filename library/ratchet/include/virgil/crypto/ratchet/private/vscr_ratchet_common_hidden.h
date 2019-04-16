@@ -82,7 +82,7 @@ enum {
     vscr_ratchet_common_hidden_MAX_MESSAGE_GAP = 2000,
     vscr_ratchet_common_hidden_SIGNATURE_LEN = 64,
     vscr_ratchet_common_hidden_MAX_REGULAR_MESSAGE_LEN = 32834,
-    vscr_ratchet_common_hidden_MAX_PREKEY_MESSAGE_LEN = 32976,
+    vscr_ratchet_common_hidden_MAX_PREKEY_MESSAGE_LEN = 32975,
     vscr_ratchet_common_hidden_MAX_GROUP_REGULAR_MESSAGE_LEN = 32975,
     vscr_ratchet_common_hidden_MAX_GROUP_INFO_MESSAGE_LEN = 10811,
     vscr_ratchet_common_hidden_PARTICIPANT_LEN = 108,

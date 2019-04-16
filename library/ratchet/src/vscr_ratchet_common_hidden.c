@@ -80,6 +80,7 @@ vscr_ratchet_common_hidden_buffer_decode_callback(
         return false;
 
     *arg = vsc_buffer_new_with_data(vsc_data(stream->state, stream->bytes_left));
+    stream->state = (byte *)stream->state + stream->bytes_left;
     stream->bytes_left = 0;
 
     return true;

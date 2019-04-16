@@ -11,7 +11,7 @@
     <constant name="signature len" value="64"/>
 
     <constant name="max regular message len" value="32834"/>
-    <constant name="max prekey message len" value="32976"/>
+    <constant name="max prekey message len" value="32975"/>
 
     <constant name="max group regular message len" value="32975"/>
     <constant name="max group info message len" value="10811"/>

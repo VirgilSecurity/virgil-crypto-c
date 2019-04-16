@@ -622,8 +622,8 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_ide
         goto x3dh_err;
     }
 
-    status = vscr_ratchet_respond(self->ratchet, vsc_buffer_data(shared_secret),
-            &message->message_pb.prekey_message.regular_message, message->header_pb);
+    status = vscr_ratchet_respond(
+            self->ratchet, vsc_buffer_data(shared_secret), &message->message_pb.regular_message, message->header_pb);
 
     self->is_initiator = false;
 
@@ -697,15 +697,13 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *self, vsc_data_t plain_text
 
     ratchet_message = vscr_ratchet_message_new();
     ratchet_message->message_pb.version = vscr_ratchet_common_hidden_RATCHET_MESSAGE_VERSION;
-    RegularMessage *regular_message;
+    RegularMessage *regular_message = &ratchet_message->message_pb.regular_message;
 
     if (self->received_first_response || !self->is_initiator) {
-        ratchet_message->message_pb.has_regular_message = true;
-        regular_message = &ratchet_message->message_pb.regular_message;
+        ratchet_message->message_pb.has_prekey_message = false;
     } else {
         ratchet_message->message_pb.has_prekey_message = true;
         PrekeyMessage *prekey_message = &ratchet_message->message_pb.prekey_message;
-        regular_message = &prekey_message->regular_message;
 
         prekey_message->version = vscr_ratchet_common_hidden_RATCHET_PROTOCOL_VERSION;
 
@@ -754,13 +752,7 @@ vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *self, const vscr_ratche
     VSCR_ASSERT_PTR(self->ratchet);
     VSCR_ASSERT_PTR(message);
 
-    size_t cipher_text_len = 0;
-
-    if (message->message_pb.has_regular_message) {
-        cipher_text_len = vsc_buffer_len(message->message_pb.regular_message.cipher_text.arg);
-    } else if (message->message_pb.has_prekey_message) {
-        cipher_text_len = vsc_buffer_len(message->message_pb.prekey_message.regular_message.cipher_text.arg);
-    }
+    size_t cipher_text_len = vsc_buffer_len(message->message_pb.regular_message.cipher_text.arg);
 
     VSCR_ASSERT(cipher_text_len <= vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
 
@@ -783,16 +775,11 @@ vscr_ratchet_session_decrypt(
 
     // TODO: Enhance old chains removal
 
-    const RegularMessage *regular_message = NULL;
+    const RegularMessage *regular_message = &message->message_pb.regular_message;
+    ;
 
-    if (message->message_pb.has_regular_message) {
-        regular_message = &message->message_pb.regular_message;
-    } else if (message->message_pb.has_prekey_message) {
-        if (self->is_initiator) {
-            return vscr_status_ERROR_BAD_MESSAGE_TYPE;
-        }
-
-        regular_message = &message->message_pb.prekey_message.regular_message;
+    if (message->message_pb.has_prekey_message && self->is_initiator) {
+        return vscr_status_ERROR_BAD_MESSAGE_TYPE;
     }
 
     VSCR_ASSERT(vsc_buffer_unused_len(plain_text) >= vscr_ratchet_session_decrypt_len(self, message));
