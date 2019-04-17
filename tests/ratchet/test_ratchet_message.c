@@ -61,8 +61,7 @@ reg_msg_cmp(RegularMessage *msg1, RegularMessage *msg2) {
 static bool
 prekey_msg_cmp(PrekeyMessage *msg1, PrekeyMessage *msg2) {
 
-    return msg1->version == msg2->version &&
-           memcmp(msg1->sender_identity_key, msg2->sender_identity_key, sizeof(msg1->sender_identity_key)) == 0 &&
+    return memcmp(msg1->sender_identity_key, msg2->sender_identity_key, sizeof(msg1->sender_identity_key)) == 0 &&
            memcmp(msg1->sender_ephemeral_key, msg2->sender_ephemeral_key, sizeof(msg1->sender_ephemeral_key)) == 0 &&
            memcmp(msg1->receiver_long_term_key, msg2->receiver_long_term_key, sizeof(msg1->receiver_long_term_key)) ==
                    0 &&
@@ -88,10 +87,9 @@ test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
 
     msg1->message_pb.has_prekey_message = false;
     msg1->message_pb.version = 5;
-    msg1->message_pb.regular_message.version = 11;
+    msg1->message_pb.version = 11;
 
     msg1->header_pb->counter = 17;
-    msg1->header_pb->version = 3;
     msg1->header_pb->prev_chain_count = 42;
     memcpy(msg1->header_pb->public_key, test_data_ratchet_message_raw_key1.bytes,
             test_data_ratchet_message_raw_key1.len);
@@ -126,8 +124,6 @@ test__serialize_deserialize__fixed_prekey_msg__should_be_equal(void) {
 
     msg1->message_pb.has_prekey_message = true;
     msg1->message_pb.version = 5;
-    msg1->message_pb.prekey_message.version = 11;
-    msg1->message_pb.regular_message.version = 10;
 
     memcpy(msg1->message_pb.prekey_message.receiver_one_time_key, test_data_ratchet_message_raw_key1.bytes,
             test_data_ratchet_message_raw_key1.len);
@@ -176,8 +172,6 @@ test__serialize_deserialize__fixed_prekey_msg_no_one_time__should_be_equal(void)
 
     msg1->message_pb.has_prekey_message = true;
     msg1->message_pb.version = 5;
-    msg1->message_pb.prekey_message.version = 11;
-    msg1->message_pb.regular_message.version = 10;
 
     msg1->message_pb.prekey_message.has_receiver_one_time_key = false;
 
@@ -224,8 +218,6 @@ test__methods__fixed_prekey_msg__should_return_correct_values(void) {
 
     msg1->message_pb.has_prekey_message = true;
     msg1->message_pb.version = 5;
-    msg1->message_pb.prekey_message.version = 11;
-    msg1->message_pb.regular_message.version = 10;
     msg1->header_pb->counter = 17;
 
     memcpy(msg1->message_pb.prekey_message.receiver_one_time_key, test_data_ratchet_message_raw_key1.bytes,
@@ -259,8 +251,6 @@ test__methods__fixed_prekey_msg_no_one_time__should_return_correct_values(void) 
 
     msg1->message_pb.has_prekey_message = true;
     msg1->message_pb.version = 5;
-    msg1->message_pb.prekey_message.version = 11;
-    msg1->message_pb.regular_message.version = 10;
     msg1->header_pb->counter = 17;
 
     msg1->message_pb.prekey_message.has_receiver_one_time_key = false;
@@ -293,7 +283,6 @@ test__methods__fixed_regular_msg__should_return_correct_values(void) {
 
     msg1->message_pb.has_prekey_message = false;
     msg1->message_pb.version = 5;
-    msg1->message_pb.regular_message.version = 11;
     msg1->header_pb->counter = 17;
 
     memcpy(msg1->header_pb->public_key, test_data_ratchet_message_raw_key1.bytes,
@@ -311,6 +300,7 @@ void
 test__serialize_deserialize__prekey_msg_overflow__should_be_equal(void) {
     vscr_ratchet_message_t *msg1 = vscr_ratchet_message_new();
 
+    msg1->message_pb.version = UINT32_MAX;
     msg1->message_pb.has_prekey_message = true;
     msg1->message_pb.prekey_message.has_receiver_one_time_key = true;
 
@@ -346,6 +336,7 @@ void
 test__serialize_deserialize__regular_msg_overflow__should_be_equal(void) {
     vscr_ratchet_message_t *msg1 = vscr_ratchet_message_new();
 
+    msg1->message_pb.version = UINT32_MAX;
     msg1->message_pb.has_prekey_message = false;
 
     vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);

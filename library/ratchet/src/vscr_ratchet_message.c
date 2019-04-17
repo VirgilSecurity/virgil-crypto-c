@@ -228,6 +228,7 @@ vscr_ratchet_message_init_ctx(vscr_ratchet_message_t *self) {
     RegularMessageHeader hdr = RegularMessageHeader_init_zero;
 
     self->message_pb = msg;
+    self->message_pb.version = vscr_ratchet_common_hidden_MESSAGE_VERSION;
     self->header_pb = vscr_alloc(sizeof(RegularMessageHeader));
     *self->header_pb = hdr;
 }
@@ -298,22 +299,13 @@ VSCR_PUBLIC size_t
 vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN >=
+                vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg));
 
-    if (self->message_pb.has_prekey_message) {
-        VSCR_ASSERT(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN >=
-                    vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg));
-        return vscr_ratchet_common_hidden_MAX_PREKEY_MESSAGE_LEN - vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN +
-               vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg);
-    } else {
-        VSCR_ASSERT(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN >=
-                    vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg));
-        return vscr_ratchet_common_hidden_MAX_REGULAR_MESSAGE_LEN - vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN +
-               vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg);
-    }
-
-    VSCR_ASSERT(false);
-
-    return 0;
+    return vscr_ratchet_common_MAX_MESSAGE_LEN -
+           (vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN -
+                   vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg)) -
+           (self->message_pb.has_prekey_message ? 0 : vscr_ratchet_common_hidden_PREKEY_MESSAGE_LEN);
 }
 
 //

@@ -120,9 +120,9 @@ struct vscr_ratchet_group_session_t {
 
     vscr_ratchet_group_participant_epoch_t *my_epoch;
 
-    byte my_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LEN];
+    byte my_public_key[vscr_ratchet_common_hidden_KEY_LEN];
 
-    byte my_private_key[vscr_ratchet_common_hidden_RATCHET_KEY_LEN];
+    byte my_private_key[vscr_ratchet_common_hidden_KEY_LEN];
 
     vscr_ratchet_group_participant_data_t **participants;
 
@@ -760,8 +760,6 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
 
     RegularGroupMessage *regular_message = &msg->message_pb.regular_message;
 
-    regular_message->version = 1;
-
     msg->header_pb->epoch = self->my_epoch->epoch;
 
     msg->header_pb->counter = self->my_epoch->chain_key->index;
@@ -984,6 +982,7 @@ vscr_ratchet_group_session_serialize(vscr_ratchet_group_session_t *self, vsc_buf
 
     GroupSession session_pb = GroupSession_init_zero;
 
+    session_pb.version = vscr_ratchet_common_hidden_GROUP_SESSION_VERSION;
     session_pb.participants_count = self->participants_count;
     session_pb.skipped_messages_count = self->participants_count;
     memcpy(session_pb.session_id, self->session_id, sizeof(session_pb.session_id));

@@ -43,13 +43,14 @@ message Ratchet {
 }
 
 message Session {
-	required bool received_first_response = 1;
-	required bool is_initiator = 2;
-	required bytes sender_identity_key = 3;
-	required bytes sender_ephemeral_key = 4;
-	required bytes receiver_long_term_key = 5;
-	optional bytes receiver_one_time_key = 6;
-	required Ratchet ratchet = 7;
+	required uint32 version = 1;
+	required bool received_first_response = 2;
+	required bool is_initiator = 3;
+	required bytes sender_identity_key = 4;
+	required bytes sender_ephemeral_key = 5;
+	required bytes receiver_long_term_key = 6;
+	optional bytes receiver_one_time_key = 7;
+	required Ratchet ratchet = 8;
 }
 
 message ParticipantEpoch {
@@ -74,9 +75,10 @@ message SkippedGroupMessagesRoot {
 }
 
 message GroupSession {
-	required ParticipantEpoch my_epoch = 1;
-	required bytes session_id = 2;
-	required bytes my_id = 3;
-	repeated ParticipantData participants = 4;
-	repeated SkippedGroupMessagesRoot skipped_messages = 5;
+	required uint32 version = 1;
+	required ParticipantEpoch my_epoch = 2;
+	required bytes session_id = 3;
+	required bytes my_id = 4;
+	repeated ParticipantData participants = 5;
+	repeated SkippedGroupMessagesRoot skipped_messages = 6;
 }

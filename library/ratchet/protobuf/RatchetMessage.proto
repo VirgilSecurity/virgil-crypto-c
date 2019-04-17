@@ -1,24 +1,21 @@
 syntax = "proto2";
 
 message RegularMessageHeader {
-    required uint32 version = 1;
-    required uint32 counter = 2;
-    required uint32 prev_chain_count = 3;
-    required bytes public_key = 4;
+    required uint32 counter = 1;
+    required uint32 prev_chain_count = 2;
+    required bytes public_key = 3;
 }
 
 message RegularMessage {
-    required uint32 version = 1;
-    required bytes header = 2;
-    required bytes cipher_text = 3;
+    required bytes header = 1;
+    required bytes cipher_text = 2;
 }
 
 message PrekeyMessage {
-    required uint32 version = 1;
-    required bytes sender_identity_key = 2;
-    required bytes sender_ephemeral_key = 3;
-    required bytes receiver_long_term_key = 4;
-    optional bytes receiver_one_time_key = 5;
+    required bytes sender_identity_key = 1;
+    required bytes sender_ephemeral_key = 2;
+    required bytes receiver_long_term_key = 3;
+    optional bytes receiver_one_time_key = 4;
 }
 
 message Message {

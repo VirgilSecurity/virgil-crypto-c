@@ -286,7 +286,7 @@ vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, vsc_data_t key) {
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->aes256_gcm);
 
-    VSCR_ASSERT(key.len == vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LEN);
+    VSCR_ASSERT(key.len == vscr_ratchet_common_hidden_SHARED_KEY_LEN);
 
     vscf_hkdf_t *hkdf = vscf_hkdf_new();
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));

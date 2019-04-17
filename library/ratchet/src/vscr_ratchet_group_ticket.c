@@ -396,10 +396,10 @@ vscr_ratchet_group_ticket_add_new_participant(
         goto err1;
     }
 
-    vsc_buffer_t *key = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LEN);
+    vsc_buffer_t *key = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_SHARED_KEY_LEN);
     vsc_buffer_make_secure(key);
 
-    vscf_status_t f_status = vscf_random(self->rng, vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LEN, key);
+    vscf_status_t f_status = vscf_random(self->rng, vscr_ratchet_common_hidden_SHARED_KEY_LEN, key);
 
     if (f_status != vscf_status_SUCCESS) {
         status = vscr_status_ERROR_RNG_FAILED;
@@ -442,7 +442,7 @@ vscr_ratchet_group_ticket_add_existing_participant(vscr_ratchet_group_ticket_t *
         vsc_buffer_init(&key);
         vsc_buffer_use(&key, new_chain_key.key, sizeof(new_chain_key.key));
 
-        vscf_status_t f_status = vscf_random(self->rng, vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LEN, &key);
+        vscf_status_t f_status = vscf_random(self->rng, vscr_ratchet_common_hidden_SHARED_KEY_LEN, &key);
         vsc_buffer_delete(&key);
 
         if (f_status != vscf_status_SUCCESS) {
@@ -457,8 +457,7 @@ vscr_ratchet_group_ticket_add_existing_participant(vscr_ratchet_group_ticket_t *
     }
 
     vscr_ratchet_group_ticket_add_participant_to_msg(&self->full_msg->message_pb.group_info,
-            vsc_data(id, vscr_ratchet_common_PARTICIPANT_ID_LEN),
-            vsc_data(pub_key, vscr_ratchet_common_hidden_RATCHET_KEY_LEN),
+            vsc_data(id, vscr_ratchet_common_PARTICIPANT_ID_LEN), vsc_data(pub_key, vscr_ratchet_common_hidden_KEY_LEN),
             vsc_data(chain_key_ref->key, sizeof(chain_key_ref->key)), chain_key_ref->index);
 
 err:
@@ -473,12 +472,11 @@ vscr_ratchet_group_ticket_add_participant_to_msg(
 
     VSCR_ASSERT_PTR(msg_info);
     VSCR_ASSERT(participant_id.len == vscr_ratchet_common_PARTICIPANT_ID_LEN);
-    VSCR_ASSERT(public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LEN);
-    VSCR_ASSERT(key.len == vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LEN);
+    VSCR_ASSERT(public_key.len == vscr_ratchet_common_hidden_KEY_LEN);
+    VSCR_ASSERT(key.len == vscr_ratchet_common_hidden_SHARED_KEY_LEN);
 
     MessageParticipantInfo *info = &msg_info->participants[msg_info->participants_count];
 
-    info->version = 1;
     info->index = index;
     memcpy(info->id, participant_id.bytes, sizeof(info->id));
     memcpy(info->pub_key, public_key.bytes, sizeof(info->pub_key));

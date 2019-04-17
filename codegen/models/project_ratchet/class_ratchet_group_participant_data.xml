@@ -8,7 +8,7 @@
         <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
     </property>
     <property name="pub key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_len)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_key_len)"/>
     </property>
 
     <property name="epoch count" type="size" access="readwrite"/>

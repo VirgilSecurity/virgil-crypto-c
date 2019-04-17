@@ -6,7 +6,7 @@
     <require class="ratchet common hidden" scope="context"/>
 
     <property name="public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_len)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_key_len)"/>
     </property>
     <property name="message key" class="ratchet message key" access="readwrite"/>
 

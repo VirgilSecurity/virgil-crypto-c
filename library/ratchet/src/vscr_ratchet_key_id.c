@@ -250,7 +250,7 @@ vscr_ratchet_key_id_cleanup_ctx(vscr_ratchet_key_id_t *self) {
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_key_id_compute_public_key_id(vscr_ratchet_key_id_t *self, vsc_data_t public_key, vsc_buffer_t *key_id) {
 
-    if (public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LEN) {
+    if (public_key.len == vscr_ratchet_common_hidden_KEY_LEN) {
         byte digest[vscf_sha512_DIGEST_LEN];
 
         vsc_buffer_t digest_buf;

@@ -225,6 +225,7 @@ vscr_ratchet_group_message_init_ctx(vscr_ratchet_group_message_t *self) {
     GroupMessage msg = GroupMessage_init_zero;
 
     self->message_pb = msg;
+    self->message_pb.version = vscr_ratchet_common_hidden_GROUP_MESSAGE_VERSION;
     self->key_id = vscr_ratchet_key_id_new();
 }
 
@@ -403,7 +404,7 @@ vscr_ratchet_group_message_serialize_len(vscr_ratchet_group_message_t *self) {
 
         return vscr_ratchet_common_hidden_MAX_GROUP_INFO_MESSAGE_LEN -
                (vscr_ratchet_common_MAX_PARTICIPANTS_COUNT - info->participants_count) *
-                       vscr_ratchet_common_hidden_PARTICIPANT_LEN;
+                       vscr_ratchet_common_hidden_MIN_PARTICIPANT_LEN;
     } else if (self->message_pb.has_regular_message) {
         VSCR_ASSERT(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN >=
                     vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg));

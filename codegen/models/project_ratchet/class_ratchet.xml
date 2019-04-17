@@ -26,7 +26,7 @@
     <property name="receiver chains" class="ratchet receiver chains" access="readwrite"/>
     <property name="skipped messages" class="ratchet skipped messages" access="readwrite"/>
     <property name="root key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_shared_key_len)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_shared_key_len)"/>
     </property>
 
     <method name="decrypt for existing chain" declaration="private">

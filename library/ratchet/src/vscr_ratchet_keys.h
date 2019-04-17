@@ -125,13 +125,12 @@ VSCR_PUBLIC vscr_ratchet_keys_t *
 vscr_ratchet_keys_shallow_copy(vscr_ratchet_keys_t *self);
 
 VSCR_PUBLIC void
-vscr_ratchet_keys_derive_initial_keys(vsc_data_t shared_secret,
-        byte root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LEN],
-        byte chain_key[vscr_ratchet_common_hidden_RATCHET_KEY_LEN]);
+vscr_ratchet_keys_derive_initial_keys(vsc_data_t shared_secret, byte root_key[vscr_ratchet_common_hidden_KEY_LEN],
+        byte chain_key[vscr_ratchet_common_hidden_KEY_LEN]);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_keys_create_chain_key(const byte root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LEN],
-        vsc_data_t private_key, vsc_data_t public_key, byte new_root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LEN],
+vscr_ratchet_keys_create_chain_key(const byte root_key[vscr_ratchet_common_hidden_KEY_LEN], vsc_data_t private_key,
+        vsc_data_t public_key, byte new_root_key[vscr_ratchet_common_hidden_KEY_LEN],
         vscr_ratchet_chain_key_t *chain_key) VSCR_NODISCARD;
 
 VSCR_PUBLIC void
