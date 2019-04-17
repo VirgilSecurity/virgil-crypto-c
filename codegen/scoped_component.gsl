@@ -1,0 +1,149 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Helpers for 'scoped component' functionality.
+## ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+
+gsl from "common.gsl"
+
+
+# ---------------------------------------------------------------------------
+#   Return true if class has at least one component with a given scope.
+# ---------------------------------------------------------------------------
+function class_has_scoped_item_with_scope (class, scope)
+    check_arguments (my, "class, scope", my)
+
+    if count (my.class.constant, scope = my.scope)
+        return "1"
+    elsif count (my.class.enum, scope = my.scope)
+        return "1"
+    elsif count (my.class.callback, scope = my.scope)
+        return "1"
+    elsif count (my.class.method, scope = my.scope)
+        return "1"
+    elsif count (my.class.struct, scope = my.scope)
+        return "1"
+    elsif count (my.class.variable, scope = my.scope)
+        return "1"
+    else
+        return "0"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Copy scoped component to the main module.
+# ---------------------------------------------------------------------------
+function class_add_scoped_components_to_main_module (class, add_method_callback, module, meta)
+    check_arguments (my, "class, add_method_callback, module, meta", my)
+
+    for my.class.constant where 0.scope = my.module.scope
+        my.component = component_clean_copy (constant, my.module)
+    endfor
+
+    for my.class.enum where 0.scope = my.module.scope
+        my.component = component_clean_copy (enum, my.module)
+    endfor
+
+    for my.class.callback where 0.scope = my.module.scope
+        my.component = component_clean_copy (callback, my.module)
+    endfor
+
+    for my.class.method
+        my.component = $(my.add_method_callback:) (my.class, method, my.module, my.meta)
+        if method.scope <> my.module.scope
+            my.component.declaration = "external"
+            my.component.definition = "private"
+        endif
+    endfor
+
+    for my.class.struct where 0.scope = my.module.scope
+        my.component = component_clean_copy (struct, my.module)
+    endfor
+
+    for my.class.variable
+        my.component = component_clean_copy (variable, my.module)
+        if variable.scope <> my.module.scope
+            my.component.declaration = "external"
+            my.component.definition = "private"
+        endif
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Copy scoped component to the given scoped destination.
+# ---------------------------------------------------------------------------
+function class_add_scoped_components_to_extended_module (class, add_method_callback, module, meta)
+    check_arguments (my, "class, add_method_callback, module, meta", my)
+
+    for my.class.constant where 0.scope = my.module.scope
+        my.component = component_clean_copy (constant, my.module)
+        my.component.definition = "public"
+    endfor
+
+    for my.class.enum where 0.scope = my.module.scope
+        my.component = component_clean_copy (enum, my.module)
+        my.component.declaration = "public"
+        my.component.definition = "public"
+    endfor
+
+    for my.class.callback where 0.scope = my.module.scope
+        my.component = component_clean_copy (callback, my.module)
+    endfor
+
+    for my.class.method where 0.scope = my.module.scope
+        my.component = $(my.add_method_callback:) (my.class, method, my.module, my.meta)
+        my.component.declaration = "public"
+        my.component.definition = "external"
+    endfor
+
+    for my.class.struct where 0.scope = my.module.scope
+        my.component = component_clean_copy (struct, my.module)
+        my.component.declaration = "public"
+        my.component.definition = "public"
+    endfor
+
+    for my.class.variable where 0.scope = my.module.scope
+        my.component = component_clean_copy (variable, my.module)
+        my.component.declaration = "public"
+        my.component.definition = "external"
+    endfor
+endfunction
+
+.endtemplate

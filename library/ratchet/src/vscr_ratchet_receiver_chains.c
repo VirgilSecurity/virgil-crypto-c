@@ -47,9 +47,8 @@
 #include "vscr_ratchet_receiver_chains.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_receiver_chains_defs.h"
 #include "vscr_ratchet_chain_key.h"
-#include "vscr_ratchet_receiver_chain_list_node.h"
 
 // clang-format on
 //  @end
@@ -60,22 +59,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Handle 'ratchet receiver chains' context.
-//
-struct vscr_ratchet_receiver_chains_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscr_ratchet_receiver_chain_list_node_t *chains;
-};
 
 //
 //  Perform context specific initialization.
