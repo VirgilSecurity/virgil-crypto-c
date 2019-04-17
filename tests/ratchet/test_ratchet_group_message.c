@@ -115,9 +115,7 @@ test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
     msg1->header_pb->prev_epoch_msgs = 24;
     msg1->header_pb->epoch = 3;
 
-    memcpy(msg1->header_pb->commitment, test_data_ratchet_group_message_commitment.bytes,
-            test_data_ratchet_group_message_commitment.len);
-    memcpy(msg1->header_pb->signature, test_data_ratchet_group_message_signature.bytes,
+    memcpy(msg1->message_pb.regular_message.signature, test_data_ratchet_group_message_signature.bytes,
             test_data_ratchet_group_message_signature.len);
     memcpy(msg1->header_pb->sender_id, test_data_ratchet_group_message_sender_id.bytes,
             test_data_ratchet_group_message_sender_id.len);
@@ -245,9 +243,7 @@ test__serialize_deserialize__regular_overflow__should_be_equal(void) {
     msg1->header_pb->prev_epoch_msgs = 24;
     msg1->header_pb->epoch = 3;
 
-    memcpy(msg1->header_pb->commitment, test_data_ratchet_group_message_commitment.bytes,
-            test_data_ratchet_group_message_commitment.len);
-    memcpy(msg1->header_pb->signature, test_data_ratchet_group_message_signature.bytes,
+    memcpy(msg1->message_pb.regular_message.signature, test_data_ratchet_group_message_signature.bytes,
             test_data_ratchet_group_message_signature.len);
     memcpy(msg1->header_pb->sender_id, test_data_ratchet_group_message_sender_id.bytes,
             test_data_ratchet_group_message_sender_id.len);

@@ -5,6 +5,8 @@
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
 
+    <require module="buffer defs" scope="private" project="common"/>
+
     <require module="ratchet group message defs" scope="private"/>
     <require module="ratchet group ticket defs" scope="private"/>
 
@@ -12,6 +14,7 @@
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
+    <require impl="sha512" project="foundation" scope="private"/>
     <require header="ed25519/ed25519.h" scope="private"/>
 
     <require class="ratchet keys" scope="private"/>

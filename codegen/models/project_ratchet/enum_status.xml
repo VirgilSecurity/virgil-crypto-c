@@ -29,95 +29,99 @@
         Curve25519 error.
     </constant>
 
-    <constant name="error key deserialization failed" value="-7">
+    <constant name="error ed25519" value="-7">
+        Curve25519 error.
+    </constant>
+
+    <constant name="error key deserialization failed" value="-8">
         Key deserialization failed.
     </constant>
 
-    <constant name="error invalid key type" value="-8">
+    <constant name="error invalid key type" value="-9">
         Invalid key type.
     </constant>
 
-    <constant name="error identity key doesnt match" value="-9">
+    <constant name="error identity key doesnt match" value="-10">
         Identity key doesn't match.
     </constant>
 
-    <constant name="error message already decrypted" value="-10">
+    <constant name="error message already decrypted" value="-11">
         Message already decrypted.
     </constant>
 
-    <constant name="error too many lost messages" value="-11">
+    <constant name="error too many lost messages" value="-12">
         Too many lost messages.
     </constant>
 
-    <constant name="error sender chain missing" value="-12">
+    <constant name="error sender chain missing" value="-13">
         Sender chain missing.
     </constant>
 
-    <constant name="error skipped message missing" value="-13">
+    <constant name="error skipped message missing" value="-14">
         Skipped message missing.
     </constant>
 
-    <constant name="error session is not initialized" value="-14">
+    <constant name="error session is not initialized" value="-15">
         Session is not initialized.
     </constant>
 
-    <constant name="error exceeded max plain text len" value="-15">
+    <constant name="error exceeded max plain text len" value="-16">
         Exceeded max plain text len.
     </constant>
 
-    <constant name="error too many messages for sender chain" value="-16">
+    <constant name="error too many messages for sender chain" value="-17">
         Too many messages for sender chain.
     </constant>
 
-    <constant name="error too many messages for receiver chain" value="-17">
+    <constant name="error too many messages for receiver chain" value="-18">
         Too many messages for receiver chain.
     </constant>
 
-    <constant name="error invalid padding" value="-18">
+    <constant name="error invalid padding" value="-19">
         Invalid padding.
     </constant>
 
-    <constant name="error too many participants" value="-19">
+    <constant name="error too many participants" value="-20">
         Too many participants.
     </constant>
 
-    <constant name="error too few participants" value="-20">
+    <constant name="error too few participants" value="-21">
         Too few participants.
     </constant>
 
-    <constant name="error sender not found" value="-21">
+    <constant name="error sender not found" value="-22">
         Sender not found.
     </constant>
 
-    <constant name="error cannot decrypt own messages" value="-22">
+    <constant name="error cannot decrypt own messages" value="-23">
         Cannot decrypt own messages.
     </constant>
 
-    <constant name="error duplicate id" value="-23">
+    <constant name="error duplicate id" value="-24">
         Duplicate id.
     </constant>
 
-    <constant name="error invalid signature" value="-24">
+    <constant name="error invalid signature" value="-25">
         Invalid signature.
     </constant>
 
-    <constant name="error user is not present in group message" value="-25">
+    <constant name="error user is not present in group message" value="-26">
         User is not present in group message.
     </constant>
 
-    <constant name="error epoch mismatch" value="-26">
+    <constant name="error epoch mismatch" value="-27">
         Epoch mismatch.
     </constant>
 
-    <constant name="error participant not found" value="-27">
+    <constant name="error participant not found" value="-28">
         Participant not found.
     </constant>
 
-    <constant name="error epoch not found" value="-28">
+    <constant name="error epoch not found" value="-29">
         Epoch not found.
     </constant>
 
-    <constant name="error session id mismatch" value="-29">
+    <constant name="error session id mismatch" value="-30">
         Session id mismatch.
     </constant>
 

@@ -101,97 +101,101 @@ enum vscr_status_t {
     //
     vscr_status_ERROR_CURVE25519 = -6,
     //
+    //  Curve25519 error.
+    //
+    vscr_status_ERROR_ED25519 = -7,
+    //
     //  Key deserialization failed.
     //
-    vscr_status_ERROR_KEY_DESERIALIZATION_FAILED = -7,
+    vscr_status_ERROR_KEY_DESERIALIZATION_FAILED = -8,
     //
     //  Invalid key type.
     //
-    vscr_status_ERROR_INVALID_KEY_TYPE = -8,
+    vscr_status_ERROR_INVALID_KEY_TYPE = -9,
     //
     //  Identity key doesn't match.
     //
-    vscr_status_ERROR_IDENTITY_KEY_DOESNT_MATCH = -9,
+    vscr_status_ERROR_IDENTITY_KEY_DOESNT_MATCH = -10,
     //
     //  Message already decrypted.
     //
-    vscr_status_ERROR_MESSAGE_ALREADY_DECRYPTED = -10,
+    vscr_status_ERROR_MESSAGE_ALREADY_DECRYPTED = -11,
     //
     //  Too many lost messages.
     //
-    vscr_status_ERROR_TOO_MANY_LOST_MESSAGES = -11,
+    vscr_status_ERROR_TOO_MANY_LOST_MESSAGES = -12,
     //
     //  Sender chain missing.
     //
-    vscr_status_ERROR_SENDER_CHAIN_MISSING = -12,
+    vscr_status_ERROR_SENDER_CHAIN_MISSING = -13,
     //
     //  Skipped message missing.
     //
-    vscr_status_ERROR_SKIPPED_MESSAGE_MISSING = -13,
+    vscr_status_ERROR_SKIPPED_MESSAGE_MISSING = -14,
     //
     //  Session is not initialized.
     //
-    vscr_status_ERROR_SESSION_IS_NOT_INITIALIZED = -14,
+    vscr_status_ERROR_SESSION_IS_NOT_INITIALIZED = -15,
     //
     //  Exceeded max plain text len.
     //
-    vscr_status_ERROR_EXCEEDED_MAX_PLAIN_TEXT_LEN = -15,
+    vscr_status_ERROR_EXCEEDED_MAX_PLAIN_TEXT_LEN = -16,
     //
     //  Too many messages for sender chain.
     //
-    vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_SENDER_CHAIN = -16,
+    vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_SENDER_CHAIN = -17,
     //
     //  Too many messages for receiver chain.
     //
-    vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN = -17,
+    vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN = -18,
     //
     //  Invalid padding.
     //
-    vscr_status_ERROR_INVALID_PADDING = -18,
+    vscr_status_ERROR_INVALID_PADDING = -19,
     //
     //  Too many participants.
     //
-    vscr_status_ERROR_TOO_MANY_PARTICIPANTS = -19,
+    vscr_status_ERROR_TOO_MANY_PARTICIPANTS = -20,
     //
     //  Too few participants.
     //
-    vscr_status_ERROR_TOO_FEW_PARTICIPANTS = -20,
+    vscr_status_ERROR_TOO_FEW_PARTICIPANTS = -21,
     //
     //  Sender not found.
     //
-    vscr_status_ERROR_SENDER_NOT_FOUND = -21,
+    vscr_status_ERROR_SENDER_NOT_FOUND = -22,
     //
     //  Cannot decrypt own messages.
     //
-    vscr_status_ERROR_CANNOT_DECRYPT_OWN_MESSAGES = -22,
+    vscr_status_ERROR_CANNOT_DECRYPT_OWN_MESSAGES = -23,
     //
     //  Duplicate id.
     //
-    vscr_status_ERROR_DUPLICATE_ID = -23,
+    vscr_status_ERROR_DUPLICATE_ID = -24,
     //
     //  Invalid signature.
     //
-    vscr_status_ERROR_INVALID_SIGNATURE = -24,
+    vscr_status_ERROR_INVALID_SIGNATURE = -25,
     //
     //  User is not present in group message.
     //
-    vscr_status_ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE = -25,
+    vscr_status_ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE = -26,
     //
     //  Epoch mismatch.
     //
-    vscr_status_ERROR_EPOCH_MISMATCH = -26,
+    vscr_status_ERROR_EPOCH_MISMATCH = -27,
     //
     //  Participant not found.
     //
-    vscr_status_ERROR_PARTICIPANT_NOT_FOUND = -27,
+    vscr_status_ERROR_PARTICIPANT_NOT_FOUND = -28,
     //
     //  Epoch not found.
     //
-    vscr_status_ERROR_EPOCH_NOT_FOUND = -28,
+    vscr_status_ERROR_EPOCH_NOT_FOUND = -29,
     //
     //  Session id mismatch.
     //
-    vscr_status_ERROR_SESSION_ID_MISMATCH = -29
+    vscr_status_ERROR_SESSION_ID_MISMATCH = -30
 };
 typedef enum vscr_status_t vscr_status_t;
 

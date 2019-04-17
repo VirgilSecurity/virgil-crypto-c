@@ -4,9 +4,6 @@
     <require class="ratchet common hidden" scope="private"/>
     <require class="ratchet common" scope="private"/>
 
-    <require impl="sha512" project="foundation" scope="private"/>
-    <require module="buffer defs" scope="private" project="common"/>
-
     <require header="RatchetGroupMessage.pb.h" scope="context"/>
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>

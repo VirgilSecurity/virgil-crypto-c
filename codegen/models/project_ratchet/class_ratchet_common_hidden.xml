@@ -13,7 +13,7 @@
     <constant name="max regular message len" value="32834"/>
     <constant name="max prekey message len" value="32975"/>
 
-    <constant name="max group regular message len" value="32975"/>
+    <constant name="max group regular message len" value="32906"/>
     <constant name="max group info message len" value="10845"/>
     <constant name="participant len" value="108"/>
     <constant name="max cipher text len" value="32768"/>

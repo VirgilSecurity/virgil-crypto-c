@@ -27,14 +27,13 @@ message RegularGroupMessageHeader {
     required uint32 prev_epoch_msgs = 3;
     required uint32 counter = 4;
     required bytes sender_id = 5;
-    required bytes commitment = 6;
-    required bytes signature = 7;
 }
 
 message RegularGroupMessage {
     required uint32 version = 1;
     required bytes header = 2;
-    required bytes cipher_text = 3;
+    required bytes signature = 3;
+    required bytes cipher_text = 4;
 }
 
 message GroupMessage {

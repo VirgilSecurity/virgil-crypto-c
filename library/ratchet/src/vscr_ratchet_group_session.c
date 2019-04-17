@@ -65,9 +65,11 @@
 #include "vscr_ratchet_group_participant_epoch.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <RatchetGroupMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
+#include <virgil/crypto/foundation/vscf_sha512.h>
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 
@@ -489,7 +491,7 @@ vscr_ratchet_group_session_set_private_key(vscr_ratchet_group_session_t *self, v
     self->is_private_key_set = true;
 
     if (ed25519_get_pubkey(self->my_public_key, self->my_private_key) != 0) {
-        error_ctx.status = vscr_status_ERROR_CURVE25519;
+        error_ctx.status = vscr_status_ERROR_ED25519;
     }
 
 err:
@@ -746,19 +748,19 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     VSCR_ASSERT(self->is_id_set);
     VSCR_ASSERT(self->is_private_key_set);
 
-    vscr_ratchet_group_message_t *result = NULL;
-
     if (plain_text.len > vscr_ratchet_common_MAX_PLAIN_TEXT_LEN) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_EXCEEDED_MAX_PLAIN_TEXT_LEN);
-        goto err;
+        return NULL;
     }
+
+    vscr_status_t status = vscr_status_SUCCESS;
 
     vscr_ratchet_group_message_t *msg = vscr_ratchet_group_message_new();
     vscr_ratchet_group_message_set_type(msg, vscr_group_msg_type_REGULAR);
 
-    msg->message_pb.regular_message.version = 1;
+    RegularGroupMessage *regular_message = &msg->message_pb.regular_message;
 
-    ed25519_sign(msg->header_pb->signature, self->my_private_key, plain_text.bytes, plain_text.len);
+    regular_message->version = 1;
 
     msg->header_pb->epoch = self->my_epoch->epoch;
 
@@ -768,33 +770,38 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(self->my_epoch->chain_key);
     vscr_ratchet_keys_advance_chain_key(self->my_epoch->chain_key);
 
-    msg->message_pb.regular_message.cipher_text.arg =
+    regular_message->cipher_text.arg =
             vsc_buffer_new_with_capacity(vscr_ratchet_cipher_encrypt_len(self->cipher, plain_text.len));
 
-    pb_ostream_t ostream = pb_ostream_from_buffer(
-            msg->message_pb.regular_message.header, sizeof(msg->message_pb.regular_message.header));
+    pb_ostream_t ostream = pb_ostream_from_buffer(regular_message->header, sizeof(regular_message->header));
 
     VSCR_ASSERT(pb_encode(&ostream, RegularGroupMessageHeader_fields, msg->header_pb));
 
-    vscr_status_t status =
-            vscr_ratchet_cipher_encrypt(self->cipher, vsc_data(message_key->key, sizeof(message_key->key)), plain_text,
-                    vsc_data(msg->message_pb.regular_message.header, sizeof(msg->message_pb.regular_message.header)),
-                    msg->message_pb.regular_message.cipher_text.arg);
+    status = vscr_ratchet_cipher_encrypt(self->cipher, vsc_data(message_key->key, sizeof(message_key->key)), plain_text,
+            vsc_data(regular_message->header, sizeof(regular_message->header)), regular_message->cipher_text.arg);
 
     if (status != vscr_status_SUCCESS) {
-        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_SESSION_IS_NOT_INITIALIZED);
-        goto err2;
+        status = vscr_status_ERROR_SESSION_IS_NOT_INITIALIZED;
+        goto err;
     }
 
-    result = vscr_ratchet_group_message_shallow_copy(msg);
+    int ed_status = ed25519_sign(regular_message->signature, self->my_private_key,
+            vsc_buffer_bytes(regular_message->cipher_text.arg), vsc_buffer_len(regular_message->cipher_text.arg));
 
-err2:
-    vscr_ratchet_message_key_destroy(&message_key);
-
-    vscr_ratchet_group_message_destroy(&msg);
+    if (ed_status != 0) {
+        status = vscr_status_ERROR_ED25519;
+        goto err;
+    }
 
 err:
-    return result;
+    if (status != vscr_status_SUCCESS) {
+        VSCR_ERROR_SAFE_UPDATE(error, status);
+        vscr_ratchet_group_message_destroy(&msg);
+    }
+
+    vscr_ratchet_message_key_destroy(&message_key);
+
+    return msg;
 }
 
 //
@@ -834,7 +841,6 @@ vscr_ratchet_group_session_decrypt(
 
     // TODO: Check version
 
-
     if (memcmp(header->sender_id, self->my_id, sizeof(self->my_id)) == 0) {
         return vscr_status_ERROR_CANNOT_DECRYPT_OWN_MESSAGES;
     }
@@ -850,6 +856,13 @@ vscr_ratchet_group_session_decrypt(
 
     VSCR_ASSERT(participant);
     VSCR_ASSERT(skipped_root);
+
+    int ed_status = ed25519_verify(group_message->signature, participant->pub_key,
+            vsc_buffer_bytes(group_message->cipher_text.arg), vsc_buffer_len(group_message->cipher_text.arg));
+
+    if (ed_status != 0) {
+        return ed_status == 1 ? vscr_status_ERROR_ED25519 : vscr_status_ERROR_INVALID_SIGNATURE;
+    }
 
     vscr_ratchet_group_participant_epoch_t *epoch =
             vscr_ratchet_group_participant_data_find_epoch(participant, header->epoch);
@@ -901,14 +914,6 @@ vscr_ratchet_group_session_decrypt(
             vsc_data(group_message->header, sizeof(group_message->header)), plain_text);
 
     if (result != vscr_status_SUCCESS) {
-        goto err;
-    }
-
-    int ed_result = ed25519_verify(
-            header->signature, participant->pub_key, vsc_buffer_bytes(plain_text), vsc_buffer_len(plain_text));
-
-    if (ed_result != 0) {
-        result = vscr_status_ERROR_INVALID_SIGNATURE;
         goto err;
     }
 

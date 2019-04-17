@@ -52,13 +52,6 @@ const byte test_data_ratchet_group_message_signature_BYTES[] = {
         0xbf, 0x06, 0xa4, 0x0f, 0x19, 0x82, 0xaa, 0x8b,
 };
 
-const byte test_data_ratchet_group_message_commitment_BYTES[] = {
-        0x15, 0xc3, 0x8b, 0x2f, 0xf0, 0x7d, 0x43, 0x43,
-        0xd7, 0xbc, 0xa3, 0x1b, 0xb0, 0x7e, 0x83, 0x12,
-        0x84, 0x5e, 0x45, 0xb1, 0x55, 0x29, 0xb6, 0x06,
-        0x33, 0x3b, 0xf6, 0x37, 0x12, 0xea, 0x90, 0x24
-};
-
 const byte test_data_ratchet_group_message_id_BYTES[] = {
         0x56, 0x4b, 0xd7, 0xce, 0x05, 0x90, 0x64, 0xa1,
         0xe9, 0x1c, 0x76, 0xb2, 0x4e, 0x31, 0xa3, 0x97,
@@ -133,10 +126,6 @@ const vsc_data_t test_data_ratchet_group_message_sender_id = {
 
 const vsc_data_t test_data_ratchet_group_message_signature = {
         test_data_ratchet_group_message_signature_BYTES, sizeof(test_data_ratchet_group_message_signature_BYTES)
-};
-
-const vsc_data_t test_data_ratchet_group_message_commitment = {
-        test_data_ratchet_group_message_commitment_BYTES, sizeof(test_data_ratchet_group_message_commitment_BYTES)
 };
 
 const vsc_data_t test_data_ratchet_group_message_id = {

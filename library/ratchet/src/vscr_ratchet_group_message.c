@@ -57,8 +57,6 @@
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_common.h"
 
-#include <virgil/crypto/foundation/vscf_sha512.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 
