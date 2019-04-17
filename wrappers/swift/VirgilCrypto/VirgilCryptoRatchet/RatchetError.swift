@@ -57,74 +57,77 @@ import VSCRatchet
     /// Curve25519 error.
     case errorCurve25519 = -6
 
+    /// Curve25519 error.
+    case errorEd25519 = -7
+
     /// Key deserialization failed.
-    case errorKeyDeserializationFailed = -7
+    case errorKeyDeserializationFailed = -8
 
     /// Invalid key type.
-    case errorInvalidKeyType = -8
+    case errorInvalidKeyType = -9
 
     /// Identity key doesn't match.
-    case errorIdentityKeyDoesntMatch = -9
+    case errorIdentityKeyDoesntMatch = -10
 
     /// Message already decrypted.
-    case errorMessageAlreadyDecrypted = -10
+    case errorMessageAlreadyDecrypted = -11
 
     /// Too many lost messages.
-    case errorTooManyLostMessages = -11
+    case errorTooManyLostMessages = -12
 
     /// Sender chain missing.
-    case errorSenderChainMissing = -12
+    case errorSenderChainMissing = -13
 
     /// Skipped message missing.
-    case errorSkippedMessageMissing = -13
+    case errorSkippedMessageMissing = -14
 
     /// Session is not initialized.
-    case errorSessionIsNotInitialized = -14
+    case errorSessionIsNotInitialized = -15
 
     /// Exceeded max plain text len.
-    case errorExceededMaxPlainTextLen = -15
+    case errorExceededMaxPlainTextLen = -16
 
     /// Too many messages for sender chain.
-    case errorTooManyMessagesForSenderChain = -16
+    case errorTooManyMessagesForSenderChain = -17
 
     /// Too many messages for receiver chain.
-    case errorTooManyMessagesForReceiverChain = -17
+    case errorTooManyMessagesForReceiverChain = -18
 
     /// Invalid padding.
-    case errorInvalidPadding = -18
+    case errorInvalidPadding = -19
 
     /// Too many participants.
-    case errorTooManyParticipants = -19
+    case errorTooManyParticipants = -20
 
     /// Too few participants.
-    case errorTooFewParticipants = -20
+    case errorTooFewParticipants = -21
 
     /// Sender not found.
-    case errorSenderNotFound = -21
+    case errorSenderNotFound = -22
 
     /// Cannot decrypt own messages.
-    case errorCannotDecryptOwnMessages = -22
+    case errorCannotDecryptOwnMessages = -23
 
     /// Duplicate id.
-    case errorDuplicateId = -23
+    case errorDuplicateId = -24
 
     /// Invalid signature.
-    case errorInvalidSignature = -24
+    case errorInvalidSignature = -25
 
     /// User is not present in group message.
-    case errorUserIsNotPresentInGroupMessage = -25
+    case errorUserIsNotPresentInGroupMessage = -26
 
     /// Epoch mismatch.
-    case errorEpochMismatch = -26
+    case errorEpochMismatch = -27
 
     /// Participant not found.
-    case errorParticipantNotFound = -27
+    case errorParticipantNotFound = -28
 
     /// Epoch not found.
-    case errorEpochNotFound = -28
+    case errorEpochNotFound = -29
 
     /// Session id mismatch.
-    case errorSessionIdMismatch = -29
+    case errorSessionIdMismatch = -30
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscr_status_t) {
