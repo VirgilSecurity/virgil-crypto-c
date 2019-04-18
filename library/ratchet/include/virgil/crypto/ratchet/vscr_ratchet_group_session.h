@@ -214,6 +214,12 @@ VSCR_PUBLIC vsc_data_t
 vscr_ratchet_group_session_get_id(const vscr_ratchet_group_session_t *self);
 
 //
+//  Returns number of participants.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_group_session_get_participants_count(const vscr_ratchet_group_session_t *self);
+
+//
 //  Sets up session. Identity private key should be set separately.
 //
 VSCR_PUBLIC vscr_status_t

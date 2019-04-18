@@ -150,7 +150,8 @@ vscr_ratchet_group_message_get_pub_key_count(const vscr_ratchet_group_message_t 
 //  This method should be called only for start group info message type.
 //
 VSCR_PUBLIC vsc_buffer_t *
-vscr_ratchet_group_message_get_pub_key_id(const vscr_ratchet_group_message_t *self, vsc_data_t participant_id);
+vscr_ratchet_group_message_get_pub_key_id(const vscr_ratchet_group_message_t *self, vsc_data_t participant_id,
+        vscr_error_t *error);
 
 //
 //  Returns message sender id.

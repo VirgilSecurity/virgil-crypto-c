@@ -487,6 +487,17 @@ vscr_ratchet_group_session_get_id(const vscr_ratchet_group_session_t *self) {
     return vsc_data(self->session_id, sizeof(self->session_id));
 }
 
+//
+//  Returns number of participants.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_group_session_get_participants_count(const vscr_ratchet_group_session_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+
+    return self->participants_count;
+}
+
 static vscr_status_t
 vscr_ratchet_group_session_check_session_consistency(
         vscr_ratchet_group_session_t *self, const vscr_ratchet_group_message_t *message) {

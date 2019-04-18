@@ -85,15 +85,20 @@ import VirgilCryptoFoundation
 
     /// Returns public key id for some participant id.
     /// This method should be called only for start group info message type.
-    @objc public func getPubKeyId(participantId: Data) -> Data {
+    @objc public func getPubKeyId(participantId: Data) throws -> Data {
+        var error: vscr_error_t = vscr_error_t()
+        vscr_error_reset(&error)
+
         let proxyResult = participantId.withUnsafeBytes({ (participantIdPointer: UnsafeRawBufferPointer) in
 
-            return vscr_ratchet_group_message_get_pub_key_id(self.c_ctx, vsc_data(participantIdPointer.bindMemory(to: byte.self).baseAddress, participantId.count))
+            return vscr_ratchet_group_message_get_pub_key_id(self.c_ctx, vsc_data(participantIdPointer.bindMemory(to: byte.self).baseAddress, participantId.count), &error)
         })
 
         defer {
             vsc_buffer_delete(proxyResult)
         }
+
+        try RatchetError.handleStatus(fromC: error.status)
 
         return Data.init(bytes: vsc_buffer_bytes(proxyResult), count: vsc_buffer_len(proxyResult))
     }

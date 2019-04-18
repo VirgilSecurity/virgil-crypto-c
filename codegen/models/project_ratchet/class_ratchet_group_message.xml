@@ -39,6 +39,10 @@
             Participant id
         </argument>
 
+        <argument name="error" class="error" access="readwrite">
+            Error context.
+        </argument>
+
         <return class="buffer" access="disown"/>
     </method>
 

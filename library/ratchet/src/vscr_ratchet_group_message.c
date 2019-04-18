@@ -265,8 +265,6 @@ vscr_ratchet_group_message_get_type(const vscr_ratchet_group_message_t *self) {
         VSCR_ASSERT(self->message_pb.has_group_info);
         return vscr_group_msg_type_GROUP_INFO;
     }
-
-    return vscr_group_msg_type_REGULAR;
 }
 
 VSCR_PUBLIC void
@@ -311,7 +309,8 @@ vscr_ratchet_group_message_get_pub_key_count(const vscr_ratchet_group_message_t 
 //  This method should be called only for start group info message type.
 //
 VSCR_PUBLIC vsc_buffer_t *
-vscr_ratchet_group_message_get_pub_key_id(const vscr_ratchet_group_message_t *self, vsc_data_t participant_id) {
+vscr_ratchet_group_message_get_pub_key_id(
+        const vscr_ratchet_group_message_t *self, vsc_data_t participant_id, vscr_error_t *error) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->key_id);
@@ -332,9 +331,13 @@ vscr_ratchet_group_message_get_pub_key_id(const vscr_ratchet_group_message_t *se
                 return key_id;
             }
 
+            VSCR_ERROR_SAFE_UPDATE(error, status);
+
             return NULL;
         }
     }
+
+    VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE);
 
     return NULL;
 }

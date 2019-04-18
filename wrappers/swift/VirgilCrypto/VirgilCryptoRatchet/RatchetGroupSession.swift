@@ -139,6 +139,13 @@ import VirgilCryptoFoundation
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
+    /// Returns number of participants.
+    @objc public func getParticipantsCount() -> Int {
+        let proxyResult = vscr_ratchet_group_session_get_participants_count(self.c_ctx)
+
+        return proxyResult
+    }
+
     /// Sets up session. Identity private key should be set separately.
     @objc public func setupSession(message: RatchetGroupMessage) throws {
         let proxyResult = vscr_ratchet_group_session_setup_session(self.c_ctx, message.c_ctx)

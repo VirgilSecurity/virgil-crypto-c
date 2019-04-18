@@ -112,6 +112,12 @@
         <return class="data"/>
     </method>
 
+    <method name="get participants count" is_const="1">
+        Returns number of participants.
+
+        <return type="size"/>
+    </method>
+
     <method name="check session consistency" declaration="private">
         <argument name="message" class="ratchet group message"/>
         <return enum="status"/>
