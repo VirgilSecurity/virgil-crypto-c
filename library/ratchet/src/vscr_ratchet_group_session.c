@@ -514,8 +514,8 @@ vscr_ratchet_group_session_check_session_consistency(
     VSCR_ASSERT(group_info->participants_count < vscr_ratchet_common_MAX_PARTICIPANTS_COUNT);
     VSCR_ASSERT(group_info->participants_count >= vscr_ratchet_common_MIN_PARTICIPANTS_COUNT);
 
-    if (self->my_epoch && self->my_epoch->epoch != group_info->epoch &&
-            self->my_epoch->epoch + 1 != group_info->epoch) {
+    // TODO: Implement missing epoch initialization to decrypt out-of-orders messages?
+    if (self->my_epoch && self->my_epoch->epoch > group_info->epoch) {
         return vscr_status_ERROR_EPOCH_MISMATCH;
     }
 
@@ -620,7 +620,7 @@ vscr_ratchet_group_session_setup_session(
                 self->skipped_messages[index] = old_skipped[i];
                 old_skipped[i] = NULL;
 
-                if (self->my_epoch->epoch + 1 == group_info->epoch) {
+                if (self->my_epoch->epoch < group_info->epoch) {
                     vscr_ratchet_group_session_update_participant(self->participants[index], group_info->epoch, info);
                 }
 
@@ -698,7 +698,6 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     RegularGroupMessage *regular_message = &msg->message_pb.regular_message;
 
     msg->header_pb->epoch = self->my_epoch->epoch;
-
     msg->header_pb->counter = self->my_epoch->chain_key->index;
     memcpy(msg->header_pb->sender_id, self->my_id, sizeof(self->my_id));
 
@@ -774,8 +773,6 @@ vscr_ratchet_group_session_decrypt(
     const RegularGroupMessage *group_message = &message->message_pb.regular_message;
     const RegularGroupMessageHeader *header = message->header_pb;
 
-    // TODO: Check version
-
     if (memcmp(header->sender_id, self->my_id, sizeof(self->my_id)) == 0) {
         return vscr_status_ERROR_CANNOT_DECRYPT_OWN_MESSAGES;
     }
@@ -805,8 +802,6 @@ vscr_ratchet_group_session_decrypt(
     if (!epoch) {
         return vscr_status_ERROR_EPOCH_NOT_FOUND;
     }
-
-    // TODO: Add old epoches removal
 
     if (epoch->chain_key->index > header->counter) {
         vscr_ratchet_message_key_t *skipped_message_key =
@@ -851,6 +846,8 @@ vscr_ratchet_group_session_decrypt(
     if (result != vscr_status_SUCCESS) {
         goto err;
     }
+
+    // TODO: Add old epoches removal
 
     while (epoch->chain_key->index < header->counter) {
         vscr_ratchet_skipped_group_message_key_t *skipped_message_key = vscr_ratchet_skipped_group_message_key_new();
