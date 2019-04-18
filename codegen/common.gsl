@@ -1270,6 +1270,7 @@ function make_ref_python (uid)
     check_argument (my, "uid", my)
 
     return make_ref (my.uid, "python")
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Wraps given UID as 'Reference UID' specific for Java language.
@@ -1385,6 +1386,7 @@ function python_lang_ref (maybe_ref)
     check_argument (my, "maybe_ref", my)
 
     return lang_ref (my.maybe_ref, "python")
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Shortcut for lang_ref (my.maybe_ref, "java")
