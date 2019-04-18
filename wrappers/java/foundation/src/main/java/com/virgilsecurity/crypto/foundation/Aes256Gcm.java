@@ -220,7 +220,7 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
 
     /*
     * Encrypt given data.
-    * If 'tag' is not give, then it will written to the 'enc'.
+    * If 'tag' is not given, then it will written to the 'enc'.
     */
     public AuthEncryptAuthEncryptResult authEncrypt(byte[] data, byte[] authData) throws FoundationException {
         return FoundationJNI.INSTANCE.aes256Gcm_authEncrypt(this.cCtx, data, authData);
@@ -235,7 +235,7 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
 
     /*
     * Decrypt given data.
-    * If 'tag' is not give, then it will be taken from the 'enc'.
+    * If 'tag' is not given, then it will be taken from the 'enc'.
     */
     public byte[] authDecrypt(byte[] data, byte[] authData, byte[] tag) throws FoundationException {
         return FoundationJNI.INSTANCE.aes256Gcm_authDecrypt(this.cCtx, data, authData, tag);

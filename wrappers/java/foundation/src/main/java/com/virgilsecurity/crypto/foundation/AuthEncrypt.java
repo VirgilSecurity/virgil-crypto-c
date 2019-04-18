@@ -43,7 +43,7 @@ public interface AuthEncrypt extends CipherAuthInfo {
 
     /*
     * Encrypt given data.
-    * If 'tag' is not give, then it will written to the 'enc'.
+    * If 'tag' is not given, then it will written to the 'enc'.
     */
     AuthEncryptAuthEncryptResult authEncrypt(byte[] data, byte[] authData) throws FoundationException;
 

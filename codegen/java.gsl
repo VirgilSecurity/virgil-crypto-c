@@ -1001,7 +1001,7 @@ function java_create_interface_implementation (implementation, java_class, java_
             java_create_class_method_from_constant (constant, my.java_class, my.java_project, my.meta)
         endfor
 
-        for interface.method
+        for interface.method where 0.scope = "public"
             java_create_class_method (my.implementation, method, my.java_class, my.java_project, my.meta)
         endfor
     endfor
@@ -1652,7 +1652,7 @@ function java_create_class_module (class, java_project, meta)
                 java_create_method_from_dependency (dependency, my.class, java_class, my.java_project, my.meta)
             endfor
 
-            for my.class.method where method.declaration = "public" & method.visibility = "public"
+            for my.class.method where 0.scope = "public" & method.declaration = "public" & method.visibility = "public"
                 java_create_class_method (my.class, method, java_class, my.java_project, my.meta)
             endfor
 
@@ -1708,7 +1708,7 @@ function java_create_implementation_module (implementation, java_project, meta)
                 java_create_method_from_dependency (dependency, my.implementation, java_class, my.java_project, my.meta)
             endfor
 
-            for my.implementation.method where method.declaration = "public" & method.visibility = "public"
+            for my.implementation.method where 0.scope = "public" & method.declaration = "public" & method.visibility = "public"
                 java_create_class_method (my.implementation, method, java_class, my.java_project, my.meta)
             endfor
 

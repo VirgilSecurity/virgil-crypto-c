@@ -840,7 +840,7 @@ public class FoundationJNI {
 
     /*
     * Encrypt given data.
-    * If 'tag' is not give, then it will written to the 'enc'.
+    * If 'tag' is not given, then it will written to the 'enc'.
     */
     public native AuthEncryptAuthEncryptResult aes256Gcm_authEncrypt(long cCtx, byte[] data, byte[] authData) throws FoundationException;
 
@@ -851,7 +851,7 @@ public class FoundationJNI {
 
     /*
     * Decrypt given data.
-    * If 'tag' is not give, then it will be taken from the 'enc'.
+    * If 'tag' is not given, then it will be taken from the 'enc'.
     */
     public native byte[] aes256Gcm_authDecrypt(long cCtx, byte[] data, byte[] authData, byte[] tag) throws FoundationException;
 

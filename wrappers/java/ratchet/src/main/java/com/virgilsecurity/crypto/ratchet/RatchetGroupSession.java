@@ -87,6 +87,17 @@ public class RatchetGroupSession implements AutoCloseable {
     }
 
     /*
+    * Shows whether identity private key was set.
+    */
+    public boolean isIdSet() {
+        return RatchetJNI.INSTANCE.ratchetGroupSession_isIdSet(this.cCtx);
+    }
+
+    public int getCurrentEpoch() {
+        return RatchetJNI.INSTANCE.ratchetGroupSession_getCurrentEpoch(this.cCtx);
+    }
+
+    /*
     * Setups default dependencies:
     * - RNG: CTR DRBG
     */
@@ -102,10 +113,25 @@ public class RatchetGroupSession implements AutoCloseable {
     }
 
     /*
+    * Sets identity private key.
+    */
+    public void setId(byte[] myId) {
+        RatchetJNI.INSTANCE.ratchetGroupSession_setId(this.cCtx, myId);
+    }
+
+    public byte[] getMyId() {
+        return RatchetJNI.INSTANCE.ratchetGroupSession_getMyId(this.cCtx);
+    }
+
+    public byte[] getId() {
+        return RatchetJNI.INSTANCE.ratchetGroupSession_getId(this.cCtx);
+    }
+
+    /*
     * Sets up session. Identity private key should be set separately.
     */
-    public void setupSession(byte[] myId, RatchetGroupMessage message) throws RatchetException {
-        RatchetJNI.INSTANCE.ratchetGroupSession_setupSession(this.cCtx, myId, message);
+    public void setupSession(RatchetGroupMessage message) throws RatchetException {
+        RatchetJNI.INSTANCE.ratchetGroupSession_setupSession(this.cCtx, message);
     }
 
     /*
@@ -149,6 +175,14 @@ public class RatchetGroupSession implements AutoCloseable {
     */
     public static RatchetGroupSession deserialize(byte[] input) throws RatchetException {
         return RatchetJNI.INSTANCE.ratchetGroupSession_deserialize(input);
+    }
+
+    public RatchetGroupTicket createGroupTicketForAddingMembers() {
+        return RatchetJNI.INSTANCE.ratchetGroupSession_createGroupTicketForAddingMembers(this.cCtx);
+    }
+
+    public RatchetGroupTicket createGroupTicketForAddingOrRemovingMembers() throws RatchetException {
+        return RatchetJNI.INSTANCE.ratchetGroupSession_createGroupTicketForAddingOrRemovingMembers(this.cCtx);
     }
 }
 

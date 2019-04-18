@@ -36,50 +36,58 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
-import com.virgilsecurity.crypto.foundation.*;
+import android.support.test.runner.AndroidJUnit4;
 
-/*
-* Represents group message type
-*/
-public enum GroupMsgType {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-    /*
-    * Group info used to create group chat, or change group chat.
-    * Should be distributed only using secure channels.
-    */
-    START_GROUP(1),
-    /*
-    * Add members message.
-    * Should be distributed only using secure channels.
-    */
-    ADD_MEMBERS(2),
-    /*
-    * Remove members message.
-    * Should be distributed only using secure channels.
-    */
-    EPOCH_CHANGE(3),
-    /*
-    * Regular group ratchet message with cipher text.
-    */
-    REGULAR(4);
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-    private final int code;
+@RunWith(AndroidJUnit4.class)
+public class RatchetMessageTest {
 
-    private GroupMsgType(int code) {
-        this.code = code;
-    }
+	private RatchetMessage ratchetMessage;
 
-    public int getCode() {
-        return code;
-    }
+	@Before
+	public void setup() {
+		this.ratchetMessage = new RatchetMessage();
+	}
 
-    public static GroupMsgType fromCode(int code) {
-        for (GroupMsgType a : GroupMsgType.values()) {
-            if (a.code == code) {
-                return a;
-            }
-        }
-        return null;
-    }
+	@After
+	public void tearDown() {
+		this.ratchetMessage.close();
+	}
+
+	@Test
+	@Ignore
+	public void getType() {
+		MsgType msgType = this.ratchetMessage.getType();
+		assertNotNull(msgType);
+		assertEquals(MsgType.PREKEY, msgType);
+	}
+
+	@Test
+	public void getLongTermPublicKey() {
+		byte[] key = this.ratchetMessage.getLongTermPublicKey();
+		assertNull(key);
+	}
+
+	@Test
+	public void getOneTimePublicKey() {
+		byte[] key = this.ratchetMessage.getOneTimePublicKey();
+		assertNull(key);
+	}
+
+	@Test
+	@Ignore
+	public void serialize_deserialize() {
+		byte[] serializedMessage = this.ratchetMessage.serialize();
+		assertNotNull(serializedMessage);
+	}
+
 }
-

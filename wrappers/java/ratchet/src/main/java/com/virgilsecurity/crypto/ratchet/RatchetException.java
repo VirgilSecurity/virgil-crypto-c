@@ -47,15 +47,15 @@ public class RatchetException extends RuntimeException {
 
     public static final int ERROR_PROTOBUF_DECODE = -1;
 
-    public static final int ERROR_MESSAGE_VERSION_DOESN_T_MATCH = -2;
+    public static final int ERROR_BAD_MESSAGE_TYPE = -2;
 
-    public static final int ERROR_BAD_MESSAGE_TYPE = -3;
+    public static final int ERROR_AES = -3;
 
-    public static final int ERROR_AES = -4;
+    public static final int ERROR_RNG_FAILED = -4;
 
-    public static final int ERROR_RNG_FAILED = -5;
+    public static final int ERROR_CURVE25519 = -5;
 
-    public static final int ERROR_CURVE25519 = -6;
+    public static final int ERROR_ED25519 = -6;
 
     public static final int ERROR_KEY_DESERIALIZATION_FAILED = -7;
 
@@ -92,6 +92,16 @@ public class RatchetException extends RuntimeException {
     public static final int ERROR_DUPLICATE_ID = -23;
 
     public static final int ERROR_INVALID_SIGNATURE = -24;
+
+    public static final int ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE = -25;
+
+    public static final int ERROR_EPOCH_MISMATCH = -26;
+
+    public static final int ERROR_PARTICIPANT_NOT_FOUND = -27;
+
+    public static final int ERROR_EPOCH_NOT_FOUND = -28;
+
+    public static final int ERROR_SESSION_ID_MISMATCH = -29;
 
     private int statusCode;
 

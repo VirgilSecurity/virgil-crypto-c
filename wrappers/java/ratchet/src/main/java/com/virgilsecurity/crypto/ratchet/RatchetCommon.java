@@ -54,7 +54,7 @@ public class RatchetCommon {
     * Max message length
     */
     public int getMaxMessageLen() {
-        return 32960;
+        return 32975;
     }
 
     /*
@@ -72,6 +72,13 @@ public class RatchetCommon {
     }
 
     /*
+    * Session id length
+    */
+    public int getSessionIdLen() {
+        return 32;
+    }
+
+    /*
     * Max number of group chat participants
     */
     public int getMaxParticipantsCount() {
@@ -82,14 +89,14 @@ public class RatchetCommon {
     * Min number of group chat participants
     */
     public int getMinParticipantsCount() {
-        return 1;
+        return 2;
     }
 
     /*
     * Max group message length
     */
     public int getMaxGroupMessageLen() {
-        return 32882;
+        return 32908;
     }
 }
 

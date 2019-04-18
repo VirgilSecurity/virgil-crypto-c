@@ -80,18 +80,36 @@ public class RatchetGroupTicket implements AutoCloseable {
         RatchetJNI.INSTANCE.ratchetGroupTicket_setupDefaults(this.cCtx);
     }
 
+    public void setupTicketAsNew() throws RatchetException {
+        RatchetJNI.INSTANCE.ratchetGroupTicket_setupTicketAsNew(this.cCtx);
+    }
+
     /*
     * Adds participant to chat.
     */
-    public void addParticipant(byte[] participantId, byte[] publicKey) throws RatchetException {
-        RatchetJNI.INSTANCE.ratchetGroupTicket_addParticipant(this.cCtx, participantId, publicKey);
+    public void addNewParticipant(byte[] participantId, byte[] publicKey) throws RatchetException {
+        RatchetJNI.INSTANCE.ratchetGroupTicket_addNewParticipant(this.cCtx, participantId, publicKey);
+    }
+
+    /*
+    * Remove participant from chat.
+    */
+    public void removeParticipant(byte[] participantId) throws RatchetException {
+        RatchetJNI.INSTANCE.ratchetGroupTicket_removeParticipant(this.cCtx, participantId);
     }
 
     /*
     * Generates message that should be sent to all participants using secure channel.
     */
-    public RatchetGroupMessage generateTicket() {
-        return RatchetJNI.INSTANCE.ratchetGroupTicket_generateTicket(this.cCtx);
+    public RatchetGroupMessage getComplementaryTicketMessage() {
+        return RatchetJNI.INSTANCE.ratchetGroupTicket_getComplementaryTicketMessage(this.cCtx);
+    }
+
+    /*
+    * Generates message that should be sent to all participants using secure channel.
+    */
+    public RatchetGroupMessage getFullTicketMessage() {
+        return RatchetJNI.INSTANCE.ratchetGroupTicket_getFullTicketMessage(this.cCtx);
     }
 }
 

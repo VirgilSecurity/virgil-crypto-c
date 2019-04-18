@@ -39,45 +39,37 @@ package com.virgilsecurity.crypto.ratchet;
 import com.virgilsecurity.crypto.foundation.*;
 
 /*
-* Utils class for working with keys formats
+* Utils class for working with keys formats.
 */
-public class RatchetKeyUtils implements AutoCloseable {
+public class RatchetKeyId implements AutoCloseable {
 
     public long cCtx;
 
     /* Create underlying C context. */
-    public RatchetKeyUtils() {
+    public RatchetKeyId() {
         super();
-        this.cCtx = RatchetJNI.INSTANCE.ratchetKeyUtils_new();
+        this.cCtx = RatchetJNI.INSTANCE.ratchetKeyId_new();
     }
 
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public RatchetKeyUtils(long cCtx) {
+    public RatchetKeyId(long cCtx) {
         super();
         this.cCtx = cCtx;
     }
 
     /* Close resource. */
     public void close() {
-        RatchetJNI.INSTANCE.ratchetKeyUtils_close(this.cCtx);
+        RatchetJNI.INSTANCE.ratchetKeyId_close(this.cCtx);
     }
 
     /*
-    * Computes 8 bytes key pair id from public key
+    * Computes 8 bytes key pair id from Curve25519 (in PKCS8 or raw format) public key
     */
-    public byte[] computePublicKeyId(byte[] publicKey, boolean convertToCurve25519) throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetKeyUtils_computePublicKeyId(this.cCtx, publicKey, convertToCurve25519);
-    }
-
-    public byte[] extractRatchetPublicKey(byte[] data, boolean ed25519, boolean curve25519, boolean convertToCurve25519) throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetKeyUtils_extractRatchetPublicKey(this.cCtx, data, ed25519, curve25519, convertToCurve25519);
-    }
-
-    public byte[] extractRatchetPrivateKey(byte[] data, boolean ed25519, boolean curve25519, boolean convertToCurve25519) throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetKeyUtils_extractRatchetPrivateKey(this.cCtx, data, ed25519, curve25519, convertToCurve25519);
+    public byte[] computePublicKeyId(byte[] publicKey) throws RatchetException {
+        return RatchetJNI.INSTANCE.ratchetKeyId_computePublicKeyId(this.cCtx, publicKey);
     }
 }
 
