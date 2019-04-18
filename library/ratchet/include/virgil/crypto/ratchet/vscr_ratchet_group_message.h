@@ -138,9 +138,6 @@ vscr_ratchet_group_message_shallow_copy(vscr_ratchet_group_message_t *self);
 VSCR_PUBLIC vscr_group_msg_type_t
 vscr_ratchet_group_message_get_type(const vscr_ratchet_group_message_t *self);
 
-VSCR_PRIVATE void
-vscr_ratchet_group_message_set_type(vscr_ratchet_group_message_t *self, vscr_group_msg_type_t type);
-
 //
 //  Returns number of public keys.
 //  This method should be called only for start group info message type.

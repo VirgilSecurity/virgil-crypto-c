@@ -44,21 +44,11 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#ifndef VSCR_RATCHET_GROUP_MESSAGE_INTERNAL_H_INCLUDED
+#define VSCR_RATCHET_GROUP_MESSAGE_INTERNAL_H_INCLUDED
 
-//  @description
-// --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
-// --------------------------------------------------------------------------
-
-#ifndef VSCR_RATCHET_PRIVATE_H_INCLUDED
-#define VSCR_RATCHET_PRIVATE_H_INCLUDED
-
-#include "vscr_ratchet_cipher.h"
-#include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_group_message_defs.h"
-#include "vscr_ratchet_group_ticket_defs.h"
-#include "vscr_ratchet_message_defs.h"
-#include "vscr_ratchet_padding.h"
+#include "vscr_ratchet_group_message.h"
+#include "vscr_group_msg_type.h"
 
 // clang-format on
 //  @end
@@ -75,6 +65,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+VSCR_PUBLIC void
+vscr_ratchet_group_message_set_type(vscr_ratchet_group_message_t *self, vscr_group_msg_type_t type);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -89,5 +82,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSCR_RATCHET_PRIVATE_H_INCLUDED
+#endif // VSCR_RATCHET_GROUP_MESSAGE_INTERNAL_H_INCLUDED
 //  @end

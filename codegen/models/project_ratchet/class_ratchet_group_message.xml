@@ -20,7 +20,7 @@
         </return>
     </method>
 
-    <method name="set type" visibility="private">
+    <method name="set type" scope="internal">
         <argument name="type" enum="group msg type"/>
     </method>
 

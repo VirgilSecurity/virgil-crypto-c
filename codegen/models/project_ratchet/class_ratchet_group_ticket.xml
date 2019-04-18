@@ -7,6 +7,7 @@
 
     <require module="buffer defs" project="common" scope="private"/>
     <require module="ratchet group message defs" scope="private"/>
+    <require module="ratchet group message internal" scope="private"/>
 
     <require header="RatchetGroupMessage.pb.h" scope="private"/>
     <require header="pb_decode.h" scope="private"/>
@@ -32,7 +33,7 @@
         <return enum="status"/>
     </method>
 
-    <method name="setup ticket internal" visibility="private">
+    <method name="setup ticket internal" scope="internal">
         <argument name="epoch" type="size"/>
         <argument name="epoch change" type="boolean"/>
         <argument name="session id" class="data"/>
@@ -57,7 +58,7 @@
         </return>
     </method>
 
-    <method name="add existing participant" visibility="private" scope="private">
+    <method name="add existing participant" scope="internal">
         <argument name="id" type="byte">
             <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
         </argument>

@@ -44,21 +44,20 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#ifndef VSCR_RATCHET_GROUP_TICKET_INTERNAL_H_INCLUDED
+#define VSCR_RATCHET_GROUP_TICKET_INTERNAL_H_INCLUDED
 
-//  @description
-// --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
-// --------------------------------------------------------------------------
+#include "vscr_ratchet_group_ticket.h"
+#include "vscr_ratchet_chain_key.h"
+#include "vscr_status.h"
 
-#ifndef VSCR_RATCHET_PRIVATE_H_INCLUDED
-#define VSCR_RATCHET_PRIVATE_H_INCLUDED
+#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
 
-#include "vscr_ratchet_cipher.h"
-#include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_group_message_defs.h"
-#include "vscr_ratchet_group_ticket_defs.h"
-#include "vscr_ratchet_message_defs.h"
-#include "vscr_ratchet_padding.h"
+#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
@@ -75,6 +74,15 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+VSCR_PUBLIC void
+vscr_ratchet_group_ticket_setup_ticket_internal(vscr_ratchet_group_ticket_t *self, size_t epoch, bool epoch_change,
+        vsc_data_t session_id);
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_group_ticket_add_existing_participant(vscr_ratchet_group_ticket_t *self,
+        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN], const byte pub_key[vscr_ratchet_common_hidden_KEY_LEN],
+        const vscr_ratchet_chain_key_t *chain_key) VSCR_NODISCARD;
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -89,5 +97,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSCR_RATCHET_PRIVATE_H_INCLUDED
+#endif // VSCR_RATCHET_GROUP_TICKET_INTERNAL_H_INCLUDED
 //  @end

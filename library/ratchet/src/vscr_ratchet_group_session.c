@@ -55,8 +55,9 @@
 #include "vscr_assert.h"
 #include "vscr_ratchet_group_session_defs.h"
 #include "vscr_ratchet_group_message_defs.h"
+#include "vscr_ratchet_group_message_internal.h"
 #include "vscr_ratchet_group_ticket_defs.h"
-#include "vscr_ratchet_group_ticket_private.h"
+#include "vscr_ratchet_group_ticket_internal.h"
 #include "vscr_ratchet_keys.h"
 #include "vscr_ratchet_group_participant_data.h"
 

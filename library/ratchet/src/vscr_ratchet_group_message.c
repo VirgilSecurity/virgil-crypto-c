@@ -53,6 +53,7 @@
 #include "vscr_ratchet_group_message.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
+#include "vscr_ratchet_group_message_internal.h"
 #include "vscr_ratchet_group_message_defs.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_common.h"
@@ -276,7 +277,7 @@ vscr_ratchet_group_message_get_type(const vscr_ratchet_group_message_t *self) {
     return vscr_group_msg_type_REGULAR;
 }
 
-VSCR_PRIVATE void
+VSCR_PUBLIC void
 vscr_ratchet_group_message_set_type(vscr_ratchet_group_message_t *self, vscr_group_msg_type_t type) {
 
     VSCR_ASSERT_PTR(self);

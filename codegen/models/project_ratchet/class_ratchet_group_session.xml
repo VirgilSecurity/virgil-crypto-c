@@ -8,8 +8,9 @@
     <require module="buffer defs" scope="private" project="common"/>
 
     <require module="ratchet group message defs" scope="private"/>
+    <require module="ratchet group message internal" scope="private"/>
     <require module="ratchet group ticket defs" scope="private"/>
-    <require module="ratchet group ticket private" scope="private"/>
+    <require module="ratchet group ticket internal" scope="private"/>
 
     <require header="RatchetGroupMessage.pb.h" scope="private"/>
     <require header="pb_decode.h" scope="private"/>
