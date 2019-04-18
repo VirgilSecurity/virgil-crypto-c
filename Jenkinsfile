@@ -27,16 +27,16 @@ def nodes = [:]
 //
 //  Language: C
 //
-// nodes['lang-c-platform-linux'] = build_LangC_Unix('build-centos7')
-// nodes['lang-c-platform-macos'] = build_LangC_Unix('build-os-x')
-// nodes['lang-c-platform-windows'] = build_LangC_Windows('build-win8')
+nodes['lang-c-platform-linux'] = build_LangC_Unix('build-centos7')
+nodes['lang-c-platform-macos'] = build_LangC_Unix('build-os-x')
+nodes['lang-c-platform-windows'] = build_LangC_Windows('build-win8')
 
 //
 //  Language: PHP
 //
-// nodes['lang-php-platform-linux'] = build_LangPHP_Linux('build-centos7')
-// nodes['lang-php-platform-macos'] = build_LangPHP_MacOS('build-os-x')
-// nodes['lang-php-platform-windows'] = build_LangPHP_Windows('build-win8')
+nodes['lang-php-platform-linux'] = build_LangPHP_Linux('build-centos7')
+nodes['lang-php-platform-macos'] = build_LangPHP_MacOS('build-os-x')
+nodes['lang-php-platform-windows'] = build_LangPHP_Windows('build-win8')
 
 //
 //  Language: Java
