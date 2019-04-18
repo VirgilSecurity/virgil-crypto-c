@@ -4,15 +4,13 @@
     <require class="ratchet common hidden" scope="private"/>
     <require class="ratchet common" scope="private"/>
 
-    <require impl="sha512" project="foundation" scope="private"/>
-    <require module="buffer defs" scope="private" project="common"/>
-
     <require header="RatchetGroupMessage.pb.h" scope="context"/>
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
     <property name="key id" impl="ratchet key id"/>
     <property name="message pb" class="GroupMessage" library="nanopb" access="readwrite" is_reference="0"/>
+    <property name="header pb" class="RegularGroupMessageHeader" library="nanopb" access="readwrite"/>
 
     <method name="get type" is_const="1">
         Returns message type.
@@ -20,6 +18,10 @@
         <return enum="group msg type">
             Message type.
         </return>
+    </method>
+
+    <method name="set type" scope="internal">
+        <argument name="type" enum="group msg type"/>
     </method>
 
     <method name="get pub key count" is_const="1">
@@ -41,6 +43,13 @@
     </method>
 
     <method name="get sender id" is_const="1">
+        Returns message sender id.
+        This method should be called only for regular message type.
+
+        <return class="data" access="readwrite"/>
+    </method>
+
+    <method name="get session id" is_const="1">
         Returns message sender id.
         This method should be called only for regular message type.
 

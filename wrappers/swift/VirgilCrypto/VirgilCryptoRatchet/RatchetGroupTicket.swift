@@ -82,6 +82,12 @@ import VirgilCryptoFoundation
         try RatchetError.handleStatus(fromC: proxyResult)
     }
 
+    @objc public func setupTicketAsNew() throws {
+        let proxyResult = vscr_ratchet_group_ticket_setup_ticket_as_new(self.c_ctx)
+
+        try RatchetError.handleStatus(fromC: proxyResult)
+    }
+
     /// Adds participant to chat.
     @objc public func addNewParticipant(participantId: Data, publicKey: Data) throws {
         let proxyResult = participantId.withUnsafeBytes({ (participantIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in

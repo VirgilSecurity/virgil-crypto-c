@@ -53,10 +53,11 @@
 #include "vscr_ratchet_group_ticket.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_ratchet_group_ticket_private.h"
+#include "vscr_ratchet_group_ticket_internal.h"
 #include "vscr_ratchet_group_ticket_defs.h"
 #include "vscr_ratchet_chain_key.h"
 #include "vscr_ratchet_group_message_defs.h"
+#include "vscr_ratchet_group_message_internal.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
@@ -272,14 +273,7 @@ vscr_ratchet_group_ticket_init_ctx(vscr_ratchet_group_ticket_t *self) {
     VSCR_ASSERT_PTR(self);
 
     self->key_utils = vscr_ratchet_key_utils_new();
-    self->epoch_change = true;
     self->full_msg = vscr_ratchet_group_message_new();
-
-    GroupMessage msg = GroupMessage_init_zero;
-
-    self->full_msg->message_pb = msg;
-    self->full_msg->message_pb.has_group_info = true;
-    self->full_msg->message_pb.group_info.type = MessageGroupInfo_Type_START;
 }
 
 //
@@ -320,25 +314,55 @@ vscr_ratchet_group_ticket_setup_defaults(vscr_ratchet_group_ticket_t *self) {
     return vscr_status_SUCCESS;
 }
 
-VSCR_PRIVATE void
-vscr_ratchet_group_ticket_setup_ticket(vscr_ratchet_group_ticket_t *self, size_t epoch, bool epoch_change) {
+VSCR_PUBLIC void
+vscr_ratchet_group_ticket_setup_ticket_internal(
+        vscr_ratchet_group_ticket_t *self, size_t epoch, bool epoch_change, vsc_data_t session_id) {
 
     VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(session_id.len == vscr_ratchet_common_SESSION_ID_LEN);
 
     self->epoch_change = epoch_change;
 
+    vscr_ratchet_group_message_set_type(
+            self->full_msg, epoch_change ? vscr_group_msg_type_EPOCH_CHANGE : vscr_group_msg_type_START_GROUP);
+    memcpy(self->full_msg->message_pb.group_info.session_id, session_id.bytes, session_id.len);
     self->full_msg->message_pb.group_info.epoch = epoch;
-    self->full_msg->message_pb.group_info.type =
-            epoch_change ? MessageGroupInfo_Type_CHANGE : MessageGroupInfo_Type_START;
 
     if (!epoch_change) {
-        GroupMessage msg = GroupMessage_init_zero;
         self->complementary_msg = vscr_ratchet_group_message_new();
-        self->complementary_msg->message_pb = msg;
-        self->complementary_msg->message_pb.has_group_info = true;
-        self->complementary_msg->message_pb.group_info.type = MessageGroupInfo_Type_ADD;
+        vscr_ratchet_group_message_set_type(self->complementary_msg, vscr_group_msg_type_ADD_MEMBERS);
         self->complementary_msg->message_pb.group_info.epoch = epoch;
+        memcpy(self->complementary_msg->message_pb.group_info.session_id, session_id.bytes, session_id.len);
     }
+}
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_group_ticket_setup_ticket_as_new(vscr_ratchet_group_ticket_t *self) {
+
+    VSCR_ASSERT(self);
+    VSCR_ASSERT(self->rng);
+
+    vscr_status_t status = vscr_status_SUCCESS;
+
+    self->epoch_change = true;
+    vscr_ratchet_group_message_set_type(self->full_msg, vscr_group_msg_type_START_GROUP);
+
+    vsc_buffer_t *session_id = vsc_buffer_new_with_capacity(vscr_ratchet_common_SESSION_ID_LEN);
+
+    vscf_status_t f_status = vscf_random(self->rng, vscr_ratchet_common_SESSION_ID_LEN, session_id);
+
+    if (f_status != vscf_status_SUCCESS) {
+        status = vscr_status_ERROR_RNG_FAILED;
+        goto err;
+    }
+
+    memcpy(self->full_msg->message_pb.group_info.session_id, vsc_buffer_bytes(session_id),
+            vscr_ratchet_common_SESSION_ID_LEN);
+
+err:
+    vsc_buffer_destroy(&session_id);
+
+    return status;
 }
 
 //
@@ -350,8 +374,16 @@ vscr_ratchet_group_ticket_add_new_participant(
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->rng);
+    VSCR_ASSERT_PTR(self->full_msg);
 
     VSCR_ASSERT(participant_id.len == vscr_ratchet_common_PARTICIPANT_ID_LEN);
+
+    for (size_t i = 0; i < self->full_msg->message_pb.group_info.participants_count; i++) {
+        if (memcmp(self->full_msg->message_pb.group_info.participants[i].id, participant_id.bytes,
+                    participant_id.len) == 0) {
+            return vscr_status_ERROR_DUPLICATE_ID;
+        }
+    }
 
     vscr_status_t status = vscr_status_SUCCESS;
 
@@ -366,10 +398,10 @@ vscr_ratchet_group_ticket_add_new_participant(
         goto err1;
     }
 
-    vsc_buffer_t *key = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH);
+    vsc_buffer_t *key = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_SHARED_KEY_LEN);
     vsc_buffer_make_secure(key);
 
-    vscf_status_t f_status = vscf_random(self->rng, vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH, key);
+    vscf_status_t f_status = vscf_random(self->rng, vscr_ratchet_common_hidden_SHARED_KEY_LEN, key);
 
     if (f_status != vscf_status_SUCCESS) {
         status = vscr_status_ERROR_RNG_FAILED;
@@ -380,6 +412,7 @@ vscr_ratchet_group_ticket_add_new_participant(
             &self->full_msg->message_pb.group_info, participant_id, vsc_buffer_data(pub_key), vsc_buffer_data(key), 0);
 
     if (!self->epoch_change) {
+        VSCR_ASSERT_PTR(self->complementary_msg);
         vscr_ratchet_group_ticket_add_participant_to_msg(&self->complementary_msg->message_pb.group_info,
                 participant_id, vsc_buffer_data(pub_key), vsc_buffer_data(key), 0);
     }
@@ -393,10 +426,10 @@ err1:
     return status;
 }
 
-VSCR_PRIVATE vscr_status_t
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_ticket_add_existing_participant(vscr_ratchet_group_ticket_t *self,
-        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN],
-        const byte pub_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH], const vscr_ratchet_chain_key_t *chain_key) {
+        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN], const byte pub_key[vscr_ratchet_common_hidden_KEY_LEN],
+        const vscr_ratchet_chain_key_t *chain_key) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->rng);
@@ -412,7 +445,7 @@ vscr_ratchet_group_ticket_add_existing_participant(vscr_ratchet_group_ticket_t *
         vsc_buffer_init(&key);
         vsc_buffer_use(&key, new_chain_key.key, sizeof(new_chain_key.key));
 
-        vscf_status_t f_status = vscf_random(self->rng, vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH, &key);
+        vscf_status_t f_status = vscf_random(self->rng, vscr_ratchet_common_hidden_SHARED_KEY_LEN, &key);
         vsc_buffer_delete(&key);
 
         if (f_status != vscf_status_SUCCESS) {
@@ -427,8 +460,7 @@ vscr_ratchet_group_ticket_add_existing_participant(vscr_ratchet_group_ticket_t *
     }
 
     vscr_ratchet_group_ticket_add_participant_to_msg(&self->full_msg->message_pb.group_info,
-            vsc_data(id, vscr_ratchet_common_PARTICIPANT_ID_LEN),
-            vsc_data(pub_key, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH),
+            vsc_data(id, vscr_ratchet_common_PARTICIPANT_ID_LEN), vsc_data(pub_key, vscr_ratchet_common_hidden_KEY_LEN),
             vsc_data(chain_key_ref->key, sizeof(chain_key_ref->key)), chain_key_ref->index);
 
 err:
@@ -443,12 +475,11 @@ vscr_ratchet_group_ticket_add_participant_to_msg(
 
     VSCR_ASSERT_PTR(msg_info);
     VSCR_ASSERT(participant_id.len == vscr_ratchet_common_PARTICIPANT_ID_LEN);
-    VSCR_ASSERT(public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
-    VSCR_ASSERT(key.len == vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH);
+    VSCR_ASSERT(public_key.len == vscr_ratchet_common_hidden_KEY_LEN);
+    VSCR_ASSERT(key.len == vscr_ratchet_common_hidden_SHARED_KEY_LEN);
 
     MessageParticipantInfo *info = &msg_info->participants[msg_info->participants_count];
 
-    info->version = 1;
     info->index = index;
     memcpy(info->id, participant_id.bytes, sizeof(info->id));
     memcpy(info->pub_key, public_key.bytes, sizeof(info->pub_key));

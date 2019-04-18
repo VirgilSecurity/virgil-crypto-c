@@ -222,14 +222,14 @@ vscr_ratchet_skipped_messages_find_key(
         vscr_ratchet_skipped_messages_t *self, size_t counter, vsc_data_t ratchet_public_key) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(ratchet_public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+    VSCR_ASSERT(ratchet_public_key.len == vscr_ratchet_common_hidden_KEY_LEN);
 
     vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key_list_node = self->keys;
 
     while (skipped_message_key_list_node) {
         if (counter == skipped_message_key_list_node->value->message_key->index &&
                 !memcmp(ratchet_public_key.bytes, skipped_message_key_list_node->value->public_key,
-                        vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH)) {
+                        vscr_ratchet_common_hidden_KEY_LEN)) {
             return skipped_message_key_list_node->value;
         }
         skipped_message_key_list_node = skipped_message_key_list_node->next;

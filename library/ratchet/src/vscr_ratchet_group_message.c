@@ -53,12 +53,11 @@
 #include "vscr_ratchet_group_message.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
+#include "vscr_ratchet_group_message_internal.h"
 #include "vscr_ratchet_group_message_defs.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_common.h"
 
-#include <virgil/crypto/foundation/vscf_sha512.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 
@@ -227,7 +226,7 @@ vscr_ratchet_group_message_init_ctx(vscr_ratchet_group_message_t *self) {
     GroupMessage msg = GroupMessage_init_zero;
 
     self->message_pb = msg;
-
+    self->message_pb.version = vscr_ratchet_common_hidden_GROUP_MESSAGE_VERSION;
     self->key_id = vscr_ratchet_key_id_new();
 }
 
@@ -246,6 +245,8 @@ vscr_ratchet_group_message_cleanup_ctx(vscr_ratchet_group_message_t *self) {
             vsc_buffer_destroy((vsc_buffer_t **)&self->message_pb.regular_message.cipher_text.arg);
         }
     }
+
+    vscr_dealloc(self->header_pb);
 
     vscr_ratchet_key_id_destroy(&self->key_id);
 }
@@ -274,6 +275,47 @@ vscr_ratchet_group_message_get_type(const vscr_ratchet_group_message_t *self) {
     }
 
     return vscr_group_msg_type_REGULAR;
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_group_message_set_type(vscr_ratchet_group_message_t *self, vscr_group_msg_type_t type) {
+
+    VSCR_ASSERT_PTR(self);
+
+    GroupMessage msg = GroupMessage_init_zero;
+    self->message_pb = msg;
+
+    switch (type) {
+    case vscr_group_msg_type_REGULAR:
+        self->message_pb.has_regular_message = true;
+        self->message_pb.has_group_info = false;
+        self->header_pb = vscr_alloc(sizeof(RegularGroupMessageHeader));
+        RegularGroupMessageHeader hdr = RegularGroupMessageHeader_init_zero;
+        *self->header_pb = hdr;
+        break;
+
+    case vscr_group_msg_type_START_GROUP:
+    case vscr_group_msg_type_ADD_MEMBERS:
+    case vscr_group_msg_type_EPOCH_CHANGE:
+        self->message_pb.has_regular_message = false;
+        self->message_pb.has_group_info = true;
+        break;
+    }
+
+    switch (type) {
+    case vscr_group_msg_type_REGULAR:
+        break;
+
+    case vscr_group_msg_type_START_GROUP:
+        self->message_pb.group_info.type = MessageGroupInfo_Type_START;
+        break;
+    case vscr_group_msg_type_ADD_MEMBERS:
+        self->message_pb.group_info.type = MessageGroupInfo_Type_ADD;
+        break;
+    case vscr_group_msg_type_EPOCH_CHANGE:
+        self->message_pb.group_info.type = MessageGroupInfo_Type_CHANGE;
+        break;
+    }
 }
 
 //
@@ -331,8 +373,22 @@ vscr_ratchet_group_message_get_sender_id(const vscr_ratchet_group_message_t *sel
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(self->message_pb.has_regular_message);
+    VSCR_ASSERT_PTR(self->header_pb);
 
-    return vsc_data(self->message_pb.regular_message.sender_id, sizeof(self->message_pb.regular_message.sender_id));
+    return vsc_data(self->header_pb->sender_id, sizeof(self->header_pb->sender_id));
+}
+
+//
+//  Returns message sender id.
+//  This method should be called only for regular message type.
+//
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_group_message_get_session_id(const vscr_ratchet_group_message_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->message_pb.has_group_info);
+
+    return vsc_data(self->message_pb.group_info.session_id, sizeof(self->message_pb.group_info.session_id));
 }
 
 //
@@ -349,7 +405,7 @@ vscr_ratchet_group_message_serialize_len(vscr_ratchet_group_message_t *self) {
 
         return vscr_ratchet_common_hidden_MAX_GROUP_INFO_MESSAGE_LEN -
                (vscr_ratchet_common_MAX_PARTICIPANTS_COUNT - info->participants_count) *
-                       vscr_ratchet_common_hidden_PARTICIPANT_LEN;
+                       vscr_ratchet_common_hidden_MIN_PARTICIPANT_LEN;
     } else if (self->message_pb.has_regular_message) {
         VSCR_ASSERT(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN >=
                     vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg));
@@ -422,6 +478,17 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
                     goto err;
                 }
             }
+        }
+    } else {
+        pb_istream_t sub_istream = pb_istream_from_buffer(
+                message->message_pb.regular_message.header, sizeof(message->message_pb.regular_message.header));
+
+        message->header_pb = vscr_alloc(sizeof(RegularGroupMessageHeader));
+        pb_status = pb_decode(&sub_istream, RegularGroupMessageHeader_fields, message->header_pb);
+
+        if (!pb_status) {
+            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+            goto err;
         }
     }
 

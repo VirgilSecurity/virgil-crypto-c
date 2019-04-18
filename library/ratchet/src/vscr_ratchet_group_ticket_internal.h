@@ -44,30 +44,19 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#ifndef VSCR_RATCHET_GROUP_TICKET_INTERNAL_H_INCLUDED
+#define VSCR_RATCHET_GROUP_TICKET_INTERNAL_H_INCLUDED
 
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'ratchet' types definition.
-// --------------------------------------------------------------------------
+#include "vscr_ratchet_group_ticket.h"
+#include "vscr_ratchet_chain_key.h"
+#include "vscr_status.h"
 
-#ifndef VSCR_RATCHET_DEFS_H_INCLUDED
-#define VSCR_RATCHET_DEFS_H_INCLUDED
-
-#include "vscr_library.h"
-#include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_keys.h"
-#include "vscr_ratchet_cipher.h"
-#include "vscr_ratchet_padding.h"
-#include "vscr_ratchet_sender_chain.h"
-#include "vscr_ratchet_receiver_chains.h"
-#include "vscr_ratchet_skipped_messages.h"
-
-#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
+#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
-#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
+#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 // clang-format on
@@ -85,37 +74,14 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'ratchet' context.
-//
-struct vscr_ratchet_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *rng;
+VSCR_PUBLIC void
+vscr_ratchet_group_ticket_setup_ticket_internal(vscr_ratchet_group_ticket_t *self, size_t epoch, bool epoch_change,
+        vsc_data_t session_id);
 
-    vscr_ratchet_cipher_t *cipher;
-
-    vscr_ratchet_padding_t *padding;
-
-    vscr_ratchet_sender_chain_t *sender_chain;
-
-    uint32_t prev_sender_chain_count;
-
-    vscr_ratchet_receiver_chains_t *receiver_chains;
-
-    vscr_ratchet_skipped_messages_t *skipped_messages;
-
-    byte root_key[vscr_ratchet_common_hidden_SHARED_KEY_LEN];
-};
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_group_ticket_add_existing_participant(vscr_ratchet_group_ticket_t *self,
+        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN], const byte pub_key[vscr_ratchet_common_hidden_KEY_LEN],
+        const vscr_ratchet_chain_key_t *chain_key) VSCR_NODISCARD;
 
 
 // --------------------------------------------------------------------------
@@ -131,5 +97,5 @@ struct vscr_ratchet_t {
 
 
 //  @footer
-#endif // VSCR_RATCHET_DEFS_H_INCLUDED
+#endif // VSCR_RATCHET_GROUP_TICKET_INTERNAL_H_INCLUDED
 //  @end

@@ -57,12 +57,10 @@
 #include "vscr_ratchet_common_hidden.h"
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
 #   include <virgil/crypto/foundation/vscf_aes256_gcm.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
 #   include <VSCFoundation/vscf_aes256_gcm.h>
 #endif
 
@@ -93,10 +91,6 @@ struct vscr_ratchet_cipher_t {
     //  Reference counter.
     //
     size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *rng;
 
     vscf_aes256_gcm_t *aes256_gcm;
 };

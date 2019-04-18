@@ -5,14 +5,18 @@
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
 
+    <require module="buffer defs" scope="private" project="common"/>
+
     <require module="ratchet group message defs" scope="private"/>
+    <require module="ratchet group message internal" scope="private"/>
     <require module="ratchet group ticket defs" scope="private"/>
-    <require module="ratchet group ticket private" scope="private"/>
+    <require module="ratchet group ticket internal" scope="private"/>
 
     <require header="RatchetGroupMessage.pb.h" scope="private"/>
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
+    <require impl="sha512" project="foundation" scope="private"/>
     <require header="ed25519/ed25519.h" scope="private"/>
 
     <require class="ratchet keys" scope="private"/>
@@ -25,6 +29,7 @@
 
     <property name="key utils" class="ratchet key utils"/>
     <property name="cipher" class="ratchet cipher" access="readwrite"/>
+    <property name="padding" class="ratchet padding" access="readwrite"/>
     <property name="skipped messages" class="ratchet skipped group message key root node" access="readwrite">
         <array/>
     </property>
@@ -33,15 +38,18 @@
     <property name="is private key set" type="boolean" access="readwrite"/>
     <property name="is id set" type="boolean" access="readwrite"/>
 
+    <property name="session id" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_session_id_len)"/>
+    </property>
     <property name="my id" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
     </property>
     <property name="my epoch" class="ratchet group participant epoch" access="readwrite"/>
     <property name="my public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_key_len)"/>
     </property>
     <property name="my private key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_key_len)"/>
     </property>
 
     <property name="participants" class="ratchet group participant data" access="readwrite">
@@ -94,6 +102,10 @@
         Sets identity private key.
 
         <argument name="my id" class="data"/>
+    </method>
+
+    <method name="get my id" is_const="1">
+        <return class="data"/>
     </method>
 
     <method name="get id" is_const="1">

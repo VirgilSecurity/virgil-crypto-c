@@ -10,10 +10,7 @@
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 
-    <dependency name="rng" interface="random" project="foundation"/>
     <property name="aes256 gcm" impl="aes256 gcm" project="foundation"/>
-
-    <constant name="key len" value="32"/>
 
     <method name="encrypt len">
         <argument name="plain text len" type="size"/>
@@ -31,22 +28,10 @@
         <argument name="key" class="data"/>
     </method>
 
-    <method name="padded len" declaration="private" is_static="1">
-        <argument name="plain text len" type="size"/>
-
-        <return type="size"/>
-    </method>
-
-    <method name="add padding" declaration="private">
-        <argument name="plain text" class="data"/>
-        <argument name="error" class="error" access="readwrite"/>
-
-        <return class="buffer" access="disown"/>
-    </method>
-
     <method name="encrypt">
         <argument name="key" class="data"/>
         <argument name="plain text" class="data"/>
+        <argument name="additional data" class="data"/>
 
         <argument name="buffer" class="buffer">
             <length method="encrypt len">
@@ -57,16 +42,10 @@
         <return enum="status"/>
     </method>
 
-    <method name="remove padding" declaration="private" is_static="1">
-        <argument name="decrypted text" class="data"/>
-        <argument name="buffer" class="buffer"/>
-
-        <return enum="status"/>
-    </method>
-
     <method name="decrypt">
         <argument name="key" class="data"/>
         <argument name="cipher text" class="data"/>
+        <argument name="additional data" class="data"/>
 
         <argument name="buffer" class="buffer">
             <length method="decrypt len">

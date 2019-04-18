@@ -81,7 +81,7 @@ enum {
     //
     //  Max message length
     //
-    vscr_ratchet_common_MAX_MESSAGE_LEN = 32960,
+    vscr_ratchet_common_MAX_MESSAGE_LEN = 32975,
     //
     //  Key pair id length
     //
@@ -90,6 +90,10 @@ enum {
     //  Participant id length
     //
     vscr_ratchet_common_PARTICIPANT_ID_LEN = 32,
+    //
+    //  Session id length
+    //
+    vscr_ratchet_common_SESSION_ID_LEN = 32,
     //
     //  Max number of group chat participants
     //
@@ -101,7 +105,7 @@ enum {
     //
     //  Max group message length
     //
-    vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN = 32886
+    vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN = 32908
 };
 
 

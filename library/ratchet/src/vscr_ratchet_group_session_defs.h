@@ -57,6 +57,7 @@
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet_cipher.h"
+#include "vscr_ratchet_padding.h"
 #include "vscr_ratchet_skipped_group_message_key_root_node.h"
 #include "vscr_ratchet_group_participant_epoch.h"
 #include "vscr_ratchet_group_participant_data.h"
@@ -105,6 +106,8 @@ struct vscr_ratchet_group_session_t {
 
     vscr_ratchet_cipher_t *cipher;
 
+    vscr_ratchet_padding_t *padding;
+
     vscr_ratchet_skipped_group_message_key_root_node_t **skipped_messages;
 
     bool is_initialized;
@@ -113,13 +116,15 @@ struct vscr_ratchet_group_session_t {
 
     bool is_id_set;
 
+    byte session_id[vscr_ratchet_common_SESSION_ID_LEN];
+
     byte my_id[vscr_ratchet_common_PARTICIPANT_ID_LEN];
 
     vscr_ratchet_group_participant_epoch_t *my_epoch;
 
-    byte my_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte my_public_key[vscr_ratchet_common_hidden_KEY_LEN];
 
-    byte my_private_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte my_private_key[vscr_ratchet_common_hidden_KEY_LEN];
 
     vscr_ratchet_group_participant_data_t **participants;
 

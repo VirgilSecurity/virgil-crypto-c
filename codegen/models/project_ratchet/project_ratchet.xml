@@ -67,6 +67,7 @@
     <class name="ratchet skipped messages"/>
     <class name="ratchet receiver chains"/>
     <class name="ratchet message"/>
+    <class name="ratchet padding"/>
     <class name="ratchet cipher"/>
     <class name="ratchet chain key"/>
     <class name="ratchet message key"/>
