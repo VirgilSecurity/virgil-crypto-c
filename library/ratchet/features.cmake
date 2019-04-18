@@ -53,14 +53,12 @@ option(VSCR_RATCHET_KEY_ID "Enable class 'ratchet key id'." ON)
 option(VSCR_ERROR "Enable class 'error'." ON)
 option(VSCR_RATCHET_X3DH "Enable class 'ratchet x3dh'." ON)
 option(VSCR_RATCHET_SKIPPED_MESSAGES "Enable class 'ratchet skipped messages'." ON)
-option(VSCR_RATCHET_RECEIVER_CHAINS "Enable class 'ratchet receiver chains'." ON)
 option(VSCR_RATCHET_MESSAGE "Enable class 'ratchet message'." ON)
 option(VSCR_RATCHET_PADDING "Enable class 'ratchet padding'." ON)
 option(VSCR_RATCHET_CIPHER "Enable class 'ratchet cipher'." ON)
 option(VSCR_RATCHET_CHAIN_KEY "Enable class 'ratchet chain key'." ON)
 option(VSCR_RATCHET_MESSAGE_KEY "Enable class 'ratchet message key'." ON)
 option(VSCR_RATCHET_RECEIVER_CHAIN "Enable class 'ratchet receiver chain'." ON)
-option(VSCR_RATCHET_RECEIVER_CHAIN_LIST_NODE "Enable class 'ratchet receiver chain list node'." ON)
 option(VSCR_RATCHET_SKIPPED_MESSAGE_KEY "Enable class 'ratchet skipped message key'." ON)
 option(VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE "Enable class 'ratchet skipped message key list node'." ON)
 option(VSCR_RATCHET_SENDER_CHAIN "Enable class 'ratchet sender chain'." ON)
@@ -84,14 +82,12 @@ mark_as_advanced(
         VSCR_ERROR
         VSCR_RATCHET_X3DH
         VSCR_RATCHET_SKIPPED_MESSAGES
-        VSCR_RATCHET_RECEIVER_CHAINS
         VSCR_RATCHET_MESSAGE
         VSCR_RATCHET_PADDING
         VSCR_RATCHET_CIPHER
         VSCR_RATCHET_CHAIN_KEY
         VSCR_RATCHET_MESSAGE_KEY
         VSCR_RATCHET_RECEIVER_CHAIN
-        VSCR_RATCHET_RECEIVER_CHAIN_LIST_NODE
         VSCR_RATCHET_SKIPPED_MESSAGE_KEY
         VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE
         VSCR_RATCHET_SENDER_CHAIN
@@ -189,24 +185,6 @@ if(VSCR_RATCHET_SKIPPED_MESSAGES AND NOT VSCR_RATCHET_CHAIN_KEY)
     message(FATAL_ERROR)
 endif()
 
-if(VSCR_RATCHET_RECEIVER_CHAINS AND NOT VSCR_RATCHET_COMMON_HIDDEN)
-    message("-- error --")
-    message("--")
-    message("Feature VSCR_RATCHET_RECEIVER_CHAINS depends on the feature:")
-    message("     VSCR_RATCHET_COMMON_HIDDEN - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCR_RATCHET_RECEIVER_CHAINS AND NOT VSCR_RATCHET_CHAIN_KEY)
-    message("-- error --")
-    message("--")
-    message("Feature VSCR_RATCHET_RECEIVER_CHAINS depends on the feature:")
-    message("     VSCR_RATCHET_CHAIN_KEY - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
 if(VSCR_RATCHET_MESSAGE AND NOT VSCR_RATCHET_COMMON_HIDDEN)
     message("-- error --")
     message("--")
@@ -293,15 +271,6 @@ if(VSCR_RATCHET_RECEIVER_CHAIN AND NOT VSCR_RATCHET_COMMON_HIDDEN)
     message("--")
     message("Feature VSCR_RATCHET_RECEIVER_CHAIN depends on the feature:")
     message("     VSCR_RATCHET_COMMON_HIDDEN - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCR_RATCHET_RECEIVER_CHAIN_LIST_NODE AND NOT VSCR_RATCHET_RECEIVER_CHAIN)
-    message("-- error --")
-    message("--")
-    message("Feature VSCR_RATCHET_RECEIVER_CHAIN_LIST_NODE depends on the feature:")
-    message("     VSCR_RATCHET_RECEIVER_CHAIN - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

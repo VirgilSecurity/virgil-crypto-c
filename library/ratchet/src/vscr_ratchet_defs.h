@@ -59,7 +59,7 @@
 #include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet_padding.h"
 #include "vscr_ratchet_sender_chain.h"
-#include "vscr_ratchet_receiver_chains.h"
+#include "vscr_ratchet_receiver_chain.h"
 #include "vscr_ratchet_skipped_messages.h"
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -110,7 +110,7 @@ struct vscr_ratchet_t {
 
     uint32_t prev_sender_chain_count;
 
-    vscr_ratchet_receiver_chains_t *receiver_chains;
+    vscr_ratchet_receiver_chain_t *receiver_chain;
 
     vscr_ratchet_skipped_messages_t *skipped_messages;
 

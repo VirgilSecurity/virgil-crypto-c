@@ -23,7 +23,7 @@
     <property name="padding" class="ratchet padding" access="readwrite"/>
     <property name="sender chain" class="ratchet sender chain" access="readwrite"/>
     <property name="prev sender chain count" type="unsigned" size="4" access="readwrite"/>
-    <property name="receiver chains" class="ratchet receiver chains" access="readwrite"/>
+    <property name="receiver chain" class="ratchet receiver chain" access="readwrite"/>
     <property name="skipped messages" class="ratchet skipped messages" access="readwrite"/>
     <property name="root key" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_shared_key_len)"/>
@@ -94,6 +94,13 @@
 
     <method name="generate sender chain keypair" declaration="private">
         <argument name="sender chain" class="ratchet sender chain" access="readwrite"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="generate skipped keys" declaration="private">
+        <argument name="receiver chain" class="ratchet receiver chain" access="readwrite"/>
+        <argument name="counter" type="size"/>
 
         <return enum="status"/>
     </method>

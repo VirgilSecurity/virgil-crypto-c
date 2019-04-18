@@ -36,13 +36,12 @@
 #define VIRGIL_CRYPTO_PRIVATEAPI_H
 
 #include <virgil/crypto/foundation/private/vscf_pkcs8_der_deserializer_defs.h>
+#include "vscr_ratchet_receiver_chain.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet.h"
 #include "vscr_ratchet_sender_chain.h"
-#include "vscr_ratchet_receiver_chain_list_node.h"
 #include "vscr_ratchet_skipped_message_key_list_node.h"
-#include "vscr_ratchet_receiver_chains.h"
 #include "vscr_ratchet_skipped_messages.h"
 #include "vscr_ratchet_key_utils.h"
 
@@ -57,19 +56,6 @@ struct vscr_ratchet_skipped_messages_t {
     size_t refcnt;
 
     vscr_ratchet_skipped_message_key_list_node_t *keys;
-};
-
-struct vscr_ratchet_receiver_chains_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscr_ratchet_receiver_chain_list_node_t *chains;
 };
 
 struct vscr_ratchet_t {
@@ -96,7 +82,7 @@ struct vscr_ratchet_t {
 
     uint32_t prev_sender_chain_count;
 
-    vscr_ratchet_receiver_chains_t *receiver_chains;
+    vscr_ratchet_receiver_chain_t *receiver_chain;
 
     vscr_ratchet_skipped_messages_t *skipped_messages;
 

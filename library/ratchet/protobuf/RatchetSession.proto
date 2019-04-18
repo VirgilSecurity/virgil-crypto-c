@@ -30,15 +30,11 @@ message SkippedMessages {
 	repeated SkippedMessageKey keys = 1;
 }
 
-message ReceiverChains {
-	repeated ReceiverChain chains = 1;
-}
-
 message Ratchet {
 	optional SenderChain sender_chain = 1;
 	required uint32 prev_sender_chain_count = 2;
-	required bytes root_key = 3;
-	required ReceiverChains receiver_chains = 4;
+	optional ReceiverChain receiver_chain = 3;
+	required bytes root_key = 4;
 	required SkippedMessages skipped_messages = 5;
 }
 

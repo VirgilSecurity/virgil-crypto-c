@@ -65,14 +65,12 @@
     <class name="error"/>
     <class name="ratchet x3dh"/>
     <class name="ratchet skipped messages"/>
-    <class name="ratchet receiver chains"/>
     <class name="ratchet message"/>
     <class name="ratchet padding"/>
     <class name="ratchet cipher"/>
     <class name="ratchet chain key"/>
     <class name="ratchet message key"/>
     <class name="ratchet receiver chain"/>
-    <class name="ratchet receiver chain list node"/>
     <class name="ratchet skipped message key"/>
     <class name="ratchet skipped message key list node"/>
     <class name="ratchet sender chain"/>

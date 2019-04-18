@@ -293,9 +293,9 @@ vscr_ratchet_skipped_group_message_key_root_node_add_key(vscr_ratchet_skipped_gr
         skipped_message_key_list_node = skipped_message_key_list_node->next;
     }
 
-    VSCR_ASSERT(msgs_count <= vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES + 1);
+    VSCR_ASSERT(msgs_count <= vscr_ratchet_common_hidden_MAX_SKIPPED_GROUP_MESSAGES + 1);
 
-    if (msgs_count == vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES + 1) {
+    if (msgs_count == vscr_ratchet_common_hidden_MAX_SKIPPED_GROUP_MESSAGES + 1) {
         vscr_ratchet_skipped_group_message_key_node_destroy(&skipped_message_key_list_node->next);
     }
 }

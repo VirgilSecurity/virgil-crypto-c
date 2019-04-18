@@ -733,10 +733,7 @@ vscr_ratchet_session_decrypt(
     VSCR_ASSERT_PTR(message);
     VSCR_ASSERT_PTR(plain_text);
 
-    // TODO: Enhance old chains removal
-
     const RegularMessage *regular_message = &message->message_pb.regular_message;
-    ;
 
     if (message->message_pb.has_prekey_message && self->is_initiator) {
         return vscr_status_ERROR_BAD_MESSAGE_TYPE;

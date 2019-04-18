@@ -773,6 +773,8 @@ vscr_ratchet_group_session_decrypt(
     const RegularGroupMessage *group_message = &message->message_pb.regular_message;
     const RegularGroupMessageHeader *header = message->header_pb;
 
+    // TODO: Check mas message gap
+
     if (memcmp(header->sender_id, self->my_id, sizeof(self->my_id)) == 0) {
         return vscr_status_ERROR_CANNOT_DECRYPT_OWN_MESSAGES;
     }
