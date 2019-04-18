@@ -112,6 +112,11 @@
         <return class="data"/>
     </method>
 
+    <method name="check session consistency" declaration="private">
+        <argument name="message" class="ratchet group message"/>
+        <return enum="status"/>
+    </method>
+
     <method name="setup session">
         Sets up session. Identity private key should be set separately.
 

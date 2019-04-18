@@ -189,13 +189,7 @@ vscr_ratchet_group_ticket_remove_participant(vscr_ratchet_group_ticket_t *self,
 //  Generates message that should be sent to all participants using secure channel.
 //
 VSCR_PUBLIC const vscr_ratchet_group_message_t *
-vscr_ratchet_group_ticket_get_complementary_ticket_message(const vscr_ratchet_group_ticket_t *self);
-
-//
-//  Generates message that should be sent to all participants using secure channel.
-//
-VSCR_PUBLIC const vscr_ratchet_group_message_t *
-vscr_ratchet_group_ticket_get_full_ticket_message(const vscr_ratchet_group_ticket_t *self);
+vscr_ratchet_group_ticket_get_ticket_message(const vscr_ratchet_group_ticket_t *self);
 
 
 // --------------------------------------------------------------------------

@@ -34,20 +34,21 @@
 
 #define UNITY_BEGIN() UnityBegin(__FILENAME__)
 
-#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
-#include <virgil/crypto/ratchet/vscr_memory.h>
-#include "vscr_ratchet_common.h"
-#include "vscr_ratchet_common_hidden.h"
 #include "unity.h"
 #include "test_utils.h"
 
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET_GROUP_SESSION
 #if TEST_DEPENDENCIES_AVAILABLE
 
+#include "vscf_ctr_drbg.h"
+#include "vscr_memory.h"
+#include "vscr_ratchet_group_message_internal.h"
 #include "test_data_ratchet_group_message.h"
 #include "vscr_ratchet_group_message.h"
 #include "vscr_ratchet_group_message_defs.h"
 #include "test_utils_ratchet.h"
+#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_common_hidden.h"
 
 // --------------------------------------------------------------------------
 //  Test functions.
@@ -144,7 +145,7 @@ void
 test__serialize_deserialize__fixed_group_info_msg__should_be_equal(void) {
     vscr_ratchet_group_message_t *msg1 = vscr_ratchet_group_message_new();
 
-    vscr_ratchet_group_message_set_type(msg1, vscr_group_msg_type_EPOCH_CHANGE);
+    vscr_ratchet_group_message_set_type(msg1, vscr_group_msg_type_GROUP_INFO);
 
     msg1->message_pb.version = 5;
     msg1->message_pb.group_info.participants_count = 2;
@@ -189,12 +190,12 @@ test__serialize_deserialize__group_info_overflow__should_be_equal(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
     vscr_ratchet_group_message_t *msg1 = vscr_ratchet_group_message_new();
-    vscr_ratchet_group_message_set_type(msg1, vscr_group_msg_type_EPOCH_CHANGE);
+    vscr_ratchet_group_message_set_type(msg1, vscr_group_msg_type_GROUP_INFO);
 
     msg1->message_pb.version = UINT32_MAX;
     msg1->message_pb.group_info.epoch = UINT32_MAX;
 
-    size_t number_of_participants = vscr_ratchet_common_MAX_PARTICIPANTS_COUNT - 1;
+    size_t number_of_participants = vscr_ratchet_common_MAX_PARTICIPANTS_COUNT;
 
     msg1->message_pb.group_info.participants_count = number_of_participants;
 
@@ -202,7 +203,7 @@ test__serialize_deserialize__group_info_overflow__should_be_equal(void) {
         vsc_buffer_t *id;
         generate_random_participant_id(rng, &id);
         memcpy(msg1->message_pb.group_info.participants[i].id, vsc_buffer_bytes(id), vsc_buffer_len(id));
-        msg1->message_pb.group_info.participants[i].index = 0; // UINT32_MAX;
+        msg1->message_pb.group_info.participants[i].index = UINT32_MAX;
         vsc_buffer_destroy(&id);
     }
 

@@ -73,24 +73,14 @@ extern "C" {
 //
 enum vscr_group_msg_type_t {
     //
-    //  Group info used to create group chat, or change group chat.
+    //  Group info used to create group chat, add or remove participants.
     //  Should be distributed only using secure channels.
     //
-    vscr_group_msg_type_START_GROUP = 1,
-    //
-    //  Add members message.
-    //  Should be distributed only using secure channels.
-    //
-    vscr_group_msg_type_ADD_MEMBERS = 2,
-    //
-    //  Remove members message.
-    //  Should be distributed only using secure channels.
-    //
-    vscr_group_msg_type_EPOCH_CHANGE = 3,
+    vscr_group_msg_type_GROUP_INFO = 1,
     //
     //  Regular group ratchet message with cipher text.
     //
-    vscr_group_msg_type_REGULAR = 4
+    vscr_group_msg_type_REGULAR = 3
 };
 typedef enum vscr_group_msg_type_t vscr_group_msg_type_t;
 

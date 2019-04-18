@@ -606,7 +606,7 @@ initialize_random_group_chat(
         vsc_buffer_destroy(&pub);
     }
 
-    const vscr_ratchet_group_message_t *msg_start = vscr_ratchet_group_ticket_get_full_ticket_message(ticket);
+    const vscr_ratchet_group_message_t *msg_start = vscr_ratchet_group_ticket_get_ticket_message(ticket);
 
     for (size_t i = 0; i < group_size; i++) {
         vscr_ratchet_group_session_t *session = vscr_ratchet_group_session_new();
@@ -689,16 +689,12 @@ add_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t add_size, vscr_ratc
         (*sessions)[size + i] = session;
     }
 
-    const vscr_ratchet_group_message_t *msg_start = vscr_ratchet_group_ticket_get_full_ticket_message(ticket);
-    const vscr_ratchet_group_message_t *msg_add = vscr_ratchet_group_ticket_get_complementary_ticket_message(ticket);
+    const vscr_ratchet_group_message_t *msg = vscr_ratchet_group_ticket_get_ticket_message(ticket);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vscr_ratchet_group_message_get_session_id(msg_start), session_id);
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vscr_ratchet_group_message_get_session_id(msg_add), session_id);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vscr_ratchet_group_message_get_session_id(msg), session_id);
 
     for (size_t i = 0; i < size + add_size; i++) {
         vscr_ratchet_group_session_t *session = (*sessions)[i];
-
-        const vscr_ratchet_group_message_t *msg = i >= size ? msg_start : msg_add;
 
         TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(session, msg));
 
@@ -764,7 +760,7 @@ remove_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t remove_size, vsc
         }
     }
 
-    const vscr_ratchet_group_message_t *msg = vscr_ratchet_group_ticket_get_full_ticket_message(ticket);
+    const vscr_ratchet_group_message_t *msg = vscr_ratchet_group_ticket_get_ticket_message(ticket);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vscr_ratchet_group_message_get_session_id(msg), session_id);
 
     for (size_t i = 0; i < counter; i++) {

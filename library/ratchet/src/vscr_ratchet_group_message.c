@@ -259,19 +259,11 @@ vscr_ratchet_group_message_get_type(const vscr_ratchet_group_message_t *self) {
 
     VSCR_ASSERT(self);
 
-
     if (self->message_pb.has_regular_message) {
         return vscr_group_msg_type_REGULAR;
     } else {
         VSCR_ASSERT(self->message_pb.has_group_info);
-        switch (self->message_pb.group_info.type) {
-        case MessageGroupInfo_Type_START:
-            return vscr_group_msg_type_START_GROUP;
-        case MessageGroupInfo_Type_ADD:
-            return vscr_group_msg_type_ADD_MEMBERS;
-        case MessageGroupInfo_Type_CHANGE:
-            return vscr_group_msg_type_EPOCH_CHANGE;
-        }
+        return vscr_group_msg_type_GROUP_INFO;
     }
 
     return vscr_group_msg_type_REGULAR;
@@ -294,26 +286,9 @@ vscr_ratchet_group_message_set_type(vscr_ratchet_group_message_t *self, vscr_gro
         *self->header_pb = hdr;
         break;
 
-    case vscr_group_msg_type_START_GROUP:
-    case vscr_group_msg_type_ADD_MEMBERS:
-    case vscr_group_msg_type_EPOCH_CHANGE:
+    case vscr_group_msg_type_GROUP_INFO:
         self->message_pb.has_regular_message = false;
         self->message_pb.has_group_info = true;
-        break;
-    }
-
-    switch (type) {
-    case vscr_group_msg_type_REGULAR:
-        break;
-
-    case vscr_group_msg_type_START_GROUP:
-        self->message_pb.group_info.type = MessageGroupInfo_Type_START;
-        break;
-    case vscr_group_msg_type_ADD_MEMBERS:
-        self->message_pb.group_info.type = MessageGroupInfo_Type_ADD;
-        break;
-    case vscr_group_msg_type_EPOCH_CHANGE:
-        self->message_pb.group_info.type = MessageGroupInfo_Type_CHANGE;
         break;
     }
 }
@@ -469,6 +444,16 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     if (message->message_pb.has_group_info) {
         MessageGroupInfo *info = &message->message_pb.group_info;
+
+        if (info->participants_count > vscr_ratchet_common_MAX_PARTICIPANTS_COUNT) {
+            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_TOO_MANY_PARTICIPANTS);
+            goto err;
+        }
+
+        if (info->participants_count < vscr_ratchet_common_MIN_PARTICIPANTS_COUNT) {
+            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_TOO_FEW_PARTICIPANTS);
+            goto err;
+        }
 
         // Checking for duplicates
         for (size_t i = 0; i < info->participants_count; i++) {
