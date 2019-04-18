@@ -115,9 +115,9 @@ import VSCFoundation
             vsc_buffer_delete(dataBuf)
         }
 
-        let proxyResult = data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_status_t in
+        let proxyResult = data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
             vsc_buffer_init(dataBuf)
-            vsc_buffer_use(dataBuf, dataPointer, dataCount)
+            vsc_buffer_use(dataBuf, dataPointer.bindMemory(to: byte.self).baseAddress, dataCount)
 
             return vscf_ctr_drbg_random(self.c_ctx, dataLen, dataBuf)
         })

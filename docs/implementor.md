@@ -24,7 +24,7 @@ attribute names are case-sensitive and we use only lower-case names.
              </property>
           </context>
           <interface name>
-             <constant name [c_prefix] [of_class] [uid] [full_uid] [feature] [definition] [value]/>
+             <constant name [c_prefix] [of_class] [uid] [full_uid] [feature] [scope] [definition] [value]/>
           </interface>
           <dependency name [library] [project] [interface] [api] [class] [impl] [type_name] [has_observers]
                [is_observers_return_status]/>
@@ -121,7 +121,7 @@ scope:
 Value: Meaning:
 public: Component is visible for outside world.
 private: Component is visible for outside world via private interface.
-internal: Component is visible only within library or a specific source file.
+internal: Component is visible only within library.
 
 name:
     Implementation name. The name attribute is required.
@@ -508,7 +508,9 @@ name:
 The 'constant' item
 -------------------
 
-Groups common attributes for the component. Defines integral constant.
+Groups common attributes for the component. Groups common attributes for a
+scoped component. Scoped component is a component that more precisely can
+specify the scope where it can be used. Defines integral constant.
 
     <constant
         name = "..."
@@ -517,6 +519,7 @@ Groups common attributes for the component. Defines integral constant.
       [ uid = "..." ]
       [ full_uid = "..." ]
       [ feature = "..." ]
+      [ scope = "public | private | internal | hidden"  ("public") ]
       [ definition = "public | private | external"  ("private") ]
       [ value = "..." ]
         />
@@ -552,6 +555,18 @@ full_uid:
 feature:
     In-project feature name that is implemented. This attribute is used for
     feature-based compilation. The feature attribute is optional.
+
+scope:
+    Defines component visibility for outside world. This attribute must not
+    be inherited. This attributed can be defined only within entities: -
+    'class' - 'implementation'. The scope attribute is optional. Its default
+    value is "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library.
+hidden: Component is visible only within related source file.
 
 name:
     Constant name. The name attribute is required.

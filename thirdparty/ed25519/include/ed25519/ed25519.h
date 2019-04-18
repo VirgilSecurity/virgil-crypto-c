@@ -76,7 +76,7 @@ int curve25519_key_exchange(
 /**
  * @brief Create signature based on the Curve25519 montgomery curve
  *
- * Use ESDSA to derive signature
+ * Use EdDSA algorithm (RFC 8032) to derive signature
  *
  * @param signature - derived signature (unsigned binary data, low endian, 64 byte)
  * @param secret_key - Curve25519 secret key (unsigned binary data, low endian, 32 byte)
@@ -93,7 +93,7 @@ int curve25519_sign(
 /**
  * @brief Verify signature based on the Curve25519 montgomery curve
  *
- * Use ESDSA to verify signature
+ * Use EdDSA algorithm (RFC 8032) to verify signature
  *
  * @param signature - derived signature (unsigned binary data, low endian, 64 byte)
  * @param public_key - Curve25519 public key (unsigned binary data, low endian, 32 byte)
@@ -119,7 +119,7 @@ int ed25519_get_pubkey(
 /**
  * @brief Create signature based on the Ed25519 edwards curve
  *
- * Use ESDSA to derive signature
+ * Use EdDSA algorithm (RFC 8032) to derive signature
  *
  * @param signature - derived signature (unsigned binary data, low endian, 64 byte)
  * @param secret_key - Ed25519 secret key (unsigned binary data, low endian, 32 byte)
@@ -136,7 +136,7 @@ int ed25519_sign(
 /**
  * @brief Verify signature based on the Ed25519 edwards curve
  *
- * Use ESDSA to verify signature
+ * Use EdDSA algorithm (RFC 8032) to verify signature
  *
  * @param signature - derived signature (unsigned binary data, low endian, 64 byte)
  * @param public_key - Ed25519 public key (unsigned binary data, low endian, 32 byte)

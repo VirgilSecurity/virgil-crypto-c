@@ -36,6 +36,18 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(virgil_crypto_c_common VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
+# ---------------------------------------------------------------------------
+#   Check dependencies
+# ---------------------------------------------------------------------------
+
+#
+# Virgil Security helper library platform
+#
+if(NOT TARGET vsc::platform)
+    message(FATAL_ERROR
+            "Required library 'Virgil Security Crypto Platform' is not found - looking for target 'vsc::platform'.")
+endif()
+
 #
 # Options
 #
@@ -52,6 +64,11 @@ include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 add_library(common "")
 include("${CMAKE_CURRENT_LIST_DIR}/sources.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
+
+#
+# Link to dependencies
+#
+target_link_libraries(common PUBLIC vsc::platform)
 
 #
 # Define specific compilation and linkage flags.
@@ -95,7 +112,7 @@ add_library(vsc::common ALIAS common)
 #
 # Format code
 #
-if(COMMAND add_clangformat)
+if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
     add_clangformat(common)
 endif()
 

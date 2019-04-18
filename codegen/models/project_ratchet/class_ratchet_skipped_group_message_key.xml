@@ -1,0 +1,20 @@
+<class name="ratchet skipped group message key" context="public" scope="internal">
+
+    <require header="RatchetSession.pb.h" scope="public"/>
+    <require header="pb_decode.h" scope="public"/>
+    <require header="pb_encode.h" scope="public"/>
+    <require class="ratchet common hidden" scope="context"/>
+
+    <property name="epoch" type="size" access="readwrite"/>
+    <property name="message key" class="ratchet message key" access="readwrite"/>
+
+    <method name="serialize">
+        <argument name="skipped message key pb" class="SkippedGroupMessageKey" library="nanopb" access="readwrite"/>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        <argument name="skipped message key pb" class="SkippedGroupMessageKey" library="nanopb"/>
+        <argument name="skipped message key" class="self" access="readwrite"/>
+    </method>
+
+</class>

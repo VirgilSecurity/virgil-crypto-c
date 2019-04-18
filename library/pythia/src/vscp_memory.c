@@ -64,6 +64,31 @@
 // --------------------------------------------------------------------------
 
 //
+//  Include external platform header if defined.
+//
+#ifdef VIRGIL_PLATFORM_INCLUDE_STATEMENT
+#   include VIRGIL_PLATFORM_INCLUDE_STATEMENT
+#endif
+
+//
+//  Compile-time configuration of the default alloc function.
+//
+#ifdef VIRGIL_PLATFORM_ALLOC
+#   define VSCP_ALLOC_DEFAULT(size) VIRGIL_PLATFORM_ALLOC((size))
+#else
+#   define VSCP_ALLOC_DEFAULT(size) calloc(1, (size))
+#endif
+
+//
+//  Compile-time configuration of the default dealloc function.
+//
+#ifdef VIRGIL_PLATFORM_DEALLOC
+#   define VSCP_DEALLOC_DEFAULT(mem) VIRGIL_PLATFORM_DEALLOC(mem)
+#else
+#   define VSCP_DEALLOC_DEFAULT(mem) free((mem))
+#endif
+
+//
 //  Default allocation function, that is configured during compilation.
 //
 static void *
@@ -91,7 +116,7 @@ static vscp_dealloc_fn inner_dealloc = vscp_default_dealloc;
 static void *
 vscp_default_alloc(size_t size) {
 
-    return VSCP_ALLOC_DEFAULT (size);
+    return VSCP_ALLOC_DEFAULT(size);
 }
 
 //
@@ -100,7 +125,7 @@ vscp_default_alloc(size_t size) {
 static void
 vscp_default_dealloc(void *mem) {
 
-    VSCP_DEALLOC_DEFAULT (mem);
+    VSCP_DEALLOC_DEFAULT(mem);
 }
 
 //
@@ -110,7 +135,17 @@ vscp_default_dealloc(void *mem) {
 VSCP_PUBLIC void *
 vscp_alloc(size_t size) {
 
-    return inner_alloc (size);
+    return inner_alloc(size);
+}
+
+//
+//  Allocate required amount of memory by usging current allocation function.
+//  Returns NULL if memory allocation fails.
+//
+VSCP_PUBLIC void *
+vscp_calloc(size_t count, size_t size) {
+
+    return inner_alloc(count * size);
 }
 
 //
@@ -119,7 +154,7 @@ vscp_alloc(size_t size) {
 VSCP_PUBLIC void
 vscp_dealloc(void *mem) {
 
-    inner_dealloc (mem);
+    inner_dealloc(mem);
 }
 
 //
@@ -128,8 +163,8 @@ vscp_dealloc(void *mem) {
 VSCP_PUBLIC void
 vscp_set_allocators(vscp_alloc_fn alloc_cb, vscp_dealloc_fn dealloc_cb) {
 
-    VSCP_ASSERT_PTR (alloc_cb);
-    VSCP_ASSERT_PTR (dealloc_cb);
+    VSCP_ASSERT_PTR(alloc_cb);
+    VSCP_ASSERT_PTR(dealloc_cb);
 
     inner_alloc = alloc_cb;
     inner_dealloc = dealloc_cb;
@@ -138,13 +173,13 @@ vscp_set_allocators(vscp_alloc_fn alloc_cb, vscp_dealloc_fn dealloc_cb) {
 //
 //  Zeroize memory.
 //  Note, this function can be reduced by compiler during optimization step.
-//  For sensitive data erasing use vscp_erase ().
+//  For sensitive data erasing use vscp_erase().
 //
 VSCP_PUBLIC void
 vscp_zeroize(void *mem, size_t size) {
 
-    VSCP_ASSERT_PTR (mem);
-    memset (mem, 0, size);
+    VSCP_ASSERT_PTR(mem);
+    memset(mem, 0, size);
 }
 
 //
@@ -154,10 +189,32 @@ vscp_zeroize(void *mem, size_t size) {
 VSCP_PUBLIC void
 vscp_erase(void *mem, size_t size) {
 
-    VSCP_ASSERT_PTR (mem);
+    VSCP_ASSERT_PTR(mem);
 
     volatile uint8_t* p = (uint8_t*)mem;
     while (size--) { *p++ = 0; }
+}
+
+//
+//  Perform constant-time memory comparison.
+//  The time depends on the given length but not on the compared memory.
+//  Return true of given memory chunks are equal.
+//
+VSCP_PUBLIC bool
+vscp_memory_secure_equal(const void *a, const void *b, size_t len) {
+
+    VSCP_ASSERT_PTR(a);
+    VSCP_ASSERT_PTR(b);
+
+    const volatile uint8_t *in_a = a;
+    const volatile uint8_t *in_b = b;
+    volatile uint8_t c = 0x00;
+
+    for (size_t i = 0; i < len; ++i) {
+        c |= in_a[i] ^ in_b[i];
+    }
+
+    return c == 0;
 }
 
 

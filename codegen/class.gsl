@@ -75,7 +75,12 @@ endfunction
 function class_resolve_attr_context (class, project)
     check_arguments (my, "class, project", my)
 
-    my.class.context ?= count (my.class.property) ?? "private" ? "none"
+    my.has_context = (count (my.class.property) + count (my.class.dependency)) > 0
+    my.class.context ?= my.has_context ?? "private" ? "none"
+
+    if my.class.context = "private" & string_equal (my.class.scope ?, "internal")
+        my.class.context = "internal"
+    endif
 
     my.valid_contexts = "none, public, private, internal"
 
@@ -91,6 +96,14 @@ function class_resolve_attr_context (class, project)
 
         echo_fatal ("Class attribute context is explicitly 'none'," + \
                     " when context's 'property' defined as well." + \
+                    "Expected {$(my.valid_contexts)}", my)
+    endif
+
+    if count (my.class.dependency) & my.class.context = "none"
+        my.class_dump = class_dump (my.class)
+
+        echo_fatal ("Class attribute context is explicitly 'none'," + \
+                    " when context's 'dependency' defined as well." + \
                     "Expected {$(my.valid_contexts)}", my)
     endif
 endfunction
@@ -147,6 +160,15 @@ function class_resolve_attr_uid (class, project)
     check_arguments (my, "class, project", my)
 
     my.class.uid = make_id ("class", my.class.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: class.scope.
+# ---------------------------------------------------------------------------
+function class_resolve_attr_scope (class, project)
+    check_arguments (my, "class, project", my)
+
+    my.class.scope ?= "public"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -226,6 +248,7 @@ function class_resolve (class, project)
     class_resolve_attr_lifecycle (my.class, my.project)
     class_resolve_attr_c_prefix (my.class, my.project)
     class_resolve_attr_uid (my.class, my.project)
+    class_resolve_attr_scope (my.class, my.project)
 
     for my.class.constructor
         class_resolve_constructor (constructor, my.class)

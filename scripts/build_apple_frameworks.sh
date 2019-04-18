@@ -304,6 +304,6 @@ if [ $PREPARE_RELEASE == "YES" ]; then
 
     pushd "${ROOT_DIR}"
         rm -f VSCCrypto.framework.zip
-        zip -r VSCCrypto.framework.zip "Carthage"
+        zip --symlinks -r VSCCrypto.framework.zip "Carthage"
     popd
 fi

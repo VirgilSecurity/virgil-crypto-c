@@ -220,10 +220,17 @@ VSCF_PUBLIC vscf_status_t
 vscf_rsa_private_key_setup_defaults(vscf_rsa_private_key_t *self) VSCF_NODISCARD;
 
 //
-//  Setup parameters that is used during key generation.
+//  Setup key length in bits that is used for key generation.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_set_keygen_params(vscf_rsa_private_key_t *self, size_t bitlen, size_t exponent);
+vscf_rsa_private_key_set_keygen_params(vscf_rsa_private_key_t *self, size_t bitlen);
+
+//
+//  Setup key exponent that is used for key generation.
+//  Note, this method is used internally.
+//
+VSCF_PRIVATE void
+vscf_rsa_private_key_set_keygen_exponent(vscf_rsa_private_key_t *self, size_t exponent);
 
 //
 //  Provide algorithm identificator.

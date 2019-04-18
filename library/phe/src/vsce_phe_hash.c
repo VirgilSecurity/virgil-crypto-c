@@ -47,9 +47,9 @@
 #include "vsce_phe_hash.h"
 #include "vsce_memory.h"
 #include "vsce_assert.h"
+#include "vsce_phe_hash_defs.h"
 #include "vsce_const.h"
 
-#include <mbedtls/bignum.h>
 #include <stdarg.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
@@ -64,26 +64,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Handle 'phe hash' context.
-//
-struct vsce_phe_hash_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vsce_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the class 'simple swu'.
-    //
-    vsce_simple_swu_t *simple_swu;
-
-    mbedtls_ecp_group group;
-};
 
 //
 //  Perform context specific initialization.

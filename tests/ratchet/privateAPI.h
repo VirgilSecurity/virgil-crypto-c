@@ -44,6 +44,7 @@
 #include "vscr_ratchet_skipped_message_key_list_node.h"
 #include "vscr_ratchet_receiver_chains.h"
 #include "vscr_ratchet_skipped_messages.h"
+#include "vscr_ratchet_key_utils.h"
 
 struct vscr_ratchet_skipped_messages_t {
     //
@@ -87,7 +88,9 @@ struct vscr_ratchet_t {
     //
     //  Dependency to the class 'ratchet cipher'.
     //
-    vscr_ratchet_cipher_t *cipher;
+    void *cipher;
+
+    void *padding;
 
     vscr_ratchet_sender_chain_t *sender_chain;
 
@@ -97,23 +100,8 @@ struct vscr_ratchet_t {
 
     vscr_ratchet_skipped_messages_t *skipped_messages;
 
-    byte root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
+    byte root_key[vscr_ratchet_common_hidden_SHARED_KEY_LEN];
 };
-
-struct vscr_ratchet_key_utils_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscf_pkcs8_der_deserializer_t *pkcs8;
-};
-
-typedef struct vscr_ratchet_key_utils_t vscr_ratchet_key_utils_t;
 
 struct vscr_ratchet_session_t {
     //
@@ -137,15 +125,15 @@ struct vscr_ratchet_session_t {
 
     bool received_first_response;
 
-    byte sender_identity_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte sender_identity_public_key[vscr_ratchet_common_hidden_KEY_LEN];
 
-    byte sender_ephemeral_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte sender_ephemeral_public_key[vscr_ratchet_common_hidden_KEY_LEN];
 
-    byte receiver_long_term_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte receiver_long_term_public_key[vscr_ratchet_common_hidden_KEY_LEN];
 
     bool receiver_has_one_time_public_key;
 
-    byte receiver_one_time_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte receiver_one_time_public_key[vscr_ratchet_common_hidden_KEY_LEN];
 };
 
 #endif //VIRGIL_CRYPTO_PRIVATEAPI_H

@@ -37,16 +37,6 @@
 #include "unity.h"
 #include "test_utils.h"
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage errors in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
@@ -56,15 +46,18 @@ int suiteTearDown(int num_failures) { return num_failures; }
 
 void
 test__skipped_messages__adding_chains__should_be_correct(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
     vscr_ratchet_skipped_messages_t *msgs = vscr_ratchet_skipped_messages_new();
 
     vsc_buffer_t *priv1, *pub1;
     vsc_buffer_t *priv2, *pub2;
     vsc_buffer_t *priv3, *pub3;
 
-    generate_raw_keypair(&priv1, &pub1);
-    generate_raw_keypair(&priv2, &pub2);
-    generate_raw_keypair(&priv3, &pub3);
+    generate_raw_keypair(rng, &priv1, &pub1, true);
+    generate_raw_keypair(rng, &priv2, &pub2, true);
+    generate_raw_keypair(rng, &priv3, &pub3, true);
 
     TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 1, vsc_buffer_data(pub1)));
     TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, vsc_buffer_data(pub2)));
@@ -138,10 +131,15 @@ test__skipped_messages__adding_chains__should_be_correct(void) {
     vsc_buffer_destroy(&pub3);
 
     vscr_ratchet_skipped_messages_destroy(&msgs);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 void
 test__add_key__many_keys__keys_number_should_be_limited(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
     vscr_ratchet_skipped_messages_t *msgs = vscr_ratchet_skipped_messages_new();
 
     vsc_buffer_t *pub[vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES + 1];
@@ -150,7 +148,7 @@ test__add_key__many_keys__keys_number_should_be_limited(void) {
     for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES; i++) {
         vsc_buffer_t *priv;
 
-        generate_raw_keypair(&priv, &pub[i]);
+        generate_raw_keypair(rng, &priv, &pub[i], true);
 
         vsc_buffer_destroy(&priv);
 
@@ -169,7 +167,7 @@ test__add_key__many_keys__keys_number_should_be_limited(void) {
 
     vsc_buffer_t *priv;
 
-    generate_raw_keypair(&priv, &pub[vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES]);
+    generate_raw_keypair(rng, &priv, &pub[vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES], true);
 
     vsc_buffer_destroy(&priv);
 
@@ -193,6 +191,8 @@ test__add_key__many_keys__keys_number_should_be_limited(void) {
     }
 
     vscr_ratchet_skipped_messages_destroy(&msgs);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 #endif

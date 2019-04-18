@@ -9,5 +9,6 @@ framework module VSCPhe {
     header "vsce_phe_common.h"
     header "vsce_phe_server.h"
     header "vsce_status.h"
+    header "vsce_phe_public.h"
     export *
 }

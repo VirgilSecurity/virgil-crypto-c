@@ -18,3 +18,17 @@ Session.sender_ephemeral_key max_size:32 fixed_length:true
 Session.receiver_long_term_key max_size:32 fixed_length:true
 Session.receiver_one_time_key max_size:32 fixed_length:true
 Session.ratchet max_size:32 fixed_length:true
+
+ParticipantData.id max_size:32 fixed_length:true
+ParticipantData.pub_key max_size:32 fixed_length:true
+ParticipantData.epochs max_count:5 fixed_length:false
+
+GroupSession.session_id max_size:32 fixed_length:true
+GroupSession.my_id max_size:32 fixed_length:true
+GroupSession.participants max_count:100 fixed_count:false
+GroupSession.skipped_messages max_count:100 fixed_count:false
+
+SkippedGroupMessages.messages_roots max_count:100 fixed_count:false
+
+SkippedGroupMessagesRoot.id max_size:32 fixed_length:true
+SkippedGroupMessagesRoot.skipped_message_keys max_count:40 fixed_count:false

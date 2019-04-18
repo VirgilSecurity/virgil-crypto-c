@@ -129,10 +129,18 @@ VSC_PUBLIC bool
 vsc_data_is_empty(vsc_data_t self);
 
 //
-//  Return true if given datas are equal.
+//  Return true if given data are equal.
 //
 VSC_PUBLIC bool
 vsc_data_equal(vsc_data_t self, vsc_data_t rhs);
+
+//
+//  Perform constant-time data comparison.
+//  The time depends on the given length but not on the data itself.
+//  Return true if given data are equal.
+//
+VSC_PUBLIC bool
+vsc_data_secure_equal(vsc_data_t self, vsc_data_t rhs);
 
 //
 //  Return underlying data slice starting from beginning.

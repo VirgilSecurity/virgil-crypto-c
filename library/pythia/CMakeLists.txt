@@ -152,7 +152,7 @@ add_library(vsc::pythia ALIAS pythia)
 #
 # Format code
 #
-if(COMMAND add_clangformat)
+if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
     add_clangformat(pythia)
 endif()
 

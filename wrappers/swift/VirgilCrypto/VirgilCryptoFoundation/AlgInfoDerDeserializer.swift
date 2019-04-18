@@ -96,9 +96,9 @@ import VSCFoundation
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) in
 
-            return vscf_alg_info_der_deserializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count), &error)
+            return vscf_alg_info_der_deserializer_deserialize(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), &error)
         })
 
         try FoundationError.handleStatus(fromC: error.status)

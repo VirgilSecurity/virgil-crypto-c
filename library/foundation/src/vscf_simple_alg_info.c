@@ -101,16 +101,13 @@ vscf_simple_alg_info_cleanup_ctx(vscf_simple_alg_info_t *self) {
 //
 //  Create algorithm info with identificator.
 //
-VSCF_PUBLIC vscf_simple_alg_info_t *
-vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_t alg_id) {
+VSCF_PUBLIC void
+vscf_simple_alg_info_init_ctx_with_alg_id(vscf_simple_alg_info_t *self, vscf_alg_id_t alg_id) {
 
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
-    vscf_simple_alg_info_t *self = vscf_simple_alg_info_new();
-
     self->alg_id = alg_id;
-
-    return self;
 }
 
 //

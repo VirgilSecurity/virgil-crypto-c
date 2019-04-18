@@ -24,22 +24,22 @@
         <argument name="shared secret" class="data"/>
 
         <argument name="root key" type="byte" access="readwrite">
-            <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+            <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_key_len)"/>
         </argument>
         <argument name="chain key" type="byte" access="readwrite">
-            <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+            <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_key_len)"/>
         </argument>
     </method>
 
     <method name="create chain key" is_static="1">
         <argument name="root key" type="byte">
-            <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+            <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_key_len)"/>
         </argument>
         <argument name="private key" class="data"/>
         <argument name="public key" class="data"/>
 
         <argument name="new root key" type="byte" access="readwrite">
-            <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+            <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_key_len)"/>
         </argument>
 
         <argument name="chain key" class="ratchet chain key" access="readwrite"/>
@@ -54,7 +54,7 @@
     <method name="create message key" is_static="1">
         <argument name="chain key" class="ratchet chain key"/>
 
-        <return class="ratchet message key" access="readwrite"/>
+        <return class="ratchet message key" access="disown"/>
     </method>
 
 </class>

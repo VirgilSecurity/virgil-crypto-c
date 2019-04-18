@@ -47,9 +47,8 @@
 #include "vscr_ratchet_skipped_messages.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_skipped_messages_defs.h"
 #include "vscr_ratchet_chain_key.h"
-#include "vscr_ratchet_skipped_message_key_list_node.h"
 
 // clang-format on
 //  @end
@@ -60,22 +59,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Handle 'ratchet skipped messages' context.
-//
-struct vscr_ratchet_skipped_messages_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscr_ratchet_skipped_message_key_list_node_t *keys;
-};
 
 //
 //  Perform context specific initialization.
@@ -239,14 +222,14 @@ vscr_ratchet_skipped_messages_find_key(
         vscr_ratchet_skipped_messages_t *self, size_t counter, vsc_data_t ratchet_public_key) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(ratchet_public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+    VSCR_ASSERT(ratchet_public_key.len == vscr_ratchet_common_hidden_KEY_LEN);
 
     vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key_list_node = self->keys;
 
     while (skipped_message_key_list_node) {
         if (counter == skipped_message_key_list_node->value->message_key->index &&
                 !memcmp(ratchet_public_key.bytes, skipped_message_key_list_node->value->public_key,
-                        vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH)) {
+                        vscr_ratchet_common_hidden_KEY_LEN)) {
             return skipped_message_key_list_node->value;
         }
         skipped_message_key_list_node = skipped_message_key_list_node->next;
@@ -262,25 +245,21 @@ vscr_ratchet_skipped_messages_delete_key(
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(skipped_message_key);
 
-    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key_list_node_prev = NULL;
-    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key_list_node = self->keys;
+    vscr_ratchet_skipped_message_key_list_node_t **prev = &self->keys;
+    vscr_ratchet_skipped_message_key_list_node_t *node = self->keys;
 
-    while (skipped_message_key_list_node) {
-        if (skipped_message_key_list_node->value == skipped_message_key) {
-            if (skipped_message_key_list_node_prev) {
-                skipped_message_key_list_node_prev->next = skipped_message_key_list_node->next;
-            } else {
-                self->keys = skipped_message_key_list_node->next;
-            }
+    while (node) {
+        if (node->value == skipped_message_key) {
+            (*prev) = node->next;
 
-            skipped_message_key_list_node->next = NULL;
-            vscr_ratchet_skipped_message_key_list_node_destroy(&skipped_message_key_list_node);
+            node->next = NULL;
+            vscr_ratchet_skipped_message_key_list_node_destroy(&node);
 
             return;
         }
 
-        skipped_message_key_list_node_prev = skipped_message_key_list_node;
-        skipped_message_key_list_node = skipped_message_key_list_node->next;
+        prev = &node->next;
+        node = node->next;
     }
 
     // Element not found

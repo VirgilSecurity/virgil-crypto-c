@@ -44,7 +44,35 @@
 
 
 gsl from "common.gsl"
+gsl from "scoped_component.gsl"
 gsl from "c_dependency.gsl"
+
+
+# ---------------------------------------------------------------------------
+#   Return true if class reuire creating "private" module.
+# ---------------------------------------------------------------------------
+function _X13_has_module_private (class)
+    check_arguments (my, "class", my)
+
+    if my.class.scope <> "public"
+        return "0"
+    endif
+
+    return class_has_scoped_item_with_scope (my.class, "private")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true if class reuire creating "internal" module.
+# ---------------------------------------------------------------------------
+function _X13_has_module_internal (class)
+    check_arguments (my, "class", my)
+
+    if my.class.scope = "internal"
+        return "0"
+    endif
+
+    return class_has_scoped_item_with_scope (my.class, "internal")
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Add model 'struct' that handles class context.
@@ -285,16 +313,6 @@ function _X13_add_method_init_ctx (class, destination, meta)
 
 
         _X13_add_argument_ctx (my.class, method, my.meta)
-
-        new code to method
-            .type = "stub"
-
-            . = "\
-                .(c_class_assert_macros_ptr)($(my.refs.class_argument_ctx));
-
-                //  TODO: Perform additional context initialization.
-            "
-        endnew
     endnew
 endfunction
 
@@ -368,9 +386,68 @@ function _X13_add_method_new (class, destination, meta)
     endnew
 endfunction
 
+# ---------------------------------------------------------------------------
+function _X13_format_proxy_arguments (method)
+    check_arguments (my, "method", my)
+
+    for my.method.argument
+        my.proxy_args ?= ""
+        my.proxy_args += make_ref("_argument_$(make_id (argument.name))")
+        if ! last()
+            my.proxy_args += ", "
+        endif
+    endfor
+
+    return my.proxy_args
+endfunction
 
 # ---------------------------------------------------------------------------
-function _X13_add_constructor (class, constructor, destination, meta)
+function _X13_add_method_custom_init (class, constructor, destination, meta)
+    check_arguments (my, "class, constructor, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        if defined (my.constructor.)
+            my.comment = format_left (my.constructor.)
+        endif
+        my.comment = format_left("Perform initialization of pre-allocated context.") + (my.comment ? "")
+        . = my.comment
+
+        .name = cat (my.names.method_init, my.constructor.name)
+        .declaration ?= my.constructor.declaration ?
+        .definition ?= my.constructor.definition ?
+        .visibility ?= my.constructor.visibility ?
+
+        _X13_add_argument_ctx (my.class, method, my.meta)
+
+        for my.constructor.argument
+            component_clean_copy (argument, method)
+        endfor
+
+        new code to method
+            my.type_ctx = my.refs.c_class_struct_ctx
+            my.arg_ctx = my.names.c_class_argument_ctx
+            my.method_init_ctx = make_ref_c (make_id ("class", my.class.name, "method init ctx", my.constructor.name))
+            my.proxy_args = _X13_format_proxy_arguments (my.constructor)
+
+            . = "\
+                .(c_class_assert_macros_ptr)($(my.arg_ctx));
+
+                .(c_global_method_zeroize)($(my.arg_ctx), sizeof($(my.type_ctx)));
+
+                $(my.arg_ctx)->$(my.names.c_property_ref_counter:) = 1;
+
+                $(my.method_init_ctx)($(my.arg_ctx), $(my.proxy_args:));
+            "
+        endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _X13_add_method_custom_init_ctx (class, constructor, destination, meta)
     check_arguments (my, "class, constructor, destination, meta", my)
 
     my.names = meta_names (my.meta)
@@ -378,7 +455,82 @@ function _X13_add_constructor (class, constructor, destination, meta)
 
     new method to my.destination
         . = my.constructor. ?
-        .name = cat (! my.class.is_value_type ?? my.names.method_new ? "", my.constructor.name)
+        .name = cat (my.names.method_init_ctx, my.constructor.name)
+        .declaration = "private"
+        .definition = "private"
+
+        _X13_add_argument_ctx (my.class, method, my.meta)
+
+        for my.constructor.argument
+            component_clean_copy (argument, method)
+        endfor
+
+        new code to method
+            .type = "stub"
+            . = "\
+                //   TODO: Perform initialization.
+            "
+        endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _X13_add_custom_new (class, constructor, destination, meta)
+    check_arguments (my, "class, constructor, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        if defined (my.constructor.)
+            my.comment = format_left (my.constructor.)
+        endif
+        my.comment = format_left("Allocate class context and perform it's initialization.") + (my.comment ? "")
+        . = my.comment
+
+        .name = cat (my.names.method_new, my.constructor.name)
+        .declaration ?= my.constructor.declaration ?
+        .definition ?= my.constructor.definition ?
+        .visibility ?= my.constructor.visibility ?
+
+        _X13_add_return_ctx (my.class, method, my.meta)
+
+        for my.constructor.argument
+            component_clean_copy (argument, method)
+        endfor
+
+        new code to method
+            my.type_ctx = my.refs.c_class_struct_ctx
+            my.arg_ctx = my.names.c_class_argument_ctx
+            my.method_init = make_ref_c (make_id ("class", my.class.name, "method init", my.constructor.name))
+            my.proxy_args = _X13_format_proxy_arguments (my.constructor)
+
+            . = "\
+                $(my.type_ctx) *$(my.arg_ctx:) = ($(my.type_ctx) *) .(c_global_method_alloc)(sizeof ($(my.type_ctx)));
+                .(c_class_assert_macros_alloc)($(my.arg_ctx:));
+
+                $(my.method_init)($(my.arg_ctx:), $(my.proxy_args:));
+
+                $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc) = .(c_global_method_dealloc);
+
+                return $(my.arg_ctx:);
+            "
+        endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _X13_add_value_type_constructor (class, constructor, destination, meta)
+    check_arguments (my, "class, constructor, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        . = my.constructor. ?
+        .name = my.constructor.name
         .declaration ?= my.constructor.declaration ?
         .definition ?= my.constructor.definition ?
         .visibility ?= my.constructor.visibility ?
@@ -390,35 +542,41 @@ function _X13_add_constructor (class, constructor, destination, meta)
         _X13_add_return_ctx (my.class, method, my.meta)
 
         new code to method
-            .type = "stub"
-
             my.type_ctx = my.refs.c_class_struct_ctx
             my.arg_ctx = my.names.c_class_argument_ctx
 
-            if my.class.is_value_type
-                my.object_init = "\
-                    $(my.type_ctx) $(my.arg_ctx:);
-                "
+            .type = "stub"
+            . = "\
+                $(my.type_ctx) $(my.arg_ctx:);
 
-            else
-                my.object_init = "\
-                    $(my.type_ctx) *$(my.arg_ctx:) = $(my.refs.c_class_method_new)();
-                "
-            endif
-
-            my.object_return = "\
-                //   TODO: Perform initialization.
+                //  TODO: Perform initialization.
 
                 return $(my.arg_ctx:);
             "
-
-            my.method_body = ""
-            my.method_body += format_left (my.object_init) + terminator
-            my.method_body += format_left (my.object_return)
-
-            . = my.method_body
         endnew
     endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _X13_add_object_type_constructor (class, constructor, destination, meta)
+    check_arguments (my, "class, constructor, destination, meta", my)
+
+    _X13_add_method_custom_init(my.class, my.constructor, my.destination, my.meta)
+    _X13_add_method_custom_init_ctx(my.class, my.constructor, my.destination, my.meta)
+    _X13_add_custom_new(my.class, my.constructor, my.destination, my.meta)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _X13_add_constructor (class, constructor, destination, meta)
+    check_arguments (my, "class, constructor, destination, meta", my)
+
+    if my.class.is_value_type
+        _X13_add_value_type_constructor (my.class, my.constructor, my.destination, my.meta)
+    else
+        _X13_add_object_type_constructor (my.class, my.constructor, my.destination, my.meta)
+    endif
 endfunction
 
 
@@ -534,13 +692,13 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Copy class methods with context resolution.
 # ---------------------------------------------------------------------------
-function _X13_add_method (class, method, destination, meta)
-    check_arguments (my, "class, method, destination, meta", my)
+function _X13_add_method (class, method, module, meta)
+    check_arguments (my, "class, method, module, meta", my)
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
-    my.copied_method = component_clean_copy (my.method, my.destination)
+    my.copied_method = component_clean_copy (my.method, my.module)
 
     if ! my.copied_method.is_static
         _X13_add_argument_ctx (my.class, my.copied_method, my.meta)
@@ -554,6 +712,8 @@ function _X13_add_method (class, method, destination, meta)
     for my.copied_method.return where string_equal(0.class, "self")
         .class = my.refs.class_struct_ctx
     endfor
+
+    return my.copied_method
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -583,7 +743,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create 'module' component with a public API for given class.
 # ---------------------------------------------------------------------------
-function c_module_class_create_module_public (class, destination, meta)
+function c_module_class_create_module (class, destination, meta)
     check_arguments (my, "class, destination, meta", my)
 
     my.names = meta_names (my.meta)
@@ -610,21 +770,32 @@ function c_module_class_create_module_public (class, destination, meta)
             .scope = "private"
         endnew
 
+        if _X13_has_module_private (my.class)
+            new require to module
+                .module = my.names.class_module_private
+                .scope = "private"
+            endnew
+        endif
+
+        if _X13_has_module_internal (my.class)
+            new require to module
+                .module = my.names.class_module_internal
+                .scope = "private"
+            endnew
+        endif
+
         c_dependency_add_requirements (my.class, module)
 
         if my.class.context = "public"
             _X13_add_context_struct (my.class, "public", "public", module, my.meta)
 
-        elsif my.class.context = "private"
+        elsif string_in (my.class.context, "private, internal")
             _X13_add_context_struct (my.class, "public", "external", module, my.meta)
 
             new require to module
                 .module = my.names.class_module_defs
                 .scope = "private"
             endnew
-
-        elsif my.class.context = "internal"
-            _X13_add_context_struct (my.class, "public", "private", module, my.meta)
         endif
 
 
@@ -637,7 +808,7 @@ function c_module_class_create_module_public (class, destination, meta)
             _X13_add_lifecycle_methods (my.class, module, my.meta)
 
         elsif my.class.context <> "none"
-            for my.class.constructor
+            for my.class.constructor where constructor.scope = "public"
                 _X13_add_constructor (my.class, constructor, module, my.meta)
             endfor
         endif
@@ -651,26 +822,6 @@ function c_module_class_create_module_public (class, destination, meta)
             component_clean_copy (c_include, module)
         endfor
 
-        for my.class.constant
-            component_clean_copy (constant, module)
-        endfor
-
-        for my.class.property
-            component_clean_copy (property, module)
-        endfor
-
-        for my.class.enum
-            component_clean_copy (enum, module)
-        endfor
-
-        for my.class.callback
-            component_clean_copy (callback, module)
-        endfor
-
-        for my.class.method
-            _X13_add_method (my.class, method, module, my.meta)
-        endfor
-
         for my.class.macros
             component_clean_copy (macros, module)
         endfor
@@ -679,16 +830,51 @@ function c_module_class_create_module_public (class, destination, meta)
             component_clean_copy (macroses, module)
         endfor
 
-        for my.class.struct
-            component_clean_copy (struct, module)
-        endfor
-
-        for my.class.variable
-            component_clean_copy (variable, module)
-        endfor
+        class_add_scoped_components_to_main_module (my.class, "_X13_add_method", module, my.meta)
     endnew
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Create 'module' component with a private API for given class.
+# ---------------------------------------------------------------------------
+function c_module_class_create_module_private (class, destination, meta)
+    check_arguments (my, "class, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+
+    new module to my.destination
+        .name = my.names.class_module_private
+        .of_class = my.class.name
+        .c_prefix = my.class.c_prefix
+        .scope = "private"
+        .is_header_only = "1"
+
+        class_add_scoped_components_to_extended_module (my.class, "_X13_add_method", module, my.meta)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create 'module' component with an internal API for given class.
+# ---------------------------------------------------------------------------
+function c_module_class_create_module_internal (class, destination, meta)
+    check_arguments (my, "class, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+
+    new module to my.destination
+        .name = my.names.class_module_internal
+        .of_class = my.class.name
+        .c_prefix = my.class.c_prefix
+        .scope = "internal"
+        .is_header_only = "1"
+
+        new require to module
+            .module = my.names.class_module
+        endnew
+
+        class_add_scoped_components_to_extended_module (my.class, "_X13_add_method", module, my.meta)
+    endnew
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Create 'module' component with a types defineition for given class.
@@ -700,7 +886,7 @@ function c_module_class_create_module_defs (class, destination, meta)
 
     new module to my.destination
         .name = my.names.class_module_defs
-        .scope = "private"
+        .scope = my.class.context
         .feature = my.class.name
         .of_class = my.class.name
         . = "
@@ -723,9 +909,17 @@ function c_module_class_create (source, destination, meta)
 
     for my.source.class by name
         meta_reset_active_entity (my.meta, class.name)
-        c_module_class_create_module_public (class, my.destination, my.meta)
+        c_module_class_create_module (class, my.destination, my.meta)
 
-        if class.context = "private"
+        if _X13_has_module_private (class)
+            c_module_class_create_module_private (class, my.destination, my.meta)
+        endif
+
+        if _X13_has_module_internal (class)
+            c_module_class_create_module_internal (class, my.destination, my.meta)
+        endif
+
+        if string_in (class.context, "private, internal")
             c_module_class_create_module_defs (class, my.destination, my.meta)
         endif
     endfor

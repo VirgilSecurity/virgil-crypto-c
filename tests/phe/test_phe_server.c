@@ -47,17 +47,6 @@
 
 #include <virgil/crypto/foundation/vscf_fake_random.h>
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage errors in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
 void
 test__get_enrollment__mocked_rnd__should_match(void) {
     vsce_phe_server_t *server = vsce_phe_server_new();

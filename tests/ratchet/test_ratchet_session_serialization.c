@@ -37,16 +37,6 @@
 #include "unity.h"
 #include "test_utils.h"
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage errors in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
@@ -61,15 +51,20 @@ int suiteTearDown(int num_failures) { return num_failures; }
 
 void
 test__serialization__randomly_skipped_messages__should_work_after_restore(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
     vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
     vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
 
-    initialize(&session_alice, &session_bob, true, true);
+    initialize(rng, &session_alice, &session_bob, true, true);
 
-    encrypt_decrypt__100_plain_texts_random_order_with_producers(&session_alice, &session_bob, true);
+    encrypt_decrypt__100_plain_texts_random_order_with_producers(rng, &session_alice, &session_bob, true);
 
     vscr_ratchet_session_destroy(&session_alice);
     vscr_ratchet_session_destroy(&session_bob);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

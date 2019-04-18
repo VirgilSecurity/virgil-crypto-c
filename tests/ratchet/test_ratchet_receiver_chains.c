@@ -37,16 +37,6 @@
 #include "unity.h"
 #include "test_utils.h"
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage errors in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
@@ -56,15 +46,18 @@ int suiteTearDown(int num_failures) { return num_failures; }
 
 void
 test__receiver_chains__adding_chains__should_be_correct(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
     vscr_ratchet_receiver_chains_t *chains = vscr_ratchet_receiver_chains_new();
 
     vsc_buffer_t *priv1, *pub1;
     vsc_buffer_t *priv2, *pub2;
     vsc_buffer_t *priv3, *pub3;
 
-    generate_raw_keypair(&priv1, &pub1);
-    generate_raw_keypair(&priv2, &pub2);
-    generate_raw_keypair(&priv3, &pub3);
+    generate_raw_keypair(rng, &priv1, &pub1, true);
+    generate_raw_keypair(rng, &priv2, &pub2, true);
+    generate_raw_keypair(rng, &priv3, &pub3, true);
 
     TEST_ASSERT_EQUAL(NULL, vscr_ratchet_receiver_chains_first_chain(chains));
     TEST_ASSERT_EQUAL(NULL, vscr_ratchet_receiver_chains_find_chain(chains, vsc_buffer_data(pub1)));
@@ -99,19 +92,24 @@ test__receiver_chains__adding_chains__should_be_correct(void) {
     vsc_buffer_destroy(&pub3);
 
     vscr_ratchet_receiver_chains_destroy(&chains);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 void
 test__delete_next__adding_chains__should_be_correct(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
     vscr_ratchet_receiver_chains_t *chains = vscr_ratchet_receiver_chains_new();
 
     vsc_buffer_t *priv1, *pub1;
     vsc_buffer_t *priv2, *pub2;
     vsc_buffer_t *priv3, *pub3;
 
-    generate_raw_keypair(&priv1, &pub1);
-    generate_raw_keypair(&priv2, &pub2);
-    generate_raw_keypair(&priv3, &pub3);
+    generate_raw_keypair(rng, &priv1, &pub1, true);
+    generate_raw_keypair(rng, &priv2, &pub2, true);
+    generate_raw_keypair(rng, &priv3, &pub3, true);
 
     vscr_ratchet_receiver_chain_t *chain1 = vscr_ratchet_receiver_chain_new();
     vscr_ratchet_receiver_chain_t *chain2 = vscr_ratchet_receiver_chain_new();
@@ -146,10 +144,15 @@ test__delete_next__adding_chains__should_be_correct(void) {
     vsc_buffer_destroy(&pub3);
 
     vscr_ratchet_receiver_chains_destroy(&chains);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 void
 test__add_chain__many_chains__chains_number_should_be_limited(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
     vscr_ratchet_receiver_chains_t *chains = vscr_ratchet_receiver_chains_new();
 
     vsc_buffer_t *pub[vscr_ratchet_common_hidden_MAX_RECEIVERS_CHAINS + 1];
@@ -158,7 +161,7 @@ test__add_chain__many_chains__chains_number_should_be_limited(void) {
     for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_RECEIVERS_CHAINS; i++) {
         vsc_buffer_t *priv;
 
-        generate_raw_keypair(&priv, &pub[i]);
+        generate_raw_keypair(rng, &priv, &pub[i], true);
 
         vsc_buffer_destroy(&priv);
 
@@ -177,7 +180,7 @@ test__add_chain__many_chains__chains_number_should_be_limited(void) {
 
     vsc_buffer_t *priv;
 
-    generate_raw_keypair(&priv, &pub[vscr_ratchet_common_hidden_MAX_RECEIVERS_CHAINS]);
+    generate_raw_keypair(rng, &priv, &pub[vscr_ratchet_common_hidden_MAX_RECEIVERS_CHAINS], true);
 
     vsc_buffer_destroy(&priv);
 
@@ -200,6 +203,8 @@ test__add_chain__many_chains__chains_number_should_be_limited(void) {
     }
 
     vscr_ratchet_receiver_chains_destroy(&chains);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 #endif

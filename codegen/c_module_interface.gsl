@@ -140,6 +140,7 @@ function _L23_add_interface_api_type (interface, declaration, definition, destin
                 .name = my.names.interface_property_inherited_$(make_id (inherit.interface))
                 .class = my.refs.interface_class_inherited_$(make_id (inherit.interface))
                 .tag = "api"
+                .access = "readonly"
             endnew
         endfor
 

@@ -9,23 +9,23 @@
         Error during protobuf deserialization.
     </constant>
 
-    <constant name="error message version doesn't match" value="-2">
-        Message version doesn't match.
-    </constant>
-
-    <constant name="error bad message type" value="-3">
+    <constant name="error bad message type" value="-2">
         Bad message type.
     </constant>
 
-    <constant name="error aes" value="-4">
+    <constant name="error aes" value="-3">
         AES error.
     </constant>
 
-    <constant name="error rng failed" value="-5">
+    <constant name="error rng failed" value="-4">
         RNG failed.
     </constant>
 
-    <constant name="error curve25519" value="-6">
+    <constant name="error curve25519" value="-5">
+        Curve25519 error.
+    </constant>
+
+    <constant name="error ed25519" value="-6">
         Curve25519 error.
     </constant>
 
@@ -57,8 +57,8 @@
         Skipped message missing.
     </constant>
 
-    <constant name="error can't encrypt yet" value="-14">
-        Can't encrypt yet.
+    <constant name="error session is not initialized" value="-14">
+        Session is not initialized.
     </constant>
 
     <constant name="error exceeded max plain text len" value="-15">
@@ -76,4 +76,49 @@
     <constant name="error invalid padding" value="-18">
         Invalid padding.
     </constant>
+
+    <constant name="error too many participants" value="-19">
+        Too many participants.
+    </constant>
+
+    <constant name="error too few participants" value="-20">
+        Too few participants.
+    </constant>
+
+    <constant name="error sender not found" value="-21">
+        Sender not found.
+    </constant>
+
+    <constant name="error cannot decrypt own messages" value="-22">
+        Cannot decrypt own messages.
+    </constant>
+
+    <constant name="error duplicate id" value="-23">
+        Duplicate id.
+    </constant>
+
+    <constant name="error invalid signature" value="-24">
+        Invalid signature.
+    </constant>
+
+    <constant name="error user is not present in group message" value="-25">
+        User is not present in group message.
+    </constant>
+
+    <constant name="error epoch mismatch" value="-26">
+        Epoch mismatch.
+    </constant>
+
+    <constant name="error participant not found" value="-27">
+        Participant not found.
+    </constant>
+
+    <constant name="error epoch not found" value="-28">
+        Epoch not found.
+    </constant>
+
+    <constant name="error session id mismatch" value="-29">
+        Session id mismatch.
+    </constant>
+
 </enum>
