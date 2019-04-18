@@ -121,7 +121,7 @@ function js_append_js_interface_module_model(parent, source, wrapper_project)
     endnew
     js_interface_module.cpp_umbrella_header = make_ref_js(make_id("umbrella", "module", "cpp header"))
     js_interface_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
-    js_interface_module.c_implementation_type = "$(make_ref_c(make_id("class", "impl", "struct", "impl")))*"
+    js_interface_module.c_implementation_type = make_ref_c(make_id("class", "impl", "struct", "impl"))
     new js_cpp_header to js_interface_module
       js_cpp_header.name = "$(my.source.name:c).h"
       js_cpp_header.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_header.name)
@@ -192,7 +192,7 @@ function js_append_js_class_module_model(parent, source, wrapper_project, meta)
     js_class_module.has_context = defined(my.source.context) & my.source.context <> "none"
     if js_class_module.has_context
       js_class_module.c_context_name = "$(my.source.name:c)"
-      js_class_module.c_context_type = "$(make_ref_c(make_id("class", my.source.name, "struct", my.source.name)))*"
+      js_class_module.c_context_type = make_ref_c(make_id("class", my.source.name, "struct", my.source.name))
       js_class_module.c_context_constructor = make_ref_c(make_id("class", my.source.name, "method", "new"))
       js_class_module.c_context_destructor = make_ref_c(make_id("class", my.source.name, "method", "destroy"))
     endif
@@ -230,7 +230,7 @@ function js_append_js_class_module_model(parent, source, wrapper_project, meta)
       js_class_module.c_restore_alg_info = make_ref_c(make_id("class", my.source.name, "method", "restore alg info"))
     endif
     if count(js_class_module.js_interface_implementation) > 0
-      js_class_module.c_implementation_type = "$(make_ref_c(make_id("class", "impl", "struct", "impl")))*"
+      js_class_module.c_implementation_type = make_ref_c(make_id("class", "impl", "struct", "impl"))
       js_class_module.c_implementation_method_name = make_ref_c(make_id("class", my.source.name, "method", "impl"))
     endif
     for my.source.dependency
@@ -249,7 +249,6 @@ endfunction
 function js_append_js_interface_implementation(parent, interface)
   new js_interface_implementation to my.parent
     js_interface_implementation.cpp_class_name = make_ref_js(make_id("interface", "module", my.interface.name, "cpp name"))
-    js_interface_implementation.c_implementation_type = "$(make_ref_c(make_id("class", "impl", "struct", "impl")))*"
     return js_interface_implementation
   endnew
 endfunction
@@ -417,7 +416,7 @@ function js_append_js_class_call_argument(parent, source, argument, index)
     js_class_call_argument.js_name = "$(my.argument.name:camel)"
     js_class_call_argument.cpp_class_name = make_ref_js(make_id(my.project_uid, "class", "module", my.class_name, "cpp name"))
     js_class_call_argument.c_context_name = "$(my.class_name:c)"
-    js_class_call_argument.c_context_type = "$(make_ref_c(make_id(my.project_uid, "class", my.class_name, "struct", my.class_name)))*"
+    js_class_call_argument.c_context_type = make_ref_c(make_id(my.project_uid, "class", my.class_name, "struct", my.class_name))
     return js_class_call_argument
   endnew
 endfunction
@@ -429,7 +428,7 @@ function js_append_js_interface_call_argument(parent, source, argument, index)
     js_interface_call_argument.cpp_name = "$(my.argument.name:c)"
     js_interface_call_argument.js_name = "$(my.argument.name:camel)"
     js_interface_call_argument.cpp_class_name = make_ref_js(make_id(my.project_uid, "interface", "module", my.argument.interface, "cpp name"))
-    js_interface_call_argument.c_implementation_type = "$(make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl")))*"
+    js_interface_call_argument.c_implementation_type = make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl"))
     return js_interface_call_argument
   endnew
 endfunction
@@ -639,7 +638,7 @@ function js_append_js_interface_method_return(parent, argument)
     js_interface_method_return.cpp_implementation_resolver_name = make_ref_js(make_id(my.project_uid, "implementation resolver", "module", "cpp name"))
     js_interface_method_return.cpp_implementation_resolver_method_name = make_ref_js(make_id(my.project_uid, "implementation resolver", "module", "cpp method name"))
     js_interface_method_return.cpp_class_name = make_ref_js(make_id(my.project_uid, "interface", "module", my.argument.interface, "cpp name"))
-    js_interface_method_return.c_implementation_type = "$(make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl")))*"
+    js_interface_method_return.c_implementation_type = make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl"))
     return js_interface_method_return
   endnew
 endfunction
