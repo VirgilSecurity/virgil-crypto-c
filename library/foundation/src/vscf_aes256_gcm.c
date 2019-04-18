@@ -466,7 +466,7 @@ vscf_aes256_gcm_auth_encrypted_len(vscf_aes256_gcm_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
 
-    return data_len + vscf_aes256_gcm_BLOCK_LEN;
+    return data_len + vscf_aes256_gcm_BLOCK_LEN + vscf_aes256_gcm_AUTH_TAG_LEN;
 }
 
 //

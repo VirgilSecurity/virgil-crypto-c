@@ -182,11 +182,6 @@ VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_ticket_add_new_participant(vscr_ratchet_group_ticket_t *self, vsc_data_t participant_id,
         vsc_data_t public_key) VSCR_NODISCARD;
 
-VSCR_PRIVATE vscr_status_t
-vscr_ratchet_group_ticket_add_existing_participant(vscr_ratchet_group_ticket_t *self,
-        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN], const byte pub_key[32],
-        const void *chain_key) VSCR_NODISCARD;
-
 //
 //  Remove participant from chat.
 //

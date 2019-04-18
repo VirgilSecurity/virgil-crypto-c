@@ -53,15 +53,11 @@
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_key_utils_defs.h"
 
 #include <virgil/crypto/foundation/vscf_pkcs8_der_deserializer.h>
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
-
-#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_pkcs8_der_deserializer.h>
-#endif
 
 // clang-format on
 //  @end
@@ -72,22 +68,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Handle 'ratchet key utils' context.
-//
-struct vscr_ratchet_key_utils_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscf_pkcs8_der_deserializer_t *pkcs8;
-};
 
 //
 //  Perform context specific initialization.

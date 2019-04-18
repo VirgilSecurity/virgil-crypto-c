@@ -47,19 +47,11 @@
 #include "vscr_ratchet_cipher.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_cipher_defs.h"
 
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
-
-#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_aes256_gcm.h>
-#endif
-
-#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_aes256_gcm.h>
-#endif
 
 // clang-format on
 //  @end
@@ -83,22 +75,6 @@ static const byte ratchet_kdf_cipher_info[] = {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Handle 'ratchet cipher' context.
-//
-struct vscr_ratchet_cipher_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscf_aes256_gcm_t *aes256_gcm;
-};
 
 //
 //  Perform context specific initialization.

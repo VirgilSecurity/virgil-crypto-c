@@ -52,7 +52,7 @@
         </restrict>
 
         <restrict value="internal">
-            Component is visible only within library or a specific source file.
+            Component is visible only within library.
         </restrict>
     </attr>
 </entity>

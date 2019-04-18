@@ -53,8 +53,7 @@
 #include "vscr_ratchet_key_id.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_key_utils.h"
+#include "vscr_ratchet_key_id_defs.h"
 
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
@@ -68,22 +67,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Handle 'ratchet key id' context.
-//
-struct vscr_ratchet_key_id_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscr_ratchet_key_utils_t *key_utils;
-};
 
 //
 //  Perform context specific initialization.

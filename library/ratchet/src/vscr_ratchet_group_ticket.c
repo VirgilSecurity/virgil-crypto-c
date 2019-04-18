@@ -53,6 +53,7 @@
 #include "vscr_ratchet_group_ticket.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
+#include "vscr_ratchet_group_ticket_private.h"
 #include "vscr_ratchet_group_ticket_defs.h"
 #include "vscr_ratchet_chain_key.h"
 #include "vscr_ratchet_group_message_defs.h"
@@ -426,7 +427,8 @@ err1:
 
 VSCR_PRIVATE vscr_status_t
 vscr_ratchet_group_ticket_add_existing_participant(vscr_ratchet_group_ticket_t *self,
-        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN], const byte pub_key[32], const void *chain_key) {
+        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN], const byte pub_key[vscr_ratchet_common_hidden_KEY_LEN],
+        const vscr_ratchet_chain_key_t *chain_key) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->rng);

@@ -998,6 +998,34 @@ function component_resolve_attr_feature (component, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve attribute: scoped_component.scope.
+# ---------------------------------------------------------------------------
+function component_resolve_scoped_component_attr_scope (component, parent)
+    check_arguments (my, "component")
+
+    my.component.scope ?= my.parent.scope ? "public"
+
+    my.valid_scopes = "public, private, internal, hidden"
+    if ! string_in (my.component.scope, my.valid_scopes)
+        my.component_dump = component_dump (my.component)
+
+        echo_fatal ("Invalid component scope '$(my.component_dump:)'. " + \
+                    "Expected {$(my.valid_scopes)}", my)
+    endif
+
+    # downgrade scope
+    if defined (my.parent) & defined (my.parent.scope)
+        if my.parent.scope = "private" & my.component.scope = "public"
+            my.component.scope = "public"
+        endif
+
+        if my.parent.scope = "internal" & string_in(my.component.scope, "public, private")
+            my.component.scope = "internal"
+        endif
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve attribute: method.is_static.
 # ---------------------------------------------------------------------------
 function component_resolve_method_attr_is_static (method, parent)
@@ -1237,6 +1265,16 @@ function component_resolve_component (component, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve scoped component: component.
+# ---------------------------------------------------------------------------
+function component_resolve_scoped_component (component, parent)
+    check_arguments (my, "component, parent", my)
+
+    component_resolve_component (my.component, my.parent)
+    component_resolve_scoped_component_attr_scope (my.component, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve component: constant.
 # ---------------------------------------------------------------------------
 function component_resolve_constant (constant, parent)
@@ -1258,7 +1296,7 @@ function component_resolve_constant (constant, parent)
 
     component_add_lineage (my.constant, my.parent)
 
-    component_resolve_component (my.constant, my.parent)
+    component_resolve_scoped_component (my.constant, my.parent)
     component_resolve_attr_definition (my.constant, my.parent)
 endfunction
 
@@ -1266,16 +1304,17 @@ endfunction
 #   Resolve component: enum.
 # ---------------------------------------------------------------------------
 function component_resolve_enum (enum, parent)
-    check_argument (my, "enum", my)
+    check_arguments (my, "enum, parent", my)
 
     component_require_attr_name (my.enum, my)
 
     component_add_lineage (my.enum, my.parent)
 
-    component_resolve_component (my.enum, my.parent)
+    component_resolve_scoped_component (my.enum, my.parent)
     component_resolve_attr_visibility (my.enum, my.parent)
     component_resolve_attr_declaration (my.enum, my.parent)
     component_resolve_attr_definition (my.enum, my.parent)
+    component_resolve_attr_scope (my.enum, my.parent)
 
     for my.enum.constant
         component_resolve_constant (constant, my.enum)
@@ -1311,10 +1350,11 @@ function component_resolve_struct (struct, parent)
 
     component_add_lineage (my.struct, my.parent)
 
-    component_resolve_component (my.struct, my.parent)
+    component_resolve_scoped_component (my.struct, my.parent)
     component_resolve_attr_visibility (my.struct, my.parent)
     component_resolve_attr_declaration (my.struct, my.parent)
     component_resolve_attr_definition (my.struct, my.parent)
+    component_resolve_attr_scope (my.struct, my.parent)
 
     for my.struct.property
         component_resolve_property (property, my.struct)
@@ -1357,11 +1397,12 @@ function component_resolve_variable (variable, parent)
 
     component_add_lineage (my.variable, my.parent)
 
-    component_resolve_component (my.variable, my.parent)
+    component_resolve_scoped_component (my.variable, my.parent)
     component_resolve_instance (my.variable, my.parent)
     component_resolve_attr_visibility (my.variable, my.parent)
     component_resolve_attr_declaration (my.variable, my.parent)
     component_resolve_attr_definition (my.variable, my.parent)
+    component_resolve_attr_scope (my.variable, my.parent)
 
     for my.variable.value
         component_resolve_value (value, my.variable)
@@ -1394,10 +1435,11 @@ function component_resolve_method (method, parent)
 
     component_add_lineage (my.method, my.parent)
 
-    component_resolve_component (my.method, my.parent)
+    component_resolve_scoped_component (my.method, my.parent)
     component_resolve_attr_visibility (my.method, my.parent)
     component_resolve_attr_declaration (my.method, my.parent)
     component_resolve_attr_definition (my.method, my.parent)
+    component_resolve_attr_scope (my.method, my.parent)
     component_resolve_method_attr_is_static (my.method, my.parent)
     component_resolve_method_attr_is_const (my.method, my.parent)
     component_resolve_method_attr_nodiscard (my.method, my.parent)
@@ -1423,8 +1465,9 @@ function component_resolve_callback (callback, parent)
 
     component_add_lineage (my.callback, my.parent)
 
-    component_resolve_component (my.callback, my.parent)
+    component_resolve_scoped_component (my.callback, my.parent)
     component_resolve_attr_declaration (my.callback, my.parent)
+    component_resolve_attr_scope (my.callback, my.parent)
 
     for my.callback.argument
         component_resolve_argument (argument, my.callback)
@@ -1445,6 +1488,7 @@ function component_resolve_macros (macros, parent)
 
     component_resolve_component (my.macros, my.parent)
     component_resolve_attr_definition (my.macros, my.parent)
+    component_resolve_attr_scope (my.macros, my.parent)
     component_resolve_macros_attr_is_method (my.macros, my.parent)
 
     for my.macros.code
@@ -1461,6 +1505,7 @@ function component_resolve_macroses (macroses, parent)
     component_require_code (my.macroses, my)
 
     component_resolve_attr_definition (my.macroses, my.parent)
+    component_resolve_attr_scope (my.macroses, my.parent)
     component_resolve_attr_of_class (my.macroses, my.parent)
 
     for my.macroses.macros
