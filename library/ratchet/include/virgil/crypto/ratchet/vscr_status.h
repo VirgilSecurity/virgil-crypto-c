@@ -81,25 +81,25 @@ enum vscr_status_t {
     //
     vscr_status_ERROR_PROTOBUF_DECODE = -1,
     //
-    //  Message version doesn't match.
-    //
-    vscr_status_ERROR_MESSAGE_VERSION_DOESN_T_MATCH = -2,
-    //
     //  Bad message type.
     //
-    vscr_status_ERROR_BAD_MESSAGE_TYPE = -3,
+    vscr_status_ERROR_BAD_MESSAGE_TYPE = -2,
     //
     //  AES error.
     //
-    vscr_status_ERROR_AES = -4,
+    vscr_status_ERROR_AES = -3,
     //
     //  RNG failed.
     //
-    vscr_status_ERROR_RNG_FAILED = -5,
+    vscr_status_ERROR_RNG_FAILED = -4,
     //
     //  Curve25519 error.
     //
-    vscr_status_ERROR_CURVE25519 = -6,
+    vscr_status_ERROR_CURVE25519 = -5,
+    //
+    //  Curve25519 error.
+    //
+    vscr_status_ERROR_ED25519 = -6,
     //
     //  Key deserialization failed.
     //
@@ -171,7 +171,27 @@ enum vscr_status_t {
     //
     //  Invalid signature.
     //
-    vscr_status_ERROR_INVALID_SIGNATURE = -24
+    vscr_status_ERROR_INVALID_SIGNATURE = -24,
+    //
+    //  User is not present in group message.
+    //
+    vscr_status_ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE = -25,
+    //
+    //  Epoch mismatch.
+    //
+    vscr_status_ERROR_EPOCH_MISMATCH = -26,
+    //
+    //  Participant not found.
+    //
+    vscr_status_ERROR_PARTICIPANT_NOT_FOUND = -27,
+    //
+    //  Epoch not found.
+    //
+    vscr_status_ERROR_EPOCH_NOT_FOUND = -28,
+    //
+    //  Session id mismatch.
+    //
+    vscr_status_ERROR_SESSION_ID_MISMATCH = -29
 };
 typedef enum vscr_status_t vscr_status_t;
 

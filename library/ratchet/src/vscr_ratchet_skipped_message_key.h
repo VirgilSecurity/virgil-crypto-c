@@ -85,7 +85,7 @@ struct vscr_ratchet_skipped_message_key_t {
     //
     size_t refcnt;
 
-    byte public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte public_key[vscr_ratchet_common_hidden_KEY_LEN];
 
     vscr_ratchet_message_key_t *message_key;
 };

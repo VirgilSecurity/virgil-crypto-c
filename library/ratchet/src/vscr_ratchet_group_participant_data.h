@@ -51,8 +51,8 @@
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_common.h"
+#include "vscr_ratchet_group_participant_epoch.h"
 #include "vscr_ratchet_group_participant_data.h"
-#include "vscr_ratchet_chain_key.h"
 
 // clang-format on
 //  @end
@@ -85,9 +85,11 @@ struct vscr_ratchet_group_participant_data_t {
 
     byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN];
 
-    byte pub_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte pub_key[vscr_ratchet_common_hidden_KEY_LEN];
 
-    vscr_ratchet_chain_key_t *chain_key;
+    size_t epoch_count;
+
+    vscr_ratchet_group_participant_epoch_t *epoches[vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT];
 };
 
 //
@@ -133,6 +135,15 @@ vscr_ratchet_group_participant_data_destroy(vscr_ratchet_group_participant_data_
 //
 VSCR_PUBLIC vscr_ratchet_group_participant_data_t *
 vscr_ratchet_group_participant_data_shallow_copy(vscr_ratchet_group_participant_data_t *self);
+
+VSCR_PUBLIC vscr_ratchet_group_participant_epoch_t *
+vscr_ratchet_group_participant_data_add_epoch(vscr_ratchet_group_participant_data_t *self, size_t epoch);
+
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_data_delete_epoch(vscr_ratchet_group_participant_data_t *self, size_t epoch);
+
+VSCR_PUBLIC vscr_ratchet_group_participant_epoch_t *
+vscr_ratchet_group_participant_data_find_epoch(vscr_ratchet_group_participant_data_t *self, size_t epoch);
 
 VSCR_PUBLIC void
 vscr_ratchet_group_participant_data_serialize(vscr_ratchet_group_participant_data_t *self, ParticipantData *data_pb);

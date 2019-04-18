@@ -5,7 +5,7 @@
         Max plain text length allowed to be encrypted
     </constant>
 
-    <constant name="max message len" value="32960">
+    <constant name="max message len" value="32975">
         Max message length
     </constant>
 
@@ -17,15 +17,19 @@
         Participant id length
     </constant>
 
+    <constant name="session id len" value="32">
+        Session id length
+    </constant>
+
     <constant name="max participants count" value="100">
         Max number of group chat participants
     </constant>
 
-    <constant name="min participants count" value="1">
+    <constant name="min participants count" value="2">
         Min number of group chat participants
     </constant>
 
-    <constant name="max group message len" value="32882">
+    <constant name="max group message len" value="32908">
         Max group message length
     </constant>
 </class>

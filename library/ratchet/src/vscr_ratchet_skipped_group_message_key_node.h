@@ -48,7 +48,7 @@
 #define VSCR_RATCHET_SKIPPED_GROUP_MESSAGE_KEY_NODE_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_message_key.h"
+#include "vscr_ratchet_skipped_group_message_key.h"
 #include "vscr_ratchet_skipped_group_message_key_node.h"
 
 // clang-format on
@@ -80,7 +80,7 @@ struct vscr_ratchet_skipped_group_message_key_node_t {
     //
     size_t refcnt;
 
-    vscr_ratchet_message_key_t *value;
+    vscr_ratchet_skipped_group_message_key_t *value;
 
     vscr_ratchet_skipped_group_message_key_node_t *next;
 };

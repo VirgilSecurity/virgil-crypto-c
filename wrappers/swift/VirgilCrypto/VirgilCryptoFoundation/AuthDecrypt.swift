@@ -40,7 +40,7 @@ import VSCFoundation
 @objc(VSCFAuthDecrypt) public protocol AuthDecrypt : CipherAuthInfo {
 
     /// Decrypt given data.
-    /// If 'tag' is not give, then it will be taken from the 'enc'.
+    /// If 'tag' is not given, then it will be taken from the 'enc'.
     @objc func authDecrypt(data: Data, authData: Data, tag: Data) throws -> Data
 
     /// Calculate required buffer length to hold the authenticated decrypted data.

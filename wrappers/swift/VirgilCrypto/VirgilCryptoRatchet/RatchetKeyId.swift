@@ -37,15 +37,15 @@ import Foundation
 import VSCRatchet
 import VirgilCryptoFoundation
 
-/// Utils class for working with keys formats
-@objc(VSCRRatchetKeyUtils) public class RatchetKeyUtils: NSObject {
+/// Utils class for working with keys formats.
+@objc(VSCRRatchetKeyId) public class RatchetKeyId: NSObject {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
     /// Create underlying C context.
     public override init() {
-        self.c_ctx = vscr_ratchet_key_utils_new()
+        self.c_ctx = vscr_ratchet_key_id_new()
         super.init()
     }
 
@@ -59,17 +59,17 @@ import VirgilCryptoFoundation
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscr_ratchet_key_utils_shallow_copy(c_ctx)
+        self.c_ctx = vscr_ratchet_key_id_shallow_copy(c_ctx)
         super.init()
     }
 
     /// Release underlying C context.
     deinit {
-        vscr_ratchet_key_utils_delete(self.c_ctx)
+        vscr_ratchet_key_id_delete(self.c_ctx)
     }
 
-    /// Computes 8 bytes key pair id from public key
-    @objc public func computePublicKeyId(publicKey: Data, convertToCurve25519: Bool) throws -> Data {
+    /// Computes 8 bytes key pair id from Curve25519 (in PKCS8 or raw format) public key
+    @objc public func computePublicKeyId(publicKey: Data) throws -> Data {
         let keyIdCount = RatchetCommon.keyIdLen
         var keyId = Data(count: keyIdCount)
         var keyIdBuf = vsc_buffer_new()
@@ -82,7 +82,7 @@ import VirgilCryptoFoundation
                 vsc_buffer_init(keyIdBuf)
                 vsc_buffer_use(keyIdBuf, keyIdPointer.bindMemory(to: byte.self).baseAddress, keyIdCount)
 
-                return vscr_ratchet_key_utils_compute_public_key_id(self.c_ctx, vsc_data(publicKeyPointer.bindMemory(to: byte.self).baseAddress, publicKey.count), convertToCurve25519, keyIdBuf)
+                return vscr_ratchet_key_id_compute_public_key_id(self.c_ctx, vsc_data(publicKeyPointer.bindMemory(to: byte.self).baseAddress, publicKey.count), keyIdBuf)
             })
         })
         keyId.count = vsc_buffer_len(keyIdBuf)
@@ -90,41 +90,5 @@ import VirgilCryptoFoundation
         try RatchetError.handleStatus(fromC: proxyResult)
 
         return keyId
-    }
-
-    @objc public func extractRatchetPublicKey(data: Data, ed25519: Bool, curve25519: Bool, convertToCurve25519: Bool) throws -> Data {
-        var error: vscr_error_t = vscr_error_t()
-        vscr_error_reset(&error)
-
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) in
-
-            return vscr_ratchet_key_utils_extract_ratchet_public_key(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), ed25519, curve25519, convertToCurve25519, &error)
-        })
-
-        defer {
-            vsc_buffer_delete(proxyResult)
-        }
-
-        try RatchetError.handleStatus(fromC: error.status)
-
-        return Data.init(bytes: vsc_buffer_bytes(proxyResult), count: vsc_buffer_len(proxyResult))
-    }
-
-    @objc public func extractRatchetPrivateKey(data: Data, ed25519: Bool, curve25519: Bool, convertToCurve25519: Bool) throws -> Data {
-        var error: vscr_error_t = vscr_error_t()
-        vscr_error_reset(&error)
-
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) in
-
-            return vscr_ratchet_key_utils_extract_ratchet_private_key(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), ed25519, curve25519, convertToCurve25519, &error)
-        })
-
-        defer {
-            vsc_buffer_delete(proxyResult)
-        }
-
-        try RatchetError.handleStatus(fromC: error.status)
-
-        return Data.init(bytes: vsc_buffer_bytes(proxyResult), count: vsc_buffer_len(proxyResult))
     }
 }

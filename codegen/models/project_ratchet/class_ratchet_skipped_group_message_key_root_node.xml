@@ -7,6 +7,21 @@
     </property>
     <property name="begin" class="ratchet skipped group message key node" access="readwrite"/>
 
+    <method name="find key">
+        <argument name="epoch" type="size"/>
+        <argument name="counter" type="size"/>
+
+        <return class="ratchet message key" access="readwrite"/>
+    </method>
+
+    <method name="delete key">
+        <argument name="skipped message key" class="ratchet message key" access="readwrite"/>
+    </method>
+
+    <method name="add key">
+        <argument name="skipped group message key" class="ratchet skipped group message key" access="readwrite"/>
+    </method>
+
     <method name="serialize">
         <argument name="root node pb" class="SkippedGroupMessagesRoot" library="nanopb" access="readwrite"/>
     </method>

@@ -41,10 +41,18 @@ import VSCRatchet
 
     /// Group info used to create group chat, or change group chat.
     /// Should be distributed only using secure channels.
-    case groupInfo = 0
+    case startGroup = 1
+
+    /// Add members message.
+    /// Should be distributed only using secure channels.
+    case addMembers = 2
+
+    /// Remove members message.
+    /// Should be distributed only using secure channels.
+    case epochChange = 3
 
     /// Regular group ratchet message with cipher text.
-    case regular = 1
+    case regular = 4
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC groupMsgType: vscr_group_msg_type_t) {

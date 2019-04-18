@@ -44,17 +44,33 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_SKIPPED_GROUP_MESSAGES_H_INCLUDED
-#define VSCR_RATCHET_SKIPPED_GROUP_MESSAGES_H_INCLUDED
+#ifndef VSCR_RATCHET_PADDING_H_INCLUDED
+#define VSCR_RATCHET_PADDING_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_common.h"
-#include "vscr_ratchet_message_key.h"
-#include "vscr_ratchet_skipped_group_messages.h"
+#include "vscr_status.h"
 
-#include <RatchetSession.pb.h>
+#include <RatchetMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
+
+#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
+#endif
 
 // clang-format on
 //  @end
@@ -72,80 +88,89 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet skipped group messages' context.
+//  Public integral constants.
 //
-typedef struct vscr_ratchet_skipped_group_messages_t vscr_ratchet_skipped_group_messages_t;
+enum {
+    vscr_ratchet_padding_PADDING_SIZE_LEN = 4,
+    vscr_ratchet_padding_PADDING_FACTOR = 160
+};
 
 //
-//  Return size of 'vscr_ratchet_skipped_group_messages_t'.
+//  Handle 'ratchet padding' context.
+//
+typedef struct vscr_ratchet_padding_t vscr_ratchet_padding_t;
+
+//
+//  Return size of 'vscr_ratchet_padding_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_skipped_group_messages_ctx_size(void);
+vscr_ratchet_padding_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_group_messages_init(vscr_ratchet_skipped_group_messages_t *self);
+vscr_ratchet_padding_init(vscr_ratchet_padding_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_group_messages_cleanup(vscr_ratchet_skipped_group_messages_t *self);
+vscr_ratchet_padding_cleanup(vscr_ratchet_padding_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_skipped_group_messages_t *
-vscr_ratchet_skipped_group_messages_new(void);
+VSCR_PUBLIC vscr_ratchet_padding_t *
+vscr_ratchet_padding_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_group_messages_delete(vscr_ratchet_skipped_group_messages_t *self);
+vscr_ratchet_padding_delete(vscr_ratchet_padding_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_skipped_group_messages_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_padding_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_group_messages_destroy(vscr_ratchet_skipped_group_messages_t **self_ref);
+vscr_ratchet_padding_destroy(vscr_ratchet_padding_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_skipped_group_messages_t *
-vscr_ratchet_skipped_group_messages_shallow_copy(vscr_ratchet_skipped_group_messages_t *self);
+VSCR_PUBLIC vscr_ratchet_padding_t *
+vscr_ratchet_padding_shallow_copy(vscr_ratchet_padding_t *self);
 
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
 VSCR_PUBLIC void
-vscr_ratchet_skipped_group_messages_setup(vscr_ratchet_skipped_group_messages_t *self, size_t group_size);
+vscr_ratchet_padding_use_rng(vscr_ratchet_padding_t *self, vscf_impl_t *rng);
 
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
 VSCR_PUBLIC void
-vscr_ratchet_skipped_group_messages_add_participant(vscr_ratchet_skipped_group_messages_t *self,
-        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN], size_t counter);
+vscr_ratchet_padding_take_rng(vscr_ratchet_padding_t *self, vscf_impl_t *rng);
 
-VSCR_PUBLIC vscr_ratchet_message_key_t *
-vscr_ratchet_skipped_group_messages_find_key(vscr_ratchet_skipped_group_messages_t *self,
-        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN], size_t counter);
-
+//
+//  Release dependency to the interface 'random'.
+//
 VSCR_PUBLIC void
-vscr_ratchet_skipped_group_messages_delete_key(vscr_ratchet_skipped_group_messages_t *self,
-        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN], vscr_ratchet_message_key_t *skipped_message_key);
+vscr_ratchet_padding_release_rng(vscr_ratchet_padding_t *self);
 
-VSCR_PUBLIC void
-vscr_ratchet_skipped_group_messages_add_key(vscr_ratchet_skipped_group_messages_t *self,
-        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN], vscr_ratchet_message_key_t *skipped_message_key);
+VSCR_PUBLIC size_t
+vscr_ratchet_padding_padded_len(size_t plain_text_len);
 
-VSCR_PUBLIC void
-vscr_ratchet_skipped_group_messages_serialize(vscr_ratchet_skipped_group_messages_t *self,
-        SkippedGroupMessages *skipped_messages_pb);
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_padding_add_padding(vscr_ratchet_padding_t *self, vsc_buffer_t *plain_text) VSCR_NODISCARD;
 
-VSCR_PUBLIC void
-vscr_ratchet_skipped_group_messages_deserialize(SkippedGroupMessages *skipped_messages_pb,
-        vscr_ratchet_skipped_group_messages_t *skipped_messages);
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_padding_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buffer) VSCR_NODISCARD;
 
 
 // --------------------------------------------------------------------------
@@ -161,5 +186,5 @@ vscr_ratchet_skipped_group_messages_deserialize(SkippedGroupMessages *skipped_me
 
 
 //  @footer
-#endif // VSCR_RATCHET_SKIPPED_GROUP_MESSAGES_H_INCLUDED
+#endif // VSCR_RATCHET_PADDING_H_INCLUDED
 //  @end

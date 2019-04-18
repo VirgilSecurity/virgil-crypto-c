@@ -47,7 +47,7 @@
 #include "vscr_ratchet_keys.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_keys_defs.h"
 
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_hmac.h>
@@ -85,20 +85,6 @@ static const uint8_t ratchet_kdf_ratchet_info[] = {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Handle 'ratchet keys' context.
-//
-struct vscr_ratchet_keys_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-};
 
 //
 //  Perform context specific initialization.
@@ -264,13 +250,12 @@ vscr_ratchet_keys_cleanup_ctx(vscr_ratchet_keys_t *self) {
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_keys_derive_initial_keys(vsc_data_t shared_secret,
-        byte root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH],
-        byte chain_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH]) {
+vscr_ratchet_keys_derive_initial_keys(vsc_data_t shared_secret, byte root_key[vscr_ratchet_common_hidden_KEY_LEN],
+        byte chain_key[vscr_ratchet_common_hidden_KEY_LEN]) {
 
     VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN || shared_secret.len == 4 * ED25519_DH_LEN);
 
-    byte derived_secret[2 * vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte derived_secret[2 * vscr_ratchet_common_hidden_KEY_LEN];
 
     vsc_buffer_t buffer;
     vsc_buffer_init(&buffer);
@@ -286,22 +271,21 @@ vscr_ratchet_keys_derive_initial_keys(vsc_data_t shared_secret,
 
     vsc_buffer_delete(&buffer);
 
-    memcpy(root_key, derived_secret, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
-    memcpy(chain_key, derived_secret + vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH,
-            vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+    memcpy(root_key, derived_secret, vscr_ratchet_common_hidden_KEY_LEN);
+    memcpy(chain_key, derived_secret + vscr_ratchet_common_hidden_KEY_LEN, vscr_ratchet_common_hidden_KEY_LEN);
 
     vscr_zeroize(derived_secret, sizeof(derived_secret));
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_keys_create_chain_key(const byte root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH],
-        vsc_data_t private_key, vsc_data_t public_key, byte new_root_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH],
+vscr_ratchet_keys_create_chain_key(const byte root_key[vscr_ratchet_common_hidden_KEY_LEN], vsc_data_t private_key,
+        vsc_data_t public_key, byte new_root_key[vscr_ratchet_common_hidden_KEY_LEN],
         vscr_ratchet_chain_key_t *chain_key) {
 
     VSCR_ASSERT_PTR(chain_key);
 
-    VSCR_ASSERT(private_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
-    VSCR_ASSERT(public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+    VSCR_ASSERT(private_key.len == vscr_ratchet_common_hidden_KEY_LEN);
+    VSCR_ASSERT(public_key.len == vscr_ratchet_common_hidden_KEY_LEN);
 
     vscr_status_t status = vscr_status_SUCCESS;
 
@@ -316,19 +300,18 @@ vscr_ratchet_keys_create_chain_key(const byte root_key[vscr_ratchet_common_hidde
 
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
 
-    byte derived_secret[2 * vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte derived_secret[2 * vscr_ratchet_common_hidden_KEY_LEN];
     vsc_buffer_t buffer;
     vsc_buffer_init(&buffer);
     vsc_buffer_use(&buffer, derived_secret, sizeof(derived_secret));
 
-    vscf_hkdf_reset(hkdf, vsc_data(root_key, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH), 0);
+    vscf_hkdf_reset(hkdf, vsc_data(root_key, vscr_ratchet_common_hidden_KEY_LEN), 0);
     vscf_hkdf_set_info(hkdf, vsc_data(ratchet_kdf_ratchet_info, sizeof(ratchet_kdf_ratchet_info)));
     vscf_hkdf_derive(hkdf, vsc_data(secret, sizeof(secret)), sizeof(derived_secret), &buffer);
 
-    memcpy(new_root_key, derived_secret, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+    memcpy(new_root_key, derived_secret, vscr_ratchet_common_hidden_KEY_LEN);
 
-    memcpy(chain_key->key, derived_secret + vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH,
-            vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+    memcpy(chain_key->key, derived_secret + vscr_ratchet_common_hidden_KEY_LEN, vscr_ratchet_common_hidden_KEY_LEN);
     chain_key->index = 0;
 
     vscf_hkdf_destroy(&hkdf);

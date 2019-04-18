@@ -48,17 +48,6 @@
 #include "vsce_phe_cipher.h"
 
 // --------------------------------------------------------------------------
-//  Should have it to prevent linkage errors in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
-// --------------------------------------------------------------------------
 //  Test functions.
 // --------------------------------------------------------------------------
 void

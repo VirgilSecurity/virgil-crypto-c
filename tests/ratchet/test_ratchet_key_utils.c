@@ -37,16 +37,6 @@
 #include "unity.h"
 #include "test_utils.h"
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage errors in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
@@ -60,6 +50,7 @@ int suiteTearDown(int num_failures) { return num_failures; }
 #include "vscr_error.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_key_utils.h"
+#include "vscr_ratchet_key_id.h"
 #include "test_data_ratchet_key_utils.h"
 
 void
@@ -118,32 +109,32 @@ test__extract__fixed_ed_keypair__should_match(void) {
 
 void
 test__key_id__fixed_curve_key__should_match(void) {
-    vscr_ratchet_key_utils_t *key_utils = vscr_ratchet_key_utils_new();
+    vscr_ratchet_key_id_t *key_id = vscr_ratchet_key_id_new();
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vscr_ratchet_common_KEY_ID_LEN);
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
-            vscr_ratchet_key_utils_compute_public_key_id(key_utils, test_data_ratchet_curve_public_key, false, buffer));
+            vscr_ratchet_key_id_compute_public_key_id(key_id, test_data_ratchet_curve_public_key, buffer));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ratchet_curve_public_key_id, buffer);
 
     vsc_buffer_destroy(&buffer);
-    vscr_ratchet_key_utils_destroy(&key_utils);
+    vscr_ratchet_key_id_destroy(&key_id);
 }
 
 void
 test__key_id__fixed_curve_raw_key__should_match(void) {
-    vscr_ratchet_key_utils_t *key_utils = vscr_ratchet_key_utils_new();
+    vscr_ratchet_key_id_t *key_id = vscr_ratchet_key_id_new();
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vscr_ratchet_common_KEY_ID_LEN);
 
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_key_utils_compute_public_key_id(
-                                                   key_utils, test_data_ratchet_curve_public_key_raw, false, buffer));
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+            vscr_ratchet_key_id_compute_public_key_id(key_id, test_data_ratchet_curve_public_key_raw, buffer));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ratchet_curve_public_key_id, buffer);
 
     vsc_buffer_destroy(&buffer);
-    vscr_ratchet_key_utils_destroy(&key_utils);
+    vscr_ratchet_key_id_destroy(&key_id);
 }
 
 // TODO: Add more tests

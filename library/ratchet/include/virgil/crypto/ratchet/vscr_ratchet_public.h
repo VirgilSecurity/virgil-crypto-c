@@ -64,7 +64,7 @@
 #include "vscr_ratchet_group_message.h"
 #include "vscr_ratchet_group_session.h"
 #include "vscr_ratchet_group_ticket.h"
-#include "vscr_ratchet_key_utils.h"
+#include "vscr_ratchet_key_id.h"
 #include "vscr_ratchet_message.h"
 #include "vscr_ratchet_session.h"
 #include "vscr_status.h"
