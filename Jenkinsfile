@@ -6,7 +6,6 @@
 // --------------------------------------------------------------------------
 properties([
     parameters([
-        [$class: 'ParametersDefinitionProperty', parameterDefinitions: [[$class: 'StringParameterDefinition', name: 'myparam', defaultValue: 'default value']]],
         booleanParam(name: 'DEPLOY_JAVA_ARTIFACTS', defaultValue: true,
             description: 'If build succeeded then Java artifacts will be deployed to the Maven repository.'),
 
