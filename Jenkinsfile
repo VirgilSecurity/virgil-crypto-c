@@ -10,9 +10,7 @@ properties([
             description: 'If build succeeded then Java artifacts will be deployed to the Maven repository.'),
 
         booleanParam(name: 'RUN_ANDROID_TESTS', defaultValue: true,
-            description: '''
-                Run Android instrumental tests.
-                If DEPLOY_ANDROID_ARTIFACTS is enabled, then these tests will be run anyway.'''),
+            description: 'Run Android instrumental tests.'),
 
         booleanParam(name: 'DEPLOY_ANDROID_ARTIFACTS', defaultValue: true,
             description: 'If build succeeded then Java Android artifacts will be deployed to the Maven repository..'),
@@ -497,7 +495,7 @@ def deployJavaArtifacts() {
     return {
         node('master') {
             stage('Deploy Java artifacts') {
-                if (env.DEPLOY_JAVA_ARTIFACTS == 'false') {
+                if (params.DEPLOY_JAVA_ARTIFACTS) {
                     echo "Skippied due to the false paramter: DEPLOY_JAVA_ARTIFACTS"
                     return
                 }
@@ -521,7 +519,7 @@ def runAndroidInstrumentalTests() {
     return {
         node('build-os-x') {
             stage('Test Android artifacts') {
-                if ((env.RUN_ANDROID_TESTS == 'false') && (env.DEPLOY_ANDROID_ARTIFACTS == 'false')) {
+                if (params.RUN_ANDROID_TESTS && params.DEPLOY_ANDROID_ARTIFACTS) {
                     echo "Skippied due to the false paramter: RUN_ANDROID_TESTS"
                     return
                 }
@@ -571,7 +569,7 @@ def deployAndroidArtifacts() {
     return {
         node('master') {
             stage('Deploy Android artifacts') {
-                if (env.DEPLOY_ANDROID_ARTIFACTS == 'false') {
+                if (params.DEPLOY_ANDROID_ARTIFACTS) {
                     echo "Skippied due to the false paramter: DEPLOY_ANDROID_ARTIFACTS"
                     return
                 }
