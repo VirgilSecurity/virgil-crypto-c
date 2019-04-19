@@ -261,7 +261,7 @@ def build_LangPHP_Windows(slave) {
             unstash 'src'
             withEnv(["PHP_HOME=C:\\php-7.3.4",
                      "PHP_DEVEL_HOME=C:\\php-7.3.4-devel",
-                     "PHPUNIT_HOME=C:\\phpunit-8.1.2"]) {
+                     "PHPUNIT_HOME=C:\\phpunit-7.2.4"]) {
                 bat '''
                     set PATH=%PATH:"=%
                     call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
