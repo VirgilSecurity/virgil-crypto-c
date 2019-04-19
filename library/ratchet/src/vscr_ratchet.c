@@ -673,6 +673,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
 
     if (old_chain) {
         result = vscr_ratchet_generate_skipped_keys(self, old_chain, regular_message_header->prev_chain_count + 1);
+        vscr_ratchet_receiver_chain_destroy(&old_chain);
 
         if (result != vscr_status_SUCCESS) {
             return result;
