@@ -2,6 +2,24 @@
 
 
 // --------------------------------------------------------------------------
+//  Configuration properties.
+// --------------------------------------------------------------------------
+properties([
+    parameters([
+        booleanParam(name: 'DEPLOY_JAVA_ARTIFACTS', defaultValue: true,
+            description: 'If build succeeded then Java artifacts will be deployed to the Maven repository.'),
+
+        booleanParam(name: 'RUN_ANDROID_TESTS', defaultValue: true,
+            description: '''
+                Run Android instrumental tests.
+                If DEPLOY_ANDROID_ARTIFACTS is enabled, then these tests will be run anyway.'''),
+
+        booleanParam(name: 'DEPLOY_ANDROID_ARTIFACTS', defaultValue: true,
+            description: 'If build succeeded then Java Android artifacts will be deployed to the Maven repository..'),
+    ])
+])
+
+// --------------------------------------------------------------------------
 //  Grab SCM
 // --------------------------------------------------------------------------
 
