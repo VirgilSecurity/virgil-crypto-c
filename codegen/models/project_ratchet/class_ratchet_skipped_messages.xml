@@ -1,5 +1,7 @@
 <class name="ratchet skipped messages" context="internal" scope="internal">
 
+    <require module="ratchet public key" scope="context"/>
+
     <require class="ratchet common hidden" scope="context"/>
     <require class="ratchet chain key" scope="private"/>
 
@@ -7,21 +9,28 @@
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 
+    <property name="public keys" class="vscr_ratchet_public_ratchet_public_key_t" is_reference="0" access="readwrite" library="internal">
+<!--        FIXME-->
+        <array length="fixed" length_constant="5"/>
+    </property>
+
     <property name="keys" class="ratchet skipped message key list node" access="readwrite"/>
 
     <method name="find key">
         <argument name="counter" type="size"/>
         <argument name="ratchet public key" class="data"/>
 
-        <return class="ratchet skipped message key" access="readwrite"/>
+        <return class="ratchet message key" access="readwrite"/>
     </method>
 
     <method name="delete key">
-        <argument name="skipped message key" class="ratchet skipped message key" access="readwrite"/>
+        <argument name="public key" class="ratchet public key"/>
+        <argument name="message key" class="ratchet message key" access="readwrite"/>
     </method>
 
     <method name="add key">
-        <argument name="skipped message key" class="ratchet skipped message key" access="readwrite"/>
+        <argument name="public key" class="ratchet public key"/>
+        <argument name="message key" class="ratchet message key" access="readwrite"/>
     </method>
 
     <method name="serialize">

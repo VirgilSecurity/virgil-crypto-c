@@ -44,7 +44,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_ratchet_skipped_message_key.h"
+#include "vscr_ratchet_public_key.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 
@@ -60,11 +60,11 @@
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_skipped_message_key_init() is called.
+//  Note, this method is called automatically when method vscr_ratchet_public_key_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_skipped_message_key_init_ctx(vscr_ratchet_skipped_message_key_t *self);
+vscr_ratchet_public_key_init_ctx(vscr_ratchet_public_key_t *self);
 
 //
 //  Release all inner resources.
@@ -72,37 +72,37 @@ vscr_ratchet_skipped_message_key_init_ctx(vscr_ratchet_skipped_message_key_t *se
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_skipped_message_key_cleanup_ctx(vscr_ratchet_skipped_message_key_t *self);
+vscr_ratchet_public_key_cleanup_ctx(vscr_ratchet_public_key_t *self);
 
 //
-//  Return size of 'vscr_ratchet_skipped_message_key_t'.
+//  Return size of 'vscr_ratchet_public_key_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_skipped_message_key_ctx_size(void) {
+vscr_ratchet_public_key_ctx_size(void) {
 
-    return sizeof(vscr_ratchet_skipped_message_key_t);
+    return sizeof(vscr_ratchet_public_key_t);
 }
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_message_key_init(vscr_ratchet_skipped_message_key_t *self) {
+vscr_ratchet_public_key_init(vscr_ratchet_public_key_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    vscr_zeroize(self, sizeof(vscr_ratchet_skipped_message_key_t));
+    vscr_zeroize(self, sizeof(vscr_ratchet_public_key_t));
 
     self->refcnt = 1;
 
-    vscr_ratchet_skipped_message_key_init_ctx(self);
+    vscr_ratchet_public_key_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_message_key_cleanup(vscr_ratchet_skipped_message_key_t *self) {
+vscr_ratchet_public_key_cleanup(vscr_ratchet_public_key_t *self) {
 
     if (self == NULL) {
         return;
@@ -113,22 +113,22 @@ vscr_ratchet_skipped_message_key_cleanup(vscr_ratchet_skipped_message_key_t *sel
     }
 
     if (--self->refcnt == 0) {
-        vscr_ratchet_skipped_message_key_cleanup_ctx(self);
+        vscr_ratchet_public_key_cleanup_ctx(self);
 
-        vscr_zeroize(self, sizeof(vscr_ratchet_skipped_message_key_t));
+        vscr_zeroize(self, sizeof(vscr_ratchet_public_key_t));
     }
 }
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_skipped_message_key_t *
-vscr_ratchet_skipped_message_key_new(void) {
+VSCR_PUBLIC vscr_ratchet_public_key_t *
+vscr_ratchet_public_key_new(void) {
 
-    vscr_ratchet_skipped_message_key_t *self = (vscr_ratchet_skipped_message_key_t *) vscr_alloc(sizeof (vscr_ratchet_skipped_message_key_t));
+    vscr_ratchet_public_key_t *self = (vscr_ratchet_public_key_t *) vscr_alloc(sizeof (vscr_ratchet_public_key_t));
     VSCR_ASSERT_ALLOC(self);
 
-    vscr_ratchet_skipped_message_key_init(self);
+    vscr_ratchet_public_key_init(self);
 
     self->self_dealloc_cb = vscr_dealloc;
 
@@ -140,7 +140,7 @@ vscr_ratchet_skipped_message_key_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_message_key_delete(vscr_ratchet_skipped_message_key_t *self) {
+vscr_ratchet_public_key_delete(vscr_ratchet_public_key_t *self) {
 
     if (self == NULL) {
         return;
@@ -148,7 +148,7 @@ vscr_ratchet_skipped_message_key_delete(vscr_ratchet_skipped_message_key_t *self
 
     vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscr_ratchet_skipped_message_key_cleanup(self);
+    vscr_ratchet_public_key_cleanup(self);
 
     if (self->refcnt == 0 && self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
@@ -157,24 +157,24 @@ vscr_ratchet_skipped_message_key_delete(vscr_ratchet_skipped_message_key_t *self
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_skipped_message_key_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_public_key_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_message_key_destroy(vscr_ratchet_skipped_message_key_t **self_ref) {
+vscr_ratchet_public_key_destroy(vscr_ratchet_public_key_t **self_ref) {
 
     VSCR_ASSERT_PTR(self_ref);
 
-    vscr_ratchet_skipped_message_key_t *self = *self_ref;
+    vscr_ratchet_public_key_t *self = *self_ref;
     *self_ref = NULL;
 
-    vscr_ratchet_skipped_message_key_delete(self);
+    vscr_ratchet_public_key_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_skipped_message_key_t *
-vscr_ratchet_skipped_message_key_shallow_copy(vscr_ratchet_skipped_message_key_t *self) {
+VSCR_PUBLIC vscr_ratchet_public_key_t *
+vscr_ratchet_public_key_shallow_copy(vscr_ratchet_public_key_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
@@ -193,13 +193,13 @@ vscr_ratchet_skipped_message_key_shallow_copy(vscr_ratchet_skipped_message_key_t
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_skipped_message_key_init() is called.
+//  Note, this method is called automatically when method vscr_ratchet_public_key_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_skipped_message_key_init_ctx(vscr_ratchet_skipped_message_key_t *self) {
+vscr_ratchet_public_key_init_ctx(vscr_ratchet_public_key_t *self) {
 
-    VSCR_ASSERT_PTR(self);
+    //  TODO: This is STUB. Implement me.
 }
 
 //
@@ -208,35 +208,9 @@ vscr_ratchet_skipped_message_key_init_ctx(vscr_ratchet_skipped_message_key_t *se
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_skipped_message_key_cleanup_ctx(vscr_ratchet_skipped_message_key_t *self) {
+vscr_ratchet_public_key_cleanup_ctx(vscr_ratchet_public_key_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    vscr_ratchet_message_key_destroy(&self->message_key);
-}
-
-VSCR_PUBLIC void
-vscr_ratchet_skipped_message_key_serialize(
-        vscr_ratchet_skipped_message_key_t *self, SkippedMessageKey *skipped_message_key_pb) {
-
-    VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(skipped_message_key_pb);
-
-    memcpy(skipped_message_key_pb->public_key, self->public_key, sizeof(skipped_message_key_pb->public_key));
-
-    vscr_ratchet_message_key_serialize(self->message_key, &skipped_message_key_pb->message_key);
-}
-
-VSCR_PUBLIC void
-vscr_ratchet_skipped_message_key_deserialize(
-        const SkippedMessageKey *skipped_message_key_pb, vscr_ratchet_skipped_message_key_t *skipped_message_key) {
-
-    VSCR_ASSERT_PTR(skipped_message_key_pb);
-    VSCR_ASSERT_PTR(skipped_message_key);
-
-    memcpy(skipped_message_key->public_key, skipped_message_key_pb->public_key,
-            sizeof(skipped_message_key_pb->public_key));
-
-    skipped_message_key->message_key = vscr_ratchet_message_key_new();
-    vscr_ratchet_message_key_deserialize(&skipped_message_key_pb->message_key, skipped_message_key->message_key);
+    //  TODO: Release all inner resources.
 }

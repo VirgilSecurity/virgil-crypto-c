@@ -49,7 +49,7 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_skipped_message_key_list_node.h"
-#include "vscr_ratchet_skipped_message_key.h"
+#include "vscr_ratchet_message_key.h"
 
 // clang-format on
 //  @end
@@ -80,7 +80,7 @@ struct vscr_ratchet_skipped_message_key_list_node_t {
     //
     size_t refcnt;
 
-    vscr_ratchet_skipped_message_key_t *value;
+    vscr_ratchet_message_key_t *value;
 
     vscr_ratchet_skipped_message_key_list_node_t *next;
 };

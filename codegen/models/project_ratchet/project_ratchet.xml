@@ -54,6 +54,8 @@
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
 
+    <module name="ratchet public key"/>
+
     <enum name="status"/>
     <enum name="msg type"/>
     <enum name="group msg type"/>
@@ -71,7 +73,6 @@
     <class name="ratchet chain key"/>
     <class name="ratchet message key"/>
     <class name="ratchet receiver chain"/>
-    <class name="ratchet skipped message key"/>
     <class name="ratchet skipped message key list node"/>
     <class name="ratchet sender chain"/>
     <class name="ratchet keys"/>

@@ -1,0 +1,8 @@
+<module name="ratchet public key" context="public" scope="internal">
+
+    <c_include file="stdint.h" is_system="1"/>
+
+    <c_alias name="ratchet_public_key_t[32]" type="uint8_t" declaration="public">
+    </c_alias>
+
+</module>
