@@ -482,6 +482,58 @@ def build_LangJava_Android_arm64_v8a(slave) {
 
 
 // --------------------------------------------------------------------------
+//  Android tests
+// --------------------------------------------------------------------------
+node('build-os-x') {
+    stage('Test Android artifacts') {
+        eccho "RUN_ANDROID_TESTS = ${params.RUN_ANDROID_TESTS}"
+        eccho "DEPLOY_ANDROID_ARTIFACTS = ${params.DEPLOY_ANDROID_ARTIFACTS}"
+        if (!params.RUN_ANDROID_TESTS && !params.DEPLOY_ANDROID_ARTIFACTS) {
+            echo "Skipped due to the false parameter: RUN_ANDROID_TESTS"
+            return
+        }
+        clearContentUnix()
+        unstash "src"
+        unstash "java_android_x86"
+        unstash "java_android_x86_64"
+        unstash "java_android_armeabi_v7a"
+        unstash "java_android_arm64_v8a"
+
+        withEnv(['ANDROID_HOME=/Users/virgil/Library/VirgilEnviroment/android-sdk']) {
+            sh '''
+                export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
+                adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+            '''
+            sh '''
+                export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
+                emulator -avd test_x86_64 -netdelay none -netspeed full -no-window -no-audio -gpu off &
+                android-wait-for-emulator.sh
+                cd wrappers/java/android
+                ./gradlew clean connectedAndroidTest
+                adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+            '''
+            sh '''
+                export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
+                emulator -avd test_x86 -netdelay none -netspeed full -no-window -no-audio -gpu off &
+                android-wait-for-emulator.sh
+                cd wrappers/java/android
+                ./gradlew clean connectedAndroidTest
+                adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+            '''
+            sh '''
+                export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
+                emulator -avd test_v7a -netdelay none -netspeed full -no-window -no-audio -gpu off &
+                android-wait-for-emulator.sh
+                cd wrappers/java/android
+                ./gradlew clean connectedAndroidTest
+                adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+            '''
+        }
+    }
+}
+
+
+// --------------------------------------------------------------------------
 //  Deploy
 // --------------------------------------------------------------------------
 def calculateArtifactsChecksum() {
@@ -501,8 +553,9 @@ def deployJavaArtifacts() {
     return {
         node('master') {
             stage('Deploy Java artifacts') {
-                if (params.DEPLOY_JAVA_ARTIFACTS) {
-                    echo "Skippied due to the false paramter: DEPLOY_JAVA_ARTIFACTS"
+                eccho "DEPLOY_JAVA_ARTIFACTS = ${params.DEPLOY_JAVA_ARTIFACTS}"
+                if (!params.DEPLOY_JAVA_ARTIFACTS) {
+                    echo "Skipped due to the false parameter: DEPLOY_JAVA_ARTIFACTS"
                     return
                 }
                 clearContentUnix()
@@ -511,63 +564,11 @@ def deployJavaArtifacts() {
                 unstash "java_macos"
                 unstash "java_windows"
 
-                withEnv(["gpg_keyname=${params.gpg_keyname}"]) {
-                    sh """
-                        env
-                        cd wrappers/java
-                        ./mvnw clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${gpg_keyname}
-                    """
-                }
-            }
-        }
-    }
-}
-
-def runAndroidInstrumentalTests() {
-    return {
-        node('build-os-x') {
-            stage('Test Android artifacts') {
-                if (params.RUN_ANDROID_TESTS && params.DEPLOY_ANDROID_ARTIFACTS) {
-                    echo "Skippied due to the false paramter: RUN_ANDROID_TESTS"
-                    return
-                }
-                clearContentUnix()
-                unstash "src"
-                unstash "java_android_x86"
-                unstash "java_android_x86_64"
-                unstash "java_android_armeabi_v7a"
-                unstash "java_android_arm64_v8a"
-
-                withEnv(['ANDROID_HOME=/Users/virgil/Library/VirgilEnviroment/android-sdk']) {
-                    sh '''
-                        export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
-                        adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
-                    '''
-                    sh '''
-                        export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
-                        emulator -avd test_x86_64 -netdelay none -netspeed full -no-window -no-audio -gpu off &
-                        android-wait-for-emulator.sh
-                        cd wrappers/java/android
-                        ./gradlew clean connectedAndroidTest
-                        adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
-                    '''
-                    sh '''
-                        export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
-                        emulator -avd test_x86 -netdelay none -netspeed full -no-window -no-audio -gpu off &
-                        android-wait-for-emulator.sh
-                        cd wrappers/java/android
-                        ./gradlew clean connectedAndroidTest
-                        adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
-                    '''
-                    sh '''
-                        export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
-                        emulator -avd test_v7a -netdelay none -netspeed full -no-window -no-audio -gpu off &
-                        android-wait-for-emulator.sh
-                        cd wrappers/java/android
-                        ./gradlew clean connectedAndroidTest
-                        adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
-                    '''
-                }
+                sh """
+                    env
+                    cd wrappers/java
+                    ./mvnw clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${params.gpg_keyname}
+                """
             }
         }
     }
@@ -577,8 +578,9 @@ def deployAndroidArtifacts() {
     return {
         node('master') {
             stage('Deploy Android artifacts') {
-                if (params.DEPLOY_ANDROID_ARTIFACTS) {
-                    echo "Skippied due to the false paramter: DEPLOY_ANDROID_ARTIFACTS"
+                eccho "DEPLOY_ANDROID_ARTIFACTS = ${params.DEPLOY_ANDROID_ARTIFACTS}"
+                if (!params.DEPLOY_ANDROID_ARTIFACTS) {
+                    echo "Skipped due to the false parameter: DEPLOY_ANDROID_ARTIFACTS"
                     return
                 }
                 clearContentUnix()
@@ -600,9 +602,9 @@ def deployAndroidArtifacts() {
     }
 }
 
+
 def deploy_nodes = [:]
 deploy_nodes['calculate-artifacts-checksum'] = calculateArtifactsChecksum()
 deploy_nodes['deploy-java-artifacts'] = deployJavaArtifacts()
-deploy_nodes['run-android-instrumental-tests'] = runAndroidInstrumentalTests()
 deploy_nodes['deploy-android-artifacts'] = deployAndroidArtifacts()
 parallel(deploy_nodes)
