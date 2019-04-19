@@ -486,8 +486,8 @@ def build_LangJava_Android_arm64_v8a(slave) {
 // --------------------------------------------------------------------------
 node('build-os-x') {
     stage('Test Android artifacts') {
-        eccho "RUN_ANDROID_TESTS = ${params.RUN_ANDROID_TESTS}"
-        eccho "DEPLOY_ANDROID_ARTIFACTS = ${params.DEPLOY_ANDROID_ARTIFACTS}"
+        echo "RUN_ANDROID_TESTS = ${params.RUN_ANDROID_TESTS}"
+        echo "DEPLOY_ANDROID_ARTIFACTS = ${params.DEPLOY_ANDROID_ARTIFACTS}"
         if (!params.RUN_ANDROID_TESTS && !params.DEPLOY_ANDROID_ARTIFACTS) {
             echo "Skipped due to the false parameter: RUN_ANDROID_TESTS"
             return
@@ -553,7 +553,7 @@ def deployJavaArtifacts() {
     return {
         node('master') {
             stage('Deploy Java artifacts') {
-                eccho "DEPLOY_JAVA_ARTIFACTS = ${params.DEPLOY_JAVA_ARTIFACTS}"
+                echo "DEPLOY_JAVA_ARTIFACTS = ${params.DEPLOY_JAVA_ARTIFACTS}"
                 if (!params.DEPLOY_JAVA_ARTIFACTS) {
                     echo "Skipped due to the false parameter: DEPLOY_JAVA_ARTIFACTS"
                     return
@@ -578,7 +578,7 @@ def deployAndroidArtifacts() {
     return {
         node('master') {
             stage('Deploy Android artifacts') {
-                eccho "DEPLOY_ANDROID_ARTIFACTS = ${params.DEPLOY_ANDROID_ARTIFACTS}"
+                echo "DEPLOY_ANDROID_ARTIFACTS = ${params.DEPLOY_ANDROID_ARTIFACTS}"
                 if (!params.DEPLOY_ANDROID_ARTIFACTS) {
                     echo "Skipped due to the false parameter: DEPLOY_ANDROID_ARTIFACTS"
                     return
