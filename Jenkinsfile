@@ -14,6 +14,8 @@ properties([
 
         booleanParam(name: 'DEPLOY_ANDROID_ARTIFACTS', defaultValue: true,
             description: 'If build succeeded then Java Android artifacts will be deployed to the Maven repository..'),
+
+        string(name: 'gpg_keyname', defaultValue: 'B2007BBB'),
     ])
 ])
 
@@ -24,6 +26,10 @@ properties([
 
 node('master') {
     stage('Grab SCM') {
+        env
+        echo "DEPLOY_JAVA_ARTIFACTS = ${params.DEPLOY_JAVA_ARTIFACTS}"
+        echo "RUN_ANDROID_TESTS = ${params.RUN_ANDROID_TESTS}"
+        echo "DEPLOY_ANDROID_ARTIFACTS = ${params.DEPLOY_ANDROID_ARTIFACTS}"
         clearContentUnix()
         checkout scm
         stash includes: '**', name: 'src'
@@ -505,11 +511,13 @@ def deployJavaArtifacts() {
                 unstash "java_macos"
                 unstash "java_windows"
 
-                sh """
-                    env
-                    cd wrappers/java
-                    ./mvnw clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${gpg_keyname}
-                """
+                withEnv(["gpg_keyname=${params.gpg_keyname}"]) {
+                    sh """
+                        env
+                        cd wrappers/java
+                        ./mvnw clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${gpg_keyname}
+                    """
+                }
             }
         }
     }
