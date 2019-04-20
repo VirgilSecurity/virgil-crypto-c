@@ -227,6 +227,7 @@ vscr_ratchet_group_message_init_ctx(vscr_ratchet_group_message_t *self) {
 
     self->message_pb = msg;
     self->message_pb.version = vscr_ratchet_common_hidden_GROUP_MESSAGE_VERSION;
+    vscr_ratchet_group_message_set_pb_encode_callback(self);
     self->key_id = vscr_ratchet_key_id_new();
 }
 
@@ -373,7 +374,7 @@ vscr_ratchet_group_message_get_session_id(const vscr_ratchet_group_message_t *se
 //  Buffer len to serialize this class.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_group_message_serialize_len(vscr_ratchet_group_message_t *self) {
+vscr_ratchet_group_message_serialize_len(const vscr_ratchet_group_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(self->message_pb.has_group_info != self->message_pb.has_regular_message);
@@ -401,7 +402,7 @@ vscr_ratchet_group_message_serialize_len(vscr_ratchet_group_message_t *self) {
 //  Serializes instance.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_message_serialize(vscr_ratchet_group_message_t *self, vsc_buffer_t *output) {
+vscr_ratchet_group_message_serialize(const vscr_ratchet_group_message_t *self, vsc_buffer_t *output) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(output);
@@ -409,8 +410,6 @@ vscr_ratchet_group_message_serialize(vscr_ratchet_group_message_t *self, vsc_buf
     VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_group_message_serialize_len(self));
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_unused_len(output));
-
-    vscr_ratchet_group_message_set_pb_encode_callback(self);
 
     VSCR_ASSERT(pb_encode(&ostream, GroupMessage_fields, &self->message_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);
@@ -433,6 +432,8 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
     vscr_status_t status = vscr_status_SUCCESS;
 
     vscr_ratchet_group_message_t *message = vscr_ratchet_group_message_new();
+
+    vscr_ratchet_group_message_set_pb_decode_callback(message);
 
     pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 

@@ -134,7 +134,7 @@ VSCR_PUBLIC vscr_ratchet_message_key_t *
 vscr_ratchet_message_key_shallow_copy(vscr_ratchet_message_key_t *self);
 
 VSCR_PUBLIC void
-vscr_ratchet_message_key_serialize(vscr_ratchet_message_key_t *self, MessageKey *message_key_pb);
+vscr_ratchet_message_key_serialize(const vscr_ratchet_message_key_t *self, MessageKey *message_key_pb);
 
 VSCR_PUBLIC void
 vscr_ratchet_message_key_deserialize(const MessageKey *message_key_pb, vscr_ratchet_message_key_t *message_key);

@@ -26,13 +26,13 @@
         <argument name="epoch" type="size"/>
     </method>
 
-    <method name="find epoch">
+    <method name="find epoch" is_const="1">
         <argument name="epoch" type="size"/>
 
         <return class="ratchet group participant epoch" access="readwrite"/>
     </method>
 
-    <method name="serialize">
+    <method name="serialize" is_const="1">
         <argument name="data pb" class="ParticipantData" library="nanopb" access="readwrite"/>
     </method>
 

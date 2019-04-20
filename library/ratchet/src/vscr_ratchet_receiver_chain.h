@@ -135,7 +135,7 @@ VSCR_PUBLIC vscr_ratchet_receiver_chain_t *
 vscr_ratchet_receiver_chain_shallow_copy(vscr_ratchet_receiver_chain_t *self);
 
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chain_serialize(vscr_ratchet_receiver_chain_t *self, ReceiverChain *receiver_chain_pb);
+vscr_ratchet_receiver_chain_serialize(const vscr_ratchet_receiver_chain_t *self, ReceiverChain *receiver_chain_pb);
 
 VSCR_PUBLIC void
 vscr_ratchet_receiver_chain_deserialize(const ReceiverChain *receiver_chain_pb,

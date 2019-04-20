@@ -219,7 +219,7 @@ vscr_ratchet_skipped_group_message_key_root_node_cleanup_ctx(vscr_ratchet_skippe
 
 VSCR_PUBLIC vscr_ratchet_message_key_t *
 vscr_ratchet_skipped_group_message_key_root_node_find_key(
-        vscr_ratchet_skipped_group_message_key_root_node_t *self, size_t epoch, size_t counter) {
+        const vscr_ratchet_skipped_group_message_key_root_node_t *self, size_t epoch, size_t counter) {
 
     VSCR_ASSERT_PTR(self);
 
@@ -302,7 +302,7 @@ vscr_ratchet_skipped_group_message_key_root_node_add_key(vscr_ratchet_skipped_gr
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_group_message_key_root_node_serialize(
-        vscr_ratchet_skipped_group_message_key_root_node_t *self, SkippedGroupMessagesRoot *root_node_pb) {
+        const vscr_ratchet_skipped_group_message_key_root_node_t *self, SkippedGroupMessagesRoot *root_node_pb) {
 
     VSCR_ASSERT(self);
     VSCR_ASSERT(root_node_pb);

@@ -898,7 +898,7 @@ vscr_ratchet_group_session_find_participant(
 //  Calculates size of buffer sufficient to store session
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_group_session_serialize_len(vscr_ratchet_group_session_t *self) {
+vscr_ratchet_group_session_serialize_len(const vscr_ratchet_group_session_t *self) {
 
     VSCR_UNUSED(self);
 
@@ -909,7 +909,7 @@ vscr_ratchet_group_session_serialize_len(vscr_ratchet_group_session_t *self) {
 //  Serializes session to buffer
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_session_serialize(vscr_ratchet_group_session_t *self, vsc_buffer_t *output) {
+vscr_ratchet_group_session_serialize(const vscr_ratchet_group_session_t *self, vsc_buffer_t *output) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->my_epoch);

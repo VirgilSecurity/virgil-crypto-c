@@ -137,7 +137,7 @@ VSCR_PUBLIC void
 vscr_ratchet_chain_key_clone(const vscr_ratchet_chain_key_t *self, vscr_ratchet_chain_key_t *dst);
 
 VSCR_PUBLIC void
-vscr_ratchet_chain_key_serialize(vscr_ratchet_chain_key_t *self, ChainKey *chain_key_pb);
+vscr_ratchet_chain_key_serialize(const vscr_ratchet_chain_key_t *self, ChainKey *chain_key_pb);
 
 VSCR_PUBLIC void
 vscr_ratchet_chain_key_deserialize(const ChainKey *chain_key_pb, vscr_ratchet_chain_key_t *chain_key);

@@ -44,17 +44,13 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_SKIPPED_GROUP_MESSAGE_KEY_H_INCLUDED
-#define VSCR_RATCHET_SKIPPED_GROUP_MESSAGE_KEY_H_INCLUDED
+#ifndef VSCR_RATCHET_SKIPPED_MESSAGES_ROOT_NODE_H_INCLUDED
+#define VSCR_RATCHET_SKIPPED_MESSAGES_ROOT_NODE_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_skipped_group_message_key.h"
-#include "vscr_ratchet_message_key.h"
-
-#include <RatchetSession.pb.h>
-#include <pb_decode.h>
-#include <pb_encode.h>
+#include "vscr_ratchet_public_key.h"
+#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_message_key_node.h"
 
 // clang-format on
 //  @end
@@ -72,10 +68,10 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet skipped group message key' context.
+//  Handle 'ratchet skipped messages root node' context.
 //
-typedef struct vscr_ratchet_skipped_group_message_key_t vscr_ratchet_skipped_group_message_key_t;
-struct vscr_ratchet_skipped_group_message_key_t {
+typedef struct vscr_ratchet_skipped_messages_root_node_t vscr_ratchet_skipped_messages_root_node_t;
+struct vscr_ratchet_skipped_messages_root_node_t {
     //
     //  Function do deallocate self context.
     //
@@ -85,62 +81,58 @@ struct vscr_ratchet_skipped_group_message_key_t {
     //
     size_t refcnt;
 
-    size_t epoch;
+    size_t count;
 
-    vscr_ratchet_message_key_t *message_key;
+    vscr_ratchet_public_key_t public_key;
+
+    vscr_ratchet_message_key_node_t *first;
+
+    vscr_ratchet_message_key_node_t *last;
 };
 
 //
-//  Return size of 'vscr_ratchet_skipped_group_message_key_t'.
+//  Return size of 'vscr_ratchet_skipped_messages_root_node_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_skipped_group_message_key_ctx_size(void);
+vscr_ratchet_skipped_messages_root_node_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_group_message_key_init(vscr_ratchet_skipped_group_message_key_t *self);
+vscr_ratchet_skipped_messages_root_node_init(vscr_ratchet_skipped_messages_root_node_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_group_message_key_cleanup(vscr_ratchet_skipped_group_message_key_t *self);
+vscr_ratchet_skipped_messages_root_node_cleanup(vscr_ratchet_skipped_messages_root_node_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_skipped_group_message_key_t *
-vscr_ratchet_skipped_group_message_key_new(void);
+VSCR_PUBLIC vscr_ratchet_skipped_messages_root_node_t *
+vscr_ratchet_skipped_messages_root_node_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_group_message_key_delete(vscr_ratchet_skipped_group_message_key_t *self);
+vscr_ratchet_skipped_messages_root_node_delete(vscr_ratchet_skipped_messages_root_node_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_skipped_group_message_key_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_skipped_messages_root_node_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_group_message_key_destroy(vscr_ratchet_skipped_group_message_key_t **self_ref);
+vscr_ratchet_skipped_messages_root_node_destroy(vscr_ratchet_skipped_messages_root_node_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_skipped_group_message_key_t *
-vscr_ratchet_skipped_group_message_key_shallow_copy(vscr_ratchet_skipped_group_message_key_t *self);
-
-VSCR_PUBLIC void
-vscr_ratchet_skipped_group_message_key_serialize(const vscr_ratchet_skipped_group_message_key_t *self,
-        SkippedGroupMessageKey *skipped_message_key_pb);
-
-VSCR_PUBLIC void
-vscr_ratchet_skipped_group_message_key_deserialize(const SkippedGroupMessageKey *skipped_message_key_pb,
-        vscr_ratchet_skipped_group_message_key_t *skipped_message_key);
+VSCR_PUBLIC vscr_ratchet_skipped_messages_root_node_t *
+vscr_ratchet_skipped_messages_root_node_shallow_copy(vscr_ratchet_skipped_messages_root_node_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -156,5 +148,5 @@ vscr_ratchet_skipped_group_message_key_deserialize(const SkippedGroupMessageKey 
 
 
 //  @footer
-#endif // VSCR_RATCHET_SKIPPED_GROUP_MESSAGE_KEY_H_INCLUDED
+#endif // VSCR_RATCHET_SKIPPED_MESSAGES_ROOT_NODE_H_INCLUDED
 //  @end

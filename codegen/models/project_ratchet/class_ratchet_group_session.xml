@@ -191,7 +191,7 @@
         <return type="size"/>
     </method>
 
-    <method name="serialize len">
+    <method name="serialize len" is_const="1">
         Calculates size of buffer sufficient to store session
 
         <return type="size">
@@ -199,7 +199,7 @@
         </return>
     </method>
 
-    <method name="serialize">
+    <method name="serialize" is_const="1">
         Serializes session to buffer
 
         <argument name="output" class="buffer">

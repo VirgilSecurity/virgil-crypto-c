@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Low level representation of the Ratchet public key.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -45,8 +51,6 @@
 // --------------------------------------------------------------------------
 
 #include "vscr_ratchet_public_key.h"
-#include "vscr_memory.h"
-#include "vscr_assert.h"
 
 // clang-format on
 //  @end
@@ -58,159 +62,9 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_public_key_init() is called.
-//  Note, that context is already zeroed.
-//
-static void
-vscr_ratchet_public_key_init_ctx(vscr_ratchet_public_key_t *self);
-
-//
-//  Release all inner resources.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-static void
-vscr_ratchet_public_key_cleanup_ctx(vscr_ratchet_public_key_t *self);
-
-//
-//  Return size of 'vscr_ratchet_public_key_t'.
-//
-VSCR_PUBLIC size_t
-vscr_ratchet_public_key_ctx_size(void) {
-
-    return sizeof(vscr_ratchet_public_key_t);
-}
-
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCR_PUBLIC void
-vscr_ratchet_public_key_init(vscr_ratchet_public_key_t *self) {
-
-    VSCR_ASSERT_PTR(self);
-
-    vscr_zeroize(self, sizeof(vscr_ratchet_public_key_t));
-
-    self->refcnt = 1;
-
-    vscr_ratchet_public_key_init_ctx(self);
-}
-
-//
-//  Release all inner resources including class dependencies.
-//
-VSCR_PUBLIC void
-vscr_ratchet_public_key_cleanup(vscr_ratchet_public_key_t *self) {
-
-    if (self == NULL) {
-        return;
-    }
-
-    if (self->refcnt == 0) {
-        return;
-    }
-
-    if (--self->refcnt == 0) {
-        vscr_ratchet_public_key_cleanup_ctx(self);
-
-        vscr_zeroize(self, sizeof(vscr_ratchet_public_key_t));
-    }
-}
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCR_PUBLIC vscr_ratchet_public_key_t *
-vscr_ratchet_public_key_new(void) {
-
-    vscr_ratchet_public_key_t *self = (vscr_ratchet_public_key_t *) vscr_alloc(sizeof (vscr_ratchet_public_key_t));
-    VSCR_ASSERT_ALLOC(self);
-
-    vscr_ratchet_public_key_init(self);
-
-    self->self_dealloc_cb = vscr_dealloc;
-
-    return self;
-}
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
-//
-VSCR_PUBLIC void
-vscr_ratchet_public_key_delete(vscr_ratchet_public_key_t *self) {
-
-    if (self == NULL) {
-        return;
-    }
-
-    vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
-
-    vscr_ratchet_public_key_cleanup(self);
-
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(self);
-    }
-}
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_public_key_new ()'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_public_key_destroy(vscr_ratchet_public_key_t **self_ref) {
-
-    VSCR_ASSERT_PTR(self_ref);
-
-    vscr_ratchet_public_key_t *self = *self_ref;
-    *self_ref = NULL;
-
-    vscr_ratchet_public_key_delete(self);
-}
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCR_PUBLIC vscr_ratchet_public_key_t *
-vscr_ratchet_public_key_shallow_copy(vscr_ratchet_public_key_t *self) {
-
-    VSCR_ASSERT_PTR(self);
-
-    ++self->refcnt;
-
-    return self;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
-
-//
-//  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_public_key_init() is called.
-//  Note, that context is already zeroed.
-//
-static void
-vscr_ratchet_public_key_init_ctx(vscr_ratchet_public_key_t *self) {
-
-    //  TODO: This is STUB. Implement me.
-}
-
-//
-//  Release all inner resources.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-static void
-vscr_ratchet_public_key_cleanup_ctx(vscr_ratchet_public_key_t *self) {
-
-    VSCR_ASSERT_PTR(self);
-
-    //  TODO: Release all inner resources.
-}

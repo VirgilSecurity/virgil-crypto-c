@@ -16,7 +16,7 @@
     </property>
     <property name="chain key" class="ratchet chain key" access="readwrite" is_reference="0"/>
 
-    <method name="serialize">
+    <method name="serialize" is_const="1">
         <argument name="sender chain pb" class="SenderChain" library="nanopb" access="readwrite"/>
     </method>
 

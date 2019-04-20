@@ -217,7 +217,7 @@ vscr_ratchet_skipped_group_message_key_cleanup_ctx(vscr_ratchet_skipped_group_me
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_group_message_key_serialize(
-        vscr_ratchet_skipped_group_message_key_t *self, SkippedGroupMessageKey *skipped_message_key_pb) {
+        const vscr_ratchet_skipped_group_message_key_t *self, SkippedGroupMessageKey *skipped_message_key_pb) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(skipped_message_key_pb);

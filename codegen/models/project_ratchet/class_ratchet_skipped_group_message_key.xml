@@ -8,7 +8,7 @@
     <property name="epoch" type="size" access="readwrite"/>
     <property name="message key" class="ratchet message key" access="readwrite"/>
 
-    <method name="serialize">
+    <method name="serialize" is_const="1">
         <argument name="skipped message key pb" class="SkippedGroupMessageKey" library="nanopb" access="readwrite"/>
     </method>
 

@@ -38,7 +38,7 @@
         </return>
     </method>
 
-    <method name="serialize len">
+    <method name="serialize len" is_const="1">
         Buffer len to serialize this class.
 
         <return type="size">
@@ -46,7 +46,7 @@
         </return>
     </method>
 
-    <method name="serialize">
+    <method name="serialize" is_const="1">
         Serializes instance.
 
         <argument name="output" class="buffer">

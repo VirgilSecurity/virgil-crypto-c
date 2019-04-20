@@ -133,7 +133,8 @@ VSCR_PUBLIC vscr_ratchet_group_participant_epoch_t *
 vscr_ratchet_group_participant_epoch_shallow_copy(vscr_ratchet_group_participant_epoch_t *self);
 
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_epoch_serialize(vscr_ratchet_group_participant_epoch_t *self, ParticipantEpoch *data_pb);
+vscr_ratchet_group_participant_epoch_serialize(const vscr_ratchet_group_participant_epoch_t *self,
+        ParticipantEpoch *data_pb);
 
 VSCR_PUBLIC void
 vscr_ratchet_group_participant_epoch_deserialize(ParticipantEpoch *data_pb,

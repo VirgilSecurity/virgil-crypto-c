@@ -229,6 +229,7 @@ vscr_ratchet_message_init_ctx(vscr_ratchet_message_t *self) {
 
     self->message_pb = msg;
     self->message_pb.version = vscr_ratchet_common_hidden_MESSAGE_VERSION;
+    vscr_ratchet_message_set_pb_encode_callback(self);
     self->header_pb = vscr_alloc(sizeof(RegularMessageHeader));
     *self->header_pb = hdr;
 }
@@ -296,7 +297,7 @@ vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *self) {
 //  Buffer len to serialize this class.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *self) {
+vscr_ratchet_message_serialize_len(const vscr_ratchet_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN >=
@@ -312,7 +313,7 @@ vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *self) {
 //  Serializes instance.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_serialize(vscr_ratchet_message_t *self, vsc_buffer_t *output) {
+vscr_ratchet_message_serialize(const vscr_ratchet_message_t *self, vsc_buffer_t *output) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(output);
@@ -320,8 +321,6 @@ vscr_ratchet_message_serialize(vscr_ratchet_message_t *self, vsc_buffer_t *outpu
     VSCR_ASSERT_PTR(self->header_pb);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
-
-    vscr_ratchet_message_set_pb_encode_callback(self);
 
     VSCR_ASSERT(pb_encode(&ostream, Message_fields, &self->message_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);
@@ -342,6 +341,7 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_t *error) {
     }
 
     vscr_ratchet_message_t *message = vscr_ratchet_message_new();
+    vscr_ratchet_message_set_pb_decode_callback(message);
 
     pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 

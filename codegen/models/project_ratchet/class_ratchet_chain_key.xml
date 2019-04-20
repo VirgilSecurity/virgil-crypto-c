@@ -15,7 +15,7 @@
         <argument name="dst" class="self" access="readwrite"/>
     </method>
 
-    <method name="serialize">
+    <method name="serialize" is_const="1">
         <argument name="chain key pb" class="ChainKey" library="nanopb" access="readwrite"/>
     </method>
 

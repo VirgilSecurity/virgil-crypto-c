@@ -135,8 +135,8 @@ vscr_ratchet_skipped_group_message_key_root_node_shallow_copy(
         vscr_ratchet_skipped_group_message_key_root_node_t *self);
 
 VSCR_PUBLIC vscr_ratchet_message_key_t *
-vscr_ratchet_skipped_group_message_key_root_node_find_key(vscr_ratchet_skipped_group_message_key_root_node_t *self,
-        size_t epoch, size_t counter);
+vscr_ratchet_skipped_group_message_key_root_node_find_key(
+        const vscr_ratchet_skipped_group_message_key_root_node_t *self, size_t epoch, size_t counter);
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_group_message_key_root_node_delete_key(vscr_ratchet_skipped_group_message_key_root_node_t *self,
@@ -147,8 +147,8 @@ vscr_ratchet_skipped_group_message_key_root_node_add_key(vscr_ratchet_skipped_gr
         vscr_ratchet_skipped_group_message_key_t *skipped_group_message_key);
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_group_message_key_root_node_serialize(vscr_ratchet_skipped_group_message_key_root_node_t *self,
-        SkippedGroupMessagesRoot *root_node_pb);
+vscr_ratchet_skipped_group_message_key_root_node_serialize(
+        const vscr_ratchet_skipped_group_message_key_root_node_t *self, SkippedGroupMessagesRoot *root_node_pb);
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_group_message_key_root_node_deserialize(SkippedGroupMessagesRoot *root_node_pb,

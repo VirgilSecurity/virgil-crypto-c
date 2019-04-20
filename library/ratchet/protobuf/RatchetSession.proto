@@ -23,7 +23,8 @@ message ReceiverChain {
 
 message SkippedMessageKey {
 	required bytes public_key = 1;
-	required MessageKey message_key = 2;
+	required uint32 index = 2;
+	repeated MessageKey message_keys = 3;
 }
 
 message SkippedMessages {

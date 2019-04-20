@@ -8,7 +8,8 @@
     <constant name="key len" value="32"/>
     <constant name="signature len" value="64"/>
 
-    <constant name="max skipped messages" value="1000"/>
+    <constant name="max skipped messages" value="200"/>
+    <constant name="max skipped dh" value="5"/>
     <constant name="max message gap" value="2000"/>
     <constant name="max epoches count" value="5"/>
 

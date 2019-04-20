@@ -44,11 +44,16 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Low level representation of the Ratchet public key.
+// --------------------------------------------------------------------------
+
 #ifndef VSCR_RATCHET_PUBLIC_KEY_H_INCLUDED
 #define VSCR_RATCHET_PUBLIC_KEY_H_INCLUDED
 
-#include "vscr_library.h"
-#include "vscr_ratchet_common_hidden.h"
+#include <stdint.h>
 
 // clang-format on
 //  @end
@@ -65,66 +70,10 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'ratchet public key' context.
-//
-typedef struct vscr_ratchet_public_key_t vscr_ratchet_public_key_t;
-struct vscr_ratchet_public_key_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    byte key[vscr_ratchet_common_hidden_KEY_LEN];
-};
-
-//
-//  Return size of 'vscr_ratchet_public_key_t'.
-//
-VSCR_PUBLIC size_t
-vscr_ratchet_public_key_ctx_size(void);
-
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCR_PUBLIC void
-vscr_ratchet_public_key_init(vscr_ratchet_public_key_t *self);
-
-//
-//  Release all inner resources including class dependencies.
-//
-VSCR_PUBLIC void
-vscr_ratchet_public_key_cleanup(vscr_ratchet_public_key_t *self);
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCR_PUBLIC vscr_ratchet_public_key_t *
-vscr_ratchet_public_key_new(void);
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
-//
-VSCR_PUBLIC void
-vscr_ratchet_public_key_delete(vscr_ratchet_public_key_t *self);
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_public_key_new ()'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_public_key_destroy(vscr_ratchet_public_key_t **self_ref);
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCR_PUBLIC vscr_ratchet_public_key_t *
-vscr_ratchet_public_key_shallow_copy(vscr_ratchet_public_key_t *self);
+#ifndef VSCR_RATCHET_PUBLIC_KEY_T_32__DEFINED
+#define VSCR_RATCHET_PUBLIC_KEY_T_32__DEFINED
+    typedef uint8_t vscr_ratchet_public_key_t[32];
+#endif // VSCR_RATCHET_PUBLIC_KEY_T_32__DEFINED
 
 
 // --------------------------------------------------------------------------

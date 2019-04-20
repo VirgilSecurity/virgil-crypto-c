@@ -34,23 +34,31 @@
 
 #include <unity.h>
 #include <test_utils.h>
-#include <virgil/crypto/ratchet/vscr_ratchet_group_ticket.h>
-#include <virgil/crypto/ratchet/vscr_memory.h>
-#include <virgil/crypto/foundation/vscf_curve25519_private_key.h>
-#include <virgil/crypto/foundation/vscf_curve25519_public_key.h>
 
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include "virgil/crypto/foundation/vscf_ctr_drbg.h"
-#include "virgil/crypto/foundation/private/vscf_pkcs8_der_serializer_defs.h"
-#include "virgil/crypto/foundation/private/vscf_ed25519_private_key_defs.h"
-#include "virgil/crypto/foundation/vscf_ed25519_public_key.h"
-#include "virgil/crypto/ratchet/vscr_ratchet_group_session.h"
+#include "vscr_ratchet_group_ticket.h"
+#include "vscr_memory.h"
+#include "vscf_curve25519_private_key.h"
+#include "vscf_curve25519_public_key.h"
+#include "vscr_ratchet_skipped_messages_defs.h"
+#include "vscf_ctr_drbg.h"
+#include "vscf_pkcs8_der_serializer_defs.h"
+#include "vscf_ed25519_private_key_defs.h"
+#include "vscf_ed25519_public_key.h"
+#include "vscr_ratchet_group_session.h"
 #include "test_utils_ratchet.h"
 #include "unreliable_msg_producer.h"
-#include "privateAPI.h"
 #include "msg_channel.h"
+#include "vscr_ratchet_session_defs.h"
+#include "vscr_ratchet_chain_key.h"
+#include "vscr_ratchet_skipped_messages.h"
+#include "vscr_ratchet_skipped_messages_defs.h"
+#include "vscr_ratchet_receiver_chain.h"
+#include "vscr_ratchet_sender_chain.h"
+#include "vscr_ratchet.h"
+#include "vscr_ratchet_defs.h"
 
 size_t
 pick_element_uniform(vscf_ctr_drbg_t *rng, size_t size) {
@@ -438,38 +446,46 @@ ratchet_msg_key_cmp(vscr_ratchet_message_key_t *msg_key1, vscr_ratchet_message_k
 }
 
 static bool
-ratchet_skipped_msg_cmp(vscr_ratchet_skipped_message_key_t *msg1, vscr_ratchet_skipped_message_key_t *msg2) {
-    if (msg1 == NULL && msg2 == NULL)
+ratchet_skipped_roots_cmp(
+        vscr_ratchet_skipped_messages_root_node_t *root1, vscr_ratchet_skipped_messages_root_node_t *root2) {
+    if (!root1 && !root2)
         return true;
 
-    if (msg1 == NULL || msg2 == NULL) {
-        TEST_ASSERT(false);
+    if (memcmp(root1->public_key, root2->public_key, sizeof(root1->public_key)) != 0) {
+        return false;
     }
 
-    return memcmp(msg1->public_key, msg1->public_key, sizeof(msg1->public_key)) == 0 &&
-           ratchet_msg_key_cmp(msg1->message_key, msg2->message_key);
-}
-
-static bool
-ratchet_skipped_msgs_cmp(vscr_ratchet_skipped_messages_t *msgs1, vscr_ratchet_skipped_messages_t *msgs2) {
-    vscr_ratchet_skipped_message_key_list_node_t *node1 = msgs1->keys;
-    vscr_ratchet_skipped_message_key_list_node_t *node2 = msgs2->keys;
+    vscr_ratchet_message_key_node_t *node1 = root1->first;
+    vscr_ratchet_message_key_node_t *node2 = root2->first;
 
     while (true) {
-
-        if (node1 == NULL && node2 == NULL)
+        if (!node1 && !node2) {
             return true;
-
-        if (node1 == NULL || node2 == NULL) {
-            TEST_ASSERT(false);
         }
 
-        if (!ratchet_skipped_msg_cmp(node1->value, node2->value))
+        if (!node1 || !node2) {
             return false;
+        }
+
+        if (!ratchet_msg_key_cmp(node1->value, node2->value)) {
+            return false;
+        }
 
         node1 = node1->next;
         node2 = node2->next;
     }
+}
+
+static bool
+ratchet_skipped_msgs_cmp(vscr_ratchet_skipped_messages_t *msgs1, vscr_ratchet_skipped_messages_t *msgs2) {
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_DH; i++) {
+
+        if (!ratchet_skipped_roots_cmp(msgs1->root_nodes[i], msgs2->root_nodes[i])) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 static bool

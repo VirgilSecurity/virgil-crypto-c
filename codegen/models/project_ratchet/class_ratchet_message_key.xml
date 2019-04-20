@@ -11,7 +11,7 @@
         <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_shared_key_len)"/>
     </property>
 
-    <method name="serialize">
+    <method name="serialize" is_const="1">
         <argument name="message key pb" class="MessageKey" library="nanopb" access="readwrite"/>
     </method>
 

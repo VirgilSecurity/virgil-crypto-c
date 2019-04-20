@@ -42,12 +42,79 @@
 
 #include "vscr_ratchet_message_defs.h"
 #include "vscr_ratchet_session.h"
-#include "privateAPI.h"
 #include "test_utils_ratchet.h"
 
 // --------------------------------------------------------------------------
 //  Test functions.
 // --------------------------------------------------------------------------
+
+void
+test__serialization__1_out_of_order_msg__decrypted_should_match(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
+    vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
+    vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
+
+    initialize(rng, &session_alice, &session_bob, true, false);
+
+    vscr_error_t error;
+    vscr_error_reset(&error);
+
+    vsc_buffer_t *text1 = NULL, *text2 = NULL;
+
+    generate_random_data(rng, &text1);
+    generate_random_data(rng, &text2);
+
+    vscr_ratchet_message_t *ratchet_message1 =
+            vscr_ratchet_session_encrypt(session_alice, vsc_buffer_data(text1), &error);
+    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscr_msg_type_PREKEY, vscr_ratchet_message_get_type(ratchet_message1));
+
+    vscr_ratchet_message_t *ratchet_message2 =
+            vscr_ratchet_session_encrypt(session_alice, vsc_buffer_data(text2), &error);
+    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscr_msg_type_PREKEY, vscr_ratchet_message_get_type(ratchet_message2));
+
+    size_t len2 = vscr_ratchet_session_decrypt_len(session_bob, ratchet_message2);
+    vsc_buffer_t *plain_text2 = vsc_buffer_new_with_capacity(len2);
+
+    vscr_status_t result = vscr_ratchet_session_decrypt(session_bob, ratchet_message2, plain_text2);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, result);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(text2), plain_text2);
+
+    size_t session_len = vscr_ratchet_session_serialize_len(session_bob);
+
+    vsc_buffer_t *session_buffer = vsc_buffer_new_with_capacity(session_len);
+    vscr_ratchet_session_serialize(session_bob, session_buffer);
+
+    vscr_ratchet_session_destroy(&session_bob);
+
+    session_bob = vscr_ratchet_session_deserialize(vsc_buffer_data(session_buffer), &error);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error.status);
+    vscr_ratchet_session_use_rng(session_bob, vscf_ctr_drbg_impl(rng));
+    vsc_buffer_destroy(&session_buffer);
+
+    size_t len1 = vscr_ratchet_session_decrypt_len(session_bob, ratchet_message1);
+    vsc_buffer_t *plain_text1 = vsc_buffer_new_with_capacity(len1);
+
+    result = vscr_ratchet_session_decrypt(session_bob, ratchet_message1, plain_text1);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, result);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(text1), plain_text1);
+
+    vsc_buffer_destroy(&text1);
+    vsc_buffer_destroy(&text2);
+    vsc_buffer_destroy(&plain_text1);
+    vsc_buffer_destroy(&plain_text2);
+    vscr_ratchet_session_destroy(&session_alice);
+    vscr_ratchet_session_destroy(&session_bob);
+    vscr_ratchet_message_destroy(&ratchet_message1);
+    vscr_ratchet_message_destroy(&ratchet_message2);
+
+    vscf_ctr_drbg_destroy(&rng);
+}
 
 void
 test__serialization__randomly_skipped_messages__should_work_after_restore(void) {
@@ -78,6 +145,7 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
+    RUN_TEST(test__serialization__1_out_of_order_msg__decrypted_should_match);
     RUN_TEST(test__serialization__randomly_skipped_messages__should_work_after_restore);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);

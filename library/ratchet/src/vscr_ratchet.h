@@ -179,7 +179,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
         const RegularMessageHeader *regular_message_header, vsc_buffer_t *plain_text) VSCR_NODISCARD;
 
 VSCR_PUBLIC void
-vscr_ratchet_serialize(vscr_ratchet_t *self, Ratchet *ratchet_pb);
+vscr_ratchet_serialize(const vscr_ratchet_t *self, Ratchet *ratchet_pb);
 
 VSCR_PUBLIC void
 vscr_ratchet_deserialize(Ratchet *ratchet_pb, vscr_ratchet_t *ratchet);

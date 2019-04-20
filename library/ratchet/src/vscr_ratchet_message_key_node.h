@@ -44,12 +44,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE_H_INCLUDED
-#define VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE_H_INCLUDED
+#ifndef VSCR_RATCHET_MESSAGE_KEY_NODE_H_INCLUDED
+#define VSCR_RATCHET_MESSAGE_KEY_NODE_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_skipped_message_key_list_node.h"
 #include "vscr_ratchet_message_key.h"
+#include "vscr_ratchet_message_key_node.h"
 
 // clang-format on
 //  @end
@@ -67,10 +67,10 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet skipped message key list node' context.
+//  Handle 'ratchet message key node' context.
 //
-typedef struct vscr_ratchet_skipped_message_key_list_node_t vscr_ratchet_skipped_message_key_list_node_t;
-struct vscr_ratchet_skipped_message_key_list_node_t {
+typedef struct vscr_ratchet_message_key_node_t vscr_ratchet_message_key_node_t;
+struct vscr_ratchet_message_key_node_t {
     //
     //  Function do deallocate self context.
     //
@@ -82,52 +82,54 @@ struct vscr_ratchet_skipped_message_key_list_node_t {
 
     vscr_ratchet_message_key_t *value;
 
-    vscr_ratchet_skipped_message_key_list_node_t *next;
+    vscr_ratchet_message_key_node_t *next;
+
+    vscr_ratchet_message_key_node_t *prev;
 };
 
 //
-//  Return size of 'vscr_ratchet_skipped_message_key_list_node_t'.
+//  Return size of 'vscr_ratchet_message_key_node_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_skipped_message_key_list_node_ctx_size(void);
+vscr_ratchet_message_key_node_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_message_key_list_node_init(vscr_ratchet_skipped_message_key_list_node_t *self);
+vscr_ratchet_message_key_node_init(vscr_ratchet_message_key_node_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_message_key_list_node_cleanup(vscr_ratchet_skipped_message_key_list_node_t *self);
+vscr_ratchet_message_key_node_cleanup(vscr_ratchet_message_key_node_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_skipped_message_key_list_node_t *
-vscr_ratchet_skipped_message_key_list_node_new(void);
+VSCR_PUBLIC vscr_ratchet_message_key_node_t *
+vscr_ratchet_message_key_node_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_message_key_list_node_delete(vscr_ratchet_skipped_message_key_list_node_t *self);
+vscr_ratchet_message_key_node_delete(vscr_ratchet_message_key_node_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_skipped_message_key_list_node_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_message_key_node_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_message_key_list_node_destroy(vscr_ratchet_skipped_message_key_list_node_t **self_ref);
+vscr_ratchet_message_key_node_destroy(vscr_ratchet_message_key_node_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_skipped_message_key_list_node_t *
-vscr_ratchet_skipped_message_key_list_node_shallow_copy(vscr_ratchet_skipped_message_key_list_node_t *self);
+VSCR_PUBLIC vscr_ratchet_message_key_node_t *
+vscr_ratchet_message_key_node_shallow_copy(vscr_ratchet_message_key_node_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -143,5 +145,5 @@ vscr_ratchet_skipped_message_key_list_node_shallow_copy(vscr_ratchet_skipped_mes
 
 
 //  @footer
-#endif // VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE_H_INCLUDED
+#endif // VSCR_RATCHET_MESSAGE_KEY_NODE_H_INCLUDED
 //  @end
