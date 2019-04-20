@@ -347,10 +347,12 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     vscr_ratchet_message_set_pb_decode_callback(message);
 
+    vscr_status_t status = vscr_status_SUCCESS;
+
     bool pb_status = pb_decode(&istream, Message_fields, &message->message_pb);
 
     if (!pb_status) {
-        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+        status = vscr_status_ERROR_PROTOBUF_DECODE;
         goto err;
     }
 
@@ -360,12 +362,15 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_t *error) {
     pb_status = pb_decode(&sub_istream, RegularMessageHeader_fields, message->header_pb);
 
     if (!pb_status) {
-        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+        status = vscr_status_ERROR_PROTOBUF_DECODE;
         goto err;
     }
 
+    vscr_ratchet_message_set_pb_encode_callback(message);
+
 err:
-    if (!pb_status) {
+    if (status != vscr_status_SUCCESS) {
+        VSCR_ERROR_SAFE_UPDATE(error, status);
         vscr_ratchet_message_destroy(&message);
     }
 

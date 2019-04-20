@@ -290,6 +290,8 @@ vscr_ratchet_group_message_set_type(vscr_ratchet_group_message_t *self, vscr_gro
         self->message_pb.has_group_info = true;
         break;
     }
+
+    vscr_ratchet_group_message_set_pb_encode_callback(self);
 }
 
 //
@@ -442,7 +444,7 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
     bool pb_status = pb_decode(&istream, GroupMessage_fields, &message->message_pb);
 
     if (!pb_status || message->message_pb.has_group_info == message->message_pb.has_regular_message) {
-        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+        status = vscr_status_ERROR_PROTOBUF_DECODE;
         goto err;
     }
 
@@ -450,12 +452,12 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
         MessageGroupInfo *info = &message->message_pb.group_info;
 
         if (info->participants_count > vscr_ratchet_common_MAX_PARTICIPANTS_COUNT) {
-            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_TOO_MANY_PARTICIPANTS);
+            status = vscr_status_ERROR_TOO_MANY_PARTICIPANTS;
             goto err;
         }
 
         if (info->participants_count < vscr_ratchet_common_MIN_PARTICIPANTS_COUNT) {
-            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_TOO_FEW_PARTICIPANTS);
+            status = vscr_status_ERROR_TOO_FEW_PARTICIPANTS;
             goto err;
         }
 
@@ -476,10 +478,12 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
         pb_status = pb_decode(&sub_istream, RegularGroupMessageHeader_fields, message->header_pb);
 
         if (!pb_status) {
-            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+            status = vscr_status_ERROR_PROTOBUF_DECODE;
             goto err;
         }
     }
+
+    vscr_ratchet_group_message_set_pb_encode_callback(message);
 
 err:
     if (status != vscr_status_SUCCESS) {

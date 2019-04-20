@@ -122,7 +122,6 @@ test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
             msg1->message_pb.regular_message.header, sizeof(msg1->message_pb.regular_message.header));
     TEST_ASSERT(pb_encode(&ostream, RegularGroupMessageHeader_fields, msg1->header_pb));
 
-
     size_t len = vscr_ratchet_group_message_serialize_len(msg1);
     vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);
     vscr_ratchet_group_message_serialize(msg1, buff);
