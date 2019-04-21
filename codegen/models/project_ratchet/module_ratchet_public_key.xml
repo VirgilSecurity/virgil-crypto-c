@@ -1,8 +1,0 @@
-<module name="ratchet public key" scope="internal">
-    Low level representation of the Ratchet public key.
-    
-    <c_include file="stdint.h" is_system="1"/>
-    
-    <c_alias name="vscr_ratchet_public_key_t[32]" type="uint8_t" declaration="public">
-    </c_alias>
-</module>

@@ -2,12 +2,15 @@
 
     <require header="ed25519/ed25519.h" scope="private"/>
 
+    <require module="ratchet typedefs" scope="public"/>
+
     <method name="compute initiator x3dh secret" is_static="1">
-        <argument name="sender identity private key" class="data"/>
-        <argument name="sender ephemeral private key" class="data"/>
-        <argument name="receiver identity public key" class="data"/>
-        <argument name="receiver long-term public key" class="data"/>
-        <argument name="receiver one-time public key" class="data"/>
+        <argument name="sender identity private key" class="vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="sender ephemeral private key" class="vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="receiver identity public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="receiver long term public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="receiver has one time key" type="boolean"/>
+        <argument name="receiver one time public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
 
         <argument name="shared secret" class="buffer" access="readwrite"/>
 
@@ -15,11 +18,12 @@
     </method>
 
     <method name="compute responder x3dh secret" is_static="1">
-        <argument name="sender identity public key" class="data"/>
-        <argument name="sender ephemeral public key" class="data"/>
-        <argument name="receiver identity private key" class="data"/>
-        <argument name="receiver long-term private key" class="data"/>
-        <argument name="receiver one-time private key" class="data"/>
+        <argument name="sender identity public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="sender ephemeral public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="receiver identity private key" class="vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="receiver long term private key" class="vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="receiver has one time key" type="boolean"/>
+        <argument name="receiver one time private key" class="vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readonly"/>
 
         <argument name="shared secret" class="buffer" access="readwrite"/>
 

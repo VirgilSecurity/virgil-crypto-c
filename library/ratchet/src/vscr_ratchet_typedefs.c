@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Typedefs for ratchet.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,24 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Low level representation of the Ratchet public key.
-// --------------------------------------------------------------------------
-
-#ifndef VSCR_RATCHET_PUBLIC_KEY_H_INCLUDED
-#define VSCR_RATCHET_PUBLIC_KEY_H_INCLUDED
-
-#include <stdint.h>
+#include "vscr_ratchet_typedefs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -70,24 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_PUBLIC_KEY_T_32__DEFINED
-#define VSCR_RATCHET_PUBLIC_KEY_T_32__DEFINED
-    typedef uint8_t vscr_ratchet_public_key_t[32];
-#endif // VSCR_RATCHET_PUBLIC_KEY_T_32__DEFINED
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCR_RATCHET_PUBLIC_KEY_H_INCLUDED
 //  @end

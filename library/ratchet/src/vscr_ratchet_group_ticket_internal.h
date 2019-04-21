@@ -79,9 +79,8 @@ vscr_ratchet_group_ticket_setup_ticket_internal(vscr_ratchet_group_ticket_t *sel
         vsc_data_t session_id);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_ticket_add_existing_participant(vscr_ratchet_group_ticket_t *self,
-        const byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN], const byte pub_key[vscr_ratchet_common_hidden_KEY_LEN],
-        const vscr_ratchet_chain_key_t *chain_key) VSCR_NODISCARD;
+vscr_ratchet_group_ticket_add_existing_participant(vscr_ratchet_group_ticket_t *self, vscr_ratchet_participant_id_t id,
+        vscr_ratchet_public_key_t pub_key, const vscr_ratchet_chain_key_t *chain_key) VSCR_NODISCARD;
 
 
 // --------------------------------------------------------------------------

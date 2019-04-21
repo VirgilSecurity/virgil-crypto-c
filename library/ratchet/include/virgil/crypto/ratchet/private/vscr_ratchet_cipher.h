@@ -48,6 +48,7 @@
 #define VSCR_RATCHET_CIPHER_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_ratchet_typedefs.h"
 #include "vscr_status.h"
 
 #include <RatchetMessage.pb.h>
@@ -135,11 +136,11 @@ VSCR_PUBLIC size_t
 vscr_ratchet_cipher_decrypt_len(vscr_ratchet_cipher_t *self, size_t cipher_text_len);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t plain_text,
+vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vscr_ratchet_symmetric_key_t key, vsc_data_t plain_text,
         vsc_data_t additional_data, vsc_buffer_t *buffer) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t cipher_text,
+vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vscr_ratchet_symmetric_key_t key, vsc_data_t cipher_text,
         vsc_data_t additional_data, vsc_buffer_t *buffer) VSCR_NODISCARD;
 
 

@@ -2,14 +2,14 @@
 
     <require class="ratchet common hidden" scope="public"/>
 
+    <require module="ratchet typedefs" scope="context"/>
+
     <require header="RatchetSession.pb.h" scope="public"/>
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 
     <property name="index" type="unsigned" size="4"/>
-    <property name="key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_shared_key_len)"/>
-    </property>
+    <property name="key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>
 
     <method name="clone" is_const="1">
         <argument name="dst" class="self" access="readwrite"/>

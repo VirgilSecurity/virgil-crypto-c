@@ -55,6 +55,7 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet_group_message.h"
 

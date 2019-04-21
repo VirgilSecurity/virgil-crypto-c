@@ -55,6 +55,7 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet_padding.h"
@@ -116,15 +117,15 @@ struct vscr_ratchet_group_session_t {
 
     bool is_id_set;
 
-    byte session_id[vscr_ratchet_common_SESSION_ID_LEN];
+    vscr_ratchet_session_id_t session_id;
 
-    byte my_id[vscr_ratchet_common_PARTICIPANT_ID_LEN];
+    vscr_ratchet_participant_id_t my_id;
 
     vscr_ratchet_group_participant_epoch_t *my_epoch;
 
-    byte my_public_key[vscr_ratchet_common_hidden_KEY_LEN];
+    vscr_ratchet_public_key_t my_public_key;
 
-    byte my_private_key[vscr_ratchet_common_hidden_KEY_LEN];
+    vscr_ratchet_private_key_t my_private_key;
 
     vscr_ratchet_group_participant_data_t **participants;
 

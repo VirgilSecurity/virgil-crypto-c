@@ -7,6 +7,8 @@
     <require module="ratchet message defs" scope="private"/>
     <require module="buffer defs" scope="private" project="common"/>
 
+    <require module="ratchet typedefs" scope="context"/>
+
     <require impl="ctr drbg" project="foundation" scope="private"/>
 
     <require header="RatchetSession.pb.h" scope="private"/>
@@ -26,19 +28,11 @@
     <property name="is initiator" type="boolean"/>
     <property name="received first response" type="boolean"/>
 
-    <property name="sender identity public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_key_len)"/>
-    </property>
-    <property name="sender ephemeral public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_key_len)"/>
-    </property>
-    <property name="receiver long term public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_key_len)"/>
-    </property>
+    <property name="sender identity public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="sender ephemeral public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="receiver long term public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="receiver has one time public key" type="boolean" access="readwrite"/>
-    <property name="receiver one time public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_key_len)"/>
-    </property>
+    <property name="receiver one time public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
 
     <method name="setup defaults">
         Setups default dependencies:

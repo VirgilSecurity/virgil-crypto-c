@@ -48,6 +48,7 @@
 #define VSCR_RATCHET_SKIPPED_GROUP_MESSAGE_KEY_ROOT_NODE_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_message_key.h"
 #include "vscr_ratchet_skipped_group_message_key.h"
@@ -83,7 +84,7 @@ struct vscr_ratchet_skipped_group_message_key_root_node_t {
     //
     size_t refcnt;
 
-    byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN];
+    vscr_ratchet_participant_id_t id;
 
     vscr_ratchet_skipped_group_message_key_node_t *begin;
 };

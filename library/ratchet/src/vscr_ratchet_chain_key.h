@@ -48,6 +48,7 @@
 #define VSCR_RATCHET_CHAIN_KEY_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_chain_key.h"
 
@@ -86,7 +87,7 @@ struct vscr_ratchet_chain_key_t {
 
     uint32_t index;
 
-    byte key[vscr_ratchet_common_hidden_SHARED_KEY_LEN];
+    vscr_ratchet_symmetric_key_t key;
 };
 
 //

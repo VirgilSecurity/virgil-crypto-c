@@ -1,10 +1,9 @@
 <class name="ratchet skipped messages" context="internal" scope="internal">
 
-    <require module="ratchet public key" scope="public"/>
-    <require module="ratchet public key" scope="context"/>
-
     <require class="ratchet common hidden" scope="context"/>
     <require class="ratchet chain key" scope="private"/>
+
+    <require module="ratchet typedefs" scope="context"/>
 
     <require header="RatchetSession.pb.h" scope="public"/>
     <require header="pb_decode.h" scope="public"/>
@@ -33,11 +32,11 @@
     </method>
 
     <method name="add public key">
-        <argument name="public key" class="vscr_ratchet_public_key_t" is_reference="0" is_const="1" library="internal"/>
+        <argument name="public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
     </method>
 
     <method name="add key">
-        <argument name="public key" class="vscr_ratchet_public_key_t" is_reference="0" is_const="1" library="internal"/>
+        <argument name="public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="message key" class="ratchet message key" access="readwrite"/>
     </method>
 

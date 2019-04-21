@@ -48,7 +48,7 @@
 #define VSCR_RATCHET_SKIPPED_MESSAGES_ROOT_NODE_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_public_key.h"
+#include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_message_key_node.h"
 

@@ -5,6 +5,7 @@
     <require module="buffer defs" scope="private" project="common"/>
 
     <require class="ratchet common hidden" scope="context"/>
+    <require module="ratchet typedefs" scope="public"/>
 
     <require header="RatchetMessage.pb.h" scope="public"/>
     <require header="pb_decode.h" scope="public"/>
@@ -25,11 +26,11 @@
     </method>
 
     <method name="setup cipher" declaration="private">
-        <argument name="key" class="data"/>
+        <argument name="key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
     </method>
 
     <method name="encrypt">
-        <argument name="key" class="data"/>
+        <argument name="key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="plain text" class="data"/>
         <argument name="additional data" class="data"/>
 
@@ -43,7 +44,7 @@
     </method>
 
     <method name="decrypt">
-        <argument name="key" class="data"/>
+        <argument name="key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="cipher text" class="data"/>
         <argument name="additional data" class="data"/>
 

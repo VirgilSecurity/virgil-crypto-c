@@ -54,6 +54,7 @@
 #define VSCR_RATCHET_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_keys.h"
 #include "vscr_ratchet_cipher.h"
@@ -114,7 +115,7 @@ struct vscr_ratchet_t {
 
     vscr_ratchet_skipped_messages_t *skipped_messages;
 
-    byte root_key[vscr_ratchet_common_hidden_SHARED_KEY_LEN];
+    vscr_ratchet_symmetric_key_t root_key;
 };
 
 

@@ -48,6 +48,7 @@
 #define VSCR_RATCHET_GROUP_PARTICIPANT_DATA_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_common.h"
@@ -83,9 +84,9 @@ struct vscr_ratchet_group_participant_data_t {
     //
     size_t refcnt;
 
-    byte id[vscr_ratchet_common_PARTICIPANT_ID_LEN];
+    vscr_ratchet_participant_id_t id;
 
-    byte pub_key[vscr_ratchet_common_hidden_KEY_LEN];
+    vscr_ratchet_public_key_t pub_key;
 
     size_t epoch_count;
 

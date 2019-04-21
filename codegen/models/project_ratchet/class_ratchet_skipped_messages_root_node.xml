@@ -1,10 +1,11 @@
 <class name="ratchet skipped messages root node" context="public" scope="internal">
 
     <require class="ratchet common" scope="public"/>
-    <require module="ratchet public key" scope="context"/>
+
+    <require module="ratchet typedefs" scope="context"/>
 
     <property name="count" type="size" access="readwrite"/>
-    <property name="public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal"/>
+    <property name="public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="first" class="ratchet message key node" access="readwrite"/>
     <property name="last" class="ratchet message key node" access="readwrite"/>
 

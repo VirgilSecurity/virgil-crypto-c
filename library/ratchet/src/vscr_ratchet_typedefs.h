@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Low level representation of the Ratchet public key.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,10 +44,24 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_ratchet_public_key.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Typedefs for ratchet.
+// --------------------------------------------------------------------------
+
+#ifndef VSCR_RATCHET_TYPEDEFS_H_INCLUDED
+#define VSCR_RATCHET_TYPEDEFS_H_INCLUDED
+
+#include <stdint.h>
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +70,44 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+#ifndef VSCR_RATCHET_PUBLIC_KEY_T_32__DEFINED
+#define VSCR_RATCHET_PUBLIC_KEY_T_32__DEFINED
+    typedef uint8_t vscr_ratchet_public_key_t[32];
+#endif // VSCR_RATCHET_PUBLIC_KEY_T_32__DEFINED
+
+#ifndef VSCR_RATCHET_PRIVATE_KEY_T_32__DEFINED
+#define VSCR_RATCHET_PRIVATE_KEY_T_32__DEFINED
+    typedef uint8_t vscr_ratchet_private_key_t[32];
+#endif // VSCR_RATCHET_PRIVATE_KEY_T_32__DEFINED
+
+#ifndef VSCR_RATCHET_SYMMETRIC_KEY_T_32__DEFINED
+#define VSCR_RATCHET_SYMMETRIC_KEY_T_32__DEFINED
+    typedef uint8_t vscr_ratchet_symmetric_key_t[32];
+#endif // VSCR_RATCHET_SYMMETRIC_KEY_T_32__DEFINED
+
+#ifndef VSCR_RATCHET_PARTICIPANT_ID_T_32__DEFINED
+#define VSCR_RATCHET_PARTICIPANT_ID_T_32__DEFINED
+    typedef uint8_t vscr_ratchet_participant_id_t[32];
+#endif // VSCR_RATCHET_PARTICIPANT_ID_T_32__DEFINED
+
+#ifndef VSCR_RATCHET_SESSION_ID_T_32__DEFINED
+#define VSCR_RATCHET_SESSION_ID_T_32__DEFINED
+    typedef uint8_t vscr_ratchet_session_id_t[32];
+#endif // VSCR_RATCHET_SESSION_ID_T_32__DEFINED
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCR_RATCHET_TYPEDEFS_H_INCLUDED
 //  @end

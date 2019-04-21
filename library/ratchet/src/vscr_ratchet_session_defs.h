@@ -55,6 +55,7 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet.h"
 
@@ -106,15 +107,15 @@ struct vscr_ratchet_session_t {
 
     bool received_first_response;
 
-    byte sender_identity_public_key[vscr_ratchet_common_hidden_KEY_LEN];
+    vscr_ratchet_public_key_t sender_identity_public_key;
 
-    byte sender_ephemeral_public_key[vscr_ratchet_common_hidden_KEY_LEN];
+    vscr_ratchet_public_key_t sender_ephemeral_public_key;
 
-    byte receiver_long_term_public_key[vscr_ratchet_common_hidden_KEY_LEN];
+    vscr_ratchet_public_key_t receiver_long_term_public_key;
 
     bool receiver_has_one_time_public_key;
 
-    byte receiver_one_time_public_key[vscr_ratchet_common_hidden_KEY_LEN];
+    vscr_ratchet_public_key_t receiver_one_time_public_key;
 };
 
 

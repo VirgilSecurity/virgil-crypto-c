@@ -5,6 +5,8 @@
     <require impl="hkdf" project="foundation" scope="private"/>
     <require module="buffer defs" scope="private" project="common"/>
 
+    <require module="ratchet typedefs" scope="context"/>
+
     <require class="ratchet common hidden" scope="context"/>
     <require class="ratchet chain key" scope="private"/>
     <require class="ratchet receiver chain" scope="private"/>
@@ -25,9 +27,7 @@
     <property name="prev sender chain count" type="unsigned" size="4" access="readwrite"/>
     <property name="receiver chain" class="ratchet receiver chain" access="readwrite"/>
     <property name="skipped messages" class="ratchet skipped messages" access="readwrite"/>
-    <property name="root key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_shared_key_len)"/>
-    </property>
+    <property name="root key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>
 
     <method name="decrypt for existing chain" declaration="private">
         <argument name="chain key" class="ratchet chain key"/>

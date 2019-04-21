@@ -54,7 +54,7 @@
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
 
-    <module name="ratchet public key"/>
+    <module name="ratchet typedefs"/>
 
     <enum name="status"/>
     <enum name="msg type"/>

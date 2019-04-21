@@ -369,9 +369,8 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet
     vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
     vsc_buffer_make_secure(temp);
 
-    vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher,
-            vsc_data(message_key->key, sizeof(message_key->key)), vsc_buffer_data(message->cipher_text.arg),
-            vsc_data(message->header, sizeof(message->header)), temp);
+    vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher, message_key->key,
+            vsc_buffer_data(message->cipher_text.arg), vsc_data(message->header, sizeof(message->header)), temp);
 
     vscr_ratchet_chain_key_destroy(&new_chain_key);
     vscr_ratchet_message_key_destroy(&message_key);
@@ -405,10 +404,8 @@ vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const RegularMessage *m
     byte new_root_key[vscr_ratchet_common_hidden_SHARED_KEY_LEN];
 
     vscr_ratchet_receiver_chain_t *new_chain = vscr_ratchet_receiver_chain_new();
-    vscr_status_t result = vscr_ratchet_keys_create_chain_key(self->root_key,
-            vsc_data(self->sender_chain->private_key, sizeof(self->sender_chain->private_key)),
-            vsc_data(regular_message_header->public_key, sizeof(regular_message_header->public_key)), new_root_key,
-            &new_chain->chain_key);
+    vscr_status_t result = vscr_ratchet_keys_create_chain_key(self->root_key, self->sender_chain->private_key,
+            (byte *)regular_message_header->public_key, new_root_key, &new_chain->chain_key);
 
     if (result != vscr_status_SUCCESS) {
         goto err;
@@ -512,10 +509,8 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
             return result;
         }
 
-        result = vscr_ratchet_keys_create_chain_key(self->root_key,
-                vsc_data(sender_chain->private_key, sizeof(sender_chain->private_key)),
-                vsc_data(self->receiver_chain->public_key, sizeof(self->receiver_chain->public_key)), self->root_key,
-                &sender_chain->chain_key);
+        result = vscr_ratchet_keys_create_chain_key(self->root_key, sender_chain->private_key,
+                self->receiver_chain->public_key, self->root_key, &sender_chain->chain_key);
 
         if (result != vscr_status_SUCCESS) {
             return result;
@@ -553,9 +548,8 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
 
     VSCR_ASSERT(pb_encode(&ostream, RegularMessageHeader_fields, regular_message_header));
 
-    result = vscr_ratchet_cipher_encrypt(self->cipher, vsc_data(message_key->key, sizeof(message_key->key)),
-            vsc_buffer_data(temp), vsc_data(regular_message->header, sizeof(regular_message->header)),
-            regular_message->cipher_text.arg);
+    result = vscr_ratchet_cipher_encrypt(self->cipher, message_key->key, vsc_buffer_data(temp),
+            vsc_data(regular_message->header, sizeof(regular_message->header)), regular_message->cipher_text.arg);
 
     if (result != vscr_status_SUCCESS) {
         goto err2;
@@ -608,8 +602,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
             vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
             vsc_buffer_make_secure(temp);
 
-            vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher,
-                    vsc_data(skipped_message_key->key, sizeof(skipped_message_key->key)),
+            vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher, skipped_message_key->key,
                     vsc_buffer_data(regular_message->cipher_text.arg),
                     vsc_data(regular_message->header, sizeof(regular_message->header)), temp);
 
@@ -655,10 +648,8 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
         memcpy(new_receiver_chain->public_key, regular_message_header->public_key,
                 sizeof(regular_message_header->public_key));
 
-        vscr_status_t result = vscr_ratchet_keys_create_chain_key(self->root_key,
-                vsc_data(self->sender_chain->private_key, sizeof(self->sender_chain->private_key)),
-                vsc_data(new_receiver_chain->public_key, sizeof(new_receiver_chain->public_key)), self->root_key,
-                &new_receiver_chain->chain_key);
+        vscr_status_t result = vscr_ratchet_keys_create_chain_key(self->root_key, self->sender_chain->private_key,
+                new_receiver_chain->public_key, self->root_key, &new_receiver_chain->chain_key);
 
         if (result != vscr_status_SUCCESS) {
             vscr_ratchet_receiver_chain_destroy(&new_receiver_chain);
