@@ -182,7 +182,7 @@ VSCR_PUBLIC void
 vscr_ratchet_serialize(const vscr_ratchet_t *self, Ratchet *ratchet_pb);
 
 VSCR_PUBLIC void
-vscr_ratchet_deserialize(Ratchet *ratchet_pb, vscr_ratchet_t *ratchet);
+vscr_ratchet_deserialize(const Ratchet *ratchet_pb, vscr_ratchet_t *ratchet);
 
 
 // --------------------------------------------------------------------------

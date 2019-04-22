@@ -52,23 +52,15 @@ message Session {
 
 message ParticipantEpoch {
 	required uint32 epoch = 1;
-	required ChainKey chain_key = 2;
+	required bool is_empty = 2;
+	required ChainKey chain_key = 3;
+	repeated MessageKey message_keys = 4;
 }
 
 message ParticipantData {
 	required bytes id = 1;
 	required bytes pub_key = 2;
-	repeated ParticipantEpoch epochs = 3;
-}
-
-message SkippedGroupMessageKey {
-	required uint32 epoch = 1;
-	required MessageKey message_key = 2;
-}
-
-message SkippedGroupMessagesRoot {
-	required bytes id = 1;
-	repeated SkippedGroupMessageKey skipped_message_keys = 2;
+	repeated ParticipantEpoch epoches = 3;
 }
 
 message GroupSession {
@@ -77,5 +69,4 @@ message GroupSession {
 	required bytes session_id = 3;
 	required bytes my_id = 4;
 	repeated ParticipantData participants = 5;
-	repeated SkippedGroupMessagesRoot skipped_messages = 6;
 }

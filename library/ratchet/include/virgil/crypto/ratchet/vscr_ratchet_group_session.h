@@ -58,6 +58,7 @@
 #include "vscr_ratchet_group_message.h"
 #include "vscr_error.h"
 #include "vscr_ratchet_group_session.h"
+#include "vscr_ratchet_group_participant_epoch.h"
 #include "vscr_ratchet_group_ticket.h"
 #include "vscr_status.h"
 
@@ -263,6 +264,10 @@ vscr_ratchet_group_session_serialize(const vscr_ratchet_group_session_t *self, v
 //
 VSCR_PUBLIC vscr_ratchet_group_session_t *
 vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error);
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_group_session_generate_skipped_keys(vscr_ratchet_group_session_t *self,
+        vscr_ratchet_group_participant_epoch_t *epoch, size_t counter) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_ratchet_group_ticket_t *
 vscr_ratchet_group_session_create_group_ticket_for_adding_members(const vscr_ratchet_group_session_t *self);

@@ -110,7 +110,7 @@
     </method>
 
     <method name="deserialize" is_static="1">
-        <argument name="ratchet pb" class="Ratchet" library="nanopb" access="readwrite"/>
+        <argument name="ratchet pb" class="Ratchet" library="nanopb"/>
         <argument name="ratchet" class="self" access="readwrite"/>
     </method>
 

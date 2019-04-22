@@ -32,9 +32,6 @@
     <property name="key utils" class="ratchet key utils"/>
     <property name="cipher" class="ratchet cipher" access="readwrite"/>
     <property name="padding" class="ratchet padding" access="readwrite"/>
-    <property name="skipped messages" class="ratchet skipped group message key root node" access="readwrite">
-        <array/>
-    </property>
 
     <property name="is initialized" type="boolean" access="readwrite"/>
     <property name="is private key set" type="boolean" access="readwrite"/>
@@ -217,6 +214,13 @@
             Deserialized session.
             NOTE: Deserialized session needs dependencies to be set. Check setup defaults
         </return>
+    </method>
+
+    <method name="generate skipped keys">
+        <argument name="epoch" class="ratchet group participant epoch" access="readwrite"/>
+        <argument name="counter" type="size"/>
+
+        <return enum="status"/>
     </method>
 
     <method name="update participant" declaration="private" is_static="1">

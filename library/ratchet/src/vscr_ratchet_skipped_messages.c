@@ -405,14 +405,14 @@ vscr_ratchet_skipped_messages_serialize(
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_messages_deserialize(
-        SkippedMessages *skipped_messages_pb, vscr_ratchet_skipped_messages_t *skipped_messages) {
+        const SkippedMessages *skipped_messages_pb, vscr_ratchet_skipped_messages_t *skipped_messages) {
 
     VSCR_ASSERT_PTR(skipped_messages_pb);
     VSCR_ASSERT_PTR(skipped_messages);
 
     for (pb_size_t i = 0; i < skipped_messages_pb->keys_count; i++) {
         vscr_ratchet_skipped_messages_root_node_t *root = vscr_ratchet_skipped_messages_root_node_new();
-        SkippedMessageKey *root_pb = &skipped_messages_pb->keys[i];
+        const SkippedMessageKey *root_pb = &skipped_messages_pb->keys[i];
         memcpy(root->public_key, root_pb->public_key, sizeof(root->public_key));
 
         skipped_messages->root_nodes[root_pb->index] = root;

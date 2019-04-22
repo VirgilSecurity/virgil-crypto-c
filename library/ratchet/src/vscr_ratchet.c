@@ -361,6 +361,7 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet
 
     while (new_chain_key->index < regular_message_header->counter) {
         vscr_ratchet_keys_advance_chain_key(new_chain_key);
+        // TODO: Check out of range
     }
 
     vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(new_chain_key);
@@ -526,6 +527,8 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
 
     vscr_ratchet_keys_advance_chain_key(&self->sender_chain->chain_key);
 
+    // TODO: Check out of range
+
     size_t size = vscr_ratchet_padding_padded_len(plain_text.len);
     vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
     vsc_buffer_make_secure(temp);
@@ -588,7 +591,6 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
     }
 
     if (!receiver_chain || receiver_chain->chain_key.index > regular_message_header->counter) {
-        // FIXME
         vscr_ratchet_message_key_t *skipped_message_key = vscr_ratchet_skipped_messages_find_key(
                 self->skipped_messages, regular_message_header->counter, regular_message_header->public_key);
 
@@ -616,7 +618,6 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
                 return result;
             }
 
-            // FIXME
             vscr_ratchet_skipped_messages_delete_key(
                     self->skipped_messages, regular_message_header->public_key, skipped_message_key);
 
@@ -663,7 +664,6 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
         vscr_ratchet_sender_chain_destroy(&self->sender_chain);
         receiver_chain = new_receiver_chain;
 
-        // FIXME
         vscr_ratchet_skipped_messages_add_public_key(self->skipped_messages, regular_message_header->public_key);
     }
 
@@ -768,7 +768,7 @@ vscr_ratchet_serialize(const vscr_ratchet_t *self, Ratchet *ratchet_pb) {
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_deserialize(Ratchet *ratchet_pb, vscr_ratchet_t *ratchet) {
+vscr_ratchet_deserialize(const Ratchet *ratchet_pb, vscr_ratchet_t *ratchet) {
 
     VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(ratchet_pb);

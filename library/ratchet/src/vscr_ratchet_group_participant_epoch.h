@@ -53,6 +53,7 @@
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_group_participant_epoch.h"
 #include "vscr_ratchet_chain_key.h"
+#include "vscr_ratchet_skipped_group_messages_root_node.h"
 
 // clang-format on
 //  @end
@@ -86,6 +87,8 @@ struct vscr_ratchet_group_participant_epoch_t {
     size_t epoch;
 
     vscr_ratchet_chain_key_t *chain_key;
+
+    vscr_ratchet_skipped_group_messages_root_node_t *skipped_messages;
 };
 
 //
@@ -137,7 +140,7 @@ vscr_ratchet_group_participant_epoch_serialize(const vscr_ratchet_group_particip
         ParticipantEpoch *data_pb);
 
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_epoch_deserialize(ParticipantEpoch *data_pb,
+vscr_ratchet_group_participant_epoch_deserialize(const ParticipantEpoch *data_pb,
         vscr_ratchet_group_participant_epoch_t *data);
 
 

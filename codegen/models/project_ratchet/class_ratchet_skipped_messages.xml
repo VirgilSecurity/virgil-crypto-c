@@ -45,7 +45,7 @@
     </method>
 
     <method name="deserialize" is_static="1">
-        <argument name="skipped messages pb" class="SkippedMessages" library="nanopb" access="readwrite"/>
+        <argument name="skipped messages pb" class="SkippedMessages" library="nanopb"/>
         <argument name="skipped messages" class="self" access="readwrite"/>
     </method>
 

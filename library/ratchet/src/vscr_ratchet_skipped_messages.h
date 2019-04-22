@@ -144,7 +144,7 @@ vscr_ratchet_skipped_messages_serialize(const vscr_ratchet_skipped_messages_t *s
         SkippedMessages *skipped_messages_pb);
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_deserialize(SkippedMessages *skipped_messages_pb,
+vscr_ratchet_skipped_messages_deserialize(const SkippedMessages *skipped_messages_pb,
         vscr_ratchet_skipped_messages_t *skipped_messages);
 
 

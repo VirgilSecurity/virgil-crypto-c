@@ -321,11 +321,9 @@ vscr_ratchet_group_session_cleanup_ctx(vscr_ratchet_group_session_t *self) {
     if (self->participants_count > 0) {
         for (size_t i = 0; i < self->participants_count; i++) {
             vscr_ratchet_group_participant_data_destroy(&self->participants[i]);
-            vscr_ratchet_skipped_group_message_key_root_node_destroy(&self->skipped_messages[i]);
         }
 
         vscr_dealloc(self->participants);
-        vscr_dealloc(self->skipped_messages);
     }
 
     vscr_ratchet_group_participant_epoch_destroy(&self->my_epoch);
@@ -514,7 +512,7 @@ vscr_ratchet_group_session_check_session_consistency(
     VSCR_ASSERT(group_info->participants_count >= vscr_ratchet_common_MIN_PARTICIPANTS_COUNT);
 
     // TODO: Implement missing epoch initialization to decrypt out-of-orders messages?
-    if (self->my_epoch && self->my_epoch->epoch > group_info->epoch) {
+    if (self->my_epoch && self->my_epoch->epoch >= group_info->epoch + vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT) {
         return vscr_status_ERROR_EPOCH_MISMATCH;
     }
 
@@ -593,12 +591,10 @@ vscr_ratchet_group_session_setup_session(
     // Save old participants, decide which participants should be removed
     if (self->participants_count > 0) {
         vscr_ratchet_group_participant_data_t **old_participants = self->participants;
-        vscr_ratchet_skipped_group_message_key_root_node_t **old_skipped = self->skipped_messages;
         size_t old_count = self->participants_count;
         self->participants_count = 0;
 
         self->participants = vscr_alloc(len * sizeof(vscr_ratchet_group_participant_data_t *));
-        self->skipped_messages = vscr_alloc(len * sizeof(vscr_ratchet_skipped_group_message_key_root_node_t *));
 
         // Save old participants
         for (size_t i = 0; i < old_count; i++) {
@@ -616,8 +612,6 @@ vscr_ratchet_group_session_setup_session(
                 size_t index = self->participants_count;
                 self->participants[index] = old_participants[i];
                 old_participants[i] = NULL;
-                self->skipped_messages[index] = old_skipped[i];
-                old_skipped[i] = NULL;
 
                 if (self->my_epoch->epoch < group_info->epoch) {
                     vscr_ratchet_group_session_update_participant(self->participants[index], group_info->epoch, info);
@@ -626,15 +620,12 @@ vscr_ratchet_group_session_setup_session(
                 self->participants_count++;
             } else {
                 vscr_ratchet_group_participant_data_destroy(&old_participants[i]);
-                vscr_ratchet_skipped_group_message_key_root_node_destroy(&old_skipped[i]);
             }
         }
 
         vscr_dealloc(old_participants);
-        vscr_dealloc(old_skipped);
     } else {
         self->participants = vscr_alloc(len * sizeof(vscr_ratchet_group_participant_data_t *));
-        self->skipped_messages = vscr_alloc(len * sizeof(vscr_ratchet_skipped_group_message_key_root_node_t *));
     }
 
     for (size_t i = 0; i < group_info->participants_count; i++) {
@@ -647,6 +638,7 @@ vscr_ratchet_group_session_setup_session(
                 vscr_ratchet_group_participant_epoch_t *new_epoch = vscr_ratchet_group_participant_epoch_new();
 
                 new_epoch->epoch = group_info->epoch;
+                new_epoch->chain_key = vscr_ratchet_chain_key_new();
                 new_epoch->chain_key->index = info->index;
                 memcpy(new_epoch->chain_key->key, info->key, sizeof(new_epoch->chain_key->key));
 
@@ -654,10 +646,6 @@ vscr_ratchet_group_session_setup_session(
             }
         } else if (vscr_ratchet_group_session_find_participant(self, info->id) == self->participants_count) {
             self->participants[self->participants_count] = vscr_ratchet_group_participant_data_new();
-
-            self->skipped_messages[self->participants_count] = vscr_ratchet_skipped_group_message_key_root_node_new();
-            memcpy(self->skipped_messages[self->participants_count]->id, info->id,
-                    sizeof(self->skipped_messages[self->participants_count]->id));
 
             vscr_ratchet_group_session_update_participant(
                     self->participants[self->participants_count], group_info->epoch, info);
@@ -684,6 +672,8 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     VSCR_ASSERT(self->is_id_set);
     VSCR_ASSERT(self->is_private_key_set);
 
+    // TODO: Add padding
+
     if (plain_text.len > vscr_ratchet_common_MAX_PLAIN_TEXT_LEN) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_EXCEEDED_MAX_PLAIN_TEXT_LEN);
         return NULL;
@@ -701,6 +691,7 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     memcpy(msg->header_pb->sender_id, self->my_id, sizeof(self->my_id));
 
     vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(self->my_epoch->chain_key);
+    // TODO: Check out of range
     vscr_ratchet_keys_advance_chain_key(self->my_epoch->chain_key);
 
     regular_message->cipher_text.arg =
@@ -772,9 +763,6 @@ vscr_ratchet_group_session_decrypt(
     const RegularGroupMessage *group_message = &message->message_pb.regular_message;
     const RegularGroupMessageHeader *header = message->header_pb;
 
-    // TODO: Check mas message gap
-    // TODO: Leave only one epoch
-
     if (memcmp(header->sender_id, self->my_id, sizeof(self->my_id)) == 0) {
         return vscr_status_ERROR_CANNOT_DECRYPT_OWN_MESSAGES;
     }
@@ -786,10 +774,8 @@ vscr_ratchet_group_session_decrypt(
     }
 
     vscr_ratchet_group_participant_data_t *participant = self->participants[sender];
-    vscr_ratchet_skipped_group_message_key_root_node_t *skipped_root = self->skipped_messages[sender];
 
     VSCR_ASSERT(participant);
-    VSCR_ASSERT(skipped_root);
 
     int ed_status = ed25519_verify(group_message->signature, participant->pub_key,
             vsc_buffer_bytes(group_message->cipher_text.arg), vsc_buffer_len(group_message->cipher_text.arg));
@@ -798,21 +784,63 @@ vscr_ratchet_group_session_decrypt(
         return ed_status == 1 ? vscr_status_ERROR_ED25519 : vscr_status_ERROR_INVALID_SIGNATURE;
     }
 
+    // Epoch not found
+    //    if (header->epoch > participant->newest_epoch ||
+    //            header->epoch <= participant->newest_epoch - vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT) {
+    //        return vscr_status_ERROR_EPOCH_NOT_FOUND;
+    //    }
+
     vscr_ratchet_group_participant_epoch_t *epoch =
             vscr_ratchet_group_participant_data_find_epoch(participant, header->epoch);
 
-    if (!epoch) {
-        return vscr_status_ERROR_EPOCH_NOT_FOUND;
-    }
+    // FIXME: Check epoch
 
-    if (epoch->chain_key->index > header->counter) {
-        vscr_ratchet_message_key_t *skipped_message_key =
-                vscr_ratchet_skipped_group_message_key_root_node_find_key(skipped_root, header->epoch, header->counter);
+    // New message
+    if (epoch && epoch->chain_key->index <= header->counter) {
+        // Too many lost messages
+        if (header->counter - epoch->chain_key->index > vscr_ratchet_common_hidden_MAX_MESSAGE_GAP) {
+            return vscr_status_ERROR_TOO_MANY_LOST_MESSAGES;
+        }
 
-        if (!skipped_message_key) {
+        vscr_ratchet_chain_key_t *new_chain_key = vscr_ratchet_chain_key_new();
+        vscr_ratchet_chain_key_clone(epoch->chain_key, new_chain_key);
+
+        while (new_chain_key->index < header->counter) {
+            if (epoch->chain_key->index == UINT32_MAX) {
+                return vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN;
+            }
+
+            vscr_ratchet_keys_advance_chain_key(new_chain_key);
+        }
+
+        vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(new_chain_key);
+
+        vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher, message_key->key,
+                vsc_buffer_data(group_message->cipher_text.arg),
+                vsc_data(group_message->header, sizeof(group_message->header)), plain_text);
+
+        if (result != vscr_status_SUCCESS) {
+            return result;
+        }
+
+        // TODO: Generate skipped for previous epoches
+        result = vscr_ratchet_group_session_generate_skipped_keys(self, epoch, header->counter);
+
+        if (epoch->chain_key->index == UINT32_MAX) {
+            return vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN;
+        }
+
+        vscr_ratchet_keys_advance_chain_key(epoch->chain_key);
+
+        return vscr_status_SUCCESS;
+    } else {
+        vscr_ratchet_message_key_t *message_key =
+                vscr_ratchet_skipped_group_messages_root_node_find_key(epoch->skipped_messages, header->counter);
+
+        if (!message_key) {
             return vscr_status_ERROR_SKIPPED_MESSAGE_MISSING;
         } else {
-            vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher, skipped_message_key->key,
+            vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher, message_key->key,
                     vsc_buffer_data(group_message->cipher_text.arg),
                     vsc_data(group_message->header, sizeof(group_message->header)), plain_text);
 
@@ -820,59 +848,11 @@ vscr_ratchet_group_session_decrypt(
                 return result;
             }
 
-            vscr_ratchet_skipped_group_message_key_root_node_delete_key(skipped_root, skipped_message_key);
+            vscr_ratchet_skipped_group_messages_root_node_delete_key(epoch->skipped_messages, message_key);
 
             return vscr_status_SUCCESS;
         }
     }
-
-    // Too many lost messages
-    if (header->counter - epoch->chain_key->index > vscr_ratchet_common_hidden_MAX_MESSAGE_GAP) {
-        return vscr_status_ERROR_TOO_MANY_LOST_MESSAGES;
-    }
-
-    vscr_ratchet_chain_key_t *new_chain_key = vscr_ratchet_chain_key_new();
-    vscr_ratchet_chain_key_clone(epoch->chain_key, new_chain_key);
-
-    while (new_chain_key->index < header->counter) {
-        vscr_ratchet_keys_advance_chain_key(new_chain_key);
-    }
-
-    vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(new_chain_key);
-
-    vscr_status_t result =
-            vscr_ratchet_cipher_decrypt(self->cipher, message_key->key, vsc_buffer_data(group_message->cipher_text.arg),
-                    vsc_data(group_message->header, sizeof(group_message->header)), plain_text);
-
-    if (result != vscr_status_SUCCESS) {
-        goto err;
-    }
-
-    // TODO: Add old epoches removal
-
-    while (epoch->chain_key->index < header->counter) {
-        vscr_ratchet_skipped_group_message_key_t *skipped_message_key = vscr_ratchet_skipped_group_message_key_new();
-        skipped_message_key->epoch = header->epoch;
-        skipped_message_key->message_key = vscr_ratchet_keys_create_message_key(epoch->chain_key);
-        if (epoch->chain_key->index == UINT32_MAX) {
-            vscr_ratchet_skipped_group_message_key_destroy(&skipped_message_key);
-            return vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN;
-        }
-        vscr_ratchet_keys_advance_chain_key(epoch->chain_key);
-        vscr_ratchet_skipped_group_message_key_root_node_add_key(skipped_root, skipped_message_key);
-    }
-
-    if (epoch->chain_key->index == UINT32_MAX) {
-        return vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN;
-    }
-
-    vscr_ratchet_keys_advance_chain_key(epoch->chain_key);
-
-err:
-    vscr_ratchet_chain_key_destroy(&new_chain_key);
-    vscr_ratchet_message_key_destroy(&message_key);
-
-    return result;
 }
 
 static size_t
@@ -919,17 +899,13 @@ vscr_ratchet_group_session_serialize(const vscr_ratchet_group_session_t *self, v
 
     session_pb.version = vscr_ratchet_common_hidden_GROUP_SESSION_VERSION;
     session_pb.participants_count = self->participants_count;
-    session_pb.skipped_messages_count = self->participants_count;
     memcpy(session_pb.session_id, self->session_id, sizeof(session_pb.session_id));
     memcpy(session_pb.my_id, self->my_id, sizeof(session_pb.my_id));
+    vscr_ratchet_group_participant_epoch_serialize(self->my_epoch, &session_pb.my_epoch);
 
     for (size_t i = 0; i < self->participants_count; i++) {
         vscr_ratchet_group_participant_data_serialize(self->participants[i], &session_pb.participants[i]);
-        vscr_ratchet_skipped_group_message_key_root_node_serialize(
-                self->skipped_messages[i], &session_pb.skipped_messages[i]);
     }
-
-    vscr_ratchet_group_participant_epoch_serialize(self->my_epoch, &session_pb.my_epoch);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
 
@@ -961,7 +937,7 @@ vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     bool status = pb_decode(&istream, GroupSession_fields, &session_pb);
 
-    if (!status || session_pb.skipped_messages_count != session_pb.participants_count) {
+    if (!status) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
 
         goto err;
@@ -979,16 +955,10 @@ vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     vscr_ratchet_group_participant_epoch_deserialize(&session_pb.my_epoch, session->my_epoch);
     session->participants_count = session_pb.participants_count;
     session->participants = vscr_alloc(session_pb.participants_count * sizeof(vscr_ratchet_group_participant_data_t *));
-    session->skipped_messages =
-            vscr_alloc(session_pb.participants_count * sizeof(vscr_ratchet_skipped_group_message_key_root_node_t *));
 
     for (size_t i = 0; i < session_pb.participants_count; i++) {
         session->participants[i] = vscr_ratchet_group_participant_data_new();
         vscr_ratchet_group_participant_data_deserialize(&session_pb.participants[i], session->participants[i]);
-
-        session->skipped_messages[i] = vscr_ratchet_skipped_group_message_key_root_node_new();
-        vscr_ratchet_skipped_group_message_key_root_node_deserialize(
-                &session_pb.skipped_messages[i], session->skipped_messages[i]);
     }
 
 err:
@@ -997,21 +967,47 @@ err:
     return session;
 }
 
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_group_session_generate_skipped_keys(
+        vscr_ratchet_group_session_t *self, vscr_ratchet_group_participant_epoch_t *epoch, size_t counter) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(epoch);
+
+    while (epoch->chain_key->index < counter) {
+        vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(epoch->chain_key);
+        if (epoch->chain_key->index == UINT32_MAX) {
+            vscr_ratchet_message_key_destroy(&message_key);
+            return vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN;
+        }
+        vscr_ratchet_keys_advance_chain_key(epoch->chain_key);
+        vscr_ratchet_skipped_group_messages_root_node_add_key(epoch->skipped_messages, message_key);
+    }
+
+    return vscr_status_SUCCESS;
+}
+
 static void
 vscr_ratchet_group_session_update_participant(
         vscr_ratchet_group_participant_data_t *participant, size_t epoch, const MessageParticipantInfo *info) {
 
     // FIXME
-    VSCR_ASSERT(vscr_ratchet_group_participant_data_find_epoch(participant, epoch) == NULL);
-
-    vscr_ratchet_group_participant_epoch_t *new_epoch =
-            vscr_ratchet_group_participant_data_add_epoch(participant, epoch);
-    VSCR_ASSERT_PTR(new_epoch);
+    VSCR_ASSERT_PTR(participant);
+    VSCR_ASSERT_PTR(info);
+    VSCR_UNUSED(epoch);
 
     memcpy(participant->id, info->id, sizeof(participant->id));
     memcpy(participant->pub_key, info->pub_key, sizeof(participant->pub_key));
-    memcpy(new_epoch->chain_key->key, info->key, sizeof(new_epoch->chain_key->key));
-    new_epoch->chain_key->index = info->index;
+
+    vscr_ratchet_group_participant_epoch_t *found_epoch =
+            vscr_ratchet_group_participant_data_find_epoch(participant, epoch);
+
+    if (!found_epoch) {
+        vscr_ratchet_chain_key_t *chain_key = vscr_ratchet_chain_key_new();
+        memcpy(chain_key->key, info->key, sizeof(chain_key->key));
+        chain_key->index = info->index;
+        vscr_ratchet_group_participant_data_add_epoch(participant, epoch, &chain_key);
+    }
 }
 
 VSCR_PUBLIC vscr_ratchet_group_ticket_t *
@@ -1033,7 +1029,7 @@ vscr_ratchet_group_session_create_group_ticket_for_adding_members(const vscr_rat
 
     for (size_t i = 0; i < self->participants_count; i++) {
         vscr_ratchet_group_participant_data_t *participant = self->participants[i];
-        vscr_ratchet_group_participant_epoch_t *current_epoch = participant->epoches[participant->epoch_count - 1];
+        vscr_ratchet_group_participant_epoch_t *current_epoch = participant->epoches[0];
         VSCR_ASSERT(current_epoch->epoch == self->my_epoch->epoch);
         status = vscr_ratchet_group_ticket_add_existing_participant(
                 ticket, participant->id, participant->pub_key, current_epoch->chain_key);

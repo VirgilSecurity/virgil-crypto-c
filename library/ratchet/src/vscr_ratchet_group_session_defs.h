@@ -59,7 +59,6 @@
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet_padding.h"
-#include "vscr_ratchet_skipped_group_message_key_root_node.h"
 #include "vscr_ratchet_group_participant_epoch.h"
 #include "vscr_ratchet_group_participant_data.h"
 
@@ -108,8 +107,6 @@ struct vscr_ratchet_group_session_t {
     vscr_ratchet_cipher_t *cipher;
 
     vscr_ratchet_padding_t *padding;
-
-    vscr_ratchet_skipped_group_message_key_root_node_t **skipped_messages;
 
     bool is_initialized;
 

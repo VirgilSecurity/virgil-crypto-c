@@ -34,6 +34,7 @@
 
 #include <unity.h>
 #include <test_utils.h>
+#include <vscr_ratchet_group_session_defs.h>
 
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
@@ -443,6 +444,90 @@ ratchet_chain_key_cmp(vscr_ratchet_chain_key_t *chain_key1, vscr_ratchet_chain_k
 static bool
 ratchet_msg_key_cmp(vscr_ratchet_message_key_t *msg_key1, vscr_ratchet_message_key_t *msg_key2) {
     return msg_key1->index == msg_key2->index && memcmp(msg_key1->key, msg_key2->key, sizeof(msg_key1->key)) == 0;
+}
+
+static bool
+ratchet_skipped_root_cmp(vscr_ratchet_skipped_group_messages_root_node_t *root1,
+        vscr_ratchet_skipped_group_messages_root_node_t *root2) {
+    if (root1->count != root2->count)
+        return false;
+
+    vscr_ratchet_message_key_node_t *node1 = root1->first;
+    vscr_ratchet_message_key_node_t *node2 = root2->first;
+
+    for (size_t i = 0; i < root1->count; i++) {
+        if (!ratchet_msg_key_cmp(node1->value, node2->value))
+            return false;
+
+        node1 = node1->next;
+        node2 = node2->next;
+    }
+
+    return true;
+}
+
+static bool
+ratchet_epoch_cmp(vscr_ratchet_group_participant_epoch_t *epoch1, vscr_ratchet_group_participant_epoch_t *epoch2) {
+
+    if (epoch1 == NULL && epoch2 == NULL)
+        return true;
+
+    if (!ratchet_chain_key_cmp(epoch1->chain_key, epoch2->chain_key))
+        return false;
+
+
+    if (epoch1->epoch != epoch2->epoch)
+        return false;
+
+    return ratchet_skipped_root_cmp(epoch1->skipped_messages, epoch2->skipped_messages);
+}
+
+static bool
+ratchet_participant_cmp(vscr_ratchet_group_participant_data_t *data1, vscr_ratchet_group_participant_data_t *data2) {
+
+    bool flag = memcmp(data1->pub_key, data2->pub_key, sizeof(data1->pub_key)) == 0 &&
+                memcmp(data1->id, data2->id, sizeof(data1->id)) == 0;
+
+    if (!flag)
+        return false;
+
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT; i++) {
+        if (!ratchet_epoch_cmp(data1->epoches[i], data2->epoches[i]))
+            return false;
+    }
+
+    return true;
+}
+
+static bool
+ratchet_group_session_cmp(
+        vscr_ratchet_group_session_t *ratchet_session1, vscr_ratchet_group_session_t *ratchet_session2) {
+
+    bool flag = ratchet_session1->participants_count == ratchet_session2->participants_count &&
+                ratchet_session1->is_initialized == ratchet_session2->is_initialized &&
+                memcmp(ratchet_session1->session_id, ratchet_session2->session_id,
+                        sizeof(ratchet_session1->session_id)) == 0 &&
+                memcmp(ratchet_session1->my_id, ratchet_session2->my_id, sizeof(ratchet_session1->my_id)) == 0 &&
+                memcmp(ratchet_session1->my_private_key, ratchet_session2->my_private_key,
+                        sizeof(ratchet_session1->my_private_key)) == 0 &&
+                memcmp(ratchet_session1->my_public_key, ratchet_session2->my_public_key,
+                        sizeof(ratchet_session1->my_public_key)) == 0 &&
+                ratchet_session1->is_id_set == ratchet_session2->is_id_set &&
+                ratchet_session1->is_initialized == ratchet_session2->is_initialized &&
+                ratchet_session1->is_private_key_set == ratchet_session2->is_private_key_set &&
+                ratchet_epoch_cmp(ratchet_session1->my_epoch, ratchet_session2->my_epoch);
+
+    if (!flag) {
+        return false;
+    }
+
+    for (size_t i = 0; i < ratchet_session1->participants_count; i++) {
+        if (!ratchet_participant_cmp(ratchet_session1->participants[i], ratchet_session2->participants[i])) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 static bool
@@ -927,13 +1012,13 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterat
         if (priv) {
             vscr_ratchet_group_session_t **session_ref = &sessions[active_session];
 
+            vscr_ratchet_group_session_t *session = *session_ref;
+
             size_t len = vscr_ratchet_group_session_serialize_len(*session_ref);
 
             vsc_buffer_t *buf = vsc_buffer_new_with_capacity(len);
 
             vscr_ratchet_group_session_serialize(*session_ref, buf);
-
-            vscr_ratchet_group_session_delete(*session_ref);
 
             vscr_error_t err_ctx;
             vscr_error_reset(&err_ctx);
@@ -949,6 +1034,14 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterat
             TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
 
             vsc_buffer_destroy(&buf);
+
+            bool flag = ratchet_group_session_cmp(*session_ref, session);
+
+            if (!flag) {
+                TEST_ASSERT(false);
+            }
+
+            vscr_ratchet_group_session_destroy(&session);
         }
     }
 

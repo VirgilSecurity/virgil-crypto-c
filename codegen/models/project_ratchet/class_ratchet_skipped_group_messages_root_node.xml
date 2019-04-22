@@ -1,0 +1,25 @@
+<class name="ratchet skipped group messages root node" context="public" scope="internal">
+
+    <require class="ratchet common" scope="public"/>
+
+    <require module="ratchet typedefs" scope="context"/>
+
+    <property name="count" type="size" access="readwrite"/>
+    <property name="first" class="ratchet message key node" access="readwrite"/>
+    <property name="last" class="ratchet message key node" access="readwrite"/>
+
+    <method name="find key" is_const="1">
+        <argument name="counter" type="size"/>
+
+        <return class="ratchet message key" access="readwrite"/>
+    </method>
+
+    <method name="delete key">
+        <argument name="message key" class="ratchet message key" access="readwrite"/>
+    </method>
+
+    <method name="add key">
+        <argument name="message key" class="ratchet message key" access="readwrite"/>
+    </method>
+
+</class>
