@@ -242,7 +242,7 @@ test__remove_members__old_messages__should_continue_working(void) {
 
     const vscr_ratchet_group_message_t *info_msg = vscr_ratchet_group_ticket_get_ticket_message(ticket);
 
-    vsc_buffer_t *text1, *text2;
+    vsc_buffer_t *text1 = NULL, *text2 = NULL;
     generate_random_data(rng, &text1);
     generate_random_data(rng, &text2);
 
@@ -297,9 +297,9 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    //    RUN_TEST(test__add_members__random_chat__should_continue_working);
-    //    RUN_TEST(test__remove_members__random_chat__should_continue_working);
-    //    RUN_TEST(test__change_members__out_of_order_msgs__should_continue_working);
+    RUN_TEST(test__add_members__random_chat__should_continue_working);
+    RUN_TEST(test__remove_members__random_chat__should_continue_working);
+    RUN_TEST(test__change_members__out_of_order_msgs__should_continue_working);
     RUN_TEST(test__remove_members__old_messages__should_continue_working);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);

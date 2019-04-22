@@ -98,7 +98,9 @@ generate_number(vscf_ctr_drbg_t *rng, size_t min, size_t max) {
     vsc_buffer_t *size_buf = vsc_buffer_new();
     vsc_buffer_use(size_buf, (byte *)&size, sizeof(size));
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, sizeof(size), size_buf));
+    vscf_status_t status = vscf_ctr_drbg_random(rng, sizeof(size), size_buf);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
     vsc_buffer_destroy(&size_buf);
 
@@ -130,7 +132,9 @@ generate_random_data(vscf_ctr_drbg_t *rng, vsc_buffer_t **buffer) {
 
     *buffer = vsc_buffer_new_with_capacity(size);
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, size, *buffer));
+    vscf_status_t status = vscf_ctr_drbg_random(rng, size, *buffer);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 }
 
 void
