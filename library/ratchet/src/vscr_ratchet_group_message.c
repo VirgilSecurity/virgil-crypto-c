@@ -381,6 +381,8 @@ vscr_ratchet_group_message_serialize_len(const vscr_ratchet_group_message_t *sel
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(self->message_pb.has_group_info != self->message_pb.has_regular_message);
 
+    return 50000;
+
     if (self->message_pb.has_group_info) {
         const MessageGroupInfo *info = &self->message_pb.group_info;
 
@@ -472,7 +474,7 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
         }
     } else {
         pb_istream_t sub_istream = pb_istream_from_buffer(
-                message->message_pb.regular_message.header, sizeof(message->message_pb.regular_message.header));
+                message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
 
         message->header_pb = vscr_alloc(sizeof(RegularGroupMessageHeader));
         pb_status = pb_decode(&sub_istream, RegularGroupMessageHeader_fields, message->header_pb);

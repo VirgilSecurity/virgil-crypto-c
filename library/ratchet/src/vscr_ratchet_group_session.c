@@ -697,12 +697,13 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     regular_message->cipher_text.arg =
             vsc_buffer_new_with_capacity(vscr_ratchet_cipher_encrypt_len(self->cipher, plain_text.len));
 
-    pb_ostream_t ostream = pb_ostream_from_buffer(regular_message->header, sizeof(regular_message->header));
+    pb_ostream_t ostream = pb_ostream_from_buffer(regular_message->header.bytes, sizeof(regular_message->header.bytes));
+    regular_message->header.size = ostream.bytes_written;
 
     VSCR_ASSERT(pb_encode(&ostream, RegularGroupMessageHeader_fields, msg->header_pb));
 
     status = vscr_ratchet_cipher_encrypt(self->cipher, message_key->key, plain_text,
-            vsc_data(regular_message->header, sizeof(regular_message->header)), regular_message->cipher_text.arg);
+            vsc_data(regular_message->header.bytes, regular_message->header.size), regular_message->cipher_text.arg);
 
     if (status != vscr_status_SUCCESS) {
         status = vscr_status_ERROR_SESSION_IS_NOT_INITIALIZED;
@@ -817,7 +818,7 @@ vscr_ratchet_group_session_decrypt(
 
         vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher, message_key->key,
                 vsc_buffer_data(group_message->cipher_text.arg),
-                vsc_data(group_message->header, sizeof(group_message->header)), plain_text);
+                vsc_data(group_message->header.bytes, group_message->header.size), plain_text);
 
         if (result != vscr_status_SUCCESS) {
             return result;
@@ -842,7 +843,7 @@ vscr_ratchet_group_session_decrypt(
         } else {
             vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher, message_key->key,
                     vsc_buffer_data(group_message->cipher_text.arg),
-                    vsc_data(group_message->header, sizeof(group_message->header)), plain_text);
+                    vsc_data(group_message->header.bytes, group_message->header.size), plain_text);
 
             if (result != vscr_status_SUCCESS) {
                 return result;
