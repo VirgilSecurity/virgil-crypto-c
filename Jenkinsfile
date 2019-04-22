@@ -2,11 +2,34 @@
 
 
 // --------------------------------------------------------------------------
+//  Configuration properties.
+// --------------------------------------------------------------------------
+properties([
+    parameters([
+        booleanParam(name: 'DEPLOY_JAVA_ARTIFACTS', defaultValue: true,
+            description: 'If build succeeded then Java artifacts will be deployed to the Maven repository.'),
+
+        booleanParam(name: 'RUN_ANDROID_TESTS', defaultValue: true,
+            description: 'Run Android instrumental tests.'),
+
+        booleanParam(name: 'DEPLOY_ANDROID_ARTIFACTS', defaultValue: true,
+            description: 'If build succeeded then Java Android artifacts will be deployed to the Maven repository..'),
+
+        string(name: 'gpg_keyname', defaultValue: 'B2007BBB'),
+    ])
+])
+
+
+// --------------------------------------------------------------------------
 //  Grab SCM
 // --------------------------------------------------------------------------
 
 node('master') {
     stage('Grab SCM') {
+        env
+        echo "DEPLOY_JAVA_ARTIFACTS = ${params.DEPLOY_JAVA_ARTIFACTS}"
+        echo "RUN_ANDROID_TESTS = ${params.RUN_ANDROID_TESTS}"
+        echo "DEPLOY_ANDROID_ARTIFACTS = ${params.DEPLOY_ANDROID_ARTIFACTS}"
         clearContentUnix()
         checkout scm
         stash includes: '**', name: 'src'
@@ -154,6 +177,26 @@ def build_LangPHP_Linux(slave) {
             dir('build') {
                 archiveArtifacts('php/**')
             }
+
+            clearContentUnix()
+            unstash 'src'
+            sh '''
+                source /opt/remi/php73/enable
+                cmake -Cconfigs/php-config.cmake \
+                      -DCMAKE_BUILD_TYPE=Release \
+                      -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
+                      -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.3 \
+                      -DCPACK_OUTPUT_FILE_PREFIX=php \
+                      -DENABLE_CLANGFORMAT=OFF \
+                      -Bbuild -H.
+                cmake --build build -- -j10
+                cd build
+                ctest --verbose
+                cpack
+            '''
+            dir('build') {
+                archiveArtifacts('php/**')
+            }
         }
     }}
 }
@@ -162,15 +205,36 @@ def build_LangPHP_MacOS(slave) {
     return { node(slave) {
         def jobPath = pathFromJobName(env.JOB_NAME)
         ws("workspace/${jobPath}") {
+            def phpVersions = "php php@7.0 php@7.1 php@7.2 php@7.3"
+
             clearContentUnix()
             unstash 'src'
-            def phpVersions = "php56 php70 php71 php72"
             sh '''
-                brew unlink ${phpVersions} && brew link php72 --force
+                brew unlink ${phpVersions} && brew link php@7.2 --force
                 cmake -Cconfigs/php-config.cmake \
                       -DCMAKE_BUILD_TYPE=Release \
                       -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 \
+                      -DCPACK_OUTPUT_FILE_PREFIX=php \
+                      -DENABLE_CLANGFORMAT=OFF \
+                      -Bbuild -H.
+                cmake --build build -- -j10
+                cd build
+                ctest --verbose
+                cpack
+            '''
+            dir('build') {
+                archiveArtifacts('php/**')
+            }
+
+            clearContentUnix()
+            unstash 'src'
+            sh '''
+                brew unlink ${phpVersions} && brew link php@7.3 --force
+                cmake -Cconfigs/php-config.cmake \
+                      -DCMAKE_BUILD_TYPE=Release \
+                      -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
+                      -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.3 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
@@ -203,6 +267,32 @@ def build_LangPHP_Windows(slave) {
                           -DCMAKE_BUILD_TYPE=Release ^
                           -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
                           -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 ^
+                          -DCPACK_OUTPUT_FILE_PREFIX=php ^
+                          -DENABLE_CLANGFORMAT=OFF ^
+                          -Bbuild -H.
+                    cmake --build build
+                    cd build
+                    ctest --verbose
+                    cpack
+                '''
+            }
+            dir('build') {
+                archiveArtifacts('php/**')
+            }
+
+            clearContentWindows()
+            unstash 'src'
+            withEnv(["PHP_HOME=C:\\php-7.3.4",
+                     "PHP_DEVEL_HOME=C:\\php-7.3.4-devel",
+                     "PHPUNIT_HOME=C:\\phpunit-7.2.4"]) {
+                bat '''
+                    set PATH=%PATH:"=%
+                    call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
+                    cmake -G"NMake Makefiles" ^
+                          -Cconfigs/php-config.cmake ^
+                          -DCMAKE_BUILD_TYPE=Release ^
+                          -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
+                          -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.3 ^
                           -DCPACK_OUTPUT_FILE_PREFIX=php ^
                           -DENABLE_CLANGFORMAT=OFF ^
                           -Bbuild -H.
@@ -392,6 +482,58 @@ def build_LangJava_Android_arm64_v8a(slave) {
 
 
 // --------------------------------------------------------------------------
+//  Android tests
+// --------------------------------------------------------------------------
+node('build-os-x') {
+    stage('Test Android artifacts') {
+        echo "RUN_ANDROID_TESTS = ${params.RUN_ANDROID_TESTS}"
+        echo "DEPLOY_ANDROID_ARTIFACTS = ${params.DEPLOY_ANDROID_ARTIFACTS}"
+        if (!params.RUN_ANDROID_TESTS && !params.DEPLOY_ANDROID_ARTIFACTS) {
+            echo "Skipped due to the false parameter: RUN_ANDROID_TESTS"
+            return
+        }
+        clearContentUnix()
+        unstash "src"
+        unstash "java_android_x86"
+        unstash "java_android_x86_64"
+        unstash "java_android_armeabi_v7a"
+        unstash "java_android_arm64_v8a"
+
+        withEnv(['ANDROID_HOME=/Users/virgil/Library/VirgilEnviroment/android-sdk']) {
+            sh '''
+                export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
+                adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+            '''
+            sh '''
+                export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
+                emulator -avd test_x86_64 -netdelay none -netspeed full -no-window -no-audio -gpu off &
+                android-wait-for-emulator.sh
+                cd wrappers/java/android
+                ./gradlew clean connectedAndroidTest
+                adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+            '''
+            sh '''
+                export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
+                emulator -avd test_x86 -netdelay none -netspeed full -no-window -no-audio -gpu off &
+                android-wait-for-emulator.sh
+                cd wrappers/java/android
+                ./gradlew clean connectedAndroidTest
+                adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+            '''
+            sh '''
+                export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
+                emulator -avd test_v7a -netdelay none -netspeed full -no-window -no-audio -gpu off &
+                android-wait-for-emulator.sh
+                cd wrappers/java/android
+                ./gradlew clean connectedAndroidTest
+                adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+            '''
+        }
+    }
+}
+
+
+// --------------------------------------------------------------------------
 //  Deploy
 // --------------------------------------------------------------------------
 def calculateArtifactsChecksum() {
@@ -411,8 +553,9 @@ def deployJavaArtifacts() {
     return {
         node('master') {
             stage('Deploy Java artifacts') {
-                if (env.DEPLOY_JAVA_ARTIFACTS == 'false') {
-                    echo "Skippied due to the false paramter: DEPLOY_JAVA_ARTIFACTS"
+                echo "DEPLOY_JAVA_ARTIFACTS = ${params.DEPLOY_JAVA_ARTIFACTS}"
+                if (!params.DEPLOY_JAVA_ARTIFACTS) {
+                    echo "Skipped due to the false parameter: DEPLOY_JAVA_ARTIFACTS"
                     return
                 }
                 clearContentUnix()
@@ -424,58 +567,8 @@ def deployJavaArtifacts() {
                 sh """
                     env
                     cd wrappers/java
-                    ./mvnw clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${gpg_keyname}
+                    ./mvnw clean deploy -P foundation,phe,pythia,ratchet,release -Dgpg.keyname=${params.gpg_keyname}
                 """
-            }
-        }
-    }
-}
-
-def runAndroidInstrumentalTests() {
-    return {
-        node('build-os-x') {
-            stage('Test Android artifacts') {
-                if ((env.RUN_ANDROID_TESTS == 'false') && (env.DEPLOY_ANDROID_ARTIFACTS == 'false')) {
-                    echo "Skippied due to the false paramter: RUN_ANDROID_TESTS"
-                    return
-                }
-                clearContentUnix()
-                unstash "src"
-                unstash "java_android_x86"
-                unstash "java_android_x86_64"
-                unstash "java_android_armeabi_v7a"
-                unstash "java_android_arm64_v8a"
-
-                withEnv(['ANDROID_HOME=/Users/virgil/Library/VirgilEnviroment/android-sdk']) {
-                    sh '''
-                        export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
-                        adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
-                    '''
-                    sh '''
-                        export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
-                        emulator -avd test_x86_64 -netdelay none -netspeed full -no-window -no-audio -gpu off &
-                        android-wait-for-emulator.sh
-                        cd wrappers/java/android
-                        ./gradlew clean connectedAndroidTest
-                        adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
-                    '''
-                    sh '''
-                        export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
-                        emulator -avd test_x86 -netdelay none -netspeed full -no-window -no-audio -gpu off &
-                        android-wait-for-emulator.sh
-                        cd wrappers/java/android
-                        ./gradlew clean connectedAndroidTest
-                        adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
-                    '''
-                    sh '''
-                        export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
-                        emulator -avd test_v7a -netdelay none -netspeed full -no-window -no-audio -gpu off &
-                        android-wait-for-emulator.sh
-                        cd wrappers/java/android
-                        ./gradlew clean connectedAndroidTest
-                        adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
-                    '''
-                }
             }
         }
     }
@@ -485,8 +578,9 @@ def deployAndroidArtifacts() {
     return {
         node('master') {
             stage('Deploy Android artifacts') {
-                if (env.DEPLOY_ANDROID_ARTIFACTS == 'false') {
-                    echo "Skippied due to the false paramter: DEPLOY_ANDROID_ARTIFACTS"
+                echo "DEPLOY_ANDROID_ARTIFACTS = ${params.DEPLOY_ANDROID_ARTIFACTS}"
+                if (!params.DEPLOY_ANDROID_ARTIFACTS) {
+                    echo "Skipped due to the false parameter: DEPLOY_ANDROID_ARTIFACTS"
                     return
                 }
                 clearContentUnix()
@@ -508,9 +602,9 @@ def deployAndroidArtifacts() {
     }
 }
 
+
 def deploy_nodes = [:]
 deploy_nodes['calculate-artifacts-checksum'] = calculateArtifactsChecksum()
 deploy_nodes['deploy-java-artifacts'] = deployJavaArtifacts()
-deploy_nodes['run-android-instrumental-tests'] = runAndroidInstrumentalTests()
 deploy_nodes['deploy-android-artifacts'] = deployAndroidArtifacts()
 parallel(deploy_nodes)
