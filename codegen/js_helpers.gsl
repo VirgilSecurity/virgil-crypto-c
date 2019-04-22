@@ -128,22 +128,48 @@ function js_binding_method_name(method)
 endfunction
 
 global.js_js_umbrella_module = "umbrella"
+global.js_bindings_module = "bindings"
 
 global.js_project_require_type_library = "js_require_library"
 global.js_project_require_type_relative = "js_require_relative"
 
-global.js_cpp_resolve_implementation_method_name = "ResolveImplementation"
-global.js_cpp_resolve_implementation_method_parameter_name = "implementation"
+global.js_argument_type_size = "js_argument_type_size"
+global.js_argument_type_integer = "js_argument_type_integer"
+global.js_argument_type_unsigned = "js_argument_type_unsigned"
+global.js_argument_type_boolean = "js_argument_type_boolean"
+global.js_argument_type_byte = "js_argument_type_byte"
+global.js_argument_type_char = "js_argument_type_char"
+global.js_argument_type_data = "js_argument_type_data"
+global.js_argument_type_buffer = "js_argument_type_buffer"
+global.js_argument_type_error_context = "js_argument_type_error_context"
+global.js_argument_type_enum = "js_argument_type_enum"
+global.js_argument_type_class = "js_argument_type_class"
+global.js_argument_type_interface = "js_argument_type_interface"
+
+global.js_buffer_size_type_constant = "js_buffer_size_constant"
+global.js_buffer_size_type_method = "js_buffer_size_method"
+global.js_buffer_size_type_argument = "js_buffer_size_argument"
+
+global.js_return_type_size = "js_return_type_size"
+global.js_return_type_integer = "js_return_type_integer"
+global.js_return_type_unsigned = "js_return_type_unsigned"
+global.js_return_type_boolean = "js_return_type_boolean"
+global.js_return_type_byte = "js_return_type_byte"
+global.js_return_type_data = "js_return_type_data"
+global.js_return_type_buffer = "js_return_type_buffer"
+global.js_return_type_error_status = "js_return_type_error_status"
+global.js_return_type_enum = "js_return_type_enum"
+global.js_return_type_class = "js_return_type_class"
+global.js_return_type_interface = "js_return_type_interface"
+
+global.js_cpp_result_object_name = "js_result_object"
+global.js_method_return_variable_name = "methodReturn"
 
 global.js_cpp_handle_error_status_method_name = "HandleStatus"
 global.js_cpp_handle_error_status_method_parameter_name = "status"
 
 global.js_cpp_argument_type_variable = "variable"
 global.js_cpp_argument_type_constant = "constant"
-
-global.js_js_buffer_size_type_constant = "js_buffer_size_constant"
-global.js_js_buffer_size_type_method = "js_buffer_size_method"
-global.js_js_buffer_size_type_argument = "js_buffer_size_argument"
 
 global.js_js_method_call_return_type_class = "js_method_call_return_class"
 global.js_js_method_call_return_type_interface = "js_method_call_return_interface"
@@ -205,6 +231,17 @@ endfunction
 
 function js_cpp_implementation_type(wrapper)
   return "$(my.wrapper.prefix)_impl_t*"
+endfunction
+
+function count_js_method_results(js_method)
+  my.results = 0
+  for my.js_method.js_argument where js_argument.type = global.js_argument_type_buffer
+    my.results += 1
+  endfor
+  if defined(my.js_method->js_return) & my.js_method->js_return.type <> global.js_return_type_error_status
+    my.results += 1
+  endif
+  return my.results
 endfunction
 
 endtemplate

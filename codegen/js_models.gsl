@@ -6,6 +6,7 @@ gsl from "js_helpers.gsl"
 function js_append_js_project_model(parent, project, wrapper)
   new js_project to my.parent
     js_project.name = my.project.name
+    js_project.js_name = "$(js_project.name:c)"
     js_project.prefix = my.project.prefix
     js_project.root_dir = cat_path("../wrappers/$(my.wrapper.lang:no)", "crypto")
     js_project.source_dir = cat_path(js_project.root_dir, "src")
@@ -73,6 +74,10 @@ endfunction
 function js_append_js_implementation_resolver_module_model(parent, wrapper_project, name)
   new js_implementation_resolver_module to my.parent
     js_implementation_resolver_module.js_name = "$(my.name:pascal)"
+    new js_name to js_implementation_resolver_module
+      js_name.name = js_implementation_resolver_module.js_name
+      js_name.uid = make_id("js", "implementation resolver", "module", "js name")
+    endnew
     js_implementation_resolver_module.cpp_name = "$(my.name:pascal)"
     new js_cpp_name to js_implementation_resolver_module
       js_cpp_name.name = js_implementation_resolver_module.cpp_name
@@ -87,6 +92,10 @@ function js_append_js_implementation_resolver_module_model(parent, wrapper_proje
     js_implementation_resolver_module.c_method_tag = make_ref_c(make_id("class", "impl", "method", "tag"))
     js_implementation_resolver_module.method_name = "resolve implementation"
     js_implementation_resolver_module.js_method_name = "$(js_implementation_resolver_module.method_name:camel)"
+    new js_method_name to js_implementation_resolver_module
+      js_method_name.name = js_implementation_resolver_module.js_method_name
+      js_method_name.uid = make_id("js", "implementation resolver", "module", "js method name")
+    endnew
     js_implementation_resolver_module.cpp_method_name = "$(js_implementation_resolver_module.method_name:pascal)"
     new js_cpp_method_name to js_implementation_resolver_module
       js_cpp_method_name.name = js_implementation_resolver_module.cpp_method_name
@@ -234,7 +243,7 @@ function js_append_js_class_module_model(parent, source, wrapper_project, meta)
       js_class_module.c_implementation_method_name = make_ref_c(make_id("class", my.source.name, "method", "impl"))
     endif
     for my.source.dependency
-      js_append_js_dependency(js_class_module, my.source, dependency)
+      js_append_js_dependency(js_class_module, dependency, my.source)
     endfor
     for my.source.constant
       js_append_js_constant(js_class_module, my.source, constant)
@@ -261,15 +270,14 @@ function js_append_js_constant(parent, source, constant)
   endnew
 endfunction
 
-function js_append_js_dependency(parent, source, dependency)
+function js_append_js_dependency(parent, dependency, source)
   new js_dependency to my.parent
     new js_method to js_dependency
       js_method.is_static = 0
       js_method.c_name = make_ref_c(make_id("class", my.source.name, "method", "use", my.dependency.name))
       js_method.js_name = "set$(my.dependency.name:pascal)"
       js_method.cpp_name = "Set$(my.dependency.name:pascal)"
-      js_append_js_argument(js_method, my.dependency)
-      js_append_resolved_argument(js_method, my.source, my.dependency, 0)
+      js_append_js_argument(js_method, my.dependency, my.source)
     endnew
   endnew
 endfunction
@@ -286,309 +294,41 @@ function js_append_js_method(parent, source, method)
     js_method.cpp_name = "$(my.method.name:pascal)"
     js_method.js_name = "$(my.method.name:camel)"
     for my.method.argument
-      js_append_js_argument(js_method, argument)
-      js_append_resolved_argument(js_method, my.source, argument, index(argument) - 1)
+      js_append_js_argument(js_method, argument, my.source)
     endfor
     if defined(my.method->return)
-      my.method->return.name = "method return"
-      js_append_js_method_call_return(js_method, my.method->return)
-      js_append_resolved_return(js_method, my.source, my.method->return)
+      js_append_js_return(js_method, my.method->return)
     endif
     return js_method
   endnew
 endfunction
 
-function js_append_js_argument(parent, argument)
-  new js_argument to my.parent
-    js_argument.cpp_name = "$(my.argument.name:c)"
-    js_argument.js_name = "$(my.argument.name:camel)"
-    if (defined(my.argument.class) & my.argument.class <> "data" & my.argument.class <> "buffer") | defined(my.argument.impl)
-      js_argument.type = "class"
-    elsif defined(my.argument.interface)
-      js_argument.type = "interface"
-    elsif defined(my.argument.enum)
-      js_argument.type = "enum"
-    else
-      js_argument.type = "other"
-    endif
-    return js_argument
-  endnew
+function js_append_js_argument_size_info(js_argument, argument)
+  my.js_argument.type = global.js_argument_type_size
 endfunction
 
-function js_append_resolved_argument(parent, source, argument, index)
-  if js_value_is_return_argument(my.argument)
-    return js_append_resolved_return(my.parent, my.source, my.argument)
-  endif
-  return js_append_resolved_call_argument(my.parent, my.source, my.argument, my.index)
+function js_append_js_argument_integer_info(js_argument, argument)
+  my.js_argument.type = global.js_argument_type_integer
 endfunction
 
-function js_append_js_call_argument(parent, argument)
-  new js_call_argument to my.parent
-    js_call_argument.cpp_name = "$(my.argument.name:c)"
-    js_call_argument.js_name = "$(my.argument.name:camel)"
-    return js_call_argument
-  endnew
+function js_append_js_argument_unsigned_info(js_argument, argument)
+  my.js_argument.type = global.js_argument_type_unsigned
 endfunction
 
-function js_append_js_size_call_argument(parent, argument, index)
-  new js_size_call_argument to my.parent
-    js_size_call_argument.index = my.index
-    js_size_call_argument.cpp_name = "$(my.argument.name:c)"
-    js_size_call_argument.js_name = "$(my.argument.name:camel)"
-    return js_size_call_argument
-  endnew
+function js_append_js_argument_boolean_info(js_argument, argument)
+  my.js_argument.type = global.js_argument_type_boolean
 endfunction
 
-function js_append_js_integer_call_argument(parent, argument, index)
-  new js_integer_call_argument to my.parent
-    js_integer_call_argument.index = my.index
-    js_integer_call_argument.cpp_name = "$(my.argument.name:c)"
-    js_integer_call_argument.js_name = "$(my.argument.name:camel)"
-    return js_integer_call_argument
-  endnew
+function js_append_js_argument_byte_info(js_argument, argument)
+  my.js_argument.type = global.js_argument_type_byte
 endfunction
 
-function js_append_js_unsigned_call_argument(parent, argument, index)
-  new js_unsigned_call_argument to my.parent
-    js_unsigned_call_argument.index = my.index
-    js_unsigned_call_argument.cpp_name = "$(my.argument.name:c)"
-    js_unsigned_call_argument.js_name = "$(my.argument.name:camel)"
-    return js_unsigned_call_argument
-  endnew
+function js_append_js_argument_char_info(js_argument, argument)
+  my.js_argument.type = global.js_argument_type_char
 endfunction
 
-function js_append_js_boolean_call_argument(parent, argument, index)
-  new js_boolean_call_argument to my.parent
-    js_boolean_call_argument.index = my.index
-    js_boolean_call_argument.cpp_name = "$(my.argument.name:c)"
-    js_boolean_call_argument.js_name = "$(my.argument.name:camel)"
-    return js_boolean_call_argument
-  endnew
-endfunction
-
-function js_append_js_byte_call_argument(parent, argument, index)
-  new js_byte_call_argument to my.parent
-    js_byte_call_argument.index = my.index
-    js_byte_call_argument.cpp_name = "$(my.argument.name:c)"
-    js_byte_call_argument.js_name = "$(my.argument.name:camel)"
-    return js_byte_call_argument
-  endnew
-endfunction
-
-function js_append_js_char_call_argument(parent, argument, index)
-  new js_char_call_argument to my.parent
-    js_char_call_argument.index = my.index
-    js_char_call_argument.cpp_name = "$(my.argument.name:c)"
-    js_char_call_argument.js_name = "$(my.argument.name:camel)"
-    return js_char_call_argument
-  endnew
-endfunction
-
-function js_append_js_data_call_argument(parent, argument, index)
-  new js_data_call_argument to my.parent
-    js_data_call_argument.index = my.index
-    js_data_call_argument.cpp_name = "$(my.argument.name:c)"
-    js_data_call_argument.js_name = "$(my.argument.name:camel)"
-    return js_data_call_argument
-  endnew
-endfunction
-
-function js_append_js_enum_call_argument(parent, source, argument, index)
-  new js_enum_call_argument to my.parent
-    js_enum_call_argument.index = my.index
-    js_enum_call_argument.cpp_name = "$(my.argument.name:c)"
-    js_enum_call_argument.js_name = "$(my.argument.name:camel)"
-    js_enum_call_argument.c_type = make_ref_c(make_id("class", my.argument.enum, "enum", my.argument.enum))
-    return js_enum_call_argument
-  endnew
-endfunction
-
-function js_append_js_class_call_argument(parent, source, argument, index)
-  new js_class_call_argument to my.parent
-    if defined(my.argument.class)
-      my.class_name = my.argument.class
-    else
-      my.class_name = my.argument.impl
-    endif
-    my.project_uid = js_get_project_uid(my.argument)
-    js_class_call_argument.index = my.index
-    js_class_call_argument.cpp_name = "$(my.argument.name:c)"
-    js_class_call_argument.js_name = "$(my.argument.name:camel)"
-    js_class_call_argument.cpp_class_name = make_ref_js(make_id(my.project_uid, "class", "module", my.class_name, "cpp name"))
-    js_class_call_argument.c_context_name = "$(my.class_name:c)"
-    js_class_call_argument.c_context_type = make_ref_c(make_id(my.project_uid, "class", my.class_name, "struct", my.class_name))
-    return js_class_call_argument
-  endnew
-endfunction
-
-function js_append_js_interface_call_argument(parent, source, argument, index)
-  new js_interface_call_argument to my.parent
-    my.project_uid = js_get_project_uid(my.argument)
-    js_interface_call_argument.index = my.index
-    js_interface_call_argument.cpp_name = "$(my.argument.name:c)"
-    js_interface_call_argument.js_name = "$(my.argument.name:camel)"
-    js_interface_call_argument.cpp_class_name = make_ref_js(make_id(my.project_uid, "interface", "module", my.argument.interface, "cpp name"))
-    js_interface_call_argument.c_implementation_type = make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl"))
-    return js_interface_call_argument
-  endnew
-endfunction
-
-function js_append_resolved_call_argument(parent, source, argument, index)
-  js_append_js_call_argument(my.parent, my.argument)
-  if defined(my.argument.type) & my.argument.type = "size"
-    return js_append_js_size_call_argument(my.parent, my.argument, my.index)
-  elsif defined(my.argument.type) & my.argument.type = "integer"
-    return js_append_js_integer_call_argument(my.parent, my.argument, my.index)
-  elsif defined(my.argument.type) & my.argument.type = "unsigned"
-    return js_append_js_unsigned_call_argument(my.parent, my.argument, my.index)
-  elsif defined(my.argument.type) & my.argument.type = "boolean"
-    return js_append_js_boolean_call_argument(my.parent, my.argument, my.index)
-  elsif defined(my.argument.type) & my.argument.type = "byte"
-    return js_append_js_byte_call_argument(my.parent, my.argument, my.index)
-  elsif defined(my.argument.type) & my.argument.type = "char"
-    return js_append_js_char_call_argument(my.parent, my.argument, my.index)
-  elsif defined(my.argument.class) & my.argument.class = "data"
-    return js_append_js_data_call_argument(my.parent, my.argument, my.index)
-  elsif defined(my.argument.enum)
-    return js_append_js_enum_call_argument(my.parent, my.source, my.argument, my.index)
-  elsif (defined(my.argument.class) & my.argument.class <> "buffer") | defined(my.argument.impl)
-    return js_append_js_class_call_argument(my.parent, my.source, my.argument, my.index)
-  elsif defined(my.argument.interface)
-    return js_append_js_interface_call_argument(my.parent, my.source, my.argument, my.index)
-  endif
-endfunction
-
-function js_append_js_method_call_return(parent, argument)
-  new js_method_call_return to my.parent
-    my.project_uid = js_get_project_uid(my.argument)
-    if defined(my.argument.class) & my.argument.class <> "data" & my.argument.class <> "buffer"
-      js_method_call_return.type = global.js_js_method_call_return_type_class
-      js_method_call_return.js_class_name = make_ref_js(make_id(my.project_uid, "class", "module", my.argument.class, "js name"))
-    elsif defined(my.argument.interface)
-      js_method_call_return.type = global.js_js_method_call_return_type_interface
-    else
-      js_method_call_return.type = global.js_js_method_call_return_type_other
-    endif
-    js_method_call_return.cpp_name = "$(my.argument.name:c)"
-    return js_method_call_return
-  endnew
-endfunction
-
-function js_append_js_error_status_method_return(parent, source, argument)
-  new js_error_status_method_return to my.parent
-    my.project_uid = js_get_project_uid(my.argument)
-    js_error_status_method_return.cpp_name = "$(my.argument.name:c)"
-    js_error_status_method_return.c_type = make_ref_c(make_id(my.project_uid, "class", "status", "enum", "status"))
-    js_error_status_method_return.cpp_class_name = make_ref_js(make_id("error", "status", "module", "cpp name"))
-  endnew
-endfunction
-
-function js_append_js_error_context_method_return(parent, source, argument)
-  new js_error_context_method_return to my.parent
-    my.project_uid = js_get_project_uid(my.argument)
-    js_error_context_method_return.cpp_name = "$(my.argument.name:c)"
-    js_error_context_method_return.cpp_status_name = "$(my.argument.name:c)_status"
-    js_error_context_method_return.c_type = make_ref_c(make_id(my.project_uid, "class", "error", "struct", "error"))
-    js_error_context_method_return.c_status_type = make_ref_c(make_id(my.project_uid, "class", "status", "enum", "status"))
-    js_error_context_method_return.c_reset_method_name = make_ref_c(make_id(my.project_uid, "class", "error", "method", "reset"))
-    js_error_context_method_return.c_status_method_name = make_ref_c(make_id(my.project_uid, "class", "error", "method", "status"))
-    js_error_context_method_return.cpp_class_name = make_ref_js(make_id("error", "status", "module", "cpp name"))
-    return js_error_context_method_return
-  endnew
-endfunction
-
-function js_append_js_method_return(parent, argument)
-  new js_method_return to my.parent
-    js_method_return.cpp_name = "$(my.argument.name:c)"
-    js_method_return.js_name = "$(my.argument.name:camel)"
-    return js_method_return
-  endnew
-endfunction
-
-function js_append_js_size_method_return(parent, argument)
-  new js_size_method_return to my.parent
-    js_size_method_return.cpp_name = "$(my.argument.name:c)"
-    js_size_method_return.js_name = "$(my.argument.name:camel)"
-    return js_size_method_return
-  endnew
-endfunction
-
-function js_append_js_integer_method_return(parent, argument)
-  new js_integer_method_return to my.parent
-    js_integer_method_return.cpp_name = "$(my.argument.name:c)"
-    js_integer_method_return.js_name = "$(my.argument.name:camel)"
-    return js_integer_method_return
-  endnew
-endfunction
-
-function js_append_js_unsigned_method_return(parent, argument)
-  new js_unsigned_method_return to my.parent
-    js_unsigned_method_return.cpp_name = "$(my.argument.name:c)"
-    js_unsigned_method_return.js_name = "$(my.argument.name:camel)"
-    return js_unsigned_method_return
-  endnew
-endfunction
-
-function js_append_js_boolean_method_return(parent, argument)
-  new js_boolean_method_return to my.parent
-    js_boolean_method_return.cpp_name = "$(my.argument.name:c)"
-    js_boolean_method_return.js_name = "$(my.argument.name:camel)"
-    return js_boolean_method_return
-  endnew
-endfunction
-
-function js_append_js_byte_method_return(parent, argument)
-  new js_byte_method_return to my.parent
-    js_byte_method_return.cpp_name = "$(my.argument.name:c)"
-    js_byte_method_return.js_name = "$(my.argument.name:camel)"
-    return js_byte_method_return
-  endnew
-endfunction
-
-function js_append_js_data_method_return(parent, argument)
-  new js_data_method_return to my.parent
-    js_data_method_return.cpp_name = "$(my.argument.name:c)"
-    js_data_method_return.js_name = "$(my.argument.name:camel)"
-    return js_data_method_return
-  endnew
-endfunction
-
-function js_append_js_buffer_method_return(parent, argument, source)
-  new js_buffer_method_return to my.parent
-    js_buffer_method_return.cpp_name = "$(my.argument.name:c)"
-    js_buffer_method_return.js_name = "$(my.argument.name:camel)"
-    js_append_js_buffer_size(js_buffer_method_return, my.argument, my.source)
-    return js_buffer_method_return
-  endnew
-endfunction
-
-function js_append_js_buffer_size(parent, argument, source)
-  if defined(my.argument->length)
-    new js_buffer_size to my.parent
-      js_buffer_size.cpp_bytes_name = "$(my.argument.name:c)_bytes"
-      if defined(my.argument->length.argument)
-        js_buffer_size.type = global.js_js_buffer_size_type_argument
-        js_buffer_size.cpp_name = "$(my.argument->length.argument:c)"
-      else
-        js_buffer_size.cpp_name = "$(my.argument.name:c)_size"
-        my.class_name = my.source.name
-        if defined(my.argument->length.class) & my.argument->length.class <> "self"
-          my.class_name = my.argument->length.class
-        endif
-        if defined(my.argument->length.constant)
-          js_buffer_size.type = global.js_js_buffer_size_type_constant
-          js_buffer_size.c_constant_name = make_ref_c(make_id("class", my.class_name, "constant", my.argument->length.constant))
-        else
-          js_buffer_size.type = global.js_js_buffer_size_type_method
-          js_buffer_size.c_method_name = make_ref_c(make_id("class", my.class_name, "method", my.argument->length.method))
-          for my.argument->length.proxy
-            js_append_js_proxy(js_buffer_size, proxy)
-          endfor
-        endif
-      endif
-      return js_buffer_size
-    endnew
-  endif
+function js_append_js_argument_data_info(js_argument, argument)
+  my.js_argument.type = global.js_argument_type_data
 endfunction
 
 function js_append_js_proxy(parent, proxy)
@@ -603,73 +343,232 @@ function js_append_js_proxy(parent, proxy)
   endnew
 endfunction
 
-function js_append_js_enum_method_return(parent, argument)
-  new js_enum_method_return to my.parent
-    my.project_uid = js_get_project_uid(my.argument)
-    js_enum_method_return.cpp_name = "$(my.argument.name:c)"
-    js_enum_method_return.js_name = "$(my.argument.name:camel)"
-    js_enum_method_return.c_type = make_ref_c(make_id(my.project_uid, "class", my.argument.enum, "enum", my.argument.enum))
-    return js_enum_method_return
-  endnew
-endfunction
-
-function js_append_js_class_method_return(parent, argument)
-  new js_class_method_return to my.parent
-    my.project_uid = js_get_project_uid(my.argument)
-    if defined(my.argument.class)
-      my.class_name = my.argument.class
+function js_append_js_buffer_size(parent, argument, source)
+  new js_buffer_size to my.parent
+    js_buffer_size.cpp_bytes_name = "$(my.argument.name:c)_bytes"
+    if defined(my.argument->length.argument)
+      js_buffer_size.type = global.js_buffer_size_type_argument
+      js_buffer_size.cpp_name = "$(my.argument->length.argument:c)"
     else
-      my.class_name = my.argument.impl
+      js_buffer_size.cpp_name = "$(my.argument.name:c)_size"
+      my.class_name = my.source.name
+      if defined(my.argument->length.class) & my.argument->length.class <> "self"
+        my.class_name = my.argument->length.class
+      endif
+      if defined(my.argument->length.constant)
+        js_buffer_size.type = global.js_buffer_size_type_constant
+        js_buffer_size.c_constant_name = make_ref_c(make_id("class", my.class_name, "constant", my.argument->length.constant))
+      else
+        js_buffer_size.type = global.js_buffer_size_type_method
+        js_buffer_size.c_method_name = make_ref_c(make_id("class", my.class_name, "method", my.argument->length.method))
+        for my.argument->length.proxy
+          js_append_js_proxy(js_buffer_size, proxy)
+        endfor
+      endif
     endif
-    js_class_method_return.cpp_name = "$(my.argument.name:c)"
-    js_class_method_return.js_name = "$(my.argument.name:camel)"
-    js_class_method_return.c_context_type = make_ref_c(make_id(my.project_uid, "class", my.class_name, "struct", my.class_name))
-    js_class_method_return.js_class_name = make_ref_js(make_id(my.project_uid, "class", "module", my.class_name, "js name"))
-    js_class_method_return.cpp_class_name = make_ref_js(make_id(my.project_uid, "class" , "module", my.class_name, "cpp name"))
-    return js_class_method_return
+    return js_buffer_size
   endnew
 endfunction
 
-function js_append_js_interface_method_return(parent, argument)
-  new js_interface_method_return to my.parent
-    my.project_uid = js_get_project_uid(my.argument)
-    js_interface_method_return.cpp_name = "$(my.argument.name:c)"
-    js_interface_method_return.js_name = "$(my.argument.name:camel)"
-    js_interface_method_return.cpp_implementation_resolver_name = make_ref_js(make_id(my.project_uid, "implementation resolver", "module", "cpp name"))
-    js_interface_method_return.cpp_implementation_resolver_method_name = make_ref_js(make_id(my.project_uid, "implementation resolver", "module", "cpp method name"))
-    js_interface_method_return.cpp_class_name = make_ref_js(make_id(my.project_uid, "interface", "module", my.argument.interface, "cpp name"))
-    js_interface_method_return.c_implementation_type = make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl"))
-    return js_interface_method_return
-  endnew
+function js_append_js_argument_buffer_info(js_argument, argument, source)
+  my.js_argument.type = global.js_argument_type_buffer
+  js_append_js_buffer_size(my.js_argument, my.argument, my.source)
 endfunction
 
-function js_append_resolved_return(parent, source, argument)
-  if defined(my.argument.enum) & my.argument.enum = "status"
-    return js_append_js_error_status_method_return(my.parent, my.source, my.argument)
-  elsif defined(my.argument.class) & my.argument.class = "error"
-    return js_append_js_error_context_method_return(my.parent, my.source, my.argument)
+function js_append_js_argument_error_context_info(js_argument, argument)
+  my.js_argument.type = global.js_argument_type_error_context
+  my.project_uid = js_get_project_uid(my.argument)
+  my.js_argument.cpp_status_name = "$(my.argument.name:c)_status"
+  my.js_argument.c_type = make_ref_c(make_id(my.project_uid, "class", "error", "struct", "error"))
+  my.js_argument.c_status_type = make_ref_c(make_id(my.project_uid, "class", "status", "enum", "status"))
+  my.js_argument.c_reset_method_name = make_ref_c(make_id(my.project_uid, "class", "error", "method", "reset"))
+  my.js_argument.c_status_method_name = make_ref_c(make_id(my.project_uid, "class", "error", "method", "status"))
+  my.js_argument.cpp_class_name = make_ref_js(make_id("error", "status", "module", "cpp name"))
+endfunction
+
+function js_append_js_argument_enum_info(js_argument, argument)
+  my.js_argument.type = global.js_argument_type_enum
+  my.project_uid = js_get_project_uid(my.argument)
+  my.js_argument.c_type = make_ref_c(make_id(my.project_uid, "class", my.argument.enum, "enum", my.argument.enum))
+endfunction
+
+function js_append_js_argument_class_info(js_argument, argument)
+  my.js_argument.type = global.js_argument_type_class
+  if defined(my.argument.class)
+    my.class_name = my.argument.class
+  else
+    my.class_name = my.argument.impl
   endif
-  js_append_js_method_return(my.parent, my.argument)
-  if defined(my.argument.type) & my.argument.type = "size"
-    return js_append_js_size_method_return(my.parent, my.argument)
-  elsif defined(my.argument.type) & my.argument.type = "integer"
-    return js_append_js_integer_method_return(my.parent, my.argument)
-  elsif defined(my.argument.type) & my.argument.type = "unsigned"
-    return js_append_js_unsigned_method_return(my.parent, my.argument)
-  elsif defined(my.argument.type) & my.argument.type = "boolean"
-    return js_append_js_boolean_method_return(my.parent, my.argument)
-  elsif defined(my.argument.type) & my.argument.type = "byte"
-    return js_append_js_byte_method_return(my.parent, my.argument)
-  elsif defined(my.argument.class) & my.argument.class = "data"
-    return js_append_js_data_method_return(my.parent, my.argument)
-  elsif defined(my.argument.class) & my.argument.class = "buffer"
-    return js_append_js_buffer_method_return(my.parent, my.argument, my.source)
-  elsif defined(my.argument.enum)
-    return js_append_js_enum_method_return(my.parent, my.argument)
-  elsif defined(my.argument.class)
-    return js_append_js_class_method_return(my.parent, my.argument)
-  elsif defined(my.argument.interface)
-    return js_append_js_interface_method_return(my.parent, my.argument)
+  my.project_uid = js_get_project_uid(my.argument)
+  my.js_argument.cpp_class_name = make_ref_js(make_id(my.project_uid, "class", "module", my.class_name, "cpp name"))
+  my.js_argument.c_context_name = "$(my.class_name:c)"
+  my.js_argument.c_context_type = make_ref_c(make_id(my.project_uid, "class", my.class_name, "struct", my.class_name))
+endfunction
+
+function js_append_js_argument_interface_info(js_argument, argument)
+  my.js_argument.type = global.js_argument_type_interface
+  my.project_uid = js_get_project_uid(my.argument)
+  my.js_argument.cpp_class_name = make_ref_js(make_id(my.project_uid, "interface", "module", my.argument.interface, "cpp name"))
+  my.js_argument.c_implementation_type = make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl"))
+endfunction
+
+function js_append_js_argument(parent, argument, source)
+  new js_argument to my.parent
+    js_argument.cpp_name = "$(my.argument.name:c)"
+    js_argument.js_name = "$(my.argument.name:camel)"
+    if defined(my.argument.type) & my.argument.type = "size"
+      js_append_js_argument_size_info(js_argument, my.argument)
+    elsif defined(my.argument.type) & my.argument.type = "integer"
+      js_append_js_argument_integer_info(js_argument, my.argument)
+    elsif defined(my.argument.type) & my.argument.type = "unsigned"
+      js_append_js_argument_unsigned_info(js_argument, my.argument)
+    elsif defined(my.argument.type) & my.argument.type = "boolean"
+      js_append_js_argument_boolean_info(js_argument, my.argument)
+    elsif defined(my.argument.type) & my.argument.type = "byte"
+      js_append_js_argument_byte_info(js_argument, my.argument)
+    elsif defined(my.argument.type) & my.argument.type = "char"
+      js_append_js_argument_char_info(js_argument, my.argument)
+    elsif defined(my.argument.class) & my.argument.class = "data"
+      js_append_js_argument_data_info(js_argument, my.argument)
+    elsif defined(my.argument.class) & my.argument.class = "buffer"
+      js_append_js_argument_buffer_info(js_argument, my.argument, my.source)
+    elsif defined(my.argument.class) & my.argument.class = "error"
+      js_append_js_argument_error_context_info(js_argument, my.argument)
+    elsif defined(my.argument.enum)
+      js_append_js_argument_enum_info(js_argument, my.argument)
+    elsif defined(my.argument.class) | defined(my.argument.impl)
+      js_append_js_argument_class_info(js_argument, my.argument)
+    elsif defined(my.argument.interface)
+      js_append_js_argument_interface_info(js_argument, my.argument)
+    endif
+    return js_argument
+  endnew
+endfunction
+
+function js_append_js_return_size_info(js_return, return)
+  my.js_return.type = global.js_return_type_size
+endfunction
+
+function js_append_js_return_integer_info(js_return, return)
+  my.js_return.type = global.js_return_type_integer
+endfunction
+
+function js_append_js_return_unsigned_info(js_return, return)
+  my.js_return.type = global.js_return_type_unsigned
+endfunction
+
+function js_append_js_return_boolean_info(js_return, return)
+  my.js_return.type = global.js_return_type_boolean
+endfunction
+
+function js_append_js_return_byte_info(js_return, return)
+  my.js_return.type = global.js_return_type_byte
+endfunction
+
+function js_append_js_return_data_info(js_return, return)
+  my.js_return.type = global.js_return_type_data
+endfunction
+
+function js_append_js_return_buffer_info(js_return, return)
+  my.js_return.type = global.js_return_type_buffer
+endfunction
+
+function js_append_js_return_error_status_info(js_return, return)
+  my.js_return.type = global.js_return_type_error_status
+  my.project_uid = js_get_project_uid(my.return)
+  my.js_return.c_type = make_ref_c(make_id(my.project_uid, "class", "status", "enum", "status"))
+  my.js_return.cpp_class_name = make_ref_js(make_id("error", "status", "module", "cpp name"))
+endfunction
+
+function js_append_js_return_enum_info(js_return, return)
+  my.js_return.type = global.js_return_type_enum
+  my.project_uid = js_get_project_uid(my.return)
+  my.js_return.c_type = make_ref_c(make_id(my.project_uid, "class", my.return.enum, "enum", my.return.enum))
+endfunction
+
+function js_append_js_return_class_info(js_return, return)
+  my.js_return.type = global.js_return_type_class
+  my.project_uid = js_get_project_uid(my.return)
+  if defined(my.return.class)
+    my.class_name = my.return.class
+  else
+    my.class_name = my.return.impl
+  endif
+  my.js_return.c_context_type = make_ref_c(make_id(my.project_uid, "class", my.class_name, "struct", my.class_name))
+  my.js_return.js_class_name = make_ref_js(make_id(my.project_uid, "class", "module", my.class_name, "js name"))
+  my.js_return.cpp_class_name = make_ref_js(make_id(my.project_uid, "class" , "module", my.class_name, "cpp name"))
+endfunction
+
+function js_append_js_return_interface_info(js_return, return)
+  my.js_return.type = global.js_return_type_interface
+  my.project_uid = js_get_project_uid(my.return)
+  my.js_return.cpp_implementation_resolver_name = make_ref_js(make_id(my.project_uid, "implementation resolver", "module", "cpp name"))
+  my.js_return.cpp_implementation_resolver_method_name = make_ref_js(make_id(my.project_uid, "implementation resolver", "module", "cpp method name"))
+  my.js_return.js_implementation_resolver_class_name = make_ref_js(make_id(my.project_uid, "implementation resolver", "module", "js name"))
+  my.js_return.js_implementation_resolver_method_name = make_ref_js(make_id(my.project_uid, "implementation resolver", "module", "js method name"))
+  my.js_return.cpp_class_name = make_ref_js(make_id(my.project_uid, "interface", "module", my.return.interface, "cpp name"))
+  my.js_return.c_implementation_type = make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl"))
+endfunction
+
+function js_append_js_return(parent, return)
+  new js_return to my.parent
+    js_return.js_name = "methodReturn"
+    js_return.cpp_name = "method_return"
+    if defined(my.return.type) & my.return.type = "size"
+      js_append_js_return_size_info(js_return, my.return)
+    elsif defined(my.return.type) & my.return.type = "integer"
+      js_append_js_return_integer_info(js_return, my.return)
+    elsif defined(my.return.type) & my.return.type = "unsigned"
+      js_append_js_return_unsigned_info(js_return, my.return)
+    elsif defined(my.return.type) & my.return.type = "boolean"
+      js_append_js_return_boolean_info(js_return, my.return)
+    elsif defined(my.return.type) & my.return.type = "byte"
+      js_append_js_return_byte_info(js_return, my.return)
+    elsif defined(my.return.class) & my.return.class = "data"
+      js_append_js_return_data_info(js_return, my.return)
+    elsif defined(my.return.class) & my.return.class = "buffer"
+      js_append_js_return_buffer_info(js_return, my.return)
+    elsif defined(my.return.enum) & my.return.enum = "status"
+      js_append_js_return_error_status_info(js_return, my.return)
+    elsif defined(my.return.enum)
+      js_append_js_return_enum_info(js_return, my.return)
+    elsif defined(my.return.class)
+      js_append_js_return_class_info(js_return, my.return)
+    elsif defined(my.return.interface)
+      js_append_js_return_interface_info(js_return, my.return)
+    endif
+    return js_return
+  endnew
+endfunction
+
+function js_append_resolved_return_argument_info(parent)
+  my.parent.category = global.js_argument_category_return
+  if defined(my.argument.enum) & my.argument.enum = "status"
+    js_append_resolved_error_status_return_argument_info(my.parent, my.source, my.argument)
+  elsif defined(my.argument.class) & my.argument.class = "error"
+    js_append_resolved_error_context_return_argument_info(my.parent, my.source, my.argument)
+  else
+    if defined(my.argument.type) & my.argument.type = "size"
+      js_append_resolved_size_return_argument_info(my.parent, my.argument)
+    elsif defined(my.argument.type) & my.argument.type = "integer"
+      js_append_resolved_integer_return_argument_info(my.parent, my.argument)
+    elsif defined(my.argument.type) & my.argument.type = "unsigned"
+      js_append_resolved_unsigned_return_argument_info(my.parent, my.argument)
+    elsif defined(my.argument.type) & my.argument.type = "boolean"
+      js_append_resolved_boolean_return_argument_info(my.parent, my.argument)
+    elsif defined(my.argument.type) & my.argument.type = "byte"
+      js_append_resolved_byte_return_argument_info(my.parent, my.argument)
+    elsif defined(my.argument.class) & my.argument.class = "data"
+      js_append_resolved_data_return_argument_info(my.parent, my.argument)
+    elsif defined(my.argument.class) & my.argument.class = "buffer"
+      js_append_resolved_buffer_return_argument_info(my.parent, my.argument, my.source)
+    elsif defined(my.argument.enum)
+      js_append_resolved_enum_return_argument_info(my.parent, my.argument)
+    elsif defined(my.argument.class)
+      js_append_resolved_class_return_argument_info(my.parent, my.argument)
+    elsif defined(my.argument.interface)
+      js_append_resolved_interface_return_argument_info(my.parent, my.argument)
+    endif
   endif
 endfunction
 
