@@ -38,7 +38,7 @@
 #
 #   To add new supported language do next:
 #       1. Create file `<lang>.gsl` with methods:
-#           - <lang>_create_project_module (project, projects_api, wrapper, destination)
+#           - <lang>_create_project_module (project, wrapper)
 #           - <lang>_create_custom_modules (source, wrapper_project, meta) [optional]
 #           - <lang>_create_interface_module (source, wrapper_project, meta)
 #           - <lang>_create_implementation_module (source, wrapper_project, meta)
@@ -46,7 +46,7 @@
 #           - <lang>_create_enum_module (source, wrapper_project, meta)
 #           - <lang>_finalize_custom_modules (source, wrapper_project, meta) [optional]
 #           - <lang>_module_resolve(wrapper_project)
-#           - <lang>_create_toplevel_modules (wrapper, projects_api) [optional]
+#           - <lang>_create_toplevel_modules (wrapper) [optional]
 #
 #       2. Create file `<lang>_codegen.gsl` with methods:
 #           - <lang>_generate_project(wrapper_project)
@@ -65,6 +65,7 @@
 
 gsl from "common.gsl"
 gsl from "swift.gsl"
+gsl from "java.gsl"
 gsl from "php.gsl"
 gsl from "js.gsl"
 
@@ -202,7 +203,7 @@ endfunction
 function wrapper_create_toplevel_modules(wrapper)
     check_arguments (my, "wrapper", my)
 
-    my.proxy_func = make_id(my.wrapper_project.lang, "create_toplevel_modules")
+    my.proxy_func = make_id(my.wrapper.lang, "create_toplevel_modules")
     if macro (my.proxy_func)
         $(my.proxy_func:) (my.wrapper)
     endif
@@ -233,6 +234,81 @@ function wrapper_generate_sources(wrapper_project)
         $(my.proxy_func:) (my.wrapper_project)
     else
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
+    endif
+endfunction
+
+
+# ===========================================================================
+#   Work with a wrappers cache file.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Load cached <wrappers/> entity or create new one.
+# ---------------------------------------------------------------------------
+function wrappers_load (work_path)
+    check_arguments (my, "work_path", my)
+
+    my.dir_path = directory.resolve (my.work_path) ?
+    my.file_path = "$(my.dir_path?:)wrappers.xml"
+
+    if file.exists (my.file_path)
+        my.wrappers = item_load_from_file(my.file_path)
+    else
+        my.wrappers = XML.new("wrappers")
+    endif
+
+    return my.wrappers
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Save <wrappers/> entity to the file at given path.
+# ---------------------------------------------------------------------------
+function wrappers_save (wrappers, work_path)
+    check_arguments (my, "wrappers", my)
+
+    item_save_to_file(my.wrappers, "wrappers.xml", my.work_path)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Update cached wrapper with a new one.
+# ---------------------------------------------------------------------------
+function wrappers_update_wrapper(wrappers, loaded_wrapper)
+    check_arguments (my, "wrappers, loaded_wrapper", my)
+
+    my.existing_wrapper = my.wrappers->wrapper(lang = my.loaded_wrapper.lang) ?
+    if defined (my.existing_wrapper)
+        my.existing_wrapper.source_dir = my.loaded_wrapper.source_dir
+        my.existing_wrapper->license. = my.loaded_wrapper->license.
+    else
+        copy my.loaded_wrapper to my.wrappers
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return wrapper for a given lang.
+# ---------------------------------------------------------------------------
+function wrappers_find_wrapper (wrappers, lang)
+    check_arguments (my, "wrappers, lang", my)
+
+    my.wrapper = my.wrappers->wrapper(lang = my.lang)
+
+    if ! defined (my.wrapper)
+        echo_fatal ("Wrapper for lang='$(my.lang:)' is not found")
+    endif
+
+    return my.wrapper
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Removed cached project.
+# ---------------------------------------------------------------------------
+function wrappers_reset_wrapper_project (wrapper, project)
+    check_arguments (my, "wrapper, project")
+
+    my.project_item_name = make_id (my.wrapper.lang, "project")
+    my.lang_project = my.wrapper->$(my.project_item_name:)(name = my.project.name) ?
+    if defined (my.lang_project)
+        delete my.lang_project
     endif
 endfunction
 

@@ -114,6 +114,11 @@ show_info "New version is: ${VERSION_FULL}"
 show_info "Change verion within VERSION file."
 echo "${VERSION_FULL}" > "${ROOT_DIR}/VERSION"
 
+# ###########################################################################
+show_info "Change verion within CMakeLists.txt file."
+sed_replace "VERSION *[0-9]*\.[0-9]*\.[0-9]" "VERSION ${VERSION}" "${ROOT_DIR}/CMakeLists.txt"
+sed_replace "\(VIRGIL_CRYPTO_VERSION_LABEL\) *\"[a-zA-Z0-9_]*\"" "\1 \"${VERSION_LABEL}\"" "${ROOT_DIR}/CMakeLists.txt"
+
 
 # ###########################################################################
 show_info "Change verion within XML project files."
@@ -139,12 +144,29 @@ for header_file in ${C_HEADER_FILES}; do
 done
 
 # ###########################################################################
-show_info "Change verion within PHP wrapper."
+show_info "Change verion within PHP wrapper files."
 
 PHP_SOURCE_FILES=$(find "${ROOT_DIR}/wrappers/php" -name "vsc*.c" | tr '\n' ' ')
 
 for source_file in ${PHP_SOURCE_FILES}; do
-    show_info "${source_file}"
     sed_replace "\([A-Z_]*_PHP_VERSION\[\] *= *\)\"[0-9]*.[0-9]*.[0-9]*\".*$" "\1\"${VERSION}\";" "${source_file}"
 done
 
+# ###########################################################################
+show_info "Change verion within Java project files."
+pushd ${ROOT_DIR}/wrappers/java >/dev/null
+if [ -z "${VERSION_LABEL}" ]; then
+    ./mvnw versions:set -DnewVersion="${VERSION}" >/dev/null
+else
+    ./mvnw versions:set -DnewVersion="${VERSION}-SNAPSHOT" >/dev/null
+fi
+popd >/dev/null
+
+# ###########################################################################
+show_info "Change verion within Android project files."
+
+if [ -z "${VERSION_LABEL}" ]; then
+    sed_replace "version \".*\"" "version \"${VERSION}\"" "${ROOT_DIR}/wrappers/java/android/build.gradle"
+else
+    sed_replace "version \".*\"" "version \"${VERSION}-SNAPSHOT\"" "${ROOT_DIR}/wrappers/java/android/build.gradle"
+fi

@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Utils class for working with keys formats
+//  Utils class for working with keys formats.
 // --------------------------------------------------------------------------
 
 
@@ -53,16 +53,11 @@
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_key_utils_defs.h"
 
 #include <virgil/crypto/foundation/vscf_pkcs8_der_deserializer.h>
-#include <virgil/crypto/foundation/vscf_sha512.h>
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
-
-#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_pkcs8_der_deserializer.h>
-#endif
 
 // clang-format on
 //  @end
@@ -73,22 +68,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Handle 'ratchet key utils' context.
-//
-struct vscr_ratchet_key_utils_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscf_pkcs8_der_deserializer_t *pkcs8;
-};
 
 //
 //  Perform context specific initialization.
@@ -250,48 +229,6 @@ vscr_ratchet_key_utils_cleanup_ctx(vscr_ratchet_key_utils_t *self) {
     vscf_pkcs8_der_deserializer_destroy(&self->pkcs8);
 }
 
-//
-//  Computes 8 bytes key pair id from public key
-//
-VSCR_PUBLIC vscr_status_t
-vscr_ratchet_key_utils_compute_public_key_id(
-        vscr_ratchet_key_utils_t *self, vsc_data_t public_key, bool convert_to_curve25519, vsc_buffer_t *key_id) {
-
-    if (public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH) {
-        byte digest[vscf_sha512_DIGEST_LEN];
-
-        vsc_buffer_t digest_buf;
-        vsc_buffer_init(&digest_buf);
-        vsc_buffer_use(&digest_buf, digest, sizeof(digest));
-
-        vscf_sha512_hash(public_key, &digest_buf);
-
-        vsc_buffer_delete(&digest_buf);
-
-        memcpy(vsc_buffer_unused_bytes(key_id), digest, vscr_ratchet_common_KEY_ID_LEN);
-        vsc_buffer_inc_used(key_id, vscr_ratchet_common_KEY_ID_LEN);
-
-        return vscr_status_SUCCESS;
-    }
-
-    vscr_error_t error_ctx;
-    vscr_error_reset(&error_ctx);
-
-    vsc_buffer_t *raw_public_key = vscr_ratchet_key_utils_extract_ratchet_public_key(
-            self, public_key, true, true, convert_to_curve25519, &error_ctx);
-
-    if (vscr_error_has_error(&error_ctx)) {
-        return vscr_error_status(&error_ctx);
-    }
-
-    vscr_status_t result =
-            vscr_ratchet_key_utils_compute_public_key_id(self, vsc_buffer_data(raw_public_key), false, key_id);
-
-    vsc_buffer_destroy(&raw_public_key);
-
-    return result;
-}
-
 VSCR_PUBLIC vsc_buffer_t *
 vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519,
         bool curve25519, bool convert_to_curve25519, vscr_error_t *error) {
@@ -310,7 +247,7 @@ vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self
     }
 
     if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_CURVE25519 && curve25519) {
-        if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH) {
+        if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_KEY_LEN) {
             VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
 
             goto err;
@@ -318,14 +255,14 @@ vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self
 
         result = vsc_buffer_new_with_data(vscf_raw_key_data(raw_key));
     } else if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_ED25519 && ed25519) {
-        if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH) {
+        if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_KEY_LEN) {
             VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
 
             goto err;
         }
 
         if (convert_to_curve25519) {
-            result = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+            result = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_KEY_LEN);
 
             int curve25519_status =
                     ed25519_pubkey_to_curve25519(vsc_buffer_unused_bytes(result), vscf_raw_key_data(raw_key).bytes);
@@ -338,7 +275,7 @@ vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self
                 goto err;
             }
 
-            vsc_buffer_inc_used(result, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+            vsc_buffer_inc_used(result, vscr_ratchet_common_hidden_KEY_LEN);
         } else {
             result = vsc_buffer_new_with_data(vscf_raw_key_data(raw_key));
         }
@@ -361,6 +298,9 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *sel
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
 
+    VSCR_ASSERT(ed25519 || curve25519);
+    VSCR_ASSERT(ed25519 || !(curve25519 && convert_to_curve25519));
+
     vsc_buffer_t *result = NULL;
 
     vscf_raw_key_t *raw_key = vscf_pkcs8_der_deserializer_deserialize_private_key(self->pkcs8, data, &error_ctx);
@@ -372,29 +312,28 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *sel
     }
 
     if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_CURVE25519 && curve25519) {
-        if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH + 2) {
+        if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_KEY_LEN + 2) {
             VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_INVALID_KEY_TYPE);
 
             goto err;
         }
 
         result = vsc_buffer_new_with_data(
-                vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH));
+                vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_KEY_LEN));
         vsc_buffer_make_secure(result);
     } else if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_ED25519 && ed25519) {
-        if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH + 2) {
+        if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_KEY_LEN + 2) {
             VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
 
             goto err;
         }
 
         if (convert_to_curve25519) {
-            result = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+            result = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_KEY_LEN);
             vsc_buffer_make_secure(result);
 
             int curve25519_status = ed25519_key_to_curve25519(vsc_buffer_unused_bytes(result),
-                    vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH)
-                            .bytes);
+                    vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_KEY_LEN).bytes);
 
             if (curve25519_status != 0) {
                 VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_CURVE25519);
@@ -404,10 +343,10 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *sel
                 goto err;
             }
 
-            vsc_buffer_inc_used(result, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+            vsc_buffer_inc_used(result, vscr_ratchet_common_hidden_KEY_LEN);
         } else {
             result = vsc_buffer_new_with_data(
-                    vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH));
+                    vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_KEY_LEN));
         }
     } else {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_INVALID_KEY_TYPE);

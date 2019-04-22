@@ -48,4 +48,5 @@
 
     <wrapper lang="js"/>
     <wrapper lang="swift"/>
+    <wrapper lang="java"/>
 </main>

@@ -6,10 +6,10 @@
         prefix="vsce"
         path="../library/phe"
         work_path = "generated/phe/"
-        wrappers="js"
+        wrappers="java,js"
         >
 
-    <version major="0" minor="6" patch="1"/>
+    <version major="0" minor="7" patch="0"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.

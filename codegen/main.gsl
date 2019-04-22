@@ -267,7 +267,8 @@ function process_project (project, features_list, projects_api, wrappers, echo_l
         for my.project.wrapper as wrapper_link
             echo_info ("Processing wrapper <wrapper lang=\"$(wrapper_link.lang:)\"/>")
 
-            my.wrapper = my.wrappers->wrapper(lang = wrapper_link.lang)
+            my.wrapper = wrappers_find_wrapper (my.wrappers, wrapper_link.lang)
+            wrappers_reset_wrapper_project (my.wrapper, my.project)
 
             my.wrapper_project = wrapper_create_project_module (my.project, my.wrapper)
             my.wrapper_project.lang ?= wrapper_link.lang
@@ -352,12 +353,12 @@ function run_main ()
         process_library (my.loaded_library, my.features_list, my.projects_api, main.echo_level)
     endfor
 
-    my.wrappers = XML.new("wrappers")
+    my.wrappers = wrappers_load(main.work_path)
     for main.wrapper
         my.loaded_wrapper = load_lang_wrapper (wrapper)
         my.loaded_wrapper.source_dir ?= cat_path ("../wrappers", wrapper.lang)
         copy main->license to my.loaded_wrapper
-        move my.loaded_wrapper to my.wrappers
+        wrappers_update_wrapper (my.wrappers, my.loaded_wrapper)
     endfor
 
     for main.project where is_false (project.skip_codegen)
@@ -390,6 +391,7 @@ function run_main ()
 
         wrapper_generate_sources (wrapper)
     endfor
+    wrappers_save (my.wrappers, main.work_path)
     delete my.wrappers
 
     #   Create context and populate it with features.

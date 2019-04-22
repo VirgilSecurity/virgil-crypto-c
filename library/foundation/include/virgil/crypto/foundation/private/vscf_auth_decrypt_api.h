@@ -86,7 +86,7 @@ extern "C" {
 
 //
 //  Callback. Decrypt given data.
-//          If 'tag' is not give, then it will be taken from the 'enc'.
+//          If 'tag' is not given, then it will be taken from the 'enc'.
 //
 typedef vscf_status_t (*vscf_auth_decrypt_api_auth_decrypt_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data,
         vsc_data_t tag, vsc_buffer_t *out);
@@ -115,7 +115,7 @@ struct vscf_auth_decrypt_api_t {
     const vscf_cipher_auth_info_api_t *cipher_auth_info_api;
     //
     //  Decrypt given data.
-    //  If 'tag' is not give, then it will be taken from the 'enc'.
+    //  If 'tag' is not given, then it will be taken from the 'enc'.
     //
     vscf_auth_decrypt_api_auth_decrypt_fn auth_decrypt_cb;
     //

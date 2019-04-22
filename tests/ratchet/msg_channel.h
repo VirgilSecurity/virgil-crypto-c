@@ -42,6 +42,7 @@
 typedef struct channel_msg {
     vsc_buffer_t *plain_text;
     vsc_buffer_t *cipher_text;
+    size_t sender;
 } channel_msg_t;
 
 typedef struct channel_msg_node channel_msg_node_t;
@@ -63,7 +64,7 @@ void deinit_msg(channel_msg_t *msg);
 void deinit_node(channel_msg_node_t *node);
 void init_channel(msg_channel_t *self, vscf_ctr_drbg_t *rng, double lost_rate, double distribution_factor);
 void deinit_channel(msg_channel_t *self);
-bool push_msg(msg_channel_t *self, vsc_data_t plain_text, vsc_data_t msg);
+bool push_msg(msg_channel_t *self, vsc_data_t plain_text, vsc_data_t msg, size_t sender);
 bool has_msg(msg_channel_t *self);
 channel_msg_t *pop_msg(msg_channel_t *self);
 

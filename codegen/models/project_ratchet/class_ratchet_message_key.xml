@@ -8,7 +8,7 @@
 
     <property name="index" type="unsigned" size="4"/>
     <property name="key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_shared_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_shared_key_len)"/>
     </property>
 
     <method name="serialize">

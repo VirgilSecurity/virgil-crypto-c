@@ -212,6 +212,6 @@ vscr_ratchet_skipped_group_message_key_node_cleanup_ctx(vscr_ratchet_skipped_gro
 
     VSCR_ASSERT_PTR(self);
 
-    vscr_ratchet_message_key_destroy(&self->value);
+    vscr_ratchet_skipped_group_message_key_destroy(&self->value);
     vscr_ratchet_skipped_group_message_key_node_destroy(&self->next);
 }

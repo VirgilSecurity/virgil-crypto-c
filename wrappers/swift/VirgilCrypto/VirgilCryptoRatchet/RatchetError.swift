@@ -42,20 +42,20 @@ import VSCRatchet
     /// Error during protobuf deserialization.
     case errorProtobufDecode = -1
 
-    /// Message version doesn't match.
-    case errorMessageVersionDoesnTMatch = -2
-
     /// Bad message type.
-    case errorBadMessageType = -3
+    case errorBadMessageType = -2
 
     /// AES error.
-    case errorAes = -4
+    case errorAes = -3
 
     /// RNG failed.
-    case errorRngFailed = -5
+    case errorRngFailed = -4
 
     /// Curve25519 error.
-    case errorCurve25519 = -6
+    case errorCurve25519 = -5
+
+    /// Curve25519 error.
+    case errorEd25519 = -6
 
     /// Key deserialization failed.
     case errorKeyDeserializationFailed = -7
@@ -110,6 +110,21 @@ import VSCRatchet
 
     /// Invalid signature.
     case errorInvalidSignature = -24
+
+    /// User is not present in group message.
+    case errorUserIsNotPresentInGroupMessage = -25
+
+    /// Epoch mismatch.
+    case errorEpochMismatch = -26
+
+    /// Participant not found.
+    case errorParticipantNotFound = -27
+
+    /// Epoch not found.
+    case errorEpochNotFound = -28
+
+    /// Session id mismatch.
+    case errorSessionIdMismatch = -29
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscr_status_t) {

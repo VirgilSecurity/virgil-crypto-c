@@ -66,7 +66,7 @@
 
 //
 //  Decrypt given data.
-//  If 'tag' is not give, then it will be taken from the 'enc'.
+//  If 'tag' is not given, then it will be taken from the 'enc'.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_auth_decrypt(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_data_t tag, vsc_buffer_t *out) {

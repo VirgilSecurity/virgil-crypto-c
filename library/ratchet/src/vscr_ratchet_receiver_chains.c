@@ -47,9 +47,8 @@
 #include "vscr_ratchet_receiver_chains.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_receiver_chains_defs.h"
 #include "vscr_ratchet_chain_key.h"
-#include "vscr_ratchet_receiver_chain_list_node.h"
 
 // clang-format on
 //  @end
@@ -60,22 +59,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Handle 'ratchet receiver chains' context.
-//
-struct vscr_ratchet_receiver_chains_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscr_ratchet_receiver_chain_list_node_t *chains;
-};
 
 //
 //  Perform context specific initialization.
@@ -250,13 +233,12 @@ VSCR_PUBLIC vscr_ratchet_receiver_chain_t *
 vscr_ratchet_receiver_chains_find_chain(vscr_ratchet_receiver_chains_t *self, vsc_data_t ratchet_public_key) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(ratchet_public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
+    VSCR_ASSERT(ratchet_public_key.len == vscr_ratchet_common_hidden_KEY_LEN);
 
     vscr_ratchet_receiver_chain_list_node_t *chain_list_node = self->chains;
 
     while (chain_list_node) {
-        if (!memcmp(ratchet_public_key.bytes, chain_list_node->value->public_key,
-                    vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH)) {
+        if (!memcmp(ratchet_public_key.bytes, chain_list_node->value->public_key, vscr_ratchet_common_hidden_KEY_LEN)) {
             return chain_list_node->value;
         }
         chain_list_node = chain_list_node->next;

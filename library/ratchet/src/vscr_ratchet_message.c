@@ -225,8 +225,12 @@ vscr_ratchet_message_init_ctx(vscr_ratchet_message_t *self) {
     VSCR_ASSERT_PTR(self);
 
     Message msg = Message_init_zero;
+    RegularMessageHeader hdr = RegularMessageHeader_init_zero;
 
     self->message_pb = msg;
+    self->message_pb.version = vscr_ratchet_common_hidden_MESSAGE_VERSION;
+    self->header_pb = vscr_alloc(sizeof(RegularMessageHeader));
+    *self->header_pb = hdr;
 }
 
 //
@@ -239,17 +243,9 @@ vscr_ratchet_message_cleanup_ctx(vscr_ratchet_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    RegularMessage *msg = NULL;
+    vsc_buffer_destroy((vsc_buffer_t **)&self->message_pb.regular_message.cipher_text.arg);
 
-    if (self->message_pb.has_prekey_message) {
-        msg = &self->message_pb.prekey_message.regular_message;
-    } else if (self->message_pb.has_regular_message) {
-        msg = &self->message_pb.regular_message;
-    }
-
-    if (msg && msg->cipher_text.arg) {
-        vsc_buffer_destroy((vsc_buffer_t **)&msg->cipher_text.arg);
-    }
+    vscr_dealloc(self->header_pb);
 }
 
 //
@@ -260,15 +256,7 @@ vscr_ratchet_message_get_type(const vscr_ratchet_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    if (self->message_pb.has_prekey_message) {
-        return vscr_msg_type_PREKEY;
-    } else if (self->message_pb.has_regular_message) {
-        return vscr_msg_type_REGULAR;
-    } else {
-        VSCR_ASSERT(false);
-    }
-
-    return 0;
+    return self->message_pb.has_prekey_message ? vscr_msg_type_PREKEY : vscr_msg_type_REGULAR;
 }
 
 //
@@ -311,23 +299,13 @@ VSCR_PUBLIC size_t
 vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(self->message_pb.has_prekey_message != self->message_pb.has_regular_message);
+    VSCR_ASSERT(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN >=
+                vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg));
 
-    if (self->message_pb.has_prekey_message) {
-        VSCR_ASSERT(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN >=
-                    vsc_buffer_len(self->message_pb.prekey_message.regular_message.cipher_text.arg));
-        return vscr_ratchet_common_hidden_MAX_PREKEY_MESSAGE_LEN - vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN +
-               vsc_buffer_len(self->message_pb.prekey_message.regular_message.cipher_text.arg);
-    } else if (self->message_pb.has_regular_message) {
-        VSCR_ASSERT(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN >=
-                    vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg));
-        return vscr_ratchet_common_hidden_MAX_REGULAR_MESSAGE_LEN - vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN +
-               vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg);
-    }
-
-    VSCR_ASSERT(false);
-
-    return 0;
+    return vscr_ratchet_common_MAX_MESSAGE_LEN -
+           (vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN -
+                   vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg)) -
+           (self->message_pb.has_prekey_message ? 0 : vscr_ratchet_common_hidden_PREKEY_MESSAGE_LEN);
 }
 
 //
@@ -339,7 +317,7 @@ vscr_ratchet_message_serialize(vscr_ratchet_message_t *self, vsc_buffer_t *outpu
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(output);
     VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_message_serialize_len(self));
-    VSCR_ASSERT(self->message_pb.has_prekey_message != self->message_pb.has_regular_message);
+    VSCR_ASSERT_PTR(self->header_pb);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
 
@@ -369,13 +347,26 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     vscr_ratchet_message_set_pb_decode_callback(message);
 
-    bool status = pb_decode(&istream, Message_fields, &message->message_pb);
+    bool pb_status = pb_decode(&istream, Message_fields, &message->message_pb);
 
-    if (!status || message->message_pb.has_prekey_message == message->message_pb.has_regular_message) {
+    if (!pb_status) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
-        vscr_ratchet_message_destroy(&message);
+        goto err;
+    }
 
-        return NULL;
+    pb_istream_t sub_istream = pb_istream_from_buffer(
+            message->message_pb.regular_message.header, sizeof(message->message_pb.regular_message.header));
+
+    pb_status = pb_decode(&sub_istream, RegularMessageHeader_fields, message->header_pb);
+
+    if (!pb_status) {
+        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+        goto err;
+    }
+
+err:
+    if (!pb_status) {
+        vscr_ratchet_message_destroy(&message);
     }
 
     return message;
@@ -391,15 +382,11 @@ vscr_ratchet_message_buffer_decode_callback(pb_istream_t *stream, const pb_field
 static void
 vscr_ratchet_message_set_pb_encode_callback(vscr_ratchet_message_t *self) {
 
-    self->message_pb.prekey_message.regular_message.cipher_text.funcs.encode =
-            vscr_ratchet_common_hidden_buffer_encode_callback;
     self->message_pb.regular_message.cipher_text.funcs.encode = vscr_ratchet_common_hidden_buffer_encode_callback;
 }
 
 static void
 vscr_ratchet_message_set_pb_decode_callback(vscr_ratchet_message_t *self) {
 
-    self->message_pb.prekey_message.regular_message.cipher_text.funcs.decode =
-            vscr_ratchet_message_buffer_decode_callback;
     self->message_pb.regular_message.cipher_text.funcs.decode = vscr_ratchet_message_buffer_decode_callback;
 }

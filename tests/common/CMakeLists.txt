@@ -42,7 +42,7 @@ macro(_add_test test)
     set_target_properties(${test} PROPERTIES C_STANDARD "99")
     add_test (NAME ${test} COMMAND ${test})
 
-    if(COMMAND add_clangformat)
+    if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
         add_clangformat(${test})
     endif()
 endmacro()
