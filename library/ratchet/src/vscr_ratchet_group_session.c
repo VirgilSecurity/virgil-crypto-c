@@ -698,9 +698,9 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
             vsc_buffer_new_with_capacity(vscr_ratchet_cipher_encrypt_len(self->cipher, plain_text.len));
 
     pb_ostream_t ostream = pb_ostream_from_buffer(regular_message->header.bytes, sizeof(regular_message->header.bytes));
-    regular_message->header.size = ostream.bytes_written;
 
     VSCR_ASSERT(pb_encode(&ostream, RegularGroupMessageHeader_fields, msg->header_pb));
+    regular_message->header.size = ostream.bytes_written;
 
     status = vscr_ratchet_cipher_encrypt(self->cipher, message_key->key, plain_text,
             vsc_data(regular_message->header.bytes, regular_message->header.size), regular_message->cipher_text.arg);

@@ -371,7 +371,7 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet
     vsc_buffer_make_secure(temp);
 
     vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher, message_key->key,
-            vsc_buffer_data(message->cipher_text.arg), vsc_data(message->header, sizeof(message->header)), temp);
+            vsc_buffer_data(message->cipher_text.arg), vsc_data(message->header.bytes, message->header.size), temp);
 
     vscr_ratchet_chain_key_destroy(&new_chain_key);
     vscr_ratchet_message_key_destroy(&message_key);
@@ -547,12 +547,14 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
 
     memcpy(regular_message_header->public_key, self->sender_chain->public_key, sizeof(self->sender_chain->public_key));
 
-    pb_ostream_t ostream = pb_ostream_from_buffer(regular_message->header, sizeof(regular_message->header));
+    pb_ostream_t ostream = pb_ostream_from_buffer(regular_message->header.bytes, sizeof(regular_message->header.bytes));
 
     VSCR_ASSERT(pb_encode(&ostream, RegularMessageHeader_fields, regular_message_header));
 
+    regular_message->header.size = ostream.bytes_written;
+
     result = vscr_ratchet_cipher_encrypt(self->cipher, message_key->key, vsc_buffer_data(temp),
-            vsc_data(regular_message->header, sizeof(regular_message->header)), regular_message->cipher_text.arg);
+            vsc_data(regular_message->header.bytes, regular_message->header.size), regular_message->cipher_text.arg);
 
     if (result != vscr_status_SUCCESS) {
         goto err2;
@@ -606,7 +608,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
 
             vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher, skipped_message_key->key,
                     vsc_buffer_data(regular_message->cipher_text.arg),
-                    vsc_data(regular_message->header, sizeof(regular_message->header)), temp);
+                    vsc_data(regular_message->header.bytes, regular_message->header.size), temp);
 
             if (result == vscr_status_SUCCESS) {
                 result = vscr_ratchet_padding_remove_padding(vsc_buffer_data(temp), plain_text);

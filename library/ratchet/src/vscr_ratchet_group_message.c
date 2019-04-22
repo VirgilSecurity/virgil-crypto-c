@@ -381,8 +381,6 @@ vscr_ratchet_group_message_serialize_len(const vscr_ratchet_group_message_t *sel
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(self->message_pb.has_group_info != self->message_pb.has_regular_message);
 
-    return 50000;
-
     if (self->message_pb.has_group_info) {
         const MessageGroupInfo *info = &self->message_pb.group_info;
 
@@ -412,6 +410,10 @@ vscr_ratchet_group_message_serialize(const vscr_ratchet_group_message_t *self, v
     VSCR_ASSERT_PTR(output);
     VSCR_ASSERT(self->message_pb.has_group_info != self->message_pb.has_regular_message);
     VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_group_message_serialize_len(self));
+
+    if (self->message_pb.has_regular_message) {
+        VSCR_ASSERT(self->message_pb.regular_message.header.size > 0);
+    }
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_unused_len(output));
 
