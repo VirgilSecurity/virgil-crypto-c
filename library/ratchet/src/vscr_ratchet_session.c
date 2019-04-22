@@ -444,10 +444,10 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
     vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_count * ED25519_DH_LEN);
     vsc_buffer_make_secure(shared_secret);
 
-    status = vscr_ratchet_x3dh_compute_initiator_x3dh_secret((byte *)vsc_buffer_bytes(sender_identity_private_key_raw),
-            (byte *)vsc_buffer_bytes(ephemeral_private_key), (byte *)vsc_buffer_bytes(receiver_identity_public_key_raw),
-            (byte *)vsc_buffer_bytes(receiver_long_term_public_key_raw), receiver_one_time_public_key_raw != NULL,
-            receiver_one_time_public_key_raw ? (byte *)vsc_buffer_bytes(receiver_one_time_public_key_raw) : NULL,
+    status = vscr_ratchet_x3dh_compute_initiator_x3dh_secret(vsc_buffer_bytes(sender_identity_private_key_raw),
+            vsc_buffer_bytes(ephemeral_private_key), vsc_buffer_bytes(receiver_identity_public_key_raw),
+            vsc_buffer_bytes(receiver_long_term_public_key_raw), receiver_one_time_public_key_raw != NULL,
+            receiver_one_time_public_key_raw ? vsc_buffer_bytes(receiver_one_time_public_key_raw) : NULL,
             shared_secret);
 
     if (status != vscr_status_SUCCESS) {
@@ -574,10 +574,10 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_ide
     vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_count * ED25519_DH_LEN);
     vsc_buffer_make_secure(shared_secret);
 
-    status = vscr_ratchet_x3dh_compute_responder_x3dh_secret((byte *)vsc_buffer_bytes(sender_identity_public_key_raw),
-            self->sender_ephemeral_public_key, (byte *)vsc_buffer_bytes(receiver_identity_private_key_raw),
-            (byte *)vsc_buffer_bytes(receiver_long_term_private_key_raw), receiver_one_time_private_key_raw != NULL,
-            receiver_one_time_private_key_raw ? (byte *)vsc_buffer_bytes(receiver_one_time_private_key_raw) : NULL,
+    status = vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_buffer_bytes(sender_identity_public_key_raw),
+            self->sender_ephemeral_public_key, vsc_buffer_bytes(receiver_identity_private_key_raw),
+            vsc_buffer_bytes(receiver_long_term_private_key_raw), receiver_one_time_private_key_raw != NULL,
+            receiver_one_time_private_key_raw ? vsc_buffer_bytes(receiver_one_time_private_key_raw) : NULL,
             shared_secret);
 
     if (status != vscr_status_SUCCESS) {

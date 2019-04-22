@@ -278,9 +278,9 @@ vscr_ratchet_keys_derive_initial_keys(
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_keys_create_chain_key(vscr_ratchet_symmetric_key_t root_key, vscr_ratchet_private_key_t private_key,
-        vscr_ratchet_public_key_t public_key, vscr_ratchet_symmetric_key_t new_root_key,
-        vscr_ratchet_chain_key_t *chain_key) {
+vscr_ratchet_keys_create_chain_key(const vscr_ratchet_symmetric_key_t root_key,
+        const vscr_ratchet_private_key_t private_key, const vscr_ratchet_public_key_t public_key,
+        vscr_ratchet_symmetric_key_t new_root_key, vscr_ratchet_chain_key_t *chain_key) {
 
     VSCR_ASSERT_PTR(chain_key);
 

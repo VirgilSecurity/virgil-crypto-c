@@ -15,28 +15,28 @@
 
     <method name="find key" is_const="1">
         <argument name="counter" type="size"/>
-        <argument name="public key" class="vscr_ratchet_public_key_t" is_reference="0" is_const="1" library="internal"/>
+        <argument name="public key" class="const vscr_ratchet_public_key_t" is_reference="0" is_const="1" library="internal" access="readonly"/>
 
         <return class="ratchet message key" access="readwrite"/>
     </method>
 
     <method name="find public key" is_const="1" scope="private">
-        <argument name="public key" class="vscr_ratchet_public_key_t" is_reference="0" is_const="1" library="internal"/>
+        <argument name="public key" class="const vscr_ratchet_public_key_t" is_reference="0" is_const="1" library="internal" access="readonly"/>
 
         <return type="size"/>
     </method>
 
     <method name="delete key">
-        <argument name="public key" class="vscr_ratchet_public_key_t" is_reference="0" is_const="1" library="internal"/>
+        <argument name="public key" class="const vscr_ratchet_public_key_t" is_reference="0" is_const="1" library="internal" access="readonly"/>
         <argument name="message key" class="ratchet message key" access="readwrite"/>
     </method>
 
     <method name="add public key">
-        <argument name="public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="public key" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
     </method>
 
     <method name="add key">
-        <argument name="public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="public key" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="message key" class="ratchet message key" access="readwrite"/>
     </method>
 

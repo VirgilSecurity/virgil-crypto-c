@@ -221,7 +221,7 @@ vscr_ratchet_skipped_messages_cleanup_ctx(vscr_ratchet_skipped_messages_t *self)
 
 VSCR_PUBLIC vscr_ratchet_message_key_t *
 vscr_ratchet_skipped_messages_find_key(
-        const vscr_ratchet_skipped_messages_t *self, size_t counter, vscr_ratchet_public_key_t public_key) {
+        const vscr_ratchet_skipped_messages_t *self, size_t counter, const vscr_ratchet_public_key_t public_key) {
 
     VSCR_ASSERT_PTR(self);
 
@@ -246,7 +246,7 @@ vscr_ratchet_skipped_messages_find_key(
 
 VSCR_PUBLIC size_t
 vscr_ratchet_skipped_messages_find_public_key(
-        const vscr_ratchet_skipped_messages_t *self, vscr_ratchet_public_key_t public_key) {
+        const vscr_ratchet_skipped_messages_t *self, const vscr_ratchet_public_key_t public_key) {
 
     VSCR_ASSERT_PTR(self);
 
@@ -262,8 +262,8 @@ vscr_ratchet_skipped_messages_find_public_key(
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_delete_key(vscr_ratchet_skipped_messages_t *self, vscr_ratchet_public_key_t public_key,
-        vscr_ratchet_message_key_t *message_key) {
+vscr_ratchet_skipped_messages_delete_key(vscr_ratchet_skipped_messages_t *self,
+        const vscr_ratchet_public_key_t public_key, vscr_ratchet_message_key_t *message_key) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(message_key);
@@ -315,7 +315,7 @@ vscr_ratchet_skipped_messages_delete_key(vscr_ratchet_skipped_messages_t *self, 
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_messages_add_public_key(
-        vscr_ratchet_skipped_messages_t *self, vscr_ratchet_public_key_t public_key) {
+        vscr_ratchet_skipped_messages_t *self, const vscr_ratchet_public_key_t public_key) {
 
     size_t i = vscr_ratchet_skipped_messages_find_public_key(self, public_key);
 
@@ -335,7 +335,7 @@ vscr_ratchet_skipped_messages_add_public_key(
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_add_key(vscr_ratchet_skipped_messages_t *self, vscr_ratchet_public_key_t public_key,
+vscr_ratchet_skipped_messages_add_key(vscr_ratchet_skipped_messages_t *self, const vscr_ratchet_public_key_t public_key,
         vscr_ratchet_message_key_t *message_key) {
 
     VSCR_ASSERT_PTR(self);

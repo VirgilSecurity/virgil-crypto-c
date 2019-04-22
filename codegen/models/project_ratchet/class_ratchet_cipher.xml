@@ -26,11 +26,11 @@
     </method>
 
     <method name="setup cipher" declaration="private">
-        <argument name="key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="key" class="const vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
     </method>
 
     <method name="encrypt">
-        <argument name="key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="key" class="const vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="plain text" class="data"/>
         <argument name="additional data" class="data"/>
 
@@ -44,7 +44,7 @@
     </method>
 
     <method name="decrypt">
-        <argument name="key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="key" class="const vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="cipher text" class="data"/>
         <argument name="additional data" class="data"/>
 

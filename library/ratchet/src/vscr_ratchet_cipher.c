@@ -93,7 +93,7 @@ static void
 vscr_ratchet_cipher_cleanup_ctx(vscr_ratchet_cipher_t *self);
 
 static void
-vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, vscr_ratchet_symmetric_key_t key);
+vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, const vscr_ratchet_symmetric_key_t key);
 
 //
 //  Return size of 'vscr_ratchet_cipher_t'.
@@ -257,7 +257,7 @@ vscr_ratchet_cipher_decrypt_len(vscr_ratchet_cipher_t *self, size_t cipher_text_
 }
 
 static void
-vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, vscr_ratchet_symmetric_key_t key) {
+vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, const vscr_ratchet_symmetric_key_t key) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->aes256_gcm);
@@ -285,7 +285,7 @@ vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, vscr_ratchet_symme
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vscr_ratchet_symmetric_key_t key, vsc_data_t plain_text,
+vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, const vscr_ratchet_symmetric_key_t key, vsc_data_t plain_text,
         vsc_data_t additional_data, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(self);
@@ -305,7 +305,7 @@ vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vscr_ratchet_symmetric_
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vscr_ratchet_symmetric_key_t key, vsc_data_t cipher_text,
+vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, const vscr_ratchet_symmetric_key_t key, vsc_data_t cipher_text,
         vsc_data_t additional_data, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(self);

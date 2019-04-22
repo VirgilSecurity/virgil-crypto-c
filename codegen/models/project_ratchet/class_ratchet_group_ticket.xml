@@ -60,8 +60,8 @@
     </method>
 
     <method name="add existing participant" scope="internal">
-        <argument name="id" class="vscr_ratchet_participant_id_t" is_reference="0" library="internal" access="readonly"/>
-        <argument name="pub key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="id" class="const vscr_ratchet_participant_id_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="pub key" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
 
         <argument name="chain key" class="ratchet chain key"/>
 

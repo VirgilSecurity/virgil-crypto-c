@@ -412,8 +412,9 @@ err1:
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_ticket_add_existing_participant(vscr_ratchet_group_ticket_t *self, vscr_ratchet_participant_id_t id,
-        vscr_ratchet_public_key_t pub_key, const vscr_ratchet_chain_key_t *chain_key) {
+vscr_ratchet_group_ticket_add_existing_participant(vscr_ratchet_group_ticket_t *self,
+        const vscr_ratchet_participant_id_t id, const vscr_ratchet_public_key_t pub_key,
+        const vscr_ratchet_chain_key_t *chain_key) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->rng);

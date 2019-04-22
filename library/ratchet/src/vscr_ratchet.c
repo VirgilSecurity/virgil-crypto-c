@@ -405,7 +405,7 @@ vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const RegularMessage *m
 
     vscr_ratchet_receiver_chain_t *new_chain = vscr_ratchet_receiver_chain_new();
     vscr_status_t result = vscr_ratchet_keys_create_chain_key(self->root_key, self->sender_chain->private_key,
-            (byte *)regular_message_header->public_key, new_root_key, &new_chain->chain_key);
+            regular_message_header->public_key, new_root_key, &new_chain->chain_key);
 
     if (result != vscr_status_SUCCESS) {
         goto err;
@@ -440,7 +440,7 @@ vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const Regul
 
     self->receiver_chain = receiver_chain;
 
-    vscr_ratchet_skipped_messages_add_public_key(self->skipped_messages, (byte *)regular_message_header->public_key);
+    vscr_ratchet_skipped_messages_add_public_key(self->skipped_messages, regular_message_header->public_key);
 
     // TODO: Optimize. Prevent double decrypt for first message if possible
     // At this moment decrypting message using symmetric authenticated encryption is the only way to check
@@ -590,7 +590,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
     if (!receiver_chain || receiver_chain->chain_key.index > regular_message_header->counter) {
         // FIXME
         vscr_ratchet_message_key_t *skipped_message_key = vscr_ratchet_skipped_messages_find_key(
-                self->skipped_messages, regular_message_header->counter, (byte *)regular_message_header->public_key);
+                self->skipped_messages, regular_message_header->counter, regular_message_header->public_key);
 
         if (!skipped_message_key) {
             if (receiver_chain) {
@@ -618,7 +618,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
 
             // FIXME
             vscr_ratchet_skipped_messages_delete_key(
-                    self->skipped_messages, (byte *)regular_message_header->public_key, skipped_message_key);
+                    self->skipped_messages, regular_message_header->public_key, skipped_message_key);
 
             return vscr_status_SUCCESS;
         }
@@ -664,8 +664,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
         receiver_chain = new_receiver_chain;
 
         // FIXME
-        vscr_ratchet_skipped_messages_add_public_key(
-                self->skipped_messages, (byte *)regular_message_header->public_key);
+        vscr_ratchet_skipped_messages_add_public_key(self->skipped_messages, regular_message_header->public_key);
     }
 
     vscr_status_t result;
