@@ -820,6 +820,9 @@ vscr_ratchet_group_session_decrypt(
                 vsc_buffer_data(group_message->cipher_text.arg),
                 vsc_data(group_message->header.bytes, group_message->header.size), plain_text);
 
+        vscr_ratchet_message_key_destroy(&message_key);
+        vscr_ratchet_chain_key_destroy(&new_chain_key);
+
         if (result != vscr_status_SUCCESS) {
             return result;
         }
