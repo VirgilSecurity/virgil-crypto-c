@@ -18,7 +18,7 @@
     <constant name="prekey message len" value="139"/>
 
     <constant name="max skipped group messages" value="40"/>
-    <constant name="max group regular message len" value="32926"/>
+    <constant name="max group regular message len" value="32918"/>
     <constant name="max group info message len" value="11049"/>
     <constant name="min participant len" value="106"/>
 
