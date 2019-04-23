@@ -49,7 +49,7 @@ function js_append_js_umbrella_module_model(parent, wrapper_project, project, na
       js_source.uid = make_id("js", "umbrella", "module", "js source")
       js_source.path = cat_path(my.wrapper_project.project_source_dir, js_source.name)
     endnew
-    for my.project.require where js_has_public_scope(require) & defined(require.project) & require.project <> "common"
+    for my.project.require where defined(require.project) & require.project <> "common"
       new js_project_require to js_umbrella_module
         js_project_require.type = global.js_project_require_type_library
         js_project_require.c_namespace_dir = ""
@@ -58,6 +58,10 @@ function js_append_js_umbrella_module_model(parent, wrapper_project, project, na
       new js_project_require to js_umbrella_module
         js_project_require.type = global.js_project_require_type_relative
         js_project_require.js_project_name = "$(require.project:camel)"
+        new js_project_name to js_project_require
+          js_project_name.name = js_project_require.js_project_name
+          js_project_name.uid = make_id("js", "umbrella", "module", "js project require", require.project, "js project name")
+        endnew
         js_project_require.project_dir = cat_path("..", require.project)
         js_project_require.umbrella_js_source = make_ref_js(make_id("project", require.project, "umbrella", "module", "js source"))
         js_project_require.umbrella_cpp_header = make_ref_js(make_id("project", require.project, "umbrella", "module", "cpp header"))
@@ -494,6 +498,9 @@ function js_append_js_return_class_info(js_return, return)
   else
     my.class_name = my.return.impl
   endif
+  if defined(my.argument.project)
+    my.js_return.js_project_name = make_ref_js(make_id("umbrella", "module", "js project require", my.return.project, "js project name"))
+  endif
   my.js_return.c_context_type = make_ref_c(make_id(my.project_uid, "class", my.class_name, "struct", my.class_name))
   my.js_return.js_class_name = make_ref_js(make_id(my.project_uid, "class", "module", my.class_name, "js name"))
   my.js_return.cpp_class_name = make_ref_js(make_id(my.project_uid, "class" , "module", my.class_name, "cpp name"))
@@ -502,6 +509,9 @@ endfunction
 function js_append_js_return_interface_info(js_return, return)
   my.js_return.type = global.js_return_type_interface
   my.project_uid = js_get_project_uid(my.return)
+  if defined(my.argument.project)
+    my.js_return.js_project_name = make_ref_js(make_id("umbrella", "module", "js project require", my.return.project, "js project name"))
+  endif
   my.js_return.cpp_implementation_resolver_name = make_ref_js(make_id(my.project_uid, "implementation resolver", "module", "cpp name"))
   my.js_return.cpp_implementation_resolver_method_name = make_ref_js(make_id(my.project_uid, "implementation resolver", "module", "cpp method name"))
   my.js_return.js_implementation_resolver_class_name = make_ref_js(make_id(my.project_uid, "implementation resolver", "module", "js name"))
