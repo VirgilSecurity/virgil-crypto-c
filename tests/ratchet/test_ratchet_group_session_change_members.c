@@ -283,6 +283,9 @@ test__remove_members__old_messages__should_continue_working(void) {
     vsc_buffer_destroy(&buffer1);
     vsc_buffer_destroy(&buffer2);
 
+    vsc_buffer_destroy(&text1);
+    vsc_buffer_destroy(&text2);
+
     vscf_ctr_drbg_destroy(&rng);
 }
 
