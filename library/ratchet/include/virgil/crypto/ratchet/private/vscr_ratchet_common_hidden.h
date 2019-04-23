@@ -82,6 +82,7 @@ enum {
     vscr_ratchet_common_hidden_MAX_SKIPPED_DH = 5,
     vscr_ratchet_common_hidden_MAX_MESSAGE_GAP = 2000,
     vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT = 5,
+    vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHES_COUNT = 4,
     vscr_ratchet_common_hidden_PREKEY_MESSAGE_LEN = 139,
     vscr_ratchet_common_hidden_MAX_SKIPPED_GROUP_MESSAGES = 40,
     vscr_ratchet_common_hidden_MAX_GROUP_REGULAR_MESSAGE_LEN = 32926,

@@ -42,6 +42,9 @@
     <property name="my epoch" class="ratchet group participant epoch" access="readwrite"/>
     <property name="my public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="my private key" class="vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="messages count" type="size" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_max_skipped_epoches_count)"/>
+    </property>
 
     <property name="participants" class="ratchet group participant data" access="readwrite">
         <array/>
@@ -225,6 +228,11 @@
 
     <method name="update participant" declaration="private" is_static="1">
         <argument name="participant" class="ratchet group participant data" access="readwrite"/>
+        <argument name="epoch" type="size"/>
+        <argument name="info" class="MessageParticipantInfo" library="nanopb"/>
+    </method>
+
+    <method name="add new participant" declaration="private">
         <argument name="epoch" type="size"/>
         <argument name="info" class="MessageParticipantInfo" library="nanopb"/>
     </method>

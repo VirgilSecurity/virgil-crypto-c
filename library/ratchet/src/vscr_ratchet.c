@@ -360,8 +360,11 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet
     vscr_ratchet_chain_key_clone(chain_key, new_chain_key);
 
     while (new_chain_key->index < regular_message_header->counter) {
+        if (new_chain_key->index == UINT32_MAX) {
+            vscr_ratchet_chain_key_destroy(&new_chain_key);
+            return vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN;
+        }
         vscr_ratchet_keys_advance_chain_key(new_chain_key);
-        // TODO: Check out of range
     }
 
     vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(new_chain_key);
@@ -525,9 +528,12 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
 
     vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(&self->sender_chain->chain_key);
 
-    vscr_ratchet_keys_advance_chain_key(&self->sender_chain->chain_key);
+    if (self->sender_chain->chain_key.index == UINT32_MAX) {
+        result = vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN;
+        goto err2;
+    }
 
-    // TODO: Check out of range
+    vscr_ratchet_keys_advance_chain_key(&self->sender_chain->chain_key);
 
     size_t size = vscr_ratchet_padding_padded_len(plain_text.len);
     vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
@@ -539,7 +545,7 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
     result = vscr_ratchet_padding_add_padding(self->padding, temp);
 
     if (result != vscr_status_SUCCESS) {
-        goto err2;
+        goto err3;
     }
 
     regular_message_header->counter = message_key->index;
@@ -557,11 +563,13 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
             vsc_data(regular_message->header.bytes, regular_message->header.size), regular_message->cipher_text.arg);
 
     if (result != vscr_status_SUCCESS) {
-        goto err2;
+        goto err3;
     }
 
-err2:
+err3:
     vsc_buffer_destroy(&temp);
+
+err2:
     vscr_ratchet_message_key_destroy(&message_key);
 
 err1:

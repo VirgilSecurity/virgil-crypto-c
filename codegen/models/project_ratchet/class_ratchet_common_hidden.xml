@@ -13,6 +13,7 @@
     <constant name="max message gap" value="2000"/>
 
     <constant name="max epoches count" value="5"/>
+    <constant name="max skipped epoches count" value="4"/>
 
     <constant name="prekey message len" value="139"/>
 

@@ -833,7 +833,8 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     session->received_first_response = session_pb->received_first_response;
     session->is_initiator = session_pb->is_initiator;
 
-    memcpy(session->sender_identity_public_key, session_pb->sender_identity_key, sizeof(session_pb->sender_identity_key));
+    memcpy(session->sender_identity_public_key, session_pb->sender_identity_key,
+            sizeof(session_pb->sender_identity_key));
     memcpy(session->sender_ephemeral_public_key, session_pb->sender_ephemeral_key,
             sizeof(session_pb->sender_ephemeral_key));
     memcpy(session->receiver_long_term_public_key, session_pb->receiver_long_term_key,
