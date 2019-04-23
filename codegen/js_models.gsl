@@ -49,7 +49,7 @@ function js_append_js_umbrella_module_model(parent, wrapper_project, project, na
       js_source.uid = make_id("js", "umbrella", "module", "js source")
       js_source.path = cat_path(my.wrapper_project.project_source_dir, js_source.name)
     endnew
-    for my.project.require where defined(require.project) & require.project <> "common"
+    for my.project.require where js_has_public_scope(require) & defined(require.project) & require.project <> "common"
       new js_project_require to js_umbrella_module
         js_project_require.type = global.js_project_require_type_library
         js_project_require.c_namespace_dir = ""
@@ -226,10 +226,10 @@ function js_append_js_class_module_model(parent, source, wrapper_project, meta)
         my.has_algorithm_interface = 1
       endif
       js_append_js_interface_implementation(js_class_module, interface)
-      for interface.constant
+      for interface.constant where js_has_public_scope(constant)
         js_append_js_constant(js_class_module, my.source, constant)
       endfor
-      for interface.method
+      for interface.method where js_has_public_scope(method)
         js_append_js_method(js_class_module, my.source, method)
       endfor
     endfor
@@ -245,10 +245,10 @@ function js_append_js_class_module_model(parent, source, wrapper_project, meta)
     for my.source.dependency
       js_append_js_dependency(js_class_module, dependency, my.source)
     endfor
-    for my.source.constant
+    for my.source.constant where js_has_public_scope(constant)
       js_append_js_constant(js_class_module, my.source, constant)
     endfor
-    for my.source.method where !js_method_is_private(method)
+    for my.source.method where js_has_public_scope(method) & !js_method_is_private(method)
       js_append_js_method(js_class_module, my.source, method)
     endfor
     return js_class_module

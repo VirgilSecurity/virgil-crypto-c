@@ -33,76 +33,8 @@ function js_method_is_private(method)
   return (defined(my.method.visibility) & my.method.visibility = "private") | (defined(my.method.declaration) & my.method.declaration = "private")
 endfunction
 
-function js_value_is_size(value)
-  return defined(my.value.type) & my.value.type = "size"
-endfunction
-
-function js_value_is_integer(value)
-  return defined(my.value.type) & my.value.type = "integer"
-endfunction
-
-function js_value_is_unsigned(value)
-  return defined(my.value.type) & my.value.type = "unsigned"
-endfunction
-
-function js_value_is_boolean(value)
-  return defined(my.value.type) & my.value.type = "boolean"
-endfunction
-
-function js_value_is_byte(value)
-  return defined(my.value.type) & my.value.type = "byte"
-endfunction
-
-function js_value_is_char(value)
-  return defined(my.value.type) & my.value.type = "char"
-endfunction
-
-function js_value_is_data(value)
-  return defined(my.value.class) & my.value.class = "data"
-endfunction
-
-function js_value_is_buffer(value)
-  return defined(my.value.class) & my.value.class = "buffer"
-endfunction
-
-function js_value_is_enum_module(value, wrapper)
-  for my.wrapper.js_wrapped_enum where defined(my.value.enum) & my.value.enum = js_wrapped_enum.name
-    return 1
-  endfor
-  return 0
-endfunction
-
-function js_value_is_class_module(value, wrapper)
-  for my.wrapper.js_wrapped_class where defined(my.value.class) & my.value.class = js_wrapped_class.name
-    return 1
-  endfor
-  return 0
-endfunction
-
-function js_value_is_interface_module(value, wrapper)
-  for my.wrapper.js_wrapped_interface where defined(my.value.interface) & my.value.interface = js_wrapped_interface.name
-    return 1
-  endfor
-  return 0
-endfunction
-
-function js_value_is_implementation_module(value, wrapper)
-  for my.wrapper.js_wrapped_implementation where (defined(my.value.impl) & my.value.impl = js_wrapped_implementation.name) | (defined(my.value.class) & my.value.class = js_wrapped_implementation.name)
-    return 1
-  endfor
-  return 0
-endfunction
-
-function js_value_is_error(value)
-  return defined(my.value.enum) & my.value.enum = "status"
-endfunction
-
-function js_value_is_error_context(value)
-  return defined(my.value.class) & my.value.class = "error"
-endfunction
-
-function js_value_is_return_argument(value)
-  return js_value_is_buffer(my.value) | ((js_value_is_byte(my.value) | js_value_is_char(my.value) | js_value_is_error_context(my.value)) & (defined(my.value.access) & (my.value.access = "writeonly" | my.value.access = "readwrite")))
+function js_has_public_scope(component)
+  return defined(my.component.scope) & my.component.scope = "public"
 endfunction
 
 function js_get_project_uid(argument)
@@ -114,18 +46,6 @@ function js_get_project_uid(argument)
 endfunction
 
 global.js_binding_property_name = "binding"
-
-function js_constant_is_private(constant)
-  return defined(my.constant.definition) & my.constant.definition = "private"
-endfunction
-
-function js_binding_class_name(class)
-  return "$(my.class.name:no)Binding"
-endfunction
-
-function js_binding_method_name(method)
-  return "$(my.method.name:Camel)"
-endfunction
 
 global.js_js_umbrella_module = "umbrella"
 global.js_bindings_module = "bindings"
@@ -171,66 +91,25 @@ global.js_cpp_handle_error_status_method_parameter_name = "status"
 global.js_cpp_argument_type_variable = "variable"
 global.js_cpp_argument_type_constant = "constant"
 
-global.js_js_method_call_return_type_class = "js_method_call_return_class"
-global.js_js_method_call_return_type_interface = "js_method_call_return_interface"
-global.js_js_method_call_return_type_other = "js_method_call_return_other"
-
-global.js_cpp_method_return_name = "method_return"
-
 global.js_cpp_init_function_name = "Init"
-
 global.js_cpp_init_function_argument_type = "v8::Local<v8::Object>"
-
 global.js_cpp_init_function_argument_name = "exports"
 
 global.js_cpp_constructor_function_name = "New"
 
 global.js_cpp_callback_info_type = "const Nan::FunctionCallbackInfo<v8::Value>&"
-
 global.js_cpp_callback_info_name = "info"
 
 global.js_cpp_persistent_constructor_name = "constructor"
 
 global.js_cpp_implementation_getter = "GetImplementation"
 
-function js_cpp_variable_name(name)
-  return "$(my.name:c)"
-endfunction
-
-function js_cpp_size_name(name)
-  return "$(my.name:c)_size"
-endfunction
-
 function js_cpp_header_guard(name)
   return "$(my.name:c,upper)_H"
 endfunction
 
-function js_cpp_context_type(context_name)
-  return "$(my.context_name:no)_t*"
-endfunction
-
 function js_cpp_class_instance_name(cpp_class)
   return "$(my.cpp_class.c_name:no)"
-endfunction
-
-function js_cpp_bytes_name(name)
-  return "$(my.name:no)_bytes"
-endfunction
-
-function js_cpp_size_name(name)
-  return "$(my.name:no)_size"
-endfunction
-
-function js_cpp_context_constructor_name(cpp_class, wrapper)
-  return "$(my.cpp_class.context_name:no)_new"
-endfunction
-
-function js_cpp_context_destructor_name(cpp_class, wrapper)
-  return "$(my.cpp_class.context_name:no)_destroy"
-endfunction
-
-function js_cpp_implementation_type(wrapper)
-  return "$(my.wrapper.prefix)_impl_t*"
 endfunction
 
 function count_js_method_results(js_method)
