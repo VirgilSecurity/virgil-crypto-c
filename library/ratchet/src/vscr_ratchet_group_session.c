@@ -899,24 +899,25 @@ vscr_ratchet_group_session_serialize(const vscr_ratchet_group_session_t *self, v
     VSCR_ASSERT(self->is_initialized);
     VSCR_ASSERT(self->is_id_set);
 
-    GroupSession session_pb = GroupSession_init_zero;
+    GroupSession *session_pb = vscr_alloc(sizeof(GroupSession));
 
-    session_pb.version = vscr_ratchet_common_hidden_GROUP_SESSION_VERSION;
-    session_pb.participants_count = self->participants_count;
-    memcpy(session_pb.session_id, self->session_id, sizeof(session_pb.session_id));
-    memcpy(session_pb.my_id, self->my_id, sizeof(session_pb.my_id));
-    vscr_ratchet_group_participant_epoch_serialize(self->my_epoch, &session_pb.my_epoch);
+    session_pb->version = vscr_ratchet_common_hidden_GROUP_SESSION_VERSION;
+    session_pb->participants_count = self->participants_count;
+    memcpy(session_pb->session_id, self->session_id, sizeof(session_pb->session_id));
+    memcpy(session_pb->my_id, self->my_id, sizeof(session_pb->my_id));
+    vscr_ratchet_group_participant_epoch_serialize(self->my_epoch, &session_pb->my_epoch);
 
     for (size_t i = 0; i < self->participants_count; i++) {
-        vscr_ratchet_group_participant_data_serialize(self->participants[i], &session_pb.participants[i]);
+        vscr_ratchet_group_participant_data_serialize(self->participants[i], &session_pb->participants[i]);
     }
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
 
-    VSCR_ASSERT(pb_encode(&ostream, GroupSession_fields, &session_pb));
+    VSCR_ASSERT(pb_encode(&ostream, GroupSession_fields, session_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);
 
-    vscr_zeroize(&session_pb, sizeof(Session));
+    vscr_zeroize(session_pb, sizeof(GroupSession));
+    vscr_dealloc(session_pb);
 }
 
 //
@@ -935,11 +936,11 @@ vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     }
 
     vscr_ratchet_group_session_t *session = NULL;
-    GroupSession session_pb = GroupSession_init_zero;
+    GroupSession *session_pb = vscr_alloc(sizeof(GroupSession));
 
     pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
-    bool status = pb_decode(&istream, GroupSession_fields, &session_pb);
+    bool status = pb_decode(&istream, GroupSession_fields, session_pb);
 
     if (!status) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
@@ -952,21 +953,23 @@ vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     session->is_initialized = true;
     session->is_id_set = true;
 
-    memcpy(session->session_id, session_pb.session_id, sizeof(session->session_id));
-    memcpy(session->my_id, session_pb.my_id, sizeof(session->my_id));
+    memcpy(session->session_id, session_pb->session_id, sizeof(session->session_id));
+    memcpy(session->my_id, session_pb->my_id, sizeof(session->my_id));
 
     session->my_epoch = vscr_ratchet_group_participant_epoch_new();
-    vscr_ratchet_group_participant_epoch_deserialize(&session_pb.my_epoch, session->my_epoch);
-    session->participants_count = session_pb.participants_count;
-    session->participants = vscr_alloc(session_pb.participants_count * sizeof(vscr_ratchet_group_participant_data_t *));
+    vscr_ratchet_group_participant_epoch_deserialize(&session_pb->my_epoch, session->my_epoch);
+    session->participants_count = session_pb->participants_count;
+    session->participants =
+            vscr_alloc(session_pb->participants_count * sizeof(vscr_ratchet_group_participant_data_t *));
 
-    for (size_t i = 0; i < session_pb.participants_count; i++) {
+    for (size_t i = 0; i < session_pb->participants_count; i++) {
         session->participants[i] = vscr_ratchet_group_participant_data_new();
-        vscr_ratchet_group_participant_data_deserialize(&session_pb.participants[i], session->participants[i]);
+        vscr_ratchet_group_participant_data_deserialize(&session_pb->participants[i], session->participants[i]);
     }
 
 err:
-    vscr_zeroize(&session_pb, sizeof(Session));
+    vscr_zeroize(session_pb, sizeof(GroupSession));
+    vscr_dealloc(session_pb);
 
     return session;
 }

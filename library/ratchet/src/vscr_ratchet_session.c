@@ -769,34 +769,35 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *self, vsc_buffer_t *outpu
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_session_serialize_len(self));
 
-    Session session_pb = Session_init_zero;
+    Session *session_pb = vscr_alloc(sizeof(Session));
 
-    session_pb.version = vscr_ratchet_common_hidden_SESSION_VERSION;
-    session_pb.received_first_response = self->received_first_response;
-    session_pb.is_initiator = self->is_initiator;
+    session_pb->version = vscr_ratchet_common_hidden_SESSION_VERSION;
+    session_pb->received_first_response = self->received_first_response;
+    session_pb->is_initiator = self->is_initiator;
 
-    memcpy(session_pb.sender_identity_key, self->sender_identity_public_key, sizeof(self->sender_identity_public_key));
-    memcpy(session_pb.sender_ephemeral_key, self->sender_ephemeral_public_key,
+    memcpy(session_pb->sender_identity_key, self->sender_identity_public_key, sizeof(self->sender_identity_public_key));
+    memcpy(session_pb->sender_ephemeral_key, self->sender_ephemeral_public_key,
             sizeof(self->sender_ephemeral_public_key));
-    memcpy(session_pb.receiver_long_term_key, self->receiver_long_term_public_key,
+    memcpy(session_pb->receiver_long_term_key, self->receiver_long_term_public_key,
             sizeof(self->receiver_long_term_public_key));
 
     if (self->receiver_has_one_time_public_key) {
-        session_pb.has_receiver_one_time_key = true;
-        memcpy(session_pb.receiver_one_time_key, self->receiver_one_time_public_key,
+        session_pb->has_receiver_one_time_key = true;
+        memcpy(session_pb->receiver_one_time_key, self->receiver_one_time_public_key,
                 sizeof(self->receiver_one_time_public_key));
     } else {
-        session_pb.has_receiver_one_time_key = false;
+        session_pb->has_receiver_one_time_key = false;
     }
 
-    vscr_ratchet_serialize(self->ratchet, &session_pb.ratchet);
+    vscr_ratchet_serialize(self->ratchet, &session_pb->ratchet);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
 
-    VSCR_ASSERT(pb_encode(&ostream, Session_fields, &session_pb));
+    VSCR_ASSERT(pb_encode(&ostream, Session_fields, session_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);
 
-    vscr_zeroize(&session_pb, sizeof(Session));
+    vscr_zeroize(session_pb, sizeof(Session));
+    vscr_dealloc(session_pb);
 }
 
 //
@@ -815,11 +816,11 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     }
 
     vscr_ratchet_session_t *session = NULL;
-    Session session_pb = Session_init_zero;
+    Session *session_pb = vscr_alloc(sizeof(Session));
 
     pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
-    bool status = pb_decode(&istream, Session_fields, &session_pb);
+    bool status = pb_decode(&istream, Session_fields, session_pb);
 
     if (!status) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
@@ -829,27 +830,28 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     session = vscr_ratchet_session_new();
 
-    session->received_first_response = session_pb.received_first_response;
-    session->is_initiator = session_pb.is_initiator;
+    session->received_first_response = session_pb->received_first_response;
+    session->is_initiator = session_pb->is_initiator;
 
-    memcpy(session->sender_identity_public_key, session_pb.sender_identity_key, sizeof(session_pb.sender_identity_key));
-    memcpy(session->sender_ephemeral_public_key, session_pb.sender_ephemeral_key,
-            sizeof(session_pb.sender_ephemeral_key));
-    memcpy(session->receiver_long_term_public_key, session_pb.receiver_long_term_key,
-            sizeof(session_pb.receiver_long_term_key));
+    memcpy(session->sender_identity_public_key, session_pb->sender_identity_key, sizeof(session_pb->sender_identity_key));
+    memcpy(session->sender_ephemeral_public_key, session_pb->sender_ephemeral_key,
+            sizeof(session_pb->sender_ephemeral_key));
+    memcpy(session->receiver_long_term_public_key, session_pb->receiver_long_term_key,
+            sizeof(session_pb->receiver_long_term_key));
 
-    if (session_pb.has_receiver_one_time_key) {
+    if (session_pb->has_receiver_one_time_key) {
         session->receiver_has_one_time_public_key = true;
-        memcpy(session->receiver_one_time_public_key, session_pb.receiver_one_time_key,
-                sizeof(session_pb.receiver_one_time_key));
+        memcpy(session->receiver_one_time_public_key, session_pb->receiver_one_time_key,
+                sizeof(session_pb->receiver_one_time_key));
     } else {
         session->receiver_has_one_time_public_key = false;
     }
 
-    vscr_ratchet_deserialize(&session_pb.ratchet, session->ratchet);
+    vscr_ratchet_deserialize(&session_pb->ratchet, session->ratchet);
 
 err:
-    vscr_zeroize(&session_pb, sizeof(Session));
+    vscr_zeroize(session_pb, sizeof(Session));
+    vscr_dealloc(session_pb);
 
     return session;
 }
