@@ -36,51 +36,47 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-public enum OidId {
+/*
+* Implements key deserialization from all known (supported) formats:
+* - SEC1 - PEM or DER encoding;
+* - PKCS#8 - PEM or DER encoding.
+*/
+public class KeyDefaultDeserializer implements AutoCloseable, KeyDeserializer {
 
-    NONE(0),
-    RSA(1),
-    ED25519(2),
-    CURVE25519(3),
-    SHA224(4),
-    SHA256(5),
-    SHA384(6),
-    SHA512(7),
-    KDF1(8),
-    KDF2(9),
-    AES256_GCM(10),
-    AES256_CBC(11),
-    PKCS5_PBKDF2(12),
-    PKCS5_PBES2(13),
-    CMS_DATA(14),
-    CMS_ENVELOPED_DATA(15),
-    HKDF_WITH_SHA256(16),
-    HKDF_WITH_SHA384(17),
-    HKDF_WITH_SHA512(18),
-    HMAC_WITH_SHA224(19),
-    HMAC_WITH_SHA256(20),
-    HMAC_WITH_SHA384(21),
-    HMAC_WITH_SHA512(22),
-    EC_GENERIC_KEY(23),
-    EC_DOMAIN_SECP256R1(24);
+    public long cCtx;
 
-    private final int code;
-
-    private OidId(int code) {
-        this.code = code;
+    /* Create underlying C context. */
+    public KeyDefaultDeserializer() {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.keyDefaultDeserializer_new();
     }
 
-    public int getCode() {
-        return code;
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public KeyDefaultDeserializer(long cCtx) {
+        super();
+        this.cCtx = cCtx;
     }
 
-    public static OidId fromCode(int code) {
-        for (OidId a : OidId.values()) {
-            if (a.code == code) {
-                return a;
-            }
-        }
-        return null;
+    /* Close resource. */
+    public void close() {
+        FoundationJNI.INSTANCE.keyDefaultDeserializer_close(this.cCtx);
+    }
+
+    /*
+    * Deserialize given public key as an interchangeable format to the object.
+    */
+    public RawKey deserializePublicKey(byte[] publicKeyData) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyDefaultDeserializer_deserializePublicKey(this.cCtx, publicKeyData);
+    }
+
+    /*
+    * Deserialize given private key as an interchangeable format to the object.
+    */
+    public RawKey deserializePrivateKey(byte[] privateKeyData) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyDefaultDeserializer_deserializePrivateKey(this.cCtx, privateKeyData);
     }
 }
 

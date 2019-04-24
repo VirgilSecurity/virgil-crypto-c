@@ -93,6 +93,14 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_BAD_CURVE25519_PRIVATE_KEY = -220;
 
+    public static final int ERROR_BAD_SEC1_PUBLIC_KEY = -221;
+
+    public static final int ERROR_BAD_SEC1_PRIVATE_KEY = -222;
+
+    public static final int ERROR_BAD_DER_PUBLIC_KEY = -223;
+
+    public static final int ERROR_BAD_DER_PRIVATE_KEY = -224;
+
     public static final int ERROR_NO_MESSAGE_INFO = -301;
 
     public static final int ERROR_BAD_MESSAGE_INFO = -302;
