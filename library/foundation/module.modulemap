@@ -22,6 +22,7 @@ framework module VSCFoundation {
     header "vscf_iotelic_sha256.h"
     header "vscf_iotelic_sha384.h"
     header "vscf_iotelic_sha512.h"
+    header "vscf_base64.h"
     header "vscf_error.h"
     header "vscf_status.h"
     header "vscf_alg_id.h"

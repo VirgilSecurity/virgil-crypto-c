@@ -72,6 +72,7 @@ target_compile_definitions(foundation
             "VSCF_IOTELIC_PUBLIC_KEY=$<BOOL:${VSCF_IOTELIC_PUBLIC_KEY}>"
             "VSCF_IOTELIC_PRIVATE_KEY=$<BOOL:${VSCF_IOTELIC_PRIVATE_KEY}>"
             "VSCF_ERROR=$<BOOL:${VSCF_ERROR}>"
+            "VSCF_BASE64=$<BOOL:${VSCF_BASE64}>"
         PRIVATE
             $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCF_BUILD_SHARED_LIBS>
         )

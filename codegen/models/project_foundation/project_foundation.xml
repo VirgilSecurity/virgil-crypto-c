@@ -48,7 +48,7 @@
     </license>
 
     <require project="common" feature="library"/>
-    <!-- <require library="mbedtls" feature="library"/> -->
+    <require library="mbedtls" feature="library"/>
 
     <feature name="multi thread" default="on">
         Enable multi-threading safety for foundation library.
@@ -107,7 +107,7 @@
     <!-- <class name="mbedtls md"/> -->
     <!-- <class name="raw key"/> -->
     <!-- <class name="oid"/> -->
-    <!-- <class name="base64"/> -->
+    <class name="base64"/>
     <!-- <class name="pem"/> -->
     <!-- <class name="pem title"/> -->
     <!-- <class name="message info"/> -->

@@ -65,6 +65,7 @@ option(VSCF_IOTELIC_KDF2 "Enable implementation 'iotelic kdf2'." ON)
 option(VSCF_IOTELIC_PUBLIC_KEY "Enable implementation 'iotelic public key'." ON)
 option(VSCF_IOTELIC_PRIVATE_KEY "Enable implementation 'iotelic private key'." ON)
 option(VSCF_ERROR "Enable class 'error'." ON)
+option(VSCF_BASE64 "Enable class 'base64'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREAD
@@ -86,6 +87,7 @@ mark_as_advanced(
         VSCF_IOTELIC_PUBLIC_KEY
         VSCF_IOTELIC_PRIVATE_KEY
         VSCF_ERROR
+        VSCF_BASE64
         )
 
 if(VSCF_KEY AND NOT VSCF_ALG)

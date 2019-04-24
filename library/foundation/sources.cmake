@@ -170,6 +170,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_base64.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -235,6 +240,7 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_IOTELIC_SHA512}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_iotelic_sha512.h>"
             "$<$<BOOL:${VSCF_IOTELIC_SHA512}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_iotelic_sha512_internal.h>"
             "$<$<BOOL:${VSCF_IOTELIC_SHA512}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_iotelic_sha512_defs.h>"
+            "$<$<BOOL:${VSCF_BASE64}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_base64.h>"
             "$<$<BOOL:${VSCF_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_status.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_id.h"
@@ -287,6 +293,7 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_IOTELIC_SHA512}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_iotelic_sha512.c>"
             "$<$<BOOL:${VSCF_IOTELIC_SHA512}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_iotelic_sha512_internal.c>"
             "$<$<BOOL:${VSCF_IOTELIC_SHA512}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_iotelic_sha512_defs.c>"
+            "$<$<BOOL:${VSCF_BASE64}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_base64.c>"
             "$<$<BOOL:${VSCF_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_error.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_status.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_id.c"
