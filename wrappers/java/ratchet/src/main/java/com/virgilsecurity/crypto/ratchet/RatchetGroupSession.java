@@ -128,6 +128,13 @@ public class RatchetGroupSession implements AutoCloseable {
     }
 
     /*
+    * Returns number of participants.
+    */
+    public int getParticipantsCount() {
+        return RatchetJNI.INSTANCE.ratchetGroupSession_getParticipantsCount(this.cCtx);
+    }
+
+    /*
     * Sets up session. Identity private key should be set separately.
     */
     public void setupSession(RatchetGroupMessage message) throws RatchetException {

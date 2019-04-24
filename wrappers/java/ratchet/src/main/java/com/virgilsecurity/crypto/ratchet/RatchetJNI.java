@@ -185,7 +185,7 @@ public class RatchetJNI {
     * Returns public key id for some participant id.
     * This method should be called only for start group info message type.
     */
-    public native byte[] ratchetGroupMessage_getPubKeyId(long cCtx, byte[] participantId);
+    public native byte[] ratchetGroupMessage_getPubKeyId(long cCtx, byte[] participantId) throws RatchetException;
 
     /*
     * Returns message sender id.
@@ -244,12 +244,7 @@ public class RatchetJNI {
     /*
     * Generates message that should be sent to all participants using secure channel.
     */
-    public native RatchetGroupMessage ratchetGroupTicket_getComplementaryTicketMessage(long cCtx);
-
-    /*
-    * Generates message that should be sent to all participants using secure channel.
-    */
-    public native RatchetGroupMessage ratchetGroupTicket_getFullTicketMessage(long cCtx);
+    public native RatchetGroupMessage ratchetGroupTicket_getTicketMessage(long cCtx);
 
     public native long ratchetGroupSession_new();
 
@@ -296,6 +291,11 @@ public class RatchetJNI {
     public native byte[] ratchetGroupSession_getMyId(long cCtx);
 
     public native byte[] ratchetGroupSession_getId(long cCtx);
+
+    /*
+    * Returns number of participants.
+    */
+    public native int ratchetGroupSession_getParticipantsCount(long cCtx);
 
     /*
     * Sets up session. Identity private key should be set separately.

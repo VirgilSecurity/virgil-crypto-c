@@ -101,15 +101,8 @@ public class RatchetGroupTicket implements AutoCloseable {
     /*
     * Generates message that should be sent to all participants using secure channel.
     */
-    public RatchetGroupMessage getComplementaryTicketMessage() {
-        return RatchetJNI.INSTANCE.ratchetGroupTicket_getComplementaryTicketMessage(this.cCtx);
-    }
-
-    /*
-    * Generates message that should be sent to all participants using secure channel.
-    */
-    public RatchetGroupMessage getFullTicketMessage() {
-        return RatchetJNI.INSTANCE.ratchetGroupTicket_getFullTicketMessage(this.cCtx);
+    public RatchetGroupMessage getTicketMessage() {
+        return RatchetJNI.INSTANCE.ratchetGroupTicket_getTicketMessage(this.cCtx);
     }
 }
 
