@@ -139,15 +139,22 @@ VSCR_PUBLIC vscr_group_msg_type_t
 vscr_ratchet_group_message_get_type(const vscr_ratchet_group_message_t *self);
 
 //
+//  Returns session id.
+//  This method should be called only for group info type.
+//
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_group_message_get_session_id(const vscr_ratchet_group_message_t *self);
+
+//
 //  Returns number of public keys.
-//  This method should be called only for start group info message type.
+//  This method should be called only for group info message type.
 //
 VSCR_PUBLIC size_t
 vscr_ratchet_group_message_get_pub_key_count(const vscr_ratchet_group_message_t *self);
 
 //
 //  Returns public key id for some participant id.
-//  This method should be called only for start group info message type.
+//  This method should be called only for group info message type.
 //
 VSCR_PUBLIC vsc_buffer_t *
 vscr_ratchet_group_message_get_pub_key_id(const vscr_ratchet_group_message_t *self, vsc_data_t participant_id,
@@ -159,13 +166,6 @@ vscr_ratchet_group_message_get_pub_key_id(const vscr_ratchet_group_message_t *se
 //
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_group_message_get_sender_id(const vscr_ratchet_group_message_t *self);
-
-//
-//  Returns message sender id.
-//  This method should be called only for regular message type.
-//
-VSCR_PUBLIC vsc_data_t
-vscr_ratchet_group_message_get_session_id(const vscr_ratchet_group_message_t *self);
 
 //
 //  Buffer len to serialize this class.

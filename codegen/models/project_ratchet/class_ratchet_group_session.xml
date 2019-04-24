@@ -26,7 +26,7 @@
     <require impl="ctr drbg" project="foundation" scope="private"/>
 
     <dependency name="rng" interface="random" project="foundation" has_observers="1">
-        Random used to generate keys
+        Random
     </dependency>
 
     <property name="key utils" class="ratchet key utils"/>
@@ -35,7 +35,7 @@
 
     <property name="is initialized" type="boolean" access="readwrite"/>
     <property name="is private key set" type="boolean" access="readwrite"/>
-    <property name="is id set" type="boolean" access="readwrite"/>
+    <property name="is my id set" type="boolean" access="readwrite"/>
 
     <property name="session id" class="vscr_ratchet_session_id_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="my id" class="vscr_ratchet_participant_id_t" is_reference="0" library="internal" access="readwrite"/>
@@ -63,13 +63,15 @@
         <return type="boolean"/>
     </method>
 
-    <method name="is id set" is_const="1">
-        Shows whether identity private key was set.
+    <method name="is my id set" is_const="1">
+        Shows whether my id was set.
 
         <return type="boolean"/>
     </method>
 
     <method name="get current epoch" is_const="1">
+        Returns current epoch.
+
         <return type="size"/>
     </method>
 
@@ -92,17 +94,21 @@
         </return>
     </method>
 
-    <method name="set id">
-        Sets identity private key.
+    <method name="set my id">
+        Sets my id.
 
         <argument name="my id" class="data"/>
     </method>
 
     <method name="get my id" is_const="1">
+        Returns my id.
+
         <return class="data"/>
     </method>
 
-    <method name="get id" is_const="1">
+    <method name="get session id" is_const="1">
+        Returns session id.
+
         <return class="data"/>
     </method>
 
@@ -118,7 +124,8 @@
     </method>
 
     <method name="setup session">
-        Sets up session. Identity private key should be set separately.
+        Sets up session.
+        NOTE: Identity private key and my id should be set separately.
 
         <argument name="message" class="ratchet group message">
             Message with group info obtained through secure channel.
@@ -133,7 +140,7 @@
         Encrypts data
 
         <argument name="plain text" class="data">
-            Data to encrypt
+            Data to encrypt. Should be less than maximum allowed value.
         </argument>
 
         <argument name="error" class="error" access="readwrite">
@@ -193,6 +200,7 @@
 
     <method name="serialize" is_const="1">
         Serializes session to buffer
+        NOTE: Session changes its state every encrypt/decrypt operations. Be sure to save it.
 
         <argument name="output" class="buffer">
             Buffer to store session
@@ -203,7 +211,11 @@
 
     <method name="deserialize" is_static="1">
         Deserializes session from buffer.
-        NOTE: Deserialized session needs dependencies to be set. Check setup defaults
+        NOTE: Deserialized session needs dependencies to be set.
+        You should set separately:
+            - rng
+            - my id
+            - my private key
 
         <argument name="input" class="data">
             Serialized session data
@@ -237,11 +249,16 @@
         <argument name="info" class="MessageParticipantInfo" library="nanopb"/>
     </method>
 
-    <method name="create group ticket for adding members" is_const="1">
+    <method name="create group ticket for adding participants" is_const="1">
+        Creates ticket for adding participants to this session.
+        NOTE: This ticket is not suitable for removing participants from this session.
+
         <return class="ratchet group ticket" access="disown"/>
     </method>
 
-    <method name="create group ticket for adding or removing members" is_const="1">
+    <method name="create group ticket for adding or removing participants" is_const="1">
+        Creates ticket for adding and or removing participants to/from this session.
+
         <argument name="error" class="error" access="readwrite">
             Error context to return error
         </argument>

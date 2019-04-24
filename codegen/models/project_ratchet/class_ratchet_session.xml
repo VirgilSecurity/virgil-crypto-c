@@ -115,6 +115,7 @@
 
         <argument name="plain text" class="data">
             Data to encrypt
+            NOTE: Plain text should be less than allowed maximum value
         </argument>
 
         <argument name="error" class="error" access="readwrite">

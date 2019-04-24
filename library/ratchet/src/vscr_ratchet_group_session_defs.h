@@ -112,7 +112,7 @@ struct vscr_ratchet_group_session_t {
 
     bool is_private_key_set;
 
-    bool is_id_set;
+    bool is_my_id_set;
 
     vscr_ratchet_session_id_t session_id;
 

@@ -47,7 +47,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Group ticket used to start group session.
+//  Group ticket used to start group session or change participants.
 // --------------------------------------------------------------------------
 
 #ifndef VSCR_RATCHET_GROUP_TICKET_H_INCLUDED
@@ -168,11 +168,14 @@ vscr_ratchet_group_ticket_release_rng(vscr_ratchet_group_ticket_t *self);
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_ticket_setup_defaults(vscr_ratchet_group_ticket_t *self) VSCR_NODISCARD;
 
+//
+//  Set this ticket to start new group session.
+//
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_ticket_setup_ticket_as_new(vscr_ratchet_group_ticket_t *self) VSCR_NODISCARD;
 
 //
-//  Adds participant to chat.
+//  Add new participant to chat.
 //
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_ticket_add_new_participant(vscr_ratchet_group_ticket_t *self, vsc_data_t participant_id,

@@ -84,17 +84,7 @@ test__serialization__1_out_of_order_msg__decrypted_should_match(void) {
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(text2), plain_text2);
 
-    size_t session_len = vscr_ratchet_session_serialize_len(session_bob);
-
-    vsc_buffer_t *session_buffer = vsc_buffer_new_with_capacity(session_len);
-    vscr_ratchet_session_serialize(session_bob, session_buffer);
-
-    vscr_ratchet_session_destroy(&session_bob);
-
-    session_bob = vscr_ratchet_session_deserialize(vsc_buffer_data(session_buffer), &error);
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error.status);
-    vscr_ratchet_session_use_rng(session_bob, vscf_ctr_drbg_impl(rng));
-    vsc_buffer_destroy(&session_buffer);
+    restore_session(rng, &session_bob);
 
     size_t len1 = vscr_ratchet_session_decrypt_len(session_bob, ratchet_message1);
     vsc_buffer_t *plain_text1 = vsc_buffer_new_with_capacity(len1);

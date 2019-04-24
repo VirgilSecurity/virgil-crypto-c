@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Group ticket used to start group session.
+//  Group ticket used to start group session or change participants.
 // --------------------------------------------------------------------------
 
 
@@ -327,6 +327,9 @@ vscr_ratchet_group_ticket_setup_ticket_internal(
     self->msg->message_pb.group_info.epoch = epoch;
 }
 
+//
+//  Set this ticket to start new group session.
+//
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_ticket_setup_ticket_as_new(vscr_ratchet_group_ticket_t *self) {
 
@@ -357,7 +360,7 @@ err:
 }
 
 //
-//  Adds participant to chat.
+//  Add new participant to chat.
 //
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_ticket_add_new_participant(

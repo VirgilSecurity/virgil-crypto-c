@@ -57,4 +57,23 @@
         <return enum="status"/>
     </method>
 
+    <method name="pad then encrypt" scope="private">
+        <argument name="padding" class="ratchet padding" access="readwrite"/>
+        <argument name="data" class="data"/>
+        <argument name="key" class="ratchet message key"/>
+        <argument name="ad" class="data"/>
+        <argument name="cipher text" class="buffer" access="readwrite"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="decrypt then remove pad" scope="private">
+        <argument name="data" class="data"/>
+        <argument name="key" class="ratchet message key"/>
+        <argument name="ad" class="data"/>
+        <argument name="plain text" class="buffer" access="readwrite"/>
+
+        <return enum="status"/>
+    </method>
+
 </class>

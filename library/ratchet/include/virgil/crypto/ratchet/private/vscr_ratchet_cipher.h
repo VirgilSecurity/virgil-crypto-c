@@ -49,6 +49,8 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_typedefs.h"
+#include "vscr_ratchet_padding.h"
+#include "vscr_ratchet_message_key.h"
 #include "vscr_status.h"
 
 #include <RatchetMessage.pb.h>
@@ -142,6 +144,15 @@ vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, const vscr_ratchet_symm
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, const vscr_ratchet_symmetric_key_t key, vsc_data_t cipher_text,
         vsc_data_t additional_data, vsc_buffer_t *buffer) VSCR_NODISCARD;
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_cipher_pad_then_encrypt(vscr_ratchet_cipher_t *self, vscr_ratchet_padding_t *padding, vsc_data_t data,
+        const vscr_ratchet_message_key_t *key, vsc_data_t ad, vsc_buffer_t *cipher_text) VSCR_NODISCARD;
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_cipher_decrypt_then_remove_pad(vscr_ratchet_cipher_t *self,
+        vsc_data_t data, const vscr_ratchet_message_key_t *key, vsc_data_t ad,
+        vsc_buffer_t *plain_text) VSCR_NODISCARD;
 
 
 // --------------------------------------------------------------------------

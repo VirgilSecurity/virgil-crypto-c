@@ -79,10 +79,7 @@
         <return type="boolean"/>
     </method>
 
-    <method name="set pb encode callback" declaration="private">
-    </method>
-
-    <method name="set pb decode callback" declaration="private">
-    </method>
+    <method name="set pb encode callback" declaration="private"/>
+    <method name="set pb decode callback" declaration="private"/>
 
 </class>

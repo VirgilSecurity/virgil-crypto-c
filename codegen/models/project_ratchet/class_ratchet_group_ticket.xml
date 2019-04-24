@@ -1,5 +1,5 @@
 <class name="ratchet group ticket" context="private">
-    Group ticket used to start group session.
+    Group ticket used to start group session or change participants.
 
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
@@ -41,11 +41,13 @@
     </method>
 
     <method name="setup ticket as new">
+        Set this ticket to start new group session.
+
         <return enum="status"/>
     </method>
 
     <method name="add new participant">
-        Adds participant to chat.
+        Add new participant to chat.
 
         <argument name="participant id" class="data">
             Participant's 32-byte identifier.

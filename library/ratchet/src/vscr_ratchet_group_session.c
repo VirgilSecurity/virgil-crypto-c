@@ -240,7 +240,7 @@ vscr_ratchet_group_session_shallow_copy(vscr_ratchet_group_session_t *self) {
 }
 
 //
-//  Random used to generate keys
+//  Random
 //
 //  Note, ownership is shared.
 //
@@ -259,7 +259,7 @@ vscr_ratchet_group_session_use_rng(vscr_ratchet_group_session_t *self, vscf_impl
 }
 
 //
-//  Random used to generate keys
+//  Random
 //
 //  Note, ownership is transfered.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
@@ -314,7 +314,7 @@ vscr_ratchet_group_session_init_ctx(vscr_ratchet_group_session_t *self) {
     self->padding = vscr_ratchet_padding_new();
     self->is_initialized = false;
     self->is_private_key_set = false;
-    self->is_id_set = false;
+    self->is_my_id_set = false;
 }
 
 //
@@ -386,16 +386,19 @@ vscr_ratchet_group_session_is_private_key_set(const vscr_ratchet_group_session_t
 }
 
 //
-//  Shows whether identity private key was set.
+//  Shows whether my id was set.
 //
 VSCR_PUBLIC bool
-vscr_ratchet_group_session_is_id_set(const vscr_ratchet_group_session_t *self) {
+vscr_ratchet_group_session_is_my_id_set(const vscr_ratchet_group_session_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    return self->is_id_set;
+    return self->is_my_id_set;
 }
 
+//
+//  Returns current epoch.
+//
 VSCR_PUBLIC size_t
 vscr_ratchet_group_session_get_current_epoch(const vscr_ratchet_group_session_t *self) {
 
@@ -462,30 +465,36 @@ err:
 }
 
 //
-//  Sets identity private key.
+//  Sets my id.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_session_set_id(vscr_ratchet_group_session_t *self, vsc_data_t my_id) {
+vscr_ratchet_group_session_set_my_id(vscr_ratchet_group_session_t *self, vsc_data_t my_id) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(my_id.len == vscr_ratchet_common_PARTICIPANT_ID_LEN);
 
     memcpy(self->my_id, my_id.bytes, sizeof(self->my_id));
 
-    self->is_id_set = true;
+    self->is_my_id_set = true;
 }
 
+//
+//  Returns my id.
+//
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_group_session_get_my_id(const vscr_ratchet_group_session_t *self) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(self->is_id_set);
+    VSCR_ASSERT(self->is_my_id_set);
 
     return vsc_data(self->my_id, sizeof(self->my_id));
 }
 
+//
+//  Returns session id.
+//
 VSCR_PUBLIC vsc_data_t
-vscr_ratchet_group_session_get_id(const vscr_ratchet_group_session_t *self) {
+vscr_ratchet_group_session_get_session_id(const vscr_ratchet_group_session_t *self) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(self->is_initialized);
@@ -512,7 +521,7 @@ vscr_ratchet_group_session_check_session_consistency(
     VSCR_ASSERT_PTR(self->key_utils);
     VSCR_ASSERT_PTR(message);
     VSCR_ASSERT(message->message_pb.has_group_info);
-    VSCR_ASSERT(self->is_id_set);
+    VSCR_ASSERT(self->is_my_id_set);
     VSCR_ASSERT(self->is_private_key_set);
 
     const MessageGroupInfo *group_info = &message->message_pb.group_info;
@@ -526,19 +535,19 @@ vscr_ratchet_group_session_check_session_consistency(
 
     // Compare participants in session and in message
     bool i_participate = false;
-    size_t present_members = 0;
+    size_t present_participants = 0;
     for (size_t i = 0; i < group_info->participants_count; i++) {
         const MessageParticipantInfo *info = &group_info->participants[i];
 
         if (memcmp(info->id, self->my_id, sizeof(self->my_id)) == 0) {
             i_participate = true;
-            present_members++;
+            present_participants++;
         } else if (vscr_ratchet_group_session_find_participant(self, info->id) != self->participants_count) {
-            present_members++;
+            present_participants++;
         }
     }
 
-    bool all_participants_are_present = present_members == self->participants_count + 1;
+    bool all_participants_are_present = present_participants == self->participants_count + 1;
 
     // Updating session
     if (self->is_initialized) {
@@ -570,7 +579,8 @@ vscr_ratchet_group_session_check_session_consistency(
 }
 
 //
-//  Sets up session. Identity private key should be set separately.
+//  Sets up session.
+//  NOTE: Identity private key and my id should be set separately.
 //
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_session_setup_session(
@@ -580,7 +590,7 @@ vscr_ratchet_group_session_setup_session(
     VSCR_ASSERT_PTR(self->key_utils);
     VSCR_ASSERT_PTR(message);
     VSCR_ASSERT(message->message_pb.has_group_info);
-    VSCR_ASSERT(self->is_id_set);
+    VSCR_ASSERT(self->is_my_id_set);
     VSCR_ASSERT(self->is_private_key_set);
 
     vscr_status_t status = vscr_ratchet_group_session_check_session_consistency(self, message);
@@ -603,7 +613,6 @@ vscr_ratchet_group_session_setup_session(
         self->participants_count = 0;
 
         self->participants = vscr_alloc(len * sizeof(vscr_ratchet_group_participant_data_t *));
-        vscr_zeroize(self->participants, len * sizeof(vscr_ratchet_group_participant_data_t *));
 
         // Save old participants
         for (size_t i = 0; i < old_count; i++) {
@@ -635,7 +644,6 @@ vscr_ratchet_group_session_setup_session(
         vscr_dealloc(old_participants);
     } else {
         self->participants = vscr_alloc(len * sizeof(vscr_ratchet_group_participant_data_t *));
-        vscr_zeroize(self->participants, len * sizeof(vscr_ratchet_group_participant_data_t *));
     }
 
     for (size_t i = 0; i < group_info->participants_count; i++) {
@@ -693,10 +701,8 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     VSCR_ASSERT_PTR(self->my_epoch);
     VSCR_ASSERT_PTR(self->my_epoch->chain_key);
     VSCR_ASSERT(self->is_initialized);
-    VSCR_ASSERT(self->is_id_set);
+    VSCR_ASSERT(self->is_my_id_set);
     VSCR_ASSERT(self->is_private_key_set);
-
-    // TODO: Add padding
 
     if (plain_text.len > vscr_ratchet_common_MAX_PLAIN_TEXT_LEN) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_EXCEEDED_MAX_PLAIN_TEXT_LEN);
@@ -806,7 +812,7 @@ vscr_ratchet_group_session_decrypt(
     VSCR_ASSERT_PTR(plain_text);
     VSCR_ASSERT(vscr_ratchet_group_message_get_type(message) == vscr_group_msg_type_REGULAR);
     VSCR_ASSERT(self->is_initialized);
-    VSCR_ASSERT(self->is_id_set);
+    VSCR_ASSERT(self->is_my_id_set);
     VSCR_ASSERT(self->is_private_key_set);
 
     const RegularGroupMessage *group_message = &message->message_pb.regular_message;
@@ -984,6 +990,7 @@ vscr_ratchet_group_session_serialize_len(const vscr_ratchet_group_session_t *sel
 
 //
 //  Serializes session to buffer
+//  NOTE: Session changes its state every encrypt/decrypt operations. Be sure to save it.
 //
 VSCR_PUBLIC void
 vscr_ratchet_group_session_serialize(const vscr_ratchet_group_session_t *self, vsc_buffer_t *output) {
@@ -992,7 +999,7 @@ vscr_ratchet_group_session_serialize(const vscr_ratchet_group_session_t *self, v
     VSCR_ASSERT_PTR(self->my_epoch);
     VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_group_session_serialize_len(self));
     VSCR_ASSERT(self->is_initialized);
-    VSCR_ASSERT(self->is_id_set);
+    VSCR_ASSERT(self->is_my_id_set);
 
     GroupSession *session_pb = vscr_alloc(sizeof(GroupSession));
 
@@ -1021,7 +1028,11 @@ vscr_ratchet_group_session_serialize(const vscr_ratchet_group_session_t *self, v
 
 //
 //  Deserializes session from buffer.
-//  NOTE: Deserialized session needs dependencies to be set. Check setup defaults
+//  NOTE: Deserialized session needs dependencies to be set.
+//  You should set separately:
+//      - rng
+//      - my id
+//      - my private key
 //
 VSCR_PUBLIC vscr_ratchet_group_session_t *
 vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error) {
@@ -1050,7 +1061,7 @@ vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     session = vscr_ratchet_group_session_new();
 
     session->is_initialized = true;
-    session->is_id_set = true;
+    session->is_my_id_set = true;
 
     memcpy(session->session_id, session_pb->session_id, sizeof(session->session_id));
     memcpy(session->my_id, session_pb->my_id, sizeof(session->my_id));
@@ -1134,8 +1145,12 @@ vscr_ratchet_group_session_add_new_participant(
     vscr_ratchet_group_session_update_participant(participant, epoch, info);
 }
 
+//
+//  Creates ticket for adding participants to this session.
+//  NOTE: This ticket is not suitable for removing participants from this session.
+//
 VSCR_PUBLIC vscr_ratchet_group_ticket_t *
-vscr_ratchet_group_session_create_group_ticket_for_adding_members(const vscr_ratchet_group_session_t *self) {
+vscr_ratchet_group_session_create_group_ticket_for_adding_participants(const vscr_ratchet_group_session_t *self) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->my_epoch);
@@ -1164,8 +1179,11 @@ vscr_ratchet_group_session_create_group_ticket_for_adding_members(const vscr_rat
     return ticket;
 }
 
+//
+//  Creates ticket for adding and or removing participants to/from this session.
+//
 VSCR_PUBLIC vscr_ratchet_group_ticket_t *
-vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_members(
+vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants(
         const vscr_ratchet_group_session_t *self, vscr_error_t *error) {
 
     VSCR_ASSERT_PTR(self);

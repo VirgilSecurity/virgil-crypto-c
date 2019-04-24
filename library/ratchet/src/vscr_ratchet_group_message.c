@@ -268,35 +268,22 @@ vscr_ratchet_group_message_get_type(const vscr_ratchet_group_message_t *self) {
     }
 }
 
-VSCR_PUBLIC void
-vscr_ratchet_group_message_set_type(vscr_ratchet_group_message_t *self, vscr_group_msg_type_t type) {
+//
+//  Returns session id.
+//  This method should be called only for group info type.
+//
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_group_message_get_session_id(const vscr_ratchet_group_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->message_pb.has_group_info);
 
-    GroupMessage msg = GroupMessage_init_zero;
-    self->message_pb = msg;
-
-    switch (type) {
-    case vscr_group_msg_type_REGULAR:
-        self->message_pb.has_regular_message = true;
-        self->message_pb.has_group_info = false;
-        self->header_pb = vscr_alloc(sizeof(RegularGroupMessageHeader));
-        RegularGroupMessageHeader hdr = RegularGroupMessageHeader_init_zero;
-        *self->header_pb = hdr;
-        break;
-
-    case vscr_group_msg_type_GROUP_INFO:
-        self->message_pb.has_regular_message = false;
-        self->message_pb.has_group_info = true;
-        break;
-    }
-
-    vscr_ratchet_group_message_set_pb_encode_callback(self);
+    return vsc_data(self->message_pb.group_info.session_id, sizeof(self->message_pb.group_info.session_id));
 }
 
 //
 //  Returns number of public keys.
-//  This method should be called only for start group info message type.
+//  This method should be called only for group info message type.
 //
 VSCR_PUBLIC size_t
 vscr_ratchet_group_message_get_pub_key_count(const vscr_ratchet_group_message_t *self) {
@@ -309,7 +296,7 @@ vscr_ratchet_group_message_get_pub_key_count(const vscr_ratchet_group_message_t 
 
 //
 //  Returns public key id for some participant id.
-//  This method should be called only for start group info message type.
+//  This method should be called only for group info message type.
 //
 VSCR_PUBLIC vsc_buffer_t *
 vscr_ratchet_group_message_get_pub_key_id(
@@ -359,17 +346,30 @@ vscr_ratchet_group_message_get_sender_id(const vscr_ratchet_group_message_t *sel
     return vsc_data(self->header_pb->sender_id, sizeof(self->header_pb->sender_id));
 }
 
-//
-//  Returns message sender id.
-//  This method should be called only for regular message type.
-//
-VSCR_PUBLIC vsc_data_t
-vscr_ratchet_group_message_get_session_id(const vscr_ratchet_group_message_t *self) {
+VSCR_PUBLIC void
+vscr_ratchet_group_message_set_type(vscr_ratchet_group_message_t *self, vscr_group_msg_type_t type) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(self->message_pb.has_group_info);
 
-    return vsc_data(self->message_pb.group_info.session_id, sizeof(self->message_pb.group_info.session_id));
+    GroupMessage msg = GroupMessage_init_zero;
+    self->message_pb = msg;
+
+    switch (type) {
+    case vscr_group_msg_type_REGULAR:
+        self->message_pb.has_regular_message = true;
+        self->message_pb.has_group_info = false;
+        self->header_pb = vscr_alloc(sizeof(RegularGroupMessageHeader));
+        RegularGroupMessageHeader hdr = RegularGroupMessageHeader_init_zero;
+        *self->header_pb = hdr;
+        break;
+
+    case vscr_group_msg_type_GROUP_INFO:
+        self->message_pb.has_regular_message = false;
+        self->message_pb.has_group_info = true;
+        break;
+    }
+
+    vscr_ratchet_group_message_set_pb_encode_callback(self);
 }
 
 //

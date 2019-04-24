@@ -369,21 +369,12 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet
 
     vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(new_chain_key);
 
-    size_t size = vscr_ratchet_cipher_decrypt_len(self->cipher, vsc_buffer_len(message->cipher_text.arg));
-    vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
-    vsc_buffer_make_secure(temp);
-
-    vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher, message_key->key,
-            vsc_buffer_data(message->cipher_text.arg), vsc_data(message->header.bytes, message->header.size), temp);
+    vscr_status_t result =
+            vscr_ratchet_cipher_decrypt_then_remove_pad(self->cipher, vsc_buffer_data(message->cipher_text.arg),
+                    message_key, vsc_data(message->header.bytes, message->header.size), buffer);
 
     vscr_ratchet_chain_key_destroy(&new_chain_key);
     vscr_ratchet_message_key_destroy(&message_key);
-
-    if (result == vscr_status_SUCCESS) {
-        result = vscr_ratchet_padding_remove_padding(vsc_buffer_data(temp), buffer);
-    }
-
-    vsc_buffer_destroy(&temp);
 
     return result;
 }
@@ -535,19 +526,6 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
 
     vscr_ratchet_keys_advance_chain_key(&self->sender_chain->chain_key);
 
-    size_t size = vscr_ratchet_padding_padded_len(plain_text.len);
-    vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
-    vsc_buffer_make_secure(temp);
-
-    memcpy(vsc_buffer_unused_bytes(temp), plain_text.bytes, plain_text.len);
-    vsc_buffer_inc_used(temp, plain_text.len);
-
-    result = vscr_ratchet_padding_add_padding(self->padding, temp);
-
-    if (result != vscr_status_SUCCESS) {
-        goto err3;
-    }
-
     regular_message_header->counter = message_key->index;
     regular_message_header->prev_chain_count = self->prev_sender_chain_count;
 
@@ -559,15 +537,12 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
 
     regular_message->header.size = ostream.bytes_written;
 
-    result = vscr_ratchet_cipher_encrypt(self->cipher, message_key->key, vsc_buffer_data(temp),
+    result = vscr_ratchet_cipher_pad_then_encrypt(self->cipher, self->padding, plain_text, message_key,
             vsc_data(regular_message->header.bytes, regular_message->header.size), regular_message->cipher_text.arg);
 
     if (result != vscr_status_SUCCESS) {
-        goto err3;
+        goto err2;
     }
-
-err3:
-    vsc_buffer_destroy(&temp);
 
 err2:
     vscr_ratchet_message_key_destroy(&message_key);
@@ -609,20 +584,9 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
                 return vscr_status_ERROR_SKIPPED_MESSAGE_MISSING;
             }
         } else {
-            size_t size =
-                    vscr_ratchet_cipher_decrypt_len(self->cipher, vsc_buffer_len(regular_message->cipher_text.arg));
-            vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
-            vsc_buffer_make_secure(temp);
-
-            vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher, skipped_message_key->key,
-                    vsc_buffer_data(regular_message->cipher_text.arg),
-                    vsc_data(regular_message->header.bytes, regular_message->header.size), temp);
-
-            if (result == vscr_status_SUCCESS) {
-                result = vscr_ratchet_padding_remove_padding(vsc_buffer_data(temp), plain_text);
-            }
-
-            vsc_buffer_destroy(&temp);
+            vscr_status_t result = vscr_ratchet_cipher_decrypt_then_remove_pad(self->cipher,
+                    vsc_buffer_data(regular_message->cipher_text.arg), skipped_message_key,
+                    vsc_data(regular_message->header.bytes, regular_message->header.size), plain_text);
 
             if (result != vscr_status_SUCCESS) {
                 return result;

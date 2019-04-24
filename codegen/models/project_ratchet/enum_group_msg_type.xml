@@ -6,7 +6,7 @@
         Should be distributed only using secure channels.
     </constant>
 
-    <constant name="regular" value="3">
+    <constant name="regular" value="2">
         Regular group ratchet message with cipher text.
     </constant>
 

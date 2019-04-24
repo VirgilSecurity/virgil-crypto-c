@@ -80,7 +80,7 @@ enum vscr_group_msg_type_t {
     //
     //  Regular group ratchet message with cipher text.
     //
-    vscr_group_msg_type_REGULAR = 3
+    vscr_group_msg_type_REGULAR = 2
 };
 typedef enum vscr_group_msg_type_t vscr_group_msg_type_t;
 

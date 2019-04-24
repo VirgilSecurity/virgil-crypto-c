@@ -353,5 +353,7 @@ vscr_ratchet_skipped_messages_deserialize(
         memcpy(skipped_messages->public_keys[i], root_pb->public_key, sizeof(skipped_messages->public_keys[i]));
 
         vscr_ratchet_skipped_messages_root_node_deserialize(root_pb->message_keys, root_pb->message_keys_count, root);
+
+        skipped_messages->root_nodes[i] = root;
     }
 }
