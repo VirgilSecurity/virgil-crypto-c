@@ -49,13 +49,14 @@
 
         <interface name="key serializer"/>
 
+        <require interface="alg"/>
         <require interface="public key"/>
         <require interface="private key"/>
+        <require enum="asn1 tag"/>
         <require class="oid"/>
         <require class="asn1wr"/>
-        <require enum="asn1 tag"/>
-        <require interface="alg"/>
         <require impl="alg info der serializer"/>
+        <require impl="ec alg info"/>
 
         <property name="alg info der serializer" impl="alg info der serializer"/>
 

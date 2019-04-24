@@ -246,7 +246,7 @@ vscf_secp256r1_public_key_encrypt(vscf_secp256r1_public_key_t *self, vsc_data_t 
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_secp256r1_public_key_encrypted_len(self, data.len));
-    VSCF_ASSERT(mbedtls_ecp_check_pubkey(&self->ecp_group, &self->ecp));
+    VSCF_ASSERT(0 == mbedtls_ecp_check_pubkey(&self->ecp_group, &self->ecp));
 
     vscf_ecies_use_encryption_key(self->ecies, vscf_secp256r1_public_key_impl(self));
     vscf_status_t status = vscf_ecies_encrypt(self->ecies, data, out);
@@ -282,7 +282,7 @@ vscf_secp256r1_public_key_verify_hash(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(hash_digest));
     VSCF_ASSERT(vsc_data_is_valid(signature));
-    VSCF_ASSERT(mbedtls_ecp_check_pubkey(&self->ecp_group, &self->ecp));
+    VSCF_ASSERT(0 == mbedtls_ecp_check_pubkey(&self->ecp_group, &self->ecp));
     VSCF_UNUSED(hash_id);
 
     mbedtls_ecdsa_context ctx;
@@ -310,7 +310,7 @@ vscf_secp256r1_public_key_export_public_key(const vscf_secp256r1_public_key_t *s
     //
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(mbedtls_ecp_check_pubkey(&self->ecp_group, &self->ecp));
+    VSCF_ASSERT(0 == mbedtls_ecp_check_pubkey(&self->ecp_group, &self->ecp));
 
     size_t out_len = 0;
     int status = mbedtls_ecp_point_write_binary(&self->ecp_group, &self->ecp, MBEDTLS_ECP_PF_UNCOMPRESSED, &out_len,

@@ -53,13 +53,14 @@
 #include "vscf_sec1_serializer.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_alg.h"
 #include "vscf_public_key.h"
 #include "vscf_private_key.h"
+#include "vscf_asn1_tag.h"
 #include "vscf_oid.h"
 #include "vscf_asn1wr.h"
-#include "vscf_asn1_tag.h"
-#include "vscf_alg.h"
 #include "vscf_alg_info_der_serializer.h"
+#include "vscf_ec_alg_info.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_sec1_serializer_defs.h"
 #include "vscf_sec1_serializer_internal.h"
@@ -182,12 +183,12 @@ vscf_sec1_serializer_serialize_public_key_inplace(
     //
     //  Write key
     //
-    vsc_buffer_t *exportedKey = vsc_buffer_new_with_capacity(vscf_public_key_exported_public_key_len(public_key));
-    vscf_status_t status = vscf_public_key_export_public_key(public_key, exportedKey);
+    vsc_buffer_t *exported_key = vsc_buffer_new_with_capacity(vscf_public_key_exported_public_key_len(public_key));
+    vscf_status_t status = vscf_public_key_export_public_key(public_key, exported_key);
 
-    len += vscf_asn1_writer_write_octet_str_as_bitstring(self->asn1_writer, vsc_buffer_data(exportedKey));
+    len += vscf_asn1_writer_write_octet_str_as_bitstring(self->asn1_writer, vsc_buffer_data(exported_key));
 
-    vsc_buffer_destroy(&exportedKey);
+    vsc_buffer_destroy(&exported_key);
 
     if (status != vscf_status_SUCCESS) {
         VSCF_ERROR_SAFE_UPDATE(error, status);
@@ -226,8 +227,8 @@ vscf_sec1_serializer_serialize_private_key_inplace(
     //  ECPrivateKey ::= SEQUENCE {
     //      version INTEGER { ecPrivkeyVer1(1) } (ecPrivkeyVer1),
     //      privateKey OCTET STRING,
-    //      parameters [0] ECParameters {{ NamedCurve }} OPTIONAL, -- not used in this implementation
-    //      publicKey [1] BIT STRING OPTIONAL -- not used in this implementation
+    //      parameters [0] ECParameters {{ NamedCurve }} OPTIONAL,
+    //      publicKey [1] BIT STRING OPTIONAL
     //  }
 
     VSCF_ASSERT_PTR(self);
@@ -245,14 +246,44 @@ vscf_sec1_serializer_serialize_private_key_inplace(
     size_t len = 0;
 
     //
+    //  Write publicKey[1]
+    //
+    vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
+    vsc_buffer_t *exported_public_key =
+            vsc_buffer_new_with_capacity(vscf_public_key_exported_public_key_len(public_key));
+
+    vscf_status_t status = vscf_public_key_export_public_key(public_key, exported_public_key);
+    VSCF_ASSERT(status == vscf_status_SUCCESS);
+
+    size_t public_key_written_len =
+            vscf_asn1_writer_write_octet_str_as_bitstring(self->asn1_writer, vsc_buffer_data(exported_public_key));
+
+    vscf_impl_destroy(&public_key);
+    vsc_buffer_destroy(&exported_public_key);
+    len += public_key_written_len + vscf_asn1_writer_write_context_tag(self->asn1_writer, 1, public_key_written_len);
+
+    //
+    //  Write parameters[0]
+    //
+    vscf_impl_t *alg_info = vscf_alg_produce_alg_info(private_key);
+    VSCF_ASSERT(vscf_impl_tag(alg_info) == vscf_impl_tag_EC_ALG_INFO);
+    const vscf_oid_id_t named_curve_id = vscf_ec_alg_info_domain_id((const vscf_ec_alg_info_t *)alg_info);
+    vscf_impl_destroy(&alg_info);
+
+    vsc_data_t named_curve_oid = vscf_oid_from_id(named_curve_id);
+    size_t named_curve_written_len = vscf_asn1_writer_write_oid(self->asn1_writer, named_curve_oid);
+    len += named_curve_written_len + vscf_asn1_writer_write_context_tag(self->asn1_writer, 0, named_curve_written_len);
+
+    //
     //  Write key
     //
-    vsc_buffer_t *exportedKey = vsc_buffer_new_with_capacity(vscf_private_key_exported_private_key_len(private_key));
-    vscf_status_t status = vscf_private_key_export_private_key(private_key, exportedKey);
+    vsc_buffer_t *exported_key = vsc_buffer_new_with_capacity(vscf_private_key_exported_private_key_len(private_key));
+    status = vscf_private_key_export_private_key(private_key, exported_key);
+    VSCF_ASSERT(status == vscf_status_SUCCESS);
 
-    len += vscf_asn1_writer_write_octet_str(self->asn1_writer, vsc_buffer_data(exportedKey));
+    len += vscf_asn1_writer_write_octet_str(self->asn1_writer, vsc_buffer_data(exported_key));
 
-    vsc_buffer_destroy(&exportedKey);
+    vsc_buffer_destroy(&exported_key);
 
     if (status != vscf_status_SUCCESS) {
         VSCF_ERROR_SAFE_UPDATE(error, status);
@@ -262,7 +293,7 @@ vscf_sec1_serializer_serialize_private_key_inplace(
     //
     //  Write version
     //
-    len += vscf_asn1_writer_write_int(self->asn1_writer, 0);
+    len += vscf_asn1_writer_write_int(self->asn1_writer, 1);
 
     //
     //  Write ECPrivateKey
@@ -366,11 +397,11 @@ vscf_sec1_serializer_serialized_private_key_len(vscf_sec1_serializer_t *self, co
     VSCF_ASSERT(vscf_private_key_can_export_private_key(vscf_private_key_api(private_key)));
 
     size_t wrappedKeyLen = vscf_private_key_exported_private_key_len(private_key);
-    size_t len = 1 + 1 + 2 +             //  ECPrivateKey ::= SEQUENCE {
-                 1 + 1 + 1 +             //      version INTEGER { ecPrivkeyVer1(1) } (ecPrivkeyVer1),
-                 1 + 1 + wrappedKeyLen + //      privateKey OCTET STRING,
-                 0 +                     //      parameters [0] ECParameters {{ NamedCurve }} OPTIONAL, -- not used
-                 0;                      //      publicKey [1] BIT STRING OPTIONAL } -- not used
+    size_t len = 1 + 1 + 2 +                    //  ECPrivateKey ::= SEQUENCE {
+                 1 + 1 + 1 +                    //      version INTEGER { ecPrivkeyVer1(1) } (ecPrivkeyVer1),
+                 1 + 1 + wrappedKeyLen +        //      privateKey OCTET STRING,
+                 1 + 1 + 1 + 1 + 8 +            //      parameters [0] ECParameters {{ NamedCurve }} OPTIONAL,
+                 1 + 1 + 2 * wrappedKeyLen + 2; //      publicKey [1] BIT STRING OPTIONAL }
 
     return len;
 }

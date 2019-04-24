@@ -529,7 +529,7 @@ vscf_alg_info_der_deserializer_deserialize_ec_alg_info(
         return NULL;
     }
 
-    const vscf_alg_id_t ec_alg_id = vscf_oid_id_to_alg_id(oid_id);
+    const vscf_alg_id_t ec_alg_id = vscf_oid_id_to_alg_id(named_curve_id);
     vscf_ec_alg_info_t *alg_info = vscf_ec_alg_info_new_with_members(ec_alg_id, oid_id, named_curve_id);
     return vscf_ec_alg_info_impl(alg_info);
 }

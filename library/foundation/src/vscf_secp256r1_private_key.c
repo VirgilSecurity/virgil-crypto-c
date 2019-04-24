@@ -308,7 +308,7 @@ vscf_secp256r1_private_key_sign_hash(
         vscf_secp256r1_private_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id, vsc_buffer_t *signature) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(mbedtls_ecp_check_privkey(&self->ecp_keypair.grp, &self->ecp_keypair.d));
+    VSCF_ASSERT(0 == mbedtls_ecp_check_privkey(&self->ecp_keypair.grp, &self->ecp_keypair.d));
     VSCF_ASSERT_PTR(signature);
     VSCF_ASSERT(vsc_buffer_is_valid(signature));
     VSCF_ASSERT(vsc_buffer_unused_len(signature) >= vscf_secp256r1_private_key_signature_len(self));
@@ -345,7 +345,7 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_secp256r1_private_key_extract_public_key(const vscf_secp256r1_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(mbedtls_ecp_check_pubkey(&self->ecp_keypair.grp, &self->ecp_keypair.Q));
+    VSCF_ASSERT(0 == mbedtls_ecp_check_pubkey(&self->ecp_keypair.grp, &self->ecp_keypair.Q));
 
     vscf_secp256r1_public_key_t *secp256r1_public_key = vscf_secp256r1_public_key_new();
 
@@ -382,7 +382,7 @@ vscf_secp256r1_private_key_export_private_key(const vscf_secp256r1_private_key_t
     //
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(mbedtls_ecp_check_privkey(&self->ecp_keypair.grp, &self->ecp_keypair.d));
+    VSCF_ASSERT(0 == mbedtls_ecp_check_privkey(&self->ecp_keypair.grp, &self->ecp_keypair.d));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_secp256r1_private_key_exported_private_key_len(self));
@@ -391,6 +391,8 @@ vscf_secp256r1_private_key_export_private_key(const vscf_secp256r1_private_key_t
 
     int status = mbedtls_mpi_write_binary(&self->ecp_keypair.d, vsc_buffer_unused_bytes(out), len);
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+
+    vsc_buffer_inc_used(out, len);
 
     return vscf_status_SUCCESS;
 }
@@ -402,7 +404,7 @@ VSCF_PUBLIC size_t
 vscf_secp256r1_private_key_exported_private_key_len(const vscf_secp256r1_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(mbedtls_ecp_check_privkey(&self->ecp_keypair.grp, &self->ecp_keypair.d));
+    VSCF_ASSERT(0 == mbedtls_ecp_check_privkey(&self->ecp_keypair.grp, &self->ecp_keypair.d));
 
     return mbedtls_mpi_size(&self->ecp_keypair.d);
 }
@@ -426,7 +428,7 @@ vscf_secp256r1_private_key_import_private_key(vscf_secp256r1_private_key_t *self
     status = mbedtls_mpi_read_binary(&self->ecp_keypair.d, data.bytes, data.len);
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 
-    if (mbedtls_ecp_check_privkey(&self->ecp_keypair.grp, &self->ecp_keypair.d)) {
+    if (0 != mbedtls_ecp_check_privkey(&self->ecp_keypair.grp, &self->ecp_keypair.d)) {
         return vscf_status_ERROR_BAD_SEC1_PRIVATE_KEY;
     }
 
@@ -459,7 +461,7 @@ vscf_secp256r1_private_key_compute_shared_key(
         vscf_secp256r1_private_key_t *self, const vscf_impl_t *public_key, vsc_buffer_t *shared_key) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(mbedtls_ecp_check_privkey(&self->ecp_keypair.grp, &self->ecp_keypair.d));
+    VSCF_ASSERT(0 == mbedtls_ecp_check_privkey(&self->ecp_keypair.grp, &self->ecp_keypair.d));
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_SECP256R1_PUBLIC_KEY);
     VSCF_ASSERT_PTR(shared_key);
@@ -472,7 +474,7 @@ vscf_secp256r1_private_key_compute_shared_key(
         return vscf_status_ERROR_SHARED_KEY_EXCHANGE_FAILED;
     }
 
-    VSCF_ASSERT(mbedtls_ecp_check_pubkey(&secp256r1_public_key->ecp_group, &secp256r1_public_key->ecp));
+    VSCF_ASSERT(0 == mbedtls_ecp_check_pubkey(&secp256r1_public_key->ecp_group, &secp256r1_public_key->ecp));
 
     int (*f_rng)(void *, byte *, size_t) = NULL;
     void *p_rng = NULL;

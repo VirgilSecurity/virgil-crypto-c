@@ -67,6 +67,8 @@
 #include "vscf_ed25519_private_key.h"
 #include "vscf_curve25519_public_key.h"
 #include "vscf_curve25519_private_key.h"
+#include "vscf_secp256r1_public_key.h"
+#include "vscf_secp256r1_private_key.h"
 #include "vscf_key_default_deserializer.h"
 #include "vscf_key_default_serializer.h"
 
@@ -508,6 +510,19 @@ vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t key_d
         break;
     }
 
+    case vscf_alg_id_SECP256R1: {
+        VSCF_ASSERT_PTR(self->ecies);
+        vscf_secp256r1_private_key_t *secp256r1_private_key = vscf_secp256r1_private_key_new();
+        vscf_secp256r1_private_key_use_random(secp256r1_private_key, self->random);
+        status = vscf_secp256r1_private_key_setup_defaults(secp256r1_private_key);
+        if (status != vscf_status_SUCCESS) {
+            break;
+        }
+
+        private_key = vscf_secp256r1_private_key_impl(secp256r1_private_key);
+        break;
+    }
+
     default:
         status = vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
         break;
@@ -588,6 +603,19 @@ vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t key_da
         }
 
         public_key = vscf_curve25519_public_key_impl(curve25519_public_key);
+        break;
+    }
+
+    case vscf_alg_id_SECP256R1: {
+        VSCF_ASSERT_PTR(self->ecies);
+        vscf_secp256r1_public_key_t *secp256r1_public_key = vscf_secp256r1_public_key_new();
+        vscf_secp256r1_public_key_use_random(secp256r1_public_key, self->random);
+        status = vscf_secp256r1_public_key_setup_defaults(secp256r1_public_key);
+        if (status != vscf_status_SUCCESS) {
+            break;
+        }
+
+        public_key = vscf_secp256r1_public_key_impl(secp256r1_public_key);
         break;
     }
 

@@ -78,6 +78,8 @@
 #include "vscf_ed25519_private_key.h"
 #include "vscf_curve25519_public_key.h"
 #include "vscf_curve25519_private_key.h"
+#include "vscf_secp256r1_public_key.h"
+#include "vscf_secp256r1_private_key.h"
 
 // clang-format on
 //  @end
@@ -296,6 +298,12 @@ vscf_alg_factory_create_public_key_from_raw_key(const vscf_raw_key_t *raw_key, v
         status = vscf_curve25519_public_key_setup_defaults(curve25519_public_key);
     }
 
+    if (alg_id == vscf_alg_id_SECP256R1) {
+        vscf_secp256r1_public_key_t *secp256r1_public_key = vscf_secp256r1_public_key_new();
+        public_key = vscf_secp256r1_public_key_impl(secp256r1_public_key);
+        status = vscf_secp256r1_public_key_setup_defaults(secp256r1_public_key);
+    }
+
     if (status == vscf_status_SUCCESS) {
         status = vscf_public_key_import_public_key(public_key, vscf_raw_key_data(raw_key));
     }
@@ -339,6 +347,12 @@ vscf_alg_factory_create_private_key_from_raw_key(const vscf_raw_key_t *raw_key, 
         vscf_curve25519_private_key_t *curve25519_private_key = vscf_curve25519_private_key_new();
         private_key = vscf_curve25519_private_key_impl(curve25519_private_key);
         status = vscf_curve25519_private_key_setup_defaults(curve25519_private_key);
+    }
+
+    if (alg_id == vscf_alg_id_SECP256R1) {
+        vscf_secp256r1_private_key_t *secp256r1_private_key = vscf_secp256r1_private_key_new();
+        private_key = vscf_secp256r1_private_key_impl(secp256r1_private_key);
+        status = vscf_secp256r1_private_key_setup_defaults(secp256r1_private_key);
     }
 
     if (status == vscf_status_SUCCESS) {

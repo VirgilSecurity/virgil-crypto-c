@@ -109,9 +109,9 @@ vscf_ec_alg_info_init_ctx_with_members(
 
     VSCF_ASSERT_PTR(self);
 
-    VSCF_ASSERT(self->alg_id != vscf_alg_id_NONE);
-    VSCF_ASSERT(self->key_id != vscf_oid_id_NONE);
-    VSCF_ASSERT(self->domain_id != vscf_oid_id_NONE);
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+    VSCF_ASSERT(key_id != vscf_oid_id_NONE);
+    VSCF_ASSERT(domain_id != vscf_oid_id_NONE);
 
     self->key_id = key_id;
     self->domain_id = domain_id;
