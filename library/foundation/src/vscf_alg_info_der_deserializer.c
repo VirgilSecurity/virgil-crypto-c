@@ -61,10 +61,12 @@
 #include "vscf_simple_alg_info.h"
 #include "vscf_salted_kdf_alg_info.h"
 #include "vscf_pbe_alg_info.h"
+#include "vscf_ec_alg_info.h"
 #include "vscf_alg_info.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_alg_info_der_deserializer_defs.h"
 #include "vscf_alg_info_der_deserializer_internal.h"
+#include "vscf_oid_id.h"
 
 // clang-format on
 //  @end
@@ -80,14 +82,14 @@
 //  Parse ASN.1 structure "AlgorithmIdentifier" with optional NULL parameter.
 //
 static vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_simple_alg_info(vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid,
+vscf_alg_info_der_deserializer_deserialize_simple_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id,
         vscf_error_t *error);
 
 //
 //  Parse ASN.1 structure "KeyDerivationFunction" from the ISO/IEC 18033-2.
 //
 static vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid,
+vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id,
         vscf_error_t *error);
 
 //
@@ -95,14 +97,14 @@ vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(vscf_alg_info_der_deseri
 //  https://tools.ietf.org/html/draft-housley-hkdf-oids-00.
 //
 static vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid,
+vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id,
         vscf_error_t *error);
 
 //
 //  Parse ASN.1 structure "DigestAlgorithm" from the RFC 4231.
 //
 static vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid,
+vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id,
         vscf_error_t *error);
 
 //
@@ -111,7 +113,7 @@ vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(vscf_alg_info_der_deser
 //      - defined in the RFC 5084.
 //
 static vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid,
+vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id,
         vscf_error_t *error);
 
 //
@@ -119,7 +121,7 @@ vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(vscf_alg_info_der_des
 //  defined in the RFC 8018.
 //
 static vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid,
+vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id,
         vscf_error_t *error);
 
 //
@@ -127,7 +129,15 @@ vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(vscf_alg_info_der_des
 //  defined in the RFC 8018.
 //
 static vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid,
+vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id,
+        vscf_error_t *error);
+
+//
+//  Parse ASN.1 structure "AlgorithmIdentifier" with ECParameters
+//  parameters defined in the RFC 5480.
+//
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_ec_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id,
         vscf_error_t *error);
 
 
@@ -156,7 +166,7 @@ vscf_alg_info_der_deserializer_setup_defaults(vscf_alg_info_der_deserializer_t *
 //
 static vscf_impl_t *
 vscf_alg_info_der_deserializer_deserialize_simple_alg_info(
-        vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid, vscf_error_t *error) {
+        vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error) {
 
     //  AlgorithmIdentifier ::= SEQUENCE {
     //          algorithm OBJECT IDENTIFIER,
@@ -165,7 +175,7 @@ vscf_alg_info_der_deserializer_deserialize_simple_alg_info(
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
-    VSCF_ASSERT(vsc_data_is_valid(alg_oid));
+    VSCF_ASSERT(oid_id != vscf_oid_id_NONE);
 
     //  According to RFC 5754 - Using SHA2 Algorithms with Cryptographic Message Syntax.
     //  Implementations MUST accept SHA2 AlgorithmIdentifiers with NULL parameters.
@@ -174,7 +184,7 @@ vscf_alg_info_der_deserializer_deserialize_simple_alg_info(
     vscf_status_t status = vscf_asn1_reader_status(self->asn1_reader);
 
     if (vscf_status_SUCCESS == status) {
-        vscf_alg_id_t alg_id = vscf_oid_to_alg_id(alg_oid);
+        vscf_alg_id_t alg_id = vscf_oid_id_to_alg_id(oid_id);
         return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(alg_id));
     } else {
         VSCF_ERROR_SAFE_UPDATE(error, status);
@@ -188,7 +198,7 @@ vscf_alg_info_der_deserializer_deserialize_simple_alg_info(
 //
 static vscf_impl_t *
 vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(
-        vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid, vscf_error_t *error) {
+        vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error) {
 
     //  -- From ISO/IEC 18033-2 --
     //  KeyDerivationFunction ::= AlgorithmIdentifier {{ KDFAlgorithms }}
@@ -210,7 +220,7 @@ vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
-    VSCF_ASSERT(vsc_data_is_valid(alg_oid));
+    VSCF_ASSERT(oid_id != vscf_oid_id_NONE);
 
     //  Read HashFunction.
     vscf_impl_t *hash_alg_info = vscf_alg_info_der_deserializer_deserialize_inplace(self, error);
@@ -218,11 +228,7 @@ vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(
         return NULL;
     }
 
-    const vscf_alg_id_t alg_id = vscf_oid_to_alg_id(alg_oid);
-    if (alg_id == vscf_alg_id_NONE) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        return NULL;
-    }
+    const vscf_alg_id_t alg_id = vscf_oid_id_to_alg_id(oid_id);
 
     vscf_impl_t *hash_based_alg_info =
             vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(alg_id, &hash_alg_info));
@@ -236,7 +242,7 @@ vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(
 //
 static vscf_impl_t *
 vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(
-        vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid, vscf_error_t *error) {
+        vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error) {
 
     //  KeyDevAlgs KEY-DERIVATION ::= {
     //       kda-hkdf-with-sha256 |
@@ -262,16 +268,10 @@ vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
-    VSCF_ASSERT(vsc_data_is_valid(alg_oid));
-
-    const vscf_oid_id_t oid_id = vscf_oid_to_id(alg_oid);
-    if (oid_id == vscf_oid_id_NONE) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        return NULL;
-    }
+    VSCF_ASSERT(oid_id != vscf_oid_id_NONE);
+    VSCF_UNUSED(error);
 
     vscf_alg_id_t hash_alg_id = vscf_alg_id_NONE;
-
     switch (oid_id) {
     case vscf_oid_id_HKDF_WITH_SHA256:
         hash_alg_id = vscf_alg_id_SHA256;
@@ -286,7 +286,7 @@ vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(
         break;
 
     default:
-        VSCF_ASSERT("Unexpected OID.");
+        VSCF_ASSERT(0 && "Unexpected OID.");
         break;
     }
 
@@ -302,7 +302,7 @@ vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(
 //
 static vscf_impl_t *
 vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(
-        vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid, vscf_error_t *error) {
+        vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error) {
 
     //  DigestAlgorithms ALGORITHM ::= {
     //       id-hmacWithSHA224 |
@@ -313,16 +313,10 @@ vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
-    VSCF_ASSERT(vsc_data_is_valid(alg_oid));
-
-    const vscf_oid_id_t oid_id = vscf_oid_to_id(alg_oid);
-    if (oid_id == vscf_oid_id_NONE) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        return NULL;
-    }
+    VSCF_ASSERT(oid_id != vscf_oid_id_NONE);
+    VSCF_UNUSED(error);
 
     vscf_alg_id_t hash_alg_id = vscf_alg_id_NONE;
-
     switch (oid_id) {
     case vscf_oid_id_HMAC_WITH_SHA224:
         hash_alg_id = vscf_alg_id_SHA224;
@@ -340,7 +334,7 @@ vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(
         hash_alg_id = vscf_alg_id_SHA512;
         break;
     default:
-        VSCF_ASSERT("Unexpected OID.");
+        VSCF_ASSERT(0 && "Unexpected OID.");
         break;
     }
 
@@ -363,7 +357,7 @@ vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(
 //
 static vscf_impl_t *
 vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(
-        vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid, vscf_error_t *error) {
+        vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error) {
 
     //  SymmetricAlgorithms ALGORITHM ::= {
     //          { OID id-aes256-GCM parameters GCMParameters } ,
@@ -378,9 +372,7 @@ vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
-    VSCF_ASSERT(vsc_data_is_valid(alg_oid));
-
-    vscf_alg_id_t alg_id = vscf_oid_to_alg_id(alg_oid);
+    VSCF_ASSERT(oid_id != vscf_oid_id_NONE);
 
     //  Read PARAMS, aka NONCE.
     vsc_data_t cipher_nonce = vsc_data_empty();
@@ -401,6 +393,7 @@ vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(
     }
 
     if (!vscf_asn1_reader_has_error(self->asn1_reader)) {
+        const vscf_alg_id_t alg_id = vscf_oid_id_to_alg_id(oid_id);
         return vscf_cipher_alg_info_impl(vscf_cipher_alg_info_new_with_members(alg_id, cipher_nonce));
     } else {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_asn1_reader_status(self->asn1_reader));
@@ -414,7 +407,7 @@ vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(
 //
 static vscf_impl_t *
 vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(
-        vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid, vscf_error_t *error) {
+        vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error) {
 
     //  PBKDF2Algorithms ALGORITHM-IDENTIFIER ::= {
     //      {PBKDF2-params IDENTIFIED BY id-PBKDF2},
@@ -433,10 +426,8 @@ vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
-    VSCF_ASSERT(vsc_data_is_valid(alg_oid));
+    VSCF_ASSERT(oid_id != vscf_oid_id_NONE);
 
-    const vscf_alg_id_t alg_id = vscf_oid_to_alg_id(alg_oid);
-    VSCF_ASSERT_PTR(alg_id != vscf_alg_id_NONE);
 
     //
     //  Read: PBKDF2-params.
@@ -463,7 +454,7 @@ vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(
     }
 
     vscf_salted_kdf_alg_info_t *pbkdf2_alg_info =
-            vscf_salted_kdf_alg_info_new_with_members(alg_id, &prf, salt, iteration_count);
+            vscf_salted_kdf_alg_info_new_with_members(vscf_alg_id_PKCS5_PBKDF2, &prf, salt, iteration_count);
 
     return vscf_salted_kdf_alg_info_impl(pbkdf2_alg_info);
 }
@@ -474,7 +465,7 @@ vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(
 //
 static vscf_impl_t *
 vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(
-        vscf_alg_info_der_deserializer_t *self, vsc_data_t alg_oid, vscf_error_t *error) {
+        vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error) {
 
     //  PBES2Algorithms ALGORITHM-IDENTIFIER ::= {
     //      {PBES2-params IDENTIFIED BY id-PBES2},
@@ -488,10 +479,7 @@ vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
-    VSCF_ASSERT(vsc_data_is_valid(alg_oid));
-
-    const vscf_alg_id_t alg_id = vscf_oid_to_alg_id(alg_oid);
-    VSCF_ASSERT_PTR(alg_id != vscf_alg_id_NONE);
+    VSCF_ASSERT(oid_id != vscf_oid_id_NONE);
 
     vscf_asn1_reader_read_sequence(self->asn1_reader);
 
@@ -506,9 +494,44 @@ vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(
         return NULL;
     }
 
-    vscf_pbe_alg_info_t *pbe = vscf_pbe_alg_info_new_with_members(alg_id, &kdf, &cipher);
+    vscf_pbe_alg_info_t *pbe = vscf_pbe_alg_info_new_with_members(vscf_alg_id_PKCS5_PBES2, &kdf, &cipher);
 
     return vscf_pbe_alg_info_impl(pbe);
+}
+
+//
+//  Parse ASN.1 structure "AlgorithmIdentifier" with ECParameters
+//  parameters defined in the RFC 5480.
+//
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_ec_alg_info(
+        vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error) {
+
+    //  ECParameters ::= CHOICE {
+    //      namedCurve OBJECT IDENTIFIER
+    //      -- implicitCurve NULL (not supported in this implementation)
+    //      -- specifiedCurve SpecifiedECDomain
+    //  }
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->asn1_reader);
+    VSCF_ASSERT(oid_id != vscf_oid_id_NONE);
+
+    vsc_data_t named_curve_oid = vscf_asn1_reader_read_oid(self->asn1_reader);
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_SEC1_PUBLIC_KEY);
+        return NULL;
+    }
+
+    const vscf_oid_id_t named_curve_id = vscf_oid_to_id(named_curve_oid);
+    if (named_curve_id == vscf_oid_id_NONE) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        return NULL;
+    }
+
+    const vscf_alg_id_t ec_alg_id = vscf_oid_id_to_alg_id(oid_id);
+    vscf_ec_alg_info_t *alg_info = vscf_ec_alg_info_new_with_members(ec_alg_id, oid_id, named_curve_id);
+    return vscf_ec_alg_info_impl(alg_info);
 }
 
 //
@@ -541,43 +564,60 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
         return NULL;
     }
 
-    vscf_alg_id_t alg_id = vscf_oid_to_alg_id(alg_oid);
-    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+    vscf_oid_id_t oid_id = vscf_oid_to_id(alg_oid);
+    if (vscf_oid_id_NONE == oid_id) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        return NULL;
+    }
 
     //
     //  Proxy further deserialization for specific algorithm.
     //
-    switch (alg_id) {
-    case vscf_alg_id_SHA224:
-    case vscf_alg_id_SHA256:
-    case vscf_alg_id_SHA384:
-    case vscf_alg_id_SHA512:
-    case vscf_alg_id_RSA:
-    case vscf_alg_id_ED25519:
-    case vscf_alg_id_CURVE25519:
-        return vscf_alg_info_der_deserializer_deserialize_simple_alg_info(self, alg_oid, error);
+    switch (oid_id) {
+    case vscf_oid_id_SHA224:
+    case vscf_oid_id_SHA256:
+    case vscf_oid_id_SHA384:
+    case vscf_oid_id_SHA512:
+    case vscf_oid_id_RSA:
+    case vscf_oid_id_ED25519:
+    case vscf_oid_id_CURVE25519:
+        return vscf_alg_info_der_deserializer_deserialize_simple_alg_info(self, oid_id, error);
 
-    case vscf_alg_id_KDF1:
-    case vscf_alg_id_KDF2:
-        return vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(self, alg_oid, error);
+    case vscf_oid_id_EC_GENERIC_KEY:
+        return vscf_alg_info_der_deserializer_deserialize_ec_alg_info(self, oid_id, error);
 
-    case vscf_alg_id_HKDF:
-        return vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(self, alg_oid, error);
+    case vscf_oid_id_KDF1:
+    case vscf_oid_id_KDF2:
+        return vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(self, oid_id, error);
 
-    case vscf_alg_id_HMAC:
-        return vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(self, alg_oid, error);
+    case vscf_oid_id_HKDF_WITH_SHA256:
+    case vscf_oid_id_HKDF_WITH_SHA384:
+    case vscf_oid_id_HKDF_WITH_SHA512:
+        return vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(self, oid_id, error);
 
-    case vscf_alg_id_AES256_GCM:
-    case vscf_alg_id_AES256_CBC:
-        return vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(self, alg_oid, error);
+    case vscf_oid_id_HMAC_WITH_SHA224:
+    case vscf_oid_id_HMAC_WITH_SHA256:
+    case vscf_oid_id_HMAC_WITH_SHA384:
+    case vscf_oid_id_HMAC_WITH_SHA512:
+        return vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(self, oid_id, error);
 
-    case vscf_alg_id_PKCS5_PBKDF2:
-        return vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(self, alg_oid, error);
+    case vscf_oid_id_AES256_GCM:
+    case vscf_oid_id_AES256_CBC:
+        return vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(self, oid_id, error);
 
-    case vscf_alg_id_PKCS5_PBES2:
-        return vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(self, alg_oid, error);
+    case vscf_oid_id_PKCS5_PBKDF2:
+        return vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(self, oid_id, error);
 
-    case vscf_alg_id_NONE:
+    case vscf_oid_id_PKCS5_PBES2:
+        return vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(self, oid_id, error);
+
+    case vscf_oid_id_CMS_DATA:
+    case vscf_oid_id_CMS_ENVELOPED_DATA:
+    case vscf_oid_id_EC_DOMAIN_SECP256R1:
+        VSCF_ASSERT(0 && "Derived OID is not an algorithm identifier.");
+        break;
+
+    case vscf_oid_id_NONE:
         VSCF_ASSERT(0 && "Unhandled alg id.");
         break;
     }

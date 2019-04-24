@@ -57,11 +57,11 @@
 #include "vscr_ratchet_common_hidden.h"
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_pkcs8_der_deserializer.h>
+#   include <virgil/crypto/foundation/vscf_key_der_deserializer.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_pkcs8_der_deserializer.h>
+#   include <VSCFoundation/vscf_key_der_deserializer.h>
 #endif
 
 // clang-format on
@@ -92,7 +92,7 @@ struct vscr_ratchet_key_utils_t {
     //
     size_t refcnt;
 
-    vscf_pkcs8_der_deserializer_t *pkcs8;
+    vscf_key_der_deserializer_t *key_der_deserializer;
 };
 
 

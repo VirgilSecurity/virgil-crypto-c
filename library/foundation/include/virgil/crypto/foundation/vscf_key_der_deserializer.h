@@ -47,11 +47,11 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'pkcs8 deserializer' implementation.
+//  This module contains 'key der deserializer' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_PKCS8_DESERIALIZER_H_INCLUDED
-#define VSCF_PKCS8_DESERIALIZER_H_INCLUDED
+#ifndef VSCF_KEY_DER_DESERIALIZER_H_INCLUDED
+#define VSCF_KEY_DER_DESERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_error.h"
@@ -84,118 +84,115 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_pkcs8_deserializer_t vscf_pkcs8_deserializer_t;
+typedef struct vscf_key_der_deserializer_t vscf_key_der_deserializer_t;
 
 //
-//  Return size of 'vscf_pkcs8_deserializer_t' type.
+//  Return size of 'vscf_key_der_deserializer_t' type.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs8_deserializer_impl_size(void);
+vscf_key_der_deserializer_impl_size(void);
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_pkcs8_deserializer_impl(vscf_pkcs8_deserializer_t *self);
+vscf_key_der_deserializer_impl(vscf_key_der_deserializer_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_deserializer_init(vscf_pkcs8_deserializer_t *self);
+vscf_key_der_deserializer_init(vscf_key_der_deserializer_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_pkcs8_deserializer_init()'.
+//  This is a reverse action of the function 'vscf_key_der_deserializer_init()'.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_deserializer_cleanup(vscf_pkcs8_deserializer_t *self);
+vscf_key_der_deserializer_cleanup(vscf_key_der_deserializer_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_pkcs8_deserializer_t *
-vscf_pkcs8_deserializer_new(void);
+VSCF_PUBLIC vscf_key_der_deserializer_t *
+vscf_key_der_deserializer_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_pkcs8_deserializer_new()'.
+//  This is a reverse action of the function 'vscf_key_der_deserializer_new()'.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_deserializer_delete(vscf_pkcs8_deserializer_t *self);
+vscf_key_der_deserializer_delete(vscf_key_der_deserializer_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_pkcs8_deserializer_new()'.
+//  This is a reverse action of the function 'vscf_key_der_deserializer_new()'.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_deserializer_destroy(vscf_pkcs8_deserializer_t **self_ref);
+vscf_key_der_deserializer_destroy(vscf_key_der_deserializer_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_pkcs8_deserializer_t *
-vscf_pkcs8_deserializer_shallow_copy(vscf_pkcs8_deserializer_t *self);
+VSCF_PUBLIC vscf_key_der_deserializer_t *
+vscf_key_der_deserializer_shallow_copy(vscf_key_der_deserializer_t *self);
 
 //
 //  Setup dependency to the interface 'asn1 reader' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_deserializer_use_asn1_reader(vscf_pkcs8_deserializer_t *self, vscf_impl_t *asn1_reader);
+vscf_key_der_deserializer_use_asn1_reader(vscf_key_der_deserializer_t *self, vscf_impl_t *asn1_reader);
 
 //
 //  Setup dependency to the interface 'asn1 reader' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_deserializer_take_asn1_reader(vscf_pkcs8_deserializer_t *self, vscf_impl_t *asn1_reader);
+vscf_key_der_deserializer_take_asn1_reader(vscf_key_der_deserializer_t *self, vscf_impl_t *asn1_reader);
 
 //
 //  Release dependency to the interface 'asn1 reader'.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_deserializer_release_asn1_reader(vscf_pkcs8_deserializer_t *self);
-
-//
-//  Setup dependency to the interface 'key deserializer' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_pkcs8_deserializer_use_der_deserializer(vscf_pkcs8_deserializer_t *self, vscf_impl_t *der_deserializer);
-
-//
-//  Setup dependency to the interface 'key deserializer' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_pkcs8_deserializer_take_der_deserializer(vscf_pkcs8_deserializer_t *self, vscf_impl_t *der_deserializer);
-
-//
-//  Release dependency to the interface 'key deserializer'.
-//
-VSCF_PUBLIC void
-vscf_pkcs8_deserializer_release_der_deserializer(vscf_pkcs8_deserializer_t *self);
+vscf_key_der_deserializer_release_asn1_reader(vscf_key_der_deserializer_t *self);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_deserializer_setup_defaults(vscf_pkcs8_deserializer_t *self);
+vscf_key_der_deserializer_setup_defaults(vscf_key_der_deserializer_t *self);
+
+//
+//  Deserialize Public Key by using internal ASN.1 reader.
+//  Note, that caller code is responsible to reset ASN.1 reader with
+//  an input buffer.
+//
+VSCF_PUBLIC vscf_raw_key_t *
+vscf_key_der_deserializer_deserialize_public_key_inplace(vscf_key_der_deserializer_t *self, vscf_error_t *error);
+
+//
+//  Deserialize Private Key by using internal ASN.1 reader.
+//  Note, that caller code is responsible to reset ASN.1 reader with
+//  an input buffer.
+//
+VSCF_PUBLIC vscf_raw_key_t *
+vscf_key_der_deserializer_deserialize_private_key_inplace(vscf_key_der_deserializer_t *self, vscf_error_t *error);
 
 //
 //  Deserialize given public key as an interchangeable format to the object.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_pkcs8_deserializer_deserialize_public_key(vscf_pkcs8_deserializer_t *self, vsc_data_t public_key_data,
+vscf_key_der_deserializer_deserialize_public_key(vscf_key_der_deserializer_t *self, vsc_data_t public_key_data,
         vscf_error_t *error);
 
 //
 //  Deserialize given private key as an interchangeable format to the object.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_pkcs8_deserializer_deserialize_private_key(vscf_pkcs8_deserializer_t *self, vsc_data_t private_key_data,
+vscf_key_der_deserializer_deserialize_private_key(vscf_key_der_deserializer_t *self, vsc_data_t private_key_data,
         vscf_error_t *error);
 
 
@@ -212,5 +209,5 @@ vscf_pkcs8_deserializer_deserialize_private_key(vscf_pkcs8_deserializer_t *self,
 
 
 //  @footer
-#endif // VSCF_PKCS8_DESERIALIZER_H_INCLUDED
+#endif // VSCF_KEY_DER_DESERIALIZER_H_INCLUDED
 //  @end

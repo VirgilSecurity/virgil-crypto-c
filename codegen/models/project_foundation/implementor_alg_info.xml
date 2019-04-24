@@ -133,4 +133,35 @@
             <return interface="alg info"/>
         </method>
     </implementation>
+
+
+    <implementation name="ec alg info">
+        Handle algorithm information about ECP.
+
+        <interface name="alg info"/>
+
+        <property name="alg id" enum="alg id"/>
+        <property name="key id" enum="oid id"/>
+        <property name="domain id" enum="oid id"/>
+
+        <constructor name="with members">
+            Create algorithm info with EC generic key identificator, EC domain group identificator.
+
+            <argument name="alg id" enum="alg id"/>
+            <argument name="key id" enum="oid id"/>
+            <argument name="domain id" enum="oid id"/>
+        </constructor>
+
+        <method name="key id" is_const="1" declaration="public">
+            Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
+
+            <return enum="oid id"/>
+        </method>
+
+        <method name="domain id" is_const="1" declaration="public">
+            Return EC domain group identificator.
+
+            <return enum="oid id"/>
+        </method>
+    </implementation>
 </implementor>

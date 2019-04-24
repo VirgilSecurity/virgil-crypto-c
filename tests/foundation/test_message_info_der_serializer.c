@@ -483,6 +483,7 @@ int
 main(void) {
     UNITY_BEGIN();
 
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__serialize__one_rsa2048_key_recipient__returns_valid_cms);
     RUN_TEST(test__serialize__one_password_recipient__returns_valid_cms);
     RUN_TEST(test__serialize__cms_with_custom_params__returns_cms_with_no_recipients_and_3_params);
@@ -497,7 +498,6 @@ main(void) {
     RUN_TEST(test__deserialize__cms_with_no_recipients_and_3_params__read_string_param_is_valid);
     RUN_TEST(test__deserialize__cms_with_no_recipients_and_3_params__read_data_param_is_valid);
 
-#if TEST_DEPENDENCIES_AVAILABLE
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'pkcs8 deserializer' implementation.
+//  This module contains 'key default deserializer' implementation.
 // --------------------------------------------------------------------------
 
 
@@ -50,20 +50,18 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_pkcs8_deserializer.h"
+#include "vscf_key_default_deserializer.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_asn1_reader.h"
 #include "vscf_public_key.h"
 #include "vscf_private_key.h"
-#include "vscf_base64.h"
-#include "vscf_asn1rd.h"
 #include "vscf_pem.h"
 #include "vscf_pem_title.h"
-#include "vscf_pkcs8_der_deserializer.h"
-#include "vscf_asn1_reader.h"
-#include "vscf_key_deserializer.h"
-#include "vscf_pkcs8_deserializer_defs.h"
-#include "vscf_pkcs8_deserializer_internal.h"
+#include "vscf_asn1rd.h"
+#include "vscf_key_der_deserializer.h"
+#include "vscf_key_default_deserializer_defs.h"
+#include "vscf_key_default_deserializer_internal.h"
 
 // clang-format on
 //  @end
@@ -84,108 +82,108 @@
 
 
 //
-//  Setup predefined values to the uninitialized class dependencies.
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_key_default_deserializer_init() is called.
+//  Note, that context is already zeroed.
 //
-VSCF_PUBLIC void
-vscf_pkcs8_deserializer_setup_defaults(vscf_pkcs8_deserializer_t *self) {
+VSCF_PRIVATE void
+vscf_key_default_deserializer_init_ctx(vscf_key_default_deserializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    if (NULL == self->asn1_reader) {
-        self->asn1_reader = vscf_asn1rd_impl(vscf_asn1rd_new());
-    }
+    self->asn1_reader = vscf_asn1rd_impl(vscf_asn1rd_new());
+    self->key_der_deserializer = vscf_key_der_deserializer_new();
+    vscf_key_der_deserializer_use_asn1_reader(self->key_der_deserializer, self->asn1_reader);
+}
 
-    if (NULL == self->der_deserializer) {
-        vscf_pkcs8_der_deserializer_t *der_deserializer = vscf_pkcs8_der_deserializer_new();
-        vscf_pkcs8_der_deserializer_use_asn1_reader(der_deserializer, self->asn1_reader);
-        self->der_deserializer = vscf_pkcs8_der_deserializer_impl(der_deserializer);
-    }
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_key_default_deserializer_cleanup_ctx(vscf_key_default_deserializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->asn1_reader);
+    vscf_key_der_deserializer_destroy(&self->key_der_deserializer);
 }
 
 //
 //  Deserialize given public key as an interchangeable format to the object.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_pkcs8_deserializer_deserialize_public_key(
-        vscf_pkcs8_deserializer_t *self, vsc_data_t public_key_data, vscf_error_t *error) {
+vscf_key_default_deserializer_deserialize_public_key(
+        vscf_key_default_deserializer_t *self, vsc_data_t public_key_data, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->der_deserializer);
     VSCF_ASSERT(vsc_data_is_valid(public_key_data));
 
-    vsc_data_t title = vscf_pem_title(public_key_data);
-    bool is_der = vsc_data_is_empty(title);
-
-    if (is_der) {
-        vscf_raw_key_t *raw_key =
-                vscf_key_deserializer_deserialize_public_key(self->der_deserializer, public_key_data, error);
-
-        return raw_key;
+    //
+    //  Check if PEM format
+    //
+    vsc_data_t pem_title = vscf_pem_title(public_key_data);
+    if (vsc_data_is_empty(pem_title)) {
+        return vscf_key_der_deserializer_deserialize_public_key(self->key_der_deserializer, public_key_data, error);
     }
 
-    if (!vsc_data_equal(title, vsc_data_from_str(vscf_pem_title_public_key, vscf_pem_title_public_key_len))) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_PKCS8_PUBLIC_KEY);
-        return NULL;
-    }
-
-    //  TODO: Reduce allocation.
+    //
+    //  Not the PEM.
+    //
     size_t der_len = vscf_pem_unwrapped_len(public_key_data.len);
     vsc_buffer_t *der = vsc_buffer_new_with_capacity(der_len);
     vscf_status_t status = vscf_pem_unwrap(public_key_data, der);
 
     if (status != vscf_status_SUCCESS) {
         vsc_buffer_destroy(&der);
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_PKCS8_PUBLIC_KEY);
+        VSCF_ERROR_SAFE_UPDATE(error, status);
         return NULL;
     }
 
-    vscf_raw_key_t *raw_key =
-            vscf_key_deserializer_deserialize_public_key(self->der_deserializer, vsc_buffer_data(der), error);
+    vscf_raw_key_t *key =
+            vscf_key_der_deserializer_deserialize_public_key(self->key_der_deserializer, vsc_buffer_data(der), error);
 
     vsc_buffer_destroy(&der);
-    return raw_key;
+
+    return key;
 }
 
 //
 //  Deserialize given private key as an interchangeable format to the object.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_pkcs8_deserializer_deserialize_private_key(
-        vscf_pkcs8_deserializer_t *self, vsc_data_t private_key_data, vscf_error_t *error) {
+vscf_key_default_deserializer_deserialize_private_key(
+        vscf_key_default_deserializer_t *self, vsc_data_t private_key_data, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->der_deserializer);
     VSCF_ASSERT(vsc_data_is_valid(private_key_data));
 
-    vsc_data_t title = vscf_pem_title(private_key_data);
-    bool is_der = vsc_data_is_empty(title);
-
-    if (is_der) {
-        vscf_raw_key_t *raw_key =
-                vscf_key_deserializer_deserialize_private_key(self->der_deserializer, private_key_data, error);
-
-        return raw_key;
+    //
+    //  Check if PEM format
+    //
+    vsc_data_t pem_title = vscf_pem_title(private_key_data);
+    if (vsc_data_is_empty(pem_title)) {
+        return vscf_key_der_deserializer_deserialize_private_key(self->key_der_deserializer, private_key_data, error);
     }
 
-    if (!vsc_data_equal(title, vsc_data_from_str(vscf_pem_title_private_key, vscf_pem_title_private_key_len))) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_PKCS8_PRIVATE_KEY);
-        return NULL;
-    }
-
-    //  TODO: Reduce allocation.
+    //
+    //  Not the PEM.
+    //
     size_t der_len = vscf_pem_unwrapped_len(private_key_data.len);
     vsc_buffer_t *der = vsc_buffer_new_with_capacity(der_len);
     vscf_status_t status = vscf_pem_unwrap(private_key_data, der);
 
     if (status != vscf_status_SUCCESS) {
         vsc_buffer_destroy(&der);
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_PKCS8_PRIVATE_KEY);
+        VSCF_ERROR_SAFE_UPDATE(error, status);
         return NULL;
     }
 
-    vscf_raw_key_t *raw_key =
-            vscf_key_deserializer_deserialize_private_key(self->der_deserializer, vsc_buffer_data(der), error);
+    vscf_raw_key_t *key =
+            vscf_key_der_deserializer_deserialize_private_key(self->key_der_deserializer, vsc_buffer_data(der), error);
 
     vsc_buffer_destroy(&der);
-    return raw_key;
+
+    return key;
 }

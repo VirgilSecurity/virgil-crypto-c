@@ -53,7 +53,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_pkcs8_der_deserializer_defs.h"
+#include "vscf_pkcs8_deserializer_defs.h"
 
 // clang-format on
 //  @end

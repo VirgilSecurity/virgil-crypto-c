@@ -3,11 +3,11 @@
 
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
-    <require impl="pkcs8 der deserializer" scope="private" project="foundation"/>
+    <require impl="key der deserializer" scope="private" project="foundation"/>
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
     <require module="buffer defs" scope="private" project="common"/>
 
-    <property name="pkcs8" impl="pkcs8 der deserializer" project="foundation"/>
+    <property name="key der deserializer" impl="key der deserializer" project="foundation"/>
 
     <method name="extract ratchet public key">
         <argument name="data" class="data"/>

@@ -290,6 +290,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ec_alg_info.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ecies.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -340,6 +345,26 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_default_deserializer.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_default_serializer.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_der_deserializer.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_der_serializer.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_material_rng.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -365,21 +390,6 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_pkcs8_der_deserializer.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_pkcs8_der_serializer.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_pkcs8_deserializer.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_pkcs8_serializer.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -396,6 +406,21 @@ set_property(
 
 set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_salted_kdf_alg_info.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sec1_serializer.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_secp256r1_private_key.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_secp256r1_public_key.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -644,6 +669,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_CURVE25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_curve25519_public_key.h>"
             "$<$<BOOL:${VSCF_CURVE25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_curve25519_public_key_internal.h>"
             "$<$<BOOL:${VSCF_CURVE25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_curve25519_public_key_defs.h>"
+            "$<$<BOOL:${VSCF_EC_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ec_alg_info.h>"
+            "$<$<BOOL:${VSCF_EC_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ec_alg_info_internal.h>"
+            "$<$<BOOL:${VSCF_EC_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_ec_alg_info_defs.h>"
             "$<$<BOOL:${VSCF_ECIES}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ecies.h>"
             "$<$<BOOL:${VSCF_ECIES}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_internal.h>"
             "$<$<BOOL:${VSCF_ECIES}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_ecies_defs.h>"
@@ -674,6 +702,18 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_kdf2.h>"
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2_internal.h>"
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_kdf2_defs.h>"
+            "$<$<BOOL:${VSCF_KEY_DEFAULT_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_default_deserializer.h>"
+            "$<$<BOOL:${VSCF_KEY_DEFAULT_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_default_deserializer_internal.h>"
+            "$<$<BOOL:${VSCF_KEY_DEFAULT_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_default_deserializer_defs.h>"
+            "$<$<BOOL:${VSCF_KEY_DEFAULT_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_default_serializer.h>"
+            "$<$<BOOL:${VSCF_KEY_DEFAULT_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_default_serializer_internal.h>"
+            "$<$<BOOL:${VSCF_KEY_DEFAULT_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_default_serializer_defs.h>"
+            "$<$<BOOL:${VSCF_KEY_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_der_deserializer.h>"
+            "$<$<BOOL:${VSCF_KEY_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_der_deserializer_internal.h>"
+            "$<$<BOOL:${VSCF_KEY_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_der_deserializer_defs.h>"
+            "$<$<BOOL:${VSCF_KEY_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_der_serializer.h>"
+            "$<$<BOOL:${VSCF_KEY_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_der_serializer_internal.h>"
+            "$<$<BOOL:${VSCF_KEY_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_der_serializer_defs.h>"
             "$<$<BOOL:${VSCF_KEY_MATERIAL_RNG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_material_rng.h>"
             "$<$<BOOL:${VSCF_KEY_MATERIAL_RNG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_material_rng_internal.h>"
             "$<$<BOOL:${VSCF_KEY_MATERIAL_RNG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_material_rng_defs.h>"
@@ -689,15 +729,6 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_PKCS5_PBKDF2}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_pkcs5_pbkdf2.h>"
             "$<$<BOOL:${VSCF_PKCS5_PBKDF2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs5_pbkdf2_internal.h>"
             "$<$<BOOL:${VSCF_PKCS5_PBKDF2}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_pkcs5_pbkdf2_defs.h>"
-            "$<$<BOOL:${VSCF_PKCS8_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_pkcs8_der_deserializer.h>"
-            "$<$<BOOL:${VSCF_PKCS8_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_der_deserializer_internal.h>"
-            "$<$<BOOL:${VSCF_PKCS8_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_pkcs8_der_deserializer_defs.h>"
-            "$<$<BOOL:${VSCF_PKCS8_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_pkcs8_der_serializer.h>"
-            "$<$<BOOL:${VSCF_PKCS8_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_der_serializer_internal.h>"
-            "$<$<BOOL:${VSCF_PKCS8_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_pkcs8_der_serializer_defs.h>"
-            "$<$<BOOL:${VSCF_PKCS8_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_pkcs8_deserializer.h>"
-            "$<$<BOOL:${VSCF_PKCS8_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_deserializer_internal.h>"
-            "$<$<BOOL:${VSCF_PKCS8_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_pkcs8_deserializer_defs.h>"
             "$<$<BOOL:${VSCF_PKCS8_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_pkcs8_serializer.h>"
             "$<$<BOOL:${VSCF_PKCS8_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_serializer_internal.h>"
             "$<$<BOOL:${VSCF_PKCS8_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_pkcs8_serializer_defs.h>"
@@ -710,6 +741,15 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_salted_kdf_alg_info.h>"
             "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_salted_kdf_alg_info_internal.h>"
             "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_salted_kdf_alg_info_defs.h>"
+            "$<$<BOOL:${VSCF_SEC1_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sec1_serializer.h>"
+            "$<$<BOOL:${VSCF_SEC1_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sec1_serializer_internal.h>"
+            "$<$<BOOL:${VSCF_SEC1_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_sec1_serializer_defs.h>"
+            "$<$<BOOL:${VSCF_SECP256R1_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_secp256r1_private_key.h>"
+            "$<$<BOOL:${VSCF_SECP256R1_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_secp256r1_private_key_internal.h>"
+            "$<$<BOOL:${VSCF_SECP256R1_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_secp256r1_private_key_defs.h>"
+            "$<$<BOOL:${VSCF_SECP256R1_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_secp256r1_public_key.h>"
+            "$<$<BOOL:${VSCF_SECP256R1_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_secp256r1_public_key_internal.h>"
+            "$<$<BOOL:${VSCF_SECP256R1_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_secp256r1_public_key_defs.h>"
             "$<$<BOOL:${VSCF_SEED_ENTROPY_SOURCE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_seed_entropy_source.h>"
             "$<$<BOOL:${VSCF_SEED_ENTROPY_SOURCE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_seed_entropy_source_internal.h>"
             "$<$<BOOL:${VSCF_SEED_ENTROPY_SOURCE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_seed_entropy_source_defs.h>"
@@ -875,6 +915,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_CURVE25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_curve25519_public_key.c>"
             "$<$<BOOL:${VSCF_CURVE25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_curve25519_public_key_internal.c>"
             "$<$<BOOL:${VSCF_CURVE25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_curve25519_public_key_defs.c>"
+            "$<$<BOOL:${VSCF_EC_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ec_alg_info.c>"
+            "$<$<BOOL:${VSCF_EC_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ec_alg_info_internal.c>"
+            "$<$<BOOL:${VSCF_EC_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ec_alg_info_defs.c>"
             "$<$<BOOL:${VSCF_ECIES}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies.c>"
             "$<$<BOOL:${VSCF_ECIES}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_internal.c>"
             "$<$<BOOL:${VSCF_ECIES}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_defs.c>"
@@ -905,6 +948,18 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2.c>"
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2_internal.c>"
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2_defs.c>"
+            "$<$<BOOL:${VSCF_KEY_DEFAULT_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_default_deserializer.c>"
+            "$<$<BOOL:${VSCF_KEY_DEFAULT_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_default_deserializer_internal.c>"
+            "$<$<BOOL:${VSCF_KEY_DEFAULT_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_default_deserializer_defs.c>"
+            "$<$<BOOL:${VSCF_KEY_DEFAULT_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_default_serializer.c>"
+            "$<$<BOOL:${VSCF_KEY_DEFAULT_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_default_serializer_internal.c>"
+            "$<$<BOOL:${VSCF_KEY_DEFAULT_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_default_serializer_defs.c>"
+            "$<$<BOOL:${VSCF_KEY_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_der_deserializer.c>"
+            "$<$<BOOL:${VSCF_KEY_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_der_deserializer_internal.c>"
+            "$<$<BOOL:${VSCF_KEY_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_der_deserializer_defs.c>"
+            "$<$<BOOL:${VSCF_KEY_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_der_serializer.c>"
+            "$<$<BOOL:${VSCF_KEY_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_der_serializer_internal.c>"
+            "$<$<BOOL:${VSCF_KEY_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_der_serializer_defs.c>"
             "$<$<BOOL:${VSCF_KEY_MATERIAL_RNG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_material_rng.c>"
             "$<$<BOOL:${VSCF_KEY_MATERIAL_RNG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_material_rng_internal.c>"
             "$<$<BOOL:${VSCF_KEY_MATERIAL_RNG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_material_rng_defs.c>"
@@ -920,15 +975,6 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_PKCS5_PBKDF2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs5_pbkdf2.c>"
             "$<$<BOOL:${VSCF_PKCS5_PBKDF2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs5_pbkdf2_internal.c>"
             "$<$<BOOL:${VSCF_PKCS5_PBKDF2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs5_pbkdf2_defs.c>"
-            "$<$<BOOL:${VSCF_PKCS8_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_der_deserializer.c>"
-            "$<$<BOOL:${VSCF_PKCS8_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_der_deserializer_internal.c>"
-            "$<$<BOOL:${VSCF_PKCS8_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_der_deserializer_defs.c>"
-            "$<$<BOOL:${VSCF_PKCS8_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_der_serializer.c>"
-            "$<$<BOOL:${VSCF_PKCS8_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_der_serializer_internal.c>"
-            "$<$<BOOL:${VSCF_PKCS8_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_der_serializer_defs.c>"
-            "$<$<BOOL:${VSCF_PKCS8_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_deserializer.c>"
-            "$<$<BOOL:${VSCF_PKCS8_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_deserializer_internal.c>"
-            "$<$<BOOL:${VSCF_PKCS8_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_deserializer_defs.c>"
             "$<$<BOOL:${VSCF_PKCS8_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_serializer.c>"
             "$<$<BOOL:${VSCF_PKCS8_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_serializer_internal.c>"
             "$<$<BOOL:${VSCF_PKCS8_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_serializer_defs.c>"
@@ -941,6 +987,15 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_salted_kdf_alg_info.c>"
             "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_salted_kdf_alg_info_internal.c>"
             "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_salted_kdf_alg_info_defs.c>"
+            "$<$<BOOL:${VSCF_SEC1_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sec1_serializer.c>"
+            "$<$<BOOL:${VSCF_SEC1_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sec1_serializer_internal.c>"
+            "$<$<BOOL:${VSCF_SEC1_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sec1_serializer_defs.c>"
+            "$<$<BOOL:${VSCF_SECP256R1_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_secp256r1_private_key.c>"
+            "$<$<BOOL:${VSCF_SECP256R1_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_secp256r1_private_key_internal.c>"
+            "$<$<BOOL:${VSCF_SECP256R1_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_secp256r1_private_key_defs.c>"
+            "$<$<BOOL:${VSCF_SECP256R1_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_secp256r1_public_key.c>"
+            "$<$<BOOL:${VSCF_SECP256R1_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_secp256r1_public_key_internal.c>"
+            "$<$<BOOL:${VSCF_SECP256R1_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_secp256r1_public_key_defs.c>"
             "$<$<BOOL:${VSCF_SEED_ENTROPY_SOURCE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_seed_entropy_source.c>"
             "$<$<BOOL:${VSCF_SEED_ENTROPY_SOURCE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_seed_entropy_source_internal.c>"
             "$<$<BOOL:${VSCF_SEED_ENTROPY_SOURCE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_seed_entropy_source_defs.c>"

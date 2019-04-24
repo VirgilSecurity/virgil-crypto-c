@@ -116,6 +116,18 @@ import VSCFoundation
     /// CURVE25519 private key is corrupted.
     case errorBadCurve25519PrivateKey = -220
 
+    /// Elliptic curve public key format is corrupted see RFC 5480.
+    case errorBadSec1PublicKey = -221
+
+    /// Elliptic curve public key format is corrupted see RFC 5915.
+    case errorBadSec1PrivateKey = -222
+
+    /// ASN.1 representation of a public key is corrupted.
+    case errorBadDerPublicKey = -223
+
+    /// ASN.1 representation of a private key is corrupted.
+    case errorBadDerPrivateKey = -224
+
     /// Decryption failed, because message info was not given explicitly,
     /// and was not part of an encrypted message.
     case errorNoMessageInfo = -301

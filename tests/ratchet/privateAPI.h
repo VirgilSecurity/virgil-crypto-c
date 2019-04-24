@@ -35,7 +35,6 @@
 #ifndef VIRGIL_CRYPTO_PRIVATEAPI_H
 #define VIRGIL_CRYPTO_PRIVATEAPI_H
 
-#include <virgil/crypto/foundation/private/vscf_pkcs8_der_deserializer_defs.h>
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet.h"
