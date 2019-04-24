@@ -201,7 +201,7 @@ vscr_ratchet_group_participant_epoch_init_ctx(vscr_ratchet_group_participant_epo
 
     VSCR_ASSERT_PTR(self);
 
-    self->skipped_messages = vscr_ratchet_skipped_group_messages_root_node_new();
+    self->skipped_messages = vscr_ratchet_skipped_messages_root_node_new();
 }
 
 //
@@ -215,7 +215,7 @@ vscr_ratchet_group_participant_epoch_cleanup_ctx(vscr_ratchet_group_participant_
     VSCR_ASSERT_PTR(self);
 
     vscr_ratchet_chain_key_destroy(&self->chain_key);
-    vscr_ratchet_skipped_group_messages_root_node_destroy(&self->skipped_messages);
+    vscr_ratchet_skipped_messages_root_node_destroy(&self->skipped_messages);
 }
 
 VSCR_PUBLIC void
@@ -235,13 +235,8 @@ vscr_ratchet_group_participant_epoch_serialize(
         data_pb->has_chain_key = false;
     }
 
-    data_pb->message_keys_count = self->skipped_messages->count;
-
-    vscr_ratchet_message_key_node_t *node = self->skipped_messages->first;
-
-    for (size_t i = 0; i < self->skipped_messages->count; i++, node = node->next) {
-        vscr_ratchet_message_key_serialize(node->value, &data_pb->message_keys[i]);
-    }
+    vscr_ratchet_skipped_messages_root_node_serialize(
+            self->skipped_messages, data_pb->message_keys, &data_pb->message_keys_count);
 }
 
 VSCR_PUBLIC void
@@ -253,36 +248,12 @@ vscr_ratchet_group_participant_epoch_deserialize(
     VSCR_ASSERT(!data_pb->is_empty);
 
     data->epoch = data_pb->epoch;
-    data->chain_key = vscr_ratchet_chain_key_new();
 
     if (data_pb->has_chain_key) {
+        data->chain_key = vscr_ratchet_chain_key_new();
         vscr_ratchet_chain_key_deserialize(&data_pb->chain_key, data->chain_key);
     }
 
-    data->skipped_messages->count = data_pb->message_keys_count;
-
-    vscr_ratchet_message_key_node_t *prev = NULL;
-
-    for (pb_size_t j = 0; j < data_pb->message_keys_count; j++) {
-        vscr_ratchet_message_key_t *message_key = vscr_ratchet_message_key_new();
-
-        vscr_ratchet_message_key_deserialize(&data_pb->message_keys[j], message_key);
-
-        vscr_ratchet_message_key_node_t *key_node = vscr_ratchet_message_key_node_new();
-
-        key_node->value = message_key;
-        key_node->prev = prev;
-
-        if (prev) {
-            prev->next = key_node;
-        } else {
-            data->skipped_messages->first = key_node;
-        }
-
-        prev = key_node;
-
-        if (j == data_pb->message_keys_count - 1) {
-            data->skipped_messages->last = key_node;
-        }
-    }
+    vscr_ratchet_skipped_messages_root_node_deserialize(
+            data_pb->message_keys, data_pb->message_keys_count, data->skipped_messages);
 }

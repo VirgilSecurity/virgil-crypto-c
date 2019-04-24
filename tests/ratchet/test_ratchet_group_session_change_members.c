@@ -61,28 +61,31 @@ test__add_members__random_chat__should_continue_working(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
     vscr_ratchet_group_session_t **sessions = NULL;
+    vsc_buffer_t **priv = NULL;
 
-    size_t group_size = generate_number(rng, 10, 50);
+    size_t group_size = generate_number(rng, 5, 25);
 
-    initialize_random_group_chat(rng, group_size, &sessions, NULL);
+    initialize_random_group_chat(rng, group_size, &sessions, &priv);
 
-    size_t number_of_iterations = 1000;
+    size_t number_of_iterations = group_size * 100;
 
-    encrypt_decrypt(rng, group_size, number_of_iterations, sessions, 0.75, 1.25, 0.25, NULL);
+    encrypt_decrypt(rng, group_size, number_of_iterations, sessions, 0.75, 1.25, 0.25, priv);
 
     size_t add_members_size = generate_number(rng, 10, 50);
 
-    add_random_members(rng, group_size, add_members_size, &sessions);
+    add_random_members(rng, group_size, add_members_size, &sessions, &priv);
 
     size_t new_size = group_size + add_members_size;
 
-    encrypt_decrypt(rng, new_size, number_of_iterations, sessions, 0.75, 1.25, 0.25, NULL);
+    encrypt_decrypt(rng, new_size, number_of_iterations, sessions, 0.75, 1.25, 0.25, priv);
 
     for (size_t i = 0; i < new_size; i++) {
         vscr_ratchet_group_session_destroy(&sessions[i]);
+        vsc_buffer_destroy(&priv[i]);
     }
 
     vscr_dealloc(sessions);
+    vscr_dealloc(priv);
 
     vscf_ctr_drbg_destroy(&rng);
 }
@@ -93,28 +96,31 @@ test__remove_members__random_chat__should_continue_working(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
     vscr_ratchet_group_session_t **sessions = NULL;
+    vsc_buffer_t **priv = NULL;
 
-    size_t group_size = generate_number(rng, 10, 50);
+    size_t group_size = generate_number(rng, 5, 25);
 
-    initialize_random_group_chat(rng, group_size, &sessions, NULL);
+    initialize_random_group_chat(rng, group_size, &sessions, &priv);
 
-    size_t number_of_iterations = 1000;
+    size_t number_of_iterations = group_size * 100;
 
-    encrypt_decrypt(rng, group_size, number_of_iterations, sessions, 0.75, 1.25, 0.25, NULL);
+    encrypt_decrypt(rng, group_size, number_of_iterations, sessions, 0.75, 1.25, 0.25, priv);
 
     size_t remove_members_size = generate_number(rng, 1, group_size - 2);
 
-    remove_random_members(rng, group_size, remove_members_size, &sessions);
+    remove_random_members(rng, group_size, remove_members_size, &sessions, &priv);
 
     size_t new_size = group_size - remove_members_size;
 
-    encrypt_decrypt(rng, new_size, number_of_iterations, sessions, 0.75, 1.25, 0.25, NULL);
+    encrypt_decrypt(rng, new_size, number_of_iterations, sessions, 0.75, 1.25, 0.25, priv);
 
     for (size_t i = 0; i < new_size; i++) {
         vscr_ratchet_group_session_destroy(&sessions[i]);
+        vsc_buffer_destroy(&priv[i]);
     }
 
     vscr_dealloc(sessions);
+    vscr_dealloc(priv);
 
     vscf_ctr_drbg_destroy(&rng);
 }

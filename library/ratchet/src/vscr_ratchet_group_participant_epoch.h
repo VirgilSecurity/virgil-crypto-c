@@ -53,7 +53,7 @@
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_group_participant_epoch.h"
 #include "vscr_ratchet_chain_key.h"
-#include "vscr_ratchet_skipped_group_messages_root_node.h"
+#include "vscr_ratchet_skipped_messages_root_node.h"
 
 // clang-format on
 //  @end
@@ -88,7 +88,7 @@ struct vscr_ratchet_group_participant_epoch_t {
 
     vscr_ratchet_chain_key_t *chain_key;
 
-    vscr_ratchet_skipped_group_messages_root_node_t *skipped_messages;
+    vscr_ratchet_skipped_messages_root_node_t *skipped_messages;
 };
 
 //

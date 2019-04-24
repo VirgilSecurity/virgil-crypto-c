@@ -28,3 +28,4 @@ ParticipantEpoch.message_keys max_count:200 fixed_length:false
 GroupSession.session_id max_size:32 fixed_length:true
 GroupSession.my_id max_size:32 fixed_length:true
 GroupSession.participants max_count:100 fixed_count:false
+GroupSession.messages_count max_count:4 fixed_count:true

@@ -82,7 +82,6 @@
     <class name="ratchet group participant epoch"/>
     <class name="ratchet group participant data"/>
     <class name="ratchet group message"/>
-    <class name="ratchet skipped group messages root node"/>
     <class name="ratchet group ticket"/>
     <class name="ratchet group session"/>
 </project>

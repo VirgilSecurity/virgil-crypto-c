@@ -227,7 +227,7 @@ vscr_ratchet_skipped_messages_find_key(
 
     size_t i = vscr_ratchet_skipped_messages_find_public_key(self, public_key);
 
-    if (i == vscr_ratchet_common_hidden_MAX_SKIPPED_DH) {
+    if (i == self->roots_count) {
         return NULL;
     }
 
@@ -251,9 +251,8 @@ vscr_ratchet_skipped_messages_find_public_key(
     VSCR_ASSERT_PTR(self);
 
     size_t i = 0;
-    for (; i < vscr_ratchet_common_hidden_MAX_SKIPPED_DH; i++) {
-        if (self->root_nodes[i] &&
-                memcmp(self->root_nodes[i]->public_key, public_key, sizeof(self->root_nodes[i]->public_key)) == 0) {
+    for (; i < self->roots_count; i++) {
+        if (memcmp(self->public_keys[i], public_key, sizeof(self->public_keys[i])) == 0) {
             break;
         }
     }
@@ -270,68 +269,39 @@ vscr_ratchet_skipped_messages_delete_key(vscr_ratchet_skipped_messages_t *self,
 
     size_t i = vscr_ratchet_skipped_messages_find_public_key(self, public_key);
 
-    if (i == vscr_ratchet_common_hidden_MAX_SKIPPED_DH) {
+    if (i == self->roots_count) {
         VSCR_ASSERT(false);
     }
 
-    vscr_ratchet_skipped_messages_root_node_t *root = self->root_nodes[i];
-
-    vscr_ratchet_message_key_node_t *prev = NULL;
-    vscr_ratchet_message_key_node_t *node = root->first;
-
-    for (size_t j = 0; j < root->count; j++) {
-        if (node->value == message_key) {
-            if (prev) {
-                prev->next = node->next;
-            }
-
-            if (node->next) {
-                node->next->prev = prev;
-            }
-
-            if (node == root->first) {
-                root->first = node->next;
-            }
-
-            if (node == root->last) {
-                root->last = node->prev;
-            }
-
-            node->next = NULL;
-            vscr_ratchet_message_key_node_destroy(&node);
-
-            root->count--;
-
-            return;
-        }
-
-        prev = node;
-        node = node->next;
-    }
-
-    // Element not found
-    VSCR_ASSERT(false);
+    vscr_ratchet_skipped_messages_root_node_delete_key(self->root_nodes[i], message_key);
 }
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_messages_add_public_key(
         vscr_ratchet_skipped_messages_t *self, const vscr_ratchet_public_key_t public_key) {
 
-    size_t i = vscr_ratchet_skipped_messages_find_public_key(self, public_key);
+    size_t index = vscr_ratchet_skipped_messages_find_public_key(self, public_key);
 
-    if (i != vscr_ratchet_common_hidden_MAX_SKIPPED_DH) {
+    if (index != self->roots_count) {
         VSCR_ASSERT(false);
     }
 
-    vscr_ratchet_skipped_messages_root_node_destroy(&self->root_nodes[vscr_ratchet_common_hidden_MAX_SKIPPED_DH - 1]);
+    if (self->roots_count == vscr_ratchet_common_hidden_MAX_SKIPPED_DH) {
+        vscr_ratchet_skipped_messages_root_node_destroy(
+                &self->root_nodes[vscr_ratchet_common_hidden_MAX_SKIPPED_DH - 1]);
+    }
 
-    for (i = vscr_ratchet_common_hidden_MAX_SKIPPED_DH - 1; i > 0; i--) {
+    for (size_t i = vscr_ratchet_common_hidden_MAX_SKIPPED_DH - 1; i > 0; i--) {
         self->root_nodes[i] = self->root_nodes[i - 1];
+        memcpy(self->public_keys[i], self->public_keys[i - 1], sizeof(self->public_keys[i]));
     }
 
     self->root_nodes[0] = vscr_ratchet_skipped_messages_root_node_new();
+    memcpy(self->public_keys[0], public_key, sizeof(self->public_keys[0]));
 
-    memcpy(self->root_nodes[0]->public_key, public_key, sizeof(self->root_nodes[0]->public_key));
+    if (self->roots_count < vscr_ratchet_common_hidden_MAX_SKIPPED_DH) {
+        self->roots_count++;
+    }
 }
 
 VSCR_PUBLIC void
@@ -345,31 +315,7 @@ vscr_ratchet_skipped_messages_add_key(vscr_ratchet_skipped_messages_t *self, con
 
     VSCR_ASSERT(i != vscr_ratchet_common_hidden_MAX_SKIPPED_DH);
 
-    vscr_ratchet_skipped_messages_root_node_t *root = self->root_nodes[i];
-
-    vscr_ratchet_message_key_node_t *node = vscr_ratchet_message_key_node_new();
-    node->value = message_key;
-    node->next = root->first;
-
-    vscr_ratchet_message_key_node_t *prev_first = root->first;
-
-    root->first = node;
-
-    if (prev_first) {
-        prev_first->prev = node;
-    } else {
-        root->last = node;
-    }
-
-    if (root->count == vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES) {
-        vscr_ratchet_message_key_node_t *last = root->last;
-        root->last = last->prev;
-        root->last->next = NULL;
-
-        vscr_ratchet_message_key_node_destroy(&last);
-    } else {
-        root->count++;
-    }
+    vscr_ratchet_skipped_messages_root_node_add_key(self->root_nodes[i], message_key);
 }
 
 VSCR_PUBLIC void
@@ -378,28 +324,16 @@ vscr_ratchet_skipped_messages_serialize(
 
     VSCR_ASSERT_PTR(self);
 
-    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_DH; i++) {
+    skipped_messages_pb->keys_count = self->roots_count;
 
-        const vscr_ratchet_skipped_messages_root_node_t *root = self->root_nodes[i];
+    for (size_t i = 0; i < self->roots_count; i++) {
 
-        if (!root) {
-            continue;
-        }
+        SkippedMessageKey *root_pb = &skipped_messages_pb->keys[i];
 
-        SkippedMessageKey *root_pb = &skipped_messages_pb->keys[skipped_messages_pb->keys_count++];
+        memcpy(root_pb->public_key, self->public_keys[i], sizeof(root_pb->public_key));
 
-        root_pb->index = i;
-
-        memcpy(root_pb->public_key, root->public_key, sizeof(root_pb->public_key));
-
-        root_pb->message_keys_count = root->count;
-
-        const vscr_ratchet_message_key_node_t *node = root->first;
-
-        for (size_t j = 0; j < root->count; j++) {
-            vscr_ratchet_message_key_serialize(node->value, &root_pb->message_keys[j]);
-            node = node->next;
-        }
+        vscr_ratchet_skipped_messages_root_node_serialize(
+                self->root_nodes[i], root_pb->message_keys, &root_pb->message_keys_count);
     }
 }
 
@@ -410,38 +344,14 @@ vscr_ratchet_skipped_messages_deserialize(
     VSCR_ASSERT_PTR(skipped_messages_pb);
     VSCR_ASSERT_PTR(skipped_messages);
 
+    skipped_messages->roots_count = skipped_messages_pb->keys_count;
+
     for (pb_size_t i = 0; i < skipped_messages_pb->keys_count; i++) {
         vscr_ratchet_skipped_messages_root_node_t *root = vscr_ratchet_skipped_messages_root_node_new();
+
         const SkippedMessageKey *root_pb = &skipped_messages_pb->keys[i];
-        memcpy(root->public_key, root_pb->public_key, sizeof(root->public_key));
+        memcpy(skipped_messages->public_keys[i], root_pb->public_key, sizeof(skipped_messages->public_keys[i]));
 
-        skipped_messages->root_nodes[root_pb->index] = root;
-
-        vscr_ratchet_message_key_node_t *prev = NULL;
-
-        root->count = root_pb->message_keys_count;
-
-        for (pb_size_t j = 0; j < root_pb->message_keys_count; j++) {
-            vscr_ratchet_message_key_t *message_key = vscr_ratchet_message_key_new();
-
-            vscr_ratchet_message_key_deserialize(&root_pb->message_keys[j], message_key);
-
-            vscr_ratchet_message_key_node_t *key_node = vscr_ratchet_message_key_node_new();
-
-            key_node->value = message_key;
-            key_node->prev = prev;
-
-            if (prev) {
-                prev->next = key_node;
-            } else {
-                root->first = key_node;
-            }
-
-            prev = key_node;
-
-            if (j == root_pb->message_keys_count - 1) {
-                root->last = key_node;
-            }
-        }
+        vscr_ratchet_skipped_messages_root_node_deserialize(root_pb->message_keys, root_pb->message_keys_count, root);
     }
 }
