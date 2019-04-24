@@ -51,7 +51,7 @@ public enum GroupMsgType {
     /*
     * Regular group ratchet message with cipher text.
     */
-    REGULAR(3);
+    REGULAR(2);
 
     private final int code;
 

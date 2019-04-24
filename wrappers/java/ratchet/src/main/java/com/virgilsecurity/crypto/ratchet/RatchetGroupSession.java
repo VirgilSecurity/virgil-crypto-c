@@ -66,7 +66,7 @@ public class RatchetGroupSession implements AutoCloseable {
     }
 
     /*
-    * Random used to generate keys
+    * Random
     */
     public void setRng(Random rng) {
         RatchetJNI.INSTANCE.ratchetGroupSession_setRng(this.cCtx, rng);
@@ -87,12 +87,15 @@ public class RatchetGroupSession implements AutoCloseable {
     }
 
     /*
-    * Shows whether identity private key was set.
+    * Shows whether my id was set.
     */
-    public boolean isIdSet() {
-        return RatchetJNI.INSTANCE.ratchetGroupSession_isIdSet(this.cCtx);
+    public boolean isMyIdSet() {
+        return RatchetJNI.INSTANCE.ratchetGroupSession_isMyIdSet(this.cCtx);
     }
 
+    /*
+    * Returns current epoch.
+    */
     public int getCurrentEpoch() {
         return RatchetJNI.INSTANCE.ratchetGroupSession_getCurrentEpoch(this.cCtx);
     }
@@ -113,18 +116,24 @@ public class RatchetGroupSession implements AutoCloseable {
     }
 
     /*
-    * Sets identity private key.
+    * Sets my id.
     */
-    public void setId(byte[] myId) {
-        RatchetJNI.INSTANCE.ratchetGroupSession_setId(this.cCtx, myId);
+    public void setMyId(byte[] myId) {
+        RatchetJNI.INSTANCE.ratchetGroupSession_setMyId(this.cCtx, myId);
     }
 
+    /*
+    * Returns my id.
+    */
     public byte[] getMyId() {
         return RatchetJNI.INSTANCE.ratchetGroupSession_getMyId(this.cCtx);
     }
 
-    public byte[] getId() {
-        return RatchetJNI.INSTANCE.ratchetGroupSession_getId(this.cCtx);
+    /*
+    * Returns session id.
+    */
+    public byte[] getSessionId() {
+        return RatchetJNI.INSTANCE.ratchetGroupSession_getSessionId(this.cCtx);
     }
 
     /*
@@ -135,7 +144,8 @@ public class RatchetGroupSession implements AutoCloseable {
     }
 
     /*
-    * Sets up session. Identity private key should be set separately.
+    * Sets up session.
+    * NOTE: Identity private key and my id should be set separately.
     */
     public void setupSession(RatchetGroupMessage message) throws RatchetException {
         RatchetJNI.INSTANCE.ratchetGroupSession_setupSession(this.cCtx, message);
@@ -171,6 +181,7 @@ public class RatchetGroupSession implements AutoCloseable {
 
     /*
     * Serializes session to buffer
+    * NOTE: Session changes its state every encrypt/decrypt operations. Be sure to save it.
     */
     public byte[] serialize() {
         return RatchetJNI.INSTANCE.ratchetGroupSession_serialize(this.cCtx);
@@ -178,18 +189,29 @@ public class RatchetGroupSession implements AutoCloseable {
 
     /*
     * Deserializes session from buffer.
-    * NOTE: Deserialized session needs dependencies to be set. Check setup defaults
+    * NOTE: Deserialized session needs dependencies to be set.
+    * You should set separately:
+    * - rng
+    * - my id
+    * - my private key
     */
     public static RatchetGroupSession deserialize(byte[] input) throws RatchetException {
         return RatchetJNI.INSTANCE.ratchetGroupSession_deserialize(input);
     }
 
-    public RatchetGroupTicket createGroupTicketForAddingMembers() {
-        return RatchetJNI.INSTANCE.ratchetGroupSession_createGroupTicketForAddingMembers(this.cCtx);
+    /*
+    * Creates ticket for adding participants to this session.
+    * NOTE: This ticket is not suitable for removing participants from this session.
+    */
+    public RatchetGroupTicket createGroupTicketForAddingParticipants() {
+        return RatchetJNI.INSTANCE.ratchetGroupSession_createGroupTicketForAddingParticipants(this.cCtx);
     }
 
-    public RatchetGroupTicket createGroupTicketForAddingOrRemovingMembers() throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetGroupSession_createGroupTicketForAddingOrRemovingMembers(this.cCtx);
+    /*
+    * Creates ticket for adding and or removing participants to/from this session.
+    */
+    public RatchetGroupTicket createGroupTicketForAddingOrRemovingParticipants() throws RatchetException {
+        return RatchetJNI.INSTANCE.ratchetGroupSession_createGroupTicketForAddingOrRemovingParticipants(this.cCtx);
     }
 }
 

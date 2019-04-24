@@ -44,7 +44,7 @@ import VSCRatchet
     case groupInfo = 1
 
     /// Regular group ratchet message with cipher text.
-    case regular = 3
+    case regular = 2
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC groupMsgType: vscr_group_msg_type_t) {

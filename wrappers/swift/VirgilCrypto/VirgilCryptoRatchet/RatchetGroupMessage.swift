@@ -75,8 +75,16 @@ import VirgilCryptoFoundation
         return GroupMsgType.init(fromC: proxyResult)
     }
 
+    /// Returns session id.
+    /// This method should be called only for group info type.
+    @objc public func getSessionId() -> Data {
+        let proxyResult = vscr_ratchet_group_message_get_session_id(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
     /// Returns number of public keys.
-    /// This method should be called only for start group info message type.
+    /// This method should be called only for group info message type.
     @objc public func getPubKeyCount() -> Int {
         let proxyResult = vscr_ratchet_group_message_get_pub_key_count(self.c_ctx)
 
@@ -84,7 +92,7 @@ import VirgilCryptoFoundation
     }
 
     /// Returns public key id for some participant id.
-    /// This method should be called only for start group info message type.
+    /// This method should be called only for group info message type.
     @objc public func getPubKeyId(participantId: Data) throws -> Data {
         var error: vscr_error_t = vscr_error_t()
         vscr_error_reset(&error)
@@ -107,14 +115,6 @@ import VirgilCryptoFoundation
     /// This method should be called only for regular message type.
     @objc public func getSenderId() -> Data {
         let proxyResult = vscr_ratchet_group_message_get_sender_id(self.c_ctx)
-
-        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
-    }
-
-    /// Returns message sender id.
-    /// This method should be called only for regular message type.
-    @objc public func getSessionId() -> Data {
-        let proxyResult = vscr_ratchet_group_message_get_session_id(self.c_ctx)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }

@@ -150,9 +150,8 @@ vscr_ratchet_cipher_pad_then_encrypt(vscr_ratchet_cipher_t *self, vscr_ratchet_p
         const vscr_ratchet_message_key_t *key, vsc_data_t ad, vsc_buffer_t *cipher_text) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_cipher_decrypt_then_remove_pad(vscr_ratchet_cipher_t *self,
-        vsc_data_t data, const vscr_ratchet_message_key_t *key, vsc_data_t ad,
-        vsc_buffer_t *plain_text) VSCR_NODISCARD;
+vscr_ratchet_cipher_decrypt_then_remove_pad(vscr_ratchet_cipher_t *self, vsc_data_t data,
+        const vscr_ratchet_message_key_t *key, vsc_data_t ad, vsc_buffer_t *plain_text) VSCR_NODISCARD;
 
 
 // --------------------------------------------------------------------------

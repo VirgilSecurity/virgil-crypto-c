@@ -529,6 +529,7 @@ vscr_ratchet_group_session_check_session_consistency(
     VSCR_ASSERT(group_info->participants_count < vscr_ratchet_common_MAX_PARTICIPANTS_COUNT);
     VSCR_ASSERT(group_info->participants_count >= vscr_ratchet_common_MIN_PARTICIPANTS_COUNT);
 
+    // FIXME: If it's old session, prevent rewriting data
     if (self->my_epoch && self->my_epoch->epoch >= group_info->epoch + vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT) {
         return vscr_status_ERROR_EPOCH_MISMATCH;
     }
