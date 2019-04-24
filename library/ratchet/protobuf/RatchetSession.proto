@@ -53,7 +53,7 @@ message Session {
 message ParticipantEpoch {
 	required uint32 epoch = 1;
 	required bool is_empty = 2;
-	required ChainKey chain_key = 3;
+	optional ChainKey chain_key = 3;
 	repeated MessageKey message_keys = 4;
 }
 

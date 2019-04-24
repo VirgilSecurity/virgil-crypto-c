@@ -227,7 +227,13 @@ vscr_ratchet_group_participant_epoch_serialize(
 
     data_pb->is_empty = false;
     data_pb->epoch = self->epoch;
-    vscr_ratchet_chain_key_serialize(self->chain_key, &data_pb->chain_key);
+
+    if (self->chain_key) {
+        data_pb->has_chain_key = true;
+        vscr_ratchet_chain_key_serialize(self->chain_key, &data_pb->chain_key);
+    } else {
+        data_pb->has_chain_key = false;
+    }
 
     data_pb->message_keys_count = self->skipped_messages->count;
 
@@ -248,7 +254,10 @@ vscr_ratchet_group_participant_epoch_deserialize(
 
     data->epoch = data_pb->epoch;
     data->chain_key = vscr_ratchet_chain_key_new();
-    vscr_ratchet_chain_key_deserialize(&data_pb->chain_key, data->chain_key);
+
+    if (data_pb->has_chain_key) {
+        vscr_ratchet_chain_key_deserialize(&data_pb->chain_key, data->chain_key);
+    }
 
     data->skipped_messages->count = data_pb->message_keys_count;
 
