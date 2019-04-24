@@ -191,11 +191,11 @@ int
 main(void) {
     UNITY_BEGIN();
 
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__encrypt__virgil_message__success);
     RUN_TEST(test__encrypt__messege_with_ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac__return_encrypted_message);
     RUN_TEST(test__decrypt__ed25519_encrypted_message__match_virgil_message);
 
-#if TEST_DEPENDENCIES_AVAILABLE
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
