@@ -9,19 +9,13 @@ message MessageParticipantInfo {
 
 message MessageGroupInfo {
     required bytes session_id = 1;
-    enum Type {
-        START = 1;
-        ADD = 2;
-        CHANGE = 3;
-    }
-    required Type type = 2;
-    required uint32 epoch = 3;
-    repeated MessageParticipantInfo participants = 4;
+    required uint32 epoch = 2;
+    repeated MessageParticipantInfo participants = 3;
 }
 
 message RegularGroupMessageHeader {
     required uint32 epoch = 1;
-    required uint32 prev_epoch_msgs = 2;
+    repeated uint32 prev_epoches_msgs = 2;
     required uint32 counter = 3;
     required bytes sender_id = 4;
 }

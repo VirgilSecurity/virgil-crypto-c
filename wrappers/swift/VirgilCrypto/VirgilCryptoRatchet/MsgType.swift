@@ -40,10 +40,10 @@ import VSCRatchet
 @objc(VSCRMsgType) public enum MsgType: Int {
 
     /// Regular message. This message is used all the time except case described in prekey message section.
-    case regular = 0
+    case regular = 1
 
     /// Prekey message. This message is sent by initiator till first response is received.
-    case prekey = 1
+    case prekey = 2
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC msgType: vscr_msg_type_t) {

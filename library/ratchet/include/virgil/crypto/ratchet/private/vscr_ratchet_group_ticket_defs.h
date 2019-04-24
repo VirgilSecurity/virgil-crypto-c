@@ -55,6 +55,7 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet_group_message.h"
 
@@ -100,9 +101,7 @@ struct vscr_ratchet_group_ticket_t {
 
     vscr_ratchet_key_utils_t *key_utils;
 
-    vscr_ratchet_group_message_t *complementary_msg;
-
-    vscr_ratchet_group_message_t *full_msg;
+    vscr_ratchet_group_message_t *msg;
 
     bool epoch_change;
 };

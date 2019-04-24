@@ -3,33 +3,53 @@
     <require class="ratchet common hidden" scope="context"/>
     <require class="ratchet chain key" scope="private"/>
 
+    <require module="ratchet typedefs" scope="context"/>
+
     <require header="RatchetSession.pb.h" scope="public"/>
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 
-    <property name="keys" class="ratchet skipped message key list node" access="readwrite"/>
+    <property name="roots count" type="size" access="readwrite"/>
+    <property name="public keys" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_max_skipped_dh)"/>
+    </property>
+    <property name="root nodes" class="ratchet skipped messages root node" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_max_skipped_dh)"/>
+    </property>
 
-    <method name="find key">
+    <method name="find key" is_const="1">
         <argument name="counter" type="size"/>
-        <argument name="ratchet public key" class="data"/>
+        <argument name="public key" class="const vscr_ratchet_public_key_t" is_reference="0" is_const="1" library="internal" access="readonly"/>
 
-        <return class="ratchet skipped message key" access="readwrite"/>
+        <return class="ratchet message key" access="readwrite"/>
+    </method>
+
+    <method name="find public key" is_const="1" scope="private">
+        <argument name="public key" class="const vscr_ratchet_public_key_t" is_reference="0" is_const="1" library="internal" access="readonly"/>
+
+        <return type="size"/>
     </method>
 
     <method name="delete key">
-        <argument name="skipped message key" class="ratchet skipped message key" access="readwrite"/>
+        <argument name="public key" class="const vscr_ratchet_public_key_t" is_reference="0" is_const="1" library="internal" access="readonly"/>
+        <argument name="message key" class="ratchet message key" access="readwrite"/>
+    </method>
+
+    <method name="add public key">
+        <argument name="public key" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
     </method>
 
     <method name="add key">
-        <argument name="skipped message key" class="ratchet skipped message key" access="readwrite"/>
+        <argument name="public key" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="message key" class="ratchet message key" access="readwrite"/>
     </method>
 
-    <method name="serialize">
+    <method name="serialize" is_const="1">
         <argument name="skipped messages pb" class="SkippedMessages" library="nanopb" access="readwrite"/>
     </method>
 
     <method name="deserialize" is_static="1">
-        <argument name="skipped messages pb" class="SkippedMessages" library="nanopb" access="readwrite"/>
+        <argument name="skipped messages pb" class="SkippedMessages" library="nanopb"/>
         <argument name="skipped messages" class="self" access="readwrite"/>
     </method>
 

@@ -48,6 +48,7 @@
 #define VSCR_RATCHET_RECEIVER_CHAIN_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_receiver_chain.h"
 #include "vscr_ratchet_chain_key.h"
@@ -85,7 +86,7 @@ struct vscr_ratchet_receiver_chain_t {
     //
     size_t refcnt;
 
-    byte public_key[vscr_ratchet_common_hidden_KEY_LEN];
+    vscr_ratchet_public_key_t public_key;
 
     vscr_ratchet_chain_key_t chain_key;
 };
@@ -135,7 +136,7 @@ VSCR_PUBLIC vscr_ratchet_receiver_chain_t *
 vscr_ratchet_receiver_chain_shallow_copy(vscr_ratchet_receiver_chain_t *self);
 
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chain_serialize(vscr_ratchet_receiver_chain_t *self, ReceiverChain *receiver_chain_pb);
+vscr_ratchet_receiver_chain_serialize(const vscr_ratchet_receiver_chain_t *self, ReceiverChain *receiver_chain_pb);
 
 VSCR_PUBLIC void
 vscr_ratchet_receiver_chain_deserialize(const ReceiverChain *receiver_chain_pb,

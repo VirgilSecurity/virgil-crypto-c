@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Typedefs for ratchet.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,26 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'ratchet receiver chains' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSCR_RATCHET_RECEIVER_CHAINS_DEFS_H_INCLUDED
-#define VSCR_RATCHET_RECEIVER_CHAINS_DEFS_H_INCLUDED
-
-#include "vscr_library.h"
-#include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_receiver_chain_list_node.h"
+#include "vscr_ratchet_typedefs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -72,35 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'ratchet receiver chains' context.
-//
-struct vscr_ratchet_receiver_chains_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscr_ratchet_receiver_chain_list_node_t *chains;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCR_RATCHET_RECEIVER_CHAINS_DEFS_H_INCLUDED
 //  @end

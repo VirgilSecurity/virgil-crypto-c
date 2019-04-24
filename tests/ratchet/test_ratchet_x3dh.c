@@ -49,10 +49,12 @@ void
 test__initiator_x3dh__fixed_keys__should_match(void) {
     vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(4 * ED25519_DH_LEN);
 
-    vscr_status_t status = vscr_ratchet_x3dh_compute_initiator_x3dh_secret(
-            test_data_ratchet_x3dh_sender_identity_private_key, test_data_ratchet_x3dh_sender_ephemeral_private_key,
-            test_data_ratchet_x3dh_receiver_identity_public_key, test_data_ratchet_x3dh_receiver_long_term_public_key,
-            test_data_ratchet_x3dh_receiver_one_time_public_key, shared_secret);
+    vscr_status_t status =
+            vscr_ratchet_x3dh_compute_initiator_x3dh_secret(test_data_ratchet_x3dh_sender_identity_private_key.bytes,
+                    test_data_ratchet_x3dh_sender_ephemeral_private_key.bytes,
+                    test_data_ratchet_x3dh_receiver_identity_public_key.bytes,
+                    test_data_ratchet_x3dh_receiver_long_term_public_key.bytes, true,
+                    test_data_ratchet_x3dh_receiver_one_time_public_key.bytes, shared_secret);
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
     TEST_ASSERT_EQUAL(0, vsc_buffer_unused_len(shared_secret));
@@ -65,10 +67,11 @@ void
 test__initiator_x3dh__fixed_keys_weak__should_match(void) {
     vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(3 * ED25519_DH_LEN);
 
-    vscr_status_t status = vscr_ratchet_x3dh_compute_initiator_x3dh_secret(
-            test_data_ratchet_x3dh_sender_identity_private_key, test_data_ratchet_x3dh_sender_ephemeral_private_key,
-            test_data_ratchet_x3dh_receiver_identity_public_key, test_data_ratchet_x3dh_receiver_long_term_public_key,
-            vsc_data_empty(), shared_secret);
+    vscr_status_t status =
+            vscr_ratchet_x3dh_compute_initiator_x3dh_secret(test_data_ratchet_x3dh_sender_identity_private_key.bytes,
+                    test_data_ratchet_x3dh_sender_ephemeral_private_key.bytes,
+                    test_data_ratchet_x3dh_receiver_identity_public_key.bytes,
+                    test_data_ratchet_x3dh_receiver_long_term_public_key.bytes, false, NULL, shared_secret);
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
     TEST_ASSERT_EQUAL(0, vsc_buffer_unused_len(shared_secret));
@@ -81,10 +84,12 @@ void
 test__responder_x3dh__fixed_keys__should_match(void) {
     vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(4 * ED25519_DH_LEN);
 
-    vscr_status_t status = vscr_ratchet_x3dh_compute_responder_x3dh_secret(
-            test_data_ratchet_x3dh_sender_identity_public_key, test_data_ratchet_x3dh_sender_ephemeral_public_key,
-            test_data_ratchet_x3dh_receiver_identity_private_key, test_data_ratchet_x3dh_receiver_long_term_private_key,
-            test_data_ratchet_x3dh_receiver_one_time_private_key, shared_secret);
+    vscr_status_t status =
+            vscr_ratchet_x3dh_compute_responder_x3dh_secret(test_data_ratchet_x3dh_sender_identity_public_key.bytes,
+                    test_data_ratchet_x3dh_sender_ephemeral_public_key.bytes,
+                    test_data_ratchet_x3dh_receiver_identity_private_key.bytes,
+                    test_data_ratchet_x3dh_receiver_long_term_private_key.bytes, true,
+                    test_data_ratchet_x3dh_receiver_one_time_private_key.bytes, shared_secret);
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
     TEST_ASSERT_EQUAL(0, vsc_buffer_unused_len(shared_secret));
@@ -97,10 +102,11 @@ void
 test__responder_x3dh__fixed_keys_weak__should_match(void) {
     vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(3 * ED25519_DH_LEN);
 
-    vscr_status_t status = vscr_ratchet_x3dh_compute_responder_x3dh_secret(
-            test_data_ratchet_x3dh_sender_identity_public_key, test_data_ratchet_x3dh_sender_ephemeral_public_key,
-            test_data_ratchet_x3dh_receiver_identity_private_key, test_data_ratchet_x3dh_receiver_long_term_private_key,
-            vsc_data_empty(), shared_secret);
+    vscr_status_t status =
+            vscr_ratchet_x3dh_compute_responder_x3dh_secret(test_data_ratchet_x3dh_sender_identity_public_key.bytes,
+                    test_data_ratchet_x3dh_sender_ephemeral_public_key.bytes,
+                    test_data_ratchet_x3dh_receiver_identity_private_key.bytes,
+                    test_data_ratchet_x3dh_receiver_long_term_private_key.bytes, false, NULL, shared_secret);
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
     TEST_ASSERT_EQUAL(0, vsc_buffer_unused_len(shared_secret));
@@ -129,17 +135,17 @@ test__x3dh__random_keys__should_match(void) {
     vsc_buffer_t *shared_secret_sender = vsc_buffer_new_with_capacity(4 * ED25519_DH_LEN);
     vsc_buffer_t *shared_secret_receiver = vsc_buffer_new_with_capacity(4 * ED25519_DH_LEN);
 
-    vscr_status_t status = vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_buffer_data(sender_identity_public_key),
-            vsc_buffer_data(sender_ephemeral_public_key), vsc_buffer_data(receiver_identity_private_key),
-            vsc_buffer_data(receiver_long_term_private_key), vsc_buffer_data(receiver_one_time_private_key),
+    vscr_status_t status = vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_buffer_bytes(sender_identity_public_key),
+            vsc_buffer_bytes(sender_ephemeral_public_key), vsc_buffer_bytes(receiver_identity_private_key),
+            vsc_buffer_bytes(receiver_long_term_private_key), true, vsc_buffer_bytes(receiver_one_time_private_key),
             shared_secret_sender);
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
     TEST_ASSERT_EQUAL(0, vsc_buffer_unused_len(shared_secret_sender));
 
-    status = vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_buffer_data(sender_identity_public_key),
-            vsc_buffer_data(sender_ephemeral_public_key), vsc_buffer_data(receiver_identity_private_key),
-            vsc_buffer_data(receiver_long_term_private_key), vsc_buffer_data(receiver_one_time_private_key),
+    status = vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_buffer_bytes(sender_identity_public_key),
+            vsc_buffer_bytes(sender_ephemeral_public_key), vsc_buffer_bytes(receiver_identity_private_key),
+            vsc_buffer_bytes(receiver_long_term_private_key), true, vsc_buffer_bytes(receiver_one_time_private_key),
             shared_secret_receiver);
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
@@ -182,16 +188,16 @@ test__x3dh__random_keys_weak__should_match(void) {
     vsc_buffer_t *shared_secret_sender = vsc_buffer_new_with_capacity(3 * ED25519_DH_LEN);
     vsc_buffer_t *shared_secret_receiver = vsc_buffer_new_with_capacity(3 * ED25519_DH_LEN);
 
-    vscr_status_t status = vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_buffer_data(sender_identity_public_key),
-            vsc_buffer_data(sender_ephemeral_public_key), vsc_buffer_data(receiver_identity_private_key),
-            vsc_buffer_data(receiver_long_term_private_key), vsc_data_empty(), shared_secret_sender);
+    vscr_status_t status = vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_buffer_bytes(sender_identity_public_key),
+            vsc_buffer_bytes(sender_ephemeral_public_key), vsc_buffer_bytes(receiver_identity_private_key),
+            vsc_buffer_bytes(receiver_long_term_private_key), false, NULL, shared_secret_sender);
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
     TEST_ASSERT_EQUAL(0, vsc_buffer_unused_len(shared_secret_sender));
 
-    status = vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_buffer_data(sender_identity_public_key),
-            vsc_buffer_data(sender_ephemeral_public_key), vsc_buffer_data(receiver_identity_private_key),
-            vsc_buffer_data(receiver_long_term_private_key), vsc_data_empty(), shared_secret_receiver);
+    status = vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_buffer_bytes(sender_identity_public_key),
+            vsc_buffer_bytes(sender_ephemeral_public_key), vsc_buffer_bytes(receiver_identity_private_key),
+            vsc_buffer_bytes(receiver_long_term_private_key), false, NULL, shared_secret_receiver);
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
     TEST_ASSERT_EQUAL(0, vsc_buffer_unused_len(shared_secret_receiver));

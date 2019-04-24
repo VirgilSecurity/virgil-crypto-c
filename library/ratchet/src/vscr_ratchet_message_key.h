@@ -48,6 +48,7 @@
 #define VSCR_RATCHET_MESSAGE_KEY_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_message_key.h"
 
@@ -86,7 +87,7 @@ struct vscr_ratchet_message_key_t {
 
     uint32_t index;
 
-    byte key[vscr_ratchet_common_hidden_SHARED_KEY_LEN];
+    vscr_ratchet_symmetric_key_t key;
 };
 
 //
@@ -134,7 +135,7 @@ VSCR_PUBLIC vscr_ratchet_message_key_t *
 vscr_ratchet_message_key_shallow_copy(vscr_ratchet_message_key_t *self);
 
 VSCR_PUBLIC void
-vscr_ratchet_message_key_serialize(vscr_ratchet_message_key_t *self, MessageKey *message_key_pb);
+vscr_ratchet_message_key_serialize(const vscr_ratchet_message_key_t *self, MessageKey *message_key_pb);
 
 VSCR_PUBLIC void
 vscr_ratchet_message_key_deserialize(const MessageKey *message_key_pb, vscr_ratchet_message_key_t *message_key);

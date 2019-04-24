@@ -227,6 +227,7 @@ vscr_ratchet_group_message_init_ctx(vscr_ratchet_group_message_t *self) {
 
     self->message_pb = msg;
     self->message_pb.version = vscr_ratchet_common_hidden_GROUP_MESSAGE_VERSION;
+    vscr_ratchet_group_message_set_pb_encode_callback(self);
     self->key_id = vscr_ratchet_key_id_new();
 }
 
@@ -259,68 +260,30 @@ vscr_ratchet_group_message_get_type(const vscr_ratchet_group_message_t *self) {
 
     VSCR_ASSERT(self);
 
-
     if (self->message_pb.has_regular_message) {
         return vscr_group_msg_type_REGULAR;
     } else {
         VSCR_ASSERT(self->message_pb.has_group_info);
-        switch (self->message_pb.group_info.type) {
-        case MessageGroupInfo_Type_START:
-            return vscr_group_msg_type_START_GROUP;
-        case MessageGroupInfo_Type_ADD:
-            return vscr_group_msg_type_ADD_MEMBERS;
-        case MessageGroupInfo_Type_CHANGE:
-            return vscr_group_msg_type_EPOCH_CHANGE;
-        }
-    }
-
-    return vscr_group_msg_type_REGULAR;
-}
-
-VSCR_PUBLIC void
-vscr_ratchet_group_message_set_type(vscr_ratchet_group_message_t *self, vscr_group_msg_type_t type) {
-
-    VSCR_ASSERT_PTR(self);
-
-    GroupMessage msg = GroupMessage_init_zero;
-    self->message_pb = msg;
-
-    switch (type) {
-    case vscr_group_msg_type_REGULAR:
-        self->message_pb.has_regular_message = true;
-        self->message_pb.has_group_info = false;
-        self->header_pb = vscr_alloc(sizeof(RegularGroupMessageHeader));
-        RegularGroupMessageHeader hdr = RegularGroupMessageHeader_init_zero;
-        *self->header_pb = hdr;
-        break;
-
-    case vscr_group_msg_type_START_GROUP:
-    case vscr_group_msg_type_ADD_MEMBERS:
-    case vscr_group_msg_type_EPOCH_CHANGE:
-        self->message_pb.has_regular_message = false;
-        self->message_pb.has_group_info = true;
-        break;
-    }
-
-    switch (type) {
-    case vscr_group_msg_type_REGULAR:
-        break;
-
-    case vscr_group_msg_type_START_GROUP:
-        self->message_pb.group_info.type = MessageGroupInfo_Type_START;
-        break;
-    case vscr_group_msg_type_ADD_MEMBERS:
-        self->message_pb.group_info.type = MessageGroupInfo_Type_ADD;
-        break;
-    case vscr_group_msg_type_EPOCH_CHANGE:
-        self->message_pb.group_info.type = MessageGroupInfo_Type_CHANGE;
-        break;
+        return vscr_group_msg_type_GROUP_INFO;
     }
 }
 
 //
+//  Returns session id.
+//  This method should be called only for group info type.
+//
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_group_message_get_session_id(const vscr_ratchet_group_message_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->message_pb.has_group_info);
+
+    return vsc_data(self->message_pb.group_info.session_id, sizeof(self->message_pb.group_info.session_id));
+}
+
+//
 //  Returns number of public keys.
-//  This method should be called only for start group info message type.
+//  This method should be called only for group info message type.
 //
 VSCR_PUBLIC size_t
 vscr_ratchet_group_message_get_pub_key_count(const vscr_ratchet_group_message_t *self) {
@@ -333,10 +296,11 @@ vscr_ratchet_group_message_get_pub_key_count(const vscr_ratchet_group_message_t 
 
 //
 //  Returns public key id for some participant id.
-//  This method should be called only for start group info message type.
+//  This method should be called only for group info message type.
 //
 VSCR_PUBLIC vsc_buffer_t *
-vscr_ratchet_group_message_get_pub_key_id(const vscr_ratchet_group_message_t *self, vsc_data_t participant_id) {
+vscr_ratchet_group_message_get_pub_key_id(
+        const vscr_ratchet_group_message_t *self, vsc_data_t participant_id, vscr_error_t *error) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->key_id);
@@ -357,9 +321,13 @@ vscr_ratchet_group_message_get_pub_key_id(const vscr_ratchet_group_message_t *se
                 return key_id;
             }
 
+            VSCR_ERROR_SAFE_UPDATE(error, status);
+
             return NULL;
         }
     }
+
+    VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE);
 
     return NULL;
 }
@@ -378,24 +346,37 @@ vscr_ratchet_group_message_get_sender_id(const vscr_ratchet_group_message_t *sel
     return vsc_data(self->header_pb->sender_id, sizeof(self->header_pb->sender_id));
 }
 
-//
-//  Returns message sender id.
-//  This method should be called only for regular message type.
-//
-VSCR_PUBLIC vsc_data_t
-vscr_ratchet_group_message_get_session_id(const vscr_ratchet_group_message_t *self) {
+VSCR_PUBLIC void
+vscr_ratchet_group_message_set_type(vscr_ratchet_group_message_t *self, vscr_group_msg_type_t type) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(self->message_pb.has_group_info);
 
-    return vsc_data(self->message_pb.group_info.session_id, sizeof(self->message_pb.group_info.session_id));
+    GroupMessage msg = GroupMessage_init_zero;
+    self->message_pb = msg;
+
+    switch (type) {
+    case vscr_group_msg_type_REGULAR:
+        self->message_pb.has_regular_message = true;
+        self->message_pb.has_group_info = false;
+        self->header_pb = vscr_alloc(sizeof(RegularGroupMessageHeader));
+        RegularGroupMessageHeader hdr = RegularGroupMessageHeader_init_zero;
+        *self->header_pb = hdr;
+        break;
+
+    case vscr_group_msg_type_GROUP_INFO:
+        self->message_pb.has_regular_message = false;
+        self->message_pb.has_group_info = true;
+        break;
+    }
+
+    vscr_ratchet_group_message_set_pb_encode_callback(self);
 }
 
 //
 //  Buffer len to serialize this class.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_group_message_serialize_len(vscr_ratchet_group_message_t *self) {
+vscr_ratchet_group_message_serialize_len(const vscr_ratchet_group_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(self->message_pb.has_group_info != self->message_pb.has_regular_message);
@@ -423,16 +404,18 @@ vscr_ratchet_group_message_serialize_len(vscr_ratchet_group_message_t *self) {
 //  Serializes instance.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_message_serialize(vscr_ratchet_group_message_t *self, vsc_buffer_t *output) {
+vscr_ratchet_group_message_serialize(const vscr_ratchet_group_message_t *self, vsc_buffer_t *output) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(output);
     VSCR_ASSERT(self->message_pb.has_group_info != self->message_pb.has_regular_message);
     VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_group_message_serialize_len(self));
 
-    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_unused_len(output));
+    if (self->message_pb.has_regular_message) {
+        VSCR_ASSERT(self->message_pb.regular_message.header.size > 0);
+    }
 
-    vscr_ratchet_group_message_set_pb_encode_callback(self);
+    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_unused_len(output));
 
     VSCR_ASSERT(pb_encode(&ostream, GroupMessage_fields, &self->message_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);
@@ -456,6 +439,8 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     vscr_ratchet_group_message_t *message = vscr_ratchet_group_message_new();
 
+    vscr_ratchet_group_message_set_pb_decode_callback(message);
+
     pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
     vscr_ratchet_group_message_set_pb_decode_callback(message);
@@ -463,12 +448,22 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
     bool pb_status = pb_decode(&istream, GroupMessage_fields, &message->message_pb);
 
     if (!pb_status || message->message_pb.has_group_info == message->message_pb.has_regular_message) {
-        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+        status = vscr_status_ERROR_PROTOBUF_DECODE;
         goto err;
     }
 
     if (message->message_pb.has_group_info) {
         MessageGroupInfo *info = &message->message_pb.group_info;
+
+        if (info->participants_count > vscr_ratchet_common_MAX_PARTICIPANTS_COUNT) {
+            status = vscr_status_ERROR_TOO_MANY_PARTICIPANTS;
+            goto err;
+        }
+
+        if (info->participants_count < vscr_ratchet_common_MIN_PARTICIPANTS_COUNT) {
+            status = vscr_status_ERROR_TOO_FEW_PARTICIPANTS;
+            goto err;
+        }
 
         // Checking for duplicates
         for (size_t i = 0; i < info->participants_count; i++) {
@@ -481,16 +476,18 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
         }
     } else {
         pb_istream_t sub_istream = pb_istream_from_buffer(
-                message->message_pb.regular_message.header, sizeof(message->message_pb.regular_message.header));
+                message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
 
         message->header_pb = vscr_alloc(sizeof(RegularGroupMessageHeader));
         pb_status = pb_decode(&sub_istream, RegularGroupMessageHeader_fields, message->header_pb);
 
         if (!pb_status) {
-            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+            status = vscr_status_ERROR_PROTOBUF_DECODE;
             goto err;
         }
     }
+
+    vscr_ratchet_group_message_set_pb_encode_callback(message);
 
 err:
     if (status != vscr_status_SUCCESS) {

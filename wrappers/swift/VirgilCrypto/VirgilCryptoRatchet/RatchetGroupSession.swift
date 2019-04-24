@@ -68,7 +68,7 @@ import VirgilCryptoFoundation
         vscr_ratchet_group_session_delete(self.c_ctx)
     }
 
-    /// Random used to generate keys
+    /// Random
     @objc public func setRng(rng: Random) {
         vscr_ratchet_group_session_release_rng(self.c_ctx)
         vscr_ratchet_group_session_use_rng(self.c_ctx, rng.c_ctx)
@@ -88,13 +88,14 @@ import VirgilCryptoFoundation
         return proxyResult
     }
 
-    /// Shows whether identity private key was set.
-    @objc public func isIdSet() -> Bool {
-        let proxyResult = vscr_ratchet_group_session_is_id_set(self.c_ctx)
+    /// Shows whether my id was set.
+    @objc public func isMyIdSet() -> Bool {
+        let proxyResult = vscr_ratchet_group_session_is_my_id_set(self.c_ctx)
 
         return proxyResult
     }
 
+    /// Returns current epoch.
     @objc public func getCurrentEpoch() -> Int {
         let proxyResult = vscr_ratchet_group_session_get_current_epoch(self.c_ctx)
 
@@ -119,27 +120,37 @@ import VirgilCryptoFoundation
         try RatchetError.handleStatus(fromC: proxyResult)
     }
 
-    /// Sets identity private key.
-    @objc public func setId(myId: Data) {
+    /// Sets my id.
+    @objc public func setMyId(myId: Data) {
         myId.withUnsafeBytes({ (myIdPointer: UnsafeRawBufferPointer) -> Void in
 
-            vscr_ratchet_group_session_set_id(self.c_ctx, vsc_data(myIdPointer.bindMemory(to: byte.self).baseAddress, myId.count))
+            vscr_ratchet_group_session_set_my_id(self.c_ctx, vsc_data(myIdPointer.bindMemory(to: byte.self).baseAddress, myId.count))
         })
     }
 
+    /// Returns my id.
     @objc public func getMyId() -> Data {
         let proxyResult = vscr_ratchet_group_session_get_my_id(self.c_ctx)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
-    @objc public func getId() -> Data {
-        let proxyResult = vscr_ratchet_group_session_get_id(self.c_ctx)
+    /// Returns session id.
+    @objc public func getSessionId() -> Data {
+        let proxyResult = vscr_ratchet_group_session_get_session_id(self.c_ctx)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
-    /// Sets up session. Identity private key should be set separately.
+    /// Returns number of participants.
+    @objc public func getParticipantsCount() -> Int {
+        let proxyResult = vscr_ratchet_group_session_get_participants_count(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Sets up session.
+    /// NOTE: Identity private key and my id should be set separately.
     @objc public func setupSession(message: RatchetGroupMessage) throws {
         let proxyResult = vscr_ratchet_group_session_setup_session(self.c_ctx, message.c_ctx)
 
@@ -198,6 +209,7 @@ import VirgilCryptoFoundation
     }
 
     /// Serializes session to buffer
+    /// NOTE: Session changes its state every encrypt/decrypt operations. Be sure to save it.
     @objc public func serialize() -> Data {
         let outputCount = self.serializeLen()
         var output = Data(count: outputCount)
@@ -218,7 +230,11 @@ import VirgilCryptoFoundation
     }
 
     /// Deserializes session from buffer.
-    /// NOTE: Deserialized session needs dependencies to be set. Check setup defaults
+    /// NOTE: Deserialized session needs dependencies to be set.
+    /// You should set separately:
+    ///     - rng
+    ///     - my id
+    ///     - my private key
     @objc public static func deserialize(input: Data) throws -> RatchetGroupSession {
         var error: vscr_error_t = vscr_error_t()
         vscr_error_reset(&error)
@@ -233,17 +249,20 @@ import VirgilCryptoFoundation
         return RatchetGroupSession.init(take: proxyResult!)
     }
 
-    @objc public func createGroupTicketForAddingMembers() -> RatchetGroupTicket {
-        let proxyResult = vscr_ratchet_group_session_create_group_ticket_for_adding_members(self.c_ctx)
+    /// Creates ticket for adding participants to this session.
+    /// NOTE: This ticket is not suitable for removing participants from this session.
+    @objc public func createGroupTicketForAddingParticipants() -> RatchetGroupTicket {
+        let proxyResult = vscr_ratchet_group_session_create_group_ticket_for_adding_participants(self.c_ctx)
 
         return RatchetGroupTicket.init(take: proxyResult!)
     }
 
-    @objc public func createGroupTicketForAddingOrRemovingMembers() throws -> RatchetGroupTicket {
+    /// Creates ticket for adding and or removing participants to/from this session.
+    @objc public func createGroupTicketForAddingOrRemovingParticipants() throws -> RatchetGroupTicket {
         var error: vscr_error_t = vscr_error_t()
         vscr_error_reset(&error)
 
-        let proxyResult = vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_members(self.c_ctx, &error)
+        let proxyResult = vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants(self.c_ctx, &error)
 
         try RatchetError.handleStatus(fromC: error.status)
 
