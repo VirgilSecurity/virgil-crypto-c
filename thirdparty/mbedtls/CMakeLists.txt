@@ -32,6 +32,17 @@
 
 
 # ---------------------------------------------------------------------------
+#   Use upstream target of the mbedtls library if exists.
+# ---------------------------------------------------------------------------
+if(TARGET mbedcrypto)
+    if(NOT TARGET mbed::crypto)
+        add_library(mbed::crypto ALIAS mbedcrypto)
+    endif()
+
+    return()
+endif()
+
+# ---------------------------------------------------------------------------
 #   Options
 # ---------------------------------------------------------------------------
 set(MBEDTLS_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/mbedtls)
