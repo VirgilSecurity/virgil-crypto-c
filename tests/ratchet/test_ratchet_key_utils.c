@@ -137,8 +137,6 @@ test__key_id__fixed_curve_raw_key__should_match(void) {
     vscr_ratchet_key_id_destroy(&key_id);
 }
 
-// TODO: Add more tests
-
 #endif
 
 // --------------------------------------------------------------------------
