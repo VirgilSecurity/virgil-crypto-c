@@ -219,7 +219,7 @@
         </return>
     </method>
 
-    <method name="generate skipped keys">
+    <method name="generate skipped keys" declaration="private">
         <argument name="epoch" class="ratchet group participant epoch" access="readwrite"/>
         <argument name="counter" type="size"/>
 

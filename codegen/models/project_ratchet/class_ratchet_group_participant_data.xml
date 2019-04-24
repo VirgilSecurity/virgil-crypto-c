@@ -18,10 +18,6 @@
         <argument name="chain key" class="ratchet chain key" access="disown"/>
     </method>
 
-    <method name="delete epoch">
-        <argument name="epoch" type="size"/>
-    </method>
-
     <method name="find epoch" is_const="1">
         <argument name="epoch" type="size"/>
 

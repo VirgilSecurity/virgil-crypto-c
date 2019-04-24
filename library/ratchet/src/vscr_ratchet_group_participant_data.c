@@ -249,30 +249,6 @@ vscr_ratchet_group_participant_data_add_epoch(
     *chain_key_ref = NULL;
 }
 
-VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_delete_epoch(vscr_ratchet_group_participant_data_t *self, size_t epoch) {
-
-    VSCR_ASSERT_PTR(self);
-    VSCR_UNUSED(epoch);
-
-    //    size_t i = 0;
-    //    for (; i < self->epoch_count; i++) {
-    //        if (self->epoches[i]->epoch == epoch) {
-    //            break;
-    //        }
-    //    }
-    //
-    //    VSCR_ASSERT(i != self->epoch_count);
-    //
-    //    vscr_ratchet_group_participant_epoch_destroy(&self->epoches[i]);
-    //
-    //    for (size_t j = i; j < self->epoch_count - 1; i++) {
-    //        self->epoches[j] = self->epoches[j + 1];
-    //    }
-    //
-    //    self->epoches[--self->epoch_count] = NULL;
-}
-
 VSCR_PUBLIC vscr_ratchet_group_participant_epoch_t *
 vscr_ratchet_group_participant_data_find_epoch(const vscr_ratchet_group_participant_data_t *self, size_t epoch) {
 

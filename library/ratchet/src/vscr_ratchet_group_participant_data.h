@@ -140,9 +140,6 @@ VSCR_PUBLIC void
 vscr_ratchet_group_participant_data_add_epoch(vscr_ratchet_group_participant_data_t *self, size_t epoch,
         vscr_ratchet_chain_key_t **chain_key_ref);
 
-VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_delete_epoch(vscr_ratchet_group_participant_data_t *self, size_t epoch);
-
 VSCR_PUBLIC vscr_ratchet_group_participant_epoch_t *
 vscr_ratchet_group_participant_data_find_epoch(const vscr_ratchet_group_participant_data_t *self, size_t epoch);
 

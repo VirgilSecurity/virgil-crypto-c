@@ -59,6 +59,7 @@
 #include "vscr_ratchet_group_ticket_defs.h"
 #include "vscr_ratchet_group_ticket_internal.h"
 #include "vscr_ratchet_keys.h"
+#include "vscr_ratchet_group_participant_epoch.h"
 #include "vscr_ratchet_group_participant_data.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
@@ -114,6 +115,10 @@ vscr_ratchet_group_session_check_session_consistency(vscr_ratchet_group_session_
 
 static size_t
 vscr_ratchet_group_session_find_participant(vscr_ratchet_group_session_t *self, const vscr_ratchet_participant_id_t id);
+
+static vscr_status_t
+vscr_ratchet_group_session_generate_skipped_keys(vscr_ratchet_group_session_t *self,
+        vscr_ratchet_group_participant_epoch_t *epoch, size_t counter) VSCR_NODISCARD;
 
 static void
 vscr_ratchet_group_session_update_participant(vscr_ratchet_group_participant_data_t *participant, size_t epoch,
@@ -1062,7 +1067,7 @@ err:
     return session;
 }
 
-VSCR_PUBLIC vscr_status_t
+static vscr_status_t
 vscr_ratchet_group_session_generate_skipped_keys(
         vscr_ratchet_group_session_t *self, vscr_ratchet_group_participant_epoch_t *epoch, size_t counter) {
 
