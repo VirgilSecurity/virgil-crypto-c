@@ -153,7 +153,7 @@ include(GNUInstallDirs)
 #
 # MbedTLS
 #
-if(NOT VIRGIL_IMPL_IOTELIC AND (VIRGIL_LIB_FOUNDATION OR VIRGIL_LIB_PYTHIA))
+if(VIRGIL_LIB_FOUNDATION OR VIRGIL_LIB_PYTHIA)
     add_subdirectory("thirdparty/mbedtls")
 endif()
 

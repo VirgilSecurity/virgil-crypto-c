@@ -36,14 +36,30 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(iotelic VERSION 1.0.0 LANGUAGES C)
 
-# ---------------------------------------------------------------------------
-#   Check dependencies
-# ---------------------------------------------------------------------------
 
-#
-# Options
-#
+# ---------------------------------------------------------------------------
+#   Options
+# ---------------------------------------------------------------------------
+set(IOTELIC_BSP_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/iotelic)
+
 include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
+
+
+# ---------------------------------------------------------------------------
+#   Load iotelic BSP as an external project
+# ---------------------------------------------------------------------------
+include(ExternalProject)
+ExternalProject_Add(iotelic-bsp-ext
+        GIT_REPOSITORY https://github.com/VirgilSecurity/virgil-iot-bsp.git
+        GIT_TAG 33aff2cdfbc4434cfcdd4482a3bf46b5abf55bc9
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        TEST_COMMAND ""
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_CURRENT_BINARY_DIR}/iotelic-bsp-ext-prefix/src/iotelic-bsp-ext/iotelic"
+            "${IOTELIC_BSP_LOCATION}/include"
+        )
+
 
 # ---------------------------------------------------------------------------
 #   Define library
@@ -54,35 +70,106 @@ include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 #
 add_library(iotelic STATIC "")
 
+add_dependencies(iotelic iotelic-bsp-ext)
+
 target_sources(iotelic
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/iotelic_sp_interface.c"
         )
 
-set(SP_DIR  ${CMAKE_CURRENT_LIST_DIR}/../../../../../sp)
-set(AP_DIR  ${CMAKE_CURRENT_LIST_DIR}/../../../../../ap)
-
 target_include_directories(iotelic
         PUBLIC
-        "$<BUILD_INTERFACE:${SP_DIR}/bsp/include>"
-        "$<BUILD_INTERFACE:${SP_DIR}/bsp/driver>"
-        "$<BUILD_INTERFACE:${SP_DIR}/crypto/inc>"
+        "$<BUILD_INTERFACE:${IOTELIC_BSP_LOCATION}/include/sp/bsp/include>"
+        "$<BUILD_INTERFACE:${IOTELIC_BSP_LOCATION}/include/sp/bsp/driver>"
+        "$<BUILD_INTERFACE:${IOTELIC_BSP_LOCATION}/include/sp/crypto/inc>"
 
-        "$<BUILD_INTERFACE:${AP_DIR}/inc>"
-        "$<BUILD_INTERFACE:${AP_DIR}/inc/app>"
-        "$<BUILD_INTERFACE:${AP_DIR}/inc/bsp>"
-        "$<BUILD_INTERFACE:${AP_DIR}/inc/gpio>"
-        "$<BUILD_INTERFACE:${AP_DIR}/inc/compiler/gcc>"
-        "$<BUILD_INTERFACE:${AP_DIR}/inc/dbglog>"
-        "$<BUILD_INTERFACE:${AP_DIR}/inc/io_lib>"
-        "$<BUILD_INTERFACE:${AP_DIR}/inc/os_shim>"
-        "$<BUILD_INTERFACE:${AP_DIR}/inc/pib>"
-        "$<BUILD_INTERFACE:${AP_DIR}/inc/pkt>"
-        "$<BUILD_INTERFACE:${AP_DIR}/inc/plc_lib>"
-        "$<BUILD_INTERFACE:${AP_DIR}/inc/uart>"
-        "$<BUILD_INTERFACE:${AP_DIR}/inc/upgrade>"
-        "$<BUILD_INTERFACE:${AP_DIR}/inc/utils>"
+        "$<BUILD_INTERFACE:${IOTELIC_BSP_LOCATION}/include/ap/inc>"
+        "$<BUILD_INTERFACE:${IOTELIC_BSP_LOCATION}/include/ap/inc/app>"
+        "$<BUILD_INTERFACE:${IOTELIC_BSP_LOCATION}/include/ap/inc/bsp>"
+        "$<BUILD_INTERFACE:${IOTELIC_BSP_LOCATION}/include/ap/inc/gpio>"
+        "$<BUILD_INTERFACE:${IOTELIC_BSP_LOCATION}/include/ap/inc/compiler/gcc>"
+        "$<BUILD_INTERFACE:${IOTELIC_BSP_LOCATION}/include/ap/inc/dbglog>"
+        "$<BUILD_INTERFACE:${IOTELIC_BSP_LOCATION}/include/ap/inc/io_lib>"
+        "$<BUILD_INTERFACE:${IOTELIC_BSP_LOCATION}/include/ap/inc/os_shim>"
+        "$<BUILD_INTERFACE:${IOTELIC_BSP_LOCATION}/include/ap/inc/pib>"
+        "$<BUILD_INTERFACE:${IOTELIC_BSP_LOCATION}/include/ap/inc/pkt>"
+        "$<BUILD_INTERFACE:${IOTELIC_BSP_LOCATION}/include/ap/inc/plc_lib>"
+        "$<BUILD_INTERFACE:${IOTELIC_BSP_LOCATION}/include/ap/inc/uart>"
+        "$<BUILD_INTERFACE:${IOTELIC_BSP_LOCATION}/include/ap/inc/upgrade>"
+        "$<BUILD_INTERFACE:${IOTELIC_BSP_LOCATION}/include/ap/inc/utils>"
 
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
         )
+
+
+
+# ---------------------------------------------------------------------------
+#   Install library
+# ---------------------------------------------------------------------------
+include (CMakePackageConfigHelpers)
+
+#
+# Install headers.
+#
+if(VIRGIL_INSTALL_DEPS_HDRS)
+    install(
+            DIRECTORY
+                "${CMAKE_CURRENT_LIST_DIR}/include/"
+                "${IOTELIC_BSP_LOCATION}/include/"
+            DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+            COMPONENT dev
+            FILES_MATCHING PATTERN "*.h"
+            )
+endif()
+
+#
+# Install libraries.
+#
+if(VIRGIL_INSTALL_DEPS_LIBS)
+    install(
+            TARGETS iotelic
+            EXPORT iotelicTargets
+            LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            )
+endif()
+
+#
+# Install CMake configuration files.
+#
+if(VIRGIL_INSTALL_DEPS_CMAKE)
+    #
+    # Create 'main' config file
+    #
+    configure_package_config_file (
+            "Config.cmake.in" "iotelicConfig.cmake"
+            INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/iotelic"
+            )
+
+    #
+    # Create 'version' config file
+    #
+    write_basic_package_version_file(
+            "iotelicConfigVersion.cmake"
+            COMPATIBILITY SameMajorVersion
+            )
+
+    #
+    # Install all config files
+    #
+    install(
+            FILES
+                "${CMAKE_CURRENT_BINARY_DIR}/iotelicConfig.cmake"
+                "${CMAKE_CURRENT_BINARY_DIR}/iotelicConfigVersion.cmake"
+            DESTINATION
+                "${CMAKE_INSTALL_LIBDIR}/cmake/iotelic"
+            )
+
+    install(
+            EXPORT
+                iotelicTargets
+            DESTINATION
+                "${CMAKE_INSTALL_LIBDIR}/cmake/iotelic"
+            )
+endif()
