@@ -55,7 +55,8 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_skipped_message_key_list_node.h"
+#include "vscr_ratchet_typedefs.h"
+#include "vscr_ratchet_skipped_messages_root_node.h"
 
 // clang-format on
 //  @end
@@ -85,7 +86,11 @@ struct vscr_ratchet_skipped_messages_t {
     //
     size_t refcnt;
 
-    vscr_ratchet_skipped_message_key_list_node_t *keys;
+    size_t roots_count;
+
+    vscr_ratchet_public_key_t public_keys[vscr_ratchet_common_hidden_MAX_SKIPPED_DH];
+
+    vscr_ratchet_skipped_messages_root_node_t *root_nodes[vscr_ratchet_common_hidden_MAX_SKIPPED_DH];
 };
 
 

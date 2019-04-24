@@ -1,9 +1,11 @@
 <class name="ratchet group ticket" context="private">
-    Group ticket used to start group session.
+    Group ticket used to start group session or change participants.
 
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
     <require class="ratchet chain key" scope="private"/>
+
+    <require module="ratchet typedefs" scope="context"/>
 
     <require module="buffer defs" project="common" scope="private"/>
     <require module="ratchet group message defs" scope="private"/>
@@ -22,8 +24,7 @@
     </dependency>
 
     <property name="key utils" class="ratchet key utils"/>
-    <property name="complementary msg" class="ratchet group message" access="readwrite"/>
-    <property name="full msg" class="ratchet group message" access="readwrite"/>
+    <property name="msg" class="ratchet group message" access="readwrite"/>
     <property name="epoch change" type="boolean" access="readwrite"/>
 
     <method name="setup defaults">
@@ -40,11 +41,13 @@
     </method>
 
     <method name="setup ticket as new">
+        Set this ticket to start new group session.
+
         <return enum="status"/>
     </method>
 
     <method name="add new participant">
-        Adds participant to chat.
+        Add new participant to chat.
 
         <argument name="participant id" class="data">
             Participant's 32-byte identifier.
@@ -59,13 +62,8 @@
     </method>
 
     <method name="add existing participant" scope="internal">
-        <argument name="id" type="byte">
-            <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
-        </argument>
-
-        <argument name="pub key" type="byte">
-            <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_key_len)"/>
-        </argument>
+        <argument name="id" class="const vscr_ratchet_participant_id_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="pub key" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
 
         <argument name="chain key" class="ratchet chain key"/>
 
@@ -94,15 +92,7 @@
         </return>
     </method>
 
-    <method name="get complementary ticket message" is_const="1">
-        Generates message that should be sent to all participants using secure channel.
-
-        <return class="ratchet group message" access="readonly">
-            Ratchet group message.
-        </return>
-    </method>
-
-    <method name="get full ticket message" is_const="1">
+    <method name="get ticket message" is_const="1">
         Generates message that should be sent to all participants using secure channel.
 
         <return class="ratchet group message" access="readonly">

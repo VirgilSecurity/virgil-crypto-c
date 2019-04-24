@@ -153,7 +153,7 @@ add_library(vsc::phe ALIAS phe)
 #
 # Format code
 #
-if(COMMAND add_clangformat)
+if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
     add_clangformat(phe)
 endif()
 

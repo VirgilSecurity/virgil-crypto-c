@@ -62,7 +62,7 @@ test__serialization__random_group_chat_bad_network__decrypt_should_succeed(void)
     vscr_ratchet_group_session_t **sessions = NULL;
     vsc_buffer_t **priv = NULL;
 
-    size_t group_size = 10;
+    size_t group_size = generate_number(rng, 10, 50);
 
     initialize_random_group_chat(rng, group_size, &sessions, &priv);
 

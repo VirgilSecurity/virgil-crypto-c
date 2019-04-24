@@ -1,11 +1,11 @@
 <enum name="msg type" definition="public">
     Represents message type
 
-    <constant name="regular" value="0">
+    <constant name="regular" value="1">
         Regular message. This message is used all the time except case described in prekey message section.
     </constant>
 
-    <constant name="prekey" value="1">
+    <constant name="prekey" value="2">
         Prekey message. This message is sent by initiator till first response is received.
     </constant>
 </enum>

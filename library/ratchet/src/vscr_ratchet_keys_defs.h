@@ -54,6 +54,7 @@
 #define VSCR_RATCHET_KEYS_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_common_hidden.h"
 
 // clang-format on
