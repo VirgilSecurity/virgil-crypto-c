@@ -126,7 +126,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_r
     const vsc_data_t /*3*/ proxyResult = vscr_ratchet_message_get_long_term_public_key(ratchet_message_ctx /*a1*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -139,7 +139,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_r
     const vsc_data_t /*3*/ proxyResult = vscr_ratchet_message_get_one_time_public_key(ratchet_message_ctx /*a1*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -191,6 +191,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_methodID) {
         VSCR_ASSERT("Class RatchetMessage has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jinput, (jbyte*) input_arr, 0);
@@ -355,6 +356,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_methodID) {
         VSCR_ASSERT("Class RatchetMessage has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jplainText, (jbyte*) plain_text_arr, 0);
@@ -456,6 +458,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_methodID) {
         VSCR_ASSERT("Class RatchetSession has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jinput, (jbyte*) input_arr, 0);
@@ -521,7 +524,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_r
     const vsc_data_t /*3*/ proxyResult = vscr_ratchet_group_message_get_sender_id(ratchet_group_message_ctx /*a1*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -534,7 +537,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_r
     const vsc_data_t /*3*/ proxyResult = vscr_ratchet_group_message_get_session_id(ratchet_group_message_ctx /*a1*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -586,6 +589,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_methodID) {
         VSCR_ASSERT("Class RatchetGroupMessage has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jinput, (jbyte*) input_arr, 0);
@@ -690,6 +694,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_methodID) {
         VSCR_ASSERT("Class RatchetGroupMessage has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -707,6 +712,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_methodID) {
         VSCR_ASSERT("Class RatchetGroupMessage has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -814,7 +820,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_r
     const vsc_data_t /*3*/ proxyResult = vscr_ratchet_group_session_get_my_id(ratchet_group_session_ctx /*a1*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -827,7 +833,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_r
     const vsc_data_t /*3*/ proxyResult = vscr_ratchet_group_session_get_id(ratchet_group_session_ctx /*a1*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -879,6 +885,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_methodID) {
         VSCR_ASSERT("Class RatchetGroupMessage has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jplainText, (jbyte*) plain_text_arr, 0);
@@ -980,6 +987,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_methodID) {
         VSCR_ASSERT("Class RatchetGroupSession has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jinput, (jbyte*) input_arr, 0);
@@ -1000,6 +1008,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_methodID) {
         VSCR_ASSERT("Class RatchetGroupTicket has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -1025,6 +1034,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_methodID) {
         VSCR_ASSERT("Class RatchetGroupTicket has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
