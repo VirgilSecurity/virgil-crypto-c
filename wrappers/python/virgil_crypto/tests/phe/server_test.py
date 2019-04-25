@@ -8,6 +8,7 @@ class ServerTest(unittest.TestCase):
 
     def test_generate_keypair(self):
         s = Server()
+        s.setup_defaults()
         priv_key, pub_key = s.generate_server_key_pair()
         self.assertIsNotNone(priv_key)
         self.assertIsNotNone(pub_key)
@@ -16,6 +17,7 @@ class ServerTest(unittest.TestCase):
 
     def test_get_enrollment(self):
         s = Server()
+        s.setup_defaults()
         priv_key, pub_key = s.generate_server_key_pair()
         enroll = s.get_enrollment(priv_key, pub_key)
         self.assertIsNotNone(enroll)
@@ -24,9 +26,11 @@ class ServerTest(unittest.TestCase):
     def test_verify_password(self):
         s = Server()
         c = Client()
+        s.setup_defaults()
+        c.setup_defaults()
         server_private_key, server_public_key = s.generate_server_key_pair()
         client_private_key, client_public_key = s.generate_server_key_pair()
-        c.set_keys(client_private_key, client_public_key)
+        c.set_keys(client_private_key, server_public_key)
         enrollment_response = s.get_enrollment(server_private_key, server_public_key)
 
         record, enroll_key = c.enroll_account(

@@ -9,9 +9,11 @@ class ClientTest(unittest.TestCase):
     def test_enroll_account(self):
         s = Server()
         c = Client()
+        s.setup_defaults()
+        c.setup_defaults()
         server_private_key, server_public_key = s.generate_server_key_pair()
         client_private_key, client_public_key = s.generate_server_key_pair()
-        c.set_keys(client_private_key, client_public_key)
+        c.set_keys(client_private_key, server_public_key)
         enrollment_response = s.get_enrollment(server_private_key, server_public_key)
         enroll_record, enroll_key = c.enroll_account(
             enrollment_response,
@@ -25,9 +27,11 @@ class ClientTest(unittest.TestCase):
     def test_password_verify_request(self):
         s = Server()
         c = Client()
+        s.setup_defaults()
+        c.setup_defaults()
         server_private_key, server_public_key = s.generate_server_key_pair()
         client_private_key, client_public_key = s.generate_server_key_pair()
-        c.set_keys(client_private_key, client_public_key)
+        c.set_keys(client_private_key, server_public_key)
         enrollment_response = s.get_enrollment(server_private_key, server_public_key)
 
         record, enroll_key = c.enroll_account(
@@ -44,9 +48,11 @@ class ClientTest(unittest.TestCase):
     def test_verify_server_response(self):
         s = Server()
         c = Client()
+        s.setup_defaults()
+        c.setup_defaults()
         server_private_key, server_public_key = s.generate_server_key_pair()
         client_private_key, client_public_key = s.generate_server_key_pair()
-        c.set_keys(client_private_key, client_public_key)
+        c.set_keys(client_private_key, server_public_key)
         enrollment_response = s.get_enrollment(server_private_key, server_public_key)
 
         record, enroll_key = c.enroll_account(

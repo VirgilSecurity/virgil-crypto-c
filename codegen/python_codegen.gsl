@@ -588,23 +588,23 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Generate project files.
 # ---------------------------------------------------------------------------
-function python_generate_project (source, wrapper)
-    check_arguments (my, "source, wrapper", my)
+function python_generate_project (wrapper_project)
+    check_arguments (my, "wrapper_project", my)
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Generate source files from <python_module/> entities.
 # ---------------------------------------------------------------------------
-function python_generate_sources (source, wrapper)
-    check_arguments (my, "source, wrapper", my)
+function python_generate_sources (wrapper_project)
+    check_arguments (my, "wrapper_project", my)
 
-    assert_attribute (my.wrapper, "source_dir", my)
+    assert_attribute (my.wrapper_project, "source_dir", my)
 
-    if -1 = directory.create (my.wrapper.source_dir)
+    if -1 = directory.create (my.wrapper_project.source_dir)
         echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
     endif
 
-    for my.source.python_module
+    for my.wrapper_project.python_module
         echo_trace ("Generate Python files from <$(name (python_module)) name = \"$(c_module.name:)\"/>", my)
 
         if defined (python_module.source_dir)

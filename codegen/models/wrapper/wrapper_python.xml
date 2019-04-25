@@ -1,3 +1,8 @@
-<wrapper lang="python">
+<wrapper lang="python"
+    root_project="virgil_crypto"
+    main_package_dir="../wrappers/python/virgil_crypto"
+    utils_source_dir="../wrappers/python/virgil_crypto/utils"
+    libs_source_dir="../wrappers/python/virgil_crypto/_libs"
+    common_source_dir="../wrappers/python/virgil_crypto/common/_c_bridge">
     Wrapper to the Python programming language.
 </wrapper>
