@@ -8,11 +8,34 @@ function js_append_js_project_model(parent, project, wrapper)
     js_project.name = my.project.name
     js_project.js_name = "$(js_project.name:c)"
     js_project.prefix = my.project.prefix
-    js_project.root_dir = cat_path("../wrappers/$(my.wrapper.lang:no)", "crypto")
+    js_project.root_dir = my.wrapper.source_dir
     js_project.source_dir = cat_path(js_project.root_dir, "src")
     js_project.project_source_dir = cat_path(js_project.source_dir, js_project.name)
     js_project.has_implementation_resolver = 0
     return js_project
+  endnew
+endfunction
+
+function js_append_toplevel_module_models(wrapper)
+  new js_index_js_module to my.wrapper
+    js_index_js_module.file_name = "index.js"
+    js_index_js_module.file_path = cat_path(my.wrapper.source_dir, "src", js_index_js_module.file_name)
+  endnew
+  new js_binding_gyp_module to my.wrapper
+    js_binding_gyp_module.file_name = "binding.gyp"
+    js_binding_gyp_module.file_path = cat_path(my.wrapper.source_dir, js_binding_gyp_module.file_name)
+  endnew
+  new js_package_json_module to my.wrapper
+    js_package_json_module.file_name = "package.json"
+    js_package_json_module.file_path = cat_path(my.wrapper.source_dir, js_package_json_module.file_name)
+  endnew
+  new js_gitignore_module to my.wrapper
+    js_gitignore_module.file_name = ".gitignore"
+    js_gitignore_module.file_path = cat_path(my.wrapper.source_dir, js_gitignore_module.file_name)
+  endnew
+  new js_download_crypto_c_module to my.wrapper
+    js_download_crypto_c_module.file_name = "download-crypto-c.js"
+    js_download_crypto_c_module.file_path = cat_path(my.wrapper.source_dir, js_download_crypto_c_module.file_name)
   endnew
 endfunction
 

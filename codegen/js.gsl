@@ -58,6 +58,10 @@ function js_module_resolve(source, wrapper_project)
   echo_info("Resolve module: $(my.source.name:no)", my)
 endfunction
 
+function js_create_toplevel_modules(wrapper_project)
+  js_append_toplevel_module_models(my.wrapper_project)
+endfunction
+
 function js_generate_project(wrapper_project)
   echo_info("Generate project: $(my.wrapper_project.name:no)", my)
   if -1 = directory.create(my.wrapper_project.project_source_dir)
@@ -67,6 +71,9 @@ endfunction
 
 function js_generate_sources(wrapper_project)
   echo_info("Generate sources for project: $(my.wrapper_project.name:no)", my)
+  if !defined(my.wrapper_project->js_module)
+    js_create_wrapper_top_level(my.wrapper_project)
+  endif
   for my.wrapper_project.js_module
     if defined(js_module->js_interface_module)
       js_create_js_interface_module(js_module->js_interface_module, my.wrapper_project)

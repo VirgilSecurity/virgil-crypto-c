@@ -1046,4 +1046,69 @@ function js_create_js_root_module(js_root_module, wrapper_project)
   js_create_js_root_module_js_source(my.js_root_module, my.wrapper_project)
 endfunction
 
+function js_create_wrapper_top_level(wrapper)
+  my.indent_levels = js_create_indent_levels()
+  output my.wrapper->js_index_js_module.file_path
+    js_out("module.exports = Object.assign(", my.indent_levels.first)
+    js_out("{},", my.indent_levels.second)
+    for my.wrapper.js_project
+      js_out("require('./$(js_project.name:no)/$(js_project.name:no).js'),", my.indent_levels.second)
+    endfor
+    js_out(");", my.indent_levels.first)
+  close
+  output my.wrapper->js_binding_gyp_module.file_path
+  close
+  output my.wrapper->js_package_json_module.file_path
+    my.package_json = my.wrapper->package_json
+    js_out("{", my.indent_levels.first)
+    js_out("\"name\": \"$(my.package_json.name:no)\",", my.indent_levels.second)
+    js_out("\"version\": \"$(my.package_json.version:no)\"", my.indent_levels.second)
+    js_out("\"description\": \"$(my.package_json.description:no)\",", my.indent_levels.second)
+    js_out("\"main\": \"./src/index.js\",", my.indent_levels.second)
+    js_out("\"repository\": \"$(my.package_json.repository:no)\",", my.indent_levels.second)
+    js_out("\"author\": \"$(my.package_json.author:no)\",", my.indent_levels.second)
+    js_out("\"license\": \"$(my.package_json.license:no)\",", my.indent_levels.second)
+    js_out("\"script\": {", my.indent_levels.second)
+    my.script = "\"preinstall\": \"node $(my.wrapper->js_download_crypto_c_module.file_name:no)\""
+    if count(my.package_json.script) > 0
+      my.script += ","
+    endif
+    js_out(my.script, my.indent_levels.third)
+    for my.package_json.script
+      my.script = "\"$(script.name:no)\": \"$(script:no)\""
+      if !last()
+        my.script += ","
+      endif
+      js_out(my.script, my.indent_levels.third)
+    endfor
+    js_out("},", my.indent_levels.second)
+    js_out("\"dependencies\": {", my.indent_levels.second)
+    for my.package_json.dependency where dependency.type = "dependency"
+      my.dependency = "\"$(dependency.name:no)\": \"$(dependency.version:no)\""
+      if !last()
+        my.dependency += ","
+      endif
+      js_out(my.dependency, my.indent_levels.third)
+    endfor
+    js_out("},", my.indent_levels.second)
+    js_out("\"devDependencies\": {", my.indent_levels.second)
+    for my.package_json.dependency where dependency.type = "devDependency"
+      my.dependency = "\"$(dependency.name:no)\": \"$(dependency.version:no)\""
+      if !last()
+        my.dependency += ","
+      endif
+      js_out(my.dependency, my.indent_levels.third)
+    endfor
+    js_out("}", my.indent_levels.second)
+    js_out("}", my.indent_levels.first)
+  close
+  output my.wrapper->js_gitignore_module.file_path
+    for my.wrapper->gitignore.ignore
+      js_out("$(ignore:no)", my.indent_levels.first)
+    endfor
+  close
+  output my.wrapper->js_download_crypto_c_module.file_path
+  close
+endfunction
+
 endtemplate

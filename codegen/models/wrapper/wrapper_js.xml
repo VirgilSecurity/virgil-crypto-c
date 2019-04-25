@@ -1,3 +1,30 @@
-<wrapper lang="js">
+<wrapper lang="js" c_crypto_version="0.6.0">
     Wrapper to the JavaScript programming language.
+
+    <package_json
+        name="@virgilsecurity/node-crypto"
+        version="0.1.0"
+        description="Virgil Security Crypto Library wrapper for Node.js"
+        repository="https://github.com/VirgilSecurity/virgil-crypto-c/tree/master/wrappers/js"
+        author="Virgil Security Inc. <support@virgilsecurity.com>"
+        license="BSD-3-Clause">
+        <script name="test">jest</script>
+        <script name="build">node-gyp build</script>
+        <script name="clean">node-gyp clean</script>
+        <script name="configure">node-gyp configure</script>
+        <script name="rebuild">node-gyp rebuild</script>
+        <dependency type="dependency" name="bindings" version="^1.5.0"></dependency>
+        <dependency type="dependency" name="nan" version="^2.13.2"></dependency>
+        <dependency type="dependency" name="node-gyp" version="^4.0.0"></dependency>
+        <dependency type="devDependency" name="jest" version="^24.7.1"></dependency>
+    </package_json>
+
+    <gitignore>
+      <ignore>node_modules</ignore>
+      <ignore>package-lock.json</ignore>
+      <ignore>yarn.lock</ignore>
+      <ignore>*.log</ignore>
+      <ignore>build</ignore>
+    </gitignore>
+
 </wrapper>
