@@ -225,12 +225,13 @@ function js_append_js_class_module_model(parent, source, wrapper_project, meta)
     js_class_module.cpp_umbrella_header = make_ref_js(make_id("umbrella", "module", "cpp header"))
     js_class_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
     js_class_module.instance_name = "$(my.source.name:c)_instance"
-    js_class_module.has_context = defined(my.source.context) & my.source.context <> "none"
+    js_class_module.has_context = defined(my.source.context) & my.source.context <> "none" & defined(my.source.lifecycle) & my.source.lifecycle <> "none"
     if js_class_module.has_context
       js_class_module.c_context_name = "$(my.source.name:c)"
       js_class_module.c_context_type = make_ref_c(make_id("class", my.source.name, "struct", my.source.name))
       js_class_module.c_context_constructor = make_ref_c(make_id("class", my.source.name, "method", "new"))
       js_class_module.c_context_destructor = make_ref_c(make_id("class", my.source.name, "method", "destroy"))
+      js_class_module.c_shallow_copy = make_ref_c(make_id("class", my.source.name, "method", "shallow copy"))
     endif
     for my.wrapper_project.js_project_require
       copy js_project_require to js_class_module

@@ -602,7 +602,7 @@ function js_cpp_create_constructor(js_class_module, indent_level)
   js_out("}", my.indent_levels.first)
 
   js_out("$(my.js_class_module.cpp_name:no)::$(my.js_class_module.cpp_name:no)($(my.js_class_module.c_context_type:no)* $(my.js_class_module.c_context_name:no)) {", my.indent_levels.first)
-  js_out("this->$(my.js_class_module.c_context_name:no) = $(my.js_class_module.c_context_name:no);", my.indent_levels.second)
+  js_out("this->$(my.js_class_module.c_context_name:no) = $(my.js_class_module.c_shallow_copy:no)($(my.js_class_module.c_context_name:no));", my.indent_levels.second)
   js_out("}", my.indent_levels.first)
 endfunction
 
