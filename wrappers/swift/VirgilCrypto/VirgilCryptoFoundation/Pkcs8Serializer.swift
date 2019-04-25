@@ -36,7 +36,8 @@
 import Foundation
 import VSCFoundation
 
-/// Implements PKCS#8 key serialization to DER format.
+/// Implements PKCS#8 key serialization to DER / PEM formats.
+/// Default format is DER.
 @objc(VSCFPkcs8Serializer) public class Pkcs8Serializer: NSObject, KeySerializer {
 
     /// Handle underlying C context.
@@ -75,6 +76,13 @@ import VSCFoundation
     /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() {
         vscf_pkcs8_serializer_setup_defaults(self.c_ctx)
+    }
+
+    /// Tell serializer to use:
+    ///     - PEM format if true given, or
+    ///     - DER format if false given.
+    @objc public func enablePemMode(enabled: Bool) {
+        vscf_pkcs8_serializer_enable_pem_mode(self.c_ctx, enabled)
     }
 
     /// Serialize Public Key by using internal ASN.1 writer.

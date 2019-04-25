@@ -15,15 +15,15 @@
     <require impl="curve25519 private key"/>
     <require impl="secp256r1 public key"/>
     <require impl="secp256r1 private key"/>
-    <require impl="key default deserializer"/>
-    <require impl="key default serializer"/>
+    <require impl="key asn1 deserializer"/>
+    <require impl="key asn1 serializer"/>
 
     <dependency name="random" interface="random"/>
     <dependency name="ecies" class="ecies"/>
 
     <property name="rsa bitlen" type="size"/>
-    <property name="key default serializer" interface="key serialzier"/>
-    <property name="key default deserializer" interface="key deserialzier"/>
+    <property name="key asn1 serializer" interface="key serialzier"/>
+    <property name="key asn1 deserializer" interface="key deserialzier"/>
 
     <method name="setup defaults">
         Setup predefined values to the uninitialized class dependencies.

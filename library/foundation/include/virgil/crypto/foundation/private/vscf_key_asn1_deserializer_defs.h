@@ -47,20 +47,20 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'key default deserializer' implementation.
+//  Types of the 'key asn1 deserializer' implementation.
 //  This types SHOULD NOT be used directly.
 //  The only purpose of including this module is to place implementation
 //  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_KEY_DEFAULT_DESERIALIZER_DEFS_H_INCLUDED
-#define VSCF_KEY_DEFAULT_DESERIALIZER_DEFS_H_INCLUDED
+#ifndef VSCF_KEY_ASN1_DESERIALIZER_DEFS_H_INCLUDED
+#define VSCF_KEY_ASN1_DESERIALIZER_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
-#include "vscf_key_default_deserializer.h"
+#include "vscf_key_asn1_deserializer.h"
 #include "vscf_impl.h"
-#include "vscf_key_der_deserializer.h"
+#include "vscf_alg_info_der_deserializer.h"
 
 // clang-format on
 //  @end
@@ -80,7 +80,7 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-struct vscf_key_default_deserializer_t {
+struct vscf_key_asn1_deserializer_t {
     //
     //  Compile-time known information about this implementation.
     //
@@ -90,13 +90,13 @@ struct vscf_key_default_deserializer_t {
     //
     size_t refcnt;
     //
-    //  Implementation specific context.
+    //  Dependency to the interface 'asn1 reader'.
     //
     vscf_impl_t *asn1_reader;
     //
     //  Implementation specific context.
     //
-    vscf_key_der_deserializer_t *key_der_deserializer;
+    vscf_alg_info_der_deserializer_t *alg_info_der_deserializer;
 };
 
 
@@ -113,5 +113,5 @@ struct vscf_key_default_deserializer_t {
 
 
 //  @footer
-#endif // VSCF_KEY_DEFAULT_DESERIALIZER_DEFS_H_INCLUDED
+#endif // VSCF_KEY_ASN1_DESERIALIZER_DEFS_H_INCLUDED
 //  @end

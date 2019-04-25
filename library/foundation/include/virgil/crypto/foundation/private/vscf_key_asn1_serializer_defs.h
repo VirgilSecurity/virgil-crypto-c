@@ -37,15 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Types of the 'key default deserializer' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -53,10 +44,32 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_key_default_deserializer_defs.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'key asn1 serializer' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_KEY_ASN1_SERIALIZER_DEFS_H_INCLUDED
+#define VSCF_KEY_ASN1_SERIALIZER_DEFS_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_key_asn1_serializer.h"
+#include "vscf_impl.h"
+#include "vscf_sec1_serializer.h"
+#include "vscf_pkcs8_serializer.h"
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -65,9 +78,49 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handles implementation details.
+//
+struct vscf_key_asn1_serializer_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the interface 'asn1 writer'.
+    //
+    vscf_impl_t *asn1_writer;
+    //
+    //  Implementation specific context.
+    //
+    vscf_sec1_serializer_t *sec1_serializer;
+    //
+    //  Implementation specific context.
+    //
+    vscf_pkcs8_serializer_t *pkcs8_serializer;
+    //
+    //  Implementation specific context.
+    //
+    bool is_pem_mode;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_KEY_ASN1_SERIALIZER_DEFS_H_INCLUDED
 //  @end

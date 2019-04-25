@@ -36,17 +36,17 @@
 import Foundation
 import VSCFoundation
 
-/// Implements SEC 1 key serialization to DER / PEM formats.
-/// Default format is DER.
-/// See also RFC 5480 and RFC 5915.
-@objc(VSCFSec1Serializer) public class Sec1Serializer: NSObject, KeySerializer {
+/// Implements key serialization in the ASN.1 format (DER / PEM):
+///     - SEC1 - for EC private keys;
+///     - PKCS#8 - for other keys.
+@objc(VSCFKeyAsn1Serializer) public class KeyAsn1Serializer: NSObject, KeySerializer {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
     /// Create underlying C context.
     public override init() {
-        self.c_ctx = vscf_sec1_serializer_new()
+        self.c_ctx = vscf_key_asn1_serializer_new()
         super.init()
     }
 
@@ -60,30 +60,30 @@ import VSCFoundation
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscf_sec1_serializer_shallow_copy(c_ctx)
+        self.c_ctx = vscf_key_asn1_serializer_shallow_copy(c_ctx)
         super.init()
     }
 
     /// Release underlying C context.
     deinit {
-        vscf_sec1_serializer_delete(self.c_ctx)
+        vscf_key_asn1_serializer_delete(self.c_ctx)
     }
 
     @objc public func setAsn1Writer(asn1Writer: Asn1Writer) {
-        vscf_sec1_serializer_release_asn1_writer(self.c_ctx)
-        vscf_sec1_serializer_use_asn1_writer(self.c_ctx, asn1Writer.c_ctx)
+        vscf_key_asn1_serializer_release_asn1_writer(self.c_ctx)
+        vscf_key_asn1_serializer_use_asn1_writer(self.c_ctx, asn1Writer.c_ctx)
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() {
-        vscf_sec1_serializer_setup_defaults(self.c_ctx)
+        vscf_key_asn1_serializer_setup_defaults(self.c_ctx)
     }
 
     /// Tell serializer to use:
     ///     - PEM format if true given, or
     ///     - DER format if false given.
     @objc public func enablePemMode(enabled: Bool) {
-        vscf_sec1_serializer_enable_pem_mode(self.c_ctx, enabled)
+        vscf_key_asn1_serializer_enable_pem_mode(self.c_ctx, enabled)
     }
 
     /// Serialize Public Key by using internal ASN.1 writer.
@@ -93,7 +93,7 @@ import VSCFoundation
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = vscf_sec1_serializer_serialize_public_key_inplace(self.c_ctx, publicKey.c_ctx, &error)
+        let proxyResult = vscf_key_asn1_serializer_serialize_public_key_inplace(self.c_ctx, publicKey.c_ctx, &error)
 
         try FoundationError.handleStatus(fromC: error.status)
 
@@ -114,7 +114,7 @@ import VSCFoundation
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = vscf_sec1_serializer_serialize_private_key_inplace(self.c_ctx, privateKey.c_ctx, &error)
+        let proxyResult = vscf_key_asn1_serializer_serialize_private_key_inplace(self.c_ctx, privateKey.c_ctx, &error)
 
         try FoundationError.handleStatus(fromC: error.status)
 
@@ -132,7 +132,7 @@ import VSCFoundation
     ///
     /// Precondition: public key must be exportable.
     @objc public func serializedPublicKeyLen(publicKey: PublicKey) -> Int {
-        let proxyResult = vscf_sec1_serializer_serialized_public_key_len(self.c_ctx, publicKey.c_ctx)
+        let proxyResult = vscf_key_asn1_serializer_serialized_public_key_len(self.c_ctx, publicKey.c_ctx)
 
         return proxyResult
     }
@@ -152,7 +152,7 @@ import VSCFoundation
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
-            return vscf_sec1_serializer_serialize_public_key(self.c_ctx, publicKey.c_ctx, outBuf)
+            return vscf_key_asn1_serializer_serialize_public_key(self.c_ctx, publicKey.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
 
@@ -165,7 +165,7 @@ import VSCFoundation
     ///
     /// Precondition: private key must be exportable.
     @objc public func serializedPrivateKeyLen(privateKey: PrivateKey) -> Int {
-        let proxyResult = vscf_sec1_serializer_serialized_private_key_len(self.c_ctx, privateKey.c_ctx)
+        let proxyResult = vscf_key_asn1_serializer_serialized_private_key_len(self.c_ctx, privateKey.c_ctx)
 
         return proxyResult
     }
@@ -185,7 +185,7 @@ import VSCFoundation
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
-            return vscf_sec1_serializer_serialize_private_key(self.c_ctx, privateKey.c_ctx, outBuf)
+            return vscf_key_asn1_serializer_serialize_private_key(self.c_ctx, privateKey.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
 

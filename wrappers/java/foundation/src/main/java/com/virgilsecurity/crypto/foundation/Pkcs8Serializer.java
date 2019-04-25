@@ -37,7 +37,8 @@
 package com.virgilsecurity.crypto.foundation;
 
 /*
-* Implements PKCS#8 key serialization to DER format.
+* Implements PKCS#8 key serialization to DER / PEM formats.
+* Default format is DER.
 */
 public class Pkcs8Serializer implements AutoCloseable, KeySerializer {
 
@@ -67,6 +68,15 @@ public class Pkcs8Serializer implements AutoCloseable, KeySerializer {
     */
     public void setupDefaults() {
         FoundationJNI.INSTANCE.pkcs8Serializer_setupDefaults(this.cCtx);
+    }
+
+    /*
+    * Tell serializer to use:
+    * - PEM format if true given, or
+    * - DER format if false given.
+    */
+    public void enablePemMode(boolean enabled) {
+        FoundationJNI.INSTANCE.pkcs8Serializer_enablePemMode(this.cCtx, enabled);
     }
 
     /*

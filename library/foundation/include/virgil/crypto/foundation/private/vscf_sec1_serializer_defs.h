@@ -97,6 +97,10 @@ struct vscf_sec1_serializer_t {
     //  Implementation specific context.
     //
     vscf_alg_info_der_serializer_t *alg_info_der_serializer;
+    //
+    //  Implementation specific context.
+    //
+    bool is_pem_mode;
 };
 
 

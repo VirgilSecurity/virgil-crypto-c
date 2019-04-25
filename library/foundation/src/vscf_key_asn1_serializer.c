@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'key der serializer' implementation.
+//  This module contains 'key asn1 serializer' implementation.
 // --------------------------------------------------------------------------
 
 
@@ -50,7 +50,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_key_der_serializer.h"
+#include "vscf_key_asn1_serializer.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
 #include "vscf_alg.h"
@@ -60,9 +60,11 @@
 #include "vscf_asn1wr.h"
 #include "vscf_pkcs8_serializer.h"
 #include "vscf_sec1_serializer.h"
+#include "vscf_pem.h"
+#include "vscf_pem_title.h"
 #include "vscf_asn1_writer.h"
-#include "vscf_key_der_serializer_defs.h"
-#include "vscf_key_der_serializer_internal.h"
+#include "vscf_key_asn1_serializer_defs.h"
+#include "vscf_key_asn1_serializer_internal.h"
 
 // clang-format on
 //  @end
@@ -84,17 +86,18 @@
 
 //
 //  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_key_der_serializer_init() is called.
+//  Note, this method is called automatically when method vscf_key_asn1_serializer_init() is called.
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_key_der_serializer_init_ctx(vscf_key_der_serializer_t *self) {
+vscf_key_asn1_serializer_init_ctx(vscf_key_asn1_serializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
 
     self->sec1_serializer = vscf_sec1_serializer_new();
     self->pkcs8_serializer = vscf_pkcs8_serializer_new();
+    self->is_pem_mode = false;
 }
 
 //
@@ -103,7 +106,7 @@ vscf_key_der_serializer_init_ctx(vscf_key_der_serializer_t *self) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_key_der_serializer_cleanup_ctx(vscf_key_der_serializer_t *self) {
+vscf_key_asn1_serializer_cleanup_ctx(vscf_key_asn1_serializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -116,7 +119,7 @@ vscf_key_der_serializer_cleanup_ctx(vscf_key_der_serializer_t *self) {
 //  This method is called when interface 'asn1 writer' was setup.
 //
 VSCF_PRIVATE void
-vscf_key_der_serializer_did_setup_asn1_writer(vscf_key_der_serializer_t *self) {
+vscf_key_asn1_serializer_did_setup_asn1_writer(vscf_key_asn1_serializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -128,7 +131,7 @@ vscf_key_der_serializer_did_setup_asn1_writer(vscf_key_der_serializer_t *self) {
 //  This method is called when interface 'asn1 writer' was released.
 //
 VSCF_PRIVATE void
-vscf_key_der_serializer_did_release_asn1_writer(vscf_key_der_serializer_t *self) {
+vscf_key_asn1_serializer_did_release_asn1_writer(vscf_key_asn1_serializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -140,13 +143,25 @@ vscf_key_der_serializer_did_release_asn1_writer(vscf_key_der_serializer_t *self)
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC void
-vscf_key_der_serializer_setup_defaults(vscf_key_der_serializer_t *self) {
+vscf_key_asn1_serializer_setup_defaults(vscf_key_asn1_serializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
     if (NULL == self->asn1_writer) {
-        vscf_key_der_serializer_take_asn1_writer(self, vscf_asn1wr_impl(vscf_asn1wr_new()));
+        vscf_key_asn1_serializer_take_asn1_writer(self, vscf_asn1wr_impl(vscf_asn1wr_new()));
     }
+}
+
+//
+//  Tell serializer to use:
+//      - PEM format if true given, or
+//      - DER format if false given.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_serializer_enable_pem_mode(vscf_key_asn1_serializer_t *self, bool enabled) {
+
+    VSCF_ASSERT_PTR(self);
+    self->is_pem_mode = enabled;
 }
 
 //
@@ -155,14 +170,14 @@ vscf_key_der_serializer_setup_defaults(vscf_key_der_serializer_t *self) {
 //  an output buffer.
 //
 VSCF_PUBLIC size_t
-vscf_key_der_serializer_serialize_public_key_inplace(
-        vscf_key_der_serializer_t *self, const vscf_impl_t *public_key, vscf_error_t *error) {
+vscf_key_asn1_serializer_serialize_public_key_inplace(
+        vscf_key_asn1_serializer_t *self, const vscf_impl_t *public_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
     VSCF_ASSERT(vscf_asn1_writer_unwritten_len(self->asn1_writer) >=
-                vscf_key_der_serializer_serialized_public_key_len(self, public_key));
+                vscf_key_asn1_serializer_serialized_public_key_len(self, public_key));
 
 
     vscf_alg_id_t alg_id = vscf_alg_alg_id(public_key);
@@ -180,14 +195,14 @@ vscf_key_der_serializer_serialize_public_key_inplace(
 //  an output buffer.
 //
 VSCF_PUBLIC size_t
-vscf_key_der_serializer_serialize_private_key_inplace(
-        vscf_key_der_serializer_t *self, const vscf_impl_t *private_key, vscf_error_t *error) {
+vscf_key_asn1_serializer_serialize_private_key_inplace(
+        vscf_key_asn1_serializer_t *self, const vscf_impl_t *private_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
     VSCF_ASSERT(vscf_asn1_writer_unwritten_len(self->asn1_writer) >=
-                vscf_key_der_serializer_serialized_private_key_len(self, private_key));
+                vscf_key_asn1_serializer_serialized_private_key_len(self, private_key));
 
     vscf_alg_id_t alg_id = vscf_alg_alg_id(private_key);
     switch (alg_id) {
@@ -204,7 +219,7 @@ vscf_key_der_serializer_serialize_private_key_inplace(
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_key_der_serializer_serialized_public_key_len(vscf_key_der_serializer_t *self, const vscf_impl_t *public_key) {
+vscf_key_asn1_serializer_serialized_public_key_len(vscf_key_asn1_serializer_t *self, const vscf_impl_t *public_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
@@ -225,15 +240,15 @@ vscf_key_der_serializer_serialized_public_key_len(vscf_key_der_serializer_t *sel
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_der_serializer_serialize_public_key(
-        vscf_key_der_serializer_t *self, const vscf_impl_t *public_key, vsc_buffer_t *out) {
+vscf_key_asn1_serializer_serialize_public_key(
+        vscf_key_asn1_serializer_t *self, const vscf_impl_t *public_key, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_key_der_serializer_serialized_public_key_len(self, public_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_key_asn1_serializer_serialized_public_key_len(self, public_key));
 
 
     vscf_alg_id_t alg_id = vscf_alg_alg_id(public_key);
@@ -251,7 +266,7 @@ vscf_key_der_serializer_serialize_public_key(
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_key_der_serializer_serialized_private_key_len(vscf_key_der_serializer_t *self, const vscf_impl_t *private_key) {
+vscf_key_asn1_serializer_serialized_private_key_len(vscf_key_asn1_serializer_t *self, const vscf_impl_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
@@ -272,15 +287,15 @@ vscf_key_der_serializer_serialized_private_key_len(vscf_key_der_serializer_t *se
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_der_serializer_serialize_private_key(
-        vscf_key_der_serializer_t *self, const vscf_impl_t *private_key, vsc_buffer_t *out) {
+vscf_key_asn1_serializer_serialize_private_key(
+        vscf_key_asn1_serializer_t *self, const vscf_impl_t *private_key, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_key_der_serializer_serialized_private_key_len(self, private_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_key_asn1_serializer_serialized_private_key_len(self, private_key));
 
     vscf_alg_id_t alg_id = vscf_alg_alg_id(private_key);
     switch (alg_id) {

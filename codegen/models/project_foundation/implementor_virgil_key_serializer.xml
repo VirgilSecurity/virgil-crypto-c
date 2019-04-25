@@ -2,21 +2,34 @@
     Virgil Security implementation of the public and private key serialization formats.
 
     <implementation name="pkcs8 serializer">
-        Implements PKCS#8 key serialization to DER format.
+        Implements PKCS#8 key serialization to DER / PEM formats.
+        Default format is DER.
 
         <interface name="key serializer"/>
 
+        <require interface="alg"/>
         <require interface="public key"/>
         <require interface="private key"/>
+        <require enum="asn1 tag"/>
         <require class="oid"/>
         <require class="asn1wr"/>
-        <require enum="asn1 tag"/>
-        <require interface="alg"/>
+        <require class="pem"/>
+        <require class="pem title"/>
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
 
+        <property name="is pem mode" type="boolean"/>
+
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.
+        </method>
+
+        <method name="enable pem mode" declaration="public">
+            Tell serializer to use:
+                - PEM format if true given, or
+                - DER format if false given.
+
+            <argument name="enabled" type="boolean"/>
         </method>
 
         <method name="serialize public key inplace" declaration="public">
@@ -44,7 +57,8 @@
 
 
     <implementation name="sec1 serializer">
-        Implements SEC 1 key serialization to DER format.
+        Implements SEC 1 key serialization to DER / PEM formats.
+        Default format is DER.
         See also RFC 5480 and RFC 5915.
 
         <interface name="key serializer"/>
@@ -57,13 +71,24 @@
         <require class="asn1wr"/>
         <require impl="alg info der serializer"/>
         <require impl="ec alg info"/>
+        <require class="pem"/>
+        <require class="pem title"/>
 
         <property name="alg info der serializer" impl="alg info der serializer"/>
+        <property name="is pem mode" type="boolean"/>
 
         <dependency name="asn1 writer" interface="asn1 writer" has_observers="1"/>
 
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.
+        </method>
+
+        <method name="enable pem mode" declaration="public">
+            Tell serializer to use:
+                - PEM format if true given, or
+                - DER format if false given.
+
+            <argument name="enabled" type="boolean"/>
         </method>
 
         <method name="serialize public key inplace" declaration="public">
@@ -98,10 +123,11 @@
     </implementation>
 
 
-    <implementation name="key der serializer">
-        Implements key serialization to the default (DER) format:
+    <implementation name="key asn1 serializer">
+        Implements key serialization in the ASN.1 format (DER / PEM):
             - SEC1 - for EC private keys;
             - PKCS#8 - for other keys.
+
 
         <interface name="key serializer"/>
 
@@ -112,14 +138,25 @@
         <require impl="asn1wr"/>
         <require impl="pkcs8 serializer"/>
         <require impl="sec1 serializer"/>
+        <require class="pem"/>
+        <require class="pem title"/>
 
         <property name="sec1 serializer" impl="sec1 serializer"/>
         <property name="pkcs8 serializer" impl="pkcs8 serializer"/>
+        <property name="is pem mode" type="boolean"/>
 
         <dependency name="asn1 writer" interface="asn1 writer" has_observers="1"/>
 
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.
+        </method>
+
+        <method name="enable pem mode" declaration="public">
+            Tell serializer to use:
+                - PEM format if true given, or
+                - DER format if false given.
+
+            <argument name="enabled" type="boolean"/>
         </method>
 
         <method name="serialize public key inplace" declaration="public">
@@ -146,8 +183,8 @@
     </implementation>
 
 
-    <implementation name="key der deserializer">
-        Implements PKCS#8 and SEC1 key deserialization from DER format.
+    <implementation name="key asn1 deserializer">
+        Implements PKCS#8 and SEC1 key deserialization from DER / PEM format.
 
         <interface name="key deserializer"/>
 
@@ -156,9 +193,11 @@
         <require interface="public key"/>
         <require interface="private key"/>
         <require impl="alg info der deserializer"/>
+        <require enum="asn1 tag"/>
         <require class="oid"/>
         <require class="asn1rd"/>
-        <require enum="asn1 tag"/>
+        <require class="pem"/>
+        <require class="pem title"/>
 
         <property name="alg info der deserializer" impl="alg info der deserializer"/>
 
@@ -207,43 +246,5 @@
 
             <return class="raw key" access="disown"/>
         </method>
-    </implementation>
-
-
-    <implementation name="key default serializer">
-        Implements key serialization to the default (DER) format:
-            - SEC1 - for EC private keys;
-            - PKCS#8 - for other keys.
-
-        <interface name="key serializer"/>
-
-        <require interface="alg"/>
-        <require interface="asn1 writer"/>
-        <require interface="public key"/>
-        <require interface="private key"/>
-        <require impl="asn1wr"/>
-        <require impl="key der serializer"/>
-
-        <property name="key der serializer" impl="key der serializer"/>
-    </implementation>
-
-
-    <implementation name="key default deserializer">
-        Implements key deserialization from all known (supported) formats:
-            - SEC1 - PEM or DER encoding;
-            - PKCS#8 - PEM or DER encoding.
-
-        <interface name="key deserializer"/>
-
-        <require interface="asn1 reader"/>
-        <require interface="public key"/>
-        <require interface="private key"/>
-        <require class="pem"/>
-        <require class="pem title"/>
-        <require impl="asn1rd"/>
-        <require impl="key der deserializer"/>
-
-        <property name="asn1 reader" interface="asn1 reader"/>
-        <property name="key der deserializer" impl="key der deserializer"/>
     </implementation>
 </implementor>

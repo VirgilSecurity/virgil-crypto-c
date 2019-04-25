@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'key der deserializer' implementation.
+//  This module contains 'key asn1 deserializer' implementation.
 // --------------------------------------------------------------------------
 
 
@@ -50,7 +50,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_key_der_deserializer.h"
+#include "vscf_key_asn1_deserializer.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
 #include "vscf_alg.h"
@@ -58,12 +58,14 @@
 #include "vscf_public_key.h"
 #include "vscf_private_key.h"
 #include "vscf_alg_info_der_deserializer.h"
+#include "vscf_asn1_tag.h"
 #include "vscf_oid.h"
 #include "vscf_asn1rd.h"
-#include "vscf_asn1_tag.h"
+#include "vscf_pem.h"
+#include "vscf_pem_title.h"
 #include "vscf_asn1_reader.h"
-#include "vscf_key_der_deserializer_defs.h"
-#include "vscf_key_der_deserializer_internal.h"
+#include "vscf_key_asn1_deserializer_defs.h"
+#include "vscf_key_asn1_deserializer_internal.h"
 
 // clang-format on
 //  @end
@@ -79,14 +81,14 @@
 //  Deserialize PKCS#8 Private Key by using internal ASN.1 reader.
 //
 static vscf_raw_key_t *
-vscf_key_der_deserializer_deserialize_pkcs8_private_key_inplace(vscf_key_der_deserializer_t *self, size_t seq_left_len,
-        int version, vscf_error_t *error);
+vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(vscf_key_asn1_deserializer_t *self,
+        size_t seq_left_len, int version, vscf_error_t *error);
 
 //
 //  Deserialize SEC1 Private Key by using internal ASN.1 reader.
 //
 static vscf_raw_key_t *
-vscf_key_der_deserializer_deserialize_sec1_private_key_inplace(vscf_key_der_deserializer_t *self, size_t seq_left_len,
+vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(vscf_key_asn1_deserializer_t *self, size_t seq_left_len,
         int version, vscf_error_t *error);
 
 
@@ -99,11 +101,11 @@ vscf_key_der_deserializer_deserialize_sec1_private_key_inplace(vscf_key_der_dese
 
 //
 //  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_key_der_deserializer_init() is called.
+//  Note, this method is called automatically when method vscf_key_asn1_deserializer_init() is called.
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_key_der_deserializer_init_ctx(vscf_key_der_deserializer_t *self) {
+vscf_key_asn1_deserializer_init_ctx(vscf_key_asn1_deserializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -116,7 +118,7 @@ vscf_key_der_deserializer_init_ctx(vscf_key_der_deserializer_t *self) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_key_der_deserializer_cleanup_ctx(vscf_key_der_deserializer_t *self) {
+vscf_key_asn1_deserializer_cleanup_ctx(vscf_key_asn1_deserializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -127,7 +129,7 @@ vscf_key_der_deserializer_cleanup_ctx(vscf_key_der_deserializer_t *self) {
 //  This method is called when interface 'asn1 reader' was setup.
 //
 VSCF_PRIVATE void
-vscf_key_der_deserializer_did_setup_asn1_reader(vscf_key_der_deserializer_t *self) {
+vscf_key_asn1_deserializer_did_setup_asn1_reader(vscf_key_asn1_deserializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -138,7 +140,7 @@ vscf_key_der_deserializer_did_setup_asn1_reader(vscf_key_der_deserializer_t *sel
 //  This method is called when interface 'asn1 reader' was released.
 //
 VSCF_PRIVATE void
-vscf_key_der_deserializer_did_release_asn1_reader(vscf_key_der_deserializer_t *self) {
+vscf_key_asn1_deserializer_did_release_asn1_reader(vscf_key_asn1_deserializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -149,12 +151,12 @@ vscf_key_der_deserializer_did_release_asn1_reader(vscf_key_der_deserializer_t *s
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC void
-vscf_key_der_deserializer_setup_defaults(vscf_key_der_deserializer_t *self) {
+vscf_key_asn1_deserializer_setup_defaults(vscf_key_asn1_deserializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
     if (NULL == self->asn1_reader) {
-        vscf_key_der_deserializer_take_asn1_reader(self, vscf_asn1rd_impl(vscf_asn1rd_new()));
+        vscf_key_asn1_deserializer_take_asn1_reader(self, vscf_asn1rd_impl(vscf_asn1rd_new()));
     }
 }
 
@@ -164,7 +166,7 @@ vscf_key_der_deserializer_setup_defaults(vscf_key_der_deserializer_t *self) {
 //  an input buffer.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_key_der_deserializer_deserialize_public_key_inplace(vscf_key_der_deserializer_t *self, vscf_error_t *error) {
+vscf_key_asn1_deserializer_deserialize_public_key_inplace(vscf_key_asn1_deserializer_t *self, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
@@ -233,7 +235,7 @@ vscf_key_der_deserializer_deserialize_public_key_inplace(vscf_key_der_deserializ
 //  an input buffer.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_key_der_deserializer_deserialize_private_key_inplace(vscf_key_der_deserializer_t *self, vscf_error_t *error) {
+vscf_key_asn1_deserializer_deserialize_private_key_inplace(vscf_key_asn1_deserializer_t *self, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
@@ -301,10 +303,10 @@ vscf_key_der_deserializer_deserialize_private_key_inplace(vscf_key_der_deseriali
 
     const size_t seq_left_len = seq_len - read_len;
     if (distinguish_tag == vscf_asn1_tag_OCTET_STRING) {
-        return vscf_key_der_deserializer_deserialize_sec1_private_key_inplace(self, seq_left_len, version, error);
+        return vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(self, seq_left_len, version, error);
 
     } else if (distinguish_tag == (vscf_asn1_tag_CONSTRUCTED | vscf_asn1_tag_SEQUENCE)) {
-        return vscf_key_der_deserializer_deserialize_pkcs8_private_key_inplace(self, seq_left_len, version, error);
+        return vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(self, seq_left_len, version, error);
 
     } else {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_DER_PRIVATE_KEY);
@@ -316,8 +318,8 @@ vscf_key_der_deserializer_deserialize_private_key_inplace(vscf_key_der_deseriali
 //  Deserialize PKCS#8 Private Key by using internal ASN.1 reader.
 //
 static vscf_raw_key_t *
-vscf_key_der_deserializer_deserialize_pkcs8_private_key_inplace(
-        vscf_key_der_deserializer_t *self, size_t seq_left_len, int version, vscf_error_t *error) {
+vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(
+        vscf_key_asn1_deserializer_t *self, size_t seq_left_len, int version, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
@@ -357,7 +359,7 @@ vscf_key_der_deserializer_deserialize_pkcs8_private_key_inplace(
     if (alg_oid_id == vscf_oid_id_EC_GENERIC_KEY) {
         vscf_asn1_reader_read_oid(self->asn1_reader);
         vscf_asn1_reader_read_tag(self->asn1_reader, vscf_asn1_tag_OCTET_STRING);
-        raw_key = vscf_key_der_deserializer_deserialize_private_key_inplace(self, error);
+        raw_key = vscf_key_asn1_deserializer_deserialize_private_key_inplace(self, error);
 
     } else {
         vscf_asn1_reader_read_null_optional(self->asn1_reader);
@@ -408,8 +410,8 @@ error:
 //  Deserialize SEC1 Private Key by using internal ASN.1 reader.
 //
 static vscf_raw_key_t *
-vscf_key_der_deserializer_deserialize_sec1_private_key_inplace(
-        vscf_key_der_deserializer_t *self, size_t seq_left_len, int version, vscf_error_t *error) {
+vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(
+        vscf_key_asn1_deserializer_t *self, size_t seq_left_len, int version, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
@@ -483,28 +485,28 @@ vscf_key_der_deserializer_deserialize_sec1_private_key_inplace(
 //  Deserialize given public key as an interchangeable format to the object.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_key_der_deserializer_deserialize_public_key(
-        vscf_key_der_deserializer_t *self, vsc_data_t public_key_data, vscf_error_t *error) {
+vscf_key_asn1_deserializer_deserialize_public_key(
+        vscf_key_asn1_deserializer_t *self, vsc_data_t public_key_data, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(public_key_data));
     VSCF_ASSERT_PTR(self->asn1_reader);
 
     vscf_asn1_reader_reset(self->asn1_reader, public_key_data);
-    return vscf_key_der_deserializer_deserialize_public_key_inplace(self, error);
+    return vscf_key_asn1_deserializer_deserialize_public_key_inplace(self, error);
 }
 
 //
 //  Deserialize given private key as an interchangeable format to the object.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_key_der_deserializer_deserialize_private_key(
-        vscf_key_der_deserializer_t *self, vsc_data_t private_key_data, vscf_error_t *error) {
+vscf_key_asn1_deserializer_deserialize_private_key(
+        vscf_key_asn1_deserializer_t *self, vsc_data_t private_key_data, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(private_key_data));
     VSCF_ASSERT_PTR(self->asn1_reader);
 
     vscf_asn1_reader_reset(self->asn1_reader, private_key_data);
-    return vscf_key_der_deserializer_deserialize_private_key_inplace(self, error);
+    return vscf_key_asn1_deserializer_deserialize_private_key_inplace(self, error);
 }

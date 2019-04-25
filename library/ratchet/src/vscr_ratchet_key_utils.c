@@ -55,7 +55,7 @@
 #include "vscr_assert.h"
 #include "vscr_ratchet_key_utils_defs.h"
 
-#include <virgil/crypto/foundation/vscf_key_der_deserializer.h>
+#include <virgil/crypto/foundation/vscf_key_asn1_deserializer.h>
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
@@ -212,8 +212,8 @@ vscr_ratchet_key_utils_init_ctx(vscr_ratchet_key_utils_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    self->key_der_deserializer = vscf_key_der_deserializer_new();
-    vscf_key_der_deserializer_setup_defaults(self->key_der_deserializer);
+    self->key_asn1_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(self->key_asn1_deserializer);
 }
 
 //
@@ -226,7 +226,7 @@ vscr_ratchet_key_utils_cleanup_ctx(vscr_ratchet_key_utils_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    vscf_key_der_deserializer_destroy(&self->key_der_deserializer);
+    vscf_key_asn1_deserializer_destroy(&self->key_asn1_deserializer);
 }
 
 VSCR_PUBLIC vsc_buffer_t *
@@ -239,7 +239,7 @@ vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self
     vsc_buffer_t *result = NULL;
 
     vscf_raw_key_t *raw_key =
-            vscf_key_der_deserializer_deserialize_public_key(self->key_der_deserializer, data, &error_ctx);
+            vscf_key_asn1_deserializer_deserialize_public_key(self->key_asn1_deserializer, data, &error_ctx);
 
     if (vscf_error_has_error(&error_ctx)) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
@@ -305,7 +305,7 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *sel
     vsc_buffer_t *result = NULL;
 
     vscf_raw_key_t *raw_key =
-            vscf_key_der_deserializer_deserialize_private_key(self->key_der_deserializer, data, &error_ctx);
+            vscf_key_asn1_deserializer_deserialize_private_key(self->key_asn1_deserializer, data, &error_ctx);
 
     if (vscf_error_has_error(&error_ctx)) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);

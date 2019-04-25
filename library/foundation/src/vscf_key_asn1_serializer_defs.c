@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'key der serializer' implementation.
+//  Types of the 'key asn1 serializer' implementation.
 //  This types SHOULD NOT be used directly.
 //  The only purpose of including this module is to place implementation
 //  object in the stack memory.
@@ -53,7 +53,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_key_der_serializer_defs.h"
+#include "vscf_key_asn1_serializer_defs.h"
 
 // clang-format on
 //  @end

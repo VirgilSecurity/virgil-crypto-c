@@ -51,11 +51,11 @@
 //  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_KEY_DEFAULT_SERIALIZER_INTERNAL_H_INCLUDED
-#define VSCF_KEY_DEFAULT_SERIALIZER_INTERNAL_H_INCLUDED
+#ifndef VSCF_KEY_ASN1_SERIALIZER_INTERNAL_H_INCLUDED
+#define VSCF_KEY_ASN1_SERIALIZER_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_key_default_serializer.h"
+#include "vscf_key_asn1_serializer.h"
 
 // clang-format on
 //  @end
@@ -74,11 +74,11 @@ extern "C" {
 
 //
 //  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_key_default_serializer_init() is called.
+//  Note, this method is called automatically when method vscf_key_asn1_serializer_init() is called.
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_key_default_serializer_init_ctx(vscf_key_default_serializer_t *self);
+vscf_key_asn1_serializer_init_ctx(vscf_key_asn1_serializer_t *self);
 
 //
 //  Release resources of the implementation specific context.
@@ -86,7 +86,7 @@ vscf_key_default_serializer_init_ctx(vscf_key_default_serializer_t *self);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_key_default_serializer_cleanup_ctx(vscf_key_default_serializer_t *self);
+vscf_key_asn1_serializer_cleanup_ctx(vscf_key_asn1_serializer_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -102,5 +102,5 @@ vscf_key_default_serializer_cleanup_ctx(vscf_key_default_serializer_t *self);
 
 
 //  @footer
-#endif // VSCF_KEY_DEFAULT_SERIALIZER_INTERNAL_H_INCLUDED
+#endif // VSCF_KEY_ASN1_SERIALIZER_INTERNAL_H_INCLUDED
 //  @end

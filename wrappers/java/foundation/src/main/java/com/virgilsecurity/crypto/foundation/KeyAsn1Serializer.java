@@ -37,38 +37,38 @@
 package com.virgilsecurity.crypto.foundation;
 
 /*
-* Implements SEC 1 key serialization to DER / PEM formats.
-* Default format is DER.
-* See also RFC 5480 and RFC 5915.
+* Implements key serialization in the ASN.1 format (DER / PEM):
+* - SEC1 - for EC private keys;
+* - PKCS#8 - for other keys.
 */
-public class Sec1Serializer implements AutoCloseable, KeySerializer {
+public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
 
     public long cCtx;
 
     /* Create underlying C context. */
-    public Sec1Serializer() {
+    public KeyAsn1Serializer() {
         super();
-        this.cCtx = FoundationJNI.INSTANCE.sec1Serializer_new();
+        this.cCtx = FoundationJNI.INSTANCE.keyAsn1Serializer_new();
     }
 
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Sec1Serializer(long cCtx) {
+    public KeyAsn1Serializer(long cCtx) {
         super();
         this.cCtx = cCtx;
     }
 
     public void setAsn1Writer(Asn1Writer asn1Writer) {
-        FoundationJNI.INSTANCE.sec1Serializer_setAsn1Writer(this.cCtx, asn1Writer);
+        FoundationJNI.INSTANCE.keyAsn1Serializer_setAsn1Writer(this.cCtx, asn1Writer);
     }
 
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
     public void setupDefaults() {
-        FoundationJNI.INSTANCE.sec1Serializer_setupDefaults(this.cCtx);
+        FoundationJNI.INSTANCE.keyAsn1Serializer_setupDefaults(this.cCtx);
     }
 
     /*
@@ -77,7 +77,7 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
     * - DER format if false given.
     */
     public void enablePemMode(boolean enabled) {
-        FoundationJNI.INSTANCE.sec1Serializer_enablePemMode(this.cCtx, enabled);
+        FoundationJNI.INSTANCE.keyAsn1Serializer_enablePemMode(this.cCtx, enabled);
     }
 
     /*
@@ -86,7 +86,7 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
     * an output buffer.
     */
     public int serializePublicKeyInplace(PublicKey publicKey) throws FoundationException {
-        return FoundationJNI.INSTANCE.sec1Serializer_serializePublicKeyInplace(this.cCtx, publicKey);
+        return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePublicKeyInplace(this.cCtx, publicKey);
     }
 
     /*
@@ -95,12 +95,12 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
     * an output buffer.
     */
     public int serializePrivateKeyInplace(PrivateKey privateKey) throws FoundationException {
-        return FoundationJNI.INSTANCE.sec1Serializer_serializePrivateKeyInplace(this.cCtx, privateKey);
+        return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePrivateKeyInplace(this.cCtx, privateKey);
     }
 
     /* Close resource. */
     public void close() {
-        FoundationJNI.INSTANCE.sec1Serializer_close(this.cCtx);
+        FoundationJNI.INSTANCE.keyAsn1Serializer_close(this.cCtx);
     }
 
     /*
@@ -109,7 +109,7 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
     * Precondition: public key must be exportable.
     */
     public int serializedPublicKeyLen(PublicKey publicKey) {
-        return FoundationJNI.INSTANCE.sec1Serializer_serializedPublicKeyLen(this.cCtx, publicKey);
+        return FoundationJNI.INSTANCE.keyAsn1Serializer_serializedPublicKeyLen(this.cCtx, publicKey);
     }
 
     /*
@@ -118,7 +118,7 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
     * Precondition: public key must be exportable.
     */
     public byte[] serializePublicKey(PublicKey publicKey) throws FoundationException {
-        return FoundationJNI.INSTANCE.sec1Serializer_serializePublicKey(this.cCtx, publicKey);
+        return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePublicKey(this.cCtx, publicKey);
     }
 
     /*
@@ -127,7 +127,7 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
     * Precondition: private key must be exportable.
     */
     public int serializedPrivateKeyLen(PrivateKey privateKey) {
-        return FoundationJNI.INSTANCE.sec1Serializer_serializedPrivateKeyLen(this.cCtx, privateKey);
+        return FoundationJNI.INSTANCE.keyAsn1Serializer_serializedPrivateKeyLen(this.cCtx, privateKey);
     }
 
     /*
@@ -136,7 +136,7 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
     * Precondition: private key must be exportable.
     */
     public byte[] serializePrivateKey(PrivateKey privateKey) throws FoundationException {
-        return FoundationJNI.INSTANCE.sec1Serializer_serializePrivateKey(this.cCtx, privateKey);
+        return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePrivateKey(this.cCtx, privateKey);
     }
 }
 

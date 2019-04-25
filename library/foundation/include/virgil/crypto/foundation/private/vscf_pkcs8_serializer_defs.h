@@ -92,6 +92,10 @@ struct vscf_pkcs8_serializer_t {
     //  Dependency to the interface 'asn1 writer'.
     //
     vscf_impl_t *asn1_writer;
+    //
+    //  Implementation specific context.
+    //
+    bool is_pem_mode;
 };
 
 

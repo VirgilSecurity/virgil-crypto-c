@@ -345,22 +345,12 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_default_deserializer.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_asn1_deserializer.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_default_serializer.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_der_deserializer.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_der_serializer.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_asn1_serializer.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -702,18 +692,12 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_kdf2.h>"
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2_internal.h>"
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_kdf2_defs.h>"
-            "$<$<BOOL:${VSCF_KEY_DEFAULT_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_default_deserializer.h>"
-            "$<$<BOOL:${VSCF_KEY_DEFAULT_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_default_deserializer_internal.h>"
-            "$<$<BOOL:${VSCF_KEY_DEFAULT_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_default_deserializer_defs.h>"
-            "$<$<BOOL:${VSCF_KEY_DEFAULT_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_default_serializer.h>"
-            "$<$<BOOL:${VSCF_KEY_DEFAULT_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_default_serializer_internal.h>"
-            "$<$<BOOL:${VSCF_KEY_DEFAULT_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_default_serializer_defs.h>"
-            "$<$<BOOL:${VSCF_KEY_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_der_deserializer.h>"
-            "$<$<BOOL:${VSCF_KEY_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_der_deserializer_internal.h>"
-            "$<$<BOOL:${VSCF_KEY_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_der_deserializer_defs.h>"
-            "$<$<BOOL:${VSCF_KEY_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_der_serializer.h>"
-            "$<$<BOOL:${VSCF_KEY_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_der_serializer_internal.h>"
-            "$<$<BOOL:${VSCF_KEY_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_der_serializer_defs.h>"
+            "$<$<BOOL:${VSCF_KEY_ASN1_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_asn1_deserializer.h>"
+            "$<$<BOOL:${VSCF_KEY_ASN1_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_asn1_deserializer_internal.h>"
+            "$<$<BOOL:${VSCF_KEY_ASN1_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_asn1_deserializer_defs.h>"
+            "$<$<BOOL:${VSCF_KEY_ASN1_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_asn1_serializer.h>"
+            "$<$<BOOL:${VSCF_KEY_ASN1_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_asn1_serializer_internal.h>"
+            "$<$<BOOL:${VSCF_KEY_ASN1_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_asn1_serializer_defs.h>"
             "$<$<BOOL:${VSCF_KEY_MATERIAL_RNG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_material_rng.h>"
             "$<$<BOOL:${VSCF_KEY_MATERIAL_RNG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_material_rng_internal.h>"
             "$<$<BOOL:${VSCF_KEY_MATERIAL_RNG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_material_rng_defs.h>"
@@ -948,18 +932,12 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2.c>"
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2_internal.c>"
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2_defs.c>"
-            "$<$<BOOL:${VSCF_KEY_DEFAULT_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_default_deserializer.c>"
-            "$<$<BOOL:${VSCF_KEY_DEFAULT_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_default_deserializer_internal.c>"
-            "$<$<BOOL:${VSCF_KEY_DEFAULT_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_default_deserializer_defs.c>"
-            "$<$<BOOL:${VSCF_KEY_DEFAULT_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_default_serializer.c>"
-            "$<$<BOOL:${VSCF_KEY_DEFAULT_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_default_serializer_internal.c>"
-            "$<$<BOOL:${VSCF_KEY_DEFAULT_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_default_serializer_defs.c>"
-            "$<$<BOOL:${VSCF_KEY_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_der_deserializer.c>"
-            "$<$<BOOL:${VSCF_KEY_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_der_deserializer_internal.c>"
-            "$<$<BOOL:${VSCF_KEY_DER_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_der_deserializer_defs.c>"
-            "$<$<BOOL:${VSCF_KEY_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_der_serializer.c>"
-            "$<$<BOOL:${VSCF_KEY_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_der_serializer_internal.c>"
-            "$<$<BOOL:${VSCF_KEY_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_der_serializer_defs.c>"
+            "$<$<BOOL:${VSCF_KEY_ASN1_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_asn1_deserializer.c>"
+            "$<$<BOOL:${VSCF_KEY_ASN1_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_asn1_deserializer_internal.c>"
+            "$<$<BOOL:${VSCF_KEY_ASN1_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_asn1_deserializer_defs.c>"
+            "$<$<BOOL:${VSCF_KEY_ASN1_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_asn1_serializer.c>"
+            "$<$<BOOL:${VSCF_KEY_ASN1_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_asn1_serializer_internal.c>"
+            "$<$<BOOL:${VSCF_KEY_ASN1_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_asn1_serializer_defs.c>"
             "$<$<BOOL:${VSCF_KEY_MATERIAL_RNG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_material_rng.c>"
             "$<$<BOOL:${VSCF_KEY_MATERIAL_RNG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_material_rng_internal.c>"
             "$<$<BOOL:${VSCF_KEY_MATERIAL_RNG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_material_rng_defs.c>"
