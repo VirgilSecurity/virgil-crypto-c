@@ -4,16 +4,16 @@
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 
+    <require module="ratchet typedefs" scope="context"/>
+
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
 
     <require class="ratchet common hidden" scope="context"/>
 
-    <property name="public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_key_len)"/>
-    </property>
+    <property name="public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="chain key" class="ratchet chain key" access="readwrite" is_reference="0"/>
 
-    <method name="serialize">
+    <method name="serialize" is_const="1">
         <argument name="receiver chain pb" class="ReceiverChain" library="nanopb" access="readwrite"/>
     </method>
 

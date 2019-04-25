@@ -47,7 +47,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Group ticket used to start group session.
+//  Group ticket used to start group session or change participants.
 // --------------------------------------------------------------------------
 
 #ifndef VSCR_RATCHET_GROUP_TICKET_H_INCLUDED
@@ -168,11 +168,14 @@ vscr_ratchet_group_ticket_release_rng(vscr_ratchet_group_ticket_t *self);
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_ticket_setup_defaults(vscr_ratchet_group_ticket_t *self) VSCR_NODISCARD;
 
+//
+//  Set this ticket to start new group session.
+//
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_ticket_setup_ticket_as_new(vscr_ratchet_group_ticket_t *self) VSCR_NODISCARD;
 
 //
-//  Adds participant to chat.
+//  Add new participant to chat.
 //
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_ticket_add_new_participant(vscr_ratchet_group_ticket_t *self, vsc_data_t participant_id,
@@ -189,13 +192,7 @@ vscr_ratchet_group_ticket_remove_participant(vscr_ratchet_group_ticket_t *self,
 //  Generates message that should be sent to all participants using secure channel.
 //
 VSCR_PUBLIC const vscr_ratchet_group_message_t *
-vscr_ratchet_group_ticket_get_complementary_ticket_message(const vscr_ratchet_group_ticket_t *self);
-
-//
-//  Generates message that should be sent to all participants using secure channel.
-//
-VSCR_PUBLIC const vscr_ratchet_group_message_t *
-vscr_ratchet_group_ticket_get_full_ticket_message(const vscr_ratchet_group_ticket_t *self);
+vscr_ratchet_group_ticket_get_ticket_message(const vscr_ratchet_group_ticket_t *self);
 
 
 // --------------------------------------------------------------------------

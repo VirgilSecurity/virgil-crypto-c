@@ -20,23 +20,30 @@
         </return>
     </method>
 
-    <method name="set type" scope="internal">
-        <argument name="type" enum="group msg type"/>
+    <method name="get session id" is_const="1">
+        Returns session id.
+        This method should be called only for group info type.
+
+        <return class="data" access="readwrite"/>
     </method>
 
     <method name="get pub key count" is_const="1">
         Returns number of public keys.
-        This method should be called only for start group info message type.
+        This method should be called only for group info message type.
 
         <return type="size"/>
     </method>
 
     <method name="get pub key id" is_const="1">
         Returns public key id for some participant id.
-        This method should be called only for start group info message type.
+        This method should be called only for group info message type.
 
         <argument name="participant id" class="data">
             Participant id
+        </argument>
+
+        <argument name="error" class="error" access="readwrite">
+            Error context.
         </argument>
 
         <return class="buffer" access="disown"/>
@@ -49,14 +56,11 @@
         <return class="data" access="readwrite"/>
     </method>
 
-    <method name="get session id" is_const="1">
-        Returns message sender id.
-        This method should be called only for regular message type.
-
-        <return class="data" access="readwrite"/>
+    <method name="set type" scope="internal">
+        <argument name="type" enum="group msg type"/>
     </method>
 
-    <method name="serialize len">
+    <method name="serialize len" is_const="1">
         Buffer len to serialize this class.
 
         <return type="size">
@@ -64,7 +68,7 @@
         </return>
     </method>
 
-    <method name="serialize">
+    <method name="serialize" is_const="1">
         Serializes instance.
 
         <argument name="output" class="buffer">
@@ -97,10 +101,7 @@
         <return type="boolean"/>
     </method>
 
-    <method name="set pb encode callback" declaration="private">
-    </method>
-
-    <method name="set pb decode callback" declaration="private">
-    </method>
+    <method name="set pb encode callback" declaration="private"/>
+    <method name="set pb decode callback" declaration="private"/>
 
 </class>

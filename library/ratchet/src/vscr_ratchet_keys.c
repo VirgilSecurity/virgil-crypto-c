@@ -250,8 +250,8 @@ vscr_ratchet_keys_cleanup_ctx(vscr_ratchet_keys_t *self) {
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_keys_derive_initial_keys(vsc_data_t shared_secret, byte root_key[vscr_ratchet_common_hidden_KEY_LEN],
-        byte chain_key[vscr_ratchet_common_hidden_KEY_LEN]) {
+vscr_ratchet_keys_derive_initial_keys(
+        vsc_data_t shared_secret, vscr_ratchet_symmetric_key_t root_key, vscr_ratchet_symmetric_key_t chain_key) {
 
     VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN || shared_secret.len == 4 * ED25519_DH_LEN);
 
@@ -278,19 +278,16 @@ vscr_ratchet_keys_derive_initial_keys(vsc_data_t shared_secret, byte root_key[vs
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_keys_create_chain_key(const byte root_key[vscr_ratchet_common_hidden_KEY_LEN], vsc_data_t private_key,
-        vsc_data_t public_key, byte new_root_key[vscr_ratchet_common_hidden_KEY_LEN],
-        vscr_ratchet_chain_key_t *chain_key) {
+vscr_ratchet_keys_create_chain_key(const vscr_ratchet_symmetric_key_t root_key,
+        const vscr_ratchet_private_key_t private_key, const vscr_ratchet_public_key_t public_key,
+        vscr_ratchet_symmetric_key_t new_root_key, vscr_ratchet_chain_key_t *chain_key) {
 
     VSCR_ASSERT_PTR(chain_key);
-
-    VSCR_ASSERT(private_key.len == vscr_ratchet_common_hidden_KEY_LEN);
-    VSCR_ASSERT(public_key.len == vscr_ratchet_common_hidden_KEY_LEN);
 
     vscr_status_t status = vscr_status_SUCCESS;
 
     byte secret[ED25519_DH_LEN];
-    int curve_status = curve25519_key_exchange(secret, public_key.bytes, private_key.bytes);
+    int curve_status = curve25519_key_exchange(secret, public_key, private_key);
     if (curve_status != 0) {
         status = vscr_status_ERROR_CURVE25519;
         goto c_err;

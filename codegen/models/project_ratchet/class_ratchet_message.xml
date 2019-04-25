@@ -38,7 +38,7 @@
         </return>
     </method>
 
-    <method name="serialize len">
+    <method name="serialize len" is_const="1">
         Buffer len to serialize this class.
 
         <return type="size">
@@ -46,7 +46,7 @@
         </return>
     </method>
 
-    <method name="serialize">
+    <method name="serialize" is_const="1">
         Serializes instance.
 
         <argument name="output" class="buffer">
@@ -79,10 +79,7 @@
         <return type="boolean"/>
     </method>
 
-    <method name="set pb encode callback" declaration="private">
-    </method>
-
-    <method name="set pb decode callback" declaration="private">
-    </method>
+    <method name="set pb encode callback" declaration="private"/>
+    <method name="set pb decode callback" declaration="private"/>
 
 </class>

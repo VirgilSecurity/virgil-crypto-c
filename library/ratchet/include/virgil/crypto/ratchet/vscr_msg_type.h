@@ -75,11 +75,11 @@ enum vscr_msg_type_t {
     //
     //  Regular message. This message is used all the time except case described in prekey message section.
     //
-    vscr_msg_type_REGULAR = 0,
+    vscr_msg_type_REGULAR = 1,
     //
     //  Prekey message. This message is sent by initiator till first response is received.
     //
-    vscr_msg_type_PREKEY = 1
+    vscr_msg_type_PREKEY = 2
 };
 typedef enum vscr_msg_type_t vscr_msg_type_t;
 

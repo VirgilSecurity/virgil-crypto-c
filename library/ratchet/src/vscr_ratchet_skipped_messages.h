@@ -48,20 +48,12 @@
 #define VSCR_RATCHET_SKIPPED_MESSAGES_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_skipped_message_key.h"
+#include "vscr_ratchet_message_key.h"
 #include "vscr_ratchet_skipped_messages.h"
 
 #include <RatchetSession.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
-
-#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#endif
 
 // clang-format on
 //  @end
@@ -127,23 +119,32 @@ vscr_ratchet_skipped_messages_destroy(vscr_ratchet_skipped_messages_t **self_ref
 VSCR_PUBLIC vscr_ratchet_skipped_messages_t *
 vscr_ratchet_skipped_messages_shallow_copy(vscr_ratchet_skipped_messages_t *self);
 
-VSCR_PUBLIC vscr_ratchet_skipped_message_key_t *
-vscr_ratchet_skipped_messages_find_key(vscr_ratchet_skipped_messages_t *self, size_t counter,
-        vsc_data_t ratchet_public_key);
+VSCR_PUBLIC vscr_ratchet_message_key_t *
+vscr_ratchet_skipped_messages_find_key(const vscr_ratchet_skipped_messages_t *self, size_t counter,
+        const vscr_ratchet_public_key_t public_key);
+
+VSCR_PUBLIC size_t
+vscr_ratchet_skipped_messages_find_public_key(const vscr_ratchet_skipped_messages_t *self,
+        const vscr_ratchet_public_key_t public_key);
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_messages_delete_key(vscr_ratchet_skipped_messages_t *self,
-        vscr_ratchet_skipped_message_key_t *skipped_message_key);
+        const vscr_ratchet_public_key_t public_key, vscr_ratchet_message_key_t *message_key);
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_add_key(vscr_ratchet_skipped_messages_t *self,
-        vscr_ratchet_skipped_message_key_t *skipped_message_key);
+vscr_ratchet_skipped_messages_add_public_key(vscr_ratchet_skipped_messages_t *self,
+        const vscr_ratchet_public_key_t public_key);
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_serialize(vscr_ratchet_skipped_messages_t *self, SkippedMessages *skipped_messages_pb);
+vscr_ratchet_skipped_messages_add_key(vscr_ratchet_skipped_messages_t *self, const vscr_ratchet_public_key_t public_key,
+        vscr_ratchet_message_key_t *message_key);
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_deserialize(SkippedMessages *skipped_messages_pb,
+vscr_ratchet_skipped_messages_serialize(const vscr_ratchet_skipped_messages_t *self,
+        SkippedMessages *skipped_messages_pb);
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_messages_deserialize(const SkippedMessages *skipped_messages_pb,
         vscr_ratchet_skipped_messages_t *skipped_messages);
 
 

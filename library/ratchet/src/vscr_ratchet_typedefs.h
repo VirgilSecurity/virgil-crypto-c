@@ -44,17 +44,16 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_SKIPPED_GROUP_MESSAGE_KEY_H_INCLUDED
-#define VSCR_RATCHET_SKIPPED_GROUP_MESSAGE_KEY_H_INCLUDED
 
-#include "vscr_library.h"
-#include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_skipped_group_message_key.h"
-#include "vscr_ratchet_message_key.h"
+//  @description
+// --------------------------------------------------------------------------
+//  Typedefs for ratchet.
+// --------------------------------------------------------------------------
 
-#include <RatchetSession.pb.h>
-#include <pb_decode.h>
-#include <pb_encode.h>
+#ifndef VSCR_RATCHET_TYPEDEFS_H_INCLUDED
+#define VSCR_RATCHET_TYPEDEFS_H_INCLUDED
+
+#include <stdint.h>
 
 // clang-format on
 //  @end
@@ -71,76 +70,30 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'ratchet skipped group message key' context.
-//
-typedef struct vscr_ratchet_skipped_group_message_key_t vscr_ratchet_skipped_group_message_key_t;
-struct vscr_ratchet_skipped_group_message_key_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
+#ifndef VSCR_RATCHET_PUBLIC_KEY_T_32__DEFINED
+#define VSCR_RATCHET_PUBLIC_KEY_T_32__DEFINED
+    typedef uint8_t vscr_ratchet_public_key_t[32];
+#endif // VSCR_RATCHET_PUBLIC_KEY_T_32__DEFINED
 
-    size_t epoch;
+#ifndef VSCR_RATCHET_PRIVATE_KEY_T_32__DEFINED
+#define VSCR_RATCHET_PRIVATE_KEY_T_32__DEFINED
+    typedef uint8_t vscr_ratchet_private_key_t[32];
+#endif // VSCR_RATCHET_PRIVATE_KEY_T_32__DEFINED
 
-    vscr_ratchet_message_key_t *message_key;
-};
+#ifndef VSCR_RATCHET_SYMMETRIC_KEY_T_32__DEFINED
+#define VSCR_RATCHET_SYMMETRIC_KEY_T_32__DEFINED
+    typedef uint8_t vscr_ratchet_symmetric_key_t[32];
+#endif // VSCR_RATCHET_SYMMETRIC_KEY_T_32__DEFINED
 
-//
-//  Return size of 'vscr_ratchet_skipped_group_message_key_t'.
-//
-VSCR_PUBLIC size_t
-vscr_ratchet_skipped_group_message_key_ctx_size(void);
+#ifndef VSCR_RATCHET_PARTICIPANT_ID_T_32__DEFINED
+#define VSCR_RATCHET_PARTICIPANT_ID_T_32__DEFINED
+    typedef uint8_t vscr_ratchet_participant_id_t[32];
+#endif // VSCR_RATCHET_PARTICIPANT_ID_T_32__DEFINED
 
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCR_PUBLIC void
-vscr_ratchet_skipped_group_message_key_init(vscr_ratchet_skipped_group_message_key_t *self);
-
-//
-//  Release all inner resources including class dependencies.
-//
-VSCR_PUBLIC void
-vscr_ratchet_skipped_group_message_key_cleanup(vscr_ratchet_skipped_group_message_key_t *self);
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCR_PUBLIC vscr_ratchet_skipped_group_message_key_t *
-vscr_ratchet_skipped_group_message_key_new(void);
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
-//
-VSCR_PUBLIC void
-vscr_ratchet_skipped_group_message_key_delete(vscr_ratchet_skipped_group_message_key_t *self);
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_skipped_group_message_key_new ()'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_skipped_group_message_key_destroy(vscr_ratchet_skipped_group_message_key_t **self_ref);
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCR_PUBLIC vscr_ratchet_skipped_group_message_key_t *
-vscr_ratchet_skipped_group_message_key_shallow_copy(vscr_ratchet_skipped_group_message_key_t *self);
-
-VSCR_PUBLIC void
-vscr_ratchet_skipped_group_message_key_serialize(vscr_ratchet_skipped_group_message_key_t *self,
-        SkippedGroupMessageKey *skipped_message_key_pb);
-
-VSCR_PUBLIC void
-vscr_ratchet_skipped_group_message_key_deserialize(const SkippedGroupMessageKey *skipped_message_key_pb,
-        vscr_ratchet_skipped_group_message_key_t *skipped_message_key);
+#ifndef VSCR_RATCHET_SESSION_ID_T_32__DEFINED
+#define VSCR_RATCHET_SESSION_ID_T_32__DEFINED
+    typedef uint8_t vscr_ratchet_session_id_t[32];
+#endif // VSCR_RATCHET_SESSION_ID_T_32__DEFINED
 
 
 // --------------------------------------------------------------------------
@@ -156,5 +109,5 @@ vscr_ratchet_skipped_group_message_key_deserialize(const SkippedGroupMessageKey 
 
 
 //  @footer
-#endif // VSCR_RATCHET_SKIPPED_GROUP_MESSAGE_KEY_H_INCLUDED
+#endif // VSCR_RATCHET_TYPEDEFS_H_INCLUDED
 //  @end

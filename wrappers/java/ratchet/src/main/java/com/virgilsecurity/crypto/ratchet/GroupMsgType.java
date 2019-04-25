@@ -44,24 +44,14 @@ import com.virgilsecurity.crypto.foundation.*;
 public enum GroupMsgType {
 
     /*
-    * Group info used to create group chat, or change group chat.
+    * Group info used to create group chat, add or remove participants.
     * Should be distributed only using secure channels.
     */
-    START_GROUP(1),
-    /*
-    * Add members message.
-    * Should be distributed only using secure channels.
-    */
-    ADD_MEMBERS(2),
-    /*
-    * Remove members message.
-    * Should be distributed only using secure channels.
-    */
-    EPOCH_CHANGE(3),
+    GROUP_INFO(1),
     /*
     * Regular group ratchet message with cipher text.
     */
-    REGULAR(4);
+    REGULAR(2);
 
     private final int code;
 
