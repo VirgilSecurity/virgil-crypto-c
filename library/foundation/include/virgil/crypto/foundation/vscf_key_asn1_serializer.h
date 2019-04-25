@@ -166,14 +166,6 @@ VSCF_PUBLIC void
 vscf_key_asn1_serializer_setup_defaults(vscf_key_asn1_serializer_t *self);
 
 //
-//  Tell serializer to use:
-//      - PEM format if true given, or
-//      - DER format if false given.
-//
-VSCF_PUBLIC void
-vscf_key_asn1_serializer_enable_pem_mode(vscf_key_asn1_serializer_t *self, bool enabled);
-
-//
 //  Serialize Public Key by using internal ASN.1 writer.
 //  Note, that caller code is responsible to reset ASN.1 writer with
 //  an output buffer.

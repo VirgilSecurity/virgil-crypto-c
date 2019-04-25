@@ -59,8 +59,6 @@
 #include "vscf_asn1_tag.h"
 #include "vscf_oid.h"
 #include "vscf_asn1wr.h"
-#include "vscf_pem.h"
-#include "vscf_pem_title.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_pkcs8_serializer_defs.h"
 #include "vscf_pkcs8_serializer_internal.h"
@@ -84,29 +82,6 @@
 
 
 //
-//  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_pkcs8_serializer_init() is called.
-//  Note, that context is already zeroed.
-//
-VSCF_PRIVATE void
-vscf_pkcs8_serializer_init_ctx(vscf_pkcs8_serializer_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    self->is_pem_mode = false;
-}
-
-//
-//  Release resources of the implementation specific context.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-VSCF_PRIVATE void
-vscf_pkcs8_serializer_cleanup_ctx(vscf_pkcs8_serializer_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-}
-
-//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC void
@@ -117,18 +92,6 @@ vscf_pkcs8_serializer_setup_defaults(vscf_pkcs8_serializer_t *self) {
     if (NULL == self->asn1_writer) {
         vscf_pkcs8_serializer_take_asn1_writer(self, vscf_asn1wr_impl(vscf_asn1wr_new()));
     }
-}
-
-//
-//  Tell serializer to use:
-//      - PEM format if true given, or
-//      - DER format if false given.
-//
-VSCF_PUBLIC void
-vscf_pkcs8_serializer_enable_pem_mode(vscf_pkcs8_serializer_t *self, bool enabled) {
-
-    VSCF_ASSERT_PTR(self);
-    self->is_pem_mode = enabled;
 }
 
 //

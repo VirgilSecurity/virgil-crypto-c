@@ -2045,13 +2045,6 @@ public class FoundationJNI {
     public native void pkcs8Serializer_setupDefaults(long cCtx);
 
     /*
-    * Tell serializer to use:
-    * - PEM format if true given, or
-    * - DER format if false given.
-    */
-    public native void pkcs8Serializer_enablePemMode(long cCtx, boolean enabled);
-
-    /*
     * Serialize Public Key by using internal ASN.1 writer.
     * Note, that caller code is responsible to reset ASN.1 writer with
     * an output buffer.
@@ -2105,13 +2098,6 @@ public class FoundationJNI {
     public native void sec1Serializer_setupDefaults(long cCtx);
 
     /*
-    * Tell serializer to use:
-    * - PEM format if true given, or
-    * - DER format if false given.
-    */
-    public native void sec1Serializer_enablePemMode(long cCtx, boolean enabled);
-
-    /*
     * Serialize Public Key by using internal ASN.1 writer.
     * Note, that caller code is responsible to reset ASN.1 writer with
     * an output buffer.
@@ -2163,13 +2149,6 @@ public class FoundationJNI {
     * Setup predefined values to the uninitialized class dependencies.
     */
     public native void keyAsn1Serializer_setupDefaults(long cCtx);
-
-    /*
-    * Tell serializer to use:
-    * - PEM format if true given, or
-    * - DER format if false given.
-    */
-    public native void keyAsn1Serializer_enablePemMode(long cCtx, boolean enabled);
 
     /*
     * Serialize Public Key by using internal ASN.1 writer.

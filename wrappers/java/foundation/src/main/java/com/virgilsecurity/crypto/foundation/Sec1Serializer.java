@@ -37,8 +37,7 @@
 package com.virgilsecurity.crypto.foundation;
 
 /*
-* Implements SEC 1 key serialization to DER / PEM formats.
-* Default format is DER.
+* Implements SEC 1 key serialization to DER format.
 * See also RFC 5480 and RFC 5915.
 */
 public class Sec1Serializer implements AutoCloseable, KeySerializer {
@@ -69,15 +68,6 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
     */
     public void setupDefaults() {
         FoundationJNI.INSTANCE.sec1Serializer_setupDefaults(this.cCtx);
-    }
-
-    /*
-    * Tell serializer to use:
-    * - PEM format if true given, or
-    * - DER format if false given.
-    */
-    public void enablePemMode(boolean enabled) {
-        FoundationJNI.INSTANCE.sec1Serializer_enablePemMode(this.cCtx, enabled);
     }
 
     /*

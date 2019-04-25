@@ -36,8 +36,7 @@
 import Foundation
 import VSCFoundation
 
-/// Implements SEC 1 key serialization to DER / PEM formats.
-/// Default format is DER.
+/// Implements SEC 1 key serialization to DER format.
 /// See also RFC 5480 and RFC 5915.
 @objc(VSCFSec1Serializer) public class Sec1Serializer: NSObject, KeySerializer {
 
@@ -77,13 +76,6 @@ import VSCFoundation
     /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() {
         vscf_sec1_serializer_setup_defaults(self.c_ctx)
-    }
-
-    /// Tell serializer to use:
-    ///     - PEM format if true given, or
-    ///     - DER format if false given.
-    @objc public func enablePemMode(enabled: Bool) {
-        vscf_sec1_serializer_enable_pem_mode(self.c_ctx, enabled)
     }
 
     /// Serialize Public Key by using internal ASN.1 writer.

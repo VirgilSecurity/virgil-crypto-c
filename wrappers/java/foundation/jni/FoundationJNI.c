@@ -6702,13 +6702,6 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_p
     vscf_pkcs8_serializer_setup_defaults(pkcs8_serializer_ctx /*a1*/);
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1enablePemMode (JNIEnv *jenv, jobject jobj, jlong c_ctx, jboolean jenabled) {
-    // Cast class context
-    vscf_pkcs8_serializer_t /*9*/* pkcs8_serializer_ctx = (vscf_pkcs8_serializer_t /*9*/*) c_ctx;
-
-    vscf_pkcs8_serializer_enable_pem_mode(pkcs8_serializer_ctx /*a1*/, jenabled /*a9*/);
-}
-
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1serializePublicKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
     // Wrap errors
     struct vscf_error_t /*4*/ error;
@@ -6887,13 +6880,6 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_s
     vscf_sec1_serializer_setup_defaults(sec1_serializer_ctx /*a1*/);
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1enablePemMode (JNIEnv *jenv, jobject jobj, jlong c_ctx, jboolean jenabled) {
-    // Cast class context
-    vscf_sec1_serializer_t /*9*/* sec1_serializer_ctx = (vscf_sec1_serializer_t /*9*/*) c_ctx;
-
-    vscf_sec1_serializer_enable_pem_mode(sec1_serializer_ctx /*a1*/, jenabled /*a9*/);
-}
-
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializePublicKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
     // Wrap errors
     struct vscf_error_t /*4*/ error;
@@ -7070,13 +7056,6 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_k
     vscf_key_asn1_serializer_t /*9*/* key_asn1_serializer_ctx = (vscf_key_asn1_serializer_t /*9*/*) c_ctx;
 
     vscf_key_asn1_serializer_setup_defaults(key_asn1_serializer_ctx /*a1*/);
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1enablePemMode (JNIEnv *jenv, jobject jobj, jlong c_ctx, jboolean jenabled) {
-    // Cast class context
-    vscf_key_asn1_serializer_t /*9*/* key_asn1_serializer_ctx = (vscf_key_asn1_serializer_t /*9*/*) c_ctx;
-
-    vscf_key_asn1_serializer_enable_pem_mode(key_asn1_serializer_ctx /*a1*/, jenabled /*a9*/);
 }
 
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializePublicKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {

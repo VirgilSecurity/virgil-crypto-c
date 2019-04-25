@@ -159,3 +159,28 @@ const byte test_secp256r1_PRIVATE_KEY_SEC1_DER_BYTES[] = {
 const vsc_data_t test_secp256r1_PRIVATE_KEY_SEC1_DER = {
     test_secp256r1_PRIVATE_KEY_SEC1_DER_BYTES, sizeof(test_secp256r1_PRIVATE_KEY_SEC1_DER_BYTES)
 };
+
+const char test_secp256r1_PUBLIC_KEY_SEC1_PEM_STR[] = {
+    "-----BEGIN PUBLIC KEY-----\n"
+    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEdvUC+4mn1ciUoYTTby6QA7mxiGf9\n"
+    "1PjJZ99+SydH8i9yl9DfsJ3c+oefkLcM9bUv0thZtPdMwMg71MjGNs9JAA==\n"
+    "-----END PUBLIC KEY-----"
+};
+
+const vsc_data_t test_secp256r1_PUBLIC_KEY_SEC1_PEM = {
+    (const byte *)test_secp256r1_PUBLIC_KEY_SEC1_PEM_STR, sizeof(test_secp256r1_PUBLIC_KEY_SEC1_PEM_STR) - 1
+};
+
+const char test_secp256r1_PRIVATE_KEY_SEC1_PEM_STR[] = {
+    "-----BEGIN EC PRIVATE KEY-----\n"
+    "MHcCAQEEIGnO+Tm+1zYwcongwQ1Zaanjr4tEPIE7jTZgchgHMeDxoAoGCCqGSM49\n"
+    "AwEHoUQDQgAEdvUC+4mn1ciUoYTTby6QA7mxiGf91PjJZ99+SydH8i9yl9DfsJ3c\n"
+    "+oefkLcM9bUv0thZtPdMwMg71MjGNs9JAA==\n"
+    "-----END EC PRIVATE KEY-----"
+
+};
+
+const vsc_data_t test_secp256r1_PRIVATE_KEY_SEC1_PEM = {
+    (const byte *)test_secp256r1_PRIVATE_KEY_SEC1_PEM_STR, sizeof(test_secp256r1_PRIVATE_KEY_SEC1_PEM_STR) - 1
+};
+

@@ -102,10 +102,6 @@ struct vscf_key_asn1_serializer_t {
     //  Implementation specific context.
     //
     vscf_pkcs8_serializer_t *pkcs8_serializer;
-    //
-    //  Implementation specific context.
-    //
-    bool is_pem_mode;
 };
 
 

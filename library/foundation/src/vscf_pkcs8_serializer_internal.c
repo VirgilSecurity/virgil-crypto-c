@@ -148,8 +148,6 @@ vscf_pkcs8_serializer_init(vscf_pkcs8_serializer_t *self) {
 
     self->info = &info;
     self->refcnt = 1;
-
-    vscf_pkcs8_serializer_init_ctx(self);
 }
 
 //
@@ -172,8 +170,6 @@ vscf_pkcs8_serializer_cleanup(vscf_pkcs8_serializer_t *self) {
     }
 
     vscf_pkcs8_serializer_release_asn1_writer(self);
-
-    vscf_pkcs8_serializer_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_pkcs8_serializer_t));
 }

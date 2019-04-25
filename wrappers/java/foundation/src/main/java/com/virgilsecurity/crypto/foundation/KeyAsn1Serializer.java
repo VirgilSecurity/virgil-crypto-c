@@ -72,15 +72,6 @@ public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
     }
 
     /*
-    * Tell serializer to use:
-    * - PEM format if true given, or
-    * - DER format if false given.
-    */
-    public void enablePemMode(boolean enabled) {
-        FoundationJNI.INSTANCE.keyAsn1Serializer_enablePemMode(this.cCtx, enabled);
-    }
-
-    /*
     * Serialize Public Key by using internal ASN.1 writer.
     * Note, that caller code is responsible to reset ASN.1 writer with
     * an output buffer.

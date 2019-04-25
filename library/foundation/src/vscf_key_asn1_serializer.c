@@ -60,8 +60,6 @@
 #include "vscf_asn1wr.h"
 #include "vscf_pkcs8_serializer.h"
 #include "vscf_sec1_serializer.h"
-#include "vscf_pem.h"
-#include "vscf_pem_title.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_key_asn1_serializer_defs.h"
 #include "vscf_key_asn1_serializer_internal.h"
@@ -97,7 +95,6 @@ vscf_key_asn1_serializer_init_ctx(vscf_key_asn1_serializer_t *self) {
 
     self->sec1_serializer = vscf_sec1_serializer_new();
     self->pkcs8_serializer = vscf_pkcs8_serializer_new();
-    self->is_pem_mode = false;
 }
 
 //
@@ -150,18 +147,6 @@ vscf_key_asn1_serializer_setup_defaults(vscf_key_asn1_serializer_t *self) {
     if (NULL == self->asn1_writer) {
         vscf_key_asn1_serializer_take_asn1_writer(self, vscf_asn1wr_impl(vscf_asn1wr_new()));
     }
-}
-
-//
-//  Tell serializer to use:
-//      - PEM format if true given, or
-//      - DER format if false given.
-//
-VSCF_PUBLIC void
-vscf_key_asn1_serializer_enable_pem_mode(vscf_key_asn1_serializer_t *self, bool enabled) {
-
-    VSCF_ASSERT_PTR(self);
-    self->is_pem_mode = enabled;
 }
 
 //

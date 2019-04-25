@@ -492,8 +492,34 @@ vscf_key_asn1_deserializer_deserialize_public_key(
     VSCF_ASSERT(vsc_data_is_valid(public_key_data));
     VSCF_ASSERT_PTR(self->asn1_reader);
 
-    vscf_asn1_reader_reset(self->asn1_reader, public_key_data);
-    return vscf_key_asn1_deserializer_deserialize_public_key_inplace(self, error);
+    //
+    //  Check if PEM format
+    //
+    vsc_data_t pem_title = vscf_pem_title(public_key_data);
+    if (vsc_data_is_empty(pem_title)) {
+        //  Not PEM.
+        vscf_asn1_reader_reset(self->asn1_reader, public_key_data);
+        return vscf_key_asn1_deserializer_deserialize_public_key_inplace(self, error);
+    }
+
+    //
+    //  PEM.
+    //
+    size_t der_len = vscf_pem_unwrapped_len(public_key_data.len);
+    vsc_buffer_t *der = vsc_buffer_new_with_capacity(der_len);
+    vscf_status_t status = vscf_pem_unwrap(public_key_data, der);
+
+    if (status != vscf_status_SUCCESS) {
+        vsc_buffer_destroy(&der);
+        VSCF_ERROR_SAFE_UPDATE(error, status);
+        return NULL;
+    }
+
+    vscf_asn1_reader_reset(self->asn1_reader, vsc_buffer_data(der));
+    vscf_raw_key_t *key = vscf_key_asn1_deserializer_deserialize_public_key_inplace(self, error);
+    vsc_buffer_destroy(&der);
+
+    return key;
 }
 
 //
@@ -507,6 +533,32 @@ vscf_key_asn1_deserializer_deserialize_private_key(
     VSCF_ASSERT(vsc_data_is_valid(private_key_data));
     VSCF_ASSERT_PTR(self->asn1_reader);
 
-    vscf_asn1_reader_reset(self->asn1_reader, private_key_data);
-    return vscf_key_asn1_deserializer_deserialize_private_key_inplace(self, error);
+    //
+    //  Check if PEM format
+    //
+    vsc_data_t pem_title = vscf_pem_title(private_key_data);
+    if (vsc_data_is_empty(pem_title)) {
+        //  Not PEM.
+        vscf_asn1_reader_reset(self->asn1_reader, private_key_data);
+        return vscf_key_asn1_deserializer_deserialize_private_key_inplace(self, error);
+    }
+
+    //
+    //  PEM.
+    //
+    size_t der_len = vscf_pem_unwrapped_len(private_key_data.len);
+    vsc_buffer_t *der = vsc_buffer_new_with_capacity(der_len);
+    vscf_status_t status = vscf_pem_unwrap(private_key_data, der);
+
+    if (status != vscf_status_SUCCESS) {
+        vsc_buffer_destroy(&der);
+        VSCF_ERROR_SAFE_UPDATE(error, status);
+        return NULL;
+    }
+
+    vscf_asn1_reader_reset(self->asn1_reader, vsc_buffer_data(der));
+    vscf_raw_key_t *key = vscf_key_asn1_deserializer_deserialize_private_key_inplace(self, error);
+    vsc_buffer_destroy(&der);
+
+    return key;
 }

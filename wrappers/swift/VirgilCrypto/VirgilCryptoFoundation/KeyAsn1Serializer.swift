@@ -79,13 +79,6 @@ import VSCFoundation
         vscf_key_asn1_serializer_setup_defaults(self.c_ctx)
     }
 
-    /// Tell serializer to use:
-    ///     - PEM format if true given, or
-    ///     - DER format if false given.
-    @objc public func enablePemMode(enabled: Bool) {
-        vscf_key_asn1_serializer_enable_pem_mode(self.c_ctx, enabled)
-    }
-
     /// Serialize Public Key by using internal ASN.1 writer.
     /// Note, that caller code is responsible to reset ASN.1 writer with
     /// an output buffer.

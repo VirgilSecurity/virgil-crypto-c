@@ -2,8 +2,7 @@
     Virgil Security implementation of the public and private key serialization formats.
 
     <implementation name="pkcs8 serializer">
-        Implements PKCS#8 key serialization to DER / PEM formats.
-        Default format is DER.
+        Implements PKCS#8 key serialization to DER format.
 
         <interface name="key serializer"/>
 
@@ -13,23 +12,11 @@
         <require enum="asn1 tag"/>
         <require class="oid"/>
         <require class="asn1wr"/>
-        <require class="pem"/>
-        <require class="pem title"/>
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
 
-        <property name="is pem mode" type="boolean"/>
-
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.
-        </method>
-
-        <method name="enable pem mode" declaration="public">
-            Tell serializer to use:
-                - PEM format if true given, or
-                - DER format if false given.
-
-            <argument name="enabled" type="boolean"/>
         </method>
 
         <method name="serialize public key inplace" declaration="public">
@@ -57,8 +44,7 @@
 
 
     <implementation name="sec1 serializer">
-        Implements SEC 1 key serialization to DER / PEM formats.
-        Default format is DER.
+        Implements SEC 1 key serialization to DER format.
         See also RFC 5480 and RFC 5915.
 
         <interface name="key serializer"/>
@@ -71,24 +57,13 @@
         <require class="asn1wr"/>
         <require impl="alg info der serializer"/>
         <require impl="ec alg info"/>
-        <require class="pem"/>
-        <require class="pem title"/>
 
         <property name="alg info der serializer" impl="alg info der serializer"/>
-        <property name="is pem mode" type="boolean"/>
 
         <dependency name="asn1 writer" interface="asn1 writer" has_observers="1"/>
 
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.
-        </method>
-
-        <method name="enable pem mode" declaration="public">
-            Tell serializer to use:
-                - PEM format if true given, or
-                - DER format if false given.
-
-            <argument name="enabled" type="boolean"/>
         </method>
 
         <method name="serialize public key inplace" declaration="public">
@@ -138,25 +113,14 @@
         <require impl="asn1wr"/>
         <require impl="pkcs8 serializer"/>
         <require impl="sec1 serializer"/>
-        <require class="pem"/>
-        <require class="pem title"/>
 
         <property name="sec1 serializer" impl="sec1 serializer"/>
         <property name="pkcs8 serializer" impl="pkcs8 serializer"/>
-        <property name="is pem mode" type="boolean"/>
 
         <dependency name="asn1 writer" interface="asn1 writer" has_observers="1"/>
 
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.
-        </method>
-
-        <method name="enable pem mode" declaration="public">
-            Tell serializer to use:
-                - PEM format if true given, or
-                - DER format if false given.
-
-            <argument name="enabled" type="boolean"/>
         </method>
 
         <method name="serialize public key inplace" declaration="public">

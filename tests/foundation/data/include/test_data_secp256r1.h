@@ -49,3 +49,5 @@ extern const vsc_data_t test_secp256r1_ENCRYPTED_MESSAGE;
 //
 extern const vsc_data_t test_secp256r1_PUBLIC_KEY_SEC1_DER;
 extern const vsc_data_t test_secp256r1_PRIVATE_KEY_SEC1_DER;
+extern const vsc_data_t test_secp256r1_PUBLIC_KEY_SEC1_PEM;
+extern const vsc_data_t test_secp256r1_PRIVATE_KEY_SEC1_PEM;
