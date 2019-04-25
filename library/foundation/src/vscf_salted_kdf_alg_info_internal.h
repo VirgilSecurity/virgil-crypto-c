@@ -56,6 +56,16 @@
 
 #include "vscf_library.h"
 #include "vscf_salted_kdf_alg_info.h"
+#include "vscf_alg_id.h"
+#include "vscf_impl.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
@@ -87,6 +97,14 @@ vscf_salted_kdf_alg_info_init_ctx(vscf_salted_kdf_alg_info_t *self);
 //
 VSCF_PRIVATE void
 vscf_salted_kdf_alg_info_cleanup_ctx(vscf_salted_kdf_alg_info_t *self);
+
+//
+//  Create algorithm info with identificator, HASH algorithm info,
+//  salt and iteration count.
+//
+VSCF_PUBLIC void
+vscf_salted_kdf_alg_info_init_ctx_with_members(vscf_salted_kdf_alg_info_t *self, vscf_alg_id_t alg_id,
+        vscf_impl_t **hash_alg_info_ref, vsc_data_t salt, size_t iteration_count);
 
 
 // --------------------------------------------------------------------------

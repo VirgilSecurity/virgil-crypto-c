@@ -109,8 +109,8 @@
 #include "vscf_hmac.h"
 #include "vscf_asn1rd.h"
 #include "vscf_asn1wr.h"
-#include "vscf_pkcs8_der_serializer.h"
-#include "vscf_pkcs8_der_deserializer.h"
+#include "vscf_key_der_serializer.h"
+#include "vscf_key_der_deserializer.h"
 #include "vscf_alg_info_der_serializer.h"
 #include "vscf_alg_info_der_deserializer.h"
 #include "vscf_hash_based_alg_info.h"
@@ -436,8 +436,8 @@ vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out) {
     vscf_alg_info_der_serializer_t *alg_info_der_serializer = vscf_alg_info_der_serializer_new();
     vscf_alg_info_der_serializer_use_asn1_writer(alg_info_der_serializer, vscf_asn1wr_impl(asn1wr));
 
-    vscf_pkcs8_der_serializer_t *pkcs8 = vscf_pkcs8_der_serializer_new();
-    vscf_pkcs8_der_serializer_use_asn1_writer(pkcs8, vscf_asn1wr_impl(asn1wr));
+    vscf_key_der_serializer_t *key_der_serializer = vscf_key_der_serializer_new();
+    vscf_key_der_serializer_use_asn1_writer(key_der_serializer, vscf_asn1wr_impl(asn1wr));
 
     size_t len = 0;
 
@@ -479,7 +479,7 @@ vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out) {
     //
     // Write: originator.
     //
-    len += vscf_pkcs8_der_serializer_serialize_public_key_inplace(pkcs8, self->ephemeral_public_key, &error);
+    len += vscf_key_der_serializer_serialize_public_key_inplace(key_der_serializer, self->ephemeral_public_key, &error);
 
     //
     // Write: version.
@@ -502,7 +502,7 @@ vscf_ecies_envelope_pack(vscf_ecies_envelope_t *self, vsc_buffer_t *out) {
         vsc_buffer_inc_used(out, len);
     }
 
-    vscf_pkcs8_der_serializer_destroy(&pkcs8);
+    vscf_key_der_serializer_destroy(&key_der_serializer);
     vscf_alg_info_der_serializer_destroy(&alg_info_der_serializer);
     vscf_asn1wr_destroy(&asn1wr);
 
@@ -533,8 +533,8 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
     vscf_alg_info_der_deserializer_t *alg_info_der_deserializer = vscf_alg_info_der_deserializer_new();
     vscf_alg_info_der_deserializer_use_asn1_reader(alg_info_der_deserializer, vscf_asn1rd_impl(asn1rd));
 
-    vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
-    vscf_pkcs8_der_deserializer_use_asn1_reader(pkcs8, vscf_asn1rd_impl(asn1rd));
+    vscf_key_der_deserializer_t *key_der_deserializer = vscf_key_der_deserializer_new();
+    vscf_key_der_deserializer_use_asn1_reader(key_der_deserializer, vscf_asn1rd_impl(asn1rd));
 
     vscf_asn1rd_read_sequence(asn1rd);
 
@@ -546,7 +546,8 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
     //
     // Read: originator.
     //
-    vscf_raw_key_t *originator_raw_key = vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(pkcs8, &error);
+    vscf_raw_key_t *originator_raw_key =
+            vscf_key_der_deserializer_deserialize_public_key_inplace(key_der_deserializer, &error);
     if (originator_raw_key) {
         self->ephemeral_public_key = vscf_alg_factory_create_public_key_from_raw_key(originator_raw_key, &error);
         vscf_raw_key_destroy(&originator_raw_key);
@@ -603,7 +604,7 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
         vscf_error_update(&error, vscf_asn1rd_status(asn1rd));
     }
 
-    vscf_pkcs8_der_deserializer_destroy(&pkcs8);
+    vscf_key_der_deserializer_destroy(&key_der_deserializer);
     vscf_alg_info_der_deserializer_destroy(&alg_info_der_deserializer);
     vscf_asn1rd_destroy(&asn1rd);
 

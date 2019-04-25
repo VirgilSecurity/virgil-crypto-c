@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto VERSION 0.6.0 LANGUAGES C)
+project(virgil_crypto VERSION 0.7.0 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
@@ -46,6 +46,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # ---------------------------------------------------------------------------
 #   Helper modules
 # ---------------------------------------------------------------------------
+include("cmake/find_host_utils.cmake")
 include("cmake/clangformat.cmake")
 include("cmake/helpers.cmake")
 include("cmake/TransitiveArgs.cmake")
@@ -56,16 +57,7 @@ include("cmake/protobuf.cmake")
 # ---------------------------------------------------------------------------
 #   Version options
 # ---------------------------------------------------------------------------
-set(VIRGIL_CRYPTO_VERSION_LABEL "dev" CACHE STRING "Version label, i.e. beta, rc1.")
-
-file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "${virgil_crypto_VERSION}")
-
-if(VIRGIL_CRYPTO_VERSION_LABEL)
-    file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "-${VIRGIL_CRYPTO_VERSION_LABEL}")
-endif()
-
-file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "\n")
-
+set(VIRGIL_CRYPTO_VERSION_LABEL "alpha2" CACHE STRING "Version label, i.e. beta, rc1.")
 
 # ---------------------------------------------------------------------------
 #   Build options
@@ -82,6 +74,11 @@ option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
 option(ENABLE_TESTING "On/Off integration tests." ON)
 option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
 option(ENABLE_PROFILING "On/Off GProf compilation options." OFF)
+
+#
+# Code formatting
+#
+option(ENABLE_CLANGFORMAT "On/Off formatting source code with clangformat." ON)
 
 option(VIRGIL_C_TESTING "On/Off C library integration tests." ON)
 option(VIRGIL_PHP_TESTING "On/Off PHP wrapper integration tests." ON)
@@ -108,7 +105,15 @@ option(VIRGIL_LIB_IOTELIC "Build 'iotelic' library" ON)
 option(VIRGIL_WRAP_ALL "Build all available wrappers on the given platform" OFF)
 option(VIRGIL_WRAP_GO "Build 'Golang' wrapper" OFF)
 option(VIRGIL_WRAP_PHP "Build 'PHP' wrapper" OFF)
+option(VIRGIL_WRAP_JAVA "Build 'Java' wrapper" OFF)
 
+# ---------------------------------------------------------------------------
+#   Platfrom specific.
+# ---------------------------------------------------------------------------
+set(VIRGIL_PLATFORM_HDR "" CACHE STRING "Name or path to the header file that contains platform specific definitions.")
+set(VIRGIL_PLATFORM_INC_DIR "" CACHE STRING "Path to the platform specific include directory.")
+set(VIRGIL_PLATFORM_ALLOC "" CACHE STRING "Platform specific allocation function, takes 1 argument with a size.")
+set(VIRGIL_PLATFORM_DEALLOC "" CACHE STRING "Platform specific de-allocation function, takes 1 argument with a pointer.")
 
 # ---------------------------------------------------------------------------
 #   Install options
@@ -190,6 +195,8 @@ endif()
 #   Library core libraries
 # ---------------------------------------------------------------------------
 
+add_subdirectory("library/platform")
+
 if(VIRGIL_LIB_COMMON)
     add_subdirectory("library/common")
 endif()
@@ -231,6 +238,10 @@ endif()
 
 if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_PHP)
     add_subdirectory("wrappers/php")
+endif()
+
+if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_JAVA)
+    add_subdirectory("wrappers/java")
 endif()
 
 

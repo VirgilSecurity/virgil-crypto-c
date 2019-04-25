@@ -49,6 +49,6 @@ target_include_directories(test_utils
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
         )
 
-if(COMMAND add_clangformat)
+if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
     add_clangformat(test_utils)
 endif()

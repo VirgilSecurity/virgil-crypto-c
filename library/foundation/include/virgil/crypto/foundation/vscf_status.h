@@ -179,6 +179,22 @@ enum vscf_status_t {
     //
     vscf_status_ERROR_BAD_CURVE25519_PRIVATE_KEY = -220,
     //
+    //  Elliptic curve public key format is corrupted see RFC 5480.
+    //
+    vscf_status_ERROR_BAD_SEC1_PUBLIC_KEY = -221,
+    //
+    //  Elliptic curve public key format is corrupted see RFC 5915.
+    //
+    vscf_status_ERROR_BAD_SEC1_PRIVATE_KEY = -222,
+    //
+    //  ASN.1 representation of a public key is corrupted.
+    //
+    vscf_status_ERROR_BAD_DER_PUBLIC_KEY = -223,
+    //
+    //  ASN.1 representation of a private key is corrupted.
+    //
+    vscf_status_ERROR_BAD_DER_PRIVATE_KEY = -224,
+    //
     //  Decryption failed, because message info was not given explicitly,
     //  and was not part of an encrypted message.
     //

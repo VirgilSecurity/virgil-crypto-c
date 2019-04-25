@@ -1,0 +1,107 @@
+<class name="ratchet group message" context="private">
+    Class represents ratchet group message
+
+    <require class="ratchet common hidden" scope="private"/>
+    <require class="ratchet common" scope="private"/>
+
+    <require header="RatchetGroupMessage.pb.h" scope="context"/>
+    <require header="pb_decode.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
+
+    <property name="key id" impl="ratchet key id"/>
+    <property name="message pb" class="GroupMessage" library="nanopb" access="readwrite" is_reference="0"/>
+    <property name="header pb" class="RegularGroupMessageHeader" library="nanopb" access="readwrite"/>
+
+    <method name="get type" is_const="1">
+        Returns message type.
+
+        <return enum="group msg type">
+            Message type.
+        </return>
+    </method>
+
+    <method name="get session id" is_const="1">
+        Returns session id.
+        This method should be called only for group info type.
+
+        <return class="data" access="readwrite"/>
+    </method>
+
+    <method name="get pub key count" is_const="1">
+        Returns number of public keys.
+        This method should be called only for group info message type.
+
+        <return type="size"/>
+    </method>
+
+    <method name="get pub key id" is_const="1">
+        Returns public key id for some participant id.
+        This method should be called only for group info message type.
+
+        <argument name="participant id" class="data">
+            Participant id
+        </argument>
+
+        <argument name="error" class="error" access="readwrite">
+            Error context.
+        </argument>
+
+        <return class="buffer" access="disown"/>
+    </method>
+
+    <method name="get sender id" is_const="1">
+        Returns message sender id.
+        This method should be called only for regular message type.
+
+        <return class="data" access="readwrite"/>
+    </method>
+
+    <method name="set type" scope="internal">
+        <argument name="type" enum="group msg type"/>
+    </method>
+
+    <method name="serialize len" is_const="1">
+        Buffer len to serialize this class.
+
+        <return type="size">
+            Buffer len to serialize this class.
+        </return>
+    </method>
+
+    <method name="serialize" is_const="1">
+        Serializes instance.
+
+        <argument name="output" class="buffer">
+            Buffer for result. Capacity should be >= serialize len.
+
+            <length method="serialize len"/>
+        </argument>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        Deserializes instance.
+
+        <argument name="input" class="data">
+            Data with serialized instance.
+        </argument>
+        <argument name="error" class="error" access="readwrite">
+            Error context.
+        </argument>
+
+        <return class="self" access="disown">
+            Deserialized instance
+        </return>
+    </method>
+
+    <method name="buffer decode callback" declaration="private" is_static="1">
+        <argument name="stream" class="pb_istream_t" library="nanopb" access="readwrite"/>
+        <argument name="field" class="pb_field_t" library="nanopb"/>
+        <argument name="arg" class="void*" library="nanopb" access="readwrite"/>
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="set pb encode callback" declaration="private"/>
+    <method name="set pb decode callback" declaration="private"/>
+
+</class>

@@ -71,25 +71,18 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Compile-time configuration of the default alloc function.
+//  Allocate required amount of memory by usging current allocation function.
+//  Returns NULL if memory allocation fails.
 //
-#ifndef VSCE_ALLOC_DEFAULT
-#   define VSCE_ALLOC_DEFAULT(size) calloc (1, (size))
-#endif
-
-//
-//  Compile-time configuration of the default dealloc function.
-//
-#ifndef VSCE_DEALLOC_DEFAULT
-#   define VSCE_DEALLOC_DEFAULT(mem) free ((mem))
-#endif
+VSCE_PUBLIC void *
+vsce_alloc(size_t size);
 
 //
 //  Allocate required amount of memory by usging current allocation function.
 //  Returns NULL if memory allocation fails.
 //
 VSCE_PUBLIC void *
-vsce_alloc(size_t size);
+vsce_calloc(size_t count, size_t size);
 
 //
 //  Deallocate given memory by usging current de-allocation function.
@@ -106,7 +99,7 @@ vsce_set_allocators(vsce_alloc_fn alloc_cb, vsce_dealloc_fn dealloc_cb);
 //
 //  Zeroize memory.
 //  Note, this function can be reduced by compiler during optimization step.
-//  For sensitive data erasing use vsce_erase ().
+//  For sensitive data erasing use vsce_erase().
 //
 VSCE_PUBLIC void
 vsce_zeroize(void *mem, size_t size);
@@ -117,6 +110,14 @@ vsce_zeroize(void *mem, size_t size);
 //
 VSCE_PUBLIC void
 vsce_erase(void *mem, size_t size);
+
+//
+//  Perform constant-time memory comparison.
+//  The time depends on the given length but not on the compared memory.
+//  Return true of given memory chunks are equal.
+//
+VSCE_PUBLIC bool
+vsce_memory_secure_equal(const void *a, const void *b, size_t len);
 
 
 // --------------------------------------------------------------------------

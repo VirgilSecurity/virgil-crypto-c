@@ -104,12 +104,12 @@ import VSCFoundation
             vsc_buffer_delete(keyBuf)
         }
 
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
-            key.withUnsafeMutableBytes({ (keyPointer: UnsafeMutablePointer<byte>) -> Void in
+        data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
+            key.withUnsafeMutableBytes({ (keyPointer: UnsafeMutableRawBufferPointer) -> Void in
                 vsc_buffer_init(keyBuf)
-                vsc_buffer_use(keyBuf, keyPointer, keyCount)
+                vsc_buffer_use(keyBuf, keyPointer.bindMemory(to: byte.self).baseAddress, keyCount)
 
-                vscf_hkdf_derive(self.c_ctx, vsc_data(dataPointer, data.count), keyLen, keyBuf)
+                vscf_hkdf_derive(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), keyLen, keyBuf)
             })
         })
         key.count = vsc_buffer_len(keyBuf)
@@ -119,18 +119,18 @@ import VSCFoundation
 
     /// Prepare algorithm to derive new key.
     @objc public func reset(salt: Data, iterationCount: Int) {
-        salt.withUnsafeBytes({ (saltPointer: UnsafePointer<byte>) -> Void in
+        salt.withUnsafeBytes({ (saltPointer: UnsafeRawBufferPointer) -> Void in
 
-            vscf_hkdf_reset(self.c_ctx, vsc_data(saltPointer, salt.count), iterationCount)
+            vscf_hkdf_reset(self.c_ctx, vsc_data(saltPointer.bindMemory(to: byte.self).baseAddress, salt.count), iterationCount)
         })
     }
 
     /// Setup application specific information (optional).
     /// Can be empty.
     @objc public func setInfo(info: Data) {
-        info.withUnsafeBytes({ (infoPointer: UnsafePointer<byte>) -> Void in
+        info.withUnsafeBytes({ (infoPointer: UnsafeRawBufferPointer) -> Void in
 
-            vscf_hkdf_set_info(self.c_ctx, vsc_data(infoPointer, info.count))
+            vscf_hkdf_set_info(self.c_ctx, vsc_data(infoPointer.bindMemory(to: byte.self).baseAddress, info.count))
         })
     }
 }

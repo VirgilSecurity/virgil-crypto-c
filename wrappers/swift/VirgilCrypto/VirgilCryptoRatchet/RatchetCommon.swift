@@ -42,10 +42,18 @@ import VirgilCryptoFoundation
 
     /// Max plain text length allowed to be encrypted
     @objc public static let maxPlainTextLen: Int = 30000
-    /// Max cipher text length allowed to be decrypted
-    @objc public static let maxCipherTextLen: Int = 32768
     /// Max message length
-    @objc public static let maxMessageLen: Int = 32964
+    @objc public static let maxMessageLen: Int = 32975
     /// Key pair id length
     @objc public static let keyIdLen: Int = 8
+    /// Participant id length
+    @objc public static let participantIdLen: Int = 32
+    /// Session id length
+    @objc public static let sessionIdLen: Int = 32
+    /// Max number of group chat participants
+    @objc public static let maxParticipantsCount: Int = 100
+    /// Min number of group chat participants
+    @objc public static let minParticipantsCount: Int = 2
+    /// Max group message length
+    @objc public static let maxGroupMessageLen: Int = 32918
 }

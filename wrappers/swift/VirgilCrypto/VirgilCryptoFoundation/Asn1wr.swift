@@ -257,9 +257,9 @@ import VSCFoundation
     /// Write ASN.1 type: OCTET STRING.
     /// Return count of written bytes.
     @objc public func writeOctetStr(value: Data) -> Int {
-        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
+        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) -> Int in
 
-            return vscf_asn1wr_write_octet_str(self.c_ctx, vsc_data(valuePointer, value.count))
+            return vscf_asn1wr_write_octet_str(self.c_ctx, vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
         })
 
         return proxyResult
@@ -269,9 +269,9 @@ import VSCFoundation
     ///
     /// Return count of written bytes.
     @objc public func writeOctetStrAsBitstring(value: Data) -> Int {
-        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
+        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) -> Int in
 
-            return vscf_asn1wr_write_octet_str_as_bitstring(self.c_ctx, vsc_data(valuePointer, value.count))
+            return vscf_asn1wr_write_octet_str_as_bitstring(self.c_ctx, vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
         })
 
         return proxyResult
@@ -281,9 +281,9 @@ import VSCFoundation
     /// Return count of written bytes.
     /// Note, use this method carefully.
     @objc public func writeData(data: Data) -> Int {
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Int in
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Int in
 
-            return vscf_asn1wr_write_data(self.c_ctx, vsc_data(dataPointer, data.count))
+            return vscf_asn1wr_write_data(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count))
         })
 
         return proxyResult
@@ -292,9 +292,9 @@ import VSCFoundation
     /// Write ASN.1 type: UTF8String.
     /// Return count of written bytes.
     @objc public func writeUtf8Str(value: Data) -> Int {
-        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
+        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) -> Int in
 
-            return vscf_asn1wr_write_utf8_str(self.c_ctx, vsc_data(valuePointer, value.count))
+            return vscf_asn1wr_write_utf8_str(self.c_ctx, vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
         })
 
         return proxyResult
@@ -303,9 +303,9 @@ import VSCFoundation
     /// Write ASN.1 type: OID.
     /// Return count of written bytes.
     @objc public func writeOid(value: Data) -> Int {
-        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
+        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) -> Int in
 
-            return vscf_asn1wr_write_oid(self.c_ctx, vsc_data(valuePointer, value.count))
+            return vscf_asn1wr_write_oid(self.c_ctx, vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
         })
 
         return proxyResult

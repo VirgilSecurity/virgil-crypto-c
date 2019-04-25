@@ -77,6 +77,41 @@
     <inherit entity="c_prefix"/>
 </entity>
 
+<entity name="scoped_component" abstract="1">
+    Groups common attributes for a scoped component.
+    Scoped component is a component that more precisely can specify
+    the scope where it can be used.
+
+    <attr name="scope" default="public">
+        Defines component visibility for outside world.
+        This attribute must be inherited from the 'component.scope'.
+        This attribute can not has more relaxed value then the parent has.
+        This attributed can be defined only within entities:
+            - 'class'
+            - 'implementation'.
+
+
+        <restrict value="public">
+            Component is visible for outside world.
+        </restrict>
+
+        <restrict value="private">
+            Component is visible for outside world via private interface.
+        </restrict>
+
+        <restrict value="internal">
+            Component is visible only within library.
+        </restrict>
+
+        <restrict value="hidden">
+            Component is visible only within related source file.
+            Not implemented yet!
+        </restrict>
+    </attr>
+
+    <inherit entity="component"/>
+</entity>
+
 
 <entity name="instance" abstract="1">
     Defines attributes that related to the instance type.
@@ -417,7 +452,7 @@
         Optional for enumerated constant.
     </attr>
 
-    <inherit entity="component"/>
+    <inherit entity="scoped_component"/>
     <inherit entity="definition"/>
 </entity>
 
@@ -429,7 +464,7 @@
         Object name.
     </attr>
 
-    <inherit entity="component"/>
+    <inherit entity="scoped_component"/>
     <inherit entity="visibility"/>
     <inherit entity="declaration"/>
     <inherit entity="definition"/>
@@ -467,7 +502,7 @@
         Object name.
     </attr>
 
-    <inherit entity="scope"/>
+    <inherit entity="scoped_component"/>
     <inherit entity="component"/>
     <inherit entity="visibility"/>
     <inherit entity="declaration"/>
@@ -484,7 +519,7 @@
         Structure name.
     </attr>
 
-    <inherit entity="component"/>
+    <inherit entity="scoped_component"/>
     <inherit entity="visibility"/>
     <inherit entity="declaration"/>
     <inherit entity="definition"/>
@@ -540,7 +575,7 @@
         </restrict>
     </attr>
 
-    <inherit entity="component"/>
+    <inherit entity="scoped_component"/>
     <inherit entity="visibility"/>
     <inherit entity="declaration"/>
     <inherit entity="definition"/>
@@ -559,7 +594,7 @@
         Method name.
     </attr>
 
-    <inherit entity="component"/>
+    <inherit entity="scoped_component"/>
     <inherit entity="declaration"/>
 
     <allow entity="return" occurs="0/1"/>

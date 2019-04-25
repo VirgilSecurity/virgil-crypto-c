@@ -86,6 +86,8 @@ struct vscr_ratchet_message_t {
     size_t refcnt;
 
     Message message_pb;
+
+    RegularMessageHeader *header_pb;
 };
 
 

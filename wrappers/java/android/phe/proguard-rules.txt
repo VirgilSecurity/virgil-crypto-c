@@ -1,0 +1,4 @@
+# -----------------------
+# --- Virgil Security ---
+# -----------------------
+-keep class com.virgilsecurity.crypto.** { *; }

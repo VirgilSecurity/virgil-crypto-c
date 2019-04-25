@@ -54,7 +54,7 @@
 #include "vsce_phe_server.h"
 #include "vsce_memory.h"
 #include "vsce_assert.h"
-#include "vsce_phe_hash.h"
+#include "vsce_phe_server_defs.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_random.h>
@@ -74,32 +74,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Handle 'phe server' context.
-//
-struct vsce_phe_server_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vsce_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *operation_random;
-
-    vsce_phe_hash_t *phe_hash;
-
-    mbedtls_ecp_group group;
-};
 
 //
 //  Perform context specific initialization.

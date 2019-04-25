@@ -88,6 +88,12 @@ vscf_iotelic_private_key_init_ctx(vscf_iotelic_private_key_t *self);
 VSCF_PRIVATE void
 vscf_iotelic_private_key_cleanup_ctx(vscf_iotelic_private_key_t *self);
 
+//
+//  Create private key with specific slot id.
+//
+VSCF_PUBLIC void
+vscf_iotelic_private_key_init_ctx_with_slot_id(vscf_iotelic_private_key_t *self, size_t slot_id);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

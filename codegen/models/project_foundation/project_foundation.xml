@@ -6,10 +6,10 @@
         prefix="vscf"
         path="../library/foundation/"
         work_path="generated/foundation/"
-        wrappers="swift"
+        wrappers="swift,java"
         >
 
-    <version major="0" minor="6" patch="0"/>
+    <version major="0" minor="7" patch="0"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.
@@ -102,45 +102,45 @@
     <!-- <interface name="message info serializer"/> -->
 
     <class name="error"/>
-    <!-- <class name="mbedtls bignum asn1 writer"/> -->
-    <!-- <class name="mbedtls bignum asn1 reader"/> -->
-    <!-- <class name="mbedtls md"/> -->
-    <!-- <class name="raw key"/> -->
-    <!-- <class name="oid"/> -->
-    <!-- <class name="base64"/> -->
-    <!-- <class name="pem"/> -->
-    <!-- <class name="pem title"/> -->
-    <!-- <class name="message info"/> -->
-    <!-- <class name="key recipient info"/> -->
-    <!-- <class name="key recipient info list"/> -->
-    <!-- <class name="password recipient info"/> -->
-    <!-- <class name="password recipient info list"/> -->
-    <!-- <class name="alg factory"/> -->
-    <!-- <class name="ecies envelope"/> -->
-    <!-- <class name="recipient cipher"/> -->
-    <!-- <class name="key recipient list"/> -->
-    <!-- <class name="list key value node"/> -->
-    <!-- <class name="message info custom params"/> -->
-    <!-- <class name="key provider"/> -->
-    <!-- <class name="signer"/> -->
-    <!-- <class name="verifier"/> -->
+    <!--<class name="mbedtls bignum asn1 writer"/>-->
+    <!--<class name="mbedtls bignum asn1 reader"/>-->
+    <!--<class name="mbedtls md"/>-->
+    <!--<class name="raw key"/>-->
+    <!--<class name="oid"/>-->
+    <!--<class name="base64"/>-->
+    <!--<class name="pem"/>-->
+    <!--<class name="pem title"/>-->
+    <!--<class name="message info"/>-->
+    <!--<class name="key recipient info"/>-->
+    <!--<class name="key recipient info list"/>-->
+    <!--<class name="password recipient info"/>-->
+    <!--<class name="password recipient info list"/>-->
+    <!--<class name="alg factory"/>-->
+    <!--<class name="ecies envelope"/>-->
+    <!--<class name="recipient cipher"/>-->
+    <!--<class name="key recipient list"/>-->
+    <!--<class name="list key value node"/>-->
+    <!--<class name="message info custom params"/>-->
+    <!--<class name="key provider"/>-->
+    <!--<class name="signer"/>-->
+    <!--<class name="verifier"/>-->
 
-    <!-- <implementor name="mbedtls"/> -->
-    <!-- <implementor name="mbedtls pk"/> -->
-    <!-- <implementor name="mbedtls rng"/> -->
-    <!-- <implementor name="virgil"/> -->
-    <!-- <implementor name="virgil pkcs8"/> -->
-    <!-- <implementor name="ed25519"/> -->
-    <!-- <implementor name="virgil ecies"/> -->
+    <!--<implementor name="mbedtls"/>-->
+    <!--<implementor name="mbedtls pk"/>-->
+    <!--<implementor name="mbedtls rng"/>-->
+    <!--<implementor name="virgil"/>-->
+    <!--<implementor name="virgil key serializer"/>-->
+    <!--<implementor name="ed25519"/>-->
+    <!--<implementor name="virgil ecies"/>-->
     <implementor name="iotelic"/>
 
-    <!-- <implementor name="alg info"/> -->
-    <!-- <implementor name="alg info der"/> -->
-    <!-- <implementor name="message info der serializer"/> -->
+    <!--<implementor name="alg info"/>-->
+    <!--<implementor name="alg info der"/>-->
+    <!--<implementor name="message info der serializer"/>-->
 
-    <!-- <module name="mbedtls bridge random"/> -->
-    <!-- <module name="mbedtls bridge entropy"/> -->
-    <!-- <module name="mbedtls bridge entropy poll"/> -->
+    <!--<module name="mbedtls bridge random"/>-->
+    <!--<module name="mbedtls bridge entropy"/>-->
+    <!--<module name="mbedtls bridge entropy poll"/>-->
 
     <error_message_getter success="0">
         <require enum="status"/>

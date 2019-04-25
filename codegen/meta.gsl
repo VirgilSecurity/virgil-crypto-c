@@ -167,7 +167,7 @@ function _X17_add_entity_project (meta, project)
     check_arguments (my, "meta, project", my)
     assert_argument_type (my.meta, "meta", my)
 
-    my.id = make_id ("project", my.project.name)
+    my.id = "project"
 
     if count (my.meta.entity, id = my.id)
         return #   Already there.
@@ -176,6 +176,8 @@ function _X17_add_entity_project (meta, project)
     new entity to my.meta
         .id = my.id
         .is_active = 1
+
+        _X17_add_name (entity, "project", my.project.name)
 
         for my.project.require where defined (0.project) & string_equal (0.feature, "library")
             _X17_add_name (entity, "namespace dir project $(require.project)", \
@@ -447,6 +449,7 @@ function _X17_add_entity_implementation (meta, implementation)
 
         _X17_add_name (entity, "implementation module", my.name)
         _X17_add_name (entity, "implementation module defs", cat (my.name, "defs"))
+        _X17_add_name (entity, "implementation module private", cat (my.name, "private"))
         _X17_add_name (entity, "implementation module internal", cat (my.name, "internal"))
 
         _X17_add_name (entity, "implementation argument impl", "self")
@@ -530,6 +533,8 @@ function _X17_add_entity_class (meta, class)
         _X17_add_smart_name (entity, "class method", "ctx size")
 
         _X17_add_name (entity, "class module", my.class.name)
+        _X17_add_name (entity, "class module private", cat (my.class.name, "private"))
+        _X17_add_name (entity, "class module internal", cat (my.class.name, "internal"))
         _X17_add_name (entity, "class module defs", cat (my.class.name, "defs"))
         _X17_add_name (entity, "class argument ctx", "self")
         _X17_add_link (entity, "class argument ctx", "_argument_self")
@@ -749,7 +754,7 @@ function meta_reset_active_entity (meta, entity_name)
     assert_argument_type (my.meta, "meta", my)
 
     for my.meta.entity
-        entity.is_active = string_in (entity.id, "common, api, impl, $(make_id (my.entity_name))")
+        entity.is_active = string_in (entity.id, "common, project, api, impl, $(make_id (my.entity_name))")
     endfor
 endfunction
 

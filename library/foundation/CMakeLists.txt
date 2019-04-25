@@ -130,7 +130,7 @@ add_library(vsc::foundation ALIAS foundation)
 #
 # Format code
 #
-if(COMMAND add_clangformat)
+if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
     add_clangformat(foundation)
 endif()
 

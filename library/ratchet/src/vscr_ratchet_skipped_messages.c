@@ -47,9 +47,8 @@
 #include "vscr_ratchet_skipped_messages.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_skipped_messages_defs.h"
 #include "vscr_ratchet_chain_key.h"
-#include "vscr_ratchet_skipped_message_key_list_node.h"
 
 // clang-format on
 //  @end
@@ -60,22 +59,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Handle 'ratchet skipped messages' context.
-//
-struct vscr_ratchet_skipped_messages_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscr_ratchet_skipped_message_key_list_node_t *keys;
-};
 
 //
 //  Perform context specific initialization.
@@ -231,124 +214,146 @@ vscr_ratchet_skipped_messages_cleanup_ctx(vscr_ratchet_skipped_messages_t *self)
 
     VSCR_ASSERT_PTR(self);
 
-    vscr_ratchet_skipped_message_key_list_node_destroy(&self->keys);
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_DH; i++) {
+        vscr_ratchet_skipped_messages_root_node_destroy(&self->root_nodes[i]);
+    }
 }
 
-VSCR_PUBLIC vscr_ratchet_skipped_message_key_t *
+VSCR_PUBLIC vscr_ratchet_message_key_t *
 vscr_ratchet_skipped_messages_find_key(
-        vscr_ratchet_skipped_messages_t *self, size_t counter, vsc_data_t ratchet_public_key) {
+        const vscr_ratchet_skipped_messages_t *self, size_t counter, const vscr_ratchet_public_key_t public_key) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(ratchet_public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
 
-    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key_list_node = self->keys;
+    size_t i = vscr_ratchet_skipped_messages_find_public_key(self, public_key);
 
-    while (skipped_message_key_list_node) {
-        if (counter == skipped_message_key_list_node->value->message_key->index &&
-                !memcmp(ratchet_public_key.bytes, skipped_message_key_list_node->value->public_key,
-                        vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH)) {
-            return skipped_message_key_list_node->value;
+    if (i == self->roots_count) {
+        return NULL;
+    }
+
+    vscr_ratchet_message_key_node_t *node = self->root_nodes[i]->first;
+
+    while (node) {
+        if (counter == node->value->index) {
+            return node->value;
         }
-        skipped_message_key_list_node = skipped_message_key_list_node->next;
+
+        node = node->next;
     }
 
     return NULL;
 }
 
-VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_delete_key(
-        vscr_ratchet_skipped_messages_t *self, vscr_ratchet_skipped_message_key_t *skipped_message_key) {
+VSCR_PUBLIC size_t
+vscr_ratchet_skipped_messages_find_public_key(
+        const vscr_ratchet_skipped_messages_t *self, const vscr_ratchet_public_key_t public_key) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(skipped_message_key);
 
-    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key_list_node_prev = NULL;
-    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key_list_node = self->keys;
-
-    while (skipped_message_key_list_node) {
-        if (skipped_message_key_list_node->value == skipped_message_key) {
-            if (skipped_message_key_list_node_prev) {
-                skipped_message_key_list_node_prev->next = skipped_message_key_list_node->next;
-            } else {
-                self->keys = skipped_message_key_list_node->next;
-            }
-
-            skipped_message_key_list_node->next = NULL;
-            vscr_ratchet_skipped_message_key_list_node_destroy(&skipped_message_key_list_node);
-
-            return;
+    size_t i = 0;
+    for (; i < self->roots_count; i++) {
+        if (memcmp(self->public_keys[i], public_key, sizeof(self->public_keys[i])) == 0) {
+            break;
         }
-
-        skipped_message_key_list_node_prev = skipped_message_key_list_node;
-        skipped_message_key_list_node = skipped_message_key_list_node->next;
     }
 
-    // Element not found
-    VSCR_ASSERT(false);
+    return i;
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_add_key(
-        vscr_ratchet_skipped_messages_t *self, vscr_ratchet_skipped_message_key_t *skipped_message_key) {
+vscr_ratchet_skipped_messages_delete_key(vscr_ratchet_skipped_messages_t *self,
+        const vscr_ratchet_public_key_t public_key, vscr_ratchet_message_key_t *message_key) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(skipped_message_key);
+    VSCR_ASSERT_PTR(message_key);
 
-    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key_list_node =
-            vscr_ratchet_skipped_message_key_list_node_new();
-    skipped_message_key_list_node->value = skipped_message_key;
-    skipped_message_key_list_node->next = self->keys;
-    self->keys = skipped_message_key_list_node;
+    size_t i = vscr_ratchet_skipped_messages_find_public_key(self, public_key);
 
-    if (!self->keys->next) {
-
-        return;
+    if (i == self->roots_count) {
+        VSCR_ASSERT(false);
     }
 
-    size_t msgs_count = 2;
-    while (skipped_message_key_list_node->next->next) {
-        msgs_count += 1;
-        skipped_message_key_list_node = skipped_message_key_list_node->next;
+    vscr_ratchet_skipped_messages_root_node_delete_key(self->root_nodes[i], message_key);
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_messages_add_public_key(
+        vscr_ratchet_skipped_messages_t *self, const vscr_ratchet_public_key_t public_key) {
+
+    size_t index = vscr_ratchet_skipped_messages_find_public_key(self, public_key);
+
+    if (index != self->roots_count) {
+        VSCR_ASSERT(false);
     }
 
-    VSCR_ASSERT(msgs_count <= vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES + 1);
+    if (self->roots_count == vscr_ratchet_common_hidden_MAX_SKIPPED_DH) {
+        vscr_ratchet_skipped_messages_root_node_destroy(
+                &self->root_nodes[vscr_ratchet_common_hidden_MAX_SKIPPED_DH - 1]);
+    }
 
-    if (msgs_count == vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES + 1) {
-        vscr_ratchet_skipped_message_key_list_node_destroy(&skipped_message_key_list_node->next);
+    for (size_t i = vscr_ratchet_common_hidden_MAX_SKIPPED_DH - 1; i > 0; i--) {
+        self->root_nodes[i] = self->root_nodes[i - 1];
+        memcpy(self->public_keys[i], self->public_keys[i - 1], sizeof(self->public_keys[i]));
+    }
+
+    self->root_nodes[0] = vscr_ratchet_skipped_messages_root_node_new();
+    memcpy(self->public_keys[0], public_key, sizeof(self->public_keys[0]));
+
+    if (self->roots_count < vscr_ratchet_common_hidden_MAX_SKIPPED_DH) {
+        self->roots_count++;
     }
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_serialize(vscr_ratchet_skipped_messages_t *self, SkippedMessages *skipped_messages_pb) {
+vscr_ratchet_skipped_messages_add_key(vscr_ratchet_skipped_messages_t *self, const vscr_ratchet_public_key_t public_key,
+        vscr_ratchet_message_key_t *message_key) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(message_key);
+
+    size_t i = vscr_ratchet_skipped_messages_find_public_key(self, public_key);
+
+    VSCR_ASSERT(i != vscr_ratchet_common_hidden_MAX_SKIPPED_DH);
+
+    vscr_ratchet_skipped_messages_root_node_add_key(self->root_nodes[i], message_key);
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_messages_serialize(
+        const vscr_ratchet_skipped_messages_t *self, SkippedMessages *skipped_messages_pb) {
 
     VSCR_ASSERT_PTR(self);
 
-    pb_size_t skipped_count = 0;
+    skipped_messages_pb->keys_count = self->roots_count;
 
-    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key = self->keys;
+    for (size_t i = 0; i < self->roots_count; i++) {
 
-    while (skipped_message_key) {
-        vscr_ratchet_skipped_message_key_serialize(
-                skipped_message_key->value, &skipped_messages_pb->keys[skipped_count]);
+        SkippedMessageKey *root_pb = &skipped_messages_pb->keys[i];
 
-        skipped_count++;
-        skipped_messages_pb->keys_count = skipped_count;
-        skipped_message_key = skipped_message_key->next;
+        memcpy(root_pb->public_key, self->public_keys[i], sizeof(root_pb->public_key));
+
+        vscr_ratchet_skipped_messages_root_node_serialize(
+                self->root_nodes[i], root_pb->message_keys, &root_pb->message_keys_count);
     }
 }
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_messages_deserialize(
-        SkippedMessages *skipped_messages_pb, vscr_ratchet_skipped_messages_t *skipped_messages) {
+        const SkippedMessages *skipped_messages_pb, vscr_ratchet_skipped_messages_t *skipped_messages) {
 
     VSCR_ASSERT_PTR(skipped_messages_pb);
     VSCR_ASSERT_PTR(skipped_messages);
 
-    for (pb_size_t i = skipped_messages_pb->keys_count; i > 0; i--) {
-        vscr_ratchet_skipped_message_key_t *skipped_message_key = vscr_ratchet_skipped_message_key_new();
+    skipped_messages->roots_count = skipped_messages_pb->keys_count;
 
-        vscr_ratchet_skipped_message_key_deserialize(&skipped_messages_pb->keys[i - 1], skipped_message_key);
+    for (pb_size_t i = 0; i < skipped_messages_pb->keys_count; i++) {
+        vscr_ratchet_skipped_messages_root_node_t *root = vscr_ratchet_skipped_messages_root_node_new();
 
-        vscr_ratchet_skipped_messages_add_key(skipped_messages, skipped_message_key);
+        const SkippedMessageKey *root_pb = &skipped_messages_pb->keys[i];
+        memcpy(skipped_messages->public_keys[i], root_pb->public_key, sizeof(skipped_messages->public_keys[i]));
+
+        vscr_ratchet_skipped_messages_root_node_deserialize(root_pb->message_keys, root_pb->message_keys_count, root);
+
+        skipped_messages->root_nodes[i] = root;
     }
 }

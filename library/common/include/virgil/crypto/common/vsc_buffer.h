@@ -102,13 +102,29 @@ VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_new(void);
 
 //
-//  Allocate context and underlying byte array.
+//  Perform initialization of pre-allocated context.
+//  Allocate inner buffer of given capacity.
+//
+VSC_PUBLIC void
+vsc_buffer_init_with_capacity(vsc_buffer_t *self, size_t capacity);
+
+//
+//  Allocate class context and perform it's initialization.
+//  Allocate inner buffer of given capacity.
 //
 VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_new_with_capacity(size_t capacity);
 
 //
-//  Create buffer with copied bytes from given data.
+//  Perform initialization of pre-allocated context.
+//  Allocate inner buffer buffer as copy of given data.
+//
+VSC_PUBLIC void
+vsc_buffer_init_with_data(vsc_buffer_t *self, vsc_data_t data);
+
+//
+//  Allocate class context and perform it's initialization.
+//  Allocate inner buffer buffer as copy of given data.
 //
 VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_new_with_data(vsc_data_t data);
@@ -152,6 +168,14 @@ VSC_PUBLIC bool
 vsc_buffer_equal(const vsc_buffer_t *self, const vsc_buffer_t *rhs);
 
 //
+//  Perform constant-time buffers comparison.
+//  The time depends on the given length but not on the buffer data.
+//  Return true if given buffers are equal.
+//
+VSC_PUBLIC bool
+vsc_buffer_secure_equal(const vsc_buffer_t *self, const vsc_buffer_t *rhs);
+
+//
 //  Allocates inner buffer with a given capacity.
 //  Precondition: buffer is initialized.
 //  Precondition: buffer does not hold any bytes.
@@ -159,6 +183,12 @@ vsc_buffer_equal(const vsc_buffer_t *self, const vsc_buffer_t *rhs);
 //
 VSC_PUBLIC void
 vsc_buffer_alloc(vsc_buffer_t *self, size_t capacity);
+
+//
+//  Release inner buffer.
+//
+VSC_PUBLIC void
+vsc_buffer_release(vsc_buffer_t *self);
 
 //
 //  Use given data as output buffer.

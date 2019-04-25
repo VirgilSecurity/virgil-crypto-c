@@ -71,25 +71,18 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Compile-time configuration of the default alloc function.
+//  Allocate required amount of memory by usging current allocation function.
+//  Returns NULL if memory allocation fails.
 //
-#ifndef VSCP_ALLOC_DEFAULT
-#   define VSCP_ALLOC_DEFAULT(size) calloc (1, (size))
-#endif
-
-//
-//  Compile-time configuration of the default dealloc function.
-//
-#ifndef VSCP_DEALLOC_DEFAULT
-#   define VSCP_DEALLOC_DEFAULT(mem) free ((mem))
-#endif
+VSCP_PUBLIC void *
+vscp_alloc(size_t size);
 
 //
 //  Allocate required amount of memory by usging current allocation function.
 //  Returns NULL if memory allocation fails.
 //
 VSCP_PUBLIC void *
-vscp_alloc(size_t size);
+vscp_calloc(size_t count, size_t size);
 
 //
 //  Deallocate given memory by usging current de-allocation function.
@@ -106,7 +99,7 @@ vscp_set_allocators(vscp_alloc_fn alloc_cb, vscp_dealloc_fn dealloc_cb);
 //
 //  Zeroize memory.
 //  Note, this function can be reduced by compiler during optimization step.
-//  For sensitive data erasing use vscp_erase ().
+//  For sensitive data erasing use vscp_erase().
 //
 VSCP_PUBLIC void
 vscp_zeroize(void *mem, size_t size);
@@ -117,6 +110,14 @@ vscp_zeroize(void *mem, size_t size);
 //
 VSCP_PUBLIC void
 vscp_erase(void *mem, size_t size);
+
+//
+//  Perform constant-time memory comparison.
+//  The time depends on the given length but not on the compared memory.
+//  Return true of given memory chunks are equal.
+//
+VSCP_PUBLIC bool
+vscp_memory_secure_equal(const void *a, const void *b, size_t len);
 
 
 // --------------------------------------------------------------------------

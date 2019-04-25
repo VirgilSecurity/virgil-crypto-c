@@ -62,6 +62,7 @@
 #include "vscf_simple_alg_info.h"
 #include "vscf_salted_kdf_alg_info.h"
 #include "vscf_pbe_alg_info.h"
+#include "vscf_ec_alg_info.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_alg_info_der_serializer_defs.h"
 #include "vscf_alg_info_der_serializer_internal.h"
@@ -197,6 +198,21 @@ static size_t
 vscf_alg_info_der_serializer_serialize_pbes2_alg_info(vscf_alg_info_der_serializer_t *self,
         const vscf_impl_t *alg_info);
 
+//
+//  Return buffer size enough to hold ASN.1 structure
+//  "AlgorithmIdentifier" with "ECParameters" from the RFC 5480.
+//
+static size_t
+vscf_alg_info_der_serializer_serialized_ec_alg_info_len(vscf_alg_info_der_serializer_t *self,
+        const vscf_impl_t *alg_info);
+
+//
+//  Serialize class "ec alg info" to the ASN.1 structure
+//  "AlgorithmIdentifier" with "ECParameters" from the RFC 5480.
+//
+static size_t
+vscf_alg_info_der_serializer_serialize_ec_alg_info(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -256,9 +272,10 @@ vscf_alg_info_der_serializer_serialized_simple_alg_info_len(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
 
+
     size_t len = 1 + 1 +      //  AlgorithmIdentifier ::= SEQUENCE {
                  1 + 1 + 32 + //          algorithm OBJECT IDENTIFIER,
-                 0;           //          parameters ANY DEFINED BY algorithm OPTIONAL
+                 2;           //          parameters ANY DEFINED BY algorithm OPTIONAL
                               //  }
 
     return len;
@@ -774,6 +791,79 @@ vscf_alg_info_der_serializer_serialize_pbes2_alg_info(
 }
 
 //
+//  Return buffer size enough to hold ASN.1 structure
+//  "AlgorithmIdentifier" with "ECParameters" from the RFC 5480.
+//
+static size_t
+vscf_alg_info_der_serializer_serialized_ec_alg_info_len(
+        vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+
+    size_t params_len = 0 +        //  ECParameters ::= CHOICE {
+                        1 + 1 + 8; //      namedCurve OBJECT IDENTIFIER }
+
+    size_t len = 1 + 1 +     //  AlgorithmIdentifier ::= SEQUENCE {
+                 1 + 1 + 7 + //      algorithm OBJECT IDENTIFIER, -- id-ecPublicKey
+                 params_len; //      parameters ECParameters }
+
+    return len;
+}
+
+//
+//  Serialize class "ec alg info" to the ASN.1 structure
+//  "AlgorithmIdentifier" with "ECParameters" from the RFC 5480.
+//
+static size_t
+vscf_alg_info_der_serializer_serialize_ec_alg_info(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+
+    //  ECAlgorithms ALGORITHM-IDENTIFIER ::= {
+    //      {ECParameters IDENTIFIED BY id-ecPublicKey},
+    //      {ECParameters IDENTIFIED BY id-id-ecDH}, -- is not supported by this implementation
+    //      {ECParameters IDENTIFIED BY id-ecMQV}, -- is not supported by this implementation
+    //      ...
+    //  }
+    //
+    //  ECParameters ::= CHOICE {
+    //      namedCurve OBJECT IDENTIFIER
+    //      -- implicitCurve NULL (not supported in this implementation)
+    //      -- specifiedCurve SpecifiedECDomain
+    //  }
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT_PTR(self->asn1_writer);
+
+    vscf_impl_t *asn1_writer = self->asn1_writer;
+
+    VSCF_ASSERT(vscf_asn1_writer_unwritten_len(asn1_writer) >=
+                vscf_alg_info_der_serializer_serialized_ec_alg_info_len(self, alg_info));
+
+
+    const vscf_ec_alg_info_t *ec_alg_info = (const vscf_ec_alg_info_t *)alg_info;
+
+    size_t len = 0;
+    vscf_oid_id_t ec_id = vscf_ec_alg_info_key_id(ec_alg_info);
+    vscf_oid_id_t ec_domain_id = vscf_ec_alg_info_domain_id(ec_alg_info);
+
+    VSCF_ASSERT(ec_id == vscf_oid_id_EC_GENERIC_KEY);
+    switch (ec_domain_id) {
+    case vscf_oid_id_EC_DOMAIN_SECP256R1:
+        len += vscf_asn1_writer_write_oid(self->asn1_writer, vscf_oid_from_id(ec_domain_id));
+        break;
+    default:
+        VSCF_ASSERT(0 && "Unexpected OID.");
+        return 0;
+    }
+
+    len += vscf_asn1_writer_write_oid(self->asn1_writer, vscf_oid_from_id(ec_id));
+    len += vscf_asn1_writer_write_sequence(self->asn1_writer, len);
+
+    return len;
+}
+
+//
 //  Serialize by using internal ASN.1 writer.
 //  Note, that caller code is responsible to reset ASN.1 writer with
 //  an output buffer.
@@ -785,10 +875,8 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
     VSCF_ASSERT_PTR(alg_info);
     VSCF_ASSERT_PTR(self->asn1_writer);
 
-    vscf_impl_t *asn1_writer = self->asn1_writer;
-
-    VSCF_ASSERT(
-            vscf_asn1_writer_unwritten_len(asn1_writer) >= vscf_alg_info_der_serializer_serialized_len(self, alg_info));
+    VSCF_ASSERT(vscf_asn1_writer_unwritten_len(self->asn1_writer) >=
+                vscf_alg_info_der_serializer_serialized_len(self, alg_info));
 
     vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
@@ -802,6 +890,9 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
     case vscf_alg_id_ED25519:
     case vscf_alg_id_CURVE25519:
         return vscf_alg_info_der_serializer_serialize_simple_alg_info(self, alg_info);
+
+    case vscf_alg_id_SECP256R1:
+        return vscf_alg_info_der_serializer_serialize_ec_alg_info(self, alg_info);
 
     case vscf_alg_id_KDF1:
     case vscf_alg_id_KDF2:
@@ -855,6 +946,9 @@ vscf_alg_info_der_serializer_serialized_len(vscf_alg_info_der_serializer_t *self
     case vscf_alg_id_ED25519:
     case vscf_alg_id_CURVE25519:
         return vscf_alg_info_der_serializer_serialized_simple_alg_info_len(self, alg_info);
+
+    case vscf_alg_id_SECP256R1:
+        return vscf_alg_info_der_serializer_serialized_ec_alg_info_len(self, alg_info);
 
     case vscf_alg_id_KDF1:
     case vscf_alg_id_KDF2:

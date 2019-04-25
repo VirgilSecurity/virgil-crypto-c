@@ -62,6 +62,10 @@ import VSCFoundation
             return RsaPublicKey(take: c_ctx)
         case vscf_impl_tag_RSA_PRIVATE_KEY:
             return RsaPrivateKey(take: c_ctx)
+        case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
+            return Secp256r1PublicKey(take: c_ctx)
+        case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
+            return Secp256r1PrivateKey(take: c_ctx)
         case vscf_impl_tag_HMAC:
             return Hmac(take: c_ctx)
         case vscf_impl_tag_HKDF:
@@ -122,6 +126,8 @@ import VSCFoundation
             return Aes256Cbc(take: c_ctx)
         case vscf_impl_tag_RSA_PUBLIC_KEY:
             return RsaPublicKey(take: c_ctx)
+        case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
+            return Secp256r1PublicKey(take: c_ctx)
         case vscf_impl_tag_PKCS5_PBES2:
             return Pkcs5Pbes2(take: c_ctx)
         case vscf_impl_tag_ED25519_PUBLIC_KEY:
@@ -149,6 +155,8 @@ import VSCFoundation
             return Aes256Cbc(take: c_ctx)
         case vscf_impl_tag_RSA_PRIVATE_KEY:
             return RsaPrivateKey(take: c_ctx)
+        case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
+            return Secp256r1PrivateKey(take: c_ctx)
         case vscf_impl_tag_PKCS5_PBES2:
             return Pkcs5Pbes2(take: c_ctx)
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
@@ -298,6 +306,10 @@ import VSCFoundation
             return RsaPublicKey(take: c_ctx)
         case vscf_impl_tag_RSA_PRIVATE_KEY:
             return RsaPrivateKey(take: c_ctx)
+        case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
+            return Secp256r1PublicKey(take: c_ctx)
+        case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
+            return Secp256r1PrivateKey(take: c_ctx)
         case vscf_impl_tag_ED25519_PUBLIC_KEY:
             return Ed25519PublicKey(take: c_ctx)
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
@@ -321,6 +333,8 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_RSA_PUBLIC_KEY:
             return RsaPublicKey(take: c_ctx)
+        case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
+            return Secp256r1PublicKey(take: c_ctx)
         case vscf_impl_tag_ED25519_PUBLIC_KEY:
             return Ed25519PublicKey(take: c_ctx)
         default:
@@ -338,6 +352,8 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_RSA_PUBLIC_KEY:
             return RsaPublicKey(take: c_ctx)
+        case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
+            return Secp256r1PublicKey(take: c_ctx)
         case vscf_impl_tag_ED25519_PUBLIC_KEY:
             return Ed25519PublicKey(take: c_ctx)
         case vscf_impl_tag_CURVE25519_PUBLIC_KEY:
@@ -357,6 +373,8 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_RSA_PUBLIC_KEY:
             return RsaPublicKey(take: c_ctx)
+        case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
+            return Secp256r1PublicKey(take: c_ctx)
         case vscf_impl_tag_ED25519_PUBLIC_KEY:
             return Ed25519PublicKey(take: c_ctx)
         case vscf_impl_tag_CURVE25519_PUBLIC_KEY:
@@ -376,6 +394,8 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_RSA_PRIVATE_KEY:
             return RsaPrivateKey(take: c_ctx)
+        case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
+            return Secp256r1PrivateKey(take: c_ctx)
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
             return Ed25519PrivateKey(take: c_ctx)
         case vscf_impl_tag_CURVE25519_PRIVATE_KEY:
@@ -395,6 +415,8 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_RSA_PRIVATE_KEY:
             return RsaPrivateKey(take: c_ctx)
+        case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
+            return Secp256r1PrivateKey(take: c_ctx)
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
             return Ed25519PrivateKey(take: c_ctx)
         default:
@@ -412,6 +434,27 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_RSA_PRIVATE_KEY:
             return RsaPrivateKey(take: c_ctx)
+        case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
+            return Secp256r1PrivateKey(take: c_ctx)
+        case vscf_impl_tag_ED25519_PRIVATE_KEY:
+            return Ed25519PrivateKey(take: c_ctx)
+        case vscf_impl_tag_CURVE25519_PRIVATE_KEY:
+            return Curve25519PrivateKey(take: c_ctx)
+        default:
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
+        }
+    }
+
+    /// Wrap C implementation object to the Swift object that implements protocol ComputeSharedKey.
+    @objc static func wrapComputeSharedKey(take c_ctx: OpaquePointer) -> ComputeSharedKey {
+        if (!vscf_compute_shared_key_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface ComputeSharedKey.")
+        }
+
+        let implTag = vscf_impl_tag(c_ctx)
+        switch(implTag) {
+        case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
+            return Secp256r1PrivateKey(take: c_ctx)
         case vscf_impl_tag_ED25519_PRIVATE_KEY:
             return Ed25519PrivateKey(take: c_ctx)
         case vscf_impl_tag_CURVE25519_PRIVATE_KEY:
@@ -520,10 +563,14 @@ import VSCFoundation
 
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
-        case vscf_impl_tag_PKCS8_DER_SERIALIZER:
-            return Pkcs8DerSerializer(take: c_ctx)
         case vscf_impl_tag_PKCS8_SERIALIZER:
             return Pkcs8Serializer(take: c_ctx)
+        case vscf_impl_tag_SEC1_SERIALIZER:
+            return Sec1Serializer(take: c_ctx)
+        case vscf_impl_tag_KEY_DER_SERIALIZER:
+            return KeyDerSerializer(take: c_ctx)
+        case vscf_impl_tag_KEY_DEFAULT_SERIALIZER:
+            return KeyDefaultSerializer(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -537,27 +584,10 @@ import VSCFoundation
 
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
-        case vscf_impl_tag_PKCS8_DER_DESERIALIZER:
-            return Pkcs8DerDeserializer(take: c_ctx)
-        case vscf_impl_tag_PKCS8_DESERIALIZER:
-            return Pkcs8Deserializer(take: c_ctx)
-        default:
-            fatalError("Unexpected C implementation cast to the Swift implementation.")
-        }
-    }
-
-    /// Wrap C implementation object to the Swift object that implements protocol ComputeSharedKey.
-    @objc static func wrapComputeSharedKey(take c_ctx: OpaquePointer) -> ComputeSharedKey {
-        if (!vscf_compute_shared_key_is_implemented(c_ctx)) {
-            fatalError("Given C implementation does not implement interface ComputeSharedKey.")
-        }
-
-        let implTag = vscf_impl_tag(c_ctx)
-        switch(implTag) {
-        case vscf_impl_tag_ED25519_PRIVATE_KEY:
-            return Ed25519PrivateKey(take: c_ctx)
-        case vscf_impl_tag_CURVE25519_PRIVATE_KEY:
-            return Curve25519PrivateKey(take: c_ctx)
+        case vscf_impl_tag_KEY_DER_DESERIALIZER:
+            return KeyDerDeserializer(take: c_ctx)
+        case vscf_impl_tag_KEY_DEFAULT_DESERIALIZER:
+            return KeyDefaultDeserializer(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -581,6 +611,8 @@ import VSCFoundation
             return SaltedKdfAlgInfo(take: c_ctx)
         case vscf_impl_tag_PBE_ALG_INFO:
             return PbeAlgInfo(take: c_ctx)
+        case vscf_impl_tag_EC_ALG_INFO:
+            return EcAlgInfo(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }

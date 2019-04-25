@@ -184,6 +184,11 @@ set_property(
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_foundation_public.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
 target_sources(foundation
     PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_assert.h"
@@ -238,6 +243,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_status.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_id.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_foundation_public.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_foundation_private.h"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_library.c"
