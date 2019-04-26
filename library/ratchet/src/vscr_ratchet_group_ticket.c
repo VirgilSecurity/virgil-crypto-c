@@ -500,8 +500,11 @@ vscr_ratchet_group_ticket_remove_participant(vscr_ratchet_group_ticket_t *self, 
         return vscr_status_ERROR_PARTICIPANT_NOT_FOUND;
     }
 
-    memcpy(&msg_info->participants[i], &msg_info->participants[msg_info->participants_count - 1],
-            sizeof(MessageParticipantInfo));
+    if (i != msg_info->participants_count - 1) {
+        memcpy(&msg_info->participants[i], &msg_info->participants[msg_info->participants_count - 1],
+               sizeof(MessageParticipantInfo));
+    }
+    
     vscr_zeroize(&msg_info->participants[msg_info->participants_count - 1], sizeof(MessageParticipantInfo));
     msg_info->participants_count--;
 
