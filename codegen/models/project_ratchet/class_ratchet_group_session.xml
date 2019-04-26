@@ -214,7 +214,6 @@
         NOTE: Deserialized session needs dependencies to be set.
         You should set separately:
             - rng
-            - my id
             - my private key
 
         <argument name="input" class="data">

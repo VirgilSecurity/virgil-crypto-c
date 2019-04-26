@@ -273,7 +273,6 @@ vscr_ratchet_group_session_serialize(const vscr_ratchet_group_session_t *self, v
 //  NOTE: Deserialized session needs dependencies to be set.
 //  You should set separately:
 //      - rng
-//      - my id
 //      - my private key
 //
 VSCR_PUBLIC vscr_ratchet_group_session_t *

@@ -440,6 +440,7 @@ vscr_ratchet_group_session_set_private_key(vscr_ratchet_group_session_t *self, v
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->key_utils);
+    VSCR_ASSERT(vsc_data_is_valid(my_private_key));
 
     vscr_error_t error_ctx;
     vscr_error_reset(&error_ctx);
@@ -471,6 +472,7 @@ VSCR_PUBLIC void
 vscr_ratchet_group_session_set_my_id(vscr_ratchet_group_session_t *self, vsc_data_t my_id) {
 
     VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(vsc_data_is_valid(my_id));
     VSCR_ASSERT(my_id.len == vscr_ratchet_common_PARTICIPANT_ID_LEN);
 
     memcpy(self->my_id, my_id.bytes, sizeof(self->my_id));
@@ -529,7 +531,6 @@ vscr_ratchet_group_session_check_session_consistency(
     VSCR_ASSERT(group_info->participants_count < vscr_ratchet_common_MAX_PARTICIPANTS_COUNT);
     VSCR_ASSERT(group_info->participants_count >= vscr_ratchet_common_MIN_PARTICIPANTS_COUNT);
 
-    // FIXME: If it's old session, prevent rewriting data
     if (self->my_epoch && self->my_epoch->epoch >= group_info->epoch + vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT) {
         return vscr_status_ERROR_EPOCH_MISMATCH;
     }
@@ -550,6 +551,11 @@ vscr_ratchet_group_session_check_session_consistency(
 
     bool all_participants_are_present = present_participants == self->participants_count + 1;
 
+    // I should be in participants list
+    if (!i_participate) {
+        return vscr_status_ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE;
+    }
+
     // Updating session
     if (self->is_initialized) {
         // Received message has another session id
@@ -558,7 +564,7 @@ vscr_ratchet_group_session_check_session_consistency(
         }
 
         // Adding members or starting new session
-        if (!self->my_epoch || self->my_epoch->epoch == group_info->epoch) {
+        if (self->my_epoch->epoch == group_info->epoch) {
             if (self->participants_count >= group_info->participants_count) {
                 return vscr_status_ERROR_BAD_MESSAGE_TYPE;
             }
@@ -566,13 +572,6 @@ vscr_ratchet_group_session_check_session_consistency(
             if (!all_participants_are_present) {
                 return vscr_status_ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE;
             }
-        }
-    }
-    // New session
-    else {
-        // Is it's new session I should be in participants list
-        if (!i_participate) {
-            return vscr_status_ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE;
         }
     }
 
@@ -704,6 +703,7 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     VSCR_ASSERT(self->is_initialized);
     VSCR_ASSERT(self->is_my_id_set);
     VSCR_ASSERT(self->is_private_key_set);
+    VSCR_ASSERT(vsc_data_is_valid(plain_text));
 
     if (plain_text.len > vscr_ratchet_common_MAX_PLAIN_TEXT_LEN) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_EXCEEDED_MAX_PLAIN_TEXT_LEN);
@@ -734,28 +734,15 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     }
     vscr_ratchet_keys_advance_chain_key(self->my_epoch->chain_key);
 
-    size_t size = vscr_ratchet_padding_padded_len(plain_text.len);
-    vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
-    vsc_buffer_make_secure(temp);
-
-    memcpy(vsc_buffer_unused_bytes(temp), plain_text.bytes, plain_text.len);
-    vsc_buffer_inc_used(temp, plain_text.len);
-
-    status = vscr_ratchet_padding_add_padding(self->padding, temp);
-
-    if (status != vscr_status_SUCCESS) {
-        goto err;
-    }
-
-    regular_message->cipher_text.arg =
-            vsc_buffer_new_with_capacity(vscr_ratchet_cipher_encrypt_len(self->cipher, vsc_buffer_len(temp)));
+    regular_message->cipher_text.arg = vsc_buffer_new_with_capacity(
+            vscr_ratchet_cipher_encrypt_len(self->cipher, vscr_ratchet_padding_padded_len(plain_text.len)));
 
     pb_ostream_t ostream = pb_ostream_from_buffer(regular_message->header.bytes, sizeof(regular_message->header.bytes));
 
     VSCR_ASSERT(pb_encode(&ostream, RegularGroupMessageHeader_fields, msg->header_pb));
     regular_message->header.size = ostream.bytes_written;
 
-    status = vscr_ratchet_cipher_encrypt(self->cipher, message_key->key, vsc_buffer_data(temp),
+    status = vscr_ratchet_cipher_pad_then_encrypt(self->cipher, self->padding, plain_text, message_key,
             vsc_data(regular_message->header.bytes, regular_message->header.size), regular_message->cipher_text.arg);
 
     if (status != vscr_status_SUCCESS) {
@@ -772,8 +759,6 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     }
 
 err:
-    vsc_buffer_destroy(&temp);
-
     if (status != vscr_status_SUCCESS) {
         VSCR_ERROR_SAFE_UPDATE(error, status);
         vscr_ratchet_group_message_destroy(&msg);
@@ -831,7 +816,7 @@ vscr_ratchet_group_session_decrypt(
 
     vscr_ratchet_group_participant_data_t *participant = self->participants[sender];
 
-    VSCR_ASSERT(participant);
+    VSCR_ASSERT_PTR(participant);
 
     int ed_status = ed25519_verify(group_message->signature, participant->pub_key,
             vsc_buffer_bytes(group_message->cipher_text.arg), vsc_buffer_len(group_message->cipher_text.arg));
@@ -840,14 +825,14 @@ vscr_ratchet_group_session_decrypt(
         return ed_status == 1 ? vscr_status_ERROR_ED25519 : vscr_status_ERROR_INVALID_SIGNATURE;
     }
 
-    vscr_ratchet_group_participant_epoch_t *epoch =
-            vscr_ratchet_group_participant_data_find_epoch(participant, header->epoch);
-
     // Check epoch is out of range
     if (self->my_epoch->epoch < header->epoch ||
             self->my_epoch->epoch >= header->epoch + vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT) {
         return vscr_status_ERROR_EPOCH_NOT_FOUND;
     }
+
+    vscr_ratchet_group_participant_epoch_t *epoch =
+            vscr_ratchet_group_participant_data_find_epoch(participant, header->epoch);
 
     // New message
     if (epoch && epoch->chain_key && epoch->chain_key->index <= header->counter) {
@@ -870,25 +855,12 @@ vscr_ratchet_group_session_decrypt(
 
         vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(new_chain_key);
 
-        size_t size = vscr_ratchet_cipher_decrypt_len(self->cipher, vsc_buffer_len(group_message->cipher_text.arg));
-        vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
-        vsc_buffer_make_secure(temp);
-
-        vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher, message_key->key,
-                vsc_buffer_data(group_message->cipher_text.arg),
-                vsc_data(group_message->header.bytes, group_message->header.size), temp);
+        vscr_status_t result = vscr_ratchet_cipher_decrypt_then_remove_pad(self->cipher,
+                vsc_buffer_data(group_message->cipher_text.arg), message_key,
+                vsc_data(group_message->header.bytes, group_message->header.size), plain_text);
 
         vscr_ratchet_message_key_destroy(&message_key);
         vscr_ratchet_chain_key_destroy(&new_chain_key);
-
-        if (result != vscr_status_SUCCESS) {
-            vsc_buffer_destroy(&temp);
-            return result;
-        }
-
-        result = vscr_ratchet_padding_remove_padding(vsc_buffer_data(temp), plain_text);
-
-        vsc_buffer_destroy(&temp);
 
         if (result != vscr_status_SUCCESS) {
             return result;
@@ -935,24 +907,15 @@ vscr_ratchet_group_session_decrypt(
         if (!message_key) {
             return vscr_status_ERROR_SKIPPED_MESSAGE_MISSING;
         } else {
-            size_t size = vscr_ratchet_cipher_decrypt_len(self->cipher, vsc_buffer_len(group_message->cipher_text.arg));
-            vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
-            vsc_buffer_make_secure(temp);
-
-            vscr_status_t result = vscr_ratchet_cipher_decrypt(self->cipher, message_key->key,
-                    vsc_buffer_data(group_message->cipher_text.arg),
-                    vsc_data(group_message->header.bytes, group_message->header.size), temp);
+            vscr_status_t result = vscr_ratchet_cipher_decrypt_then_remove_pad(self->cipher,
+                    vsc_buffer_data(group_message->cipher_text.arg), message_key,
+                    vsc_data(group_message->header.bytes, group_message->header.size), plain_text);
 
             if (result != vscr_status_SUCCESS) {
-                vsc_buffer_destroy(&temp);
                 return result;
             }
 
             vscr_ratchet_skipped_messages_root_node_delete_key(epoch->skipped_messages, message_key);
-
-            result = vscr_ratchet_padding_remove_padding(vsc_buffer_data(temp), plain_text);
-
-            vsc_buffer_destroy(&temp);
 
             return result;
         }
@@ -1032,7 +995,6 @@ vscr_ratchet_group_session_serialize(const vscr_ratchet_group_session_t *self, v
 //  NOTE: Deserialized session needs dependencies to be set.
 //  You should set separately:
 //      - rng
-//      - my id
 //      - my private key
 //
 VSCR_PUBLIC vscr_ratchet_group_session_t *

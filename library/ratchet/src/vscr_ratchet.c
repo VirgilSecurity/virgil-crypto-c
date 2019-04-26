@@ -512,16 +512,11 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
         }
     }
 
-    if (self->sender_chain->chain_key.index == UINT32_MAX) {
-        result = vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_SENDER_CHAIN;
-        goto err1;
-    }
-
     vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(&self->sender_chain->chain_key);
 
     if (self->sender_chain->chain_key.index == UINT32_MAX) {
-        result = vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN;
-        goto err2;
+        result = vscr_status_ERROR_TOO_MANY_MESSAGES_FOR_SENDER_CHAIN;
+        goto err1;
     }
 
     vscr_ratchet_keys_advance_chain_key(&self->sender_chain->chain_key);
@@ -540,14 +535,9 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
     result = vscr_ratchet_cipher_pad_then_encrypt(self->cipher, self->padding, plain_text, message_key,
             vsc_data(regular_message->header.bytes, regular_message->header.size), regular_message->cipher_text.arg);
 
-    if (result != vscr_status_SUCCESS) {
-        goto err2;
-    }
-
-err2:
+err1:
     vscr_ratchet_message_key_destroy(&message_key);
 
-err1:
     return result;
 }
 
