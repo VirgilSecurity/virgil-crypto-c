@@ -1091,7 +1091,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
                     my.prepare_result = format_left("\
                         jbyteArray ret = NULL;
                         if (proxyResult.len > 0) {
-                            (*jenv)->NewByteArray(jenv, proxyResult.len);
+                            ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
                             (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
                         }
                     ")
@@ -1099,6 +1099,9 @@ function java_create_c_class_method_call (class, method, java_class, java_method
             elsif string_in (my.c_return_type, "jobject")
 
                 if is_true (my.java_method->java_return.is_class)
+                    if defined (my.c_method.c_return) & string_in (my.c_method.c_return.access, "readwrite, readonly")
+                        my.proxy_shallow_copy_call = java_derive_c_method_shallow_copy ()
+                    endif
                     my.prepare_result = format_left("\
                         jclass result_cls = (*jenv)->FindClass(jenv, \"$(my.java_return_class_path:)/$(my.java_return_class_name:)\");
                         if (NULL == result_cls) {
@@ -1108,6 +1111,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
                         if (NULL == result_methodID) {
                             .(c_class_assert_macros_assert)(\"Class $(my.java_return_class_name:) has no constructor with C context parameter.\");
                         }
+                        $(my.proxy_shallow_copy_call?:)
                         jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
                     ")
                 elsif is_true (my.java_method->java_return.is_interface)
