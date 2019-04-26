@@ -436,6 +436,21 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
         break;
     }
 
+    case vscf_alg_id_SECP256R1: {
+        VSCF_ASSERT_PTR(self->ecies);
+        vscf_secp256r1_private_key_t *private_key = vscf_secp256r1_private_key_new();
+        key = vscf_secp256r1_private_key_impl(private_key);
+        vscf_secp256r1_private_key_use_random(private_key, self->random);
+
+        status = vscf_secp256r1_private_key_setup_defaults(private_key);
+        if (status != vscf_status_SUCCESS) {
+            break;
+        }
+
+        status = vscf_secp256r1_private_key_generate_key(private_key);
+        break;
+    }
+
     default:
         VSCF_ASSERT(0 && "Unhandled algorithm identifier.");
         status = vscf_status_ERROR_KEY_GENERATION_FAILED;
