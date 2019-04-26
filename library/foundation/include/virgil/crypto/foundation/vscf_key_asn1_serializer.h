@@ -47,23 +47,23 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'key default deserializer' implementation.
+//  This module contains 'key asn1 serializer' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_KEY_DEFAULT_DESERIALIZER_H_INCLUDED
-#define VSCF_KEY_DEFAULT_DESERIALIZER_H_INCLUDED
+#ifndef VSCF_KEY_ASN1_SERIALIZER_H_INCLUDED
+#define VSCF_KEY_ASN1_SERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_error.h"
-#include "vscf_raw_key.h"
 #include "vscf_impl.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -84,75 +84,138 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_key_default_deserializer_t vscf_key_default_deserializer_t;
+typedef struct vscf_key_asn1_serializer_t vscf_key_asn1_serializer_t;
 
 //
-//  Return size of 'vscf_key_default_deserializer_t' type.
+//  Return size of 'vscf_key_asn1_serializer_t' type.
 //
 VSCF_PUBLIC size_t
-vscf_key_default_deserializer_impl_size(void);
+vscf_key_asn1_serializer_impl_size(void);
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_default_deserializer_impl(vscf_key_default_deserializer_t *self);
+vscf_key_asn1_serializer_impl(vscf_key_asn1_serializer_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_key_default_deserializer_init(vscf_key_default_deserializer_t *self);
+vscf_key_asn1_serializer_init(vscf_key_asn1_serializer_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_key_default_deserializer_init()'.
+//  This is a reverse action of the function 'vscf_key_asn1_serializer_init()'.
 //
 VSCF_PUBLIC void
-vscf_key_default_deserializer_cleanup(vscf_key_default_deserializer_t *self);
+vscf_key_asn1_serializer_cleanup(vscf_key_asn1_serializer_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_key_default_deserializer_t *
-vscf_key_default_deserializer_new(void);
+VSCF_PUBLIC vscf_key_asn1_serializer_t *
+vscf_key_asn1_serializer_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_key_default_deserializer_new()'.
+//  This is a reverse action of the function 'vscf_key_asn1_serializer_new()'.
 //
 VSCF_PUBLIC void
-vscf_key_default_deserializer_delete(vscf_key_default_deserializer_t *self);
+vscf_key_asn1_serializer_delete(vscf_key_asn1_serializer_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_key_default_deserializer_new()'.
+//  This is a reverse action of the function 'vscf_key_asn1_serializer_new()'.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_key_default_deserializer_destroy(vscf_key_default_deserializer_t **self_ref);
+vscf_key_asn1_serializer_destroy(vscf_key_asn1_serializer_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_key_default_deserializer_t *
-vscf_key_default_deserializer_shallow_copy(vscf_key_default_deserializer_t *self);
+VSCF_PUBLIC vscf_key_asn1_serializer_t *
+vscf_key_asn1_serializer_shallow_copy(vscf_key_asn1_serializer_t *self);
 
 //
-//  Deserialize given public key as an interchangeable format to the object.
+//  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
-VSCF_PUBLIC vscf_raw_key_t *
-vscf_key_default_deserializer_deserialize_public_key(vscf_key_default_deserializer_t *self, vsc_data_t public_key_data,
+VSCF_PUBLIC void
+vscf_key_asn1_serializer_use_asn1_writer(vscf_key_asn1_serializer_t *self, vscf_impl_t *asn1_writer);
+
+//
+//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_serializer_take_asn1_writer(vscf_key_asn1_serializer_t *self, vscf_impl_t *asn1_writer);
+
+//
+//  Release dependency to the interface 'asn1 writer'.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_serializer_release_asn1_writer(vscf_key_asn1_serializer_t *self);
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_serializer_setup_defaults(vscf_key_asn1_serializer_t *self);
+
+//
+//  Serialize Public Key by using internal ASN.1 writer.
+//  Note, that caller code is responsible to reset ASN.1 writer with
+//  an output buffer.
+//
+VSCF_PUBLIC size_t
+vscf_key_asn1_serializer_serialize_public_key_inplace(vscf_key_asn1_serializer_t *self, const vscf_impl_t *public_key,
         vscf_error_t *error);
 
 //
-//  Deserialize given private key as an interchangeable format to the object.
+//  Serialize Private Key by using internal ASN.1 writer.
+//  Note, that caller code is responsible to reset ASN.1 writer with
+//  an output buffer.
 //
-VSCF_PUBLIC vscf_raw_key_t *
-vscf_key_default_deserializer_deserialize_private_key(vscf_key_default_deserializer_t *self,
-        vsc_data_t private_key_data, vscf_error_t *error);
+VSCF_PUBLIC size_t
+vscf_key_asn1_serializer_serialize_private_key_inplace(vscf_key_asn1_serializer_t *self, const vscf_impl_t *private_key,
+        vscf_error_t *error);
+
+//
+//  Calculate buffer size enough to hold serialized public key.
+//
+//  Precondition: public key must be exportable.
+//
+VSCF_PUBLIC size_t
+vscf_key_asn1_serializer_serialized_public_key_len(vscf_key_asn1_serializer_t *self, const vscf_impl_t *public_key);
+
+//
+//  Serialize given public key to an interchangeable format.
+//
+//  Precondition: public key must be exportable.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_key_asn1_serializer_serialize_public_key(vscf_key_asn1_serializer_t *self, const vscf_impl_t *public_key,
+        vsc_buffer_t *out) VSCF_NODISCARD;
+
+//
+//  Calculate buffer size enough to hold serialized private key.
+//
+//  Precondition: private key must be exportable.
+//
+VSCF_PUBLIC size_t
+vscf_key_asn1_serializer_serialized_private_key_len(vscf_key_asn1_serializer_t *self, const vscf_impl_t *private_key);
+
+//
+//  Serialize given private key to an interchangeable format.
+//
+//  Precondition: private key must be exportable.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_key_asn1_serializer_serialize_private_key(vscf_key_asn1_serializer_t *self, const vscf_impl_t *private_key,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------
@@ -168,5 +231,5 @@ vscf_key_default_deserializer_deserialize_private_key(vscf_key_default_deseriali
 
 
 //  @footer
-#endif // VSCF_KEY_DEFAULT_DESERIALIZER_H_INCLUDED
+#endif // VSCF_KEY_ASN1_SERIALIZER_H_INCLUDED
 //  @end

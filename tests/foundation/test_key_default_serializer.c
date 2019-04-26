@@ -45,7 +45,7 @@
 #include "test_data_rsa.h"
 #include "vscf_asn1rd.h"
 #include "vscf_asn1wr.h"
-#include "vscf_key_default_serializer.h"
+#include "vscf_key_asn1_serializer.h"
 #include "vscf_rsa_private_key.h"
 #include "vscf_rsa_public_key.h"
 
@@ -56,20 +56,20 @@
 void
 test__serialized_public_key_len__rsa2048__greater_then_450(void) {
 #if VSCF_RSA_PUBLIC_KEY
-    vscf_key_default_serializer_t *key_serializer = vscf_key_default_serializer_new();
+    vscf_key_asn1_serializer_t *key_serializer = vscf_key_asn1_serializer_new();
 
     vscf_rsa_public_key_t *rsa_public_key = vscf_rsa_public_key_new();
     vscf_rsa_public_key_take_asn1rd(rsa_public_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
     TEST_ASSERT_EQUAL(
             vscf_status_SUCCESS, vscf_rsa_public_key_import_public_key(rsa_public_key, test_rsa_2048_PUBLIC_KEY_PKCS1));
 
-    size_t len = vscf_key_default_serializer_serialized_public_key_len(
+    size_t len = vscf_key_asn1_serializer_serialized_public_key_len(
             key_serializer, vscf_rsa_public_key_impl(rsa_public_key));
 
     TEST_ASSERT_GREATER_OR_EQUAL(450, len);
 
     vscf_rsa_public_key_destroy(&rsa_public_key);
-    vscf_key_default_serializer_destroy(&key_serializer);
+    vscf_key_asn1_serializer_destroy(&key_serializer);
 #else
     TEST_IGNORE_MESSAGE("VSCF_RSA_PUBLIC_KEY is disabled");
 #endif
@@ -78,7 +78,7 @@ test__serialized_public_key_len__rsa2048__greater_then_450(void) {
 void
 test__serialize_public_key__rsa2048__equals_to_rsa_2048_public_key_key_serializer_pem(void) {
 #if VSCF_RSA_PUBLIC_KEY
-    vscf_key_default_serializer_t *key_serializer = vscf_key_default_serializer_new();
+    vscf_key_asn1_serializer_t *key_serializer = vscf_key_asn1_serializer_new();
 
     vscf_rsa_public_key_t *rsa_public_key = vscf_rsa_public_key_new();
     vscf_rsa_public_key_take_asn1rd(rsa_public_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
@@ -86,18 +86,18 @@ test__serialize_public_key__rsa2048__equals_to_rsa_2048_public_key_key_serialize
     TEST_ASSERT_EQUAL(
             vscf_status_SUCCESS, vscf_rsa_public_key_import_public_key(rsa_public_key, test_rsa_2048_PUBLIC_KEY_PKCS1));
 
-    size_t len = vscf_key_default_serializer_serialized_public_key_len(
+    size_t len = vscf_key_asn1_serializer_serialized_public_key_len(
             key_serializer, vscf_rsa_public_key_impl(rsa_public_key));
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_default_serializer_serialize_public_key(
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_asn1_serializer_serialize_public_key(
                                                    key_serializer, vscf_rsa_public_key_impl(rsa_public_key), out));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_rsa_2048_PUBLIC_KEY_PKCS8_PEM, out);
 
     vsc_buffer_destroy(&out);
     vscf_rsa_public_key_destroy(&rsa_public_key);
-    vscf_key_default_serializer_destroy(&key_serializer);
+    vscf_key_asn1_serializer_destroy(&key_serializer);
 #else
     TEST_IGNORE_MESSAGE("VSCF_RSA_PUBLIC_KEY is disabled");
 #endif
@@ -106,20 +106,20 @@ test__serialize_public_key__rsa2048__equals_to_rsa_2048_public_key_key_serialize
 void
 test__serialized_private_key_len__rsa2048__greater_then_1704(void) {
 #if VSCF_RSA_PRIVATE_KEY
-    vscf_key_default_serializer_t *key_serializer = vscf_key_default_serializer_new();
+    vscf_key_asn1_serializer_t *key_serializer = vscf_key_asn1_serializer_new();
 
     vscf_rsa_private_key_t *rsa_private_key = vscf_rsa_private_key_new();
     vscf_rsa_private_key_take_asn1rd(rsa_private_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
             vscf_rsa_private_key_import_private_key(rsa_private_key, test_rsa_2048_PRIVATE_KEY_PKCS1));
 
-    size_t len = vscf_key_default_serializer_serialized_private_key_len(
+    size_t len = vscf_key_asn1_serializer_serialized_private_key_len(
             key_serializer, vscf_rsa_private_key_impl(rsa_private_key));
 
     TEST_ASSERT_GREATER_OR_EQUAL(1704, len);
 
     vscf_rsa_private_key_destroy(&rsa_private_key);
-    vscf_key_default_serializer_destroy(&key_serializer);
+    vscf_key_asn1_serializer_destroy(&key_serializer);
 #else
     TEST_IGNORE_MESSAGE("VSCF_RSA_PRIVATE_KEY is disabled");
 #endif
@@ -128,7 +128,7 @@ test__serialized_private_key_len__rsa2048__greater_then_1704(void) {
 void
 test__serialize_private_key__rsa2048__equals_to_rsa_2048_private_key_key_serializer_pem(void) {
 #if VSCF_RSA_PRIVATE_KEY
-    vscf_key_default_serializer_t *key_serializer = vscf_key_default_serializer_new();
+    vscf_key_asn1_serializer_t *key_serializer = vscf_key_asn1_serializer_new();
 
     vscf_rsa_private_key_t *rsa_private_key = vscf_rsa_private_key_new();
     vscf_rsa_private_key_take_asn1rd(rsa_private_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
@@ -136,18 +136,18 @@ test__serialize_private_key__rsa2048__equals_to_rsa_2048_private_key_key_seriali
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
             vscf_rsa_private_key_import_private_key(rsa_private_key, test_rsa_2048_PRIVATE_KEY_PKCS1));
 
-    size_t len = vscf_key_default_serializer_serialized_private_key_len(
+    size_t len = vscf_key_asn1_serializer_serialized_private_key_len(
             key_serializer, vscf_rsa_private_key_impl(rsa_private_key));
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_default_serializer_serialize_private_key(
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_asn1_serializer_serialize_private_key(
                                                    key_serializer, vscf_rsa_private_key_impl(rsa_private_key), out));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_rsa_2048_PRIVATE_KEY_PKCS8_PEM, out);
 
     vsc_buffer_destroy(&out);
     vscf_rsa_private_key_destroy(&rsa_private_key);
-    vscf_key_default_serializer_destroy(&key_serializer);
+    vscf_key_asn1_serializer_destroy(&key_serializer);
 #else
     TEST_IGNORE_MESSAGE("VSCF_RSA_PRIVATE_KEY is disabled");
 #endif

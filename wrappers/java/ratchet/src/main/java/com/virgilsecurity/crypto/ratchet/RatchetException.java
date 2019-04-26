@@ -114,5 +114,72 @@ public class RatchetException extends RuntimeException {
     public int getStatusCode() {
         return this.statusCode;
     }
+
+    public String getMessage() {
+        switch (this.statusCode) {
+        case SUCCESS:
+            return "No errors was occurred.";
+        case ERROR_PROTOBUF_DECODE:
+            return "Error during protobuf deserialization.";
+        case ERROR_BAD_MESSAGE_TYPE:
+            return "Bad message type.";
+        case ERROR_AES:
+            return "AES error.";
+        case ERROR_RNG_FAILED:
+            return "RNG failed.";
+        case ERROR_CURVE25519:
+            return "Curve25519 error.";
+        case ERROR_ED25519:
+            return "Curve25519 error.";
+        case ERROR_KEY_DESERIALIZATION_FAILED:
+            return "Key deserialization failed.";
+        case ERROR_INVALID_KEY_TYPE:
+            return "Invalid key type.";
+        case ERROR_IDENTITY_KEY_DOESNT_MATCH:
+            return "Identity key doesn't match.";
+        case ERROR_MESSAGE_ALREADY_DECRYPTED:
+            return "Message already decrypted.";
+        case ERROR_TOO_MANY_LOST_MESSAGES:
+            return "Too many lost messages.";
+        case ERROR_SENDER_CHAIN_MISSING:
+            return "Sender chain missing.";
+        case ERROR_SKIPPED_MESSAGE_MISSING:
+            return "Skipped message missing.";
+        case ERROR_SESSION_IS_NOT_INITIALIZED:
+            return "Session is not initialized.";
+        case ERROR_EXCEEDED_MAX_PLAIN_TEXT_LEN:
+            return "Exceeded max plain text len.";
+        case ERROR_TOO_MANY_MESSAGES_FOR_SENDER_CHAIN:
+            return "Too many messages for sender chain.";
+        case ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN:
+            return "Too many messages for receiver chain.";
+        case ERROR_INVALID_PADDING:
+            return "Invalid padding.";
+        case ERROR_TOO_MANY_PARTICIPANTS:
+            return "Too many participants.";
+        case ERROR_TOO_FEW_PARTICIPANTS:
+            return "Too few participants.";
+        case ERROR_SENDER_NOT_FOUND:
+            return "Sender not found.";
+        case ERROR_CANNOT_DECRYPT_OWN_MESSAGES:
+            return "Cannot decrypt own messages.";
+        case ERROR_DUPLICATE_ID:
+            return "Duplicate id.";
+        case ERROR_INVALID_SIGNATURE:
+            return "Invalid signature.";
+        case ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE:
+            return "User is not present in group message.";
+        case ERROR_EPOCH_MISMATCH:
+            return "Epoch mismatch.";
+        case ERROR_PARTICIPANT_NOT_FOUND:
+            return "Participant not found.";
+        case ERROR_EPOCH_NOT_FOUND:
+            return "Epoch not found.";
+        case ERROR_SESSION_ID_MISMATCH:
+            return "Session id mismatch.";
+        default:
+            return "Unknown error";
+        }
+    }
 }
 

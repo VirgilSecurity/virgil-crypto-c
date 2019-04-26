@@ -47,15 +47,21 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains logic for interface/implementation architecture.
-//  Do not use this module in any part of the code.
+//  Types of the 'key asn1 serializer' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_KEY_DEFAULT_SERIALIZER_INTERNAL_H_INCLUDED
-#define VSCF_KEY_DEFAULT_SERIALIZER_INTERNAL_H_INCLUDED
+#ifndef VSCF_KEY_ASN1_SERIALIZER_DEFS_H_INCLUDED
+#define VSCF_KEY_ASN1_SERIALIZER_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_key_default_serializer.h"
+#include "vscf_impl_private.h"
+#include "vscf_key_asn1_serializer.h"
+#include "vscf_impl.h"
+#include "vscf_sec1_serializer.h"
+#include "vscf_pkcs8_serializer.h"
 
 // clang-format on
 //  @end
@@ -73,20 +79,30 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_key_default_serializer_init() is called.
-//  Note, that context is already zeroed.
+//  Handles implementation details.
 //
-VSCF_PRIVATE void
-vscf_key_default_serializer_init_ctx(vscf_key_default_serializer_t *self);
-
-//
-//  Release resources of the implementation specific context.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-VSCF_PRIVATE void
-vscf_key_default_serializer_cleanup_ctx(vscf_key_default_serializer_t *self);
+struct vscf_key_asn1_serializer_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the interface 'asn1 writer'.
+    //
+    vscf_impl_t *asn1_writer;
+    //
+    //  Implementation specific context.
+    //
+    vscf_sec1_serializer_t *sec1_serializer;
+    //
+    //  Implementation specific context.
+    //
+    vscf_pkcs8_serializer_t *pkcs8_serializer;
+};
 
 
 // --------------------------------------------------------------------------
@@ -102,5 +118,5 @@ vscf_key_default_serializer_cleanup_ctx(vscf_key_default_serializer_t *self);
 
 
 //  @footer
-#endif // VSCF_KEY_DEFAULT_SERIALIZER_INTERNAL_H_INCLUDED
+#endif // VSCF_KEY_ASN1_SERIALIZER_DEFS_H_INCLUDED
 //  @end

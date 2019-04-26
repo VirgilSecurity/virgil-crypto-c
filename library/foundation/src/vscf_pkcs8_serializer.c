@@ -53,12 +53,12 @@
 #include "vscf_pkcs8_serializer.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_alg.h"
 #include "vscf_public_key.h"
 #include "vscf_private_key.h"
+#include "vscf_asn1_tag.h"
 #include "vscf_oid.h"
 #include "vscf_asn1wr.h"
-#include "vscf_asn1_tag.h"
-#include "vscf_alg.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_pkcs8_serializer_defs.h"
 #include "vscf_pkcs8_serializer_internal.h"
@@ -200,14 +200,31 @@ vscf_pkcs8_serializer_serialize_private_key_inplace(
     vsc_buffer_t *exportedKey = vsc_buffer_new_with_capacity(vscf_private_key_exported_private_key_len(private_key));
     vscf_status_t status = vscf_private_key_export_private_key(private_key, exportedKey);
 
-    len += vscf_asn1_writer_write_octet_str(self->asn1_writer, vsc_buffer_data(exportedKey));
-
-    vsc_buffer_destroy(&exportedKey);
-
     if (status != vscf_status_SUCCESS) {
+        vsc_buffer_destroy(&exportedKey);
         VSCF_ERROR_SAFE_UPDATE(error, status);
         return 0;
     }
+
+    size_t key_written_len = vscf_asn1_writer_write_octet_str(self->asn1_writer, vsc_buffer_data(exportedKey));
+    vsc_buffer_destroy(&exportedKey);
+
+    vscf_alg_id_t alg_id = vscf_alg_alg_id(private_key);
+    switch (alg_id) {
+    case vscf_alg_id_ED25519:
+    case vscf_alg_id_CURVE25519:
+        //
+        //  According to RFC 8410
+        //
+        //  CurvePrivateKey ::= OCTET STRING
+        //
+        key_written_len += vscf_asn1_writer_write_len(self->asn1_writer, key_written_len);
+        key_written_len += vscf_asn1_writer_write_tag(self->asn1_writer, vscf_asn1_tag_OCTET_STRING);
+    default:
+        break;
+    }
+
+    len += key_written_len;
 
     //
     //  Write algorithm

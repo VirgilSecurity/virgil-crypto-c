@@ -567,10 +567,8 @@ import VSCFoundation
             return Pkcs8Serializer(take: c_ctx)
         case vscf_impl_tag_SEC1_SERIALIZER:
             return Sec1Serializer(take: c_ctx)
-        case vscf_impl_tag_KEY_DER_SERIALIZER:
-            return KeyDerSerializer(take: c_ctx)
-        case vscf_impl_tag_KEY_DEFAULT_SERIALIZER:
-            return KeyDefaultSerializer(take: c_ctx)
+        case vscf_impl_tag_KEY_ASN1_SERIALIZER:
+            return KeyAsn1Serializer(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -584,10 +582,8 @@ import VSCFoundation
 
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
-        case vscf_impl_tag_KEY_DER_DESERIALIZER:
-            return KeyDerDeserializer(take: c_ctx)
-        case vscf_impl_tag_KEY_DEFAULT_DESERIALIZER:
-            return KeyDefaultDeserializer(take: c_ctx)
+        case vscf_impl_tag_KEY_ASN1_DESERIALIZER:
+            return KeyAsn1Deserializer(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }

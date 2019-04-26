@@ -286,11 +286,14 @@ vscf_secp256r1_public_key_verify_hash(
     VSCF_UNUSED(hash_id);
 
     mbedtls_ecdsa_context ctx;
+
     mbedtls_ecdsa_init(&ctx);
-    ctx.grp = self->ecp_group;
-    ctx.Q = self->ecp;
+    mbedtls_ecp_group_copy(&ctx.grp, &self->ecp_group);
+    mbedtls_ecp_copy(&ctx.Q, &self->ecp);
 
     int status = mbedtls_ecdsa_read_signature(&ctx, hash_digest.bytes, hash_digest.len, signature.bytes, signature.len);
+
+    mbedtls_ecdsa_free(&ctx);
 
     return 0 == status;
 }

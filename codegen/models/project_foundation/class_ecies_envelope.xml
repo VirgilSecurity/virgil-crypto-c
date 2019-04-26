@@ -56,8 +56,8 @@
     <require impl="hmac"/>
     <require impl="asn1rd"/>
     <require impl="asn1wr"/>
-    <require impl="key der serializer"/>
-    <require impl="key der deserializer"/>
+    <require impl="key asn1 serializer"/>
+    <require impl="key asn1 deserializer"/>
     <require impl="alg info der serializer"/>
     <require impl="alg info der deserializer"/>
     <require impl="hash based alg info"/>

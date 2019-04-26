@@ -6,12 +6,12 @@
 
         <interface name="key serializer"/>
 
+        <require interface="alg"/>
         <require interface="public key"/>
         <require interface="private key"/>
+        <require enum="asn1 tag"/>
         <require class="oid"/>
         <require class="asn1wr"/>
-        <require enum="asn1 tag"/>
-        <require interface="alg"/>
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
 
@@ -98,10 +98,11 @@
     </implementation>
 
 
-    <implementation name="key der serializer">
-        Implements key serialization to the default (DER) format:
+    <implementation name="key asn1 serializer">
+        Implements key serialization in the ASN.1 format (DER / PEM):
             - SEC1 - for EC private keys;
             - PKCS#8 - for other keys.
+
 
         <interface name="key serializer"/>
 
@@ -146,8 +147,8 @@
     </implementation>
 
 
-    <implementation name="key der deserializer">
-        Implements PKCS#8 and SEC1 key deserialization from DER format.
+    <implementation name="key asn1 deserializer">
+        Implements PKCS#8 and SEC1 key deserialization from DER / PEM format.
 
         <interface name="key deserializer"/>
 
@@ -156,9 +157,11 @@
         <require interface="public key"/>
         <require interface="private key"/>
         <require impl="alg info der deserializer"/>
+        <require enum="asn1 tag"/>
         <require class="oid"/>
         <require class="asn1rd"/>
-        <require enum="asn1 tag"/>
+        <require class="pem"/>
+        <require class="pem title"/>
 
         <property name="alg info der deserializer" impl="alg info der deserializer"/>
 
@@ -207,43 +210,5 @@
 
             <return class="raw key" access="disown"/>
         </method>
-    </implementation>
-
-
-    <implementation name="key default serializer">
-        Implements key serialization to the default (DER) format:
-            - SEC1 - for EC private keys;
-            - PKCS#8 - for other keys.
-
-        <interface name="key serializer"/>
-
-        <require interface="alg"/>
-        <require interface="asn1 writer"/>
-        <require interface="public key"/>
-        <require interface="private key"/>
-        <require impl="asn1wr"/>
-        <require impl="key der serializer"/>
-
-        <property name="key der serializer" impl="key der serializer"/>
-    </implementation>
-
-
-    <implementation name="key default deserializer">
-        Implements key deserialization from all known (supported) formats:
-            - SEC1 - PEM or DER encoding;
-            - PKCS#8 - PEM or DER encoding.
-
-        <interface name="key deserializer"/>
-
-        <require interface="asn1 reader"/>
-        <require interface="public key"/>
-        <require interface="private key"/>
-        <require class="pem"/>
-        <require class="pem title"/>
-        <require impl="asn1rd"/>
-        <require impl="key der deserializer"/>
-
-        <property name="asn1 reader" interface="asn1 reader"/>
-        <property name="key der deserializer" impl="key der deserializer"/>
     </implementation>
 </implementor>

@@ -248,8 +248,8 @@ vscf_iotelic_public_key_key_bitlen(const vscf_iotelic_public_key_t *self) {
 //  Verify data with given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_iotelic_public_key_verify_hash(
-        vscf_iotelic_public_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id, vsc_data_t signature) {
+vscf_iotelic_public_key_verify_hash(vscf_iotelic_public_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id,
+        vsc_data_t signature) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->public_key);

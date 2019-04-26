@@ -342,6 +342,21 @@ function quote_string (str)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Make signe-line string from a multiline string.
+# ---------------------------------------------------------------------------
+function string_to_singleline (str)
+    check_argument (my, "str")
+
+    while regexp.match ("^(.*$(terminator))", my.str, my.raw_line)
+        regexp.match ("^(.*)$(terminator)", my.str, my.replacement)
+        my.replacement = string_trim (my.replacement)
+        my.str = string.search_replace (my.str, my.raw_line, my.replacement)
+    endwhile
+
+    return string_trim (my.str)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Collapse spaces between words to 1 space in the code.
 #   Note, do not collapse spaces in macro formatting.
 #   Note, work for both single line and multiline strings.

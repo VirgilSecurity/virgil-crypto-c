@@ -1476,6 +1476,9 @@ function java_create_exception_module (enum, java_project, meta)
                 .type = "RuntimeException"
             endnew
 
+            my.message_code = format_left("\
+                switch (this.statusCode) {")
+
             for my.enum.constant
                 if defined(constant.value)
                     my.the_value = constant.value
@@ -1486,9 +1489,10 @@ function java_create_exception_module (enum, java_project, meta)
                 endif
                 my.last_value = my.the_value
 
+                my.constant_name = java_derive_constant_name (constant, my.java_project)
                 new java_field to java_class
                     . = java_format_description (constant) ?
-                    .name = java_derive_constant_name (constant, my.java_project)
+                    .name = my.constant_name
                     .type = java_derive_constant_type (constant, my.java_project)
                     .value = my.the_value
                     .access = "readonly"
@@ -1496,7 +1500,16 @@ function java_create_exception_module (enum, java_project, meta)
                     .static = "static"
                     .final = "final"
                 endnew
+                
+                my.case_result = string_to_singleline(constant.?"")
+                my.message_code += format_left("\
+                    case $(my.constant_name:):
+                        return \"$(my.case_result:)\";")
             endfor
+            my.message_code += format_left("\
+                default:
+                    return \"Unknown error\";
+                }")
 
             new java_field to java_class
                 . = java_format_description (constant) ?
@@ -1535,6 +1548,21 @@ function java_create_exception_module (enum, java_project, meta)
                     .access = "readonly"
                     .is_enum = "0"
                     .is_reference = "0"
+                endnew
+            endnew
+            
+            new java_method to java_class
+                . = ""
+                .name = java_derive_getter_name_str ("message")
+                .visibility = "public"
+                
+                new java_return to java_method
+                    .type = "String"
+                    .access = "readonly"
+                endnew
+
+                new java_code to java_method
+                    . = my.message_code
                 endnew
             endnew
         endnew

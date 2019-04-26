@@ -243,8 +243,8 @@ vscf_iotelic_private_key_signature_len(const vscf_iotelic_private_key_t *self) {
 //  Sign data given private key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_iotelic_private_key_sign_hash(
-        vscf_iotelic_private_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id, vsc_buffer_t *signature) {
+vscf_iotelic_private_key_sign_hash(vscf_iotelic_private_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id,
+        vsc_buffer_t *signature) {
 
     VSCF_ASSERT_PTR(self);
 
