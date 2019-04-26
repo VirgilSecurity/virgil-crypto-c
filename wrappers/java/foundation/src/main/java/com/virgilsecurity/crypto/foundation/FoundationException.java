@@ -120,5 +120,80 @@ public class FoundationException extends RuntimeException {
     public int getStatusCode() {
         return this.statusCode;
     }
+
+    public String getMessage() {
+        switch (this.statusCode) {
+        case SUCCESS:
+            return "No errors was occurred.";
+        case ERROR_BAD_ARGUMENTS:
+            return "This error should not be returned if assertions is enabled.";
+        case ERROR_UNINITIALIZED:
+            return "Can be used to define that not all context prerequisites are satisfied. Note, this error should not be returned if assertions is enabled.";
+        case ERROR_UNHANDLED_THIRDPARTY_ERROR:
+            return "Define that error code from one of third-party module was not handled. Note, this error should not be returned if assertions is enabled.";
+        case ERROR_SMALL_BUFFER:
+            return "Buffer capacity is not enough to hold result.";
+        case ERROR_UNSUPPORTED_ALGORITHM:
+            return "Unsupported algorithm.";
+        case ERROR_AUTH_FAILED:
+            return "Authentication failed during decryption.";
+        case ERROR_OUT_OF_DATA:
+            return "Attempt to read data out of buffer bounds.";
+        case ERROR_BAD_ASN1:
+            return "ASN.1 encoded data is corrupted.";
+        case ERROR_ASN1_LOSSY_TYPE_NARROWING:
+            return "Attempt to read ASN.1 type that is bigger then requested C type.";
+        case ERROR_BAD_PKCS1_PUBLIC_KEY:
+            return "ASN.1 representation of PKCS#1 public key is corrupted.";
+        case ERROR_BAD_PKCS1_PRIVATE_KEY:
+            return "ASN.1 representation of PKCS#1 private key is corrupted.";
+        case ERROR_BAD_PKCS8_PUBLIC_KEY:
+            return "ASN.1 representation of PKCS#8 public key is corrupted.";
+        case ERROR_BAD_PKCS8_PRIVATE_KEY:
+            return "ASN.1 representation of PKCS#8 private key is corrupted.";
+        case ERROR_BAD_ENCRYPTED_DATA:
+            return "Encrypted data is corrupted.";
+        case ERROR_RANDOM_FAILED:
+            return "Underlying random operation returns error.";
+        case ERROR_KEY_GENERATION_FAILED:
+            return "Generation of the private or secret key failed.";
+        case ERROR_ENTROPY_SOURCE_FAILED:
+            return "One of the entropy sources failed.";
+        case ERROR_RNG_REQUESTED_DATA_TOO_BIG:
+            return "Requested data to be generated is too big.";
+        case ERROR_BAD_BASE64:
+            return "Base64 encoded string contains invalid characters.";
+        case ERROR_BAD_PEM:
+            return "PEM data is corrupted.";
+        case ERROR_SHARED_KEY_EXCHANGE_FAILED:
+            return "Exchange key return zero.";
+        case ERROR_BAD_ED25519_PUBLIC_KEY:
+            return "Ed25519 public key is corrupted.";
+        case ERROR_BAD_ED25519_PRIVATE_KEY:
+            return "Ed25519 private key is corrupted.";
+        case ERROR_BAD_CURVE25519_PUBLIC_KEY:
+            return "CURVE25519 public key is corrupted.";
+        case ERROR_BAD_CURVE25519_PRIVATE_KEY:
+            return "CURVE25519 private key is corrupted.";
+        case ERROR_NO_MESSAGE_INFO:
+            return "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.";
+        case ERROR_BAD_MESSAGE_INFO:
+            return "Message info is corrupted.";
+        case ERROR_KEY_RECIPIENT_IS_NOT_FOUND:
+            return "Recipient defined with id is not found within message info during data decryption.";
+        case ERROR_KEY_RECIPIENT_PRIVATE_KEY_IS_WRONG:
+            return "Content encryption key can not be decrypted with a given private key.";
+        case ERROR_PASSWORD_RECIPIENT_PASSWORD_IS_WRONG:
+            return "Content encryption key can not be decrypted with a given password.";
+        case ERROR_MESSAGE_INFO_CUSTOM_PARAM_NOT_FOUND:
+            return "Custom parameter with a given key is not found within message info.";
+        case ERROR_MESSAGE_INFO_CUSTOM_PARAM_TYPE_MISMATCH:
+            return "A custom parameter with a given key is found, but the requested value type does not correspond to the actual type.";
+        case ERROR_BAD_SIGNATURE:
+            return "Signature format is corrupted.";
+        default:
+            return "Unknown error";
+        }
+    }
 }
 

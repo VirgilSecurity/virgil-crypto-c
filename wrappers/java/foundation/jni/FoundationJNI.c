@@ -1294,7 +1294,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     const vsc_data_t /*3*/ proxyResult = vscf_raw_key_data(raw_key_ctx /*a1*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -1309,7 +1309,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     const vsc_data_t /*3*/ proxyResult = vscf_oid_from_alg_id(alg_id /*a7*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -1346,7 +1346,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     const vsc_data_t /*3*/ proxyResult = vscf_oid_from_id(oid_id /*a7*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -1505,7 +1505,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     const vsc_data_t /*3*/ proxyResult = vscf_pem_title(pem /*a3*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     // Free resources
@@ -1601,6 +1601,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class KeyRecipientInfoList has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -1618,6 +1619,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class PasswordRecipientInfoList has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -1652,6 +1654,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class MessageInfoCustomParams has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -1708,7 +1711,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     const vsc_data_t /*3*/ proxyResult = vscf_key_recipient_info_recipient_id(key_recipient_info_ctx /*a1*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -1730,7 +1733,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     const vsc_data_t /*3*/ proxyResult = vscf_key_recipient_info_encrypted_key(key_recipient_info_ctx /*a1*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -1784,6 +1787,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class KeyRecipientInfo has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -1809,6 +1813,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class KeyRecipientInfoList has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -1834,6 +1839,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class KeyRecipientInfoList has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -1894,7 +1900,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     const vsc_data_t /*3*/ proxyResult = vscf_password_recipient_info_encrypted_key(password_recipient_info_ctx /*a1*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -1948,6 +1954,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class PasswordRecipientInfo has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -1973,6 +1980,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class PasswordRecipientInfoList has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -1998,6 +2006,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class PasswordRecipientInfoList has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -2223,6 +2232,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class MessageInfoCustomParams has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -2514,7 +2524,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     }
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     // Free resources
@@ -2542,7 +2552,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     }
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     // Free resources
@@ -4108,7 +4118,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     const vsc_data_t /*3*/ proxyResult = vscf_asn1rd_read_octet_str(asn1rd_ctx /*a1*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -4121,7 +4131,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     const vsc_data_t /*3*/ proxyResult = vscf_asn1rd_read_bitstring_as_octet_str(asn1rd_ctx /*a1*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -4134,7 +4144,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     const vsc_data_t /*3*/ proxyResult = vscf_asn1rd_read_utf8_str(asn1rd_ctx /*a1*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -4147,7 +4157,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     const vsc_data_t /*3*/ proxyResult = vscf_asn1rd_read_oid(asn1rd_ctx /*a1*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -4160,7 +4170,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     const vsc_data_t /*3*/ proxyResult = vscf_asn1rd_read_data(asn1rd_ctx /*a1*/, jlen /*a9*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -6319,6 +6329,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -6344,6 +6355,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -6381,6 +6393,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jpublicKeyData, (jbyte*) public_key_data_arr, 0);
@@ -6413,6 +6426,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jprivateKeyData, (jbyte*) private_key_data_arr, 0);
@@ -6631,6 +6645,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jpublicKeyData, (jbyte*) public_key_data_arr, 0);
@@ -6663,6 +6678,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jprivateKeyData, (jbyte*) private_key_data_arr, 0);
@@ -7937,7 +7953,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     const vsc_data_t /*3*/ proxyResult = vscf_cipher_alg_info_nonce(cipher_alg_info_ctx /*a1*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -8002,7 +8018,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     const vsc_data_t /*3*/ proxyResult = vscf_salted_kdf_alg_info_salt(salted_kdf_alg_info_ctx /*a1*/);
     jbyteArray ret = NULL;
     if (proxyResult.len > 0) {
-        (*jenv)->NewByteArray(jenv, proxyResult.len);
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
     return ret;
@@ -8440,6 +8456,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class MessageInfo has no constructor with C context parameter.");
     }
+
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
