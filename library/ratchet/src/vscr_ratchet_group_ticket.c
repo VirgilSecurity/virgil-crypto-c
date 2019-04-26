@@ -502,9 +502,9 @@ vscr_ratchet_group_ticket_remove_participant(vscr_ratchet_group_ticket_t *self, 
 
     if (i != msg_info->participants_count - 1) {
         memcpy(&msg_info->participants[i], &msg_info->participants[msg_info->participants_count - 1],
-               sizeof(MessageParticipantInfo));
+                sizeof(MessageParticipantInfo));
     }
-    
+
     vscr_zeroize(&msg_info->participants[msg_info->participants_count - 1], sizeof(MessageParticipantInfo));
     msg_info->participants_count--;
 
