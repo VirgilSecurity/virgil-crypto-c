@@ -363,6 +363,16 @@ vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(
 
     } else {
         vscf_asn1_reader_read_null_optional(self->asn1_reader);
+
+        if ((alg_oid_id == vscf_oid_id_ED25519) || (alg_oid_id == vscf_oid_id_CURVE25519)) {
+            //
+            //  According to RFC 8410
+            //
+            //  CurvePrivateKey ::= OCTET STRING
+            //
+            vscf_asn1_reader_read_tag(self->asn1_reader, vscf_asn1_tag_OCTET_STRING);
+        }
+
         vsc_data_t private_key_data = vscf_asn1_reader_read_octet_str(self->asn1_reader);
         vscf_alg_id_t alg_id = vscf_oid_id_to_alg_id(alg_oid_id);
         raw_key = vscf_raw_key_new_with_data(alg_id, private_key_data);
