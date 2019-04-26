@@ -334,9 +334,7 @@ vscr_ratchet_padding_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buf
         return vscr_status_ERROR_INVALID_PADDING;
     }
 
-    memcpy(vsc_buffer_unused_bytes(buffer), vsc_data_slice_beg(decrypted_text, 0, plain_text_len).bytes,
-            plain_text_len);
-    vsc_buffer_inc_used(buffer, plain_text_len);
+    vsc_buffer_write_data(buffer, vsc_data_slice_beg(decrypted_text, 0, plain_text_len));
 
     return vscr_status_SUCCESS;
 }

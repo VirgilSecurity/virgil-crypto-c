@@ -192,7 +192,6 @@ public class RatchetGroupSession implements AutoCloseable {
     * NOTE: Deserialized session needs dependencies to be set.
     * You should set separately:
     * - rng
-    * - my id
     * - my private key
     */
     public static RatchetGroupSession deserialize(byte[] input) throws RatchetException {

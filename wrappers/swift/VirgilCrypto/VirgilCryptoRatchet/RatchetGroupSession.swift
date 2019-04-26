@@ -233,7 +233,6 @@ import VirgilCryptoFoundation
     /// NOTE: Deserialized session needs dependencies to be set.
     /// You should set separately:
     ///     - rng
-    ///     - my id
     ///     - my private key
     @objc public static func deserialize(input: Data) throws -> RatchetGroupSession {
         var error: vscr_error_t = vscr_error_t()
