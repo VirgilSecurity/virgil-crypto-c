@@ -92,6 +92,12 @@ char* getAlgClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ct
     case vscf_impl_tag_RSA_PRIVATE_KEY:
         strcat (classFullName, "RsaPrivateKey");
         break;
+    case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
+        strcat (classFullName, "Secp256r1PublicKey");
+        break;
+    case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
+        strcat (classFullName, "Secp256r1PrivateKey");
+        break;
     case vscf_impl_tag_HMAC:
         strcat (classFullName, "Hmac");
         break;
@@ -201,6 +207,9 @@ char* getEncryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* 
     case vscf_impl_tag_RSA_PUBLIC_KEY:
         strcat (classFullName, "RsaPublicKey");
         break;
+    case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
+        strcat (classFullName, "Secp256r1PublicKey");
+        break;
     case vscf_impl_tag_PKCS5_PBES2:
         strcat (classFullName, "Pkcs5Pbes2");
         break;
@@ -250,6 +259,9 @@ char* getDecryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* 
         break;
     case vscf_impl_tag_RSA_PRIVATE_KEY:
         strcat (classFullName, "RsaPrivateKey");
+        break;
+    case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
+        strcat (classFullName, "Secp256r1PrivateKey");
         break;
     case vscf_impl_tag_PKCS5_PBES2:
         strcat (classFullName, "Pkcs5Pbes2");
@@ -560,6 +572,12 @@ char* getKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ct
     case vscf_impl_tag_RSA_PRIVATE_KEY:
         strcat (classFullName, "RsaPrivateKey");
         break;
+    case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
+        strcat (classFullName, "Secp256r1PublicKey");
+        break;
+    case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
+        strcat (classFullName, "Secp256r1PrivateKey");
+        break;
     case vscf_impl_tag_ED25519_PUBLIC_KEY:
         strcat (classFullName, "Ed25519PublicKey");
         break;
@@ -604,6 +622,9 @@ char* getVerifyHashClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*
     case vscf_impl_tag_RSA_PUBLIC_KEY:
         strcat (classFullName, "RsaPublicKey");
         break;
+    case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
+        strcat (classFullName, "Secp256r1PublicKey");
+        break;
     case vscf_impl_tag_ED25519_PUBLIC_KEY:
         strcat (classFullName, "Ed25519PublicKey");
         break;
@@ -638,6 +659,9 @@ char* getPublicKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/
     switch(implTag) {
     case vscf_impl_tag_RSA_PUBLIC_KEY:
         strcat (classFullName, "RsaPublicKey");
+        break;
+    case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
+        strcat (classFullName, "Secp256r1PublicKey");
         break;
     case vscf_impl_tag_ED25519_PUBLIC_KEY:
         strcat (classFullName, "Ed25519PublicKey");
@@ -677,6 +701,9 @@ char* getGenerateEphemeralKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_i
     case vscf_impl_tag_RSA_PUBLIC_KEY:
         strcat (classFullName, "RsaPublicKey");
         break;
+    case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
+        strcat (classFullName, "Secp256r1PublicKey");
+        break;
     case vscf_impl_tag_ED25519_PUBLIC_KEY:
         strcat (classFullName, "Ed25519PublicKey");
         break;
@@ -714,6 +741,9 @@ char* getGenerateKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1
     switch(implTag) {
     case vscf_impl_tag_RSA_PRIVATE_KEY:
         strcat (classFullName, "RsaPrivateKey");
+        break;
+    case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
+        strcat (classFullName, "Secp256r1PrivateKey");
         break;
     case vscf_impl_tag_ED25519_PRIVATE_KEY:
         strcat (classFullName, "Ed25519PrivateKey");
@@ -753,6 +783,9 @@ char* getSignHashClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/*
     case vscf_impl_tag_RSA_PRIVATE_KEY:
         strcat (classFullName, "RsaPrivateKey");
         break;
+    case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
+        strcat (classFullName, "Secp256r1PrivateKey");
+        break;
     case vscf_impl_tag_ED25519_PRIVATE_KEY:
         strcat (classFullName, "Ed25519PrivateKey");
         break;
@@ -788,6 +821,9 @@ char* getPrivateKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*
     case vscf_impl_tag_RSA_PRIVATE_KEY:
         strcat (classFullName, "RsaPrivateKey");
         break;
+    case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
+        strcat (classFullName, "Secp256r1PrivateKey");
+        break;
     case vscf_impl_tag_ED25519_PRIVATE_KEY:
         strcat (classFullName, "Ed25519PrivateKey");
         break;
@@ -803,6 +839,44 @@ char* getPrivateKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*
 
 jobject wrapPrivateKey (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getPrivateKeyClassName(jenv, jobj, c_ctx);
+    jclass cls = (*jenv)->FindClass(jenv, classFullName);
+    free(classFullName);
+    if (NULL == cls) {
+        VSCF_ASSERT("Class not found.");
+    }
+    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+    if (NULL == methodID) {
+        VSCF_ASSERT("Class has no constructor with C context parameter.");
+    }
+    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+}
+
+char* getComputeSharedKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
+    if (!vscf_compute_shared_key_is_implemented(c_ctx)) {
+        VSCF_ASSERT("Given C implementation does not implement interface ComputeSharedKey.");
+    }
+    char *classFullName = malloc(200);
+    strcpy (classFullName, "com/virgilsecurity/crypto/foundation/");
+    vscf_impl_tag_t implTag = vscf_impl_tag((vscf_impl_t*) c_ctx);
+    switch(implTag) {
+    case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
+        strcat (classFullName, "Secp256r1PrivateKey");
+        break;
+    case vscf_impl_tag_ED25519_PRIVATE_KEY:
+        strcat (classFullName, "Ed25519PrivateKey");
+        break;
+    case vscf_impl_tag_CURVE25519_PRIVATE_KEY:
+        strcat (classFullName, "Curve25519PrivateKey");
+        break;
+    default:
+        free(classFullName);
+        VSCF_ASSERT("Unexpected C implementation cast to the Java implementation.");
+    }
+    return classFullName;
+}
+
+jobject wrapComputeSharedKey (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
+    char *classFullName = getComputeSharedKeyClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
     free(classFullName);
     if (NULL == cls) {
@@ -1007,11 +1081,14 @@ char* getKeySerializerClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /
     strcpy (classFullName, "com/virgilsecurity/crypto/foundation/");
     vscf_impl_tag_t implTag = vscf_impl_tag((vscf_impl_t*) c_ctx);
     switch(implTag) {
-    case vscf_impl_tag_PKCS8_DER_SERIALIZER:
-        strcat (classFullName, "Pkcs8DerSerializer");
-        break;
     case vscf_impl_tag_PKCS8_SERIALIZER:
         strcat (classFullName, "Pkcs8Serializer");
+        break;
+    case vscf_impl_tag_SEC1_SERIALIZER:
+        strcat (classFullName, "Sec1Serializer");
+        break;
+    case vscf_impl_tag_KEY_ASN1_SERIALIZER:
+        strcat (classFullName, "KeyAsn1Serializer");
         break;
     default:
         free(classFullName);
@@ -1042,11 +1119,8 @@ char* getKeyDeserializerClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t
     strcpy (classFullName, "com/virgilsecurity/crypto/foundation/");
     vscf_impl_tag_t implTag = vscf_impl_tag((vscf_impl_t*) c_ctx);
     switch(implTag) {
-    case vscf_impl_tag_PKCS8_DER_DESERIALIZER:
-        strcat (classFullName, "Pkcs8DerDeserializer");
-        break;
-    case vscf_impl_tag_PKCS8_DESERIALIZER:
-        strcat (classFullName, "Pkcs8Deserializer");
+    case vscf_impl_tag_KEY_ASN1_DESERIALIZER:
+        strcat (classFullName, "KeyAsn1Deserializer");
         break;
     default:
         free(classFullName);
@@ -1057,41 +1131,6 @@ char* getKeyDeserializerClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t
 
 jobject wrapKeyDeserializer (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getKeyDeserializerClassName(jenv, jobj, c_ctx);
-    jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
-    if (NULL == cls) {
-        VSCF_ASSERT("Class not found.");
-    }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
-    if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
-    }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
-}
-
-char* getComputeSharedKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
-    if (!vscf_compute_shared_key_is_implemented(c_ctx)) {
-        VSCF_ASSERT("Given C implementation does not implement interface ComputeSharedKey.");
-    }
-    char *classFullName = malloc(200);
-    strcpy (classFullName, "com/virgilsecurity/crypto/foundation/");
-    vscf_impl_tag_t implTag = vscf_impl_tag((vscf_impl_t*) c_ctx);
-    switch(implTag) {
-    case vscf_impl_tag_ED25519_PRIVATE_KEY:
-        strcat (classFullName, "Ed25519PrivateKey");
-        break;
-    case vscf_impl_tag_CURVE25519_PRIVATE_KEY:
-        strcat (classFullName, "Curve25519PrivateKey");
-        break;
-    default:
-        free(classFullName);
-        VSCF_ASSERT("Unexpected C implementation cast to the Java implementation.");
-    }
-    return classFullName;
-}
-
-jobject wrapComputeSharedKey (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
-    char *classFullName = getComputeSharedKeyClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
     free(classFullName);
     if (NULL == cls) {
@@ -1126,6 +1165,9 @@ char* getAlgInfoClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* 
         break;
     case vscf_impl_tag_PBE_ALG_INFO:
         strcat (classFullName, "PbeAlgInfo");
+        break;
+    case vscf_impl_tag_EC_ALG_INFO:
+        strcat (classFullName, "EcAlgInfo");
         break;
     default:
         free(classFullName);
@@ -1371,6 +1413,26 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, joid, (jbyte*) oid_arr, 0);
 
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_oid_1idToAlgId (JNIEnv *jenv, jobject jobj, jobject joidId) {
+    // Wrap enums
+    jclass oid_id_cls = (*jenv)->GetObjectClass(jenv, joidId);
+    jmethodID oid_id_methodID = (*jenv)->GetMethodID(jenv, oid_id_cls, "getCode", "()I");
+    vscf_oid_id_t /*8*/ oid_id = (vscf_oid_id_t /*8*/) (*jenv)->CallIntMethod(jenv, joidId, oid_id_methodID);
+
+    const vscf_alg_id_t proxyResult = vscf_oid_id_to_alg_id(oid_id /*a7*/);
+    jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/AlgId");
+    if (NULL == cls) {
+        VSCF_ASSERT("Enum AlgId not found.");
+    }
+
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "fromCode", "(I)Lcom/virgilsecurity/crypto/foundation/AlgId;");
+    if (NULL == methodID) {
+        VSCF_ASSERT("Enum AlgId has no method 'fromCode'.");
+    }
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, proxyResult);
     return ret;
 }
 
@@ -2639,7 +2701,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     return ret;
 }
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1importPrivateKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jpkcs8Data) {
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1importPrivateKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jkeyData) {
     // Wrap errors
     struct vscf_error_t /*4*/ error;
     vscf_error_reset(&error);
@@ -2647,10 +2709,10 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     vscf_key_provider_t /*2*/* key_provider_ctx = (vscf_key_provider_t /*2*/*) c_ctx;
 
     // Wrap input data
-    byte* pkcs8_data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpkcs8Data, NULL);
-    vsc_data_t pkcs8_data = vsc_data(pkcs8_data_arr, (*jenv)->GetArrayLength(jenv, jpkcs8Data));
+    byte* key_data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jkeyData, NULL);
+    vsc_data_t key_data = vsc_data(key_data_arr, (*jenv)->GetArrayLength(jenv, jkeyData));
 
-    const vscf_impl_t */*6*/ proxyResult = vscf_key_provider_import_private_key(key_provider_ctx /*a1*/, pkcs8_data /*a3*/, &error /*a4*/);
+    const vscf_impl_t */*6*/ proxyResult = vscf_key_provider_import_private_key(key_provider_ctx /*a1*/, key_data /*a3*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -2658,12 +2720,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     }
     jobject ret = wrapPrivateKey(jenv, jobj, proxyResult);
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jpkcs8Data, (jbyte*) pkcs8_data_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jkeyData, (jbyte*) key_data_arr, 0);
 
     return ret;
 }
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1importPublicKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jpkcs8Data) {
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1importPublicKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jkeyData) {
     // Wrap errors
     struct vscf_error_t /*4*/ error;
     vscf_error_reset(&error);
@@ -2671,10 +2733,10 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     vscf_key_provider_t /*2*/* key_provider_ctx = (vscf_key_provider_t /*2*/*) c_ctx;
 
     // Wrap input data
-    byte* pkcs8_data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpkcs8Data, NULL);
-    vsc_data_t pkcs8_data = vsc_data(pkcs8_data_arr, (*jenv)->GetArrayLength(jenv, jpkcs8Data));
+    byte* key_data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jkeyData, NULL);
+    vsc_data_t key_data = vsc_data(key_data_arr, (*jenv)->GetArrayLength(jenv, jkeyData));
 
-    const vscf_impl_t */*6*/ proxyResult = vscf_key_provider_import_public_key(key_provider_ctx /*a1*/, pkcs8_data /*a3*/, &error /*a4*/);
+    const vscf_impl_t */*6*/ proxyResult = vscf_key_provider_import_public_key(key_provider_ctx /*a1*/, key_data /*a3*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -2682,7 +2744,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     }
     jobject ret = wrapPublicKey(jenv, jobj, proxyResult);
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jpkcs8Data, (jbyte*) pkcs8_data_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jkeyData, (jbyte*) key_data_arr, 0);
 
     return ret;
 }
@@ -5025,6 +5087,526 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_r
     (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
 }
 
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PublicKey_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ random = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+
+    vscf_secp256r1_public_key_release_random((vscf_secp256r1_public_key_t /*9*/ *) c_ctx);
+    vscf_secp256r1_public_key_use_random((vscf_secp256r1_public_key_t /*9*/ *) c_ctx, random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PublicKey_1setEcies (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jecies) {
+    jclass ecies_cls = (*jenv)->GetObjectClass(jenv, jecies);
+    if (NULL == ecies_cls) {
+        VSCF_ASSERT("Class Ecies not found.");
+    }
+    jfieldID ecies_fidCtx = (*jenv)->GetFieldID(jenv, ecies_cls, "cCtx", "J");
+    if (NULL == ecies_fidCtx) {
+        VSCF_ASSERT("Class 'Ecies' has no field 'cCtx'.");
+    }
+    vscf_ecies_t * /*7*/ ecies = (vscf_ecies_t * /*7*/) (*jenv)->GetLongField(jenv, jecies, ecies_fidCtx);
+
+    vscf_secp256r1_public_key_release_ecies((vscf_secp256r1_public_key_t /*9*/ *) c_ctx);
+    vscf_secp256r1_public_key_use_ecies((vscf_secp256r1_public_key_t /*9*/ *) c_ctx, ecies);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PublicKey_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_public_key_t /*9*/* secp256r1_public_key_ctx = (vscf_secp256r1_public_key_t /*9*/*) c_ctx;
+
+    vscf_status_t status = vscf_secp256r1_public_key_setup_defaults(secp256r1_public_key_ctx /*a1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PublicKey_1new__ (JNIEnv *jenv, jobject jobj) {
+    return (jlong) vscf_secp256r1_public_key_new();
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PublicKey_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_secp256r1_public_key_delete((vscf_secp256r1_public_key_t /*9*/ *) c_ctx /*5*/);
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PublicKey_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_public_key_t /*9*/* secp256r1_public_key_ctx = (vscf_secp256r1_public_key_t /*9*/*) c_ctx;
+
+    const vscf_alg_id_t proxyResult = vscf_secp256r1_public_key_alg_id(secp256r1_public_key_ctx /*a1*/);
+    jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/AlgId");
+    if (NULL == cls) {
+        VSCF_ASSERT("Enum AlgId not found.");
+    }
+
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "fromCode", "(I)Lcom/virgilsecurity/crypto/foundation/AlgId;");
+    if (NULL == methodID) {
+        VSCF_ASSERT("Enum AlgId has no method 'fromCode'.");
+    }
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PublicKey_1produceAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_public_key_t /*9*/* secp256r1_public_key_ctx = (vscf_secp256r1_public_key_t /*9*/*) c_ctx;
+
+    const vscf_impl_t */*6*/ proxyResult = vscf_secp256r1_public_key_produce_alg_info(secp256r1_public_key_ctx /*a1*/);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PublicKey_1restoreAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Cast class context
+    vscf_secp256r1_public_key_t /*9*/* secp256r1_public_key_ctx = (vscf_secp256r1_public_key_t /*9*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ alg_info = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+
+    vscf_status_t status = vscf_secp256r1_public_key_restore_alg_info(secp256r1_public_key_ctx /*a1*/, alg_info /*a6*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PublicKey_1keyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_public_key_t /*9*/* secp256r1_public_key_ctx = (vscf_secp256r1_public_key_t /*9*/*) c_ctx;
+
+    jint ret = (jint) vscf_secp256r1_public_key_key_len(secp256r1_public_key_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PublicKey_1keyBitlen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_public_key_t /*9*/* secp256r1_public_key_ctx = (vscf_secp256r1_public_key_t /*9*/*) c_ctx;
+
+    jint ret = (jint) vscf_secp256r1_public_key_key_bitlen(secp256r1_public_key_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PublicKey_1encrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
+    // Cast class context
+    vscf_secp256r1_public_key_t /*9*/* secp256r1_public_key_ctx = (vscf_secp256r1_public_key_t /*9*/*) c_ctx;
+
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_secp256r1_public_key_encrypted_len((vscf_secp256r1_public_key_t /*9*/ *) c_ctx /*3*/, data.len/*a*/));
+
+    vscf_status_t status = vscf_secp256r1_public_key_encrypt(secp256r1_public_key_ctx /*a1*/, data /*a3*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+
+    vsc_buffer_delete(out);
+
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PublicKey_1encryptedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_secp256r1_public_key_t /*9*/* secp256r1_public_key_ctx = (vscf_secp256r1_public_key_t /*9*/*) c_ctx;
+
+    jint ret = (jint) vscf_secp256r1_public_key_encrypted_len(secp256r1_public_key_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PublicKey_1verifyHash (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jhashDigest, jobject jhashId, jbyteArray jsignature) {
+    // Cast class context
+    vscf_secp256r1_public_key_t /*9*/* secp256r1_public_key_ctx = (vscf_secp256r1_public_key_t /*9*/*) c_ctx;
+
+    // Wrap enums
+    jclass hash_id_cls = (*jenv)->GetObjectClass(jenv, jhashId);
+    jmethodID hash_id_methodID = (*jenv)->GetMethodID(jenv, hash_id_cls, "getCode", "()I");
+    vscf_alg_id_t /*8*/ hash_id = (vscf_alg_id_t /*8*/) (*jenv)->CallIntMethod(jenv, jhashId, hash_id_methodID);
+
+    // Wrap input data
+    byte* hash_digest_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jhashDigest, NULL);
+    vsc_data_t hash_digest = vsc_data(hash_digest_arr, (*jenv)->GetArrayLength(jenv, jhashDigest));
+
+    byte* signature_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jsignature, NULL);
+    vsc_data_t signature = vsc_data(signature_arr, (*jenv)->GetArrayLength(jenv, jsignature));
+
+    jboolean ret = (jboolean) vscf_secp256r1_public_key_verify_hash(secp256r1_public_key_ctx /*a1*/, hash_digest /*a3*/, hash_id /*a7*/, signature /*a3*/);
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jhashDigest, (jbyte*) hash_digest_arr, 0);
+
+    (*jenv)->ReleaseByteArrayElements(jenv, jsignature, (jbyte*) signature_arr, 0);
+
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PublicKey_1exportPublicKey (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_public_key_t /*9*/* secp256r1_public_key_ctx = (vscf_secp256r1_public_key_t /*9*/*) c_ctx;
+
+    // Wrap input buffers
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_secp256r1_public_key_exported_public_key_len((vscf_secp256r1_public_key_t /*9*/ *) c_ctx /*3*/));
+
+    vscf_status_t status = vscf_secp256r1_public_key_export_public_key(secp256r1_public_key_ctx /*a1*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    vsc_buffer_delete(out);
+
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PublicKey_1exportedPublicKeyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_public_key_t /*9*/* secp256r1_public_key_ctx = (vscf_secp256r1_public_key_t /*9*/*) c_ctx;
+
+    jint ret = (jint) vscf_secp256r1_public_key_exported_public_key_len(secp256r1_public_key_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PublicKey_1importPublicKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
+    // Cast class context
+    vscf_secp256r1_public_key_t /*9*/* secp256r1_public_key_ctx = (vscf_secp256r1_public_key_t /*9*/*) c_ctx;
+
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+
+    vscf_status_t status = vscf_secp256r1_public_key_import_public_key(secp256r1_public_key_ctx /*a1*/, data /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PublicKey_1generateEphemeralKey (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Cast class context
+    vscf_secp256r1_public_key_t /*9*/* secp256r1_public_key_ctx = (vscf_secp256r1_public_key_t /*9*/*) c_ctx;
+
+    const vscf_impl_t */*6*/ proxyResult = vscf_secp256r1_public_key_generate_ephemeral_key(secp256r1_public_key_ctx /*a1*/, &error /*a4*/);
+
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return NULL;
+    }
+    jobject ret = wrapPrivateKey(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ random = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+
+    vscf_secp256r1_private_key_release_random((vscf_secp256r1_private_key_t /*9*/ *) c_ctx);
+    vscf_secp256r1_private_key_use_random((vscf_secp256r1_private_key_t /*9*/ *) c_ctx, random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1setEcies (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jecies) {
+    jclass ecies_cls = (*jenv)->GetObjectClass(jenv, jecies);
+    if (NULL == ecies_cls) {
+        VSCF_ASSERT("Class Ecies not found.");
+    }
+    jfieldID ecies_fidCtx = (*jenv)->GetFieldID(jenv, ecies_cls, "cCtx", "J");
+    if (NULL == ecies_fidCtx) {
+        VSCF_ASSERT("Class 'Ecies' has no field 'cCtx'.");
+    }
+    vscf_ecies_t * /*7*/ ecies = (vscf_ecies_t * /*7*/) (*jenv)->GetLongField(jenv, jecies, ecies_fidCtx);
+
+    vscf_secp256r1_private_key_release_ecies((vscf_secp256r1_private_key_t /*9*/ *) c_ctx);
+    vscf_secp256r1_private_key_use_ecies((vscf_secp256r1_private_key_t /*9*/ *) c_ctx, ecies);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_private_key_t /*9*/* secp256r1_private_key_ctx = (vscf_secp256r1_private_key_t /*9*/*) c_ctx;
+
+    vscf_status_t status = vscf_secp256r1_private_key_setup_defaults(secp256r1_private_key_ctx /*a1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1new__ (JNIEnv *jenv, jobject jobj) {
+    return (jlong) vscf_secp256r1_private_key_new();
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_secp256r1_private_key_delete((vscf_secp256r1_private_key_t /*9*/ *) c_ctx /*5*/);
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_private_key_t /*9*/* secp256r1_private_key_ctx = (vscf_secp256r1_private_key_t /*9*/*) c_ctx;
+
+    const vscf_alg_id_t proxyResult = vscf_secp256r1_private_key_alg_id(secp256r1_private_key_ctx /*a1*/);
+    jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/AlgId");
+    if (NULL == cls) {
+        VSCF_ASSERT("Enum AlgId not found.");
+    }
+
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "fromCode", "(I)Lcom/virgilsecurity/crypto/foundation/AlgId;");
+    if (NULL == methodID) {
+        VSCF_ASSERT("Enum AlgId has no method 'fromCode'.");
+    }
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1produceAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_private_key_t /*9*/* secp256r1_private_key_ctx = (vscf_secp256r1_private_key_t /*9*/*) c_ctx;
+
+    const vscf_impl_t */*6*/ proxyResult = vscf_secp256r1_private_key_produce_alg_info(secp256r1_private_key_ctx /*a1*/);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1restoreAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Cast class context
+    vscf_secp256r1_private_key_t /*9*/* secp256r1_private_key_ctx = (vscf_secp256r1_private_key_t /*9*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ alg_info = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+
+    vscf_status_t status = vscf_secp256r1_private_key_restore_alg_info(secp256r1_private_key_ctx /*a1*/, alg_info /*a6*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1keyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_private_key_t /*9*/* secp256r1_private_key_ctx = (vscf_secp256r1_private_key_t /*9*/*) c_ctx;
+
+    jint ret = (jint) vscf_secp256r1_private_key_key_len(secp256r1_private_key_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1keyBitlen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_private_key_t /*9*/* secp256r1_private_key_ctx = (vscf_secp256r1_private_key_t /*9*/*) c_ctx;
+
+    jint ret = (jint) vscf_secp256r1_private_key_key_bitlen(secp256r1_private_key_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1generateKey (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_private_key_t /*9*/* secp256r1_private_key_ctx = (vscf_secp256r1_private_key_t /*9*/*) c_ctx;
+
+    vscf_status_t status = vscf_secp256r1_private_key_generate_key(secp256r1_private_key_ctx /*a1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1decrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
+    // Cast class context
+    vscf_secp256r1_private_key_t /*9*/* secp256r1_private_key_ctx = (vscf_secp256r1_private_key_t /*9*/*) c_ctx;
+
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_secp256r1_private_key_decrypted_len((vscf_secp256r1_private_key_t /*9*/ *) c_ctx /*3*/, data.len/*a*/));
+
+    vscf_status_t status = vscf_secp256r1_private_key_decrypt(secp256r1_private_key_ctx /*a1*/, data /*a3*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+
+    vsc_buffer_delete(out);
+
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1decryptedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_secp256r1_private_key_t /*9*/* secp256r1_private_key_ctx = (vscf_secp256r1_private_key_t /*9*/*) c_ctx;
+
+    jint ret = (jint) vscf_secp256r1_private_key_decrypted_len(secp256r1_private_key_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1signatureLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_private_key_t /*9*/* secp256r1_private_key_ctx = (vscf_secp256r1_private_key_t /*9*/*) c_ctx;
+
+    jint ret = (jint) vscf_secp256r1_private_key_signature_len(secp256r1_private_key_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1signHash (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jhashDigest, jobject jhashId) {
+    // Cast class context
+    vscf_secp256r1_private_key_t /*9*/* secp256r1_private_key_ctx = (vscf_secp256r1_private_key_t /*9*/*) c_ctx;
+
+    // Wrap enums
+    jclass hash_id_cls = (*jenv)->GetObjectClass(jenv, jhashId);
+    jmethodID hash_id_methodID = (*jenv)->GetMethodID(jenv, hash_id_cls, "getCode", "()I");
+    vscf_alg_id_t /*8*/ hash_id = (vscf_alg_id_t /*8*/) (*jenv)->CallIntMethod(jenv, jhashId, hash_id_methodID);
+
+    // Wrap input data
+    byte* hash_digest_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jhashDigest, NULL);
+    vsc_data_t hash_digest = vsc_data(hash_digest_arr, (*jenv)->GetArrayLength(jenv, jhashDigest));
+
+    vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_secp256r1_private_key_signature_len((vscf_secp256r1_private_key_t /*9*/ *) c_ctx /*3*/));
+
+    vscf_status_t status = vscf_secp256r1_private_key_sign_hash(secp256r1_private_key_ctx /*a1*/, hash_digest /*a3*/, hash_id /*a7*/, signature /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(signature));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(signature), (jbyte*) vsc_buffer_bytes(signature));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jhashDigest, (jbyte*) hash_digest_arr, 0);
+
+    vsc_buffer_delete(signature);
+
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1extractPublicKey (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_private_key_t /*9*/* secp256r1_private_key_ctx = (vscf_secp256r1_private_key_t /*9*/*) c_ctx;
+
+    const vscf_impl_t */*6*/ proxyResult = vscf_secp256r1_private_key_extract_public_key(secp256r1_private_key_ctx /*a1*/);
+    jobject ret = wrapPublicKey(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1exportPrivateKey (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_private_key_t /*9*/* secp256r1_private_key_ctx = (vscf_secp256r1_private_key_t /*9*/*) c_ctx;
+
+    // Wrap input buffers
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_secp256r1_private_key_exported_private_key_len((vscf_secp256r1_private_key_t /*9*/ *) c_ctx /*3*/));
+
+    vscf_status_t status = vscf_secp256r1_private_key_export_private_key(secp256r1_private_key_ctx /*a1*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    vsc_buffer_delete(out);
+
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1exportedPrivateKeyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_private_key_t /*9*/* secp256r1_private_key_ctx = (vscf_secp256r1_private_key_t /*9*/*) c_ctx;
+
+    jint ret = (jint) vscf_secp256r1_private_key_exported_private_key_len(secp256r1_private_key_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1importPrivateKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
+    // Cast class context
+    vscf_secp256r1_private_key_t /*9*/* secp256r1_private_key_ctx = (vscf_secp256r1_private_key_t /*9*/*) c_ctx;
+
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+
+    vscf_status_t status = vscf_secp256r1_private_key_import_private_key(secp256r1_private_key_ctx /*a1*/, data /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1computeSharedKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
+    // Cast class context
+    vscf_secp256r1_private_key_t /*9*/* secp256r1_private_key_ctx = (vscf_secp256r1_private_key_t /*9*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass public_key_cls = (*jenv)->GetObjectClass(jenv, jpublicKey);
+    if (NULL == public_key_cls) {
+        VSCF_ASSERT("Class PublicKey not found.");
+    }
+    jfieldID public_key_fidCtx = (*jenv)->GetFieldID(jenv, public_key_cls, "cCtx", "J");
+    if (NULL == public_key_fidCtx) {
+        VSCF_ASSERT("Class 'PublicKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ public_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
+
+    // Wrap input buffers
+    vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(vscf_secp256r1_private_key_shared_key_len((vscf_secp256r1_private_key_t /*9*/ *) c_ctx /*3*/));
+
+    vscf_status_t status = vscf_secp256r1_private_key_compute_shared_key(secp256r1_private_key_ctx /*a1*/, public_key /*a6*/, shared_key /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(shared_key));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(shared_key), (jbyte*) vsc_buffer_bytes(shared_key));
+    // Free resources
+    vsc_buffer_delete(shared_key);
+
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_secp256r1PrivateKey_1sharedKeyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_secp256r1_private_key_t /*9*/* secp256r1_private_key_ctx = (vscf_secp256r1_private_key_t /*9*/*) c_ctx;
+
+    jint ret = (jint) vscf_secp256r1_private_key_shared_key_len(secp256r1_private_key_ctx /*a1*/);
+    return ret;
+}
+
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_entropyAccumulator_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscf_entropy_accumulator_t /*9*/* entropy_accumulator_ctx = (vscf_entropy_accumulator_t /*9*/*) c_ctx;
@@ -6108,332 +6690,6 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_k
     }
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerSerializer_1setAsn1Writer (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jasn1Writer) {
-    jclass asn1_writer_cls = (*jenv)->GetObjectClass(jenv, jasn1Writer);
-    if (NULL == asn1_writer_cls) {
-        VSCF_ASSERT("Class Asn1Writer not found.");
-    }
-    jfieldID asn1_writer_fidCtx = (*jenv)->GetFieldID(jenv, asn1_writer_cls, "cCtx", "J");
-    if (NULL == asn1_writer_fidCtx) {
-        VSCF_ASSERT("Class 'Asn1Writer' has no field 'cCtx'.");
-    }
-    vscf_impl_t */*6*/ asn1_writer = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jasn1Writer, asn1_writer_fidCtx);
-
-    vscf_pkcs8_der_serializer_release_asn1_writer((vscf_pkcs8_der_serializer_t /*9*/ *) c_ctx);
-    vscf_pkcs8_der_serializer_use_asn1_writer((vscf_pkcs8_der_serializer_t /*9*/ *) c_ctx, asn1_writer);
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerSerializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_pkcs8_der_serializer_t /*9*/* pkcs8_der_serializer_ctx = (vscf_pkcs8_der_serializer_t /*9*/*) c_ctx;
-
-    vscf_pkcs8_der_serializer_setup_defaults(pkcs8_der_serializer_ctx /*a1*/);
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerSerializer_1serializePublicKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
-    // Wrap errors
-    struct vscf_error_t /*4*/ error;
-    vscf_error_reset(&error);
-    // Cast class context
-    vscf_pkcs8_der_serializer_t /*9*/* pkcs8_der_serializer_ctx = (vscf_pkcs8_der_serializer_t /*9*/*) c_ctx;
-    // Wrap Java interfaces
-    jclass public_key_cls = (*jenv)->GetObjectClass(jenv, jpublicKey);
-    if (NULL == public_key_cls) {
-        VSCF_ASSERT("Class PublicKey not found.");
-    }
-    jfieldID public_key_fidCtx = (*jenv)->GetFieldID(jenv, public_key_cls, "cCtx", "J");
-    if (NULL == public_key_fidCtx) {
-        VSCF_ASSERT("Class 'PublicKey' has no field 'cCtx'.");
-    }
-    vscf_impl_t */*6*/ public_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
-
-    jint ret = (jint) vscf_pkcs8_der_serializer_serialize_public_key_inplace(pkcs8_der_serializer_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
-
-    if (error.status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, error.status);
-        return 0;
-    }
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerSerializer_1serializePrivateKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jprivateKey) {
-    // Wrap errors
-    struct vscf_error_t /*4*/ error;
-    vscf_error_reset(&error);
-    // Cast class context
-    vscf_pkcs8_der_serializer_t /*9*/* pkcs8_der_serializer_ctx = (vscf_pkcs8_der_serializer_t /*9*/*) c_ctx;
-    // Wrap Java interfaces
-    jclass private_key_cls = (*jenv)->GetObjectClass(jenv, jprivateKey);
-    if (NULL == private_key_cls) {
-        VSCF_ASSERT("Class PrivateKey not found.");
-    }
-    jfieldID private_key_fidCtx = (*jenv)->GetFieldID(jenv, private_key_cls, "cCtx", "J");
-    if (NULL == private_key_fidCtx) {
-        VSCF_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
-    }
-    vscf_impl_t */*6*/ private_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
-
-    jint ret = (jint) vscf_pkcs8_der_serializer_serialize_private_key_inplace(pkcs8_der_serializer_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
-
-    if (error.status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, error.status);
-        return 0;
-    }
-    return ret;
-}
-
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerSerializer_1new__ (JNIEnv *jenv, jobject jobj) {
-    return (jlong) vscf_pkcs8_der_serializer_new();
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerSerializer_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_pkcs8_der_serializer_delete((vscf_pkcs8_der_serializer_t /*9*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerSerializer_1serializedPublicKeyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
-    // Cast class context
-    vscf_pkcs8_der_serializer_t /*9*/* pkcs8_der_serializer_ctx = (vscf_pkcs8_der_serializer_t /*9*/*) c_ctx;
-    // Wrap Java interfaces
-    jclass public_key_cls = (*jenv)->GetObjectClass(jenv, jpublicKey);
-    if (NULL == public_key_cls) {
-        VSCF_ASSERT("Class PublicKey not found.");
-    }
-    jfieldID public_key_fidCtx = (*jenv)->GetFieldID(jenv, public_key_cls, "cCtx", "J");
-    if (NULL == public_key_fidCtx) {
-        VSCF_ASSERT("Class 'PublicKey' has no field 'cCtx'.");
-    }
-    vscf_impl_t */*6*/ public_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
-
-    jint ret = (jint) vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8_der_serializer_ctx /*a1*/, public_key /*a6*/);
-    return ret;
-}
-
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerSerializer_1serializePublicKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
-    // Cast class context
-    vscf_pkcs8_der_serializer_t /*9*/* pkcs8_der_serializer_ctx = (vscf_pkcs8_der_serializer_t /*9*/*) c_ctx;
-    // Wrap Java interfaces
-    jclass public_key_cls = (*jenv)->GetObjectClass(jenv, jpublicKey);
-    if (NULL == public_key_cls) {
-        VSCF_ASSERT("Class PublicKey not found.");
-    }
-    jfieldID public_key_fidCtx = (*jenv)->GetFieldID(jenv, public_key_cls, "cCtx", "J");
-    if (NULL == public_key_fidCtx) {
-        VSCF_ASSERT("Class 'PublicKey' has no field 'cCtx'.");
-    }
-    vscf_impl_t */*6*/ public_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
-
-    // Wrap input buffers
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_pkcs8_der_serializer_serialized_public_key_len((vscf_pkcs8_der_serializer_t /*9*/ *) c_ctx /*3*/, public_key/*a*/));
-
-    vscf_status_t status = vscf_pkcs8_der_serializer_serialize_public_key(pkcs8_der_serializer_ctx /*a1*/, public_key /*a6*/, out /*a3*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-        return NULL;
-    }
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
-    // Free resources
-    vsc_buffer_delete(out);
-
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerSerializer_1serializedPrivateKeyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jprivateKey) {
-    // Cast class context
-    vscf_pkcs8_der_serializer_t /*9*/* pkcs8_der_serializer_ctx = (vscf_pkcs8_der_serializer_t /*9*/*) c_ctx;
-    // Wrap Java interfaces
-    jclass private_key_cls = (*jenv)->GetObjectClass(jenv, jprivateKey);
-    if (NULL == private_key_cls) {
-        VSCF_ASSERT("Class PrivateKey not found.");
-    }
-    jfieldID private_key_fidCtx = (*jenv)->GetFieldID(jenv, private_key_cls, "cCtx", "J");
-    if (NULL == private_key_fidCtx) {
-        VSCF_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
-    }
-    vscf_impl_t */*6*/ private_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
-
-    jint ret = (jint) vscf_pkcs8_der_serializer_serialized_private_key_len(pkcs8_der_serializer_ctx /*a1*/, private_key /*a6*/);
-    return ret;
-}
-
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerSerializer_1serializePrivateKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jprivateKey) {
-    // Cast class context
-    vscf_pkcs8_der_serializer_t /*9*/* pkcs8_der_serializer_ctx = (vscf_pkcs8_der_serializer_t /*9*/*) c_ctx;
-    // Wrap Java interfaces
-    jclass private_key_cls = (*jenv)->GetObjectClass(jenv, jprivateKey);
-    if (NULL == private_key_cls) {
-        VSCF_ASSERT("Class PrivateKey not found.");
-    }
-    jfieldID private_key_fidCtx = (*jenv)->GetFieldID(jenv, private_key_cls, "cCtx", "J");
-    if (NULL == private_key_fidCtx) {
-        VSCF_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
-    }
-    vscf_impl_t */*6*/ private_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
-
-    // Wrap input buffers
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_pkcs8_der_serializer_serialized_private_key_len((vscf_pkcs8_der_serializer_t /*9*/ *) c_ctx /*3*/, private_key/*a*/));
-
-    vscf_status_t status = vscf_pkcs8_der_serializer_serialize_private_key(pkcs8_der_serializer_ctx /*a1*/, private_key /*a6*/, out /*a3*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-        return NULL;
-    }
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
-    // Free resources
-    vsc_buffer_delete(out);
-
-    return ret;
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerDeserializer_1setAsn1Reader (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jasn1Reader) {
-    jclass asn1_reader_cls = (*jenv)->GetObjectClass(jenv, jasn1Reader);
-    if (NULL == asn1_reader_cls) {
-        VSCF_ASSERT("Class Asn1Reader not found.");
-    }
-    jfieldID asn1_reader_fidCtx = (*jenv)->GetFieldID(jenv, asn1_reader_cls, "cCtx", "J");
-    if (NULL == asn1_reader_fidCtx) {
-        VSCF_ASSERT("Class 'Asn1Reader' has no field 'cCtx'.");
-    }
-    vscf_impl_t */*6*/ asn1_reader = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jasn1Reader, asn1_reader_fidCtx);
-
-    vscf_pkcs8_der_deserializer_release_asn1_reader((vscf_pkcs8_der_deserializer_t /*9*/ *) c_ctx);
-    vscf_pkcs8_der_deserializer_use_asn1_reader((vscf_pkcs8_der_deserializer_t /*9*/ *) c_ctx, asn1_reader);
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerDeserializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_pkcs8_der_deserializer_t /*9*/* pkcs8_der_deserializer_ctx = (vscf_pkcs8_der_deserializer_t /*9*/*) c_ctx;
-
-    vscf_pkcs8_der_deserializer_setup_defaults(pkcs8_der_deserializer_ctx /*a1*/);
-}
-
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerDeserializer_1deserializePublicKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Wrap errors
-    struct vscf_error_t /*4*/ error;
-    vscf_error_reset(&error);
-    // Cast class context
-    vscf_pkcs8_der_deserializer_t /*9*/* pkcs8_der_deserializer_ctx = (vscf_pkcs8_der_deserializer_t /*9*/*) c_ctx;
-
-    const vscf_raw_key_t */*5*/ proxyResult = vscf_pkcs8_der_deserializer_deserialize_public_key_inplace(pkcs8_der_deserializer_ctx /*a1*/, &error /*a4*/);
-
-    if (error.status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, error.status);
-        return NULL;
-    }
-    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/RawKey");
-    if (NULL == result_cls) {
-        VSCF_ASSERT("Class RawKey not found.");
-    }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
-    if (NULL == result_methodID) {
-        VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
-    }
-
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
-    return ret;
-}
-
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerDeserializer_1deserializePrivateKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Wrap errors
-    struct vscf_error_t /*4*/ error;
-    vscf_error_reset(&error);
-    // Cast class context
-    vscf_pkcs8_der_deserializer_t /*9*/* pkcs8_der_deserializer_ctx = (vscf_pkcs8_der_deserializer_t /*9*/*) c_ctx;
-
-    const vscf_raw_key_t */*5*/ proxyResult = vscf_pkcs8_der_deserializer_deserialize_private_key_inplace(pkcs8_der_deserializer_ctx /*a1*/, &error /*a4*/);
-
-    if (error.status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, error.status);
-        return NULL;
-    }
-    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/RawKey");
-    if (NULL == result_cls) {
-        VSCF_ASSERT("Class RawKey not found.");
-    }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
-    if (NULL == result_methodID) {
-        VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
-    }
-
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
-    return ret;
-}
-
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerDeserializer_1new__ (JNIEnv *jenv, jobject jobj) {
-    return (jlong) vscf_pkcs8_der_deserializer_new();
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerDeserializer_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_pkcs8_der_deserializer_delete((vscf_pkcs8_der_deserializer_t /*9*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerDeserializer_1deserializePublicKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jpublicKeyData) {
-    // Wrap errors
-    struct vscf_error_t /*4*/ error;
-    vscf_error_reset(&error);
-    // Cast class context
-    vscf_pkcs8_der_deserializer_t /*9*/* pkcs8_der_deserializer_ctx = (vscf_pkcs8_der_deserializer_t /*9*/*) c_ctx;
-
-    // Wrap input data
-    byte* public_key_data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpublicKeyData, NULL);
-    vsc_data_t public_key_data = vsc_data(public_key_data_arr, (*jenv)->GetArrayLength(jenv, jpublicKeyData));
-
-    const vscf_raw_key_t */*5*/ proxyResult = vscf_pkcs8_der_deserializer_deserialize_public_key(pkcs8_der_deserializer_ctx /*a1*/, public_key_data /*a3*/, &error /*a4*/);
-
-    if (error.status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, error.status);
-        return NULL;
-    }
-    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/RawKey");
-    if (NULL == result_cls) {
-        VSCF_ASSERT("Class RawKey not found.");
-    }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
-    if (NULL == result_methodID) {
-        VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
-    }
-
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
-    // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jpublicKeyData, (jbyte*) public_key_data_arr, 0);
-
-    return ret;
-}
-
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8DerDeserializer_1deserializePrivateKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jprivateKeyData) {
-    // Wrap errors
-    struct vscf_error_t /*4*/ error;
-    vscf_error_reset(&error);
-    // Cast class context
-    vscf_pkcs8_der_deserializer_t /*9*/* pkcs8_der_deserializer_ctx = (vscf_pkcs8_der_deserializer_t /*9*/*) c_ctx;
-
-    // Wrap input data
-    byte* private_key_data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jprivateKeyData, NULL);
-    vsc_data_t private_key_data = vsc_data(private_key_data_arr, (*jenv)->GetArrayLength(jenv, jprivateKeyData));
-
-    const vscf_raw_key_t */*5*/ proxyResult = vscf_pkcs8_der_deserializer_deserialize_private_key(pkcs8_der_deserializer_ctx /*a1*/, private_key_data /*a3*/, &error /*a4*/);
-
-    if (error.status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, error.status);
-        return NULL;
-    }
-    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/RawKey");
-    if (NULL == result_cls) {
-        VSCF_ASSERT("Class RawKey not found.");
-    }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
-    if (NULL == result_methodID) {
-        VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
-    }
-
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
-    // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jprivateKeyData, (jbyte*) private_key_data_arr, 0);
-
-    return ret;
-}
-
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1setAsn1Writer (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jasn1Writer) {
     jclass asn1_writer_cls = (*jenv)->GetObjectClass(jenv, jasn1Writer);
     if (NULL == asn1_writer_cls) {
@@ -6449,26 +6705,63 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_p
     vscf_pkcs8_serializer_use_asn1_writer((vscf_pkcs8_serializer_t /*9*/ *) c_ctx, asn1_writer);
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1setDerSerializer (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jderSerializer) {
-    jclass der_serializer_cls = (*jenv)->GetObjectClass(jenv, jderSerializer);
-    if (NULL == der_serializer_cls) {
-        VSCF_ASSERT("Class KeySerializer not found.");
-    }
-    jfieldID der_serializer_fidCtx = (*jenv)->GetFieldID(jenv, der_serializer_cls, "cCtx", "J");
-    if (NULL == der_serializer_fidCtx) {
-        VSCF_ASSERT("Class 'KeySerializer' has no field 'cCtx'.");
-    }
-    vscf_impl_t */*6*/ der_serializer = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jderSerializer, der_serializer_fidCtx);
-
-    vscf_pkcs8_serializer_release_der_serializer((vscf_pkcs8_serializer_t /*9*/ *) c_ctx);
-    vscf_pkcs8_serializer_use_der_serializer((vscf_pkcs8_serializer_t /*9*/ *) c_ctx, der_serializer);
-}
-
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscf_pkcs8_serializer_t /*9*/* pkcs8_serializer_ctx = (vscf_pkcs8_serializer_t /*9*/*) c_ctx;
 
     vscf_pkcs8_serializer_setup_defaults(pkcs8_serializer_ctx /*a1*/);
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1serializePublicKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Cast class context
+    vscf_pkcs8_serializer_t /*9*/* pkcs8_serializer_ctx = (vscf_pkcs8_serializer_t /*9*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass public_key_cls = (*jenv)->GetObjectClass(jenv, jpublicKey);
+    if (NULL == public_key_cls) {
+        VSCF_ASSERT("Class PublicKey not found.");
+    }
+    jfieldID public_key_fidCtx = (*jenv)->GetFieldID(jenv, public_key_cls, "cCtx", "J");
+    if (NULL == public_key_fidCtx) {
+        VSCF_ASSERT("Class 'PublicKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ public_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
+
+    jint ret = (jint) vscf_pkcs8_serializer_serialize_public_key_inplace(pkcs8_serializer_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
+
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return 0;
+    }
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1serializePrivateKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jprivateKey) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Cast class context
+    vscf_pkcs8_serializer_t /*9*/* pkcs8_serializer_ctx = (vscf_pkcs8_serializer_t /*9*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass private_key_cls = (*jenv)->GetObjectClass(jenv, jprivateKey);
+    if (NULL == private_key_cls) {
+        VSCF_ASSERT("Class PrivateKey not found.");
+    }
+    jfieldID private_key_fidCtx = (*jenv)->GetFieldID(jenv, private_key_cls, "cCtx", "J");
+    if (NULL == private_key_fidCtx) {
+        VSCF_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ private_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
+
+    jint ret = (jint) vscf_pkcs8_serializer_serialize_private_key_inplace(pkcs8_serializer_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
+
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return 0;
+    }
+    return ret;
 }
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1new__ (JNIEnv *jenv, jobject jobj) {
@@ -6575,7 +6868,363 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     return ret;
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Deserializer_1setAsn1Reader (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jasn1Reader) {
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1setAsn1Writer (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jasn1Writer) {
+    jclass asn1_writer_cls = (*jenv)->GetObjectClass(jenv, jasn1Writer);
+    if (NULL == asn1_writer_cls) {
+        VSCF_ASSERT("Class Asn1Writer not found.");
+    }
+    jfieldID asn1_writer_fidCtx = (*jenv)->GetFieldID(jenv, asn1_writer_cls, "cCtx", "J");
+    if (NULL == asn1_writer_fidCtx) {
+        VSCF_ASSERT("Class 'Asn1Writer' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ asn1_writer = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jasn1Writer, asn1_writer_fidCtx);
+
+    vscf_sec1_serializer_release_asn1_writer((vscf_sec1_serializer_t /*9*/ *) c_ctx);
+    vscf_sec1_serializer_use_asn1_writer((vscf_sec1_serializer_t /*9*/ *) c_ctx, asn1_writer);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_sec1_serializer_t /*9*/* sec1_serializer_ctx = (vscf_sec1_serializer_t /*9*/*) c_ctx;
+
+    vscf_sec1_serializer_setup_defaults(sec1_serializer_ctx /*a1*/);
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializePublicKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Cast class context
+    vscf_sec1_serializer_t /*9*/* sec1_serializer_ctx = (vscf_sec1_serializer_t /*9*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass public_key_cls = (*jenv)->GetObjectClass(jenv, jpublicKey);
+    if (NULL == public_key_cls) {
+        VSCF_ASSERT("Class PublicKey not found.");
+    }
+    jfieldID public_key_fidCtx = (*jenv)->GetFieldID(jenv, public_key_cls, "cCtx", "J");
+    if (NULL == public_key_fidCtx) {
+        VSCF_ASSERT("Class 'PublicKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ public_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
+
+    jint ret = (jint) vscf_sec1_serializer_serialize_public_key_inplace(sec1_serializer_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
+
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return 0;
+    }
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializePrivateKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jprivateKey) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Cast class context
+    vscf_sec1_serializer_t /*9*/* sec1_serializer_ctx = (vscf_sec1_serializer_t /*9*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass private_key_cls = (*jenv)->GetObjectClass(jenv, jprivateKey);
+    if (NULL == private_key_cls) {
+        VSCF_ASSERT("Class PrivateKey not found.");
+    }
+    jfieldID private_key_fidCtx = (*jenv)->GetFieldID(jenv, private_key_cls, "cCtx", "J");
+    if (NULL == private_key_fidCtx) {
+        VSCF_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ private_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
+
+    jint ret = (jint) vscf_sec1_serializer_serialize_private_key_inplace(sec1_serializer_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
+
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return 0;
+    }
+    return ret;
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1new__ (JNIEnv *jenv, jobject jobj) {
+    return (jlong) vscf_sec1_serializer_new();
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_sec1_serializer_delete((vscf_sec1_serializer_t /*9*/ *) c_ctx /*5*/);
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializedPublicKeyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
+    // Cast class context
+    vscf_sec1_serializer_t /*9*/* sec1_serializer_ctx = (vscf_sec1_serializer_t /*9*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass public_key_cls = (*jenv)->GetObjectClass(jenv, jpublicKey);
+    if (NULL == public_key_cls) {
+        VSCF_ASSERT("Class PublicKey not found.");
+    }
+    jfieldID public_key_fidCtx = (*jenv)->GetFieldID(jenv, public_key_cls, "cCtx", "J");
+    if (NULL == public_key_fidCtx) {
+        VSCF_ASSERT("Class 'PublicKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ public_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
+
+    jint ret = (jint) vscf_sec1_serializer_serialized_public_key_len(sec1_serializer_ctx /*a1*/, public_key /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializePublicKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
+    // Cast class context
+    vscf_sec1_serializer_t /*9*/* sec1_serializer_ctx = (vscf_sec1_serializer_t /*9*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass public_key_cls = (*jenv)->GetObjectClass(jenv, jpublicKey);
+    if (NULL == public_key_cls) {
+        VSCF_ASSERT("Class PublicKey not found.");
+    }
+    jfieldID public_key_fidCtx = (*jenv)->GetFieldID(jenv, public_key_cls, "cCtx", "J");
+    if (NULL == public_key_fidCtx) {
+        VSCF_ASSERT("Class 'PublicKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ public_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
+
+    // Wrap input buffers
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_sec1_serializer_serialized_public_key_len((vscf_sec1_serializer_t /*9*/ *) c_ctx /*3*/, public_key/*a*/));
+
+    vscf_status_t status = vscf_sec1_serializer_serialize_public_key(sec1_serializer_ctx /*a1*/, public_key /*a6*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    vsc_buffer_delete(out);
+
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializedPrivateKeyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jprivateKey) {
+    // Cast class context
+    vscf_sec1_serializer_t /*9*/* sec1_serializer_ctx = (vscf_sec1_serializer_t /*9*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass private_key_cls = (*jenv)->GetObjectClass(jenv, jprivateKey);
+    if (NULL == private_key_cls) {
+        VSCF_ASSERT("Class PrivateKey not found.");
+    }
+    jfieldID private_key_fidCtx = (*jenv)->GetFieldID(jenv, private_key_cls, "cCtx", "J");
+    if (NULL == private_key_fidCtx) {
+        VSCF_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ private_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
+
+    jint ret = (jint) vscf_sec1_serializer_serialized_private_key_len(sec1_serializer_ctx /*a1*/, private_key /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializePrivateKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jprivateKey) {
+    // Cast class context
+    vscf_sec1_serializer_t /*9*/* sec1_serializer_ctx = (vscf_sec1_serializer_t /*9*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass private_key_cls = (*jenv)->GetObjectClass(jenv, jprivateKey);
+    if (NULL == private_key_cls) {
+        VSCF_ASSERT("Class PrivateKey not found.");
+    }
+    jfieldID private_key_fidCtx = (*jenv)->GetFieldID(jenv, private_key_cls, "cCtx", "J");
+    if (NULL == private_key_fidCtx) {
+        VSCF_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ private_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
+
+    // Wrap input buffers
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_sec1_serializer_serialized_private_key_len((vscf_sec1_serializer_t /*9*/ *) c_ctx /*3*/, private_key/*a*/));
+
+    vscf_status_t status = vscf_sec1_serializer_serialize_private_key(sec1_serializer_ctx /*a1*/, private_key /*a6*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    vsc_buffer_delete(out);
+
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1setAsn1Writer (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jasn1Writer) {
+    jclass asn1_writer_cls = (*jenv)->GetObjectClass(jenv, jasn1Writer);
+    if (NULL == asn1_writer_cls) {
+        VSCF_ASSERT("Class Asn1Writer not found.");
+    }
+    jfieldID asn1_writer_fidCtx = (*jenv)->GetFieldID(jenv, asn1_writer_cls, "cCtx", "J");
+    if (NULL == asn1_writer_fidCtx) {
+        VSCF_ASSERT("Class 'Asn1Writer' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ asn1_writer = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jasn1Writer, asn1_writer_fidCtx);
+
+    vscf_key_asn1_serializer_release_asn1_writer((vscf_key_asn1_serializer_t /*9*/ *) c_ctx);
+    vscf_key_asn1_serializer_use_asn1_writer((vscf_key_asn1_serializer_t /*9*/ *) c_ctx, asn1_writer);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_key_asn1_serializer_t /*9*/* key_asn1_serializer_ctx = (vscf_key_asn1_serializer_t /*9*/*) c_ctx;
+
+    vscf_key_asn1_serializer_setup_defaults(key_asn1_serializer_ctx /*a1*/);
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializePublicKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Cast class context
+    vscf_key_asn1_serializer_t /*9*/* key_asn1_serializer_ctx = (vscf_key_asn1_serializer_t /*9*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass public_key_cls = (*jenv)->GetObjectClass(jenv, jpublicKey);
+    if (NULL == public_key_cls) {
+        VSCF_ASSERT("Class PublicKey not found.");
+    }
+    jfieldID public_key_fidCtx = (*jenv)->GetFieldID(jenv, public_key_cls, "cCtx", "J");
+    if (NULL == public_key_fidCtx) {
+        VSCF_ASSERT("Class 'PublicKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ public_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
+
+    jint ret = (jint) vscf_key_asn1_serializer_serialize_public_key_inplace(key_asn1_serializer_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
+
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return 0;
+    }
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializePrivateKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jprivateKey) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Cast class context
+    vscf_key_asn1_serializer_t /*9*/* key_asn1_serializer_ctx = (vscf_key_asn1_serializer_t /*9*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass private_key_cls = (*jenv)->GetObjectClass(jenv, jprivateKey);
+    if (NULL == private_key_cls) {
+        VSCF_ASSERT("Class PrivateKey not found.");
+    }
+    jfieldID private_key_fidCtx = (*jenv)->GetFieldID(jenv, private_key_cls, "cCtx", "J");
+    if (NULL == private_key_fidCtx) {
+        VSCF_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ private_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
+
+    jint ret = (jint) vscf_key_asn1_serializer_serialize_private_key_inplace(key_asn1_serializer_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
+
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return 0;
+    }
+    return ret;
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1new__ (JNIEnv *jenv, jobject jobj) {
+    return (jlong) vscf_key_asn1_serializer_new();
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_key_asn1_serializer_delete((vscf_key_asn1_serializer_t /*9*/ *) c_ctx /*5*/);
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializedPublicKeyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
+    // Cast class context
+    vscf_key_asn1_serializer_t /*9*/* key_asn1_serializer_ctx = (vscf_key_asn1_serializer_t /*9*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass public_key_cls = (*jenv)->GetObjectClass(jenv, jpublicKey);
+    if (NULL == public_key_cls) {
+        VSCF_ASSERT("Class PublicKey not found.");
+    }
+    jfieldID public_key_fidCtx = (*jenv)->GetFieldID(jenv, public_key_cls, "cCtx", "J");
+    if (NULL == public_key_fidCtx) {
+        VSCF_ASSERT("Class 'PublicKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ public_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
+
+    jint ret = (jint) vscf_key_asn1_serializer_serialized_public_key_len(key_asn1_serializer_ctx /*a1*/, public_key /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializePublicKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey) {
+    // Cast class context
+    vscf_key_asn1_serializer_t /*9*/* key_asn1_serializer_ctx = (vscf_key_asn1_serializer_t /*9*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass public_key_cls = (*jenv)->GetObjectClass(jenv, jpublicKey);
+    if (NULL == public_key_cls) {
+        VSCF_ASSERT("Class PublicKey not found.");
+    }
+    jfieldID public_key_fidCtx = (*jenv)->GetFieldID(jenv, public_key_cls, "cCtx", "J");
+    if (NULL == public_key_fidCtx) {
+        VSCF_ASSERT("Class 'PublicKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ public_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
+
+    // Wrap input buffers
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_key_asn1_serializer_serialized_public_key_len((vscf_key_asn1_serializer_t /*9*/ *) c_ctx /*3*/, public_key/*a*/));
+
+    vscf_status_t status = vscf_key_asn1_serializer_serialize_public_key(key_asn1_serializer_ctx /*a1*/, public_key /*a6*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    vsc_buffer_delete(out);
+
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializedPrivateKeyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jprivateKey) {
+    // Cast class context
+    vscf_key_asn1_serializer_t /*9*/* key_asn1_serializer_ctx = (vscf_key_asn1_serializer_t /*9*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass private_key_cls = (*jenv)->GetObjectClass(jenv, jprivateKey);
+    if (NULL == private_key_cls) {
+        VSCF_ASSERT("Class PrivateKey not found.");
+    }
+    jfieldID private_key_fidCtx = (*jenv)->GetFieldID(jenv, private_key_cls, "cCtx", "J");
+    if (NULL == private_key_fidCtx) {
+        VSCF_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ private_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
+
+    jint ret = (jint) vscf_key_asn1_serializer_serialized_private_key_len(key_asn1_serializer_ctx /*a1*/, private_key /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializePrivateKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jprivateKey) {
+    // Cast class context
+    vscf_key_asn1_serializer_t /*9*/* key_asn1_serializer_ctx = (vscf_key_asn1_serializer_t /*9*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass private_key_cls = (*jenv)->GetObjectClass(jenv, jprivateKey);
+    if (NULL == private_key_cls) {
+        VSCF_ASSERT("Class PrivateKey not found.");
+    }
+    jfieldID private_key_fidCtx = (*jenv)->GetFieldID(jenv, private_key_cls, "cCtx", "J");
+    if (NULL == private_key_fidCtx) {
+        VSCF_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ private_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
+
+    // Wrap input buffers
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_key_asn1_serializer_serialized_private_key_len((vscf_key_asn1_serializer_t /*9*/ *) c_ctx /*3*/, private_key/*a*/));
+
+    vscf_status_t status = vscf_key_asn1_serializer_serialize_private_key(key_asn1_serializer_ctx /*a1*/, private_key /*a6*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    vsc_buffer_delete(out);
+
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1setAsn1Reader (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jasn1Reader) {
     jclass asn1_reader_cls = (*jenv)->GetObjectClass(jenv, jasn1Reader);
     if (NULL == asn1_reader_cls) {
         VSCF_ASSERT("Class Asn1Reader not found.");
@@ -6586,52 +7235,89 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_p
     }
     vscf_impl_t */*6*/ asn1_reader = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jasn1Reader, asn1_reader_fidCtx);
 
-    vscf_pkcs8_deserializer_release_asn1_reader((vscf_pkcs8_deserializer_t /*9*/ *) c_ctx);
-    vscf_pkcs8_deserializer_use_asn1_reader((vscf_pkcs8_deserializer_t /*9*/ *) c_ctx, asn1_reader);
+    vscf_key_asn1_deserializer_release_asn1_reader((vscf_key_asn1_deserializer_t /*9*/ *) c_ctx);
+    vscf_key_asn1_deserializer_use_asn1_reader((vscf_key_asn1_deserializer_t /*9*/ *) c_ctx, asn1_reader);
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Deserializer_1setDerDeserializer (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jderDeserializer) {
-    jclass der_deserializer_cls = (*jenv)->GetObjectClass(jenv, jderDeserializer);
-    if (NULL == der_deserializer_cls) {
-        VSCF_ASSERT("Class KeyDeserializer not found.");
-    }
-    jfieldID der_deserializer_fidCtx = (*jenv)->GetFieldID(jenv, der_deserializer_cls, "cCtx", "J");
-    if (NULL == der_deserializer_fidCtx) {
-        VSCF_ASSERT("Class 'KeyDeserializer' has no field 'cCtx'.");
-    }
-    vscf_impl_t */*6*/ der_deserializer = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jderDeserializer, der_deserializer_fidCtx);
-
-    vscf_pkcs8_deserializer_release_der_deserializer((vscf_pkcs8_deserializer_t /*9*/ *) c_ctx);
-    vscf_pkcs8_deserializer_use_der_deserializer((vscf_pkcs8_deserializer_t /*9*/ *) c_ctx, der_deserializer);
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Deserializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
-    vscf_pkcs8_deserializer_t /*9*/* pkcs8_deserializer_ctx = (vscf_pkcs8_deserializer_t /*9*/*) c_ctx;
+    vscf_key_asn1_deserializer_t /*9*/* key_asn1_deserializer_ctx = (vscf_key_asn1_deserializer_t /*9*/*) c_ctx;
 
-    vscf_pkcs8_deserializer_setup_defaults(pkcs8_deserializer_ctx /*a1*/);
+    vscf_key_asn1_deserializer_setup_defaults(key_asn1_deserializer_ctx /*a1*/);
 }
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Deserializer_1new__ (JNIEnv *jenv, jobject jobj) {
-    return (jlong) vscf_pkcs8_deserializer_new();
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Deserializer_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_pkcs8_deserializer_delete((vscf_pkcs8_deserializer_t /*9*/ *) c_ctx /*5*/);
-}
-
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Deserializer_1deserializePublicKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jpublicKeyData) {
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1deserializePublicKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Wrap errors
     struct vscf_error_t /*4*/ error;
     vscf_error_reset(&error);
     // Cast class context
-    vscf_pkcs8_deserializer_t /*9*/* pkcs8_deserializer_ctx = (vscf_pkcs8_deserializer_t /*9*/*) c_ctx;
+    vscf_key_asn1_deserializer_t /*9*/* key_asn1_deserializer_ctx = (vscf_key_asn1_deserializer_t /*9*/*) c_ctx;
+
+    const vscf_raw_key_t */*5*/ proxyResult = vscf_key_asn1_deserializer_deserialize_public_key_inplace(key_asn1_deserializer_ctx /*a1*/, &error /*a4*/);
+
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return NULL;
+    }
+    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/RawKey");
+    if (NULL == result_cls) {
+        VSCF_ASSERT("Class RawKey not found.");
+    }
+    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    if (NULL == result_methodID) {
+        VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
+    }
+
+    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1deserializePrivateKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Cast class context
+    vscf_key_asn1_deserializer_t /*9*/* key_asn1_deserializer_ctx = (vscf_key_asn1_deserializer_t /*9*/*) c_ctx;
+
+    const vscf_raw_key_t */*5*/ proxyResult = vscf_key_asn1_deserializer_deserialize_private_key_inplace(key_asn1_deserializer_ctx /*a1*/, &error /*a4*/);
+
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return NULL;
+    }
+    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/RawKey");
+    if (NULL == result_cls) {
+        VSCF_ASSERT("Class RawKey not found.");
+    }
+    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    if (NULL == result_methodID) {
+        VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
+    }
+
+    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1new__ (JNIEnv *jenv, jobject jobj) {
+    return (jlong) vscf_key_asn1_deserializer_new();
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_key_asn1_deserializer_delete((vscf_key_asn1_deserializer_t /*9*/ *) c_ctx /*5*/);
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1deserializePublicKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jpublicKeyData) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Cast class context
+    vscf_key_asn1_deserializer_t /*9*/* key_asn1_deserializer_ctx = (vscf_key_asn1_deserializer_t /*9*/*) c_ctx;
 
     // Wrap input data
     byte* public_key_data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpublicKeyData, NULL);
     vsc_data_t public_key_data = vsc_data(public_key_data_arr, (*jenv)->GetArrayLength(jenv, jpublicKeyData));
 
-    const vscf_raw_key_t */*5*/ proxyResult = vscf_pkcs8_deserializer_deserialize_public_key(pkcs8_deserializer_ctx /*a1*/, public_key_data /*a3*/, &error /*a4*/);
+    const vscf_raw_key_t */*5*/ proxyResult = vscf_key_asn1_deserializer_deserialize_public_key(key_asn1_deserializer_ctx /*a1*/, public_key_data /*a3*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -6653,18 +7339,18 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     return ret;
 }
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Deserializer_1deserializePrivateKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jprivateKeyData) {
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1deserializePrivateKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jprivateKeyData) {
     // Wrap errors
     struct vscf_error_t /*4*/ error;
     vscf_error_reset(&error);
     // Cast class context
-    vscf_pkcs8_deserializer_t /*9*/* pkcs8_deserializer_ctx = (vscf_pkcs8_deserializer_t /*9*/*) c_ctx;
+    vscf_key_asn1_deserializer_t /*9*/* key_asn1_deserializer_ctx = (vscf_key_asn1_deserializer_t /*9*/*) c_ctx;
 
     // Wrap input data
     byte* private_key_data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jprivateKeyData, NULL);
     vsc_data_t private_key_data = vsc_data(private_key_data_arr, (*jenv)->GetArrayLength(jenv, jprivateKeyData));
 
-    const vscf_raw_key_t */*5*/ proxyResult = vscf_pkcs8_deserializer_deserialize_private_key(pkcs8_deserializer_ctx /*a1*/, private_key_data /*a3*/, &error /*a4*/);
+    const vscf_raw_key_t */*5*/ proxyResult = vscf_key_asn1_deserializer_deserialize_private_key(key_asn1_deserializer_ctx /*a1*/, private_key_data /*a3*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -8151,6 +8837,86 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     vscf_pbe_alg_info_t /*9*/* pbe_alg_info_ctx = (vscf_pbe_alg_info_t /*9*/*) c_ctx;
 
     const vscf_alg_id_t proxyResult = vscf_pbe_alg_info_alg_id(pbe_alg_info_ctx /*a1*/);
+    jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/AlgId");
+    if (NULL == cls) {
+        VSCF_ASSERT("Enum AlgId not found.");
+    }
+
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "fromCode", "(I)Lcom/virgilsecurity/crypto/foundation/AlgId;");
+    if (NULL == methodID) {
+        VSCF_ASSERT("Enum AlgId has no method 'fromCode'.");
+    }
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecAlgInfo_1keyId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_ec_alg_info_t /*9*/* ec_alg_info_ctx = (vscf_ec_alg_info_t /*9*/*) c_ctx;
+
+    const vscf_oid_id_t proxyResult = vscf_ec_alg_info_key_id(ec_alg_info_ctx /*a1*/);
+    jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/OidId");
+    if (NULL == cls) {
+        VSCF_ASSERT("Enum OidId not found.");
+    }
+
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "fromCode", "(I)Lcom/virgilsecurity/crypto/foundation/OidId;");
+    if (NULL == methodID) {
+        VSCF_ASSERT("Enum OidId has no method 'fromCode'.");
+    }
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecAlgInfo_1domainId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_ec_alg_info_t /*9*/* ec_alg_info_ctx = (vscf_ec_alg_info_t /*9*/*) c_ctx;
+
+    const vscf_oid_id_t proxyResult = vscf_ec_alg_info_domain_id(ec_alg_info_ctx /*a1*/);
+    jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/OidId");
+    if (NULL == cls) {
+        VSCF_ASSERT("Enum OidId not found.");
+    }
+
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "fromCode", "(I)Lcom/virgilsecurity/crypto/foundation/OidId;");
+    if (NULL == methodID) {
+        VSCF_ASSERT("Enum OidId has no method 'fromCode'.");
+    }
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecAlgInfo_1new__ (JNIEnv *jenv, jobject jobj) {
+    return (jlong) vscf_ec_alg_info_new();
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecAlgInfo_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_ec_alg_info_delete((vscf_ec_alg_info_t /*9*/ *) c_ctx /*5*/);
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecAlgInfo_1new__Lcom_virgilsecurity_crypto_foundation_AlgId_2Lcom_virgilsecurity_crypto_foundation_OidId_2Lcom_virgilsecurity_crypto_foundation_OidId_2 (JNIEnv *jenv, jobject jobj, jobject jalgId, jobject jkeyId, jobject jdomainId) {
+    // Wrap enums
+    jclass alg_id_cls = (*jenv)->GetObjectClass(jenv, jalgId);
+    jmethodID alg_id_methodID = (*jenv)->GetMethodID(jenv, alg_id_cls, "getCode", "()I");
+    vscf_alg_id_t /*8*/ alg_id = (vscf_alg_id_t /*8*/) (*jenv)->CallIntMethod(jenv, jalgId, alg_id_methodID);
+
+    jclass key_id_cls = (*jenv)->GetObjectClass(jenv, jkeyId);
+    jmethodID key_id_methodID = (*jenv)->GetMethodID(jenv, key_id_cls, "getCode", "()I");
+    vscf_oid_id_t /*8*/ key_id = (vscf_oid_id_t /*8*/) (*jenv)->CallIntMethod(jenv, jkeyId, key_id_methodID);
+
+    jclass domain_id_cls = (*jenv)->GetObjectClass(jenv, jdomainId);
+    jmethodID domain_id_methodID = (*jenv)->GetMethodID(jenv, domain_id_cls, "getCode", "()I");
+    vscf_oid_id_t /*8*/ domain_id = (vscf_oid_id_t /*8*/) (*jenv)->CallIntMethod(jenv, jdomainId, domain_id_methodID);
+
+    jlong proxyResult = (jlong) vscf_ec_alg_info_new_with_members(alg_id /*a7*/, key_id /*a7*/, domain_id /*a7*/);
+    return proxyResult;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecAlgInfo_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_ec_alg_info_t /*9*/* ec_alg_info_ctx = (vscf_ec_alg_info_t /*9*/*) c_ctx;
+
+    const vscf_alg_id_t proxyResult = vscf_ec_alg_info_alg_id(ec_alg_info_ctx /*a1*/);
     jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/AlgId");
     if (NULL == cls) {
         VSCF_ASSERT("Enum AlgId not found.");

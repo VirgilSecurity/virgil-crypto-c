@@ -70,6 +70,13 @@ public class Oid {
     }
 
     /*
+    * Map oid identifier to the algorithm identifier.
+    */
+    public static AlgId idToAlgId(OidId oidId) {
+        return FoundationJNI.INSTANCE.oid_idToAlgId(oidId);
+    }
+
+    /*
     * Return true if given OIDs are equal.
     */
     public static boolean equal(byte[] lhs, byte[] rhs) {

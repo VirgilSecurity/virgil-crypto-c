@@ -96,15 +96,15 @@ public class KeyProvider implements AutoCloseable {
     /*
     * Import private key from the PKCS#8 format.
     */
-    public PrivateKey importPrivateKey(byte[] pkcs8Data) throws FoundationException {
-        return FoundationJNI.INSTANCE.keyProvider_importPrivateKey(this.cCtx, pkcs8Data);
+    public PrivateKey importPrivateKey(byte[] keyData) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_importPrivateKey(this.cCtx, keyData);
     }
 
     /*
     * Import public key from the PKCS#8 format.
     */
-    public PublicKey importPublicKey(byte[] pkcs8Data) throws FoundationException {
-        return FoundationJNI.INSTANCE.keyProvider_importPublicKey(this.cCtx, pkcs8Data);
+    public PublicKey importPublicKey(byte[] keyData) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_importPublicKey(this.cCtx, keyData);
     }
 
     /*
@@ -135,7 +135,7 @@ public class KeyProvider implements AutoCloseable {
     }
 
     /*
-    * Export given private key to the PKCS#8 DER format.
+    * Export given private key to the PKCS#8 or SEC1 DER format.
     *
     * Precondition: private key must be exportable.
     */

@@ -58,7 +58,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
-#include "vscf_pkcs8_der_deserializer.h"
+#include "vscf_pkcs8_deserializer.h"
 #include "vscf_impl.h"
 
 // clang-format on
@@ -79,7 +79,7 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-struct vscf_pkcs8_der_deserializer_t {
+struct vscf_pkcs8_deserializer_t {
     //
     //  Compile-time known information about this implementation.
     //

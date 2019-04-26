@@ -54,6 +54,7 @@
 #define VSCF_PKCS8_SERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_error.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
 
@@ -159,29 +160,28 @@ VSCF_PUBLIC void
 vscf_pkcs8_serializer_release_asn1_writer(vscf_pkcs8_serializer_t *self);
 
 //
-//  Setup dependency to the interface 'key serializer' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_pkcs8_serializer_use_der_serializer(vscf_pkcs8_serializer_t *self, vscf_impl_t *der_serializer);
-
-//
-//  Setup dependency to the interface 'key serializer' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_pkcs8_serializer_take_der_serializer(vscf_pkcs8_serializer_t *self, vscf_impl_t *der_serializer);
-
-//
-//  Release dependency to the interface 'key serializer'.
-//
-VSCF_PUBLIC void
-vscf_pkcs8_serializer_release_der_serializer(vscf_pkcs8_serializer_t *self);
-
-//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC void
 vscf_pkcs8_serializer_setup_defaults(vscf_pkcs8_serializer_t *self);
+
+//
+//  Serialize Public Key by using internal ASN.1 writer.
+//  Note, that caller code is responsible to reset ASN.1 writer with
+//  an output buffer.
+//
+VSCF_PUBLIC size_t
+vscf_pkcs8_serializer_serialize_public_key_inplace(vscf_pkcs8_serializer_t *self, const vscf_impl_t *public_key,
+        vscf_error_t *error);
+
+//
+//  Serialize Private Key by using internal ASN.1 writer.
+//  Note, that caller code is responsible to reset ASN.1 writer with
+//  an output buffer.
+//
+VSCF_PUBLIC size_t
+vscf_pkcs8_serializer_serialize_private_key_inplace(vscf_pkcs8_serializer_t *self, const vscf_impl_t *private_key,
+        vscf_error_t *error);
 
 //
 //  Calculate buffer size enough to hold serialized public key.

@@ -51,11 +51,11 @@
 //  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_PKCS8_DESERIALIZER_INTERNAL_H_INCLUDED
-#define VSCF_PKCS8_DESERIALIZER_INTERNAL_H_INCLUDED
+#ifndef VSCF_SECP256R1_PUBLIC_KEY_INTERNAL_H_INCLUDED
+#define VSCF_SECP256R1_PUBLIC_KEY_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_pkcs8_deserializer.h"
+#include "vscf_secp256r1_public_key.h"
 
 // clang-format on
 //  @end
@@ -72,6 +72,22 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_secp256r1_public_key_init() is called.
+//  Note, that context is already zeroed.
+//
+VSCF_PRIVATE void
+vscf_secp256r1_public_key_init_ctx(vscf_secp256r1_public_key_t *self);
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_secp256r1_public_key_cleanup_ctx(vscf_secp256r1_public_key_t *self);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -86,5 +102,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSCF_PKCS8_DESERIALIZER_INTERNAL_H_INCLUDED
+#endif // VSCF_SECP256R1_PUBLIC_KEY_INTERNAL_H_INCLUDED
 //  @end

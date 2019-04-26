@@ -55,7 +55,7 @@
 #define VSCF_PKCS8_DER_SERIALIZER_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_pkcs8_der_serializer.h"
+#include "vscf_pkcs8_serializer.h"
 
 // clang-format on
 //  @end

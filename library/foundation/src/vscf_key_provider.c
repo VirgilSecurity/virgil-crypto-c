@@ -67,8 +67,10 @@
 #include "vscf_ed25519_private_key.h"
 #include "vscf_curve25519_public_key.h"
 #include "vscf_curve25519_private_key.h"
-#include "vscf_pkcs8_deserializer.h"
-#include "vscf_pkcs8_der_serializer.h"
+#include "vscf_secp256r1_public_key.h"
+#include "vscf_secp256r1_private_key.h"
+#include "vscf_key_asn1_deserializer.h"
+#include "vscf_key_asn1_serializer.h"
 
 // clang-format on
 //  @end
@@ -308,13 +310,13 @@ vscf_key_provider_init_ctx(vscf_key_provider_t *self) {
 
     self->rsa_bitlen = 2048;
 
-    vscf_pkcs8_der_serializer_t *pkcs8_der_serializer = vscf_pkcs8_der_serializer_new();
-    vscf_pkcs8_der_serializer_setup_defaults(pkcs8_der_serializer);
-    self->pkcs8_serializer = vscf_pkcs8_der_serializer_impl(pkcs8_der_serializer);
+    vscf_key_asn1_serializer_t *key_asn1_serializer = vscf_key_asn1_serializer_new();
+    vscf_key_asn1_serializer_setup_defaults(key_asn1_serializer);
+    self->key_asn1_serializer = vscf_key_asn1_serializer_impl(key_asn1_serializer);
 
-    vscf_pkcs8_deserializer_t *pkcs8_deserializer = vscf_pkcs8_deserializer_new();
-    vscf_pkcs8_deserializer_setup_defaults(pkcs8_deserializer);
-    self->pkcs8_deserializer = vscf_pkcs8_deserializer_impl(pkcs8_deserializer);
+    vscf_key_asn1_deserializer_t *key_asn1_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(key_asn1_deserializer);
+    self->key_asn1_deserializer = vscf_key_asn1_deserializer_impl(key_asn1_deserializer);
 }
 
 //
@@ -327,8 +329,8 @@ vscf_key_provider_cleanup_ctx(vscf_key_provider_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&self->pkcs8_serializer);
-    vscf_impl_destroy(&self->pkcs8_deserializer);
+    vscf_impl_destroy(&self->key_asn1_serializer);
+    vscf_impl_destroy(&self->key_asn1_deserializer);
 }
 
 //
@@ -434,6 +436,21 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
         break;
     }
 
+    case vscf_alg_id_SECP256R1: {
+        VSCF_ASSERT_PTR(self->ecies);
+        vscf_secp256r1_private_key_t *private_key = vscf_secp256r1_private_key_new();
+        key = vscf_secp256r1_private_key_impl(private_key);
+        vscf_secp256r1_private_key_use_random(private_key, self->random);
+
+        status = vscf_secp256r1_private_key_setup_defaults(private_key);
+        if (status != vscf_status_SUCCESS) {
+            break;
+        }
+
+        status = vscf_secp256r1_private_key_generate_key(private_key);
+        break;
+    }
+
     default:
         VSCF_ASSERT(0 && "Unhandled algorithm identifier.");
         status = vscf_status_ERROR_KEY_GENERATION_FAILED;
@@ -453,15 +470,15 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
 //  Import private key from the PKCS#8 format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8_data, vscf_error_t *error) {
+vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t key_data, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
-    VSCF_ASSERT_PTR(self->pkcs8_deserializer);
-    VSCF_ASSERT(vsc_data_is_valid(pkcs8_data));
+    VSCF_ASSERT_PTR(self->key_asn1_deserializer);
+    VSCF_ASSERT(vsc_data_is_valid(key_data));
 
     vscf_raw_key_t *raw_key =
-            vscf_key_deserializer_deserialize_private_key(self->pkcs8_deserializer, pkcs8_data, error);
+            vscf_key_deserializer_deserialize_private_key(self->key_asn1_deserializer, key_data, error);
 
     if (raw_key == NULL) {
         return NULL;
@@ -510,6 +527,19 @@ vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8
         break;
     }
 
+    case vscf_alg_id_SECP256R1: {
+        VSCF_ASSERT_PTR(self->ecies);
+        vscf_secp256r1_private_key_t *secp256r1_private_key = vscf_secp256r1_private_key_new();
+        vscf_secp256r1_private_key_use_random(secp256r1_private_key, self->random);
+        status = vscf_secp256r1_private_key_setup_defaults(secp256r1_private_key);
+        if (status != vscf_status_SUCCESS) {
+            break;
+        }
+
+        private_key = vscf_secp256r1_private_key_impl(secp256r1_private_key);
+        break;
+    }
+
     default:
         status = vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
         break;
@@ -537,14 +567,15 @@ vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8
 //  Import public key from the PKCS#8 format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t pkcs8_data, vscf_error_t *error) {
+vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t key_data, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
-    VSCF_ASSERT_PTR(self->pkcs8_deserializer);
-    VSCF_ASSERT(vsc_data_is_valid(pkcs8_data));
+    VSCF_ASSERT_PTR(self->key_asn1_deserializer);
+    VSCF_ASSERT(vsc_data_is_valid(key_data));
 
-    vscf_raw_key_t *raw_key = vscf_key_deserializer_deserialize_public_key(self->pkcs8_deserializer, pkcs8_data, error);
+    vscf_raw_key_t *raw_key =
+            vscf_key_deserializer_deserialize_public_key(self->key_asn1_deserializer, key_data, error);
 
     if (raw_key == NULL) {
         return NULL;
@@ -592,6 +623,19 @@ vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t pkcs8_
         break;
     }
 
+    case vscf_alg_id_SECP256R1: {
+        VSCF_ASSERT_PTR(self->ecies);
+        vscf_secp256r1_public_key_t *secp256r1_public_key = vscf_secp256r1_public_key_new();
+        vscf_secp256r1_public_key_use_random(secp256r1_public_key, self->random);
+        status = vscf_secp256r1_public_key_setup_defaults(secp256r1_public_key);
+        if (status != vscf_status_SUCCESS) {
+            break;
+        }
+
+        public_key = vscf_secp256r1_public_key_impl(secp256r1_public_key);
+        break;
+    }
+
     default:
         status = vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
         break;
@@ -624,11 +668,11 @@ VSCF_PUBLIC size_t
 vscf_key_provider_exported_public_key_len(vscf_key_provider_t *self, const vscf_impl_t *public_key) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->pkcs8_serializer);
+    VSCF_ASSERT_PTR(self->key_asn1_serializer);
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_public_key_can_export_public_key(vscf_public_key_api(public_key)));
 
-    size_t len = vscf_key_serializer_serialized_public_key_len(self->pkcs8_serializer, public_key);
+    size_t len = vscf_key_serializer_serialized_public_key_len(self->key_asn1_serializer, public_key);
     return len;
 }
 
@@ -641,14 +685,14 @@ VSCF_PUBLIC vscf_status_t
 vscf_key_provider_export_public_key(vscf_key_provider_t *self, const vscf_impl_t *public_key, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->pkcs8_serializer);
+    VSCF_ASSERT_PTR(self->key_asn1_serializer);
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_public_key_can_export_public_key(vscf_public_key_api(public_key)));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_key_provider_exported_public_key_len(self, public_key));
 
-    vscf_status_t status = vscf_key_serializer_serialize_public_key(self->pkcs8_serializer, public_key, out);
+    vscf_status_t status = vscf_key_serializer_serialize_public_key(self->key_asn1_serializer, public_key, out);
     return status;
 }
 
@@ -661,16 +705,16 @@ VSCF_PUBLIC size_t
 vscf_key_provider_exported_private_key_len(vscf_key_provider_t *self, const vscf_impl_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->pkcs8_serializer);
+    VSCF_ASSERT_PTR(self->key_asn1_serializer);
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_can_export_private_key(vscf_private_key_api(private_key)));
 
-    size_t len = vscf_key_serializer_serialized_private_key_len(self->pkcs8_serializer, private_key);
+    size_t len = vscf_key_serializer_serialized_private_key_len(self->key_asn1_serializer, private_key);
     return len;
 }
 
 //
-//  Export given private key to the PKCS#8 DER format.
+//  Export given private key to the PKCS#8 or SEC1 DER format.
 //
 //  Precondition: private key must be exportable.
 //
@@ -678,13 +722,13 @@ VSCF_PUBLIC vscf_status_t
 vscf_key_provider_export_private_key(vscf_key_provider_t *self, const vscf_impl_t *private_key, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->pkcs8_serializer);
+    VSCF_ASSERT_PTR(self->key_asn1_serializer);
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_can_export_private_key(vscf_private_key_api(private_key)));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_key_provider_exported_private_key_len(self, private_key));
 
-    vscf_status_t status = vscf_key_serializer_serialize_private_key(self->pkcs8_serializer, private_key, out);
+    vscf_status_t status = vscf_key_serializer_serialize_private_key(self->key_asn1_serializer, private_key, out);
     return status;
 }

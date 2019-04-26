@@ -37,7 +37,7 @@
 package com.virgilsecurity.crypto.foundation;
 
 /*
-* Implements PKCS#8 key serialization to PEM format.
+* Implements PKCS#8 key serialization to DER format.
 */
 public class Pkcs8Serializer implements AutoCloseable, KeySerializer {
 
@@ -62,15 +62,29 @@ public class Pkcs8Serializer implements AutoCloseable, KeySerializer {
         FoundationJNI.INSTANCE.pkcs8Serializer_setAsn1Writer(this.cCtx, asn1Writer);
     }
 
-    public void setDerSerializer(KeySerializer derSerializer) {
-        FoundationJNI.INSTANCE.pkcs8Serializer_setDerSerializer(this.cCtx, derSerializer);
-    }
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
     public void setupDefaults() {
         FoundationJNI.INSTANCE.pkcs8Serializer_setupDefaults(this.cCtx);
+    }
+
+    /*
+    * Serialize Public Key by using internal ASN.1 writer.
+    * Note, that caller code is responsible to reset ASN.1 writer with
+    * an output buffer.
+    */
+    public int serializePublicKeyInplace(PublicKey publicKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.pkcs8Serializer_serializePublicKeyInplace(this.cCtx, publicKey);
+    }
+
+    /*
+    * Serialize Private Key by using internal ASN.1 writer.
+    * Note, that caller code is responsible to reset ASN.1 writer with
+    * an output buffer.
+    */
+    public int serializePrivateKeyInplace(PrivateKey privateKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.pkcs8Serializer_serializePrivateKeyInplace(this.cCtx, privateKey);
     }
 
     /* Close resource. */

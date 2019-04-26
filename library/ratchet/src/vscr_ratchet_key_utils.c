@@ -55,7 +55,7 @@
 #include "vscr_assert.h"
 #include "vscr_ratchet_key_utils_defs.h"
 
-#include <virgil/crypto/foundation/vscf_pkcs8_der_deserializer.h>
+#include <virgil/crypto/foundation/vscf_key_asn1_deserializer.h>
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
@@ -212,8 +212,8 @@ vscr_ratchet_key_utils_init_ctx(vscr_ratchet_key_utils_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    self->pkcs8 = vscf_pkcs8_der_deserializer_new();
-    vscf_pkcs8_der_deserializer_setup_defaults(self->pkcs8);
+    self->key_asn1_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(self->key_asn1_deserializer);
 }
 
 //
@@ -226,7 +226,7 @@ vscr_ratchet_key_utils_cleanup_ctx(vscr_ratchet_key_utils_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    vscf_pkcs8_der_deserializer_destroy(&self->pkcs8);
+    vscf_key_asn1_deserializer_destroy(&self->key_asn1_deserializer);
 }
 
 VSCR_PUBLIC vsc_buffer_t *
@@ -238,7 +238,8 @@ vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self
 
     vsc_buffer_t *result = NULL;
 
-    vscf_raw_key_t *raw_key = vscf_pkcs8_der_deserializer_deserialize_public_key(self->pkcs8, data, &error_ctx);
+    vscf_raw_key_t *raw_key =
+            vscf_key_asn1_deserializer_deserialize_public_key(self->key_asn1_deserializer, data, &error_ctx);
 
     if (vscf_error_has_error(&error_ctx)) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
@@ -303,7 +304,8 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *sel
 
     vsc_buffer_t *result = NULL;
 
-    vscf_raw_key_t *raw_key = vscf_pkcs8_der_deserializer_deserialize_private_key(self->pkcs8, data, &error_ctx);
+    vscf_raw_key_t *raw_key =
+            vscf_key_asn1_deserializer_deserialize_private_key(self->key_asn1_deserializer, data, &error_ctx);
 
     if (vscf_error_has_error(&error_ctx)) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
@@ -312,17 +314,16 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *sel
     }
 
     if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_CURVE25519 && curve25519) {
-        if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_KEY_LEN + 2) {
+        if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_KEY_LEN) {
             VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_INVALID_KEY_TYPE);
 
             goto err;
         }
 
-        result = vsc_buffer_new_with_data(
-                vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_KEY_LEN));
+        result = vsc_buffer_new_with_data(vscf_raw_key_data(raw_key));
         vsc_buffer_make_secure(result);
     } else if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_ED25519 && ed25519) {
-        if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_KEY_LEN + 2) {
+        if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_KEY_LEN) {
             VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
 
             goto err;
@@ -332,8 +333,8 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *sel
             result = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_KEY_LEN);
             vsc_buffer_make_secure(result);
 
-            int curve25519_status = ed25519_key_to_curve25519(vsc_buffer_unused_bytes(result),
-                    vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_KEY_LEN).bytes);
+            int curve25519_status =
+                    ed25519_key_to_curve25519(vsc_buffer_unused_bytes(result), vscf_raw_key_data(raw_key).bytes);
 
             if (curve25519_status != 0) {
                 VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_CURVE25519);
@@ -345,8 +346,7 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *sel
 
             vsc_buffer_inc_used(result, vscr_ratchet_common_hidden_KEY_LEN);
         } else {
-            result = vsc_buffer_new_with_data(
-                    vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_KEY_LEN));
+            result = vsc_buffer_new_with_data(vscf_raw_key_data(raw_key));
         }
     } else {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_INVALID_KEY_TYPE);

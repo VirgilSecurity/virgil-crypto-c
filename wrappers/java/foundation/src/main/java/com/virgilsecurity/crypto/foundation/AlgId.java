@@ -51,12 +51,13 @@ public enum AlgId {
     RSA(7),
     ED25519(8),
     CURVE25519(9),
-    AES256_GCM(10),
-    AES256_CBC(11),
-    HMAC(12),
-    HKDF(13),
-    PKCS5_PBKDF2(14),
-    PKCS5_PBES2(15);
+    SECP256R1(10),
+    AES256_GCM(11),
+    AES256_CBC(12),
+    HMAC(13),
+    HKDF(14),
+    PKCS5_PBKDF2(15),
+    PKCS5_PBES2(16);
 
     private final int code;
 
