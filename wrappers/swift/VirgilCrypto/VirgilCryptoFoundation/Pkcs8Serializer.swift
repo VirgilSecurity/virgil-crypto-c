@@ -36,7 +36,7 @@
 import Foundation
 import VSCFoundation
 
-/// Implements PKCS#8 key serialization to PEM format.
+/// Implements PKCS#8 key serialization to DER format.
 @objc(VSCFPkcs8Serializer) public class Pkcs8Serializer: NSObject, KeySerializer {
 
     /// Handle underlying C context.
@@ -72,14 +72,51 @@ import VSCFoundation
         vscf_pkcs8_serializer_use_asn1_writer(self.c_ctx, asn1Writer.c_ctx)
     }
 
-    @objc public func setDerSerializer(derSerializer: KeySerializer) {
-        vscf_pkcs8_serializer_release_der_serializer(self.c_ctx)
-        vscf_pkcs8_serializer_use_der_serializer(self.c_ctx, derSerializer.c_ctx)
-    }
-
     /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() {
         vscf_pkcs8_serializer_setup_defaults(self.c_ctx)
+    }
+
+    /// Serialize Public Key by using internal ASN.1 writer.
+    /// Note, that caller code is responsible to reset ASN.1 writer with
+    /// an output buffer.
+    public func serializePublicKeyInplace(publicKey: PublicKey) throws -> Int {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = vscf_pkcs8_serializer_serialize_public_key_inplace(self.c_ctx, publicKey.c_ctx, &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return proxyResult
+    }
+
+    /// Serialize Public Key by using internal ASN.1 writer.
+    /// Note, that caller code is responsible to reset ASN.1 writer with
+    /// an output buffer.
+    @objc public func serializePublicKeyInplace(publicKey: PublicKey) throws -> NSNumber {
+        return NSNumber(value: try self.serializePublicKeyInplace(publicKey: publicKey))
+    }
+
+    /// Serialize Private Key by using internal ASN.1 writer.
+    /// Note, that caller code is responsible to reset ASN.1 writer with
+    /// an output buffer.
+    public func serializePrivateKeyInplace(privateKey: PrivateKey) throws -> Int {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = vscf_pkcs8_serializer_serialize_private_key_inplace(self.c_ctx, privateKey.c_ctx, &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return proxyResult
+    }
+
+    /// Serialize Private Key by using internal ASN.1 writer.
+    /// Note, that caller code is responsible to reset ASN.1 writer with
+    /// an output buffer.
+    @objc public func serializePrivateKeyInplace(privateKey: PrivateKey) throws -> NSNumber {
+        return NSNumber(value: try self.serializePrivateKeyInplace(privateKey: privateKey))
     }
 
     /// Calculate buffer size enough to hold serialized public key.

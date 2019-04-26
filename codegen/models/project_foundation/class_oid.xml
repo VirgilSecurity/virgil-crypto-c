@@ -38,6 +38,15 @@
     </method>
 
 
+    <method name="id to alg id">
+        Map oid identifier to the algorithm identifier.
+
+        <argument name="oid id" enum="oid id"/>
+
+        <return enum="alg id"/>
+    </method>
+
+
     <method name="equal">
         Return true if given OIDs are equal.
 

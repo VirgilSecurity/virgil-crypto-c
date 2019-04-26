@@ -45,7 +45,7 @@
 #include "vscf_curve25519_public_key.h"
 #include "vscr_ratchet_skipped_messages_defs.h"
 #include "vscf_ctr_drbg.h"
-#include "vscf_pkcs8_der_serializer_defs.h"
+#include "vscf_pkcs8_serializer.h"
 #include "vscf_ed25519_private_key_defs.h"
 #include "vscf_ed25519_public_key.h"
 #include "vscr_ratchet_group_session.h"
@@ -150,8 +150,8 @@ generate_permutation(vscf_ctr_drbg_t *rng, size_t n, size_t *buffer) {
 
 void
 generate_PKCS8_ed_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub) {
-    vscf_pkcs8_der_serializer_t *pkcs8 = vscf_pkcs8_der_serializer_new();
-    vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
+    vscf_pkcs8_serializer_t *pkcs8 = vscf_pkcs8_serializer_new();
+    vscf_pkcs8_serializer_setup_defaults(pkcs8);
 
     vscf_ed25519_private_key_t *ed25519_private_key = vscf_ed25519_private_key_new();
     vscf_impl_t *private_key = vscf_ed25519_private_key_impl(ed25519_private_key);
@@ -159,21 +159,21 @@ generate_PKCS8_ed_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ed25519_private_key_generate_key(ed25519_private_key));
 
-    size_t len_private = vscf_pkcs8_der_serializer_serialized_private_key_len(pkcs8, private_key);
+    size_t len_private = vscf_pkcs8_serializer_serialized_private_key_len(pkcs8, private_key);
 
     *priv = vsc_buffer_new_with_capacity(len_private);
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_der_serializer_serialize_private_key(pkcs8, private_key, *priv));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_private_key(pkcs8, private_key, *priv));
 
     vscf_impl_t *public_key = vscf_ed25519_private_key_extract_public_key(ed25519_private_key);
 
-    size_t len_public = vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8, public_key);
+    size_t len_public = vscf_pkcs8_serializer_serialized_public_key_len(pkcs8, public_key);
 
     *pub = vsc_buffer_new_with_capacity(len_public);
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_der_serializer_serialize_public_key(pkcs8, public_key, *pub));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_public_key(pkcs8, public_key, *pub));
 
-    vscf_pkcs8_der_serializer_destroy(&pkcs8);
+    vscf_pkcs8_serializer_destroy(&pkcs8);
 
     vscf_ed25519_public_key_destroy((vscf_ed25519_public_key_t **)&public_key);
     vscf_ed25519_private_key_destroy((vscf_ed25519_private_key_t **)&private_key);
@@ -181,8 +181,8 @@ generate_PKCS8_ed_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_
 
 void
 generate_PKCS8_curve_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub) {
-    vscf_pkcs8_der_serializer_t *pkcs8 = vscf_pkcs8_der_serializer_new();
-    vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
+    vscf_pkcs8_serializer_t *pkcs8 = vscf_pkcs8_serializer_new();
+    vscf_pkcs8_serializer_setup_defaults(pkcs8);
 
     vscf_curve25519_private_key_t *curve25519_private_key = vscf_curve25519_private_key_new();
     vscf_impl_t *private_key = vscf_curve25519_private_key_impl(curve25519_private_key);
@@ -190,21 +190,21 @@ generate_PKCS8_curve_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buff
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_curve25519_private_key_generate_key(curve25519_private_key));
 
-    size_t len_private = vscf_pkcs8_der_serializer_serialized_private_key_len(pkcs8, private_key);
+    size_t len_private = vscf_pkcs8_serializer_serialized_private_key_len(pkcs8, private_key);
 
     *priv = vsc_buffer_new_with_capacity(len_private);
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_der_serializer_serialize_private_key(pkcs8, private_key, *priv));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_private_key(pkcs8, private_key, *priv));
 
     vscf_impl_t *public_key = vscf_curve25519_private_key_extract_public_key(curve25519_private_key);
 
-    size_t len_public = vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8, public_key);
+    size_t len_public = vscf_pkcs8_serializer_serialized_public_key_len(pkcs8, public_key);
 
     *pub = vsc_buffer_new_with_capacity(len_public);
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_der_serializer_serialize_public_key(pkcs8, public_key, *pub));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_public_key(pkcs8, public_key, *pub));
 
-    vscf_pkcs8_der_serializer_destroy(&pkcs8);
+    vscf_pkcs8_serializer_destroy(&pkcs8);
 
     vscf_curve25519_public_key_destroy((vscf_curve25519_public_key_t **)&public_key);
     vscf_curve25519_private_key_destroy((vscf_curve25519_private_key_t **)&private_key);

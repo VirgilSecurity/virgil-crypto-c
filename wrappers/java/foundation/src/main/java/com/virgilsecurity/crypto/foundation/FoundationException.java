@@ -93,6 +93,14 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_BAD_CURVE25519_PRIVATE_KEY = -220;
 
+    public static final int ERROR_BAD_SEC1_PUBLIC_KEY = -221;
+
+    public static final int ERROR_BAD_SEC1_PRIVATE_KEY = -222;
+
+    public static final int ERROR_BAD_DER_PUBLIC_KEY = -223;
+
+    public static final int ERROR_BAD_DER_PRIVATE_KEY = -224;
+
     public static final int ERROR_NO_MESSAGE_INFO = -301;
 
     public static final int ERROR_BAD_MESSAGE_INFO = -302;
@@ -175,6 +183,14 @@ public class FoundationException extends RuntimeException {
             return "CURVE25519 public key is corrupted.";
         case ERROR_BAD_CURVE25519_PRIVATE_KEY:
             return "CURVE25519 private key is corrupted.";
+        case ERROR_BAD_SEC1_PUBLIC_KEY:
+            return "Elliptic curve public key format is corrupted see RFC 5480.";
+        case ERROR_BAD_SEC1_PRIVATE_KEY:
+            return "Elliptic curve public key format is corrupted see RFC 5915.";
+        case ERROR_BAD_DER_PUBLIC_KEY:
+            return "ASN.1 representation of a public key is corrupted.";
+        case ERROR_BAD_DER_PRIVATE_KEY:
+            return "ASN.1 representation of a private key is corrupted.";
         case ERROR_NO_MESSAGE_INFO:
             return "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.";
         case ERROR_BAD_MESSAGE_INFO:

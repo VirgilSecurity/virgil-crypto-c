@@ -73,6 +73,13 @@ import VSCFoundation
         return OidId.init(fromC: proxyResult)
     }
 
+    /// Map oid identifier to the algorithm identifier.
+    @objc public static func idToAlgId(oidId: OidId) -> AlgId {
+        let proxyResult = vscf_oid_id_to_alg_id(vscf_oid_id_t(rawValue: UInt32(oidId.rawValue)))
+
+        return AlgId.init(fromC: proxyResult)
+    }
+
     /// Return true if given OIDs are equal.
     @objc public static func equal(lhs: Data, rhs: Data) -> Bool {
         let proxyResult = lhs.withUnsafeBytes({ (lhsPointer: UnsafeRawBufferPointer) -> Bool in
