@@ -58,6 +58,7 @@
     <enum name="status"/>
 
     <class name="pythia"/>
+    <class name="error" from="shared"/>
 
     <error_message_getter success="0">
         <require enum="status"/>

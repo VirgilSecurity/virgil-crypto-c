@@ -37,6 +37,15 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Error context.
+//  Can be used for sequential operations, i.e. parsers, to accumulate error.
+//  In this way operation is successful if all steps are successful, otherwise
+//  last occurred error code can be obtained.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,22 +53,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Defines the library status codes.
-// --------------------------------------------------------------------------
-
-#ifndef VSCP_STATUS_H_INCLUDED
-#define VSCP_STATUS_H_INCLUDED
+#include "vscp_error.h"
+#include "vscp_memory.h"
+#include "vscp_assert.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -69,41 +68,61 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines the library status codes.
+//  Return size of 'vscp_error_t'.
 //
-enum vscp_status_t {
-    //
-    //  No errors was occurred.
-    //
-    vscp_status_SUCCESS = 0,
-    //
-    //  This error should not be returned if assertions is enabled.
-    //
-    vscp_status_ERROR_BAD_ARGUMENTS = -1,
-    //
-    //  Underlying pythia library returns -1.
-    //
-    vscp_status_ERROR_PYTHIA_INNER_FAIL = -200,
-    //
-    //  Underlying random number generator failed.
-    //
-    vscp_status_ERROR_RNG_FAILED = -202
-};
-typedef enum vscp_status_t vscp_status_t;
+VSCP_PUBLIC size_t
+vscp_error_ctx_size(void) {
+
+    return sizeof(vscp_error_t);
+}
+
+//
+//  Reset context to the "no error" state.
+//
+VSCP_PUBLIC void
+vscp_error_reset(vscp_error_t *self) {
+
+    VSCP_ASSERT_PTR(self);
+    self->status = vscp_status_SUCCESS;
+}
+
+//
+//  Update context with given status.
+//  If status is "success" then do nothing.
+//
+VSCP_PRIVATE void
+vscp_error_update(vscp_error_t *self, vscp_status_t status) {
+
+    VSCP_ASSERT_PTR(self);
+
+    if (status != vscp_status_SUCCESS) {
+        self->status = status;
+    }
+}
+
+//
+//  Return true if status is not "success".
+//
+VSCP_PUBLIC bool
+vscp_error_has_error(const vscp_error_t *self) {
+
+    VSCP_ASSERT_PTR(self);
+    return self->status != vscp_status_SUCCESS;
+}
+
+//
+//  Return error code.
+//
+VSCP_PUBLIC vscp_status_t
+vscp_error_status(const vscp_error_t *self) {
+
+    VSCP_ASSERT_PTR(self);
+    return self->status;
+}
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCP_STATUS_H_INCLUDED
 //  @end

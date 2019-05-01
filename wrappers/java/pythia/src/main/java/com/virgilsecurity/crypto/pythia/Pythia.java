@@ -160,8 +160,8 @@ public class Pythia {
     * This operation allows client to verify that the output of transform() is correct,
     * assuming that client has previously stored transformation public key.
     */
-    public static void verify(byte[] transformedPassword, byte[] blindedPassword, byte[] tweak, byte[] transformationPublicKey, byte[] proofValueC, byte[] proofValueU) throws PythiaException {
-        PythiaJNI.INSTANCE.pythia_verify(transformedPassword, blindedPassword, tweak, transformationPublicKey, proofValueC, proofValueU);
+    public static boolean verify(byte[] transformedPassword, byte[] blindedPassword, byte[] tweak, byte[] transformationPublicKey, byte[] proofValueC, byte[] proofValueU) throws PythiaException {
+        return PythiaJNI.INSTANCE.pythia_verify(transformedPassword, blindedPassword, tweak, transformationPublicKey, proofValueC, proofValueU);
     }
 
     /*

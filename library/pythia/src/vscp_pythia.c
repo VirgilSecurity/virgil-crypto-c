@@ -420,9 +420,9 @@ vscp_pythia_prove(vsc_data_t transformed_password, vsc_data_t blinded_password, 
 //  This operation allows client to verify that the output of transform() is correct,
 //  assuming that client has previously stored transformation public key.
 //
-VSCP_PUBLIC vscp_status_t
+VSCP_PUBLIC bool
 vscp_pythia_verify(vsc_data_t transformed_password, vsc_data_t blinded_password, vsc_data_t tweak,
-        vsc_data_t transformation_public_key, vsc_data_t proof_value_c, vsc_data_t proof_value_u) {
+        vsc_data_t transformation_public_key, vsc_data_t proof_value_c, vsc_data_t proof_value_u, vscp_error_t *error) {
 
     VSCP_ASSERT_PTR(transformed_password.bytes);
     VSCP_ASSERT_PTR(blinded_password.bytes);
@@ -443,14 +443,15 @@ vscp_pythia_verify(vsc_data_t transformed_password, vsc_data_t blinded_password,
     if (0 != pythia_w_verify(&transformed_password_buf, &blinded_password_buf, &tweak_buf,
                      &transformation_public_key_buf, &proof_value_c_buf, &proof_value_u_buf, &verified)) {
 
-        return vscp_status_ERROR_PYTHIA_INNER_FAIL;
+        VSCP_ERROR_SAFE_UPDATE(error, vscp_status_ERROR_PYTHIA_INNER_FAIL);
+        return false;
     }
 
     if (0 == verified) {
-        return vscp_status_ERROR_VERIFICATION_FAIL;
+        return false;
+    } else {
+        return true;
     }
-
-    return vscp_status_SUCCESS;
 }
 
 //

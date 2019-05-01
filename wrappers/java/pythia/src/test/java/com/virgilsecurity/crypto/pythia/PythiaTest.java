@@ -1,5 +1,6 @@
 package com.virgilsecurity.crypto.pythia;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -77,8 +78,8 @@ public class PythiaTest extends SampleBasedTest {
 				transform.transformedTweak, transformationKeyPair.transformationPrivateKey,
 				transformationKeyPair.transformationPublicKey);
 
-		Pythia.verify(transform.transformedPassword, blindResult.blindedPassword, tweak,
-				transformationKeyPair.transformationPublicKey, prove.proofValueC, prove.proofValueU);
+		assertTrue(Pythia.verify(transform.transformedPassword, blindResult.blindedPassword, tweak,
+				transformationKeyPair.transformationPublicKey, prove.proofValueC, prove.proofValueU));
 	}
 
 }

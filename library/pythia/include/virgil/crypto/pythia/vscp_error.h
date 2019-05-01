@@ -47,11 +47,17 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Defines the library status codes.
+//  Error context.
+//  Can be used for sequential operations, i.e. parsers, to accumulate error.
+//  In this way operation is successful if all steps are successful, otherwise
+//  last occurred error code can be obtained.
 // --------------------------------------------------------------------------
 
-#ifndef VSCP_STATUS_H_INCLUDED
-#define VSCP_STATUS_H_INCLUDED
+#ifndef VSCP_ERROR_H_INCLUDED
+#define VSCP_ERROR_H_INCLUDED
+
+#include "vscp_library.h"
+#include "vscp_status.h"
 
 // clang-format on
 //  @end
@@ -69,27 +75,55 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines the library status codes.
+//  Perform update only if context defined, otherwise log error.
 //
-enum vscp_status_t {
-    //
-    //  No errors was occurred.
-    //
-    vscp_status_SUCCESS = 0,
-    //
-    //  This error should not be returned if assertions is enabled.
-    //
-    vscp_status_ERROR_BAD_ARGUMENTS = -1,
-    //
-    //  Underlying pythia library returns -1.
-    //
-    vscp_status_ERROR_PYTHIA_INNER_FAIL = -200,
-    //
-    //  Underlying random number generator failed.
-    //
-    vscp_status_ERROR_RNG_FAILED = -202
+#define VSCP_ERROR_SAFE_UPDATE(CTX, ERR)                            \
+    do {                                                            \
+        if (NULL != (CTX)) {                                        \
+            vscp_error_update ((CTX), (ERR));                       \
+        } else {                                                    \
+            /* TODO: Log this error, when logging will be added. */ \
+        }                                                           \
+    } while (false)
+
+//
+//  Handle 'error' context.
+//
+typedef struct vscp_error_t vscp_error_t;
+struct vscp_error_t {
+    vscp_status_t status;
 };
-typedef enum vscp_status_t vscp_status_t;
+
+//
+//  Return size of 'vscp_error_t'.
+//
+VSCP_PUBLIC size_t
+vscp_error_ctx_size(void);
+
+//
+//  Reset context to the "no error" state.
+//
+VSCP_PUBLIC void
+vscp_error_reset(vscp_error_t *self);
+
+//
+//  Update context with given status.
+//  If status is "success" then do nothing.
+//
+VSCP_PRIVATE void
+vscp_error_update(vscp_error_t *self, vscp_status_t status);
+
+//
+//  Return true if status is not "success".
+//
+VSCP_PUBLIC bool
+vscp_error_has_error(const vscp_error_t *self);
+
+//
+//  Return error code.
+//
+VSCP_PUBLIC vscp_status_t
+vscp_error_status(const vscp_error_t *self) VSCP_NODISCARD;
 
 
 // --------------------------------------------------------------------------
@@ -105,5 +139,5 @@ typedef enum vscp_status_t vscp_status_t;
 
 
 //  @footer
-#endif // VSCP_STATUS_H_INCLUDED
+#endif // VSCP_ERROR_H_INCLUDED
 //  @end

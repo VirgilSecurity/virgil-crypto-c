@@ -73,7 +73,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1prove (JNIEnv *, jobject, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1verify (JNIEnv *, jobject, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray);
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1verify (JNIEnv *, jobject, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray);
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1getPasswordUpdateToken (JNIEnv *, jobject, jbyteArray, jbyteArray);
 
