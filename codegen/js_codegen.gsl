@@ -74,7 +74,7 @@ function js_cpp_header_create_private_properties(indent_level)
   js_out("static Nan::Persistent<v8::Function> $(global.js_cpp_persistent_constructor_name:no);", my.indent_levels.first)
 endfunction
 
-function js_cpp_header_create_class_inheritance(js_class_module)
+function js_cpp_header_format_class_inheritance(js_class_module)
   my.inheritance = "public Nan::ObjectWrap"
   for my.js_class_module.js_interface_implementation
     my.inheritance += ", public $(js_interface_implementation.cpp_class_name:no)"
@@ -84,7 +84,7 @@ endfunction
 
 function js_cpp_header_create_class(js_class_module, indent_level)
   my.indent_levels = js_create_indent_levels(my.indent_level)
-  js_out("class $(my.js_class_module.cpp_name:no) : $(js_cpp_header_create_class_inheritance(my.js_class_module)) {", my.indent_levels.first)
+  js_out("class $(my.js_class_module.cpp_name:no) : $(js_cpp_header_format_class_inheritance(my.js_class_module)) {", my.indent_levels.first)
   js_cpp_header_create_public_access_specifier(my.indent_levels.first)
   js_cpp_header_create_init(my.indent_levels.second)
   if my.js_class_module.has_context
@@ -1008,20 +1008,7 @@ function js_create_js_umbrella_module(js_umbrella_module, wrapper_project)
   js_create_js_umbrella_module_js_source(my.js_umbrella_module, my.wrapper_project)
 endfunction
 
-function js_create_js_root_module_cpp_source(js_root_module, wrapper_project)
-  my.indent_levels = js_create_indent_levels()
-  output my.js_root_module->js_cpp_source.path
-    js_out("#include \"$(my.wrapper_project->js_module->js_umbrella_module->js_cpp_header.name:no)\"", my.indent_levels.first)
-    js_out("void InitAll(v8::Local<v8::Object> exports) {", my.indent_levels.first)
-    for my.wrapper_project.js_module where defined(js_module->js_class_module)
-      js_out("$(js_module->js_class_module.cpp_name:no)::$(global.js_cpp_init_function_name:no)(exports);", my.indent_levels.second)
-    endfor
-    js_out("}", my.indent_levels.first)
-    js_out("NODE_MODULE(addon, InitAll);", my.indent_levels.first)
-  close
-endfunction
-
-function js_create_js_root_module_js_source(js_root_module, wrapper_project)
+function js_create_js_root_module(js_root_module, wrapper_project)
   my.indent_levels = js_create_indent_levels()
   output my.js_root_module->js_source.path
     js_out("module.exports = Object.assign(", my.indent_levels.first)
@@ -1041,14 +1028,9 @@ function js_create_js_root_module_js_source(js_root_module, wrapper_project)
   close
 endfunction
 
-function js_create_js_root_module(js_root_module, wrapper_project)
-  js_create_js_root_module_cpp_source(my.js_root_module, my.wrapper_project)
-  js_create_js_root_module_js_source(my.js_root_module, my.wrapper_project)
-endfunction
-
-function js_create_wrapper_top_level(wrapper)
+function js_create_wrapper_top_level_js_entry_module(wrapper)
   my.indent_levels = js_create_indent_levels()
-  output my.wrapper->js_index_js_module.file_path
+  output my.wrapper->js_entry_module->js_source.path
     js_out("module.exports = Object.assign(", my.indent_levels.first)
     js_out("{},", my.indent_levels.second)
     for my.wrapper.js_project
@@ -1056,13 +1038,121 @@ function js_create_wrapper_top_level(wrapper)
     endfor
     js_out(");", my.indent_levels.first)
   close
-  output my.wrapper->js_binding_gyp_module.file_path
+  output my.wrapper->js_entry_module->js_cpp_source.path
+    for my.wrapper.js_project
+      for js_project.js_module where defined(js_module->js_umbrella_module)
+        js_out("#include \"$(js_project.name:no)/$(js_module->js_umbrella_module->js_cpp_header.name:no)\"", my.indent_levels.first)
+      endfor
+    endfor
+    js_out("void InitAll(v8::Local<v8::Object> exports) {", my.indent_levels.first)
+    for my.wrapper.js_project
+      for js_project.js_module where defined(js_module->js_class_module)
+        js_out("$(js_module->js_class_module.cpp_name:no)::$(global.js_cpp_init_function_name:no)(exports);", my.indent_levels.second)
+      endfor
+    endfor
+    js_out("}", my.indent_levels.first)
+    js_out("NODE_MODULE(addon, InitAll);", my.indent_levels.first)
   close
+endfunction
+
+function js_create_binding_gyp_sources(wrapper, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("\"sources\": [", my.indent_levels.first)
+  js_out("\"$(global.js_source_folder_name:no)/$(my.wrapper->js_entry_module->js_cpp_source.name:no)\",", my.indent_levels.second)
+  for my.wrapper.js_project
+    for js_project.js_module
+      if defined(js_module->js_interface_module)
+        js_out("\"$(global.js_source_folder_name:no)/$(js_project.name:no)/$(js_module->js_interface_module->js_cpp_header.name:no)\",", my.indent_levels.second)
+      elsif defined(js_module->js_error_status_module)
+        js_out("\"$(global.js_source_folder_name:no)/$(js_project.name:no)/$(js_module->js_error_status_module->js_cpp_header.name:no)\",", my.indent_levels.second)
+        js_out("\"$(global.js_source_folder_name:no)/$(js_project.name:no)/$(js_module->js_error_status_module->js_cpp_source.name:no)\",", my.indent_levels.second)
+      elsif defined(js_module->js_class_module)
+        js_out("\"$(global.js_source_folder_name:no)/$(js_project.name:no)/$(js_module->js_class_module->js_cpp_header.name:no)\",", my.indent_levels.second)
+        js_out("\"$(global.js_source_folder_name:no)/$(js_project.name:no)/$(js_module->js_class_module->js_cpp_source.name:no)\",", my.indent_levels.second)
+      elsif defined(js_module->js_implementation_resolver_module)
+        js_out("\"$(global.js_source_folder_name:no)/$(js_project.name:no)/$(js_module->js_implementation_resolver_module->js_cpp_header.name:no)\",", my.indent_levels.second)
+        js_out("\"$(global.js_source_folder_name:no)/$(js_project.name:no)/$(js_module->js_implementation_resolver_module->js_cpp_source.name:no)\",", my.indent_levels.second)
+      elsif defined(js_module->js_umbrella_module)
+        js_out("\"$(global.js_source_folder_name:no)/$(js_project.name:no)/$(js_module->js_umbrella_module->js_cpp_header.name:no)\",", my.indent_levels.second)
+      endif
+    endfor
+  endfor
+  js_out("],", my.indent_levels.first)
+endfunction
+
+function js_create_binding_gyp_include_dirs(indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("\"include_dirs\": [", my.indent_levels.first)
+  js_out("\"<!(node -e \\\"require('nan')\\\")\",", my.indent_levels.second)
+  js_out("\"virgil-crypto-c/include\",", my.indent_levels.second)
+  js_out("],", my.indent_levels.first)
+endfunction
+
+/* FIXME */
+function js_get_library_name(js_library_require)
+  if my.js_library_require.type = global.js_library_require_type_project
+    return "vsc_$(my.js_library_require.name:no)"
+  elsif my.js_library_require.type = global.js_library_require_type_library
+    if my.js_library_require.name = "mbedtls"
+      return "mbedcrypto"
+    elsif my.js_library_require.name = "relic"
+      return "relic_s"
+    endif
+  endif
+  return my.js_library_require.name
+endfunction
+
+function js_create_binding_gyp_conditions(wrapper, indent_level)
+  my.indent_levels = js_create_indent_levels(my.indent_level)
+  js_out("\"conditions\": [", my.indent_levels.first)
+  js_out("[\"OS=='mac'\", {", my.indent_levels.second)
+  js_out("\"libraries\": [", my.indent_levels.third)
+  for my.wrapper.js_library_require
+    js_out("\"virgil-crypto-c/lib/lib$(js_get_library_name(js_library_require):no).a\",", my.indent_levels.fourth)
+  endfor
+  js_out("],", my.indent_levels.third)
+  js_out("}],", my.indent_levels.second)
+  js_out("[\"OS=='linux'\", {", my.indent_levels.second)
+  js_out("\"libraries\": [", my.indent_levels.third)
+  for my.wrapper.js_library_require
+    js_out("\"virgil-crypto-c/lib64/lib$(js_get_library_name(js_library_require):no).a\",", my.indent_levels.fourth)
+  endfor
+  js_out("],", my.indent_levels.third)
+  js_out("}],", my.indent_levels.second)
+  js_out("[\"OS=='win'\", {", my.indent_levels.second)
+  js_out("\"libraries\": [", my.indent_levels.third)
+  for my.wrapper.js_library_require
+    js_out("\"virgil-crypto-c/lib/$(js_get_library_name(js_library_require):no).lib\",", my.indent_levels.fourth)
+  endfor
+  js_out("],", my.indent_levels.third)
+  js_out("}],", my.indent_levels.second)
+  js_out("],", my.indent_levels.first)
+endfunction
+
+function js_create_wrapper_top_level_binding_gyp(wrapper)
+  my.indent_levels = js_create_indent_levels()
+  my.js_binding_gyp_module = my.wrapper->js_binding_gyp_module
+  output my.js_binding_gyp_module.file_path
+    js_out("{", my.indent_levels.first)
+    js_out("\"targets\": [", my.indent_levels.second)
+    js_out("{", my.indent_levels.third)
+    js_out("\"target_name\": \"$(global.js_binding_target_name:no)\",", my.indent_levels.fourth)
+    js_create_binding_gyp_sources(my.wrapper, my.indent_levels.fourth)
+    js_create_binding_gyp_include_dirs(my.indent_levels.fourth)
+    js_create_binding_gyp_conditions(my.wrapper, my.indent_levels.fourth)
+    js_out("},", my.indent_levels.third)
+    js_out("],", my.indent_levels.second)
+    js_out("}", my.indent_levels.first)
+  close
+endfunction
+
+function js_create_wrapper_top_level_package_json(wrapper)
+  my.indent_levels = js_create_indent_levels()
   output my.wrapper->js_package_json_module.file_path
     my.package_json = my.wrapper->package_json
     js_out("{", my.indent_levels.first)
     js_out("\"name\": \"$(my.package_json.name:no)\",", my.indent_levels.second)
-    js_out("\"version\": \"$(my.package_json.version:no)\"", my.indent_levels.second)
+    js_out("\"version\": \"$(my.package_json.version:no)\",", my.indent_levels.second)
     js_out("\"description\": \"$(my.package_json.description:no)\",", my.indent_levels.second)
     js_out("\"main\": \"./src/index.js\",", my.indent_levels.second)
     js_out("\"repository\": \"$(my.package_json.repository:no)\",", my.indent_levels.second)
@@ -1102,13 +1192,29 @@ function js_create_wrapper_top_level(wrapper)
     js_out("}", my.indent_levels.second)
     js_out("}", my.indent_levels.first)
   close
+endfunction
+
+function js_create_wrapper_top_level_gitignore(wrapper)
+  my.indent_levels = js_create_indent_levels()
   output my.wrapper->js_gitignore_module.file_path
     for my.wrapper->gitignore.ignore
       js_out("$(ignore:no)", my.indent_levels.first)
     endfor
   close
+endfunction
+
+function js_create_wrapper_top_level_download_crypto_c(wrapper)
+  my.indent_levels = js_create_indent_levels()
   output my.wrapper->js_download_crypto_c_module.file_path
   close
+endfunction
+
+function js_create_wrapper_top_level(wrapper)
+  js_create_wrapper_top_level_js_entry_module(my.wrapper)
+  js_create_wrapper_top_level_binding_gyp(my.wrapper)
+  js_create_wrapper_top_level_package_json(my.wrapper)
+  js_create_wrapper_top_level_gitignore(my.wrapper)
+  js_create_wrapper_top_level_download_crypto_c(my.wrapper)
 endfunction
 
 endtemplate

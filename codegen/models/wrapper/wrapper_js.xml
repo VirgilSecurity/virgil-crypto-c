@@ -24,6 +24,7 @@
       <ignore>package-lock.json</ignore>
       <ignore>yarn.lock</ignore>
       <ignore>*.log</ignore>
+      <ignore>virgil-crypto-c</ignore>
       <ignore>build</ignore>
     </gitignore>
 

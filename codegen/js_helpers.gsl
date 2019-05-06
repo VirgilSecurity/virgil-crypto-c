@@ -45,10 +45,16 @@ function js_get_project_uid(argument)
   return my.project_uid
 endfunction
 
+global.js_binding_target_name = "crypto"
+global.js_source_folder_name = "src"
+
 global.js_binding_property_name = "binding"
 
 global.js_js_umbrella_module = "umbrella"
 global.js_bindings_module = "bindings"
+
+global.js_library_require_type_project = "js_library_require_type_project"
+global.js_library_require_type_library = "js_library_require_type_library"
 
 global.js_project_require_type_library = "js_require_library"
 global.js_project_require_type_relative = "js_require_relative"
