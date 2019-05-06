@@ -39,9 +39,9 @@ package com.virgilsecurity.crypto.foundation;
 /* Encapsulate result of method aes256 gcm.authEncrypt() */
 public class AuthEncryptAuthEncryptResult {
 
-    public byte[] out;
+    private byte[] out;
 
-    public byte[] tag;
+    private byte[] tag;
 
     /* Create new instance of AuthEncryptAuthEncryptResult. */
     AuthEncryptAuthEncryptResult() {
@@ -52,6 +52,22 @@ public class AuthEncryptAuthEncryptResult {
     AuthEncryptAuthEncryptResult(byte[] out, byte[] tag) {
         super();
         this.out = out;
+        this.tag = tag;
+    }
+
+    public byte[] getOut() {
+        return this.out;
+    }
+
+    public void setOut(byte[] out) {
+        this.out = out;
+    }
+
+    public byte[] getTag() {
+        return this.tag;
+    }
+
+    public void setTag(byte[] tag) {
         this.tag = tag;
     }
 }
