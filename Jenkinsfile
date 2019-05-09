@@ -256,8 +256,8 @@ def build_LangPHP_Windows(slave) {
         ws("workspace\\${jobPath}") {
             clearContentWindows()
             unstash 'src'
-            withEnv(["PHP_HOME=C:\\php-7.2.6",
-                     "PHP_DEVEL_HOME=C:\\php-7.2.6-devel",
+            withEnv(["PHP_HOME=C:\\php-7.2.18",
+                     "PHP_DEVEL_HOME=C:\\php-7.2.18-devel",
                      "PHPUNIT_HOME=C:\\phpunit-7.2.4"]) {
                 bat '''
                     set PATH=%PATH:"=%
