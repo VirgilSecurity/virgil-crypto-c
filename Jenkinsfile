@@ -282,8 +282,8 @@ def build_LangPHP_Windows(slave) {
 
             clearContentWindows()
             unstash 'src'
-            withEnv(["PHP_HOME=C:\\php-7.3.4",
-                     "PHP_DEVEL_HOME=C:\\php-7.3.4-devel",
+            withEnv(["PHP_HOME=C:\\php-7.3.5",
+                     "PHP_DEVEL_HOME=C:\\php-7.3.5-devel",
                      "PHPUNIT_HOME=C:\\phpunit-7.2.4"]) {
                 bat '''
                     set PATH=%PATH:"=%
