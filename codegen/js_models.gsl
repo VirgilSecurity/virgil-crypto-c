@@ -1,6 +1,7 @@
 .template 0
 
 gsl from "common.gsl"
+gsl from "js_constants.gsl"
 gsl from "js_helpers.gsl"
 
 function js_append_js_project_model(parent, project, wrapper)
@@ -346,13 +347,13 @@ function js_append_js_method(parent, source, method)
       my.of_class = my.method.of_class ? my.source.of_class ? my.source.name
       js_method.c_name = make_ref_c(make_id("class", my.of_class, "method", my.method.name))
     endif
-    js_method.cpp_name = "$(my.method.name:pascal)"
+    js_method.cpp_name = "$(my.method.name:pascal)Binding"
     js_method.js_name = "$(my.method.name:camel)"
     for my.method.argument
       js_append_js_argument(js_method, argument, my.source)
     endfor
     if defined(my.method->return)
-      js_append_js_return(js_method, my.method->return)
+      js_append_js_return(js_method, my.method->return, my.method)
     endif
     return js_method
   endnew
@@ -389,10 +390,18 @@ endfunction
 function js_append_js_proxy(parent, proxy)
   new js_proxy to my.parent
     if defined(my.proxy.argument)
-      js_proxy.cpp_value = my.proxy.argument
+      js_proxy.cpp_name = "$(my.proxy.argument:c)"
     endif
     if defined(my.proxy.constant)
       js_proxy.constant = my.proxy.constant
+    endif
+    if defined(my.proxy.cast)
+      if my.proxy.cast = "data_length"
+        js_proxy.cast_type = global.js_proxy_cast_type_data_len
+        js_proxy.c_property_name = make_ref_c(make_id("project", "common", "class", "data", "struct", "data", "property", "len"))
+      else
+        echo_fatal("Unknown cast type", my)
+      endif
     endif
     return js_proxy
   endnew
@@ -471,6 +480,22 @@ function js_append_js_argument(parent, argument, source)
   new js_argument to my.parent
     js_argument.cpp_name = "$(my.argument.name:c)"
     js_argument.js_name = "$(my.argument.name:camel)"
+    if defined(my.argument.access)
+      if my.argument.access = "disown"
+        js_argument.access = global.js_argument_access_disown
+      elsif my.argument.access = "retain"
+        js_argument.access = global.js_argument_access_retain
+      elsif my.argument.access = "writeonly"
+        js_argument.access = global.js_argument_access_writeonly
+      elsif my.argument.access = "readonly"
+        js_argument.access = global.js_argument_access_readonly
+      elsif my.argument.access = "readwrite"
+        js_argument.access = global.js_argument_access_readwrite
+      else
+        echo my.argument.access
+        echo_fatal("Unknown argument access type", my)
+      endif
+    endif
     if defined(my.argument.type) & my.argument.type = "size"
       js_append_js_argument_size_info(js_argument, my.argument)
     elsif defined(my.argument.type) & my.argument.type = "integer"
@@ -571,10 +596,11 @@ function js_append_js_return_interface_info(js_return, return)
   my.js_return.c_implementation_type = make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl"))
 endfunction
 
-function js_append_js_return(parent, return)
+function js_append_js_return(parent, return, method)
   new js_return to my.parent
     js_return.js_name = "methodReturn"
     js_return.cpp_name = "method_return"
+    js_return.is_const = my.method.is_const
     if defined(my.return.type) & my.return.type = "size"
       js_append_js_return_size_info(js_return, my.return)
     elsif defined(my.return.type) & my.return.type = "integer"
