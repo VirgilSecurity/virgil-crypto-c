@@ -105,7 +105,7 @@ extern "C" {
 #   endif
 #   define VSCF_PRIVATE
 #else
-#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER)
+#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER) || defined(__clang__)
 #       define VSCF_PUBLIC __attribute__ ((visibility ("default")))
 #       define VSCF_PRIVATE __attribute__ ((visibility ("hidden")))
 #   else

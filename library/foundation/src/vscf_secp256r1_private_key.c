@@ -491,8 +491,8 @@ vscf_secp256r1_private_key_compute_shared_key(
             &self->ecp_keypair.grp, &shared_key_mpi, &secp256r1_public_key->ecp, &self->ecp_keypair.d, f_rng, p_rng);
 
     if (MBEDTLS_ERR_ECP_RANDOM_FAILED == status) {
-        return vscf_status_ERROR_RANDOM_FAILED;
         mbedtls_mpi_free(&shared_key_mpi);
+        return vscf_status_ERROR_RANDOM_FAILED;
     }
 
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
