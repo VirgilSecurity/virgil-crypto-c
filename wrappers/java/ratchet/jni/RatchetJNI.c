@@ -702,7 +702,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_methodID) {
         VSCR_ASSERT("Class RatchetGroupMessage has no constructor with C context parameter.");
     }
-
+    vscr_ratchet_group_message_shallow_copy((vscr_ratchet_group_message_t */*5*/) proxyResult);
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
