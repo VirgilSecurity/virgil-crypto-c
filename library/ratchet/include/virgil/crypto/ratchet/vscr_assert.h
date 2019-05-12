@@ -95,17 +95,17 @@ extern "C" {
 //
 //  Asserts even in optimized mode.
 //
-#define VSCR_ASSERT_OPT(X) VSCR_ASSERT_INTERNAL (X)
+#define VSCR_ASSERT_OPT(X) VSCR_ASSERT_INTERNAL(X)
 
 //
 //  Default assert, that is enabled in debug mode.
 //
-#define VSCR_ASSERT(X) VSCR_ASSERT_INTERNAL (X)
+#define VSCR_ASSERT(X) VSCR_ASSERT_INTERNAL(X)
 
 //
 //  Heavy assert, that is enabled in a special (safe) cases.
 //
-#define VSCR_ASSERT_SAFE(X) VSCR_ASSERT_INTERNAL (X)
+#define VSCR_ASSERT_SAFE(X) VSCR_ASSERT_INTERNAL(X)
 
 //
 //  Asserts during compilation. Has no runtime impact.
@@ -127,7 +127,7 @@ extern "C" {
 //
 #define VSCR_ASSERT_NULL(X)                                                       \
     do {                                                                          \
-        if (X) {                                                                  \
+        if(X) {                                                                   \
             vscr_assert_trigger (#X" == NULL", VSCR_FILE_PATH_OR_NAME, __LINE__); \
         }                                                                         \
     } while (false)
