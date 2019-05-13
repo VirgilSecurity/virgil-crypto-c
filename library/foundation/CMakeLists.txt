@@ -143,6 +143,47 @@ endif()
 
 
 # ---------------------------------------------------------------------------
+#   WebAssembly specific
+# ---------------------------------------------------------------------------
+if(CMAKE_CROSSCOMPILING AND (CMAKE_SYSTEM_NAME STREQUAL "Emscripten"))
+    add_custom_target(foundation_wasm ALL
+            COMMAND "${CMAKE_C_COMPILER}"
+                    -s EXPORTED_FUNCTIONS="@${CMAKE_CURRENT_LIST_DIR}/emcc_exported_functions.json"
+                    $<TARGET_FILE:common>
+                    $<TARGET_FILE:foundation>
+                    $<TARGET_FILE:mbedcrypto>
+                    -o libvsc_foundation.html
+            DEPENDS foundation
+            COMMENT "Create WASM+JS+HTML for the library foundation."
+            )
+
+    add_custom_target(foundation_wat ALL
+            COMMAND wasm2wat libvsc_foundation.wasm -o libvsc_foundation.wat
+            DEPENDS foundation_wasm
+            COMMENT "Create WAT for the library foundation (WASM+JS+HTML)."
+            )
+
+    add_custom_target(foundation_wasm_only ALL
+            COMMAND "${CMAKE_C_COMPILER}"
+                    -s SIDE_MODULE=1
+                    -s EXPORTED_FUNCTIONS="@${CMAKE_CURRENT_LIST_DIR}/emcc_exported_functions.json"
+                    $<TARGET_FILE:common>
+                    $<TARGET_FILE:foundation>
+                    $<TARGET_FILE:mbedcrypto>
+                    -o libvsc_foundation_pure_wasm.wasm
+            DEPENDS foundation
+            COMMENT "Create WASM ONLY for the library foundation."
+            )
+
+    add_custom_target(foundation_wasm_only_wat ALL
+            COMMAND wasm2wat libvsc_foundation_pure_wasm.wasm -o libvsc_foundation_pure_wasm.wat
+            DEPENDS foundation_wasm_only
+            COMMENT "Create WAT for the library foundation (WASM ONLY)."
+            )
+endif()
+
+
+# ---------------------------------------------------------------------------
 #   Install library
 # ---------------------------------------------------------------------------
 include (CMakePackageConfigHelpers)

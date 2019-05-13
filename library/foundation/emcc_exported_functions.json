@@ -1,0 +1,10 @@
+[
+    "_vscf_sha256_new",
+    "_vscf_sha256_delete",
+    "_vscf_sha256_shallow_copy",
+    "_vscf_sha256_alg_id",
+    "_vscf_sha256_hash",
+    "_vscf_sha256_start",
+    "_vscf_sha256_update",
+    "_vscf_sha256_finish"
+]
