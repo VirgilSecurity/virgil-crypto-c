@@ -83,11 +83,6 @@ VSCF_PRIVATE void
 vscf_fake_random_init_ctx(vscf_fake_random_t *self) {
 
     VSCF_ASSERT_PTR(self);
-
-    self->data_source.bytes = NULL;
-    self->data_source.len = 0;
-    self->byte_source = 0;
-    self->pos = 0;
 }
 
 //
@@ -100,7 +95,7 @@ vscf_fake_random_cleanup_ctx(vscf_fake_random_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    (void)vscf_fake_random_init_ctx(self);
+    vsc_buffer_destroy(&self->data_source);
 }
 
 //
@@ -124,10 +119,15 @@ VSCF_PUBLIC void
 vscf_fake_random_setup_source_data(vscf_fake_random_t *self, vsc_data_t data_source) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(data_source));
+    VSCF_ASSERT(!vsc_data_is_empty(data_source));
 
     vscf_fake_random_init_ctx(self);
 
-    self->data_source = data_source;
+    vsc_buffer_destroy(&self->data_source);
+
+    self->data_source = vsc_buffer_new_with_data(data_source);
+    self->pos = 0;
 }
 
 //
@@ -145,10 +145,11 @@ vscf_fake_random_random(vscf_fake_random_t *self, size_t data_len, vsc_buffer_t 
     const byte *end = vsc_buffer_unused_bytes(data) + data_len;
 
     for (byte *write_ptr = vsc_buffer_unused_bytes(data); write_ptr < end; ++write_ptr) {
-        if (self->data_source.bytes != NULL) {
-            *write_ptr = *(self->data_source.bytes + self->pos);
+        if (self->data_source != NULL) {
+            vsc_data_t data_source = vsc_buffer_data(self->data_source);
+            *write_ptr = *(data_source.bytes + self->pos);
 
-            if (++self->pos >= self->data_source.len) {
+            if (++self->pos >= data_source.len) {
                 self->pos = 0;
             }
         } else {
