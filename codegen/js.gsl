@@ -17,15 +17,16 @@ function js_create_project_module(project, wrapper)
 endfunction
 
 function js_create_interface_module(source, wrapper_project, meta)
-  echo_info("Create interface module: $(my.source.name:no)", my)
-  my.js_module = js_append_js_module_model(my.wrapper_project, my.source.name)
-  js_append_js_interface_module_model(my.js_module, my.source, my.wrapper_project)
+  echo_info("Skipping interface module: $(my.project.name:no)", my)
 endfunction
 
 function js_create_implementation_module(source, wrapper_project, meta)
   echo_info("Create implementation module: $(my.source.name)", my)
-  if !my.wrapper_project.has_implementation_resolver
-    my.wrapper_project.has_implementation_resolver = 1
+  if !my.wrapper_project.has_implementations
+    my.wrapper_project.has_implementations = 1
+    my.name = "$(my.wrapper_project.name:no) implementation"
+    my.js_module = js_append_js_module_model(my.wrapper_project, my.name)
+    js_append_js_implementation_module_model(my.js_module, my.wrapper_project, my.name)
     my.name = "$(my.wrapper_project.name:no) implementation resolver"
     my.js_module = js_append_js_module_model(my.wrapper_project, my.name)
     js_append_js_implementation_resolver_module_model(my.js_module, my.wrapper_project, my.name)
@@ -75,14 +76,14 @@ function js_generate_sources(wrapper_project)
     js_create_wrapper_top_level(my.wrapper_project)
   endif
   for my.wrapper_project.js_module
-    if defined(js_module->js_interface_module)
-      js_create_js_interface_module(js_module->js_interface_module, my.wrapper_project)
-    elsif defined(js_module->js_enum_module)
+    if defined(js_module->js_enum_module)
       js_create_js_enum_module(js_module->js_enum_module)
     elsif defined(js_module->js_error_status_module)
       js_create_js_error_status_module(js_module->js_error_status_module)
     elsif defined(js_module->js_class_module)
       js_create_js_class_module(js_module->js_class_module, my.wrapper_project)
+    elsif defined(js_module->js_implementation_module)
+      js_create_js_implementation_module(js_module->js_implementation_module)
     elsif defined(js_module->js_implementation_resolver_module)
       js_create_js_implementation_resolver_module(js_module->js_implementation_resolver_module, my.wrapper_project)
     elsif defined(js_module->js_umbrella_module)

@@ -68,10 +68,8 @@ global.js_cpp_init_function_argument_name = "exports"
 global.js_cpp_constructor_function_name = "New"
 
 global.js_cpp_callback_info_type = "const Nan::FunctionCallbackInfo<v8::Value>&"
-global.js_cpp_callback_info_name = "info"
+global.js_cpp_callback_info_name = "callback_info"
 
 global.js_cpp_persistent_constructor_name = "constructor"
-
-global.js_cpp_implementation_getter = "GetImplementation"
 
 endtemplate

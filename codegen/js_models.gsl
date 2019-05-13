@@ -12,7 +12,7 @@ function js_append_js_project_model(parent, project, wrapper)
     js_project.root_dir = my.wrapper.source_dir
     js_project.source_dir = cat_path(js_project.root_dir, global.js_source_folder_name)
     js_project.project_source_dir = cat_path(js_project.source_dir, js_project.name)
-    js_project.has_implementation_resolver = 0
+    js_project.has_implementations = 0
     for my.project.require
       if defined(require.library)
         new js_library_require to js_project
@@ -126,6 +126,29 @@ function js_append_js_umbrella_module_model(parent, wrapper_project, project, na
   endnew
 endfunction
 
+function js_append_js_implementation_module_model(parent, wrapper_project, name)
+  new js_implementation_module to my.parent
+    js_implementation_module.cpp_name = "$(my.name:pascal)"
+    new js_cpp_name to js_implementation_module
+      js_cpp_name.name = js_implementation_module.cpp_name
+      js_cpp_name.uid = make_id("js", "implementation", "module", "cpp name")
+    endnew
+    js_implementation_module.c_implementation_type = make_ref_c(make_id("class", "impl", "struct", "impl"))
+    js_implementation_module.method_name = "get implementation"
+    js_implementation_module.cpp_method_name = "$(js_implementation_module.method_name:pascal)"
+    new js_cpp_method_name to js_implementation_module
+      js_cpp_method_name.name = js_implementation_module.cpp_method_name
+      js_cpp_method_name.uid = make_id("js", "implementation", "module", "cpp method name")
+    endnew
+    js_implementation_module.cpp_header_guard = js_cpp_header_guard(my.name)
+    new js_cpp_header to js_implementation_module
+      js_cpp_header.name = "$(my.name:c).h"
+      js_cpp_header.uid = make_id("js", "implementation", "module", "cpp header")
+      js_cpp_header.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_header.name)
+    endnew
+  endnew
+endfunction
+
 function js_append_js_implementation_resolver_module_model(parent, wrapper_project, name)
   new js_implementation_resolver_module to my.parent
     js_implementation_resolver_module.js_name = "$(my.name:pascal)"
@@ -173,24 +196,6 @@ function js_append_js_implementation_resolver_module_model(parent, wrapper_proje
       js_source.path = cat_path(my.wrapper_project.project_source_dir, js_source.name)
     endnew
     return js_implementation_resolver_module
-  endnew
-endfunction
-
-function js_append_js_interface_module_model(parent, source, wrapper_project)
-  new js_interface_module to my.parent
-    js_interface_module.cpp_name = "$(my.source.name:pascal)"
-    new js_cpp_name to js_interface_module
-      js_cpp_name.name = js_interface_module.cpp_name
-      js_cpp_name.uid = make_id("js", "interface", "module", my.source.name, "cpp name")
-    endnew
-    js_interface_module.cpp_umbrella_header = make_ref_js(make_id("umbrella", "module", "cpp header"))
-    js_interface_module.cpp_header_guard = js_cpp_header_guard(my.source.name)
-    js_interface_module.c_implementation_type = make_ref_c(make_id("class", "impl", "struct", "impl"))
-    new js_cpp_header to js_interface_module
-      js_cpp_header.name = "$(my.source.name:c).h"
-      js_cpp_header.path = cat_path(my.wrapper_project.project_source_dir, js_cpp_header.name)
-    endnew
-    return js_interface_module
   endnew
 endfunction
 
@@ -285,7 +290,7 @@ function js_append_js_class_module_model(parent, source, wrapper_project, meta)
       for interface.constant where js_has_public_scope(constant)
         js_append_js_constant(js_class_module, my.source, constant)
       endfor
-      for interface.method where js_has_public_scope(method)
+      for interface.method where js_has_public_scope(method) & method.name <> "write uint64"
         js_append_js_method(js_class_module, my.source, method)
       endfor
     endfor
@@ -294,7 +299,9 @@ function js_append_js_class_module_model(parent, source, wrapper_project, meta)
       js_class_module.c_implementation_tag = my.refs.c_implementation_constant_tag
       js_class_module.c_restore_alg_info = make_ref_c(make_id("class", my.source.name, "method", "restore alg info"))
     endif
-    if count(js_class_module.js_interface_implementation) > 0
+    if count(js_class_module.js_interface_implementation)
+      js_class_module.cpp_implementation_class_name = make_ref_js(make_id("implementation", "module", "cpp name"))
+      js_class_module.cpp_implementation_method_name = make_ref_js(make_id("implementation", "module", "cpp method name"))
       js_class_module.c_implementation_type = make_ref_c(make_id("class", "impl", "struct", "impl"))
       js_class_module.c_implementation_method_name = make_ref_c(make_id("class", my.source.name, "method", "impl"))
     endif
@@ -313,7 +320,6 @@ endfunction
 
 function js_append_js_interface_implementation(parent, interface)
   new js_interface_implementation to my.parent
-    js_interface_implementation.cpp_class_name = make_ref_js(make_id("interface", "module", my.interface.name, "cpp name"))
     return js_interface_implementation
   endnew
 endfunction
@@ -377,6 +383,7 @@ endfunction
 
 function js_append_js_argument_byte_info(js_argument, argument)
   my.js_argument.type = global.js_argument_type_byte
+  echo my.argument.string()
 endfunction
 
 function js_append_js_argument_char_info(js_argument, argument)
@@ -472,7 +479,8 @@ endfunction
 function js_append_js_argument_interface_info(js_argument, argument)
   my.js_argument.type = global.js_argument_type_interface
   my.project_uid = js_get_project_uid(my.argument)
-  my.js_argument.cpp_class_name = make_ref_js(make_id(my.project_uid, "interface", "module", my.argument.interface, "cpp name"))
+  my.js_argument.cpp_implementation_class_name = make_ref_js(make_id(my.project_uid, "implementation", "module", "cpp name"))
+  my.js_argument.cpp_implementation_method_name = make_ref_js(make_id(my.project_uid, "implementation", "module", "cpp method name"))
   my.js_argument.c_implementation_type = make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl"))
 endfunction
 
@@ -592,7 +600,6 @@ function js_append_js_return_interface_info(js_return, return)
   my.js_return.cpp_implementation_resolver_method_name = make_ref_js(make_id(my.project_uid, "implementation resolver", "module", "cpp method name"))
   my.js_return.js_implementation_resolver_class_name = make_ref_js(make_id(my.project_uid, "implementation resolver", "module", "js name"))
   my.js_return.js_implementation_resolver_method_name = make_ref_js(make_id(my.project_uid, "implementation resolver", "module", "js method name"))
-  my.js_return.cpp_class_name = make_ref_js(make_id(my.project_uid, "interface", "module", my.return.interface, "cpp name"))
   my.js_return.c_implementation_type = make_ref_c(make_id(my.project_uid, "class", "impl", "struct", "impl"))
 endfunction
 
