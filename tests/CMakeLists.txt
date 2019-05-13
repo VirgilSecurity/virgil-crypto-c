@@ -58,3 +58,8 @@ endif()
 if(TARGET vsc::phe)
     add_subdirectory(phe)
 endif()
+
+if(ENABLE_FUZZY_TESTING)
+    add_subdirectory(fuzzy)
+endif(ENABLE_FUZZY_TESTING)
+
