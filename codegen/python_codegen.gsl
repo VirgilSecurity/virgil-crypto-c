@@ -320,7 +320,7 @@ function python_insert_destructor (python_destructor)
 
     
     python_insert_code("\
-         def __delete__(self):
+         def __delete__(self, instance):
     ", 1)
     python_insert_description (my.python_destructor, 2)
 

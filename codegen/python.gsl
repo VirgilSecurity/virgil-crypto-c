@@ -364,9 +364,12 @@ function python_class_derive_buffer_length_getter (class, method, argument, pyth
 
         if defined (proxy.argument)
             my.proxy_args += python_derive_argument_name_str (proxy.[to])
-            my.proxy_args += "=len(" + python_derive_argument_name_str (proxy.argument) + ")"
-
-
+            if string_in (proxy.cast, "data_length")
+                my.proxy_args += "=len(" + python_derive_argument_name_str (proxy.argument) + ")"
+            else
+                my.proxy_args += "=" + python_derive_argument_name_str (proxy.argument)
+            endif
+            
         elsif defined (proxy.constant)
 
             my.proxy_args += python_derive_argument_name_str (proxy.[to])
@@ -724,13 +727,13 @@ endfunction
 #   Add <python_method/> with setter only that proxy dependency to the
 #   C context.
 # ---------------------------------------------------------------------------
-function python_create_method_from_dependency (dependency, impl, destination, python_project, meta)
-    check_arguments (my, "dependency, impl, destination, python_project, meta", my)
+function python_create_method_from_dependency (dependency, instance, destination, python_project, meta)
+    check_arguments (my, "dependency, instance, destination, python_project, meta", my)
 
     new python_method to my.destination
         . = python_format_description (my.dependency) ?
         .name = python_derive_method_name_str (cat ("set", my.dependency.name))
-        .low_level_name = class_derive_c_method_use_dependency (my.impl, my.dependency)
+        .low_level_name = class_derive_c_method_use_dependency (my.instance, my.dependency)
         .visibility = "public"
 
         my.arg_name = python_derive_argument_name_str (my.dependency.name, my.python_project)
@@ -758,20 +761,20 @@ endfunction
 #   Add <python_method/> with setter only that proxy dependency to the
 #   C context.
 # ---------------------------------------------------------------------------
-function python_create_low_level_method_from_dependency (dependency, impl, destination, python_project, meta)
-    check_arguments (my, "dependency, impl, destination, python_project, meta", my)
+function python_create_low_level_method_from_dependency (dependency, instance, destination, python_project, meta)
+    check_arguments (my, "dependency, instance, destination, python_project, meta", my)
 
     new python_method to my.destination
         . = python_format_description (my.dependency) ?
-        .name = class_derive_c_method_use_dependency (my.impl, my.dependency)
+        .name = class_derive_c_method_use_dependency (my.instance, my.dependency)
         .visibility = "public"
 
         my.arg_name = python_derive_argument_name_str (my.dependency.name, my.python_project)
 
-        if my.impl.context <> "none"
+        if my.instance.context <> "none"
             new python_argument to python_method
                 .name = "ctx"
-                .type = class_derive_c_type (my.impl)
+                .type = class_derive_c_type (my.instance)
                 .is_reference = "1"
             endnew
         endif
@@ -1020,6 +1023,8 @@ function python_create_class_method (class, method, destination, python_project,
                     endnew
                     
                     delete python_argument
+                elsif is_true (python_argument.is_interface)
+                    my.low_level_arguments += "$(python_argument.name:).c_impl"
                 else
                     my.low_level_arguments += "$(python_argument.name:)"
                 endif
@@ -1499,6 +1504,11 @@ function python_create_data_class (class, destination, python_project, meta)
             . = python_format_license (my.python_project->license) ?
         endnew
 
+        new python_import to python_module
+            .framework = "virgil_crypto.utils"
+            .import_all = "1"
+        endnew
+
         if ! string_in (my.class.name, "data, buffer")
             # Add C wrapper import to high level
             new python_import to python_module
@@ -1548,7 +1558,7 @@ function python_create_data_class (class, destination, python_project, meta)
                             self._lib_vsc_data = VscData()
                             if predefined_value is None:
                                 self._bytes_ = (c_byte * 0)()
-                            if isinstance(predefined_value, bytes) or isinstance(predefined_value, bytearray):
+                            elif isinstance(predefined_value, bytes) or isinstance(predefined_value, bytearray):
                                 self._bytes_ = (c_byte * len(predefined_value))(*predefined_value)
                             elif isinstance(predefined_value, str) or Utils.check_unicode(predefined_value):
                                 str_bytes = bytearray(Utils.strtobytes(predefined_value))
@@ -2140,6 +2150,8 @@ function python_create_toplevel_modules (wrapper)
                 import json
                 import sys
 
+                from ctypes import *
+
                 if sys.version_info[0] == 2:
                     from __builtin__ import unicode
 
@@ -2206,7 +2218,7 @@ function python_create_toplevel_modules (wrapper)
                     def strtobytes(source):
                         # type: (str) -> Tuple[*int]
                         \"\"\"Convert string to bytes tuple used for all crypto methods.\"\"\"
-                        return tuple(bytearray(source))
+                        return tuple(bytearray(source.encode()))
 
                     @classmethod
                     def b64tobytes(cls, source):
@@ -2261,6 +2273,15 @@ function python_create_toplevel_modules (wrapper)
                     @staticmethod
                     def check_unicode(source):
                         return check_unicode(source)
+                    
+                    @classmethod
+                    def convert_byte_to_c_byte(cls, python_bytearray):
+                        return cls.convert_bytearray_to_c_byte_array(python_bytearray)[0]
+
+                    @staticmethod
+                    def convert_bytearray_to_c_byte_array(python_bytearray):
+                        c_byte_array = (c_byte * len(python_bytearray))(*python_bytearray)
+                        return c_byte_array
 
             ")
         endnew
@@ -2617,6 +2638,10 @@ function python_create_class_module (class, python_project, meta)
                 python_create_c_destructor_mapping (my.class, python_class)
             endif
 
+            for my.class.dependency
+                python_create_low_level_method_from_dependency (dependency, my.class, python_class, my.python_project, my.meta)
+            endfor
+
             for my.class.method where method.declaration = "public" & method.visibility = "public" & method.scope ?= "public"
                 python_create_low_level_class_method (my.class, method, python_class, my.python_project, my.meta)
             endfor
@@ -2707,6 +2732,10 @@ function python_create_class_module (class, python_project, meta)
                     python_create_class_default_destructor (python_class, my.class, my.python_project, my.meta)
                 endif
             endif
+
+            for my.class.dependency
+                python_create_method_from_dependency (dependency, my.class, python_class, my.python_project, my.meta)
+            endfor
 
             for my.class.method where method.declaration = "public" & method.visibility = "public" & method.scope ?= "public"
                 python_create_class_method (my.class, method, python_class, my.python_project, my.meta)
@@ -2799,6 +2828,60 @@ function python_create_enum_module (enum, python_project, meta)
             python_append_import_to_custom_module (python_module, python_class, my.init_module)
         endfor
     endnew
+
+    # High level modules
+    new python_module to my.python_project
+        echo_debug ("Generate high level module $(python_derive_module_low_level_name (my.enum, my.python_project))")
+        .name = python_derive_module_name (my.enum, my.python_project)
+        .source_file_name = 0.name + ".py"
+        .source_file_path = cat_path (my.python_project.source_dir, 0.source_file_name)
+
+        new python_license to python_module
+            . = python_format_license (my.python_project->license) ?
+        endnew
+
+        for my.python_project.python_import
+            copy python_import to python_module
+        endfor
+        
+        if string_in (my.enum.name, "status")
+            new python_class to python_module   
+                .name = "VirgilCrypto$(my.python_project.name:Pascal)Error"
+                .visibility = "public"
+
+                python_create_custom_inherit ("Exception", python_class, my.python_project)
+                
+                new python_code to python_class
+                    . = format_left ("pass")
+                endnew
+            endnew
+        endif
+
+        new python_class to python_module
+            . = python_format_description (my.enum) ?
+            .name = python_derive_class_name (my.enum, my.python_project)
+            echo_debug ("Generate high level ENUM class: $(.name:)")
+
+            python_create_custom_inherit ("object", python_class, my.python_project)
+
+            python_map_attr_visibility (python_class, my.enum)
+
+            for my.enum.constant where constant.scope ?= "public"
+                python_create_class_constant (constant, python_class, my.python_project, my.meta, index(constant))
+            endfor
+
+            if string_in (my.enum.name, "status")
+                python_create_status_dict (my.enum, python_class)
+                python_create_status_handle_method (python_class, my.python_project)
+            endif
+        endnew
+
+        for python_module.python_class
+            my.init_module = my.python_project->python_module (python_module.name = "__init__" & is_false (python_module.is_c_bridge))
+            python_append_import_to_custom_module (python_module, python_class, my.init_module)
+        endfor
+    endnew
+
 endfunction
 
 .endtemplate
