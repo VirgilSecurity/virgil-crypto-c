@@ -38,7 +38,6 @@
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/ratchet/private/vscr_ratchet_group_message_defs.h>
 #include <virgil/crypto/foundation/vscf_raw_key.h>
-#include <vscf_pkcs8_der_deserializer_internal.h>
 #include "unity.h"
 #include "test_utils.h"
 
@@ -63,7 +62,7 @@ test__serialization__random_group_chat_bad_network__decrypt_should_succeed(void)
     vscr_ratchet_group_session_t **sessions = NULL;
     vsc_buffer_t **priv = NULL;
 
-    size_t group_size = 10;
+    size_t group_size = generate_number(rng, 10, 50);
 
     initialize_random_group_chat(rng, group_size, &sessions, &priv);
 

@@ -92,10 +92,6 @@ struct vscf_pkcs8_serializer_t {
     //  Dependency to the interface 'asn1 writer'.
     //
     vscf_impl_t *asn1_writer;
-    //
-    //  Dependency to the interface 'key serializer'.
-    //
-    vscf_impl_t *der_serializer;
 };
 
 

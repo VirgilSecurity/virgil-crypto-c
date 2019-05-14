@@ -309,15 +309,18 @@ import VSCPythia
 
     /// This operation allows client to verify that the output of transform() is correct,
     /// assuming that client has previously stored transformation public key.
-    @objc public static func verify(transformedPassword: Data, blindedPassword: Data, tweak: Data, transformationPublicKey: Data, proofValueC: Data, proofValueU: Data) throws {
-        let proxyResult = transformedPassword.withUnsafeBytes({ (transformedPasswordPointer: UnsafeRawBufferPointer) -> vscp_status_t in
-            blindedPassword.withUnsafeBytes({ (blindedPasswordPointer: UnsafeRawBufferPointer) -> vscp_status_t in
-                tweak.withUnsafeBytes({ (tweakPointer: UnsafeRawBufferPointer) -> vscp_status_t in
-                    transformationPublicKey.withUnsafeBytes({ (transformationPublicKeyPointer: UnsafeRawBufferPointer) -> vscp_status_t in
-                        proofValueC.withUnsafeBytes({ (proofValueCPointer: UnsafeRawBufferPointer) -> vscp_status_t in
-                            proofValueU.withUnsafeBytes({ (proofValueUPointer: UnsafeRawBufferPointer) -> vscp_status_t in
+    public static func verify(transformedPassword: Data, blindedPassword: Data, tweak: Data, transformationPublicKey: Data, proofValueC: Data, proofValueU: Data) throws -> Bool {
+        var error: vscp_error_t = vscp_error_t()
+        vscp_error_reset(&error)
 
-                                return vscp_pythia_verify(vsc_data(transformedPasswordPointer.bindMemory(to: byte.self).baseAddress, transformedPassword.count), vsc_data(blindedPasswordPointer.bindMemory(to: byte.self).baseAddress, blindedPassword.count), vsc_data(tweakPointer.bindMemory(to: byte.self).baseAddress, tweak.count), vsc_data(transformationPublicKeyPointer.bindMemory(to: byte.self).baseAddress, transformationPublicKey.count), vsc_data(proofValueCPointer.bindMemory(to: byte.self).baseAddress, proofValueC.count), vsc_data(proofValueUPointer.bindMemory(to: byte.self).baseAddress, proofValueU.count))
+        let proxyResult = transformedPassword.withUnsafeBytes({ (transformedPasswordPointer: UnsafeRawBufferPointer) -> Bool in
+            blindedPassword.withUnsafeBytes({ (blindedPasswordPointer: UnsafeRawBufferPointer) -> Bool in
+                tweak.withUnsafeBytes({ (tweakPointer: UnsafeRawBufferPointer) -> Bool in
+                    transformationPublicKey.withUnsafeBytes({ (transformationPublicKeyPointer: UnsafeRawBufferPointer) -> Bool in
+                        proofValueC.withUnsafeBytes({ (proofValueCPointer: UnsafeRawBufferPointer) -> Bool in
+                            proofValueU.withUnsafeBytes({ (proofValueUPointer: UnsafeRawBufferPointer) -> Bool in
+
+                                return vscp_pythia_verify(vsc_data(transformedPasswordPointer.bindMemory(to: byte.self).baseAddress, transformedPassword.count), vsc_data(blindedPasswordPointer.bindMemory(to: byte.self).baseAddress, blindedPassword.count), vsc_data(tweakPointer.bindMemory(to: byte.self).baseAddress, tweak.count), vsc_data(transformationPublicKeyPointer.bindMemory(to: byte.self).baseAddress, transformationPublicKey.count), vsc_data(proofValueCPointer.bindMemory(to: byte.self).baseAddress, proofValueC.count), vsc_data(proofValueUPointer.bindMemory(to: byte.self).baseAddress, proofValueU.count), &error)
                             })
                         })
                     })
@@ -325,7 +328,15 @@ import VSCPythia
             })
         })
 
-        try PythiaError.handleStatus(fromC: proxyResult)
+        try PythiaError.handleStatus(fromC: error.status)
+
+        return proxyResult
+    }
+
+    /// This operation allows client to verify that the output of transform() is correct,
+    /// assuming that client has previously stored transformation public key.
+    @objc public static func verify(transformedPassword: Data, blindedPassword: Data, tweak: Data, transformationPublicKey: Data, proofValueC: Data, proofValueU: Data) throws -> NSNumber {
+        return NSNumber(value: try self.verify(transformedPassword: transformedPassword, blindedPassword: blindedPassword, tweak: tweak, transformationPublicKey: transformationPublicKey, proofValueC: proofValueC, proofValueU: proofValueU))
     }
 
     /// Rotates old transformation key to new transformation key and generates 'password update token',

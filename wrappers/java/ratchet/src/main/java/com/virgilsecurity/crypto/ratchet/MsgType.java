@@ -46,11 +46,11 @@ public enum MsgType {
     /*
     * Regular message. This message is used all the time except case described in prekey message section.
     */
-    REGULAR(0),
+    REGULAR(1),
     /*
     * Prekey message. This message is sent by initiator till first response is received.
     */
-    PREKEY(1);
+    PREKEY(2);
 
     private final int code;
 

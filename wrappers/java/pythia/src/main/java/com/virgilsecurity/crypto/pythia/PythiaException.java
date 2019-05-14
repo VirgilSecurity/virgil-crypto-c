@@ -47,8 +47,6 @@ public class PythiaException extends RuntimeException {
 
     public static final int ERROR_PYTHIA_INNER_FAIL = -200;
 
-    public static final int ERROR_VERIFICATION_FAIL = -201;
-
     public static final int ERROR_RNG_FAILED = -202;
 
     private int statusCode;
@@ -61,6 +59,21 @@ public class PythiaException extends RuntimeException {
 
     public int getStatusCode() {
         return this.statusCode;
+    }
+
+    public String getMessage() {
+        switch (this.statusCode) {
+        case SUCCESS:
+            return "No errors was occurred.";
+        case ERROR_BAD_ARGUMENTS:
+            return "This error should not be returned if assertions is enabled.";
+        case ERROR_PYTHIA_INNER_FAIL:
+            return "Underlying pythia library returns -1.";
+        case ERROR_RNG_FAILED:
+            return "Underlying random number generator failed.";
+        default:
+            return "Unknown error";
+        }
     }
 }
 

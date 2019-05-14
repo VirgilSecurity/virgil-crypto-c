@@ -93,7 +93,7 @@ static void
 vscr_ratchet_cipher_cleanup_ctx(vscr_ratchet_cipher_t *self);
 
 static void
-vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, vsc_data_t key);
+vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, const vscr_ratchet_symmetric_key_t key);
 
 //
 //  Return size of 'vscr_ratchet_cipher_t'.
@@ -257,12 +257,10 @@ vscr_ratchet_cipher_decrypt_len(vscr_ratchet_cipher_t *self, size_t cipher_text_
 }
 
 static void
-vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, vsc_data_t key) {
+vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, const vscr_ratchet_symmetric_key_t key) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->aes256_gcm);
-
-    VSCR_ASSERT(key.len == vscr_ratchet_common_hidden_SHARED_KEY_LEN);
 
     vscf_hkdf_t *hkdf = vscf_hkdf_new();
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
@@ -274,7 +272,7 @@ vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, vsc_data_t key) {
     vsc_buffer_use(&buffer, derived_secret, sizeof(derived_secret));
 
     vscf_hkdf_set_info(hkdf, vsc_data(ratchet_kdf_cipher_info, sizeof(ratchet_kdf_cipher_info)));
-    vscf_hkdf_derive(hkdf, key, sizeof(derived_secret), &buffer);
+    vscf_hkdf_derive(hkdf, vsc_data(key, sizeof(vscr_ratchet_symmetric_key_t)), sizeof(derived_secret), &buffer);
 
     vscf_hkdf_destroy(&hkdf);
 
@@ -287,7 +285,7 @@ vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *self, vsc_data_t key) {
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t plain_text,
+vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, const vscr_ratchet_symmetric_key_t key, vsc_data_t plain_text,
         vsc_data_t additional_data, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(self);
@@ -307,7 +305,7 @@ vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_dat
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t cipher_text,
+vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, const vscr_ratchet_symmetric_key_t key, vsc_data_t cipher_text,
         vsc_data_t additional_data, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(self);
@@ -325,4 +323,59 @@ vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_dat
     }
 
     return vscr_status_SUCCESS;
+}
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_cipher_pad_then_encrypt(vscr_ratchet_cipher_t *self, vscr_ratchet_padding_t *padding, vsc_data_t data,
+        const vscr_ratchet_message_key_t *key, vsc_data_t ad, vsc_buffer_t *cipher_text) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(padding);
+    VSCR_ASSERT_PTR(key);
+    VSCR_ASSERT_PTR(cipher_text);
+
+    size_t size = vscr_ratchet_padding_padded_len(data.len);
+    vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
+    vsc_buffer_make_secure(temp);
+
+    vsc_buffer_write_data(temp, data);
+
+    vscr_status_t result = vscr_ratchet_padding_add_padding(padding, temp);
+
+    if (result != vscr_status_SUCCESS) {
+        goto err;
+    }
+
+    result = vscr_ratchet_cipher_encrypt(self, key->key, vsc_buffer_data(temp), ad, cipher_text);
+
+err:
+    vsc_buffer_destroy(&temp);
+
+    return result;
+}
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_cipher_decrypt_then_remove_pad(vscr_ratchet_cipher_t *self, vsc_data_t data,
+        const vscr_ratchet_message_key_t *key, vsc_data_t ad, vsc_buffer_t *plain_text) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(key);
+    VSCR_ASSERT_PTR(plain_text);
+
+    size_t size = vscr_ratchet_cipher_decrypt_len(self, data.len);
+    vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
+    vsc_buffer_make_secure(temp);
+
+    vscr_status_t result = vscr_ratchet_cipher_decrypt(self, key->key, data, ad, temp);
+
+    if (result != vscr_status_SUCCESS) {
+        goto err;
+    }
+
+    result = vscr_ratchet_padding_remove_padding(vsc_buffer_data(temp), plain_text);
+
+err:
+    vsc_buffer_destroy(&temp);
+
+    return result;
 }

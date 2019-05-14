@@ -218,7 +218,7 @@ vscr_ratchet_receiver_chain_cleanup_ctx(vscr_ratchet_receiver_chain_t *self) {
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chain_serialize(vscr_ratchet_receiver_chain_t *self, ReceiverChain *receiver_chain_pb) {
+vscr_ratchet_receiver_chain_serialize(const vscr_ratchet_receiver_chain_t *self, ReceiverChain *receiver_chain_pb) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(receiver_chain_pb);

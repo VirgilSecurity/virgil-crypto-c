@@ -66,15 +66,18 @@ endif()
 # ---------------------------------------------------------------------------
 include(ExternalProject)
 
+if(WIN32 AND NOT CYGWIN)
+    set(EXECUTABLE_SUFFIX ".exe")
+endif()
 
 if(TARGET protoc)
     set(PROTOC_EXE protoc)
 
 elseif(COMMAND find_host_program)
-    find_host_program(PROTOC_EXE NAMES protoc${CMAKE_EXECUTABLE_SUFFIX})
+    find_host_program(PROTOC_EXE NAMES protoc${EXECUTABLE_SUFFIX})
 
 else()
-    find_program(PROTOC_EXE NAMES protoc${CMAKE_EXECUTABLE_SUFFIX})
+    find_program(PROTOC_EXE NAMES protoc${EXECUTABLE_SUFFIX})
 endif()
 
 
@@ -98,7 +101,7 @@ if(NOT PROTOC_EXE)
     set_target_properties(protoc
             PROPERTIES
             IMPORTED_LOCATION
-                "${NANOPB_INSTALL_LOCATION}/bin/protoc${CMAKE_EXECUTABLE_SUFFIX}"
+                "${NANOPB_INSTALL_LOCATION}/bin/protoc${EXECUTABLE_SUFFIX}"
             )
 
     set(PROTOC_EXE protoc)

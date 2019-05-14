@@ -39,15 +39,30 @@ package com.virgilsecurity.crypto.foundation;
 public enum OidId {
 
     NONE(0),
-    CMS_DATA(1),
-    CMS_ENVELOPED_DATA(2),
-    HKDF_WITH_SHA256(3),
-    HKDF_WITH_SHA384(4),
-    HKDF_WITH_SHA512(5),
-    HMAC_WITH_SHA224(6),
-    HMAC_WITH_SHA256(7),
-    HMAC_WITH_SHA384(8),
-    HMAC_WITH_SHA512(9);
+    RSA(1),
+    ED25519(2),
+    CURVE25519(3),
+    SHA224(4),
+    SHA256(5),
+    SHA384(6),
+    SHA512(7),
+    KDF1(8),
+    KDF2(9),
+    AES256_GCM(10),
+    AES256_CBC(11),
+    PKCS5_PBKDF2(12),
+    PKCS5_PBES2(13),
+    CMS_DATA(14),
+    CMS_ENVELOPED_DATA(15),
+    HKDF_WITH_SHA256(16),
+    HKDF_WITH_SHA384(17),
+    HKDF_WITH_SHA512(18),
+    HMAC_WITH_SHA224(19),
+    HMAC_WITH_SHA256(20),
+    HMAC_WITH_SHA384(21),
+    HMAC_WITH_SHA512(22),
+    EC_GENERIC_KEY(23),
+    EC_DOMAIN_SECP256R1(24);
 
     private final int code;
 

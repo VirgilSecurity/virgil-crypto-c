@@ -15,6 +15,7 @@
         <require impl="simple alg info"/>
         <require impl="salted kdf alg info"/>
         <require impl="pbe alg info"/>
+        <require impl="ec alg info"/>
         <require module="buffer defs" project="common"/>
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
@@ -160,6 +161,24 @@
             <return type="size"/>
         </method>
 
+        <method name="serialized ec alg info len">
+            Return buffer size enough to hold ASN.1 structure
+            "AlgorithmIdentifier" with "ECParameters" from the RFC 5480.
+
+            <argument name="alg info" interface="alg info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize ec alg info">
+            Serialize class "ec alg info" to the ASN.1 structure
+            "AlgorithmIdentifier" with "ECParameters" from the RFC 5480.
+
+            <argument name="alg info" interface="alg info"/>
+
+            <return type="size"/>
+        </method>
+
         <method name="serialize inplace" declaration="public">
             Serialize by using internal ASN.1 writer.
             Note, that caller code is responsible to reset ASN.1 writer with
@@ -184,6 +203,7 @@
         <require impl="simple alg info"/>
         <require impl="salted kdf alg info"/>
         <require impl="pbe alg info"/>
+        <require impl="ec alg info"/>
         <require interface="alg info"/>
 
         <dependency name="asn1 reader" interface="asn1 reader"/>
@@ -195,7 +215,7 @@
         <method name="deserialize simple alg info">
             Parse ASN.1 structure "AlgorithmIdentifier" with optional NULL parameter.
 
-            <argument name="alg oid" class="data"/>
+            <argument name="oid id" enum="oid id"/>
             <argument name="error" class="error" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
@@ -204,7 +224,7 @@
         <method name="deserialize kdf alg info">
             Parse ASN.1 structure "KeyDerivationFunction" from the ISO/IEC 18033-2.
 
-            <argument name="alg oid" class="data"/>
+            <argument name="oid id" enum="oid id"/>
             <argument name="error" class="error" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
@@ -214,7 +234,7 @@
             Parse ASN.1 structure "KeyDevAlgs" from the
             https://tools.ietf.org/html/draft-housley-hkdf-oids-00.
 
-            <argument name="alg oid" class="data"/>
+            <argument name="oid id" enum="oid id"/>
             <argument name="error" class="error" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
@@ -223,7 +243,7 @@
         <method name="deserialize hmac alg info">
             Parse ASN.1 structure "DigestAlgorithm" from the RFC 4231.
 
-            <argument name="alg oid" class="data"/>
+            <argument name="oid id" enum="oid id"/>
             <argument name="error" class="error" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
@@ -234,7 +254,7 @@
                 - defined in the RFC 3565;
                 - defined in the RFC 5084.
 
-            <argument name="alg oid" class="data"/>
+            <argument name="oid id" enum="oid id"/>
             <argument name="error" class="error" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
@@ -244,7 +264,7 @@
             Parse ASN.1 structure "AlgorithmIdentifier" with PBKDF2 parameters
             defined in the RFC 8018.
 
-            <argument name="alg oid" class="data"/>
+            <argument name="oid id" enum="oid id"/>
             <argument name="error" class="error" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
@@ -254,7 +274,17 @@
             Parse ASN.1 structure "AlgorithmIdentifier" with PBES2 parameters
             defined in the RFC 8018.
 
-            <argument name="alg oid" class="data"/>
+            <argument name="oid id" enum="oid id"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return interface="alg info" access="disown"/>
+        </method>
+
+        <method name="deserialize ec alg info">
+            Parse ASN.1 structure "AlgorithmIdentifier" with ECParameters
+            parameters defined in the RFC 5480.
+
+            <argument name="oid id" enum="oid id"/>
             <argument name="error" class="error" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>

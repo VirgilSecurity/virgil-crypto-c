@@ -4,40 +4,32 @@
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common" scope="public"/>
 
-    <property name="id" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
-    </property>
-    <property name="pub key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_key_len)"/>
-    </property>
+    <require module="ratchet typedefs" scope="context"/>
 
-    <property name="epoch count" type="size" access="readwrite"/>
-    <property name="epoches" class="ratchet group participant epoch">
+    <property name="id" class="vscr_ratchet_participant_id_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="pub key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
+
+    <property name="epoches" class="ratchet group participant epoch" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_max_epoches_count)"/>
     </property>
 
     <method name="add epoch">
         <argument name="epoch" type="size"/>
-
-        <return class="ratchet group participant epoch" access="readwrite"/>
+        <argument name="chain key" class="ratchet chain key" access="disown"/>
     </method>
 
-    <method name="delete epoch">
-        <argument name="epoch" type="size"/>
-    </method>
-
-    <method name="find epoch">
+    <method name="find epoch" is_const="1">
         <argument name="epoch" type="size"/>
 
         <return class="ratchet group participant epoch" access="readwrite"/>
     </method>
 
-    <method name="serialize">
+    <method name="serialize" is_const="1">
         <argument name="data pb" class="ParticipantData" library="nanopb" access="readwrite"/>
     </method>
 
     <method name="deserialize" is_static="1">
-        <argument name="data pb" class="ParticipantData" library="nanopb" access="readwrite"/>
+        <argument name="data pb" class="ParticipantData" library="nanopb"/>
         <argument name="data" class="self" access="readwrite"/>
     </method>
 

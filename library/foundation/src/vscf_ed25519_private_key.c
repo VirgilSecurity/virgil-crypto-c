@@ -56,10 +56,6 @@
 #include "vscf_ed25519_public_key_defs.h"
 #include "vscf_alg_info.h"
 #include "vscf_simple_alg_info.h"
-#include "vscf_asn1rd.h"
-#include "vscf_asn1wr.h"
-#include "vscf_asn1rd_defs.h"
-#include "vscf_asn1wr_defs.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_random.h"
 #include "vscf_ed25519_private_key_defs.h"
@@ -326,15 +322,8 @@ vscf_ed25519_private_key_export_private_key(const vscf_ed25519_private_key_t *se
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_ed25519_private_key_exported_private_key_len(self));
 
-    vscf_asn1wr_t asn1wr;
-    vscf_asn1wr_init(&asn1wr);
-    vscf_asn1wr_reset(&asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
-    size_t len = vscf_asn1wr_write_octet_str(&asn1wr, vsc_data(self->secret_key, ED25519_KEY_LEN));
-
-    vscf_asn1wr_finish(&asn1wr, vsc_buffer_is_reverse(out));
-    vsc_buffer_inc_used(out, len);
-
-    vscf_asn1wr_cleanup(&asn1wr);
+    vsc_buffer_make_secure(out);
+    vsc_buffer_write_data(out, vsc_data(self->secret_key, ED25519_KEY_LEN));
 
     return vscf_status_SUCCESS;
 }
@@ -347,12 +336,7 @@ vscf_ed25519_private_key_exported_private_key_len(const vscf_ed25519_private_key
 
     VSCF_ASSERT_PTR(self);
 
-    //
-    //  https://tools.ietf.org/rfc/rfc8410.txt
-    //
-    //  CurvePrivateKey ::= OCTET STRING
-    //
-    return 2 + ED25519_KEY_LEN;
+    return ED25519_KEY_LEN;
 }
 
 //
@@ -368,19 +352,11 @@ vscf_ed25519_private_key_import_private_key(vscf_ed25519_private_key_t *self, vs
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(data));
 
-    vscf_asn1rd_t asn1rd;
-    vscf_asn1rd_init(&asn1rd);
-    vscf_asn1rd_reset(&asn1rd, data);
-
-    vsc_data_t key = vscf_asn1rd_read_octet_str(&asn1rd);
-
-    vscf_asn1rd_cleanup(&asn1rd);
-
-    if (vscf_asn1rd_has_error(&asn1rd) || key.len != ED25519_KEY_LEN) {
+    if (data.len != ED25519_KEY_LEN) {
         return vscf_status_ERROR_BAD_ED25519_PRIVATE_KEY;
     }
 
-    memcpy(self->secret_key, key.bytes, ED25519_KEY_LEN);
+    memcpy(self->secret_key, data.bytes, ED25519_KEY_LEN);
 
     return vscf_status_SUCCESS;
 }

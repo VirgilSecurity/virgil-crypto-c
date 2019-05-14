@@ -58,7 +58,6 @@
 #include "vscf_key_serializer.h"
 #include "vscf_key_serializer_api.h"
 #include "vscf_asn1_writer.h"
-#include "vscf_key_serializer.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -171,7 +170,6 @@ vscf_pkcs8_serializer_cleanup(vscf_pkcs8_serializer_t *self) {
     }
 
     vscf_pkcs8_serializer_release_asn1_writer(self);
-    vscf_pkcs8_serializer_release_der_serializer(self);
 
     vscf_zeroize(self, sizeof(vscf_pkcs8_serializer_t));
 }
@@ -291,48 +289,6 @@ vscf_pkcs8_serializer_release_asn1_writer(vscf_pkcs8_serializer_t *self) {
     VSCF_ASSERT_PTR(self);
 
     vscf_impl_destroy(&self->asn1_writer);
-}
-
-//
-//  Setup dependency to the interface 'key serializer' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_pkcs8_serializer_use_der_serializer(vscf_pkcs8_serializer_t *self, vscf_impl_t *der_serializer) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(der_serializer);
-    VSCF_ASSERT(self->der_serializer == NULL);
-
-    VSCF_ASSERT(vscf_key_serializer_is_implemented(der_serializer));
-
-    self->der_serializer = vscf_impl_shallow_copy(der_serializer);
-}
-
-//
-//  Setup dependency to the interface 'key serializer' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_pkcs8_serializer_take_der_serializer(vscf_pkcs8_serializer_t *self, vscf_impl_t *der_serializer) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(der_serializer);
-    VSCF_ASSERT_PTR(self->der_serializer == NULL);
-
-    VSCF_ASSERT(vscf_key_serializer_is_implemented(der_serializer));
-
-    self->der_serializer = der_serializer;
-}
-
-//
-//  Release dependency to the interface 'key serializer'.
-//
-VSCF_PUBLIC void
-vscf_pkcs8_serializer_release_der_serializer(vscf_pkcs8_serializer_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->der_serializer);
 }
 
 static const vscf_api_t *

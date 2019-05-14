@@ -336,7 +336,10 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia
     return newObj;
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1verify (JNIEnv *jenv, jobject jobj, jbyteArray jtransformedPassword, jbyteArray jblindedPassword, jbyteArray jtweak, jbyteArray jtransformationPublicKey, jbyteArray jproofValueC, jbyteArray jproofValueU) {
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1verify (JNIEnv *jenv, jobject jobj, jbyteArray jtransformedPassword, jbyteArray jblindedPassword, jbyteArray jtweak, jbyteArray jtransformationPublicKey, jbyteArray jproofValueC, jbyteArray jproofValueU) {
+    // Wrap errors
+    struct vscp_error_t /*4*/ error;
+    vscp_error_reset(&error);
     // Wrap input data
     byte* transformed_password_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jtransformedPassword, NULL);
     vsc_data_t transformed_password = vsc_data(transformed_password_arr, (*jenv)->GetArrayLength(jenv, jtransformedPassword));
@@ -356,10 +359,11 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1v
     byte* proof_value_u_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jproofValueU, NULL);
     vsc_data_t proof_value_u = vsc_data(proof_value_u_arr, (*jenv)->GetArrayLength(jenv, jproofValueU));
 
-    vscp_status_t status = vscp_pythia_verify(transformed_password /*a3*/, blinded_password /*a3*/, tweak /*a3*/, transformation_public_key /*a3*/, proof_value_c /*a3*/, proof_value_u /*a3*/);
-    if (status != vscp_status_SUCCESS) {
-        throwPythiaException(jenv, jobj, status);
-        return;
+    jboolean ret = (jboolean) vscp_pythia_verify(transformed_password /*a3*/, blinded_password /*a3*/, tweak /*a3*/, transformation_public_key /*a3*/, proof_value_c /*a3*/, proof_value_u /*a3*/, &error /*a4*/);
+
+    if (error.status != vscp_status_SUCCESS) {
+        throwPythiaException(jenv, jobj, error.status);
+        return 0;
     }
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jtransformedPassword, (jbyte*) transformed_password_arr, 0);
@@ -373,6 +377,8 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1v
     (*jenv)->ReleaseByteArrayElements(jenv, jproofValueC, (jbyte*) proof_value_c_arr, 0);
 
     (*jenv)->ReleaseByteArrayElements(jenv, jproofValueU, (jbyte*) proof_value_u_arr, 0);
+
+    return ret;
 }
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1getPasswordUpdateToken (JNIEnv *jenv, jobject jobj, jbyteArray jpreviousTransformationPrivateKey, jbyteArray jnewTransformationPrivateKey) {

@@ -82,7 +82,7 @@ test__create_chain_key__fixed_keys__should_match(void) {
     vscr_ratchet_chain_key_t *chain_key = vscr_ratchet_chain_key_new();
 
     vscr_status_t status = vscr_ratchet_keys_create_chain_key(test_data_ratchet_keys_root_key.bytes,
-            test_data_ratchet_keys_private_key, test_data_ratchet_keys_public, new_root_key, chain_key);
+            test_data_ratchet_keys_private_key.bytes, test_data_ratchet_keys_public.bytes, new_root_key, chain_key);
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
 

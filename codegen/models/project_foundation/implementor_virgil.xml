@@ -92,7 +92,7 @@
         <interface name="entropy source"/>
 
         <context>
-            <property name="data source" class="data" access="readwrite"/>
+            <property name="data source" class="buffer"/>
             <property name="byte source" type="byte"/>
             <property name="pos" type="size"/>
         </context>

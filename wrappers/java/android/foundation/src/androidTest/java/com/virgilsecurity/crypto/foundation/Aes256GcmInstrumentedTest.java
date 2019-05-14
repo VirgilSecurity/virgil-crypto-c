@@ -151,8 +151,8 @@ public class Aes256GcmInstrumentedTest {
         AuthEncryptAuthEncryptResult result = this.aes.authEncrypt(data, authData);
 
         assertNotNull(result);
-        assertArrayEquals(TestData.aes256_gcm_auth_out, result.out);
-        assertArrayEquals(TestData.aes256_gcm_auth_tag, result.tag);
+        assertArrayEquals(TestData.aes256_gcm_auth_out, result.getOut());
+        assertArrayEquals(TestData.aes256_gcm_auth_tag, result.getTag());
     }
 
     @Test

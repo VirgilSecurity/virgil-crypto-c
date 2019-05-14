@@ -70,5 +70,28 @@ public class PheException extends RuntimeException {
     public int getStatusCode() {
         return this.statusCode;
     }
+
+    public String getMessage() {
+        switch (this.statusCode) {
+        case SUCCESS:
+            return "No errors was occurred.";
+        case ERROR_INVALID_SUCCESS_PROOF:
+            return "Success proof check failed.";
+        case ERROR_INVALID_FAIL_PROOF:
+            return "Failure proof check failed.";
+        case ERROR_RNG_FAILED:
+            return "RNG returned error.";
+        case ERROR_PROTOBUF_DECODE_FAILED:
+            return "Protobuf decode failed.";
+        case ERROR_INVALID_PUBLIC_KEY:
+            return "Invalid public key.";
+        case ERROR_INVALID_PRIVATE_KEY:
+            return "Invalid private key.";
+        case ERROR_AES_FAILED:
+            return "AES error occurred.";
+        default:
+            return "Unknown error";
+        }
+    }
 }
 

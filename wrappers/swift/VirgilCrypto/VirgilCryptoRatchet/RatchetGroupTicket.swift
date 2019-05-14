@@ -37,7 +37,7 @@ import Foundation
 import VSCRatchet
 import VirgilCryptoFoundation
 
-/// Group ticket used to start group session.
+/// Group ticket used to start group session or change participants.
 @objc(VSCRRatchetGroupTicket) public class RatchetGroupTicket: NSObject {
 
     /// Handle underlying C context.
@@ -82,13 +82,14 @@ import VirgilCryptoFoundation
         try RatchetError.handleStatus(fromC: proxyResult)
     }
 
+    /// Set this ticket to start new group session.
     @objc public func setupTicketAsNew() throws {
         let proxyResult = vscr_ratchet_group_ticket_setup_ticket_as_new(self.c_ctx)
 
         try RatchetError.handleStatus(fromC: proxyResult)
     }
 
-    /// Adds participant to chat.
+    /// Add new participant to chat.
     @objc public func addNewParticipant(participantId: Data, publicKey: Data) throws {
         let proxyResult = participantId.withUnsafeBytes({ (participantIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
             publicKey.withUnsafeBytes({ (publicKeyPointer: UnsafeRawBufferPointer) -> vscr_status_t in
@@ -111,15 +112,8 @@ import VirgilCryptoFoundation
     }
 
     /// Generates message that should be sent to all participants using secure channel.
-    @objc public func getComplementaryTicketMessage() -> RatchetGroupMessage {
-        let proxyResult = vscr_ratchet_group_ticket_get_complementary_ticket_message(self.c_ctx)
-
-        return RatchetGroupMessage.init(use: proxyResult!)
-    }
-
-    /// Generates message that should be sent to all participants using secure channel.
-    @objc public func getFullTicketMessage() -> RatchetGroupMessage {
-        let proxyResult = vscr_ratchet_group_ticket_get_full_ticket_message(self.c_ctx)
+    @objc public func getTicketMessage() -> RatchetGroupMessage {
+        let proxyResult = vscr_ratchet_group_ticket_get_ticket_message(self.c_ctx)
 
         return RatchetGroupMessage.init(use: proxyResult!)
     }

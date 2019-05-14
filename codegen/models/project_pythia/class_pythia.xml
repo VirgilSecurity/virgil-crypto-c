@@ -203,8 +203,9 @@
         <argument name="transformation public key" class="data"/>
         <argument name="proof value c" class="data"/>
         <argument name="proof value u" class="data"/>
+        <argument name="error" class="error" access="readwrite"/>
 
-        <return enum="status"/>
+        <return type="boolean"/>
     </method>
 
 

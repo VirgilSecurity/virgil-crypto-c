@@ -105,6 +105,12 @@ VSCF_PUBLIC vscf_oid_id_t
 vscf_oid_to_id(vsc_data_t oid);
 
 //
+//  Map oid identifier to the algorithm identifier.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_oid_id_to_alg_id(vscf_oid_id_t oid_id);
+
+//
 //  Return true if given OIDs are equal.
 //
 VSCF_PUBLIC bool

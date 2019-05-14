@@ -87,6 +87,11 @@ public class FoundationJNI {
     public native OidId oid_toId(byte[] oid);
 
     /*
+    * Map oid identifier to the algorithm identifier.
+    */
+    public native AlgId oid_idToAlgId(OidId oidId);
+
+    /*
     * Return true if given OIDs are equal.
     */
     public native boolean oid_equal(byte[] lhs, byte[] rhs);
@@ -512,12 +517,12 @@ public class FoundationJNI {
     /*
     * Import private key from the PKCS#8 format.
     */
-    public native PrivateKey keyProvider_importPrivateKey(long cCtx, byte[] pkcs8Data) throws FoundationException;
+    public native PrivateKey keyProvider_importPrivateKey(long cCtx, byte[] keyData) throws FoundationException;
 
     /*
     * Import public key from the PKCS#8 format.
     */
-    public native PublicKey keyProvider_importPublicKey(long cCtx, byte[] pkcs8Data) throws FoundationException;
+    public native PublicKey keyProvider_importPublicKey(long cCtx, byte[] keyData) throws FoundationException;
 
     /*
     * Calculate buffer size enough to hold exported public key.
@@ -541,7 +546,7 @@ public class FoundationJNI {
     public native int keyProvider_exportedPrivateKeyLen(long cCtx, PrivateKey privateKey);
 
     /*
-    * Export given private key to the PKCS#8 DER format.
+    * Export given private key to the PKCS#8 or SEC1 DER format.
     *
     * Precondition: private key must be exportable.
     */
@@ -1478,6 +1483,190 @@ public class FoundationJNI {
     */
     public native void rsaPrivateKey_importPrivateKey(long cCtx, byte[] data) throws FoundationException;
 
+    public native void secp256r1PublicKey_setRandom(long cCtx, Random random);
+
+    public native void secp256r1PublicKey_setEcies(long cCtx, Ecies ecies);
+
+    /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public native void secp256r1PublicKey_setupDefaults(long cCtx) throws FoundationException;
+
+    public native long secp256r1PublicKey_new();
+
+    public native void secp256r1PublicKey_close(long cCtx);
+
+    /*
+    * Provide algorithm identificator.
+    */
+    public native AlgId secp256r1PublicKey_algId(long cCtx);
+
+    /*
+    * Produce object with algorithm information and configuration parameters.
+    */
+    public native AlgInfo secp256r1PublicKey_produceAlgInfo(long cCtx);
+
+    /*
+    * Restore algorithm configuration from the given object.
+    */
+    public native void secp256r1PublicKey_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    /*
+    * Length of the key in bytes.
+    */
+    public native int secp256r1PublicKey_keyLen(long cCtx);
+
+    /*
+    * Length of the key in bits.
+    */
+    public native int secp256r1PublicKey_keyBitlen(long cCtx);
+
+    /*
+    * Encrypt given data.
+    */
+    public native byte[] secp256r1PublicKey_encrypt(long cCtx, byte[] data) throws FoundationException;
+
+    /*
+    * Calculate required buffer length to hold the encrypted data.
+    */
+    public native int secp256r1PublicKey_encryptedLen(long cCtx, int dataLen);
+
+    /*
+    * Verify data with given public key and signature.
+    */
+    public native boolean secp256r1PublicKey_verifyHash(long cCtx, byte[] hashDigest, AlgId hashId, byte[] signature);
+
+    /*
+    * Export public key in the binary format.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA public key must be exported in format defined in
+    * RFC 3447 Appendix A.1.1.
+    */
+    public native byte[] secp256r1PublicKey_exportPublicKey(long cCtx) throws FoundationException;
+
+    /*
+    * Return length in bytes required to hold exported public key.
+    */
+    public native int secp256r1PublicKey_exportedPublicKeyLen(long cCtx);
+
+    /*
+    * Import public key from the binary format.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA public key must be imported from the format defined in
+    * RFC 3447 Appendix A.1.1.
+    */
+    public native void secp256r1PublicKey_importPublicKey(long cCtx, byte[] data) throws FoundationException;
+
+    /*
+    * Generate ephemeral private key of the same type.
+    */
+    public native PrivateKey secp256r1PublicKey_generateEphemeralKey(long cCtx) throws FoundationException;
+
+    public native void secp256r1PrivateKey_setRandom(long cCtx, Random random);
+
+    public native void secp256r1PrivateKey_setEcies(long cCtx, Ecies ecies);
+
+    /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public native void secp256r1PrivateKey_setupDefaults(long cCtx) throws FoundationException;
+
+    public native long secp256r1PrivateKey_new();
+
+    public native void secp256r1PrivateKey_close(long cCtx);
+
+    /*
+    * Provide algorithm identificator.
+    */
+    public native AlgId secp256r1PrivateKey_algId(long cCtx);
+
+    /*
+    * Produce object with algorithm information and configuration parameters.
+    */
+    public native AlgInfo secp256r1PrivateKey_produceAlgInfo(long cCtx);
+
+    /*
+    * Restore algorithm configuration from the given object.
+    */
+    public native void secp256r1PrivateKey_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    /*
+    * Length of the key in bytes.
+    */
+    public native int secp256r1PrivateKey_keyLen(long cCtx);
+
+    /*
+    * Length of the key in bits.
+    */
+    public native int secp256r1PrivateKey_keyBitlen(long cCtx);
+
+    /*
+    * Generate new private or secret key.
+    * Note, this operation can be slow.
+    */
+    public native void secp256r1PrivateKey_generateKey(long cCtx) throws FoundationException;
+
+    /*
+    * Decrypt given data.
+    */
+    public native byte[] secp256r1PrivateKey_decrypt(long cCtx, byte[] data) throws FoundationException;
+
+    /*
+    * Calculate required buffer length to hold the decrypted data.
+    */
+    public native int secp256r1PrivateKey_decryptedLen(long cCtx, int dataLen);
+
+    /*
+    * Return length in bytes required to hold signature.
+    */
+    public native int secp256r1PrivateKey_signatureLen(long cCtx);
+
+    /*
+    * Sign data given private key.
+    */
+    public native byte[] secp256r1PrivateKey_signHash(long cCtx, byte[] hashDigest, AlgId hashId) throws FoundationException;
+
+    /*
+    * Extract public part of the key.
+    */
+    public native PublicKey secp256r1PrivateKey_extractPublicKey(long cCtx);
+
+    /*
+    * Export private key in the binary format.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be exported in format defined in
+    * RFC 3447 Appendix A.1.2.
+    */
+    public native byte[] secp256r1PrivateKey_exportPrivateKey(long cCtx) throws FoundationException;
+
+    /*
+    * Return length in bytes required to hold exported private key.
+    */
+    public native int secp256r1PrivateKey_exportedPrivateKeyLen(long cCtx);
+
+    /*
+    * Import private key from the binary format.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be imported from the format defined in
+    * RFC 3447 Appendix A.1.2.
+    */
+    public native void secp256r1PrivateKey_importPrivateKey(long cCtx, byte[] data) throws FoundationException;
+
+    /*
+    * Compute shared key for 2 asymmetric keys.
+    * Note, shared key can be used only for symmetric cryptography.
+    */
+    public native byte[] secp256r1PrivateKey_computeSharedKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    /*
+    * Return number of bytes required to hold shared key.
+    */
+    public native int secp256r1PrivateKey_sharedKeyLen(long cCtx);
+
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
@@ -1848,102 +2037,26 @@ public class FoundationJNI {
     */
     public native void keyMaterialRng_reseed(long cCtx) throws FoundationException;
 
-    public native void pkcs8DerSerializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
+    public native void pkcs8Serializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
 
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
-    public native void pkcs8DerSerializer_setupDefaults(long cCtx);
+    public native void pkcs8Serializer_setupDefaults(long cCtx);
 
     /*
     * Serialize Public Key by using internal ASN.1 writer.
     * Note, that caller code is responsible to reset ASN.1 writer with
     * an output buffer.
     */
-    public native int pkcs8DerSerializer_serializePublicKeyInplace(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native int pkcs8Serializer_serializePublicKeyInplace(long cCtx, PublicKey publicKey) throws FoundationException;
 
     /*
     * Serialize Private Key by using internal ASN.1 writer.
     * Note, that caller code is responsible to reset ASN.1 writer with
     * an output buffer.
     */
-    public native int pkcs8DerSerializer_serializePrivateKeyInplace(long cCtx, PrivateKey privateKey) throws FoundationException;
-
-    public native long pkcs8DerSerializer_new();
-
-    public native void pkcs8DerSerializer_close(long cCtx);
-
-    /*
-    * Calculate buffer size enough to hold serialized public key.
-    *
-    * Precondition: public key must be exportable.
-    */
-    public native int pkcs8DerSerializer_serializedPublicKeyLen(long cCtx, PublicKey publicKey);
-
-    /*
-    * Serialize given public key to an interchangeable format.
-    *
-    * Precondition: public key must be exportable.
-    */
-    public native byte[] pkcs8DerSerializer_serializePublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
-
-    /*
-    * Calculate buffer size enough to hold serialized private key.
-    *
-    * Precondition: private key must be exportable.
-    */
-    public native int pkcs8DerSerializer_serializedPrivateKeyLen(long cCtx, PrivateKey privateKey);
-
-    /*
-    * Serialize given private key to an interchangeable format.
-    *
-    * Precondition: private key must be exportable.
-    */
-    public native byte[] pkcs8DerSerializer_serializePrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
-
-    public native void pkcs8DerDeserializer_setAsn1Reader(long cCtx, Asn1Reader asn1Reader);
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public native void pkcs8DerDeserializer_setupDefaults(long cCtx);
-
-    /*
-    * Deserialize Public Key by using internal ASN.1 reader.
-    * Note, that caller code is responsible to reset ASN.1 reader with
-    * an input buffer.
-    */
-    public native RawKey pkcs8DerDeserializer_deserializePublicKeyInplace(long cCtx) throws FoundationException;
-
-    /*
-    * Deserialize Public Key by using internal ASN.1 reader.
-    * Note, that caller code is responsible to reset ASN.1 reader with
-    * an input buffer.
-    */
-    public native RawKey pkcs8DerDeserializer_deserializePrivateKeyInplace(long cCtx) throws FoundationException;
-
-    public native long pkcs8DerDeserializer_new();
-
-    public native void pkcs8DerDeserializer_close(long cCtx);
-
-    /*
-    * Deserialize given public key as an interchangeable format to the object.
-    */
-    public native RawKey pkcs8DerDeserializer_deserializePublicKey(long cCtx, byte[] publicKeyData) throws FoundationException;
-
-    /*
-    * Deserialize given private key as an interchangeable format to the object.
-    */
-    public native RawKey pkcs8DerDeserializer_deserializePrivateKey(long cCtx, byte[] privateKeyData) throws FoundationException;
-
-    public native void pkcs8Serializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
-
-    public native void pkcs8Serializer_setDerSerializer(long cCtx, KeySerializer derSerializer);
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public native void pkcs8Serializer_setupDefaults(long cCtx);
+    public native int pkcs8Serializer_serializePrivateKeyInplace(long cCtx, PrivateKey privateKey) throws FoundationException;
 
     public native long pkcs8Serializer_new();
 
@@ -1977,28 +2090,146 @@ public class FoundationJNI {
     */
     public native byte[] pkcs8Serializer_serializePrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
 
-    public native void pkcs8Deserializer_setAsn1Reader(long cCtx, Asn1Reader asn1Reader);
-
-    public native void pkcs8Deserializer_setDerDeserializer(long cCtx, KeyDeserializer derDeserializer);
+    public native void sec1Serializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer) throws FoundationException;
 
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
-    public native void pkcs8Deserializer_setupDefaults(long cCtx);
+    public native void sec1Serializer_setupDefaults(long cCtx);
 
-    public native long pkcs8Deserializer_new();
+    /*
+    * Serialize Public Key by using internal ASN.1 writer.
+    * Note, that caller code is responsible to reset ASN.1 writer with
+    * an output buffer.
+    */
+    public native int sec1Serializer_serializePublicKeyInplace(long cCtx, PublicKey publicKey) throws FoundationException;
 
-    public native void pkcs8Deserializer_close(long cCtx);
+    /*
+    * Serialize Private Key by using internal ASN.1 writer.
+    * Note, that caller code is responsible to reset ASN.1 writer with
+    * an output buffer.
+    */
+    public native int sec1Serializer_serializePrivateKeyInplace(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    public native long sec1Serializer_new();
+
+    public native void sec1Serializer_close(long cCtx);
+
+    /*
+    * Calculate buffer size enough to hold serialized public key.
+    *
+    * Precondition: public key must be exportable.
+    */
+    public native int sec1Serializer_serializedPublicKeyLen(long cCtx, PublicKey publicKey);
+
+    /*
+    * Serialize given public key to an interchangeable format.
+    *
+    * Precondition: public key must be exportable.
+    */
+    public native byte[] sec1Serializer_serializePublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    /*
+    * Calculate buffer size enough to hold serialized private key.
+    *
+    * Precondition: private key must be exportable.
+    */
+    public native int sec1Serializer_serializedPrivateKeyLen(long cCtx, PrivateKey privateKey);
+
+    /*
+    * Serialize given private key to an interchangeable format.
+    *
+    * Precondition: private key must be exportable.
+    */
+    public native byte[] sec1Serializer_serializePrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    public native void keyAsn1Serializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer) throws FoundationException;
+
+    /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public native void keyAsn1Serializer_setupDefaults(long cCtx);
+
+    /*
+    * Serialize Public Key by using internal ASN.1 writer.
+    * Note, that caller code is responsible to reset ASN.1 writer with
+    * an output buffer.
+    */
+    public native int keyAsn1Serializer_serializePublicKeyInplace(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    /*
+    * Serialize Private Key by using internal ASN.1 writer.
+    * Note, that caller code is responsible to reset ASN.1 writer with
+    * an output buffer.
+    */
+    public native int keyAsn1Serializer_serializePrivateKeyInplace(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    public native long keyAsn1Serializer_new();
+
+    public native void keyAsn1Serializer_close(long cCtx);
+
+    /*
+    * Calculate buffer size enough to hold serialized public key.
+    *
+    * Precondition: public key must be exportable.
+    */
+    public native int keyAsn1Serializer_serializedPublicKeyLen(long cCtx, PublicKey publicKey);
+
+    /*
+    * Serialize given public key to an interchangeable format.
+    *
+    * Precondition: public key must be exportable.
+    */
+    public native byte[] keyAsn1Serializer_serializePublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    /*
+    * Calculate buffer size enough to hold serialized private key.
+    *
+    * Precondition: private key must be exportable.
+    */
+    public native int keyAsn1Serializer_serializedPrivateKeyLen(long cCtx, PrivateKey privateKey);
+
+    /*
+    * Serialize given private key to an interchangeable format.
+    *
+    * Precondition: private key must be exportable.
+    */
+    public native byte[] keyAsn1Serializer_serializePrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    public native void keyAsn1Deserializer_setAsn1Reader(long cCtx, Asn1Reader asn1Reader) throws FoundationException;
+
+    /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public native void keyAsn1Deserializer_setupDefaults(long cCtx);
+
+    /*
+    * Deserialize Public Key by using internal ASN.1 reader.
+    * Note, that caller code is responsible to reset ASN.1 reader with
+    * an input buffer.
+    */
+    public native RawKey keyAsn1Deserializer_deserializePublicKeyInplace(long cCtx) throws FoundationException;
+
+    /*
+    * Deserialize Private Key by using internal ASN.1 reader.
+    * Note, that caller code is responsible to reset ASN.1 reader with
+    * an input buffer.
+    */
+    public native RawKey keyAsn1Deserializer_deserializePrivateKeyInplace(long cCtx) throws FoundationException;
+
+    public native long keyAsn1Deserializer_new();
+
+    public native void keyAsn1Deserializer_close(long cCtx);
 
     /*
     * Deserialize given public key as an interchangeable format to the object.
     */
-    public native RawKey pkcs8Deserializer_deserializePublicKey(long cCtx, byte[] publicKeyData) throws FoundationException;
+    public native RawKey keyAsn1Deserializer_deserializePublicKey(long cCtx, byte[] publicKeyData) throws FoundationException;
 
     /*
     * Deserialize given private key as an interchangeable format to the object.
     */
-    public native RawKey pkcs8Deserializer_deserializePrivateKey(long cCtx, byte[] privateKeyData) throws FoundationException;
+    public native RawKey keyAsn1Deserializer_deserializePrivateKey(long cCtx, byte[] privateKeyData) throws FoundationException;
 
     public native void ed25519PublicKey_setRandom(long cCtx, Random random);
 
@@ -2505,6 +2736,27 @@ public class FoundationJNI {
     * Provide algorithm identificator.
     */
     public native AlgId pbeAlgInfo_algId(long cCtx);
+
+    /*
+    * Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
+    */
+    public native OidId ecAlgInfo_keyId(long cCtx);
+
+    /*
+    * Return EC domain group identificator.
+    */
+    public native OidId ecAlgInfo_domainId(long cCtx);
+
+    public native long ecAlgInfo_new();
+
+    public native void ecAlgInfo_close(long cCtx);
+
+    public native long ecAlgInfo_new(AlgId algId, OidId keyId, OidId domainId);
+
+    /*
+    * Provide algorithm identificator.
+    */
+    public native AlgId ecAlgInfo_algId(long cCtx);
 
     public native void algInfoDerSerializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
 

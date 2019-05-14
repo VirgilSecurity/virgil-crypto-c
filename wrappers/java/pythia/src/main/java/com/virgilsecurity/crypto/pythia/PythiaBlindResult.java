@@ -39,9 +39,9 @@ package com.virgilsecurity.crypto.pythia;
 /* Encapsulate result of method pythia.blind() */
 public class PythiaBlindResult {
 
-    public byte[] blindedPassword;
+    private byte[] blindedPassword;
 
-    public byte[] blindingSecret;
+    private byte[] blindingSecret;
 
     /* Create new instance of PythiaBlindResult. */
     PythiaBlindResult() {
@@ -52,6 +52,22 @@ public class PythiaBlindResult {
     PythiaBlindResult(byte[] blindedPassword, byte[] blindingSecret) {
         super();
         this.blindedPassword = blindedPassword;
+        this.blindingSecret = blindingSecret;
+    }
+
+    public byte[] getBlindedPassword() {
+        return this.blindedPassword;
+    }
+
+    public void setBlindedPassword(byte[] blindedPassword) {
+        this.blindedPassword = blindedPassword;
+    }
+
+    public byte[] getBlindingSecret() {
+        return this.blindingSecret;
+    }
+
+    public void setBlindingSecret(byte[] blindingSecret) {
         this.blindingSecret = blindingSecret;
     }
 }

@@ -97,12 +97,13 @@ vscp_assert_change_handler(vscp_assert_handler_fn handler_cb) {
 VSCP_PUBLIC void
 vscp_assert_abort(const char *message, const char *file, int line) {
 
-    printf ("Assertion failed: %s, file %s, line %d\n",
+    printf("Assertion failed: %s, file %s, line %d\n",
             message, vscp_assert_path_basename (file), line);
 
-    printf ("Abort");
+    printf("Abort");
+    fflush(stdout);
 
-    abort ();
+    abort();
 }
 
 //

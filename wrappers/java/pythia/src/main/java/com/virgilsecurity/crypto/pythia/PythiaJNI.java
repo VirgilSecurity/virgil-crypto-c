@@ -137,7 +137,7 @@ public class PythiaJNI {
     * This operation allows client to verify that the output of transform() is correct,
     * assuming that client has previously stored transformation public key.
     */
-    public native void pythia_verify(byte[] transformedPassword, byte[] blindedPassword, byte[] tweak, byte[] transformationPublicKey, byte[] proofValueC, byte[] proofValueU) throws PythiaException;
+    public native boolean pythia_verify(byte[] transformedPassword, byte[] blindedPassword, byte[] tweak, byte[] transformationPublicKey, byte[] proofValueC, byte[] proofValueU) throws PythiaException;
 
     /*
     * Rotates old transformation key to new transformation key and generates 'password update token',

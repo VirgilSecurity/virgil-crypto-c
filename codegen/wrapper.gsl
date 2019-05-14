@@ -38,6 +38,7 @@
 #
 #   To add new supported language do next:
 #       1. Create file `<lang>.gsl` with methods:
+#           - <lang>_resolve_wrapper (wrapper) [optional]
 #           - <lang>_create_project_module (project, wrapper)
 #           - <lang>_create_custom_modules (source, wrapper_project, meta) [optional]
 #           - <lang>_create_interface_module (source, wrapper_project, meta)
@@ -276,11 +277,25 @@ function wrappers_update_wrapper(wrappers, loaded_wrapper)
     check_arguments (my, "wrappers, loaded_wrapper", my)
 
     my.existing_wrapper = my.wrappers->wrapper(lang = my.loaded_wrapper.lang) ?
+    my.new_wrapper = item_copy_to(my.loaded_wrapper, my.wrappers)
+
     if defined (my.existing_wrapper)
         my.existing_wrapper.source_dir = my.loaded_wrapper.source_dir
-        my.existing_wrapper->license. = my.loaded_wrapper->license.
-    else
-        copy my.loaded_wrapper to my.wrappers
+
+        for my.existing_wrapper.license
+            delete license
+        endfor
+
+        for my.existing_wrapper. as item where is_item(item)
+            move item to my.new_wrapper
+        endfor
+
+        delete my.existing_wrapper
+    endif
+
+    my.proxy_func = make_id(my.wrapper.lang, "resolve_wrapper")
+    if macro (my.proxy_func)
+        $(my.proxy_func:) (my.new_wrapper)
     endif
 endfunction
 

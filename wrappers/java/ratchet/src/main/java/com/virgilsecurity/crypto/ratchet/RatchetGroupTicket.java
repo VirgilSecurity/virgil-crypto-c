@@ -39,7 +39,7 @@ package com.virgilsecurity.crypto.ratchet;
 import com.virgilsecurity.crypto.foundation.*;
 
 /*
-* Group ticket used to start group session.
+* Group ticket used to start group session or change participants.
 */
 public class RatchetGroupTicket implements AutoCloseable {
 
@@ -80,12 +80,15 @@ public class RatchetGroupTicket implements AutoCloseable {
         RatchetJNI.INSTANCE.ratchetGroupTicket_setupDefaults(this.cCtx);
     }
 
+    /*
+    * Set this ticket to start new group session.
+    */
     public void setupTicketAsNew() throws RatchetException {
         RatchetJNI.INSTANCE.ratchetGroupTicket_setupTicketAsNew(this.cCtx);
     }
 
     /*
-    * Adds participant to chat.
+    * Add new participant to chat.
     */
     public void addNewParticipant(byte[] participantId, byte[] publicKey) throws RatchetException {
         RatchetJNI.INSTANCE.ratchetGroupTicket_addNewParticipant(this.cCtx, participantId, publicKey);
@@ -101,15 +104,8 @@ public class RatchetGroupTicket implements AutoCloseable {
     /*
     * Generates message that should be sent to all participants using secure channel.
     */
-    public RatchetGroupMessage getComplementaryTicketMessage() {
-        return RatchetJNI.INSTANCE.ratchetGroupTicket_getComplementaryTicketMessage(this.cCtx);
-    }
-
-    /*
-    * Generates message that should be sent to all participants using secure channel.
-    */
-    public RatchetGroupMessage getFullTicketMessage() {
-        return RatchetJNI.INSTANCE.ratchetGroupTicket_getFullTicketMessage(this.cCtx);
+    public RatchetGroupMessage getTicketMessage() {
+        return RatchetJNI.INSTANCE.ratchetGroupTicket_getTicketMessage(this.cCtx);
     }
 }
 

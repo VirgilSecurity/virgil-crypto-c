@@ -42,8 +42,6 @@
 
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/foundation/private/vscf_pkcs8_der_deserializer_defs.h>
-#include <virgil/crypto/foundation/private/vscf_pkcs8_der_serializer_defs.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <virgil/crypto/foundation/vscf_ed25519_private_key.h>
 #include <virgil/crypto/foundation/vscf_ed25519_public_key.h>
@@ -136,8 +134,6 @@ test__key_id__fixed_curve_raw_key__should_match(void) {
     vsc_buffer_destroy(&buffer);
     vscr_ratchet_key_id_destroy(&key_id);
 }
-
-// TODO: Add more tests
 
 #endif
 

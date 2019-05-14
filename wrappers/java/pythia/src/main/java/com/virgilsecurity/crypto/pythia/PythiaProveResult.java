@@ -39,9 +39,9 @@ package com.virgilsecurity.crypto.pythia;
 /* Encapsulate result of method pythia.prove() */
 public class PythiaProveResult {
 
-    public byte[] proofValueC;
+    private byte[] proofValueC;
 
-    public byte[] proofValueU;
+    private byte[] proofValueU;
 
     /* Create new instance of PythiaProveResult. */
     PythiaProveResult() {
@@ -52,6 +52,22 @@ public class PythiaProveResult {
     PythiaProveResult(byte[] proofValueC, byte[] proofValueU) {
         super();
         this.proofValueC = proofValueC;
+        this.proofValueU = proofValueU;
+    }
+
+    public byte[] getProofValueC() {
+        return this.proofValueC;
+    }
+
+    public void setProofValueC(byte[] proofValueC) {
+        this.proofValueC = proofValueC;
+    }
+
+    public byte[] getProofValueU() {
+        return this.proofValueU;
+    }
+
+    public void setProofValueU(byte[] proofValueU) {
         this.proofValueU = proofValueU;
     }
 }

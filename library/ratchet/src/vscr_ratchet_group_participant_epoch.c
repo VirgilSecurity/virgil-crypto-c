@@ -201,7 +201,7 @@ vscr_ratchet_group_participant_epoch_init_ctx(vscr_ratchet_group_participant_epo
 
     VSCR_ASSERT_PTR(self);
 
-    self->chain_key = vscr_ratchet_chain_key_new();
+    self->skipped_messages = vscr_ratchet_skipped_messages_root_node_new();
 }
 
 //
@@ -215,28 +215,45 @@ vscr_ratchet_group_participant_epoch_cleanup_ctx(vscr_ratchet_group_participant_
     VSCR_ASSERT_PTR(self);
 
     vscr_ratchet_chain_key_destroy(&self->chain_key);
+    vscr_ratchet_skipped_messages_root_node_destroy(&self->skipped_messages);
 }
 
 VSCR_PUBLIC void
 vscr_ratchet_group_participant_epoch_serialize(
-        vscr_ratchet_group_participant_epoch_t *self, ParticipantEpoch *data_pb) {
+        const vscr_ratchet_group_participant_epoch_t *self, ParticipantEpoch *data_pb) {
 
-    VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(data_pb);
+    VSCR_ASSERT_PTR(self);
 
+    data_pb->is_empty = false;
     data_pb->epoch = self->epoch;
 
-    vscr_ratchet_chain_key_serialize(self->chain_key, &data_pb->chain_key);
+    if (self->chain_key) {
+        data_pb->has_chain_key = true;
+        vscr_ratchet_chain_key_serialize(self->chain_key, &data_pb->chain_key);
+    } else {
+        data_pb->has_chain_key = false;
+    }
+
+    vscr_ratchet_skipped_messages_root_node_serialize(
+            self->skipped_messages, data_pb->message_keys, &data_pb->message_keys_count);
 }
 
 VSCR_PUBLIC void
 vscr_ratchet_group_participant_epoch_deserialize(
-        ParticipantEpoch *data_pb, vscr_ratchet_group_participant_epoch_t *data) {
+        const ParticipantEpoch *data_pb, vscr_ratchet_group_participant_epoch_t *data) {
 
     VSCR_ASSERT_PTR(data_pb);
     VSCR_ASSERT_PTR(data);
+    VSCR_ASSERT(!data_pb->is_empty);
 
     data->epoch = data_pb->epoch;
 
-    vscr_ratchet_chain_key_deserialize(&data_pb->chain_key, data->chain_key);
+    if (data_pb->has_chain_key) {
+        data->chain_key = vscr_ratchet_chain_key_new();
+        vscr_ratchet_chain_key_deserialize(&data_pb->chain_key, data->chain_key);
+    }
+
+    vscr_ratchet_skipped_messages_root_node_deserialize(
+            data_pb->message_keys, data_pb->message_keys_count, data->skipped_messages);
 }

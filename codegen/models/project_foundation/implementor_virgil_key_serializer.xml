@@ -1,0 +1,214 @@
+<implementor name="virgil key serialization" is_default="1">
+    Virgil Security implementation of the public and private key serialization formats.
+
+    <implementation name="pkcs8 serializer">
+        Implements PKCS#8 key serialization to DER format.
+
+        <interface name="key serializer"/>
+
+        <require interface="alg"/>
+        <require interface="public key"/>
+        <require interface="private key"/>
+        <require enum="asn1 tag"/>
+        <require class="oid"/>
+        <require class="asn1wr"/>
+
+        <dependency name="asn1 writer" interface="asn1 writer"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+        </method>
+
+        <method name="serialize public key inplace" declaration="public">
+            Serialize Public Key by using internal ASN.1 writer.
+            Note, that caller code is responsible to reset ASN.1 writer with
+            an output buffer.
+
+            <argument name="public key" interface="public key"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize private key inplace" declaration="public">
+            Serialize Private Key by using internal ASN.1 writer.
+            Note, that caller code is responsible to reset ASN.1 writer with
+            an output buffer.
+
+            <argument name="private key" interface="private key"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return type="size"/>
+        </method>
+    </implementation>
+
+
+    <implementation name="sec1 serializer">
+        Implements SEC 1 key serialization to DER format.
+        See also RFC 5480 and RFC 5915.
+
+        <interface name="key serializer"/>
+
+        <require interface="alg"/>
+        <require interface="public key"/>
+        <require interface="private key"/>
+        <require enum="asn1 tag"/>
+        <require class="oid"/>
+        <require class="asn1wr"/>
+        <require impl="alg info der serializer"/>
+        <require impl="ec alg info"/>
+
+        <property name="alg info der serializer" impl="alg info der serializer"/>
+
+        <dependency name="asn1 writer" interface="asn1 writer" has_observers="1"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+        </method>
+
+        <method name="serialize public key inplace" declaration="public">
+            Serialize Public Key by using internal ASN.1 writer.
+            Note, that caller code is responsible to reset ASN.1 writer with
+            an output buffer.
+
+            <argument name="public key" interface="public key"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize private key inplace" declaration="public">
+            Serialize Private Key by using internal ASN.1 writer.
+            Note, that caller code is responsible to reset ASN.1 writer with
+            an output buffer.
+
+            <argument name="private key" interface="private key"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="is ec key" is_static="1">
+            Return true if given key is an Elliptic Curve key defined in the SEC 1.
+
+            <argument name="key" interface="alg"/>
+
+            <return type="boolean"/>
+        </method>
+    </implementation>
+
+
+    <implementation name="key asn1 serializer">
+        Implements key serialization in the ASN.1 format (DER / PEM):
+            - SEC1 - for EC private keys;
+            - PKCS#8 - for other keys.
+
+
+        <interface name="key serializer"/>
+
+        <require interface="alg"/>
+        <require interface="asn1 writer"/>
+        <require interface="public key"/>
+        <require interface="private key"/>
+        <require impl="asn1wr"/>
+        <require impl="pkcs8 serializer"/>
+        <require impl="sec1 serializer"/>
+
+        <property name="sec1 serializer" impl="sec1 serializer"/>
+        <property name="pkcs8 serializer" impl="pkcs8 serializer"/>
+
+        <dependency name="asn1 writer" interface="asn1 writer" has_observers="1"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+        </method>
+
+        <method name="serialize public key inplace" declaration="public">
+            Serialize Public Key by using internal ASN.1 writer.
+            Note, that caller code is responsible to reset ASN.1 writer with
+            an output buffer.
+
+            <argument name="public key" interface="public key"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize private key inplace" declaration="public">
+            Serialize Private Key by using internal ASN.1 writer.
+            Note, that caller code is responsible to reset ASN.1 writer with
+            an output buffer.
+
+            <argument name="private key" interface="private key"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return type="size"/>
+        </method>
+    </implementation>
+
+
+    <implementation name="key asn1 deserializer">
+        Implements PKCS#8 and SEC1 key deserialization from DER / PEM format.
+
+        <interface name="key deserializer"/>
+
+        <require interface="alg"/>
+        <require interface="alg info"/>
+        <require interface="public key"/>
+        <require interface="private key"/>
+        <require impl="alg info der deserializer"/>
+        <require enum="asn1 tag"/>
+        <require class="oid"/>
+        <require class="asn1rd"/>
+        <require class="pem"/>
+        <require class="pem title"/>
+
+        <property name="alg info der deserializer" impl="alg info der deserializer"/>
+
+        <dependency name="asn1 reader" interface="asn1 reader" has_observers="1"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+        </method>
+
+        <method name="deserialize public key inplace" declaration="public">
+            Deserialize Public Key by using internal ASN.1 reader.
+            Note, that caller code is responsible to reset ASN.1 reader with
+            an input buffer.
+
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return class="raw key" access="disown"/>
+        </method>
+
+        <method name="deserialize private key inplace" declaration="public">
+            Deserialize Private Key by using internal ASN.1 reader.
+            Note, that caller code is responsible to reset ASN.1 reader with
+            an input buffer.
+
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return class="raw key" access="disown"/>
+        </method>
+
+        <method name="deserialize pkcs8 private key inplace">
+            Deserialize PKCS#8 Private Key by using internal ASN.1 reader.
+
+            <argument name="seq left len" type="size"/>
+            <argument name="version" type="integer"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return class="raw key" access="disown"/>
+        </method>
+
+        <method name="deserialize sec1 private key inplace">
+            Deserialize SEC1 Private Key by using internal ASN.1 reader.
+
+            <argument name="seq left len" type="size"/>
+            <argument name="version" type="integer"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return class="raw key" access="disown"/>
+        </method>
+    </implementation>
+</implementor>
