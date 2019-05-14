@@ -1,7 +1,7 @@
 [
-    "_vsc_data",
-    "_vsc_data_from_str",
-    "_vsc_buffer_ctx_size",
+    "_vsc_data_ctx_size",
+    "_vsc_data_bytes",
+    "_vsc_data_len",
     "_vsc_buffer_new",
     "_vsc_buffer_new_with_capacity",
     "_vsc_buffer_new_with_data",

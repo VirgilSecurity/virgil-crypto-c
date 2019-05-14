@@ -4,4 +4,41 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Test library: foundation</title>
     <script async type="text/javascript" src="libvsc_foundation.js"></script>
-</head>
+  </head>
+  <body>
+    <script type="text/javascript">
+      var Module = {
+        onRuntimeInitialized() {
+          window.data2hex = function(data) { // data is an Uint8Array
+            return Array.prototype.map.call(data, x => ('00' + x.toString(16)).slice(-2)).join('');
+          }
+
+          window.hash = function(data) {
+            const dataSize = data.length * data.BYTES_PER_ELEMENT;
+            const dataPtr = Module._malloc(dataSize);
+            HEAP8.set(data, dataPtr);
+
+            const cdataSize = Module._vsc_data_ctx_size()
+            const cdataPtr = Module._malloc(cdataSize);
+
+            var cdataHeap = new Uint32Array(buffer, cdataPtr, cdataSize);
+            cdataHeap[0] = dataPtr;
+            cdataHeap[1] = dataSize;
+
+            const outputSize = 32;
+            const outputPtr = Module._vsc_buffer_new_with_capacity(outputSize);
+
+            Module._vscf_sha256_hash(cdataPtr, outputPtr);
+
+            const digestPtr = Module._vsc_buffer_bytes(outputPtr);
+            console.log(data2hex(new Uint8Array(buffer, digestPtr, outputSize)));
+
+            Module._free(dataPtr);
+            Module._free(cdataPtr);
+            _vsc_buffer_delete(outputPtr);
+          }
+        }
+      };
+    </script>
+  </body>
+</html>
