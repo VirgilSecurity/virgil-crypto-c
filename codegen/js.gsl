@@ -60,6 +60,7 @@ function js_module_resolve(source, wrapper_project)
 endfunction
 
 function js_create_toplevel_modules(wrapper_project)
+  echo_info("Creating toplevel modules", my)
   js_append_toplevel_module_models(my.wrapper_project)
 endfunction
 

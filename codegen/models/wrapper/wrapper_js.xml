@@ -20,12 +20,9 @@
     </package_json>
 
     <gitignore>
-      <ignore>node_modules</ignore>
-      <ignore>package-lock.json</ignore>
-      <ignore>yarn.lock</ignore>
-      <ignore>*.log</ignore>
-      <ignore>virgil-crypto-c</ignore>
-      <ignore>build</ignore>
+      <ignore>*</ignore>
+      <ignore>**/*</ignore>
+      <ignore>!tests/**</ignore>
     </gitignore>
 
 </wrapper>

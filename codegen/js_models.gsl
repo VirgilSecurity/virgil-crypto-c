@@ -61,10 +61,6 @@ function js_append_toplevel_module_models(wrapper)
     js_package_json_module.file_name = "package.json"
     js_package_json_module.file_path = cat_path(my.wrapper.source_dir, js_package_json_module.file_name)
   endnew
-  new js_gitignore_module to my.wrapper
-    js_gitignore_module.file_name = ".gitignore"
-    js_gitignore_module.file_path = cat_path(my.wrapper.source_dir, js_gitignore_module.file_name)
-  endnew
   new js_download_crypto_c_module to my.wrapper
     js_download_crypto_c_module.file_name = "download-crypto-c.js"
     js_download_crypto_c_module.file_path = cat_path(my.wrapper.source_dir, js_download_crypto_c_module.file_name)
@@ -383,7 +379,11 @@ endfunction
 
 function js_append_js_argument_byte_info(js_argument, argument)
   my.js_argument.type = global.js_argument_type_byte
-  echo my.argument.string()
+  if defined(my.argument->length)
+    new js_byte_length to my.js_argument
+      js_byte_length.cpp_name = "$(my.argument->length.argument:c)"
+    endnew
+  endif
 endfunction
 
 function js_append_js_argument_char_info(js_argument, argument)
@@ -500,7 +500,6 @@ function js_append_js_argument(parent, argument, source)
       elsif my.argument.access = "readwrite"
         js_argument.access = global.js_argument_access_readwrite
       else
-        echo my.argument.access
         echo_fatal("Unknown argument access type", my)
       endif
     endif
