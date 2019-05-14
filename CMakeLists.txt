@@ -100,6 +100,7 @@ option(VIRGIL_WRAP_ALL "Build all available wrappers on the given platform" OFF)
 option(VIRGIL_WRAP_GO "Build 'Golang' wrapper" OFF)
 option(VIRGIL_WRAP_PHP "Build 'PHP' wrapper" OFF)
 option(VIRGIL_WRAP_JAVA "Build 'Java' wrapper" OFF)
+option(VIRGIL_WRAP_WASM "Build 'WebAssembly' wrapper" OFF)
 
 # ---------------------------------------------------------------------------
 #   Platfrom specific.
@@ -227,6 +228,10 @@ endif()
 
 if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_JAVA)
     add_subdirectory("wrappers/java")
+endif()
+
+if(VIRGIL_WRAP_WASM)
+    add_subdirectory("wrappers/wasm")
 endif()
 
 
