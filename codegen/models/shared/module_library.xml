@@ -76,7 +76,7 @@
             #   endif
             #   define .(c_global_macros_private)
             #else
-            #   if (defined(__GNUC__) &amp;&amp; __GNUC__ >= 4) || defined(__INTEL_COMPILER)
+            #   if (defined(__GNUC__) &amp;&amp; __GNUC__ >= 4) || defined(__INTEL_COMPILER) || defined(__clang__)
             #       define .(c_global_macros_public)  __attribute__ ((visibility ("default")))
             #       define .(c_global_macros_private) __attribute__ ((visibility ("hidden")))
             #   else

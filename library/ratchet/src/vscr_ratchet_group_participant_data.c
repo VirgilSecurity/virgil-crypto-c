@@ -200,8 +200,6 @@ static void
 vscr_ratchet_group_participant_data_init_ctx(vscr_ratchet_group_participant_data_t *self) {
 
     VSCR_ASSERT_PTR(self);
-
-    self->chain_key = vscr_ratchet_chain_key_new();
 }
 
 //
@@ -214,29 +212,89 @@ vscr_ratchet_group_participant_data_cleanup_ctx(vscr_ratchet_group_participant_d
 
     VSCR_ASSERT_PTR(self);
 
-    vscr_ratchet_chain_key_destroy(&self->chain_key);
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT; i++) {
+        vscr_ratchet_group_participant_epoch_destroy(&self->epoches[i]);
+    }
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_serialize(vscr_ratchet_group_participant_data_t *self, ParticipantData *data_pb) {
+vscr_ratchet_group_participant_data_add_epoch(
+        vscr_ratchet_group_participant_data_t *self, size_t epoch, vscr_ratchet_chain_key_t **chain_key_ref) {
 
-    VSCR_ASSERT(self);
-    VSCR_ASSERT(data_pb);
+    VSCR_ASSERT_PTR(self);
+
+    size_t last_epoch = 0;
+
+    if (self->epoches[0]) {
+        last_epoch = self->epoches[0]->epoch;
+        VSCR_ASSERT(epoch > last_epoch);
+    }
+
+    size_t shift = epoch - last_epoch;
+
+    if (shift != 0) {
+        for (size_t i = 0; i < shift; i++) {
+            vscr_ratchet_group_participant_epoch_destroy(
+                    &self->epoches[vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT - i - 1]);
+        }
+
+        for (size_t i = vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT - 1; i >= shift; i--) {
+            self->epoches[i] = self->epoches[i - shift];
+        }
+    }
+
+    self->epoches[0] = vscr_ratchet_group_participant_epoch_new();
+    self->epoches[0]->epoch = epoch;
+    self->epoches[0]->chain_key = *chain_key_ref;
+    *chain_key_ref = NULL;
+}
+
+VSCR_PUBLIC vscr_ratchet_group_participant_epoch_t *
+vscr_ratchet_group_participant_data_find_epoch(const vscr_ratchet_group_participant_data_t *self, size_t epoch) {
+
+    VSCR_ASSERT_PTR(self);
+
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT; i++) {
+        if (self->epoches[i] && self->epoches[i]->epoch == epoch)
+            return self->epoches[i];
+    }
+
+    return NULL;
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_data_serialize(
+        const vscr_ratchet_group_participant_data_t *self, ParticipantData *data_pb) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(data_pb);
 
     memcpy(data_pb->id, self->id, sizeof(self->id));
     memcpy(data_pb->pub_key, self->pub_key, sizeof(self->pub_key));
 
-    vscr_ratchet_chain_key_serialize(self->chain_key, &data_pb->chain_key);
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT; i++) {
+        if (self->epoches[i]) {
+            vscr_ratchet_group_participant_epoch_serialize(self->epoches[i], &data_pb->epoches[i]);
+        } else {
+            data_pb->epoches[i].is_empty = true;
+        }
+    }
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_deserialize(ParticipantData *data_pb, vscr_ratchet_group_participant_data_t *data) {
+vscr_ratchet_group_participant_data_deserialize(
+        const ParticipantData *data_pb, vscr_ratchet_group_participant_data_t *data) {
 
-    VSCR_ASSERT(data_pb);
-    VSCR_ASSERT(data);
+    VSCR_ASSERT_PTR(data_pb);
+    VSCR_ASSERT_PTR(data);
 
-    vscr_ratchet_chain_key_deserialize(&data_pb->chain_key, data->chain_key);
-
-    memcpy(data->pub_key, data_pb->pub_key, sizeof(data->pub_key));
     memcpy(data->id, data_pb->id, sizeof(data->id));
+    memcpy(data->pub_key, data_pb->pub_key, sizeof(data->pub_key));
+
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT; i++) {
+        if (!data_pb->epoches[i].is_empty) {
+            data->epoches[i] = vscr_ratchet_group_participant_epoch_new();
+            vscr_ratchet_group_participant_epoch_deserialize(&data_pb->epoches[i], data->epoches[i]);
+        }
+    }
 }

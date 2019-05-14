@@ -54,6 +54,7 @@
 #include "vsce_phe_cipher.h"
 #include "vsce_memory.h"
 #include "vsce_assert.h"
+#include "vsce_phe_cipher_defs.h"
 #include "vsce_const.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
@@ -62,10 +63,6 @@
 #include <virgil/crypto/foundation/vscf_hkdf.h>
 #include <virgil/crypto/foundation/vscf_aes256_gcm.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
-
-#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_aes256_gcm.h>
-#endif
 
 // clang-format on
 //  @end
@@ -84,26 +81,6 @@ enum {
     vsce_phe_cipher_SALT_LEN = 32,
     vsce_phe_cipher_KEY_LEN = 32,
     vsce_phe_cipher_NONCE_LEN = 12
-};
-
-//
-//  Handle 'phe cipher' context.
-//
-struct vsce_phe_cipher_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vsce_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-
-    vscf_aes256_gcm_t *aes256_gcm;
 };
 
 //

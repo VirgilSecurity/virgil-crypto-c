@@ -96,12 +96,13 @@ vscr_assert_change_handler(vscr_assert_handler_fn handler_cb) {
 VSCR_PUBLIC void
 vscr_assert_abort(const char *message, const char *file, int line) {
 
-    printf ("Assertion failed: %s, file %s, line %d\n",
+    printf("Assertion failed: %s, file %s, line %d\n",
             message, vscr_assert_path_basename (file), line);
 
-    printf ("Abort");
+    printf("Abort");
+    fflush(stdout);
 
-    abort ();
+    abort();
 }
 
 //

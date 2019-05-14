@@ -6,10 +6,10 @@
         prefix="vscp"
         path="../library/pythia/"
         work_path="generated/pythia/"
-        wrappers="swift"
+        wrappers="java,swift"
         >
 
-    <version major="0" minor="6" patch="0"/>
+    <version major="0" minor="7" patch="0"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.
@@ -58,6 +58,7 @@
     <enum name="status"/>
 
     <class name="pythia"/>
+    <class name="error" from="shared"/>
 
     <error_message_getter success="0">
         <require enum="status"/>

@@ -95,9 +95,9 @@ struct vscf_key_provider_t {
 
     size_t rsa_bitlen;
 
-    vscf_impl_t *pkcs8_serializer;
+    vscf_impl_t *key_asn1_serializer;
 
-    vscf_impl_t *pkcs8_deserializer;
+    vscf_impl_t *key_asn1_deserializer;
 };
 
 

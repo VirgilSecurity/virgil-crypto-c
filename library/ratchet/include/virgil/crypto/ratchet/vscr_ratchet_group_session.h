@@ -58,6 +58,7 @@
 #include "vscr_ratchet_group_message.h"
 #include "vscr_error.h"
 #include "vscr_ratchet_group_session.h"
+#include "vscr_ratchet_group_ticket.h"
 #include "vscr_status.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -143,7 +144,7 @@ VSCR_PUBLIC vscr_ratchet_group_session_t *
 vscr_ratchet_group_session_shallow_copy(vscr_ratchet_group_session_t *self);
 
 //
-//  Random used to generate keys
+//  Random
 //
 //  Note, ownership is shared.
 //
@@ -151,7 +152,7 @@ VSCR_PUBLIC void
 vscr_ratchet_group_session_use_rng(vscr_ratchet_group_session_t *self, vscf_impl_t *rng);
 
 //
-//  Random used to generate keys
+//  Random
 //
 //  Note, ownership is transfered.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
@@ -178,6 +179,18 @@ VSCR_PUBLIC bool
 vscr_ratchet_group_session_is_private_key_set(const vscr_ratchet_group_session_t *self);
 
 //
+//  Shows whether my id was set.
+//
+VSCR_PUBLIC bool
+vscr_ratchet_group_session_is_my_id_set(const vscr_ratchet_group_session_t *self);
+
+//
+//  Returns current epoch.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_group_session_get_current_epoch(const vscr_ratchet_group_session_t *self);
+
+//
 //  Setups default dependencies:
 //  - RNG: CTR DRBG
 //
@@ -192,10 +205,35 @@ vscr_ratchet_group_session_set_private_key(vscr_ratchet_group_session_t *self,
         vsc_data_t my_private_key) VSCR_NODISCARD;
 
 //
-//  Sets up session. Identity private key should be set separately.
+//  Sets my id.
+//
+VSCR_PUBLIC void
+vscr_ratchet_group_session_set_my_id(vscr_ratchet_group_session_t *self, vsc_data_t my_id);
+
+//
+//  Returns my id.
+//
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_group_session_get_my_id(const vscr_ratchet_group_session_t *self);
+
+//
+//  Returns session id.
+//
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_group_session_get_session_id(const vscr_ratchet_group_session_t *self);
+
+//
+//  Returns number of participants.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_group_session_get_participants_count(const vscr_ratchet_group_session_t *self);
+
+//
+//  Sets up session.
+//  NOTE: Identity private key and my id should be set separately.
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self, vsc_data_t my_id,
+vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self,
         const vscr_ratchet_group_message_t *message) VSCR_NODISCARD;
 
 //
@@ -221,20 +259,38 @@ vscr_ratchet_group_session_decrypt(vscr_ratchet_group_session_t *self, const vsc
 //  Calculates size of buffer sufficient to store session
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_group_session_serialize_len(vscr_ratchet_group_session_t *self);
+vscr_ratchet_group_session_serialize_len(const vscr_ratchet_group_session_t *self);
 
 //
 //  Serializes session to buffer
+//  NOTE: Session changes its state every encrypt/decrypt operations. Be sure to save it.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_session_serialize(vscr_ratchet_group_session_t *self, vsc_buffer_t *output);
+vscr_ratchet_group_session_serialize(const vscr_ratchet_group_session_t *self, vsc_buffer_t *output);
 
 //
 //  Deserializes session from buffer.
-//  NOTE: Deserialized session needs dependencies to be set. Check setup defaults
+//  NOTE: Deserialized session needs dependencies to be set.
+//  You should set separately:
+//      - rng
+//      - my private key
 //
 VSCR_PUBLIC vscr_ratchet_group_session_t *
 vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error);
+
+//
+//  Creates ticket for adding participants to this session.
+//  NOTE: This ticket is not suitable for removing participants from this session.
+//
+VSCR_PUBLIC vscr_ratchet_group_ticket_t *
+vscr_ratchet_group_session_create_group_ticket_for_adding_participants(const vscr_ratchet_group_session_t *self);
+
+//
+//  Creates ticket for adding and or removing participants to/from this session.
+//
+VSCR_PUBLIC vscr_ratchet_group_ticket_t *
+vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants(
+        const vscr_ratchet_group_session_t *self, vscr_error_t *error);
 
 
 // --------------------------------------------------------------------------

@@ -82,7 +82,7 @@ deinit_channel(msg_channel_t *self) {
 }
 
 bool
-push_msg(msg_channel_t *self, vsc_data_t plain_text, vsc_data_t msg) {
+push_msg(msg_channel_t *self, vsc_data_t plain_text, vsc_data_t msg, size_t sender) {
     double prob = generate_prob(self->rng);
 
     if (prob < self->lost_rate) {
@@ -93,6 +93,7 @@ push_msg(msg_channel_t *self, vsc_data_t plain_text, vsc_data_t msg) {
     channel_msg_node_t *new_node = vscr_alloc(sizeof(channel_msg_node_t));
 
     new_node->msg = vscr_alloc(sizeof(channel_msg_t));
+    new_node->msg->sender = sender;
     new_node->msg->plain_text = vsc_buffer_new_with_data(plain_text);
     new_node->msg->cipher_text = vsc_buffer_new_with_data(msg);
     new_node->next = NULL;

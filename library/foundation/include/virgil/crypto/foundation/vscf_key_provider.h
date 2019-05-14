@@ -195,13 +195,13 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
 //  Import private key from the PKCS#8 format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t pkcs8_data, vscf_error_t *error);
+vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t key_data, vscf_error_t *error);
 
 //
 //  Import public key from the PKCS#8 format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t pkcs8_data, vscf_error_t *error);
+vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t key_data, vscf_error_t *error);
 
 //
 //  Calculate buffer size enough to hold exported public key.
@@ -229,7 +229,7 @@ VSCF_PUBLIC size_t
 vscf_key_provider_exported_private_key_len(vscf_key_provider_t *self, const vscf_impl_t *private_key);
 
 //
-//  Export given private key to the PKCS#8 DER format.
+//  Export given private key to the PKCS#8 or SEC1 DER format.
 //
 //  Precondition: private key must be exportable.
 //

@@ -1,0 +1,20 @@
+{
+	"curve": {
+		"private_key": "MC4CAQAwBQYDK2VuBCIEIE4VNkJKhPPYPCYBPjwStxQOdp2HRApEpvUP7Q2EPTaS",
+		"public_key": "MCowBQYDK2VuAyEAqaJunUCdIr9tcRt6EB0Avs+HapzHURQkBc/4S2kJczs=",
+		"public_key_raw": "qaJunUCdIr9tcRt6EB0Avs+HapzHURQkBc/4S2kJczs=",
+		"public_key_id": "5BBfhHC7reQ="
+	},
+	"ed": {
+		"private_key": "MC4CAQAwBQYDK2VwBCIEILnATNiEWzN688ngZCTcj4RPCBCd+B/ALcF+n50NSO2E",
+		"public_key": "MCowBQYDK2VwAyEAfOKTjHjkZ8KIl54Bwn/VRpsUsdpsAThbE9QIVWztv84="
+	},
+	"message": {
+		"data": "zEhJfiHxsCoDJVY5oG3zJyPgJ/EdrckT11tpLYCzpOgsPuDorYt3nH/6dxqvm82QU935rc6J4VPKcUBtanu6UY+ZvMWFC2qSsQSmG0+KeIC1pUW84B/O2kZ4qHCBwn7lY1O5Yg8AXUoDRhfrpn5e4kyAKnUJC/GQzBJxlbfVnKk=",
+		"raw_key1": "s44+07H1ZfuAuYj/FGLNxXoM48u1vZTWszVPnZw1BI8=",
+		"raw_key2": "7xva6MvxNZqY2tYdZ4bnWy4lJlduM0qbZcwL+Qz3xFg=",
+		"raw_key3": "sAlpBAL/fAsrKn2Ia6OlhAF28mUYFiqjvwakDxmCqos=",
+		"raw_key4": "Tk7lAbgRwgjwr9d20fLZ/+9XVx0O2kDZf7b0Jv2I4Ys=",
+		"raw_key5": "jOubgqAhTneaujqJn9Ai4qedRs4JkENuTr2nMFr2ohA="
+	}
+}

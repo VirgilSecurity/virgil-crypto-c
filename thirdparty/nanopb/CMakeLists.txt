@@ -66,15 +66,18 @@ endif()
 # ---------------------------------------------------------------------------
 include(ExternalProject)
 
+if(WIN32 AND NOT CYGWIN)
+    set(EXECUTABLE_SUFFIX ".exe")
+endif()
 
 if(TARGET protoc)
     set(PROTOC_EXE protoc)
 
 elseif(COMMAND find_host_program)
-    find_host_program(PROTOC_EXE NAMES protoc${CMAKE_EXECUTABLE_SUFFIX})
+    find_host_program(PROTOC_EXE NAMES protoc${EXECUTABLE_SUFFIX})
 
 else()
-    find_program(PROTOC_EXE NAMES protoc${CMAKE_EXECUTABLE_SUFFIX})
+    find_program(PROTOC_EXE NAMES protoc${EXECUTABLE_SUFFIX})
 endif()
 
 
@@ -98,7 +101,7 @@ if(NOT PROTOC_EXE)
     set_target_properties(protoc
             PROPERTIES
             IMPORTED_LOCATION
-                "${NANOPB_INSTALL_LOCATION}/bin/protoc${CMAKE_EXECUTABLE_SUFFIX}"
+                "${NANOPB_INSTALL_LOCATION}/bin/protoc${EXECUTABLE_SUFFIX}"
             )
 
     set(PROTOC_EXE protoc)
@@ -122,6 +125,7 @@ ExternalProject_Add(protobuf-nanopb-ext
             "-Dnanopb_BUILD_RUNTIME=ON"
             "-Dnanopb_BUILD_GENERATOR=OFF"
             "-Dnanopb_MSVC_STATIC_RUNTIME=ON"
+            "-DCMAKE_INSTALL_LIBDIR=lib"
         PATCH_COMMAND
             ${CMAKE_COMMAND}
                 -DPB_H_FILE="${CMAKE_CURRENT_BINARY_DIR}/protobuf-nanopb-ext-prefix/src/protobuf-nanopb-ext/pb.h"
@@ -135,8 +139,8 @@ ExternalProject_Add(protobuf-nanopb-ext
                 -DPB_OLD_CALLBACK_STYLE=${PB_OLD_CALLBACK_STYLE}
                 -P "${CMAKE_CURRENT_LIST_DIR}/patch_pb.h.cmake"
         BUILD_BYPRODUCTS
-            "${NANOPB_INSTALL_LOCATION}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopb${CMAKE_STATIC_LIBRARY_SUFFIX}"
-            "${NANOPB_INSTALL_LOCATION}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopb${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
         )
 
 ExternalProject_Add_Step(protobuf-nanopb-ext install-protobuf-generator
@@ -200,9 +204,9 @@ add_dependencies(protobuf-nanopb protobuf-nanopb-ext)
 set_target_properties(protobuf-nanopb
         PROPERTIES
         IMPORTED_LOCATION
-            "${NANOPB_INSTALL_LOCATION}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopb${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopb${CMAKE_STATIC_LIBRARY_SUFFIX}"
         IMPORTED_LOCATION_DEBUG
-            "${NANOPB_INSTALL_LOCATION}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
         INTERFACE_INCLUDE_DIRECTORIES
             "${NANOPB_INSTALL_LOCATION}/include"
         )
@@ -234,7 +238,7 @@ endif()
 #
 if(VIRGIL_INSTALL_DEPS_LIBS)
     install(
-            DIRECTORY "${NANOPB_INSTALL_LOCATION}/${CMAKE_INSTALL_LIBDIR}/"
+            DIRECTORY "${NANOPB_INSTALL_LOCATION}/lib/"
             DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             PATTERN "cmake" EXCLUDE
             )

@@ -1,0 +1,20 @@
+<class name="ratchet group participant epoch" context="public" scope="internal">
+
+    <require class="ratchet common hidden" scope="public"/>
+    <require class="ratchet common" scope="public"/>
+    <require class="ratchet common" scope="public"/>
+
+    <property name="epoch" type="size" access="readwrite"/>
+    <property name="chain key" class="ratchet chain key" access="readwrite"/>
+    <property name="skipped messages" class="ratchet skipped messages root node" access="readwrite"/>
+
+    <method name="serialize" is_const="1">
+        <argument name="data pb" class="ParticipantEpoch" library="nanopb" access="readwrite"/>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        <argument name="data pb" class="ParticipantEpoch" library="nanopb"/>
+        <argument name="data" class="self" access="readwrite"/>
+    </method>
+
+</class>

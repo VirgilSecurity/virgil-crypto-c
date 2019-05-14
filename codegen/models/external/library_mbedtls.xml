@@ -13,8 +13,6 @@
     <feature name="GCM C"/>
     <feature name="MD C"/>
     <feature name="BIGNUM C"/>
-    <feature name="ECP C"/>
-    <feature name="ECP_DP_SECP256R1_ENABLED"/>
     <feature name="PKCS1 V21"/>
     <feature name="OID C"/>
     <feature name="ASN1 PARSE C"/>
@@ -28,6 +26,22 @@
     <feature name="CIPHER MODE CBC"/>
     <feature name="CIPHER MODE WITH PADDING"/>
     <feature name="CIPHER PADDING PKCS7"/>
+
+    <feature name="ECP_DP_SECP256R1_ENABLED"/>
+    <feature name="ECP C">
+        <require feature="BIGNUM C"/>
+        <require>
+            <alternative feature="ECP_DP_SECP256R1_ENABLED"/>
+        </require>
+    </feature>
+
+    <feature name="ECDH C">
+        <require feature="ECP C"/>
+    </feature>
+
+    <feature name="ECDSA C">
+        <require feature="ECP C"/>
+    </feature>
 
     <feature name="RSA C">
         <require feature="BIGNUM C"/>

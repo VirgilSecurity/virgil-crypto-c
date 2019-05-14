@@ -107,6 +107,22 @@
         CURVE25519 private key is corrupted.
     </constant>
 
+    <constant name="error bad sec1 public key" value="-221">
+        Elliptic curve public key format is corrupted see RFC 5480.
+    </constant>
+
+    <constant name="error bad sec1 private key" value="-222">
+        Elliptic curve public key format is corrupted see RFC 5915.
+    </constant>
+
+    <constant name="error bad der public key" value="-223">
+        ASN.1 representation of a public key is corrupted.
+    </constant>
+
+    <constant name="error bad der private key" value="-224">
+        ASN.1 representation of a private key is corrupted.
+    </constant>
+
     <constant name="error no message info" value="-301">
         Decryption failed, because message info was not given explicitly,
         and was not part of an encrypted message.

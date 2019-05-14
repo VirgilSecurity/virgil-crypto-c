@@ -105,7 +105,7 @@ extern "C" {
 #   endif
 #   define VSC_PRIVATE
 #else
-#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER)
+#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER) || defined(__clang__)
 #       define VSC_PUBLIC __attribute__ ((visibility ("default")))
 #       define VSC_PRIVATE __attribute__ ((visibility ("hidden")))
 #   else
@@ -115,7 +115,7 @@ extern "C" {
 
 #define VSC_VERSION_MAJOR 0
 
-#define VSC_VERSION_MINOR 6
+#define VSC_VERSION_MINOR 7
 
 #define VSC_VERSION_PATCH 0
 

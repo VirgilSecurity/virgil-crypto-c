@@ -64,6 +64,19 @@ extern "C" {
 
 enum vscf_oid_id_t {
     vscf_oid_id_NONE,
+    vscf_oid_id_RSA,
+    vscf_oid_id_ED25519,
+    vscf_oid_id_CURVE25519,
+    vscf_oid_id_SHA224,
+    vscf_oid_id_SHA256,
+    vscf_oid_id_SHA384,
+    vscf_oid_id_SHA512,
+    vscf_oid_id_KDF1,
+    vscf_oid_id_KDF2,
+    vscf_oid_id_AES256_GCM,
+    vscf_oid_id_AES256_CBC,
+    vscf_oid_id_PKCS5_PBKDF2,
+    vscf_oid_id_PKCS5_PBES2,
     vscf_oid_id_CMS_DATA,
     vscf_oid_id_CMS_ENVELOPED_DATA,
     vscf_oid_id_HKDF_WITH_SHA256,
@@ -72,7 +85,9 @@ enum vscf_oid_id_t {
     vscf_oid_id_HMAC_WITH_SHA224,
     vscf_oid_id_HMAC_WITH_SHA256,
     vscf_oid_id_HMAC_WITH_SHA384,
-    vscf_oid_id_HMAC_WITH_SHA512
+    vscf_oid_id_HMAC_WITH_SHA512,
+    vscf_oid_id_EC_GENERIC_KEY,
+    vscf_oid_id_EC_DOMAIN_SECP256R1
 };
 typedef enum vscf_oid_id_t vscf_oid_id_t;
 

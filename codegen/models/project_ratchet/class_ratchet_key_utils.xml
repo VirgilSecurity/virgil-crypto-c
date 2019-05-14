@@ -1,34 +1,13 @@
-<class name="ratchet key utils" context="internal">
-    Utils class for working with keys formats
+<class name="ratchet key utils" scope="internal" context="internal">
+    Utils class for working with keys formats.
 
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
-    <require impl="pkcs8 der deserializer" scope="private" project="foundation"/>
-    <require impl="sha512" project="foundation" scope="private"/>
+    <require impl="key asn1 deserializer" scope="private" project="foundation"/>
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
     <require module="buffer defs" scope="private" project="common"/>
 
-    <property name="pkcs8" impl="pkcs8 der deserializer" project="foundation"/>
-
-    <method name="compute public key id">
-        Computes 8 bytes key pair id from public key
-
-        <argument name="public key" class="data">
-            Public key
-        </argument>
-
-        <argument name="convert to curve25519" type="boolean"/>
-
-        <argument name="key id" class="buffer">
-            Key pair id
-
-            <length constant="key id len" class="ratchet common"/>
-        </argument>
-
-        <return enum="status">
-            Error
-        </return>
-    </method>
+    <property name="key asn1 deserializer" impl="key asn1 deserializer" project="foundation"/>
 
     <method name="extract ratchet public key">
         <argument name="data" class="data"/>

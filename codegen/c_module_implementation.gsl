@@ -49,6 +49,7 @@
 
 gsl from "common.gsl"
 gsl from "component.gsl"
+gsl from "scoped_component.gsl"
 gsl from "c_dependency.gsl"
 gsl from "c_module_interface.gsl"
 
@@ -58,6 +59,15 @@ function _Z19_has_underlying_context (impl)
     check_argument (my, "impl", my)
 
     return count (my.impl.context) <> 0 | count (my.impl.property) <> 0
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true if impl reuire creating "private" module.
+# ---------------------------------------------------------------------------
+function _Z19_has_module_private (impl)
+    check_arguments (my, "impl", my)
+
+    return class_has_scoped_item_with_scope (my.impl, "private")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -220,12 +230,19 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
             .module = my.names.implementation_module_defs
             .scope = "private"
         endnew
+    endif
 
+    if _Z19_has_module_private (my.impl)
         new require to my.destination
-            .module = my.names.implementation_module_internal
+            .module = my.names.implementation_module_private
             .scope = "private"
         endnew
     endif
+
+    new require to my.destination
+        .module = my.names.implementation_module_internal
+        .scope = "private"
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1083,28 +1100,6 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add functions that are defined in the implementation itself.
 # ---------------------------------------------------------------------------
-function _Z19_add_constants (impl, destination, meta)
-    check_arguments (my, "impl, destination, meta", my)
-
-    for my.impl.constant
-        component_clean_copy (constant, my.destination)
-    endfor
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Add functions that are defined in the implementation itself.
-# ---------------------------------------------------------------------------
-function _Z19_add_enums (impl, destination, meta)
-    check_arguments (my, "impl, destination, meta", my)
-
-    for my.impl.enum
-        component_clean_copy (enum, my.destination)
-    endfor
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Add functions that are defined in the implementation itself.
-# ---------------------------------------------------------------------------
 function _Z19_add_macroses (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
@@ -1120,16 +1115,16 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add functions that are defined in the implementation itself.
 # ---------------------------------------------------------------------------
-function _Z19_add_methods (impl, destination, meta)
-    check_arguments (my, "impl, destination, meta", my)
+function _Z19_add_method (impl, method, module, meta)
+    check_arguments (my, "impl, method, module, meta", my)
 
-    for my.impl.method
-        my.copied_method = component_clean_copy (method, my.destination)
+    my.copied_method = component_clean_copy (method, my.module)
 
-        if ! my.copied_method.is_static
-            _Z19_add_argument_impl (my.impl, my.copied_method, my.meta)
-        endif
-    endfor
+    if ! my.copied_method.is_static
+        _Z19_add_argument_impl (my.impl, my.copied_method, my.meta)
+    endif
+
+    return my.copied_method
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1158,6 +1153,7 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
         .name = my.names.implementation_module
         .of_class = my.names.implementation_class
         .feature = my.impl.name
+        .scope = my.impl.scope
 
         _Z19_add_includes_for_module_public (my.impl, module, my.meta)
         _Z19_add_self_tag (my.impl, my.enum_impl_tag, my.meta)
@@ -1180,10 +1176,8 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
         endif
 
         _Z19_add_interface_api_methods (my.impl, "public", "external", module, my.meta)
-        _Z19_add_constants (my.impl, module, my.meta)
-        _Z19_add_enums (my.impl, module, my.meta)
         _Z19_add_macroses (my.impl, module, my.meta)
-        _Z19_add_methods (my.impl, module, my.meta)
+        class_add_scoped_components_to_main_module (my.impl, "_Z19_add_method", module, my.meta)
         _Z19_add_interface_methods (my.impl, "private", module, my.meta)
     endnew
 endfunction
@@ -1225,6 +1219,25 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
         endnew
 
         _Z19_add_type_impl (my.impl, "external", "public", module, my.meta)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create 'module' component with a private API for given implementation.
+# ---------------------------------------------------------------------------
+function c_module_implementation_create_module_private (impl, destination, meta)
+    check_arguments (my, "impl, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+
+    new module to my.destination
+        .name = my.names.implementation_module_private
+        .of_class = my.names.implementation_class
+        .scope = "private"
+        .feature = my.impl.name
+        .is_header_only = "1"
+
+        class_add_scoped_components_to_extended_module (my.impl, "_Z19_add_method", module, my.meta)
     endnew
 endfunction
 
@@ -1280,6 +1293,7 @@ function c_module_implementation_create_module_internal (impl, source, destinati
             _Z19_add_interface_api_methods (my.impl, "external", "private", module, my.meta)
         endif
 
+        class_add_scoped_components_to_extended_module (my.impl, "_Z19_add_method", module, my.meta)
         _Z19_add_method_find_api (my.impl, module, my.meta)
     endnew
 endfunction
@@ -1302,6 +1316,10 @@ function c_module_implementation_create (source, destination, meta)
 
         c_module_implementation_create_module_public (implementation, my.enum_impl_tag, my.destination, my.meta)
         c_module_implementation_create_module_internal (implementation, my.source, my.destination, my.meta)
+
+        if _Z19_has_module_private (implementation)
+            c_module_implementation_create_module_private (implementation, my.destination, my.meta)
+        endif
 
         if implementation.context <> "none"
             c_module_implementation_create_module_impl (implementation, my.destination, my.meta)

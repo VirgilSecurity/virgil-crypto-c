@@ -103,13 +103,13 @@ import VSCFoundation
     }
 
     /// Import private key from the PKCS#8 format.
-    @objc public func importPrivateKey(pkcs8Data: Data) throws -> PrivateKey {
+    @objc public func importPrivateKey(keyData: Data) throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = pkcs8Data.withUnsafeBytes({ (pkcs8DataPointer: UnsafeRawBufferPointer) in
+        let proxyResult = keyData.withUnsafeBytes({ (keyDataPointer: UnsafeRawBufferPointer) in
 
-            return vscf_key_provider_import_private_key(self.c_ctx, vsc_data(pkcs8DataPointer.bindMemory(to: byte.self).baseAddress, pkcs8Data.count), &error)
+            return vscf_key_provider_import_private_key(self.c_ctx, vsc_data(keyDataPointer.bindMemory(to: byte.self).baseAddress, keyData.count), &error)
         })
 
         try FoundationError.handleStatus(fromC: error.status)
@@ -118,13 +118,13 @@ import VSCFoundation
     }
 
     /// Import public key from the PKCS#8 format.
-    @objc public func importPublicKey(pkcs8Data: Data) throws -> PublicKey {
+    @objc public func importPublicKey(keyData: Data) throws -> PublicKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = pkcs8Data.withUnsafeBytes({ (pkcs8DataPointer: UnsafeRawBufferPointer) in
+        let proxyResult = keyData.withUnsafeBytes({ (keyDataPointer: UnsafeRawBufferPointer) in
 
-            return vscf_key_provider_import_public_key(self.c_ctx, vsc_data(pkcs8DataPointer.bindMemory(to: byte.self).baseAddress, pkcs8Data.count), &error)
+            return vscf_key_provider_import_public_key(self.c_ctx, vsc_data(keyDataPointer.bindMemory(to: byte.self).baseAddress, keyData.count), &error)
         })
 
         try FoundationError.handleStatus(fromC: error.status)
@@ -174,7 +174,7 @@ import VSCFoundation
         return proxyResult
     }
 
-    /// Export given private key to the PKCS#8 DER format.
+    /// Export given private key to the PKCS#8 or SEC1 DER format.
     ///
     /// Precondition: private key must be exportable.
     @objc public func exportPrivateKey(privateKey: PrivateKey) throws -> Data {

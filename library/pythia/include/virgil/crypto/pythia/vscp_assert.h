@@ -95,17 +95,17 @@ extern "C" {
 //
 //  Asserts even in optimized mode.
 //
-#define VSCP_ASSERT_OPT(X) VSCP_ASSERT_INTERNAL (X)
+#define VSCP_ASSERT_OPT(X) VSCP_ASSERT_INTERNAL(X)
 
 //
 //  Default assert, that is enabled in debug mode.
 //
-#define VSCP_ASSERT(X) VSCP_ASSERT_INTERNAL (X)
+#define VSCP_ASSERT(X) VSCP_ASSERT_INTERNAL(X)
 
 //
 //  Heavy assert, that is enabled in a special (safe) cases.
 //
-#define VSCP_ASSERT_SAFE(X) VSCP_ASSERT_INTERNAL (X)
+#define VSCP_ASSERT_SAFE(X) VSCP_ASSERT_INTERNAL(X)
 
 //
 //  Asserts during compilation. Has no runtime impact.
@@ -127,7 +127,7 @@ extern "C" {
 //
 #define VSCP_ASSERT_NULL(X)                                                       \
     do {                                                                          \
-        if (X) {                                                                  \
+        if(X) {                                                                   \
             vscp_assert_trigger (#X" == NULL", VSCP_FILE_PATH_OR_NAME, __LINE__); \
         }                                                                         \
     } while (false)

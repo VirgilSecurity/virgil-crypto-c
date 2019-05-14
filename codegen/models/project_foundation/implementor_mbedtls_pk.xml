@@ -110,4 +110,107 @@
             <argument name="exponent" type="size"/>
         </method>
     </implementation>
+
+    <implementation name="secp256r1 public key">
+        <require library="mbedtls" feature="ECP C"/>
+        <require library="mbedtls" feature="ECDH C"/>
+        <require library="mbedtls" feature="ECDSA C"/>
+        <require library="mbedtls" feature="ECP DP SECP256R1 ENABLED"/>
+        <require library="mbedtls" feature="BIGNUM C"/>
+
+        <require header="mbedtls/ecp.h" scope="context"/>
+        <require header="mbedtls/ecdh.h" scope="context"/>
+        <require header="mbedtls/ecdsa.h" scope="context"/>
+
+        <require class="asn1rd"/>
+        <require class="asn1wr"/>
+        <require class="mbedtls bignum asn1 reader"/>
+        <require class="mbedtls bignum asn1 writer"/>
+        <require class="mbedtls md"/>
+        <require class="ec alg info"/>
+        <require enum="asn1 tag"/>
+        <require impl="ctr drbg"/>
+        <require impl="secp256r1 private key"/>
+        <require interface="alg info"/>
+        <require interface="alg"/>
+        <require module="mbedtls bridge random"/>
+
+        <constant name="key len" value="32"/>
+        <constant name="key bitlen" value="256"/>
+
+        <property name="ecp group" class="mbedtls_ecp_group" library="mbedtls" is_reference="0"/>
+        <property name="ecp" class="mbedtls_ecp_point" library="mbedtls" is_reference="0"/>
+
+        <dependency name="random" interface="random"/>
+        <dependency name="ecies" impl="ecies"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
+        <interface name="alg"/>
+        <interface name="key"/>
+        <interface name="encrypt"/>
+        <interface name="verify hash"/>
+        <interface name="public key">
+            <constant name="can import public key" value="true"/>
+            <constant name="can export public key" value="true"/>
+        </interface>
+        <interface name="generate ephemeral key"/>
+    </implementation>
+
+
+    <implementation name="secp256r1 private key">
+        <require library="mbedtls" feature="ECP C"/>
+        <require library="mbedtls" feature="ECDH C"/>
+        <require library="mbedtls" feature="ECDSA C"/>
+        <require library="mbedtls" feature="ECP DP SECP256R1 ENABLED"/>
+        <require library="mbedtls" feature="BIGNUM C"/>
+
+        <require header="mbedtls/ecp.h" scope="context"/>
+        <require header="mbedtls/ecdh.h" scope="context"/>
+        <require header="mbedtls/ecdsa.h" scope="context"/>
+
+        <require class="asn1rd"/>
+        <require class="asn1wr"/>
+        <require class="mbedtls bignum asn1 reader"/>
+        <require class="mbedtls bignum asn1 writer"/>
+        <require class="mbedtls md"/>
+        <require class="ec alg info"/>
+        <require enum="asn1 tag"/>
+        <require impl="ctr drbg"/>
+        <require interface="alg info"/>
+        <require interface="alg"/>
+        <require module="mbedtls bridge random"/>
+        <require module="secp256r1 public key defs"/>
+
+
+        <constant name="key len" value="32"/>
+        <constant name="key bitlen" value="256"/>
+        <constant name="shared key len" value="32"/>
+
+        <property name="ecp keypair" class="mbedtls_ecp_keypair" library="mbedtls" is_reference="0"/>
+
+        <dependency name="random" interface="random"/>
+        <dependency name="ecies" impl="ecies"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
+        <interface name="alg"/>
+        <interface name="key"/>
+        <interface name="generate key"/>
+        <interface name="decrypt"/>
+        <interface name="sign hash"/>
+        <interface name="private key">
+            <constant name="can import private key" value="true"/>
+            <constant name="can export private key" value="true"/>
+        </interface>
+        <interface name="compute shared key"/>
+    </implementation>
 </implementor>

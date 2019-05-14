@@ -12,11 +12,10 @@ const vsc_data_t test_ed25519_RANDOM = {
 };
 
 const byte test_ed25519_PRIVATE_KEY_BYTES[] = {
-    0x04, 0x20, 0x4D, 0x43, 0x34, 0x43, 0x41, 0x51,
-    0x41, 0x77, 0x42, 0x51, 0x59, 0x44, 0x4B, 0x32,
-    0x56, 0x77, 0x42, 0x43, 0x49, 0x45, 0x49, 0x45,
-    0x73, 0x43, 0x4C, 0x48, 0x4E, 0x50, 0x63, 0x58,
-    0x50, 0x2B
+    0x4D, 0x43, 0x34, 0x43, 0x41, 0x51, 0x41, 0x77,
+    0x42, 0x51, 0x59, 0x44, 0x4B, 0x32, 0x56, 0x77,
+    0x42, 0x43, 0x49, 0x45, 0x49, 0x45, 0x73, 0x43,
+    0x4C, 0x48, 0x4E, 0x50, 0x63, 0x58, 0x50, 0x2B,
 };
 
 const vsc_data_t test_ed25519_PRIVATE_KEY = {
@@ -130,4 +129,25 @@ const byte test_ed25519_PRIVATE_KEY_PKCS8_DER_BYTES[] = {
 
 const vsc_data_t test_ed25519_PRIVATE_KEY_PKCS8_DER = {
     test_ed25519_PRIVATE_KEY_PKCS8_DER_BYTES, sizeof(test_ed25519_PRIVATE_KEY_PKCS8_DER_BYTES)
+};
+
+const char test_ed25519_PUBLIC_KEY_PKCS8_PEM_STR[] = {
+    "-----BEGIN PUBLIC KEY-----\n"
+    "MCowBQYDK2VwAyEA5zSd1esjIzdm8xkuLZ1NJtiiZx1x6K7UgFO0f1X0cDI=\n"
+    "-----END PUBLIC KEY-----"
+
+};
+
+const vsc_data_t test_ed25519_PUBLIC_KEY_PKCS8_PEM = {
+    (const byte *)test_ed25519_PUBLIC_KEY_PKCS8_PEM_STR, sizeof(test_ed25519_PUBLIC_KEY_PKCS8_PEM_STR) - 1
+};
+
+const char test_ed25519_PRIVATE_KEY_PKCS8_PEM_STR[] = {
+    "-----BEGIN PRIVATE KEY-----\n"
+    "MC4CAQAwBQYDK2VwBCIEIE1DNENBUUF3QlFZREsyVndCQ0lFSUVzQ0xITlBjWFAr\n"
+    "-----END PRIVATE KEY-----"
+};
+
+const vsc_data_t test_ed25519_PRIVATE_KEY_PKCS8_PEM = {
+    (const byte *)test_ed25519_PRIVATE_KEY_PKCS8_PEM_STR, sizeof(test_ed25519_PRIVATE_KEY_PKCS8_PEM_STR) - 1
 };

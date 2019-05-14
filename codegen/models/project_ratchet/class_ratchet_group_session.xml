@@ -5,12 +5,20 @@
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
 
+    <require module="ratchet typedefs" scope="context"/>
+
+    <require module="buffer defs" scope="private" project="common"/>
+
     <require module="ratchet group message defs" scope="private"/>
+    <require module="ratchet group message internal" scope="private"/>
+    <require module="ratchet group ticket defs" scope="private"/>
+    <require module="ratchet group ticket internal" scope="private"/>
 
     <require header="RatchetGroupMessage.pb.h" scope="private"/>
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
+    <require impl="sha512" project="foundation" scope="private"/>
     <require header="ed25519/ed25519.h" scope="private"/>
 
     <require class="ratchet keys" scope="private"/>
@@ -18,19 +26,24 @@
     <require impl="ctr drbg" project="foundation" scope="private"/>
 
     <dependency name="rng" interface="random" project="foundation" has_observers="1">
-        Random used to generate keys
+        Random
     </dependency>
 
     <property name="key utils" class="ratchet key utils"/>
     <property name="cipher" class="ratchet cipher" access="readwrite"/>
-    <property name="skipped messages" class="ratchet skipped group messages" access="readwrite"/>
+    <property name="padding" class="ratchet padding" access="readwrite"/>
 
     <property name="is initialized" type="boolean" access="readwrite"/>
     <property name="is private key set" type="boolean" access="readwrite"/>
+    <property name="is my id set" type="boolean" access="readwrite"/>
 
-    <property name="me" class="ratchet group participant data" access="readwrite"/>
-    <property name="my private key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
+    <property name="session id" class="vscr_ratchet_session_id_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="my id" class="vscr_ratchet_participant_id_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="my epoch" class="ratchet group participant epoch" access="readwrite"/>
+    <property name="my public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="my private key" class="vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="messages count" type="size" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_max_skipped_epoches_count)"/>
     </property>
 
     <property name="participants" class="ratchet group participant data" access="readwrite">
@@ -48,6 +61,18 @@
         Shows whether identity private key was set.
 
         <return type="boolean"/>
+    </method>
+
+    <method name="is my id set" is_const="1">
+        Shows whether my id was set.
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="get current epoch" is_const="1">
+        Returns current epoch.
+
+        <return type="size"/>
     </method>
 
     <method name="setup defaults">
@@ -69,12 +94,39 @@
         </return>
     </method>
 
-    <method name="setup session">
-        Sets up session. Identity private key should be set separately.
+    <method name="set my id">
+        Sets my id.
 
-        <argument name="my id" class="data">
-            User's 32-byte identifier.
-        </argument>
+        <argument name="my id" class="data"/>
+    </method>
+
+    <method name="get my id" is_const="1">
+        Returns my id.
+
+        <return class="data"/>
+    </method>
+
+    <method name="get session id" is_const="1">
+        Returns session id.
+
+        <return class="data"/>
+    </method>
+
+    <method name="get participants count" is_const="1">
+        Returns number of participants.
+
+        <return type="size"/>
+    </method>
+
+    <method name="check session consistency" declaration="private">
+        <argument name="message" class="ratchet group message"/>
+        <return enum="status"/>
+    </method>
+
+    <method name="setup session">
+        Sets up session.
+        NOTE: Identity private key and my id should be set separately.
+
         <argument name="message" class="ratchet group message">
             Message with group info obtained through secure channel.
         </argument>
@@ -88,7 +140,7 @@
         Encrypts data
 
         <argument name="plain text" class="data">
-            Data to encrypt
+            Data to encrypt. Should be less than maximum allowed value.
         </argument>
 
         <argument name="error" class="error" access="readwrite">
@@ -133,14 +185,12 @@
     </method>
 
     <method name="find participant" declaration="private">
-        <argument name="id" type="byte">
-            <array length="fixed" length_constant=".(class_ratchet_common_constant_participant_id_len)"/>
-        </argument>
+        <argument name="id" class="const vscr_ratchet_participant_id_t" is_reference="0" library="internal" access="readonly"/>
 
-        <return class="ratchet group participant data" access="readwrite"/>
+        <return type="size"/>
     </method>
 
-    <method name="serialize len">
+    <method name="serialize len" is_const="1">
         Calculates size of buffer sufficient to store session
 
         <return type="size">
@@ -148,8 +198,9 @@
         </return>
     </method>
 
-    <method name="serialize">
+    <method name="serialize" is_const="1">
         Serializes session to buffer
+        NOTE: Session changes its state every encrypt/decrypt operations. Be sure to save it.
 
         <argument name="output" class="buffer">
             Buffer to store session
@@ -160,7 +211,10 @@
 
     <method name="deserialize" is_static="1">
         Deserializes session from buffer.
-        NOTE: Deserialized session needs dependencies to be set. Check setup defaults
+        NOTE: Deserialized session needs dependencies to be set.
+        You should set separately:
+            - rng
+            - my private key
 
         <argument name="input" class="data">
             Serialized session data
@@ -174,6 +228,41 @@
             Deserialized session.
             NOTE: Deserialized session needs dependencies to be set. Check setup defaults
         </return>
+    </method>
+
+    <method name="generate skipped keys" declaration="private">
+        <argument name="epoch" class="ratchet group participant epoch" access="readwrite"/>
+        <argument name="counter" type="size"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="update participant" declaration="private" is_static="1">
+        <argument name="participant" class="ratchet group participant data" access="readwrite"/>
+        <argument name="epoch" type="size"/>
+        <argument name="info" class="MessageParticipantInfo" library="nanopb"/>
+    </method>
+
+    <method name="add new participant" declaration="private">
+        <argument name="epoch" type="size"/>
+        <argument name="info" class="MessageParticipantInfo" library="nanopb"/>
+    </method>
+
+    <method name="create group ticket for adding participants" is_const="1">
+        Creates ticket for adding participants to this session.
+        NOTE: This ticket is not suitable for removing participants from this session.
+
+        <return class="ratchet group ticket" access="disown"/>
+    </method>
+
+    <method name="create group ticket for adding or removing participants" is_const="1">
+        Creates ticket for adding and or removing participants to/from this session.
+
+        <argument name="error" class="error" access="readwrite">
+            Error context to return error
+        </argument>
+
+        <return class="ratchet group ticket" access="disown"/>
     </method>
 
 </class>

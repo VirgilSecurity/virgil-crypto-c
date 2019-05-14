@@ -158,7 +158,8 @@ VSCR_PUBLIC void
 vscr_ratchet_release_rng(vscr_ratchet_t *self);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const RegularMessage *message) VSCR_NODISCARD;
+vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const RegularMessage *message,
+        const RegularMessageHeader *regular_message_header) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret) VSCR_NODISCARD;
@@ -167,20 +168,21 @@ VSCR_PUBLIC size_t
 vscr_ratchet_encrypt_len(vscr_ratchet_t *self, size_t plain_text_len);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage *regular_message) VSCR_NODISCARD;
+vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage *regular_message,
+        RegularMessageHeader *regular_message_header) VSCR_NODISCARD;
 
 VSCR_PUBLIC size_t
 vscr_ratchet_decrypt_len(vscr_ratchet_t *self, size_t cipher_text_len);
 
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message,
-        vsc_buffer_t *plain_text) VSCR_NODISCARD;
+        const RegularMessageHeader *regular_message_header, vsc_buffer_t *plain_text) VSCR_NODISCARD;
 
 VSCR_PUBLIC void
-vscr_ratchet_serialize(vscr_ratchet_t *self, Ratchet *ratchet_pb);
+vscr_ratchet_serialize(const vscr_ratchet_t *self, Ratchet *ratchet_pb);
 
 VSCR_PUBLIC void
-vscr_ratchet_deserialize(Ratchet *ratchet_pb, vscr_ratchet_t *ratchet);
+vscr_ratchet_deserialize(const Ratchet *ratchet_pb, vscr_ratchet_t *ratchet);
 
 
 // --------------------------------------------------------------------------

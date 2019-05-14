@@ -1,5 +1,18 @@
 <enum name="oid id" definition="public">
     <constant name="none"/>
+    <constant name="rsa"/>
+    <constant name="ed25519"/>
+    <constant name="curve25519"/>
+    <constant name="sha224"/>
+    <constant name="sha256"/>
+    <constant name="sha384"/>
+    <constant name="sha512"/>
+    <constant name="kdf1"/>
+    <constant name="kdf2"/>
+    <constant name="aes256 gcm"/>
+    <constant name="aes256 cbc"/>
+    <constant name="pkcs5 pbkdf2"/>
+    <constant name="pkcs5 pbes2"/>
     <constant name="cms data"/>
     <constant name="cms enveloped data"/>
     <constant name="hkdf with sha256"/>
@@ -9,4 +22,6 @@
     <constant name="hmac With sha256"/>
     <constant name="hmac With sha384"/>
     <constant name="hmac With sha512"/>
+    <constant name="ec generic key"/>
+    <constant name="ec domain secp256r1"/>
 </enum>

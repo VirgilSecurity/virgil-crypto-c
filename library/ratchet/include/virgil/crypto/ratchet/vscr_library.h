@@ -105,7 +105,7 @@ extern "C" {
 #   endif
 #   define VSCR_PRIVATE
 #else
-#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER)
+#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER) || defined(__clang__)
 #       define VSCR_PUBLIC __attribute__ ((visibility ("default")))
 #       define VSCR_PRIVATE __attribute__ ((visibility ("hidden")))
 #   else
@@ -115,7 +115,7 @@ extern "C" {
 
 #define VSCR_VERSION_MAJOR 0
 
-#define VSCR_VERSION_MINOR 6
+#define VSCR_VERSION_MINOR 7
 
 #define VSCR_VERSION_PATCH 0
 

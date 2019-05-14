@@ -342,6 +342,21 @@ function quote_string (str)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Make signe-line string from a multiline string.
+# ---------------------------------------------------------------------------
+function string_to_singleline (str)
+    check_argument (my, "str")
+
+    while regexp.match ("^(.*$(terminator))", my.str, my.raw_line)
+        regexp.match ("^(.*)$(terminator)", my.str, my.replacement)
+        my.replacement = string_trim (my.replacement)
+        my.str = string.search_replace (my.str, my.raw_line, my.replacement)
+    endwhile
+
+    return string_trim (my.str)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Collapse spaces between words to 1 space in the code.
 #   Note, do not collapse spaces in macro formatting.
 #   Note, work for both single line and multiline strings.
@@ -1264,6 +1279,15 @@ function make_ref_swift (uid)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Wraps given UID as 'Reference UID' specific for Java language.
+# ---------------------------------------------------------------------------
+function make_ref_java (uid)
+    check_argument (my, "uid", my)
+
+    return make_ref (my.uid, "java")
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Wraps given UID as 'Reference UID' specific for PHP language.
 # ---------------------------------------------------------------------------
 function make_ref_php (uid)
@@ -1358,6 +1382,15 @@ function swift_lang_ref (maybe_ref)
     check_argument (my, "maybe_ref", my)
 
     return lang_ref (my.maybe_ref, "swift")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Shortcut for lang_ref (my.maybe_ref, "java")
+# ---------------------------------------------------------------------------
+function java_lang_ref (maybe_ref)
+    check_argument (my, "maybe_ref", my)
+
+    return lang_ref (my.maybe_ref, "java")
 endfunction
 
 # ---------------------------------------------------------------------------

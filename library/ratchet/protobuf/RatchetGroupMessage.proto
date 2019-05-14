@@ -1,23 +1,29 @@
 syntax = "proto2";
 
 message MessageParticipantInfo {
-    required uint32 version = 1;
-    required bytes id = 2;
-    required bytes key = 3;
-    required bytes pub_key = 4;
+    required bytes id = 1;
+    required bytes key = 2;
+    required bytes pub_key = 3;
+    required uint32 index = 4;
 }
 
 message MessageGroupInfo {
-    required uint32 version = 1;
-    repeated MessageParticipantInfo participants = 2;
+    required bytes session_id = 1;
+    required uint32 epoch = 2;
+    repeated MessageParticipantInfo participants = 3;
+}
+
+message RegularGroupMessageHeader {
+    required uint32 epoch = 1;
+    repeated uint32 prev_epoches_msgs = 2;
+    required uint32 counter = 3;
+    required bytes sender_id = 4;
 }
 
 message RegularGroupMessage {
-    required uint32 version = 1;
-    required uint32 counter = 2;
-    required bytes sender_id = 3;
-    required bytes signature = 4;
-    required bytes cipher_text = 5;
+    required bytes header = 1;
+    required bytes signature = 2;
+    required bytes cipher_text = 3;
 }
 
 message GroupMessage {

@@ -8,10 +8,6 @@
         <require header="ed25519/ed25519.h" scope="context"/>
         <require class="simple alg info"/>
         <require interface="alg info"/>
-        <require class="asn1rd"/>
-        <require class="asn1wr"/>
-        <require module="asn1rd defs"/>
-        <require module="asn1wr defs"/>
         <require impl="ed25519 private key"/>
         <require impl="ctr drbg"/>
 
@@ -47,10 +43,6 @@
         <require module="ed25519 public key defs"/>
         <require interface="alg info"/>
         <require class="simple alg info"/>
-        <require class="asn1rd"/>
-        <require class="asn1wr"/>
-        <require module="asn1rd defs"/>
-        <require module="asn1wr defs"/>
         <require impl="ctr drbg"/>
         <require module="buffer defs" project="common"/>
 
@@ -86,10 +78,6 @@
         <require header="ed25519/ed25519.h" scope="context"/>
         <require class="simple alg info"/>
         <require interface="alg info"/>
-        <require class="asn1rd"/>
-        <require class="asn1wr"/>
-        <require module="asn1rd defs"/>
-        <require module="asn1wr defs"/>
         <require impl="curve25519 private key"/>
         <require impl="ctr drbg"/>
 
@@ -124,10 +112,6 @@
         <require module="curve25519 public key defs"/>
         <require interface="alg info"/>
         <require class="simple alg info"/>
-        <require class="asn1rd"/>
-        <require class="asn1wr"/>
-        <require module="asn1rd defs"/>
-        <require module="asn1wr defs"/>
         <require impl="ctr drbg"/>
         <require module="buffer defs" project="common"/>
 
