@@ -41,9 +41,9 @@ import com.virgilsecurity.crypto.foundation.*;
 /* Encapsulate result of method phe client.rotateKeys() */
 public class PheClientRotateKeysResult {
 
-    public byte[] newClientPrivateKey;
+    private byte[] newClientPrivateKey;
 
-    public byte[] newServerPublicKey;
+    private byte[] newServerPublicKey;
 
     /* Create new instance of PheClientRotateKeysResult. */
     PheClientRotateKeysResult() {
@@ -54,6 +54,22 @@ public class PheClientRotateKeysResult {
     PheClientRotateKeysResult(byte[] newClientPrivateKey, byte[] newServerPublicKey) {
         super();
         this.newClientPrivateKey = newClientPrivateKey;
+        this.newServerPublicKey = newServerPublicKey;
+    }
+
+    public byte[] getNewClientPrivateKey() {
+        return this.newClientPrivateKey;
+    }
+
+    public void setNewClientPrivateKey(byte[] newClientPrivateKey) {
+        this.newClientPrivateKey = newClientPrivateKey;
+    }
+
+    public byte[] getNewServerPublicKey() {
+        return this.newServerPublicKey;
+    }
+
+    public void setNewServerPublicKey(byte[] newServerPublicKey) {
         this.newServerPublicKey = newServerPublicKey;
     }
 }

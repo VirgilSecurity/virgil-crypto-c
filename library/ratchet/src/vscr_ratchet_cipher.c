@@ -338,8 +338,7 @@ vscr_ratchet_cipher_pad_then_encrypt(vscr_ratchet_cipher_t *self, vscr_ratchet_p
     vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
     vsc_buffer_make_secure(temp);
 
-    memcpy(vsc_buffer_unused_bytes(temp), data.bytes, data.len);
-    vsc_buffer_inc_used(temp, data.len);
+    vsc_buffer_write_data(temp, data);
 
     vscr_status_t result = vscr_ratchet_padding_add_padding(padding, temp);
 

@@ -346,7 +346,6 @@ public class RatchetJNI {
     * NOTE: Deserialized session needs dependencies to be set.
     * You should set separately:
     * - rng
-    * - my id
     * - my private key
     */
     public native RatchetGroupSession ratchetGroupSession_deserialize(byte[] input) throws RatchetException;

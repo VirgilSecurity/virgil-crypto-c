@@ -2,6 +2,7 @@ package com.virgilsecurity.crypto.pythia;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -25,8 +26,8 @@ public class PythiaTest extends SampleBasedTest {
 
 		PythiaBlindResult blindResult = Pythia.blind(password);
 		assertNotNull(blindResult);
-		assertNotNull(blindResult.blindedPassword);
-		assertNotNull(blindResult.blindingSecret);
+		assertNotNull(blindResult.getBlindedPassword());
+		assertNotNull(blindResult.getBlindingSecret());
 	}
 
 	@Test
@@ -44,11 +45,11 @@ public class PythiaTest extends SampleBasedTest {
 				.computeTransformationKeyPair(transformationKeyId, pythiaSecret, pythiaScopeSecret);
 		assertNotNull(transformationKeyPair);
 
-		PythiaTransformResult transform = Pythia.transform(blindResult.blindedPassword, tweak,
-				transformationKeyPair.transformationPrivateKey);
+		PythiaTransformResult transform = Pythia.transform(blindResult.getBlindedPassword(), tweak,
+				transformationKeyPair.getTransformationPrivateKey());
 		assertNotNull(transform);
 
-		byte[] deblindedPassword = Pythia.deblind(transform.transformedPassword, blindResult.blindingSecret);
+		byte[] deblindedPassword = Pythia.deblind(transform.getTransformedPassword(), blindResult.getBlindingSecret());
 		assertNotNull(deblindedPassword);
 
 		assertArrayEquals(getBytes("deblinded_password"), deblindedPassword);
@@ -69,16 +70,16 @@ public class PythiaTest extends SampleBasedTest {
 				.computeTransformationKeyPair(transformationKeyId, pythiaSecret, pythiaScopeSecret);
 		assertNotNull(transformationKeyPair);
 
-		PythiaTransformResult transform = Pythia.transform(blindResult.blindedPassword, tweak,
-				transformationKeyPair.transformationPrivateKey);
+		PythiaTransformResult transform = Pythia.transform(blindResult.getBlindedPassword(), tweak,
+				transformationKeyPair.getTransformationPrivateKey());
 		assertNotNull(transform);
 
-		PythiaProveResult prove = Pythia.prove(transform.transformedPassword, blindResult.blindedPassword,
-				transform.transformedTweak, transformationKeyPair.transformationPrivateKey,
-				transformationKeyPair.transformationPublicKey);
+		PythiaProveResult prove = Pythia.prove(transform.getTransformedPassword(), blindResult.getBlindedPassword(),
+				transform.getTransformedTweak(), transformationKeyPair.getTransformationPrivateKey(),
+				transformationKeyPair.getTransformationPublicKey());
 
-		Pythia.verify(transform.transformedPassword, blindResult.blindedPassword, tweak,
-				transformationKeyPair.transformationPublicKey, prove.proofValueC, prove.proofValueU);
+		assertTrue(Pythia.verify(transform.getTransformedPassword(), blindResult.getBlindedPassword(), tweak,
+				transformationKeyPair.getTransformationPublicKey(), prove.getProofValueC(), prove.getProofValueU()));
 	}
 
 }

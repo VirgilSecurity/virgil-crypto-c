@@ -196,6 +196,15 @@ function java_derive_getter_name_str (name)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return formatted setter name from raw name.
+# ---------------------------------------------------------------------------
+function java_derive_setter_name_str (name)
+    check_arguments (my, "name", my)
+
+    return "set$(my.name:c, Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return formatted getter name by constant.
 # ---------------------------------------------------------------------------
 function java_derive_getter_name_by_constant (constant, java_project)
@@ -771,11 +780,50 @@ function java_create_result_class (parent, java_method, java_project, meta)
             .visibility = my.parent.visibility
 
             for my.java_method.java_return
+                my.field_name = java_return.name ? "theResult"
+                my.field_type = java_return.type
+
                 new java_field to java_class
-                    .name = java_return.name ? "theResult"
-                    .type = java_return.type
+                    .name = my.field_name
+                    .type = my.field_type
                     .access = "readonly"
+                    .visibility = "private"
+                endnew
+
+                # Getter
+                new java_method to java_class
+                    . = ""
+                    .name = java_derive_getter_name_str (my.field_name)
                     .visibility = "public"
+
+                    new java_code to java_method
+                        . = "return this.$(my.field_name:);"
+                    endnew
+
+                    new java_return to java_method
+                        .type = my.field_type
+                        .access = "readonly"
+                        .is_enum = "0"
+                        .is_reference = "0"
+                    endnew
+                endnew
+
+                # Setter
+                new java_method to java_class
+                    . = ""
+                    .name = java_derive_setter_name_str (my.field_name)
+                    .visibility = "public"
+
+                    new java_argument to java_method
+                        .name = my.field_name
+                        .type = my.field_type
+                        .is_enum = "0"
+                        .is_reference = "0"
+                    endnew
+
+                    new java_code to java_method
+                        . = "this.$(my.field_name:) = $(my.field_name:);"
+                    endnew
                 endnew
 
                 delete java_return

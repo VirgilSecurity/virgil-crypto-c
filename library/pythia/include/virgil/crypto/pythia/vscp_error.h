@@ -47,15 +47,17 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains logic for interface/implementation architecture.
-//  Do not use this module in any part of the code.
+//  Error context.
+//  Can be used for sequential operations, i.e. parsers, to accumulate error.
+//  In this way operation is successful if all steps are successful, otherwise
+//  last occurred error code can be obtained.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_PKCS8_DER_DESERIALIZER_INTERNAL_H_INCLUDED
-#define VSCF_PKCS8_DER_DESERIALIZER_INTERNAL_H_INCLUDED
+#ifndef VSCP_ERROR_H_INCLUDED
+#define VSCP_ERROR_H_INCLUDED
 
-#include "vscf_library.h"
-#include "vscf_pkcs8_deserializer.h"
+#include "vscp_library.h"
+#include "vscp_status.h"
 
 // clang-format on
 //  @end
@@ -72,6 +74,57 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Perform update only if context defined, otherwise log error.
+//
+#define VSCP_ERROR_SAFE_UPDATE(CTX, ERR)                            \
+    do {                                                            \
+        if (NULL != (CTX)) {                                        \
+            vscp_error_update ((CTX), (ERR));                       \
+        } else {                                                    \
+            /* TODO: Log this error, when logging will be added. */ \
+        }                                                           \
+    } while (false)
+
+//
+//  Handle 'error' context.
+//
+typedef struct vscp_error_t vscp_error_t;
+struct vscp_error_t {
+    vscp_status_t status;
+};
+
+//
+//  Return size of 'vscp_error_t'.
+//
+VSCP_PUBLIC size_t
+vscp_error_ctx_size(void);
+
+//
+//  Reset context to the "no error" state.
+//
+VSCP_PUBLIC void
+vscp_error_reset(vscp_error_t *self);
+
+//
+//  Update context with given status.
+//  If status is "success" then do nothing.
+//
+VSCP_PRIVATE void
+vscp_error_update(vscp_error_t *self, vscp_status_t status);
+
+//
+//  Return true if status is not "success".
+//
+VSCP_PUBLIC bool
+vscp_error_has_error(const vscp_error_t *self);
+
+//
+//  Return error code.
+//
+VSCP_PUBLIC vscp_status_t
+vscp_error_status(const vscp_error_t *self) VSCP_NODISCARD;
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -86,5 +139,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSCF_PKCS8_DER_DESERIALIZER_INTERNAL_H_INCLUDED
+#endif // VSCP_ERROR_H_INCLUDED
 //  @end

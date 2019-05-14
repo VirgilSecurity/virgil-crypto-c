@@ -1646,6 +1646,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     vscf_message_info_t /*2*/* message_info_ctx = (vscf_message_info_t /*2*/*) c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_message_info_data_encryption_alg_info(message_info_ctx /*a1*/);
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
     jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
     return ret;
 }
@@ -1663,7 +1664,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class KeyRecipientInfoList has no constructor with C context parameter.");
     }
-
+    vscf_key_recipient_info_list_shallow_copy((vscf_key_recipient_info_list_t */*5*/) proxyResult);
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -1681,7 +1682,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class PasswordRecipientInfoList has no constructor with C context parameter.");
     }
-
+    vscf_password_recipient_info_list_shallow_copy((vscf_password_recipient_info_list_t */*5*/) proxyResult);
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -1716,7 +1717,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class MessageInfoCustomParams has no constructor with C context parameter.");
     }
-
+    vscf_message_info_custom_params_shallow_copy((vscf_message_info_custom_params_t */*5*/) proxyResult);
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -1784,6 +1785,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     vscf_key_recipient_info_t /*2*/* key_recipient_info_ctx = (vscf_key_recipient_info_t /*2*/*) c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_key_recipient_info_key_encryption_algorithm(key_recipient_info_ctx /*a1*/);
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
     jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
     return ret;
 }
@@ -1849,7 +1851,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class KeyRecipientInfo has no constructor with C context parameter.");
     }
-
+    vscf_key_recipient_info_shallow_copy((vscf_key_recipient_info_t */*5*/) proxyResult);
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -1951,6 +1953,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     vscf_password_recipient_info_t /*2*/* password_recipient_info_ctx = (vscf_password_recipient_info_t /*2*/*) c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_password_recipient_info_key_encryption_algorithm(password_recipient_info_ctx /*a1*/);
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
     jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
     return ret;
 }
@@ -2016,7 +2019,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class PasswordRecipientInfo has no constructor with C context parameter.");
     }
-
+    vscf_password_recipient_info_shallow_copy((vscf_password_recipient_info_t */*5*/) proxyResult);
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -2294,7 +2297,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class MessageInfoCustomParams has no constructor with C context parameter.");
     }
-
+    vscf_message_info_custom_params_shallow_copy((vscf_message_info_custom_params_t */*5*/) proxyResult);
     jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
     return ret;
 }
@@ -8580,6 +8583,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     vscf_hash_based_alg_info_t /*9*/* hash_based_alg_info_ctx = (vscf_hash_based_alg_info_t /*9*/*) c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info_ctx /*a1*/);
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
     jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
     return ret;
 }
@@ -8693,6 +8697,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     vscf_salted_kdf_alg_info_t /*9*/* salted_kdf_alg_info_ctx = (vscf_salted_kdf_alg_info_t /*9*/*) c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_salted_kdf_alg_info_hash_alg_info(salted_kdf_alg_info_ctx /*a1*/);
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
     jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
     return ret;
 }
@@ -8778,6 +8783,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     vscf_pbe_alg_info_t /*9*/* pbe_alg_info_ctx = (vscf_pbe_alg_info_t /*9*/*) c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_pbe_alg_info_kdf_alg_info(pbe_alg_info_ctx /*a1*/);
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
     jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
     return ret;
 }
@@ -8787,6 +8793,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     vscf_pbe_alg_info_t /*9*/* pbe_alg_info_ctx = (vscf_pbe_alg_info_t /*9*/*) c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_pbe_alg_info_cipher_alg_info(pbe_alg_info_ctx /*a1*/);
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
     jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
     return ret;
 }
