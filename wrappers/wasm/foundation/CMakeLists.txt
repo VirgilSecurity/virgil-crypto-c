@@ -71,7 +71,7 @@ add_custom_target(foundation_wasm ALL
         )
 
 find_host_program(EMRUN emrun)
-if(WASM2WAT)
+if(EMRUN)
     add_custom_target(run_wasm_foundation
             COMMAND "${EMRUN}" --no_browser --port 8080 .
             DEPENDS foundation_wasm
