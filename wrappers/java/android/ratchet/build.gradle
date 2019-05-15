@@ -101,8 +101,8 @@ publishing {
             artifact sourcesJar
             artifact javadocJar
             pom {
-                name = 'Implementation of the double ratchet algorithm'
-                description = 'Virgil Security introduces an implementation of the Password-Hardened Encryption (PHE) protocol that provides developers with a technology to protect users passwords from offline/online attacks and make stolen passwords useless even if your database has been compromised.'
+                name = 'Virgil Security Crypto Ratchet'
+                description = 'Implementation of the Double Ratchet Algorithm.'
                 url = 'https://www.virgilsecurity.com/'
                 licenses {
                     license {
@@ -119,7 +119,7 @@ publishing {
                     }
                 }
                 scm {
-                    connection = 'scm:git:https://github.com/virgilsecurity/virgil-passw0rd-kotlin.git'
+                    connection = 'scm:git:git@github.com:VirgilSecurity/virgil-crypto-c.git'
                     developerConnection = 'scm:git:git@github.com:VirgilSecurity/virgil-crypto-c.git'
                     url = 'https://github.com/VirgilSecurity/virgil-crypto-c'
                 }
