@@ -515,6 +515,8 @@ function java_derive_c_method_shallow_copy (instance)
     elsif has_one_of_attribute(my.instance, "class, impl")
         return make_ref_c (make_id ("class", my.instance.class ? my.instance.impl, "method", "shallow copy"))
     endif
+    
+    return "/* shallow copy method not defined */"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1097,11 +1099,12 @@ function java_create_c_class_method_call (class, method, java_class, java_method
                     ")
                 endif
             elsif string_in (my.c_return_type, "jobject")
+            
+                if defined (my.method->return) & string_in (my.method->return.access, "readwrite, readonly")
+                    my.proxy_shallow_copy_call = "$(java_derive_c_method_shallow_copy (my.method->return))(($(my.proxy_return_type:)) proxyResult);"
+                endif
 
-                if is_true (my.java_method->java_return.is_class)
-                    if defined (my.c_method.c_return) & string_in (my.c_method.c_return.access, "readwrite, readonly")
-                        my.proxy_shallow_copy_call = java_derive_c_method_shallow_copy ()
-                    endif
+                if is_true (my.java_method->java_return.is_class)                    
                     my.prepare_result = format_left("\
                         jclass result_cls = (*jenv)->FindClass(jenv, \"$(my.java_return_class_path:)/$(my.java_return_class_name:)\");
                         if (NULL == result_cls) {
@@ -1112,10 +1115,11 @@ function java_create_c_class_method_call (class, method, java_class, java_method
                             .(c_class_assert_macros_assert)(\"Class $(my.java_return_class_name:) has no constructor with C context parameter.\");
                         }
                         $(my.proxy_shallow_copy_call?:)
-                        jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+                        jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
                     ")
                 elsif is_true (my.java_method->java_return.is_interface)
                     my.prepare_result = format_left("\
+                        $(my.proxy_shallow_copy_call?:)
                         jobject ret = wrap$(my.java_return_class_name:)(jenv, jobj, proxyResult);
                     ")
                 elsif is_true (my.java_method->java_return.is_enum)

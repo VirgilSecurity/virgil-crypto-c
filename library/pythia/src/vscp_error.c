@@ -37,6 +37,15 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Error context.
+//  Can be used for sequential operations, i.e. parsers, to accumulate error.
+//  In this way operation is successful if all steps are successful, otherwise
+//  last occurred error code can be obtained.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,30 +53,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Types of the 'pkcs8 der deserializer' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_PKCS8_DER_DESERIALIZER_DEFS_H_INCLUDED
-#define VSCF_PKCS8_DER_DESERIALIZER_DEFS_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_pkcs8_deserializer.h"
-#include "vscf_impl.h"
+#include "vscp_error.h"
+#include "vscp_memory.h"
+#include "vscp_assert.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -77,36 +68,61 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Return size of 'vscp_error_t'.
 //
-struct vscf_pkcs8_deserializer_t {
-    //
-    //  Compile-time known information about this implementation.
-    //
-    const vscf_impl_info_t *info;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'asn1 reader'.
-    //
-    vscf_impl_t *asn1_reader;
-};
+VSCP_PUBLIC size_t
+vscp_error_ctx_size(void) {
+
+    return sizeof(vscp_error_t);
+}
+
+//
+//  Reset context to the "no error" state.
+//
+VSCP_PUBLIC void
+vscp_error_reset(vscp_error_t *self) {
+
+    VSCP_ASSERT_PTR(self);
+    self->status = vscp_status_SUCCESS;
+}
+
+//
+//  Update context with given status.
+//  If status is "success" then do nothing.
+//
+VSCP_PRIVATE void
+vscp_error_update(vscp_error_t *self, vscp_status_t status) {
+
+    VSCP_ASSERT_PTR(self);
+
+    if (status != vscp_status_SUCCESS) {
+        self->status = status;
+    }
+}
+
+//
+//  Return true if status is not "success".
+//
+VSCP_PUBLIC bool
+vscp_error_has_error(const vscp_error_t *self) {
+
+    VSCP_ASSERT_PTR(self);
+    return self->status != vscp_status_SUCCESS;
+}
+
+//
+//  Return error code.
+//
+VSCP_PUBLIC vscp_status_t
+vscp_error_status(const vscp_error_t *self) {
+
+    VSCP_ASSERT_PTR(self);
+    return self->status;
+}
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_PKCS8_DER_DESERIALIZER_DEFS_H_INCLUDED
 //  @end

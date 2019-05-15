@@ -387,9 +387,9 @@ vscf_ecies_decrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     vscf_cipher_update(self->envelope->cipher, vsc_buffer_data(self->envelope->encrypted_content), out);
     vscf_error_update(&error, vscf_cipher_finish(self->envelope->cipher, out));
 
-    //
-    //  Cleanup.
-    //
+//
+//  Cleanup.
+//
 mac_validation_failed:
     vsc_buffer_destroy(&mac_digest);
     vsc_buffer_destroy(&derived_key);

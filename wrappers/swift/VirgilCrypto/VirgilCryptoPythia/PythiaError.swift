@@ -45,9 +45,6 @@ import VSCPythia
     /// Underlying pythia library returns -1.
     case errorPythiaInnerFail = -200
 
-    /// Pythia verify operation failed.
-    case errorVerificationFail = -201
-
     /// Underlying random number generator failed.
     case errorRngFailed = -202
 

@@ -244,8 +244,7 @@ vscr_ratchet_key_id_compute_public_key_id(vscr_ratchet_key_id_t *self, vsc_data_
 
         vsc_buffer_delete(&digest_buf);
 
-        memcpy(vsc_buffer_unused_bytes(key_id), digest, vscr_ratchet_common_KEY_ID_LEN);
-        vsc_buffer_inc_used(key_id, vscr_ratchet_common_KEY_ID_LEN);
+        vsc_buffer_write_data(key_id, vsc_data(digest, vscr_ratchet_common_KEY_ID_LEN));
 
         return vscr_status_SUCCESS;
     }

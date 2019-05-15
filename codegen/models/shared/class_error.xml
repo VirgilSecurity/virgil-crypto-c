@@ -1,0 +1,73 @@
+<class name="error" context="public" lifecycle="none">
+    Error context.
+    Can be used for sequential operations, i.e. parsers, to accumulate error.
+    In this way operation is successful if all steps are successful, otherwise
+    last occurred error code can be obtained.
+
+    <property name="status" enum="status"/>
+
+    <macros name="safe update">
+        Perform update only if context defined, otherwise log error.
+
+        <code>
+            #define .(c_class_error_macros_safe_update) (CTX, ERR)
+                do {
+                    if (NULL != (CTX)) {
+                        .(c_class_error_method_update) ((CTX), (ERR));
+                    } else {
+                        /* TODO: Log this error, when logging will be added. */
+                    }
+                } while (false)
+        </code>
+    </macros>
+
+
+    <method name="reset">
+        Reset context to the "no error" state.
+
+        <code>
+            .(c_class_assert_macros_ptr)(self);
+            self->status = .(c_class_status_enum_status_constant_success);
+        </code>
+    </method>
+
+
+    <method name="update" visibility="private">
+        Update context with given status.
+        If status is "success" then do nothing.
+
+        <argument name="status" enum="status"/>
+
+        <code>
+            .(c_class_assert_macros_ptr)(self);
+
+            if (status != .(c_class_status_enum_status_constant_success)) {
+                self->status = status;
+            }
+        </code>
+    </method>
+
+
+    <method name="has error" is_const="1">
+        Return true if status is not "success".
+
+        <return type="boolean"/>
+
+        <code>
+            .(c_class_assert_macros_ptr)(self);
+            return self->status != .(c_class_status_enum_status_constant_success);
+        </code>
+    </method>
+
+
+    <method name="status" is_const="1">
+        Return error code.
+
+        <return enum="status"/>
+
+        <code>
+            .(c_class_assert_macros_ptr)(self);
+            return self->status;
+        </code>
+    </method>
+</class>

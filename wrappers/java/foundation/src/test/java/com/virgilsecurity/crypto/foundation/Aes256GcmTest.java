@@ -145,8 +145,8 @@ public class Aes256GcmTest extends SampleBasedTest {
 		AuthEncryptAuthEncryptResult result = this.aes.authEncrypt(data, authData);
 
 		assertNotNull(result);
-		assertArrayEquals(getBytes("aes256_gcm.auth_out"), result.out);
-		assertArrayEquals(getBytes("aes256_gcm.auth_tag"), result.tag);
+		assertArrayEquals(getBytes("aes256_gcm.auth_out"), result.getOut());
+		assertArrayEquals(getBytes("aes256_gcm.auth_tag"), result.getTag());
 	}
 
 	@Test

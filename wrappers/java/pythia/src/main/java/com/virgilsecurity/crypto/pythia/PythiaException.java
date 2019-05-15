@@ -47,8 +47,6 @@ public class PythiaException extends RuntimeException {
 
     public static final int ERROR_PYTHIA_INNER_FAIL = -200;
 
-    public static final int ERROR_VERIFICATION_FAIL = -201;
-
     public static final int ERROR_RNG_FAILED = -202;
 
     private int statusCode;
@@ -71,8 +69,6 @@ public class PythiaException extends RuntimeException {
             return "This error should not be returned if assertions is enabled.";
         case ERROR_PYTHIA_INNER_FAIL:
             return "Underlying pythia library returns -1.";
-        case ERROR_VERIFICATION_FAIL:
-            return "Pythia verify operation failed.";
         case ERROR_RNG_FAILED:
             return "Underlying random number generator failed.";
         default:

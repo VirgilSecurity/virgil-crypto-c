@@ -54,6 +54,7 @@
 #define VSCP_PYTHIA_PUBLIC_H_INCLUDED
 
 #include "vscp_assert.h"
+#include "vscp_error.h"
 #include "vscp_library.h"
 #include "vscp_memory.h"
 #include "vscp_platform.h"

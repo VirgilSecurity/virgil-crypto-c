@@ -76,11 +76,11 @@ public class PheClientTest {
 		PheServerGenerateServerKeyPairResult serverKeyPair = server.generateServerKeyPair();
 		assertNotNull(serverKeyPair);
 
-		byte[] serverPrivateKey = serverKeyPair.serverPrivateKey;
+		byte[] serverPrivateKey = serverKeyPair.getServerPrivateKey();
 		assertNotNull(serverPrivateKey);
 		assertEquals(32, serverPrivateKey.length);
 
-		byte[] serverPublicKey = serverKeyPair.serverPublicKey;
+		byte[] serverPublicKey = serverKeyPair.getServerPublicKey();
 		assertNotNull(serverPublicKey);
 		assertEquals(65, serverPublicKey.length);
 
@@ -96,10 +96,10 @@ public class PheClientTest {
 		PheClientEnrollAccountResult clientEnrollAccount = this.client.enrollAccount(serverEnrollment, password);
 		assertNotNull(clientEnrollAccount);
 
-		byte[] clientEnrollmentRecord = clientEnrollAccount.enrollmentRecord;
+		byte[] clientEnrollmentRecord = clientEnrollAccount.getEnrollmentRecord();
 		assertNotNull(clientEnrollmentRecord);
 
-		byte[] clientAccountKey = clientEnrollAccount.accountKey;
+		byte[] clientAccountKey = clientEnrollAccount.getAccountKey();
 		assertNotNull(clientAccountKey);
 		assertEquals(32, clientAccountKey.length);
 
@@ -124,24 +124,24 @@ public class PheClientTest {
 		PheServerGenerateServerKeyPairResult serverKeyPair = this.server.generateServerKeyPair();
 		assertNotNull(serverKeyPair);
 
-		byte[] serverPrivateKey = serverKeyPair.serverPrivateKey;
+		byte[] serverPrivateKey = serverKeyPair.getServerPrivateKey();
 		assertNotNull(serverPrivateKey);
 
-		byte[] serverPublicKey = serverKeyPair.serverPublicKey;
+		byte[] serverPublicKey = serverKeyPair.getServerPublicKey();
 		assertNotNull(serverPublicKey);
 
 		PheServerRotateKeysResult serverRotateKeys = this.server.rotateKeys(serverPrivateKey);
 		assertNotNull(serverRotateKeys);
 
-		byte[] serverRotatedPrivateKey = serverRotateKeys.newServerPrivateKey;
+		byte[] serverRotatedPrivateKey = serverRotateKeys.getNewServerPrivateKey();
 		assertNotNull(serverRotatedPrivateKey);
 		assertEquals(32, serverRotatedPrivateKey.length);
 
-		byte[] serverRotatedPublicKey = serverRotateKeys.newServerPublicKey;
+		byte[] serverRotatedPublicKey = serverRotateKeys.getNewServerPublicKey();
 		assertNotNull(serverRotatedPublicKey);
 		assertEquals(65, serverRotatedPublicKey.length);
 
-		byte[] serverUpdateToken = serverRotateKeys.updateToken;
+		byte[] serverUpdateToken = serverRotateKeys.getUpdateToken();
 		assertNotNull(serverUpdateToken);
 		assertTrue(serverUpdateToken.length > 0);
 
@@ -154,11 +154,11 @@ public class PheClientTest {
 		PheClientRotateKeysResult clientRotateKeys = this.client.rotateKeys(serverUpdateToken);
 		assertNotNull(clientRotateKeys);
 
-		byte[] clientNewPrivateKey = clientRotateKeys.newClientPrivateKey;
+		byte[] clientNewPrivateKey = clientRotateKeys.getNewClientPrivateKey();
 		assertNotNull(clientNewPrivateKey);
 		assertEquals(32, clientNewPrivateKey.length);
 
-		byte[] serverNewPublicKey = clientRotateKeys.newServerPublicKey;
+		byte[] serverNewPublicKey = clientRotateKeys.getNewServerPublicKey();
 		assertNotNull(serverNewPublicKey);
 		assertEquals(65, serverNewPublicKey.length);
 

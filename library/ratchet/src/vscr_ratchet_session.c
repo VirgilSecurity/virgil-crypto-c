@@ -362,6 +362,11 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
     VSCR_ASSERT_PTR(self->ratchet);
     VSCR_ASSERT_PTR(self->key_utils);
 
+    VSCR_ASSERT(vsc_data_is_valid(sender_identity_private_key));
+    VSCR_ASSERT(vsc_data_is_valid(receiver_identity_public_key));
+    VSCR_ASSERT(vsc_data_is_valid(receiver_long_term_public_key));
+    VSCR_ASSERT(vsc_data_is_valid(receiver_one_time_public_key));
+
     vscr_status_t status = vscr_status_SUCCESS;
 
     vscr_error_t error_ctx;
@@ -491,6 +496,11 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_ide
     VSCR_ASSERT_PTR(self->rng);
     VSCR_ASSERT_PTR(self->ratchet);
     VSCR_ASSERT_PTR(self->key_utils);
+
+    VSCR_ASSERT(vsc_data_is_valid(sender_identity_public_key));
+    VSCR_ASSERT(vsc_data_is_valid(receiver_identity_private_key));
+    VSCR_ASSERT(vsc_data_is_valid(receiver_long_term_private_key));
+    VSCR_ASSERT(vsc_data_is_valid(receiver_one_time_private_key));
 
     vscr_status_t status = vscr_status_SUCCESS;
 
@@ -645,6 +655,8 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *self, vsc_data_t plain_text
     VSCR_ASSERT_PTR(self->rng);
     VSCR_ASSERT_PTR(self->ratchet);
 
+    VSCR_ASSERT(vsc_data_is_valid(plain_text));
+
     vscr_ratchet_message_t *ratchet_message = NULL;
 
     if (plain_text.len > vscr_ratchet_common_MAX_PLAIN_TEXT_LEN) {
@@ -658,7 +670,7 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *self, vsc_data_t plain_text
     }
 
     ratchet_message = vscr_ratchet_message_new();
-    ;
+
     RegularMessage *regular_message = &ratchet_message->message_pb.regular_message;
 
     if (self->received_first_response || !self->is_initiator) {

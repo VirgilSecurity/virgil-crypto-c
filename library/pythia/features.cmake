@@ -47,7 +47,9 @@ include_guard()
 
 option(VSCP_LIBRARY "Enable build of the 'pythia' library" ON)
 option(VSCP_PYTHIA "Enable class 'pythia'." ON)
+option(VSCP_ERROR "Enable class 'error'." ON)
 mark_as_advanced(
         VSCP_LIBRARY
         VSCP_PYTHIA
+        VSCP_ERROR
         )
