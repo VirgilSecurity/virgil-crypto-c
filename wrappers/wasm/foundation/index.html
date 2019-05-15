@@ -33,6 +33,12 @@
             const digestPtr = Module._vsc_buffer_bytes(outputPtr);
             console.log(data2hex(new Uint8Array(buffer, digestPtr, outputSize)));
 
+            //  If C structure is returned by value, then WASM expects
+            //  a pointer to this structure as a first parameter.
+            Module._vsc_buffer_data(cdataPtr, outputPtr);
+            console.log(data2hex(new Uint8Array(buffer,
+                Module._vsc_data_bytes(cdataPtr), Module._vsc_data_len(cdataPtr))));
+
             Module._free(dataPtr);
             Module._free(cdataPtr);
             _vsc_buffer_delete(outputPtr);
