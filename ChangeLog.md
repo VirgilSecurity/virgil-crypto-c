@@ -1,6 +1,28 @@
 # virgil-crypto-c ChangeLog (Sorted per date)
 
 
+## Version 0.7.0 released 2019-05-14
+
+### Features
+
+- Lib/Foundation: Add elliptic curve secp256r1 (NIST P-256)
+- Lib/Ratchet: Add group chats
+- Wrapper/Java: Add Java wrapper
+- Wrapper/PHP: Add version 7.3
+
+### Changes
+
+- Lib/Foundation: Export ed25519 and curve25519 private key as is - 32 bytes
+- Lib/Foundation: Rename class "pkcs8 der deserializer" -> "asn1 deserializer"
+- Lib/Foundation: Rename class "pkcs8 der serializer" -> "pkcs8 serializer"
+- Lib/Foundation: Rename class "pkcs8 deserializer" -> "asn1 deserializer"
+
+### Bugfix
+
+- Lib/Foundation: Fix SIGSEGV at messageInfoCustomParams_findData method
+- Lib/Foundation: Fix aes_256_gcm_auth_len() function
+
+
 ## Version 0.6.0 released 2019-04-09
 
 ### Features
