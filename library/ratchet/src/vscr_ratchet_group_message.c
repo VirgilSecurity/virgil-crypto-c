@@ -299,8 +299,8 @@ vscr_ratchet_group_message_get_pub_key_count(const vscr_ratchet_group_message_t 
 //  This method should be called only for group info message type.
 //
 VSCR_PUBLIC vsc_buffer_t *
-vscr_ratchet_group_message_get_pub_key_id(
-        const vscr_ratchet_group_message_t *self, vsc_data_t participant_id, vscr_error_t *error) {
+vscr_ratchet_group_message_get_pub_key_id(const vscr_ratchet_group_message_t *self, vsc_data_t participant_id,
+        vscr_error_t *error) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->key_id);
@@ -429,77 +429,77 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     VSCR_ASSERT(vsc_data_is_valid(input));
 
-    if (input.len > vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN) {
-        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+        if (input.len > vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN) {
+            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
 
-        return NULL;
-    }
-
-    vscr_status_t status = vscr_status_SUCCESS;
-
-    vscr_ratchet_group_message_t *message = vscr_ratchet_group_message_new();
-
-    vscr_ratchet_group_message_set_pb_decode_callback(message);
-
-    pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
-
-    vscr_ratchet_group_message_set_pb_decode_callback(message);
-
-    bool pb_status = pb_decode(&istream, GroupMessage_fields, &message->message_pb);
-
-    if (!pb_status || message->message_pb.has_group_info == message->message_pb.has_regular_message) {
-        status = vscr_status_ERROR_PROTOBUF_DECODE;
-        goto err;
-    }
-
-    if (message->message_pb.has_group_info) {
-        MessageGroupInfo *info = &message->message_pb.group_info;
-
-        if (info->participants_count > vscr_ratchet_common_MAX_PARTICIPANTS_COUNT) {
-            status = vscr_status_ERROR_TOO_MANY_PARTICIPANTS;
-            goto err;
+            return NULL;
         }
 
-        if (info->participants_count < vscr_ratchet_common_MIN_PARTICIPANTS_COUNT) {
-            status = vscr_status_ERROR_TOO_FEW_PARTICIPANTS;
-            goto err;
-        }
+        vscr_status_t status = vscr_status_SUCCESS;
 
-        // Checking for duplicates
-        for (size_t i = 0; i < info->participants_count; i++) {
-            for (size_t j = 0; j < i; j++) {
-                if (memcmp(info->participants[i].id, info->participants[j].id, sizeof(info->participants[i].id)) == 0) {
-                    status = vscr_status_ERROR_DUPLICATE_ID;
-                    goto err;
-                }
-            }
-        }
-    } else {
-        pb_istream_t sub_istream = pb_istream_from_buffer(
-                message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
+        vscr_ratchet_group_message_t *message = vscr_ratchet_group_message_new();
 
-        message->header_pb = vscr_alloc(sizeof(RegularGroupMessageHeader));
-        pb_status = pb_decode(&sub_istream, RegularGroupMessageHeader_fields, message->header_pb);
+        vscr_ratchet_group_message_set_pb_decode_callback(message);
 
-        if (!pb_status) {
+        pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
+
+        vscr_ratchet_group_message_set_pb_decode_callback(message);
+
+        bool pb_status = pb_decode(&istream, GroupMessage_fields, &message->message_pb);
+
+        if (!pb_status || message->message_pb.has_group_info == message->message_pb.has_regular_message) {
             status = vscr_status_ERROR_PROTOBUF_DECODE;
             goto err;
         }
-    }
 
-    vscr_ratchet_group_message_set_pb_encode_callback(message);
+        if (message->message_pb.has_group_info) {
+            MessageGroupInfo *info = &message->message_pb.group_info;
 
-err:
-    if (status != vscr_status_SUCCESS) {
-        VSCR_ERROR_SAFE_UPDATE(error, status);
-        vscr_ratchet_group_message_destroy(&message);
-    }
+            if (info->participants_count > vscr_ratchet_common_MAX_PARTICIPANTS_COUNT) {
+                status = vscr_status_ERROR_TOO_MANY_PARTICIPANTS;
+                goto err;
+            }
 
-    return message;
+            if (info->participants_count < vscr_ratchet_common_MIN_PARTICIPANTS_COUNT) {
+                status = vscr_status_ERROR_TOO_FEW_PARTICIPANTS;
+                goto err;
+            }
+
+            // Checking for duplicates
+            for (size_t i = 0; i < info->participants_count; i++) {
+                for (size_t j = 0; j < i; j++) {
+                    if (memcmp(info->participants[i].id, info->participants[j].id, sizeof(info->participants[i].id)) == 0) {
+                        status = vscr_status_ERROR_DUPLICATE_ID;
+                        goto err;
+                    }
+                }
+            }
+        } else {
+            pb_istream_t sub_istream = pb_istream_from_buffer(
+                    message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
+
+            message->header_pb = vscr_alloc(sizeof(RegularGroupMessageHeader));
+            pb_status = pb_decode(&sub_istream, RegularGroupMessageHeader_fields, message->header_pb);
+
+            if (!pb_status) {
+                status = vscr_status_ERROR_PROTOBUF_DECODE;
+                goto err;
+            }
+        }
+
+        vscr_ratchet_group_message_set_pb_encode_callback(message);
+
+    err:
+        if (status != vscr_status_SUCCESS) {
+            VSCR_ERROR_SAFE_UPDATE(error, status);
+            vscr_ratchet_group_message_destroy(&message);
+        }
+
+        return message;
 }
 
 static bool
-vscr_ratchet_group_message_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void **arg) {
+vscr_ratchet_group_message_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void**arg) {
 
     return vscr_ratchet_common_hidden_buffer_decode_callback(
             stream, field, arg, vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);

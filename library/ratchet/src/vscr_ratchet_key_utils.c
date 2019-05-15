@@ -234,62 +234,62 @@ vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self
         bool curve25519, bool convert_to_curve25519, vscr_error_t *error) {
 
     vscf_error_t error_ctx;
-    vscf_error_reset(&error_ctx);
+        vscf_error_reset(&error_ctx);
 
-    vsc_buffer_t *result = NULL;
+        vsc_buffer_t *result = NULL;
 
-    vscf_raw_key_t *raw_key =
-            vscf_key_asn1_deserializer_deserialize_public_key(self->key_asn1_deserializer, data, &error_ctx);
+        vscf_raw_key_t *raw_key =
+                vscf_key_asn1_deserializer_deserialize_public_key(self->key_asn1_deserializer, data, &error_ctx);
 
-    if (vscf_error_has_error(&error_ctx)) {
-        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
-
-        goto err;
-    }
-
-    if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_CURVE25519 && curve25519) {
-        if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_KEY_LEN) {
+        if (vscf_error_has_error(&error_ctx)) {
             VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
 
             goto err;
         }
 
-        result = vsc_buffer_new_with_data(vscf_raw_key_data(raw_key));
-    } else if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_ED25519 && ed25519) {
-        if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_KEY_LEN) {
-            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
-
-            goto err;
-        }
-
-        if (convert_to_curve25519) {
-            result = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_KEY_LEN);
-
-            int curve25519_status =
-                    ed25519_pubkey_to_curve25519(vsc_buffer_unused_bytes(result), vscf_raw_key_data(raw_key).bytes);
-
-            if (curve25519_status != 0) {
-                VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_CURVE25519);
-
-                vsc_buffer_destroy(&result);
+        if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_CURVE25519 && curve25519) {
+            if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_KEY_LEN) {
+                VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
 
                 goto err;
             }
 
-            vsc_buffer_inc_used(result, vscr_ratchet_common_hidden_KEY_LEN);
-        } else {
             result = vsc_buffer_new_with_data(vscf_raw_key_data(raw_key));
+        } else if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_ED25519 && ed25519) {
+            if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_KEY_LEN) {
+                VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
+
+                goto err;
+            }
+
+            if (convert_to_curve25519) {
+                result = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_KEY_LEN);
+
+                int curve25519_status =
+                        ed25519_pubkey_to_curve25519(vsc_buffer_unused_bytes(result), vscf_raw_key_data(raw_key).bytes);
+
+                if (curve25519_status != 0) {
+                    VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_CURVE25519);
+
+                    vsc_buffer_destroy(&result);
+
+                    goto err;
+                }
+
+                vsc_buffer_inc_used(result, vscr_ratchet_common_hidden_KEY_LEN);
+            } else {
+                result = vsc_buffer_new_with_data(vscf_raw_key_data(raw_key));
+            }
+        } else {
+            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_INVALID_KEY_TYPE);
+
+            goto err;
         }
-    } else {
-        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_INVALID_KEY_TYPE);
 
-        goto err;
-    }
+    err:
+        vscf_raw_key_destroy(&raw_key);
 
-err:
-    vscf_raw_key_destroy(&raw_key);
-
-    return result;
+        return result;
 }
 
 VSCR_PUBLIC vsc_buffer_t *
@@ -297,65 +297,65 @@ vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *sel
         bool curve25519, bool convert_to_curve25519, vscr_error_t *error) {
 
     vscf_error_t error_ctx;
-    vscf_error_reset(&error_ctx);
+        vscf_error_reset(&error_ctx);
 
-    VSCR_ASSERT(ed25519 || curve25519);
-    VSCR_ASSERT(ed25519 || !(curve25519 && convert_to_curve25519));
+        VSCR_ASSERT(ed25519 || curve25519);
+        VSCR_ASSERT(ed25519 || !(curve25519 && convert_to_curve25519));
 
-    vsc_buffer_t *result = NULL;
+        vsc_buffer_t *result = NULL;
 
-    vscf_raw_key_t *raw_key =
-            vscf_key_asn1_deserializer_deserialize_private_key(self->key_asn1_deserializer, data, &error_ctx);
+        vscf_raw_key_t *raw_key =
+                vscf_key_asn1_deserializer_deserialize_private_key(self->key_asn1_deserializer, data, &error_ctx);
 
-    if (vscf_error_has_error(&error_ctx)) {
-        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
-
-        goto err;
-    }
-
-    if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_CURVE25519 && curve25519) {
-        if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_KEY_LEN) {
-            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_INVALID_KEY_TYPE);
-
-            goto err;
-        }
-
-        result = vsc_buffer_new_with_data(vscf_raw_key_data(raw_key));
-        vsc_buffer_make_secure(result);
-    } else if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_ED25519 && ed25519) {
-        if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_KEY_LEN) {
+        if (vscf_error_has_error(&error_ctx)) {
             VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
 
             goto err;
         }
 
-        if (convert_to_curve25519) {
-            result = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_KEY_LEN);
-            vsc_buffer_make_secure(result);
-
-            int curve25519_status =
-                    ed25519_key_to_curve25519(vsc_buffer_unused_bytes(result), vscf_raw_key_data(raw_key).bytes);
-
-            if (curve25519_status != 0) {
-                VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_CURVE25519);
-
-                vsc_buffer_destroy(&result);
+        if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_CURVE25519 && curve25519) {
+            if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_KEY_LEN) {
+                VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_INVALID_KEY_TYPE);
 
                 goto err;
             }
 
-            vsc_buffer_inc_used(result, vscr_ratchet_common_hidden_KEY_LEN);
-        } else {
             result = vsc_buffer_new_with_data(vscf_raw_key_data(raw_key));
+            vsc_buffer_make_secure(result);
+        } else if (vscf_raw_key_alg_id(raw_key) == vscf_alg_id_ED25519 && ed25519) {
+            if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_KEY_LEN) {
+                VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_KEY_DESERIALIZATION_FAILED);
+
+                goto err;
+            }
+
+            if (convert_to_curve25519) {
+                result = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_KEY_LEN);
+                vsc_buffer_make_secure(result);
+
+                int curve25519_status =
+                        ed25519_key_to_curve25519(vsc_buffer_unused_bytes(result), vscf_raw_key_data(raw_key).bytes);
+
+                if (curve25519_status != 0) {
+                    VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_CURVE25519);
+
+                    vsc_buffer_destroy(&result);
+
+                    goto err;
+                }
+
+                vsc_buffer_inc_used(result, vscr_ratchet_common_hidden_KEY_LEN);
+            } else {
+                result = vsc_buffer_new_with_data(vscf_raw_key_data(raw_key));
+            }
+        } else {
+            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_INVALID_KEY_TYPE);
+
+            goto err;
         }
-    } else {
-        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_INVALID_KEY_TYPE);
 
-        goto err;
-    }
+    err:
+        vscf_raw_key_destroy(&raw_key);
 
-err:
-    vscf_raw_key_destroy(&raw_key);
-
-    return result;
+        return result;
 }

@@ -330,28 +330,28 @@ vscr_ratchet_cipher_pad_then_encrypt(vscr_ratchet_cipher_t *self, vscr_ratchet_p
         const vscr_ratchet_message_key_t *key, vsc_data_t ad, vsc_buffer_t *cipher_text) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(padding);
-    VSCR_ASSERT_PTR(key);
-    VSCR_ASSERT_PTR(cipher_text);
+        VSCR_ASSERT_PTR(padding);
+        VSCR_ASSERT_PTR(key);
+        VSCR_ASSERT_PTR(cipher_text);
 
-    size_t size = vscr_ratchet_padding_padded_len(data.len);
-    vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
-    vsc_buffer_make_secure(temp);
+        size_t size = vscr_ratchet_padding_padded_len(data.len);
+        vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
+        vsc_buffer_make_secure(temp);
 
-    vsc_buffer_write_data(temp, data);
+        vsc_buffer_write_data(temp, data);
 
-    vscr_status_t result = vscr_ratchet_padding_add_padding(padding, temp);
+        vscr_status_t result = vscr_ratchet_padding_add_padding(padding, temp);
 
-    if (result != vscr_status_SUCCESS) {
-        goto err;
-    }
+        if (result != vscr_status_SUCCESS) {
+            goto err;
+        }
 
-    result = vscr_ratchet_cipher_encrypt(self, key->key, vsc_buffer_data(temp), ad, cipher_text);
+        result = vscr_ratchet_cipher_encrypt(self, key->key, vsc_buffer_data(temp), ad, cipher_text);
 
-err:
-    vsc_buffer_destroy(&temp);
+    err:
+        vsc_buffer_destroy(&temp);
 
-    return result;
+        return result;
 }
 
 VSCR_PUBLIC vscr_status_t
@@ -359,23 +359,23 @@ vscr_ratchet_cipher_decrypt_then_remove_pad(vscr_ratchet_cipher_t *self, vsc_dat
         const vscr_ratchet_message_key_t *key, vsc_data_t ad, vsc_buffer_t *plain_text) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(key);
-    VSCR_ASSERT_PTR(plain_text);
+        VSCR_ASSERT_PTR(key);
+        VSCR_ASSERT_PTR(plain_text);
 
-    size_t size = vscr_ratchet_cipher_decrypt_len(self, data.len);
-    vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
-    vsc_buffer_make_secure(temp);
+        size_t size = vscr_ratchet_cipher_decrypt_len(self, data.len);
+        vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
+        vsc_buffer_make_secure(temp);
 
-    vscr_status_t result = vscr_ratchet_cipher_decrypt(self, key->key, data, ad, temp);
+        vscr_status_t result = vscr_ratchet_cipher_decrypt(self, key->key, data, ad, temp);
 
-    if (result != vscr_status_SUCCESS) {
-        goto err;
-    }
+        if (result != vscr_status_SUCCESS) {
+            goto err;
+        }
 
-    result = vscr_ratchet_padding_remove_padding(vsc_buffer_data(temp), plain_text);
+        result = vscr_ratchet_padding_remove_padding(vsc_buffer_data(temp), plain_text);
 
-err:
-    vsc_buffer_destroy(&temp);
+    err:
+        vsc_buffer_destroy(&temp);
 
-    return result;
+        return result;
 }

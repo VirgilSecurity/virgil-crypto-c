@@ -228,8 +228,8 @@ vscr_ratchet_receiver_chain_serialize(const vscr_ratchet_receiver_chain_t *self,
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chain_deserialize(
-        const ReceiverChain *receiver_chain_pb, vscr_ratchet_receiver_chain_t *receiver_chain) {
+vscr_ratchet_receiver_chain_deserialize(const ReceiverChain *receiver_chain_pb,
+        vscr_ratchet_receiver_chain_t *receiver_chain) {
 
     VSCR_ASSERT_PTR(receiver_chain);
     VSCR_ASSERT_PTR(receiver_chain_pb);

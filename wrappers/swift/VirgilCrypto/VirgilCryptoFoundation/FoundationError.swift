@@ -155,6 +155,9 @@ import VSCFoundation
     /// Signature format is corrupted.
     case errorBadSignature = -308
 
+    /// Operation on HSM failed.
+    case errorHsmFailed = -401
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscf_status_t) {
         self.init(rawValue: Int(status.rawValue))!

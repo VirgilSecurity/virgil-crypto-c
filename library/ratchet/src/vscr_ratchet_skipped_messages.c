@@ -220,8 +220,8 @@ vscr_ratchet_skipped_messages_cleanup_ctx(vscr_ratchet_skipped_messages_t *self)
 }
 
 VSCR_PUBLIC vscr_ratchet_message_key_t *
-vscr_ratchet_skipped_messages_find_key(
-        const vscr_ratchet_skipped_messages_t *self, size_t counter, const vscr_ratchet_public_key_t public_key) {
+vscr_ratchet_skipped_messages_find_key(const vscr_ratchet_skipped_messages_t *self, size_t counter,
+        const vscr_ratchet_public_key_t public_key) {
 
     VSCR_ASSERT_PTR(self);
 
@@ -245,8 +245,8 @@ vscr_ratchet_skipped_messages_find_key(
 }
 
 VSCR_PUBLIC size_t
-vscr_ratchet_skipped_messages_find_public_key(
-        const vscr_ratchet_skipped_messages_t *self, const vscr_ratchet_public_key_t public_key) {
+vscr_ratchet_skipped_messages_find_public_key(const vscr_ratchet_skipped_messages_t *self,
+        const vscr_ratchet_public_key_t public_key) {
 
     VSCR_ASSERT_PTR(self);
 
@@ -277,8 +277,8 @@ vscr_ratchet_skipped_messages_delete_key(vscr_ratchet_skipped_messages_t *self,
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_add_public_key(
-        vscr_ratchet_skipped_messages_t *self, const vscr_ratchet_public_key_t public_key) {
+vscr_ratchet_skipped_messages_add_public_key(vscr_ratchet_skipped_messages_t *self,
+        const vscr_ratchet_public_key_t public_key) {
 
     size_t index = vscr_ratchet_skipped_messages_find_public_key(self, public_key);
 
@@ -319,8 +319,8 @@ vscr_ratchet_skipped_messages_add_key(vscr_ratchet_skipped_messages_t *self, con
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_serialize(
-        const vscr_ratchet_skipped_messages_t *self, SkippedMessages *skipped_messages_pb) {
+vscr_ratchet_skipped_messages_serialize(const vscr_ratchet_skipped_messages_t *self,
+        SkippedMessages *skipped_messages_pb) {
 
     VSCR_ASSERT_PTR(self);
 
@@ -338,8 +338,8 @@ vscr_ratchet_skipped_messages_serialize(
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_deserialize(
-        const SkippedMessages *skipped_messages_pb, vscr_ratchet_skipped_messages_t *skipped_messages) {
+vscr_ratchet_skipped_messages_deserialize(const SkippedMessages *skipped_messages_pb,
+        vscr_ratchet_skipped_messages_t *skipped_messages) {
 
     VSCR_ASSERT_PTR(skipped_messages_pb);
     VSCR_ASSERT_PTR(skipped_messages);
