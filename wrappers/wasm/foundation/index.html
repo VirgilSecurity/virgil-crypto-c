@@ -52,6 +52,11 @@
               const bytesPtr = Module._vsc_buffer_bytes(bufferPtr);
               const result = new Uint8Array(buffer, bytesPtr, bufferSize);
 
+              // If C structure is returned by value, then WASM expects
+              // a pointer to this structure as a first parameter.
+              // Module._vsc_buffer_data(cdataPtr, outputPtr);
+              // console.log(data2hex(new Uint8Array(buffer, Module._vsc_data_bytes(cdataPtr), Module._vsc_data_len(cdataPtr))));
+
               Module._free(dataPtr);
               Module._free(dataCtxPtr);
               Module._vsc_buffer_delete(bufferPtr);
