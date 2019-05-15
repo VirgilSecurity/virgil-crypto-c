@@ -594,7 +594,9 @@ def deployAndroidArtifacts() {
                     sh '''
                         env
                         cd wrappers/java/android
-                        ./gradlew clean publish
+                        ./gradlew clean publish \
+                            -Dhttp.socketTimeout=60000 -Dhttp.connectionTimeout=60000 \
+                            -Dorg.gradle.internal.http.socketTimeout=60000 -Dorg.gradle.internal.http.connectionTimeout=60000
                     '''
                 }
             }
