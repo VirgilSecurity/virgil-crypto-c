@@ -7,36 +7,104 @@
   </head>
   <body>
     <script type="text/javascript">
+      window.data2hex = function(data) { // data is an Uint8Array
+        return Array.prototype.map.call(data, x => ('00' + x.toString(16)).slice(-2)).join('');
+      };
+
       var Module = {
         onRuntimeInitialized() {
-          window.data2hex = function(data) { // data is an Uint8Array
-            return Array.prototype.map.call(data, x => ('00' + x.toString(16)).slice(-2)).join('');
-          }
+          window.Sha256 = class {
+            static get DIGEST_LEN() {
+              return 32;
+            }
 
-          window.hash = function(data) {
-            const dataSize = data.length * data.BYTES_PER_ELEMENT;
-            const dataPtr = Module._malloc(dataSize);
-            HEAP8.set(data, dataPtr);
+            static get BLOCK_LEN() {
+              return 64;
+            }
 
-            const cdataSize = Module._vsc_data_ctx_size()
-            const cdataPtr = Module._malloc(cdataSize);
+            constructor() {
+              this.ctxPtr = Module._vscf_sha256_new();
+            }
 
-            var cdataHeap = new Uint32Array(buffer, cdataPtr, cdataSize);
-            cdataHeap[0] = dataPtr;
-            cdataHeap[1] = dataSize;
+            free() {
+              this.throwUnlessHasContext();
+              Module._vscf_sha256_delete(this.ctxPtr);
+              this.ctxPtr = undefined;
+            }
 
-            const outputSize = 32;
-            const outputPtr = Module._vsc_buffer_new_with_capacity(outputSize);
+            static hash(data) {
+              const dataSize = data.length * data.BYTES_PER_ELEMENT;
+              const dataPtr = Module._malloc(dataSize);
+              HEAP8.set(data, dataPtr);
 
-            Module._vscf_sha256_hash(cdataPtr, outputPtr);
+              const dataCtxSize = Module._vsc_data_ctx_size();
+              const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            const digestPtr = Module._vsc_buffer_bytes(outputPtr);
-            console.log(data2hex(new Uint8Array(buffer, digestPtr, outputSize)));
+              const dataCtxHeap = new Uint32Array(buffer, dataCtxPtr, dataCtxSize);
+              dataCtxHeap[0] = dataPtr;
+              dataCtxHeap[1] = dataSize;
 
-            Module._free(dataPtr);
-            Module._free(cdataPtr);
-            _vsc_buffer_delete(outputPtr);
-          }
+              const bufferSize = Sha256.DIGEST_LEN;
+              const bufferPtr = Module._vsc_buffer_new_with_capacity(bufferSize);
+
+              Module._vscf_sha256_hash(dataCtxPtr, bufferPtr);
+
+              const bytesPtr = Module._vsc_buffer_bytes(bufferPtr);
+              const result = new Uint8Array(buffer, bytesPtr, bufferSize);
+
+              Module._free(dataPtr);
+              Module._free(dataCtxPtr);
+              Module._vsc_buffer_delete(bufferPtr);
+
+              return result;
+            }
+
+            start() {
+              this.throwUnlessHasContext();
+              Module._vscf_sha256_start(this.ctxPtr);
+            }
+
+            update(data) {
+              this.throwUnlessHasContext();
+
+              const dataSize = data.length * data.BYTES_PER_ELEMENT;
+              const dataPtr = Module._malloc(dataSize);
+              HEAP8.set(data, dataPtr);
+
+              const dataCtxSize = Module._vsc_data_ctx_size();
+              const dataCtxPtr = Module._malloc(dataCtxSize);
+
+              const dataCtxHeap = new Uint32Array(buffer, dataCtxPtr, dataCtxSize);
+              dataCtxHeap[0] = dataPtr;
+              dataCtxHeap[1] = dataSize;
+
+              Module._vscf_sha256_update(this.ctxPtr, dataCtxPtr);
+
+              Module._free(dataCtxPtr);
+            }
+
+            finish() {
+              this.throwUnlessHasContext();
+
+              const bufferSize = Sha256.DIGEST_LEN;
+              const bufferPtr = Module._vsc_buffer_new_with_capacity(bufferSize);
+
+              Module._vscf_sha256_finish(this.ctxPtr, bufferPtr);
+
+              const bytesPtr = Module._vsc_buffer_bytes(bufferPtr);
+              const result = new Uint8Array(buffer, bytesPtr, bufferSize);
+
+              Module._vsc_buffer_delete(bufferPtr);
+
+              return result;
+            }
+
+            throwUnlessHasContext() {
+              if (typeof this.ctxPtr === 'undefined') {
+                throw new Error('The instance does not have a context');
+              }
+            }
+          };
         }
       };
     </script>
