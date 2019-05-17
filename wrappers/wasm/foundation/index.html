@@ -33,11 +33,6 @@
           }
 
           static hash(data) {
-            // We can access to `window.buffer` directly because it's available globally.
-            // The problem is that we can't have access to it if we use modules
-            // TODO: Maybe there is an elegant way to access the memory...
-            const buffer = Module.HEAP8.buffer;
-
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
@@ -45,10 +40,9 @@
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            /* Module.HEAPU32.set(dataPtr, dataCtxPtr); */
-            const dataCtxHeap = new Uint32Array(buffer, dataCtxPtr, dataCtxSize);
-            dataCtxHeap[0] = dataPtr;
-            dataCtxHeap[1] = dataSize;
+            // If C structure is returned by value, then WASM expects
+            // a pointer to this structure as a first parameter.
+            Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             const bufferSize = Sha256.DIGEST_LEN;
             const bufferPtr = Module._vsc_buffer_new_with_capacity(bufferSize);
@@ -56,12 +50,8 @@
             Module._vscf_sha256_hash(dataCtxPtr, bufferPtr);
 
             const bytesPtr = Module._vsc_buffer_bytes(bufferPtr);
-            const result = new Uint8Array(buffer, bytesPtr, bufferSize);
-
-            // If C structure is returned by value, then WASM expects
-            // a pointer to this structure as a first parameter.
-            // Module._vsc_buffer_data(cdataPtr, outputPtr);
-            // console.log(data2hex(new Uint8Array(buffer, Module._vsc_data_bytes(cdataPtr), Module._vsc_data_len(cdataPtr))));
+            const result = Module.HEAPU8.slice(bytesPtr, bytesPtr + bufferSize);
+            // console.log(data2hex(result));
 
             Module._free(dataPtr);
             Module._free(dataCtxPtr);
@@ -78,11 +68,6 @@
           update(data) {
             this.throwUnlessHasContext();
 
-            // We can access to `window.buffer` directly because it's available globally.
-            // The problem is that we can't have access to it if we use modules
-            // TODO: Maybe there is an elegant way to access the memory...
-            const buffer = Module.HEAP8.buffer;
-
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
@@ -90,9 +75,9 @@
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            const dataCtxHeap = new Uint32Array(buffer, dataCtxPtr, dataCtxSize);
-            dataCtxHeap[0] = dataPtr;
-            dataCtxHeap[1] = dataSize;
+            // If C structure is returned by value, then WASM expects
+            // a pointer to this structure as a first parameter.
+            Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             Module._vscf_sha256_update(this.ctxPtr, dataCtxPtr);
 
@@ -102,18 +87,14 @@
           finish() {
             this.throwUnlessHasContext();
 
-            // We can access to `window.buffer` directly because it's available globally.
-            // The problem is that we can't have access to it if we use modules
-            // TODO: Maybe there is an elegant way to access the memory...
-            const buffer = Module.HEAP8.buffer;
-
             const bufferSize = Sha256.DIGEST_LEN;
             const bufferPtr = Module._vsc_buffer_new_with_capacity(bufferSize);
 
             Module._vscf_sha256_finish(this.ctxPtr, bufferPtr);
 
             const bytesPtr = Module._vsc_buffer_bytes(bufferPtr);
-            const result = new Uint8Array(buffer, bytesPtr, bufferSize);
+            const result = Module.HEAPU8.slice(bytesPtr, bytesPtr + bufferSize);
+            // console.log(data2hex(result));
 
             Module._vsc_buffer_delete(bufferPtr);
 
