@@ -117,8 +117,7 @@ VSCF_PUBLIC void
 vscf_iotelic_private_key_init_ctx_with_slot_id(vscf_iotelic_private_key_t *self, size_t slot_id) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_UNUSED(slot_id);
-    //  TODO: This is STUB. Implement me.
+    self->slot_id = slot_id;
 }
 
 //
