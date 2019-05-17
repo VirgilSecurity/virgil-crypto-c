@@ -351,11 +351,7 @@ function swift_insert_class_method (swift_method)
                 func $(my.swift_method.name:)($(my.method_args?:)) $(my.method_throws?:) $(my.method_return?:) {
     ", 1)
 
-    if count (my.swift_method.swift_code)
-        swift_insert_code (my.swift_method->swift_code., 2)
-    else
-        swift_insert_code ("// TODO: Implement me.", 2)
-    endif
+    swift_insert_code (my.swift_method->swift_code., 2)
 
     swift_insert_code ("}", 1)
 endfunction
@@ -523,7 +519,7 @@ function swift_generate_sources (swift_project)
     endif
 
     for my.swift_project.swift_module
-        echo_trace ("Generate Swift files from <$(name (swift_module)) name = \"$(c_module.name:)\"/>", my)
+        echo_trace ("Generate Swift files from <$(name (swift_module)) name = \"$(swift_module.name:)\"/>", my)
 
         output swift_module.source_file_path
 
@@ -548,11 +544,6 @@ function swift_generate_sources (swift_project)
         for swift_module.swift_class
             newline ()
             swift_insert_class (swift_class)
-        endfor
-
-        for swift_module.swift_struct
-            newline ()
-            swift_insert_struct (swift_struct)
         endfor
 
         for swift_module.swift_extension
