@@ -334,51 +334,51 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     VSCR_ASSERT(vsc_data_is_valid(input));
 
-    if (input.len > vscr_ratchet_common_MAX_MESSAGE_LEN) {
-        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+        if (input.len > vscr_ratchet_common_MAX_MESSAGE_LEN) {
+            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
 
-        return NULL;
-    }
+            return NULL;
+        }
 
-    vscr_ratchet_message_t *message = vscr_ratchet_message_new();
-    vscr_ratchet_message_set_pb_decode_callback(message);
+        vscr_ratchet_message_t *message = vscr_ratchet_message_new();
+        vscr_ratchet_message_set_pb_decode_callback(message);
 
-    pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
+        pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
-    vscr_ratchet_message_set_pb_decode_callback(message);
+        vscr_ratchet_message_set_pb_decode_callback(message);
 
-    vscr_status_t status = vscr_status_SUCCESS;
+        vscr_status_t status = vscr_status_SUCCESS;
 
-    bool pb_status = pb_decode(&istream, Message_fields, &message->message_pb);
+        bool pb_status = pb_decode(&istream, Message_fields, &message->message_pb);
 
-    if (!pb_status) {
-        status = vscr_status_ERROR_PROTOBUF_DECODE;
-        goto err;
-    }
+        if (!pb_status) {
+            status = vscr_status_ERROR_PROTOBUF_DECODE;
+            goto err;
+        }
 
-    pb_istream_t sub_istream = pb_istream_from_buffer(
-            message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
+        pb_istream_t sub_istream = pb_istream_from_buffer(
+                message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
 
-    pb_status = pb_decode(&sub_istream, RegularMessageHeader_fields, message->header_pb);
+        pb_status = pb_decode(&sub_istream, RegularMessageHeader_fields, message->header_pb);
 
-    if (!pb_status) {
-        status = vscr_status_ERROR_PROTOBUF_DECODE;
-        goto err;
-    }
+        if (!pb_status) {
+            status = vscr_status_ERROR_PROTOBUF_DECODE;
+            goto err;
+        }
 
-    vscr_ratchet_message_set_pb_encode_callback(message);
+        vscr_ratchet_message_set_pb_encode_callback(message);
 
-err:
-    if (status != vscr_status_SUCCESS) {
-        VSCR_ERROR_SAFE_UPDATE(error, status);
-        vscr_ratchet_message_destroy(&message);
-    }
+    err:
+        if (status != vscr_status_SUCCESS) {
+            VSCR_ERROR_SAFE_UPDATE(error, status);
+            vscr_ratchet_message_destroy(&message);
+        }
 
-    return message;
+        return message;
 }
 
 static bool
-vscr_ratchet_message_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void **arg) {
+vscr_ratchet_message_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void**arg) {
 
     return vscr_ratchet_common_hidden_buffer_decode_callback(
             stream, field, arg, vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);

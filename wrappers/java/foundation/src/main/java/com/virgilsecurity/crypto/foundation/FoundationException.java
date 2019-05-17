@@ -117,6 +117,8 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_BAD_SIGNATURE = -308;
 
+    public static final int ERROR_HSM_FAILED = -401;
+
     private int statusCode;
 
     /* Create new instance. */
@@ -207,6 +209,8 @@ public class FoundationException extends RuntimeException {
             return "A custom parameter with a given key is found, but the requested value type does not correspond to the actual type.";
         case ERROR_BAD_SIGNATURE:
             return "Signature format is corrupted.";
+        case ERROR_HSM_FAILED:
+            return "Operation on HSM failed.";
         default:
             return "Unknown error";
         }
