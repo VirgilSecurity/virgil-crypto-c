@@ -51,7 +51,7 @@ endif()
 #
 # MbedTLS
 #
-if(NOT VIRGIL_IMPL_IOTELIC AND NOT TARGET mbed::crypto)
+if(NOT VIRGIL_IMPL_HSM AND NOT TARGET mbed::crypto)
     message(FATAL_ERROR "Required library MbedTLS is not found - looking for target 'mbed::crypto'.")
 endif()
 
@@ -82,9 +82,9 @@ include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 # Link to dependencies
 #
 target_link_libraries(foundation PUBLIC vsc::common)
-if (NOT VIRGIL_IMPL_IOTELIC)
+if (NOT VIRGIL_IMPL_HSM)
     target_link_libraries(foundation PUBLIC vsc::common mbed::crypto ed25519)
-else()
+elseif(VIRGIL_IMPL_HSM_IOTELIC)
     target_link_libraries(foundation PRIVATE iotelic)
 endif ()
 

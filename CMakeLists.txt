@@ -86,7 +86,10 @@ option(VIRGIL_PHP_TESTING "On/Off PHP wrapper integration tests." ON)
 #
 # Specific implementations
 #
-option(VIRGIL_IMPL_IOTELIC "Build libraries for Iotelic" ON)
+option(VIRGIL_IMPL_HSM_IOTELIC "Build libraries for IoTelic HSM" ON)
+if (VIRGIL_IMPL_HSM_IOTELIC)
+    set (VIRGIL_IMPL_HSM ON)
+endif()
 
 #
 # Libraries
@@ -97,7 +100,7 @@ option(VIRGIL_LIB_PYTHIA "Build 'pythia' library" ON)
 option(VIRGIL_LIB_ED25519 "Build 'ed25519' library" ON)
 option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" ON)
 option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
-option(VIRGIL_LIB_IOTELIC "Build 'iotelic' library" ${VIRGIL_IMPL_IOTELIC})
+option(VIRGIL_LIB_IOTELIC "Build 'iotelic' library" ${VIRGIL_IMPL_HSM_IOTELIC})
 
 #
 # Wrappers
@@ -159,7 +162,7 @@ include(GNUInstallDirs)
 # MbedTLS
 #
 
-if(NOT VIRGIL_IMPL_IOTELIC AND (VIRGIL_LIB_FOUNDATION OR VIRGIL_LIB_PYTHIA))
+if(NOT VIRGIL_IMPL_HSM AND (VIRGIL_LIB_FOUNDATION OR VIRGIL_LIB_PYTHIA))
     add_subdirectory("thirdparty/mbedtls")
 endif()
 
@@ -187,7 +190,7 @@ endif()
 #
 # Protobuf
 #
-if(NOT VIRGIL_LIB_IOTELIC)
+if(NOT VIRGIL_IMPL_HSM)
     add_subdirectory("thirdparty/nanopb")
 endif()
 
