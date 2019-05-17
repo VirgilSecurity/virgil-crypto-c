@@ -1,0 +1,222 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+gsl from "common.gsl"
+gsl from "wrapper_helpers.gsl"
+gsl from "wasm_format.gsl"
+gsl from "wasm_derive.gsl"
+gsl from "wasm_codegen.gsl"
+
+
+# ===========================================================================
+#   Component creation.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Create class <wasm_constant/> from the entity <constant/>.
+# ---------------------------------------------------------------------------
+function wasm_create_class_constant (constant, wasm_class, wasm_project)
+    check_arguments (my, "constant, wasm_class, wasm_project", my)
+
+    assert_attributes (my.constant, "name, value", my)
+
+    new wasm_constant to my.wasm_class
+        . = wasm_format_description(my.constant) ?
+        .name = wasm_derive_constant_name(my.constant)
+        .value = my.constant.value
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create class default constructor.
+# ---------------------------------------------------------------------------
+function wasm_create_class_default_constructor(class, wasm_class)
+    check_arguments(my, "class, wasm_class", my)
+
+    new wasm_constructor to my.wasm_class
+        . = "//  Create object with underlying C context."
+
+        new wasm_code to wasm_constructor
+            . = "\
+                this.ctxPtr = Module._$(class_derive_c_constructor(my.class))()
+            "
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create class default destructor.
+# ---------------------------------------------------------------------------
+function wasm_create_class_destructor(class, wasm_class)
+    check_arguments(my, "class, wasm_class", my)
+
+    new wasm_method to my.wasm_class
+        . = "//  Release underlying C context."
+        .name = "delete"
+
+        new wasm_code to wasm_method
+            . = "\
+                if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
+                    Module._$(class_derive_c_destructor(my.class))(this.ctxPtr)
+                    this.ctxPtr = null
+                }
+            "
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create class custom constructor.
+# ---------------------------------------------------------------------------
+function wasm_create_class_constructor(class, constructor, wasm_class)
+    check_arguments(my, "class, constructor, wasm_class", my)
+
+endfunction
+
+
+# ===========================================================================
+#   Module creation.
+# ===========================================================================
+
+#  --------------------------------------------------------------------------
+function wasm_resolve_wrapper(wrapper)
+    check_arguments(my, "wrapper", my)
+
+endfunction
+
+#  --------------------------------------------------------------------------
+function wasm_create_project_module(project, wrapper)
+    check_arguments(my, "project, wrapper", my)
+
+    new wasm_project to my.wrapper
+        . = my.project. ?
+        .name = my.project.name
+        .prefix = my.project.prefix
+        .source_dir = cat_path (my.wrapper.source_dir, 0.name)
+
+        copy my.project->license to wasm_project
+
+        return wasm_project
+    endnew
+endfunction
+
+#  --------------------------------------------------------------------------
+function wasm_create_custom_modules(source, wasm_project, meta)
+    check_arguments(my, "source, wasm_project, meta", my)
+
+endfunction
+
+#  --------------------------------------------------------------------------
+function wasm_create_interface_module(interface, wasm_project, meta)
+    check_arguments(my, "interface, wasm_project, meta", my)
+
+endfunction
+
+#  --------------------------------------------------------------------------
+function wasm_create_implementation_module(impl, wasm_project, meta)
+    check_arguments(my, "impl, wasm_project, meta", my)
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create language specific module that will represent class.
+# ---------------------------------------------------------------------------
+function wasm_create_class_module(class, wasm_project, meta)
+    check_arguments(my, "class, wasm_project, meta", my)
+
+    assert_attribute(my.class, "name", my)
+
+    if string_in(my.class.name, "error")
+        #   Do not generate classes that can be mapped to the built-in types.
+        return
+    endif
+
+    echo_info("Create <wasm_module/> from class: '$(my.class.name:)'", my)
+
+    new wasm_module to my.wasm_project
+        .name = wasm_derive_module_name(my.class)
+        .source_file_name = 0.name + ".js"
+        .source_file_path = cat_path (my.wasm_project.source_dir, 0.source_file_name)
+
+        new wasm_license to wasm_module
+            . = wasm_format_license (my.wasm_project->license) ?
+        endnew
+
+        new wasm_class to wasm_module
+            . = wasm_format_description (my.class) ?
+            .name = wasm_derive_class_name (my.class)
+
+            for my.class.constant where wrapper_should_wrap_class_constant(constant)
+                wasm_create_class_constant(constant, wasm_class, my.wasm_project)
+            endfor
+
+            if my.class.context <> "none" & my.class.lifecycle <> "none"
+                wasm_create_class_default_constructor(my.class, wasm_class)
+                wasm_create_class_destructor(my.class, wasm_class)
+
+                for my.class.constructor where wrapper_should_wrap_method(constructor)
+                    wasm_create_class_constructor(my.class, constructor, wasm_class)
+                endfor
+            endif
+        endnew
+    endnew
+endfunction
+
+#  --------------------------------------------------------------------------
+function wasm_create_enum_module(enum, wasm_project, meta)
+    check_arguments(my, "enum, wasm_project, meta", my)
+
+endfunction
+
+#  --------------------------------------------------------------------------
+function wasm_finalize_custom_modules(source, wasm_project, meta)
+    check_arguments(my, "source, wasm_project, meta", my)
+
+endfunction
+
+#  --------------------------------------------------------------------------
+function wasm_module_resolve(wasm_module, wasm_project)
+    check_arguments(my, "wasm_module, wasm_project", my)
+
+endfunction
+
+#  --------------------------------------------------------------------------
+function wasm_create_toplevel_modules(wrapper)
+    check_arguments(my, "wrapper", my)
+
+endfunction
+
+
+.endtemplate

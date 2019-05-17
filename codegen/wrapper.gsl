@@ -41,17 +41,17 @@
 #           - <lang>_resolve_wrapper (wrapper) [optional]
 #           - <lang>_create_project_module (project, wrapper)
 #           - <lang>_create_custom_modules (source, wrapper_project, meta) [optional]
-#           - <lang>_create_interface_module (source, wrapper_project, meta)
-#           - <lang>_create_implementation_module (source, wrapper_project, meta)
-#           - <lang>_create_class_module (source, wrapper_project, meta)
-#           - <lang>_create_enum_module (source, wrapper_project, meta)
+#           - <lang>_create_interface_module (interface, wrapper_project, meta)
+#           - <lang>_create_implementation_module (impl, wrapper_project, meta)
+#           - <lang>_create_class_module (class, wrapper_project, meta)
+#           - <lang>_create_enum_module (enum, wrapper_project, meta)
 #           - <lang>_finalize_custom_modules (source, wrapper_project, meta) [optional]
-#           - <lang>_module_resolve(wrapper_project)
+#           - <lang>_module_resolve(wrapper_module, wrapper_project)
 #           - <lang>_create_toplevel_modules (wrapper) [optional]
 #
 #       2. Create file `<lang>_codegen.gsl` with methods:
 #           - <lang>_generate_project(wrapper_project)
-#           - <lang>_generate_sources(source)
+#           - <lang>_generate_sources(wrapper_project)
 #
 #       3. Add `gsl from "<lang>.gsl"` to this file.
 #       4. Add `gsl from "<lang>_codegen.gsl"` to `<lang>.gsl` file.
@@ -68,6 +68,7 @@ gsl from "common.gsl"
 gsl from "swift.gsl"
 gsl from "java.gsl"
 gsl from "php.gsl"
+gsl from "wasm.gsl"
 
 # ---------------------------------------------------------------------------
 #   Create project root module, for instance:
@@ -224,7 +225,7 @@ function wrapper_generate_project(wrapper_project)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Generate project source files.
+#   Generate source files.
 # ---------------------------------------------------------------------------
 function wrapper_generate_sources(wrapper_project)
     check_arguments (my, "wrapper_project", my)

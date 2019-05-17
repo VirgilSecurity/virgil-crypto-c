@@ -1,0 +1,203 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+gsl from "common.gsl"
+
+# ---------------------------------------------------------------------------
+#   Insert given multiline code.
+# ---------------------------------------------------------------------------
+function wasm_insert_code(code, tab_count)
+    check_argument(my, "code", my)
+
+    my.code = "$(my.code:left,no)"
+    my.code = string_trim(my.code)
+    my.code = code_collapse_spaces(my.code)
+
+    my.code = string_indent(my.code, my.tab_count)
+    my.code = string_multi_rtrim(my.code)
+
+    out(my.code)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert description of the given object.
+# ---------------------------------------------------------------------------
+function wasm_insert_description(obj, tab_count)
+    my.desciption = my.obj. ?
+    my.tab_count ?= 0
+    if string_empty(my.desciption)
+        return
+    endif
+    wasm_insert_code(my.desciption, my.tab_count)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert model: wasm_license
+# ---------------------------------------------------------------------------
+function wasm_insert_prologue(wasm_module)
+    check_arguments(my, "wasm_module", my)
+
+    assert_item(my.wasm_module, "wasm_license", my)
+
+    wasm_insert_description(my.wasm_module->wasm_license)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert model: wasm_class->wasm_constant
+# ---------------------------------------------------------------------------
+function wasm_insert_class_constant(wasm_constant)
+    check_arguments(my, "wasm_constant", my)
+
+    wasm_insert_description(my.wasm_constant, 2)
+    wasm_insert_code("\
+        static get $(my.wasm_constant.name:)() {
+            return $(my.wasm_constant.value:);
+        }
+    ", 2)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert model: wasm_class->wasm_constructor
+# ---------------------------------------------------------------------------
+function wasm_insert_class_construcor(wasm_constructor)
+    check_arguments(my, "wasm_constructor", my)
+
+    my.method_args = # TODO: Add arguments
+
+    wasm_insert_description(my.wasm_constructor, 2)
+    wasm_insert_code("\
+         constructor($(my.method_args?:)) {
+    ", 2)
+
+    wasm_insert_code("\
+        $(my.wasm_constructor->wasm_code.:)
+    ", 3)
+
+    wasm_insert_code("}", 2)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert model: wasm_class->wasm_method
+# ---------------------------------------------------------------------------
+function wasm_insert_class_method(wasm_method)
+    check_arguments(my, "wasm_method", my)
+
+    assert_attributes (my.wasm_method, "name", my)
+
+    my.method_args = # TODO: Add arguments
+
+    wasm_insert_description(my.wasm_method, 2)
+    wasm_insert_code("\
+         $(my.wasm_method.name:)($(my.method_args?:)) {
+    ", 2)
+
+    wasm_insert_code("\
+        $(my.wasm_method->wasm_code.:)
+    ", 3)
+
+    wasm_insert_code("}", 2)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert model: wasm_class
+# ---------------------------------------------------------------------------
+function wasm_insert_class(wasm_class)
+    check_arguments(my, "wasm_class", my)
+
+    echo_trace ("Generate WebAssembly JS class: " + my.wasm_class.name, my)
+
+    assert_attributes (my.wasm_class, "name", my)
+
+    wasm_insert_description(my.wasm_class)
+    wasm_insert_code("\
+        const init$(my.wasm_class.name:) = Module => {
+            class $(my.wasm_class.name:) {
+    ")
+
+    for my.wasm_class.wasm_constant
+        newline()
+        wasm_insert_class_constant(wasm_constant)
+    endfor
+
+    for my.wasm_class.wasm_constructor
+        newline()
+        wasm_insert_class_construcor(wasm_constructor)
+    endfor
+
+    for my.wasm_class.wasm_method
+        newline()
+        wasm_insert_class_method(wasm_method)
+    endfor
+
+    wasm_insert_code("}", 1)
+    wasm_insert_code("}")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate project files.
+# ---------------------------------------------------------------------------
+function wasm_generate_project(wasm_project)
+    check_arguments(my, "wasm_project", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate source files.
+# ---------------------------------------------------------------------------
+function wasm_generate_sources(wasm_project)
+    check_arguments(my, "wasm_project", my)
+
+    assert_attribute(my.wasm_project, "source_dir", my)
+
+    if -1 = directory.create(my.wasm_project.source_dir)
+        echo_fatal("Can not create directory: $(my.wasm_project.source_dir:)")
+    endif
+
+    for my.wasm_project.wasm_module
+        echo_trace("Generate WebAssembly files from <$(name(wasm_module)) name=\"$(wasm_module.name:)\"/>", my)
+
+        output wasm_module.source_file_path
+
+        wasm_insert_prologue(wasm_module)
+        newline()
+
+        for wasm_module.wasm_class
+            newline()
+            wasm_insert_class(wasm_class)
+        endfor
+    endfor
+endfunction
+
+
+.endtemplate
