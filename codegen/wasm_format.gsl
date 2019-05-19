@@ -45,8 +45,10 @@ function wasm_format_description(obj)
 
     my.str = my.obj.
     my.str = string_indent(my.str)
-    my.str = "//  $(my.str:left, block, no)$(terminator)"
+    my.str = "* $(my.str:left, block, no)$(terminator)"
+    my.str = string_indent(my.str, 1, 1)
     my.str = string_multi_rtrim(my.str)
+    my.str = "/**" + terminator + my.str + terminator + " */"
 
     return my.str
 endfunction
@@ -56,6 +58,23 @@ endfunction
 # ---------------------------------------------------------------------------
 function wasm_format_license(license)
     return wasm_format_description(my.license) ?
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted list of arguments without braces.
+# ---------------------------------------------------------------------------
+function wasm_format_argument_list (wasm_method)
+    check_arguments (my, "wasm_method", my)
+
+    for my.wasm_method.wasm_argument
+        my.arg_list ?= ""
+        my.arg_list += "$(wasm_argument.name:)$("=" + wasm_argument.default?:)"
+        if ! last()
+            my.arg_list += ", "
+        endif
+    endfor
+
+    return my.arg_list
 endfunction
 
 .endtemplate

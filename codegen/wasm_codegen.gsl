@@ -94,7 +94,7 @@ endfunction
 function wasm_insert_class_construcor(wasm_constructor)
     check_arguments(my, "wasm_constructor", my)
 
-    my.method_args = # TODO: Add arguments
+    my.method_args = wasm_format_argument_list(my.wasm_constructor) ?
 
     wasm_insert_description(my.wasm_constructor, 2)
     wasm_insert_code("\
@@ -116,11 +116,12 @@ function wasm_insert_class_method(wasm_method)
 
     assert_attributes (my.wasm_method, "name", my)
 
-    my.method_args = # TODO: Add arguments
+    my.method_args = wasm_format_argument_list(my.wasm_method) ?
+    my.static = is_true(my.wasm_method.is_static) ?? "static " ?
 
     wasm_insert_description(my.wasm_method, 2)
     wasm_insert_code("\
-         $(my.wasm_method.name:)($(my.method_args?:)) {
+         $(my.static?:)$(my.wasm_method.name:)($(my.method_args?:)) {
     ", 2)
 
     wasm_insert_code("\
@@ -162,7 +163,7 @@ function wasm_insert_class(wasm_class)
     endfor
 
     wasm_insert_code("}", 1)
-    wasm_insert_code("}")
+    wasm_insert_code("};")
 endfunction
 
 # ---------------------------------------------------------------------------

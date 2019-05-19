@@ -66,11 +66,80 @@ function wasm_create_class_default_constructor(class, wasm_class)
     check_arguments(my, "class, wasm_class", my)
 
     new wasm_constructor to my.wasm_class
-        . = "//  Create object with underlying C context."
+        . = "\
+            /**
+             * Create object with underlying C context.
+             *
+             * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
+             */
+        "
+
+        new wasm_argument to wasm_constructor
+            .name = "ctxPtr"
+            .default = "undefined"
+        endnew
 
         new wasm_code to wasm_constructor
             . = "\
-                this.ctxPtr = Module._$(class_derive_c_constructor(my.class))()
+                if (typeof ctxPtr === 'undefined') {
+                    this.ctxPtr = Module._$(class_derive_c_constructor(my.class))();
+                } else {
+                    this.ctxPtr = ctxPtr;
+                }
+            "
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create class constructors with given C context.
+# ---------------------------------------------------------------------------
+function wasm_create_class_constructors_with_c_context(class, wasm_class)
+    check_arguments(my, "class, wasm_class", my)
+
+    new wasm_method to my.wasm_class
+        . = "
+            /**
+             * Acquire C context by making it's shallow copy.
+             *
+             * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+             */
+        "
+        .name = "newAndUseCContext"
+        .is_static = "1"
+
+        new wasm_argument to wasm_method
+            .name = "ctxPtr"
+        endnew
+
+        new wasm_code to wasm_method
+            . = "\
+                // assert(typeof ctxPtr === 'number');
+                return new $(my.wasm_class.name:)(Module._$(class_derive_c_method_shallow_copy(my.class))(ctxPtr));
+            "
+        endnew
+    endnew
+
+    new wasm_method to my.wasm_class
+        . = "
+            /**
+             * Acquire C context by taking it ownership.
+             *
+             * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+             */
+        "
+        .name = "newAndTakeCContext"
+        .default="undefined"
+        .is_static = "1"
+
+        new wasm_argument to wasm_method
+            .name = "ctxPtr"
+        endnew
+
+        new wasm_code to wasm_method
+            . = "\
+                // assert(typeof ctxPtr === 'number');
+                return new $(my.wasm_class.name:)(ctxPtr);
             "
         endnew
     endnew
@@ -83,14 +152,18 @@ function wasm_create_class_destructor(class, wasm_class)
     check_arguments(my, "class, wasm_class", my)
 
     new wasm_method to my.wasm_class
-        . = "//  Release underlying C context."
+        . = "
+            /**
+             * Release underlying C context.
+             */
+        "
         .name = "delete"
 
         new wasm_code to wasm_method
             . = "\
                 if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
-                    Module._$(class_derive_c_destructor(my.class))(this.ctxPtr)
-                    this.ctxPtr = null
+                    Module._$(class_derive_c_destructor(my.class))(this.ctxPtr);
+                    this.ctxPtr = null;
                 }
             "
         endnew
@@ -184,6 +257,7 @@ function wasm_create_class_module(class, wasm_project, meta)
 
             if my.class.context <> "none" & my.class.lifecycle <> "none"
                 wasm_create_class_default_constructor(my.class, wasm_class)
+                wasm_create_class_constructors_with_c_context(my.class, wasm_class)
                 wasm_create_class_destructor(my.class, wasm_class)
 
                 for my.class.constructor where wrapper_should_wrap_method(constructor)

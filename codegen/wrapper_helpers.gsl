@@ -82,4 +82,14 @@ function class_derive_c_destructor(class)
 endfunction
 
 
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C class shallow copy method.
+# ---------------------------------------------------------------------------
+function class_derive_c_method_shallow_copy (class)
+    check_arguments (my, "class", my)
+
+    my.of_class = my.class.of_class ? my.class.name
+    return make_ref_c (make_id ("class", my.of_class, "method", "shallow copy"))
+endfunction
+
 .endtemplate
