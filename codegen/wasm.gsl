@@ -47,15 +47,30 @@ gsl from "wasm_codegen.gsl"
 # ---------------------------------------------------------------------------
 #   Create class <wasm_constant/> from the entity <constant/>.
 # ---------------------------------------------------------------------------
-function wasm_create_class_constant (constant, wasm_class, wasm_project)
-    check_arguments (my, "constant, wasm_class, wasm_project", my)
+function wasm_create_class_constant(constant, wasm_class)
+    check_arguments(my, "constant, wasm_class", my)
 
-    assert_attributes (my.constant, "name, value", my)
+    assert_attributes(my.constant, "name, value", my)
 
     new wasm_constant to my.wasm_class
         . = wasm_format_description(my.constant) ?
         .name = wasm_derive_constant_name(my.constant)
         .value = my.constant.value
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create enumeration <wasm_constant/> from the entity <constant/>
+# ---------------------------------------------------------------------------
+function wasm_create_enum_constant(constant, constant_value, wasm_enum)
+    check_arguments(my, "constant, constant_value, wasm_enum", my)
+
+    assert_attribute(my.constant, "name", my)
+
+    new wasm_constant to my.wasm_enum
+        . = wasm_format_description(my.constant) ?
+        .name = wasm_derive_constant_name(my.constant)
+        .value = my.constant_value
     endnew
 endfunction
 
@@ -81,6 +96,8 @@ function wasm_create_class_default_constructor(class, wasm_class)
 
         new wasm_code to wasm_constructor
             . = "\
+                this.name = '$(my.wasm_class.name:)';
+
                 if (typeof ctxPtr === 'undefined') {
                     this.ctxPtr = Module._$(class_derive_c_constructor(my.class))();
                 } else {
@@ -176,6 +193,41 @@ endfunction
 function wasm_create_class_constructor(class, constructor, wasm_class)
     check_arguments(my, "class, constructor, wasm_class", my)
 
+    #   TODO: Implement me.
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add dependency setter as <wasm_method/>.
+# ---------------------------------------------------------------------------
+function wasm_create_class_dependency_method(dependency, class, wasm_class, wasm_project)
+    check_arguments(my, "dependency, class, wasm_class, wasm_project", my)
+
+    new wasm_method to my.wasm_class
+        . = wasm_format_description(my.dependency) ?
+        .name = wasm_derive_method_name_str(my.dependency.name)
+        .is_setter = "1"
+
+        my.arg_name = wasm_derive_argument_name(my.dependency)
+
+        new wasm_argument to wasm_method
+            .name = my.arg_name
+        endnew
+
+        new wasm_code to wasm_method
+            if my.dependency.has_observers & my.dependency.is_observers_return_status
+                my.result_var = "const proxyStatus = "
+                my.enum_status = wasm_derive_error_class_name(my.wasm_project)
+                my.impl_handle_status = "$(my.enum_status:).handleStatusCode(proxyStatus)"
+            endif
+
+            . = format_left("\
+                Module._$(class_derive_c_method_release_dependency(my.class, my.dependency))(this.ctxPtr)
+                $(my.result_var?:)Module._$(class_derive_c_method_use_dependency(my.class, my.dependency))(this.ctxPtr,\
+                        $(my.arg_name:).ctxPtr)
+                $(my.impl_handle_status?:)
+            ")
+        endnew
+    endnew
 endfunction
 
 
@@ -197,7 +249,7 @@ function wasm_create_project_module(project, wrapper)
         . = my.project. ?
         .name = my.project.name
         .prefix = my.project.prefix
-        .source_dir = cat_path (my.wrapper.source_dir, 0.name)
+        .source_dir = cat_path(my.wrapper.source_dir, 0.name)
 
         copy my.project->license to wasm_project
 
@@ -217,10 +269,48 @@ function wasm_create_interface_module(interface, wasm_project, meta)
 
 endfunction
 
-#  --------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+#   Create language specific module that will represent implementation.
+# ---------------------------------------------------------------------------
 function wasm_create_implementation_module(impl, wasm_project, meta)
     check_arguments(my, "impl, wasm_project, meta", my)
 
+    assert_attribute(my.impl, "name", my)
+
+    echo_info("Create <wasm_module/> from implementation: '$(my.impl.name:)'", my)
+
+    new wasm_module to my.wasm_project
+        .name = wasm_derive_module_name(my.impl)
+        .source_file_name = 0.name + ".js"
+        .source_file_path = cat_path(my.wasm_project.source_dir, 0.source_file_name)
+
+        new wasm_license to wasm_module
+            . = wasm_format_license(my.wasm_project->license) ?
+        endnew
+
+        new wasm_class to wasm_module
+            . = wasm_format_description(my.impl) ?
+            .name = wasm_derive_class_name(my.impl)
+
+            for my.impl.constant where wrapper_should_wrap_class_constant(constant)
+                wasm_create_class_constant(constant, wasm_class)
+            endfor
+
+            if my.impl.context <> "none" & my.impl.lifecycle <> "none"
+                wasm_create_class_default_constructor(my.impl, wasm_class)
+                wasm_create_class_constructors_with_c_context(my.impl, wasm_class)
+                wasm_create_class_destructor(my.impl, wasm_class)
+
+                for my.impl.constructor where wrapper_should_wrap_method(constructor)
+                    wasm_create_class_constructor(my.impl, constructor, wasm_class)
+                endfor
+            endif
+
+            for my.impl.dependency
+                wasm_create_class_dependency_method(dependency, my.impl, wasm_class, my.wasm_project)
+            endfor
+        endnew
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -241,18 +331,18 @@ function wasm_create_class_module(class, wasm_project, meta)
     new wasm_module to my.wasm_project
         .name = wasm_derive_module_name(my.class)
         .source_file_name = 0.name + ".js"
-        .source_file_path = cat_path (my.wasm_project.source_dir, 0.source_file_name)
+        .source_file_path = cat_path(my.wasm_project.source_dir, 0.source_file_name)
 
         new wasm_license to wasm_module
-            . = wasm_format_license (my.wasm_project->license) ?
+            . = wasm_format_license(my.wasm_project->license) ?
         endnew
 
         new wasm_class to wasm_module
-            . = wasm_format_description (my.class) ?
-            .name = wasm_derive_class_name (my.class)
+            . = wasm_format_description(my.class) ?
+            .name = wasm_derive_class_name(my.class)
 
             for my.class.constant where wrapper_should_wrap_class_constant(constant)
-                wasm_create_class_constant(constant, wasm_class, my.wasm_project)
+                wasm_create_class_constant(constant, wasm_class)
             endfor
 
             if my.class.context <> "none" & my.class.lifecycle <> "none"
@@ -264,14 +354,125 @@ function wasm_create_class_module(class, wasm_project, meta)
                     wasm_create_class_constructor(my.class, constructor, wasm_class)
                 endfor
             endif
+
+            for my.class.dependency
+                wasm_create_class_dependency_method(dependency, my.class, wasm_class, my.wasm_project)
+            endfor
         endnew
     endnew
 endfunction
 
-#  --------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+#   Create module with WebAssembly error from the "sttaus" enum.
+# ---------------------------------------------------------------------------
+function wasm_create_error_module(enum, wasm_project, meta)
+    check_arguments(my, "enum, wasm_project, meta", my)
+
+    echo_info("Create <wasm_module/> with errors from enum: '$(my.enum.name:)'", my)
+
+    assert_attribute(my.enum, "name", my)
+
+    new wasm_module to my.wasm_project
+        .name = wasm_derive_error_module_name(my.wasm_project)
+        .source_file_name = 0.name + ".js"
+        .source_file_path = cat_path(my.wasm_project.source_dir, 0.source_file_name)
+
+        new wasm_license to wasm_module
+            . = wasm_format_license(my.wasm_project->license) ?
+        endnew
+
+        new wasm_class to wasm_module
+            . = wasm_format_description(my.enum) ?
+            .name = wasm_derive_error_class_name(my.wasm_project)
+            .extends = "Error"
+
+            new wasm_constructor to wasm_class
+                new wasm_argument to wasm_constructor
+                    .name = "message"
+                endnew
+
+                new wasm_code to wasm_constructor
+                    . = "\
+                        super(message);
+                        this.name = '$(wasm_class.name:)';
+                        this.message = message;
+                    "
+                endnew
+            endnew
+
+            new wasm_method to wasm_class
+                . = "\
+                    /**
+                     * Throw exception of this class with a message that corresponds to the given status code.
+                     */
+                "
+                .name = "handleStatusCode"
+                .is_static = "1"
+
+                new wasm_argument to wasm_method
+                    .name = "statusCode"
+                endnew
+
+                new wasm_code to wasm_method
+                    for my.enum.constant where 0.name <> "success"
+                        my.status_check ?= ""
+                        my.status_check += terminator + format_left("\
+                            if (statusCode == $(constant.value:)) {
+                                throw new $(wasm_class.name:)(\"$(enum_constant_format_oneline_description(constant))\");
+                            }
+                        ")
+                    endfor
+                    . = my.status_check
+                endnew
+            endnew
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create module with WebAssembly enum from the abstract 'enum' notion.
+# ---------------------------------------------------------------------------
 function wasm_create_enum_module(enum, wasm_project, meta)
     check_arguments(my, "enum, wasm_project, meta", my)
 
+    echo_info("Create <wasm_module/> from enum: '$(my.enum.name:)'", my)
+
+    assert_attribute(my.enum, "name", my)
+
+    if my.enum.name = "status"
+        wasm_create_error_module(my.enum, my.wasm_project, my.meta)
+        return
+    endif
+
+    new wasm_module to my.wasm_project
+        .name = wasm_derive_module_name(my.enum)
+        .source_file_name = 0.name + ".js"
+        .source_file_path = cat_path(my.wasm_project.source_dir, 0.source_file_name)
+
+        new wasm_license to wasm_module
+            . = wasm_format_license(my.wasm_project->license) ?
+        endnew
+
+        new wasm_enum to wasm_module
+            . = wasm_format_description(my.enum) ?
+            .name = wasm_derive_enum_name(my.enum)
+
+            for my.enum.constant
+                my.constant_value ?= "0"
+                if defined(my.constant.value)
+                    my.constant_value = my.constant.value
+
+                elsif my.constant_value < 0
+                    my.constant_value -= 1
+
+                else
+                    my.constant_value += 1
+                endif
+
+                wasm_create_enum_constant(constant, my.constant_value, wasm_enum)
+            endfor
+        endnew
+    endnew
 endfunction
 
 #  --------------------------------------------------------------------------

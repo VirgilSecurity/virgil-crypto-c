@@ -67,29 +67,62 @@ endfunction
 #   Return .(UID) that refers to the C class constructor.
 # ---------------------------------------------------------------------------
 function class_derive_c_constructor(class, name)
-    check_arguments (my, "class", my)
+    check_arguments(my, "class", my)
 
-    return make_ref_c(make_id ("class", my.class.name, "method new", my.name))
+    return make_ref_c(make_id("class", my.class.name, "method new", my.name))
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Return .(UID) that refers to the C class destructor.
 # ---------------------------------------------------------------------------
 function class_derive_c_destructor(class)
-    check_arguments (my, "class", my)
+    check_arguments(my, "class", my)
 
-    return make_ref_c(make_id ("class", my.class.name, "method delete"))
+    return make_ref_c(make_id("class", my.class.name, "method delete"))
 endfunction
 
 
 # ---------------------------------------------------------------------------
 #   Return .(UID) that refers to the C class shallow copy method.
 # ---------------------------------------------------------------------------
-function class_derive_c_method_shallow_copy (class)
-    check_arguments (my, "class", my)
+function class_derive_c_method_shallow_copy(class)
+    check_arguments(my, "class", my)
 
     my.of_class = my.class.of_class ? my.class.name
-    return make_ref_c (make_id ("class", my.of_class, "method", "shallow copy"))
+    return make_ref_c(make_id("class", my.of_class, "method", "shallow copy"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C interface method that returns API.
+# ---------------------------------------------------------------------------
+function class_derive_c_method_use_dependency(class, dependency)
+    check_arguments(my, "class, dependency", my)
+
+    return make_ref_c(make_id("class", my.class.name, "method", "use", my.dependency.name))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C interface method that returns API.
+# ---------------------------------------------------------------------------
+function class_derive_c_method_release_dependency(class, dependency)
+    check_arguments(my, "class, dependency", my)
+
+    return make_ref_c(make_id("class", my.class.name, "method", "release", my.dependency.name))
+endfunction
+
+# ===========================================================================
+#   Formatters.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Return error message that is extarcted from the constant description.
+# ---------------------------------------------------------------------------
+function enum_constant_format_oneline_description(constant)
+    check_arguments(my, "constant", my)
+
+    my.message = my.constant. ? ""
+
+    return string_trim(string_collapse_spaces(string.replace(my.message, "$(terminator)| ")))
 endfunction
 
 .endtemplate

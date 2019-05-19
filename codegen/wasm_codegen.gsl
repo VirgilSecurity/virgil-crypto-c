@@ -114,14 +114,16 @@ endfunction
 function wasm_insert_class_method(wasm_method)
     check_arguments(my, "wasm_method", my)
 
-    assert_attributes (my.wasm_method, "name", my)
+    assert_attributes(my.wasm_method, "name", my)
 
     my.method_args = wasm_format_argument_list(my.wasm_method) ?
     my.static = is_true(my.wasm_method.is_static) ?? "static " ?
+    my.setter = is_true(my.wasm_method.is_setter) ?? "set " ?
+    my.modifiers = "$(my.static?:)$(my.setter?:)"
 
     wasm_insert_description(my.wasm_method, 2)
     wasm_insert_code("\
-         $(my.static?:)$(my.wasm_method.name:)($(my.method_args?:)) {
+         $(my.modifiers?:)$(my.wasm_method.name:)($(my.method_args?:)) {
     ", 2)
 
     wasm_insert_code("\
@@ -132,20 +134,62 @@ function wasm_insert_class_method(wasm_method)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Insert model: wasm_enum->wasm_constant
+# ---------------------------------------------------------------------------
+function wasm_insert_enum_constant(wasm_constant, is_last)
+    check_arguments(my, "wasm_constant, is_last", my)
+
+    my.separator = is_true(my.is_last) ?? "" ? ","
+
+    wasm_insert_description(my.wasm_constant, 2)
+    wasm_insert_code("\
+        $(my.wasm_constant.name:): $(my.wasm_constant.value:)$(my.separator:)
+    ", 2)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert model: wasm_enum
+# ---------------------------------------------------------------------------
+function wasm_insert_enum(wasm_enum)
+    check_arguments(my, "wasm_enum", my)
+
+    echo_trace("Generate WebAssembly JS enum: " + my.wasm_enum.name, my)
+
+    assert_attributes(my.wasm_enum, "name", my)
+
+    wasm_insert_code("const init$(my.wasm_enum.name:) = Module => {")
+    wasm_insert_description(my.wasm_enum, 1)
+    wasm_insert_code("const $(my.wasm_enum.name:) = Object.freeze({", 1)
+
+    for my.wasm_enum.wasm_constant
+        newline()
+        wasm_insert_enum_constant(wasm_constant, last())
+    endfor
+
+    wasm_insert_code(")};", 1)
+    wasm_insert_code("};")
+
+    newline()
+    wasm_insert_code("module.exports = init$(my.wasm_enum.name:);")
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Insert model: wasm_class
 # ---------------------------------------------------------------------------
 function wasm_insert_class(wasm_class)
     check_arguments(my, "wasm_class", my)
 
-    echo_trace ("Generate WebAssembly JS class: " + my.wasm_class.name, my)
+    echo_trace("Generate WebAssembly JS class: " + my.wasm_class.name, my)
 
-    assert_attributes (my.wasm_class, "name", my)
+    assert_attributes(my.wasm_class, "name", my)
 
-    wasm_insert_description(my.wasm_class)
+    my.extends = "extends $(my.wasm_class.extends:) " ?
+
+    wasm_insert_code("const init$(my.wasm_class.name:) = Module => {")
+    wasm_insert_description(my.wasm_class, 1)
     wasm_insert_code("\
-        const init$(my.wasm_class.name:) = Module => {
-            class $(my.wasm_class.name:) {
-    ")
+        class $(my.wasm_class.name:) $(my.extends?:){
+    ",  1)
 
     for my.wasm_class.wasm_constant
         newline()
@@ -164,6 +208,9 @@ function wasm_insert_class(wasm_class)
 
     wasm_insert_code("}", 1)
     wasm_insert_code("};")
+
+    newline()
+    wasm_insert_code("module.exports = init$(my.wasm_class.name:);")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -192,6 +239,11 @@ function wasm_generate_sources(wasm_project)
 
         wasm_insert_prologue(wasm_module)
         newline()
+
+        for wasm_module.wasm_enum
+            newline()
+            wasm_insert_enum(wasm_enum)
+        endfor
 
         for wasm_module.wasm_class
             newline()

@@ -47,6 +47,28 @@ function wasm_derive_module_name(type)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return formatted module name that handle errors.
+# ---------------------------------------------------------------------------
+function wasm_derive_error_module_name(wasm_project)
+    check_arguments(my, "wasm_project", my)
+
+    assert_attribute(my.wasm_project, "name", my)
+
+    return "$(my.wasm_project.name:Pascal)Error"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted class name that handle errors.
+# ---------------------------------------------------------------------------
+function wasm_derive_error_class_name(wasm_project)
+    check_arguments(my, "wasm_project", my)
+
+    assert_attribute(my.wasm_project, "name", my)
+
+    return "$(my.wasm_project.name:Pascal)Error"
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return formatted name of the WebAssembly class.
 # ---------------------------------------------------------------------------
 function wasm_derive_class_name_str(class_name)
@@ -84,6 +106,55 @@ function wasm_derive_constant_name(constant)
     assert_attribute_one_of(my.constant, "name", my)
 
     return wasm_derive_constant_name_str(my.constant.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the WebAssembly enumeration.
+# ---------------------------------------------------------------------------
+function wasm_derive_enum_name_str(enum_name)
+    check_arguments(my, "enum_name", my)
+
+    return "$(my.enum_name:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the WebAssembly enumeration.
+# ---------------------------------------------------------------------------
+function wasm_derive_enum_name(enum)
+    check_arguments(my, "enum", my)
+
+    assert_attribute_one_of(my.enum, "name", my)
+
+    return wasm_derive_enum_name_str(my.enum.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the WebAssembly method.
+# ---------------------------------------------------------------------------
+function wasm_derive_method_name_str(name)
+    check_arguments(my, "name", my)
+
+    return "$(my.name:Camel)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the WebAssembly method.
+# ---------------------------------------------------------------------------
+function wasm_derive_method_name(method)
+    check_arguments(my, "method", my)
+
+    return wasm_derive_method_name_str(my.method.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the WebAssembly argument.
+# ---------------------------------------------------------------------------
+function wasm_derive_argument_name(argument)
+    check_arguments(my, "argument", my)
+
+    assert_attribute_one_of(my.argument, "name", my)
+
+    return "$(my.argument.name:Camel)"
 endfunction
 
 .endtemplate
