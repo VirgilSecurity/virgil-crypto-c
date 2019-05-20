@@ -260,6 +260,15 @@ function string_collapse_spaces (str)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Remove spaces and new lines right to the string.
+# ---------------------------------------------------------------------------
+function string_rtrim (str)
+    check_argument (my, "str")
+
+    return string.trim (my.str)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Remove trailing white-spaces for each line of multi-line string.
 # ---------------------------------------------------------------------------
 function string_multi_rtrim (str)
@@ -284,15 +293,6 @@ function string_ltrim (str)
     endif
 
     return ""
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Remove spaces and new lines right to the string.
-# ---------------------------------------------------------------------------
-function string_rtrim (str)
-    check_argument (my, "str")
-
-    return string.trim (my.str)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1304,7 +1304,7 @@ function lang_ref (maybe_ref, lang)
     check_arguments (my, "maybe_ref, lang", my)
 
     my.lang = "$(my.lang:lower)"
-    my.valid_langs = "c, java, csharp, swift"
+    my.valid_langs = "c, java, csharp, swift, wasm"
 
     if ! string_in (my.lang, my.valid_langs)
         echo_fatal ("Attempt to resolve reference for invalid language '$(my.lang:)'." + \
@@ -1400,6 +1400,15 @@ function php_lang_ref (maybe_ref)
     check_argument (my, "maybe_ref", my)
 
     return lang_ref (my.maybe_ref, "php")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Shortcut for lang_ref (my.maybe_ref, "wasm")
+# ---------------------------------------------------------------------------
+function wasm_lang_ref (maybe_ref)
+    check_argument (my, "maybe_ref", my)
+
+    return lang_ref (my.maybe_ref, "wasm")
 endfunction
 
 # ###########################################################################

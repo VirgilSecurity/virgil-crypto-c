@@ -58,6 +58,68 @@ function wrapper_should_wrap_method(method)
     return my.method.scope = "public" & my.method.declaration = "public" & my.method.visibility = "public"
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Return true, if method return status code.
+# ---------------------------------------------------------------------------
+function wrapper_is_method_return_status(method)
+    check_arguments(my, "method", my)
+
+    return count(my.method.return, string_equal(return.enum, "status"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true, if given method argument should be skipped from the wrapper.
+# ---------------------------------------------------------------------------
+function wrapper_method_should_skip_argument(argument)
+    check_arguments(my, "argument", my)
+
+    return my.argument.access = "writeonly" | string_equal(my.argument.class, "error")
+endfunction
+
+# ===========================================================================
+#   Type helpers.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Store type meta information of given instance within wrapper instance.
+# ---------------------------------------------------------------------------
+function wrapper_map_instance_type_info(instance, wrapper_instance)
+    check_arguments(my, "instance, wrapper_instance", my)
+
+    if defined(my.instance.type)
+        my.wrapper_instance.is_primitive_type = "1"
+
+    elsif defined(my.instance.class)
+        my.wrapper_instance.is_class = "1"
+
+        if my.instance.class = "any"
+            my.wrapper_instance.is_any = "1"
+
+        elsif my.instance.class = "data"
+            my.wrapper_instance.is_data = "1"
+
+        elsif my.instance.class = "buffer"
+            my.wrapper_instance.is_buffer = "1"
+
+        elsif my.instance.class = "error"
+            my.wrapper_instance.is_error = "1"
+            my.wrapper_instance.method_reset = make_ref_c(make_id("class error method reset"))
+        endif
+
+    elsif defined(my.instance.interface)
+        my.wrapper_instance.is_interface = "1"
+
+    elsif defined(my.instance.enum)
+        my.wrapper_instance.is_enum = "1"
+
+    elsif defined(my.instance.impl)
+        my.wrapper_instance.is_class = "1"
+    endif
+
+    my.wrapper_instance.is_array = count(my.instance.array) ?? "1" ?
+    my.wrapper_instance.is_string = count(my.instance.string) ?? "1" ?
+    my.wrapper_instance.is_reference = my.instance.is_reference ?
+endfunction
 
 # ===========================================================================
 #   Derive C names.
@@ -81,6 +143,20 @@ function class_derive_c_destructor(class)
     return make_ref_c(make_id("class", my.class.name, "method delete"))
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C class method.
+# ---------------------------------------------------------------------------
+function class_derive_c_method(class, method)
+    check_arguments(my, "class, method", my)
+
+    if string_equal(my.method.of_class, "global") | string_equal (my.class.of_class, "global")
+        return make_ref_c(make_id("global method", my.method.name))
+
+    else
+        my.of_class = my.method.of_class ? my.class.of_class ? my.class.name
+        return make_ref_c(make_id("class", my.of_class, "method", my.method.name))
+    endif
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Return .(UID) that refers to the C class shallow copy method.

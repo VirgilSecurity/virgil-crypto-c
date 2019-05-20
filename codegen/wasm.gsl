@@ -41,6 +41,71 @@ gsl from "wasm_codegen.gsl"
 
 
 # ===========================================================================
+#   Map types.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Derive Swift type from the <instance/> type attributes.
+# ---------------------------------------------------------------------------
+function wasm_derive_instance_type(instance)
+    check_arguments(my, "instance", my)
+
+    if defined(my.instance.type)
+        if my.instance.type = "nothing"
+            my.primitive_type = "undefined"
+
+        elsif my.instance.type = "boolean"
+            my.primitive_type = "boolean"
+
+        elsif my.instance.type = "char"
+            my.primitive_type = "string"
+
+        else
+            my.primitive_type = "number"
+        endif
+
+        if count(my.instance.array)
+            my.primitive_type = "object"
+        endif
+
+        return my.primitive_type
+
+    elsif defined(my.instance.class)
+
+        if my.instance.class = "data" | my.instance.class = "buffer"
+            return "Uint8Array"
+        else
+            return "function"
+        endif
+
+    elsif defined(my.instance.impl)
+            return "function"
+
+    elsif defined(my.instance.interface)
+            return "function"
+
+    elsif defined(my.instance.enum)
+            return "function"
+
+    else
+        my.instance_dump = component_instance_dump(my.instance)
+        echo_warning("Unreachable code, component_resolve_instance() must handle this. $(my.instance_dump:)", my)
+        return "Unknown"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Map <instance/> attributes to the <wasm_instance type=""/> attributes.
+# ---------------------------------------------------------------------------
+function wasm_map_instance_type(instance, wasm_instance)
+    check_arguments(my, "instance, wasm_instance", my)
+
+    my.wasm_instance.type = wasm_derive_instance_type(my.instance)
+    wrapper_map_instance_type_info(my.instance, my.wasm_instance)
+endfunction
+
+
+# ===========================================================================
 #   Component creation.
 # ===========================================================================
 
@@ -207,7 +272,7 @@ function wasm_create_class_dependency_method(dependency, class, wasm_class, wasm
         .name = wasm_derive_method_name_str(my.dependency.name)
         .is_setter = "1"
 
-        my.arg_name = wasm_derive_argument_name(my.dependency)
+        my.arg_name = wasm_derive_method_argument_name(my.dependency)
 
         new wasm_argument to wasm_method
             .name = my.arg_name
@@ -230,6 +295,262 @@ function wasm_create_class_dependency_method(dependency, class, wasm_class, wasm
     endnew
 endfunction
 
+
+# ---------------------------------------------------------------------------
+function wasm_create_method_arguments_for_primitive_type(argument, wasm_method, wasm_class)
+    check_arguments(my, "argument, wasm_method, wasm_class", my)
+
+    new wasm_argument to my.wasm_method
+        wasm_map_instance_type(my.argument, wasm_argument)
+        .name = wasm_derive_method_argument_name(my.argument)
+        .code_precondition = "// assert(typeof $(wasm_argument.name:) === '$(wasm_argument.type:)')"
+        my.wasm_method.c_arg_list += 0.name + ", "
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+function wasm_create_method_arguments_for_data(argument, wasm_method, wasm_class)
+    check_arguments(my, "argument, wasm_method, wasm_class", my)
+
+    new wasm_argument to my.wasm_method
+        wasm_map_instance_type(my.argument, wasm_argument)
+
+        .name = wasm_derive_method_argument_name(my.argument)
+
+        .code_precondition = "// assert(typeof $(wasm_argument.name:) === 'Uint8Array')"
+
+        .code_initialize = "\
+            //  Copy bytes from JS memory to the WASM memory.
+            const $(0.name:)Size = $(0.name:).length * $(0.name:).BYTES_PER_ELEMENT;
+            const $(0.name:)Ptr = Module._malloc($(0.name:)Size);
+            Module.HEAP8.set($(0.name:), $(0.name:)Ptr);
+
+            //  Create C structure vsc_data_t.
+            const $(0.name:)CtxSize = Module._vsc_data_ctx_size();
+            const $(0.name:)CtxPtr = Module._malloc($(0.name:)CtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data($(0.name:)CtxPtr, $(0.name:)Ptr, $(0.name:)Size);
+        "
+
+        .code_finalize = "\
+            Module._free($(0.name:)Ptr);
+            Module._free($(0.name:)CtxPtr);
+        "
+
+        my.wasm_method.c_arg_list += "$(0.name:)CtxPtr" + ", "
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+function wasm_create_method_arguments_for_writeonly_buffer(argument, wasm_method, wasm_class)
+    check_arguments(my, "argument, wasm_method, wasm_class", my)
+
+    new wasm_return to my.wasm_method
+        wasm_map_instance_type(my.argument, wasm_return)
+        .name = wasm_derive_method_argument_name(my.argument)
+
+        .code_initialize = "\
+            const $(0.name:)Size = $(wasm_derive_buffer_length_getter(my.argument, my.wasm_class));
+            const $(0.name:)CtxPtr = Module._vsc_buffer_new_with_capacity($(0.name:)Size);
+        "
+
+        .code_on_success = "\
+            const $(0.name:)Ptr = Module._vsc_buffer_bytes($(0.name:)CtxPtr);
+            const $(0.name:) = Module.HEAPU8.slice($(0.name:)Ptr, $(0.name:)Ptr + $(0.name:)Size);
+        "
+
+        .code_finalize = "\
+            Module._vsc_buffer_delete($(0.name:)CtxPtr);
+        "
+
+        my.wasm_method.c_arg_list += "$(0.name:)CtxPtr" + ", "
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+function wasm_create_method_arguments_for_readwrite_buffer(argument, wasm_method, wasm_class)
+    check_arguments(my, "argument, wasm_method, wasm_class", my)
+
+    new wasm_argument to my.wasm_method
+        wasm_map_instance_type(my.argument, wasm_argument)
+        .name = wasm_derive_method_argument_name(my.argument)
+
+        .code_precondition = "// assert(typeof $(wasm_argument.name:) === 'Uint8Array')"
+
+        .code_initialize = "\
+            //  Copy bytes from JS memory to the WASM memory.
+            const $(0.name:)Size = $(0.name:).length * $(0.name:).BYTES_PER_ELEMENT;
+            const $(0.name:)Ptr = Module._malloc($(0.name:)Size);
+            Module.HEAP8.set($(0.name:), $(0.name:)Ptr);
+
+            //  Create C structure vsc_buffer_t.
+            const $(0.name:)CtxPtr = Module._vsc_buffer_new();
+
+            //  Point created vsc_buffer_t object to the copied bytes.
+            Module._vsc_buffer_use($(0.name:)CtxPtr, $(0.name:)Ptr, $(0.name:)Size);
+        "
+
+        .code_finalize = "\
+            Module._vsc_buffer_delete($(0.name:)CtxPtr);
+        "
+
+        my.wasm_method.c_arg_list += "$(0.name:)CtxPtr" + ", "
+    endnew
+
+    new wasm_return to my.wasm_method
+        wasm_map_instance_type(my.argument, wasm_return)
+        .name = "$(wasm_derive_method_argument_name(my.argument))Result"
+
+        .code_on_success = "\
+            const $(0.name:)Ptr = Module._vsc_buffer_bytes($(0.name:)CtxPtr);
+            const $(0.name:)Result = Module.HEAPU8.slice($(0.name:)Ptr, $(0.name:)Ptr + $(0.name:)Size);
+        "
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+function wasm_create_method_arguments_for_class(argument, wasm_method, wasm_class)
+    check_arguments(my, "argument, wasm_method, wasm_class", my)
+
+    new wasm_argument to my.wasm_method
+        wasm_map_instance_type(my.argument, wasm_argument)
+        .name = wasm_derive_method_argument_name(my.argument)
+
+        my.wasm_method.c_arg_list += "$(0.name:).ctxPtr" + ", "
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+function wasm_create_method_arguments_for_interface(argument, wasm_method, wasm_class)
+    check_arguments(my, "argument, wasm_method, wasm_class", my)
+
+    new wasm_argument to my.wasm_method
+        wasm_map_instance_type(my.argument, wasm_argument)
+        .name = wasm_derive_method_argument_name(my.argument)
+
+        my.wasm_method.c_arg_list += "$(0.name:).ctxPtr" + ", "
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+function wasm_create_method_arguments_for_enum(argument, wasm_method, wasm_class)
+    check_arguments(my, "argument, wasm_method, wasm_class", my)
+
+    new wasm_argument to my.wasm_method
+        wasm_map_instance_type(my.argument, wasm_argument)
+        .name = wasm_derive_method_argument_name(my.argument)
+
+        my.wasm_method.c_arg_list += "$(0.name:)" + ", "
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create class method as <wasm_method/>.
+# ---------------------------------------------------------------------------
+function wasm_create_class_method(method, class, wasm_class, wasm_project)
+    check_arguments(my, "method, class, wasm_class, wasm_project", my)
+
+    new wasm_method to my.wasm_class
+        . = wasm_format_description(my.method) ?
+        .name = wasm_derive_method_name(my.method)
+        .handle_proxy_status = wrapper_is_method_return_status(my.method)
+        .interface = my.method.interface ? #   When method comes from an interface.
+
+        .c_method = class_derive_c_method(my.class, my.method)
+        .c_arg_list = ""
+
+        if ! defined(my.method.interface)
+            #   Method can be static only if it doesn't come from an interface.
+            .is_static = my.method.is_static ?
+        endif
+
+        if is_false(wasm_method.is_static)
+            wasm_method.c_arg_list += "this.ctxPtr, "
+        endif
+
+        #
+        #   Wrap arguments:
+        #       - Wrap primitive types.
+        #       - Wrap input data
+        #       - Wrap output buffer (writeonly)
+        #       - Wrap input/output buffer (readwrite)
+        #       - Wrap input class/impl/interface
+        #       - Wrap class error
+        #
+        #   Wrap return:
+        #       - Wrap returned status code
+        #       - Wrap returned class to the specific JS object
+        #       - Wrap returned impl to the specific JS object
+        #       - Wrap returned interface to the specific JS object
+        #
+        for my.method.argument
+            if defined(argument.type) & is_false(argument.is_reference)
+                wasm_create_method_arguments_for_primitive_type(argument, wasm_method, my.wasm_class)
+
+            elsif string_equal(argument.class, "data")
+                wasm_create_method_arguments_for_data(argument, wasm_method, my.wasm_class)
+
+            elsif string_equal(argument.class, "buffer") & argument.access = "writeonly"
+                wasm_create_method_arguments_for_writeonly_buffer(argument, wasm_method, my.wasm_class)
+
+            elsif string_equal(argument.class, "buffer") & argument.access = "readwrite"
+                wasm_create_method_arguments_for_readwrite_buffer(argument, wasm_method, my.wasm_class)
+
+            elsif string_equal(argument.class, "buffer") & argument.access = "readonly"
+                echo_fatal("Buffers with readonly access are prohibited.", my)
+
+            elsif defined(argument.class) | defined(argument.impl)
+                wasm_create_method_arguments_for_class(argument, wasm_method, my.wasm_class)
+
+            elsif defined(argument.interface)
+                wasm_create_method_arguments_for_interface(argument, wasm_method, my.wasm_class)
+
+            elsif defined(argument.enum)
+                wasm_create_method_arguments_for_enum(argument, wasm_method, my.wasm_class)
+            else
+                my.argument_dump = component_instance_dump(argument)
+                echo_fatal("Unexpected argument:  $(my.argument_dump:)", my)
+            endif
+        endfor
+
+        wasm_method.c_arg_list = string_rtrim(wasm_method.c_arg_list)
+        my.c_arg_list_len = string.length(wasm_method.c_arg_list)
+        if (my.c_arg_list_len > 1)
+            wasm_method.c_arg_list = string.substr(wasm_method.c_arg_list, 0, my.c_arg_list_len - 2)
+        endif
+
+        my.code = ""
+        for wasm_method.wasm_argument where defined (wasm_argument.code_precondition)
+            my.code += format_left(wasm_argument.code_precondition)
+        endfor
+
+        for wasm_method.wasm_argument where defined (wasm_argument.code_initialize)
+            my.code += terminator + format_left(wasm_argument.code_initialize)
+        endfor
+
+        for wasm_method.wasm_return where defined (wasm_return.code_initialize)
+            my.code += terminator + format_left(wasm_return.code_initialize)
+        endfor
+
+
+        my.code += terminator + format_left("
+            $(wasm_method.c_method:)($(wasm_method.c_arg_list:))
+        ")
+
+        for wasm_method.wasm_return where defined (wasm_return.code_on_success)
+            my.code += terminator + format_left(wasm_return.code_on_success)
+        endfor
+
+        for wasm_method.wasm_argument where defined (wasm_argument.code_finalize)
+            my.code += terminator + format_left(wasm_argument.code_finalize)
+        endfor
+
+        new wasm_code to wasm_method
+            . = (my.code = "") ?? "// Implement me." ? my.code
+        endnew
+    endnew
+endfunction
 
 # ===========================================================================
 #   Module creation.
@@ -309,6 +630,10 @@ function wasm_create_implementation_module(impl, wasm_project, meta)
             for my.impl.dependency
                 wasm_create_class_dependency_method(dependency, my.impl, wasm_class, my.wasm_project)
             endfor
+
+            for my.impl.method where wrapper_should_wrap_method(method)
+                wasm_create_class_method(method, my.impl, wasm_class, my.wasm_project)
+            endfor
         endnew
     endnew
 endfunction
@@ -358,12 +683,16 @@ function wasm_create_class_module(class, wasm_project, meta)
             for my.class.dependency
                 wasm_create_class_dependency_method(dependency, my.class, wasm_class, my.wasm_project)
             endfor
+
+            for my.class.method where wrapper_should_wrap_method(method)
+                wasm_create_class_method(method, my.class, wasm_class, my.wasm_project)
+            endfor
         endnew
     endnew
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create module with WebAssembly error from the "sttaus" enum.
+#   Create module with WebAssembly error from the "status" enum.
 # ---------------------------------------------------------------------------
 function wasm_create_error_module(enum, wasm_project, meta)
     check_arguments(my, "enum, wasm_project, meta", my)
@@ -461,15 +790,13 @@ function wasm_create_enum_module(enum, wasm_project, meta)
                 my.constant_value ?= "0"
                 if defined(my.constant.value)
                     my.constant_value = my.constant.value
-
-                elsif my.constant_value < 0
-                    my.constant_value -= 1
-
-                else
-                    my.constant_value += 1
                 endif
 
                 wasm_create_enum_constant(constant, my.constant_value, wasm_enum)
+
+                if ! defined(my.constant.value)
+                    my.constant_value += 1
+                endif
             endfor
         endnew
     endnew

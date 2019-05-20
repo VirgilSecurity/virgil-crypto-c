@@ -101,6 +101,10 @@ function wasm_insert_class_construcor(wasm_constructor)
          constructor($(my.method_args?:)) {
     ", 2)
 
+    if !defined(my.wasm_constructor->wasm_code.)
+        echo_fatal("WASM: constructor has no code.", my)
+    endif
+
     wasm_insert_code("\
         $(my.wasm_constructor->wasm_code.:)
     ", 3)
@@ -125,6 +129,10 @@ function wasm_insert_class_method(wasm_method)
     wasm_insert_code("\
          $(my.modifiers?:)$(my.wasm_method.name:)($(my.method_args?:)) {
     ", 2)
+
+    if !defined(my.wasm_method->wasm_code.)
+        echo_fatal("WASM: method '$(my.wasm_method.name:)' has no code.", my)
+    endif
 
     wasm_insert_code("\
         $(my.wasm_method->wasm_code.:)
@@ -166,7 +174,7 @@ function wasm_insert_enum(wasm_enum)
         wasm_insert_enum_constant(wasm_constant, last())
     endfor
 
-    wasm_insert_code(")};", 1)
+    wasm_insert_code("});", 1)
     wasm_insert_code("};")
 
     newline()

@@ -149,12 +149,80 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted name of the WebAssembly argument.
 # ---------------------------------------------------------------------------
-function wasm_derive_argument_name(argument)
+function wasm_derive_method_argument_name_str(argument_name)
+    check_arguments(my, "argument_name", my)
+
+    return "$(my.argument_name:Camel)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the WebAssembly argument.
+# ---------------------------------------------------------------------------
+function wasm_derive_method_argument_name(argument)
     check_arguments(my, "argument", my)
 
     assert_attribute_one_of(my.argument, "name", my)
 
-    return "$(my.argument.name:Camel)"
+    return wasm_derive_method_argument_name_str(my.argument.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return invocation of the getter function that returns buffer length.
+# ---------------------------------------------------------------------------
+function wasm_derive_buffer_length_getter(argument, wasm_class)
+    assert_attributes(my, "argument, wasm_class", my)
+
+    assert_item(my.argument, "length", my)
+
+    my.length = my.argument->length
+    assert_attribute_one_of(my.length, "constant, argument, method", my)
+
+    for my.length.proxy
+        if ! defined(proxy.[to])
+            echo_debug_item(my.argument, my)
+            assert_attributes(proxy, "to", my)
+        endif
+
+        my.proxy_args ?= ""
+
+        if ! first()
+            my.proxy_args += ", "
+        endif
+
+        if defined(proxy.argument)
+            my.proxy_args += wasm_derive_method_argument_name_str(proxy.argument)
+
+            if string_in(proxy.cast, "data_length")
+                my.proxy_args += ".length"
+            endif
+
+        elsif defined(proxy.constant)
+            my.proxy_args += wasm_lang_ref(proxy.constant)
+        else
+            echo_debug_item(my.argument, my)
+            echo_fatal("Buffer length argument can be proxied. Undefined type.", my)
+        endif
+    endfor
+
+    my.specified_proxy_object = get_one_of_attribute(my.length, "class, impl") ?
+    if defined(my.specified_proxy_object) & my.specified_proxy_object <> "self"
+        my.proxy_object = wasm_derive_class_name_str(my.specified_proxy_object)
+    else
+        my.proxy_object = my.wasm_class.name
+    endif
+
+    if defined(my.length.method)
+        my.proxy_method = wasm_derive_method_name_str(my.length.method)
+        return "$(my.proxy_object:).$(my.proxy_method:)($(my.proxy_args?:))"
+
+    elsif defined(my.length.constant)
+        my.proxy_constant = wasm_derive_constant_name_str(my.length.constant)
+        return "$(my.proxy_object:).$(my.proxy_constant:)"
+
+    elsif defined(my.length.argument)
+        my.proxy_argument = wasm_derive_method_argument_name_str(my.length.argument)
+        return my.proxy_argument
+    endif
 endfunction
 
 .endtemplate
