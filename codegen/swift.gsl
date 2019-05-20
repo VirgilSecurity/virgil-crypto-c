@@ -1417,13 +1417,14 @@ function swift_create_method_declaration (class, method, destination, swift_proj
 
     new swift_method to my.destination
         . = swift_format_description (my.method) ?
-        .name = swift_derive_method_name (method, my.swift_project)
+        .name = swift_derive_method_name (my.method, my.swift_project)
         .throws = swift_derive_method_throws (my.method)
         .handle_proxy_status = swift_derive_handle_proxy_status (my.method)
-        .interface = my.method.interface ?
+        .interface = my.method.interface ? #   When method comes from an interface.
         .objc = "1"
 
         if ! defined (my.method.interface)
+            #   Method can be static only if it doesn't come from an interface.
             .modifier = is_true (my.method.is_static) ?? "static" ?
         endif
 
