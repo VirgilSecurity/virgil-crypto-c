@@ -59,6 +59,15 @@ function wrapper_should_wrap_method(method)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return true, if given instance refers to a status code.
+# ---------------------------------------------------------------------------
+function wrapper_instance_is_status(instance)
+    check_arguments(my, "instance", my)
+
+    return string_equal(my.instance.enum, "status")
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return true, if method return status code.
 # ---------------------------------------------------------------------------
 function wrapper_is_method_return_status(method)
@@ -191,14 +200,14 @@ endfunction
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
-#   Return error message that is extarcted from the constant description.
+#   Return error message that is extracted from the constant description.
 # ---------------------------------------------------------------------------
 function enum_constant_format_oneline_description(constant)
     check_arguments(my, "constant", my)
 
     my.message = my.constant. ? ""
 
-    return string_trim(string_collapse_spaces(string.replace(my.message, "$(terminator)| ")))
+    return string_to_singleline(my.message)
 endfunction
 
 .endtemplate

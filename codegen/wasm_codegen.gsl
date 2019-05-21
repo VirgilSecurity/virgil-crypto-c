@@ -77,13 +77,17 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Insert model: wasm_class->wasm_constant
 # ---------------------------------------------------------------------------
-function wasm_insert_class_constant(wasm_constant)
-    check_arguments(my, "wasm_constant", my)
+function wasm_insert_class_constant(wasm_constant, wasm_class)
+    check_arguments(my, "wasm_constant, wasm_class", my)
 
     wasm_insert_description(my.wasm_constant, 2)
     wasm_insert_code("\
         static get $(my.wasm_constant.name:)() {
             return $(my.wasm_constant.value:);
+        }
+
+        get $(my.wasm_constant.name:)() {
+            return $(my.wasm_class.name:).$(my.wasm_constant.name:);
         }
     ", 2)
 endfunction
@@ -201,7 +205,7 @@ function wasm_insert_class(wasm_class)
 
     for my.wasm_class.wasm_constant
         newline()
-        wasm_insert_class_constant(wasm_constant)
+        wasm_insert_class_constant(wasm_constant, my.wasm_class)
     endfor
 
     for my.wasm_class.wasm_constructor
