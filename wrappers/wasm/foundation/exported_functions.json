@@ -1,4 +1,6 @@
 [
+    "_malloc",
+    "_free",
     "_vsc_data",
     "_vsc_data_ctx_size",
     "_vsc_data_bytes",

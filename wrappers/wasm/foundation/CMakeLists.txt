@@ -60,9 +60,13 @@ configure_file(
 # ---------------------------------------------------------------------------
 add_custom_target(foundation_wasm ALL
         COMMAND "${CMAKE_C_COMPILER}"
+                -Os
+                --closure 1
+                --llvm-lto 1
                 -s EXPORTED_FUNCTIONS="@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json"
                 -s MODULARIZE=1
                 -s EXPORT_NAME=EmscriptenModule
+                -s USE_CLOSURE_COMPILER=1
                 $<$<CONFIG:Debug>:--emrun>
                 $<TARGET_FILE:common>
                 $<TARGET_FILE:foundation>

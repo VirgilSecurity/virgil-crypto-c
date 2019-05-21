@@ -4,6 +4,7 @@ const builtinModules = require('builtin-modules');
 const commonjs = require('rollup-plugin-commonjs');
 const copy = require('rollup-plugin-copy');
 const nodeResolve = require('rollup-plugin-node-resolve');
+const { terser } = require('rollup-plugin-terser');
 
 const UMD_NAME = 'Foundation';
 
@@ -39,6 +40,7 @@ module.exports = {
       ignoreGlobal: true,
       ignore: id => typeof builtinModulesMap[id] !== 'undefined',
     }),
+    terser(),
     copy({
       targets: [
         path.join(wasmBuildRoot, 'libvsc_foundation.wasm'),
