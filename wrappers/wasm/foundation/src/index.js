@@ -1,6 +1,7 @@
-const Module = require('../../../../build/wrappers/wasm/foundation/libvsc_foundation');
+const EmscriptenModule = require('../../../../build/wrappers/wasm/foundation/libvsc_foundation');
 const initSha256 = require('./sha256');
 
+const emscriptenModule = new EmscriptenModule();
 let initPromise;
 
 const initFoundation = () => {
@@ -8,13 +9,13 @@ const initFoundation = () => {
     return initPromise;
   }
   initPromise = new Promise((resolve, reject) => {
-    Module.onRuntimeInitialized = () => {
+    emscriptenModule.onRuntimeInitialized = () => {
       resolve({
-        Sha256: initSha256(Module),
+        Sha256: initSha256(emscriptenModule),
       });
     };
-    Module.onAbort = what => {
-      reject(new Error(what));
+    emscriptenModule.onAbort = message => {
+      reject(new Error(message));
     };
   });
   return initPromise;

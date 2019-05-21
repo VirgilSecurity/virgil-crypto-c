@@ -3,111 +3,39 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Test library: foundation</title>
-    <script async type="text/javascript" src="libvsc_foundation.js"></script>
   </head>
   <body>
+    <script type="text/javascript" src="./dist/foundation.umd.js"></script>
     <script type="text/javascript">
       window.data2hex = function(data) { // data is an Uint8Array
         return Array.prototype.map.call(data, x => ('00' + x.toString(16)).slice(-2)).join('');
       };
 
-      var Module = typeof Module === 'undefined' ? {} : Module;
-      Module.onRuntimeInitialized = () => {
-        window.Sha256 = class {
-          static get DIGEST_LEN() {
-            return 32;
-          }
+      const initFoundation = window.Foundation;
+      initFoundation()
+        .then(foundation => {
+          const sha256 = new foundation.Sha256();
+          const textEncoder = new TextEncoder();
 
-          static get BLOCK_LEN() {
-            return 64;
-          }
+          console.log('3a6eb0790f39ac87c94f3856b2dd2c5d110e6811602261a9a923d3bb23adc8b7');
 
-          constructor() {
-            this.ctxPtr = Module._vscf_sha256_new();
-          }
+          const data = textEncoder.encode('data');
+          const digest1 = foundation.Sha256.hash(data);
+          console.log(data2hex(digest1));
 
-          free() {
-            this.throwUnlessHasContext();
-            Module._vscf_sha256_delete(this.ctxPtr);
-            this.ctxPtr = undefined;
-          }
+          sha256.start();
+          sha256.update(textEncoder.encode('d'));
+          sha256.update(textEncoder.encode('a'));
+          sha256.update(textEncoder.encode('t'));
+          sha256.update(textEncoder.encode('a'));
+          const digest2 = sha256.finish();
+          console.log(data2hex(digest2));
 
-          static hash(data) {
-            const dataSize = data.length * data.BYTES_PER_ELEMENT;
-            const dataPtr = Module._malloc(dataSize);
-            Module.HEAP8.set(data, dataPtr);
-
-            const dataCtxSize = Module._vsc_data_ctx_size();
-            const dataCtxPtr = Module._malloc(dataCtxSize);
-
-            // If C structure is returned by value, then WASM expects
-            // a pointer to this structure as a first parameter.
-            Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
-            const bufferSize = Sha256.DIGEST_LEN;
-            const bufferPtr = Module._vsc_buffer_new_with_capacity(bufferSize);
-
-            Module._vscf_sha256_hash(dataCtxPtr, bufferPtr);
-
-            const bytesPtr = Module._vsc_buffer_bytes(bufferPtr);
-            const result = Module.HEAPU8.slice(bytesPtr, bytesPtr + bufferSize);
-            // console.log(data2hex(result));
-
-            Module._free(dataPtr);
-            Module._free(dataCtxPtr);
-            Module._vsc_buffer_delete(bufferPtr);
-
-            return result;
-          }
-
-          start() {
-            this.throwUnlessHasContext();
-            Module._vscf_sha256_start(this.ctxPtr);
-          }
-
-          update(data) {
-            this.throwUnlessHasContext();
-
-            const dataSize = data.length * data.BYTES_PER_ELEMENT;
-            const dataPtr = Module._malloc(dataSize);
-            Module.HEAP8.set(data, dataPtr);
-
-            const dataCtxSize = Module._vsc_data_ctx_size();
-            const dataCtxPtr = Module._malloc(dataCtxSize);
-
-            // If C structure is returned by value, then WASM expects
-            // a pointer to this structure as a first parameter.
-            Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
-            Module._vscf_sha256_update(this.ctxPtr, dataCtxPtr);
-
-            Module._free(dataCtxPtr);
-          }
-
-          finish() {
-            this.throwUnlessHasContext();
-
-            const bufferSize = Sha256.DIGEST_LEN;
-            const bufferPtr = Module._vsc_buffer_new_with_capacity(bufferSize);
-
-            Module._vscf_sha256_finish(this.ctxPtr, bufferPtr);
-
-            const bytesPtr = Module._vsc_buffer_bytes(bufferPtr);
-            const result = Module.HEAPU8.slice(bytesPtr, bytesPtr + bufferSize);
-            // console.log(data2hex(result));
-
-            Module._vsc_buffer_delete(bufferPtr);
-
-            return result;
-          }
-
-          throwUnlessHasContext() {
-            if (typeof this.ctxPtr === 'undefined') {
-              throw new Error('The instance does not have a context');
-            }
-          }
-        };
-      };
+          sha256.free();
+        })
+        .catch(error => {
+          console.log(error);
+        });
     </script>
   </body>
 </html>

@@ -1,6 +1,5 @@
 const util = require('util');
-const Module = require('../../../build/wrappers/wasm/foundation/libvsc_foundation');
-const initFoundation = require('./src');
+const initFoundation = require('./dist/foundation.cjs');
 
 const data2hex = data =>
   Array.prototype.map.call(data, x => ('00' + x.toString(16)).slice(-2)).join('');;
