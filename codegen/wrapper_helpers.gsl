@@ -37,7 +37,7 @@
 gsl from "common.gsl"
 
 # ===========================================================================
-#   Generic helpers.
+#   Check.
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
@@ -83,6 +83,15 @@ function wrapper_method_should_skip_argument(argument)
     check_arguments(my, "argument", my)
 
     return my.argument.access = "writeonly" | string_equal(my.argument.class, "error")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true, if given class instance is returned by value.
+# ---------------------------------------------------------------------------
+function wrapper_is_class_returned_by_value(return)
+    check_arguments(my, "return", my)
+
+    return defined(my.return.class) & is_false(my.return.is_reference)
 endfunction
 
 # ===========================================================================

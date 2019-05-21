@@ -450,7 +450,13 @@ function wasm_create_method_return_for_primitive_type(return, wasm_method, wasm_
     check_arguments(my, "return, wasm_method, wasm_class", my)
 
     new wasm_return to my.wasm_method
+        .name = "proxyResult"
+
         wasm_map_instance_type(my.return, wasm_return)
+
+        wasm_return.code_initialize = "\
+            var proxyResult = undefined;
+        "
 
         if wasm_return.type = "boolean"
             wasm_return.name = "booleanResult"
@@ -466,16 +472,53 @@ function wasm_create_method_return_for_data(return, wasm_method, wasm_class)
     check_arguments(my, "return, wasm_method, wasm_class", my)
 
     new wasm_return to my.wasm_method
+        .name = "dataResult"
+
         wasm_map_instance_type(my.return, wasm_return)
+
+        wasm_return.code_initialize = "\
+            //  Create C structure vsc_data_t.
+            const dataResultCtxSize = Module._vsc_data_ctx_size();
+            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
+        "
+
+        wasm_return.code_on_success = "\
+            const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
+            const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
+            const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
+        "
+
+        wasm_return.code_finalize = "\
+            Module._free(dataResultCtxPtr);
+        "
+
+        my.wasm_method.c_arg_list += "dataResultCtxPtr" + ", "
     endnew
 endfunction
 
 # ---------------------------------------------------------------------------
 function wasm_create_method_return_for_disown_buffer(return, wasm_method, wasm_class)
     check_arguments(my, "return, wasm_method, wasm_class", my)
+    .name = "bufferResult"
 
     new wasm_return to my.wasm_method
+        .name = "bufferResult"
+
         wasm_map_instance_type(my.return, wasm_return)
+
+        wasm_return.code_initialize = "\
+            var proxyResult = undefined;
+        "
+
+        wasm_return.code_on_success = "\
+            const bufferResultSize = Module._vsc_buffer_len(proxyResult);
+            const bufferResultPtr = Module._vsc_buffer_bytes(proxyResult);
+            const bufferResult = Module.HEAPU8.slice(bufferResultPtr, bufferResultPtr + bufferResultSize);
+        "
+
+        wasm_return.code_finalize = "\
+            Module._vsc_buffer_delete(proxyResult);
+        "
     endnew
 endfunction
 
@@ -484,7 +527,13 @@ function wasm_create_method_return_for_class(return, wasm_method, wasm_class)
     check_arguments(my, "return, wasm_method, wasm_class", my)
 
     new wasm_return to my.wasm_method
+        .name = "proxyResult"
+
         wasm_map_instance_type(my.return, wasm_return)
+
+        wasm_return.code_initialize = "\
+            var proxyResult = undefined;
+        "
     endnew
 endfunction
 
@@ -493,7 +542,13 @@ function wasm_create_method_return_for_interface(return, wasm_method, wasm_class
     check_arguments(my, "return, wasm_method, wasm_class", my)
 
     new wasm_return to my.wasm_method
+        .name = "proxyResult"
+
         wasm_map_instance_type(my.return, wasm_return)
+
+        wasm_return.code_initialize = "\
+            var proxyResult = undefined;
+        "
     endnew
 endfunction
 
@@ -502,7 +557,13 @@ function wasm_create_method_return_for_enum(return, wasm_method, wasm_class)
     check_arguments(my, "return, wasm_method, wasm_class", my)
 
     new wasm_return to my.wasm_method
+        .name = "proxyResult"
+
         wasm_map_instance_type(my.return, wasm_return)
+
+        wasm_return.code_initialize = "\
+            var proxyResult = undefined;
+        "
     endnew
 endfunction
 
@@ -521,13 +582,56 @@ function wasm_create_class_method(method, class, wasm_class, wasm_project)
         .c_method = "Module._$(class_derive_c_method(my.class, my.method))"
         .c_arg_list = ""
 
-        if is_false(my.method.is_static)
-            wasm_method.c_arg_list += "this.ctxPtr, "
-        endif
-
         if ! defined(my.method.interface)
             #   Method can be static only if it doesn't come from an interface.
             .is_static = my.method.is_static ?
+        endif
+
+        #
+        #   Return values SHOULD be proceeded first to be able pass
+        #   pointer to vsc_data_t as first argument to a proxy call.
+        #
+
+        #
+        #   Wrap return:
+        #       [x] Wrap primitive type
+        #       [x] Wrap class "data"
+        #       [x] Wrap class "buffer"
+        #           - [x] disown
+        #       [ ] Wrap class
+        #       [ ] Wrap impl
+        #       [ ] Wrap interface
+        #       [x] Wrap enum "status"
+        #
+        for my.method.return where ! wrapper_instance_is_status(return)
+            if defined(return.type)
+                wasm_create_method_return_for_primitive_type(return, wasm_method, my.wasm_class)
+
+            elsif string_equal(return.class, "data")
+                wasm_create_method_return_for_data(return, wasm_method, my.wasm_class)
+
+            elsif string_equal(return.class, "buffer") & return.access = "disown"
+                wasm_create_method_return_for_disown_buffer(return, wasm_method, my.wasm_class)
+
+            elsif defined(return.class) | defined(return.impl)
+                wasm_create_method_return_for_class(return, wasm_method, my.wasm_class)
+
+            elsif defined(return.interface)
+                wasm_create_method_return_for_interface(return, wasm_method, my.wasm_class)
+
+            elsif defined(return.enum)
+                wasm_create_method_return_for_enum(return, wasm_method, my.wasm_class)
+            else
+                my.return_dump = component_instance_dump(return)
+                echo_fatal("Unexpected return:  $(my.return_dump:)", my)
+            endif
+        endfor
+
+        #
+        #   Add this context.
+        #
+        if is_false(my.method.is_static)
+            wasm_method.c_arg_list += "this.ctxPtr, "
         endif
 
         #
@@ -584,40 +688,6 @@ function wasm_create_class_method(method, class, wasm_class, wasm_project)
             endif
         endfor
 
-        #
-        #   Wrap return:
-        #       [ ] Wrap primitive type
-        #       [ ] Wrap class "data"
-        #       [ ] Wrap class "buffer"
-        #           - [ ] disown
-        #       [ ] Wrap class
-        #       [ ] Wrap impl
-        #       [ ] Wrap interface
-        #       [x] Wrap enum "status"
-        #
-        for my.method.return where ! wrapper_instance_is_status(return)
-            if defined(return.type)
-                wasm_create_method_return_for_primitive_type(return, wasm_method, my.wasm_class)
-
-            elsif string_equal(return.class, "data")
-                wasm_create_method_return_for_data(return, wasm_method, my.wasm_class)
-
-            elsif string_equal(return.class, "buffer") & return.access = "disown"
-                wasm_create_method_return_for_disown_buffer(return, wasm_method, my.wasm_class)
-
-            elsif defined(return.class) | defined(return.impl)
-                wasm_create_method_return_for_class(return, wasm_method, my.wasm_class)
-
-            elsif defined(return.interface)
-                wasm_create_method_return_for_interface(return, wasm_method, my.wasm_class)
-
-            elsif defined(return.enum)
-                wasm_create_method_return_for_enum(return, wasm_method, my.wasm_class)
-            else
-                my.return_dump = component_instance_dump(return)
-                echo_fatal("Unexpected return:  $(my.return_dump:)", my)
-            endif
-        endfor
 
         #
         #   Create method body.
@@ -638,7 +708,12 @@ function wasm_create_class_method(method, class, wasm_class, wasm_project)
         endfor
 
         my.c_arg_list = string_rtrim_symbol(wasm_method.c_arg_list, ",")
-        my.return_statement = count(my.method.return) ?? "const proxyResult = " ?
+
+        if wrapper_is_method_return_status(my.method)
+            my.return_statement = "const proxyResult = "
+        elsif count(my.method.return, !wrapper_is_class_returned_by_value(return))
+            my.return_statement = "proxyResult = "
+        endif
 
         #   Proxy invocation.
         my.has_finalizer = count(wasm_method.wasm_argument, defined(wasm_argument.code_finalize)) + \
@@ -658,7 +733,7 @@ function wasm_create_class_method(method, class, wasm_class, wasm_project)
         if defined(my.status_return)
             my.class_error_name = wasm_derive_error_class_name_from_instance(my.status_return, my.wasm_project)
             my.code += format_left("
-                $(my.class_error_name:).handleStatusCode(proxyResult)
+                $(my.class_error_name:).handleStatusCode(proxyResult);
             ", my.proxy_indent)
         endif
 
