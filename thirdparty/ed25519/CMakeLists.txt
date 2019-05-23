@@ -99,6 +99,13 @@ else()
     message(STATUS "To enable pedantic mode create function 'enable_target_pedantic(<target>)'.")
 endif()
 
+#
+# Enable ASAN for fuzzy testing
+#
+if(ENABLE_FUZZY_TESTING)
+    enable_target_asan(ed25519)
+endif()
+
 
 # ---------------------------------------------------------------------------
 #   Install library

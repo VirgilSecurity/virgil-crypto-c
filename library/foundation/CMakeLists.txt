@@ -118,6 +118,13 @@ else()
 endif()
 
 #
+# Enable ASAN for fuzzy testing
+#
+if(ENABLE_FUZZY_TESTING)
+    enable_target_asan(foundation)
+endif()
+
+#
 # Add library alias
 #
 add_library(vsc::foundation ALIAS foundation)

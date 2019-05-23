@@ -48,6 +48,8 @@
 #include "test_data_curve25519.h"
 #include "test_data_secp256r1.h"
 
+void fuzz_assert_handler()
+
 int
 LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();

@@ -105,6 +105,13 @@ else()
 endif()
 
 #
+# Enable ASAN for fuzzy testing
+#
+if(ENABLE_FUZZY_TESTING)
+    enable_target_asan(common)
+endif()
+
+#
 # Add library alias
 #
 add_library(vsc::common ALIAS common)

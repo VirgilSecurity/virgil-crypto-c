@@ -14,18 +14,18 @@ macro(_add_test test)
 
     target_compile_options(${test}
             PRIVATE
-            $<$<C_COMPILER_ID:Clang>: -Wall -Werror -g -O1 -fsanitize=fuzzer,address -fno-omit-frame-pointer>
-            $<$<C_COMPILER_ID:AppleClang>: -Wall -Werror -g -O1 -fsanitize=fuzzer,address -fno-omit-frame-pointer>
+            $<$<C_COMPILER_ID:Clang>: -Wall -Werror -g -O0 -fsanitize=fuzzer>
             )
 
+    # enable_target_asan(${test})
+
     target_add_filename_definitions(${test})
-    target_compile_definitions(${test} PRIVATE "ENABLE_HEAVY_TESTS=$<BOOL:${ENABLE_HEAVY_TESTS}>")
     target_link_libraries(${test}
+            PRIVATE
             test_utils
             test_data_foundation
             vsc::foundation
-            $<$<C_COMPILER_ID:Clang>:-fsanitize=fuzzer,address>
-            $<$<C_COMPILER_ID:AppleClang>:-fsanitize=fuzzer,address>
+            $<$<C_COMPILER_ID:Clang>:-fsanitize=fuzzer>
             )
 
     if(COMMAND add_clangformat)
@@ -34,4 +34,5 @@ macro(_add_test test)
 endmacro()
 
 _add_test(pkcs8_test_fuzzy)
+_add_test(recipient_cipher_fuzzy)
 

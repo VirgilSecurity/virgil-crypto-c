@@ -200,6 +200,8 @@ vscf_ctr_drbg_random(vscf_ctr_drbg_t *self, size_t data_len, vsc_buffer_t *data)
     VSCF_ASSERT(vsc_buffer_is_valid(data));
     VSCF_ASSERT(vsc_buffer_unused_len(data) >= data_len);
 
+    VSCF_ASSERT(0 && "=============================");
+
     int status = mbedtls_ctr_drbg_random(&self->ctx, vsc_buffer_unused_bytes(data), data_len);
     switch (status) {
     case 0:
