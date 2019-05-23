@@ -525,7 +525,7 @@ test__generate_private_key__secp256r1_and_then_do_sign_hash_and_verify_hash__suc
 }
 
 void
-test__import_invalid_public_key__fail(void) {
+test__import_public_key__invalid_public_key__expected_status_bad_der_public_key(void) {
 
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
@@ -542,7 +542,7 @@ test__import_invalid_public_key__fail(void) {
 }
 
 void
-test__import_invalid_private_key__fail(void) {
+test__import_private_key__invalid_private_key__expected_status_bad_der_private_key(void) {
 
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
@@ -590,8 +590,9 @@ main(void) {
     RUN_TEST(test__generate_private_key__secp256r1__success);
     RUN_TEST(test__generate_private_key__secp256r1_and_then_do_encrypt_decrypt__success);
     RUN_TEST(test__generate_private_key__secp256r1_and_then_do_sign_hash_and_verify_hash__success);
-    RUN_TEST(test__import_invalid_public_key__fail);
-    RUN_TEST(test__import_invalid_private_key__fail);
+
+    RUN_TEST(test__import_public_key__invalid_public_key__expected_status_bad_der_public_key);
+    RUN_TEST(test__import_private_key__invalid_private_key__expected_status_bad_der_private_key);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
