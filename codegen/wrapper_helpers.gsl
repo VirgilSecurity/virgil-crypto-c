@@ -177,7 +177,7 @@ function class_derive_c_method(class, method)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C class shallow copy method.
+#   Return .(UID) that refers to the C class method shallow copy method.
 # ---------------------------------------------------------------------------
 function class_derive_c_method_shallow_copy(class)
     check_arguments(my, "class", my)
@@ -187,7 +187,7 @@ function class_derive_c_method_shallow_copy(class)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C interface method that returns API.
+#   Return .(UID) that refers to the C class method that use dependency.
 # ---------------------------------------------------------------------------
 function class_derive_c_method_use_dependency(class, dependency)
     check_arguments(my, "class, dependency", my)
@@ -196,12 +196,34 @@ function class_derive_c_method_use_dependency(class, dependency)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C interface method that returns API.
+#   Return .(UID) that refers to the C class method that release dependency.
 # ---------------------------------------------------------------------------
 function class_derive_c_method_release_dependency(class, dependency)
     check_arguments(my, "class, dependency", my)
 
     return make_ref_c(make_id("class", my.class.name, "method", "release", my.dependency.name))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C interface method that makes shallow
+#   copy.
+# ---------------------------------------------------------------------------
+function interface_derive_c_method_shallow_copy()
+    return make_ref_c(make_id("class", "impl", "method", "shallow copy"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C class "error" method "ctx size".
+# ---------------------------------------------------------------------------
+function class_error_derive_c_method_ctx_size()
+    return make_ref_c(make_id("class", "error", "method", "ctx size"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C class "error" method "status".
+# ---------------------------------------------------------------------------
+function class_error_derive_c_method_status()
+    return make_ref_c(make_id("class", "error", "method", "status"))
 endfunction
 
 # ===========================================================================

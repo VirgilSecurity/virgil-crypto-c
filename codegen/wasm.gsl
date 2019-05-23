@@ -211,7 +211,6 @@ function wasm_create_class_constructors_with_c_context(class, wasm_class)
              */
         "
         .name = "newAndTakeCContext"
-        .default="undefined"
         .is_static = "1"
 
         new wasm_argument to wasm_method
@@ -225,6 +224,75 @@ function wasm_create_class_constructors_with_c_context(class, wasm_class)
             "
         endnew
     endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create class constructors with given C context.
+# ---------------------------------------------------------------------------
+function wasm_create_custom_interface_class_constructors(source, wasm_class, wasm_project)
+    check_arguments(my, "source, wasm_class, wasm_project", my)
+
+    new wasm_method to my.wasm_class
+        . = "
+            /**
+             * Acquire C context by taking it ownership.
+             *
+             * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+             */
+        "
+        .name = "newAndTakeCContext"
+        .is_static = "1"
+
+        new wasm_argument to wasm_method
+            .name = "ctxPtr"
+        endnew
+
+        my.code_switch_statement_begin = format_left("\
+            const implTag = vscf_impl_tag(ctxPtr);
+            switch(implTag) {
+        ")
+
+        my.code_switch_statement_end = terminator + format_left("\
+                default:
+                    throw new Error('Unexpected implementation tag found: ' + implTag);
+            }
+        ")
+
+        for my.source.implementation as impl
+            my.code_switch_statement_cases ?= ""
+            my.code_switch_statement_cases += terminator + format_left("\
+                case $(my.wasm_project.impl_tag_enum_name:).$(wasm_derive_constant_name_str(impl.name));
+                    return $(wasm_derive_class_name(impl)).newAndTakeCContext(ctxPtr);
+            ", 1)
+        endfor
+
+        new wasm_code to wasm_method
+            . = my.code_switch_statement_begin + my.code_switch_statement_cases + my.code_switch_statement_end
+        endnew
+    endnew
+
+    new wasm_method to my.wasm_class
+        . = "
+            /**
+             * Acquire C context by making it's shallow copy.
+             *
+             * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+             */
+        "
+        .name = "newAndUseCContext"
+        .is_static = "1"
+
+        new wasm_argument to wasm_method
+            .name = "ctxPtr"
+        endnew
+
+        new wasm_code to wasm_method
+            . = "\
+                return new $(my.wasm_class.name:).newAndTakeCContext(Module._$(interface_derive_c_method_shallow_copy())(ctxPtr));
+            "
+        endnew
+    endnew
+
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -281,8 +349,7 @@ function wasm_create_class_dependency_method(dependency, class, wasm_class, wasm
         new wasm_code to wasm_method
             if my.dependency.has_observers & my.dependency.is_observers_return_status
                 my.result_var = "const proxyStatus = "
-                my.enum_status = wasm_derive_error_class_name(my.wasm_project)
-                my.impl_handle_status = "$(my.enum_status:).handleStatusCode(proxyStatus)"
+                my.impl_handle_status = "$(my.wasm_project.error_class_name:).handleStatusCode(proxyStatus)"
             endif
 
             . = format_left("\
@@ -446,6 +513,30 @@ function wasm_create_method_argument_for_enum(argument, wasm_method, wasm_class)
 endfunction
 
 # ---------------------------------------------------------------------------
+function wasm_create_method_argument_for_class_error(argument, wasm_method, wasm_class, wasm_project)
+    check_arguments(my, "argument, wasm_method, wasm_class, wasm_project", my)
+
+    new wasm_argument to my.wasm_method
+        .name = wasm_derive_method_argument_name(my.argument)
+        .is_local = "1"
+
+        .code_initialize = "\
+            const $(0.name:)CtxSize = Module.$(class_error_derive_c_method_ctx_size())();
+            const $(0.name:)CtxPtr = Module._malloc($(0.name:)CtxSize);
+        "
+
+        .code_on_success = "\
+            const $(0.name:)Status = Module.$(class_error_derive_c_method_status())($(0.name:)CtxPtr);
+            $(my.wasm_project.error_class_name:).handleStatusCode($(0.name:)Status);
+        "
+        .code_finalize = "\
+            Module._free($(0.name:)CtxPtr);
+        "
+        my.wasm_method.c_arg_list += "$(0.name:)CtxPtr" + ", "
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 function wasm_create_method_return_for_primitive_type(return, wasm_method, wasm_class)
     check_arguments(my, "return, wasm_method, wasm_class", my)
 
@@ -527,28 +618,50 @@ function wasm_create_method_return_for_class(return, wasm_method, wasm_class)
     check_arguments(my, "return, wasm_method, wasm_class", my)
 
     new wasm_return to my.wasm_method
-        .name = "proxyResult"
+        .name = "jsResult"
 
         wasm_map_instance_type(my.return, wasm_return)
 
         wasm_return.code_initialize = "\
             var proxyResult = undefined;
         "
+
+        my.instance_class = wasm_derive_instance_class(my.return)
+        if string_in(my.return.access, "disown, retain")
+            wasm_return.code_on_success = "\
+                const jsResult = $(my.instance_class:).newAndTakeCContext(proxyResult);
+            "
+        else
+            wasm_return.code_on_success = "\
+                const jsResult = $(my.instance_class:).newAndUseCContext(proxyResult);
+            "
+        endif
     endnew
 endfunction
 
 # ---------------------------------------------------------------------------
-function wasm_create_method_return_for_interface(return, wasm_method, wasm_class)
-    check_arguments(my, "return, wasm_method, wasm_class", my)
+function wasm_create_method_return_for_interface(return, wasm_method, wasm_class, wasm_project)
+    check_arguments(my, "return, wasm_method, wasm_class, wasm_project", my)
 
     new wasm_return to my.wasm_method
-        .name = "proxyResult"
+        .name = "jsResult"
 
         wasm_map_instance_type(my.return, wasm_return)
 
         wasm_return.code_initialize = "\
             var proxyResult = undefined;
         "
+
+        my.instance_class = wasm_derive_interface_wrapper_class_name(my.return, my.wasm_project)
+        if string_in(my.return.access, "disown, retain")
+            wasm_return.code_on_success = "\
+                const jsResult = $(my.instance_class:).newAndTakeCContext(proxyResult);
+            "
+        else
+            wasm_return.code_on_success = "\
+                const jsResult = $(my.instance_class:).newAndUseCContext(proxyResult);
+            "
+        endif
     endnew
 endfunction
 
@@ -591,17 +704,27 @@ function wasm_create_class_method(method, class, wasm_class, wasm_project)
         #   Return values SHOULD be proceeded first to be able pass
         #   pointer to vsc_data_t as first argument to a proxy call.
         #
-
-        #
         #   Wrap return:
-        #       [x] Wrap primitive type
-        #       [x] Wrap class "data"
-        #       [x] Wrap class "buffer"
+        #       - [x] Wrap primitive type
+        #       - [x] Wrap class "data"
+        #       - [x] Wrap class "buffer"
         #           - [x] disown
-        #       [ ] Wrap class
-        #       [ ] Wrap impl
-        #       [ ] Wrap interface
-        #       [x] Wrap enum "status"
+        #       - [x] Wrap class
+        #           - [x] readonly
+        #           - [x] readwrite
+        #           - [x] disown
+        #           - [x] retain
+        #       - [x] Wrap impl
+        #           - [x] readonly
+        #           - [x] readwrite
+        #           - [x] disown
+        #           - [x] retain
+        #       - [x] Wrap interface
+        #           - [x] readonly
+        #           - [x] readwrite
+        #           - [x] disown
+        #           - [x] retain
+        #       - [x] Wrap enum "status"
         #
         for my.method.return where ! wrapper_instance_is_status(return)
             if defined(return.type)
@@ -617,7 +740,7 @@ function wasm_create_class_method(method, class, wasm_class, wasm_project)
                 wasm_create_method_return_for_class(return, wasm_method, my.wasm_class)
 
             elsif defined(return.interface)
-                wasm_create_method_return_for_interface(return, wasm_method, my.wasm_class)
+                wasm_create_method_return_for_interface(return, wasm_method, my.wasm_class, my.wasm_project)
 
             elsif defined(return.enum)
                 wasm_create_method_return_for_enum(return, wasm_method, my.wasm_class)
@@ -644,19 +767,22 @@ function wasm_create_class_method(method, class, wasm_class, wasm_project)
         #       - [x] Wrap class
         #           - [x] readonly
         #           - [x] readwrite
-        #           - [ ] disown
+        #           - [x] retain
+        #           - [x] disown (not supported)
         #       - [x] Wrap impl
         #           - [x] readonly
         #           - [x] readwrite
-        #           - [ ] disown
+        #           - [x] retain
+        #           - [x] disown (not supported)
         #       - [x] Wrap interface
         #           - [x] readonly
         #           - [x] readwrite
-        #           - [ ] disown
+        #           - [x] retain
+        #           - [x] disown (not supported)
         #       - [x] Wrap enum
         #           - [x] readonly
-        #       - [ ] Wrap class "error"
-        #           - [ ] readwrite
+        #       - [x] Wrap class "error"
+        #           - [x] readwrite
         #
         for my.method.argument
             if defined(argument.type) & is_false(argument.is_reference)
@@ -673,6 +799,9 @@ function wasm_create_class_method(method, class, wasm_class, wasm_project)
 
             elsif string_equal(argument.class, "buffer") & argument.access = "readonly"
                 echo_fatal("Buffers with readonly access are prohibited.", my)
+
+            elsif string_equal(argument.class, "error") & argument.access = "readwrite"
+                wasm_create_method_argument_for_class_error(argument, wasm_method, my.wasm_class, my.wasm_project)
 
             elsif defined(argument.class) | defined(argument.impl)
                 wasm_create_method_argument_for_class(argument, wasm_method, my.wasm_class)
@@ -737,6 +866,10 @@ function wasm_create_class_method(method, class, wasm_class, wasm_project)
             ", my.proxy_indent)
         endif
 
+        for wasm_method.wasm_argument where defined(wasm_argument.code_on_success)
+            my.code += terminator + format_left(wasm_argument.code_on_success, my.proxy_indent)
+        endfor
+
         for wasm_method.wasm_return where defined(wasm_return.code_on_success)
             my.code += terminator + format_left(wasm_return.code_on_success, my.proxy_indent)
         endfor
@@ -778,6 +911,7 @@ function wasm_create_class_method(method, class, wasm_class, wasm_project)
     endnew
 endfunction
 
+
 # ===========================================================================
 #   Module creation.
 # ===========================================================================
@@ -797,6 +931,9 @@ function wasm_create_project_module(project, wrapper)
         .name = my.project.name
         .prefix = my.project.prefix
         .source_dir = cat_path(my.wrapper.source_dir, 0.name)
+        .impl_tag_enum_name = wasm_derive_class_name_str(cat(wasm_project.name, "impl tag"))
+        .error_class_name = wasm_derive_error_class_name(wasm_project)
+        .interface_class_name = wasm_derive_class_name_str(cat(wasm_project.name, "interface"))
 
         copy my.project->license to wasm_project
 
@@ -805,15 +942,10 @@ function wasm_create_project_module(project, wrapper)
 endfunction
 
 #  --------------------------------------------------------------------------
-function wasm_create_custom_modules(source, wasm_project, meta)
-    check_arguments(my, "source, wasm_project, meta", my)
-
-endfunction
-
-#  --------------------------------------------------------------------------
 function wasm_create_interface_module(interface, wasm_project, meta)
     check_arguments(my, "interface, wasm_project, meta", my)
 
+    #   Nothing to do here.
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -938,7 +1070,7 @@ function wasm_create_error_module(enum, wasm_project, meta)
     assert_attribute(my.enum, "name", my)
 
     new wasm_module to my.wasm_project
-        .name = wasm_derive_error_module_name(my.wasm_project)
+        .name = my.wasm_project.error_class_name
         .source_file_name = 0.name + ".js"
         .source_file_path = cat_path(my.wasm_project.source_dir, 0.source_file_name)
 
@@ -948,7 +1080,7 @@ function wasm_create_error_module(enum, wasm_project, meta)
 
         new wasm_class to wasm_module
             . = wasm_format_description(my.enum) ?
-            .name = wasm_derive_error_class_name(my.wasm_project)
+            .name = my.wasm_project.error_class_name
             .extends = "Error"
 
             new wasm_constructor to wasm_class
@@ -1039,12 +1171,6 @@ function wasm_create_enum_module(enum, wasm_project, meta)
 endfunction
 
 #  --------------------------------------------------------------------------
-function wasm_finalize_custom_modules(source, wasm_project, meta)
-    check_arguments(my, "source, wasm_project, meta", my)
-
-endfunction
-
-#  --------------------------------------------------------------------------
 function wasm_module_resolve(wasm_module, wasm_project)
     check_arguments(my, "wasm_module, wasm_project", my)
 
@@ -1056,5 +1182,79 @@ function wasm_create_toplevel_modules(wrapper)
 
 endfunction
 
+
+# ===========================================================================
+#   Custom module creation.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Create a class that takes a generic C interface type, aka vscf_impl_t,
+#   and create correspond specific JS class.
+# ---------------------------------------------------------------------------
+function wasm_create_interface_wrapper_module(source, wasm_project)
+    check_arguments(my, "source, wasm_project", my)
+
+    new wasm_module to my.wasm_project
+        .name = my.wasm_project.interface_class_name
+        .source_file_name = 0.name + ".js"
+        .source_file_path = cat_path(my.wasm_project.source_dir, 0.source_file_name)
+
+        new wasm_license to wasm_module
+            . = wasm_format_license(my.wasm_project->license) ?
+        endnew
+
+        new wasm_class to wasm_module
+            .name = my.wasm_project.interface_class_name
+
+            wasm_create_custom_interface_class_constructors(my.source, wasm_class, my.wasm_project)
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create an enumeration with all possibles implementation tags.
+#   JS representation of the enum "impl tag", aka vscf_impl_tag_t.
+# ---------------------------------------------------------------------------
+function wasm_create_impl_tag_module(source, wasm_project)
+    check_arguments(my, "source, wasm_project", my)
+
+    new wasm_module to my.wasm_project
+        .name = my.wasm_project.impl_tag_enum_name
+        .source_file_name = 0.name + ".js"
+        .source_file_path = cat_path(my.wasm_project.source_dir, 0.source_file_name)
+
+        new wasm_license to wasm_module
+            . = wasm_format_license(my.wasm_project->license) ?
+        endnew
+
+        new wasm_enum to wasm_module
+            .name = my.wasm_project.impl_tag_enum_name
+
+            for my.source.implementation as impl by impl.name
+                my.counter ?= 1
+
+                new wasm_constant to wasm_enum
+                    .name = wasm_derive_constant_name_str(impl.name)
+                    .value = my.counter
+                endnew
+
+                my.counter += 1
+            endfor
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create a bunch of custom modules that are not related to the existing
+#   high-level models.
+# ---------------------------------------------------------------------------
+function wasm_create_custom_modules(source, wasm_project, meta)
+    check_arguments(my, "source, wasm_project, meta", my)
+
+    if count(my.source.implementation)
+        wasm_create_interface_wrapper_module(my.source, my.wasm_project)
+        wasm_create_impl_tag_module(my.source, my.wasm_project)
+    endif
+endfunction
 
 .endtemplate

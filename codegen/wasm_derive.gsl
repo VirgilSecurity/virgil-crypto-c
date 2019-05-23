@@ -37,6 +37,15 @@ gsl from "common.gsl"
 gsl from "component.gsl"
 
 # ---------------------------------------------------------------------------
+#   Return formatted project name.
+# ---------------------------------------------------------------------------
+function wasm_derive_project_name_str(project_name)
+    check_arguments(my, "project_name", my)
+
+    return "$(my.project_name:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return formatted module name.
 # ---------------------------------------------------------------------------
 function wasm_derive_module_name(type)
@@ -245,6 +254,33 @@ function wasm_derive_buffer_length_getter(argument, wasm_class)
         my.proxy_argument = wasm_derive_method_argument_name_str(my.length.argument)
         return my.proxy_argument
     endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return class name that instance belongs to.
+# ---------------------------------------------------------------------------
+function wasm_derive_instance_class(instance)
+    assert_attributes(my, "instance", my)
+    assert_attribute_one_of(my.instance, "class, impl", my)
+
+    return wasm_derive_class_name_str(my.instance.class ? my.instance.impl)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return helper class name that can wrap C interface object to a scpecific
+#   JS class object.
+# ---------------------------------------------------------------------------
+function wasm_derive_interface_wrapper_class_name(return, wasm_project)
+    assert_attributes(my, "return", my)
+    assert_attributes(my.return, "interface", my)
+
+    if defined(my.return.project)
+        my.project_name = wasm_derive_project_name_str(my.return.project)
+    else
+        my.project_name = my.wasm_project.name
+    endif
+
+    return wasm_derive_class_name_str(cat(my.return.project ? my.wasm_project.name, "interface"))
 endfunction
 
 .endtemplate

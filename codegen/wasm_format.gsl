@@ -66,7 +66,7 @@ endfunction
 function wasm_format_argument_list (wasm_method)
     check_arguments (my, "wasm_method", my)
 
-    for my.wasm_method.wasm_argument
+    for my.wasm_method.wasm_argument where is_false(wasm_argument.is_local)
         my.arg_list ?= ""
         my.arg_list += "$(wasm_argument.name:)$("=" + wasm_argument.default?:)"
         if ! last()
