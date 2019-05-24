@@ -234,6 +234,14 @@ endfunction
 # ---------------------------------------------------------------------------
 function wasm_generate_project(wasm_project)
     check_arguments(my, "wasm_project", my)
+
+    if -1 = directory.create(my.wasm_project.source_dir)
+        echo_fatal("Can not create directory: $(my.wasm_project.source_dir:)")
+    endif
+
+    if -1 = directory.create(my.wasm_project.src_source_dir)
+        echo_fatal("Can not create directory: $(my.wasm_project.src_source_dir:)")
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -244,9 +252,16 @@ function wasm_generate_sources(wasm_project)
 
     assert_attribute(my.wasm_project, "source_dir", my)
 
-    if -1 = directory.create(my.wasm_project.source_dir)
-        echo_fatal("Can not create directory: $(my.wasm_project.source_dir:)")
-    endif
+    for my.wasm_project.json_module
+        echo_trace("Generate JSON files from <$(name(json_module)) name=\"$(json_module.name:)\"/>", my)
+
+        output json_module.source_file_path
+
+        for json_module.json_code
+            newline()
+            wasm_insert_code(json_code.)
+        endfor
+    endfor
 
     for my.wasm_project.wasm_module
         echo_trace("Generate WebAssembly files from <$(name(wasm_module)) name=\"$(wasm_module.name:)\"/>", my)
@@ -264,6 +279,11 @@ function wasm_generate_sources(wasm_project)
         for wasm_module.wasm_class
             newline()
             wasm_insert_class(wasm_class)
+        endfor
+
+        for wasm_module.wasm_code
+            newline()
+            wasm_insert_code(wasm_code.)
         endfor
     endfor
 endfunction

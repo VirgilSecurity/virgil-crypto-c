@@ -47,42 +47,25 @@ endif()
 
 
 # ---------------------------------------------------------------------------
-#   Configure
-# ---------------------------------------------------------------------------
-configure_file(
-        "${CMAKE_CURRENT_LIST_DIR}/index.html"
-        "${CMAKE_CURRENT_BINARY_DIR}/index.html"
-        COPYONLY
-        )
-
-# ---------------------------------------------------------------------------
 #   Create WebAssembly library
 # ---------------------------------------------------------------------------
 add_custom_target(foundation_wasm ALL
         COMMAND "${CMAKE_C_COMPILER}"
                 -s EXPORTED_FUNCTIONS="@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json"
                 -s MODULARIZE=1
-                -s EXPORT_NAME=EmscriptenModule
+                -s EXPORT_NAME=FoundationModule
                 "$<$<CONFIG:Release>:--llvm-lto;1;-Os;--closure;1;-s;USE_CLOSURE_COMPILER=1>"
                 $<$<CONFIG:Debug>:--emrun>
                 $<TARGET_FILE:common>
                 $<TARGET_FILE:foundation>
                 $<TARGET_FILE:mbedcrypto>
-                -o libvsc_foundation.html
+                -o libfoundation.js
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_BINARY_DIR}"
         COMMAND_EXPAND_LISTS
         DEPENDS foundation
         COMMENT "Create WASM+JS for the library foundation."
         )
-
-find_host_program(EMRUN emrun)
-if(EMRUN)
-    add_custom_target(run_wasm_foundation
-            COMMAND "${EMRUN}" --no_browser --port 8080 .
-            DEPENDS foundation_wasm
-            COMMENT "Running WASM foundation"
-            )
-endif()
-
 
 # ---------------------------------------------------------------------------
 #   Produce additional info suitable for debug
@@ -90,7 +73,7 @@ endif()
 find_host_program(WASM2WAT wasm2wat)
 if(WASM2WAT)
     add_custom_target(foundation_wat ALL
-            COMMAND "${WASM2WAT}" libvsc_foundation.wasm -o libvsc_foundation.wat
+            COMMAND "${WASM2WAT}" libfoundation.wasm -o libfoundation.wat
             DEPENDS foundation_wasm
             COMMENT "Create WAT for the library foundation."
             )

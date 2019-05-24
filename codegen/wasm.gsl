@@ -926,10 +926,14 @@ function wasm_create_project_module(project, wrapper)
     check_arguments(my, "project, wrapper", my)
 
     new wasm_project to my.wrapper
-        . = my.project. ?
+        . = my.project. ? "Project $(my.project.name:)."
         .name = my.project.name
         .prefix = my.project.prefix
+        .lib_name = "lib$(0.name:c)"
+        .module_name = "$(0.name:Pascal)Module"
+        .description = string_to_singleline(wasm_project)
         .source_dir = cat_path(my.wrapper.source_dir, 0.name)
+        .src_source_dir = cat_path(my.wrapper.source_dir, 0.name, "src")
         .impl_tag_enum_name = wasm_derive_class_name_str(cat(wasm_project.name, "impl tag"))
         .error_class_name = wasm_derive_error_class_name(wasm_project)
         .interface_class_name = wasm_derive_class_name_str(cat(wasm_project.name, "interface"))
@@ -960,7 +964,7 @@ function wasm_create_implementation_module(impl, wasm_project, meta)
     new wasm_module to my.wasm_project
         .name = wasm_derive_module_name(my.impl)
         .source_file_name = 0.name + ".js"
-        .source_file_path = cat_path(my.wasm_project.source_dir, 0.source_file_name)
+        .source_file_path = cat_path(my.wasm_project.src_source_dir, 0.source_file_name)
 
         new wasm_license to wasm_module
             . = wasm_format_license(my.wasm_project->license) ?
@@ -1023,7 +1027,7 @@ function wasm_create_class_module(class, wasm_project, meta)
     new wasm_module to my.wasm_project
         .name = wasm_derive_module_name(my.class)
         .source_file_name = 0.name + ".js"
-        .source_file_path = cat_path(my.wasm_project.source_dir, 0.source_file_name)
+        .source_file_path = cat_path(my.wasm_project.src_source_dir, 0.source_file_name)
 
         new wasm_license to wasm_module
             . = wasm_format_license(my.wasm_project->license) ?
@@ -1071,7 +1075,7 @@ function wasm_create_error_module(enum, wasm_project, meta)
     new wasm_module to my.wasm_project
         .name = my.wasm_project.error_class_name
         .source_file_name = 0.name + ".js"
-        .source_file_path = cat_path(my.wasm_project.source_dir, 0.source_file_name)
+        .source_file_path = cat_path(my.wasm_project.src_source_dir, 0.source_file_name)
 
         new wasm_license to wasm_module
             . = wasm_format_license(my.wasm_project->license) ?
@@ -1143,7 +1147,7 @@ function wasm_create_enum_module(enum, wasm_project, meta)
     new wasm_module to my.wasm_project
         .name = wasm_derive_module_name(my.enum)
         .source_file_name = 0.name + ".js"
-        .source_file_path = cat_path(my.wasm_project.source_dir, 0.source_file_name)
+        .source_file_path = cat_path(my.wasm_project.src_source_dir, 0.source_file_name)
 
         new wasm_license to wasm_module
             . = wasm_format_license(my.wasm_project->license) ?
@@ -1187,6 +1191,201 @@ endfunction
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
+#   Create module describing "index.js".
+# ---------------------------------------------------------------------------
+function wasm_create_index_module(wasm_project)
+    check_arguments(my, "wasm_project", my)
+
+    echo_info("Create custom <wasm_module/>: 'index'", my)
+
+    new wasm_module to my.wasm_project
+        .name = "index"
+        .source_file_name = 0.name + ".js"
+        .source_file_path = cat_path(my.wasm_project.src_source_dir, 0.source_file_name)
+
+        new wasm_license to wasm_module
+            . = wasm_format_license(my.wasm_project->license) ?
+        endnew
+
+        my.code = ""
+        my.code += format_left("
+            const $(my.wasm_project.module_name:) = require('$(my.wasm_project.lib_name:)');
+        ")
+
+        my.code += terminator
+
+        for my.wasm_project.wasm_module where wasm_module.name <> "index"
+            my.code += format_left("
+                const init$(wasm_module.name:Pascal) = require('./$(wasm_module.name:)');
+            ")
+
+            my.init_code ?= ""
+            my.init_code += format_left("
+                  modules.$(wasm_module.name:Pascal) = init$(wasm_module.name:Pascal)($(my.wasm_project.module_name:Camel), modules);
+            ")
+        endfor
+
+        my.code += terminator + format_left("
+            const $(my.wasm_project.module_name:Camel) = new $(my.wasm_project.module_name:)();
+            let initPromise;
+        ")
+
+        my.code += terminator + format_left("
+            const init$(my.wasm_project.name:Pascal) = () => {
+                if (initPromise) {
+                    return initPromise;
+                }
+                initPromise = new Promise((resolve, reject) => {
+                    $(my.wasm_project.module_name:Camel).onRuntimeInitialized = () => {
+                        const modules = {};
+                        $(format_left(my.init_code, 6))
+                        resolve(modules);
+                    };
+
+                    $(my.wasm_project.module_name:Camel).onAbort = message => {
+                        reject(new Error(message));
+                    };
+                });
+                return initPromise;
+            };
+            module.exports = init$(my.wasm_project.name:Pascal);
+        ")
+
+        new wasm_code to wasm_module
+            . = my.code
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create module describing "rollup.config.js".
+# ---------------------------------------------------------------------------
+function wasm_create_rollup_module(wasm_project)
+    check_arguments(my, "wasm_project", my)
+
+    echo_info("Create custom <wasm_module/>: 'rollup.config'", my)
+
+    new wasm_module to my.wasm_project
+        .name = "rollup.config"
+        .source_file_name = 0.name + ".js"
+        .source_file_path = cat_path(my.wasm_project.src_source_dir, 0.source_file_name)
+
+        new wasm_license to wasm_module
+            . = wasm_format_license(my.wasm_project->license) ?
+        endnew
+
+        new wasm_code to wasm_module
+            . = "
+                const path = require('path');
+
+                const builtinModules = require('builtin-modules');
+                const commonjs = require('rollup-plugin-commonjs');
+                const copy = require('rollup-plugin-copy');
+                const nodeResolve = require('rollup-plugin-node-resolve');
+                const { terser } = require('rollup-plugin-terser');
+
+                const UMD_NAME = '$(my.wasm_project.name:Pascal)';
+
+                const wasmBuildRoot = path.join(__dirname, '.');
+                const sourceRoot = path.join(__dirname, '.');
+                const outputFolder = path.join(__dirname, 'dist');
+
+                const builtinModulesMap = builtinModules.reduce((result, item) => {
+                    result[item] = item;
+                    return result;
+                }, {});
+
+                const format = process.env.FORMAT;
+                const formats = {
+                    cjs: 'cjs',
+                    es: 'es',
+                    umd: 'umd',
+                };
+                if (!formats[format]) {
+                    throw new TypeError(`'${format}' is not a valid format`);
+                }
+
+                module.exports = {
+                    input: path.join(sourceRoot, 'index.js'),
+                    output: {
+                       format,
+                       file: path.join(outputFolder, `$(my.wasm_project.name:).${format}.js`),
+                       name: UMD_NAME,
+                    },
+                    plugins: [
+                        nodeResolve(),
+                        commonjs({
+                            ignoreGlobal: true,
+                            ignore: id => typeof builtinModulesMap[id] !== 'undefined',
+                        }),
+                        terser(),
+                        copy({
+                            targets: [
+                                path.join(wasmBuildRoot, '$(my.wasm_project.lib_name:).wasm'),
+                            ],
+                            outputFolder: outputFolder,
+                        }),
+                    ],
+                };
+            "
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create module describing "package.json".
+# ---------------------------------------------------------------------------
+function wasm_create_package_module(wasm_project)
+    check_arguments(my, "wasm_project", my)
+
+    echo_info("Create custom <json_module/>: 'package'", my)
+
+    new json_module to my.wasm_project
+        .name = "package"
+        .source_file_name = 0.name + ".json"
+        .source_file_path = cat_path(my.wasm_project.src_source_dir, 0.source_file_name)
+
+        my.code = ""
+        my.code += format_left('
+            {
+              "name": "$(my.wasm_project.name:)",
+              "version": "1.0.0",
+              "description": "$(my.wasm_project.description:)",
+              "main": "index.js",
+              "repository": "https://github.com/VirgilSecurity/virgil-crypto-c/tree/feature/wrapper-webasm-js/wrappers/wasm/$(my.wasm_project.name:)",
+              "author": "Virgil Security Inc. <support@virgilsecurity.com>",
+              "license": "BSD-3-Clause",
+              "private": true,
+              "scripts": {
+                "build:cjs": "cross-env FORMAT=cjs rollup -c",
+                "build:es": "cross-env FORMAT=es rollup -c",
+                "build:umd": "cross-env FORMAT=umd rollup -c",
+                "build": "npm run build:cjs && npm run build:es && npm run build:umd",
+                "clean": "rimraf dist",
+                "prepare": "npm run clean && npm run build",
+                "serve": "serve"
+              },
+              "devDependencies": {
+                "builtin-modules": "^3.1.0",
+                "cross-env": "^5.2.0",
+                "rimraf": "^2.6.3",
+                "rollup": "^1.12.3",
+                "rollup-plugin-commonjs": "^10.0.0",
+                "rollup-plugin-copy": "^2.0.1",
+                "rollup-plugin-node-resolve": "^5.0.0",
+                "rollup-plugin-terser": "^4.0.4",
+                "serve": "^11.0.0"
+              }
+            }
+        ')
+
+        new json_code to json_module
+            . = my.code
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create a class that takes a generic C interface type, aka vscf_impl_t,
 #   and create correspond specific JS class.
 # ---------------------------------------------------------------------------
@@ -1196,7 +1395,7 @@ function wasm_create_interface_wrapper_module(source, wasm_project)
     new wasm_module to my.wasm_project
         .name = my.wasm_project.interface_class_name
         .source_file_name = 0.name + ".js"
-        .source_file_path = cat_path(my.wasm_project.source_dir, 0.source_file_name)
+        .source_file_path = cat_path(my.wasm_project.src_source_dir, 0.source_file_name)
 
         new wasm_license to wasm_module
             . = wasm_format_license(my.wasm_project->license) ?
@@ -1220,7 +1419,7 @@ function wasm_create_impl_tag_module(source, wasm_project)
     new wasm_module to my.wasm_project
         .name = my.wasm_project.impl_tag_enum_name
         .source_file_name = 0.name + ".js"
-        .source_file_path = cat_path(my.wasm_project.source_dir, 0.source_file_name)
+        .source_file_path = cat_path(my.wasm_project.src_source_dir, 0.source_file_name)
 
         new wasm_license to wasm_module
             . = wasm_format_license(my.wasm_project->license) ?
@@ -1254,6 +1453,18 @@ function wasm_create_custom_modules(source, wasm_project, meta)
         wasm_create_interface_wrapper_module(my.source, my.wasm_project)
         wasm_create_impl_tag_module(my.source, my.wasm_project)
     endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create a bunch of custom modules that are not related to the existing
+#   high-level models.
+# ---------------------------------------------------------------------------
+function wasm_finalize_custom_modules(source, wasm_project, meta)
+    check_arguments(my, "source, wasm_project, meta", my)
+
+    wasm_create_index_module(my.wasm_project)
+    wasm_create_rollup_module(my.wasm_project)
+    wasm_create_package_module(my.wasm_project)
 endfunction
 
 .endtemplate
