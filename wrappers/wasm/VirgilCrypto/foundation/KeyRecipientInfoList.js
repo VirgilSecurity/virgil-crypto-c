@@ -35,7 +35,7 @@
  */
 
 
-const initKeyRecipientInfoList = Module => {
+const initKeyRecipientInfoList = (Module, modules) => {
     /**
      * Handles a list of "key recipient info" class objects.
      */
@@ -46,7 +46,7 @@ const initKeyRecipientInfoList = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'KeyRecipientInfoList';
 
             if (typeof ctxPtr === 'undefined') {
@@ -98,7 +98,7 @@ const initKeyRecipientInfoList = Module => {
          * Return true if given list has item.
          */
         hasItem() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_key_recipient_info_list_has_item(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
@@ -109,10 +109,10 @@ const initKeyRecipientInfoList = Module => {
          * Return list item.
          */
         item() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_key_recipient_info_list_item(this.ctxPtr);
 
-            const jsResult = KeyRecipientInfo.newAndUseCContext(proxyResult);
+            const jsResult = modules.KeyRecipientInfo.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
@@ -120,7 +120,7 @@ const initKeyRecipientInfoList = Module => {
          * Return true if list has next item.
          */
         hasNext() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_key_recipient_info_list_has_next(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
@@ -131,10 +131,10 @@ const initKeyRecipientInfoList = Module => {
          * Return next list node if exists, or NULL otherwise.
          */
         next() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_key_recipient_info_list_next(this.ctxPtr);
 
-            const jsResult = KeyRecipientInfoList.newAndTakeCContext(proxyResult);
+            const jsResult = modules.KeyRecipientInfoList.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -142,7 +142,7 @@ const initKeyRecipientInfoList = Module => {
          * Return true if list has previous item.
          */
         hasPrev() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_key_recipient_info_list_has_prev(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
@@ -153,10 +153,10 @@ const initKeyRecipientInfoList = Module => {
          * Return previous list node if exists, or NULL otherwise.
          */
         prev() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_key_recipient_info_list_prev(this.ctxPtr);
 
-            const jsResult = KeyRecipientInfoList.newAndTakeCContext(proxyResult);
+            const jsResult = modules.KeyRecipientInfoList.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -167,6 +167,8 @@ const initKeyRecipientInfoList = Module => {
             Module._vscf_key_recipient_info_list_clear(this.ctxPtr);
         }
     }
+
+    return KeyRecipientInfoList;
 };
 
 module.exports = initKeyRecipientInfoList;

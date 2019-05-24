@@ -35,7 +35,7 @@
  */
 
 
-const initAlgInfoDerDeserializer = Module => {
+const initAlgInfoDerDeserializer = (Module, modules) => {
     /**
      * Provide DER deserializer of algorithm information.
      */
@@ -46,7 +46,7 @@ const initAlgInfoDerDeserializer = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'AlgInfoDerDeserializer';
 
             if (typeof ctxPtr === 'undefined') {
@@ -112,15 +112,15 @@ const initAlgInfoDerDeserializer = Module => {
             const errorCtxSize = Module.vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_alg_info_der_deserializer_deserialize(this.ctxPtr, dataCtxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(dataPtr);
@@ -145,21 +145,23 @@ const initAlgInfoDerDeserializer = Module => {
             const errorCtxSize = Module.vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_alg_info_der_deserializer_deserialize_inplace(this.ctxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(errorCtxPtr);
             }
         }
     }
+
+    return AlgInfoDerDeserializer;
 };
 
 module.exports = initAlgInfoDerDeserializer;

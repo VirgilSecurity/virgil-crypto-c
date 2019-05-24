@@ -35,7 +35,7 @@
  */
 
 
-const initMessageInfoCustomParams = Module => {
+const initMessageInfoCustomParams = (Module, modules) => {
     class MessageInfoCustomParams {
 
         /**
@@ -43,7 +43,7 @@ const initMessageInfoCustomParams = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'MessageInfoCustomParams';
 
             if (typeof ctxPtr === 'undefined') {
@@ -220,13 +220,13 @@ const initMessageInfoCustomParams = Module => {
             const errorCtxSize = Module.vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_message_info_custom_params_find_int(this.ctxPtr, keyCtxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
                 return proxyResult;
             } finally {
                 Module._free(keyPtr);
@@ -264,7 +264,7 @@ const initMessageInfoCustomParams = Module => {
                 Module._vscf_message_info_custom_params_find_string(dataResultCtxPtr, this.ctxPtr, keyCtxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
 
                 const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
                 const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
@@ -307,7 +307,7 @@ const initMessageInfoCustomParams = Module => {
                 Module._vscf_message_info_custom_params_find_data(dataResultCtxPtr, this.ctxPtr, keyCtxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
 
                 const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
                 const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
@@ -321,6 +321,8 @@ const initMessageInfoCustomParams = Module => {
             }
         }
     }
+
+    return MessageInfoCustomParams;
 };
 
 module.exports = initMessageInfoCustomParams;

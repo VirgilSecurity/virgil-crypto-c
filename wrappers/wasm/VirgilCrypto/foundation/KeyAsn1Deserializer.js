@@ -35,7 +35,7 @@
  */
 
 
-const initKeyAsn1Deserializer = Module => {
+const initKeyAsn1Deserializer = (Module, modules) => {
     /**
      * Implements PKCS#8 and SEC1 key deserialization from DER / PEM format.
      */
@@ -46,7 +46,7 @@ const initKeyAsn1Deserializer = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'KeyAsn1Deserializer';
 
             if (typeof ctxPtr === 'undefined') {
@@ -112,15 +112,15 @@ const initKeyAsn1Deserializer = Module => {
             const errorCtxSize = Module.vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_key_asn1_deserializer_deserialize_public_key(this.ctxPtr, publicKeyDataCtxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = RawKey.newAndTakeCContext(proxyResult);
+                const jsResult = modules.RawKey.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(publicKeyDataPtr);
@@ -150,15 +150,15 @@ const initKeyAsn1Deserializer = Module => {
             const errorCtxSize = Module.vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_key_asn1_deserializer_deserialize_private_key(this.ctxPtr, privateKeyDataCtxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = RawKey.newAndTakeCContext(proxyResult);
+                const jsResult = modules.RawKey.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(privateKeyDataPtr);
@@ -183,15 +183,15 @@ const initKeyAsn1Deserializer = Module => {
             const errorCtxSize = Module.vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_key_asn1_deserializer_deserialize_public_key_inplace(this.ctxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = RawKey.newAndTakeCContext(proxyResult);
+                const jsResult = modules.RawKey.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(errorCtxPtr);
@@ -207,21 +207,23 @@ const initKeyAsn1Deserializer = Module => {
             const errorCtxSize = Module.vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_key_asn1_deserializer_deserialize_private_key_inplace(this.ctxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = RawKey.newAndTakeCContext(proxyResult);
+                const jsResult = modules.RawKey.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(errorCtxPtr);
             }
         }
     }
+
+    return KeyAsn1Deserializer;
 };
 
 module.exports = initKeyAsn1Deserializer;

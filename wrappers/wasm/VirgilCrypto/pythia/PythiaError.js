@@ -35,7 +35,7 @@
  */
 
 
-const initPythiaError = Module => {
+const initPythiaError = (Module, modules) => {
     /**
      * Defines the library status codes.
      */
@@ -64,6 +64,8 @@ const initPythiaError = Module => {
             }
         }
     }
+
+    return PythiaError;
 };
 
 module.exports = initPythiaError;

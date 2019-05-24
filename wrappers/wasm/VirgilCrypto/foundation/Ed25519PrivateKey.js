@@ -35,7 +35,7 @@
  */
 
 
-const initEd25519PrivateKey = Module => {
+const initEd25519PrivateKey = (Module, modules) => {
     /**
      * This is implementation of ED25519 private key
      */
@@ -68,7 +68,7 @@ const initEd25519PrivateKey = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'Ed25519PrivateKey';
 
             if (typeof ctxPtr === 'undefined') {
@@ -122,7 +122,7 @@ const initEd25519PrivateKey = Module => {
          * Provide algorithm identificator.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_ed25519_private_key_alg_id(this.ctxPtr);
             return proxyResult;
         }
@@ -131,10 +131,10 @@ const initEd25519PrivateKey = Module => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_ed25519_private_key_produce_alg_info(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -143,14 +143,14 @@ const initEd25519PrivateKey = Module => {
          */
         restoreAlgInfo(algInfo) {
             const proxyResult = Module._vscf_ed25519_private_key_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
          * Length of the key in bytes.
          */
         keyLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_ed25519_private_key_key_len(this.ctxPtr);
             return proxyResult;
         }
@@ -159,7 +159,7 @@ const initEd25519PrivateKey = Module => {
          * Length of the key in bits.
          */
         keyBitlen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_ed25519_private_key_key_bitlen(this.ctxPtr);
             return proxyResult;
         }
@@ -170,7 +170,7 @@ const initEd25519PrivateKey = Module => {
          */
         generateKey() {
             const proxyResult = Module._vscf_ed25519_private_key_generate_key(this.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -196,7 +196,7 @@ const initEd25519PrivateKey = Module => {
 
             try {
                 const proxyResult = Module._vscf_ed25519_private_key_decrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -214,7 +214,7 @@ const initEd25519PrivateKey = Module => {
         decryptedLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_ed25519_private_key_decrypted_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -223,7 +223,7 @@ const initEd25519PrivateKey = Module => {
          * Return length in bytes required to hold signature.
          */
         signatureLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_ed25519_private_key_signature_len(this.ctxPtr);
             return proxyResult;
         }
@@ -251,7 +251,7 @@ const initEd25519PrivateKey = Module => {
 
             try {
                 const proxyResult = Module._vscf_ed25519_private_key_sign_hash(this.ctxPtr, hashDigestCtxPtr, hashId, signatureCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const signaturePtr = Module._vsc_buffer_bytes(signatureCtxPtr);
                 const signature = Module.HEAPU8.slice(signaturePtr, signaturePtr + signatureSize);
@@ -267,10 +267,10 @@ const initEd25519PrivateKey = Module => {
          * Extract public part of the key.
          */
         extractPublicKey() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_ed25519_private_key_extract_public_key(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -287,7 +287,7 @@ const initEd25519PrivateKey = Module => {
 
             try {
                 const proxyResult = Module._vscf_ed25519_private_key_export_private_key(this.ctxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -301,7 +301,7 @@ const initEd25519PrivateKey = Module => {
          * Return length in bytes required to hold exported private key.
          */
         exportedPrivateKeyLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_ed25519_private_key_exported_private_key_len(this.ctxPtr);
             return proxyResult;
         }
@@ -330,7 +330,7 @@ const initEd25519PrivateKey = Module => {
 
             try {
                 const proxyResult = Module._vscf_ed25519_private_key_import_private_key(this.ctxPtr, dataCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
             } finally {
                 Module._free(dataPtr);
                 Module._free(dataCtxPtr);
@@ -347,7 +347,7 @@ const initEd25519PrivateKey = Module => {
 
             try {
                 const proxyResult = Module._vscf_ed25519_private_key_compute_shared_key(this.ctxPtr, publicKey.ctxPtr, sharedKeyCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const sharedKeyPtr = Module._vsc_buffer_bytes(sharedKeyCtxPtr);
                 const sharedKey = Module.HEAPU8.slice(sharedKeyPtr, sharedKeyPtr + sharedKeySize);
@@ -361,7 +361,7 @@ const initEd25519PrivateKey = Module => {
          * Return number of bytes required to hold shared key.
          */
         sharedKeyLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_ed25519_private_key_shared_key_len(this.ctxPtr);
             return proxyResult;
         }
@@ -371,9 +371,11 @@ const initEd25519PrivateKey = Module => {
          */
         setupDefaults() {
             const proxyResult = Module._vscf_ed25519_private_key_setup_defaults(this.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
     }
+
+    return Ed25519PrivateKey;
 };
 
 module.exports = initEd25519PrivateKey;

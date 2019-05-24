@@ -35,7 +35,7 @@
  */
 
 
-const initPbeAlgInfo = Module => {
+const initPbeAlgInfo = (Module, modules) => {
     /**
      * Handle information about password-based encryption algorithm.
      */
@@ -46,7 +46,7 @@ const initPbeAlgInfo = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'PbeAlgInfo';
 
             if (typeof ctxPtr === 'undefined') {
@@ -90,7 +90,7 @@ const initPbeAlgInfo = Module => {
          * Provide algorithm identificator.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_pbe_alg_info_alg_id(this.ctxPtr);
             return proxyResult;
         }
@@ -99,10 +99,10 @@ const initPbeAlgInfo = Module => {
          * Return KDF algorithm information.
          */
         kdfAlgInfo() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_pbe_alg_info_kdf_alg_info(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndUseCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
@@ -110,13 +110,15 @@ const initPbeAlgInfo = Module => {
          * Return cipher algorithm information.
          */
         cipherAlgInfo() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_pbe_alg_info_cipher_alg_info(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndUseCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
     }
+
+    return PbeAlgInfo;
 };
 
 module.exports = initPbeAlgInfo;

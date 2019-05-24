@@ -35,7 +35,7 @@
  */
 
 
-const initKeyRecipientInfo = Module => {
+const initKeyRecipientInfo = (Module, modules) => {
     /**
      * Handle information about recipient that is defined by a Public Key.
      */
@@ -46,7 +46,7 @@ const initKeyRecipientInfo = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'KeyRecipientInfo';
 
             if (typeof ctxPtr === 'undefined') {
@@ -111,10 +111,10 @@ const initKeyRecipientInfo = Module => {
          * a data encryption key.
          */
         keyEncryptionAlgorithm() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_key_recipient_info_key_encryption_algorithm(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndUseCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
@@ -138,6 +138,8 @@ const initKeyRecipientInfo = Module => {
             }
         }
     }
+
+    return KeyRecipientInfo;
 };
 
 module.exports = initKeyRecipientInfo;

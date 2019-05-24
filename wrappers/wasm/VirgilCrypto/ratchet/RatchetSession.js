@@ -35,7 +35,7 @@
  */
 
 
-const initRatchetSession = Module => {
+const initRatchetSession = (Module, modules) => {
     /**
      * Class for ratchet session between 2 participants
      */
@@ -46,7 +46,7 @@ const initRatchetSession = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'RatchetSession';
 
             if (typeof ctxPtr === 'undefined') {
@@ -100,7 +100,7 @@ const initRatchetSession = Module => {
          */
         setupDefaults() {
             const proxyResult = Module._vscr_ratchet_session_setup_defaults(this.ctxPtr);
-            RatchetError.handleStatusCode(proxyResult);
+            modules.RatchetError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -162,7 +162,7 @@ const initRatchetSession = Module => {
 
             try {
                 const proxyResult = Module._vscr_ratchet_session_initiate(this.ctxPtr, senderIdentityPrivateKeyCtxPtr, receiverIdentityPublicKeyCtxPtr, receiverLongTermPublicKeyCtxPtr, receiverOneTimePublicKeyCtxPtr);
-                RatchetError.handleStatusCode(proxyResult);
+                modules.RatchetError.handleStatusCode(proxyResult);
             } finally {
                 Module._free(senderIdentityPrivateKeyPtr);
                 Module._free(senderIdentityPrivateKeyCtxPtr);
@@ -234,7 +234,7 @@ const initRatchetSession = Module => {
 
             try {
                 const proxyResult = Module._vscr_ratchet_session_respond(this.ctxPtr, senderIdentityPublicKeyCtxPtr, receiverIdentityPrivateKeyCtxPtr, receiverLongTermPrivateKeyCtxPtr, receiverOneTimePrivateKeyCtxPtr, message.ctxPtr);
-                RatchetError.handleStatusCode(proxyResult);
+                modules.RatchetError.handleStatusCode(proxyResult);
             } finally {
                 Module._free(senderIdentityPublicKeyPtr);
                 Module._free(senderIdentityPublicKeyCtxPtr);
@@ -251,7 +251,7 @@ const initRatchetSession = Module => {
          * Returns flag that indicates is this session was initiated or responded
          */
         isInitiator() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscr_ratchet_session_is_initiator(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
@@ -262,7 +262,7 @@ const initRatchetSession = Module => {
          * Returns true if at least 1 response was successfully decrypted, false - otherwise
          */
         receivedFirstResponse() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscr_ratchet_session_received_first_response(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
@@ -273,7 +273,7 @@ const initRatchetSession = Module => {
          * Returns true if receiver had one time public key
          */
         receiverHasOneTimePublicKey() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscr_ratchet_session_receiver_has_one_time_public_key(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
@@ -301,15 +301,15 @@ const initRatchetSession = Module => {
             const errorCtxSize = Module.vscr_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscr_ratchet_session_encrypt(this.ctxPtr, plainTextCtxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscr_error_status(errorCtxPtr);
-                RatchetError.handleStatusCode(errorStatus);
+                modules.RatchetError.handleStatusCode(errorStatus);
 
-                const jsResult = RatchetMessage.newAndTakeCContext(proxyResult);
+                const jsResult = modules.RatchetMessage.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(plainTextPtr);
@@ -322,7 +322,7 @@ const initRatchetSession = Module => {
          * Calculates size of buffer sufficient to store decrypted message
          */
         decryptLen(message) {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscr_ratchet_session_decrypt_len(this.ctxPtr, message.ctxPtr);
             return proxyResult;
         }
@@ -336,7 +336,7 @@ const initRatchetSession = Module => {
 
             try {
                 const proxyResult = Module._vscr_ratchet_session_decrypt(this.ctxPtr, message.ctxPtr, plainTextCtxPtr);
-                RatchetError.handleStatusCode(proxyResult);
+                modules.RatchetError.handleStatusCode(proxyResult);
 
                 const plainTextPtr = Module._vsc_buffer_bytes(plainTextCtxPtr);
                 const plainText = Module.HEAPU8.slice(plainTextPtr, plainTextPtr + plainTextSize);
@@ -350,7 +350,7 @@ const initRatchetSession = Module => {
          * Calculates size of buffer sufficient to store session
          */
         serializeLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscr_ratchet_session_serialize_len(this.ctxPtr);
             return proxyResult;
         }
@@ -395,15 +395,15 @@ const initRatchetSession = Module => {
             const errorCtxSize = Module.vscr_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscr_ratchet_session_deserialize(inputCtxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscr_error_status(errorCtxPtr);
-                RatchetError.handleStatusCode(errorStatus);
+                modules.RatchetError.handleStatusCode(errorStatus);
 
-                const jsResult = RatchetSession.newAndTakeCContext(proxyResult);
+                const jsResult = modules.RatchetSession.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(inputPtr);
@@ -412,6 +412,8 @@ const initRatchetSession = Module => {
             }
         }
     }
+
+    return RatchetSession;
 };
 
 module.exports = initRatchetSession;

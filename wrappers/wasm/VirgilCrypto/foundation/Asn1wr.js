@@ -35,7 +35,7 @@
  */
 
 
-const initAsn1wr = Module => {
+const initAsn1wr = (Module, modules) => {
     /**
      * This is MbedTLS implementation of ASN.1 writer.
      */
@@ -46,7 +46,7 @@ const initAsn1wr = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'Asn1wr';
 
             if (typeof ctxPtr === 'undefined') {
@@ -107,7 +107,7 @@ const initAsn1wr = Module => {
         finish(doNotAdjust) {
             // assert(typeof doNotAdjust === 'boolean')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_finish(this.ctxPtr, doNotAdjust);
             return proxyResult;
         }
@@ -116,7 +116,7 @@ const initAsn1wr = Module => {
          * Returns pointer to the inner buffer.
          */
         bytes() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_bytes(this.ctxPtr);
             return proxyResult;
         }
@@ -125,7 +125,7 @@ const initAsn1wr = Module => {
          * Returns total inner buffer length.
          */
         len() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_len(this.ctxPtr);
             return proxyResult;
         }
@@ -134,7 +134,7 @@ const initAsn1wr = Module => {
          * Returns how many bytes were already written to the ASN.1 structure.
          */
         writtenLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_written_len(this.ctxPtr);
             return proxyResult;
         }
@@ -143,7 +143,7 @@ const initAsn1wr = Module => {
          * Returns how many bytes are available for writing.
          */
         unwrittenLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_unwritten_len(this.ctxPtr);
             return proxyResult;
         }
@@ -152,7 +152,7 @@ const initAsn1wr = Module => {
          * Return true if status is not "success".
          */
         hasError() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_has_error(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
@@ -164,7 +164,7 @@ const initAsn1wr = Module => {
          */
         status() {
             const proxyResult = Module._vscf_asn1wr_status(this.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -174,7 +174,7 @@ const initAsn1wr = Module => {
         reserve(len) {
             // assert(typeof len === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_reserve(this.ctxPtr, len);
             return proxyResult;
         }
@@ -186,7 +186,7 @@ const initAsn1wr = Module => {
         writeTag(tag) {
             // assert(typeof tag === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_tag(this.ctxPtr, tag);
             return proxyResult;
         }
@@ -199,7 +199,7 @@ const initAsn1wr = Module => {
             // assert(typeof tag === 'number')
             // assert(typeof len === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_context_tag(this.ctxPtr, tag, len);
             return proxyResult;
         }
@@ -211,7 +211,7 @@ const initAsn1wr = Module => {
         writeLen(len) {
             // assert(typeof len === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_len(this.ctxPtr, len);
             return proxyResult;
         }
@@ -223,7 +223,7 @@ const initAsn1wr = Module => {
         writeInt(value) {
             // assert(typeof value === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_int(this.ctxPtr, value);
             return proxyResult;
         }
@@ -235,7 +235,7 @@ const initAsn1wr = Module => {
         writeInt8(value) {
             // assert(typeof value === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_int8(this.ctxPtr, value);
             return proxyResult;
         }
@@ -247,7 +247,7 @@ const initAsn1wr = Module => {
         writeInt16(value) {
             // assert(typeof value === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_int16(this.ctxPtr, value);
             return proxyResult;
         }
@@ -259,7 +259,7 @@ const initAsn1wr = Module => {
         writeInt32(value) {
             // assert(typeof value === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_int32(this.ctxPtr, value);
             return proxyResult;
         }
@@ -271,7 +271,7 @@ const initAsn1wr = Module => {
         writeInt64(value) {
             // assert(typeof value === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_int64(this.ctxPtr, value);
             return proxyResult;
         }
@@ -283,7 +283,7 @@ const initAsn1wr = Module => {
         writeUint(value) {
             // assert(typeof value === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_uint(this.ctxPtr, value);
             return proxyResult;
         }
@@ -295,7 +295,7 @@ const initAsn1wr = Module => {
         writeUint8(value) {
             // assert(typeof value === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_uint8(this.ctxPtr, value);
             return proxyResult;
         }
@@ -307,7 +307,7 @@ const initAsn1wr = Module => {
         writeUint16(value) {
             // assert(typeof value === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_uint16(this.ctxPtr, value);
             return proxyResult;
         }
@@ -319,7 +319,7 @@ const initAsn1wr = Module => {
         writeUint32(value) {
             // assert(typeof value === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_uint32(this.ctxPtr, value);
             return proxyResult;
         }
@@ -331,7 +331,7 @@ const initAsn1wr = Module => {
         writeUint64(value) {
             // assert(typeof value === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_uint64(this.ctxPtr, value);
             return proxyResult;
         }
@@ -343,7 +343,7 @@ const initAsn1wr = Module => {
         writeBool(value) {
             // assert(typeof value === 'boolean')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_bool(this.ctxPtr, value);
             return proxyResult;
         }
@@ -352,7 +352,7 @@ const initAsn1wr = Module => {
          * Write ASN.1 type: NULL.
          */
         writeNull() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_null(this.ctxPtr);
             return proxyResult;
         }
@@ -376,7 +376,7 @@ const initAsn1wr = Module => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(valueCtxPtr, valuePtr, valueSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_asn1wr_write_octet_str(this.ctxPtr, valueCtxPtr);
@@ -407,7 +407,7 @@ const initAsn1wr = Module => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(valueCtxPtr, valuePtr, valueSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_asn1wr_write_octet_str_as_bitstring(this.ctxPtr, valueCtxPtr);
@@ -438,7 +438,7 @@ const initAsn1wr = Module => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_asn1wr_write_data(this.ctxPtr, dataCtxPtr);
@@ -468,7 +468,7 @@ const initAsn1wr = Module => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(valueCtxPtr, valuePtr, valueSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_asn1wr_write_utf8_str(this.ctxPtr, valueCtxPtr);
@@ -498,7 +498,7 @@ const initAsn1wr = Module => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(valueCtxPtr, valuePtr, valueSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_asn1wr_write_oid(this.ctxPtr, valueCtxPtr);
@@ -516,7 +516,7 @@ const initAsn1wr = Module => {
         writeSequence(len) {
             // assert(typeof len === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_sequence(this.ctxPtr, len);
             return proxyResult;
         }
@@ -528,11 +528,13 @@ const initAsn1wr = Module => {
         writeSet(len) {
             // assert(typeof len === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_set(this.ctxPtr, len);
             return proxyResult;
         }
     }
+
+    return Asn1wr;
 };
 
 module.exports = initAsn1wr;

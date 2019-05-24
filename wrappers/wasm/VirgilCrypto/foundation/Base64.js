@@ -35,7 +35,7 @@
  */
 
 
-const initBase64 = Module => {
+const initBase64 = (Module, modules) => {
     /**
      * Implementation of the Base64 algorithm RFC 1421 and RFC 2045.
      */
@@ -47,7 +47,7 @@ const initBase64 = Module => {
         static encodedLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_base64_encoded_len(dataLen);
             return proxyResult;
         }
@@ -93,7 +93,7 @@ const initBase64 = Module => {
         static decodedLen(strLen) {
             // assert(typeof strLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_base64_decoded_len(strLen);
             return proxyResult;
         }
@@ -121,7 +121,7 @@ const initBase64 = Module => {
 
             try {
                 const proxyResult = Module._vscf_base64_decode(strCtxPtr, dataCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const dataPtr = Module._vsc_buffer_bytes(dataCtxPtr);
                 const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataSize);
@@ -133,6 +133,8 @@ const initBase64 = Module => {
             }
         }
     }
+
+    return Base64;
 };
 
 module.exports = initBase64;

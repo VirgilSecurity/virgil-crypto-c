@@ -35,7 +35,7 @@
  */
 
 
-const initSha224 = Module => {
+const initSha224 = (Module, modules) => {
     /**
      * This is MbedTLS implementation of SHA224.
      */
@@ -68,7 +68,7 @@ const initSha224 = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'Sha224';
 
             if (typeof ctxPtr === 'undefined') {
@@ -112,7 +112,7 @@ const initSha224 = Module => {
          * Provide algorithm identificator.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_sha224_alg_id(this.ctxPtr);
             return proxyResult;
         }
@@ -121,10 +121,10 @@ const initSha224 = Module => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_sha224_produce_alg_info(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -133,7 +133,7 @@ const initSha224 = Module => {
          */
         restoreAlgInfo(algInfo) {
             const proxyResult = Module._vscf_sha224_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -221,6 +221,8 @@ const initSha224 = Module => {
             }
         }
     }
+
+    return Sha224;
 };
 
 module.exports = initSha224;

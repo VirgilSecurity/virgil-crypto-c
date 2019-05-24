@@ -35,7 +35,7 @@
  */
 
 
-const initCipherAlgInfo = Module => {
+const initCipherAlgInfo = (Module, modules) => {
     /**
      * Handle symmetric cipher algorithm information.
      */
@@ -46,7 +46,7 @@ const initCipherAlgInfo = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'CipherAlgInfo';
 
             if (typeof ctxPtr === 'undefined') {
@@ -90,7 +90,7 @@ const initCipherAlgInfo = Module => {
          * Provide algorithm identificator.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_cipher_alg_info_alg_id(this.ctxPtr);
             return proxyResult;
         }
@@ -115,6 +115,8 @@ const initCipherAlgInfo = Module => {
             }
         }
     }
+
+    return CipherAlgInfo;
 };
 
 module.exports = initCipherAlgInfo;

@@ -35,7 +35,7 @@
  */
 
 
-const initPheServer = Module => {
+const initPheServer = (Module, modules) => {
     /**
      * Class for server-side PHE crypto operations.
      * This class is thread-safe in case if VSCE_MULTI_THREAD defined
@@ -47,7 +47,7 @@ const initPheServer = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'PheServer';
 
             if (typeof ctxPtr === 'undefined') {
@@ -105,7 +105,7 @@ const initPheServer = Module => {
 
         setupDefaults() {
             const proxyResult = Module._vsce_phe_server_setup_defaults(this.ctxPtr);
-            PheError.handleStatusCode(proxyResult);
+            modules.PheError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -120,7 +120,7 @@ const initPheServer = Module => {
 
             try {
                 const proxyResult = Module._vsce_phe_server_generate_server_key_pair(this.ctxPtr, serverPrivateKeyCtxPtr, serverPublicKeyCtxPtr);
-                PheError.handleStatusCode(proxyResult);
+                modules.PheError.handleStatusCode(proxyResult);
 
                 const serverPrivateKeyPtr = Module._vsc_buffer_bytes(serverPrivateKeyCtxPtr);
                 const serverPrivateKey = Module.HEAPU8.slice(serverPrivateKeyPtr, serverPrivateKeyPtr + serverPrivateKeySize);
@@ -138,7 +138,7 @@ const initPheServer = Module => {
          * Buffer size needed to fit EnrollmentResponse
          */
         enrollmentResponseLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vsce_phe_server_enrollment_response_len(this.ctxPtr);
             return proxyResult;
         }
@@ -179,7 +179,7 @@ const initPheServer = Module => {
 
             try {
                 const proxyResult = Module._vsce_phe_server_get_enrollment(this.ctxPtr, serverPrivateKeyCtxPtr, serverPublicKeyCtxPtr, enrollmentResponseCtxPtr);
-                PheError.handleStatusCode(proxyResult);
+                modules.PheError.handleStatusCode(proxyResult);
 
                 const enrollmentResponsePtr = Module._vsc_buffer_bytes(enrollmentResponseCtxPtr);
                 const enrollmentResponse = Module.HEAPU8.slice(enrollmentResponsePtr, enrollmentResponsePtr + enrollmentResponseSize);
@@ -197,7 +197,7 @@ const initPheServer = Module => {
          * Buffer size needed to fit VerifyPasswordResponse
          */
         verifyPasswordResponseLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vsce_phe_server_verify_password_response_len(this.ctxPtr);
             return proxyResult;
         }
@@ -251,7 +251,7 @@ const initPheServer = Module => {
 
             try {
                 const proxyResult = Module._vsce_phe_server_verify_password(this.ctxPtr, serverPrivateKeyCtxPtr, serverPublicKeyCtxPtr, verifyPasswordRequestCtxPtr, verifyPasswordResponseCtxPtr);
-                PheError.handleStatusCode(proxyResult);
+                modules.PheError.handleStatusCode(proxyResult);
 
                 const verifyPasswordResponsePtr = Module._vsc_buffer_bytes(verifyPasswordResponseCtxPtr);
                 const verifyPasswordResponse = Module.HEAPU8.slice(verifyPasswordResponsePtr, verifyPasswordResponsePtr + verifyPasswordResponseSize);
@@ -271,7 +271,7 @@ const initPheServer = Module => {
          * Buffer size needed to fit UpdateToken
          */
         updateTokenLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vsce_phe_server_update_token_len(this.ctxPtr);
             return proxyResult;
         }
@@ -305,7 +305,7 @@ const initPheServer = Module => {
 
             try {
                 const proxyResult = Module._vsce_phe_server_rotate_keys(this.ctxPtr, serverPrivateKeyCtxPtr, newServerPrivateKeyCtxPtr, newServerPublicKeyCtxPtr, updateTokenCtxPtr);
-                PheError.handleStatusCode(proxyResult);
+                modules.PheError.handleStatusCode(proxyResult);
 
                 const newServerPrivateKeyPtr = Module._vsc_buffer_bytes(newServerPrivateKeyCtxPtr);
                 const newServerPrivateKey = Module.HEAPU8.slice(newServerPrivateKeyPtr, newServerPrivateKeyPtr + newServerPrivateKeySize);
@@ -325,6 +325,8 @@ const initPheServer = Module => {
             }
         }
     }
+
+    return PheServer;
 };
 
 module.exports = initPheServer;

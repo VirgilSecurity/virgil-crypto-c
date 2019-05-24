@@ -35,7 +35,7 @@
  */
 
 
-const initHmac = Module => {
+const initHmac = (Module, modules) => {
     /**
      * Virgil Security implementation of HMAC algorithm (RFC 2104) (FIPS PUB 198-1).
      */
@@ -46,7 +46,7 @@ const initHmac = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'Hmac';
 
             if (typeof ctxPtr === 'undefined') {
@@ -95,7 +95,7 @@ const initHmac = Module => {
          * Provide algorithm identificator.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_hmac_alg_id(this.ctxPtr);
             return proxyResult;
         }
@@ -104,10 +104,10 @@ const initHmac = Module => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_hmac_produce_alg_info(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -116,14 +116,14 @@ const initHmac = Module => {
          */
         restoreAlgInfo(algInfo) {
             const proxyResult = Module._vscf_hmac_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
          * Size of the digest (mac output) in bytes.
          */
         digestLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_hmac_digest_len(this.ctxPtr);
             return proxyResult;
         }
@@ -255,6 +255,8 @@ const initHmac = Module => {
             Module._vscf_hmac_reset(this.ctxPtr);
         }
     }
+
+    return Hmac;
 };
 
 module.exports = initHmac;

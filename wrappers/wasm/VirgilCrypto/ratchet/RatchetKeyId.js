@@ -35,7 +35,7 @@
  */
 
 
-const initRatchetKeyId = Module => {
+const initRatchetKeyId = (Module, modules) => {
     /**
      * Utils class for working with keys formats.
      */
@@ -46,7 +46,7 @@ const initRatchetKeyId = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'RatchetKeyId';
 
             if (typeof ctxPtr === 'undefined') {
@@ -109,7 +109,7 @@ const initRatchetKeyId = Module => {
 
             try {
                 const proxyResult = Module._vscr_ratchet_key_id_compute_public_key_id(this.ctxPtr, publicKeyCtxPtr, keyIdCtxPtr);
-                RatchetError.handleStatusCode(proxyResult);
+                modules.RatchetError.handleStatusCode(proxyResult);
 
                 const keyIdPtr = Module._vsc_buffer_bytes(keyIdCtxPtr);
                 const keyId = Module.HEAPU8.slice(keyIdPtr, keyIdPtr + keyIdSize);
@@ -121,6 +121,8 @@ const initRatchetKeyId = Module => {
             }
         }
     }
+
+    return RatchetKeyId;
 };
 
 module.exports = initRatchetKeyId;

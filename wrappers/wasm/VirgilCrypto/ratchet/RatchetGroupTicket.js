@@ -35,7 +35,7 @@
  */
 
 
-const initRatchetGroupTicket = Module => {
+const initRatchetGroupTicket = (Module, modules) => {
     /**
      * Group ticket used to start group session or change participants.
      */
@@ -46,7 +46,7 @@ const initRatchetGroupTicket = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'RatchetGroupTicket';
 
             if (typeof ctxPtr === 'undefined') {
@@ -100,7 +100,7 @@ const initRatchetGroupTicket = Module => {
          */
         setupDefaults() {
             const proxyResult = Module._vscr_ratchet_group_ticket_setup_defaults(this.ctxPtr);
-            RatchetError.handleStatusCode(proxyResult);
+            modules.RatchetError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -108,7 +108,7 @@ const initRatchetGroupTicket = Module => {
          */
         setupTicketAsNew() {
             const proxyResult = Module._vscr_ratchet_group_ticket_setup_ticket_as_new(this.ctxPtr);
-            RatchetError.handleStatusCode(proxyResult);
+            modules.RatchetError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -144,7 +144,7 @@ const initRatchetGroupTicket = Module => {
 
             try {
                 const proxyResult = Module._vscr_ratchet_group_ticket_add_new_participant(this.ctxPtr, participantIdCtxPtr, publicKeyCtxPtr);
-                RatchetError.handleStatusCode(proxyResult);
+                modules.RatchetError.handleStatusCode(proxyResult);
             } finally {
                 Module._free(participantIdPtr);
                 Module._free(participantIdCtxPtr);
@@ -173,7 +173,7 @@ const initRatchetGroupTicket = Module => {
 
             try {
                 const proxyResult = Module._vscr_ratchet_group_ticket_remove_participant(this.ctxPtr, participantIdCtxPtr);
-                RatchetError.handleStatusCode(proxyResult);
+                modules.RatchetError.handleStatusCode(proxyResult);
             } finally {
                 Module._free(participantIdPtr);
                 Module._free(participantIdCtxPtr);
@@ -184,13 +184,15 @@ const initRatchetGroupTicket = Module => {
          * Generates message that should be sent to all participants using secure channel.
          */
         getTicketMessage() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscr_ratchet_group_ticket_get_ticket_message(this.ctxPtr);
 
-            const jsResult = RatchetGroupMessage.newAndUseCContext(proxyResult);
+            const jsResult = modules.RatchetGroupMessage.newAndUseCContext(proxyResult);
             return jsResult;
         }
     }
+
+    return RatchetGroupTicket;
 };
 
 module.exports = initRatchetGroupTicket;

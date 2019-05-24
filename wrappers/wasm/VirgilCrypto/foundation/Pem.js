@@ -35,7 +35,7 @@
  */
 
 
-const initPem = Module => {
+const initPem = (Module, modules) => {
     /**
      * Simple PEM wrapper.
      */
@@ -48,7 +48,7 @@ const initPem = Module => {
             // assert(typeof title === 'string')
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_pem_wrapped_len(title, dataLen);
             return proxyResult;
         }
@@ -96,7 +96,7 @@ const initPem = Module => {
         static unwrappedLen(pemLen) {
             // assert(typeof pemLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_pem_unwrapped_len(pemLen);
             return proxyResult;
         }
@@ -124,7 +124,7 @@ const initPem = Module => {
 
             try {
                 const proxyResult = Module._vscf_pem_unwrap(pemCtxPtr, dataCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const dataPtr = Module._vsc_buffer_bytes(dataCtxPtr);
                 const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataSize);
@@ -172,6 +172,8 @@ const initPem = Module => {
             }
         }
     }
+
+    return Pem;
 };
 
 module.exports = initPem;

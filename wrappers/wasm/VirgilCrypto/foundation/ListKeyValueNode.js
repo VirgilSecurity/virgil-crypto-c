@@ -35,7 +35,7 @@
  */
 
 
-const initListKeyValueNode = Module => {
+const initListKeyValueNode = (Module, modules) => {
     /**
      * Double linked list node with key and value.
      */
@@ -46,7 +46,7 @@ const initListKeyValueNode = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'ListKeyValueNode';
 
             if (typeof ctxPtr === 'undefined') {
@@ -86,6 +86,8 @@ const initListKeyValueNode = Module => {
             }
         }
     }
+
+    return ListKeyValueNode;
 };
 
 module.exports = initListKeyValueNode;

@@ -35,7 +35,7 @@
  */
 
 
-const initAsn1rd = Module => {
+const initAsn1rd = (Module, modules) => {
     /**
      * This is MbedTLS implementation of ASN.1 reader.
      */
@@ -46,7 +46,7 @@ const initAsn1rd = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'Asn1rd';
 
             if (typeof ctxPtr === 'undefined') {
@@ -116,7 +116,7 @@ const initAsn1rd = Module => {
          * Return length in bytes how many bytes are left for reading.
          */
         leftLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_left_len(this.ctxPtr);
             return proxyResult;
         }
@@ -125,7 +125,7 @@ const initAsn1rd = Module => {
          * Return true if status is not "success".
          */
         hasError() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_has_error(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
@@ -137,14 +137,14 @@ const initAsn1rd = Module => {
          */
         status() {
             const proxyResult = Module._vscf_asn1rd_status(this.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
          * Get tag of the current ASN.1 element.
          */
         getTag() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_get_tag(this.ctxPtr);
             return proxyResult;
         }
@@ -153,7 +153,7 @@ const initAsn1rd = Module => {
          * Get length of the current ASN.1 element.
          */
         getLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_get_len(this.ctxPtr);
             return proxyResult;
         }
@@ -162,7 +162,7 @@ const initAsn1rd = Module => {
          * Get length of the current ASN.1 element with tag and length itself.
          */
         getDataLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_get_data_len(this.ctxPtr);
             return proxyResult;
         }
@@ -174,7 +174,7 @@ const initAsn1rd = Module => {
         readTag(tag) {
             // assert(typeof tag === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_tag(this.ctxPtr, tag);
             return proxyResult;
         }
@@ -187,7 +187,7 @@ const initAsn1rd = Module => {
         readContextTag(tag) {
             // assert(typeof tag === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_context_tag(this.ctxPtr, tag);
             return proxyResult;
         }
@@ -196,7 +196,7 @@ const initAsn1rd = Module => {
          * Read ASN.1 type: INTEGER.
          */
         readInt() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_int(this.ctxPtr);
             return proxyResult;
         }
@@ -205,7 +205,7 @@ const initAsn1rd = Module => {
          * Read ASN.1 type: INTEGER.
          */
         readInt8() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_int8(this.ctxPtr);
             return proxyResult;
         }
@@ -214,7 +214,7 @@ const initAsn1rd = Module => {
          * Read ASN.1 type: INTEGER.
          */
         readInt16() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_int16(this.ctxPtr);
             return proxyResult;
         }
@@ -223,7 +223,7 @@ const initAsn1rd = Module => {
          * Read ASN.1 type: INTEGER.
          */
         readInt32() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_int32(this.ctxPtr);
             return proxyResult;
         }
@@ -232,7 +232,7 @@ const initAsn1rd = Module => {
          * Read ASN.1 type: INTEGER.
          */
         readInt64() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_int64(this.ctxPtr);
             return proxyResult;
         }
@@ -241,7 +241,7 @@ const initAsn1rd = Module => {
          * Read ASN.1 type: INTEGER.
          */
         readUint() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_uint(this.ctxPtr);
             return proxyResult;
         }
@@ -250,7 +250,7 @@ const initAsn1rd = Module => {
          * Read ASN.1 type: INTEGER.
          */
         readUint8() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_uint8(this.ctxPtr);
             return proxyResult;
         }
@@ -259,7 +259,7 @@ const initAsn1rd = Module => {
          * Read ASN.1 type: INTEGER.
          */
         readUint16() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_uint16(this.ctxPtr);
             return proxyResult;
         }
@@ -268,7 +268,7 @@ const initAsn1rd = Module => {
          * Read ASN.1 type: INTEGER.
          */
         readUint32() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_uint32(this.ctxPtr);
             return proxyResult;
         }
@@ -277,7 +277,7 @@ const initAsn1rd = Module => {
          * Read ASN.1 type: INTEGER.
          */
         readUint64() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_uint64(this.ctxPtr);
             return proxyResult;
         }
@@ -286,7 +286,7 @@ const initAsn1rd = Module => {
          * Read ASN.1 type: BOOLEAN.
          */
         readBool() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_bool(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
@@ -415,7 +415,7 @@ const initAsn1rd = Module => {
          * Return element length.
          */
         readSequence() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_sequence(this.ctxPtr);
             return proxyResult;
         }
@@ -425,11 +425,13 @@ const initAsn1rd = Module => {
          * Return element length.
          */
         readSet() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_set(this.ctxPtr);
             return proxyResult;
         }
     }
+
+    return Asn1rd;
 };
 
 module.exports = initAsn1rd;

@@ -35,7 +35,7 @@
  */
 
 
-const initMessageInfoDerSerializer = Module => {
+const initMessageInfoDerSerializer = (Module, modules) => {
     /**
      * CMS based implementation of the class "message info" serialization.
      */
@@ -54,7 +54,7 @@ const initMessageInfoDerSerializer = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'MessageInfoDerSerializer';
 
             if (typeof ctxPtr === 'undefined') {
@@ -108,7 +108,7 @@ const initMessageInfoDerSerializer = Module => {
          * Return buffer size enough to hold serialized message info.
          */
         serializedLen(messageInfo) {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_message_info_der_serializer_serialized_len(this.ctxPtr, messageInfo.ctxPtr);
             return proxyResult;
         }
@@ -153,7 +153,7 @@ const initMessageInfoDerSerializer = Module => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_message_info_der_serializer_read_prefix(this.ctxPtr, dataCtxPtr);
@@ -185,15 +185,15 @@ const initMessageInfoDerSerializer = Module => {
             const errorCtxSize = Module.vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_message_info_der_serializer_deserialize(this.ctxPtr, dataCtxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = MessageInfo.newAndTakeCContext(proxyResult);
+                const jsResult = modules.MessageInfo.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(dataPtr);
@@ -209,6 +209,8 @@ const initMessageInfoDerSerializer = Module => {
             Module._vscf_message_info_der_serializer_setup_defaults(this.ctxPtr);
         }
     }
+
+    return MessageInfoDerSerializer;
 };
 
 module.exports = initMessageInfoDerSerializer;

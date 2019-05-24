@@ -35,7 +35,7 @@
  */
 
 
-const initFoundationError = Module => {
+const initFoundationError = (Module, modules) => {
     /**
      * Defines the library status codes.
      */
@@ -200,6 +200,8 @@ const initFoundationError = Module => {
             }
         }
     }
+
+    return FoundationError;
 };
 
 module.exports = initFoundationError;

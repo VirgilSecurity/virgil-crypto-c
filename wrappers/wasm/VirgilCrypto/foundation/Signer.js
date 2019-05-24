@@ -35,7 +35,7 @@
  */
 
 
-const initSigner = Module => {
+const initSigner = (Module, modules) => {
     /**
      * Sign data of any size.
      */
@@ -46,7 +46,7 @@ const initSigner = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'Signer';
 
             if (typeof ctxPtr === 'undefined') {
@@ -128,7 +128,7 @@ const initSigner = Module => {
          * Return length of the signature.
          */
         signatureLen(privateKey) {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_signer_signature_len(this.ctxPtr, privateKey.ctxPtr);
             return proxyResult;
         }
@@ -142,7 +142,7 @@ const initSigner = Module => {
 
             try {
                 const proxyResult = Module._vscf_signer_sign(this.ctxPtr, privateKey.ctxPtr, signatureCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const signaturePtr = Module._vsc_buffer_bytes(signatureCtxPtr);
                 const signature = Module.HEAPU8.slice(signaturePtr, signaturePtr + signatureSize);
@@ -152,6 +152,8 @@ const initSigner = Module => {
             }
         }
     }
+
+    return Signer;
 };
 
 module.exports = initSigner;

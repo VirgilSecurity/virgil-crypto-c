@@ -35,7 +35,7 @@
  */
 
 
-const initHashBasedAlgInfo = Module => {
+const initHashBasedAlgInfo = (Module, modules) => {
     /**
      * Handle hashed based algorithm information, i.e. HKDF, HMAC, etc.
      */
@@ -46,7 +46,7 @@ const initHashBasedAlgInfo = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'HashBasedAlgInfo';
 
             if (typeof ctxPtr === 'undefined') {
@@ -90,7 +90,7 @@ const initHashBasedAlgInfo = Module => {
          * Provide algorithm identificator.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_hash_based_alg_info_alg_id(this.ctxPtr);
             return proxyResult;
         }
@@ -99,13 +99,15 @@ const initHashBasedAlgInfo = Module => {
          * Return hash algorithm information.
          */
         hashAlgInfo() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_hash_based_alg_info_hash_alg_info(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndUseCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
     }
+
+    return HashBasedAlgInfo;
 };
 
 module.exports = initHashBasedAlgInfo;

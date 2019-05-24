@@ -35,7 +35,7 @@
  */
 
 
-const initAlgFactory = Module => {
+const initAlgFactory = (Module, modules) => {
     /**
      * Create algorithms based on the given information.
      */
@@ -45,10 +45,10 @@ const initAlgFactory = Module => {
          * Create algorithm that implements "hash stream" interface.
          */
         static createHashFromInfo(algInfo) {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_hash_from_info(algInfo.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -56,10 +56,10 @@ const initAlgFactory = Module => {
          * Create algorithm that implements "mac stream" interface.
          */
         static createMacFromInfo(algInfo) {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_mac_from_info(algInfo.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -67,10 +67,10 @@ const initAlgFactory = Module => {
          * Create algorithm that implements "kdf" interface.
          */
         static createKdfFromInfo(algInfo) {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_kdf_from_info(algInfo.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -78,10 +78,10 @@ const initAlgFactory = Module => {
          * Create algorithm that implements "salted kdf" interface.
          */
         static createSaltedKdfFromInfo(algInfo) {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_salted_kdf_from_info(algInfo.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -89,10 +89,10 @@ const initAlgFactory = Module => {
          * Create algorithm that implements "cipher" interface.
          */
         static createCipherFromInfo(algInfo) {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_cipher_from_info(algInfo.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -103,15 +103,15 @@ const initAlgFactory = Module => {
             const errorCtxSize = Module.vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_alg_factory_create_public_key_from_raw_key(rawKey.ctxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(errorCtxPtr);
@@ -125,21 +125,23 @@ const initAlgFactory = Module => {
             const errorCtxSize = Module.vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_alg_factory_create_private_key_from_raw_key(rawKey.ctxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(errorCtxPtr);
             }
         }
     }
+
+    return AlgFactory;
 };
 
 module.exports = initAlgFactory;

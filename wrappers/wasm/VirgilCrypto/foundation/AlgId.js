@@ -35,7 +35,7 @@
  */
 
 
-const initAlgId = Module => {
+const initAlgId = (Module, modules) => {
     /**
      * Define implemented algorithm identificator.
      */

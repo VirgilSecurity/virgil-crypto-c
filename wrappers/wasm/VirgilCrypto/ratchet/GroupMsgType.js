@@ -35,7 +35,7 @@
  */
 
 
-const initGroupMsgType = Module => {
+const initGroupMsgType = (Module, modules) => {
     /**
      * Represents group message type
      */

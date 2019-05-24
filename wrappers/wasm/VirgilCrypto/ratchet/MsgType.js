@@ -35,7 +35,7 @@
  */
 
 
-const initMsgType = Module => {
+const initMsgType = (Module, modules) => {
     /**
      * Represents message type
      */

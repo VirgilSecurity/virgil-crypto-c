@@ -35,7 +35,7 @@
  */
 
 
-const initCtrDrbg = Module => {
+const initCtrDrbg = (Module, modules) => {
     /**
      * Implementation of the RNG using deterministic random bit generators
      * based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
@@ -70,7 +70,7 @@ const initCtrDrbg = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'CtrDrbg';
 
             if (typeof ctxPtr === 'undefined') {
@@ -113,7 +113,7 @@ const initCtrDrbg = Module => {
         set entropySource(entropySource) {
             Module._vscf_ctr_drbg_release_entropy_source(this.ctxPtr)
             const proxyStatus = Module._vscf_ctr_drbg_use_entropy_source(this.ctxPtr, entropySource.ctxPtr)
-            FoundationError.handleStatusCode(proxyStatus)
+            modules.FoundationError.handleStatusCode(proxyStatus)
         }
 
         /**
@@ -127,7 +127,7 @@ const initCtrDrbg = Module => {
 
             try {
                 const proxyResult = Module._vscf_ctr_drbg_random(this.ctxPtr, dataLen, dataCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const dataPtr = Module._vsc_buffer_bytes(dataCtxPtr);
                 const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataSize);
@@ -142,7 +142,7 @@ const initCtrDrbg = Module => {
          */
         reseed() {
             const proxyResult = Module._vscf_ctr_drbg_reseed(this.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -150,7 +150,7 @@ const initCtrDrbg = Module => {
          */
         setupDefaults() {
             const proxyResult = Module._vscf_ctr_drbg_setup_defaults(this.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -180,6 +180,8 @@ const initCtrDrbg = Module => {
             Module._vscf_ctr_drbg_set_entropy_len(this.ctxPtr, len);
         }
     }
+
+    return CtrDrbg;
 };
 
 module.exports = initCtrDrbg;

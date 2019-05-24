@@ -35,7 +35,7 @@
  */
 
 
-const initRecipientCipher = Module => {
+const initRecipientCipher = (Module, modules) => {
     /**
      * This class provides hybrid encryption algorithm that combines symmetric
      * cipher for data encryption and asymmetric cipher and password based
@@ -48,7 +48,7 @@ const initRecipientCipher = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'RecipientCipher';
 
             if (typeof ctxPtr === 'undefined') {
@@ -136,10 +136,10 @@ const initRecipientCipher = Module => {
          * The returned object can be used to add custom params or read it.
          */
         customParams() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_recipient_cipher_custom_params(this.ctxPtr);
 
-            const jsResult = MessageInfoCustomParams.newAndUseCContext(proxyResult);
+            const jsResult = modules.MessageInfoCustomParams.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
@@ -149,7 +149,7 @@ const initRecipientCipher = Module => {
          * Precondition: all recipients and custom parameters should be set.
          */
         messageInfoLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_recipient_cipher_message_info_len(this.ctxPtr);
             return proxyResult;
         }
@@ -159,7 +159,7 @@ const initRecipientCipher = Module => {
          */
         startEncryption() {
             const proxyResult = Module._vscf_recipient_cipher_start_encryption(this.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -196,7 +196,7 @@ const initRecipientCipher = Module => {
         encryptionOutLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_recipient_cipher_encryption_out_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -224,7 +224,7 @@ const initRecipientCipher = Module => {
 
             try {
                 const proxyResult = Module._vscf_recipient_cipher_process_encryption(this.ctxPtr, dataCtxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -245,7 +245,7 @@ const initRecipientCipher = Module => {
 
             try {
                 const proxyResult = Module._vscf_recipient_cipher_finish_encryption(this.ctxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -289,7 +289,7 @@ const initRecipientCipher = Module => {
 
             try {
                 const proxyResult = Module._vscf_recipient_cipher_start_decryption_with_key(this.ctxPtr, recipientIdCtxPtr, privateKey.ctxPtr, messageInfoCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
             } finally {
                 Module._free(recipientIdPtr);
                 Module._free(recipientIdCtxPtr);
@@ -305,7 +305,7 @@ const initRecipientCipher = Module => {
         decryptionOutLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_recipient_cipher_decryption_out_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -334,7 +334,7 @@ const initRecipientCipher = Module => {
 
             try {
                 const proxyResult = Module._vscf_recipient_cipher_process_decryption(this.ctxPtr, dataCtxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -355,7 +355,7 @@ const initRecipientCipher = Module => {
 
             try {
                 const proxyResult = Module._vscf_recipient_cipher_finish_decryption(this.ctxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -365,6 +365,8 @@ const initRecipientCipher = Module => {
             }
         }
     }
+
+    return RecipientCipher;
 };
 
 module.exports = initRecipientCipher;

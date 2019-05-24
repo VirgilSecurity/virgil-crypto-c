@@ -35,7 +35,7 @@
  */
 
 
-const initEntropyAccumulator = Module => {
+const initEntropyAccumulator = (Module, modules) => {
     /**
      * Implementation based on a simple entropy accumulator.
      */
@@ -54,7 +54,7 @@ const initEntropyAccumulator = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'EntropyAccumulator';
 
             if (typeof ctxPtr === 'undefined') {
@@ -98,7 +98,7 @@ const initEntropyAccumulator = Module => {
          * Defines that implemented source is strong.
          */
         isStrong() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_entropy_accumulator_is_strong(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
@@ -116,7 +116,7 @@ const initEntropyAccumulator = Module => {
 
             try {
                 const proxyResult = Module._vscf_entropy_accumulator_gather(this.ctxPtr, len, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -143,6 +143,8 @@ const initEntropyAccumulator = Module => {
             Module._vscf_entropy_accumulator_add_source(this.ctxPtr, source.ctxPtr, threshold);
         }
     }
+
+    return EntropyAccumulator;
 };
 
 module.exports = initEntropyAccumulator;

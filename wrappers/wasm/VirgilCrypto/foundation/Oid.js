@@ -35,7 +35,7 @@
  */
 
 
-const initOid = Module => {
+const initOid = (Module, modules) => {
     /**
      * Provide conversion logic between OID and algorithm tags.
      */
@@ -79,7 +79,7 @@ const initOid = Module => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(oidCtxPtr, oidPtr, oidSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_oid_to_alg_id(oidCtxPtr);
@@ -128,7 +128,7 @@ const initOid = Module => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(oidCtxPtr, oidPtr, oidSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_oid_to_id(oidCtxPtr);
@@ -143,7 +143,7 @@ const initOid = Module => {
          * Map oid identifier to the algorithm identifier.
          */
         static idToAlgId(oidId) {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_oid_id_to_alg_id(oidId);
             return proxyResult;
         }
@@ -179,7 +179,7 @@ const initOid = Module => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(rhsCtxPtr, rhsPtr, rhsSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_oid_equal(lhsCtxPtr, rhsCtxPtr);
@@ -194,6 +194,8 @@ const initOid = Module => {
             }
         }
     }
+
+    return Oid;
 };
 
 module.exports = initOid;

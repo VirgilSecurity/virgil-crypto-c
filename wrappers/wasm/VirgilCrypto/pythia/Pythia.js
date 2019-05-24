@@ -35,7 +35,7 @@
  */
 
 
-const initPythia = Module => {
+const initPythia = (Module, modules) => {
     /**
      * Provide Pythia implementation based on the Virgil Security.
      */
@@ -47,7 +47,7 @@ const initPythia = Module => {
          */
         static configure() {
             const proxyResult = Module._vscp_pythia_configure();
-            PythiaError.handleStatusCode(proxyResult);
+            modules.PythiaError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -62,7 +62,7 @@ const initPythia = Module => {
          * Return length of the buffer needed to hold 'blinded password'.
          */
         static blindedPasswordBufLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscp_pythia_blinded_password_buf_len();
             return proxyResult;
         }
@@ -71,7 +71,7 @@ const initPythia = Module => {
          * Return length of the buffer needed to hold 'deblinded password'.
          */
         static deblindedPasswordBufLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscp_pythia_deblinded_password_buf_len();
             return proxyResult;
         }
@@ -80,7 +80,7 @@ const initPythia = Module => {
          * Return length of the buffer needed to hold 'blinding secret'.
          */
         static blindingSecretBufLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscp_pythia_blinding_secret_buf_len();
             return proxyResult;
         }
@@ -89,7 +89,7 @@ const initPythia = Module => {
          * Return length of the buffer needed to hold 'transformation private key'.
          */
         static transformationPrivateKeyBufLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscp_pythia_transformation_private_key_buf_len();
             return proxyResult;
         }
@@ -98,7 +98,7 @@ const initPythia = Module => {
          * Return length of the buffer needed to hold 'transformation public key'.
          */
         static transformationPublicKeyBufLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscp_pythia_transformation_public_key_buf_len();
             return proxyResult;
         }
@@ -107,7 +107,7 @@ const initPythia = Module => {
          * Return length of the buffer needed to hold 'transformed password'.
          */
         static transformedPasswordBufLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscp_pythia_transformed_password_buf_len();
             return proxyResult;
         }
@@ -116,7 +116,7 @@ const initPythia = Module => {
          * Return length of the buffer needed to hold 'transformed tweak'.
          */
         static transformedTweakBufLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscp_pythia_transformed_tweak_buf_len();
             return proxyResult;
         }
@@ -125,7 +125,7 @@ const initPythia = Module => {
          * Return length of the buffer needed to hold 'proof value'.
          */
         static proofValueBufLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscp_pythia_proof_value_buf_len();
             return proxyResult;
         }
@@ -134,7 +134,7 @@ const initPythia = Module => {
          * Return length of the buffer needed to hold 'password update token'.
          */
         static passwordUpdateTokenBufLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscp_pythia_password_update_token_buf_len();
             return proxyResult;
         }
@@ -166,7 +166,7 @@ const initPythia = Module => {
 
             try {
                 const proxyResult = Module._vscp_pythia_blind(passwordCtxPtr, blindedPasswordCtxPtr, blindingSecretCtxPtr);
-                PythiaError.handleStatusCode(proxyResult);
+                modules.PythiaError.handleStatusCode(proxyResult);
 
                 const blindedPasswordPtr = Module._vsc_buffer_bytes(blindedPasswordCtxPtr);
                 const blindedPassword = Module.HEAPU8.slice(blindedPasswordPtr, blindedPasswordPtr + blindedPasswordSize);
@@ -218,7 +218,7 @@ const initPythia = Module => {
 
             try {
                 const proxyResult = Module._vscp_pythia_deblind(transformedPasswordCtxPtr, blindingSecretCtxPtr, deblindedPasswordCtxPtr);
-                PythiaError.handleStatusCode(proxyResult);
+                modules.PythiaError.handleStatusCode(proxyResult);
 
                 const deblindedPasswordPtr = Module._vsc_buffer_bytes(deblindedPasswordCtxPtr);
                 const deblindedPassword = Module.HEAPU8.slice(deblindedPasswordPtr, deblindedPasswordPtr + deblindedPasswordSize);
@@ -284,7 +284,7 @@ const initPythia = Module => {
 
             try {
                 const proxyResult = Module._vscp_pythia_compute_transformation_key_pair(transformationKeyIdCtxPtr, pythiaSecretCtxPtr, pythiaScopeSecretCtxPtr, transformationPrivateKeyCtxPtr, transformationPublicKeyCtxPtr);
-                PythiaError.handleStatusCode(proxyResult);
+                modules.PythiaError.handleStatusCode(proxyResult);
 
                 const transformationPrivateKeyPtr = Module._vsc_buffer_bytes(transformationPrivateKeyCtxPtr);
                 const transformationPrivateKey = Module.HEAPU8.slice(transformationPrivateKeyPtr, transformationPrivateKeyPtr + transformationPrivateKeySize);
@@ -356,7 +356,7 @@ const initPythia = Module => {
 
             try {
                 const proxyResult = Module._vscp_pythia_transform(blindedPasswordCtxPtr, tweakCtxPtr, transformationPrivateKeyCtxPtr, transformedPasswordCtxPtr, transformedTweakCtxPtr);
-                PythiaError.handleStatusCode(proxyResult);
+                modules.PythiaError.handleStatusCode(proxyResult);
 
                 const transformedPasswordPtr = Module._vsc_buffer_bytes(transformedPasswordCtxPtr);
                 const transformedPassword = Module.HEAPU8.slice(transformedPasswordPtr, transformedPasswordPtr + transformedPasswordSize);
@@ -454,7 +454,7 @@ const initPythia = Module => {
 
             try {
                 const proxyResult = Module._vscp_pythia_prove(transformedPasswordCtxPtr, blindedPasswordCtxPtr, transformedTweakCtxPtr, transformationPrivateKeyCtxPtr, transformationPublicKeyCtxPtr, proofValueCCtxPtr, proofValueUCtxPtr);
-                PythiaError.handleStatusCode(proxyResult);
+                modules.PythiaError.handleStatusCode(proxyResult);
 
                 const proofValueCPtr = Module._vsc_buffer_bytes(proofValueCCtxPtr);
                 const proofValueC = Module.HEAPU8.slice(proofValueCPtr, proofValueCPtr + proofValueCSize);
@@ -565,13 +565,13 @@ const initPythia = Module => {
             const errorCtxSize = Module.vscp_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscp_pythia_verify(transformedPasswordCtxPtr, blindedPasswordCtxPtr, tweakCtxPtr, transformationPublicKeyCtxPtr, proofValueCCtxPtr, proofValueUCtxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscp_error_status(errorCtxPtr);
-                PythiaError.handleStatusCode(errorStatus);
+                modules.PythiaError.handleStatusCode(errorStatus);
 
                 const booleanResult = !!proxyResult;
                 return booleanResult;
@@ -631,7 +631,7 @@ const initPythia = Module => {
 
             try {
                 const proxyResult = Module._vscp_pythia_get_password_update_token(previousTransformationPrivateKeyCtxPtr, newTransformationPrivateKeyCtxPtr, passwordUpdateTokenCtxPtr);
-                PythiaError.handleStatusCode(proxyResult);
+                modules.PythiaError.handleStatusCode(proxyResult);
 
                 const passwordUpdateTokenPtr = Module._vsc_buffer_bytes(passwordUpdateTokenCtxPtr);
                 const passwordUpdateToken = Module.HEAPU8.slice(passwordUpdateTokenPtr, passwordUpdateTokenPtr + passwordUpdateTokenSize);
@@ -682,7 +682,7 @@ const initPythia = Module => {
 
             try {
                 const proxyResult = Module._vscp_pythia_update_deblinded_with_token(deblindedPasswordCtxPtr, passwordUpdateTokenCtxPtr, updatedDeblindedPasswordCtxPtr);
-                PythiaError.handleStatusCode(proxyResult);
+                modules.PythiaError.handleStatusCode(proxyResult);
 
                 const updatedDeblindedPasswordPtr = Module._vsc_buffer_bytes(updatedDeblindedPasswordCtxPtr);
                 const updatedDeblindedPassword = Module.HEAPU8.slice(updatedDeblindedPasswordPtr, updatedDeblindedPasswordPtr + updatedDeblindedPasswordSize);
@@ -696,6 +696,8 @@ const initPythia = Module => {
             }
         }
     }
+
+    return Pythia;
 };
 
 module.exports = initPythia;

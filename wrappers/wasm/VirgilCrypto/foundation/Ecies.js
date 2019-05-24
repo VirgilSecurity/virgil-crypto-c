@@ -35,7 +35,7 @@
  */
 
 
-const initEcies = Module => {
+const initEcies = (Module, modules) => {
     /**
      * Virgil implementation of the ECIES algorithm.
      */
@@ -46,7 +46,7 @@ const initEcies = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'Ecies';
 
             if (typeof ctxPtr === 'undefined') {
@@ -163,7 +163,7 @@ const initEcies = Module => {
 
             try {
                 const proxyResult = Module._vscf_ecies_encrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -181,7 +181,7 @@ const initEcies = Module => {
         encryptedLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_ecies_encrypted_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -209,7 +209,7 @@ const initEcies = Module => {
 
             try {
                 const proxyResult = Module._vscf_ecies_decrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -227,7 +227,7 @@ const initEcies = Module => {
         decryptedLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_ecies_decrypted_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -237,9 +237,11 @@ const initEcies = Module => {
          */
         setupDefaults() {
             const proxyResult = Module._vscf_ecies_setup_defaults(this.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
     }
+
+    return Ecies;
 };
 
 module.exports = initEcies;

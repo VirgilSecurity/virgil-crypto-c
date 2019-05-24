@@ -35,7 +35,7 @@
  */
 
 
-const initRatchetError = Module => {
+const initRatchetError = (Module, modules) => {
     /**
      * Defines the library status codes.
      */
@@ -168,6 +168,8 @@ const initRatchetError = Module => {
             }
         }
     }
+
+    return RatchetError;
 };
 
 module.exports = initRatchetError;

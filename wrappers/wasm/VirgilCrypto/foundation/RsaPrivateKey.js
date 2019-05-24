@@ -35,7 +35,7 @@
  */
 
 
-const initRsaPrivateKey = Module => {
+const initRsaPrivateKey = (Module, modules) => {
     class RsaPrivateKey {
 
         /**
@@ -65,7 +65,7 @@ const initRsaPrivateKey = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'RsaPrivateKey';
 
             if (typeof ctxPtr === 'undefined') {
@@ -124,7 +124,7 @@ const initRsaPrivateKey = Module => {
          * Provide algorithm identificator.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_rsa_private_key_alg_id(this.ctxPtr);
             return proxyResult;
         }
@@ -133,10 +133,10 @@ const initRsaPrivateKey = Module => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_rsa_private_key_produce_alg_info(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -145,14 +145,14 @@ const initRsaPrivateKey = Module => {
          */
         restoreAlgInfo(algInfo) {
             const proxyResult = Module._vscf_rsa_private_key_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
          * Length of the key in bytes.
          */
         keyLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_rsa_private_key_key_len(this.ctxPtr);
             return proxyResult;
         }
@@ -161,7 +161,7 @@ const initRsaPrivateKey = Module => {
          * Length of the key in bits.
          */
         keyBitlen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_rsa_private_key_key_bitlen(this.ctxPtr);
             return proxyResult;
         }
@@ -172,7 +172,7 @@ const initRsaPrivateKey = Module => {
          */
         generateKey() {
             const proxyResult = Module._vscf_rsa_private_key_generate_key(this.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -198,7 +198,7 @@ const initRsaPrivateKey = Module => {
 
             try {
                 const proxyResult = Module._vscf_rsa_private_key_decrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -216,7 +216,7 @@ const initRsaPrivateKey = Module => {
         decryptedLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_rsa_private_key_decrypted_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -225,7 +225,7 @@ const initRsaPrivateKey = Module => {
          * Return length in bytes required to hold signature.
          */
         signatureLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_rsa_private_key_signature_len(this.ctxPtr);
             return proxyResult;
         }
@@ -253,7 +253,7 @@ const initRsaPrivateKey = Module => {
 
             try {
                 const proxyResult = Module._vscf_rsa_private_key_sign_hash(this.ctxPtr, hashDigestCtxPtr, hashId, signatureCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const signaturePtr = Module._vsc_buffer_bytes(signatureCtxPtr);
                 const signature = Module.HEAPU8.slice(signaturePtr, signaturePtr + signatureSize);
@@ -269,10 +269,10 @@ const initRsaPrivateKey = Module => {
          * Extract public part of the key.
          */
         extractPublicKey() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_rsa_private_key_extract_public_key(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -289,7 +289,7 @@ const initRsaPrivateKey = Module => {
 
             try {
                 const proxyResult = Module._vscf_rsa_private_key_export_private_key(this.ctxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -303,7 +303,7 @@ const initRsaPrivateKey = Module => {
          * Return length in bytes required to hold exported private key.
          */
         exportedPrivateKeyLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_rsa_private_key_exported_private_key_len(this.ctxPtr);
             return proxyResult;
         }
@@ -332,7 +332,7 @@ const initRsaPrivateKey = Module => {
 
             try {
                 const proxyResult = Module._vscf_rsa_private_key_import_private_key(this.ctxPtr, dataCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
             } finally {
                 Module._free(dataPtr);
                 Module._free(dataCtxPtr);
@@ -344,7 +344,7 @@ const initRsaPrivateKey = Module => {
          */
         setupDefaults() {
             const proxyResult = Module._vscf_rsa_private_key_setup_defaults(this.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -355,6 +355,8 @@ const initRsaPrivateKey = Module => {
             Module._vscf_rsa_private_key_set_keygen_params(this.ctxPtr, bitlen);
         }
     }
+
+    return RsaPrivateKey;
 };
 
 module.exports = initRsaPrivateKey;

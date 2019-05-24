@@ -156,7 +156,6 @@ function wasm_create_class_default_constructor(class, wasm_class)
 
         new wasm_argument to wasm_constructor
             .name = "ctxPtr"
-            .default = "undefined"
         endnew
 
         new wasm_code to wasm_constructor
@@ -261,8 +260,8 @@ function wasm_create_custom_interface_class_constructors(source, wasm_class, was
         for my.source.implementation as impl
             my.code_switch_statement_cases ?= ""
             my.code_switch_statement_cases += terminator + format_left("\
-                case $(my.wasm_project.impl_tag_enum_name:).$(wasm_derive_constant_name_str(impl.name));
-                    return $(wasm_derive_class_name(impl)).newAndTakeCContext(ctxPtr);
+                case $(my.wasm_project.impl_tag_enum_name:).$(wasm_derive_constant_name_str(impl.name)):
+                    return modules.$(wasm_derive_class_name(impl)).newAndTakeCContext(ctxPtr);
             ", 1)
         endfor
 
@@ -288,7 +287,7 @@ function wasm_create_custom_interface_class_constructors(source, wasm_class, was
 
         new wasm_code to wasm_method
             . = "\
-                return new $(my.wasm_class.name:).newAndTakeCContext(Module._$(interface_derive_c_method_shallow_copy())(ctxPtr));
+                return new modules.$(my.wasm_class.name:).newAndTakeCContext(Module._$(interface_derive_c_method_shallow_copy())(ctxPtr));
             "
         endnew
     endnew
@@ -349,7 +348,7 @@ function wasm_create_class_dependency_method(dependency, class, wasm_class, wasm
         new wasm_code to wasm_method
             if my.dependency.has_observers & my.dependency.is_observers_return_status
                 my.result_var = "const proxyStatus = "
-                my.impl_handle_status = "$(my.wasm_project.error_class_name:).handleStatusCode(proxyStatus)"
+                my.impl_handle_status = "modules.$(my.wasm_project.error_class_name:).handleStatusCode(proxyStatus)"
             endif
 
             . = format_left("\
@@ -527,7 +526,7 @@ function wasm_create_method_argument_for_class_error(argument, wasm_method, wasm
 
         .code_on_success = "\
             const $(0.name:)Status = Module.$(class_error_derive_c_method_status())($(0.name:)CtxPtr);
-            $(my.wasm_project.error_class_name:).handleStatusCode($(0.name:)Status);
+            modules.$(my.wasm_project.error_class_name:).handleStatusCode($(0.name:)Status);
         "
         .code_on_finalize = "\
             Module._free($(0.name:)CtxPtr);
@@ -546,7 +545,7 @@ function wasm_create_method_return_for_primitive_type(return, wasm_method, wasm_
         wasm_map_instance_type(my.return, wasm_return)
 
         wasm_return.code_on_initialize = "\
-            var proxyResult = undefined;
+            let proxyResult;
         "
 
         if wasm_return.type = "boolean"
@@ -598,7 +597,7 @@ function wasm_create_method_return_for_disown_buffer(return, wasm_method, wasm_c
         wasm_map_instance_type(my.return, wasm_return)
 
         wasm_return.code_on_initialize = "\
-            var proxyResult = undefined;
+            let proxyResult;
         "
 
         wasm_return.code_on_success = "\
@@ -623,17 +622,17 @@ function wasm_create_method_return_for_class(return, wasm_method, wasm_class)
         wasm_map_instance_type(my.return, wasm_return)
 
         wasm_return.code_on_initialize = "\
-            var proxyResult = undefined;
+            let proxyResult;
         "
 
         my.instance_class = wasm_derive_instance_class(my.return)
         if string_in(my.return.access, "disown, retain")
             wasm_return.code_on_success = "\
-                const jsResult = $(my.instance_class:).newAndTakeCContext(proxyResult);
+                const jsResult = modules.$(my.instance_class:).newAndTakeCContext(proxyResult);
             "
         else
             wasm_return.code_on_success = "\
-                const jsResult = $(my.instance_class:).newAndUseCContext(proxyResult);
+                const jsResult = modules.$(my.instance_class:).newAndUseCContext(proxyResult);
             "
         endif
     endnew
@@ -649,17 +648,17 @@ function wasm_create_method_return_for_interface(return, wasm_method, wasm_class
         wasm_map_instance_type(my.return, wasm_return)
 
         wasm_return.code_on_initialize = "\
-            var proxyResult = undefined;
+            let proxyResult;
         "
 
         my.instance_class = wasm_derive_interface_wrapper_class_name(my.return, my.wasm_project)
         if string_in(my.return.access, "disown, retain")
             wasm_return.code_on_success = "\
-                const jsResult = $(my.instance_class:).newAndTakeCContext(proxyResult);
+                const jsResult = modules.$(my.instance_class:).newAndTakeCContext(proxyResult);
             "
         else
             wasm_return.code_on_success = "\
-                const jsResult = $(my.instance_class:).newAndUseCContext(proxyResult);
+                const jsResult = modules.$(my.instance_class:).newAndUseCContext(proxyResult);
             "
         endif
     endnew
@@ -675,7 +674,7 @@ function wasm_create_method_return_for_enum(return, wasm_method, wasm_class)
         wasm_map_instance_type(my.return, wasm_return)
 
         wasm_return.code_on_initialize = "\
-            var proxyResult = undefined;
+            let proxyResult;
         "
     endnew
 endfunction
@@ -862,7 +861,7 @@ function wasm_create_class_method(method, class, wasm_class, wasm_project)
         if defined(my.status_return)
             my.class_error_name = wasm_derive_error_class_name_from_instance(my.status_return, my.wasm_project)
             my.code += format_left("
-                $(my.class_error_name:).handleStatusCode(proxyResult);
+                modules.$(my.class_error_name:).handleStatusCode(proxyResult);
             ", my.proxy_indent)
         endif
 

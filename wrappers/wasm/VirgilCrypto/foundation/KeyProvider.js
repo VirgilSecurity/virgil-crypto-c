@@ -35,7 +35,7 @@
  */
 
 
-const initKeyProvider = Module => {
+const initKeyProvider = (Module, modules) => {
     /**
      * Provide functionality for private key generation and importing that
      * relies on the software default implementations.
@@ -47,7 +47,7 @@ const initKeyProvider = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'KeyProvider';
 
             if (typeof ctxPtr === 'undefined') {
@@ -102,7 +102,7 @@ const initKeyProvider = Module => {
          */
         setupDefaults() {
             const proxyResult = Module._vscf_key_provider_setup_defaults(this.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -120,15 +120,15 @@ const initKeyProvider = Module => {
             const errorCtxSize = Module.vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_key_provider_generate_private_key(this.ctxPtr, algId, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(errorCtxPtr);
@@ -156,15 +156,15 @@ const initKeyProvider = Module => {
             const errorCtxSize = Module.vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_key_provider_import_private_key(this.ctxPtr, keyDataCtxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(keyDataPtr);
@@ -194,15 +194,15 @@ const initKeyProvider = Module => {
             const errorCtxSize = Module.vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_key_provider_import_public_key(this.ctxPtr, keyDataCtxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(keyDataPtr);
@@ -217,7 +217,7 @@ const initKeyProvider = Module => {
          * Precondition: public key must be exportable.
          */
         exportedPublicKeyLen(publicKey) {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_key_provider_exported_public_key_len(this.ctxPtr, publicKey.ctxPtr);
             return proxyResult;
         }
@@ -233,7 +233,7 @@ const initKeyProvider = Module => {
 
             try {
                 const proxyResult = Module._vscf_key_provider_export_public_key(this.ctxPtr, publicKey.ctxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -249,7 +249,7 @@ const initKeyProvider = Module => {
          * Precondition: private key must be exportable.
          */
         exportedPrivateKeyLen(privateKey) {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_key_provider_exported_private_key_len(this.ctxPtr, privateKey.ctxPtr);
             return proxyResult;
         }
@@ -265,7 +265,7 @@ const initKeyProvider = Module => {
 
             try {
                 const proxyResult = Module._vscf_key_provider_export_private_key(this.ctxPtr, privateKey.ctxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -275,6 +275,8 @@ const initKeyProvider = Module => {
             }
         }
     }
+
+    return KeyProvider;
 };
 
 module.exports = initKeyProvider;

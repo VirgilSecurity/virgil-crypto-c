@@ -35,7 +35,7 @@
  */
 
 
-const initOidId = Module => {
+const initOidId = (Module, modules) => {
     const OidId = Object.freeze({
 
         NONE: 0,

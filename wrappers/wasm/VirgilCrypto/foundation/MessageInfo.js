@@ -35,7 +35,7 @@
  */
 
 
-const initMessageInfo = Module => {
+const initMessageInfo = (Module, modules) => {
     /**
      * Handle information about an encrypted message and algorithms
      * that was used for encryption.
@@ -47,7 +47,7 @@ const initMessageInfo = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'MessageInfo';
 
             if (typeof ctxPtr === 'undefined') {
@@ -112,10 +112,10 @@ const initMessageInfo = Module => {
          * Return information about algorithm that was used for the data encryption.
          */
         dataEncryptionAlgInfo() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_message_info_data_encryption_alg_info(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndUseCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
@@ -123,10 +123,10 @@ const initMessageInfo = Module => {
          * Return list with a "key recipient info" elements.
          */
         keyRecipientInfoList() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_message_info_key_recipient_info_list(this.ctxPtr);
 
-            const jsResult = KeyRecipientInfoList.newAndUseCContext(proxyResult);
+            const jsResult = modules.KeyRecipientInfoList.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
@@ -134,10 +134,10 @@ const initMessageInfo = Module => {
          * Return list with a "password recipient info" elements.
          */
         passwordRecipientInfoList() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_message_info_password_recipient_info_list(this.ctxPtr);
 
-            const jsResult = PasswordRecipientInfoList.newAndUseCContext(proxyResult);
+            const jsResult = modules.PasswordRecipientInfoList.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
@@ -154,10 +154,10 @@ const initMessageInfo = Module => {
          * If custom params object was not set then new empty object is created.
          */
         customParams() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_message_info_custom_params(this.ctxPtr);
 
-            const jsResult = MessageInfoCustomParams.newAndUseCContext(proxyResult);
+            const jsResult = modules.MessageInfoCustomParams.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
@@ -168,6 +168,8 @@ const initMessageInfo = Module => {
             Module._vscf_message_info_clear_recipients(this.ctxPtr);
         }
     }
+
+    return MessageInfo;
 };
 
 module.exports = initMessageInfo;

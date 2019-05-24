@@ -35,7 +35,7 @@
  */
 
 
-const initRatchetMessage = Module => {
+const initRatchetMessage = (Module, modules) => {
     /**
      * Class represents ratchet message
      */
@@ -46,7 +46,7 @@ const initRatchetMessage = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'RatchetMessage';
 
             if (typeof ctxPtr === 'undefined') {
@@ -90,7 +90,7 @@ const initRatchetMessage = Module => {
          * Returns message type.
          */
         getType() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscr_ratchet_message_get_type(this.ctxPtr);
             return proxyResult;
         }
@@ -139,7 +139,7 @@ const initRatchetMessage = Module => {
          * Buffer len to serialize this class.
          */
         serializeLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscr_ratchet_message_serialize_len(this.ctxPtr);
             return proxyResult;
         }
@@ -183,15 +183,15 @@ const initRatchetMessage = Module => {
             const errorCtxSize = Module.vscr_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscr_ratchet_message_deserialize(inputCtxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscr_error_status(errorCtxPtr);
-                RatchetError.handleStatusCode(errorStatus);
+                modules.RatchetError.handleStatusCode(errorStatus);
 
-                const jsResult = RatchetMessage.newAndTakeCContext(proxyResult);
+                const jsResult = modules.RatchetMessage.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(inputPtr);
@@ -200,6 +200,8 @@ const initRatchetMessage = Module => {
             }
         }
     }
+
+    return RatchetMessage;
 };
 
 module.exports = initRatchetMessage;

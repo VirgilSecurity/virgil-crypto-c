@@ -35,7 +35,7 @@
  */
 
 
-const initPkcs5Pbes2 = Module => {
+const initPkcs5Pbes2 = (Module, modules) => {
     /**
      * Virgil Security implementation of the PBES2 (RFC 8018) algorithm.
      */
@@ -46,7 +46,7 @@ const initPkcs5Pbes2 = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'Pkcs5Pbes2';
 
             if (typeof ctxPtr === 'undefined') {
@@ -100,7 +100,7 @@ const initPkcs5Pbes2 = Module => {
          * Provide algorithm identificator.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_pkcs5_pbes2_alg_id(this.ctxPtr);
             return proxyResult;
         }
@@ -109,10 +109,10 @@ const initPkcs5Pbes2 = Module => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_pkcs5_pbes2_produce_alg_info(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -121,7 +121,7 @@ const initPkcs5Pbes2 = Module => {
          */
         restoreAlgInfo(algInfo) {
             const proxyResult = Module._vscf_pkcs5_pbes2_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -147,7 +147,7 @@ const initPkcs5Pbes2 = Module => {
 
             try {
                 const proxyResult = Module._vscf_pkcs5_pbes2_encrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -165,7 +165,7 @@ const initPkcs5Pbes2 = Module => {
         encryptedLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_pkcs5_pbes2_encrypted_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -193,7 +193,7 @@ const initPkcs5Pbes2 = Module => {
 
             try {
                 const proxyResult = Module._vscf_pkcs5_pbes2_decrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -211,7 +211,7 @@ const initPkcs5Pbes2 = Module => {
         decryptedLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_pkcs5_pbes2_decrypted_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -242,6 +242,8 @@ const initPkcs5Pbes2 = Module => {
             }
         }
     }
+
+    return Pkcs5Pbes2;
 };
 
 module.exports = initPkcs5Pbes2;

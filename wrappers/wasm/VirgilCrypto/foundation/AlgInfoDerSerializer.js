@@ -35,7 +35,7 @@
  */
 
 
-const initAlgInfoDerSerializer = Module => {
+const initAlgInfoDerSerializer = (Module, modules) => {
     /**
      * Provide DER serializer of algorithm information.
      */
@@ -46,7 +46,7 @@ const initAlgInfoDerSerializer = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'AlgInfoDerSerializer';
 
             if (typeof ctxPtr === 'undefined') {
@@ -95,7 +95,7 @@ const initAlgInfoDerSerializer = Module => {
          * Return buffer size enough to hold serialized algorithm.
          */
         serializedLen(algInfo) {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_alg_info_der_serializer_serialized_len(this.ctxPtr, algInfo.ctxPtr);
             return proxyResult;
         }
@@ -131,11 +131,13 @@ const initAlgInfoDerSerializer = Module => {
          * an output buffer.
          */
         serializeInplace(algInfo) {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_alg_info_der_serializer_serialize_inplace(this.ctxPtr, algInfo.ctxPtr);
             return proxyResult;
         }
     }
+
+    return AlgInfoDerSerializer;
 };
 
 module.exports = initAlgInfoDerSerializer;

@@ -35,7 +35,7 @@
  */
 
 
-const initPheCommon = Module => {
+const initPheCommon = (Module, modules) => {
     class PheCommon {
 
         /**
@@ -148,6 +148,8 @@ const initPheCommon = Module => {
             return PheCommon.PHE_MAX_DECRYPT_LEN;
         }
     }
+
+    return PheCommon;
 };
 
 module.exports = initPheCommon;

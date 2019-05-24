@@ -35,7 +35,7 @@
  */
 
 
-const initSaltedKdfAlgInfo = Module => {
+const initSaltedKdfAlgInfo = (Module, modules) => {
     /**
      * Handle KDF algorithms that are configured with salt and iteration count.
      */
@@ -46,7 +46,7 @@ const initSaltedKdfAlgInfo = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'SaltedKdfAlgInfo';
 
             if (typeof ctxPtr === 'undefined') {
@@ -90,7 +90,7 @@ const initSaltedKdfAlgInfo = Module => {
          * Provide algorithm identificator.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_salted_kdf_alg_info_alg_id(this.ctxPtr);
             return proxyResult;
         }
@@ -99,10 +99,10 @@ const initSaltedKdfAlgInfo = Module => {
          * Return hash algorithm information.
          */
         hashAlgInfo() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_salted_kdf_alg_info_hash_alg_info(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndUseCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
@@ -131,11 +131,13 @@ const initSaltedKdfAlgInfo = Module => {
          * Note, can be 0 if KDF does not need the iteration count.
          */
         iterationCount() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_salted_kdf_alg_info_iteration_count(this.ctxPtr);
             return proxyResult;
         }
     }
+
+    return SaltedKdfAlgInfo;
 };
 
 module.exports = initSaltedKdfAlgInfo;

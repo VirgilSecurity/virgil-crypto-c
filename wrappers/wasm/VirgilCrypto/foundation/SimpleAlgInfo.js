@@ -35,7 +35,7 @@
  */
 
 
-const initSimpleAlgInfo = Module => {
+const initSimpleAlgInfo = (Module, modules) => {
     /**
      * Handle simple algorithm information (just id).
      */
@@ -46,7 +46,7 @@ const initSimpleAlgInfo = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'SimpleAlgInfo';
 
             if (typeof ctxPtr === 'undefined') {
@@ -90,11 +90,13 @@ const initSimpleAlgInfo = Module => {
          * Provide algorithm identificator.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_simple_alg_info_alg_id(this.ctxPtr);
             return proxyResult;
         }
     }
+
+    return SimpleAlgInfo;
 };
 
 module.exports = initSimpleAlgInfo;

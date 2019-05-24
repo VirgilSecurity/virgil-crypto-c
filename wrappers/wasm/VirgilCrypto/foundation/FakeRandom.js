@@ -35,7 +35,7 @@
  */
 
 
-const initFakeRandom = Module => {
+const initFakeRandom = (Module, modules) => {
     /**
      * Random number generator that is used for test purposes only.
      */
@@ -46,7 +46,7 @@ const initFakeRandom = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'FakeRandom';
 
             if (typeof ctxPtr === 'undefined') {
@@ -97,7 +97,7 @@ const initFakeRandom = Module => {
 
             try {
                 const proxyResult = Module._vscf_fake_random_random(this.ctxPtr, dataLen, dataCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const dataPtr = Module._vsc_buffer_bytes(dataCtxPtr);
                 const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataSize);
@@ -112,14 +112,14 @@ const initFakeRandom = Module => {
          */
         reseed() {
             const proxyResult = Module._vscf_fake_random_reseed(this.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
          * Defines that implemented source is strong.
          */
         isStrong() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_fake_random_is_strong(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
@@ -137,7 +137,7 @@ const initFakeRandom = Module => {
 
             try {
                 const proxyResult = Module._vscf_fake_random_gather(this.ctxPtr, len, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -182,6 +182,8 @@ const initFakeRandom = Module => {
             }
         }
     }
+
+    return FakeRandom;
 };
 
 module.exports = initFakeRandom;

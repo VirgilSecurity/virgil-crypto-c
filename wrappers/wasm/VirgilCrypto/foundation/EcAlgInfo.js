@@ -35,7 +35,7 @@
  */
 
 
-const initEcAlgInfo = Module => {
+const initEcAlgInfo = (Module, modules) => {
     /**
      * Handle algorithm information about ECP.
      */
@@ -46,7 +46,7 @@ const initEcAlgInfo = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'EcAlgInfo';
 
             if (typeof ctxPtr === 'undefined') {
@@ -90,7 +90,7 @@ const initEcAlgInfo = Module => {
          * Provide algorithm identificator.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_ec_alg_info_alg_id(this.ctxPtr);
             return proxyResult;
         }
@@ -99,7 +99,7 @@ const initEcAlgInfo = Module => {
          * Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
          */
         keyId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_ec_alg_info_key_id(this.ctxPtr);
             return proxyResult;
         }
@@ -108,11 +108,13 @@ const initEcAlgInfo = Module => {
          * Return EC domain group identificator.
          */
         domainId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_ec_alg_info_domain_id(this.ctxPtr);
             return proxyResult;
         }
     }
+
+    return EcAlgInfo;
 };
 
 module.exports = initEcAlgInfo;

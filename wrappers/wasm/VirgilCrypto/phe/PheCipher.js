@@ -35,7 +35,7 @@
  */
 
 
-const initPheCipher = Module => {
+const initPheCipher = (Module, modules) => {
     /**
      * Class for encryption using PHE account key
      * This class is thread-safe.
@@ -47,7 +47,7 @@ const initPheCipher = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'PheCipher';
 
             if (typeof ctxPtr === 'undefined') {
@@ -100,7 +100,7 @@ const initPheCipher = Module => {
          */
         setupDefaults() {
             const proxyResult = Module._vsce_phe_cipher_setup_defaults(this.ctxPtr);
-            PheError.handleStatusCode(proxyResult);
+            modules.PheError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -109,7 +109,7 @@ const initPheCipher = Module => {
         encryptLen(plainTextLen) {
             // assert(typeof plainTextLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vsce_phe_cipher_encrypt_len(this.ctxPtr, plainTextLen);
             return proxyResult;
         }
@@ -120,7 +120,7 @@ const initPheCipher = Module => {
         decryptLen(cipherTextLen) {
             // assert(typeof cipherTextLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vsce_phe_cipher_decrypt_len(this.ctxPtr, cipherTextLen);
             return proxyResult;
         }
@@ -161,7 +161,7 @@ const initPheCipher = Module => {
 
             try {
                 const proxyResult = Module._vsce_phe_cipher_encrypt(this.ctxPtr, plainTextCtxPtr, accountKeyCtxPtr, cipherTextCtxPtr);
-                PheError.handleStatusCode(proxyResult);
+                modules.PheError.handleStatusCode(proxyResult);
 
                 const cipherTextPtr = Module._vsc_buffer_bytes(cipherTextCtxPtr);
                 const cipherText = Module.HEAPU8.slice(cipherTextPtr, cipherTextPtr + cipherTextSize);
@@ -211,7 +211,7 @@ const initPheCipher = Module => {
 
             try {
                 const proxyResult = Module._vsce_phe_cipher_decrypt(this.ctxPtr, cipherTextCtxPtr, accountKeyCtxPtr, plainTextCtxPtr);
-                PheError.handleStatusCode(proxyResult);
+                modules.PheError.handleStatusCode(proxyResult);
 
                 const plainTextPtr = Module._vsc_buffer_bytes(plainTextCtxPtr);
                 const plainText = Module.HEAPU8.slice(plainTextPtr, plainTextPtr + plainTextSize);
@@ -225,6 +225,8 @@ const initPheCipher = Module => {
             }
         }
     }
+
+    return PheCipher;
 };
 
 module.exports = initPheCipher;

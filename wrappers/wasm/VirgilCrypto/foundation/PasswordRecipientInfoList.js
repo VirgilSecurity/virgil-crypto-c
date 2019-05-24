@@ -35,7 +35,7 @@
  */
 
 
-const initPasswordRecipientInfoList = Module => {
+const initPasswordRecipientInfoList = (Module, modules) => {
     /**
      * Handles a list of "password recipient info" class objects.
      */
@@ -46,7 +46,7 @@ const initPasswordRecipientInfoList = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'PasswordRecipientInfoList';
 
             if (typeof ctxPtr === 'undefined') {
@@ -98,7 +98,7 @@ const initPasswordRecipientInfoList = Module => {
          * Return true if given list has item.
          */
         hasItem() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_password_recipient_info_list_has_item(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
@@ -109,10 +109,10 @@ const initPasswordRecipientInfoList = Module => {
          * Return list item.
          */
         item() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_password_recipient_info_list_item(this.ctxPtr);
 
-            const jsResult = PasswordRecipientInfo.newAndUseCContext(proxyResult);
+            const jsResult = modules.PasswordRecipientInfo.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
@@ -120,7 +120,7 @@ const initPasswordRecipientInfoList = Module => {
          * Return true if list has next item.
          */
         hasNext() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_password_recipient_info_list_has_next(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
@@ -131,10 +131,10 @@ const initPasswordRecipientInfoList = Module => {
          * Return next list node if exists, or NULL otherwise.
          */
         next() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_password_recipient_info_list_next(this.ctxPtr);
 
-            const jsResult = PasswordRecipientInfoList.newAndTakeCContext(proxyResult);
+            const jsResult = modules.PasswordRecipientInfoList.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -142,7 +142,7 @@ const initPasswordRecipientInfoList = Module => {
          * Return true if list has previous item.
          */
         hasPrev() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_password_recipient_info_list_has_prev(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
@@ -153,10 +153,10 @@ const initPasswordRecipientInfoList = Module => {
          * Return previous list node if exists, or NULL otherwise.
          */
         prev() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_password_recipient_info_list_prev(this.ctxPtr);
 
-            const jsResult = PasswordRecipientInfoList.newAndTakeCContext(proxyResult);
+            const jsResult = modules.PasswordRecipientInfoList.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -167,6 +167,8 @@ const initPasswordRecipientInfoList = Module => {
             Module._vscf_password_recipient_info_list_clear(this.ctxPtr);
         }
     }
+
+    return PasswordRecipientInfoList;
 };
 
 module.exports = initPasswordRecipientInfoList;

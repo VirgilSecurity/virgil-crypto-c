@@ -35,7 +35,7 @@
  */
 
 
-const initKeyAsn1Serializer = Module => {
+const initKeyAsn1Serializer = (Module, modules) => {
     /**
      * Implements key serialization in the ASN.1 format (DER / PEM):
      * - SEC1 - for EC private keys;
@@ -48,7 +48,7 @@ const initKeyAsn1Serializer = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'KeyAsn1Serializer';
 
             if (typeof ctxPtr === 'undefined') {
@@ -99,7 +99,7 @@ const initKeyAsn1Serializer = Module => {
          * Precondition: public key must be exportable.
          */
         serializedPublicKeyLen(publicKey) {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_key_asn1_serializer_serialized_public_key_len(this.ctxPtr, publicKey.ctxPtr);
             return proxyResult;
         }
@@ -115,7 +115,7 @@ const initKeyAsn1Serializer = Module => {
 
             try {
                 const proxyResult = Module._vscf_key_asn1_serializer_serialize_public_key(this.ctxPtr, publicKey.ctxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -131,7 +131,7 @@ const initKeyAsn1Serializer = Module => {
          * Precondition: private key must be exportable.
          */
         serializedPrivateKeyLen(privateKey) {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_key_asn1_serializer_serialized_private_key_len(this.ctxPtr, privateKey.ctxPtr);
             return proxyResult;
         }
@@ -147,7 +147,7 @@ const initKeyAsn1Serializer = Module => {
 
             try {
                 const proxyResult = Module._vscf_key_asn1_serializer_serialize_private_key(this.ctxPtr, privateKey.ctxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -173,13 +173,13 @@ const initKeyAsn1Serializer = Module => {
             const errorCtxSize = Module.vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_key_asn1_serializer_serialize_public_key_inplace(this.ctxPtr, publicKey.ctxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
                 return proxyResult;
             } finally {
                 Module._free(errorCtxPtr);
@@ -195,19 +195,21 @@ const initKeyAsn1Serializer = Module => {
             const errorCtxSize = Module.vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_key_asn1_serializer_serialize_private_key_inplace(this.ctxPtr, privateKey.ctxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
                 return proxyResult;
             } finally {
                 Module._free(errorCtxPtr);
             }
         }
     }
+
+    return KeyAsn1Serializer;
 };
 
 module.exports = initKeyAsn1Serializer;

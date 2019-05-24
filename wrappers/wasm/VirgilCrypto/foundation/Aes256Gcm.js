@@ -35,7 +35,7 @@
  */
 
 
-const initAes256Gcm = Module => {
+const initAes256Gcm = (Module, modules) => {
     /**
      * Implementation of the symmetric cipher AES-256 bit in a GCM mode.
      * Note, this implementation contains dynamic memory allocations,
@@ -103,7 +103,7 @@ const initAes256Gcm = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'Aes256Gcm';
 
             if (typeof ctxPtr === 'undefined') {
@@ -147,7 +147,7 @@ const initAes256Gcm = Module => {
          * Provide algorithm identificator.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_aes256_gcm_alg_id(this.ctxPtr);
             return proxyResult;
         }
@@ -156,10 +156,10 @@ const initAes256Gcm = Module => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_aes256_gcm_produce_alg_info(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -168,7 +168,7 @@ const initAes256Gcm = Module => {
          */
         restoreAlgInfo(algInfo) {
             const proxyResult = Module._vscf_aes256_gcm_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -194,7 +194,7 @@ const initAes256Gcm = Module => {
 
             try {
                 const proxyResult = Module._vscf_aes256_gcm_encrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -212,7 +212,7 @@ const initAes256Gcm = Module => {
         encryptedLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_aes256_gcm_encrypted_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -240,7 +240,7 @@ const initAes256Gcm = Module => {
 
             try {
                 const proxyResult = Module._vscf_aes256_gcm_decrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -258,7 +258,7 @@ const initAes256Gcm = Module => {
         decryptedLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_aes256_gcm_decrypted_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -371,7 +371,7 @@ const initAes256Gcm = Module => {
         outLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_aes256_gcm_out_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -384,7 +384,7 @@ const initAes256Gcm = Module => {
         encryptedOutLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_aes256_gcm_encrypted_out_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -397,7 +397,7 @@ const initAes256Gcm = Module => {
         decryptedOutLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_aes256_gcm_decrypted_out_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -411,7 +411,7 @@ const initAes256Gcm = Module => {
 
             try {
                 const proxyResult = Module._vscf_aes256_gcm_finish(this.ctxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -461,7 +461,7 @@ const initAes256Gcm = Module => {
 
             try {
                 const proxyResult = Module._vscf_aes256_gcm_auth_encrypt(this.ctxPtr, dataCtxPtr, authDataCtxPtr, outCtxPtr, tagCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -485,7 +485,7 @@ const initAes256Gcm = Module => {
         authEncryptedLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_aes256_gcm_auth_encrypted_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -540,7 +540,7 @@ const initAes256Gcm = Module => {
 
             try {
                 const proxyResult = Module._vscf_aes256_gcm_auth_decrypt(this.ctxPtr, dataCtxPtr, authDataCtxPtr, tagCtxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -562,11 +562,13 @@ const initAes256Gcm = Module => {
         authDecryptedLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_aes256_gcm_auth_decrypted_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
     }
+
+    return Aes256Gcm;
 };
 
 module.exports = initAes256Gcm;

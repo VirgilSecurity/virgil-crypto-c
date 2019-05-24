@@ -35,7 +35,7 @@
  */
 
 
-const initFoundationImplTag = Module => {
+const initFoundationImplTag = (Module, modules) => {
     const FoundationImplTag = Object.freeze({
 
         AES256_CBC: 1,

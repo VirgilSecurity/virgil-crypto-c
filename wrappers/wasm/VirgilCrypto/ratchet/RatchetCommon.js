@@ -35,7 +35,7 @@
  */
 
 
-const initRatchetCommon = Module => {
+const initRatchetCommon = (Module, modules) => {
     /**
      * Class with public constants
      */
@@ -129,6 +129,8 @@ const initRatchetCommon = Module => {
             return RatchetCommon.MAX_GROUP_MESSAGE_LEN;
         }
     }
+
+    return RatchetCommon;
 };
 
 module.exports = initRatchetCommon;

@@ -35,7 +35,7 @@
  */
 
 
-const initRawKey = Module => {
+const initRawKey = (Module, modules) => {
     /**
      * Provide implementation agnostic representation of the asymmetric key.
      */
@@ -46,7 +46,7 @@ const initRawKey = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'RawKey';
 
             if (typeof ctxPtr === 'undefined') {
@@ -90,7 +90,7 @@ const initRawKey = Module => {
          * Returns asymmetric algorithm type that raw key belongs to.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_raw_key_alg_id(this.ctxPtr);
             return proxyResult;
         }
@@ -115,6 +115,8 @@ const initRawKey = Module => {
             }
         }
     }
+
+    return RawKey;
 };
 
 module.exports = initRawKey;

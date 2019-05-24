@@ -35,7 +35,7 @@
  */
 
 
-const initHkdf = Module => {
+const initHkdf = (Module, modules) => {
     /**
      * Virgil Security implementation of the HKDF (RFC 6234) algorithm.
      */
@@ -46,7 +46,7 @@ const initHkdf = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'Hkdf';
 
             if (typeof ctxPtr === 'undefined') {
@@ -95,7 +95,7 @@ const initHkdf = Module => {
          * Provide algorithm identificator.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_hkdf_alg_id(this.ctxPtr);
             return proxyResult;
         }
@@ -104,10 +104,10 @@ const initHkdf = Module => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_hkdf_produce_alg_info(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -116,7 +116,7 @@ const initHkdf = Module => {
          */
         restoreAlgInfo(algInfo) {
             const proxyResult = Module._vscf_hkdf_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -208,6 +208,8 @@ const initHkdf = Module => {
             }
         }
     }
+
+    return Hkdf;
 };
 
 module.exports = initHkdf;

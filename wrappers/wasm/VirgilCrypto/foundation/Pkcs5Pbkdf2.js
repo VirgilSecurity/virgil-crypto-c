@@ -35,7 +35,7 @@
  */
 
 
-const initPkcs5Pbkdf2 = Module => {
+const initPkcs5Pbkdf2 = (Module, modules) => {
     /**
      * Virgil Security implementation of the PBKDF2 (RFC 8018) algorithm.
      */
@@ -46,7 +46,7 @@ const initPkcs5Pbkdf2 = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'Pkcs5Pbkdf2';
 
             if (typeof ctxPtr === 'undefined') {
@@ -95,7 +95,7 @@ const initPkcs5Pbkdf2 = Module => {
          * Provide algorithm identificator.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_pkcs5_pbkdf2_alg_id(this.ctxPtr);
             return proxyResult;
         }
@@ -104,10 +104,10 @@ const initPkcs5Pbkdf2 = Module => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_pkcs5_pbkdf2_produce_alg_info(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -116,7 +116,7 @@ const initPkcs5Pbkdf2 = Module => {
          */
         restoreAlgInfo(algInfo) {
             const proxyResult = Module._vscf_pkcs5_pbkdf2_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -215,6 +215,8 @@ const initPkcs5Pbkdf2 = Module => {
             Module._vscf_pkcs5_pbkdf2_setup_defaults(this.ctxPtr);
         }
     }
+
+    return Pkcs5Pbkdf2;
 };
 
 module.exports = initPkcs5Pbkdf2;

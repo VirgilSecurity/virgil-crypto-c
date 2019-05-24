@@ -35,7 +35,7 @@
  */
 
 
-const initAes256Cbc = Module => {
+const initAes256Cbc = (Module, modules) => {
     /**
      * Implementation of the symmetric cipher AES-256 bit in a CBC mode.
      * Note, this implementation contains dynamic memory allocations,
@@ -92,7 +92,7 @@ const initAes256Cbc = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'Aes256Cbc';
 
             if (typeof ctxPtr === 'undefined') {
@@ -136,7 +136,7 @@ const initAes256Cbc = Module => {
          * Provide algorithm identificator.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_aes256_cbc_alg_id(this.ctxPtr);
             return proxyResult;
         }
@@ -145,10 +145,10 @@ const initAes256Cbc = Module => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_aes256_cbc_produce_alg_info(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -157,7 +157,7 @@ const initAes256Cbc = Module => {
          */
         restoreAlgInfo(algInfo) {
             const proxyResult = Module._vscf_aes256_cbc_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -183,7 +183,7 @@ const initAes256Cbc = Module => {
 
             try {
                 const proxyResult = Module._vscf_aes256_cbc_encrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -201,7 +201,7 @@ const initAes256Cbc = Module => {
         encryptedLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_aes256_cbc_encrypted_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -229,7 +229,7 @@ const initAes256Cbc = Module => {
 
             try {
                 const proxyResult = Module._vscf_aes256_cbc_decrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -247,7 +247,7 @@ const initAes256Cbc = Module => {
         decryptedLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_aes256_cbc_decrypted_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -360,7 +360,7 @@ const initAes256Cbc = Module => {
         outLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_aes256_cbc_out_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -373,7 +373,7 @@ const initAes256Cbc = Module => {
         encryptedOutLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_aes256_cbc_encrypted_out_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -386,7 +386,7 @@ const initAes256Cbc = Module => {
         decryptedOutLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_aes256_cbc_decrypted_out_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -400,7 +400,7 @@ const initAes256Cbc = Module => {
 
             try {
                 const proxyResult = Module._vscf_aes256_cbc_finish(this.ctxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -410,6 +410,8 @@ const initAes256Cbc = Module => {
             }
         }
     }
+
+    return Aes256Cbc;
 };
 
 module.exports = initAes256Cbc;

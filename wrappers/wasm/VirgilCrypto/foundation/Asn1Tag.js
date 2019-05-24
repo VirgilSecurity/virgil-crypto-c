@@ -35,7 +35,7 @@
  */
 
 
-const initAsn1Tag = Module => {
+const initAsn1Tag = (Module, modules) => {
     /**
      * ASN.1 constants.
      */

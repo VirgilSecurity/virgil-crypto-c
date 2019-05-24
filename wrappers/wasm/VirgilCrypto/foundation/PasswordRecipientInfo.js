@@ -35,7 +35,7 @@
  */
 
 
-const initPasswordRecipientInfo = Module => {
+const initPasswordRecipientInfo = (Module, modules) => {
     /**
      * Handle information about recipient that is defined by a password.
      */
@@ -46,7 +46,7 @@ const initPasswordRecipientInfo = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'PasswordRecipientInfo';
 
             if (typeof ctxPtr === 'undefined') {
@@ -91,10 +91,10 @@ const initPasswordRecipientInfo = Module => {
          * a data encryption key.
          */
         keyEncryptionAlgorithm() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_password_recipient_info_key_encryption_algorithm(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndUseCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
@@ -118,6 +118,8 @@ const initPasswordRecipientInfo = Module => {
             }
         }
     }
+
+    return PasswordRecipientInfo;
 };
 
 module.exports = initPasswordRecipientInfo;

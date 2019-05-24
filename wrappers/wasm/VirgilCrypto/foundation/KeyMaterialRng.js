@@ -35,7 +35,7 @@
  */
 
 
-const initKeyMaterialRng = Module => {
+const initKeyMaterialRng = (Module, modules) => {
     /**
      * Random number generator that generate deterministic sequence based
      * on a given seed.
@@ -70,7 +70,7 @@ const initKeyMaterialRng = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'KeyMaterialRng';
 
             if (typeof ctxPtr === 'undefined') {
@@ -121,7 +121,7 @@ const initKeyMaterialRng = Module => {
 
             try {
                 const proxyResult = Module._vscf_key_material_rng_random(this.ctxPtr, dataLen, dataCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const dataPtr = Module._vsc_buffer_bytes(dataCtxPtr);
                 const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataSize);
@@ -136,7 +136,7 @@ const initKeyMaterialRng = Module => {
          */
         reseed() {
             const proxyResult = Module._vscf_key_material_rng_reseed(this.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -165,6 +165,8 @@ const initKeyMaterialRng = Module => {
             }
         }
     }
+
+    return KeyMaterialRng;
 };
 
 module.exports = initKeyMaterialRng;

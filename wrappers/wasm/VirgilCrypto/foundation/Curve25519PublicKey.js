@@ -35,7 +35,7 @@
  */
 
 
-const initCurve25519PublicKey = Module => {
+const initCurve25519PublicKey = (Module, modules) => {
     /**
      * This is implementation of CURVE25519 public key
      */
@@ -68,7 +68,7 @@ const initCurve25519PublicKey = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'Curve25519PublicKey';
 
             if (typeof ctxPtr === 'undefined') {
@@ -122,7 +122,7 @@ const initCurve25519PublicKey = Module => {
          * Provide algorithm identificator.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_curve25519_public_key_alg_id(this.ctxPtr);
             return proxyResult;
         }
@@ -131,10 +131,10 @@ const initCurve25519PublicKey = Module => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_curve25519_public_key_produce_alg_info(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -143,14 +143,14 @@ const initCurve25519PublicKey = Module => {
          */
         restoreAlgInfo(algInfo) {
             const proxyResult = Module._vscf_curve25519_public_key_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
          * Length of the key in bytes.
          */
         keyLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_curve25519_public_key_key_len(this.ctxPtr);
             return proxyResult;
         }
@@ -159,7 +159,7 @@ const initCurve25519PublicKey = Module => {
          * Length of the key in bits.
          */
         keyBitlen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_curve25519_public_key_key_bitlen(this.ctxPtr);
             return proxyResult;
         }
@@ -187,7 +187,7 @@ const initCurve25519PublicKey = Module => {
 
             try {
                 const proxyResult = Module._vscf_curve25519_public_key_encrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -205,7 +205,7 @@ const initCurve25519PublicKey = Module => {
         encryptedLen(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_curve25519_public_key_encrypted_len(this.ctxPtr, dataLen);
             return proxyResult;
         }
@@ -223,7 +223,7 @@ const initCurve25519PublicKey = Module => {
 
             try {
                 const proxyResult = Module._vscf_curve25519_public_key_export_public_key(this.ctxPtr, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -237,7 +237,7 @@ const initCurve25519PublicKey = Module => {
          * Return length in bytes required to hold exported public key.
          */
         exportedPublicKeyLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_curve25519_public_key_exported_public_key_len(this.ctxPtr);
             return proxyResult;
         }
@@ -266,7 +266,7 @@ const initCurve25519PublicKey = Module => {
 
             try {
                 const proxyResult = Module._vscf_curve25519_public_key_import_public_key(this.ctxPtr, dataCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
             } finally {
                 Module._free(dataPtr);
                 Module._free(dataCtxPtr);
@@ -280,15 +280,15 @@ const initCurve25519PublicKey = Module => {
             const errorCtxSize = Module.vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscf_curve25519_public_key_generate_ephemeral_key(this.ctxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscf_error_status(errorCtxPtr);
-                FoundationError.handleStatusCode(errorStatus);
+                modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(errorCtxPtr);
@@ -300,9 +300,11 @@ const initCurve25519PublicKey = Module => {
          */
         setupDefaults() {
             const proxyResult = Module._vscf_curve25519_public_key_setup_defaults(this.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
     }
+
+    return Curve25519PublicKey;
 };
 
 module.exports = initCurve25519PublicKey;

@@ -35,7 +35,7 @@
  */
 
 
-const initRatchetGroupMessage = Module => {
+const initRatchetGroupMessage = (Module, modules) => {
     /**
      * Class represents ratchet group message
      */
@@ -46,7 +46,7 @@ const initRatchetGroupMessage = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'RatchetGroupMessage';
 
             if (typeof ctxPtr === 'undefined') {
@@ -90,7 +90,7 @@ const initRatchetGroupMessage = Module => {
          * Returns message type.
          */
         getType() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscr_ratchet_group_message_get_type(this.ctxPtr);
             return proxyResult;
         }
@@ -121,7 +121,7 @@ const initRatchetGroupMessage = Module => {
          * This method should be called only for group info message type.
          */
         getPubKeyCount() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscr_ratchet_group_message_get_pub_key_count(this.ctxPtr);
             return proxyResult;
         }
@@ -148,13 +148,13 @@ const initRatchetGroupMessage = Module => {
             const errorCtxSize = Module.vscr_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscr_ratchet_group_message_get_pub_key_id(this.ctxPtr, participantIdCtxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscr_error_status(errorCtxPtr);
-                RatchetError.handleStatusCode(errorStatus);
+                modules.RatchetError.handleStatusCode(errorStatus);
 
                 const bufferResultSize = Module._vsc_buffer_len(proxyResult);
                 const bufferResultPtr = Module._vsc_buffer_bytes(proxyResult);
@@ -193,7 +193,7 @@ const initRatchetGroupMessage = Module => {
          * Buffer len to serialize this class.
          */
         serializeLen() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscr_ratchet_group_message_serialize_len(this.ctxPtr);
             return proxyResult;
         }
@@ -237,15 +237,15 @@ const initRatchetGroupMessage = Module => {
             const errorCtxSize = Module.vscr_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
-            var proxyResult = undefined;
+            let proxyResult;
 
             try {
                 proxyResult = Module._vscr_ratchet_group_message_deserialize(inputCtxPtr, errorCtxPtr);
 
                 const errorStatus = Module.vscr_error_status(errorCtxPtr);
-                RatchetError.handleStatusCode(errorStatus);
+                modules.RatchetError.handleStatusCode(errorStatus);
 
-                const jsResult = RatchetGroupMessage.newAndTakeCContext(proxyResult);
+                const jsResult = modules.RatchetGroupMessage.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(inputPtr);
@@ -254,6 +254,8 @@ const initRatchetGroupMessage = Module => {
             }
         }
     }
+
+    return RatchetGroupMessage;
 };
 
 module.exports = initRatchetGroupMessage;

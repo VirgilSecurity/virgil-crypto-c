@@ -35,7 +35,7 @@
  */
 
 
-const initKdf1 = Module => {
+const initKdf1 = (Module, modules) => {
     /**
      * Virgil Security implementation of the KDF1 (ISO-18033-2) algorithm.
      */
@@ -46,7 +46,7 @@ const initKdf1 = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'Kdf1';
 
             if (typeof ctxPtr === 'undefined') {
@@ -95,7 +95,7 @@ const initKdf1 = Module => {
          * Provide algorithm identificator.
          */
         algId() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_kdf1_alg_id(this.ctxPtr);
             return proxyResult;
         }
@@ -104,10 +104,10 @@ const initKdf1 = Module => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_kdf1_produce_alg_info(this.ctxPtr);
 
-            const jsResult = FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -116,7 +116,7 @@ const initKdf1 = Module => {
          */
         restoreAlgInfo(algInfo) {
             const proxyResult = Module._vscf_kdf1_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
-            FoundationError.handleStatusCode(proxyResult);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -154,6 +154,8 @@ const initKdf1 = Module => {
             }
         }
     }
+
+    return Kdf1;
 };
 
 module.exports = initKdf1;

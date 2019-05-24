@@ -169,7 +169,7 @@ function wasm_insert_enum(wasm_enum)
 
     assert_attributes(my.wasm_enum, "name", my)
 
-    wasm_insert_code("const init$(my.wasm_enum.name:) = Module => {")
+    wasm_insert_code("const init$(my.wasm_enum.name:) = (Module, modules) => {")
     wasm_insert_description(my.wasm_enum, 1)
     wasm_insert_code("const $(my.wasm_enum.name:) = Object.freeze({", 1)
 
@@ -197,7 +197,7 @@ function wasm_insert_class(wasm_class)
 
     my.extends = "extends $(my.wasm_class.extends:) " ?
 
-    wasm_insert_code("const init$(my.wasm_class.name:) = Module => {")
+    wasm_insert_code("const init$(my.wasm_class.name:) = (Module, modules) => {")
     wasm_insert_description(my.wasm_class, 1)
     wasm_insert_code("\
         class $(my.wasm_class.name:) $(my.extends?:){
@@ -219,6 +219,10 @@ function wasm_insert_class(wasm_class)
     endfor
 
     wasm_insert_code("}", 1)
+
+    newline()
+    wasm_insert_code("return $(my.wasm_class.name:);", 1)
+
     wasm_insert_code("};")
 
     newline()

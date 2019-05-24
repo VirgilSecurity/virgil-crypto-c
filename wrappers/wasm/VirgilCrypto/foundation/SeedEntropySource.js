@@ -35,7 +35,7 @@
  */
 
 
-const initSeedEntropySource = Module => {
+const initSeedEntropySource = (Module, modules) => {
     /**
      * Deterministic entropy source that is based only on the given seed.
      */
@@ -46,7 +46,7 @@ const initSeedEntropySource = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'SeedEntropySource';
 
             if (typeof ctxPtr === 'undefined') {
@@ -90,7 +90,7 @@ const initSeedEntropySource = Module => {
          * Defines that implemented source is strong.
          */
         isStrong() {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_seed_entropy_source_is_strong(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
@@ -108,7 +108,7 @@ const initSeedEntropySource = Module => {
 
             try {
                 const proxyResult = Module._vscf_seed_entropy_source_gather(this.ctxPtr, len, outCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
@@ -144,6 +144,8 @@ const initSeedEntropySource = Module => {
             }
         }
     }
+
+    return SeedEntropySource;
 };
 
 module.exports = initSeedEntropySource;

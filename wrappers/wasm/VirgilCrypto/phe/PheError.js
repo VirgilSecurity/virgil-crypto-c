@@ -35,7 +35,7 @@
  */
 
 
-const initPheError = Module => {
+const initPheError = (Module, modules) => {
     /**
      * Defines the library status codes.
      */
@@ -80,6 +80,8 @@ const initPheError = Module => {
             }
         }
     }
+
+    return PheError;
 };
 
 module.exports = initPheError;

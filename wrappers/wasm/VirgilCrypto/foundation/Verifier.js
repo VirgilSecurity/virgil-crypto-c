@@ -35,7 +35,7 @@
  */
 
 
-const initVerifier = Module => {
+const initVerifier = (Module, modules) => {
     /**
      * Verify data of any size.
      * Compatible with the class "signer".
@@ -47,7 +47,7 @@ const initVerifier = Module => {
          *
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
-        constructor(ctxPtr=undefined) {
+        constructor(ctxPtr) {
             this.name = 'Verifier';
 
             if (typeof ctxPtr === 'undefined') {
@@ -107,7 +107,7 @@ const initVerifier = Module => {
 
             try {
                 const proxyResult = Module._vscf_verifier_reset(this.ctxPtr, signatureCtxPtr);
-                FoundationError.handleStatusCode(proxyResult);
+                modules.FoundationError.handleStatusCode(proxyResult);
             } finally {
                 Module._free(signaturePtr);
                 Module._free(signatureCtxPtr);
@@ -144,13 +144,15 @@ const initVerifier = Module => {
          * Verify accumulated data.
          */
         verify(publicKey) {
-            var proxyResult = undefined;
+            let proxyResult;
             proxyResult = Module._vscf_verifier_verify(this.ctxPtr, publicKey.ctxPtr);
 
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
     }
+
+    return Verifier;
 };
 
 module.exports = initVerifier;
