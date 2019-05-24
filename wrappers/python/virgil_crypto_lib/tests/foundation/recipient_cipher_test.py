@@ -1,20 +1,20 @@
 import unittest
 
-from virgil_crypto.common._c_bridge import Data
-from virgil_crypto.foundation import Pkcs8DerSerializer, Pkcs8DerDeserializer, AlgFactory, RecipientCipher
-from virgil_crypto.tests.data import TestData
+from virgil_crypto_lib.common._c_bridge import Data
+from virgil_crypto_lib.foundation import AlgFactory, RecipientCipher, KeyAsn1Deserializer
+from virgil_crypto_lib.tests.data import TestData
 
 
 class RecipientCipherTest(unittest.TestCase):
 
     def test_encrypt_decrypt_with_ed25519_key_recipient(self):
-        pkcs8 = Pkcs8DerDeserializer()
-        pkcs8.setup_defaults()
+        key_deserializer = KeyAsn1Deserializer()
+        key_deserializer.setup_defaults()
 
-        raw_public_key = pkcs8.deserialize_public_key(TestData.RECIPIENT_CIPHER_ED25519_PUBLIC_KEY)
+        raw_public_key = key_deserializer.deserialize_public_key(TestData.RECIPIENT_CIPHER_ED25519_PUBLIC_KEY)
         public_key = AlgFactory().create_public_key_from_raw_key(raw_public_key)
 
-        raw_private_key = pkcs8.deserialize_private_key(TestData.RECIPIENT_CIPHER_ED25519_PRIVATE_KEY)
+        raw_private_key = key_deserializer.deserialize_private_key(TestData.RECIPIENT_CIPHER_ED25519_PRIVATE_KEY)
         private_key = AlgFactory().create_private_key_from_raw_key(raw_private_key)
 
         recipient_cipher = RecipientCipher()
@@ -35,10 +35,10 @@ class RecipientCipherTest(unittest.TestCase):
         self.assertEqual(TestData.RECIPIENT_CIPHER_MESSAGE, decrypted_message)
 
     def test_decrypt_with_ed25519_public_key(self):
-        pkcs8 = Pkcs8DerDeserializer()
-        pkcs8.setup_defaults()
+        key_deserializer = KeyAsn1Deserializer()
+        key_deserializer.setup_defaults()
 
-        raw_private_key = pkcs8.deserialize_private_key(TestData.RECIPIENT_CIPHER_ED25519_PRIVATE_KEY)
+        raw_private_key = key_deserializer.deserialize_private_key(TestData.RECIPIENT_CIPHER_ED25519_PRIVATE_KEY)
         private_key = AlgFactory().create_private_key_from_raw_key(raw_private_key)
 
         recipient_cipher = RecipientCipher()

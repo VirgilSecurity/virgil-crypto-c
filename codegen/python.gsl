@@ -382,7 +382,11 @@ function python_class_derive_buffer_length_getter (class, method, argument, pyth
 
     my.specified_proxy_object = get_one_of_attribute (my.length, "class, interface, impl") ?
     if defined (my.specified_proxy_object)
-        my.proxy_object = python_derive_class_name_str (my.specified_proxy_object, my.python_project)
+        if my.specified_proxy_object <> "self"
+            my.proxy_object = python_derive_class_name_str (my.specified_proxy_object, my.python_project)
+        else
+            my.proxy_object = my.specified_proxy_object
+        endif
     else
         my.proxy_object = "self"
     endif
@@ -634,6 +638,33 @@ function python_create_class_default_constructor (python_class, class, python_pr
 
             . = my.constructor_body
         endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Create additional <python_constructor/> that initialize underlying C context.
+# ---------------------------------------------------------------------------
+function python_create_class_additional_constructors (python_class, class, python_project, meta)
+    check_arguments (my, "python_class, class, python_project, meta", my)
+
+    new python_code to python_class
+        .leadeing_new_line = "1"
+        . = "\
+            @classmethod
+            def take_c_ctx(cls, c_ctx):
+                inst = cls.__new__(cls)
+                inst._lib_$(my.python_class.low_level_name_c_format:) = $(my.python_class.low_level_name:)()
+                inst.ctx = c_ctx
+                return inst
+
+            @classmethod
+            def use_c_ctx(cls, c_ctx):
+                inst = cls.__new__(cls)
+                inst._lib_$(my.python_class.low_level_name_c_format:) = $(my.python_class.low_level_name:)()
+                inst.ctx = inst._lib_$(my.python_class.low_level_name_c_format:).$(my.python_class.low_level_name_c_format:)_shallow_copy(c_ctx)
+                return inst
+        "
     endnew
 endfunction
 
@@ -1049,10 +1080,33 @@ function python_create_class_method (class, method, destination, python_project,
                 endif
 
                 if handling_python_return.name = "result" & (is_true (handling_python_return.is_interface) | defined (handling_python_return.high_level_type))
-                    if is_true (handling_python_return.is_interface)
+                    if defined (handling_python_return.high_level_type) & (handling_python_return.high_level_type = "Data" | handling_python_return.high_level_type = "Buffer")
+                        if handling_python_return.high_level_type = "Data"
+                            context = "data"
+                        else
+                            context = "c_buffer"
+                        endif
+                        if handling_python_return.access = "readonly" | handling_python_return.access = "readwrite" & handling_python_return.high_level_type <> "Data"
+                            custom_constructor = "use_c_ctx"
+                        else
+                            custom_constructor = "take_c_ctx"
+                        endif
+
                         my.cast_from_implementation = "\
-                            instance = $(my.python_project.prefix:Pascal)ImplTag.get_type(result)[0]()
-                            instance.ctx = cast(result, POINTER($(my.python_project.prefix:Pascal)ImplTag.get_type(result)[1]))
+                                instance = $(handling_python_return.high_level_type:).$(custom_constructor:)(result)
+                                cleaned_bytes = bytearray(instance)
+                            "
+                        new python_return to my.python_method
+                            .name = "cleaned_bytes"
+                            .type = "c_byte"
+                            .visibility = handling_python_return.visibility ?
+                            .access = handling_python_return.access ?
+                        endnew
+
+                        delete handling_python_return
+                    elsif is_true (handling_python_return.is_interface)
+                        my.cast_from_implementation = "\
+                            instance = $(my.python_project.prefix:Pascal)ImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER($(my.python_project.prefix:Pascal)ImplTag.get_type(result)[1])))
                         "
 
                         new python_return to my.python_method
@@ -1062,11 +1116,10 @@ function python_create_class_method (class, method, destination, python_project,
                             .access = handling_python_return.access ?
                         endnew
 
-                        delete handling_python_return                        
-                    elsif is_true (handling_python_return.is_reference) & (handling_python_return.access = "readwrite" | handling_python_return.access = "readwrite") & defined (handling_python_return.high_level_type)
+                        delete handling_python_return
+                    elsif is_true (handling_python_return.is_reference) & (handling_python_return.access = "readonly" | handling_python_return.access = "readwrite") & defined (handling_python_return.high_level_type)
                         my.cast_from_implementation = "\
-                            instance = $(handling_python_return.high_level_type:)()
-                            instance.ctx = result
+                            instance = $(handling_python_return.high_level_type:).use_c_ctx(result)
                         "
 
                         new python_return to my.python_method
@@ -1203,7 +1256,7 @@ function python_create_status_dict(enum, destination)
         for my.enum.constant
             new entry to python_dict
                 .key = constant.value
-                .value = string_multi_rtrim (string_trim (constant.)) # FIXME multiline to one line
+                .value = string_multi_rtrim (string_trim (constant.))
                 .value = string.search_replace(0.value, terminator, " ")
             endnew
         endfor
@@ -1248,7 +1301,7 @@ function python_create_cast_to_implementation_low_level_method(implementation, d
 
     
     new python_method to my.destination
-        .name = "$(my.destination.low_level_name_c_format)_impl"
+        .name = "$(my.destination.low_level_name_c_format:)_impl"
 
         new python_argument to python_method
             .name = "ctx"
@@ -1302,7 +1355,6 @@ function python_create_c_context_getter_setter(python_class, implementation, pyt
 
     new python_code to my.python_class
         .leadeing_new_line = "1"
-        # FIXME here must be shallow copy for classes with defined (handling_python_return.high_level_type)
         . = format_left ("\
             @property
             def c_impl(self):
@@ -1417,7 +1469,7 @@ function python_create_data_class (class, destination, python_project, meta)
         endnew
 
         new python_import to python_module
-            .framework = "virgil_crypto._libs"
+            .framework = "virgil_crypto_lib._libs"
             .import_all = "1"
         endnew
 
@@ -1505,7 +1557,7 @@ function python_create_data_class (class, destination, python_project, meta)
         endnew
 
         new python_import to python_module
-            .framework = "virgil_crypto.utils"
+            .framework = "virgil_crypto_lib.utils"
             .import_all = "1"
         endnew
 
@@ -1538,7 +1590,7 @@ function python_create_data_class (class, destination, python_project, meta)
         endfor
 
         new python_import
-            .framework = "virgil_crypto.$(my.python_project.name:c)"
+            .framework = "virgil_crypto_lib.$(my.python_project.name:c)"
             .import_all = "1"
         endnew
 
@@ -1571,10 +1623,20 @@ function python_create_data_class (class, destination, python_project, meta)
                             return self._lib_vsc_data.vsc_data_equal(self.data, other.data)
 
                         def __len__(self):
-                            return len(self._bytes_)
+                            return self.data.len
 
                         def __bytes__(self):
-                            return bytearray(self._bytes_)
+                            return bytes(bytearray((c_byte * len(self))(*self.data.bytes[:len(self)])))
+
+                        def __iter__(self):
+                            return iter(bytearray((c_byte * len(self))(*self.data.bytes[:len(self)])))
+                        
+                        @classmethod
+                        def take_c_ctx(cls, c_ctx):
+                            inst = cls.__new__(cls)
+                            inst._lib_$(python_class.low_level_name_c_format:) = $(python_class.low_level_name:)()
+                            inst.data = c_ctx
+                            return inst
                 ")
             endnew
         endnew
@@ -1606,12 +1668,12 @@ function python_create_buffer_class (class, destination, python_project, meta)
         endnew
 
         new python_import to python_module
-            .framework = "virgil_crypto._libs"
+            .framework = "virgil_crypto_lib._libs"
             .import_all = "1"
         endnew
 
         new python_import to python_module
-            .framework = "virgil_crypto.common._c_bridge"
+            .framework = "virgil_crypto_lib.common._c_bridge"
             .import_all = "1"
         endnew
 
@@ -1684,6 +1746,12 @@ function python_create_buffer_class (class, destination, python_project, meta)
                         vsc_buffer_len.argtypes = [POINTER(vsc_buffer_t)]
                         vsc_buffer_len.restype = c_size_t
                         return vsc_buffer_len(buffer)
+
+                    def vsc_buffer_shallow_copy(self, buffer):
+                        vsc_buffer_shallow_copy = self._lib.vsc_buffer_shallow_copy
+                        vsc_buffer_shallow_copy.argtypes = [POINTER(vsc_buffer_t)]
+                        vsc_buffer_shallow_copy.restype = POINTER(vsc_buffer_t)
+                        return vsc_buffer_shallow_copy(buffer)
                 ")
             endnew
         endnew
@@ -1739,7 +1807,7 @@ function python_create_buffer_class (class, destination, python_project, meta)
         endfor
 
         new python_import
-            .framework = "virgil_crypto.$(my.python_project.name:c)"
+            .framework = "virgil_crypto_lib.$(my.python_project.name:c)"
             .import_all = "1"
         endnew
 
@@ -1777,6 +1845,20 @@ function python_create_buffer_class (class, destination, python_project, meta)
                             def __delete__(self, instance):
                                 self._lib_vsc_buffer.vsc_buffer_destroy(self.c_buffer)
                             
+                            @classmethod
+                            def take_c_ctx(cls, c_ctx):
+                                inst = cls.__new__(cls)
+                                inst._lib_$(python_class.low_level_name_c_format:) = $(python_class.low_level_name:)()
+                                inst.c_buffer = c_ctx
+                                return inst
+
+                            @classmethod
+                            def use_c_ctx(cls, c_ctx):
+                                inst = cls.__new__(cls)
+                                inst._lib_$(python_class.low_level_name_c_format:) = $(python_class.low_level_name:)()
+                                inst.c_buffer = inst._lib_$(python_class.low_level_name_c_format:).$(python_class.low_level_name_c_format:)_shallow_copy(c_ctx)
+                                return inst
+
                             def get_bytes(self):
                                 return bytearray(self._bytes_)[:self._lib_vsc_buffer.vsc_buffer_len(self.c_buffer)]
                 ")
@@ -1811,12 +1893,12 @@ function python_create_impl_tag_class(source, python_project, meta)
         endnew
 
         new python_import to python_module
-            .framework = "virgil_crypto._libs"
+            .framework = "virgil_crypto_lib._libs"
             .import_all = "1"
         endnew
 
         new python_import to python_module
-            .framework = "virgil_crypto.foundation._c_bridge"
+            .framework = "virgil_crypto_lib.foundation._c_bridge"
             .import_all = "1"
         endnew
 
@@ -1932,7 +2014,7 @@ function python_create_project_module (project, wrapper)
 
         for my.project.require where defined (0.project) & string_equal (0.feature, "library")
             new python_import to python_project
-                .framework = "virgil_crypto.$(require.project:c)"
+                .framework = "virgil_crypto_lib.$(require.project:c)"
                 if require.project = "common"
                     .framework += "._c_bridge"
                 endif
@@ -1987,12 +2069,6 @@ function python_create_custom_modules (source, python_project, meta)
             . = python_format_license (my.python_project->license) ?
         endnew
     endnew
-
-    # FIXME
-    # Skip generation of implementation module for project common
-    # if my.python_project.name = "common"
-    #     return
-    # endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -2371,12 +2447,12 @@ function python_create_implementation_module (implementation, python_project, me
         endnew
 
         new python_import to python_module
-            .framework = "virgil_crypto._libs"
+            .framework = "virgil_crypto_lib._libs"
             .import_all = "1"
         endnew
 
         new python_import
-            .framework = "virgil_crypto.$(my.python_project.name:c)._c_bridge"
+            .framework = "virgil_crypto_lib.$(my.python_project.name:c)._c_bridge"
             .import_all = "1"
         endnew
 
@@ -2472,7 +2548,7 @@ function python_create_implementation_module (implementation, python_project, me
         endfor
 
         new python_import
-            .framework = "virgil_crypto.$(my.python_project.name:c)"
+            .framework = "virgil_crypto_lib.$(my.python_project.name:c)"
             .import_all = "1"
         endnew
 
@@ -2506,6 +2582,10 @@ function python_create_implementation_module (implementation, python_project, me
             for my.implementation.method where method.declaration = "public" & method.visibility = "public" & method.scope ?= "public"
                 python_create_class_method (my.implementation, method, python_class, my.python_project, my.meta)
             endfor
+
+            if my.implementation.lifecycle <> "none" & my.implementation.context <> "none"
+                python_create_class_additional_constructors (python_class, my.implementation, my.python_project, my.meta)
+            endif
 
             if count (python_class.python_inherit) = 0
                 python_create_custom_inherit ("object", python_class, my.python_project)
@@ -2564,7 +2644,7 @@ function python_create_class_module (class, python_project, meta)
         endnew
 
         new python_import to python_module
-            .framework = "virgil_crypto._libs"
+            .framework = "virgil_crypto_lib._libs"
             .import_all = "1"
         endnew
 
@@ -2573,7 +2653,7 @@ function python_create_class_module (class, python_project, meta)
         endfor
 
         new python_import
-            .framework = "virgil_crypto.$(my.python_project.name:c)._c_bridge"
+            .framework = "virgil_crypto_lib.$(my.python_project.name:c)._c_bridge"
             .import_all = "1"
         endnew
 
@@ -2622,6 +2702,8 @@ function python_create_class_module (class, python_project, meta)
             . = python_format_description (my.class) ?
             .name = python_derive_class_low_level_name (my.class, my.python_project)
             .name_c_format = python_derive_class_low_level_name_c_formated (my.class, my.python_project)
+            .low_level_name = python_derive_class_low_level_name (my.class, my.python_project)
+            .low_level_name_c_format = python_derive_class_low_level_name_c_formated (my.class, my.python_project)
 
             python_map_attr_visibility (python_class, my.class)
 
@@ -2645,6 +2727,10 @@ function python_create_class_module (class, python_project, meta)
             for my.class.method where method.declaration = "public" & method.visibility = "public" & method.scope ?= "public"
                 python_create_low_level_class_method (my.class, method, python_class, my.python_project, my.meta)
             endfor
+
+            if my.class.lifecycle <> "none" & my.class.context <> "none"
+                python_create_shallow_copy_low_level_method(my.class, python_class, my.python_project, my.meta)
+            endif
 
             if count (python_class.python_inherit) = 0
                 python_create_custom_inherit ("object", python_class, my.python_project)
@@ -2707,7 +2793,7 @@ function python_create_class_module (class, python_project, meta)
         endfor
 
         new python_import
-            .framework = "virgil_crypto.$(my.python_project.name:c)"
+            .framework = "virgil_crypto_lib.$(my.python_project.name:c)"
             .import_all = "1"
         endnew
 
@@ -2723,6 +2809,7 @@ function python_create_class_module (class, python_project, meta)
                 python_create_class_constant (constant, python_class, my.python_project, my.meta)
             endfor
 
+            
             if count(my.class.method) > 0
                 python_create_class_default_constructor (python_class, my.class, my.python_project, my.meta)
             endif
@@ -2740,6 +2827,12 @@ function python_create_class_module (class, python_project, meta)
             for my.class.method where method.declaration = "public" & method.visibility = "public" & method.scope ?= "public"
                 python_create_class_method (my.class, method, python_class, my.python_project, my.meta)
             endfor
+
+            if my.class.context <> "none"
+                if ! string_in (my.class.name, "data,buffer")
+                    python_create_class_additional_constructors (python_class, my.class, my.python_project, my.meta)
+                endif
+            endif
 
             if count (python_class.python_inherit) = 0
                 python_create_custom_inherit ("object", python_class, my.python_project)

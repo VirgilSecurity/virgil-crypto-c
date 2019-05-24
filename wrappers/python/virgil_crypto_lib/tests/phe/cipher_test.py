@@ -1,6 +1,6 @@
 import os
 import unittest
-from virgil_crypto.phe.cipher import Cipher
+from virgil_crypto_lib.phe.cipher import Cipher
 
 
 class CipherTest(unittest.TestCase):

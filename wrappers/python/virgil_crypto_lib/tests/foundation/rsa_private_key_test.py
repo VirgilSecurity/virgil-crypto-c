@@ -2,11 +2,11 @@ import unittest
 from binascii import unhexlify
 from ctypes import cast, POINTER, c_byte
 
-from virgil_crypto.common._c_bridge import Data
-from virgil_crypto.foundation import RsaPrivateKey, FakeRandom, KeyMaterialRng
-from virgil_crypto.foundation._c_bridge import *
-from virgil_crypto.tests.data.test_data import TestData
-from virgil_crypto.utils import Utils
+from virgil_crypto_lib.common._c_bridge import Data
+from virgil_crypto_lib.foundation import RsaPrivateKey, FakeRandom, KeyMaterialRng
+from virgil_crypto_lib.foundation._c_bridge import *
+from virgil_crypto_lib.tests.data.test_data import TestData
+from virgil_crypto_lib.utils import Utils
 
 
 class RsaPrivateKeyTest(unittest.TestCase):

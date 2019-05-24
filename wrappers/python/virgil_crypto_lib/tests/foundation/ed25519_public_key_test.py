@@ -1,8 +1,8 @@
 import unittest
 
-from virgil_crypto.foundation import Ed25519PublicKey
-from virgil_crypto.foundation._c_bridge import VscfAlgId
-from virgil_crypto.tests.data.test_data import TestData
+from virgil_crypto_lib.foundation import Ed25519PublicKey
+from virgil_crypto_lib.foundation._c_bridge import VscfAlgId
+from virgil_crypto_lib.tests.data.test_data import TestData
 
 
 class Ed25519PublicKeyTest(unittest.TestCase):

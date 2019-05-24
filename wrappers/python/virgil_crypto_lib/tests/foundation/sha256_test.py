@@ -2,8 +2,8 @@ import unittest
 from base64 import b64encode
 from binascii import unhexlify
 
-from virgil_crypto.foundation.sha256 import Sha256
-from virgil_crypto.tests.data import TestData
+from virgil_crypto_lib.foundation.sha256 import Sha256
+from virgil_crypto_lib.tests.data import TestData
 
 
 class Sha256Test(unittest.TestCase):

@@ -1,8 +1,8 @@
 import unittest
 from binascii import unhexlify
 
-from virgil_crypto.foundation.kdf1 import Kdf1
-from virgil_crypto.foundation.sha256 import Sha256
+from virgil_crypto_lib.foundation.kdf1 import Kdf1
+from virgil_crypto_lib.foundation.sha256 import Sha256
 
 
 class Kdf1Test(unittest.TestCase):

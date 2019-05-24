@@ -1,9 +1,8 @@
 import unittest
 
-from virgil_crypto.common._c_bridge import Data
-from virgil_crypto.foundation import KeyProvider, KeyMaterialRng
-from virgil_crypto.foundation._c_bridge import VscfAlgId
-from virgil_crypto.tests.data import TestData
+from virgil_crypto_lib.foundation import KeyProvider, KeyMaterialRng
+from virgil_crypto_lib.foundation._c_bridge import VscfAlgId
+from virgil_crypto_lib.tests.data import TestData
 
 
 class KeyProviderTest(unittest.TestCase):
