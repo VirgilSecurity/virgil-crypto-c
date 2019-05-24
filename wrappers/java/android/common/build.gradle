@@ -57,7 +57,7 @@ publishing {
             artifact javadocJar
             pom {
                 name = 'Virgil Security Crypto Common'
-                description = 'Virgil Security introduces an implementation of the Password-Hardened Encryption (PHE) protocol that provides developers with a technology to protect users passwords from offline/online attacks and make stolen passwords useless even if your database has been compromised.'
+                description = 'This library is designed to be small, flexible and convenient wrapper for a variety crypto algorithms. So it can be used in a small micro controller as well as in a high load server application.'
                 url = 'https://www.virgilsecurity.com/'
                 licenses {
                     license {
@@ -74,7 +74,7 @@ publishing {
                     }
                 }
                 scm {
-                    connection = 'scm:git:https://github.com/virgilsecurity/virgil-passw0rd-kotlin.git'
+                    connection = 'scm:git:git@github.com:VirgilSecurity/virgil-crypto-c.git'
                     developerConnection = 'scm:git:git@github.com:VirgilSecurity/virgil-crypto-c.git'
                     url = 'https://github.com/VirgilSecurity/virgil-crypto-c'
                 }

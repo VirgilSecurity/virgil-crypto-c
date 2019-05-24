@@ -48,7 +48,7 @@
 // --------------------------------------------------------------------------
 //  Constants
 // --------------------------------------------------------------------------
-const char VSCP_PYTHIA_PHP_VERSION[] = "0.7.0";
+const char VSCP_PYTHIA_PHP_VERSION[] = "0.8.0";
 const char VSCP_PYTHIA_PHP_EXTNAME[] = "vscp_pythia_php";
 const char VSCP_PYTHIA_PHP_RES_NAME[] = "vscp_pythia_t";
 

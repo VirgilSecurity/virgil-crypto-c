@@ -202,11 +202,17 @@ vscf_key_asn1_deserializer_deserialize_public_key_inplace(vscf_key_asn1_deserial
     //
     vscf_asn1_reader_read_sequence(self->asn1_reader);
 
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_DER_PUBLIC_KEY);
+        return NULL;
+    }
+
     //
     //  Read algorithm
     //
     vscf_impl_t *alg_info = vscf_alg_info_der_deserializer_deserialize_inplace(self->alg_info_der_deserializer, error);
     if (NULL == alg_info) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_DER_PUBLIC_KEY);
         return NULL;
     }
 
@@ -222,7 +228,7 @@ vscf_key_asn1_deserializer_deserialize_public_key_inplace(vscf_key_asn1_deserial
     //  Finalize
     //
     if (vscf_asn1_reader_has_error(self->asn1_reader)) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_PKCS8_PUBLIC_KEY);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_DER_PUBLIC_KEY);
         return NULL;
     }
 

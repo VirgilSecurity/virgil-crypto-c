@@ -1665,7 +1665,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class KeyRecipientInfoList has no constructor with C context parameter.");
     }
     vscf_key_recipient_info_list_shallow_copy((vscf_key_recipient_info_list_t */*5*/) proxyResult);
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -1683,7 +1683,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class PasswordRecipientInfoList has no constructor with C context parameter.");
     }
     vscf_password_recipient_info_list_shallow_copy((vscf_password_recipient_info_list_t */*5*/) proxyResult);
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -1718,7 +1718,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class MessageInfoCustomParams has no constructor with C context parameter.");
     }
     vscf_message_info_custom_params_shallow_copy((vscf_message_info_custom_params_t */*5*/) proxyResult);
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -1852,7 +1852,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class KeyRecipientInfo has no constructor with C context parameter.");
     }
     vscf_key_recipient_info_shallow_copy((vscf_key_recipient_info_t */*5*/) proxyResult);
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -1878,7 +1878,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class KeyRecipientInfoList has no constructor with C context parameter.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -1904,7 +1904,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class KeyRecipientInfoList has no constructor with C context parameter.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -2020,7 +2020,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class PasswordRecipientInfo has no constructor with C context parameter.");
     }
     vscf_password_recipient_info_shallow_copy((vscf_password_recipient_info_t */*5*/) proxyResult);
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -2046,7 +2046,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class PasswordRecipientInfoList has no constructor with C context parameter.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -2072,7 +2072,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class PasswordRecipientInfoList has no constructor with C context parameter.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -2298,7 +2298,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class MessageInfoCustomParams has no constructor with C context parameter.");
     }
     vscf_message_info_custom_params_shallow_copy((vscf_message_info_custom_params_t */*5*/) proxyResult);
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -7271,7 +7271,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -7297,7 +7297,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -7335,7 +7335,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jpublicKeyData, (jbyte*) public_key_data_arr, 0);
 
@@ -7368,7 +7368,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jprivateKeyData, (jbyte*) private_key_data_arr, 0);
 
@@ -9230,7 +9230,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class MessageInfo has no constructor with C context parameter.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
 
