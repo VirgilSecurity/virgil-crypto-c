@@ -10,9 +10,9 @@ const initFoundation = () => {
   }
   initPromise = new Promise((resolve, reject) => {
     emscriptenModule.onRuntimeInitialized = () => {
-      resolve({
-        Sha256: initSha256(emscriptenModule),
-      });
+      const modules = {};
+      modules.Sha256 = initSha256(emscriptenModule, modules);
+      resolve(modules);
     };
     emscriptenModule.onAbort = message => {
       reject(new Error(message));

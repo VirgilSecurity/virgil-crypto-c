@@ -1,4 +1,4 @@
-const initSha256 = emscriptenModule => {
+const initSha256 = (emscriptenModule, modules) => {
   class Sha256 {
     static get DIGEST_LEN() {
       return 32;
