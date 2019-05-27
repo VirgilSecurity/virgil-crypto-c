@@ -12,6 +12,8 @@
     "_vsc_buffer_bytes",
     "_vsc_buffer_data",
     "_vsc_buffer_len",
+    "_vscp_error_ctx_size",
+    "_vscp_error_status",
     "_vscp_pythia_configure",
     "_vscp_pythia_cleanup",
     "_vscp_pythia_blinded_password_buf_len",

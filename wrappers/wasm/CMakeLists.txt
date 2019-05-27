@@ -66,4 +66,4 @@ configure_file(
 add_subdirectory(foundation)
 add_subdirectory(phe)
 add_subdirectory(pythia)
-# add_subdirectory(ratchet)
+add_subdirectory(ratchet)

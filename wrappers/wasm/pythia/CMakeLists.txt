@@ -40,7 +40,7 @@ project(virgil_crypto_pythia_wasm VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 # ---------------------------------------------------------------------------
 #   Check dependencies
 # ---------------------------------------------------------------------------
-if(NOT VIRGIL_LIB_FOUNDATION)
+if(NOT VIRGIL_LIB_PYTHIA)
     message(STATUS "Skip building the WebAssembly wrapper for library Foundation, which is not built.")
     return()
 endif()

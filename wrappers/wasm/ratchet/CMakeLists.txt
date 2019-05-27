@@ -34,13 +34,13 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_phe_wasm VERSION ${virgil_crypto_VERSION} LANGUAGES C)
+project(virgil_crypto_ratchet_wasm VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
 #   Check dependencies
 # ---------------------------------------------------------------------------
-if(NOT VIRGIL_LIB_PHE)
+if(NOT VIRGIL_LIB_RATCHET)
     message(STATUS "Skip building the WebAssembly wrapper for library Foundation, which is not built.")
     return()
 endif()
@@ -49,7 +49,7 @@ endif()
 # ---------------------------------------------------------------------------
 #   Create WebAssembly library
 # ---------------------------------------------------------------------------
-add_custom_target(phe_wasm ALL
+add_custom_target(ratchet_wasm ALL
         COMMAND "${CMAKE_C_COMPILER}"
                 -s EXPORTED_FUNCTIONS="@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json"
                 -s MODULARIZE=1
@@ -58,17 +58,17 @@ add_custom_target(phe_wasm ALL
                 $<$<CONFIG:Debug>:--emrun>
                 $<TARGET_FILE:common>
                 $<TARGET_FILE:foundation>
-                $<TARGET_FILE:phe_pb>
+                $<TARGET_FILE:ratchet_pb>
                 $<TARGET_FILE:protobuf-nanopb>
-                $<TARGET_FILE:phe>
+                $<TARGET_FILE:ratchet>
                 $<TARGET_FILE:mbedcrypto>
                 $<TARGET_FILE:ed25519>
-                -o libphe.js
+                -o libratchet.js
         COMMAND ${CMAKE_COMMAND} -E copy_directory
                 "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_BINARY_DIR}"
         COMMAND_EXPAND_LISTS
-        DEPENDS phe
-        COMMENT "Create WASM+JS for the library phe."
+        DEPENDS ratchet
+        COMMENT "Create WASM+JS for the library ratchet."
         )
 
 # ---------------------------------------------------------------------------
@@ -76,9 +76,9 @@ add_custom_target(phe_wasm ALL
 # ---------------------------------------------------------------------------
 find_host_program(WASM2WAT wasm2wat)
 if(WASM2WAT)
-    add_custom_target(phe_wat ALL
-            COMMAND "${WASM2WAT}" libphe.wasm -o libphe.wat
-            DEPENDS phe_wasm
-            COMMENT "Create WAT for the library phe."
+    add_custom_target(ratchet_wat ALL
+            COMMAND "${WASM2WAT}" libratchet.wasm -o libratchet.wat
+            DEPENDS ratchet_wasm
+            COMMENT "Create WAT for the library ratchet."
             )
 endif()

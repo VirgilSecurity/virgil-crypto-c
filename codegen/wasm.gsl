@@ -1307,9 +1307,11 @@ function wasm_create_index_module(wasm_project)
             . = wasm_format_license(my.wasm_project->license) ?
         endnew
 
+        my.module_inst = "$(my.wasm_project.name:Camel)Module"
+
         my.code = ""
         my.code += format_left("
-            const $(my.wasm_project.module_name:) = require('$(my.wasm_project.lib_name:)');
+            const $(my.wasm_project.module_name:) = require('./$(my.wasm_project.lib_name:)');
         ")
 
         my.code += terminator
@@ -1323,7 +1325,7 @@ function wasm_create_index_module(wasm_project)
             my.init_code ?= ""
             my.init_code += format_left("
                   modules.$(wasm_imported_class.name:Pascal) =\
-                        init$(wasm_imported_class.name:Pascal)($(my.wasm_project.module_name:Camel), modules);
+                        init$(wasm_imported_class.name:Pascal)($(my.module_inst:), modules);
             ")
         endfor
 
@@ -1334,34 +1336,34 @@ function wasm_create_index_module(wasm_project)
 
             my.init_code ?= ""
             my.init_code += format_left("
-                  modules.$(wasm_module.name:Pascal) = init$(wasm_module.name:Pascal)($(my.wasm_project.module_name:Camel), modules);
+                  modules.$(wasm_module.name:Pascal) = init$(wasm_module.name:Pascal)($(my.module_inst:), modules);
             ")
         endfor
 
         my.code += terminator + format_left("
-            const $(my.wasm_project.module_name:Camel) = new $(my.wasm_project.module_name:)();
+            const $(my.module_inst:) = new $(my.wasm_project.module_name:)();
             let initPromise;
         ")
 
         my.code += terminator + format_left("
-            const init$(my.wasm_project.name:Pascal) = () => {
+            const initProject = () => {
                 if (initPromise) {
                     return initPromise;
                 }
                 initPromise = new Promise((resolve, reject) => {
-                    $(my.wasm_project.module_name:Camel).onRuntimeInitialized = () => {
+                    $(my.module_inst:).onRuntimeInitialized = () => {
                         const modules = {};
                         $(format_left(my.init_code, 6))
                         resolve(modules);
                     };
 
-                    $(my.wasm_project.module_name:Camel).onAbort = message => {
+                    $(my.module_inst:).onAbort = message => {
                         reject(new Error(message));
                     };
                 });
                 return initPromise;
             };
-            module.exports = init$(my.wasm_project.name:Pascal);
+            module.exports = initProject;
         ")
 
         new wasm_code to wasm_module
