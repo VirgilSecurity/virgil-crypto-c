@@ -34,21 +34,48 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_wasm VERSION ${virgil_crypto_VERSION} LANGUAGES C)
+project(virgil_crypto_pythia_wasm VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
-#   Check Emscripten environment.
+#   Check dependencies
 # ---------------------------------------------------------------------------
-
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-    message(FATAL_ERROR "Attempt to build WebAssembly without Emscripten toolchain.")
+if(NOT VIRGIL_LIB_FOUNDATION)
+    message(STATUS "Skip building the WebAssembly wrapper for library Foundation, which is not built.")
+    return()
 endif()
 
+
 # ---------------------------------------------------------------------------
-#   Add per project extension build
+#   Create WebAssembly library
 # ---------------------------------------------------------------------------
-add_subdirectory(foundation)
-add_subdirectory(phe)
-add_subdirectory(pythia)
-# add_subdirectory(ratchet)
+add_custom_target(pythia_wasm ALL
+        COMMAND "${CMAKE_C_COMPILER}"
+                -s EXPORTED_FUNCTIONS="@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json"
+                -s MODULARIZE=1
+                -s EXPORT_NAME=FoundationModule
+                "$<$<CONFIG:Release>:--llvm-lto;1;-Os;--closure;1;-s;USE_CLOSURE_COMPILER=1>"
+                $<$<CONFIG:Debug>:--emrun>
+                $<TARGET_FILE:common>
+                $<TARGET_FILE:pythia>
+                $<TARGET_FILE:mbedcrypto>
+                $<TARGET_FILE:relic>
+                -o libpythia.js
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_BINARY_DIR}"
+        COMMAND_EXPAND_LISTS
+        DEPENDS pythia
+        COMMENT "Create WASM+JS for the library pythia."
+        )
+
+# ---------------------------------------------------------------------------
+#   Produce additional info suitable for debug
+# ---------------------------------------------------------------------------
+find_host_program(WASM2WAT wasm2wat)
+if(WASM2WAT)
+    add_custom_target(pythia_wat ALL
+            COMMAND "${WASM2WAT}" libpythia.wasm -o libpythia.wat
+            DEPENDS pythia_wasm
+            COMMENT "Create WAT for the library pythia."
+            )
+endif()

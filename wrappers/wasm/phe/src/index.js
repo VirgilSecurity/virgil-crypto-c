@@ -36,3 +36,46 @@
 
 
 const PheModule = require('libphe');
+
+const initFoundationInterface = require('../foundation/FoundationInterface');
+const initCtrDrbg = require('../foundation/CtrDrbg');
+const initHmac = require('../foundation/Hmac');
+const initHkdf = require('../foundation/Hkdf');
+const initSha512 = require('../foundation/Sha512');
+const initPheError = require('./PheError');
+const initPheCommon = require('./PheCommon');
+const initPheServer = require('./PheServer');
+const initPheClient = require('./PheClient');
+const initPheCipher = require('./PheCipher');
+
+const PheModule = new PheModule();
+let initPromise;
+
+const initPhe = () => {
+    if (initPromise) {
+        return initPromise;
+    }
+    initPromise = new Promise((resolve, reject) => {
+        PheModule.onRuntimeInitialized = () => {
+            const modules = {};
+
+            modules.FoundationInterface = initFoundationInterface(PheModule, modules);
+            modules.CtrDrbg = initCtrDrbg(PheModule, modules);
+            modules.Hmac = initHmac(PheModule, modules);
+            modules.Hkdf = initHkdf(PheModule, modules);
+            modules.Sha512 = initSha512(PheModule, modules);
+            modules.PheError = initPheError(PheModule, modules);
+            modules.PheCommon = initPheCommon(PheModule, modules);
+            modules.PheServer = initPheServer(PheModule, modules);
+            modules.PheClient = initPheClient(PheModule, modules);
+            modules.PheCipher = initPheCipher(PheModule, modules);
+            resolve(modules);
+        };
+
+        PheModule.onAbort = message => {
+            reject(new Error(message));
+        };
+    });
+    return initPromise;
+};
+module.exports = initPhe;

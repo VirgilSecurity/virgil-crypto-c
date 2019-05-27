@@ -1369,6 +1369,7 @@ function uid_insert_prefix (uid, prefix)
     my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "java") ?
     my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "csharp") ?
     my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "swift") ?
+    my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "wasm") ?
     my.new_uid ?= make_id (my.prefix, my.uid)
 
     return my.new_uid

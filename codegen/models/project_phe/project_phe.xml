@@ -48,7 +48,18 @@
     </license>
 
     <require project="common" feature="library"/>
-    <require project="foundation" feature="library"/>
+
+    <require project="foundation" feature="library">
+        <require interface="random"/>
+        <require interface="hash"/>
+        <require interface="mac"/>
+        <require interface="kdf"/>
+        <require impl="ctr drbg"/>
+        <require impl="hmac"/>
+        <require impl="hkdf"/>
+        <require impl="sha512"/>
+    </require>
+
     <require library="mbedtls" feature="library"/>
 
     <feature name="multi thread" default="on">

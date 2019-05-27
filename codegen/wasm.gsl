@@ -146,7 +146,7 @@ function wasm_create_class_default_constructor(class, wasm_class)
     check_arguments(my, "class, wasm_class", my)
 
     new wasm_constructor to my.wasm_class
-        . = "\
+        . = "
             /**
              * Create object with underlying C context.
              *
@@ -159,7 +159,7 @@ function wasm_create_class_default_constructor(class, wasm_class)
         endnew
 
         new wasm_code to wasm_constructor
-            . = "\
+            . = "
                 this.name = '$(my.wasm_class.name:)';
 
                 if (typeof ctxPtr === 'undefined') {
@@ -169,6 +169,10 @@ function wasm_create_class_default_constructor(class, wasm_class)
                 }
             "
         endnew
+    endnew
+
+    new wasm_imported_function to my.wasm_class
+        .name = class_derive_c_constructor(my.class)
     endnew
 endfunction
 
@@ -194,7 +198,7 @@ function wasm_create_class_constructors_with_c_context(class, wasm_class)
         endnew
 
         new wasm_code to wasm_method
-            . = "\
+            . = "
                 // assert(typeof ctxPtr === 'number');
                 return new $(my.wasm_class.name:)(Module._$(class_derive_c_method_shallow_copy(my.class))(ctxPtr));
             "
@@ -217,11 +221,15 @@ function wasm_create_class_constructors_with_c_context(class, wasm_class)
         endnew
 
         new wasm_code to wasm_method
-            . = "\
+            . = "
                 // assert(typeof ctxPtr === 'number');
                 return new $(my.wasm_class.name:)(ctxPtr);
             "
         endnew
+    endnew
+
+    new wasm_imported_function to my.wasm_class
+        .name = class_derive_c_method_shallow_copy(my.class)
     endnew
 endfunction
 
@@ -246,12 +254,12 @@ function wasm_create_custom_interface_class_constructors(source, wasm_class, was
             .name = "ctxPtr"
         endnew
 
-        my.code_switch_statement_begin = format_left("\
-            const implTag = vscf_impl_tag(ctxPtr);
+        my.code_switch_statement_begin = format_left("
+            const implTag = $(impl_derive_c_method_implementation_tag())(ctxPtr);
             switch(implTag) {
         ")
 
-        my.code_switch_statement_end = terminator + format_left("\
+        my.code_switch_statement_end = terminator + format_left("
                 default:
                     throw new Error('Unexpected implementation tag found: ' + implTag);
             }
@@ -259,7 +267,7 @@ function wasm_create_custom_interface_class_constructors(source, wasm_class, was
 
         for my.source.implementation as impl
             my.code_switch_statement_cases ?= ""
-            my.code_switch_statement_cases += terminator + format_left("\
+            my.code_switch_statement_cases += terminator + format_left("
                 case $(my.wasm_project.impl_tag_enum_name:).$(wasm_derive_constant_name_str(impl.name)):
                     return modules.$(wasm_derive_class_name(impl)).newAndTakeCContext(ctxPtr);
             ", 1)
@@ -286,12 +294,19 @@ function wasm_create_custom_interface_class_constructors(source, wasm_class, was
         endnew
 
         new wasm_code to wasm_method
-            . = "\
-                return new modules.$(my.wasm_class.name:).newAndTakeCContext(Module._$(interface_derive_c_method_shallow_copy())(ctxPtr));
+            . = "
+                return new modules.$(my.wasm_class.name:).newAndTakeCContext(Module._$(impl_derive_c_method_shallow_copy())(ctxPtr));
             "
         endnew
     endnew
 
+    new wasm_imported_function to my.wasm_class
+        .name = impl_derive_c_method_shallow_copy()
+    endnew
+
+    new wasm_imported_function to my.wasm_class
+        .name = impl_derive_c_method_implementation_tag()
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -309,13 +324,17 @@ function wasm_create_class_destructor(class, wasm_class)
         .name = "delete"
 
         new wasm_code to wasm_method
-            . = "\
+            . = "
                 if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                     Module._$(class_derive_c_destructor(my.class))(this.ctxPtr);
                     this.ctxPtr = null;
                 }
             "
         endnew
+    endnew
+
+    new wasm_imported_function to my.wasm_class
+        .name = class_derive_c_destructor(my.class)
     endnew
 endfunction
 
@@ -351,13 +370,18 @@ function wasm_create_class_dependency_method(dependency, class, wasm_class, wasm
                 my.impl_handle_status = "modules.$(my.wasm_project.error_class_name:).handleStatusCode(proxyStatus)"
             endif
 
-            . = format_left("\
+            . = format_left("
                 Module._$(class_derive_c_method_release_dependency(my.class, my.dependency))(this.ctxPtr)
                 $(my.result_var?:)Module._$(class_derive_c_method_use_dependency(my.class, my.dependency))(this.ctxPtr,\
                         $(my.arg_name:).ctxPtr)
                 $(my.impl_handle_status?:)
             ")
         endnew
+    endnew
+
+    new wasm_imported_function to my.wasm_class
+        .name = class_derive_c_method_release_dependency(my.class, my.dependency)
+        .name = class_derive_c_method_use_dependency(my.class, my.dependency)
     endnew
 endfunction
 
@@ -385,7 +409,7 @@ function wasm_create_method_argument_for_data(argument, wasm_method, wasm_class)
 
         .code_precondition = "// assert(typeof $(wasm_argument.name:) === 'Uint8Array')"
 
-        .code_on_initialize = "\
+        .code_on_initialize = "
             //  Copy bytes from JS memory to the WASM memory.
             const $(0.name:)Size = $(0.name:).length * $(0.name:).BYTES_PER_ELEMENT;
             const $(0.name:)Ptr = Module._malloc($(0.name:)Size);
@@ -399,7 +423,7 @@ function wasm_create_method_argument_for_data(argument, wasm_method, wasm_class)
             Module._vsc_data($(0.name:)CtxPtr, $(0.name:)Ptr, $(0.name:)Size);
         "
 
-        .code_on_finalize = "\
+        .code_on_finalize = "
             Module._free($(0.name:)Ptr);
             Module._free($(0.name:)CtxPtr);
         "
@@ -416,17 +440,17 @@ function wasm_create_method_argument_for_writeonly_buffer(argument, wasm_method,
         wasm_map_instance_type(my.argument, wasm_return)
         .name = wasm_derive_method_argument_name(my.argument)
 
-        .code_on_initialize = "\
+        .code_on_initialize = "
             const $(0.name:)Size = $(wasm_derive_buffer_length_getter(my.argument, my.wasm_class));
             const $(0.name:)CtxPtr = Module._vsc_buffer_new_with_capacity($(0.name:)Size);
         "
 
-        .code_on_success = "\
+        .code_on_success = "
             const $(0.name:)Ptr = Module._vsc_buffer_bytes($(0.name:)CtxPtr);
             const $(0.name:) = Module.HEAPU8.slice($(0.name:)Ptr, $(0.name:)Ptr + $(0.name:)Size);
         "
 
-        .code_on_finalize = "\
+        .code_on_finalize = "
             Module._vsc_buffer_delete($(0.name:)CtxPtr);
         "
 
@@ -444,7 +468,7 @@ function wasm_create_method_argument_for_readwrite_buffer(argument, wasm_method,
 
         .code_precondition = "// assert(typeof $(wasm_argument.name:) === 'Uint8Array')"
 
-        .code_on_initialize = "\
+        .code_on_initialize = "
             //  Copy bytes from JS memory to the WASM memory.
             const $(0.name:)Size = $(0.name:).length * $(0.name:).BYTES_PER_ELEMENT;
             const $(0.name:)Ptr = Module._malloc($(0.name:)Size);
@@ -457,7 +481,7 @@ function wasm_create_method_argument_for_readwrite_buffer(argument, wasm_method,
             Module._vsc_buffer_use($(0.name:)CtxPtr, $(0.name:)Ptr, $(0.name:)Size);
         "
 
-        .code_on_finalize = "\
+        .code_on_finalize = "
             Module._vsc_buffer_delete($(0.name:)CtxPtr);
         "
 
@@ -468,7 +492,7 @@ function wasm_create_method_argument_for_readwrite_buffer(argument, wasm_method,
         wasm_map_instance_type(my.argument, wasm_return)
         .name = "$(wasm_derive_method_argument_name(my.argument))Result"
 
-        .code_on_success = "\
+        .code_on_success = "
             const $(0.name:)Ptr = Module._vsc_buffer_bytes($(0.name:)CtxPtr);
             const $(0.name:)Result = Module.HEAPU8.slice($(0.name:)Ptr, $(0.name:)Ptr + $(0.name:)Size);
         "
@@ -519,16 +543,16 @@ function wasm_create_method_argument_for_class_error(argument, wasm_method, wasm
         .name = wasm_derive_method_argument_name(my.argument)
         .is_local = "1"
 
-        .code_on_initialize = "\
+        .code_on_initialize = "
             const $(0.name:)CtxSize = Module.$(class_error_derive_c_method_ctx_size())();
             const $(0.name:)CtxPtr = Module._malloc($(0.name:)CtxSize);
         "
 
-        .code_on_success = "\
+        .code_on_success = "
             const $(0.name:)Status = Module.$(class_error_derive_c_method_status())($(0.name:)CtxPtr);
             modules.$(my.wasm_project.error_class_name:).handleStatusCode($(0.name:)Status);
         "
-        .code_on_finalize = "\
+        .code_on_finalize = "
             Module._free($(0.name:)CtxPtr);
         "
         my.wasm_method.c_arg_list += "$(0.name:)CtxPtr" + ", "
@@ -544,13 +568,13 @@ function wasm_create_method_return_for_primitive_type(return, wasm_method, wasm_
 
         wasm_map_instance_type(my.return, wasm_return)
 
-        wasm_return.code_on_initialize = "\
+        wasm_return.code_on_initialize = "
             let proxyResult;
         "
 
         if wasm_return.type = "boolean"
             wasm_return.name = "booleanResult"
-            wasm_return.code_on_success = "\
+            wasm_return.code_on_success = "
                 const booleanResult = !!proxyResult;
             "
         endif
@@ -566,19 +590,19 @@ function wasm_create_method_return_for_data(return, wasm_method, wasm_class)
 
         wasm_map_instance_type(my.return, wasm_return)
 
-        wasm_return.code_on_initialize = "\
+        wasm_return.code_on_initialize = "
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
         "
 
-        wasm_return.code_on_success = "\
+        wasm_return.code_on_success = "
             const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
             const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
             const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
         "
 
-        wasm_return.code_on_finalize = "\
+        wasm_return.code_on_finalize = "
             Module._free(dataResultCtxPtr);
         "
 
@@ -596,17 +620,17 @@ function wasm_create_method_return_for_disown_buffer(return, wasm_method, wasm_c
 
         wasm_map_instance_type(my.return, wasm_return)
 
-        wasm_return.code_on_initialize = "\
+        wasm_return.code_on_initialize = "
             let proxyResult;
         "
 
-        wasm_return.code_on_success = "\
+        wasm_return.code_on_success = "
             const bufferResultSize = Module._vsc_buffer_len(proxyResult);
             const bufferResultPtr = Module._vsc_buffer_bytes(proxyResult);
             const bufferResult = Module.HEAPU8.slice(bufferResultPtr, bufferResultPtr + bufferResultSize);
         "
 
-        wasm_return.code_on_finalize = "\
+        wasm_return.code_on_finalize = "
             Module._vsc_buffer_delete(proxyResult);
         "
     endnew
@@ -621,17 +645,17 @@ function wasm_create_method_return_for_class(return, wasm_method, wasm_class)
 
         wasm_map_instance_type(my.return, wasm_return)
 
-        wasm_return.code_on_initialize = "\
+        wasm_return.code_on_initialize = "
             let proxyResult;
         "
 
         my.instance_class = wasm_derive_instance_class(my.return)
         if string_in(my.return.access, "disown, retain")
-            wasm_return.code_on_success = "\
+            wasm_return.code_on_success = "
                 const jsResult = modules.$(my.instance_class:).newAndTakeCContext(proxyResult);
             "
         else
-            wasm_return.code_on_success = "\
+            wasm_return.code_on_success = "
                 const jsResult = modules.$(my.instance_class:).newAndUseCContext(proxyResult);
             "
         endif
@@ -647,17 +671,17 @@ function wasm_create_method_return_for_interface(return, wasm_method, wasm_class
 
         wasm_map_instance_type(my.return, wasm_return)
 
-        wasm_return.code_on_initialize = "\
+        wasm_return.code_on_initialize = "
             let proxyResult;
         "
 
         my.instance_class = wasm_derive_interface_wrapper_class_name(my.return, my.wasm_project)
         if string_in(my.return.access, "disown, retain")
-            wasm_return.code_on_success = "\
+            wasm_return.code_on_success = "
                 const jsResult = modules.$(my.instance_class:).newAndTakeCContext(proxyResult);
             "
         else
-            wasm_return.code_on_success = "\
+            wasm_return.code_on_success = "
                 const jsResult = modules.$(my.instance_class:).newAndUseCContext(proxyResult);
             "
         endif
@@ -673,7 +697,7 @@ function wasm_create_method_return_for_enum(return, wasm_method, wasm_class)
 
         wasm_map_instance_type(my.return, wasm_return)
 
-        wasm_return.code_on_initialize = "\
+        wasm_return.code_on_initialize = "
             let proxyResult;
         "
     endnew
@@ -852,7 +876,7 @@ function wasm_create_class_method(method, class, wasm_class, wasm_project)
         if my.has_finalizer
             my.code += terminator + format_left("try {")
         endif
-        my.code += format_left("\
+        my.code += format_left("
             $(my.return_statement?:)$(wasm_method.c_method:)($(my.c_arg_list:));
         ", my.proxy_indent)
 
@@ -908,6 +932,70 @@ function wasm_create_class_method(method, class, wasm_class, wasm_project)
             . = (my.code = "") ?? "//  TODO: Implement me." ? my.code
         endnew
     endnew
+
+    new wasm_imported_function to my.wasm_class
+        .name = class_derive_c_method(my.class, my.method)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create singlr <wasm_imported_class/> entry.
+# ---------------------------------------------------------------------------
+function wasm_create_imported_class(ext_wasm_class, ext_wasm_project, wasm_project)
+    check_arguments(my, "ext_wasm_class, ext_wasm_project, wasm_project", my)
+
+    new wasm_imported_class to my.wasm_project
+        .name = my.ext_wasm_class.name
+        .source_dir = cat_path("..", my.ext_wasm_project.name)
+
+        for my.ext_wasm_class.wasm_imported_function
+            copy wasm_imported_function to wasm_imported_class
+        endfor
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create <wasm_imported_class/> entries.
+# ---------------------------------------------------------------------------
+function wasm_create_project_imported_classes(project, wasm_project, wrapper)
+    check_arguments(my, "project, wasm_project, wrapper", my)
+
+    for my.project.require where defined(0.project) & 0.project <> "common" & 0.feature = "library"
+        my.imported_wasm_project = wrapper_find_project(my.wrapper, require.project)
+
+        if count(require.require)
+            #   Import only specified classes.
+
+            if count(require.require, defined(interface) | defined(impl))
+                my.name = my.imported_wasm_project.interface_class_name
+                my.imported_module = my.imported_wasm_project->wasm_module(name = my.name)
+                wasm_create_imported_class(my.imported_module->wasm_class, my.imported_wasm_project, my.wasm_project)
+            endif
+
+            for require.require as inner_require where defined(inner_require.impl)
+                my.name = wasm_derive_class_name_str(inner_require.impl)
+                my.imported_module = my.imported_wasm_project->wasm_module(name = my.name)
+                wasm_create_imported_class(my.imported_module->wasm_class, my.imported_wasm_project, my.wasm_project)
+            endfor
+
+            for require.require as inner_require where defined(inner_require.class)
+                my.name = wasm_derive_class_name_str(inner_require.class)
+                my.imported_module = my.imported_wasm_project->wasm_module(name = my.name)
+                wasm_create_imported_class(my.imported_module->wasm_class, my.imported_wasm_project, my.wasm_project)
+            endfor
+        else
+            #   Import all.
+            for my.imported_wasm_project.wasm_module
+                for wasm_module.wasm_class
+                    wasm_create_imported_class(wasm_class, my.imported_wasm_project, my.wasm_project)
+                endfor
+            endfor
+        endif
+
+        for my.imported_wasm_project.wasm_imported_function
+            copy wasm_imported_function to my.wasm_project
+        endfor
+    endfor
 endfunction
 
 
@@ -939,6 +1027,8 @@ function wasm_create_project_module(project, wrapper)
         .interface_class_name = wasm_derive_class_name_str(cat(wasm_project.name, "interface"))
 
         copy my.project->license to wasm_project
+
+        wasm_create_project_imported_classes(my.project, wasm_project, my.wrapper)
 
         return wasm_project
     endnew
@@ -1017,8 +1107,18 @@ function wasm_create_class_module(class, wasm_project, meta)
 
     assert_attribute(my.class, "name", my)
 
-    if string_in(my.class.name, "error")
+    if my.class.name = "error"
+        #
         #   Do not generate classes that can be mapped to the built-in types.
+        #   Just add imported functions.
+        new wasm_imported_function to my.wasm_project
+            .name = class_error_derive_c_method_ctx_size()
+        endnew
+
+        new wasm_imported_function to my.wasm_project
+            .name = class_error_derive_c_method_status()
+        endnew
+
         return
     endif
 
@@ -1092,7 +1192,7 @@ function wasm_create_error_module(enum, wasm_project, meta)
                 endnew
 
                 new wasm_code to wasm_constructor
-                    . = "\
+                    . = "
                         super(message);
                         this.name = '$(wasm_class.name:)';
                         this.message = message;
@@ -1101,7 +1201,7 @@ function wasm_create_error_module(enum, wasm_project, meta)
             endnew
 
             new wasm_method to wasm_class
-                . = "\
+                . = "
                     /**
                      * Throw exception of this class with a message that corresponds to the given status code.
                      */
@@ -1116,7 +1216,7 @@ function wasm_create_error_module(enum, wasm_project, meta)
                 new wasm_code to wasm_method
                     for my.enum.constant where 0.name <> "success"
                         my.status_check ?= ""
-                        my.status_check += terminator + format_left("\
+                        my.status_check += terminator + format_left("
                             if (statusCode == $(constant.value:)) {
                                 throw new $(wasm_class.name:)(\"$(enum_constant_format_oneline_description(constant))\");
                             }
@@ -1214,6 +1314,19 @@ function wasm_create_index_module(wasm_project)
 
         my.code += terminator
 
+        for my.wasm_project.wasm_imported_class
+            my.code += format_left("
+                const init$(wasm_imported_class.name:Pascal) = \
+                        require('$(wasm_imported_class.source_dir)/$(wasm_imported_class.name:)');
+            ")
+
+            my.init_code ?= ""
+            my.init_code += format_left("
+                  modules.$(wasm_imported_class.name:Pascal) =\
+                        init$(wasm_imported_class.name:Pascal)($(my.wasm_project.module_name:Camel), modules);
+            ")
+        endfor
+
         for my.wasm_project.wasm_module where wasm_module.name <> "index"
             my.code += format_left("
                 const init$(wasm_module.name:Pascal) = require('./$(wasm_module.name:)');
@@ -1252,134 +1365,6 @@ function wasm_create_index_module(wasm_project)
         ")
 
         new wasm_code to wasm_module
-            . = my.code
-        endnew
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Create module describing "rollup.config.js".
-# ---------------------------------------------------------------------------
-function wasm_create_rollup_module(wasm_project)
-    check_arguments(my, "wasm_project", my)
-
-    echo_info("Create custom <wasm_module/>: 'rollup.config'", my)
-
-    new wasm_module to my.wasm_project
-        .name = "rollup.config"
-        .source_file_name = 0.name + ".js"
-        .source_file_path = cat_path(my.wasm_project.src_source_dir, 0.source_file_name)
-
-        new wasm_license to wasm_module
-            . = wasm_format_license(my.wasm_project->license) ?
-        endnew
-
-        new wasm_code to wasm_module
-            . = "
-                const path = require('path');
-
-                const builtinModules = require('builtin-modules');
-                const commonjs = require('rollup-plugin-commonjs');
-                const copy = require('rollup-plugin-copy');
-                const nodeResolve = require('rollup-plugin-node-resolve');
-                const { terser } = require('rollup-plugin-terser');
-
-                const UMD_NAME = '$(my.wasm_project.name:Pascal)';
-
-                const wasmBuildRoot = path.join(__dirname, '.');
-                const sourceRoot = path.join(__dirname, '.');
-                const outputFolder = path.join(__dirname, 'dist');
-
-                const builtinModulesMap = builtinModules.reduce((result, item) => {
-                    result[item] = item;
-                    return result;
-                }, {});
-
-                const format = process.env.FORMAT;
-                const formats = {
-                    cjs: 'cjs',
-                    es: 'es',
-                    umd: 'umd',
-                };
-                if (!formats[format]) {
-                    throw new TypeError(`'${format}' is not a valid format`);
-                }
-
-                module.exports = {
-                    input: path.join(sourceRoot, 'index.js'),
-                    output: {
-                       format,
-                       file: path.join(outputFolder, `$(my.wasm_project.name:).${format}.js`),
-                       name: UMD_NAME,
-                    },
-                    plugins: [
-                        nodeResolve(),
-                        commonjs({
-                            ignoreGlobal: true,
-                            ignore: id => typeof builtinModulesMap[id] !== 'undefined',
-                        }),
-                        terser(),
-                        copy({
-                            targets: [
-                                path.join(wasmBuildRoot, '$(my.wasm_project.lib_name:).wasm'),
-                            ],
-                            outputFolder: outputFolder,
-                        }),
-                    ],
-                };
-            "
-        endnew
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Create module describing "package.json".
-# ---------------------------------------------------------------------------
-function wasm_create_package_module(wasm_project)
-    check_arguments(my, "wasm_project", my)
-
-    echo_info("Create custom <json_module/>: 'package'", my)
-
-    new json_module to my.wasm_project
-        .name = "package"
-        .source_file_name = 0.name + ".json"
-        .source_file_path = cat_path(my.wasm_project.src_source_dir, 0.source_file_name)
-
-        my.code = ""
-        my.code += format_left('
-            {
-              "name": "$(my.wasm_project.name:)",
-              "version": "1.0.0",
-              "description": "$(my.wasm_project.description:)",
-              "main": "index.js",
-              "repository": "https://github.com/VirgilSecurity/virgil-crypto-c/tree/feature/wrapper-webasm-js/wrappers/wasm/$(my.wasm_project.name:)",
-              "author": "Virgil Security Inc. <support@virgilsecurity.com>",
-              "license": "BSD-3-Clause",
-              "private": true,
-              "scripts": {
-                "build:cjs": "cross-env FORMAT=cjs rollup -c",
-                "build:es": "cross-env FORMAT=es rollup -c",
-                "build:umd": "cross-env FORMAT=umd rollup -c",
-                "build": "npm run build:cjs && npm run build:es && npm run build:umd",
-                "clean": "rimraf dist",
-                "prepare": "npm run clean && npm run build",
-                "serve": "serve"
-              },
-              "devDependencies": {
-                "builtin-modules": "^3.1.0",
-                "cross-env": "^5.2.0",
-                "rimraf": "^2.6.3",
-                "rollup": "^1.12.3",
-                "rollup-plugin-commonjs": "^10.0.0",
-                "rollup-plugin-copy": "^2.0.1",
-                "rollup-plugin-node-resolve": "^5.0.0",
-                "rollup-plugin-terser": "^4.0.4",
-                "serve": "^11.0.0"
-              }
-            }
-        ')
-
-        new json_code to json_module
             . = my.code
         endnew
     endnew
@@ -1443,6 +1428,74 @@ function wasm_create_impl_tag_module(source, wasm_project)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Create module with JSON array of exported functions.
+# ---------------------------------------------------------------------------
+function wasm_create_exported_functions_module(wasm_project)
+    check_arguments(my, "wasm_project", my)
+
+    echo_info("Create custom <json_module/>: 'exported functions'", my)
+
+    new json_module to my.wasm_project
+        .name = "exported_functions"
+        .source_file_name = 0.name + ".json"
+        .source_file_path = cat_path(my.wasm_project.source_dir, 0.source_file_name)
+
+        my.code = ""
+        my.code += format_left('
+            [
+                "_malloc",
+                "_free",
+                "_vsc_data",
+                "_vsc_data_ctx_size",
+                "_vsc_data_bytes",
+                "_vsc_data_len",
+                "_vsc_buffer_new",
+                "_vsc_buffer_new_with_capacity",
+                "_vsc_buffer_delete",
+                "_vsc_buffer_make_secure",
+                "_vsc_buffer_bytes",
+                "_vsc_buffer_data",
+                "_vsc_buffer_len",
+        ')
+
+        my.container = XML.new("container")
+
+        for my.wasm_project.wasm_imported_class
+            for wasm_imported_class.wasm_imported_function
+                copy wasm_imported_function to my.container
+            endfor
+        endfor
+
+        for my.wasm_project.wasm_imported_function
+            copy wasm_imported_function to my.container
+        endfor
+
+        for my.wasm_project.wasm_module
+            for wasm_module.wasm_class
+                for wasm_class.wasm_imported_function
+                    copy wasm_imported_function to my.container
+                endfor
+            endfor
+        endfor
+
+        for my.container.wasm_imported_function
+            my.sep = !last() ?? "," ?
+            my.code += format_left('
+                "_$(wasm_imported_function.name:)"$(my.sep?)
+            ', 1)
+        endfor
+
+        delete my.container
+
+        my.code += format_left(']')
+
+        new json_code to json_module
+            . = my.code
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create a bunch of custom modules that are not related to the existing
 #   high-level models.
 # ---------------------------------------------------------------------------
@@ -1462,9 +1515,8 @@ endfunction
 function wasm_finalize_custom_modules(source, wasm_project, meta)
     check_arguments(my, "source, wasm_project, meta", my)
 
+    wasm_create_exported_functions_module(my.wasm_project)
     wasm_create_index_module(my.wasm_project)
-    wasm_create_rollup_module(my.wasm_project)
-    wasm_create_package_module(my.wasm_project)
 endfunction
 
 .endtemplate

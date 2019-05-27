@@ -208,8 +208,16 @@ endfunction
 #   Return .(UID) that refers to the C interface method that makes shallow
 #   copy.
 # ---------------------------------------------------------------------------
-function interface_derive_c_method_shallow_copy()
+function impl_derive_c_method_shallow_copy()
     return make_ref_c(make_id("class", "impl", "method", "shallow copy"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C implementation method that returns
+#   implementation tag.
+# ---------------------------------------------------------------------------
+function impl_derive_c_method_implementation_tag()
+    return make_ref_c(make_id("class", "impl", "method", "tag"))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -239,6 +247,25 @@ function enum_constant_format_oneline_description(constant)
     my.message = my.constant. ? ""
 
     return string_to_singleline(my.message)
+endfunction
+
+# ===========================================================================
+#   Finding.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Find project with a given name.
+# ---------------------------------------------------------------------------
+function wrapper_find_project(wrapper, name)
+    check_arguments(my, "wrapper, name", my)
+
+    my.lang = my.wrapper.lang
+    my.project = my.wrapper->$(my.lang:)_project(name = my.name) ?
+    if ! defined (my.project)
+        echo_fatal ("Project with name='$(my.name)' for lang='$(my.lang:)' is not found.")
+    endif
+
+    return my.project
 endfunction
 
 .endtemplate

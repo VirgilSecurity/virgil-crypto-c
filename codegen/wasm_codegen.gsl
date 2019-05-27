@@ -258,7 +258,6 @@ function wasm_generate_sources(wasm_project)
         output json_module.source_file_path
 
         for json_module.json_code
-            newline()
             wasm_insert_code(json_code.)
         endfor
     endfor
