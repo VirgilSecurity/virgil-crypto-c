@@ -35,31 +35,31 @@
  */
 
 
-const PythiaModule = require('libpythia');
+const PythiaModule = require('./libpythia');
 
 const initPythiaError = require('./PythiaError');
 const initPythia = require('./Pythia');
 
-const PythiaModule = new PythiaModule();
+const pythiaModule = new PythiaModule();
 let initPromise;
 
-const initPythia = () => {
+const initProject = () => {
     if (initPromise) {
         return initPromise;
     }
     initPromise = new Promise((resolve, reject) => {
-        PythiaModule.onRuntimeInitialized = () => {
+        pythiaModule.onRuntimeInitialized = () => {
             const modules = {};
 
-            modules.PythiaError = initPythiaError(PythiaModule, modules);
-            modules.Pythia = initPythia(PythiaModule, modules);
+            modules.PythiaError = initPythiaError(pythiaModule, modules);
+            modules.Pythia = initPythia(pythiaModule, modules);
             resolve(modules);
         };
 
-        PythiaModule.onAbort = message => {
+        pythiaModule.onAbort = message => {
             reject(new Error(message));
         };
     });
     return initPromise;
 };
-module.exports = initPythia;
+module.exports = initProject;

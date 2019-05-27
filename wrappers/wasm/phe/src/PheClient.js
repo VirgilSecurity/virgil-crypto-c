@@ -156,7 +156,7 @@ const initPheClient = (Module, modules) => {
          * Generates client private key
          */
         generateClientPrivateKey() {
-            const clientPrivateKeySize = PheCommon.PHE_PRIVATE_KEY_LENGTH;
+            const clientPrivateKeySize = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
             const clientPrivateKeyCtxPtr = Module._vsc_buffer_new_with_capacity(clientPrivateKeySize);
 
             try {
@@ -216,7 +216,7 @@ const initPheClient = (Module, modules) => {
             const enrollmentRecordSize = PheClient.enrollmentRecordLen();
             const enrollmentRecordCtxPtr = Module._vsc_buffer_new_with_capacity(enrollmentRecordSize);
 
-            const accountKeySize = PheCommon.PHE_ACCOUNT_KEY_LENGTH;
+            const accountKeySize = modules.PheCommon.PHE_ACCOUNT_KEY_LENGTH;
             const accountKeyCtxPtr = Module._vsc_buffer_new_with_capacity(accountKeySize);
 
             try {
@@ -344,7 +344,7 @@ const initPheClient = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(verifyPasswordResponseCtxPtr, verifyPasswordResponsePtr, verifyPasswordResponseSize);
 
-            const accountKeySize = PheCommon.PHE_ACCOUNT_KEY_LENGTH;
+            const accountKeySize = modules.PheCommon.PHE_ACCOUNT_KEY_LENGTH;
             const accountKeyCtxPtr = Module._vsc_buffer_new_with_capacity(accountKeySize);
 
             try {
@@ -384,10 +384,10 @@ const initPheClient = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(updateTokenCtxPtr, updateTokenPtr, updateTokenSize);
 
-            const newClientPrivateKeySize = PheCommon.PHE_PRIVATE_KEY_LENGTH;
+            const newClientPrivateKeySize = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
             const newClientPrivateKeyCtxPtr = Module._vsc_buffer_new_with_capacity(newClientPrivateKeySize);
 
-            const newServerPublicKeySize = PheCommon.PHE_PUBLIC_KEY_LENGTH;
+            const newServerPublicKeySize = modules.PheCommon.PHE_PUBLIC_KEY_LENGTH;
             const newServerPublicKeyCtxPtr = Module._vsc_buffer_new_with_capacity(newServerPublicKeySize);
 
             try {

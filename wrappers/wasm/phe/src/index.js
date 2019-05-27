@@ -35,7 +35,7 @@
  */
 
 
-const PheModule = require('libphe');
+const PheModule = require('./libphe');
 
 const initFoundationInterface = require('../foundation/FoundationInterface');
 const initCtrDrbg = require('../foundation/CtrDrbg');
@@ -48,34 +48,34 @@ const initPheServer = require('./PheServer');
 const initPheClient = require('./PheClient');
 const initPheCipher = require('./PheCipher');
 
-const PheModule = new PheModule();
+const pheModule = new PheModule();
 let initPromise;
 
-const initPhe = () => {
+const initProject = () => {
     if (initPromise) {
         return initPromise;
     }
     initPromise = new Promise((resolve, reject) => {
-        PheModule.onRuntimeInitialized = () => {
+        pheModule.onRuntimeInitialized = () => {
             const modules = {};
 
-            modules.FoundationInterface = initFoundationInterface(PheModule, modules);
-            modules.CtrDrbg = initCtrDrbg(PheModule, modules);
-            modules.Hmac = initHmac(PheModule, modules);
-            modules.Hkdf = initHkdf(PheModule, modules);
-            modules.Sha512 = initSha512(PheModule, modules);
-            modules.PheError = initPheError(PheModule, modules);
-            modules.PheCommon = initPheCommon(PheModule, modules);
-            modules.PheServer = initPheServer(PheModule, modules);
-            modules.PheClient = initPheClient(PheModule, modules);
-            modules.PheCipher = initPheCipher(PheModule, modules);
+            modules.FoundationInterface = initFoundationInterface(pheModule, modules);
+            modules.CtrDrbg = initCtrDrbg(pheModule, modules);
+            modules.Hmac = initHmac(pheModule, modules);
+            modules.Hkdf = initHkdf(pheModule, modules);
+            modules.Sha512 = initSha512(pheModule, modules);
+            modules.PheError = initPheError(pheModule, modules);
+            modules.PheCommon = initPheCommon(pheModule, modules);
+            modules.PheServer = initPheServer(pheModule, modules);
+            modules.PheClient = initPheClient(pheModule, modules);
+            modules.PheCipher = initPheCipher(pheModule, modules);
             resolve(modules);
         };
 
-        PheModule.onAbort = message => {
+        pheModule.onAbort = message => {
             reject(new Error(message));
         };
     });
     return initPromise;
 };
-module.exports = initPhe;
+module.exports = initProject;

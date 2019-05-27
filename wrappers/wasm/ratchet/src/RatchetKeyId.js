@@ -104,7 +104,7 @@ const initRatchetKeyId = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(publicKeyCtxPtr, publicKeyPtr, publicKeySize);
 
-            const keyIdSize = RatchetCommon.KEY_ID_LEN;
+            const keyIdSize = modules.RatchetCommon.KEY_ID_LEN;
             const keyIdCtxPtr = Module._vsc_buffer_new_with_capacity(keyIdSize);
 
             try {

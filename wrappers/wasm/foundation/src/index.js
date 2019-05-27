@@ -35,7 +35,7 @@
  */
 
 
-const FoundationModule = require('libfoundation');
+const FoundationModule = require('./libfoundation');
 
 const initFoundationInterface = require('./FoundationInterface');
 const initFoundationImplTag = require('./FoundationImplTag');
@@ -101,87 +101,87 @@ const initAlgInfoDerSerializer = require('./AlgInfoDerSerializer');
 const initAlgInfoDerDeserializer = require('./AlgInfoDerDeserializer');
 const initMessageInfoDerSerializer = require('./MessageInfoDerSerializer');
 
-const FoundationModule = new FoundationModule();
+const foundationModule = new FoundationModule();
 let initPromise;
 
-const initFoundation = () => {
+const initProject = () => {
     if (initPromise) {
         return initPromise;
     }
     initPromise = new Promise((resolve, reject) => {
-        FoundationModule.onRuntimeInitialized = () => {
+        foundationModule.onRuntimeInitialized = () => {
             const modules = {};
 
-            modules.FoundationInterface = initFoundationInterface(FoundationModule, modules);
-            modules.FoundationImplTag = initFoundationImplTag(FoundationModule, modules);
-            modules.FoundationError = initFoundationError(FoundationModule, modules);
-            modules.Asn1Tag = initAsn1Tag(FoundationModule, modules);
-            modules.AlgId = initAlgId(FoundationModule, modules);
-            modules.OidId = initOidId(FoundationModule, modules);
-            modules.RawKey = initRawKey(FoundationModule, modules);
-            modules.Oid = initOid(FoundationModule, modules);
-            modules.Base64 = initBase64(FoundationModule, modules);
-            modules.Pem = initPem(FoundationModule, modules);
-            modules.MessageInfo = initMessageInfo(FoundationModule, modules);
-            modules.KeyRecipientInfo = initKeyRecipientInfo(FoundationModule, modules);
-            modules.KeyRecipientInfoList = initKeyRecipientInfoList(FoundationModule, modules);
-            modules.PasswordRecipientInfo = initPasswordRecipientInfo(FoundationModule, modules);
-            modules.PasswordRecipientInfoList = initPasswordRecipientInfoList(FoundationModule, modules);
-            modules.AlgFactory = initAlgFactory(FoundationModule, modules);
-            modules.RecipientCipher = initRecipientCipher(FoundationModule, modules);
-            modules.ListKeyValueNode = initListKeyValueNode(FoundationModule, modules);
-            modules.MessageInfoCustomParams = initMessageInfoCustomParams(FoundationModule, modules);
-            modules.KeyProvider = initKeyProvider(FoundationModule, modules);
-            modules.Signer = initSigner(FoundationModule, modules);
-            modules.Verifier = initVerifier(FoundationModule, modules);
-            modules.Sha224 = initSha224(FoundationModule, modules);
-            modules.Sha256 = initSha256(FoundationModule, modules);
-            modules.Sha384 = initSha384(FoundationModule, modules);
-            modules.Sha512 = initSha512(FoundationModule, modules);
-            modules.Aes256Gcm = initAes256Gcm(FoundationModule, modules);
-            modules.Aes256Cbc = initAes256Cbc(FoundationModule, modules);
-            modules.Asn1rd = initAsn1rd(FoundationModule, modules);
-            modules.Asn1wr = initAsn1wr(FoundationModule, modules);
-            modules.RsaPublicKey = initRsaPublicKey(FoundationModule, modules);
-            modules.RsaPrivateKey = initRsaPrivateKey(FoundationModule, modules);
-            modules.Secp256r1PublicKey = initSecp256r1PublicKey(FoundationModule, modules);
-            modules.Secp256r1PrivateKey = initSecp256r1PrivateKey(FoundationModule, modules);
-            modules.EntropyAccumulator = initEntropyAccumulator(FoundationModule, modules);
-            modules.CtrDrbg = initCtrDrbg(FoundationModule, modules);
-            modules.Hmac = initHmac(FoundationModule, modules);
-            modules.Hkdf = initHkdf(FoundationModule, modules);
-            modules.Kdf1 = initKdf1(FoundationModule, modules);
-            modules.Kdf2 = initKdf2(FoundationModule, modules);
-            modules.FakeRandom = initFakeRandom(FoundationModule, modules);
-            modules.Pkcs5Pbkdf2 = initPkcs5Pbkdf2(FoundationModule, modules);
-            modules.Pkcs5Pbes2 = initPkcs5Pbes2(FoundationModule, modules);
-            modules.SeedEntropySource = initSeedEntropySource(FoundationModule, modules);
-            modules.KeyMaterialRng = initKeyMaterialRng(FoundationModule, modules);
-            modules.Pkcs8Serializer = initPkcs8Serializer(FoundationModule, modules);
-            modules.Sec1Serializer = initSec1Serializer(FoundationModule, modules);
-            modules.KeyAsn1Serializer = initKeyAsn1Serializer(FoundationModule, modules);
-            modules.KeyAsn1Deserializer = initKeyAsn1Deserializer(FoundationModule, modules);
-            modules.Ed25519PublicKey = initEd25519PublicKey(FoundationModule, modules);
-            modules.Ed25519PrivateKey = initEd25519PrivateKey(FoundationModule, modules);
-            modules.Curve25519PublicKey = initCurve25519PublicKey(FoundationModule, modules);
-            modules.Curve25519PrivateKey = initCurve25519PrivateKey(FoundationModule, modules);
-            modules.Ecies = initEcies(FoundationModule, modules);
-            modules.SimpleAlgInfo = initSimpleAlgInfo(FoundationModule, modules);
-            modules.HashBasedAlgInfo = initHashBasedAlgInfo(FoundationModule, modules);
-            modules.CipherAlgInfo = initCipherAlgInfo(FoundationModule, modules);
-            modules.SaltedKdfAlgInfo = initSaltedKdfAlgInfo(FoundationModule, modules);
-            modules.PbeAlgInfo = initPbeAlgInfo(FoundationModule, modules);
-            modules.EcAlgInfo = initEcAlgInfo(FoundationModule, modules);
-            modules.AlgInfoDerSerializer = initAlgInfoDerSerializer(FoundationModule, modules);
-            modules.AlgInfoDerDeserializer = initAlgInfoDerDeserializer(FoundationModule, modules);
-            modules.MessageInfoDerSerializer = initMessageInfoDerSerializer(FoundationModule, modules);
+            modules.FoundationInterface = initFoundationInterface(foundationModule, modules);
+            modules.FoundationImplTag = initFoundationImplTag(foundationModule, modules);
+            modules.FoundationError = initFoundationError(foundationModule, modules);
+            modules.Asn1Tag = initAsn1Tag(foundationModule, modules);
+            modules.AlgId = initAlgId(foundationModule, modules);
+            modules.OidId = initOidId(foundationModule, modules);
+            modules.RawKey = initRawKey(foundationModule, modules);
+            modules.Oid = initOid(foundationModule, modules);
+            modules.Base64 = initBase64(foundationModule, modules);
+            modules.Pem = initPem(foundationModule, modules);
+            modules.MessageInfo = initMessageInfo(foundationModule, modules);
+            modules.KeyRecipientInfo = initKeyRecipientInfo(foundationModule, modules);
+            modules.KeyRecipientInfoList = initKeyRecipientInfoList(foundationModule, modules);
+            modules.PasswordRecipientInfo = initPasswordRecipientInfo(foundationModule, modules);
+            modules.PasswordRecipientInfoList = initPasswordRecipientInfoList(foundationModule, modules);
+            modules.AlgFactory = initAlgFactory(foundationModule, modules);
+            modules.RecipientCipher = initRecipientCipher(foundationModule, modules);
+            modules.ListKeyValueNode = initListKeyValueNode(foundationModule, modules);
+            modules.MessageInfoCustomParams = initMessageInfoCustomParams(foundationModule, modules);
+            modules.KeyProvider = initKeyProvider(foundationModule, modules);
+            modules.Signer = initSigner(foundationModule, modules);
+            modules.Verifier = initVerifier(foundationModule, modules);
+            modules.Sha224 = initSha224(foundationModule, modules);
+            modules.Sha256 = initSha256(foundationModule, modules);
+            modules.Sha384 = initSha384(foundationModule, modules);
+            modules.Sha512 = initSha512(foundationModule, modules);
+            modules.Aes256Gcm = initAes256Gcm(foundationModule, modules);
+            modules.Aes256Cbc = initAes256Cbc(foundationModule, modules);
+            modules.Asn1rd = initAsn1rd(foundationModule, modules);
+            modules.Asn1wr = initAsn1wr(foundationModule, modules);
+            modules.RsaPublicKey = initRsaPublicKey(foundationModule, modules);
+            modules.RsaPrivateKey = initRsaPrivateKey(foundationModule, modules);
+            modules.Secp256r1PublicKey = initSecp256r1PublicKey(foundationModule, modules);
+            modules.Secp256r1PrivateKey = initSecp256r1PrivateKey(foundationModule, modules);
+            modules.EntropyAccumulator = initEntropyAccumulator(foundationModule, modules);
+            modules.CtrDrbg = initCtrDrbg(foundationModule, modules);
+            modules.Hmac = initHmac(foundationModule, modules);
+            modules.Hkdf = initHkdf(foundationModule, modules);
+            modules.Kdf1 = initKdf1(foundationModule, modules);
+            modules.Kdf2 = initKdf2(foundationModule, modules);
+            modules.FakeRandom = initFakeRandom(foundationModule, modules);
+            modules.Pkcs5Pbkdf2 = initPkcs5Pbkdf2(foundationModule, modules);
+            modules.Pkcs5Pbes2 = initPkcs5Pbes2(foundationModule, modules);
+            modules.SeedEntropySource = initSeedEntropySource(foundationModule, modules);
+            modules.KeyMaterialRng = initKeyMaterialRng(foundationModule, modules);
+            modules.Pkcs8Serializer = initPkcs8Serializer(foundationModule, modules);
+            modules.Sec1Serializer = initSec1Serializer(foundationModule, modules);
+            modules.KeyAsn1Serializer = initKeyAsn1Serializer(foundationModule, modules);
+            modules.KeyAsn1Deserializer = initKeyAsn1Deserializer(foundationModule, modules);
+            modules.Ed25519PublicKey = initEd25519PublicKey(foundationModule, modules);
+            modules.Ed25519PrivateKey = initEd25519PrivateKey(foundationModule, modules);
+            modules.Curve25519PublicKey = initCurve25519PublicKey(foundationModule, modules);
+            modules.Curve25519PrivateKey = initCurve25519PrivateKey(foundationModule, modules);
+            modules.Ecies = initEcies(foundationModule, modules);
+            modules.SimpleAlgInfo = initSimpleAlgInfo(foundationModule, modules);
+            modules.HashBasedAlgInfo = initHashBasedAlgInfo(foundationModule, modules);
+            modules.CipherAlgInfo = initCipherAlgInfo(foundationModule, modules);
+            modules.SaltedKdfAlgInfo = initSaltedKdfAlgInfo(foundationModule, modules);
+            modules.PbeAlgInfo = initPbeAlgInfo(foundationModule, modules);
+            modules.EcAlgInfo = initEcAlgInfo(foundationModule, modules);
+            modules.AlgInfoDerSerializer = initAlgInfoDerSerializer(foundationModule, modules);
+            modules.AlgInfoDerDeserializer = initAlgInfoDerDeserializer(foundationModule, modules);
+            modules.MessageInfoDerSerializer = initMessageInfoDerSerializer(foundationModule, modules);
             resolve(modules);
         };
 
-        FoundationModule.onAbort = message => {
+        foundationModule.onAbort = message => {
             reject(new Error(message));
         };
     });
     return initPromise;
 };
-module.exports = initFoundation;
+module.exports = initProject;

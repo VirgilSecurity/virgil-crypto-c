@@ -112,10 +112,10 @@ const initPheServer = (Module, modules) => {
          * Generates new NIST P-256 server key pair for some client
          */
         generateServerKeyPair() {
-            const serverPrivateKeySize = PheCommon.PHE_PRIVATE_KEY_LENGTH;
+            const serverPrivateKeySize = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
             const serverPrivateKeyCtxPtr = Module._vsc_buffer_new_with_capacity(serverPrivateKeySize);
 
-            const serverPublicKeySize = PheCommon.PHE_PUBLIC_KEY_LENGTH;
+            const serverPublicKeySize = modules.PheCommon.PHE_PUBLIC_KEY_LENGTH;
             const serverPublicKeyCtxPtr = Module._vsc_buffer_new_with_capacity(serverPublicKeySize);
 
             try {
@@ -294,10 +294,10 @@ const initPheServer = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(serverPrivateKeyCtxPtr, serverPrivateKeyPtr, serverPrivateKeySize);
 
-            const newServerPrivateKeySize = PheCommon.PHE_PRIVATE_KEY_LENGTH;
+            const newServerPrivateKeySize = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
             const newServerPrivateKeyCtxPtr = Module._vsc_buffer_new_with_capacity(newServerPrivateKeySize);
 
-            const newServerPublicKeySize = PheCommon.PHE_PUBLIC_KEY_LENGTH;
+            const newServerPublicKeySize = modules.PheCommon.PHE_PUBLIC_KEY_LENGTH;
             const newServerPublicKeyCtxPtr = Module._vsc_buffer_new_with_capacity(newServerPublicKeySize);
 
             const updateTokenSize = PheServer.updateTokenLen();

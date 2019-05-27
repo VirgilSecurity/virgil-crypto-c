@@ -29,7 +29,7 @@ if (!formats[format]) {
 const packageJsonPath = path.join(__dirname, 'package.json');
 const sourcePath = path.join(__dirname, project);
 const inputPath = path.join(sourcePath, 'index.js');
-const wasmPath = path.join(sourcePath, `${project}.wasm`);
+const wasmPath = path.join(sourcePath, `lib${project}.wasm`);
 const outputPath = path.join(__dirname, 'dist');
 const outputFilePath = path.join(outputPath, `${project}.${format}.js`);
 const umdName = project;
