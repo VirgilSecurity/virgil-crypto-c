@@ -46,6 +46,21 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
 endif()
 
 # ---------------------------------------------------------------------------
+#   Configure
+# ---------------------------------------------------------------------------
+configure_file(
+        "${CMAKE_CURRENT_LIST_DIR}/rollup.config.js"
+        "${CMAKE_CURRENT_BINARY_DIR}/rollup.config.js"
+        COPYONLY
+        )
+
+configure_file(
+        "${CMAKE_CURRENT_LIST_DIR}/package.json"
+        "${CMAKE_CURRENT_BINARY_DIR}/package.json"
+        COPYONLY
+        )
+
+# ---------------------------------------------------------------------------
 #   Add per project extension build
 # ---------------------------------------------------------------------------
 add_subdirectory(foundation)
