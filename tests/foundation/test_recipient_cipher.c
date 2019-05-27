@@ -242,14 +242,21 @@ test__encrypt_decrypt_chunk__with_ed25519_key_recipient__success(void) {
                     recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, private_key, vsc_data_empty()));
 
 
-    size_t step = 16;
-    for (size_t i = 0; i < enc_msg->len; i += step) {
-        size_t chunk_size = (i + step) > enc_msg->len ? enc_msg->len - i : step;
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_process_decryption(recipient_cipher,
+                                                   vsc_data_slice_beg(vsc_buffer_data(enc_msg), 0, 16), dec_msg));
 
-        TEST_ASSERT_EQUAL(
-                vscf_status_SUCCESS, vscf_recipient_cipher_process_decryption(recipient_cipher,
-                                             vsc_data_slice_beg(vsc_buffer_data(enc_msg), i, chunk_size), dec_msg));
-    }
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_process_decryption(recipient_cipher,
+                                                   vsc_data_slice_beg(vsc_buffer_data(enc_msg), 16, 16), dec_msg));
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_process_decryption(recipient_cipher,
+                                                   vsc_data_slice_beg(vsc_buffer_data(enc_msg), 32, 16), dec_msg));
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_recipient_cipher_process_decryption(
+                    recipient_cipher, vsc_data_slice_beg(vsc_buffer_data(enc_msg), 48, 402 - (16 * 3) - 2), dec_msg));
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_process_decryption(recipient_cipher,
+                                                   vsc_data_slice_beg(vsc_buffer_data(enc_msg), 400, 2), dec_msg));
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_decryption(recipient_cipher, dec_msg));
 

@@ -67,6 +67,7 @@
 #include "vscf_password_recipient_info.h"
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
+#include <mbedtls/asn1.h>
 
 // clang-format on
 //  @end
@@ -1436,15 +1437,29 @@ vscf_message_info_der_serializer_read_prefix(vscf_message_info_der_serializer_t 
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT(data.len >= vscf_message_info_der_serializer_PREFIX_LEN);
 
-    vscf_asn1_reader_reset(self->asn1_reader, data);
-    size_t len = vscf_asn1_reader_read_sequence(self->asn1_reader);
 
-    if (!vscf_asn1_reader_has_error(self->asn1_reader)) {
-        vscf_asn1_reader_reset(self->asn1_reader, data);
-        len = vscf_asn1_reader_get_data_len(self->asn1_reader);
+    unsigned char *p = (unsigned char *)data.bytes;
+    const unsigned char *end = data.bytes + data.len;
+
+    if (*p != (MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE)) {
+        return 0;
     }
 
-    return len;
+    ++p; // skip tag
+
+    size_t length_len = 1;
+    if ((*p & 0x80) > 0) {
+        length_len += *p & 0x7F;
+    }
+
+    size_t len = 0;
+    int status = mbedtls_asn1_get_len(&p, end, &len);
+
+    if (status == 0 || status == MBEDTLS_ERR_ASN1_OUT_OF_DATA) {
+        return len + length_len + 1 /* tag */;
+    }
+
+    return 0;
 }
 
 //
