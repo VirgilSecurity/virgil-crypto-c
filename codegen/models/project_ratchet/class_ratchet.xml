@@ -5,7 +5,7 @@
     <require impl="hkdf" project="foundation" scope="private"/>
     <require module="buffer defs" scope="private" project="common"/>
 
-    <require module="ratchet typedefs" scope="context"/>
+    <require module="ratchet typedefs" scope="public"/>
 
     <require class="ratchet common hidden" scope="context"/>
     <require class="ratchet chain key" scope="private"/>
@@ -47,7 +47,8 @@
     </method>
 
     <method name="respond">
-        <argument name="shared secret" class="data"/>
+        <argument name="shared key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal"/>
+        <argument name="receiver long term private key" class="const vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
         <argument name="regular message header" class="RegularMessageHeader" library="nanopb" access="readonly"/>
 
@@ -55,7 +56,8 @@
     </method>
 
     <method name="initiate">
-        <argument name="shared secret" class="data"/>
+        <argument name="shared key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal"/>
+        <argument name="receiver long term public key" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
 
         <return enum="status"/>
     </method>

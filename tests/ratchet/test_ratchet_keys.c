@@ -44,36 +44,6 @@
 #include "test_data_ratchet_keys.h"
 
 void
-test__derive_initial_keys__fixed_shared_secret__should_match(void) {
-    vscr_ratchet_keys_t *keys = vscr_ratchet_keys_new();
-
-    byte root_key[vscr_ratchet_common_hidden_KEY_LEN];
-    byte chain_key[vscr_ratchet_common_hidden_KEY_LEN];
-
-    vscr_ratchet_keys_derive_initial_keys(test_data_ratchet_keys_shared_secret, root_key, chain_key);
-
-    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_keys_root_key, vsc_data(root_key, sizeof(root_key)));
-    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_keys_chain_key, vsc_data(chain_key, sizeof(chain_key)));
-
-    vscr_ratchet_keys_destroy(&keys);
-}
-
-void
-test__derive_initial_keys__fixed_shared_secret_weak__should_match(void) {
-    vscr_ratchet_keys_t *keys = vscr_ratchet_keys_new();
-
-    byte root_key[vscr_ratchet_common_hidden_KEY_LEN];
-    byte chain_key[vscr_ratchet_common_hidden_KEY_LEN];
-
-    vscr_ratchet_keys_derive_initial_keys(test_data_ratchet_keys_shared_secret_weak, root_key, chain_key);
-
-    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_keys_root_key_weak, vsc_data(root_key, sizeof(root_key)));
-    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_keys_chain_key_weak, vsc_data(chain_key, sizeof(chain_key)));
-
-    vscr_ratchet_keys_destroy(&keys);
-}
-
-void
 test__create_chain_key__fixed_keys__should_match(void) {
     vscr_ratchet_keys_t *keys = vscr_ratchet_keys_new();
 
@@ -151,8 +121,6 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__derive_initial_keys__fixed_shared_secret__should_match);
-    RUN_TEST(test__derive_initial_keys__fixed_shared_secret_weak__should_match);
     RUN_TEST(test__create_chain_key__fixed_keys__should_match);
     RUN_TEST(test__create_msg_key__fixed_keys__should_match);
     RUN_TEST(test__advance_chain_key__fixed_keys__should_match);

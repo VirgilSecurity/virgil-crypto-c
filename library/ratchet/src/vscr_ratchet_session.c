@@ -407,8 +407,6 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
     memcpy(self->receiver_long_term_public_key, vsc_buffer_bytes(receiver_long_term_public_key_raw),
             vsc_buffer_len(receiver_long_term_public_key_raw));
 
-    size_t shared_secret_count = 3;
-
     vsc_buffer_t *receiver_one_time_public_key_raw = NULL;
 
     if (receiver_one_time_public_key.len != 0) {
@@ -419,8 +417,6 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
             status = vscr_error_status(&error_ctx);
             goto key_err4;
         }
-
-        shared_secret_count = 4;
 
         self->receiver_has_one_time_public_key = true;
         memcpy(self->receiver_one_time_public_key, vsc_buffer_bytes(receiver_one_time_public_key_raw),
@@ -446,26 +442,22 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
         goto rng_err;
     }
 
-    vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_count * ED25519_DH_LEN);
-    vsc_buffer_make_secure(shared_secret);
+    vscr_ratchet_symmetric_key_t shared_key;
 
     status = vscr_ratchet_x3dh_compute_initiator_x3dh_secret(vsc_buffer_bytes(sender_identity_private_key_raw),
             vsc_buffer_bytes(ephemeral_private_key), vsc_buffer_bytes(receiver_identity_public_key_raw),
             vsc_buffer_bytes(receiver_long_term_public_key_raw), receiver_one_time_public_key_raw != NULL,
-            receiver_one_time_public_key_raw ? vsc_buffer_bytes(receiver_one_time_public_key_raw) : NULL,
-            shared_secret);
+            receiver_one_time_public_key_raw ? vsc_buffer_bytes(receiver_one_time_public_key_raw) : NULL, shared_key);
 
     if (status != vscr_status_SUCCESS) {
         goto x3dh_err;
     }
 
-    status = vscr_ratchet_initiate(self->ratchet, vsc_buffer_data(shared_secret));
+    status = vscr_ratchet_initiate(self->ratchet, shared_key, vsc_buffer_bytes(receiver_long_term_public_key_raw));
 
     self->is_initiator = true;
 
 x3dh_err:
-    vsc_buffer_destroy(&shared_secret);
-
 rng_err:
     vsc_buffer_destroy(&ephemeral_private_key);
 
@@ -480,6 +472,8 @@ key_err2:
 
 key_err1:
     vsc_buffer_destroy(&sender_identity_private_key_raw);
+
+    vscr_zeroize(shared_key, sizeof(shared_key));
 
     return status;
 }
@@ -557,7 +551,6 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_ide
 
     vsc_buffer_t *receiver_one_time_private_key_raw = NULL;
 
-    size_t shared_secret_count = 3;
     if (receiver_one_time_private_key.len != 0) {
         receiver_one_time_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
                 self->key_utils, receiver_one_time_private_key, false, true, false, &error_ctx);
@@ -566,8 +559,6 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_ide
             status = vscr_error_status(&error_ctx);
             goto key_err4;
         }
-
-        shared_secret_count = 4;
 
         self->receiver_has_one_time_public_key = true;
         curve_status = curve25519_get_pubkey(
@@ -581,27 +572,23 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_ide
         self->receiver_has_one_time_public_key = false;
     }
 
-    vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_count * ED25519_DH_LEN);
-    vsc_buffer_make_secure(shared_secret);
+    vscr_ratchet_symmetric_key_t shared_key;
 
     status = vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_buffer_bytes(sender_identity_public_key_raw),
             self->sender_ephemeral_public_key, vsc_buffer_bytes(receiver_identity_private_key_raw),
             vsc_buffer_bytes(receiver_long_term_private_key_raw), receiver_one_time_private_key_raw != NULL,
-            receiver_one_time_private_key_raw ? vsc_buffer_bytes(receiver_one_time_private_key_raw) : NULL,
-            shared_secret);
+            receiver_one_time_private_key_raw ? vsc_buffer_bytes(receiver_one_time_private_key_raw) : NULL, shared_key);
 
     if (status != vscr_status_SUCCESS) {
         goto x3dh_err;
     }
 
-    status = vscr_ratchet_respond(
-            self->ratchet, vsc_buffer_data(shared_secret), &message->message_pb.regular_message, message->header_pb);
+    status = vscr_ratchet_respond(self->ratchet, shared_key, vsc_buffer_data(receiver_long_term_private_key_raw).bytes,
+            &message->message_pb.regular_message, message->header_pb);
 
     self->is_initiator = false;
 
 x3dh_err:
-    vsc_buffer_destroy(&shared_secret);
-
 key_err4:
     vsc_buffer_destroy(&receiver_one_time_private_key_raw);
 
@@ -615,6 +602,8 @@ key_err1:
     vsc_buffer_destroy(&sender_identity_public_key_raw);
 
 msg_type_err:
+    vscr_zeroize(shared_key, sizeof(shared_key));
+
     return status;
 }
 

@@ -417,19 +417,24 @@ err:
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const RegularMessage *message,
+vscr_ratchet_respond(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key,
+        const vscr_ratchet_private_key_t receiver_long_term_private_key, const RegularMessage *message,
         const RegularMessageHeader *regular_message_header) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(message);
-    VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN || shared_secret.len == 4 * ED25519_DH_LEN);
 
     VSCR_ASSERT(!self->receiver_chain);
 
     vscr_ratchet_receiver_chain_t *receiver_chain = vscr_ratchet_receiver_chain_new();
-    receiver_chain->chain_key.index = 0;
 
-    vscr_ratchet_keys_derive_initial_keys(shared_secret, self->root_key, receiver_chain->chain_key.key);
+    vscr_status_t status = vscr_ratchet_keys_create_chain_key(shared_key, receiver_long_term_private_key,
+            regular_message_header->public_key, self->root_key, &receiver_chain->chain_key);
+
+    if (status != vscr_status_SUCCESS) {
+        vscr_ratchet_receiver_chain_destroy(&receiver_chain);
+        return status;
+    }
 
     memcpy(receiver_chain->public_key, regular_message_header->public_key, sizeof(regular_message_header->public_key));
 
@@ -444,7 +449,7 @@ vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const Regul
     vsc_buffer_t *msg_buffer =
             vsc_buffer_new_with_capacity(vscr_ratchet_decrypt_len(self, vsc_buffer_len(message->cipher_text.arg)));
     vsc_buffer_make_secure(msg_buffer);
-    vscr_status_t status = vscr_ratchet_decrypt_for_existing_chain(
+    status = vscr_ratchet_decrypt_for_existing_chain(
             self, &receiver_chain->chain_key, message, regular_message_header, msg_buffer);
     vsc_buffer_destroy(&msg_buffer);
 
@@ -452,10 +457,10 @@ vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const Regul
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret) {
+vscr_ratchet_initiate(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key,
+        const vscr_ratchet_public_key_t receiver_long_term_public_key) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN || shared_secret.len == 4 * ED25519_DH_LEN);
     VSCR_ASSERT(!self->sender_chain);
 
     vscr_status_t status = vscr_status_SUCCESS;
@@ -469,9 +474,13 @@ vscr_ratchet_initiate(vscr_ratchet_t *self, vsc_data_t shared_secret) {
         return status;
     }
 
-    sender_chain->chain_key.index = 0;
+    status = vscr_ratchet_keys_create_chain_key(shared_key, sender_chain->private_key, receiver_long_term_public_key,
+            self->root_key, &sender_chain->chain_key);
 
-    vscr_ratchet_keys_derive_initial_keys(shared_secret, self->root_key, sender_chain->chain_key.key);
+    if (status != vscr_status_SUCCESS) {
+        vscr_ratchet_sender_chain_destroy(&sender_chain);
+        return status;
+    }
 
     self->sender_chain = sender_chain;
 
