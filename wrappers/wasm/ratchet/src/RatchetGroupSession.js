@@ -307,7 +307,7 @@ const initRatchetGroupSession = (Module, modules) => {
          * Decrypts message
          */
         decrypt(message) {
-            const plainTextSize = RatchetGroupSession.decryptLen(message);
+            const plainTextSize = this.decryptLen(message);
             const plainTextCtxPtr = Module._vsc_buffer_new_with_capacity(plainTextSize);
 
             try {
@@ -336,7 +336,7 @@ const initRatchetGroupSession = (Module, modules) => {
          * NOTE: Session changes its state every encrypt/decrypt operations. Be sure to save it.
          */
         serialize() {
-            const outputSize = RatchetGroupSession.serializeLen();
+            const outputSize = this.serializeLen();
             const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputSize);
 
             try {

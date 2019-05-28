@@ -228,7 +228,7 @@ const initKeyProvider = (Module, modules) => {
          * Precondition: public key must be exportable.
          */
         exportPublicKey(publicKey) {
-            const outSize = KeyProvider.exportedPublicKeyLen(publicKey);
+            const outSize = this.exportedPublicKeyLen(publicKey);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -260,7 +260,7 @@ const initKeyProvider = (Module, modules) => {
          * Precondition: private key must be exportable.
          */
         exportPrivateKey(privateKey) {
-            const outSize = KeyProvider.exportedPrivateKeyLen(privateKey);
+            const outSize = this.exportedPrivateKeyLen(privateKey);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {

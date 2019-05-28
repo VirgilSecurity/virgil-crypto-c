@@ -104,7 +104,7 @@ const initAlgInfoDerSerializer = (Module, modules) => {
          * Serialize algorithm info to buffer class.
          */
         serialize(algInfo) {
-            const outSize = AlgInfoDerSerializer.serializedLen(algInfo);
+            const outSize = this.serializedLen(algInfo);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {

@@ -213,7 +213,7 @@ const initPheClient = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(passwordCtxPtr, passwordPtr, passwordSize);
 
-            const enrollmentRecordSize = PheClient.enrollmentRecordLen();
+            const enrollmentRecordSize = this.enrollmentRecordLen();
             const enrollmentRecordCtxPtr = Module._vsc_buffer_new_with_capacity(enrollmentRecordSize);
 
             const accountKeySize = modules.PheCommon.PHE_ACCOUNT_KEY_LENGTH;
@@ -279,7 +279,7 @@ const initPheClient = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(enrollmentRecordCtxPtr, enrollmentRecordPtr, enrollmentRecordSize);
 
-            const verifyPasswordRequestSize = PheClient.verifyPasswordRequestLen();
+            const verifyPasswordRequestSize = this.verifyPasswordRequestLen();
             const verifyPasswordRequestCtxPtr = Module._vsc_buffer_new_with_capacity(verifyPasswordRequestSize);
 
             try {
@@ -439,7 +439,7 @@ const initPheClient = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(updateTokenCtxPtr, updateTokenPtr, updateTokenSize);
 
-            const newEnrollmentRecordSize = PheClient.enrollmentRecordLen();
+            const newEnrollmentRecordSize = this.enrollmentRecordLen();
             const newEnrollmentRecordCtxPtr = Module._vsc_buffer_new_with_capacity(newEnrollmentRecordSize);
 
             try {

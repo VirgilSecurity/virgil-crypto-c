@@ -255,7 +255,7 @@ function wasm_create_custom_interface_class_constructors(source, wasm_class, was
         endnew
 
         my.code_switch_statement_begin = format_left("
-            const implTag = $(impl_derive_c_method_implementation_tag())(ctxPtr);
+            const implTag = Module._$(impl_derive_c_method_implementation_tag())(ctxPtr);
             switch(implTag) {
         ")
 
@@ -268,7 +268,7 @@ function wasm_create_custom_interface_class_constructors(source, wasm_class, was
         for my.source.implementation as impl
             my.code_switch_statement_cases ?= ""
             my.code_switch_statement_cases += terminator + format_left("
-                case $(my.wasm_project.impl_tag_enum_name:).$(wasm_derive_constant_name_str(impl.name)):
+                case modules.$(my.wasm_project.impl_tag_enum_name:).$(wasm_derive_constant_name_str(impl.name)):
                     return modules.$(wasm_derive_class_name(impl)).newAndTakeCContext(ctxPtr);
             ", 1)
         endfor
@@ -381,6 +381,9 @@ function wasm_create_class_dependency_method(dependency, class, wasm_class, wasm
 
     new wasm_imported_function to my.wasm_class
         .name = class_derive_c_method_release_dependency(my.class, my.dependency)
+    endnew
+
+    new wasm_imported_function to my.wasm_class
         .name = class_derive_c_method_use_dependency(my.class, my.dependency)
     endnew
 endfunction

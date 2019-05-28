@@ -148,7 +148,7 @@ const initRatchetMessage = (Module, modules) => {
          * Serializes instance.
          */
         serialize() {
-            const outputSize = RatchetMessage.serializeLen();
+            const outputSize = this.serializeLen();
             const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputSize);
 
             try {

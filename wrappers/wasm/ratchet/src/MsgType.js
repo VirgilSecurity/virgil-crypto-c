@@ -50,7 +50,9 @@ const initMsgType = (Module, modules) => {
          * Prekey message. This message is sent by initiator till first response is received.
          */
         PREKEY: 1
-    });
+    }
+
+    return MsgType;
 };
 
 module.exports = initMsgType;

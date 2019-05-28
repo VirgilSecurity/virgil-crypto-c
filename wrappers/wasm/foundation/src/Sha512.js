@@ -154,7 +154,7 @@ const initSha512 = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const digestSize = Sha512.DIGEST_LEN;
+            const digestSize = this.DIGEST_LEN;
             const digestCtxPtr = Module._vsc_buffer_new_with_capacity(digestSize);
 
             try {
@@ -207,7 +207,7 @@ const initSha512 = (Module, modules) => {
          * Accompilsh hashing and return it's result (a message digest).
          */
         finish() {
-            const digestSize = Sha512.DIGEST_LEN;
+            const digestSize = this.DIGEST_LEN;
             const digestCtxPtr = Module._vsc_buffer_new_with_capacity(digestSize);
 
             try {

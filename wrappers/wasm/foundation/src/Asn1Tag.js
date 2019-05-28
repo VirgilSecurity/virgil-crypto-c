@@ -78,7 +78,9 @@ const initAsn1Tag = (Module, modules) => {
         CONSTRUCTED: 17,
 
         CONTEXT_SPECIFIC: 18
-    });
+    }
+
+    return Asn1Tag;
 };
 
 module.exports = initAsn1Tag;

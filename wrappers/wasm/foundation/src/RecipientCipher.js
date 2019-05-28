@@ -175,7 +175,7 @@ const initRecipientCipher = (Module, modules) => {
          * algorithm information, etc.
          */
         packMessageInfo() {
-            const messageInfoSize = RecipientCipher.messageInfoLen();
+            const messageInfoSize = this.messageInfoLen();
             const messageInfoCtxPtr = Module._vsc_buffer_new_with_capacity(messageInfoSize);
 
             try {
@@ -219,7 +219,7 @@ const initRecipientCipher = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = RecipientCipher.encryptionOutLen(data.length);
+            const outSize = this.encryptionOutLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -240,7 +240,7 @@ const initRecipientCipher = (Module, modules) => {
          * Accomplish encryption.
          */
         finishEncryption() {
-            const outSize = RecipientCipher.encryptionOutLen(0);
+            const outSize = this.encryptionOutLen(0);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -329,7 +329,7 @@ const initRecipientCipher = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = RecipientCipher.decryptionOutLen(data.length);
+            const outSize = this.decryptionOutLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -350,7 +350,7 @@ const initRecipientCipher = (Module, modules) => {
          * Accomplish decryption.
          */
         finishDecryption() {
-            const outSize = RecipientCipher.decryptionOutLen(0);
+            const outSize = this.decryptionOutLen(0);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {

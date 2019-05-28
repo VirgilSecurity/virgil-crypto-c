@@ -108,7 +108,7 @@ const initPkcs8Serializer = (Module, modules) => {
          * Precondition: public key must be exportable.
          */
         serializePublicKey(publicKey) {
-            const outSize = Pkcs8Serializer.serializedPublicKeyLen(publicKey);
+            const outSize = this.serializedPublicKeyLen(publicKey);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -140,7 +140,7 @@ const initPkcs8Serializer = (Module, modules) => {
          * Precondition: private key must be exportable.
          */
         serializePrivateKey(privateKey) {
-            const outSize = Pkcs8Serializer.serializedPrivateKeyLen(privateKey);
+            const outSize = this.serializedPrivateKeyLen(privateKey);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {

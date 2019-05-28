@@ -156,7 +156,7 @@ const initPheCipher = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(accountKeyCtxPtr, accountKeyPtr, accountKeySize);
 
-            const cipherTextSize = PheCipher.encryptLen(plainText.length);
+            const cipherTextSize = this.encryptLen(plainText.length);
             const cipherTextCtxPtr = Module._vsc_buffer_new_with_capacity(cipherTextSize);
 
             try {
@@ -206,7 +206,7 @@ const initPheCipher = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(accountKeyCtxPtr, accountKeyPtr, accountKeySize);
 
-            const plainTextSize = PheCipher.decryptLen(cipherText.length);
+            const plainTextSize = this.decryptLen(cipherText.length);
             const plainTextCtxPtr = Module._vsc_buffer_new_with_capacity(plainTextSize);
 
             try {

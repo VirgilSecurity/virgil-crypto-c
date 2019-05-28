@@ -159,7 +159,7 @@ const initHmac = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const macSize = Hmac.digestLen();
+            const macSize = this.digestLen();
             const macCtxPtr = Module._vsc_buffer_new_with_capacity(macSize);
 
             try {
@@ -233,7 +233,7 @@ const initHmac = (Module, modules) => {
          * Accomplish MAC and return it's result (a message digest).
          */
         finish() {
-            const macSize = Hmac.digestLen();
+            const macSize = this.digestLen();
             const macCtxPtr = Module._vsc_buffer_new_with_capacity(macSize);
 
             try {

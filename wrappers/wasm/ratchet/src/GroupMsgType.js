@@ -51,7 +51,9 @@ const initGroupMsgType = (Module, modules) => {
          * Regular group ratchet message with cipher text.
          */
         REGULAR: 1
-    });
+    }
+
+    return GroupMsgType;
 };
 
 module.exports = initGroupMsgType;

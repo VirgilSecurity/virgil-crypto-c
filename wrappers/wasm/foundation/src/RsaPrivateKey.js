@@ -193,7 +193,7 @@ const initRsaPrivateKey = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = RsaPrivateKey.decryptedLen(data.length);
+            const outSize = this.decryptedLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -248,7 +248,7 @@ const initRsaPrivateKey = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(hashDigestCtxPtr, hashDigestPtr, hashDigestSize);
 
-            const signatureSize = RsaPrivateKey.signatureLen();
+            const signatureSize = this.signatureLen();
             const signatureCtxPtr = Module._vsc_buffer_new_with_capacity(signatureSize);
 
             try {
@@ -284,7 +284,7 @@ const initRsaPrivateKey = (Module, modules) => {
          * RFC 3447 Appendix A.1.2.
          */
         exportPrivateKey() {
-            const outSize = RsaPrivateKey.exportedPrivateKeyLen();
+            const outSize = this.exportedPrivateKeyLen();
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {

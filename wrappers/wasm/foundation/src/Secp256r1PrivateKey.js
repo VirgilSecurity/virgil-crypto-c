@@ -188,7 +188,7 @@ const initSecp256r1PrivateKey = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = Secp256r1PrivateKey.decryptedLen(data.length);
+            const outSize = this.decryptedLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -243,7 +243,7 @@ const initSecp256r1PrivateKey = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(hashDigestCtxPtr, hashDigestPtr, hashDigestSize);
 
-            const signatureSize = Secp256r1PrivateKey.signatureLen();
+            const signatureSize = this.signatureLen();
             const signatureCtxPtr = Module._vsc_buffer_new_with_capacity(signatureSize);
 
             try {
@@ -279,7 +279,7 @@ const initSecp256r1PrivateKey = (Module, modules) => {
          * RFC 3447 Appendix A.1.2.
          */
         exportPrivateKey() {
-            const outSize = Secp256r1PrivateKey.exportedPrivateKeyLen();
+            const outSize = this.exportedPrivateKeyLen();
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -339,7 +339,7 @@ const initSecp256r1PrivateKey = (Module, modules) => {
          * Note, shared key can be used only for symmetric cryptography.
          */
         computeSharedKey(publicKey) {
-            const sharedKeySize = Secp256r1PrivateKey.sharedKeyLen();
+            const sharedKeySize = this.sharedKeyLen();
             const sharedKeyCtxPtr = Module._vsc_buffer_new_with_capacity(sharedKeySize);
 
             try {

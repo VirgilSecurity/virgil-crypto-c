@@ -189,7 +189,7 @@ const initAes256Gcm = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = Aes256Gcm.encryptedLen(data.length);
+            const outSize = this.encryptedLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -235,7 +235,7 @@ const initAes256Gcm = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = Aes256Gcm.decryptedLen(data.length);
+            const outSize = this.decryptedLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -347,7 +347,7 @@ const initAes256Gcm = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = Aes256Gcm.outLen(data.length);
+            const outSize = this.outLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -406,7 +406,7 @@ const initAes256Gcm = (Module, modules) => {
          * Accomplish encryption or decryption process.
          */
         finish() {
-            const outSize = Aes256Gcm.outLen(0);
+            const outSize = this.outLen(0);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -453,10 +453,10 @@ const initAes256Gcm = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(authDataCtxPtr, authDataPtr, authDataSize);
 
-            const outSize = Aes256Gcm.authEncryptedLen(data.length);
+            const outSize = this.authEncryptedLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
-            const tagSize = Aes256Gcm.AUTH_TAG_LEN;
+            const tagSize = this.AUTH_TAG_LEN;
             const tagCtxPtr = Module._vsc_buffer_new_with_capacity(tagSize);
 
             try {
@@ -535,7 +535,7 @@ const initAes256Gcm = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(tagCtxPtr, tagPtr, tagSize);
 
-            const outSize = Aes256Gcm.authDecryptedLen(data.length);
+            const outSize = this.authDecryptedLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {

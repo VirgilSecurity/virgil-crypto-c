@@ -182,7 +182,7 @@ const initEd25519PublicKey = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = Ed25519PublicKey.encryptedLen(data.length);
+            const outSize = this.encryptedLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -264,7 +264,7 @@ const initEd25519PublicKey = (Module, modules) => {
          * RFC 3447 Appendix A.1.1.
          */
         exportPublicKey() {
-            const outSize = Ed25519PublicKey.exportedPublicKeyLen();
+            const outSize = this.exportedPublicKeyLen();
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {

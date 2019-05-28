@@ -44,130 +44,130 @@ const initFoundationInterface = (Module, modules) => {
          * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
          */
         static newAndTakeCContext(ctxPtr) {
-            const implTag = vscf_impl_tag(ctxPtr);
+            const implTag = Module._vscf_impl_tag(ctxPtr);
             switch(implTag) {
 
-                case FoundationImplTag.SHA224:
+                case modules.FoundationImplTag.SHA224:
                     return modules.Sha224.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.SHA256:
+                case modules.FoundationImplTag.SHA256:
                     return modules.Sha256.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.SHA384:
+                case modules.FoundationImplTag.SHA384:
                     return modules.Sha384.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.SHA512:
+                case modules.FoundationImplTag.SHA512:
                     return modules.Sha512.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.AES256_GCM:
+                case modules.FoundationImplTag.AES256_GCM:
                     return modules.Aes256Gcm.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.AES256_CBC:
+                case modules.FoundationImplTag.AES256_CBC:
                     return modules.Aes256Cbc.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.ASN1RD:
+                case modules.FoundationImplTag.ASN1RD:
                     return modules.Asn1rd.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.ASN1WR:
+                case modules.FoundationImplTag.ASN1WR:
                     return modules.Asn1wr.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.RSA_PUBLIC_KEY:
+                case modules.FoundationImplTag.RSA_PUBLIC_KEY:
                     return modules.RsaPublicKey.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.RSA_PRIVATE_KEY:
+                case modules.FoundationImplTag.RSA_PRIVATE_KEY:
                     return modules.RsaPrivateKey.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.SECP256R1_PUBLIC_KEY:
+                case modules.FoundationImplTag.SECP256R1_PUBLIC_KEY:
                     return modules.Secp256r1PublicKey.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.SECP256R1_PRIVATE_KEY:
+                case modules.FoundationImplTag.SECP256R1_PRIVATE_KEY:
                     return modules.Secp256r1PrivateKey.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.ENTROPY_ACCUMULATOR:
+                case modules.FoundationImplTag.ENTROPY_ACCUMULATOR:
                     return modules.EntropyAccumulator.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.CTR_DRBG:
+                case modules.FoundationImplTag.CTR_DRBG:
                     return modules.CtrDrbg.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.HMAC:
+                case modules.FoundationImplTag.HMAC:
                     return modules.Hmac.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.HKDF:
+                case modules.FoundationImplTag.HKDF:
                     return modules.Hkdf.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.KDF1:
+                case modules.FoundationImplTag.KDF1:
                     return modules.Kdf1.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.KDF2:
+                case modules.FoundationImplTag.KDF2:
                     return modules.Kdf2.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.FAKE_RANDOM:
+                case modules.FoundationImplTag.FAKE_RANDOM:
                     return modules.FakeRandom.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.PKCS5_PBKDF2:
+                case modules.FoundationImplTag.PKCS5_PBKDF2:
                     return modules.Pkcs5Pbkdf2.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.PKCS5_PBES2:
+                case modules.FoundationImplTag.PKCS5_PBES2:
                     return modules.Pkcs5Pbes2.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.SEED_ENTROPY_SOURCE:
+                case modules.FoundationImplTag.SEED_ENTROPY_SOURCE:
                     return modules.SeedEntropySource.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.KEY_MATERIAL_RNG:
+                case modules.FoundationImplTag.KEY_MATERIAL_RNG:
                     return modules.KeyMaterialRng.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.PKCS8_SERIALIZER:
+                case modules.FoundationImplTag.PKCS8_SERIALIZER:
                     return modules.Pkcs8Serializer.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.SEC1_SERIALIZER:
+                case modules.FoundationImplTag.SEC1_SERIALIZER:
                     return modules.Sec1Serializer.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.KEY_ASN1_SERIALIZER:
+                case modules.FoundationImplTag.KEY_ASN1_SERIALIZER:
                     return modules.KeyAsn1Serializer.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.KEY_ASN1_DESERIALIZER:
+                case modules.FoundationImplTag.KEY_ASN1_DESERIALIZER:
                     return modules.KeyAsn1Deserializer.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.ED25519_PUBLIC_KEY:
+                case modules.FoundationImplTag.ED25519_PUBLIC_KEY:
                     return modules.Ed25519PublicKey.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.ED25519_PRIVATE_KEY:
+                case modules.FoundationImplTag.ED25519_PRIVATE_KEY:
                     return modules.Ed25519PrivateKey.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.CURVE25519_PUBLIC_KEY:
+                case modules.FoundationImplTag.CURVE25519_PUBLIC_KEY:
                     return modules.Curve25519PublicKey.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.CURVE25519_PRIVATE_KEY:
+                case modules.FoundationImplTag.CURVE25519_PRIVATE_KEY:
                     return modules.Curve25519PrivateKey.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.ECIES:
+                case modules.FoundationImplTag.ECIES:
                     return modules.Ecies.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.SIMPLE_ALG_INFO:
+                case modules.FoundationImplTag.SIMPLE_ALG_INFO:
                     return modules.SimpleAlgInfo.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.HASH_BASED_ALG_INFO:
+                case modules.FoundationImplTag.HASH_BASED_ALG_INFO:
                     return modules.HashBasedAlgInfo.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.CIPHER_ALG_INFO:
+                case modules.FoundationImplTag.CIPHER_ALG_INFO:
                     return modules.CipherAlgInfo.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.SALTED_KDF_ALG_INFO:
+                case modules.FoundationImplTag.SALTED_KDF_ALG_INFO:
                     return modules.SaltedKdfAlgInfo.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.PBE_ALG_INFO:
+                case modules.FoundationImplTag.PBE_ALG_INFO:
                     return modules.PbeAlgInfo.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.EC_ALG_INFO:
+                case modules.FoundationImplTag.EC_ALG_INFO:
                     return modules.EcAlgInfo.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.ALG_INFO_DER_SERIALIZER:
+                case modules.FoundationImplTag.ALG_INFO_DER_SERIALIZER:
                     return modules.AlgInfoDerSerializer.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.ALG_INFO_DER_DESERIALIZER:
+                case modules.FoundationImplTag.ALG_INFO_DER_DESERIALIZER:
                     return modules.AlgInfoDerDeserializer.newAndTakeCContext(ctxPtr);
 
-                case FoundationImplTag.MESSAGE_INFO_DER_SERIALIZER:
+                case modules.FoundationImplTag.MESSAGE_INFO_DER_SERIALIZER:
                     return modules.MessageInfoDerSerializer.newAndTakeCContext(ctxPtr);
 
                 default:

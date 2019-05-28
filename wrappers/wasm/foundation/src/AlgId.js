@@ -74,7 +74,9 @@ const initAlgId = (Module, modules) => {
         PKCS5_PBKDF2: 15,
 
         PKCS5_PBES2: 16
-    });
+    }
+
+    return AlgId;
 };
 
 module.exports = initAlgId;

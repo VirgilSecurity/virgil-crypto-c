@@ -117,7 +117,7 @@ const initMessageInfoDerSerializer = (Module, modules) => {
          * Serialize class "message info".
          */
         serialize(messageInfo) {
-            const outSize = MessageInfoDerSerializer.serializedLen(messageInfo);
+            const outSize = this.serializedLen(messageInfo);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {

@@ -142,7 +142,7 @@ const initPkcs5Pbes2 = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = Pkcs5Pbes2.encryptedLen(data.length);
+            const outSize = this.encryptedLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -188,7 +188,7 @@ const initPkcs5Pbes2 = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = Pkcs5Pbes2.decryptedLen(data.length);
+            const outSize = this.decryptedLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {

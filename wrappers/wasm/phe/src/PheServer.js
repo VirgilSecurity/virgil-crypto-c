@@ -174,7 +174,7 @@ const initPheServer = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(serverPublicKeyCtxPtr, serverPublicKeyPtr, serverPublicKeySize);
 
-            const enrollmentResponseSize = PheServer.enrollmentResponseLen();
+            const enrollmentResponseSize = this.enrollmentResponseLen();
             const enrollmentResponseCtxPtr = Module._vsc_buffer_new_with_capacity(enrollmentResponseSize);
 
             try {
@@ -246,7 +246,7 @@ const initPheServer = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(verifyPasswordRequestCtxPtr, verifyPasswordRequestPtr, verifyPasswordRequestSize);
 
-            const verifyPasswordResponseSize = PheServer.verifyPasswordResponseLen();
+            const verifyPasswordResponseSize = this.verifyPasswordResponseLen();
             const verifyPasswordResponseCtxPtr = Module._vsc_buffer_new_with_capacity(verifyPasswordResponseSize);
 
             try {
@@ -300,7 +300,7 @@ const initPheServer = (Module, modules) => {
             const newServerPublicKeySize = modules.PheCommon.PHE_PUBLIC_KEY_LENGTH;
             const newServerPublicKeyCtxPtr = Module._vsc_buffer_new_with_capacity(newServerPublicKeySize);
 
-            const updateTokenSize = PheServer.updateTokenLen();
+            const updateTokenSize = this.updateTokenLen();
             const updateTokenCtxPtr = Module._vsc_buffer_new_with_capacity(updateTokenSize);
 
             try {

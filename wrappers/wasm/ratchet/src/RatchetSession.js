@@ -331,7 +331,7 @@ const initRatchetSession = (Module, modules) => {
          * Decrypts message
          */
         decrypt(message) {
-            const plainTextSize = RatchetSession.decryptLen(message);
+            const plainTextSize = this.decryptLen(message);
             const plainTextCtxPtr = Module._vsc_buffer_new_with_capacity(plainTextSize);
 
             try {
@@ -359,7 +359,7 @@ const initRatchetSession = (Module, modules) => {
          * Serializes session to buffer
          */
         serialize() {
-            const outputSize = RatchetSession.serializeLen();
+            const outputSize = this.serializeLen();
             const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputSize);
 
             try {

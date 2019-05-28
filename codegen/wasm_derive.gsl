@@ -236,11 +236,16 @@ function wasm_derive_buffer_length_getter(argument, wasm_class)
     endfor
 
     my.specified_proxy_object = get_one_of_attribute(my.length, "class, impl") ?
-    if defined(my.specified_proxy_object) & my.specified_proxy_object <> "self"
-        my.proxy_object = "modules.$(wasm_derive_class_name_str(my.specified_proxy_object))"
+    if defined(my.specified_proxy_object)
+        if my.specified_proxy_object = "self"
+            my.proxy_object = my.wasm_class.name
+        else
+            my.proxy_object = "modules.$(wasm_derive_class_name_str(my.specified_proxy_object))"
+        endif
     else
-        my.proxy_object = my.wasm_class.name
+        my.proxy_object = "this"
     endif
+
 
     if defined(my.length.method)
         my.proxy_method = wasm_derive_method_name_str(my.length.method)

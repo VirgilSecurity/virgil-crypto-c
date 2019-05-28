@@ -191,7 +191,7 @@ const initCurve25519PrivateKey = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = Curve25519PrivateKey.decryptedLen(data.length);
+            const outSize = this.decryptedLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -238,7 +238,7 @@ const initCurve25519PrivateKey = (Module, modules) => {
          * RFC 3447 Appendix A.1.2.
          */
         exportPrivateKey() {
-            const outSize = Curve25519PrivateKey.exportedPrivateKeyLen();
+            const outSize = this.exportedPrivateKeyLen();
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -298,7 +298,7 @@ const initCurve25519PrivateKey = (Module, modules) => {
          * Note, shared key can be used only for symmetric cryptography.
          */
         computeSharedKey(publicKey) {
-            const sharedKeySize = Curve25519PrivateKey.sharedKeyLen();
+            const sharedKeySize = this.sharedKeyLen();
             const sharedKeyCtxPtr = Module._vsc_buffer_new_with_capacity(sharedKeySize);
 
             try {

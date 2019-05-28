@@ -137,7 +137,7 @@ const initSigner = (Module, modules) => {
          * Accomplish signing and return signature.
          */
         sign(privateKey) {
-            const signatureSize = Signer.signatureLen(privateKey);
+            const signatureSize = this.signatureLen(privateKey);
             const signatureCtxPtr = Module._vsc_buffer_new_with_capacity(signatureSize);
 
             try {

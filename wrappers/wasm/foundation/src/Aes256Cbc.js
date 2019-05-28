@@ -178,7 +178,7 @@ const initAes256Cbc = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = Aes256Cbc.encryptedLen(data.length);
+            const outSize = this.encryptedLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -224,7 +224,7 @@ const initAes256Cbc = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = Aes256Cbc.decryptedLen(data.length);
+            const outSize = this.decryptedLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -336,7 +336,7 @@ const initAes256Cbc = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = Aes256Cbc.outLen(data.length);
+            const outSize = this.outLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {
@@ -395,7 +395,7 @@ const initAes256Cbc = (Module, modules) => {
          * Accomplish encryption or decryption process.
          */
         finish() {
-            const outSize = Aes256Cbc.outLen(0);
+            const outSize = this.outLen(0);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
 
             try {

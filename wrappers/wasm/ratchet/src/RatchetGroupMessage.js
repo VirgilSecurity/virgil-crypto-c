@@ -202,7 +202,7 @@ const initRatchetGroupMessage = (Module, modules) => {
          * Serializes instance.
          */
         serialize() {
-            const outputSize = RatchetGroupMessage.serializeLen();
+            const outputSize = this.serializeLen();
             const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputSize);
 
             try {
