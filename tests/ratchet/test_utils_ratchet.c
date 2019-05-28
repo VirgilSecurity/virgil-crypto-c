@@ -645,8 +645,8 @@ restore_session(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session) {
 }
 
 void
-initialize_random_group_chat(
-        vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratchet_group_session_t ***sessions, vsc_buffer_t ***priv) {
+initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratchet_group_session_t ***sessions,
+        vsc_buffer_t ***priv, vsc_buffer_t ***pub, vsc_buffer_t ***id) {
     TEST_ASSERT(*sessions == NULL);
 
     vscr_ratchet_group_ticket_t *ticket = vscr_ratchet_group_ticket_new();
@@ -655,22 +655,16 @@ initialize_random_group_chat(
 
     *sessions = vscr_alloc(group_size * sizeof(vscr_ratchet_group_session_t *));
     vsc_buffer_t **ids = vscr_alloc(group_size * sizeof(vsc_buffer_t *));
-
     vsc_buffer_t **private_keys = vscr_alloc(group_size * sizeof(vsc_buffer_t *));
+    vsc_buffer_t **public_keys = vscr_alloc(group_size * sizeof(vsc_buffer_t *));
 
     for (size_t i = 0; i < group_size; i++) {
-        vsc_buffer_t *pub;
-        generate_PKCS8_ed_keypair(rng, &private_keys[i], &pub);
+        generate_PKCS8_ed_keypair(rng, &private_keys[i], &public_keys[i]);
 
-        vsc_buffer_t *id;
-        generate_random_participant_id(rng, &id);
+        generate_random_participant_id(rng, &ids[i]);
 
-        TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
-                vscr_ratchet_group_ticket_add_new_participant(ticket, vsc_buffer_data(id), vsc_buffer_data(pub)));
-
-        ids[i] = id;
-
-        vsc_buffer_destroy(&pub);
+        TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_ticket_add_new_participant(ticket,
+                                                       vsc_buffer_data(ids[i]), vsc_buffer_data(public_keys[i])));
     }
 
     const vscr_ratchet_group_message_t *msg_start = vscr_ratchet_group_ticket_get_ticket_message(ticket);
@@ -694,13 +688,18 @@ initialize_random_group_chat(
     }
 
     for (size_t i = 0; i < group_size; i++) {
-        vsc_buffer_destroy(&ids[i]);
         if (!priv) {
             vsc_buffer_destroy(&private_keys[i]);
         }
-    }
 
-    vscr_dealloc(ids);
+        if (!pub) {
+            vsc_buffer_destroy(&public_keys[i]);
+        }
+
+        if (!id) {
+            vsc_buffer_destroy(&ids[i]);
+        }
+    }
 
     if (priv) {
         *priv = private_keys;
@@ -708,6 +707,17 @@ initialize_random_group_chat(
         vscr_dealloc(private_keys);
     }
 
+    if (pub) {
+        *pub = public_keys;
+    } else {
+        vscr_dealloc(public_keys);
+    }
+
+    if (id) {
+        *id = ids;
+    } else {
+        vscr_dealloc(ids);
+    }
 
     vscr_ratchet_group_ticket_destroy(&ticket);
 }

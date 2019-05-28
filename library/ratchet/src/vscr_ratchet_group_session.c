@@ -834,8 +834,12 @@ vscr_ratchet_group_session_decrypt(
     vscr_ratchet_group_participant_epoch_t *epoch =
             vscr_ratchet_group_participant_data_find_epoch(participant, header->epoch);
 
+    if (!epoch) {
+        return vscr_status_ERROR_EPOCH_NOT_FOUND;
+    }
+
     // New message
-    if (epoch && epoch->chain_key && epoch->chain_key->index <= header->counter) {
+    if (epoch->chain_key && epoch->chain_key->index <= header->counter) {
 
         // Too many lost messages
         if (header->counter - epoch->chain_key->index > vscr_ratchet_common_hidden_MAX_MESSAGE_GAP) {

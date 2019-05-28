@@ -64,7 +64,7 @@ test__serialization__random_group_chat_bad_network__decrypt_should_succeed(void)
 
     size_t group_size = generate_number(rng, 10, 50);
 
-    initialize_random_group_chat(rng, group_size, &sessions, &priv);
+    initialize_random_group_chat(rng, group_size, &sessions, &priv, NULL, NULL);
 
     size_t number_of_iterations = 1000;
 

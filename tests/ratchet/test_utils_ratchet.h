@@ -55,7 +55,7 @@ void initialize(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session_alice, vs
 void encrypt_decrypt__100_plain_texts_random_order(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *session_bob);
 void encrypt_decrypt__100_plain_texts_random_order_with_producers(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool should_restore);
 void restore_session(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session);
-void initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratchet_group_session_t ***sessions, vsc_buffer_t ***priv);
+void initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratchet_group_session_t ***sessions, vsc_buffer_t ***priv, vsc_buffer_t ***pub, vsc_buffer_t ***id);
 void add_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t add_size, vscr_ratchet_group_session_t ***sessions, vsc_buffer_t ***priv);
 void remove_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t remove_size, vscr_ratchet_group_session_t ***sessions, vsc_buffer_t ***priv);
 void encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterations, vscr_ratchet_group_session_t **sessions, double lost_rate, double distribution_factor, double generate_distribution, vsc_buffer_t **priv);
