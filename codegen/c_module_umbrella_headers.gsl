@@ -37,7 +37,7 @@
 #   Create module with all-in-one headers.
 # ---------------------------------------------------------------------------
 #   This is a code generator helper built using the iMatix GSL code
-#   generation language. See https://github.com/imatix/gsl for details.
+#   generation language. See https://github.com/zeromq/gsl for details.
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"

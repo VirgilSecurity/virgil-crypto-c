@@ -37,7 +37,7 @@
 #   Contains API for Java wrapper generation.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
-#   language. See https://github.com/imatix/gsl for details.
+#   language. See https://github.com/zeromq/gsl for details.
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"
@@ -1548,7 +1548,7 @@ function java_create_exception_module (enum, java_project, meta)
                     .static = "static"
                     .final = "final"
                 endnew
-                
+
                 my.case_result = string_to_singleline(constant.?"")
                 my.message_code += format_left("\
                     case $(my.constant_name:):
@@ -1598,12 +1598,12 @@ function java_create_exception_module (enum, java_project, meta)
                     .is_reference = "0"
                 endnew
             endnew
-            
+
             new java_method to java_class
                 . = ""
                 .name = java_derive_getter_name_str ("message")
                 .visibility = "public"
-                
+
                 new java_return to java_method
                     .type = "String"
                     .access = "readonly"

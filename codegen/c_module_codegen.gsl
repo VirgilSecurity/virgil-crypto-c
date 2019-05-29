@@ -37,7 +37,7 @@
 #   Generate C header or source file based on the 'common' c_module.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
-#   language. See https://github.com/imatix/gsl for details.
+#   language. See https://github.com/zeromq/gsl for details.
 # ---------------------------------------------------------------------------
 
 gsl from "c_codegen.gsl"
