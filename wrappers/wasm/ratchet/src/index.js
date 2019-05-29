@@ -81,6 +81,5 @@ const initProject = () => {
             reject(new Error(message));
         };
     });
-    return initPromise;
 };
 module.exports = initProject;

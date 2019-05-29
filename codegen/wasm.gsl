@@ -1349,16 +1349,9 @@ function wasm_create_index_module(wasm_project)
         endfor
 
         my.code += terminator + format_left("
-            const $(my.module_inst:) = new $(my.wasm_project.module_name:)();
-            let initPromise;
-        ")
-
-        my.code += terminator + format_left("
             const initProject = () => {
-                if (initPromise) {
-                    return initPromise;
-                }
-                initPromise = new Promise((resolve, reject) => {
+                const $(my.module_inst:) = new $(my.wasm_project.module_name:)();
+                return new Promise((resolve, reject) => {
                     $(my.module_inst:).onRuntimeInitialized = () => {
                         const modules = {};
                         $(format_left(my.init_code, 6))
@@ -1369,7 +1362,6 @@ function wasm_create_index_module(wasm_project)
                         reject(new Error(message));
                     };
                 });
-                return initPromise;
             };
             module.exports = initProject;
         ")
@@ -1557,6 +1549,11 @@ function wasm_create_project_cmake_module(wasm_project)
                         $(my.wasm_project.cmake_c_export_target:)
                         )
 
+                add_custom_command(TARGET $(my.wasm_project.cmake_wasm_target:) POST_BUILD
+                        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                                "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_BINARY_DIR}"
+                        )
+
                 if(WASM2WAT)
                     add_custom_command(TARGET $(my.wasm_project.cmake_wasm_target:) POST_BUILD
                             COMMAND "${WASM2WAT}"
@@ -1642,6 +1639,17 @@ function wasm_create_toplevel_modules(wrapper)
                     "${CMAKE_CURRENT_LIST_DIR}/package.json"
                     "${CMAKE_CURRENT_BINARY_DIR}/package.json"
                     COPYONLY
+                    )
+
+            configure_file(
+                    "${CMAKE_CURRENT_LIST_DIR}/jest.config.js"
+                    "${CMAKE_CURRENT_BINARY_DIR}/jest.config.js"
+                    COPYONLY
+                    )
+
+            add_custom_target(copy_wasm_tests ALL
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory
+                            "${CMAKE_CURRENT_LIST_DIR}/tests" "${CMAKE_CURRENT_BINARY_DIR}/tests"
                     )
 
             # ---------------------------------------------------------------------------

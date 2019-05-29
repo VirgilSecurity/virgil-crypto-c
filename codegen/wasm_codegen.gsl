@@ -180,7 +180,7 @@ function wasm_insert_enum(wasm_enum)
     endfor
 
 
-    wasm_insert_code("}", 1)
+    wasm_insert_code("});", 1)
 
     newline()
     wasm_insert_code("return $(my.wasm_enum.name:);", 1)

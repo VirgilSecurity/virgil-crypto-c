@@ -70,6 +70,17 @@ configure_file(
         COPYONLY
         )
 
+configure_file(
+        "${CMAKE_CURRENT_LIST_DIR}/jest.config.js"
+        "${CMAKE_CURRENT_BINARY_DIR}/jest.config.js"
+        COPYONLY
+        )
+
+add_custom_target(copy_wasm_tests ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${CMAKE_CURRENT_LIST_DIR}/tests" "${CMAKE_CURRENT_BINARY_DIR}/tests"
+        )
+
 # ---------------------------------------------------------------------------
 #   Add per project wrapper build
 # ---------------------------------------------------------------------------

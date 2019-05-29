@@ -75,6 +75,11 @@ target_link_libraries(libratchet
         vsc::ratchet
         )
 
+add_custom_command(TARGET libratchet POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_BINARY_DIR}"
+        )
+
 if(WASM2WAT)
     add_custom_command(TARGET libratchet POST_BUILD
             COMMAND "${WASM2WAT}"
