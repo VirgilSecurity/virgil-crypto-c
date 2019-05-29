@@ -87,7 +87,7 @@ const initOidId = (Module, modules) => {
         EC_GENERIC_KEY: 23,
 
         EC_DOMAIN_SECP256R1: 24
-    }
+    });
 
     return OidId;
 };

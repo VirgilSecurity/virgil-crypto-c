@@ -119,7 +119,7 @@ const initFoundationImplTag = (Module, modules) => {
         SHA512: 40,
 
         SIMPLE_ALG_INFO: 41
-    }
+    });
 
     return FoundationImplTag;
 };

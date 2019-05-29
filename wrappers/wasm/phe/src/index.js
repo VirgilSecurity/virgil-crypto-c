@@ -48,14 +48,9 @@ const initPheServer = require('./PheServer');
 const initPheClient = require('./PheClient');
 const initPheCipher = require('./PheCipher');
 
-const pheModule = new PheModule();
-let initPromise;
-
 const initProject = () => {
-    if (initPromise) {
-        return initPromise;
-    }
-    initPromise = new Promise((resolve, reject) => {
+    const pheModule = new PheModule();
+    return new Promise((resolve, reject) => {
         pheModule.onRuntimeInitialized = () => {
             const modules = {};
 
@@ -76,6 +71,5 @@ const initProject = () => {
             reject(new Error(message));
         };
     });
-    return initPromise;
 };
 module.exports = initProject;

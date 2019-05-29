@@ -53,14 +53,9 @@ const initRatchetGroupMessage = require('./RatchetGroupMessage');
 const initRatchetGroupTicket = require('./RatchetGroupTicket');
 const initRatchetGroupSession = require('./RatchetGroupSession');
 
-const ratchetModule = new RatchetModule();
-let initPromise;
-
 const initProject = () => {
-    if (initPromise) {
-        return initPromise;
-    }
-    initPromise = new Promise((resolve, reject) => {
+    const ratchetModule = new RatchetModule();
+    return new Promise((resolve, reject) => {
         ratchetModule.onRuntimeInitialized = () => {
             const modules = {};
 

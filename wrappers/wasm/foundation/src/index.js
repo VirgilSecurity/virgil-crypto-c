@@ -101,14 +101,9 @@ const initAlgInfoDerSerializer = require('./AlgInfoDerSerializer');
 const initAlgInfoDerDeserializer = require('./AlgInfoDerDeserializer');
 const initMessageInfoDerSerializer = require('./MessageInfoDerSerializer');
 
-const foundationModule = new FoundationModule();
-let initPromise;
-
 const initProject = () => {
-    if (initPromise) {
-        return initPromise;
-    }
-    initPromise = new Promise((resolve, reject) => {
+    const foundationModule = new FoundationModule();
+    return new Promise((resolve, reject) => {
         foundationModule.onRuntimeInitialized = () => {
             const modules = {};
 
@@ -182,6 +177,5 @@ const initProject = () => {
             reject(new Error(message));
         };
     });
-    return initPromise;
 };
 module.exports = initProject;

@@ -40,14 +40,9 @@ const PythiaModule = require('./libpythia');
 const initPythiaError = require('./PythiaError');
 const initPythia = require('./Pythia');
 
-const pythiaModule = new PythiaModule();
-let initPromise;
-
 const initProject = () => {
-    if (initPromise) {
-        return initPromise;
-    }
-    initPromise = new Promise((resolve, reject) => {
+    const pythiaModule = new PythiaModule();
+    return new Promise((resolve, reject) => {
         pythiaModule.onRuntimeInitialized = () => {
             const modules = {};
 
@@ -60,6 +55,5 @@ const initProject = () => {
             reject(new Error(message));
         };
     });
-    return initPromise;
 };
 module.exports = initProject;
