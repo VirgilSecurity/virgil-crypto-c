@@ -134,7 +134,7 @@ const initKeyRecipientInfoList = (Module, modules) => {
             let proxyResult;
             proxyResult = Module._vscf_key_recipient_info_list_next(this.ctxPtr);
 
-            const jsResult = modules.KeyRecipientInfoList.newAndTakeCContext(proxyResult);
+            const jsResult = KeyRecipientInfoList.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -156,7 +156,7 @@ const initKeyRecipientInfoList = (Module, modules) => {
             let proxyResult;
             proxyResult = Module._vscf_key_recipient_info_list_prev(this.ctxPtr);
 
-            const jsResult = modules.KeyRecipientInfoList.newAndTakeCContext(proxyResult);
+            const jsResult = KeyRecipientInfoList.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 

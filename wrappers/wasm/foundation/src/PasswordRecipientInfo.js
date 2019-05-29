@@ -87,6 +87,37 @@ const initPasswordRecipientInfo = (Module, modules) => {
         }
 
         /**
+         * Create object and define all properties.
+         */
+        static newWithMembers(keyEncryptionAlgorithm, encryptedKey) {
+            // assert(typeof encryptedKey === 'Uint8Array')
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const encryptedKeySize = encryptedKey.length * encryptedKey.BYTES_PER_ELEMENT;
+            const encryptedKeyPtr = Module._malloc(encryptedKeySize);
+            Module.HEAP8.set(encryptedKey, encryptedKeyPtr);
+
+            //  Create C structure vsc_data_t.
+            const encryptedKeyCtxSize = Module._vsc_data_ctx_size();
+            const encryptedKeyCtxPtr = Module._malloc(encryptedKeyCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(encryptedKeyCtxPtr, encryptedKeyPtr, encryptedKeySize);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_password_recipient_info_new_with_members(keyEncryptionAlgorithm.ctxPtr, encryptedKeyCtxPtr);
+
+                const jsResult = PasswordRecipientInfo.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(encryptedKeyPtr);
+                Module._free(encryptedKeyCtxPtr);
+            }
+        }
+
+        /**
          * Return algorithm information that was used for encryption
          * a data encryption key.
          */

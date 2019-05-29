@@ -340,15 +340,6 @@ function wasm_create_class_destructor(class, wasm_class)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create class custom constructor.
-# ---------------------------------------------------------------------------
-function wasm_create_class_constructor(class, constructor, wasm_class)
-    check_arguments(my, "class, constructor, wasm_class", my)
-
-    #   TODO: Implement me.
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Add dependency setter as <wasm_method/>.
 # ---------------------------------------------------------------------------
 function wasm_create_class_dependency_method(dependency, class, wasm_class, wasm_project)
@@ -654,13 +645,14 @@ function wasm_create_method_return_for_class(return, wasm_method, wasm_class)
         "
 
         my.instance_class = wasm_derive_instance_class(my.return)
+        my.instance_modules = (my.instance_class <> my.wasm_class.name) ?? "modules." ?
         if string_in(my.return.access, "disown, retain")
             wasm_return.code_on_success = "
-                const jsResult = modules.$(my.instance_class:).newAndTakeCContext(proxyResult);
+                const jsResult = $(my.instance_modules?:)$(my.instance_class:).newAndTakeCContext(proxyResult);
             "
         else
             wasm_return.code_on_success = "
-                const jsResult = modules.$(my.instance_class:).newAndUseCContext(proxyResult);
+                const jsResult = $(my.instance_modules?:)$(my.instance_class:).newAndUseCContext(proxyResult);
             "
         endif
     endnew
@@ -943,6 +935,26 @@ function wasm_create_class_method(method, class, wasm_class, wasm_project)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Create class custom constructor.
+# ---------------------------------------------------------------------------
+function wasm_create_class_constructor(class, constructor, wasm_class, wasm_project)
+    check_arguments(my, "class, constructor, wasm_class, wasm_project", my)
+
+    my.method = item_copy_to(my.constructor, my.wasm_class, "method")
+    my.method.name = "new $(my.method.name:)"
+    my.method.is_static = "1"
+    new return to my.method
+        .class = my.class.name
+        .access = "disown"
+        .is_reference = "1"
+    endnew
+
+    wasm_create_class_method(my.method, my.class, my.wasm_class, my.wasm_project)
+
+    delete my.method
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create singlr <wasm_imported_class/> entry.
 # ---------------------------------------------------------------------------
 function wasm_create_imported_class(ext_wasm_class, ext_wasm_project, wasm_project)
@@ -1082,7 +1094,7 @@ function wasm_create_implementation_module(impl, wasm_project, meta)
                 wasm_create_class_destructor(my.impl, wasm_class)
 
                 for my.impl.constructor where wrapper_should_wrap_method(constructor)
-                    wasm_create_class_constructor(my.impl, constructor, wasm_class)
+                    wasm_create_class_constructor(my.impl, constructor, wasm_class, my.wasm_project)
                 endfor
             endif
 
@@ -1155,7 +1167,7 @@ function wasm_create_class_module(class, wasm_project, meta)
                 wasm_create_class_destructor(my.class, wasm_class)
 
                 for my.class.constructor where wrapper_should_wrap_method(constructor)
-                    wasm_create_class_constructor(my.class, constructor, wasm_class)
+                    wasm_create_class_constructor(my.class, constructor, wasm_class, my.wasm_project)
                 endfor
             endif
 

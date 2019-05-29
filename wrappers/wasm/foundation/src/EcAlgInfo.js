@@ -87,6 +87,17 @@ const initEcAlgInfo = (Module, modules) => {
         }
 
         /**
+         * Create algorithm info with EC generic key identificator, EC domain group identificator.
+         */
+        static newWithMembers(algId, keyId, domainId) {
+            let proxyResult;
+            proxyResult = Module._vscf_ec_alg_info_new_with_members(algId, keyId, domainId);
+
+            const jsResult = EcAlgInfo.newAndTakeCContext(proxyResult);
+            return jsResult;
+        }
+
+        /**
          * Provide algorithm identificator.
          */
         algId() {

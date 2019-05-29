@@ -87,6 +87,18 @@ const initPbeAlgInfo = (Module, modules) => {
         }
 
         /**
+         * Create algorithm info with identificator, KDF algorithm info and
+         * cipher alg info.
+         */
+        static newWithMembers(algId, kdfAlgInfo, cipherAlgInfo) {
+            let proxyResult;
+            proxyResult = Module._vscf_pbe_alg_info_new_with_members(algId, kdfAlgInfo.ctxPtr, cipherAlgInfo.ctxPtr);
+
+            const jsResult = PbeAlgInfo.newAndTakeCContext(proxyResult);
+            return jsResult;
+        }
+
+        /**
          * Provide algorithm identificator.
          */
         algId() {

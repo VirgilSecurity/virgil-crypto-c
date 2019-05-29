@@ -87,6 +87,17 @@ const initSimpleAlgInfo = (Module, modules) => {
         }
 
         /**
+         * Create algorithm info with identificator.
+         */
+        static newWithAlgId(algId) {
+            let proxyResult;
+            proxyResult = Module._vscf_simple_alg_info_new_with_alg_id(algId);
+
+            const jsResult = SimpleAlgInfo.newAndTakeCContext(proxyResult);
+            return jsResult;
+        }
+
+        /**
          * Provide algorithm identificator.
          */
         algId() {
