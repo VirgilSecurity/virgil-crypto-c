@@ -58,6 +58,8 @@
 #include "vscf_aes256_gcm_defs.h"
 #include "vscf_aes256_gcm_internal.h"
 
+#include "stdio.h"
+
 // clang-format on
 //  @end
 
@@ -287,6 +289,10 @@ vscf_aes256_gcm_start_decryption(vscf_aes256_gcm_t *self) {
 //
 //  Process encryption or decryption of the given data chunk.
 //
+
+void
+print_data(vsc_data_t data);
+
 VSCF_PUBLIC void
 vscf_aes256_gcm_update(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
@@ -301,15 +307,57 @@ vscf_aes256_gcm_update(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *o
     //
     if (self->do_decrypt) {
         if (data.len >= vscf_aes256_gcm_AUTH_TAG_LEN) {
+
+            //            printf("Here is tag in if: \n");
+
+            if (self->auth_tag_len) {
+                size_t tag_block_len = 0;
+                int status = mbedtls_cipher_update(&self->cipher_ctx, self->auth_tag, self->auth_tag_len,
+                        vsc_buffer_unused_bytes(out), &tag_block_len);
+                VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+                vsc_buffer_inc_used(out, tag_block_len);
+                memset(self->auth_tag, 0, sizeof self->auth_tag);
+            }
+
             filtered_data = vsc_data_slice_beg(data, 0, data.len - vscf_aes256_gcm_AUTH_TAG_LEN);
             vsc_data_t tag = vsc_data_slice_end(data, 0, vscf_aes256_gcm_AUTH_TAG_LEN);
+            //            print_data(tag);
             memcpy(self->auth_tag, tag.bytes, tag.len);
+            self->auth_tag_len = vscf_aes256_gcm_AUTH_TAG_LEN;
 
         } else {
-            filtered_data = vsc_data_empty();
-            byte *auth_tag_dst = self->auth_tag + vscf_aes256_gcm_AUTH_TAG_LEN - data.len;
-            memmove(self->auth_tag, auth_tag_dst, data.len);
-            memcpy(auth_tag_dst, data.bytes, data.len);
+            //            printf("Here is last data: \n");
+            //            print_data(data);
+            //
+            //            printf("Here is tag in else: \n");
+            //            print_data(vsc_data(self->auth_tag, 16));
+
+            // data.len < 12 b
+            if (self->auth_tag_len + data.len >= vscf_aes256_gcm_AUTH_TAG_LEN) {
+                size_t tag_block_len = 0;
+                int status = mbedtls_cipher_update(
+                        &self->cipher_ctx, self->auth_tag, data.len, vsc_buffer_unused_bytes(out), &tag_block_len);
+                VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+                vsc_buffer_inc_used(out, tag_block_len);
+                self->auth_tag_len -= data.len;
+
+                // print_data(data);
+
+
+                memmove(self->auth_tag, self->auth_tag + data.len, vscf_aes256_gcm_AUTH_TAG_LEN - data.len);
+                memset(self->auth_tag + vscf_aes256_gcm_AUTH_TAG_LEN - data.len, 0, data.len);
+
+                // printf("Here is tag in else 2: \n");
+                // print_data(vsc_data(self->auth_tag, 16));
+
+                memcpy(&self->auth_tag[vscf_aes256_gcm_AUTH_TAG_LEN - data.len], data.bytes, data.len);
+                self->auth_tag_len += data.len;
+            } else {
+                // self->auth_tag_len + data.len < vscf_aes256_gcm_AUTH_TAG_LEN)
+                // it's bad means that we can't fill auth_tag fully
+                memcpy(&self->auth_tag[self->auth_tag_len], data.bytes, data.len);
+                self->auth_tag_len += data.len;
+            }
         }
     }
 
@@ -325,6 +373,12 @@ vscf_aes256_gcm_update(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *o
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 
     vsc_buffer_inc_used(out, block_len);
+
+    printf("Here is tag: \n");
+    print_data(vsc_data(self->auth_tag, 16));
+
+    printf("Here is filter data \n");
+    print_data(filtered_data);
 }
 
 //

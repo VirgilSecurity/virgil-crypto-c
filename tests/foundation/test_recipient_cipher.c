@@ -241,6 +241,9 @@ test__encrypt_decrypt_chunk__with_ed25519_key_recipient__success(void) {
             vscf_recipient_cipher_start_decryption_with_key(
                     recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, private_key, vsc_data_empty()));
 
+    printf("Here is last 16 bytes of data: \n");
+    print_data(vsc_data_slice_end(vsc_buffer_data(enc_msg), 0, 16));
+
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_process_decryption(recipient_cipher,
                                                    vsc_data_slice_beg(vsc_buffer_data(enc_msg), 0, 16), dec_msg));
@@ -259,6 +262,7 @@ test__encrypt_decrypt_chunk__with_ed25519_key_recipient__success(void) {
                                                    vsc_data_slice_beg(vsc_buffer_data(enc_msg), 400, 2), dec_msg));
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_decryption(recipient_cipher, dec_msg));
+
 
     //
     //  Check.
@@ -290,8 +294,8 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__encrypt_decrypt__with_ed25519_key_recipient__success);
-    RUN_TEST(test__decrypt__with_ed25519_public_key__success);
+    //    RUN_TEST(test__encrypt_decrypt__with_ed25519_key_recipient__success);
+    //    RUN_TEST(test__decrypt__with_ed25519_public_key__success);
     RUN_TEST(test__encrypt_decrypt_chunk__with_ed25519_key_recipient__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);

@@ -109,6 +109,10 @@ struct vscf_aes256_gcm_t {
     //  Implementation specific context.
     //
     byte auth_tag[vscf_aes256_gcm_AUTH_TAG_LEN];
+    //
+    //  Implementation specific context.
+    //
+    size_t auth_tag_len;
 };
 
 

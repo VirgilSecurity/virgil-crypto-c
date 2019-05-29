@@ -69,6 +69,8 @@
 #include "vscf_ctr_drbg.h"
 #include "vscf_alg_factory.h"
 
+#include "stdio.h"
+
 // clang-format on
 //  @end
 
