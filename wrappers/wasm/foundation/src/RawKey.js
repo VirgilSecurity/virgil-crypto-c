@@ -87,6 +87,38 @@ const initRawKey = (Module, modules) => {
         }
 
         /**
+         * Creates raw key defined with algorithm and data.
+         * Note, data is copied.
+         */
+        static newWithData(algId, rawKeyData) {
+            // assert(typeof rawKeyData === 'Uint8Array')
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const rawKeyDataSize = rawKeyData.length * rawKeyData.BYTES_PER_ELEMENT;
+            const rawKeyDataPtr = Module._malloc(rawKeyDataSize);
+            Module.HEAP8.set(rawKeyData, rawKeyDataPtr);
+
+            //  Create C structure vsc_data_t.
+            const rawKeyDataCtxSize = Module._vsc_data_ctx_size();
+            const rawKeyDataCtxPtr = Module._malloc(rawKeyDataCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(rawKeyDataCtxPtr, rawKeyDataPtr, rawKeyDataSize);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_raw_key_new_with_data(algId, rawKeyDataCtxPtr);
+
+                const jsResult = RawKey.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(rawKeyDataPtr);
+                Module._free(rawKeyDataCtxPtr);
+            }
+        }
+
+        /**
          * Returns asymmetric algorithm type that raw key belongs to.
          */
         algId() {

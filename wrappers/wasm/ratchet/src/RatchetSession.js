@@ -403,7 +403,7 @@ const initRatchetSession = (Module, modules) => {
                 const errorStatus = Module.vscr_error_status(errorCtxPtr);
                 modules.RatchetError.handleStatusCode(errorStatus);
 
-                const jsResult = modules.RatchetSession.newAndTakeCContext(proxyResult);
+                const jsResult = RatchetSession.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(inputPtr);

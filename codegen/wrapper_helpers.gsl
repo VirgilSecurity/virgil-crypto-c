@@ -91,7 +91,9 @@ endfunction
 function wrapper_is_class_returned_by_value(return)
     check_arguments(my, "return", my)
 
-    return defined(my.return.class) & is_false(my.return.is_reference)
+    return has_one_of_attribute(my.return, "class, impl") & \
+            is_false(my.return.is_reference) & \
+            string_in(my.return.access, "readonly, readwrite")
 endfunction
 
 # ===========================================================================

@@ -87,6 +87,37 @@ const initCipherAlgInfo = (Module, modules) => {
         }
 
         /**
+         * Create symmetric cipher algorithm info with identificator and input vector.
+         */
+        static newWithMembers(algId, nonce) {
+            // assert(typeof nonce === 'Uint8Array')
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const nonceSize = nonce.length * nonce.BYTES_PER_ELEMENT;
+            const noncePtr = Module._malloc(nonceSize);
+            Module.HEAP8.set(nonce, noncePtr);
+
+            //  Create C structure vsc_data_t.
+            const nonceCtxSize = Module._vsc_data_ctx_size();
+            const nonceCtxPtr = Module._malloc(nonceCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(nonceCtxPtr, noncePtr, nonceSize);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_cipher_alg_info_new_with_members(algId, nonceCtxPtr);
+
+                const jsResult = CipherAlgInfo.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(noncePtr);
+                Module._free(nonceCtxPtr);
+            }
+        }
+
+        /**
          * Provide algorithm identificator.
          */
         algId() {

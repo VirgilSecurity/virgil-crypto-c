@@ -383,7 +383,7 @@ const initRatchetGroupSession = (Module, modules) => {
                 const errorStatus = Module.vscr_error_status(errorCtxPtr);
                 modules.RatchetError.handleStatusCode(errorStatus);
 
-                const jsResult = modules.RatchetGroupSession.newAndTakeCContext(proxyResult);
+                const jsResult = RatchetGroupSession.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(inputPtr);

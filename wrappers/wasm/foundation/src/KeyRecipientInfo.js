@@ -87,6 +87,52 @@ const initKeyRecipientInfo = (Module, modules) => {
         }
 
         /**
+         * Create object and define all properties.
+         */
+        static newWithMembers(recipientId, keyEncryptionAlgorithm, encryptedKey) {
+            // assert(typeof recipientId === 'Uint8Array')
+            // assert(typeof encryptedKey === 'Uint8Array')
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const recipientIdSize = recipientId.length * recipientId.BYTES_PER_ELEMENT;
+            const recipientIdPtr = Module._malloc(recipientIdSize);
+            Module.HEAP8.set(recipientId, recipientIdPtr);
+
+            //  Create C structure vsc_data_t.
+            const recipientIdCtxSize = Module._vsc_data_ctx_size();
+            const recipientIdCtxPtr = Module._malloc(recipientIdCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(recipientIdCtxPtr, recipientIdPtr, recipientIdSize);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const encryptedKeySize = encryptedKey.length * encryptedKey.BYTES_PER_ELEMENT;
+            const encryptedKeyPtr = Module._malloc(encryptedKeySize);
+            Module.HEAP8.set(encryptedKey, encryptedKeyPtr);
+
+            //  Create C structure vsc_data_t.
+            const encryptedKeyCtxSize = Module._vsc_data_ctx_size();
+            const encryptedKeyCtxPtr = Module._malloc(encryptedKeyCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(encryptedKeyCtxPtr, encryptedKeyPtr, encryptedKeySize);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_key_recipient_info_new_with_members(recipientIdCtxPtr, keyEncryptionAlgorithm.ctxPtr, encryptedKeyCtxPtr);
+
+                const jsResult = KeyRecipientInfo.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(recipientIdPtr);
+                Module._free(recipientIdCtxPtr);
+                Module._free(encryptedKeyPtr);
+                Module._free(encryptedKeyCtxPtr);
+            }
+        }
+
+        /**
          * Return recipient identifier.
          */
         recipientId() {

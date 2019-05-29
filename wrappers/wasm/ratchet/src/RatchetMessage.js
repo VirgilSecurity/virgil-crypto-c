@@ -191,7 +191,7 @@ const initRatchetMessage = (Module, modules) => {
                 const errorStatus = Module.vscr_error_status(errorCtxPtr);
                 modules.RatchetError.handleStatusCode(errorStatus);
 
-                const jsResult = modules.RatchetMessage.newAndTakeCContext(proxyResult);
+                const jsResult = RatchetMessage.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(inputPtr);
