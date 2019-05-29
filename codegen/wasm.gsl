@@ -38,6 +38,7 @@ gsl from "wrapper_helpers.gsl"
 gsl from "wasm_format.gsl"
 gsl from "wasm_derive.gsl"
 gsl from "wasm_codegen.gsl"
+gsl from "cmake_format.gsl"
 
 
 # ===========================================================================
@@ -1028,6 +1029,10 @@ function wasm_create_project_module(project, wrapper)
         .impl_tag_enum_name = wasm_derive_class_name_str(cat(wasm_project.name, "impl tag"))
         .error_class_name = wasm_derive_error_class_name(wasm_project)
         .interface_class_name = wasm_derive_class_name_str(cat(wasm_project.name, "interface"))
+        .cmake_wasm_target = 0.lib_name
+        .cmake_c_target = my.project.cmake_target
+        .cmake_c_export_target = my.project.cmake_export_target
+        .cmake_c_enable_option = my.project.cmake_enable_option
 
         copy my.project->license to wasm_project
 
@@ -1501,11 +1506,78 @@ function wasm_create_exported_functions_module(wasm_project)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Create project CMakeLists.txt file.
+# ---------------------------------------------------------------------------
+function wasm_create_project_cmake_module(wasm_project)
+    check_arguments(my, "wasm_project", my)
+
+    new cmake_module to my.wasm_project
+        .name = "CMakeLists"
+        .source_file_name = 0.name + ".txt"
+        .source_file_path = cat_path(my.wasm_project.source_dir, 0.source_file_name)
+
+        new cmake_license to cmake_module
+            . = cmake_format_license(my.wasm_project->license)
+        endnew
+
+        new cmake_code
+            . = format_left('
+                cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+
+                project(virgil_crypto_$(my.wasm_project.cmake_c_target:)_wasm \
+                        VERSION ${virgil_crypto_VERSION} LANGUAGES C)
+
+                # ---------------------------------------------------------------------------
+                #   Check dependencies
+                # ---------------------------------------------------------------------------
+                if(NOT $(my.wasm_project.cmake_c_enable_option:))
+                    message(STATUS "Skip building the WebAssembly wrapper for \
+                            library $(my.wasm_project.cmake_c_target:), which is not built.")
+                    return()
+                endif()
+
+                # ---------------------------------------------------------------------------
+                #   Find utils
+                # ---------------------------------------------------------------------------
+                find_host_program(WASM2WAT wasm2wat)
+
+                # ---------------------------------------------------------------------------
+                #   Create WebAssembly library
+                # ---------------------------------------------------------------------------
+                file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/fake.c" "")
+                add_executable($(my.wasm_project.cmake_wasm_target:) "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+                target_sources($(my.wasm_project.cmake_wasm_target:) PRIVATE \
+                        "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+                target_link_libraries($(my.wasm_project.cmake_wasm_target:)
+                        "-s EXPORTED_FUNCTIONS=\\\\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\\\\""
+                        "-s MODULARIZE=1"
+                        "-s EXPORT_NAME=$(my.wasm_project.module_name:)"
+                        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+                        "$<$<CONFIG:Debug>:--emrun>"
+                        $(my.wasm_project.cmake_c_export_target:)
+                        )
+
+                if(WASM2WAT)
+                    add_custom_command(TARGET $(my.wasm_project.cmake_wasm_target:) POST_BUILD
+                            COMMAND "${WASM2WAT}"
+                                    $(my.wasm_project.cmake_wasm_target:).wasm
+                                    -o $(my.wasm_project.cmake_wasm_target:).wat
+                            COMMENT "Create WAT from $(my.wasm_project.cmake_wasm_target:).wasm"
+                            )
+                endif()
+            ')
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create a bunch of custom modules that are not related to the existing
 #   high-level models.
 # ---------------------------------------------------------------------------
 function wasm_create_custom_modules(source, wasm_project, meta)
     check_arguments(my, "source, wasm_project, meta", my)
+
+    wasm_create_project_cmake_module(my.wasm_project)
 
     if count(my.source.implementation)
         wasm_create_interface_wrapper_module(my.source, my.wasm_project)
@@ -1522,6 +1594,71 @@ function wasm_finalize_custom_modules(source, wasm_project, meta)
 
     wasm_create_exported_functions_module(my.wasm_project)
     wasm_create_index_module(my.wasm_project)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create toplevel modules:
+#       - CMake project files.
+# ---------------------------------------------------------------------------
+function wasm_create_toplevel_modules(wrapper)
+    check_arguments(my, "wrapper", my)
+
+    for my.wrapper.cmake_module
+        delete cmake_module
+    endfor
+
+    new cmake_module to my.wrapper
+        .name = "CMakeLists"
+        .source_file_name = 0.name + ".txt"
+        .source_file_path = cat_path(my.wrapper.source_dir, 0.source_file_name)
+
+        new cmake_license to cmake_module
+            . = cmake_format_license(my.wrapper->license)
+        endnew
+
+        my.code = format_left('
+            cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+
+            project(virgil_crypto_wasm VERSION ${virgil_crypto_VERSION} LANGUAGES C)
+
+            # ---------------------------------------------------------------------------
+            #   Check Emscripten environment.
+            # ---------------------------------------------------------------------------
+
+            if(NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+                message(FATAL_ERROR "Attempt to build WebAssembly without Emscripten toolchain.")
+            endif()
+
+            # ---------------------------------------------------------------------------
+            #   Configure
+            # ---------------------------------------------------------------------------
+            configure_file(
+                    "${CMAKE_CURRENT_LIST_DIR}/rollup.config.js"
+                    "${CMAKE_CURRENT_BINARY_DIR}/rollup.config.js"
+                    COPYONLY
+                    )
+
+            configure_file(
+                    "${CMAKE_CURRENT_LIST_DIR}/package.json"
+                    "${CMAKE_CURRENT_BINARY_DIR}/package.json"
+                    COPYONLY
+                    )
+
+            # ---------------------------------------------------------------------------
+            #   Add per project wrapper build
+            # ---------------------------------------------------------------------------
+        ')
+
+        for my.wrapper.wasm_project
+            my.code +=format_left('
+                add_subdirectory("$(wasm_project.name:)")
+            ')
+        endfor
+
+        new cmake_code to cmake_module
+            . = my.code
+        endnew
+    endnew
 endfunction
 
 .endtemplate
