@@ -78,8 +78,8 @@ const initBase64 = (Module, modules) => {
                 Module._vscf_base64_encode(dataCtxPtr, strCtxPtr);
 
                 const strPtr = Module._vsc_buffer_bytes(strCtxPtr);
-                const strLen = Module._vsc_buffer_len(strCtxPtr);
-                const str = Module.HEAPU8.slice(strPtr, strPtr + strLen);
+                const strPtrLen = Module._vsc_buffer_len(strCtxPtr);
+                const str = Module.HEAPU8.slice(strPtr, strPtr + strPtrLen);
                 return str;
             } finally {
                 Module._free(dataPtr);
@@ -125,8 +125,8 @@ const initBase64 = (Module, modules) => {
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const dataPtr = Module._vsc_buffer_bytes(dataCtxPtr);
-                const dataLen = Module._vsc_buffer_len(dataCtxPtr);
-                const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataLen);
+                const dataPtrLen = Module._vsc_buffer_len(dataCtxPtr);
+                const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataPtrLen);
                 return data;
             } finally {
                 Module._free(strPtr);

@@ -145,8 +145,8 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
                 Module._vscf_pkcs5_pbkdf2_derive(this.ctxPtr, dataCtxPtr, keyLen, keyCtxPtr);
 
                 const keyPtr = Module._vsc_buffer_bytes(keyCtxPtr);
-                const keyLen = Module._vsc_buffer_len(keyCtxPtr);
-                const key = Module.HEAPU8.slice(keyPtr, keyPtr + keyLen);
+                const keyPtrLen = Module._vsc_buffer_len(keyCtxPtr);
+                const key = Module.HEAPU8.slice(keyPtr, keyPtr + keyPtrLen);
                 return key;
             } finally {
                 Module._free(dataPtr);

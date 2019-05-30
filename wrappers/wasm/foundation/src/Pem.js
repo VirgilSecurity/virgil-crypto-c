@@ -81,8 +81,8 @@ const initPem = (Module, modules) => {
                 Module._vscf_pem_wrap(title, dataCtxPtr, pemCtxPtr);
 
                 const pemPtr = Module._vsc_buffer_bytes(pemCtxPtr);
-                const pemLen = Module._vsc_buffer_len(pemCtxPtr);
-                const pem = Module.HEAPU8.slice(pemPtr, pemPtr + pemLen);
+                const pemPtrLen = Module._vsc_buffer_len(pemCtxPtr);
+                const pem = Module.HEAPU8.slice(pemPtr, pemPtr + pemPtrLen);
                 return pem;
             } finally {
                 Module._free(dataPtr);
@@ -128,8 +128,8 @@ const initPem = (Module, modules) => {
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const dataPtr = Module._vsc_buffer_bytes(dataCtxPtr);
-                const dataLen = Module._vsc_buffer_len(dataCtxPtr);
-                const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataLen);
+                const dataPtrLen = Module._vsc_buffer_len(dataCtxPtr);
+                const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataPtrLen);
                 return data;
             } finally {
                 Module._free(pemPtr);

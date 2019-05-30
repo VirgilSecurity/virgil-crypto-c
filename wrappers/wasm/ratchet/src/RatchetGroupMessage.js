@@ -209,8 +209,8 @@ const initRatchetGroupMessage = (Module, modules) => {
                 Module._vscr_ratchet_group_message_serialize(this.ctxPtr, outputCtxPtr);
 
                 const outputPtr = Module._vsc_buffer_bytes(outputCtxPtr);
-                const outputLen = Module._vsc_buffer_len(outputCtxPtr);
-                const output = Module.HEAPU8.slice(outputPtr, outputPtr + outputLen);
+                const outputPtrLen = Module._vsc_buffer_len(outputCtxPtr);
+                const output = Module.HEAPU8.slice(outputPtr, outputPtr + outputPtrLen);
                 return output;
             } finally {
                 Module._vsc_buffer_delete(outputCtxPtr);

@@ -161,8 +161,8 @@ const initSha512 = (Module, modules) => {
                 Module._vscf_sha512_hash(dataCtxPtr, digestCtxPtr);
 
                 const digestPtr = Module._vsc_buffer_bytes(digestCtxPtr);
-                const digestLen = Module._vsc_buffer_len(digestCtxPtr);
-                const digest = Module.HEAPU8.slice(digestPtr, digestPtr + digestLen);
+                const digestPtrLen = Module._vsc_buffer_len(digestCtxPtr);
+                const digest = Module.HEAPU8.slice(digestPtr, digestPtr + digestPtrLen);
                 return digest;
             } finally {
                 Module._free(dataPtr);
@@ -215,8 +215,8 @@ const initSha512 = (Module, modules) => {
                 Module._vscf_sha512_finish(this.ctxPtr, digestCtxPtr);
 
                 const digestPtr = Module._vsc_buffer_bytes(digestCtxPtr);
-                const digestLen = Module._vsc_buffer_len(digestCtxPtr);
-                const digest = Module.HEAPU8.slice(digestPtr, digestPtr + digestLen);
+                const digestPtrLen = Module._vsc_buffer_len(digestCtxPtr);
+                const digest = Module.HEAPU8.slice(digestPtr, digestPtr + digestPtrLen);
                 return digest;
             } finally {
                 Module._vsc_buffer_delete(digestCtxPtr);

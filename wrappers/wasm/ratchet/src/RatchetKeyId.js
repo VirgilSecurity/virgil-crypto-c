@@ -112,8 +112,8 @@ const initRatchetKeyId = (Module, modules) => {
                 modules.RatchetError.handleStatusCode(proxyResult);
 
                 const keyIdPtr = Module._vsc_buffer_bytes(keyIdCtxPtr);
-                const keyIdLen = Module._vsc_buffer_len(keyIdCtxPtr);
-                const keyId = Module.HEAPU8.slice(keyIdPtr, keyIdPtr + keyIdLen);
+                const keyIdPtrLen = Module._vsc_buffer_len(keyIdCtxPtr);
+                const keyId = Module.HEAPU8.slice(keyIdPtr, keyIdPtr + keyIdPtrLen);
                 return keyId;
             } finally {
                 Module._free(publicKeyPtr);

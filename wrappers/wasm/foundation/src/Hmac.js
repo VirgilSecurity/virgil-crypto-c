@@ -166,8 +166,8 @@ const initHmac = (Module, modules) => {
                 Module._vscf_hmac_mac(this.ctxPtr, keyCtxPtr, dataCtxPtr, macCtxPtr);
 
                 const macPtr = Module._vsc_buffer_bytes(macCtxPtr);
-                const macLen = Module._vsc_buffer_len(macCtxPtr);
-                const mac = Module.HEAPU8.slice(macPtr, macPtr + macLen);
+                const macPtrLen = Module._vsc_buffer_len(macCtxPtr);
+                const mac = Module.HEAPU8.slice(macPtr, macPtr + macPtrLen);
                 return mac;
             } finally {
                 Module._free(keyPtr);
@@ -241,8 +241,8 @@ const initHmac = (Module, modules) => {
                 Module._vscf_hmac_finish(this.ctxPtr, macCtxPtr);
 
                 const macPtr = Module._vsc_buffer_bytes(macCtxPtr);
-                const macLen = Module._vsc_buffer_len(macCtxPtr);
-                const mac = Module.HEAPU8.slice(macPtr, macPtr + macLen);
+                const macPtrLen = Module._vsc_buffer_len(macCtxPtr);
+                const mac = Module.HEAPU8.slice(macPtr, macPtr + macPtrLen);
                 return mac;
             } finally {
                 Module._vsc_buffer_delete(macCtxPtr);

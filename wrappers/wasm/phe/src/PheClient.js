@@ -164,8 +164,8 @@ const initPheClient = (Module, modules) => {
                 modules.PheError.handleStatusCode(proxyResult);
 
                 const clientPrivateKeyPtr = Module._vsc_buffer_bytes(clientPrivateKeyCtxPtr);
-                const clientPrivateKeyLen = Module._vsc_buffer_len(clientPrivateKeyCtxPtr);
-                const clientPrivateKey = Module.HEAPU8.slice(clientPrivateKeyPtr, clientPrivateKeyPtr + clientPrivateKeyLen);
+                const clientPrivateKeyPtrLen = Module._vsc_buffer_len(clientPrivateKeyCtxPtr);
+                const clientPrivateKey = Module.HEAPU8.slice(clientPrivateKeyPtr, clientPrivateKeyPtr + clientPrivateKeyPtrLen);
                 return clientPrivateKey;
             } finally {
                 Module._vsc_buffer_delete(clientPrivateKeyCtxPtr);
@@ -225,12 +225,12 @@ const initPheClient = (Module, modules) => {
                 modules.PheError.handleStatusCode(proxyResult);
 
                 const enrollmentRecordPtr = Module._vsc_buffer_bytes(enrollmentRecordCtxPtr);
-                const enrollmentRecordLen = Module._vsc_buffer_len(enrollmentRecordCtxPtr);
-                const enrollmentRecord = Module.HEAPU8.slice(enrollmentRecordPtr, enrollmentRecordPtr + enrollmentRecordLen);
+                const enrollmentRecordPtrLen = Module._vsc_buffer_len(enrollmentRecordCtxPtr);
+                const enrollmentRecord = Module.HEAPU8.slice(enrollmentRecordPtr, enrollmentRecordPtr + enrollmentRecordPtrLen);
 
                 const accountKeyPtr = Module._vsc_buffer_bytes(accountKeyCtxPtr);
-                const accountKeyLen = Module._vsc_buffer_len(accountKeyCtxPtr);
-                const accountKey = Module.HEAPU8.slice(accountKeyPtr, accountKeyPtr + accountKeyLen);
+                const accountKeyPtrLen = Module._vsc_buffer_len(accountKeyCtxPtr);
+                const accountKey = Module.HEAPU8.slice(accountKeyPtr, accountKeyPtr + accountKeyPtrLen);
                 return { enrollmentRecord, accountKey };
             } finally {
                 Module._free(enrollmentResponsePtr);
@@ -290,8 +290,8 @@ const initPheClient = (Module, modules) => {
                 modules.PheError.handleStatusCode(proxyResult);
 
                 const verifyPasswordRequestPtr = Module._vsc_buffer_bytes(verifyPasswordRequestCtxPtr);
-                const verifyPasswordRequestLen = Module._vsc_buffer_len(verifyPasswordRequestCtxPtr);
-                const verifyPasswordRequest = Module.HEAPU8.slice(verifyPasswordRequestPtr, verifyPasswordRequestPtr + verifyPasswordRequestLen);
+                const verifyPasswordRequestPtrLen = Module._vsc_buffer_len(verifyPasswordRequestCtxPtr);
+                const verifyPasswordRequest = Module.HEAPU8.slice(verifyPasswordRequestPtr, verifyPasswordRequestPtr + verifyPasswordRequestPtrLen);
                 return verifyPasswordRequest;
             } finally {
                 Module._free(passwordPtr);
@@ -356,8 +356,8 @@ const initPheClient = (Module, modules) => {
                 modules.PheError.handleStatusCode(proxyResult);
 
                 const accountKeyPtr = Module._vsc_buffer_bytes(accountKeyCtxPtr);
-                const accountKeyLen = Module._vsc_buffer_len(accountKeyCtxPtr);
-                const accountKey = Module.HEAPU8.slice(accountKeyPtr, accountKeyPtr + accountKeyLen);
+                const accountKeyPtrLen = Module._vsc_buffer_len(accountKeyCtxPtr);
+                const accountKey = Module.HEAPU8.slice(accountKeyPtr, accountKeyPtr + accountKeyPtrLen);
                 return accountKey;
             } finally {
                 Module._free(passwordPtr);
@@ -400,12 +400,12 @@ const initPheClient = (Module, modules) => {
                 modules.PheError.handleStatusCode(proxyResult);
 
                 const newClientPrivateKeyPtr = Module._vsc_buffer_bytes(newClientPrivateKeyCtxPtr);
-                const newClientPrivateKeyLen = Module._vsc_buffer_len(newClientPrivateKeyCtxPtr);
-                const newClientPrivateKey = Module.HEAPU8.slice(newClientPrivateKeyPtr, newClientPrivateKeyPtr + newClientPrivateKeyLen);
+                const newClientPrivateKeyPtrLen = Module._vsc_buffer_len(newClientPrivateKeyCtxPtr);
+                const newClientPrivateKey = Module.HEAPU8.slice(newClientPrivateKeyPtr, newClientPrivateKeyPtr + newClientPrivateKeyPtrLen);
 
                 const newServerPublicKeyPtr = Module._vsc_buffer_bytes(newServerPublicKeyCtxPtr);
-                const newServerPublicKeyLen = Module._vsc_buffer_len(newServerPublicKeyCtxPtr);
-                const newServerPublicKey = Module.HEAPU8.slice(newServerPublicKeyPtr, newServerPublicKeyPtr + newServerPublicKeyLen);
+                const newServerPublicKeyPtrLen = Module._vsc_buffer_len(newServerPublicKeyCtxPtr);
+                const newServerPublicKey = Module.HEAPU8.slice(newServerPublicKeyPtr, newServerPublicKeyPtr + newServerPublicKeyPtrLen);
                 return { newClientPrivateKey, newServerPublicKey };
             } finally {
                 Module._free(updateTokenPtr);
@@ -454,8 +454,8 @@ const initPheClient = (Module, modules) => {
                 modules.PheError.handleStatusCode(proxyResult);
 
                 const newEnrollmentRecordPtr = Module._vsc_buffer_bytes(newEnrollmentRecordCtxPtr);
-                const newEnrollmentRecordLen = Module._vsc_buffer_len(newEnrollmentRecordCtxPtr);
-                const newEnrollmentRecord = Module.HEAPU8.slice(newEnrollmentRecordPtr, newEnrollmentRecordPtr + newEnrollmentRecordLen);
+                const newEnrollmentRecordPtrLen = Module._vsc_buffer_len(newEnrollmentRecordCtxPtr);
+                const newEnrollmentRecord = Module.HEAPU8.slice(newEnrollmentRecordPtr, newEnrollmentRecordPtr + newEnrollmentRecordPtrLen);
                 return newEnrollmentRecord;
             } finally {
                 Module._free(enrollmentRecordPtr);

@@ -315,8 +315,8 @@ const initRatchetGroupSession = (Module, modules) => {
                 modules.RatchetError.handleStatusCode(proxyResult);
 
                 const plainTextPtr = Module._vsc_buffer_bytes(plainTextCtxPtr);
-                const plainTextLen = Module._vsc_buffer_len(plainTextCtxPtr);
-                const plainText = Module.HEAPU8.slice(plainTextPtr, plainTextPtr + plainTextLen);
+                const plainTextPtrLen = Module._vsc_buffer_len(plainTextCtxPtr);
+                const plainText = Module.HEAPU8.slice(plainTextPtr, plainTextPtr + plainTextPtrLen);
                 return plainText;
             } finally {
                 Module._vsc_buffer_delete(plainTextCtxPtr);
@@ -344,8 +344,8 @@ const initRatchetGroupSession = (Module, modules) => {
                 Module._vscr_ratchet_group_session_serialize(this.ctxPtr, outputCtxPtr);
 
                 const outputPtr = Module._vsc_buffer_bytes(outputCtxPtr);
-                const outputLen = Module._vsc_buffer_len(outputCtxPtr);
-                const output = Module.HEAPU8.slice(outputPtr, outputPtr + outputLen);
+                const outputPtrLen = Module._vsc_buffer_len(outputCtxPtr);
+                const output = Module.HEAPU8.slice(outputPtr, outputPtr + outputPtrLen);
                 return output;
             } finally {
                 Module._vsc_buffer_delete(outputCtxPtr);

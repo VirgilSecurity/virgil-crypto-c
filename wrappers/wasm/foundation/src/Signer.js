@@ -145,8 +145,8 @@ const initSigner = (Module, modules) => {
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const signaturePtr = Module._vsc_buffer_bytes(signatureCtxPtr);
-                const signatureLen = Module._vsc_buffer_len(signatureCtxPtr);
-                const signature = Module.HEAPU8.slice(signaturePtr, signaturePtr + signatureLen);
+                const signaturePtrLen = Module._vsc_buffer_len(signatureCtxPtr);
+                const signature = Module.HEAPU8.slice(signaturePtr, signaturePtr + signaturePtrLen);
                 return signature;
             } finally {
                 Module._vsc_buffer_delete(signatureCtxPtr);

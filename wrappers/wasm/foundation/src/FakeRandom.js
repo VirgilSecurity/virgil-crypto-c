@@ -100,8 +100,8 @@ const initFakeRandom = (Module, modules) => {
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const dataPtr = Module._vsc_buffer_bytes(dataCtxPtr);
-                const dataLen = Module._vsc_buffer_len(dataCtxPtr);
-                const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataLen);
+                const dataPtrLen = Module._vsc_buffer_len(dataCtxPtr);
+                const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataPtrLen);
                 return data;
             } finally {
                 Module._vsc_buffer_delete(dataCtxPtr);
@@ -141,8 +141,8 @@ const initFakeRandom = (Module, modules) => {
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const outLen = Module._vsc_buffer_len(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
+                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
                 return out;
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);

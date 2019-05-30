@@ -182,8 +182,8 @@ const initRecipientCipher = (Module, modules) => {
                 Module._vscf_recipient_cipher_pack_message_info(this.ctxPtr, messageInfoCtxPtr);
 
                 const messageInfoPtr = Module._vsc_buffer_bytes(messageInfoCtxPtr);
-                const messageInfoLen = Module._vsc_buffer_len(messageInfoCtxPtr);
-                const messageInfo = Module.HEAPU8.slice(messageInfoPtr, messageInfoPtr + messageInfoLen);
+                const messageInfoPtrLen = Module._vsc_buffer_len(messageInfoCtxPtr);
+                const messageInfo = Module.HEAPU8.slice(messageInfoPtr, messageInfoPtr + messageInfoPtrLen);
                 return messageInfo;
             } finally {
                 Module._vsc_buffer_delete(messageInfoCtxPtr);
@@ -228,8 +228,8 @@ const initRecipientCipher = (Module, modules) => {
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const outLen = Module._vsc_buffer_len(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
+                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
                 return out;
             } finally {
                 Module._free(dataPtr);
@@ -250,8 +250,8 @@ const initRecipientCipher = (Module, modules) => {
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const outLen = Module._vsc_buffer_len(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
+                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
                 return out;
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);
@@ -340,8 +340,8 @@ const initRecipientCipher = (Module, modules) => {
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const outLen = Module._vsc_buffer_len(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
+                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
                 return out;
             } finally {
                 Module._free(dataPtr);
@@ -362,8 +362,8 @@ const initRecipientCipher = (Module, modules) => {
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const outLen = Module._vsc_buffer_len(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
+                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
                 return out;
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);

@@ -164,8 +164,8 @@ const initPheCipher = (Module, modules) => {
                 modules.PheError.handleStatusCode(proxyResult);
 
                 const cipherTextPtr = Module._vsc_buffer_bytes(cipherTextCtxPtr);
-                const cipherTextLen = Module._vsc_buffer_len(cipherTextCtxPtr);
-                const cipherText = Module.HEAPU8.slice(cipherTextPtr, cipherTextPtr + cipherTextLen);
+                const cipherTextPtrLen = Module._vsc_buffer_len(cipherTextCtxPtr);
+                const cipherText = Module.HEAPU8.slice(cipherTextPtr, cipherTextPtr + cipherTextPtrLen);
                 return cipherText;
             } finally {
                 Module._free(plainTextPtr);
@@ -215,8 +215,8 @@ const initPheCipher = (Module, modules) => {
                 modules.PheError.handleStatusCode(proxyResult);
 
                 const plainTextPtr = Module._vsc_buffer_bytes(plainTextCtxPtr);
-                const plainTextLen = Module._vsc_buffer_len(plainTextCtxPtr);
-                const plainText = Module.HEAPU8.slice(plainTextPtr, plainTextPtr + plainTextLen);
+                const plainTextPtrLen = Module._vsc_buffer_len(plainTextCtxPtr);
+                const plainText = Module.HEAPU8.slice(plainTextPtr, plainTextPtr + plainTextPtrLen);
                 return plainText;
             } finally {
                 Module._free(cipherTextPtr);

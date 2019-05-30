@@ -169,12 +169,12 @@ const initPythia = (Module, modules) => {
                 modules.PythiaError.handleStatusCode(proxyResult);
 
                 const blindedPasswordPtr = Module._vsc_buffer_bytes(blindedPasswordCtxPtr);
-                const blindedPasswordLen = Module._vsc_buffer_len(blindedPasswordCtxPtr);
-                const blindedPassword = Module.HEAPU8.slice(blindedPasswordPtr, blindedPasswordPtr + blindedPasswordLen);
+                const blindedPasswordPtrLen = Module._vsc_buffer_len(blindedPasswordCtxPtr);
+                const blindedPassword = Module.HEAPU8.slice(blindedPasswordPtr, blindedPasswordPtr + blindedPasswordPtrLen);
 
                 const blindingSecretPtr = Module._vsc_buffer_bytes(blindingSecretCtxPtr);
-                const blindingSecretLen = Module._vsc_buffer_len(blindingSecretCtxPtr);
-                const blindingSecret = Module.HEAPU8.slice(blindingSecretPtr, blindingSecretPtr + blindingSecretLen);
+                const blindingSecretPtrLen = Module._vsc_buffer_len(blindingSecretCtxPtr);
+                const blindingSecret = Module.HEAPU8.slice(blindingSecretPtr, blindingSecretPtr + blindingSecretPtrLen);
                 return { blindedPassword, blindingSecret };
             } finally {
                 Module._free(passwordPtr);
@@ -223,8 +223,8 @@ const initPythia = (Module, modules) => {
                 modules.PythiaError.handleStatusCode(proxyResult);
 
                 const deblindedPasswordPtr = Module._vsc_buffer_bytes(deblindedPasswordCtxPtr);
-                const deblindedPasswordLen = Module._vsc_buffer_len(deblindedPasswordCtxPtr);
-                const deblindedPassword = Module.HEAPU8.slice(deblindedPasswordPtr, deblindedPasswordPtr + deblindedPasswordLen);
+                const deblindedPasswordPtrLen = Module._vsc_buffer_len(deblindedPasswordCtxPtr);
+                const deblindedPassword = Module.HEAPU8.slice(deblindedPasswordPtr, deblindedPasswordPtr + deblindedPasswordPtrLen);
                 return deblindedPassword;
             } finally {
                 Module._free(transformedPasswordPtr);
@@ -290,12 +290,12 @@ const initPythia = (Module, modules) => {
                 modules.PythiaError.handleStatusCode(proxyResult);
 
                 const transformationPrivateKeyPtr = Module._vsc_buffer_bytes(transformationPrivateKeyCtxPtr);
-                const transformationPrivateKeyLen = Module._vsc_buffer_len(transformationPrivateKeyCtxPtr);
-                const transformationPrivateKey = Module.HEAPU8.slice(transformationPrivateKeyPtr, transformationPrivateKeyPtr + transformationPrivateKeyLen);
+                const transformationPrivateKeyPtrLen = Module._vsc_buffer_len(transformationPrivateKeyCtxPtr);
+                const transformationPrivateKey = Module.HEAPU8.slice(transformationPrivateKeyPtr, transformationPrivateKeyPtr + transformationPrivateKeyPtrLen);
 
                 const transformationPublicKeyPtr = Module._vsc_buffer_bytes(transformationPublicKeyCtxPtr);
-                const transformationPublicKeyLen = Module._vsc_buffer_len(transformationPublicKeyCtxPtr);
-                const transformationPublicKey = Module.HEAPU8.slice(transformationPublicKeyPtr, transformationPublicKeyPtr + transformationPublicKeyLen);
+                const transformationPublicKeyPtrLen = Module._vsc_buffer_len(transformationPublicKeyCtxPtr);
+                const transformationPublicKey = Module.HEAPU8.slice(transformationPublicKeyPtr, transformationPublicKeyPtr + transformationPublicKeyPtrLen);
                 return { transformationPrivateKey, transformationPublicKey };
             } finally {
                 Module._free(transformationKeyIdPtr);
@@ -364,12 +364,12 @@ const initPythia = (Module, modules) => {
                 modules.PythiaError.handleStatusCode(proxyResult);
 
                 const transformedPasswordPtr = Module._vsc_buffer_bytes(transformedPasswordCtxPtr);
-                const transformedPasswordLen = Module._vsc_buffer_len(transformedPasswordCtxPtr);
-                const transformedPassword = Module.HEAPU8.slice(transformedPasswordPtr, transformedPasswordPtr + transformedPasswordLen);
+                const transformedPasswordPtrLen = Module._vsc_buffer_len(transformedPasswordCtxPtr);
+                const transformedPassword = Module.HEAPU8.slice(transformedPasswordPtr, transformedPasswordPtr + transformedPasswordPtrLen);
 
                 const transformedTweakPtr = Module._vsc_buffer_bytes(transformedTweakCtxPtr);
-                const transformedTweakLen = Module._vsc_buffer_len(transformedTweakCtxPtr);
-                const transformedTweak = Module.HEAPU8.slice(transformedTweakPtr, transformedTweakPtr + transformedTweakLen);
+                const transformedTweakPtrLen = Module._vsc_buffer_len(transformedTweakCtxPtr);
+                const transformedTweak = Module.HEAPU8.slice(transformedTweakPtr, transformedTweakPtr + transformedTweakPtrLen);
                 return { transformedPassword, transformedTweak };
             } finally {
                 Module._free(blindedPasswordPtr);
@@ -464,12 +464,12 @@ const initPythia = (Module, modules) => {
                 modules.PythiaError.handleStatusCode(proxyResult);
 
                 const proofValueCPtr = Module._vsc_buffer_bytes(proofValueCCtxPtr);
-                const proofValueCLen = Module._vsc_buffer_len(proofValueCCtxPtr);
-                const proofValueC = Module.HEAPU8.slice(proofValueCPtr, proofValueCPtr + proofValueCLen);
+                const proofValueCPtrLen = Module._vsc_buffer_len(proofValueCCtxPtr);
+                const proofValueC = Module.HEAPU8.slice(proofValueCPtr, proofValueCPtr + proofValueCPtrLen);
 
                 const proofValueUPtr = Module._vsc_buffer_bytes(proofValueUCtxPtr);
-                const proofValueULen = Module._vsc_buffer_len(proofValueUCtxPtr);
-                const proofValueU = Module.HEAPU8.slice(proofValueUPtr, proofValueUPtr + proofValueULen);
+                const proofValueUPtrLen = Module._vsc_buffer_len(proofValueUCtxPtr);
+                const proofValueU = Module.HEAPU8.slice(proofValueUPtr, proofValueUPtr + proofValueUPtrLen);
                 return { proofValueC, proofValueU };
             } finally {
                 Module._free(transformedPasswordPtr);
@@ -643,8 +643,8 @@ const initPythia = (Module, modules) => {
                 modules.PythiaError.handleStatusCode(proxyResult);
 
                 const passwordUpdateTokenPtr = Module._vsc_buffer_bytes(passwordUpdateTokenCtxPtr);
-                const passwordUpdateTokenLen = Module._vsc_buffer_len(passwordUpdateTokenCtxPtr);
-                const passwordUpdateToken = Module.HEAPU8.slice(passwordUpdateTokenPtr, passwordUpdateTokenPtr + passwordUpdateTokenLen);
+                const passwordUpdateTokenPtrLen = Module._vsc_buffer_len(passwordUpdateTokenCtxPtr);
+                const passwordUpdateToken = Module.HEAPU8.slice(passwordUpdateTokenPtr, passwordUpdateTokenPtr + passwordUpdateTokenPtrLen);
                 return passwordUpdateToken;
             } finally {
                 Module._free(previousTransformationPrivateKeyPtr);
@@ -695,8 +695,8 @@ const initPythia = (Module, modules) => {
                 modules.PythiaError.handleStatusCode(proxyResult);
 
                 const updatedDeblindedPasswordPtr = Module._vsc_buffer_bytes(updatedDeblindedPasswordCtxPtr);
-                const updatedDeblindedPasswordLen = Module._vsc_buffer_len(updatedDeblindedPasswordCtxPtr);
-                const updatedDeblindedPassword = Module.HEAPU8.slice(updatedDeblindedPasswordPtr, updatedDeblindedPasswordPtr + updatedDeblindedPasswordLen);
+                const updatedDeblindedPasswordPtrLen = Module._vsc_buffer_len(updatedDeblindedPasswordCtxPtr);
+                const updatedDeblindedPassword = Module.HEAPU8.slice(updatedDeblindedPasswordPtr, updatedDeblindedPasswordPtr + updatedDeblindedPasswordPtrLen);
                 return updatedDeblindedPassword;
             } finally {
                 Module._free(deblindedPasswordPtr);

@@ -442,8 +442,8 @@ function wasm_create_method_argument_for_writeonly_buffer(argument, wasm_method,
 
         .code_on_success = "
             const $(0.name:)Ptr = Module._vsc_buffer_bytes($(0.name:)CtxPtr);
-            const $(0.name:)Len = Module._vsc_buffer_len($(0.name:)CtxPtr);
-            const $(0.name:) = Module.HEAPU8.slice($(0.name:)Ptr, $(0.name:)Ptr + $(0.name:)Len);
+            const $(0.name:)PtrLen = Module._vsc_buffer_len($(0.name:)CtxPtr);
+            const $(0.name:) = Module.HEAPU8.slice($(0.name:)Ptr, $(0.name:)Ptr + $(0.name:)PtrLen);
         "
 
         .code_on_finalize = "
@@ -490,8 +490,8 @@ function wasm_create_method_argument_for_readwrite_buffer(argument, wasm_method,
 
         .code_on_success = "
             const $(0.name:)Ptr = Module._vsc_buffer_bytes($(0.name:)CtxPtr);
-            const $(0.name:)Len = Module._vsc_buffer_len($(0.name:)CtxPtr);
-            const $(0.name:)Result = Module.HEAPU8.slice($(0.name:)Ptr, $(0.name:)Ptr + $(0.name:)Len);
+            const $(0.name:)PtrLen = Module._vsc_buffer_len($(0.name:)CtxPtr);
+            const $(0.name:)Result = Module.HEAPU8.slice($(0.name:)Ptr, $(0.name:)Ptr + $(0.name:)PtrLen);
         "
     endnew
 endfunction
