@@ -41,5 +41,6 @@ extern const vsc_data_t test_phe_cipher_rnd;
 extern const vsc_data_t test_phe_cipher_account_key;
 extern const vsc_data_t test_phe_cipher_plain_text;
 extern const vsc_data_t test_phe_cipher_cipher_text;
+extern const size_t test_phe_cipher_cipher_text_capacity;
 
 #endif //VIRGIL_CRYPTO_TEST_DATA_PHE_CIPHER_H

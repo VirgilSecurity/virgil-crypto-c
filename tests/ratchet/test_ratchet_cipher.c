@@ -54,6 +54,8 @@ test__encrypt__fixed_data__should_match(void) {
 
     size_t len = vscr_ratchet_cipher_encrypt_len(cipher, test_data_ratchet_cipher_plain_text.len);
 
+    TEST_ASSERT_EQUAL(test_data_ratchet_cipher_cipher_text_len, len);
+
     vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(len);
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS,

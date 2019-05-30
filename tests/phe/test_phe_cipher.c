@@ -59,8 +59,10 @@ test__encrypt_decrypt__fixed_data__should_match(void) {
 
     vsce_phe_cipher_take_random(cipher, vscf_fake_random_impl(fake_random));
 
-    vsc_buffer_t *cipher_text =
-            vsc_buffer_new_with_capacity(vsce_phe_cipher_encrypt_len(cipher, test_phe_cipher_plain_text.len));
+    TEST_ASSERT_EQUAL(
+            test_phe_cipher_cipher_text_capacity, vsce_phe_cipher_encrypt_len(cipher, test_phe_cipher_plain_text.len));
+
+    vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(test_phe_cipher_cipher_text_capacity);
 
     TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
             vsce_phe_cipher_encrypt(cipher, test_phe_cipher_plain_text, test_phe_cipher_account_key, cipher_text));
