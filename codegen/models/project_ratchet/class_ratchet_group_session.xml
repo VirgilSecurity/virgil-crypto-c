@@ -5,6 +5,8 @@
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
 
+    <require impl="hkdf" project="foundation" scope="private"/>
+    <require module="hkdf private" scope="private" project="foundation"/>
     <require module="ratchet typedefs" scope="context"/>
 
     <require module="buffer defs" scope="private" project="common"/>

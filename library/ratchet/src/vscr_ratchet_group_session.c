@@ -63,6 +63,8 @@
 #include "vscr_ratchet_group_participant_data.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
+#include <virgil/crypto/foundation/vscf_hkdf.h>
+#include <virgil/crypto/foundation/private/vscf_hkdf_private.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <RatchetGroupMessage.pb.h>
 #include <pb_decode.h>
