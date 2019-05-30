@@ -125,7 +125,7 @@ describe('KeyProvider', () => {
       );
       const publicKey = keyProvider.importPublicKey(publicKeyBuffer);
       const exportedKey = keyProvider.exportPublicKey(publicKey);
-      expect(Buffer.compare(exportedKey, privateKeyBuffer)).toBe(0);
+      expect(Buffer.compare(exportedKey, publicKeyBuffer)).toBe(0);
     });
   });
 
