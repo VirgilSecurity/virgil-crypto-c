@@ -154,14 +154,15 @@ const initSha384 = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const digestSize = this.DIGEST_LEN;
-            const digestCtxPtr = Module._vsc_buffer_new_with_capacity(digestSize);
+            const digestCapacity = this.DIGEST_LEN;
+            const digestCtxPtr = Module._vsc_buffer_new_with_capacity(digestCapacity);
 
             try {
                 Module._vscf_sha384_hash(dataCtxPtr, digestCtxPtr);
 
                 const digestPtr = Module._vsc_buffer_bytes(digestCtxPtr);
-                const digest = Module.HEAPU8.slice(digestPtr, digestPtr + digestSize);
+                const digestLen = Module._vsc_buffer_len(digestCtxPtr);
+                const digest = Module.HEAPU8.slice(digestPtr, digestPtr + digestLen);
                 return digest;
             } finally {
                 Module._free(dataPtr);
@@ -207,14 +208,15 @@ const initSha384 = (Module, modules) => {
          * Accompilsh hashing and return it's result (a message digest).
          */
         finish() {
-            const digestSize = this.DIGEST_LEN;
-            const digestCtxPtr = Module._vsc_buffer_new_with_capacity(digestSize);
+            const digestCapacity = this.DIGEST_LEN;
+            const digestCtxPtr = Module._vsc_buffer_new_with_capacity(digestCapacity);
 
             try {
                 Module._vscf_sha384_finish(this.ctxPtr, digestCtxPtr);
 
                 const digestPtr = Module._vsc_buffer_bytes(digestCtxPtr);
-                const digest = Module.HEAPU8.slice(digestPtr, digestPtr + digestSize);
+                const digestLen = Module._vsc_buffer_len(digestCtxPtr);
+                const digest = Module.HEAPU8.slice(digestPtr, digestPtr + digestLen);
                 return digest;
             } finally {
                 Module._vsc_buffer_delete(digestCtxPtr);

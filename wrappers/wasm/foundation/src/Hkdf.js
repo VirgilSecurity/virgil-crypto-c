@@ -138,14 +138,15 @@ const initHkdf = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const keySize = keyLen;
-            const keyCtxPtr = Module._vsc_buffer_new_with_capacity(keySize);
+            const keyCapacity = keyLen;
+            const keyCtxPtr = Module._vsc_buffer_new_with_capacity(keyCapacity);
 
             try {
                 Module._vscf_hkdf_derive(this.ctxPtr, dataCtxPtr, keyLen, keyCtxPtr);
 
                 const keyPtr = Module._vsc_buffer_bytes(keyCtxPtr);
-                const key = Module.HEAPU8.slice(keyPtr, keyPtr + keySize);
+                const keyLen = Module._vsc_buffer_len(keyCtxPtr);
+                const key = Module.HEAPU8.slice(keyPtr, keyPtr + keyLen);
                 return key;
             } finally {
                 Module._free(dataPtr);

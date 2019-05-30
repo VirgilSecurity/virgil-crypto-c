@@ -137,15 +137,16 @@ const initSigner = (Module, modules) => {
          * Accomplish signing and return signature.
          */
         sign(privateKey) {
-            const signatureSize = this.signatureLen(privateKey);
-            const signatureCtxPtr = Module._vsc_buffer_new_with_capacity(signatureSize);
+            const signatureCapacity = this.signatureLen(privateKey);
+            const signatureCtxPtr = Module._vsc_buffer_new_with_capacity(signatureCapacity);
 
             try {
                 const proxyResult = Module._vscf_signer_sign(this.ctxPtr, privateKey.ctxPtr, signatureCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const signaturePtr = Module._vsc_buffer_bytes(signatureCtxPtr);
-                const signature = Module.HEAPU8.slice(signaturePtr, signaturePtr + signatureSize);
+                const signatureLen = Module._vsc_buffer_len(signatureCtxPtr);
+                const signature = Module.HEAPU8.slice(signaturePtr, signaturePtr + signatureLen);
                 return signature;
             } finally {
                 Module._vsc_buffer_delete(signatureCtxPtr);

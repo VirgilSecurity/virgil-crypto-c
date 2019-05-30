@@ -109,15 +109,16 @@ const initSec1Serializer = (Module, modules) => {
          * Precondition: public key must be exportable.
          */
         serializePublicKey(publicKey) {
-            const outSize = this.serializedPublicKeyLen(publicKey);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.serializedPublicKeyLen(publicKey);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 const proxyResult = Module._vscf_sec1_serializer_serialize_public_key(this.ctxPtr, publicKey.ctxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);
@@ -141,15 +142,16 @@ const initSec1Serializer = (Module, modules) => {
          * Precondition: private key must be exportable.
          */
         serializePrivateKey(privateKey) {
-            const outSize = this.serializedPrivateKeyLen(privateKey);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.serializedPrivateKeyLen(privateKey);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 const proxyResult = Module._vscf_sec1_serializer_serialize_private_key(this.ctxPtr, privateKey.ctxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);

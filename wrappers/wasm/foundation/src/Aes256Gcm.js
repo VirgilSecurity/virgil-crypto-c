@@ -189,15 +189,16 @@ const initAes256Gcm = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = this.encryptedLen(data.length);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.encryptedLen(data.length);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 const proxyResult = Module._vscf_aes256_gcm_encrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._free(dataPtr);
@@ -235,15 +236,16 @@ const initAes256Gcm = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = this.decryptedLen(data.length);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.decryptedLen(data.length);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 const proxyResult = Module._vscf_aes256_gcm_decrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._free(dataPtr);
@@ -347,14 +349,15 @@ const initAes256Gcm = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = this.outLen(data.length);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.outLen(data.length);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 Module._vscf_aes256_gcm_update(this.ctxPtr, dataCtxPtr, outCtxPtr);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._free(dataPtr);
@@ -406,15 +409,16 @@ const initAes256Gcm = (Module, modules) => {
          * Accomplish encryption or decryption process.
          */
         finish() {
-            const outSize = this.outLen(0);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.outLen(0);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 const proxyResult = Module._vscf_aes256_gcm_finish(this.ctxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);
@@ -453,21 +457,23 @@ const initAes256Gcm = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(authDataCtxPtr, authDataPtr, authDataSize);
 
-            const outSize = this.authEncryptedLen(data.length);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.authEncryptedLen(data.length);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
-            const tagSize = this.AUTH_TAG_LEN;
-            const tagCtxPtr = Module._vsc_buffer_new_with_capacity(tagSize);
+            const tagCapacity = this.AUTH_TAG_LEN;
+            const tagCtxPtr = Module._vsc_buffer_new_with_capacity(tagCapacity);
 
             try {
                 const proxyResult = Module._vscf_aes256_gcm_auth_encrypt(this.ctxPtr, dataCtxPtr, authDataCtxPtr, outCtxPtr, tagCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
 
                 const tagPtr = Module._vsc_buffer_bytes(tagCtxPtr);
-                const tag = Module.HEAPU8.slice(tagPtr, tagPtr + tagSize);
+                const tagLen = Module._vsc_buffer_len(tagCtxPtr);
+                const tag = Module.HEAPU8.slice(tagPtr, tagPtr + tagLen);
                 return { out, tag };
             } finally {
                 Module._free(dataPtr);
@@ -535,15 +541,16 @@ const initAes256Gcm = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(tagCtxPtr, tagPtr, tagSize);
 
-            const outSize = this.authDecryptedLen(data.length);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.authDecryptedLen(data.length);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 const proxyResult = Module._vscf_aes256_gcm_auth_decrypt(this.ctxPtr, dataCtxPtr, authDataCtxPtr, tagCtxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._free(dataPtr);

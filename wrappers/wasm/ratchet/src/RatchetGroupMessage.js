@@ -156,9 +156,9 @@ const initRatchetGroupMessage = (Module, modules) => {
                 const errorStatus = Module._vscr_error_status(errorCtxPtr);
                 modules.RatchetError.handleStatusCode(errorStatus);
 
-                const bufferResultSize = Module._vsc_buffer_len(proxyResult);
+                const bufferResultLen = Module._vsc_buffer_len(proxyResult);
                 const bufferResultPtr = Module._vsc_buffer_bytes(proxyResult);
-                const bufferResult = Module.HEAPU8.slice(bufferResultPtr, bufferResultPtr + bufferResultSize);
+                const bufferResult = Module.HEAPU8.slice(bufferResultPtr, bufferResultPtr + bufferResultLen);
                 return bufferResult;
             } finally {
                 Module._free(participantIdPtr);
@@ -202,14 +202,15 @@ const initRatchetGroupMessage = (Module, modules) => {
          * Serializes instance.
          */
         serialize() {
-            const outputSize = this.serializeLen();
-            const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputSize);
+            const outputCapacity = this.serializeLen();
+            const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputCapacity);
 
             try {
                 Module._vscr_ratchet_group_message_serialize(this.ctxPtr, outputCtxPtr);
 
                 const outputPtr = Module._vsc_buffer_bytes(outputCtxPtr);
-                const output = Module.HEAPU8.slice(outputPtr, outputPtr + outputSize);
+                const outputLen = Module._vsc_buffer_len(outputCtxPtr);
+                const output = Module.HEAPU8.slice(outputPtr, outputPtr + outputLen);
                 return output;
             } finally {
                 Module._vsc_buffer_delete(outputCtxPtr);

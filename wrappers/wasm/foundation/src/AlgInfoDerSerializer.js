@@ -104,14 +104,15 @@ const initAlgInfoDerSerializer = (Module, modules) => {
          * Serialize algorithm info to buffer class.
          */
         serialize(algInfo) {
-            const outSize = this.serializedLen(algInfo);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.serializedLen(algInfo);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 Module._vscf_alg_info_der_serializer_serialize(this.ctxPtr, algInfo.ctxPtr, outCtxPtr);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);

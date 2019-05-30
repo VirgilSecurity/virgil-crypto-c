@@ -156,15 +156,16 @@ const initPheCipher = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(accountKeyCtxPtr, accountKeyPtr, accountKeySize);
 
-            const cipherTextSize = this.encryptLen(plainText.length);
-            const cipherTextCtxPtr = Module._vsc_buffer_new_with_capacity(cipherTextSize);
+            const cipherTextCapacity = this.encryptLen(plainText.length);
+            const cipherTextCtxPtr = Module._vsc_buffer_new_with_capacity(cipherTextCapacity);
 
             try {
                 const proxyResult = Module._vsce_phe_cipher_encrypt(this.ctxPtr, plainTextCtxPtr, accountKeyCtxPtr, cipherTextCtxPtr);
                 modules.PheError.handleStatusCode(proxyResult);
 
                 const cipherTextPtr = Module._vsc_buffer_bytes(cipherTextCtxPtr);
-                const cipherText = Module.HEAPU8.slice(cipherTextPtr, cipherTextPtr + cipherTextSize);
+                const cipherTextLen = Module._vsc_buffer_len(cipherTextCtxPtr);
+                const cipherText = Module.HEAPU8.slice(cipherTextPtr, cipherTextPtr + cipherTextLen);
                 return cipherText;
             } finally {
                 Module._free(plainTextPtr);
@@ -206,15 +207,16 @@ const initPheCipher = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(accountKeyCtxPtr, accountKeyPtr, accountKeySize);
 
-            const plainTextSize = this.decryptLen(cipherText.length);
-            const plainTextCtxPtr = Module._vsc_buffer_new_with_capacity(plainTextSize);
+            const plainTextCapacity = this.decryptLen(cipherText.length);
+            const plainTextCtxPtr = Module._vsc_buffer_new_with_capacity(plainTextCapacity);
 
             try {
                 const proxyResult = Module._vsce_phe_cipher_decrypt(this.ctxPtr, cipherTextCtxPtr, accountKeyCtxPtr, plainTextCtxPtr);
                 modules.PheError.handleStatusCode(proxyResult);
 
                 const plainTextPtr = Module._vsc_buffer_bytes(plainTextCtxPtr);
-                const plainText = Module.HEAPU8.slice(plainTextPtr, plainTextPtr + plainTextSize);
+                const plainTextLen = Module._vsc_buffer_len(plainTextCtxPtr);
+                const plainText = Module.HEAPU8.slice(plainTextPtr, plainTextPtr + plainTextLen);
                 return plainText;
             } finally {
                 Module._free(cipherTextPtr);

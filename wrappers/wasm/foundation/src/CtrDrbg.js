@@ -122,15 +122,16 @@ const initCtrDrbg = (Module, modules) => {
         random(dataLen) {
             // assert(typeof dataLen === 'number')
 
-            const dataSize = dataLen;
-            const dataCtxPtr = Module._vsc_buffer_new_with_capacity(dataSize);
+            const dataCapacity = dataLen;
+            const dataCtxPtr = Module._vsc_buffer_new_with_capacity(dataCapacity);
 
             try {
                 const proxyResult = Module._vscf_ctr_drbg_random(this.ctxPtr, dataLen, dataCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const dataPtr = Module._vsc_buffer_bytes(dataCtxPtr);
-                const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataSize);
+                const dataLen = Module._vsc_buffer_len(dataCtxPtr);
+                const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataLen);
                 return data;
             } finally {
                 Module._vsc_buffer_delete(dataCtxPtr);

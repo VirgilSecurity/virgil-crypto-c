@@ -189,15 +189,16 @@ const initRsaPublicKey = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = this.encryptedLen(data.length);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.encryptedLen(data.length);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 const proxyResult = Module._vscf_rsa_public_key_encrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._free(dataPtr);
@@ -271,15 +272,16 @@ const initRsaPublicKey = (Module, modules) => {
          * RFC 3447 Appendix A.1.1.
          */
         exportPublicKey() {
-            const outSize = this.exportedPublicKeyLen();
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.exportedPublicKeyLen();
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 const proxyResult = Module._vscf_rsa_public_key_export_public_key(this.ctxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);

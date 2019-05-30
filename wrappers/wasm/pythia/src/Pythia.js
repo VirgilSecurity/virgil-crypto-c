@@ -158,21 +158,23 @@ const initPythia = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(passwordCtxPtr, passwordPtr, passwordSize);
 
-            const blindedPasswordSize = Pythia.blindedPasswordBufLen();
-            const blindedPasswordCtxPtr = Module._vsc_buffer_new_with_capacity(blindedPasswordSize);
+            const blindedPasswordCapacity = Pythia.blindedPasswordBufLen();
+            const blindedPasswordCtxPtr = Module._vsc_buffer_new_with_capacity(blindedPasswordCapacity);
 
-            const blindingSecretSize = Pythia.blindingSecretBufLen();
-            const blindingSecretCtxPtr = Module._vsc_buffer_new_with_capacity(blindingSecretSize);
+            const blindingSecretCapacity = Pythia.blindingSecretBufLen();
+            const blindingSecretCtxPtr = Module._vsc_buffer_new_with_capacity(blindingSecretCapacity);
 
             try {
                 const proxyResult = Module._vscp_pythia_blind(passwordCtxPtr, blindedPasswordCtxPtr, blindingSecretCtxPtr);
                 modules.PythiaError.handleStatusCode(proxyResult);
 
                 const blindedPasswordPtr = Module._vsc_buffer_bytes(blindedPasswordCtxPtr);
-                const blindedPassword = Module.HEAPU8.slice(blindedPasswordPtr, blindedPasswordPtr + blindedPasswordSize);
+                const blindedPasswordLen = Module._vsc_buffer_len(blindedPasswordCtxPtr);
+                const blindedPassword = Module.HEAPU8.slice(blindedPasswordPtr, blindedPasswordPtr + blindedPasswordLen);
 
                 const blindingSecretPtr = Module._vsc_buffer_bytes(blindingSecretCtxPtr);
-                const blindingSecret = Module.HEAPU8.slice(blindingSecretPtr, blindingSecretPtr + blindingSecretSize);
+                const blindingSecretLen = Module._vsc_buffer_len(blindingSecretCtxPtr);
+                const blindingSecret = Module.HEAPU8.slice(blindingSecretPtr, blindingSecretPtr + blindingSecretLen);
                 return { blindedPassword, blindingSecret };
             } finally {
                 Module._free(passwordPtr);
@@ -213,15 +215,16 @@ const initPythia = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(blindingSecretCtxPtr, blindingSecretPtr, blindingSecretSize);
 
-            const deblindedPasswordSize = Pythia.deblindedPasswordBufLen();
-            const deblindedPasswordCtxPtr = Module._vsc_buffer_new_with_capacity(deblindedPasswordSize);
+            const deblindedPasswordCapacity = Pythia.deblindedPasswordBufLen();
+            const deblindedPasswordCtxPtr = Module._vsc_buffer_new_with_capacity(deblindedPasswordCapacity);
 
             try {
                 const proxyResult = Module._vscp_pythia_deblind(transformedPasswordCtxPtr, blindingSecretCtxPtr, deblindedPasswordCtxPtr);
                 modules.PythiaError.handleStatusCode(proxyResult);
 
                 const deblindedPasswordPtr = Module._vsc_buffer_bytes(deblindedPasswordCtxPtr);
-                const deblindedPassword = Module.HEAPU8.slice(deblindedPasswordPtr, deblindedPasswordPtr + deblindedPasswordSize);
+                const deblindedPasswordLen = Module._vsc_buffer_len(deblindedPasswordCtxPtr);
+                const deblindedPassword = Module.HEAPU8.slice(deblindedPasswordPtr, deblindedPasswordPtr + deblindedPasswordLen);
                 return deblindedPassword;
             } finally {
                 Module._free(transformedPasswordPtr);
@@ -276,21 +279,23 @@ const initPythia = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(pythiaScopeSecretCtxPtr, pythiaScopeSecretPtr, pythiaScopeSecretSize);
 
-            const transformationPrivateKeySize = Pythia.transformationPrivateKeyBufLen();
-            const transformationPrivateKeyCtxPtr = Module._vsc_buffer_new_with_capacity(transformationPrivateKeySize);
+            const transformationPrivateKeyCapacity = Pythia.transformationPrivateKeyBufLen();
+            const transformationPrivateKeyCtxPtr = Module._vsc_buffer_new_with_capacity(transformationPrivateKeyCapacity);
 
-            const transformationPublicKeySize = Pythia.transformationPublicKeyBufLen();
-            const transformationPublicKeyCtxPtr = Module._vsc_buffer_new_with_capacity(transformationPublicKeySize);
+            const transformationPublicKeyCapacity = Pythia.transformationPublicKeyBufLen();
+            const transformationPublicKeyCtxPtr = Module._vsc_buffer_new_with_capacity(transformationPublicKeyCapacity);
 
             try {
                 const proxyResult = Module._vscp_pythia_compute_transformation_key_pair(transformationKeyIdCtxPtr, pythiaSecretCtxPtr, pythiaScopeSecretCtxPtr, transformationPrivateKeyCtxPtr, transformationPublicKeyCtxPtr);
                 modules.PythiaError.handleStatusCode(proxyResult);
 
                 const transformationPrivateKeyPtr = Module._vsc_buffer_bytes(transformationPrivateKeyCtxPtr);
-                const transformationPrivateKey = Module.HEAPU8.slice(transformationPrivateKeyPtr, transformationPrivateKeyPtr + transformationPrivateKeySize);
+                const transformationPrivateKeyLen = Module._vsc_buffer_len(transformationPrivateKeyCtxPtr);
+                const transformationPrivateKey = Module.HEAPU8.slice(transformationPrivateKeyPtr, transformationPrivateKeyPtr + transformationPrivateKeyLen);
 
                 const transformationPublicKeyPtr = Module._vsc_buffer_bytes(transformationPublicKeyCtxPtr);
-                const transformationPublicKey = Module.HEAPU8.slice(transformationPublicKeyPtr, transformationPublicKeyPtr + transformationPublicKeySize);
+                const transformationPublicKeyLen = Module._vsc_buffer_len(transformationPublicKeyCtxPtr);
+                const transformationPublicKey = Module.HEAPU8.slice(transformationPublicKeyPtr, transformationPublicKeyPtr + transformationPublicKeyLen);
                 return { transformationPrivateKey, transformationPublicKey };
             } finally {
                 Module._free(transformationKeyIdPtr);
@@ -348,21 +353,23 @@ const initPythia = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(transformationPrivateKeyCtxPtr, transformationPrivateKeyPtr, transformationPrivateKeySize);
 
-            const transformedPasswordSize = Pythia.transformedPasswordBufLen();
-            const transformedPasswordCtxPtr = Module._vsc_buffer_new_with_capacity(transformedPasswordSize);
+            const transformedPasswordCapacity = Pythia.transformedPasswordBufLen();
+            const transformedPasswordCtxPtr = Module._vsc_buffer_new_with_capacity(transformedPasswordCapacity);
 
-            const transformedTweakSize = Pythia.transformedTweakBufLen();
-            const transformedTweakCtxPtr = Module._vsc_buffer_new_with_capacity(transformedTweakSize);
+            const transformedTweakCapacity = Pythia.transformedTweakBufLen();
+            const transformedTweakCtxPtr = Module._vsc_buffer_new_with_capacity(transformedTweakCapacity);
 
             try {
                 const proxyResult = Module._vscp_pythia_transform(blindedPasswordCtxPtr, tweakCtxPtr, transformationPrivateKeyCtxPtr, transformedPasswordCtxPtr, transformedTweakCtxPtr);
                 modules.PythiaError.handleStatusCode(proxyResult);
 
                 const transformedPasswordPtr = Module._vsc_buffer_bytes(transformedPasswordCtxPtr);
-                const transformedPassword = Module.HEAPU8.slice(transformedPasswordPtr, transformedPasswordPtr + transformedPasswordSize);
+                const transformedPasswordLen = Module._vsc_buffer_len(transformedPasswordCtxPtr);
+                const transformedPassword = Module.HEAPU8.slice(transformedPasswordPtr, transformedPasswordPtr + transformedPasswordLen);
 
                 const transformedTweakPtr = Module._vsc_buffer_bytes(transformedTweakCtxPtr);
-                const transformedTweak = Module.HEAPU8.slice(transformedTweakPtr, transformedTweakPtr + transformedTweakSize);
+                const transformedTweakLen = Module._vsc_buffer_len(transformedTweakCtxPtr);
+                const transformedTweak = Module.HEAPU8.slice(transformedTweakPtr, transformedTweakPtr + transformedTweakLen);
                 return { transformedPassword, transformedTweak };
             } finally {
                 Module._free(blindedPasswordPtr);
@@ -446,21 +453,23 @@ const initPythia = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(transformationPublicKeyCtxPtr, transformationPublicKeyPtr, transformationPublicKeySize);
 
-            const proofValueCSize = Pythia.proofValueBufLen();
-            const proofValueCCtxPtr = Module._vsc_buffer_new_with_capacity(proofValueCSize);
+            const proofValueCCapacity = Pythia.proofValueBufLen();
+            const proofValueCCtxPtr = Module._vsc_buffer_new_with_capacity(proofValueCCapacity);
 
-            const proofValueUSize = Pythia.proofValueBufLen();
-            const proofValueUCtxPtr = Module._vsc_buffer_new_with_capacity(proofValueUSize);
+            const proofValueUCapacity = Pythia.proofValueBufLen();
+            const proofValueUCtxPtr = Module._vsc_buffer_new_with_capacity(proofValueUCapacity);
 
             try {
                 const proxyResult = Module._vscp_pythia_prove(transformedPasswordCtxPtr, blindedPasswordCtxPtr, transformedTweakCtxPtr, transformationPrivateKeyCtxPtr, transformationPublicKeyCtxPtr, proofValueCCtxPtr, proofValueUCtxPtr);
                 modules.PythiaError.handleStatusCode(proxyResult);
 
                 const proofValueCPtr = Module._vsc_buffer_bytes(proofValueCCtxPtr);
-                const proofValueC = Module.HEAPU8.slice(proofValueCPtr, proofValueCPtr + proofValueCSize);
+                const proofValueCLen = Module._vsc_buffer_len(proofValueCCtxPtr);
+                const proofValueC = Module.HEAPU8.slice(proofValueCPtr, proofValueCPtr + proofValueCLen);
 
                 const proofValueUPtr = Module._vsc_buffer_bytes(proofValueUCtxPtr);
-                const proofValueU = Module.HEAPU8.slice(proofValueUPtr, proofValueUPtr + proofValueUSize);
+                const proofValueULen = Module._vsc_buffer_len(proofValueUCtxPtr);
+                const proofValueU = Module.HEAPU8.slice(proofValueUPtr, proofValueUPtr + proofValueULen);
                 return { proofValueC, proofValueU };
             } finally {
                 Module._free(transformedPasswordPtr);
@@ -626,15 +635,16 @@ const initPythia = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(newTransformationPrivateKeyCtxPtr, newTransformationPrivateKeyPtr, newTransformationPrivateKeySize);
 
-            const passwordUpdateTokenSize = Pythia.passwordUpdateTokenBufLen();
-            const passwordUpdateTokenCtxPtr = Module._vsc_buffer_new_with_capacity(passwordUpdateTokenSize);
+            const passwordUpdateTokenCapacity = Pythia.passwordUpdateTokenBufLen();
+            const passwordUpdateTokenCtxPtr = Module._vsc_buffer_new_with_capacity(passwordUpdateTokenCapacity);
 
             try {
                 const proxyResult = Module._vscp_pythia_get_password_update_token(previousTransformationPrivateKeyCtxPtr, newTransformationPrivateKeyCtxPtr, passwordUpdateTokenCtxPtr);
                 modules.PythiaError.handleStatusCode(proxyResult);
 
                 const passwordUpdateTokenPtr = Module._vsc_buffer_bytes(passwordUpdateTokenCtxPtr);
-                const passwordUpdateToken = Module.HEAPU8.slice(passwordUpdateTokenPtr, passwordUpdateTokenPtr + passwordUpdateTokenSize);
+                const passwordUpdateTokenLen = Module._vsc_buffer_len(passwordUpdateTokenCtxPtr);
+                const passwordUpdateToken = Module.HEAPU8.slice(passwordUpdateTokenPtr, passwordUpdateTokenPtr + passwordUpdateTokenLen);
                 return passwordUpdateToken;
             } finally {
                 Module._free(previousTransformationPrivateKeyPtr);
@@ -677,15 +687,16 @@ const initPythia = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(passwordUpdateTokenCtxPtr, passwordUpdateTokenPtr, passwordUpdateTokenSize);
 
-            const updatedDeblindedPasswordSize = Pythia.deblindedPasswordBufLen();
-            const updatedDeblindedPasswordCtxPtr = Module._vsc_buffer_new_with_capacity(updatedDeblindedPasswordSize);
+            const updatedDeblindedPasswordCapacity = Pythia.deblindedPasswordBufLen();
+            const updatedDeblindedPasswordCtxPtr = Module._vsc_buffer_new_with_capacity(updatedDeblindedPasswordCapacity);
 
             try {
                 const proxyResult = Module._vscp_pythia_update_deblinded_with_token(deblindedPasswordCtxPtr, passwordUpdateTokenCtxPtr, updatedDeblindedPasswordCtxPtr);
                 modules.PythiaError.handleStatusCode(proxyResult);
 
                 const updatedDeblindedPasswordPtr = Module._vsc_buffer_bytes(updatedDeblindedPasswordCtxPtr);
-                const updatedDeblindedPassword = Module.HEAPU8.slice(updatedDeblindedPasswordPtr, updatedDeblindedPasswordPtr + updatedDeblindedPasswordSize);
+                const updatedDeblindedPasswordLen = Module._vsc_buffer_len(updatedDeblindedPasswordCtxPtr);
+                const updatedDeblindedPassword = Module.HEAPU8.slice(updatedDeblindedPasswordPtr, updatedDeblindedPasswordPtr + updatedDeblindedPasswordLen);
                 return updatedDeblindedPassword;
             } finally {
                 Module._free(deblindedPasswordPtr);

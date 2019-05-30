@@ -74,14 +74,15 @@ const initPem = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const pemSize = Pem.wrappedLen(title, data.length);
-            const pemCtxPtr = Module._vsc_buffer_new_with_capacity(pemSize);
+            const pemCapacity = Pem.wrappedLen(title, data.length);
+            const pemCtxPtr = Module._vsc_buffer_new_with_capacity(pemCapacity);
 
             try {
                 Module._vscf_pem_wrap(title, dataCtxPtr, pemCtxPtr);
 
                 const pemPtr = Module._vsc_buffer_bytes(pemCtxPtr);
-                const pem = Module.HEAPU8.slice(pemPtr, pemPtr + pemSize);
+                const pemLen = Module._vsc_buffer_len(pemCtxPtr);
+                const pem = Module.HEAPU8.slice(pemPtr, pemPtr + pemLen);
                 return pem;
             } finally {
                 Module._free(dataPtr);
@@ -119,15 +120,16 @@ const initPem = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(pemCtxPtr, pemPtr, pemSize);
 
-            const dataSize = Pem.unwrappedLen(pem.length);
-            const dataCtxPtr = Module._vsc_buffer_new_with_capacity(dataSize);
+            const dataCapacity = Pem.unwrappedLen(pem.length);
+            const dataCtxPtr = Module._vsc_buffer_new_with_capacity(dataCapacity);
 
             try {
                 const proxyResult = Module._vscf_pem_unwrap(pemCtxPtr, dataCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const dataPtr = Module._vsc_buffer_bytes(dataCtxPtr);
-                const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataSize);
+                const dataLen = Module._vsc_buffer_len(dataCtxPtr);
+                const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataLen);
                 return data;
             } finally {
                 Module._free(pemPtr);

@@ -112,21 +112,23 @@ const initPheServer = (Module, modules) => {
          * Generates new NIST P-256 server key pair for some client
          */
         generateServerKeyPair() {
-            const serverPrivateKeySize = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
-            const serverPrivateKeyCtxPtr = Module._vsc_buffer_new_with_capacity(serverPrivateKeySize);
+            const serverPrivateKeyCapacity = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
+            const serverPrivateKeyCtxPtr = Module._vsc_buffer_new_with_capacity(serverPrivateKeyCapacity);
 
-            const serverPublicKeySize = modules.PheCommon.PHE_PUBLIC_KEY_LENGTH;
-            const serverPublicKeyCtxPtr = Module._vsc_buffer_new_with_capacity(serverPublicKeySize);
+            const serverPublicKeyCapacity = modules.PheCommon.PHE_PUBLIC_KEY_LENGTH;
+            const serverPublicKeyCtxPtr = Module._vsc_buffer_new_with_capacity(serverPublicKeyCapacity);
 
             try {
                 const proxyResult = Module._vsce_phe_server_generate_server_key_pair(this.ctxPtr, serverPrivateKeyCtxPtr, serverPublicKeyCtxPtr);
                 modules.PheError.handleStatusCode(proxyResult);
 
                 const serverPrivateKeyPtr = Module._vsc_buffer_bytes(serverPrivateKeyCtxPtr);
-                const serverPrivateKey = Module.HEAPU8.slice(serverPrivateKeyPtr, serverPrivateKeyPtr + serverPrivateKeySize);
+                const serverPrivateKeyLen = Module._vsc_buffer_len(serverPrivateKeyCtxPtr);
+                const serverPrivateKey = Module.HEAPU8.slice(serverPrivateKeyPtr, serverPrivateKeyPtr + serverPrivateKeyLen);
 
                 const serverPublicKeyPtr = Module._vsc_buffer_bytes(serverPublicKeyCtxPtr);
-                const serverPublicKey = Module.HEAPU8.slice(serverPublicKeyPtr, serverPublicKeyPtr + serverPublicKeySize);
+                const serverPublicKeyLen = Module._vsc_buffer_len(serverPublicKeyCtxPtr);
+                const serverPublicKey = Module.HEAPU8.slice(serverPublicKeyPtr, serverPublicKeyPtr + serverPublicKeyLen);
                 return { serverPrivateKey, serverPublicKey };
             } finally {
                 Module._vsc_buffer_delete(serverPrivateKeyCtxPtr);
@@ -174,15 +176,16 @@ const initPheServer = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(serverPublicKeyCtxPtr, serverPublicKeyPtr, serverPublicKeySize);
 
-            const enrollmentResponseSize = this.enrollmentResponseLen();
-            const enrollmentResponseCtxPtr = Module._vsc_buffer_new_with_capacity(enrollmentResponseSize);
+            const enrollmentResponseCapacity = this.enrollmentResponseLen();
+            const enrollmentResponseCtxPtr = Module._vsc_buffer_new_with_capacity(enrollmentResponseCapacity);
 
             try {
                 const proxyResult = Module._vsce_phe_server_get_enrollment(this.ctxPtr, serverPrivateKeyCtxPtr, serverPublicKeyCtxPtr, enrollmentResponseCtxPtr);
                 modules.PheError.handleStatusCode(proxyResult);
 
                 const enrollmentResponsePtr = Module._vsc_buffer_bytes(enrollmentResponseCtxPtr);
-                const enrollmentResponse = Module.HEAPU8.slice(enrollmentResponsePtr, enrollmentResponsePtr + enrollmentResponseSize);
+                const enrollmentResponseLen = Module._vsc_buffer_len(enrollmentResponseCtxPtr);
+                const enrollmentResponse = Module.HEAPU8.slice(enrollmentResponsePtr, enrollmentResponsePtr + enrollmentResponseLen);
                 return enrollmentResponse;
             } finally {
                 Module._free(serverPrivateKeyPtr);
@@ -246,15 +249,16 @@ const initPheServer = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(verifyPasswordRequestCtxPtr, verifyPasswordRequestPtr, verifyPasswordRequestSize);
 
-            const verifyPasswordResponseSize = this.verifyPasswordResponseLen();
-            const verifyPasswordResponseCtxPtr = Module._vsc_buffer_new_with_capacity(verifyPasswordResponseSize);
+            const verifyPasswordResponseCapacity = this.verifyPasswordResponseLen();
+            const verifyPasswordResponseCtxPtr = Module._vsc_buffer_new_with_capacity(verifyPasswordResponseCapacity);
 
             try {
                 const proxyResult = Module._vsce_phe_server_verify_password(this.ctxPtr, serverPrivateKeyCtxPtr, serverPublicKeyCtxPtr, verifyPasswordRequestCtxPtr, verifyPasswordResponseCtxPtr);
                 modules.PheError.handleStatusCode(proxyResult);
 
                 const verifyPasswordResponsePtr = Module._vsc_buffer_bytes(verifyPasswordResponseCtxPtr);
-                const verifyPasswordResponse = Module.HEAPU8.slice(verifyPasswordResponsePtr, verifyPasswordResponsePtr + verifyPasswordResponseSize);
+                const verifyPasswordResponseLen = Module._vsc_buffer_len(verifyPasswordResponseCtxPtr);
+                const verifyPasswordResponse = Module.HEAPU8.slice(verifyPasswordResponsePtr, verifyPasswordResponsePtr + verifyPasswordResponseLen);
                 return verifyPasswordResponse;
             } finally {
                 Module._free(serverPrivateKeyPtr);
@@ -294,27 +298,30 @@ const initPheServer = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(serverPrivateKeyCtxPtr, serverPrivateKeyPtr, serverPrivateKeySize);
 
-            const newServerPrivateKeySize = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
-            const newServerPrivateKeyCtxPtr = Module._vsc_buffer_new_with_capacity(newServerPrivateKeySize);
+            const newServerPrivateKeyCapacity = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
+            const newServerPrivateKeyCtxPtr = Module._vsc_buffer_new_with_capacity(newServerPrivateKeyCapacity);
 
-            const newServerPublicKeySize = modules.PheCommon.PHE_PUBLIC_KEY_LENGTH;
-            const newServerPublicKeyCtxPtr = Module._vsc_buffer_new_with_capacity(newServerPublicKeySize);
+            const newServerPublicKeyCapacity = modules.PheCommon.PHE_PUBLIC_KEY_LENGTH;
+            const newServerPublicKeyCtxPtr = Module._vsc_buffer_new_with_capacity(newServerPublicKeyCapacity);
 
-            const updateTokenSize = this.updateTokenLen();
-            const updateTokenCtxPtr = Module._vsc_buffer_new_with_capacity(updateTokenSize);
+            const updateTokenCapacity = this.updateTokenLen();
+            const updateTokenCtxPtr = Module._vsc_buffer_new_with_capacity(updateTokenCapacity);
 
             try {
                 const proxyResult = Module._vsce_phe_server_rotate_keys(this.ctxPtr, serverPrivateKeyCtxPtr, newServerPrivateKeyCtxPtr, newServerPublicKeyCtxPtr, updateTokenCtxPtr);
                 modules.PheError.handleStatusCode(proxyResult);
 
                 const newServerPrivateKeyPtr = Module._vsc_buffer_bytes(newServerPrivateKeyCtxPtr);
-                const newServerPrivateKey = Module.HEAPU8.slice(newServerPrivateKeyPtr, newServerPrivateKeyPtr + newServerPrivateKeySize);
+                const newServerPrivateKeyLen = Module._vsc_buffer_len(newServerPrivateKeyCtxPtr);
+                const newServerPrivateKey = Module.HEAPU8.slice(newServerPrivateKeyPtr, newServerPrivateKeyPtr + newServerPrivateKeyLen);
 
                 const newServerPublicKeyPtr = Module._vsc_buffer_bytes(newServerPublicKeyCtxPtr);
-                const newServerPublicKey = Module.HEAPU8.slice(newServerPublicKeyPtr, newServerPublicKeyPtr + newServerPublicKeySize);
+                const newServerPublicKeyLen = Module._vsc_buffer_len(newServerPublicKeyCtxPtr);
+                const newServerPublicKey = Module.HEAPU8.slice(newServerPublicKeyPtr, newServerPublicKeyPtr + newServerPublicKeyLen);
 
                 const updateTokenPtr = Module._vsc_buffer_bytes(updateTokenCtxPtr);
-                const updateToken = Module.HEAPU8.slice(updateTokenPtr, updateTokenPtr + updateTokenSize);
+                const updateTokenLen = Module._vsc_buffer_len(updateTokenCtxPtr);
+                const updateToken = Module.HEAPU8.slice(updateTokenPtr, updateTokenPtr + updateTokenLen);
                 return { newServerPrivateKey, newServerPublicKey, updateToken };
             } finally {
                 Module._free(serverPrivateKeyPtr);

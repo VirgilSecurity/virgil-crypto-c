@@ -104,15 +104,16 @@ const initRatchetKeyId = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(publicKeyCtxPtr, publicKeyPtr, publicKeySize);
 
-            const keyIdSize = modules.RatchetCommon.KEY_ID_LEN;
-            const keyIdCtxPtr = Module._vsc_buffer_new_with_capacity(keyIdSize);
+            const keyIdCapacity = modules.RatchetCommon.KEY_ID_LEN;
+            const keyIdCtxPtr = Module._vsc_buffer_new_with_capacity(keyIdCapacity);
 
             try {
                 const proxyResult = Module._vscr_ratchet_key_id_compute_public_key_id(this.ctxPtr, publicKeyCtxPtr, keyIdCtxPtr);
                 modules.RatchetError.handleStatusCode(proxyResult);
 
                 const keyIdPtr = Module._vsc_buffer_bytes(keyIdCtxPtr);
-                const keyId = Module.HEAPU8.slice(keyIdPtr, keyIdPtr + keyIdSize);
+                const keyIdLen = Module._vsc_buffer_len(keyIdCtxPtr);
+                const keyId = Module.HEAPU8.slice(keyIdPtr, keyIdPtr + keyIdLen);
                 return keyId;
             } finally {
                 Module._free(publicKeyPtr);

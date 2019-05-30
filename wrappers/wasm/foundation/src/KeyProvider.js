@@ -228,15 +228,16 @@ const initKeyProvider = (Module, modules) => {
          * Precondition: public key must be exportable.
          */
         exportPublicKey(publicKey) {
-            const outSize = this.exportedPublicKeyLen(publicKey);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.exportedPublicKeyLen(publicKey);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 const proxyResult = Module._vscf_key_provider_export_public_key(this.ctxPtr, publicKey.ctxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);
@@ -260,15 +261,16 @@ const initKeyProvider = (Module, modules) => {
          * Precondition: private key must be exportable.
          */
         exportPrivateKey(privateKey) {
-            const outSize = this.exportedPrivateKeyLen(privateKey);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.exportedPrivateKeyLen(privateKey);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 const proxyResult = Module._vscf_key_provider_export_private_key(this.ctxPtr, privateKey.ctxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);

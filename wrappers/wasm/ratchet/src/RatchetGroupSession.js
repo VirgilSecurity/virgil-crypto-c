@@ -307,15 +307,16 @@ const initRatchetGroupSession = (Module, modules) => {
          * Decrypts message
          */
         decrypt(message) {
-            const plainTextSize = this.decryptLen(message);
-            const plainTextCtxPtr = Module._vsc_buffer_new_with_capacity(plainTextSize);
+            const plainTextCapacity = this.decryptLen(message);
+            const plainTextCtxPtr = Module._vsc_buffer_new_with_capacity(plainTextCapacity);
 
             try {
                 const proxyResult = Module._vscr_ratchet_group_session_decrypt(this.ctxPtr, message.ctxPtr, plainTextCtxPtr);
                 modules.RatchetError.handleStatusCode(proxyResult);
 
                 const plainTextPtr = Module._vsc_buffer_bytes(plainTextCtxPtr);
-                const plainText = Module.HEAPU8.slice(plainTextPtr, plainTextPtr + plainTextSize);
+                const plainTextLen = Module._vsc_buffer_len(plainTextCtxPtr);
+                const plainText = Module.HEAPU8.slice(plainTextPtr, plainTextPtr + plainTextLen);
                 return plainText;
             } finally {
                 Module._vsc_buffer_delete(plainTextCtxPtr);
@@ -336,14 +337,15 @@ const initRatchetGroupSession = (Module, modules) => {
          * NOTE: Session changes its state every encrypt/decrypt operations. Be sure to save it.
          */
         serialize() {
-            const outputSize = this.serializeLen();
-            const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputSize);
+            const outputCapacity = this.serializeLen();
+            const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputCapacity);
 
             try {
                 Module._vscr_ratchet_group_session_serialize(this.ctxPtr, outputCtxPtr);
 
                 const outputPtr = Module._vsc_buffer_bytes(outputCtxPtr);
-                const output = Module.HEAPU8.slice(outputPtr, outputPtr + outputSize);
+                const outputLen = Module._vsc_buffer_len(outputCtxPtr);
+                const output = Module.HEAPU8.slice(outputPtr, outputPtr + outputLen);
                 return output;
             } finally {
                 Module._vsc_buffer_delete(outputCtxPtr);

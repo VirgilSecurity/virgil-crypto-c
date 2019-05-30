@@ -436,13 +436,14 @@ function wasm_create_method_argument_for_writeonly_buffer(argument, wasm_method,
         .name = wasm_derive_method_argument_name(my.argument)
 
         .code_on_initialize = "
-            const $(0.name:)Size = $(wasm_derive_buffer_length_getter(my.argument, my.wasm_class));
-            const $(0.name:)CtxPtr = Module._vsc_buffer_new_with_capacity($(0.name:)Size);
+            const $(0.name:)Capacity = $(wasm_derive_buffer_length_getter(my.argument, my.wasm_class));
+            const $(0.name:)CtxPtr = Module._vsc_buffer_new_with_capacity($(0.name:)Capacity);
         "
 
         .code_on_success = "
             const $(0.name:)Ptr = Module._vsc_buffer_bytes($(0.name:)CtxPtr);
-            const $(0.name:) = Module.HEAPU8.slice($(0.name:)Ptr, $(0.name:)Ptr + $(0.name:)Size);
+            const $(0.name:)Len = Module._vsc_buffer_len($(0.name:)CtxPtr);
+            const $(0.name:) = Module.HEAPU8.slice($(0.name:)Ptr, $(0.name:)Ptr + $(0.name:)Len);
         "
 
         .code_on_finalize = "
@@ -465,15 +466,15 @@ function wasm_create_method_argument_for_readwrite_buffer(argument, wasm_method,
 
         .code_on_initialize = "
             //  Copy bytes from JS memory to the WASM memory.
-            const $(0.name:)Size = $(0.name:).length * $(0.name:).BYTES_PER_ELEMENT;
-            const $(0.name:)Ptr = Module._malloc($(0.name:)Size);
+            const $(0.name:)Capacity = $(0.name:).length * $(0.name:).BYTES_PER_ELEMENT;
+            const $(0.name:)Ptr = Module._malloc($(0.name:)Capacity);
             Module.HEAP8.set($(0.name:), $(0.name:)Ptr);
 
             //  Create C structure vsc_buffer_t.
             const $(0.name:)CtxPtr = Module._vsc_buffer_new();
 
             //  Point created vsc_buffer_t object to the copied bytes.
-            Module._vsc_buffer_use($(0.name:)CtxPtr, $(0.name:)Ptr, $(0.name:)Size);
+            Module._vsc_buffer_use($(0.name:)CtxPtr, $(0.name:)Ptr, $(0.name:)Capacity);
         "
 
         .code_on_finalize = "
@@ -489,7 +490,8 @@ function wasm_create_method_argument_for_readwrite_buffer(argument, wasm_method,
 
         .code_on_success = "
             const $(0.name:)Ptr = Module._vsc_buffer_bytes($(0.name:)CtxPtr);
-            const $(0.name:)Result = Module.HEAPU8.slice($(0.name:)Ptr, $(0.name:)Ptr + $(0.name:)Size);
+            const $(0.name:)Len = Module._vsc_buffer_len($(0.name:)CtxPtr);
+            const $(0.name:)Result = Module.HEAPU8.slice($(0.name:)Ptr, $(0.name:)Ptr + $(0.name:)Len);
         "
     endnew
 endfunction
@@ -620,9 +622,9 @@ function wasm_create_method_return_for_disown_buffer(return, wasm_method, wasm_c
         "
 
         wasm_return.code_on_success = "
-            const bufferResultSize = Module._vsc_buffer_len(proxyResult);
+            const bufferResultLen = Module._vsc_buffer_len(proxyResult);
             const bufferResultPtr = Module._vsc_buffer_bytes(proxyResult);
-            const bufferResult = Module.HEAPU8.slice(bufferResultPtr, bufferResultPtr + bufferResultSize);
+            const bufferResult = Module.HEAPU8.slice(bufferResultPtr, bufferResultPtr + bufferResultLen);
         "
 
         wasm_return.code_on_finalize = "

@@ -71,14 +71,15 @@ const initBase64 = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const strSize = Base64.encodedLen(data.length);
-            const strCtxPtr = Module._vsc_buffer_new_with_capacity(strSize);
+            const strCapacity = Base64.encodedLen(data.length);
+            const strCtxPtr = Module._vsc_buffer_new_with_capacity(strCapacity);
 
             try {
                 Module._vscf_base64_encode(dataCtxPtr, strCtxPtr);
 
                 const strPtr = Module._vsc_buffer_bytes(strCtxPtr);
-                const str = Module.HEAPU8.slice(strPtr, strPtr + strSize);
+                const strLen = Module._vsc_buffer_len(strCtxPtr);
+                const str = Module.HEAPU8.slice(strPtr, strPtr + strLen);
                 return str;
             } finally {
                 Module._free(dataPtr);
@@ -116,15 +117,16 @@ const initBase64 = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(strCtxPtr, strPtr, strSize);
 
-            const dataSize = Base64.decodedLen(str.length);
-            const dataCtxPtr = Module._vsc_buffer_new_with_capacity(dataSize);
+            const dataCapacity = Base64.decodedLen(str.length);
+            const dataCtxPtr = Module._vsc_buffer_new_with_capacity(dataCapacity);
 
             try {
                 const proxyResult = Module._vscf_base64_decode(strCtxPtr, dataCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const dataPtr = Module._vsc_buffer_bytes(dataCtxPtr);
-                const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataSize);
+                const dataLen = Module._vsc_buffer_len(dataCtxPtr);
+                const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataLen);
                 return data;
             } finally {
                 Module._free(strPtr);

@@ -188,15 +188,16 @@ const initSecp256r1PrivateKey = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = this.decryptedLen(data.length);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.decryptedLen(data.length);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 const proxyResult = Module._vscf_secp256r1_private_key_decrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._free(dataPtr);
@@ -243,15 +244,16 @@ const initSecp256r1PrivateKey = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(hashDigestCtxPtr, hashDigestPtr, hashDigestSize);
 
-            const signatureSize = this.signatureLen();
-            const signatureCtxPtr = Module._vsc_buffer_new_with_capacity(signatureSize);
+            const signatureCapacity = this.signatureLen();
+            const signatureCtxPtr = Module._vsc_buffer_new_with_capacity(signatureCapacity);
 
             try {
                 const proxyResult = Module._vscf_secp256r1_private_key_sign_hash(this.ctxPtr, hashDigestCtxPtr, hashId, signatureCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const signaturePtr = Module._vsc_buffer_bytes(signatureCtxPtr);
-                const signature = Module.HEAPU8.slice(signaturePtr, signaturePtr + signatureSize);
+                const signatureLen = Module._vsc_buffer_len(signatureCtxPtr);
+                const signature = Module.HEAPU8.slice(signaturePtr, signaturePtr + signatureLen);
                 return signature;
             } finally {
                 Module._free(hashDigestPtr);
@@ -279,15 +281,16 @@ const initSecp256r1PrivateKey = (Module, modules) => {
          * RFC 3447 Appendix A.1.2.
          */
         exportPrivateKey() {
-            const outSize = this.exportedPrivateKeyLen();
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.exportedPrivateKeyLen();
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 const proxyResult = Module._vscf_secp256r1_private_key_export_private_key(this.ctxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);
@@ -339,15 +342,16 @@ const initSecp256r1PrivateKey = (Module, modules) => {
          * Note, shared key can be used only for symmetric cryptography.
          */
         computeSharedKey(publicKey) {
-            const sharedKeySize = this.sharedKeyLen();
-            const sharedKeyCtxPtr = Module._vsc_buffer_new_with_capacity(sharedKeySize);
+            const sharedKeyCapacity = this.sharedKeyLen();
+            const sharedKeyCtxPtr = Module._vsc_buffer_new_with_capacity(sharedKeyCapacity);
 
             try {
                 const proxyResult = Module._vscf_secp256r1_private_key_compute_shared_key(this.ctxPtr, publicKey.ctxPtr, sharedKeyCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const sharedKeyPtr = Module._vsc_buffer_bytes(sharedKeyCtxPtr);
-                const sharedKey = Module.HEAPU8.slice(sharedKeyPtr, sharedKeyPtr + sharedKeySize);
+                const sharedKeyLen = Module._vsc_buffer_len(sharedKeyCtxPtr);
+                const sharedKey = Module.HEAPU8.slice(sharedKeyPtr, sharedKeyPtr + sharedKeyLen);
                 return sharedKey;
             } finally {
                 Module._vsc_buffer_delete(sharedKeyCtxPtr);

@@ -159,14 +159,15 @@ const initHmac = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const macSize = this.digestLen();
-            const macCtxPtr = Module._vsc_buffer_new_with_capacity(macSize);
+            const macCapacity = this.digestLen();
+            const macCtxPtr = Module._vsc_buffer_new_with_capacity(macCapacity);
 
             try {
                 Module._vscf_hmac_mac(this.ctxPtr, keyCtxPtr, dataCtxPtr, macCtxPtr);
 
                 const macPtr = Module._vsc_buffer_bytes(macCtxPtr);
-                const mac = Module.HEAPU8.slice(macPtr, macPtr + macSize);
+                const macLen = Module._vsc_buffer_len(macCtxPtr);
+                const mac = Module.HEAPU8.slice(macPtr, macPtr + macLen);
                 return mac;
             } finally {
                 Module._free(keyPtr);
@@ -233,14 +234,15 @@ const initHmac = (Module, modules) => {
          * Accomplish MAC and return it's result (a message digest).
          */
         finish() {
-            const macSize = this.digestLen();
-            const macCtxPtr = Module._vsc_buffer_new_with_capacity(macSize);
+            const macCapacity = this.digestLen();
+            const macCtxPtr = Module._vsc_buffer_new_with_capacity(macCapacity);
 
             try {
                 Module._vscf_hmac_finish(this.ctxPtr, macCtxPtr);
 
                 const macPtr = Module._vsc_buffer_bytes(macCtxPtr);
-                const mac = Module.HEAPU8.slice(macPtr, macPtr + macSize);
+                const macLen = Module._vsc_buffer_len(macCtxPtr);
+                const mac = Module.HEAPU8.slice(macPtr, macPtr + macLen);
                 return mac;
             } finally {
                 Module._vsc_buffer_delete(macCtxPtr);

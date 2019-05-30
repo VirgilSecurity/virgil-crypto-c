@@ -175,14 +175,15 @@ const initRecipientCipher = (Module, modules) => {
          * algorithm information, etc.
          */
         packMessageInfo() {
-            const messageInfoSize = this.messageInfoLen();
-            const messageInfoCtxPtr = Module._vsc_buffer_new_with_capacity(messageInfoSize);
+            const messageInfoCapacity = this.messageInfoLen();
+            const messageInfoCtxPtr = Module._vsc_buffer_new_with_capacity(messageInfoCapacity);
 
             try {
                 Module._vscf_recipient_cipher_pack_message_info(this.ctxPtr, messageInfoCtxPtr);
 
                 const messageInfoPtr = Module._vsc_buffer_bytes(messageInfoCtxPtr);
-                const messageInfo = Module.HEAPU8.slice(messageInfoPtr, messageInfoPtr + messageInfoSize);
+                const messageInfoLen = Module._vsc_buffer_len(messageInfoCtxPtr);
+                const messageInfo = Module.HEAPU8.slice(messageInfoPtr, messageInfoPtr + messageInfoLen);
                 return messageInfo;
             } finally {
                 Module._vsc_buffer_delete(messageInfoCtxPtr);
@@ -219,15 +220,16 @@ const initRecipientCipher = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = this.encryptionOutLen(data.length);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.encryptionOutLen(data.length);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 const proxyResult = Module._vscf_recipient_cipher_process_encryption(this.ctxPtr, dataCtxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._free(dataPtr);
@@ -240,15 +242,16 @@ const initRecipientCipher = (Module, modules) => {
          * Accomplish encryption.
          */
         finishEncryption() {
-            const outSize = this.encryptionOutLen(0);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.encryptionOutLen(0);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 const proxyResult = Module._vscf_recipient_cipher_finish_encryption(this.ctxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);
@@ -329,15 +332,16 @@ const initRecipientCipher = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outSize = this.decryptionOutLen(data.length);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.decryptionOutLen(data.length);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 const proxyResult = Module._vscf_recipient_cipher_process_decryption(this.ctxPtr, dataCtxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._free(dataPtr);
@@ -350,15 +354,16 @@ const initRecipientCipher = (Module, modules) => {
          * Accomplish decryption.
          */
         finishDecryption() {
-            const outSize = this.decryptionOutLen(0);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.decryptionOutLen(0);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 const proxyResult = Module._vscf_recipient_cipher_finish_decryption(this.ctxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);

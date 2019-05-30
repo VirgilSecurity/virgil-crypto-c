@@ -148,14 +148,15 @@ const initRatchetMessage = (Module, modules) => {
          * Serializes instance.
          */
         serialize() {
-            const outputSize = this.serializeLen();
-            const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputSize);
+            const outputCapacity = this.serializeLen();
+            const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputCapacity);
 
             try {
                 Module._vscr_ratchet_message_serialize(this.ctxPtr, outputCtxPtr);
 
                 const outputPtr = Module._vsc_buffer_bytes(outputCtxPtr);
-                const output = Module.HEAPU8.slice(outputPtr, outputPtr + outputSize);
+                const outputLen = Module._vsc_buffer_len(outputCtxPtr);
+                const output = Module.HEAPU8.slice(outputPtr, outputPtr + outputLen);
                 return output;
             } finally {
                 Module._vsc_buffer_delete(outputCtxPtr);

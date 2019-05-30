@@ -117,14 +117,15 @@ const initMessageInfoDerSerializer = (Module, modules) => {
          * Serialize class "message info".
          */
         serialize(messageInfo) {
-            const outSize = this.serializedLen(messageInfo);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outSize);
+            const outCapacity = this.serializedLen(messageInfo);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
                 Module._vscf_message_info_der_serializer_serialize(this.ctxPtr, messageInfo.ctxPtr, outCtxPtr);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outSize);
+                const outLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outLen);
                 return out;
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);
