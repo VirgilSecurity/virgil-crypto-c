@@ -1,4 +1,3 @@
-const util = require('util');
 const initFoundation = require('../../foundation');
 
 describe('Kdf1', () => {

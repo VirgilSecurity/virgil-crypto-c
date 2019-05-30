@@ -1,4 +1,3 @@
-const util = require('util');
 const initPhe = require('../../phe');
 
 describe('PheServer', () => {
