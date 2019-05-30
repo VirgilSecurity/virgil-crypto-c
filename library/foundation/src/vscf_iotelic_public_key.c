@@ -217,10 +217,6 @@ vscf_iotelic_public_key_key_len(const vscf_iotelic_public_key_t *self) {
         return 32;
     case KEYPAIR_RSA_2048:
         return 256;
-    case KEYPAIR_RSA_3072:
-        return 384;
-    case KEYPAIR_RSA_4096:
-        return 512;
     default:
         VSCF_ASSERT(false && "Unsupported keypair type");
         return 0;
@@ -290,8 +286,6 @@ vscf_iotelic_public_key_verify_hash(
 
     switch (cmd.keypair_type) {
     case KEYPAIR_RSA_2048:
-    case KEYPAIR_RSA_3072:
-    case KEYPAIR_RSA_4096:
         cmd.sign_type = SIGN_PSS;
         break;
     default:

@@ -146,6 +146,8 @@ vscf_iotelic_private_key_generate_key(vscf_iotelic_private_key_t *self, size_t s
         break;
     case vscf_alg_id_SECP256R1:
         cmd.keypair_type = KEYPAIR_EC_SECP256R1;
+    case vscf_alg_id_RSA:
+        cmd.keypair_type = KEYPAIR_RSA_2048;
         break;
     default: {
         return vscf_status_ERROR_BAD_ARGUMENTS;
