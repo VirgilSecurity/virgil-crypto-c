@@ -113,9 +113,25 @@
 
         <property name="do decrypt" type="boolean"/>
 
+        <property name="cached data" type="byte">
+            <array length="fixed" length_constant=".(class_aes256_gcm_constant_block_len)"/>
+        </property>
+
         <property name="auth tag" type="byte">
             <array length="fixed" length_constant=".(class_aes256_gcm_constant_auth_tag_len)"/>
         </property>
+
+        <property name="cached data len" type="size"/>
+
+        <property name="auth tag len" type="size"/>
+
+        <method name="update internal" scope="internal" declaration="private">
+            Process buffered encryption/decryption to ensure that data size is
+            multiple of the block size of the cipher.
+
+            <argument name="data" class="data"/>
+            <argument name="out" class="buffer"/>
+        </method>
     </implementation>
 
 
