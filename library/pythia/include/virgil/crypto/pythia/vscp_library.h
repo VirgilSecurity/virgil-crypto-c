@@ -115,7 +115,7 @@ extern "C" {
 
 #define VSCP_VERSION_MAJOR 0
 
-#define VSCP_VERSION_MINOR 7
+#define VSCP_VERSION_MINOR 8
 
 #define VSCP_VERSION_PATCH 0
 

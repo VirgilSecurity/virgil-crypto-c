@@ -170,3 +170,8 @@ if [ -z "${VERSION_LABEL}" ]; then
 else
     sed_replace "version \".*\"" "version \"${VERSION}-SNAPSHOT\"" "${ROOT_DIR}/wrappers/java/android/build.gradle"
 fi
+
+# ###########################################################################
+show_info "Change verion within VSCCrypto.podspec file."
+sed_replace "s.version\( *= *\)\"[0-9]*\.[0-9]*\.[0-9]\"" "s.version\1\"${VERSION}\"" "${ROOT_DIR}/VSCCrypto.podspec"
+

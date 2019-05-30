@@ -57,6 +57,16 @@
 #include "vscf_library.h"
 #include "vscf_aes256_gcm.h"
 
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
+
 // clang-format on
 //  @end
 
@@ -87,6 +97,13 @@ vscf_aes256_gcm_init_ctx(vscf_aes256_gcm_t *self);
 //
 VSCF_PRIVATE void
 vscf_aes256_gcm_cleanup_ctx(vscf_aes256_gcm_t *self);
+
+//
+//  Process buffered encryption/decryption to ensure that data size is
+//  multiple of the block size of the cipher.
+//
+VSCF_PUBLIC void
+vscf_aes256_gcm_update_internal(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *out);
 
 
 // --------------------------------------------------------------------------

@@ -1115,7 +1115,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
                             .(c_class_assert_macros_assert)(\"Class $(my.java_return_class_name:) has no constructor with C context parameter.\");
                         }
                         $(my.proxy_shallow_copy_call?:)
-                        jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, proxyResult);
+                        jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
                     ")
                 elsif is_true (my.java_method->java_return.is_interface)
                     my.prepare_result = format_left("\
