@@ -21,7 +21,7 @@ Session.ratchet max_size:32 fixed_length:true
 
 ParticipantData.id max_size:32 fixed_length:true
 ParticipantData.pub_key max_size:32 fixed_length:true
-ParticipantData.epoches max_count:5 fixed_count:true
+ParticipantData.epochs max_count:5 fixed_count:true
 
 ParticipantEpoch.message_keys max_count:200 fixed_length:false
 

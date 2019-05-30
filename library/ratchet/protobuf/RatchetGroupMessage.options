@@ -9,4 +9,4 @@ RegularGroupMessage.header max_size:76 fixed_length:false
 RegularGroupMessage.signature max_size:64 fixed_length:true
 
 RegularGroupMessageHeader.sender_id max_size:32 fixed_length:true
-RegularGroupMessageHeader.prev_epoches_msgs max_count:4 fixed_count:true
+RegularGroupMessageHeader.prev_epochs_msgs max_count:4 fixed_count:true

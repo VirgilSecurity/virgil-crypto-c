@@ -89,7 +89,7 @@ struct vscr_ratchet_group_participant_data_t {
 
     vscr_ratchet_public_key_t pub_key;
 
-    vscr_ratchet_group_participant_epoch_t *epoches[vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT];
+    vscr_ratchet_group_participant_epoch_t *epochs[vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT];
 };
 
 //

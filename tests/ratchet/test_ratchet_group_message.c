@@ -109,10 +109,10 @@ test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
 
     msg1->message_pb.version = 5;
     msg1->header_pb->counter = 17;
-    msg1->header_pb->prev_epoches_msgs[0] = 24;
-    msg1->header_pb->prev_epoches_msgs[1] = 78;
-    msg1->header_pb->prev_epoches_msgs[2] = 32;
-    msg1->header_pb->prev_epoches_msgs[3] = 22;
+    msg1->header_pb->prev_epochs_msgs[0] = 24;
+    msg1->header_pb->prev_epochs_msgs[1] = 78;
+    msg1->header_pb->prev_epochs_msgs[2] = 32;
+    msg1->header_pb->prev_epochs_msgs[3] = 22;
     msg1->header_pb->epoch = 3;
 
     memcpy(msg1->message_pb.regular_message.signature, test_data_ratchet_group_message_signature.bytes,
@@ -238,10 +238,10 @@ test__serialize_deserialize__regular_overflow__should_be_equal(void) {
 
     msg1->message_pb.version = UINT32_MAX;
     msg1->header_pb->counter = UINT32_MAX;
-    msg1->header_pb->prev_epoches_msgs[0] = UINT32_MAX;
-    msg1->header_pb->prev_epoches_msgs[1] = UINT32_MAX;
-    msg1->header_pb->prev_epoches_msgs[2] = UINT32_MAX;
-    msg1->header_pb->prev_epoches_msgs[3] = UINT32_MAX;
+    msg1->header_pb->prev_epochs_msgs[0] = UINT32_MAX;
+    msg1->header_pb->prev_epochs_msgs[1] = UINT32_MAX;
+    msg1->header_pb->prev_epochs_msgs[2] = UINT32_MAX;
+    msg1->header_pb->prev_epochs_msgs[3] = UINT32_MAX;
     msg1->header_pb->epoch = UINT32_MAX;
 
     memcpy(msg1->message_pb.regular_message.signature, test_data_ratchet_group_message_signature.bytes,

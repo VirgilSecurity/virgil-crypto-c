@@ -59,7 +59,7 @@ message ParticipantEpoch {
 message ParticipantData {
 	required bytes id = 1;
 	required bytes pub_key = 2;
-	repeated ParticipantEpoch epoches = 3;
+	repeated ParticipantEpoch epochs = 3;
 }
 
 message GroupSession {

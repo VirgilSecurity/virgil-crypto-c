@@ -124,7 +124,7 @@ struct vscr_ratchet_group_session_t {
 
     vscr_ratchet_private_key_t my_private_key;
 
-    size_t messages_count[vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHES_COUNT];
+    size_t messages_count[vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHS_COUNT];
 
     vscr_ratchet_group_participant_data_t **participants;
 

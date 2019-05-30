@@ -45,7 +45,7 @@
     <property name="my public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="my private key" class="vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="messages count" type="size" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_max_skipped_epoches_count)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_max_skipped_epochs_count)"/>
     </property>
 
     <property name="participants" class="ratchet group participant data" access="readwrite">

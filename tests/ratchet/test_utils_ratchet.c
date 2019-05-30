@@ -497,8 +497,8 @@ ratchet_participant_cmp(vscr_ratchet_group_participant_data_t *data1, vscr_ratch
     if (!flag)
         return false;
 
-    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT; i++) {
-        if (!ratchet_epoch_cmp(data1->epoches[i], data2->epoches[i]))
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT; i++) {
+        if (!ratchet_epoch_cmp(data1->epochs[i], data2->epochs[i]))
             return false;
     }
 
@@ -509,7 +509,7 @@ static bool
 ratchet_group_session_cmp(
         vscr_ratchet_group_session_t *ratchet_session1, vscr_ratchet_group_session_t *ratchet_session2) {
 
-    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHES_COUNT; i++) {
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHS_COUNT; i++) {
         if (ratchet_session1->messages_count[i] != ratchet_session2->messages_count[i]) {
             return false;
         }

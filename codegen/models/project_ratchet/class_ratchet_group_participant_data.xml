@@ -9,8 +9,8 @@
     <property name="id" class="vscr_ratchet_participant_id_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="pub key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
 
-    <property name="epoches" class="ratchet group participant epoch" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_max_epoches_count)"/>
+    <property name="epochs" class="ratchet group participant epoch" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_max_epochs_count)"/>
     </property>
 
     <method name="add epoch">

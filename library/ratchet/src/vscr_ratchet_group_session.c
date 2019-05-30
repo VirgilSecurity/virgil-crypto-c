@@ -533,7 +533,7 @@ vscr_ratchet_group_session_check_session_consistency(
     VSCR_ASSERT(group_info->participants_count < vscr_ratchet_common_MAX_PARTICIPANTS_COUNT);
     VSCR_ASSERT(group_info->participants_count >= vscr_ratchet_common_MIN_PARTICIPANTS_COUNT);
 
-    if (self->my_epoch && self->my_epoch->epoch >= group_info->epoch + vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT) {
+    if (self->my_epoch && self->my_epoch->epoch >= group_info->epoch + vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT) {
         return vscr_status_ERROR_EPOCH_MISMATCH;
     }
 
@@ -663,7 +663,7 @@ vscr_ratchet_group_session_setup_session(
                         self->messages_count[j] = 0;
                     }
 
-                    for (size_t j = vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHES_COUNT - 1; j >= shift; j--) {
+                    for (size_t j = vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHS_COUNT - 1; j >= shift; j--) {
                         self->messages_count[j] = self->messages_count[j - shift];
                     }
 
@@ -723,8 +723,8 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     msg->header_pb->counter = self->my_epoch->chain_key->index;
     memcpy(msg->header_pb->sender_id, self->my_id, sizeof(self->my_id));
 
-    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHES_COUNT; i++) {
-        msg->header_pb->prev_epoches_msgs[i] = self->messages_count[i];
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHS_COUNT; i++) {
+        msg->header_pb->prev_epochs_msgs[i] = self->messages_count[i];
     }
 
     vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(self->my_epoch->chain_key);
@@ -829,7 +829,7 @@ vscr_ratchet_group_session_decrypt(
 
     // Check epoch is out of range
     if (self->my_epoch->epoch < header->epoch ||
-            self->my_epoch->epoch >= header->epoch + vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT) {
+            self->my_epoch->epoch >= header->epoch + vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT) {
         return vscr_status_ERROR_EPOCH_NOT_FOUND;
     }
 
@@ -878,7 +878,7 @@ vscr_ratchet_group_session_decrypt(
             return result;
         }
 
-        for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHES_COUNT; i++) {
+        for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHS_COUNT; i++) {
             if (header->epoch < i + 1) {
                 break;
             }
@@ -890,7 +890,7 @@ vscr_ratchet_group_session_decrypt(
                 continue;
             }
 
-            result = vscr_ratchet_group_session_generate_skipped_keys(self, old_epoch, header->prev_epoches_msgs[i]);
+            result = vscr_ratchet_group_session_generate_skipped_keys(self, old_epoch, header->prev_epochs_msgs[i]);
 
             if (result != vscr_status_SUCCESS) {
                 return result;
@@ -979,7 +979,7 @@ vscr_ratchet_group_session_serialize(const vscr_ratchet_group_session_t *self, v
     memcpy(session_pb->my_id, self->my_id, sizeof(session_pb->my_id));
     vscr_ratchet_group_participant_epoch_serialize(self->my_epoch, &session_pb->my_epoch);
 
-    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHES_COUNT; i++) {
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHS_COUNT; i++) {
         session_pb->messages_count[i] = self->messages_count[i];
     }
 
@@ -1038,7 +1038,7 @@ vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     session->my_epoch = vscr_ratchet_group_participant_epoch_new();
     vscr_ratchet_group_participant_epoch_deserialize(&session_pb->my_epoch, session->my_epoch);
 
-    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHES_COUNT; i++) {
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHS_COUNT; i++) {
         session->messages_count[i] = session_pb->messages_count[i];
     }
 
@@ -1137,7 +1137,7 @@ vscr_ratchet_group_session_create_group_ticket_for_adding_participants(const vsc
 
     for (size_t i = 0; i < self->participants_count; i++) {
         vscr_ratchet_group_participant_data_t *participant = self->participants[i];
-        vscr_ratchet_group_participant_epoch_t *current_epoch = participant->epoches[0];
+        vscr_ratchet_group_participant_epoch_t *current_epoch = participant->epochs[0];
         VSCR_ASSERT(current_epoch->epoch == self->my_epoch->epoch);
         status = vscr_ratchet_group_ticket_add_existing_participant(
                 ticket, participant->id, participant->pub_key, current_epoch->chain_key);
