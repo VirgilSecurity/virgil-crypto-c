@@ -172,6 +172,7 @@ const initPkcs8Serializer = (Module, modules) => {
         serializePublicKeyInplace(publicKey) {
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
 
             let proxyResult;
 
@@ -194,6 +195,7 @@ const initPkcs8Serializer = (Module, modules) => {
         serializePrivateKeyInplace(privateKey) {
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
 
             let proxyResult;
 

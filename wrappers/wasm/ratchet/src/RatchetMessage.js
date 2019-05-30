@@ -183,6 +183,7 @@ const initRatchetMessage = (Module, modules) => {
 
             const errorCtxSize = Module._vscr_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscr_error_reset(errorCtxPtr);
 
             let proxyResult;
 

@@ -14,6 +14,7 @@
     "_vsc_buffer_len",
     "_vscf_error_ctx_size",
     "_vscf_error_status",
+    "_vscf_error_reset",
     "_vscf_impl_shallow_copy",
     "_vscf_impl_tag",
     "_vscf_raw_key_new",

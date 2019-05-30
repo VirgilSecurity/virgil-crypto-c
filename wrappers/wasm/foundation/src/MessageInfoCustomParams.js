@@ -219,6 +219,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
 
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
 
             let proxyResult;
 
@@ -255,6 +256,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
 
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
 
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
@@ -298,6 +300,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
 
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
 
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();

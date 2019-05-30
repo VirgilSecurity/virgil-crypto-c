@@ -51,6 +51,10 @@ const initPythiaError = (Module, modules) => {
          * Throw exception of this class with a message that corresponds to the given status code.
          */
         static handleStatusCode(statusCode) {
+            if (statusCode == 0) {
+                return;
+            }
+
             if (statusCode == -1) {
                 throw new PythiaError("This error should not be returned if assertions is enabled.");
             }
@@ -62,6 +66,8 @@ const initPythiaError = (Module, modules) => {
             if (statusCode == -202) {
                 throw new PythiaError("Underlying random number generator failed.");
             }
+
+            throw new PythiaError("Unexpected status code:" + statusCode);
         }
     }
 

@@ -573,6 +573,7 @@ const initPythia = (Module, modules) => {
 
             const errorCtxSize = Module._vscp_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscp_error_reset(errorCtxPtr);
 
             let proxyResult;
 

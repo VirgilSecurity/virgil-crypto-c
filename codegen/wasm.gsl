@@ -543,6 +543,7 @@ function wasm_create_method_argument_for_class_error(argument, wasm_method, wasm
         .code_on_initialize = "
             const $(0.name:)CtxSize = Module._$(class_error_derive_c_method_ctx_size())();
             const $(0.name:)CtxPtr = Module._malloc($(0.name:)CtxSize);
+            Module._$(class_error_derive_c_method_reset())($(0.name:)CtxPtr);
         "
 
         .code_on_success = "
@@ -1141,6 +1142,10 @@ function wasm_create_class_module(class, wasm_project, meta)
             .name = class_error_derive_c_method_status()
         endnew
 
+        new wasm_imported_function to my.wasm_project
+            .name = class_error_derive_c_method_reset()
+        endnew
+
         return
     endif
 
@@ -1236,14 +1241,25 @@ function wasm_create_error_module(enum, wasm_project, meta)
                 endnew
 
                 new wasm_code to wasm_method
-                    for my.enum.constant where 0.name <> "success"
+                    for my.enum.constant
                         my.status_check ?= ""
-                        my.status_check += terminator + format_left("
-                            if (statusCode == $(constant.value:)) {
-                                throw new $(wasm_class.name:)(\"$(enum_constant_format_oneline_description(constant))\");
-                            }
-                        ")
+                        if constant.name = "success"
+                            my.status_check += terminator + format_left("
+                                if (statusCode == $(constant.value:)) {
+                                    return;
+                                }
+                            ")
+                        else
+                            my.status_check += terminator + format_left("
+                                if (statusCode == $(constant.value:)) {
+                                    throw new $(wasm_class.name:)(\"$(enum_constant_format_oneline_description(constant))\");
+                                }
+                            ")
+                        endif
                     endfor
+                    my.status_check += terminator + format_left("
+                        throw new $(wasm_class.name:)(\"Unexpected status code:\" + statusCode);
+                    ")
                     . = my.status_check
                 endnew
             endnew

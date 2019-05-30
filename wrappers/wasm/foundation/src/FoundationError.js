@@ -51,6 +51,10 @@ const initFoundationError = (Module, modules) => {
          * Throw exception of this class with a message that corresponds to the given status code.
          */
         static handleStatusCode(statusCode) {
+            if (statusCode == 0) {
+                return;
+            }
+
             if (statusCode == -1) {
                 throw new FoundationError("This error should not be returned if assertions is enabled.");
             }
@@ -198,6 +202,8 @@ const initFoundationError = (Module, modules) => {
             if (statusCode == -308) {
                 throw new FoundationError("Signature format is corrupted.");
             }
+
+            throw new FoundationError("Unexpected status code:" + statusCode);
         }
     }
 

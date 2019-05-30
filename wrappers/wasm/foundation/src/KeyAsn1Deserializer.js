@@ -111,6 +111,7 @@ const initKeyAsn1Deserializer = (Module, modules) => {
 
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
 
             let proxyResult;
 
@@ -149,6 +150,7 @@ const initKeyAsn1Deserializer = (Module, modules) => {
 
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
 
             let proxyResult;
 
@@ -182,6 +184,7 @@ const initKeyAsn1Deserializer = (Module, modules) => {
         deserializePublicKeyInplace() {
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
 
             let proxyResult;
 
@@ -206,6 +209,7 @@ const initKeyAsn1Deserializer = (Module, modules) => {
         deserializePrivateKeyInplace() {
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
 
             let proxyResult;
 

@@ -51,6 +51,10 @@ const initRatchetError = (Module, modules) => {
          * Throw exception of this class with a message that corresponds to the given status code.
          */
         static handleStatusCode(statusCode) {
+            if (statusCode == 0) {
+                return;
+            }
+
             if (statusCode == -1) {
                 throw new RatchetError("Error during protobuf deserialization.");
             }
@@ -166,6 +170,8 @@ const initRatchetError = (Module, modules) => {
             if (statusCode == -29) {
                 throw new RatchetError("Session id mismatch.");
             }
+
+            throw new RatchetError("Unexpected status code:" + statusCode);
         }
     }
 

@@ -327,6 +327,7 @@ const initEd25519PublicKey = (Module, modules) => {
         generateEphemeralKey() {
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
 
             let proxyResult;
 

@@ -111,6 +111,7 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
 
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
 
             let proxyResult;
 
@@ -144,6 +145,7 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
         deserializeInplace() {
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
 
             let proxyResult;
 

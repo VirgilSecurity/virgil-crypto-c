@@ -102,6 +102,7 @@ const initAlgFactory = (Module, modules) => {
         static createPublicKeyFromRawKey(rawKey) {
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
 
             let proxyResult;
 
@@ -124,6 +125,7 @@ const initAlgFactory = (Module, modules) => {
         static createPrivateKeyFromRawKey(rawKey) {
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
 
             let proxyResult;
 

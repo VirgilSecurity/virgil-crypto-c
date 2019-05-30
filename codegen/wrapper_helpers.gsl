@@ -236,6 +236,13 @@ function class_error_derive_c_method_status()
     return make_ref_c(make_id("class", "error", "method", "status"))
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C class "error" method "reset".
+# ---------------------------------------------------------------------------
+function class_error_derive_c_method_reset()
+    return make_ref_c(make_id("class", "error", "method", "reset"))
+endfunction
+
 # ===========================================================================
 #   Formatters.
 # ===========================================================================

@@ -51,6 +51,10 @@ const initPheError = (Module, modules) => {
          * Throw exception of this class with a message that corresponds to the given status code.
          */
         static handleStatusCode(statusCode) {
+            if (statusCode == 0) {
+                return;
+            }
+
             if (statusCode == -1) {
                 throw new PheError("Success proof check failed.");
             }
@@ -78,6 +82,8 @@ const initPheError = (Module, modules) => {
             if (statusCode == -7) {
                 throw new PheError("AES error occurred.");
             }
+
+            throw new PheError("Unexpected status code:" + statusCode);
         }
     }
 
