@@ -120,7 +120,7 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    //    RUN_TEST(test__encrypt__pbkdf2_with_hmac_sha256_and_aes256_gcm_with_valid_nonce__success);
+    RUN_TEST(test__encrypt__pbkdf2_with_hmac_sha256_and_aes256_gcm_with_valid_nonce__success);
     RUN_TEST(test__decrypt__pbkdf2_with_hmac_sha256_and_aes256_gcm_with_valid_nonce__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
