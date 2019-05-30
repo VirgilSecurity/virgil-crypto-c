@@ -116,11 +116,11 @@ struct vscf_aes256_gcm_t {
     //
     //  Implementation specific context.
     //
-    size_t auth_tag_len;
+    size_t cached_data_len;
     //
     //  Implementation specific context.
     //
-    size_t cached_data_len;
+    size_t auth_tag_len;
 };
 
 
