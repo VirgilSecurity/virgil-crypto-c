@@ -92,7 +92,3 @@ const vsc_data_t test_phe_cipher_cipher_text = {
         test_phe_cipher_cipher_text_BYTES, sizeof(test_phe_cipher_cipher_text_BYTES)
 };
 
-const size_t test_phe_cipher_cipher_text_capacity = {
-        sizeof(test_phe_cipher_plain_text_BYTES) + 64
-};
-
