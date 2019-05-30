@@ -262,6 +262,7 @@ vscf_rsa_public_key_encrypt(vscf_rsa_public_key_t *self, vsc_data_t data, vsc_bu
         return vscf_status_ERROR_RANDOM_FAILED;
 
     default:
+        VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(result);
         return vscf_status_ERROR_BAD_ARGUMENTS;
     }
 }

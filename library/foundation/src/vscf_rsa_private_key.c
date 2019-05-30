@@ -339,6 +339,7 @@ vscf_rsa_private_key_sign_hash(
         return vscf_status_ERROR_RANDOM_FAILED;
 
     default:
+        VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(ret);
         return vscf_status_ERROR_BAD_ARGUMENTS;
     }
 }
