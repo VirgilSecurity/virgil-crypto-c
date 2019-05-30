@@ -59,6 +59,8 @@ import VSCFoundation
 
     case curve25519
 
+    case secp256r1
+
     case aes256Gcm
 
     case aes256Cbc

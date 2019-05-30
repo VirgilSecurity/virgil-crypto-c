@@ -105,9 +105,9 @@ import VirgilCryptoFoundation
             vsc_buffer_delete(outputBuf)
         }
 
-        output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutablePointer<byte>) -> Void in
+        output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutableRawBufferPointer) -> Void in
             vsc_buffer_init(outputBuf)
-            vsc_buffer_use(outputBuf, outputPointer, outputCount)
+            vsc_buffer_use(outputBuf, outputPointer.bindMemory(to: byte.self).baseAddress, outputCount)
 
             vscr_ratchet_message_serialize(self.c_ctx, outputBuf)
         })
@@ -121,9 +121,9 @@ import VirgilCryptoFoundation
         var error: vscr_error_t = vscr_error_t()
         vscr_error_reset(&error)
 
-        let proxyResult = input.withUnsafeBytes({ (inputPointer: UnsafePointer<byte>) in
+        let proxyResult = input.withUnsafeBytes({ (inputPointer: UnsafeRawBufferPointer) in
 
-            return vscr_ratchet_message_deserialize(vsc_data(inputPointer, input.count), &error)
+            return vscr_ratchet_message_deserialize(vsc_data(inputPointer.bindMemory(to: byte.self).baseAddress, input.count), &error)
         })
 
         try RatchetError.handleStatus(fromC: error.status)

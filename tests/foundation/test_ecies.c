@@ -41,7 +41,7 @@
 
 #define TEST_DEPENDENCIES_AVAILABLE                                                                                    \
     (VSCF_ECIES && VSCF_AES256_CBC && VSCF_ED25519_PUBLIC_KEY && VSCF_HMAC && VSCF_KDF2 && VSCF_SHA384 &&              \
-            VSCF_PKCS8_DESERIALIZER && VSCF_ALG_FACTORY && VSCF_FAKE_RANDOM)
+            VSCF_KEY_ASN1_DESERIALIZER && VSCF_ALG_FACTORY && VSCF_FAKE_RANDOM)
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_aes256_cbc.h"
@@ -49,7 +49,7 @@
 #include "vscf_hmac.h"
 #include "vscf_kdf2.h"
 #include "vscf_sha384.h"
-#include "vscf_pkcs8_deserializer.h"
+#include "vscf_key_asn1_deserializer.h"
 #include "vscf_alg_factory.h"
 #include "vscf_fake_random.h"
 
@@ -62,14 +62,14 @@ test__encrypt__virgil_message__success(void) {
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    vscf_pkcs8_deserializer_t *pkcs8 = vscf_pkcs8_deserializer_new();
-    vscf_pkcs8_deserializer_setup_defaults(pkcs8);
+    vscf_key_asn1_deserializer_t *key_asn1_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(key_asn1_deserializer);
 
     vscf_ecies_t *ecies = vscf_ecies_new();
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ecies_setup_defaults(ecies));
 
-    vscf_raw_key_t *raw_public_key =
-            vscf_pkcs8_deserializer_deserialize_public_key(pkcs8, test_data_ecies_ED25519_RECEIVER_PUBLIC_KEY, NULL);
+    vscf_raw_key_t *raw_public_key = vscf_key_asn1_deserializer_deserialize_public_key(
+            key_asn1_deserializer, test_data_ecies_ED25519_RECEIVER_PUBLIC_KEY, NULL);
 
     vscf_impl_t *public_key = vscf_alg_factory_create_public_key_from_raw_key(raw_public_key, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error.status);
@@ -84,7 +84,7 @@ test__encrypt__virgil_message__success(void) {
     vsc_buffer_destroy(&enc_msg);
     vscf_raw_key_destroy(&raw_public_key);
     vscf_ecies_destroy(&ecies);
-    vscf_pkcs8_deserializer_destroy(&pkcs8);
+    vscf_key_asn1_deserializer_destroy(&key_asn1_deserializer);
 }
 
 void
@@ -116,17 +116,18 @@ test__encrypt__messege_with_ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac_
     vscf_ecies_take_mac(ecies, mac);
     vscf_ecies_take_cipher(ecies, cipher);
 
-    vscf_pkcs8_deserializer_t *pkcs8 = vscf_pkcs8_deserializer_new();
-    vscf_pkcs8_deserializer_setup_defaults(pkcs8);
+    vscf_key_asn1_deserializer_t *key_asn1_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(key_asn1_deserializer);
 
-    vscf_raw_key_t *raw_public_key =
-            vscf_pkcs8_deserializer_deserialize_public_key(pkcs8, test_data_ecies_ED25519_RECEIVER_PUBLIC_KEY, NULL);
+
+    vscf_raw_key_t *raw_public_key = vscf_key_asn1_deserializer_deserialize_public_key(
+            key_asn1_deserializer, test_data_ecies_ED25519_RECEIVER_PUBLIC_KEY, NULL);
 
     vscf_impl_t *public_key = vscf_alg_factory_create_public_key_from_raw_key(raw_public_key, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error.status);
 
-    vscf_raw_key_t *raw_ephemeral_key =
-            vscf_pkcs8_deserializer_deserialize_private_key(pkcs8, test_data_ecies_ED25519_EPHEMERAL_PRIVATE_KEY, NULL);
+    vscf_raw_key_t *raw_ephemeral_key = vscf_key_asn1_deserializer_deserialize_private_key(
+            key_asn1_deserializer, test_data_ecies_ED25519_EPHEMERAL_PRIVATE_KEY, NULL);
 
     vscf_impl_t *ephemeral_key = vscf_alg_factory_create_private_key_from_raw_key(raw_ephemeral_key, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error.status);
@@ -143,7 +144,7 @@ test__encrypt__messege_with_ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac_
     vsc_buffer_destroy(&enc_msg);
     vscf_raw_key_destroy(&raw_ephemeral_key);
     vscf_raw_key_destroy(&raw_public_key);
-    vscf_pkcs8_deserializer_destroy(&pkcs8);
+    vscf_key_asn1_deserializer_destroy(&key_asn1_deserializer);
     vscf_ecies_destroy(&ecies);
 }
 
@@ -153,14 +154,14 @@ test__decrypt__ed25519_encrypted_message__match_virgil_message(void) {
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    vscf_pkcs8_deserializer_t *pkcs8 = vscf_pkcs8_deserializer_new();
-    vscf_pkcs8_deserializer_setup_defaults(pkcs8);
+    vscf_key_asn1_deserializer_t *key_asn1_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(key_asn1_deserializer);
 
     vscf_ecies_t *ecies = vscf_ecies_new();
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ecies_setup_defaults(ecies));
 
-    vscf_raw_key_t *raw_private_key =
-            vscf_pkcs8_deserializer_deserialize_private_key(pkcs8, test_data_ecies_ED25519_RECEIVER_PRIVATE_KEY, NULL);
+    vscf_raw_key_t *raw_private_key = vscf_key_asn1_deserializer_deserialize_private_key(
+            key_asn1_deserializer, test_data_ecies_ED25519_RECEIVER_PRIVATE_KEY, NULL);
 
     vscf_impl_t *private_key = vscf_alg_factory_create_private_key_from_raw_key(raw_private_key, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error.status);
@@ -177,7 +178,7 @@ test__decrypt__ed25519_encrypted_message__match_virgil_message(void) {
     vsc_buffer_destroy(&dec_msg);
     vscf_raw_key_destroy(&raw_private_key);
     vscf_ecies_destroy(&ecies);
-    vscf_pkcs8_deserializer_destroy(&pkcs8);
+    vscf_key_asn1_deserializer_destroy(&key_asn1_deserializer);
 }
 
 
@@ -191,11 +192,11 @@ int
 main(void) {
     UNITY_BEGIN();
 
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__encrypt__virgil_message__success);
     RUN_TEST(test__encrypt__messege_with_ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac__return_encrypted_message);
     RUN_TEST(test__decrypt__ed25519_encrypted_message__match_virgil_message);
 
-#if TEST_DEPENDENCIES_AVAILABLE
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

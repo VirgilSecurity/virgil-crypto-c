@@ -44,7 +44,18 @@
 
 
     <method name="equal">
-        Return true if given datas are equal.
+        Return true if given data are equal.
+
+        <argument name="rhs" class="data"/>
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="secure equal">
+        Perform constant-time data comparison.
+        The time depends on the given length but not on the data itself.
+        Return true if given data are equal.
 
         <argument name="rhs" class="data"/>
 

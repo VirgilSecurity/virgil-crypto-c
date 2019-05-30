@@ -100,14 +100,12 @@ produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr
         node = &((*node)->next);
     }
 
-    byte lost_level;
-    vsc_buffer_t *fake_buffer = vsc_buffer_new();
-    vsc_buffer_use(fake_buffer, &lost_level, sizeof(lost_level));
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(producer->rng, sizeof(lost_level), fake_buffer));
-    vsc_buffer_destroy(&fake_buffer);
-
-    byte lost_level_threshold = (byte)(255 * (1 - producer->lost_rate));
-    bool message_lost = (lost_level_threshold < lost_level);
+    bool message_lost;
+    if (producer->lost_rate == 0) {
+        message_lost = false;
+    } else {
+        message_lost = generate_prob(producer->rng) < producer->lost_rate;
+    }
 
     if (message_lost) {
         producer->produced_count++;
@@ -117,7 +115,7 @@ produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr
     }
 
     vsc_buffer_t *plain_text_local = NULL;
-    generate_random_data(&plain_text_local);
+    generate_random_data(producer->rng, &plain_text_local);
 
     vscr_error_t error;
     vscr_error_reset(&error);
@@ -127,28 +125,19 @@ produce_msg(unreliable_msg_producer_t *producer, vsc_buffer_t **plain_text, vscr
     TEST_ASSERT_FALSE(vscr_error_has_error(&error));
 
     if (should_restore) {
-        restore_session(producer->session);
+        restore_session(producer->rng, producer->session);
     }
 
-    byte late_level;
-    vsc_buffer_destroy(&fake_buffer);
-    fake_buffer = vsc_buffer_new();
-    vsc_buffer_use(fake_buffer, &late_level, sizeof(late_level));
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(producer->rng, sizeof(late_level), fake_buffer));
-    vsc_buffer_destroy(&fake_buffer);
 
-    byte late_level_threshold = (byte)(255 * (1 - producer->out_of_order_rate));
-    bool message_late = (late_level_threshold < late_level);
+    bool message_late;
+    if (producer->out_of_order_rate == 0) {
+        message_late = false;
+    } else {
+        message_late = generate_prob(producer->rng) < producer->out_of_order_rate;
+    }
 
     if (message_late) {
-        byte late_number;
-
-        fake_buffer = vsc_buffer_new();
-        vsc_buffer_use(fake_buffer, &late_number, sizeof(late_number));
-        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(producer->rng, sizeof(late_number), fake_buffer));
-        vsc_buffer_destroy(&fake_buffer);
-
-        late_number = (byte)((5 * (float)(late_number + 26)) / 255.0);
+        byte late_number = generate_number(producer->rng, 1, 5);
 
         size_t index = late_number + producer->produced_count;
 

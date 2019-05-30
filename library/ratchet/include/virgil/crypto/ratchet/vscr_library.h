@@ -87,9 +87,35 @@ extern "C" {
     typedef uint8_t byte;
 #endif // BYTE_DEFINED
 
+#if defined(_WIN32) || defined(__CYGWIN__)
+#   ifdef VSCR_BUILD_SHARED_LIBS
+#       ifdef __GNUC__
+#           define VSCR_PUBLIC __attribute__ ((dllexport))
+#       else
+#           define VSCR_PUBLIC __declspec(dllexport)
+#       endif
+#   elsif !defined(c_global_macros_internal_build)
+#       ifdef __GNUC__
+#           define VSCR_PUBLIC __attribute__ ((dllimport))
+#       else
+#           define VSCR_PUBLIC __declspec(dllimport)
+#       endif
+#   else
+#       define VSCR_PUBLIC
+#   endif
+#   define VSCR_PRIVATE
+#else
+#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER) || defined(__clang__)
+#       define VSCR_PUBLIC __attribute__ ((visibility ("default")))
+#       define VSCR_PRIVATE __attribute__ ((visibility ("hidden")))
+#   else
+#       define VSCR_PRIVATE
+#   endif
+#endif
+
 #define VSCR_VERSION_MAJOR 0
 
-#define VSCR_VERSION_MINOR 6
+#define VSCR_VERSION_MINOR 7
 
 #define VSCR_VERSION_PATCH 0
 
@@ -116,32 +142,6 @@ extern "C" {
 //  Mark argument or function return value as "unused".
 //
 #define VSCR_UNUSED(x) (void)(x)
-
-#if defined(_WIN32) || defined(__CYGWIN__)
-#   ifdef VSCR_BUILD_SHARED_LIBS
-#       ifdef __GNUC__
-#           define VSCR_PUBLIC __attribute__ ((dllexport))
-#       else
-#           define VSCR_PUBLIC __declspec(dllexport)
-#       endif
-#   elsif !defined(c_global_macros_internal_build)
-#       ifdef __GNUC__
-#           define VSCR_PUBLIC __attribute__ ((dllimport))
-#       else
-#           define VSCR_PUBLIC __declspec(dllimport)
-#       endif
-#   else
-#       define VSCR_PUBLIC
-#   endif
-#   define VSCR_PRIVATE
-#else
-#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER)
-#       define VSCR_PUBLIC __attribute__ ((visibility ("default")))
-#       define VSCR_PRIVATE __attribute__ ((visibility ("hidden")))
-#   else
-#       define VSCR_PRIVATE
-#   endif
-#endif
 
 //
 //  Public integral constants.

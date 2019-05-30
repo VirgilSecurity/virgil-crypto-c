@@ -300,7 +300,7 @@ static const vscf_auth_encrypt_api_t auth_encrypt_api = {
     &cipher_auth_info_api,
     //
     //  Encrypt given data.
-    //  If 'tag' is not give, then it will written to the 'enc'.
+    //  If 'tag' is not given, then it will written to the 'enc'.
     //
     (vscf_auth_encrypt_api_auth_encrypt_fn)vscf_aes256_gcm_auth_encrypt,
     //
@@ -328,7 +328,7 @@ static const vscf_auth_decrypt_api_t auth_decrypt_api = {
     &cipher_auth_info_api,
     //
     //  Decrypt given data.
-    //  If 'tag' is not give, then it will be taken from the 'enc'.
+    //  If 'tag' is not given, then it will be taken from the 'enc'.
     //
     (vscf_auth_decrypt_api_auth_decrypt_fn)vscf_aes256_gcm_auth_decrypt,
     //

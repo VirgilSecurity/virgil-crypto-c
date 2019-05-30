@@ -1,0 +1,7 @@
+<class name="ratchet message key node" context="public" scope="internal">
+
+    <property name="value" class="ratchet message key" access="readwrite"/>
+    <property name="next" class="ratchet message key node" access="readwrite"/>
+    <property name="prev" class="ratchet message key node" access="readwrite"/>
+
+</class>

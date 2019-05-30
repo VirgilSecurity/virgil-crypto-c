@@ -55,8 +55,6 @@ option(MBEDTLS_AES_C "" ON)
 option(MBEDTLS_GCM_C "" ON)
 option(MBEDTLS_MD_C "" ON)
 option(MBEDTLS_BIGNUM_C "" ON)
-option(MBEDTLS_ECP_C "" ON)
-option(MBEDTLS_ECP_DP_SECP256R1_ENABLED "" ON)
 option(MBEDTLS_PKCS1_V21 "" ON)
 option(MBEDTLS_OID_C "" ON)
 option(MBEDTLS_ASN1_PARSE_C "" ON)
@@ -70,6 +68,10 @@ option(MBEDTLS_THREADING_C "" ON)
 option(MBEDTLS_CIPHER_MODE_CBC "" ON)
 option(MBEDTLS_CIPHER_MODE_WITH_PADDING "" ON)
 option(MBEDTLS_CIPHER_PADDING_PKCS7 "" ON)
+option(MBEDTLS_ECP_DP_SECP256R1_ENABLED "" ON)
+option(MBEDTLS_ECP_C "" ON)
+option(MBEDTLS_ECDH_C "" ON)
+option(MBEDTLS_ECDSA_C "" ON)
 option(MBEDTLS_RSA_C "" ON)
 option(MBEDTLS_CTR_DRBG_C "" ON)
 option(MBEDTLS_ENTROPY_C "" ON)
@@ -88,8 +90,6 @@ mark_as_advanced(
         MBEDTLS_GCM_C
         MBEDTLS_MD_C
         MBEDTLS_BIGNUM_C
-        MBEDTLS_ECP_C
-        MBEDTLS_ECP_DP_SECP256R1_ENABLED
         MBEDTLS_PKCS1_V21
         MBEDTLS_OID_C
         MBEDTLS_ASN1_PARSE_C
@@ -103,6 +103,10 @@ mark_as_advanced(
         MBEDTLS_CIPHER_MODE_CBC
         MBEDTLS_CIPHER_MODE_WITH_PADDING
         MBEDTLS_CIPHER_PADDING_PKCS7
+        MBEDTLS_ECP_DP_SECP256R1_ENABLED
+        MBEDTLS_ECP_C
+        MBEDTLS_ECDH_C
+        MBEDTLS_ECDSA_C
         MBEDTLS_RSA_C
         MBEDTLS_CTR_DRBG_C
         MBEDTLS_ENTROPY_C
@@ -111,6 +115,42 @@ mark_as_advanced(
         MBEDTLS_AES_ALT
         MBEDTLS_GCM_ALT
         )
+
+if(MBEDTLS_ECP_C AND NOT MBEDTLS_BIGNUM_C)
+    message("-- error --")
+    message("--")
+    message("Feature MBEDTLS_ECP_C depends on the feature:")
+    message("     MBEDTLS_BIGNUM_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(MBEDTLS_ECP_C AND NOT MBEDTLS_ECP_DP_SECP256R1_ENABLED)
+    message("-- error --")
+    message("--")
+    message("Feature MBEDTLS_ECP_C depends on one of the features:")
+    message("     MBEDTLS_ECP_DP_SECP256R1_ENABLED - which are disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(MBEDTLS_ECDH_C AND NOT MBEDTLS_ECP_C)
+    message("-- error --")
+    message("--")
+    message("Feature MBEDTLS_ECDH_C depends on the feature:")
+    message("     MBEDTLS_ECP_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(MBEDTLS_ECDSA_C AND NOT MBEDTLS_ECP_C)
+    message("-- error --")
+    message("--")
+    message("Feature MBEDTLS_ECDSA_C depends on the feature:")
+    message("     MBEDTLS_ECP_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
 
 if(MBEDTLS_RSA_C AND NOT MBEDTLS_BIGNUM_C)
     message("-- error --")

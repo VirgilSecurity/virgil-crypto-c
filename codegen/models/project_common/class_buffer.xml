@@ -34,7 +34,7 @@
 
 
     <property name="is reverse" type="boolean">
-        Defines that buffer is in the revese mode.
+        Defines that buffer is in the reverse mode.
         This means that written data is located from the buffer ending.
     </property>
 
@@ -62,15 +62,26 @@
     </method>
 
 
+    <method name="secure equal" is_const="1">
+        Perform constant-time buffers comparison.
+        The time depends on the given length but not on the buffer data.
+        Return true if given buffers are equal.
+
+        <argument name="rhs" class="self" access="readonly"/>
+
+        <return type="boolean"/>
+    </method>
+
+
     <constructor name="with capacity">
-        Allocate context and underlying byte array.
+        Allocate inner buffer of given capacity.
 
         <argument name="capacity" type="size"/>
     </constructor>
 
 
     <constructor name="with data">
-        Create buffer with copied bytes from given data.
+        Allocate inner buffer buffer as copy of given data.
 
         <argument name="data" class="data"/>
     </constructor>
@@ -83,6 +94,11 @@
         Postcondition: inner buffer is allocated.
 
         <argument name="capacity" type="size"/>
+    </method>
+
+
+    <method name="release">
+        Release inner buffer.
     </method>
 
 

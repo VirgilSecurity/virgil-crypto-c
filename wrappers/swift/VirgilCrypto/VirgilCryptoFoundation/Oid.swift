@@ -48,9 +48,9 @@ import VSCFoundation
 
     /// Return algorithm identifier for given OID.
     @objc public static func toAlgId(oid: Data) -> AlgId {
-        let proxyResult = oid.withUnsafeBytes({ (oidPointer: UnsafePointer<byte>) -> vscf_alg_id_t in
+        let proxyResult = oid.withUnsafeBytes({ (oidPointer: UnsafeRawBufferPointer) -> vscf_alg_id_t in
 
-            return vscf_oid_to_alg_id(vsc_data(oidPointer, oid.count))
+            return vscf_oid_to_alg_id(vsc_data(oidPointer.bindMemory(to: byte.self).baseAddress, oid.count))
         })
 
         return AlgId.init(fromC: proxyResult)
@@ -65,20 +65,27 @@ import VSCFoundation
 
     /// Return identifier for a given OID.
     @objc public static func toId(oid: Data) -> OidId {
-        let proxyResult = oid.withUnsafeBytes({ (oidPointer: UnsafePointer<byte>) -> vscf_oid_id_t in
+        let proxyResult = oid.withUnsafeBytes({ (oidPointer: UnsafeRawBufferPointer) -> vscf_oid_id_t in
 
-            return vscf_oid_to_id(vsc_data(oidPointer, oid.count))
+            return vscf_oid_to_id(vsc_data(oidPointer.bindMemory(to: byte.self).baseAddress, oid.count))
         })
 
         return OidId.init(fromC: proxyResult)
     }
 
+    /// Map oid identifier to the algorithm identifier.
+    @objc public static func idToAlgId(oidId: OidId) -> AlgId {
+        let proxyResult = vscf_oid_id_to_alg_id(vscf_oid_id_t(rawValue: UInt32(oidId.rawValue)))
+
+        return AlgId.init(fromC: proxyResult)
+    }
+
     /// Return true if given OIDs are equal.
     @objc public static func equal(lhs: Data, rhs: Data) -> Bool {
-        let proxyResult = lhs.withUnsafeBytes({ (lhsPointer: UnsafePointer<byte>) -> Bool in
-            rhs.withUnsafeBytes({ (rhsPointer: UnsafePointer<byte>) -> Bool in
+        let proxyResult = lhs.withUnsafeBytes({ (lhsPointer: UnsafeRawBufferPointer) -> Bool in
+            rhs.withUnsafeBytes({ (rhsPointer: UnsafeRawBufferPointer) -> Bool in
 
-                return vscf_oid_equal(vsc_data(lhsPointer, lhs.count), vsc_data(rhsPointer, rhs.count))
+                return vscf_oid_equal(vsc_data(lhsPointer.bindMemory(to: byte.self).baseAddress, lhs.count), vsc_data(rhsPointer.bindMemory(to: byte.self).baseAddress, rhs.count))
             })
         })
 

@@ -54,6 +54,7 @@ target_compile_definitions(pythia
             $<BUILD_INTERFACE:VSCP_INTERNAL_BUILD>
             "VSCP_LIBRARY=$<BOOL:${VSCP_LIBRARY}>"
             "VSCP_PYTHIA=$<BOOL:${VSCP_PYTHIA}>"
+            "VSCP_ERROR=$<BOOL:${VSCP_ERROR}>"
         PRIVATE
             $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCP_BUILD_SHARED_LIBS>
         )

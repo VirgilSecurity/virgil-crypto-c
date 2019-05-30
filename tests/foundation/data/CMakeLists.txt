@@ -67,6 +67,7 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_signer_verifier.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_key_provider.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_deterministic_key.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_secp256r1.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_aes256_gcm.c"
@@ -97,6 +98,7 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_signer_verifier.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_key_provider.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_deterministic_key.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_secp256r1.c"
         )
 
 target_include_directories(test_data_foundation

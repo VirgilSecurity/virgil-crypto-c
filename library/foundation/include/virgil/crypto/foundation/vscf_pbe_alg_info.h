@@ -90,14 +90,6 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_pbe_alg_info_impl(vscf_pbe_alg_info_t *self);
 
 //
-//  Create algorithm info with identificator, KDF algorithm info and
-//  cipher alg info.
-//
-VSCF_PUBLIC vscf_pbe_alg_info_t *
-vscf_pbe_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t **kdf_alg_info_ref,
-        vscf_impl_t **cipher_alg_info_ref);
-
-//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -138,6 +130,24 @@ vscf_pbe_alg_info_destroy(vscf_pbe_alg_info_t **self_ref);
 //
 VSCF_PUBLIC vscf_pbe_alg_info_t *
 vscf_pbe_alg_info_shallow_copy(vscf_pbe_alg_info_t *self);
+
+//
+//  Perform initialization of pre-allocated context.
+//  Create algorithm info with identificator, KDF algorithm info and
+//  cipher alg info.
+//
+VSCF_PUBLIC void
+vscf_pbe_alg_info_init_with_members(vscf_pbe_alg_info_t *self, vscf_alg_id_t alg_id, vscf_impl_t **kdf_alg_info_ref,
+        vscf_impl_t **cipher_alg_info_ref);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Create algorithm info with identificator, KDF algorithm info and
+//  cipher alg info.
+//
+VSCF_PUBLIC vscf_pbe_alg_info_t *
+vscf_pbe_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t **kdf_alg_info_ref,
+        vscf_impl_t **cipher_alg_info_ref);
 
 //
 //  Return KDF algorithm information.

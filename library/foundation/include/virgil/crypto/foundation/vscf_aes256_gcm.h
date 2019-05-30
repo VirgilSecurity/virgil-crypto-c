@@ -293,7 +293,7 @@ vscf_aes256_gcm_finish(vscf_aes256_gcm_t *self, vsc_buffer_t *out) VSCF_NODISCAR
 
 //
 //  Encrypt given data.
-//  If 'tag' is not give, then it will written to the 'enc'.
+//  If 'tag' is not given, then it will written to the 'enc'.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_aes256_gcm_auth_encrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_data_t auth_data, vsc_buffer_t *out,
@@ -307,7 +307,7 @@ vscf_aes256_gcm_auth_encrypted_len(vscf_aes256_gcm_t *self, size_t data_len);
 
 //
 //  Decrypt given data.
-//  If 'tag' is not give, then it will be taken from the 'enc'.
+//  If 'tag' is not given, then it will be taken from the 'enc'.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_aes256_gcm_auth_decrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_data_t auth_data, vsc_data_t tag,

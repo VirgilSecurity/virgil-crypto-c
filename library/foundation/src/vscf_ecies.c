@@ -374,7 +374,7 @@ vscf_ecies_decrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     vscf_mac_update(self->envelope->mac, vsc_buffer_data(self->envelope->encrypted_content));
     vscf_mac_finish(self->envelope->mac, mac_digest);
 
-    if (!vsc_buffer_equal(self->envelope->mac_digest, mac_digest)) {
+    if (!vsc_buffer_secure_equal(self->envelope->mac_digest, mac_digest)) {
         vscf_error_update(&error, vscf_status_ERROR_BAD_ENCRYPTED_DATA);
         goto mac_validation_failed;
     }
@@ -387,9 +387,9 @@ vscf_ecies_decrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     vscf_cipher_update(self->envelope->cipher, vsc_buffer_data(self->envelope->encrypted_content), out);
     vscf_error_update(&error, vscf_cipher_finish(self->envelope->cipher, out));
 
-    //
-    //  Cleanup.
-    //
+//
+//  Cleanup.
+//
 mac_validation_failed:
     vsc_buffer_destroy(&mac_digest);
     vsc_buffer_destroy(&derived_key);

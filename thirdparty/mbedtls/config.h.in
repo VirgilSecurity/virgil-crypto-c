@@ -38,12 +38,20 @@
 #ifndef MBEDTLS_CONFIG_H
 #define MBEDTLS_CONFIG_H
 
+#include <stddef.h> // size_t
 
 //
 //  Common
 //
 #cmakedefine MBEDTLS_ERROR_C
 #cmakedefine MBEDTLS_PLATFORM_C
+
+void *vsc_calloc(size_t count, size_t size);
+void *vsc_dealloc(size_t size);
+
+#define MBEDTLS_PLATFORM_MEMORY
+#define MBEDTLS_PLATFORM_CALLOC vsc_calloc
+#define MBEDTLS_PLATFORM_FREE vsc_dealloc
 
 //
 //  Required by library vsc::foundation
@@ -84,10 +92,17 @@
 #cmakedefine MBEDTLS_ENTROPY_C
 
 //
-//  Required by library vsc::phe
+//  Required by library vsc::phe and vsc::foundation
 //
-#cmakedefine MBEDTLS_ECP_C
 #cmakedefine MBEDTLS_ECP_DP_SECP256R1_ENABLED
+#cmakedefine MBEDTLS_ECP_C
+#cmakedefine MBEDTLS_ECDH_C
+#cmakedefine MBEDTLS_ECDSA_C
+
+#if defined(MBEDTLS_ECDSA_C)
+#    define MBEDTLS_ECDSA_DETERMINISTIC
+#    define MBEDTLS_HMAC_DRBG_C
+#endif
 
 //
 //  Alternative implementations

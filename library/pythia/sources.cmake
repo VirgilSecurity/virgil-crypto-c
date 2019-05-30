@@ -75,6 +75,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_error.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_pythia.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -84,18 +89,27 @@ set_property(
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_pythia_public.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
 target_sources(pythia
     PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_assert.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_library.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_memory.h"
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/pythia/vscp_platform.h"
+            "$<$<BOOL:${VSCP_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_error.h>"
             "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_pythia.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_status.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_pythia_public.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/vscp_pythia_private.h"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vscp_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscp_library.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscp_memory.c"
+            "$<$<BOOL:${VSCP_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscp_error.c>"
             "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscp_status.c"
         )

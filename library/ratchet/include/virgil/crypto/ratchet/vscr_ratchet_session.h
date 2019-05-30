@@ -168,8 +168,6 @@ vscr_ratchet_session_release_rng(vscr_ratchet_session_t *self);
 //
 //  Setups default dependencies:
 //      - RNG: CTR DRBG
-//      - Key serialization: DER PKCS8
-//      - Symmetric cipher: AES256-GCM
 //
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *self) VSCR_NODISCARD;

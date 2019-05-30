@@ -121,11 +121,11 @@ int
 main(void) {
     UNITY_BEGIN();
 
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__serialize__sha256__returns_valid_der_v2_compat);
     RUN_TEST(test__serialize__kdf1_sha256__returns_valid_der_v2_compat);
     RUN_TEST(test__serialize__aes256_gcm__returns_valid_der_v2_compat);
 
-#if TEST_DEPENDENCIES_AVAILABLE
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

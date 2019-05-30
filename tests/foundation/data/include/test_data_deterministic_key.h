@@ -36,6 +36,5 @@
 #include "vsc_data.h"
 
 extern const vsc_data_t test_data_deterministic_key_KEY_MATERIAL;
-extern const vsc_data_t test_data_deterministic_key_RSA256_PRIVATE_KEY;
 extern const vsc_data_t test_data_deterministic_key_RSA4096_PRIVATE_KEY;
 extern const vsc_data_t test_data_deterministic_key_ED25519_PRIVATE_KEY;

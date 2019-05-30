@@ -38,21 +38,20 @@
 #
 #   To add new supported language do next:
 #       1. Create file `<lang>.gsl` with methods:
-#           - <lang>_create_toplevel_modules(destination, wrapper, projects_api) [optional]
-#           - <lang>_resolve_toplevel (wrapper, license) [optional]
-#           - <lang>_resolve_project (project, wrapper, projects_api)
-#           - <lang>_create_project_module (project, destination, wrapper)
-#           - <lang>_create_custom_modules (source, destination, wrapper, meta) [optional]
-#           - <lang>_create_interface_module (source, destination, wrapper, meta)
-#           - <lang>_create_implementation_module (source, destination, wrapper, meta)
-#           - <lang>_create_class_module (source, destination, wrapper, meta)
-#           - <lang>_create_enum_module (source, destination, wrapper, meta)
-#           - <lang>_finalize_custom_modules (source, destination, wrapper, meta) [optional]
-#           - <lang>_module_resolve(source, wrapper)
+#           - <lang>_resolve_wrapper (wrapper) [optional]
+#           - <lang>_create_project_module (project, wrapper)
+#           - <lang>_create_custom_modules (source, wrapper_project, meta) [optional]
+#           - <lang>_create_interface_module (source, wrapper_project, meta)
+#           - <lang>_create_implementation_module (source, wrapper_project, meta)
+#           - <lang>_create_class_module (source, wrapper_project, meta)
+#           - <lang>_create_enum_module (source, wrapper_project, meta)
+#           - <lang>_finalize_custom_modules (source, wrapper_project, meta) [optional]
+#           - <lang>_module_resolve(wrapper_project)
+#           - <lang>_create_toplevel_modules (wrapper) [optional]
 #
 #       2. Create file `<lang>_codegen.gsl` with methods:
-#           - <lang>_generate_project(source, wrapper)
-#           - <lang>_generate_sources(source, wrapper)
+#           - <lang>_generate_project(wrapper_project)
+#           - <lang>_generate_sources(source)
 #
 #       3. Add `gsl from "<lang>.gsl"` to this file.
 #       4. Add `gsl from "<lang>_codegen.gsl"` to `<lang>.gsl` file.
@@ -67,170 +66,264 @@
 
 gsl from "common.gsl"
 gsl from "swift.gsl"
+gsl from "java.gsl"
 gsl from "php.gsl"
 
-
-function wrapper_resolve_toplevel (wrapper, license)
-    check_arguments (my, "wrapper, license", my)
-
-    my.proxy_func = make_id(my.wrapper.lang, "resolve_toplevel")
-    if macro (my.proxy_func)
-        $(my.proxy_func:) (my.wrapper, my.license)
-    endif
-endfunction
-
-
-function wrapper_resolve_project (project, wrapper, projects_api)
-    check_arguments (my, "project, wrapper, projects_api", my)
-
-    my.proxy_func = make_id(my.wrapper.lang, "resolve_project")
-    if macro (my.proxy_func)
-        $(my.proxy_func:) (my.project, my.wrapper, my.projects_api)
-    else
-        echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
-    endif
-endfunction
-
-
-function wrapper_create_toplevel_modules(destination, wrapper, projects_api)
-    check_arguments (my, "destination, wrapper, projects_api", my)
-
-    my.proxy_func = make_id(my.wrapper.lang, "create_toplevel_modules")
-    if macro (my.proxy_func)
-        $(my.proxy_func:) (my.destination, my.wrapper, my.projects_api)
-    endif
-endfunction
-
-
-function wrapper_create_project_module (project, destination, wrapper)
-    check_arguments (my, "project, destination, wrapper", my)
+# ---------------------------------------------------------------------------
+#   Create project root module, for instance:
+#       <swift_project name="foundation">
+#           <!-- Here will be placed <swift_module/> -->
+#       </swift_project>
+# ---------------------------------------------------------------------------
+function wrapper_create_project_module (project, wrapper)
+    check_arguments (my, "project, wrapper", my)
 
     my.proxy_func = make_id(my.wrapper.lang, "create_project_module")
     if macro (my.proxy_func)
-        $(my.proxy_func:) (my.project, my.destination, my.wrapper)
+        return $(my.proxy_func:) (my.project, my.wrapper)
     else
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Create a bunch of custom modules that are not related to the existing
+#   high-level models.
+# ---------------------------------------------------------------------------
+function wrapper_create_custom_modules (source, wrapper_project, meta)
+    check_arguments (my, "source, wrapper_project, meta", my)
 
-function wrapper_create_custom_modules (source, destination, wrapper, meta)
-    check_arguments (my, "source, destination, wrapper, meta", my)
-
-    my.proxy_func = make_id(my.wrapper.lang, "create_custom_modules")
+    my.proxy_func = make_id(my.wrapper_project.lang, "create_custom_modules")
     if macro (my.proxy_func)
-        $(my.proxy_func:) (my.source, my.destination, my.wrapper, my.meta)
+        $(my.proxy_func:) (my.source, my.wrapper_project, my.meta)
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Create language specific module that will represent interface.
+# ---------------------------------------------------------------------------
+function wrapper_foreach_interface_create_module (source, wrapper_project, meta)
+    check_arguments (my, "source, wrapper_project, meta", my)
 
-function wrapper_foreach_interface_create_module (source, destination, wrapper, meta)
-    check_arguments (my, "source, destination, wrapper, meta", my)
-
-    my.proxy_func = make_id(my.wrapper.lang, "create_interface_module")
+    my.proxy_func = make_id(my.wrapper_project.lang, "create_interface_module")
     if ! macro (my.proxy_func)
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 
     for my.source.interface where interface.scope = "public"
         meta_reset_active_entity (my.meta, interface.name)
-        $(my.proxy_func:) (interface, my.destination, my.wrapper, my.meta)
+        $(my.proxy_func:) (interface, my.wrapper_project, my.meta)
     endfor
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Create language specific module that will represent implementation.
+# ---------------------------------------------------------------------------
+function wrapper_foreach_implementation_create_module (source, wrapper_project, meta)
+    check_arguments (my, "source, wrapper_project, meta", my)
 
-function wrapper_foreach_implementation_create_module (source, destination, wrapper, meta)
-    check_arguments (my, "source, destination, wrapper, meta", my)
-
-    my.proxy_func = make_id(my.wrapper.lang, "create_implementation_module")
+    my.proxy_func = make_id(my.wrapper_project.lang, "create_implementation_module")
     if ! macro (my.proxy_func)
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 
     for my.source.implementation where implementation.scope = "public"
         meta_reset_active_entity (my.meta, implementation.name)
-        $(my.proxy_func:) (implementation, my.destination, my.wrapper, my.meta)
+        $(my.proxy_func:) (implementation, my.wrapper_project, my.meta)
     endfor
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Create language specific module that will represent class.
+# ---------------------------------------------------------------------------
+function wrapper_foreach_class_create_module (source, wrapper_project, meta)
+    check_arguments (my, "source, wrapper_project, meta", my)
 
-function wrapper_foreach_class_create_module (source, destination, wrapper, meta)
-    check_arguments (my, "source, destination, wrapper, meta", my)
-
-    my.proxy_func = make_id(my.wrapper.lang, "create_class_module")
+    my.proxy_func = make_id(my.wrapper_project.lang, "create_class_module")
     if ! macro (my.proxy_func)
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 
     for my.source.class where class.scope = "public"
         meta_reset_active_entity (my.meta, class.name)
-
-        $(my.proxy_func:) (class, my.destination, my.wrapper, my.meta)
+        $(my.proxy_func:) (class, my.wrapper_project, my.meta)
     endfor
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Create language specific module that will represent enum.
+# ---------------------------------------------------------------------------
+function wrapper_foreach_enum_create_module (source, wrapper_project, meta)
+    check_arguments (my, "source, wrapper_project, meta", my)
 
-function wrapper_foreach_enum_create_module (source, destination, wrapper, meta)
-    check_arguments (my, "source, destination, wrapper, meta", my)
-
-    my.proxy_func = make_id(my.wrapper.lang, "create_enum_module")
+    my.proxy_func = make_id(my.wrapper_project.lang, "create_enum_module")
     if ! macro (my.proxy_func)
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 
-    for my.source.enum where 0.scope = "public"
+    for my.source.enum where enum.scope = "public"
         meta_reset_active_entity (my.meta, enum.name)
-        $(my.proxy_func:) (enum, my.destination, my.wrapper, my.meta)
+        $(my.proxy_func:) (enum, my.wrapper_project, my.meta)
     endfor
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Finalize creating custom modules.
+#   This function is called when all project modules was already created.
+# ---------------------------------------------------------------------------
+function wrapper_finalize_custom_modules (source, wrapper_project, meta)
+    check_arguments (my, "source, wrapper_project, meta", my)
 
-function wrapper_finalize_custom_modules (source, destination, wrapper, meta)
-    check_arguments (my, "source, destination, wrapper, meta", my)
-
-    my.proxy_func = make_id(my.wrapper.lang, "finalize_custom_modules")
+    my.proxy_func = make_id(my.wrapper_project.lang, "finalize_custom_modules")
     if macro (my.proxy_func)
-        $(my.proxy_func:) (my.source, my.destination, my.wrapper, my.meta)
+        $(my.proxy_func:) (my.source, my.wrapper_project, my.meta)
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Add missed attributed for created language specific modules.
+# ---------------------------------------------------------------------------
+function wrapper_foreach_module_resolve(wrapper_project)
+    check_arguments (my, "wrapper_project", my)
 
-function wrapper_foreach_module_resolve(source, wrapper)
-    check_arguments (my, "source, wrapper", my)
-
-    my.proxy_func = make_id(my.wrapper.lang, "module_resolve")
+    my.proxy_func = make_id(my.wrapper_project.lang, "module_resolve")
     if ! macro (my.proxy_func)
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 
-    for my.source.$(make_id (my.wrapper.lang, "module")) as wrapper_module
-        $(my.proxy_func:) (wrapper_module, my.wrapper)
+    for my.wrapper_project.$(make_id (my.wrapper_project.lang, "module")) as wrapper_module
+        $(my.proxy_func:) (wrapper_module, my.wrapper_project)
     endfor
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Create language specific modules that is common for all projects.
+#       - wrapper - is a container that handle all created wrapper projects.
+# ---------------------------------------------------------------------------
+function wrapper_create_toplevel_modules(wrapper)
+    check_arguments (my, "wrapper", my)
 
-function wrapper_generate_project(source, wrapper)
-    check_arguments (my, "source, wrapper", my)
-
-    my.proxy_func = make_id(my.wrapper.lang, "generate_project")
+    my.proxy_func = make_id(my.wrapper.lang, "create_toplevel_modules")
     if macro (my.proxy_func)
-        $(my.proxy_func:) (my.source, my.wrapper)
+        $(my.proxy_func:) (my.wrapper)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate project files.
+# ---------------------------------------------------------------------------
+function wrapper_generate_project(wrapper_project)
+    check_arguments (my, "wrapper_project", my)
+
+    my.proxy_func = make_id(my.wrapper_project.lang, "generate_project")
+    if macro (my.proxy_func)
+        $(my.proxy_func:) (my.wrapper_project)
+    else
+        echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate project source files.
+# ---------------------------------------------------------------------------
+function wrapper_generate_sources(wrapper_project)
+    check_arguments (my, "wrapper_project", my)
+
+    my.proxy_func = make_id(my.wrapper_project.lang, "generate_sources")
+    if macro (my.proxy_func)
+        $(my.proxy_func:) (my.wrapper_project)
     else
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 endfunction
 
 
-function wrapper_generate_sources(source, wrapper)
-    check_arguments (my, "source, wrapper", my)
+# ===========================================================================
+#   Work with a wrappers cache file.
+# ===========================================================================
 
-    my.proxy_func = make_id(my.wrapper.lang, "generate_sources")
-    if macro (my.proxy_func)
-        $(my.proxy_func:) (my.source, my.wrapper)
+# ---------------------------------------------------------------------------
+#   Load cached <wrappers/> entity or create new one.
+# ---------------------------------------------------------------------------
+function wrappers_load (work_path)
+    check_arguments (my, "work_path", my)
+
+    my.dir_path = directory.resolve (my.work_path) ?
+    my.file_path = "$(my.dir_path?:)wrappers.xml"
+
+    if file.exists (my.file_path)
+        my.wrappers = item_load_from_file(my.file_path)
     else
-        echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
+        my.wrappers = XML.new("wrappers")
+    endif
+
+    return my.wrappers
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Save <wrappers/> entity to the file at given path.
+# ---------------------------------------------------------------------------
+function wrappers_save (wrappers, work_path)
+    check_arguments (my, "wrappers", my)
+
+    item_save_to_file(my.wrappers, "wrappers.xml", my.work_path)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Update cached wrapper with a new one.
+# ---------------------------------------------------------------------------
+function wrappers_update_wrapper(wrappers, loaded_wrapper)
+    check_arguments (my, "wrappers, loaded_wrapper", my)
+
+    my.existing_wrapper = my.wrappers->wrapper(lang = my.loaded_wrapper.lang) ?
+    my.new_wrapper = item_copy_to(my.loaded_wrapper, my.wrappers)
+
+    if defined (my.existing_wrapper)
+        my.existing_wrapper.source_dir = my.loaded_wrapper.source_dir
+
+        for my.existing_wrapper.license
+            delete license
+        endfor
+
+        for my.existing_wrapper. as item where is_item(item)
+            move item to my.new_wrapper
+        endfor
+
+        delete my.existing_wrapper
+    endif
+
+    my.proxy_func = make_id(my.wrapper.lang, "resolve_wrapper")
+    if macro (my.proxy_func)
+        $(my.proxy_func:) (my.new_wrapper)
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Return wrapper for a given lang.
+# ---------------------------------------------------------------------------
+function wrappers_find_wrapper (wrappers, lang)
+    check_arguments (my, "wrappers, lang", my)
+
+    my.wrapper = my.wrappers->wrapper(lang = my.lang)
+
+    if ! defined (my.wrapper)
+        echo_fatal ("Wrapper for lang='$(my.lang:)' is not found")
+    endif
+
+    return my.wrapper
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Removed cached project.
+# ---------------------------------------------------------------------------
+function wrappers_reset_wrapper_project (wrapper, project)
+    check_arguments (my, "wrapper, project")
+
+    my.project_item_name = make_id (my.wrapper.lang, "project")
+    my.lang_project = my.wrapper->$(my.project_item_name:)(name = my.project.name) ?
+    if defined (my.lang_project)
+        delete my.lang_project
+    endif
+endfunction
 
 .endtemplate

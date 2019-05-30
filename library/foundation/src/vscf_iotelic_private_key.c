@@ -113,14 +113,11 @@ vscf_iotelic_private_key_cleanup_ctx(vscf_iotelic_private_key_t *self) {
 //
 //  Create private key with specific slot id.
 //
-VSCF_PUBLIC vscf_iotelic_private_key_t *
-vscf_iotelic_private_key_new_with_slot_id(size_t slot_id) {
+VSCF_PUBLIC void
+vscf_iotelic_private_key_init_ctx_with_slot_id(vscf_iotelic_private_key_t *self, size_t slot_id) {
 
-    vscf_iotelic_private_key_t *self = vscf_iotelic_private_key_new();
-
+    VSCF_ASSERT_PTR(self);
     self->slot_id = slot_id;
-
-    return self;
 }
 
 //
@@ -146,6 +143,9 @@ vscf_iotelic_private_key_generate_key(vscf_iotelic_private_key_t *self, size_t s
         break;
     case vscf_alg_id_ED25519:
         cmd.keypair_type = KEYPAIR_EC_ED25519;
+        break;
+    case vscf_alg_id_SECP256R1:
+        cmd.keypair_type = KEYPAIR_EC_SECP256R1;
         break;
     case vscf_alg_id_RSA:
         cmd.keypair_type = KEYPAIR_RSA_2048;

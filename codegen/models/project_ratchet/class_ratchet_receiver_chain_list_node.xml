@@ -1,8 +1,0 @@
-<class name="ratchet receiver chain list node" context="public" scope="internal">
-
-    <require class="ratchet receiver chain" scope="public"/>
-
-    <property name="value" class="ratchet receiver chain" access="readwrite"/>
-    <property name="next" class="ratchet receiver chain list node" access="readwrite"/>
-
-</class>

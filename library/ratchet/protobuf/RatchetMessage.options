@@ -1,4 +1,6 @@
-RegularMessage.public_key max_size:32 fixed_length:true
+RegularMessageHeader.public_key max_size:32 fixed_length:true
+
+RegularMessage.header max_size:52 fixed_length:false
 
 PrekeyMessage.sender_identity_key max_size:32 fixed_length:true
 PrekeyMessage.sender_ephemeral_key max_size:32 fixed_length:true

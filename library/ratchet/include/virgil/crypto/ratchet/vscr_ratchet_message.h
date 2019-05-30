@@ -136,7 +136,7 @@ vscr_ratchet_message_shallow_copy(vscr_ratchet_message_t *self);
 //  Returns message type.
 //
 VSCR_PUBLIC vscr_msg_type_t
-vscr_ratchet_message_get_type(vscr_ratchet_message_t *self);
+vscr_ratchet_message_get_type(const vscr_ratchet_message_t *self);
 
 //
 //  Returns long-term public key, if message is prekey message.
@@ -154,13 +154,13 @@ vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *self);
 //  Buffer len to serialize this class.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *self);
+vscr_ratchet_message_serialize_len(const vscr_ratchet_message_t *self);
 
 //
 //  Serializes instance.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_serialize(vscr_ratchet_message_t *self, vsc_buffer_t *output);
+vscr_ratchet_message_serialize(const vscr_ratchet_message_t *self, vsc_buffer_t *output);
 
 //
 //  Deserializes instance.

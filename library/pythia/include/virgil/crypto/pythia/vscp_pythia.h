@@ -54,6 +54,7 @@
 #define VSCP_PYTHIA_H_INCLUDED
 
 #include "vscp_library.h"
+#include "vscp_error.h"
 #include "vscp_status.h"
 
 #if !VSCP_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -190,9 +191,9 @@ vscp_pythia_prove(vsc_data_t transformed_password, vsc_data_t blinded_password, 
 //  This operation allows client to verify that the output of transform() is correct,
 //  assuming that client has previously stored transformation public key.
 //
-VSCP_PUBLIC vscp_status_t
+VSCP_PUBLIC bool
 vscp_pythia_verify(vsc_data_t transformed_password, vsc_data_t blinded_password, vsc_data_t tweak,
-        vsc_data_t transformation_public_key, vsc_data_t proof_value_c, vsc_data_t proof_value_u) VSCP_NODISCARD;
+        vsc_data_t transformation_public_key, vsc_data_t proof_value_c, vsc_data_t proof_value_u, vscp_error_t *error);
 
 //
 //  Rotates old transformation key to new transformation key and generates 'password update token',
