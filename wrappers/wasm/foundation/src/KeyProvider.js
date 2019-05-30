@@ -117,7 +117,7 @@ const initKeyProvider = (Module, modules) => {
          * Generate new private key from the given id.
          */
         generatePrivateKey(algId) {
-            const errorCtxSize = Module.vscf_error_ctx_size();
+            const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -125,7 +125,7 @@ const initKeyProvider = (Module, modules) => {
             try {
                 proxyResult = Module._vscf_key_provider_generate_private_key(this.ctxPtr, algId, errorCtxPtr);
 
-                const errorStatus = Module.vscf_error_status(errorCtxPtr);
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
 
                 const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
@@ -153,7 +153,7 @@ const initKeyProvider = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyDataCtxPtr, keyDataPtr, keyDataSize);
 
-            const errorCtxSize = Module.vscf_error_ctx_size();
+            const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -161,7 +161,7 @@ const initKeyProvider = (Module, modules) => {
             try {
                 proxyResult = Module._vscf_key_provider_import_private_key(this.ctxPtr, keyDataCtxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscf_error_status(errorCtxPtr);
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
 
                 const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
@@ -191,7 +191,7 @@ const initKeyProvider = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyDataCtxPtr, keyDataPtr, keyDataSize);
 
-            const errorCtxSize = Module.vscf_error_ctx_size();
+            const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -199,7 +199,7 @@ const initKeyProvider = (Module, modules) => {
             try {
                 proxyResult = Module._vscf_key_provider_import_public_key(this.ctxPtr, keyDataCtxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscf_error_status(errorCtxPtr);
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
 
                 const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);

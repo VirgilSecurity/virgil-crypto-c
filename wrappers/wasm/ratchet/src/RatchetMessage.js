@@ -180,7 +180,7 @@ const initRatchetMessage = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(inputCtxPtr, inputPtr, inputSize);
 
-            const errorCtxSize = Module.vscr_error_ctx_size();
+            const errorCtxSize = Module._vscr_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -188,7 +188,7 @@ const initRatchetMessage = (Module, modules) => {
             try {
                 proxyResult = Module._vscr_ratchet_message_deserialize(inputCtxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscr_error_status(errorCtxPtr);
+                const errorStatus = Module._vscr_error_status(errorCtxPtr);
                 modules.RatchetError.handleStatusCode(errorStatus);
 
                 const jsResult = RatchetMessage.newAndTakeCContext(proxyResult);

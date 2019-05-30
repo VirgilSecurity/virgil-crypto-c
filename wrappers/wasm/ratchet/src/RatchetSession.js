@@ -298,7 +298,7 @@ const initRatchetSession = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(plainTextCtxPtr, plainTextPtr, plainTextSize);
 
-            const errorCtxSize = Module.vscr_error_ctx_size();
+            const errorCtxSize = Module._vscr_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -306,7 +306,7 @@ const initRatchetSession = (Module, modules) => {
             try {
                 proxyResult = Module._vscr_ratchet_session_encrypt(this.ctxPtr, plainTextCtxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscr_error_status(errorCtxPtr);
+                const errorStatus = Module._vscr_error_status(errorCtxPtr);
                 modules.RatchetError.handleStatusCode(errorStatus);
 
                 const jsResult = modules.RatchetMessage.newAndTakeCContext(proxyResult);
@@ -392,7 +392,7 @@ const initRatchetSession = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(inputCtxPtr, inputPtr, inputSize);
 
-            const errorCtxSize = Module.vscr_error_ctx_size();
+            const errorCtxSize = Module._vscr_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -400,7 +400,7 @@ const initRatchetSession = (Module, modules) => {
             try {
                 proxyResult = Module._vscr_ratchet_session_deserialize(inputCtxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscr_error_status(errorCtxPtr);
+                const errorStatus = Module._vscr_error_status(errorCtxPtr);
                 modules.RatchetError.handleStatusCode(errorStatus);
 
                 const jsResult = RatchetSession.newAndTakeCContext(proxyResult);

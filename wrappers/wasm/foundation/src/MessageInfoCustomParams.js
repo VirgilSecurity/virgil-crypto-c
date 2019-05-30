@@ -217,7 +217,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyCtxPtr, keyPtr, keySize);
 
-            const errorCtxSize = Module.vscf_error_ctx_size();
+            const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -225,7 +225,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
             try {
                 proxyResult = Module._vscf_message_info_custom_params_find_int(this.ctxPtr, keyCtxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscf_error_status(errorCtxPtr);
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
                 return proxyResult;
             } finally {
@@ -253,7 +253,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyCtxPtr, keyPtr, keySize);
 
-            const errorCtxSize = Module.vscf_error_ctx_size();
+            const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             //  Create C structure vsc_data_t.
@@ -263,7 +263,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
             try {
                 Module._vscf_message_info_custom_params_find_string(dataResultCtxPtr, this.ctxPtr, keyCtxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscf_error_status(errorCtxPtr);
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
 
                 const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
@@ -296,7 +296,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyCtxPtr, keyPtr, keySize);
 
-            const errorCtxSize = Module.vscf_error_ctx_size();
+            const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             //  Create C structure vsc_data_t.
@@ -306,7 +306,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
             try {
                 Module._vscf_message_info_custom_params_find_data(dataResultCtxPtr, this.ctxPtr, keyCtxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscf_error_status(errorCtxPtr);
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
 
                 const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);

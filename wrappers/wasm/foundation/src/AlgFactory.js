@@ -100,7 +100,7 @@ const initAlgFactory = (Module, modules) => {
          * Create algorithm that implements "public key" interface.
          */
         static createPublicKeyFromRawKey(rawKey) {
-            const errorCtxSize = Module.vscf_error_ctx_size();
+            const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -108,7 +108,7 @@ const initAlgFactory = (Module, modules) => {
             try {
                 proxyResult = Module._vscf_alg_factory_create_public_key_from_raw_key(rawKey.ctxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscf_error_status(errorCtxPtr);
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
 
                 const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
@@ -122,7 +122,7 @@ const initAlgFactory = (Module, modules) => {
          * Create algorithm that implements "private key" interface.
          */
         static createPrivateKeyFromRawKey(rawKey) {
-            const errorCtxSize = Module.vscf_error_ctx_size();
+            const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -130,7 +130,7 @@ const initAlgFactory = (Module, modules) => {
             try {
                 proxyResult = Module._vscf_alg_factory_create_private_key_from_raw_key(rawKey.ctxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscf_error_status(errorCtxPtr);
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
 
                 const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);

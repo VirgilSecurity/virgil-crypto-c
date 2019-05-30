@@ -539,12 +539,12 @@ function wasm_create_method_argument_for_class_error(argument, wasm_method, wasm
         .is_local = "1"
 
         .code_on_initialize = "
-            const $(0.name:)CtxSize = Module.$(class_error_derive_c_method_ctx_size())();
+            const $(0.name:)CtxSize = Module._$(class_error_derive_c_method_ctx_size())();
             const $(0.name:)CtxPtr = Module._malloc($(0.name:)CtxSize);
         "
 
         .code_on_success = "
-            const $(0.name:)Status = Module.$(class_error_derive_c_method_status())($(0.name:)CtxPtr);
+            const $(0.name:)Status = Module._$(class_error_derive_c_method_status())($(0.name:)CtxPtr);
             modules.$(my.wasm_project.error_class_name:).handleStatusCode($(0.name:)Status);
         "
         .code_on_finalize = "

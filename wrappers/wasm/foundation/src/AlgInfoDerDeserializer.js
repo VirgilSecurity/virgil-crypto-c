@@ -109,7 +109,7 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const errorCtxSize = Module.vscf_error_ctx_size();
+            const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -117,7 +117,7 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
             try {
                 proxyResult = Module._vscf_alg_info_der_deserializer_deserialize(this.ctxPtr, dataCtxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscf_error_status(errorCtxPtr);
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
 
                 const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
@@ -142,7 +142,7 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
          * an input buffer.
          */
         deserializeInplace() {
-            const errorCtxSize = Module.vscf_error_ctx_size();
+            const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -150,7 +150,7 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
             try {
                 proxyResult = Module._vscf_alg_info_der_deserializer_deserialize_inplace(this.ctxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscf_error_status(errorCtxPtr);
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
 
                 const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);

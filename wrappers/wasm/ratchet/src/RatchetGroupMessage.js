@@ -145,7 +145,7 @@ const initRatchetGroupMessage = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(participantIdCtxPtr, participantIdPtr, participantIdSize);
 
-            const errorCtxSize = Module.vscr_error_ctx_size();
+            const errorCtxSize = Module._vscr_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -153,7 +153,7 @@ const initRatchetGroupMessage = (Module, modules) => {
             try {
                 proxyResult = Module._vscr_ratchet_group_message_get_pub_key_id(this.ctxPtr, participantIdCtxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscr_error_status(errorCtxPtr);
+                const errorStatus = Module._vscr_error_status(errorCtxPtr);
                 modules.RatchetError.handleStatusCode(errorStatus);
 
                 const bufferResultSize = Module._vsc_buffer_len(proxyResult);
@@ -234,7 +234,7 @@ const initRatchetGroupMessage = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(inputCtxPtr, inputPtr, inputSize);
 
-            const errorCtxSize = Module.vscr_error_ctx_size();
+            const errorCtxSize = Module._vscr_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -242,7 +242,7 @@ const initRatchetGroupMessage = (Module, modules) => {
             try {
                 proxyResult = Module._vscr_ratchet_group_message_deserialize(inputCtxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscr_error_status(errorCtxPtr);
+                const errorStatus = Module._vscr_error_status(errorCtxPtr);
                 modules.RatchetError.handleStatusCode(errorStatus);
 
                 const jsResult = RatchetGroupMessage.newAndTakeCContext(proxyResult);

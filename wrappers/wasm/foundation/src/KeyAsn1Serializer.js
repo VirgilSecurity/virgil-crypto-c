@@ -170,7 +170,7 @@ const initKeyAsn1Serializer = (Module, modules) => {
          * an output buffer.
          */
         serializePublicKeyInplace(publicKey) {
-            const errorCtxSize = Module.vscf_error_ctx_size();
+            const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -178,7 +178,7 @@ const initKeyAsn1Serializer = (Module, modules) => {
             try {
                 proxyResult = Module._vscf_key_asn1_serializer_serialize_public_key_inplace(this.ctxPtr, publicKey.ctxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscf_error_status(errorCtxPtr);
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
                 return proxyResult;
             } finally {
@@ -192,7 +192,7 @@ const initKeyAsn1Serializer = (Module, modules) => {
          * an output buffer.
          */
         serializePrivateKeyInplace(privateKey) {
-            const errorCtxSize = Module.vscf_error_ctx_size();
+            const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -200,7 +200,7 @@ const initKeyAsn1Serializer = (Module, modules) => {
             try {
                 proxyResult = Module._vscf_key_asn1_serializer_serialize_private_key_inplace(this.ctxPtr, privateKey.ctxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscf_error_status(errorCtxPtr);
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
                 return proxyResult;
             } finally {

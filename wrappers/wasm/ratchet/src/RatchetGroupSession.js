@@ -274,7 +274,7 @@ const initRatchetGroupSession = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(plainTextCtxPtr, plainTextPtr, plainTextSize);
 
-            const errorCtxSize = Module.vscr_error_ctx_size();
+            const errorCtxSize = Module._vscr_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -282,7 +282,7 @@ const initRatchetGroupSession = (Module, modules) => {
             try {
                 proxyResult = Module._vscr_ratchet_group_session_encrypt(this.ctxPtr, plainTextCtxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscr_error_status(errorCtxPtr);
+                const errorStatus = Module._vscr_error_status(errorCtxPtr);
                 modules.RatchetError.handleStatusCode(errorStatus);
 
                 const jsResult = modules.RatchetGroupMessage.newAndTakeCContext(proxyResult);
@@ -372,7 +372,7 @@ const initRatchetGroupSession = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(inputCtxPtr, inputPtr, inputSize);
 
-            const errorCtxSize = Module.vscr_error_ctx_size();
+            const errorCtxSize = Module._vscr_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -380,7 +380,7 @@ const initRatchetGroupSession = (Module, modules) => {
             try {
                 proxyResult = Module._vscr_ratchet_group_session_deserialize(inputCtxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscr_error_status(errorCtxPtr);
+                const errorStatus = Module._vscr_error_status(errorCtxPtr);
                 modules.RatchetError.handleStatusCode(errorStatus);
 
                 const jsResult = RatchetGroupSession.newAndTakeCContext(proxyResult);
@@ -408,7 +408,7 @@ const initRatchetGroupSession = (Module, modules) => {
          * Creates ticket for adding and or removing participants to/from this session.
          */
         createGroupTicketForAddingOrRemovingParticipants() {
-            const errorCtxSize = Module.vscr_error_ctx_size();
+            const errorCtxSize = Module._vscr_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -416,7 +416,7 @@ const initRatchetGroupSession = (Module, modules) => {
             try {
                 proxyResult = Module._vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants(this.ctxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscr_error_status(errorCtxPtr);
+                const errorStatus = Module._vscr_error_status(errorCtxPtr);
                 modules.RatchetError.handleStatusCode(errorStatus);
 
                 const jsResult = modules.RatchetGroupTicket.newAndTakeCContext(proxyResult);

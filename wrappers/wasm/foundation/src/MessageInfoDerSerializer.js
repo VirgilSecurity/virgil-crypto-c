@@ -182,7 +182,7 @@ const initMessageInfoDerSerializer = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const errorCtxSize = Module.vscf_error_ctx_size();
+            const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -190,7 +190,7 @@ const initMessageInfoDerSerializer = (Module, modules) => {
             try {
                 proxyResult = Module._vscf_message_info_der_serializer_deserialize(this.ctxPtr, dataCtxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscf_error_status(errorCtxPtr);
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
 
                 const jsResult = modules.MessageInfo.newAndTakeCContext(proxyResult);

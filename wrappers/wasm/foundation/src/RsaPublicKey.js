@@ -330,7 +330,7 @@ const initRsaPublicKey = (Module, modules) => {
          * Generate ephemeral private key of the same type.
          */
         generateEphemeralKey() {
-            const errorCtxSize = Module.vscf_error_ctx_size();
+            const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -338,7 +338,7 @@ const initRsaPublicKey = (Module, modules) => {
             try {
                 proxyResult = Module._vscf_rsa_public_key_generate_ephemeral_key(this.ctxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscf_error_status(errorCtxPtr);
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
 
                 const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);

@@ -320,7 +320,7 @@ const initSecp256r1PublicKey = (Module, modules) => {
          * Generate ephemeral private key of the same type.
          */
         generateEphemeralKey() {
-            const errorCtxSize = Module.vscf_error_ctx_size();
+            const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -328,7 +328,7 @@ const initSecp256r1PublicKey = (Module, modules) => {
             try {
                 proxyResult = Module._vscf_secp256r1_public_key_generate_ephemeral_key(this.ctxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscf_error_status(errorCtxPtr);
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
 
                 const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);

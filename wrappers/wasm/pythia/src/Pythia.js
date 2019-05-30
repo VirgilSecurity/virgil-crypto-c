@@ -562,7 +562,7 @@ const initPythia = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(proofValueUCtxPtr, proofValueUPtr, proofValueUSize);
 
-            const errorCtxSize = Module.vscp_error_ctx_size();
+            const errorCtxSize = Module._vscp_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
 
             let proxyResult;
@@ -570,7 +570,7 @@ const initPythia = (Module, modules) => {
             try {
                 proxyResult = Module._vscp_pythia_verify(transformedPasswordCtxPtr, blindedPasswordCtxPtr, tweakCtxPtr, transformationPublicKeyCtxPtr, proofValueCCtxPtr, proofValueUCtxPtr, errorCtxPtr);
 
-                const errorStatus = Module.vscp_error_status(errorCtxPtr);
+                const errorStatus = Module._vscp_error_status(errorCtxPtr);
                 modules.PythiaError.handleStatusCode(errorStatus);
 
                 const booleanResult = !!proxyResult;
