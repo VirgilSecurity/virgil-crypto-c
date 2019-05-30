@@ -35,7 +35,6 @@
 
 #define UNITY_BEGIN() UnityBegin(__FILENAME__)
 
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include "unity.h"
 #include "test_utils.h"
 
