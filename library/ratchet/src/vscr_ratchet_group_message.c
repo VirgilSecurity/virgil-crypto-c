@@ -295,6 +295,22 @@ vscr_ratchet_group_message_get_sender_id(const vscr_ratchet_group_message_t *sel
     return vsc_data(self->header_pb->sender_id, sizeof(self->header_pb->sender_id));
 }
 
+//
+//  Returns message epoch.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_group_message_get_epoch(const vscr_ratchet_group_message_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+
+    if (self->message_pb.has_regular_message) {
+        VSCR_ASSERT_PTR(self->header_pb);
+        return self->header_pb->epoch;
+    } else {
+        return self->message_pb.group_info.epoch;
+    }
+}
+
 VSCR_PUBLIC void
 vscr_ratchet_group_message_set_type(vscr_ratchet_group_message_t *self, vscr_group_msg_type_t type) {
 

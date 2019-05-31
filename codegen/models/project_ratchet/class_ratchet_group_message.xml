@@ -34,6 +34,14 @@
         <return class="data" access="readwrite"/>
     </method>
 
+    <method name="get epoch" is_const="1">
+        Returns message epoch.
+
+        <return type="size">
+            Message epoch.
+        </return>
+    </method>
+
     <method name="set type" scope="internal">
         <argument name="type" enum="group msg type"/>
     </method>
