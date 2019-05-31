@@ -539,6 +539,9 @@ test__import_public_key__invalid_public_key__expected_status_bad_der_public_key(
             key_provider, vsc_data_from_str(str_message, strlen(str_message)), &error);
 
     TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_DER_PUBLIC_KEY, vscf_error_status(&error));
+
+    vscf_impl_destroy(&public_key);
+    vscf_key_provider_destroy(&key_provider);
 }
 
 void
@@ -556,6 +559,9 @@ test__import_private_key__invalid_private_key__expected_status_bad_der_private_k
             key_provider, vsc_data_from_str(str_message, strlen(str_message)), &error);
 
     TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_DER_PRIVATE_KEY, vscf_error_status(&error));
+
+    vscf_impl_destroy(&private_key);
+    vscf_key_provider_destroy(&key_provider);
 }
 
 
