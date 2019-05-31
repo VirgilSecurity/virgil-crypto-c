@@ -979,7 +979,7 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterat
     size_t number_of_msgs = 0;
     size_t number_of_picks = 0;
 
-    bool is_empty = false;
+    bool is_empty = true;
 
     for (size_t i = 0; i < number_of_iterations || !is_empty; i++) {
         size_t event;
@@ -1057,7 +1057,7 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterat
                 }
             }
 
-            if (number_of_active_channels <= 0) {
+            if (number_of_active_channels == 0) {
                 TEST_ASSERT(false);
             }
 
@@ -1110,13 +1110,13 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterat
             deinit_msg(channel_msg);
 
             number_of_picks++;
-
-            is_empty = number_of_msgs == number_of_picks;
         }
 
         if (priv) {
             restore_group_session(rng, &sessions[active_session], priv[active_session]);
         }
+
+        is_empty = number_of_msgs == number_of_picks;
     }
 
     for (size_t i = 0; i < group_size; i++) {
