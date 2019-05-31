@@ -466,6 +466,37 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     return ret;
 }
 
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupParticipantsInfo_1new__ (JNIEnv *jenv, jobject jobj) {
+    return (jlong) vscr_ratchet_group_participants_info_new();
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupParticipantsInfo_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscr_ratchet_group_participants_info_delete((vscr_ratchet_group_participants_info_t /*2*/ *) c_ctx /*5*/);
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupParticipantsInfo_1new__I (JNIEnv *jenv, jobject jobj, jint jsize) {
+    jlong proxyResult = (jlong) vscr_ratchet_group_participants_info_new_size(jsize /*a9*/);
+    return proxyResult;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupParticipantsInfo_1addParticipant (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jid, jbyteArray jpubKey) {
+    // Cast class context
+    vscr_ratchet_group_participants_info_t /*2*/* ratchet_group_participants_info_ctx = (vscr_ratchet_group_participants_info_t /*2*/*) c_ctx;
+
+    // Wrap input data
+    byte* id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jid, NULL);
+    vsc_data_t id = vsc_data(id_arr, (*jenv)->GetArrayLength(jenv, jid));
+
+    byte* pub_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpubKey, NULL);
+    vsc_data_t pub_key = vsc_data(pub_key_arr, (*jenv)->GetArrayLength(jenv, jpubKey));
+
+    vscr_ratchet_group_participants_info_add_participant(ratchet_group_participants_info_ctx /*a1*/, id /*a3*/, pub_key /*a3*/);
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jid, (jbyte*) id_arr, 0);
+
+    (*jenv)->ReleaseByteArrayElements(jenv, jpubKey, (jbyte*) pub_key_arr, 0);
+}
+
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupMessage_1new__ (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscr_ratchet_group_message_new();
 }
@@ -502,39 +533,6 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_r
         ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
         (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
     }
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupMessage_1getPubKeyCount (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscr_ratchet_group_message_t /*2*/* ratchet_group_message_ctx = (vscr_ratchet_group_message_t /*2*/*) c_ctx;
-
-    jint ret = (jint) vscr_ratchet_group_message_get_pub_key_count(ratchet_group_message_ctx /*a1*/);
-    return ret;
-}
-
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupMessage_1getPubKeyId (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jparticipantId) {
-    // Wrap errors
-    struct vscr_error_t /*4*/ error;
-    vscr_error_reset(&error);
-    // Cast class context
-    vscr_ratchet_group_message_t /*2*/* ratchet_group_message_ctx = (vscr_ratchet_group_message_t /*2*/*) c_ctx;
-
-    // Wrap input data
-    byte* participant_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jparticipantId, NULL);
-    vsc_data_t participant_id = vsc_data(participant_id_arr, (*jenv)->GetArrayLength(jenv, jparticipantId));
-
-    const vsc_buffer_t */*5*/ proxyResult = vscr_ratchet_group_message_get_pub_key_id(ratchet_group_message_ctx /*a1*/, participant_id /*a3*/, &error /*a4*/);
-
-    if (error.status != vscr_status_SUCCESS) {
-        throwRatchetException(jenv, jobj, error.status);
-        return NULL;
-    }
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(proxyResult));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(proxyResult), (jbyte*) vsc_buffer_bytes(proxyResult));
-    // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jparticipantId, (jbyte*) participant_id_arr, 0);
-
     return ret;
 }
 
@@ -650,43 +648,17 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchet
     }
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupTicket_1addNewParticipant (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jparticipantId, jbyteArray jpublicKey) {
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupTicket_1setSessionId (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jsessionId) {
     // Cast class context
     vscr_ratchet_group_ticket_t /*2*/* ratchet_group_ticket_ctx = (vscr_ratchet_group_ticket_t /*2*/*) c_ctx;
 
     // Wrap input data
-    byte* participant_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jparticipantId, NULL);
-    vsc_data_t participant_id = vsc_data(participant_id_arr, (*jenv)->GetArrayLength(jenv, jparticipantId));
+    byte* session_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jsessionId, NULL);
+    vsc_data_t session_id = vsc_data(session_id_arr, (*jenv)->GetArrayLength(jenv, jsessionId));
 
-    byte* public_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpublicKey, NULL);
-    vsc_data_t public_key = vsc_data(public_key_arr, (*jenv)->GetArrayLength(jenv, jpublicKey));
-
-    vscr_status_t status = vscr_ratchet_group_ticket_add_new_participant(ratchet_group_ticket_ctx /*a1*/, participant_id /*a3*/, public_key /*a3*/);
-    if (status != vscr_status_SUCCESS) {
-        throwRatchetException(jenv, jobj, status);
-        return;
-    }
+    vscr_ratchet_group_ticket_set_session_id(ratchet_group_ticket_ctx /*a1*/, session_id /*a3*/);
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jparticipantId, (jbyte*) participant_id_arr, 0);
-
-    (*jenv)->ReleaseByteArrayElements(jenv, jpublicKey, (jbyte*) public_key_arr, 0);
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupTicket_1removeParticipant (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jparticipantId) {
-    // Cast class context
-    vscr_ratchet_group_ticket_t /*2*/* ratchet_group_ticket_ctx = (vscr_ratchet_group_ticket_t /*2*/*) c_ctx;
-
-    // Wrap input data
-    byte* participant_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jparticipantId, NULL);
-    vsc_data_t participant_id = vsc_data(participant_id_arr, (*jenv)->GetArrayLength(jenv, jparticipantId));
-
-    vscr_status_t status = vscr_ratchet_group_ticket_remove_participant(ratchet_group_ticket_ctx /*a1*/, participant_id /*a3*/);
-    if (status != vscr_status_SUCCESS) {
-        throwRatchetException(jenv, jobj, status);
-        return;
-    }
-    // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jparticipantId, (jbyte*) participant_id_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jsessionId, (jbyte*) session_id_arr, 0);
 }
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupTicket_1getTicketMessage (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -837,7 +809,7 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchet
     return ret;
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1setupSession (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessage) {
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1setupSession (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessage, jobject jparticipants) {
     // Cast class context
     vscr_ratchet_group_session_t /*2*/* ratchet_group_session_ctx = (vscr_ratchet_group_session_t /*2*/*) c_ctx;
     // Wrap Java classes
@@ -851,7 +823,17 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchet
     }
     vscr_ratchet_group_message_t */*5*/ message = (vscr_ratchet_group_message_t */*5*/) (*jenv)->GetLongField(jenv, jmessage, message_fidCtx);
 
-    vscr_status_t status = vscr_ratchet_group_session_setup_session(ratchet_group_session_ctx /*a1*/, message /*a6*/);
+    jclass participants_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/ratchet/RatchetGroupParticipantsInfo");
+    if (NULL == participants_cls) {
+        VSCR_ASSERT("Class RatchetGroupParticipantsInfo not found.");
+    }
+    jfieldID participants_fidCtx = (*jenv)->GetFieldID(jenv, participants_cls, "cCtx", "J");
+    if (NULL == participants_fidCtx) {
+        VSCR_ASSERT("Class 'RatchetGroupParticipantsInfo' has no field 'cCtx'.");
+    }
+    vscr_ratchet_group_participants_info_t */*5*/ participants = (vscr_ratchet_group_participants_info_t */*5*/) (*jenv)->GetLongField(jenv, jparticipants, participants_fidCtx);
+
+    vscr_status_t status = vscr_ratchet_group_session_setup_session(ratchet_group_session_ctx /*a1*/, message /*a6*/, participants /*a6*/);
     if (status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, status);
         return;
@@ -993,32 +975,14 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     return ret;
 }
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1createGroupTicketForAddingParticipants (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscr_ratchet_group_session_t /*2*/* ratchet_group_session_ctx = (vscr_ratchet_group_session_t /*2*/*) c_ctx;
-
-    const vscr_ratchet_group_ticket_t */*5*/ proxyResult = vscr_ratchet_group_session_create_group_ticket_for_adding_participants(ratchet_group_session_ctx /*a1*/);
-    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/ratchet/RatchetGroupTicket");
-    if (NULL == result_cls) {
-        VSCR_ASSERT("Class RatchetGroupTicket not found.");
-    }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
-    if (NULL == result_methodID) {
-        VSCR_ASSERT("Class RatchetGroupTicket has no constructor with C context parameter.");
-    }
-
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
-    return ret;
-}
-
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1createGroupTicketForAddingOrRemovingParticipants (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1createGroupTicket (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Wrap errors
     struct vscr_error_t /*4*/ error;
     vscr_error_reset(&error);
     // Cast class context
     vscr_ratchet_group_session_t /*2*/* ratchet_group_session_ctx = (vscr_ratchet_group_session_t /*2*/*) c_ctx;
 
-    const vscr_ratchet_group_ticket_t */*5*/ proxyResult = vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants(ratchet_group_session_ctx /*a1*/, &error /*a4*/);
+    const vscr_ratchet_group_ticket_t */*5*/ proxyResult = vscr_ratchet_group_session_create_group_ticket(ratchet_group_session_ctx /*a1*/, &error /*a4*/);
 
     if (error.status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, error.status);

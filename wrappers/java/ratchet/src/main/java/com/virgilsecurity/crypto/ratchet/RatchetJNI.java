@@ -166,6 +166,14 @@ public class RatchetJNI {
     */
     public native RatchetSession ratchetSession_deserialize(byte[] input) throws RatchetException;
 
+    public native long ratchetGroupParticipantsInfo_new();
+
+    public native void ratchetGroupParticipantsInfo_close(long cCtx);
+
+    public native long ratchetGroupParticipantsInfo_new(int size);
+
+    public native void ratchetGroupParticipantsInfo_addParticipant(long cCtx, byte[] id, byte[] pubKey);
+
     public native long ratchetGroupMessage_new();
 
     public native void ratchetGroupMessage_close(long cCtx);
@@ -180,18 +188,6 @@ public class RatchetJNI {
     * This method should be called only for group info type.
     */
     public native byte[] ratchetGroupMessage_getSessionId(long cCtx);
-
-    /*
-    * Returns number of public keys.
-    * This method should be called only for group info message type.
-    */
-    public native int ratchetGroupMessage_getPubKeyCount(long cCtx);
-
-    /*
-    * Returns public key id for some participant id.
-    * This method should be called only for group info message type.
-    */
-    public native byte[] ratchetGroupMessage_getPubKeyId(long cCtx, byte[] participantId) throws RatchetException;
 
     /*
     * Returns message sender id.
@@ -234,15 +230,7 @@ public class RatchetJNI {
     */
     public native void ratchetGroupTicket_setupTicketAsNew(long cCtx) throws RatchetException;
 
-    /*
-    * Add new participant to chat.
-    */
-    public native void ratchetGroupTicket_addNewParticipant(long cCtx, byte[] participantId, byte[] publicKey) throws RatchetException;
-
-    /*
-    * Remove participant from chat.
-    */
-    public native void ratchetGroupTicket_removeParticipant(long cCtx, byte[] participantId) throws RatchetException;
+    public native void ratchetGroupTicket_setSessionId(long cCtx, byte[] sessionId);
 
     /*
     * Generates message that should be sent to all participants using secure channel.
@@ -313,7 +301,7 @@ public class RatchetJNI {
     * Sets up session.
     * NOTE: Identity private key and my id should be set separately.
     */
-    public native void ratchetGroupSession_setupSession(long cCtx, RatchetGroupMessage message) throws RatchetException;
+    public native void ratchetGroupSession_setupSession(long cCtx, RatchetGroupMessage message, RatchetGroupParticipantsInfo participants) throws RatchetException;
 
     /*
     * Encrypts data
@@ -354,11 +342,6 @@ public class RatchetJNI {
     * Creates ticket for adding participants to this session.
     * NOTE: This ticket is not suitable for removing participants from this session.
     */
-    public native RatchetGroupTicket ratchetGroupSession_createGroupTicketForAddingParticipants(long cCtx);
-
-    /*
-    * Creates ticket for adding and or removing participants to/from this session.
-    */
-    public native RatchetGroupTicket ratchetGroupSession_createGroupTicketForAddingOrRemovingParticipants(long cCtx) throws RatchetException;
+    public native RatchetGroupTicket ratchetGroupSession_createGroupTicket(long cCtx) throws RatchetException;
 }
 

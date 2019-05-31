@@ -27,28 +27,6 @@
         <return class="data" access="readwrite"/>
     </method>
 
-    <method name="get pub key count" is_const="1">
-        Returns number of public keys.
-        This method should be called only for group info message type.
-
-        <return type="size"/>
-    </method>
-
-    <method name="get pub key id" is_const="1">
-        Returns public key id for some participant id.
-        This method should be called only for group info message type.
-
-        <argument name="participant id" class="data">
-            Participant id
-        </argument>
-
-        <argument name="error" class="error" access="readwrite">
-            Error context.
-        </argument>
-
-        <return class="buffer" access="disown"/>
-    </method>
-
     <method name="get sender id" is_const="1">
         Returns message sender id.
         This method should be called only for regular message type.

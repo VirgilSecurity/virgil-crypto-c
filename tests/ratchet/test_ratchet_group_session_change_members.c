@@ -39,6 +39,8 @@
 #include <virgil/crypto/ratchet/private/vscr_ratchet_group_message_defs.h>
 #include <virgil/crypto/foundation/vscf_raw_key.h>
 #include <vscr_ratchet_group_session_defs.h>
+#include <vscr_ratchet_group_participants_info_defs.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include "unity.h"
 #include "test_utils.h"
 
@@ -62,20 +64,21 @@ test__add_members__random_chat__should_continue_working(void) {
 
     vscr_ratchet_group_session_t **sessions = NULL;
     vsc_buffer_t **priv = NULL;
+    vscr_ratchet_group_participants_info_t *info = NULL;
 
-    size_t group_size = generate_number(rng, 5, 25);
+    size_t group_size = generate_number(rng, 2, 10);
 
-    initialize_random_group_chat(rng, group_size, &sessions, &priv, NULL, NULL);
+    initialize_random_group_chat(rng, group_size, &sessions, &priv, &info);
 
-    encrypt_decrypt(rng, group_size, group_size * 50, sessions, 0.75, 1.25, 0.25, priv);
+    encrypt_decrypt(rng, group_size, group_size * generate_number(rng, 5, 10), sessions, 0.75, 1.25, 0.25, priv);
 
-    size_t add_members_size = generate_number(rng, 5, 10);
+    size_t add_members_size = generate_number(rng, 2, 10);
 
-    add_random_members(rng, group_size, add_members_size, &sessions, &priv);
+    add_random_members(rng, group_size, add_members_size, &sessions, &priv, info);
 
     size_t new_size = group_size + add_members_size;
 
-    encrypt_decrypt(rng, new_size, new_size * 50, sessions, 0.75, 1.25, 0.25, priv);
+    encrypt_decrypt(rng, new_size, new_size * generate_number(rng, 5, 10), sessions, 0.75, 1.25, 0.25, priv);
 
     for (size_t i = 0; i < new_size; i++) {
         vscr_ratchet_group_session_destroy(&sessions[i]);
@@ -84,6 +87,8 @@ test__add_members__random_chat__should_continue_working(void) {
 
     vscr_dealloc(sessions);
     vscr_dealloc(priv);
+
+    vscr_ratchet_group_participants_info_destroy(&info);
 
     vscf_ctr_drbg_destroy(&rng);
 }
@@ -95,20 +100,21 @@ test__remove_members__random_chat__should_continue_working(void) {
 
     vscr_ratchet_group_session_t **sessions = NULL;
     vsc_buffer_t **priv = NULL;
+    vscr_ratchet_group_participants_info_t *info = NULL;
 
-    size_t group_size = generate_number(rng, 5, 25);
+    size_t group_size = generate_number(rng, 10, 25);
 
-    initialize_random_group_chat(rng, group_size, &sessions, &priv, NULL, NULL);
+    initialize_random_group_chat(rng, group_size, &sessions, &priv, &info);
 
-    encrypt_decrypt(rng, group_size, group_size * 50, sessions, 0.75, 1.25, 0.25, priv);
+    encrypt_decrypt(rng, group_size, group_size * generate_number(rng, 5, 10), sessions, 0.75, 1.25, 0.25, priv);
 
     size_t remove_members_size = generate_number(rng, 1, group_size - 2);
 
-    remove_random_members(rng, group_size, remove_members_size, &sessions, &priv);
+    remove_random_members(rng, group_size, remove_members_size, &sessions, &priv, info);
 
     size_t new_size = group_size - remove_members_size;
 
-    encrypt_decrypt(rng, new_size, new_size * 50, sessions, 0.75, 1.25, 0.25, priv);
+    encrypt_decrypt(rng, new_size, new_size * generate_number(rng, 5, 10), sessions, 0.75, 1.25, 0.25, priv);
 
     for (size_t i = 0; i < new_size; i++) {
         vscr_ratchet_group_session_destroy(&sessions[i]);
@@ -117,6 +123,7 @@ test__remove_members__random_chat__should_continue_working(void) {
 
     vscr_dealloc(sessions);
     vscr_dealloc(priv);
+    vscr_ratchet_group_participants_info_destroy(&info);
 
     vscf_ctr_drbg_destroy(&rng);
 }
@@ -128,12 +135,11 @@ test__ill_be_back__random_chat__should_continue_working(void) {
 
     vscr_ratchet_group_session_t **sessions = NULL;
     vsc_buffer_t **priv = NULL;
-    vsc_buffer_t **pub = NULL;
-    vsc_buffer_t **id = NULL;
+    vscr_ratchet_group_participants_info_t *info = NULL;
 
     size_t group_size = 3;
 
-    initialize_random_group_chat(rng, group_size, &sessions, &priv, &pub, &id);
+    initialize_random_group_chat(rng, group_size, &sessions, &priv, &info);
 
     vsc_buffer_t *text1 = NULL, *text2 = NULL, *text3 = NULL;
     generate_random_data(rng, &text1);
@@ -143,40 +149,56 @@ test__ill_be_back__random_chat__should_continue_working(void) {
     vscr_ratchet_group_message_t *encrypted1 =
             vscr_ratchet_group_session_encrypt(sessions[0], vsc_buffer_data(text1), NULL);
 
-    vscr_ratchet_group_ticket_t *ticket1 =
-            vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants(sessions[0], NULL);
+    vscr_ratchet_group_ticket_t *ticket1 = vscr_ratchet_group_session_create_group_ticket(sessions[0], NULL);
+
+    vscr_ratchet_group_participants_info_t *empty_info = vscr_ratchet_group_participants_info_new_size(0);
+    vscr_ratchet_group_participants_ids_t *remove_ids = vscr_ratchet_group_participants_ids_new_size(1);
+
+    vscr_ratchet_group_participants_ids_add_id(
+            remove_ids, vsc_data(info->participants[2]->id, vscr_ratchet_common_PARTICIPANT_ID_LEN));
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
-            vscr_ratchet_group_ticket_remove_participant(ticket1, vscr_ratchet_group_session_get_my_id(sessions[2])));
+            vscr_ratchet_group_session_update_session_state(
+                    sessions[0], vscr_ratchet_group_ticket_get_ticket_message(ticket1), empty_info, remove_ids));
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+            vscr_ratchet_group_session_update_session_state(
+                    sessions[1], vscr_ratchet_group_ticket_get_ticket_message(ticket1), empty_info, remove_ids));
 
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(
-                                                   sessions[0], vscr_ratchet_group_ticket_get_ticket_message(ticket1)));
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(
-                                                   sessions[1], vscr_ratchet_group_ticket_get_ticket_message(ticket1)));
+    vscr_ratchet_group_participants_info_destroy(&empty_info);
+    vscr_ratchet_group_participants_ids_destroy(&remove_ids);
 
     vscr_ratchet_group_message_t *encrypted2 =
             vscr_ratchet_group_session_encrypt(sessions[0], vsc_buffer_data(text2), NULL);
 
-    vscr_ratchet_group_ticket_t *ticket2 =
-            vscr_ratchet_group_session_create_group_ticket_for_adding_participants(sessions[0]);
-
-    TEST_ASSERT_EQUAL(
-            vscr_status_SUCCESS, vscr_ratchet_group_ticket_add_new_participant(ticket2,
-                                         vscr_ratchet_group_session_get_my_id(sessions[2]), vsc_buffer_data(pub[2])));
+    vscr_ratchet_group_ticket_t *ticket2 = vscr_ratchet_group_session_create_group_ticket(sessions[0], NULL);
 
     vscr_ratchet_group_session_t *session = vscr_ratchet_group_session_new();
     vscr_ratchet_group_session_use_rng(session, vscf_ctr_drbg_impl(rng));
 
     TEST_ASSERT_EQUAL(
             vscr_status_SUCCESS, vscr_ratchet_group_session_set_private_key(session, vsc_buffer_data(priv[2])));
-    vscr_ratchet_group_session_set_my_id(session, vsc_buffer_data(id[2]));
+    vscr_ratchet_group_session_set_my_id(
+            session, vsc_data(info->participants[2]->id, vscr_ratchet_common_PARTICIPANT_ID_LEN));
 
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(
-                                                   sessions[0], vscr_ratchet_group_ticket_get_ticket_message(ticket2)));
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(
-                                                   sessions[1], vscr_ratchet_group_ticket_get_ticket_message(ticket2)));
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
-            vscr_ratchet_group_session_setup_session(session, vscr_ratchet_group_ticket_get_ticket_message(ticket2)));
+
+    vscr_ratchet_group_participants_info_t *part_info = copy_participants_info_without_member(info, sessions[0]->my_id);
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session_state(sessions[0],
+                                                   vscr_ratchet_group_ticket_get_ticket_message(ticket2), part_info));
+
+    vscr_ratchet_group_participants_info_destroy(&part_info);
+    part_info = copy_participants_info_without_member(info, sessions[1]->my_id);
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session_state(sessions[1],
+                                                   vscr_ratchet_group_ticket_get_ticket_message(ticket2), part_info));
+
+    vscr_ratchet_group_participants_info_destroy(&part_info);
+    part_info = copy_participants_info_without_member(info, session->my_id);
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session_state(session,
+                                                   vscr_ratchet_group_ticket_get_ticket_message(ticket2), part_info));
+
+    vscr_ratchet_group_participants_info_destroy(&part_info);
 
     vscr_ratchet_group_message_t *encrypted3 =
             vscr_ratchet_group_session_encrypt(sessions[0], vsc_buffer_data(text3), NULL);
@@ -188,8 +210,8 @@ test__ill_be_back__random_chat__should_continue_working(void) {
 
     size_t len2 = vscr_ratchet_group_session_decrypt_len(session, encrypted2);
     vsc_buffer_t *plain_text2 = vsc_buffer_new_with_capacity(len2);
-    TEST_ASSERT_EQUAL(vscr_status_ERROR_SKIPPED_MESSAGE_MISSING,
-            vscr_ratchet_group_session_decrypt(session, encrypted2, plain_text2));
+    TEST_ASSERT_EQUAL(
+            vscr_status_ERROR_EPOCH_NOT_FOUND, vscr_ratchet_group_session_decrypt(session, encrypted2, plain_text2));
 
     size_t len3 = vscr_ratchet_group_session_decrypt_len(session, encrypted3);
     vsc_buffer_t *plain_text3 = vsc_buffer_new_with_capacity(len3);
@@ -200,11 +222,11 @@ test__ill_be_back__random_chat__should_continue_working(void) {
     for (size_t i = 0; i < group_size; i++) {
         vscr_ratchet_group_session_destroy(&sessions[i]);
         vsc_buffer_destroy(&priv[i]);
-        vsc_buffer_destroy(&pub[i]);
-        vsc_buffer_destroy(&id[i]);
     }
 
     vscr_ratchet_group_session_destroy(&session);
+
+    vscr_ratchet_group_participants_info_destroy(&info);
 
     vsc_buffer_destroy(&text1);
     vsc_buffer_destroy(&text2);
@@ -223,8 +245,6 @@ test__ill_be_back__random_chat__should_continue_working(void) {
 
     vscr_dealloc(sessions);
     vscr_dealloc(priv);
-    vscr_dealloc(pub);
-    vscr_dealloc(id);
 
     vscf_ctr_drbg_destroy(&rng);
 }
@@ -236,8 +256,9 @@ test__change_members__out_of_order_msgs__should_continue_working(void) {
 
     vscr_ratchet_group_session_t **sessions = NULL;
     vsc_buffer_t **priv = NULL;
+    vscr_ratchet_group_participants_info_t *info = NULL;
 
-    initialize_random_group_chat(rng, 2, &sessions, &priv, NULL, NULL);
+    initialize_random_group_chat(rng, 2, &sessions, &priv, &info);
 
     size_t number_of_iterations = 100;
 
@@ -246,8 +267,7 @@ test__change_members__out_of_order_msgs__should_continue_working(void) {
     vscr_error_t error;
     vscr_error_reset(&error);
 
-    vscr_ratchet_group_ticket_t *ticket1 =
-            vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants(sessions[1], &error);
+    vscr_ratchet_group_ticket_t *ticket1 = vscr_ratchet_group_session_create_group_ticket(sessions[1], &error);
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error.status);
 
@@ -271,9 +291,6 @@ test__change_members__out_of_order_msgs__should_continue_working(void) {
     generate_PKCS8_ed_keypair(rng, &new_privs[2], &pub3);
     generate_PKCS8_ed_keypair(rng, &new_privs[3], &pub4);
 
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
-            vscr_ratchet_group_ticket_add_new_participant(ticket1, vsc_buffer_data(id3), vsc_buffer_data(pub3)));
-
     const vscr_ratchet_group_message_t *msg1 = vscr_ratchet_group_ticket_get_ticket_message(ticket1);
 
     new_sessions[2] = vscr_ratchet_group_session_new();
@@ -283,23 +300,33 @@ test__change_members__out_of_order_msgs__should_continue_working(void) {
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
             vscr_ratchet_group_session_set_private_key(new_sessions[2], vsc_buffer_data(new_privs[2])));
 
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(new_sessions[2], msg1));
+    vscr_ratchet_group_participants_info_t *new_info = copy_participants_info_with_free_space(info);
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_participants_info_add_participant(
+                                                   new_info, vsc_buffer_data(id3), vsc_buffer_data(pub3)));
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session_state(new_sessions[2], msg1, info));
 
     restore_group_session(rng, &new_sessions[2], new_privs[2]);
 
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(new_sessions[1], msg1));
+    vscr_ratchet_group_participants_info_t *add_info = vscr_ratchet_group_participants_info_new_size(1);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_participants_info_add_participant(
+                                                   add_info, vsc_buffer_data(id3), vsc_buffer_data(pub3)));
+
+    vscr_ratchet_group_participants_ids_t *empty_ids = vscr_ratchet_group_participants_ids_new_size(0);
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+            vscr_ratchet_group_session_update_session_state(new_sessions[1], msg1, add_info, empty_ids));
+
+    vscr_ratchet_group_participants_info_destroy(&add_info);
 
     restore_group_session(rng, &new_sessions[1], new_privs[1]);
 
     encrypt_decrypt(rng, 2, number_of_iterations, new_sessions + 1, 0.75, 1.25, 0.25, new_privs + 1);
 
-    vscr_ratchet_group_ticket_t *ticket2 =
-            vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants(new_sessions[1], &error);
+    vscr_ratchet_group_ticket_t *ticket2 = vscr_ratchet_group_session_create_group_ticket(new_sessions[1], &error);
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error.status);
-
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
-            vscr_ratchet_group_ticket_add_new_participant(ticket2, vsc_buffer_data(id4), vsc_buffer_data(pub4)));
 
     const vscr_ratchet_group_message_t *msg2 = vscr_ratchet_group_ticket_get_ticket_message(ticket2);
 
@@ -310,10 +337,35 @@ test__change_members__out_of_order_msgs__should_continue_working(void) {
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
             vscr_ratchet_group_session_set_private_key(new_sessions[3], vsc_buffer_data(new_privs[3])));
 
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(new_sessions[3], msg2));
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(new_sessions[2], msg2));
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(new_sessions[1], msg2));
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(new_sessions[0], msg2));
+    vscr_ratchet_group_participants_info_t *new_info2 = copy_participants_info_with_free_space(new_info);
+    vscr_ratchet_group_participants_info_destroy(&new_info);
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_participants_info_add_participant(
+                                                   new_info2, vsc_buffer_data(id4), vsc_buffer_data(pub4)));
+
+    add_info = vscr_ratchet_group_participants_info_new_size(1);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_participants_info_add_participant(
+                                                   add_info, vsc_buffer_data(id4), vsc_buffer_data(pub4)));
+
+    vscr_ratchet_group_participants_info_t *new_info24 = copy_participants_info_without_member(new_info2, id4->bytes);
+    vscr_ratchet_group_participants_info_t *new_info21 =
+            copy_participants_info_without_member(new_info2, new_sessions[0]->my_id);
+
+    TEST_ASSERT_EQUAL(
+            vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session_state(new_sessions[3], msg2, new_info24));
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+            vscr_ratchet_group_session_update_session_state(new_sessions[2], msg2, add_info, empty_ids));
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+            vscr_ratchet_group_session_update_session_state(new_sessions[1], msg2, add_info, empty_ids));
+    TEST_ASSERT_EQUAL(
+            vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session_state(new_sessions[0], msg2, new_info21));
+
+    vscr_ratchet_group_participants_info_destroy(&add_info);
+    vscr_ratchet_group_participants_info_destroy(&new_info21);
+    vscr_ratchet_group_participants_info_destroy(&new_info24);
+
+    vscr_ratchet_group_participants_info_destroy(&new_info2);
+    vscr_ratchet_group_participants_ids_destroy(&empty_ids);
 
     restore_group_session(rng, &new_sessions[0], new_privs[0]);
     restore_group_session(rng, &new_sessions[1], new_privs[1]);
@@ -326,6 +378,8 @@ test__change_members__out_of_order_msgs__should_continue_working(void) {
         vscr_ratchet_group_session_destroy(&new_sessions[i]);
         vsc_buffer_destroy(&new_privs[i]);
     }
+
+    vscr_ratchet_group_participants_info_destroy(&info);
 
     vscr_dealloc(new_sessions);
     vscr_dealloc(new_privs);
@@ -348,8 +402,9 @@ test__remove_members__old_messages__should_continue_working(void) {
 
     vscr_ratchet_group_session_t **sessions = NULL;
     vsc_buffer_t **priv = NULL;
+    vscr_ratchet_group_participants_info_t *info = NULL;
 
-    initialize_random_group_chat(rng, 3, &sessions, &priv, NULL, NULL);
+    initialize_random_group_chat(rng, 3, &sessions, &priv, &info);
 
     size_t number_of_iterations = 150;
 
@@ -358,12 +413,9 @@ test__remove_members__old_messages__should_continue_working(void) {
     vscr_error_t error;
     vscr_error_reset(&error);
 
-    vscr_ratchet_group_ticket_t *ticket =
-            vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants(sessions[0], &error);
+    vscr_ratchet_group_ticket_t *ticket = vscr_ratchet_group_session_create_group_ticket(sessions[0], &error);
 
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error.status);
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
-            vscr_ratchet_group_ticket_remove_participant(ticket, vscr_ratchet_group_session_get_my_id(sessions[2])));
 
     const vscr_ratchet_group_message_t *info_msg = vscr_ratchet_group_ticket_get_ticket_message(ticket);
 
@@ -379,8 +431,18 @@ test__remove_members__old_messages__should_continue_working(void) {
             vscr_ratchet_group_session_encrypt(sessions[2], vsc_buffer_data(text2), &error);
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error.status);
 
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(sessions[0], info_msg));
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_setup_session(sessions[1], info_msg));
+    vscr_ratchet_group_participants_info_t *empty_info = vscr_ratchet_group_participants_info_new_size(0);
+    vscr_ratchet_group_participants_ids_t *remove_ids = vscr_ratchet_group_participants_ids_new_size(1);
+    vscr_ratchet_group_participants_ids_add_id(
+            remove_ids, vsc_data(sessions[2]->my_id, vscr_ratchet_common_PARTICIPANT_ID_LEN));
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+            vscr_ratchet_group_session_update_session_state(sessions[0], info_msg, empty_info, remove_ids));
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+            vscr_ratchet_group_session_update_session_state(sessions[1], info_msg, empty_info, remove_ids));
+
+    vscr_ratchet_group_participants_info_destroy(&empty_info);
+    vscr_ratchet_group_participants_ids_destroy(&remove_ids);
 
     encrypt_decrypt(rng, 2, number_of_iterations, sessions, 0.75, 1.25, 0.25, priv);
 
@@ -398,6 +460,8 @@ test__remove_members__old_messages__should_continue_working(void) {
         vscr_ratchet_group_session_destroy(&sessions[i]);
         vsc_buffer_destroy(&priv[i]);
     }
+
+    vscr_ratchet_group_participants_info_destroy(&info);
 
     vscr_dealloc(sessions);
     vscr_dealloc(priv);

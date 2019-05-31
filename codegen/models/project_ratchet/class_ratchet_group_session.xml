@@ -4,9 +4,6 @@
 
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
-
-    <require impl="hkdf" project="foundation" scope="private"/>
-    <require module="hkdf private" scope="private" project="foundation"/>
     <require module="ratchet typedefs" scope="context"/>
 
     <require module="buffer defs" scope="private" project="common"/>
@@ -15,6 +12,8 @@
     <require module="ratchet group message internal" scope="private"/>
     <require module="ratchet group ticket defs" scope="private"/>
     <require module="ratchet group ticket internal" scope="private"/>
+    <require module="ratchet group participants info defs" scope="private"/>
+    <require module="ratchet group participants ids defs" scope="private"/>
 
     <require header="RatchetGroupMessage.pb.h" scope="private"/>
     <require header="pb_decode.h" scope="private"/>
@@ -48,7 +47,7 @@
         <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_max_skipped_epochs_count)"/>
     </property>
 
-    <property name="participants" class="ratchet group participant data" access="readwrite">
+    <property name="participants" class="ratchet group participant" access="readwrite">
         <array/>
     </property>
     <property name="participants count" type="size" access="readwrite"/>
@@ -122,15 +121,36 @@
 
     <method name="check session consistency" declaration="private">
         <argument name="message" class="ratchet group message"/>
+        <argument name="participants" class="ratchet group participants info">
+        </argument>
         <return enum="status"/>
     </method>
 
-    <method name="setup session">
+    <method name="setup session state">
         Sets up session.
         NOTE: Identity private key and my id should be set separately.
 
         <argument name="message" class="ratchet group message">
             Message with group info obtained through secure channel.
+        </argument>
+        <argument name="participants" class="ratchet group participants info">
+        </argument>
+
+        <return enum="status">
+            Error
+        </return>
+    </method>
+
+    <method name="update session state">
+        Sets up session.
+        NOTE: Identity private key and my id should be set separately.
+
+        <argument name="message" class="ratchet group message">
+            Message with group info obtained through secure channel.
+        </argument>
+        <argument name="add participants" class="ratchet group participants info">
+        </argument>
+        <argument name="remove participants" class="ratchet group participants ids">
         </argument>
 
         <return enum="status">
@@ -240,25 +260,21 @@
     </method>
 
     <method name="update participant" declaration="private" is_static="1">
-        <argument name="participant" class="ratchet group participant data" access="readwrite"/>
+        <argument name="participant" class="ratchet group participant" access="readwrite"/>
         <argument name="epoch" type="size"/>
-        <argument name="info" class="MessageParticipantInfo" library="nanopb"/>
+        <argument name="root key" class="const vscr_ratchet_symmetric_key_t" is_reference="0" library="internal"/>
+        <argument name="info" class="ratchet group participant info"/>
     </method>
 
     <method name="add new participant" declaration="private">
         <argument name="epoch" type="size"/>
-        <argument name="info" class="MessageParticipantInfo" library="nanopb"/>
+        <argument name="root key" class="const vscr_ratchet_symmetric_key_t" is_reference="0" library="internal"/>
+        <argument name="info" class="ratchet group participant info"/>
     </method>
 
-    <method name="create group ticket for adding participants" is_const="1">
+    <method name="create group ticket" is_const="1">
         Creates ticket for adding participants to this session.
         NOTE: This ticket is not suitable for removing participants from this session.
-
-        <return class="ratchet group ticket" access="disown"/>
-    </method>
-
-    <method name="create group ticket for adding or removing participants" is_const="1">
-        Creates ticket for adding and or removing participants to/from this session.
 
         <argument name="error" class="error" access="readwrite">
             Error context to return error

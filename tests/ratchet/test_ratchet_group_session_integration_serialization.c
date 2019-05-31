@@ -62,11 +62,11 @@ test__serialization__random_group_chat_bad_network__decrypt_should_succeed(void)
     vscr_ratchet_group_session_t **sessions = NULL;
     vsc_buffer_t **priv = NULL;
 
-    size_t group_size = generate_number(rng, 10, 50);
+    size_t group_size = generate_number(rng, 2, 10);
 
-    initialize_random_group_chat(rng, group_size, &sessions, &priv, NULL, NULL);
+    initialize_random_group_chat(rng, group_size, &sessions, &priv, NULL);
 
-    size_t number_of_iterations = 1000;
+    size_t number_of_iterations = group_size * generate_number(rng, 5, 10);
 
     encrypt_decrypt(rng, group_size, number_of_iterations, sessions, 0.75, 1.25, 0.25, priv);
 

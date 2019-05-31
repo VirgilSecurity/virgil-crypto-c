@@ -151,8 +151,8 @@ import VirgilCryptoFoundation
 
     /// Sets up session.
     /// NOTE: Identity private key and my id should be set separately.
-    @objc public func setupSession(message: RatchetGroupMessage) throws {
-        let proxyResult = vscr_ratchet_group_session_setup_session(self.c_ctx, message.c_ctx)
+    @objc public func setupSession(message: RatchetGroupMessage, participants: RatchetGroupParticipantsInfo) throws {
+        let proxyResult = vscr_ratchet_group_session_setup_session(self.c_ctx, message.c_ctx, participants.c_ctx)
 
         try RatchetError.handleStatus(fromC: proxyResult)
     }
@@ -250,18 +250,11 @@ import VirgilCryptoFoundation
 
     /// Creates ticket for adding participants to this session.
     /// NOTE: This ticket is not suitable for removing participants from this session.
-    @objc public func createGroupTicketForAddingParticipants() -> RatchetGroupTicket {
-        let proxyResult = vscr_ratchet_group_session_create_group_ticket_for_adding_participants(self.c_ctx)
-
-        return RatchetGroupTicket.init(take: proxyResult!)
-    }
-
-    /// Creates ticket for adding and or removing participants to/from this session.
-    @objc public func createGroupTicketForAddingOrRemovingParticipants() throws -> RatchetGroupTicket {
+    @objc public func createGroupTicket() throws -> RatchetGroupTicket {
         var error: vscr_error_t = vscr_error_t()
         vscr_error_reset(&error)
 
-        let proxyResult = vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants(self.c_ctx, &error)
+        let proxyResult = vscr_ratchet_group_session_create_group_ticket(self.c_ctx, &error)
 
         try RatchetError.handleStatus(fromC: error.status)
 

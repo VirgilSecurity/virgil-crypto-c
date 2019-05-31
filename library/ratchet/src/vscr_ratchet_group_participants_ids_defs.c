@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'ratchet group participants ids' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,36 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'ratchet group ticket' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSCR_RATCHET_GROUP_TICKET_DEFS_H_INCLUDED
-#define VSCR_RATCHET_GROUP_TICKET_DEFS_H_INCLUDED
-
-#include "vscr_library.h"
-#include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_typedefs.h"
-#include "vscr_ratchet_key_utils.h"
-#include "vscr_ratchet_group_message.h"
-
-#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
-#endif
-
-#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
-#endif
+#include "vscr_ratchet_group_participants_ids_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -82,41 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'ratchet group ticket' context.
-//
-struct vscr_ratchet_group_ticket_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *rng;
-
-    vscr_ratchet_key_utils_t *key_utils;
-
-    vscr_ratchet_group_message_t *msg;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCR_RATCHET_GROUP_TICKET_DEFS_H_INCLUDED
 //  @end

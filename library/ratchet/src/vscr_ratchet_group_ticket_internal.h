@@ -48,7 +48,6 @@
 #define VSCR_RATCHET_GROUP_TICKET_INTERNAL_H_INCLUDED
 
 #include "vscr_ratchet_group_ticket.h"
-#include "vscr_ratchet_chain_key.h"
 #include "vscr_status.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -74,14 +73,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-VSCR_PUBLIC void
-vscr_ratchet_group_ticket_setup_ticket_internal(vscr_ratchet_group_ticket_t *self, size_t epoch, bool epoch_change,
-        vsc_data_t session_id);
-
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_ticket_add_existing_participant(vscr_ratchet_group_ticket_t *self,
-        const vscr_ratchet_participant_id_t id, const vscr_ratchet_public_key_t pub_key,
-        const vscr_ratchet_chain_key_t *chain_key) VSCR_NODISCARD;
+vscr_ratchet_group_ticket_setup_ticket_internal(vscr_ratchet_group_ticket_t *self, size_t epoch,
+        vsc_data_t session_id) VSCR_NODISCARD;
 
 
 // --------------------------------------------------------------------------

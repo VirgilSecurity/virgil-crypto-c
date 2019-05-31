@@ -44,29 +44,18 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class represents ratchet group message
-// --------------------------------------------------------------------------
-
-#ifndef VSCR_RATCHET_GROUP_MESSAGE_H_INCLUDED
-#define VSCR_RATCHET_GROUP_MESSAGE_H_INCLUDED
+#ifndef VSCR_RATCHET_GROUP_PARTICIPANT_H_INCLUDED
+#define VSCR_RATCHET_GROUP_PARTICIPANT_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_error.h"
-#include "vscr_ratchet_group_message.h"
-#include "vscr_group_msg_type.h"
-
-#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#include "vscr_ratchet_typedefs.h"
+#include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_chain_key.h"
+#include "vscr_ratchet_group_participant_epoch.h"
+#include "vscr_ratchet_group_participant.h"
+#include "vscr_ratchet_group_participant_info.h"
 
 // clang-format on
 //  @end
@@ -84,91 +73,80 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet group message' context.
+//  Handle 'ratchet group participant' context.
 //
-typedef struct vscr_ratchet_group_message_t vscr_ratchet_group_message_t;
+typedef struct vscr_ratchet_group_participant_t vscr_ratchet_group_participant_t;
+struct vscr_ratchet_group_participant_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+
+    vscr_ratchet_group_participant_info_t info;
+
+    vscr_ratchet_group_participant_epoch_t *epochs[vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT];
+};
 
 //
-//  Return size of 'vscr_ratchet_group_message_t'.
+//  Return size of 'vscr_ratchet_group_participant_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_group_message_ctx_size(void);
+vscr_ratchet_group_participant_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_message_init(vscr_ratchet_group_message_t *self);
+vscr_ratchet_group_participant_init(vscr_ratchet_group_participant_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_message_cleanup(vscr_ratchet_group_message_t *self);
+vscr_ratchet_group_participant_cleanup(vscr_ratchet_group_participant_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_group_message_t *
-vscr_ratchet_group_message_new(void);
+VSCR_PUBLIC vscr_ratchet_group_participant_t *
+vscr_ratchet_group_participant_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_message_delete(vscr_ratchet_group_message_t *self);
+vscr_ratchet_group_participant_delete(vscr_ratchet_group_participant_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_group_message_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_group_participant_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_message_destroy(vscr_ratchet_group_message_t **self_ref);
+vscr_ratchet_group_participant_destroy(vscr_ratchet_group_participant_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_group_message_t *
-vscr_ratchet_group_message_shallow_copy(vscr_ratchet_group_message_t *self);
+VSCR_PUBLIC vscr_ratchet_group_participant_t *
+vscr_ratchet_group_participant_shallow_copy(vscr_ratchet_group_participant_t *self);
 
-//
-//  Returns message type.
-//
-VSCR_PUBLIC vscr_group_msg_type_t
-vscr_ratchet_group_message_get_type(const vscr_ratchet_group_message_t *self);
-
-//
-//  Returns session id.
-//  This method should be called only for group info type.
-//
-VSCR_PUBLIC vsc_data_t
-vscr_ratchet_group_message_get_session_id(const vscr_ratchet_group_message_t *self);
-
-//
-//  Returns message sender id.
-//  This method should be called only for regular message type.
-//
-VSCR_PUBLIC vsc_data_t
-vscr_ratchet_group_message_get_sender_id(const vscr_ratchet_group_message_t *self);
-
-//
-//  Buffer len to serialize this class.
-//
-VSCR_PUBLIC size_t
-vscr_ratchet_group_message_serialize_len(const vscr_ratchet_group_message_t *self);
-
-//
-//  Serializes instance.
-//
 VSCR_PUBLIC void
-vscr_ratchet_group_message_serialize(const vscr_ratchet_group_message_t *self, vsc_buffer_t *output);
+vscr_ratchet_group_participant_add_epoch(vscr_ratchet_group_participant_t *self, size_t epoch,
+        vscr_ratchet_chain_key_t **chain_key_ref);
 
-//
-//  Deserializes instance.
-//
-VSCR_PUBLIC vscr_ratchet_group_message_t *
-vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error);
+VSCR_PUBLIC vscr_ratchet_group_participant_epoch_t *
+vscr_ratchet_group_participant_find_epoch(const vscr_ratchet_group_participant_t *self, size_t epoch);
+
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_serialize(const vscr_ratchet_group_participant_t *self, ParticipantData *data_pb);
+
+VSCR_PUBLIC void
+vscr_ratchet_group_participant_deserialize(const ParticipantData *data_pb, vscr_ratchet_group_participant_t *data);
 
 
 // --------------------------------------------------------------------------
@@ -184,5 +162,5 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error);
 
 
 //  @footer
-#endif // VSCR_RATCHET_GROUP_MESSAGE_H_INCLUDED
+#endif // VSCR_RATCHET_GROUP_PARTICIPANT_H_INCLUDED
 //  @end

@@ -56,6 +56,8 @@
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_group_message.h"
+#include "vscr_ratchet_group_participants_info.h"
+#include "vscr_ratchet_group_participants_ids.h"
 #include "vscr_error.h"
 #include "vscr_ratchet_group_session.h"
 #include "vscr_ratchet_group_ticket.h"
@@ -233,8 +235,18 @@ vscr_ratchet_group_session_get_participants_count(const vscr_ratchet_group_sessi
 //  NOTE: Identity private key and my id should be set separately.
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self,
-        const vscr_ratchet_group_message_t *message) VSCR_NODISCARD;
+vscr_ratchet_group_session_setup_session_state(vscr_ratchet_group_session_t *self,
+        const vscr_ratchet_group_message_t *message,
+        const vscr_ratchet_group_participants_info_t *participants) VSCR_NODISCARD;
+
+//
+//  Sets up session.
+//  NOTE: Identity private key and my id should be set separately.
+//
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_group_session_update_session_state(vscr_ratchet_group_session_t *self,
+        const vscr_ratchet_group_message_t *message, const vscr_ratchet_group_participants_info_t *add_participants,
+        const vscr_ratchet_group_participants_ids_t *remove_participants) VSCR_NODISCARD;
 
 //
 //  Encrypts data
@@ -283,14 +295,7 @@ vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error);
 //  NOTE: This ticket is not suitable for removing participants from this session.
 //
 VSCR_PUBLIC vscr_ratchet_group_ticket_t *
-vscr_ratchet_group_session_create_group_ticket_for_adding_participants(const vscr_ratchet_group_session_t *self);
-
-//
-//  Creates ticket for adding and or removing participants to/from this session.
-//
-VSCR_PUBLIC vscr_ratchet_group_ticket_t *
-vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants(
-        const vscr_ratchet_group_session_t *self, vscr_error_t *error);
+vscr_ratchet_group_session_create_group_ticket(const vscr_ratchet_group_session_t *self, vscr_error_t *error);
 
 
 // --------------------------------------------------------------------------

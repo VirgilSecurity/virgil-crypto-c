@@ -147,8 +147,8 @@ public class RatchetGroupSession implements AutoCloseable {
     * Sets up session.
     * NOTE: Identity private key and my id should be set separately.
     */
-    public void setupSession(RatchetGroupMessage message) throws RatchetException {
-        RatchetJNI.INSTANCE.ratchetGroupSession_setupSession(this.cCtx, message);
+    public void setupSession(RatchetGroupMessage message, RatchetGroupParticipantsInfo participants) throws RatchetException {
+        RatchetJNI.INSTANCE.ratchetGroupSession_setupSession(this.cCtx, message, participants);
     }
 
     /*
@@ -202,15 +202,8 @@ public class RatchetGroupSession implements AutoCloseable {
     * Creates ticket for adding participants to this session.
     * NOTE: This ticket is not suitable for removing participants from this session.
     */
-    public RatchetGroupTicket createGroupTicketForAddingParticipants() {
-        return RatchetJNI.INSTANCE.ratchetGroupSession_createGroupTicketForAddingParticipants(this.cCtx);
-    }
-
-    /*
-    * Creates ticket for adding and or removing participants to/from this session.
-    */
-    public RatchetGroupTicket createGroupTicketForAddingOrRemovingParticipants() throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetGroupSession_createGroupTicketForAddingOrRemovingParticipants(this.cCtx);
+    public RatchetGroupTicket createGroupTicket() throws RatchetException {
+        return RatchetJNI.INSTANCE.ratchetGroupSession_createGroupTicket(this.cCtx);
     }
 }
 

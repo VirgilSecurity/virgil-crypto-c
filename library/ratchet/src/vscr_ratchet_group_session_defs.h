@@ -60,7 +60,7 @@
 #include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet_padding.h"
 #include "vscr_ratchet_group_participant_epoch.h"
-#include "vscr_ratchet_group_participant_data.h"
+#include "vscr_ratchet_group_participant.h"
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
@@ -126,7 +126,7 @@ struct vscr_ratchet_group_session_t {
 
     size_t messages_count[vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHS_COUNT];
 
-    vscr_ratchet_group_participant_data_t **participants;
+    vscr_ratchet_group_participant_t **participants;
 
     size_t participants_count;
 };

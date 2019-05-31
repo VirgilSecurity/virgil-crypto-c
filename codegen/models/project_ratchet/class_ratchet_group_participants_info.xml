@@ -1,0 +1,23 @@
+<class name="ratchet group participants info" context="internal">
+
+    <require module="ratchet typedefs" scope="context"/>
+
+    <property name="key utils" class="ratchet key utils"/>
+    <property name="size" type="size" access="readwrite"/>
+    <property name="count" type="size" access="readwrite"/>
+    <property name="participants" class="ratchet group participant info" access="readwrite">
+        <array/>
+    </property>
+
+    <method name="add participant">
+        <argument name="id" class="data"/>
+        <argument name="pub key" class="data"/>
+
+        <return enum="status"/>
+    </method>
+
+    <constructor name="size">
+        <argument name="size" type="size"/>
+    </constructor>
+
+</class>

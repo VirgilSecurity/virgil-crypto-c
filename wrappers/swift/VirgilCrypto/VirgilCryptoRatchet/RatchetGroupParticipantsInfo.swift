@@ -37,15 +37,14 @@ import Foundation
 import VSCRatchet
 import VirgilCryptoFoundation
 
-/// Group ticket used to start group session or change participants.
-@objc(VSCRRatchetGroupTicket) public class RatchetGroupTicket: NSObject {
+@objc(VSCRRatchetGroupParticipantsInfo) public class RatchetGroupParticipantsInfo: NSObject {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
     /// Create underlying C context.
     public override init() {
-        self.c_ctx = vscr_ratchet_group_ticket_new()
+        self.c_ctx = vscr_ratchet_group_participants_info_new()
         super.init()
     }
 
@@ -59,47 +58,27 @@ import VirgilCryptoFoundation
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscr_ratchet_group_ticket_shallow_copy(c_ctx)
+        self.c_ctx = vscr_ratchet_group_participants_info_shallow_copy(c_ctx)
         super.init()
+    }
+
+    public init(size: Int) {
+        let proxyResult = vscr_ratchet_group_participants_info_new_size(size)
+
+        self.c_ctx = proxyResult!
     }
 
     /// Release underlying C context.
     deinit {
-        vscr_ratchet_group_ticket_delete(self.c_ctx)
+        vscr_ratchet_group_participants_info_delete(self.c_ctx)
     }
 
-    /// Random used to generate keys
-    @objc public func setRng(rng: Random) {
-        vscr_ratchet_group_ticket_release_rng(self.c_ctx)
-        vscr_ratchet_group_ticket_use_rng(self.c_ctx, rng.c_ctx)
-    }
+    @objc public func addParticipant(id: Data, pubKey: Data) {
+        id.withUnsafeBytes({ (idPointer: UnsafeRawBufferPointer) -> Void in
+            pubKey.withUnsafeBytes({ (pubKeyPointer: UnsafeRawBufferPointer) -> Void in
 
-    /// Setups default dependencies:
-    /// - RNG: CTR DRBG
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscr_ratchet_group_ticket_setup_defaults(self.c_ctx)
-
-        try RatchetError.handleStatus(fromC: proxyResult)
-    }
-
-    /// Set this ticket to start new group session.
-    @objc public func setupTicketAsNew() throws {
-        let proxyResult = vscr_ratchet_group_ticket_setup_ticket_as_new(self.c_ctx)
-
-        try RatchetError.handleStatus(fromC: proxyResult)
-    }
-
-    @objc public func setSessionId(sessionId: Data) {
-        sessionId.withUnsafeBytes({ (sessionIdPointer: UnsafeRawBufferPointer) -> Void in
-
-            vscr_ratchet_group_ticket_set_session_id(self.c_ctx, vsc_data(sessionIdPointer.bindMemory(to: byte.self).baseAddress, sessionId.count))
+                vscr_ratchet_group_participants_info_add_participant(self.c_ctx, vsc_data(idPointer.bindMemory(to: byte.self).baseAddress, id.count), vsc_data(pubKeyPointer.bindMemory(to: byte.self).baseAddress, pubKey.count))
+            })
         })
-    }
-
-    /// Generates message that should be sent to all participants using secure channel.
-    @objc public func getTicketMessage() -> RatchetGroupMessage {
-        let proxyResult = vscr_ratchet_group_ticket_get_ticket_message(self.c_ctx)
-
-        return RatchetGroupMessage.init(use: proxyResult!)
     }
 }

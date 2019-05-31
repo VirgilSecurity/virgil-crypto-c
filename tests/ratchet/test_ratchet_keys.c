@@ -47,7 +47,7 @@ void
 test__create_chain_key__fixed_keys__should_match(void) {
     vscr_ratchet_keys_t *keys = vscr_ratchet_keys_new();
 
-    byte new_root_key[vscr_ratchet_common_hidden_KEY_LEN];
+    byte new_root_key[vscr_ratchet_common_hidden_SHARED_KEY_LEN];
 
     vscr_ratchet_chain_key_t *chain_key = vscr_ratchet_chain_key_new();
 

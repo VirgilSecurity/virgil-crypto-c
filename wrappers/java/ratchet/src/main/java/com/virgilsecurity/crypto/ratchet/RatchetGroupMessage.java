@@ -81,22 +81,6 @@ public class RatchetGroupMessage implements AutoCloseable {
     }
 
     /*
-    * Returns number of public keys.
-    * This method should be called only for group info message type.
-    */
-    public int getPubKeyCount() {
-        return RatchetJNI.INSTANCE.ratchetGroupMessage_getPubKeyCount(this.cCtx);
-    }
-
-    /*
-    * Returns public key id for some participant id.
-    * This method should be called only for group info message type.
-    */
-    public byte[] getPubKeyId(byte[] participantId) throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetGroupMessage_getPubKeyId(this.cCtx, participantId);
-    }
-
-    /*
     * Returns message sender id.
     * This method should be called only for regular message type.
     */

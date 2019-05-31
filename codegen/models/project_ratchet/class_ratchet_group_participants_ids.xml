@@ -1,0 +1,20 @@
+<class name="ratchet group participants ids" context="internal">
+
+    <require class="ratchet common" scope="context"/>
+    <require module="ratchet typedefs" scope="context"/>
+
+    <property name="size" type="size" access="readwrite"/>
+    <property name="count" type="size" access="readwrite"/>
+    <property name="ids" class="vscr_ratchet_participant_id_t" is_reference="0" library="internal" access="readwrite">
+        <array/>
+    </property>
+
+    <method name="add id">
+        <argument name="id" class="data"/>
+    </method>
+
+    <constructor name="size">
+        <argument name="size" type="size"/>
+    </constructor>
+
+</class>

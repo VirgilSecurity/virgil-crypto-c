@@ -38,64 +38,37 @@ package com.virgilsecurity.crypto.ratchet;
 
 import com.virgilsecurity.crypto.foundation.*;
 
-/*
-* Group ticket used to start group session or change participants.
-*/
-public class RatchetGroupTicket implements AutoCloseable {
+public class RatchetGroupParticipantsInfo implements AutoCloseable {
 
     public long cCtx;
 
     /* Create underlying C context. */
-    public RatchetGroupTicket() {
+    public RatchetGroupParticipantsInfo() {
         super();
-        this.cCtx = RatchetJNI.INSTANCE.ratchetGroupTicket_new();
+        this.cCtx = RatchetJNI.INSTANCE.ratchetGroupParticipantsInfo_new();
     }
 
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public RatchetGroupTicket(long cCtx) {
+    public RatchetGroupParticipantsInfo(long cCtx) {
         super();
         this.cCtx = cCtx;
     }
 
+    public RatchetGroupParticipantsInfo(int size) {
+        super();
+        this.cCtx = RatchetJNI.INSTANCE.ratchetGroupParticipantsInfo_new(size);
+    }
+
     /* Close resource. */
     public void close() {
-        RatchetJNI.INSTANCE.ratchetGroupTicket_close(this.cCtx);
+        RatchetJNI.INSTANCE.ratchetGroupParticipantsInfo_close(this.cCtx);
     }
 
-    /*
-    * Random used to generate keys
-    */
-    public void setRng(Random rng) {
-        RatchetJNI.INSTANCE.ratchetGroupTicket_setRng(this.cCtx, rng);
-    }
-
-    /*
-    * Setups default dependencies:
-    * - RNG: CTR DRBG
-    */
-    public void setupDefaults() throws RatchetException {
-        RatchetJNI.INSTANCE.ratchetGroupTicket_setupDefaults(this.cCtx);
-    }
-
-    /*
-    * Set this ticket to start new group session.
-    */
-    public void setupTicketAsNew() throws RatchetException {
-        RatchetJNI.INSTANCE.ratchetGroupTicket_setupTicketAsNew(this.cCtx);
-    }
-
-    public void setSessionId(byte[] sessionId) {
-        RatchetJNI.INSTANCE.ratchetGroupTicket_setSessionId(this.cCtx, sessionId);
-    }
-
-    /*
-    * Generates message that should be sent to all participants using secure channel.
-    */
-    public RatchetGroupMessage getTicketMessage() {
-        return RatchetJNI.INSTANCE.ratchetGroupTicket_getTicketMessage(this.cCtx);
+    public void addParticipant(byte[] id, byte[] pubKey) {
+        RatchetJNI.INSTANCE.ratchetGroupParticipantsInfo_addParticipant(this.cCtx, id, pubKey);
     }
 }
 
