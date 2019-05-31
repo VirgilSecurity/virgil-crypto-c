@@ -37,14 +37,14 @@ import Foundation
 import VSCRatchet
 import VirgilCryptoFoundation
 
-@objc(VSCRRatchetGroupParticipantsInfo) public class RatchetGroupParticipantsInfo: NSObject {
+@objc(VSCRRatchetGroupParticipantsIds) public class RatchetGroupParticipantsIds: NSObject {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
     /// Create underlying C context.
     public override init() {
-        self.c_ctx = vscr_ratchet_group_participants_info_new()
+        self.c_ctx = vscr_ratchet_group_participants_ids_new()
         super.init()
     }
 
@@ -58,29 +58,25 @@ import VirgilCryptoFoundation
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscr_ratchet_group_participants_info_shallow_copy(c_ctx)
+        self.c_ctx = vscr_ratchet_group_participants_ids_shallow_copy(c_ctx)
         super.init()
     }
 
     public init(size: Int) {
-        let proxyResult = vscr_ratchet_group_participants_info_new_size(size)
+        let proxyResult = vscr_ratchet_group_participants_ids_new_size(size)
 
         self.c_ctx = proxyResult!
     }
 
     /// Release underlying C context.
     deinit {
-        vscr_ratchet_group_participants_info_delete(self.c_ctx)
+        vscr_ratchet_group_participants_ids_delete(self.c_ctx)
     }
 
-    @objc public func addParticipant(id: Data, pubKey: Data) throws {
-        let proxyResult = id.withUnsafeBytes({ (idPointer: UnsafeRawBufferPointer) -> vscr_status_t in
-            pubKey.withUnsafeBytes({ (pubKeyPointer: UnsafeRawBufferPointer) -> vscr_status_t in
+    @objc public func addId(id: Data) {
+        id.withUnsafeBytes({ (idPointer: UnsafeRawBufferPointer) -> Void in
 
-                return vscr_ratchet_group_participants_info_add_participant(self.c_ctx, vsc_data(idPointer.bindMemory(to: byte.self).baseAddress, id.count), vsc_data(pubKeyPointer.bindMemory(to: byte.self).baseAddress, pubKey.count))
-            })
+            vscr_ratchet_group_participants_ids_add_id(self.c_ctx, vsc_data(idPointer.bindMemory(to: byte.self).baseAddress, id.count))
         })
-
-        try RatchetError.handleStatus(fromC: proxyResult)
     }
 }

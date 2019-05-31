@@ -172,7 +172,7 @@ public class RatchetJNI {
 
     public native long ratchetGroupParticipantsInfo_new(int size);
 
-    public native void ratchetGroupParticipantsInfo_addParticipant(long cCtx, byte[] id, byte[] pubKey);
+    public native void ratchetGroupParticipantsInfo_addParticipant(long cCtx, byte[] id, byte[] pubKey) throws RatchetException;
 
     public native long ratchetGroupMessage_new();
 
@@ -194,6 +194,11 @@ public class RatchetJNI {
     * This method should be called only for regular message type.
     */
     public native byte[] ratchetGroupMessage_getSenderId(long cCtx);
+
+    /*
+    * Returns message epoch.
+    */
+    public native int ratchetGroupMessage_getEpoch(long cCtx);
 
     /*
     * Buffer len to serialize this class.
@@ -236,6 +241,14 @@ public class RatchetJNI {
     * Generates message that should be sent to all participants using secure channel.
     */
     public native RatchetGroupMessage ratchetGroupTicket_getTicketMessage(long cCtx);
+
+    public native long ratchetGroupParticipantsIds_new();
+
+    public native void ratchetGroupParticipantsIds_close(long cCtx);
+
+    public native long ratchetGroupParticipantsIds_new(int size);
+
+    public native void ratchetGroupParticipantsIds_addId(long cCtx, byte[] id);
 
     public native long ratchetGroupSession_new();
 
@@ -301,7 +314,13 @@ public class RatchetJNI {
     * Sets up session.
     * NOTE: Identity private key and my id should be set separately.
     */
-    public native void ratchetGroupSession_setupSession(long cCtx, RatchetGroupMessage message, RatchetGroupParticipantsInfo participants) throws RatchetException;
+    public native void ratchetGroupSession_setupSessionState(long cCtx, RatchetGroupMessage message, RatchetGroupParticipantsInfo participants) throws RatchetException;
+
+    /*
+    * Sets up session.
+    * NOTE: Identity private key and my id should be set separately.
+    */
+    public native void ratchetGroupSession_updateSessionState(long cCtx, RatchetGroupMessage message, RatchetGroupParticipantsInfo addParticipants, RatchetGroupParticipantsIds removeParticipants) throws RatchetException;
 
     /*
     * Encrypts data

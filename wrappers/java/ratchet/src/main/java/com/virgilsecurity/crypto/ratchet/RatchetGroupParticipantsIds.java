@@ -38,37 +38,37 @@ package com.virgilsecurity.crypto.ratchet;
 
 import com.virgilsecurity.crypto.foundation.*;
 
-public class RatchetGroupParticipantsInfo implements AutoCloseable {
+public class RatchetGroupParticipantsIds implements AutoCloseable {
 
     public long cCtx;
 
     /* Create underlying C context. */
-    public RatchetGroupParticipantsInfo() {
+    public RatchetGroupParticipantsIds() {
         super();
-        this.cCtx = RatchetJNI.INSTANCE.ratchetGroupParticipantsInfo_new();
+        this.cCtx = RatchetJNI.INSTANCE.ratchetGroupParticipantsIds_new();
     }
 
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public RatchetGroupParticipantsInfo(long cCtx) {
+    public RatchetGroupParticipantsIds(long cCtx) {
         super();
         this.cCtx = cCtx;
     }
 
-    public RatchetGroupParticipantsInfo(int size) {
+    public RatchetGroupParticipantsIds(int size) {
         super();
-        this.cCtx = RatchetJNI.INSTANCE.ratchetGroupParticipantsInfo_new(size);
+        this.cCtx = RatchetJNI.INSTANCE.ratchetGroupParticipantsIds_new(size);
     }
 
     /* Close resource. */
     public void close() {
-        RatchetJNI.INSTANCE.ratchetGroupParticipantsInfo_close(this.cCtx);
+        RatchetJNI.INSTANCE.ratchetGroupParticipantsIds_close(this.cCtx);
     }
 
-    public void addParticipant(byte[] id, byte[] pubKey) throws RatchetException {
-        RatchetJNI.INSTANCE.ratchetGroupParticipantsInfo_addParticipant(this.cCtx, id, pubKey);
+    public void addId(byte[] id) {
+        RatchetJNI.INSTANCE.ratchetGroupParticipantsIds_addId(this.cCtx, id);
     }
 }
 

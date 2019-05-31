@@ -91,6 +91,13 @@ import VirgilCryptoFoundation
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
+    /// Returns message epoch.
+    @objc public func getEpoch() -> Int {
+        let proxyResult = vscr_ratchet_group_message_get_epoch(self.c_ctx)
+
+        return proxyResult
+    }
+
     /// Buffer len to serialize this class.
     @objc public func serializeLen() -> Int {
         let proxyResult = vscr_ratchet_group_message_serialize_len(self.c_ctx)

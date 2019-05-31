@@ -151,8 +151,16 @@ import VirgilCryptoFoundation
 
     /// Sets up session.
     /// NOTE: Identity private key and my id should be set separately.
-    @objc public func setupSession(message: RatchetGroupMessage, participants: RatchetGroupParticipantsInfo) throws {
-        let proxyResult = vscr_ratchet_group_session_setup_session(self.c_ctx, message.c_ctx, participants.c_ctx)
+    @objc public func setupSessionState(message: RatchetGroupMessage, participants: RatchetGroupParticipantsInfo) throws {
+        let proxyResult = vscr_ratchet_group_session_setup_session_state(self.c_ctx, message.c_ctx, participants.c_ctx)
+
+        try RatchetError.handleStatus(fromC: proxyResult)
+    }
+
+    /// Sets up session.
+    /// NOTE: Identity private key and my id should be set separately.
+    @objc public func updateSessionState(message: RatchetGroupMessage, addParticipants: RatchetGroupParticipantsInfo, removeParticipants: RatchetGroupParticipantsIds) throws {
+        let proxyResult = vscr_ratchet_group_session_update_session_state(self.c_ctx, message.c_ctx, addParticipants.c_ctx, removeParticipants.c_ctx)
 
         try RatchetError.handleStatus(fromC: proxyResult)
     }
