@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initOid = (Module, modules) => {
     /**
      * Provide conversion logic between OID and algorithm tags.

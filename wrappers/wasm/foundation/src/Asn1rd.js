@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initAsn1rd = (Module, modules) => {
     /**
      * This is MbedTLS implementation of ASN.1 reader.

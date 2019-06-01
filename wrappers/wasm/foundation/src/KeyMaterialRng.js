@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initKeyMaterialRng = (Module, modules) => {
     /**
      * Random number generator that generate deterministic sequence based

@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initSha256 = (Module, modules) => {
     /**
      * This is MbedTLS implementation of SHA256.

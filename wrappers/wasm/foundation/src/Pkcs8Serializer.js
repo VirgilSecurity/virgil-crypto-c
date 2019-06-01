@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initPkcs8Serializer = (Module, modules) => {
     /**
      * Implements PKCS#8 key serialization to DER format.

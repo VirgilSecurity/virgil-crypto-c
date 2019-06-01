@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initSigner = (Module, modules) => {
     /**
      * Sign data of any size.

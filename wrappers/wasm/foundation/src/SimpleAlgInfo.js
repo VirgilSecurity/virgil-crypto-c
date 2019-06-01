@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initSimpleAlgInfo = (Module, modules) => {
     /**
      * Handle simple algorithm information (just id).

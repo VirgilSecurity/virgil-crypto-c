@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initAes256Gcm = (Module, modules) => {
     /**
      * Implementation of the symmetric cipher AES-256 bit in a GCM mode.

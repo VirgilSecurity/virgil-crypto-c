@@ -35,27 +35,46 @@
  */
 
 
-const PythiaModule = require('./libpythia');
+function ensureNumber(arg, value) {
+    if (typeof value !== 'number') {
+        throw new TypeError(`'${arg}' is not a number`);
+    }
+    if (Number.isNaN(value)) {
+        throw new TypeError(`'${arg}' is NaN`);
+    }
+    if (value === Infinity) {
+        throw new TypeError(`'${arg}' is Infinity`);
+    }
+    if (value === -Infinity) {
+        throw new TypeError(`'${arg}' is -Infinity`);
+    }
+}
 
-const initPrecondition = require('./precondition');
-const initPythiaError = require('./PythiaError');
-const initPythia = require('./Pythia');
+function ensureString(arg, value) {
+    if (typeof value !== 'string') {
+        throw new TypeError(`'${arg}' is not a string`);
+    }
+}
 
-const initProject = () => {
-    const pythiaModule = new PythiaModule();
-    return new Promise((resolve, reject) => {
-        pythiaModule.onRuntimeInitialized = () => {
-            const modules = {};
+function ensureBoolean(arg, value) {
+    if (typeof value !== 'boolean') {
+        throw new TypeError(`'${arg}' is not a boolean`);
+    }
+}
 
-            modules.Precondition = initPrecondition(pythiaModule, modules);
-            modules.PythiaError = initPythiaError(pythiaModule, modules);
-            modules.Pythia = initPythia(pythiaModule, modules);
-            resolve(modules);
-        };
+function ensureUint8Array(arg, value) {
+    if (!(value instanceof Uint8Array)) {
+        throw new TypeError(`'${arg}' is not an Uint8Array`);
+    }
+}
 
-        pythiaModule.onAbort = message => {
-            reject(new Error(message));
-        };
-    });
-};
-module.exports = initProject;
+function ensureStringOrUint8Array(arg, value) {
+    if (!(typeof value === 'string' || value instanceof Uint8Array)) {
+        throw new TypeError(`'${arg}' is not a string and not an Uint8Array`);
+    }
+}
+
+module.exports.ensureNumber = ensureNumber;
+module.exports.ensureString = ensureString;
+module.exports.ensureBoolean = ensureBoolean;
+module.exports.ensureUint8Array = ensureUint8Array;

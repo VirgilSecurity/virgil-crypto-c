@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initHmac = (Module, modules) => {
     /**
      * Virgil Security implementation of HMAC algorithm (RFC 2104) (FIPS PUB 198-1).

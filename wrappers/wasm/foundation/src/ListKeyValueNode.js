@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initListKeyValueNode = (Module, modules) => {
     /**
      * Double linked list node with key and value.

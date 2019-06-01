@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initKeyRecipientInfoList = (Module, modules) => {
     /**
      * Handles a list of "key recipient info" class objects.

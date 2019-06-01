@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initMessageInfo = (Module, modules) => {
     /**
      * Handle information about an encrypted message and algorithms

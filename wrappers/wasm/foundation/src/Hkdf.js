@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initHkdf = (Module, modules) => {
     /**
      * Virgil Security implementation of the HKDF (RFC 6234) algorithm.

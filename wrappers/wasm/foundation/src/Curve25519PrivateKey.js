@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initCurve25519PrivateKey = (Module, modules) => {
     /**
      * This is implementation of CURVE25519 private key

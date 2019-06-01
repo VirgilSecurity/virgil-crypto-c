@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initPbeAlgInfo = (Module, modules) => {
     /**
      * Handle information about password-based encryption algorithm.

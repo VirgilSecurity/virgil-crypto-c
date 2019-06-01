@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initPkcs5Pbkdf2 = (Module, modules) => {
     /**
      * Virgil Security implementation of the PBKDF2 (RFC 8018) algorithm.

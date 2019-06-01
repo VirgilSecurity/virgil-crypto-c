@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initRecipientCipher = (Module, modules) => {
     /**
      * This class provides hybrid encryption algorithm that combines symmetric

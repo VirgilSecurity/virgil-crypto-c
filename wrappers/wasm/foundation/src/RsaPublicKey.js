@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initRsaPublicKey = (Module, modules) => {
     class RsaPublicKey {
 

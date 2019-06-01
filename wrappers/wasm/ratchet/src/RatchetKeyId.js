@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initRatchetKeyId = (Module, modules) => {
     /**
      * Utils class for working with keys formats.

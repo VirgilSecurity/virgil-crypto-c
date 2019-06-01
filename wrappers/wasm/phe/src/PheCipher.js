@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initPheCipher = (Module, modules) => {
     /**
      * Class for encryption using PHE account key

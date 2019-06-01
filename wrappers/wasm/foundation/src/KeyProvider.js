@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initKeyProvider = (Module, modules) => {
     /**
      * Provide functionality for private key generation and importing that

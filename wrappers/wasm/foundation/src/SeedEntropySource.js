@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initSeedEntropySource = (Module, modules) => {
     /**
      * Deterministic entropy source that is based only on the given seed.

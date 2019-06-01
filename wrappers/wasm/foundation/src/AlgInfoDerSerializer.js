@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initAlgInfoDerSerializer = (Module, modules) => {
     /**
      * Provide DER serializer of algorithm information.

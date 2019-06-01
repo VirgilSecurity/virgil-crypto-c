@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initHashBasedAlgInfo = (Module, modules) => {
     /**
      * Handle hashed based algorithm information, i.e. HKDF, HMAC, etc.

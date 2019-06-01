@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initEd25519PrivateKey = (Module, modules) => {
     /**
      * This is implementation of ED25519 private key

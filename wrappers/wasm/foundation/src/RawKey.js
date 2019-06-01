@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initRawKey = (Module, modules) => {
     /**
      * Provide implementation agnostic representation of the asymmetric key.

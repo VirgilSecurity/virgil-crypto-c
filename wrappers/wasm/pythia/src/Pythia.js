@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initPythia = (Module, modules) => {
     /**
      * Provide Pythia implementation based on the Virgil Security.

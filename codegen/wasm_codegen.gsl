@@ -76,6 +76,20 @@ function wasm_insert_prologue(wasm_module)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Insert model: wasm_enum
+# ---------------------------------------------------------------------------
+function wasm_insert_require(wasm_require)
+    check_arguments(my, "wasm_require", my)
+
+    echo_trace("Generate WebAssembly JS require: " + my.wasm_require.name, my)
+
+    assert_attributes(my.wasm_require, "name", my)
+    assert_attributes(my.wasm_require, "require", my)
+
+    wasm_insert_code("const $(my.wasm_require.name:) = require('$(my.wasm_require.require:)');")
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Insert model: wasm_class->wasm_constant
 # ---------------------------------------------------------------------------
 function wasm_insert_class_constant(wasm_constant, wasm_class)
@@ -294,6 +308,11 @@ function wasm_generate_sources(wasm_project_or_wrapper)
 
         wasm_insert_prologue(wasm_module)
         newline()
+
+        for wasm_module.wasm_require
+            newline()
+            wasm_insert_require(wasm_require)
+        endfor
 
         for wasm_module.wasm_enum
             newline()

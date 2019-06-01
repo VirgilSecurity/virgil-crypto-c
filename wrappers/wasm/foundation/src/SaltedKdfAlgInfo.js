@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initSaltedKdfAlgInfo = (Module, modules) => {
     /**
      * Handle KDF algorithms that are configured with salt and iteration count.

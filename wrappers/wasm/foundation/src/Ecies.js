@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initEcies = (Module, modules) => {
     /**
      * Virgil implementation of the ECIES algorithm.

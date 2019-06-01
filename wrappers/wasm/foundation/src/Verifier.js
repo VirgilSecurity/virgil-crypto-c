@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initVerifier = (Module, modules) => {
     /**
      * Verify data of any size.

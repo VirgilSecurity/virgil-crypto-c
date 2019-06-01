@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initMessageInfoCustomParams = (Module, modules) => {
     class MessageInfoCustomParams {
 

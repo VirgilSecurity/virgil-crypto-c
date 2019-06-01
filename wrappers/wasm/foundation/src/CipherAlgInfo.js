@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initCipherAlgInfo = (Module, modules) => {
     /**
      * Handle symmetric cipher algorithm information.

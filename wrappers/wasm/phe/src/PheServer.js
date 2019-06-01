@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initPheServer = (Module, modules) => {
     /**
      * Class for server-side PHE crypto operations.

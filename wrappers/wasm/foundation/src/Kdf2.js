@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initKdf2 = (Module, modules) => {
     /**
      * Virgil Security implementation of the KDF2 (ISO-18033-2) algorithm.

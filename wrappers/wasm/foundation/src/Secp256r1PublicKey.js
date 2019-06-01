@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initSecp256r1PublicKey = (Module, modules) => {
     class Secp256r1PublicKey {
 

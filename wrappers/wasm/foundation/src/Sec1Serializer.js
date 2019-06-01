@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initSec1Serializer = (Module, modules) => {
     /**
      * Implements SEC 1 key serialization to DER format.

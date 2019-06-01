@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initRsaPrivateKey = (Module, modules) => {
     class RsaPrivateKey {
 

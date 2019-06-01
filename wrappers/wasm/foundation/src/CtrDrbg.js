@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initCtrDrbg = (Module, modules) => {
     /**
      * Implementation of the RNG using deterministic random bit generators

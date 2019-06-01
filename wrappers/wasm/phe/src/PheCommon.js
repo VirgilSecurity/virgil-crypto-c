@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initPheCommon = (Module, modules) => {
     class PheCommon {
 

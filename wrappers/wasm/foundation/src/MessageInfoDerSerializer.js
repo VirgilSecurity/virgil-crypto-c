@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initMessageInfoDerSerializer = (Module, modules) => {
     /**
      * CMS based implementation of the class "message info" serialization.

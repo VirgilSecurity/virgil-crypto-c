@@ -1083,6 +1083,11 @@ function wasm_create_implementation_module(impl, wasm_project, meta)
             . = wasm_format_license(my.wasm_project->license) ?
         endnew
 
+        new wasm_require to wasm_module
+            .name = "precondition"
+            .require = "./precondition"
+        endnew
+
         new wasm_class to wasm_module
             . = wasm_format_description(my.impl) ?
             .name = wasm_derive_class_name(my.impl)
@@ -1158,6 +1163,11 @@ function wasm_create_class_module(class, wasm_project, meta)
 
         new wasm_license to wasm_module
             . = wasm_format_license(my.wasm_project->license) ?
+        endnew
+
+        new wasm_require to wasm_module
+            .name = "precondition"
+            .require = "./precondition"
         endnew
 
         new wasm_class to wasm_module
@@ -1598,6 +1608,71 @@ function wasm_create_project_cmake_module(wasm_project)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Create JS with precondition check helpers.
+# ---------------------------------------------------------------------------
+function wasm_create_precondition_module(wasm_project)
+    check_arguments(my, "wasm_project", my)
+
+    new wasm_module to my.wasm_project
+        .name = "precondition"
+        .source_file_name = 0.name + ".js"
+        .source_file_path = cat_path(my.wasm_project.src_source_dir, 0.source_file_name)
+
+        new wasm_license to wasm_module
+            . = wasm_format_license(my.wasm_project->license) ?
+        endnew
+
+        new wasm_code to wasm_module
+            . = "
+                function ensureNumber(arg, value) {
+                    if (typeof value !== 'number') {
+                        throw new TypeError(`'${arg}' is not a number`);
+                    }
+                    if (Number.isNaN(value)) {
+                        throw new TypeError(`'${arg}' is NaN`);
+                    }
+                    if (value === Infinity) {
+                        throw new TypeError(`'${arg}' is Infinity`);
+                    }
+                    if (value === -Infinity) {
+                        throw new TypeError(`'${arg}' is -Infinity`);
+                    }
+                }
+
+                function ensureString(arg, value) {
+                    if (typeof value !== 'string') {
+                        throw new TypeError(`'${arg}' is not a string`);
+                    }
+                }
+
+                function ensureBoolean(arg, value) {
+                    if (typeof value !== 'boolean') {
+                        throw new TypeError(`'${arg}' is not a boolean`);
+                    }
+                }
+
+                function ensureUint8Array(arg, value) {
+                    if (!(value instanceof Uint8Array)) {
+                        throw new TypeError(`'${arg}' is not an Uint8Array`);
+                    }
+                }
+
+                function ensureStringOrUint8Array(arg, value) {
+                    if (!(typeof value === 'string' || value instanceof Uint8Array)) {
+                        throw new TypeError(`'${arg}' is not a string and not an Uint8Array`);
+                    }
+                }
+
+                module.exports.ensureNumber = ensureNumber;
+                module.exports.ensureString = ensureString;
+                module.exports.ensureBoolean = ensureBoolean;
+                module.exports.ensureUint8Array = ensureUint8Array;
+            "
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create a bunch of custom modules that are not related to the existing
 #   high-level models.
 # ---------------------------------------------------------------------------
@@ -1605,6 +1680,7 @@ function wasm_create_custom_modules(source, wasm_project, meta)
     check_arguments(my, "source, wasm_project, meta", my)
 
     wasm_create_project_cmake_module(my.wasm_project)
+    wasm_create_precondition_module(my.wasm_project)
 
     if count(my.source.implementation)
         wasm_create_interface_wrapper_module(my.source, my.wasm_project)

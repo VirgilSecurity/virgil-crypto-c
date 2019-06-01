@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initEcAlgInfo = (Module, modules) => {
     /**
      * Handle algorithm information about ECP.

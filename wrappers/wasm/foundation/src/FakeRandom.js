@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initFakeRandom = (Module, modules) => {
     /**
      * Random number generator that is used for test purposes only.

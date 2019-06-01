@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initRatchetSession = (Module, modules) => {
     /**
      * Class for ratchet session between 2 participants

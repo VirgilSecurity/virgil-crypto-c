@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initPasswordRecipientInfoList = (Module, modules) => {
     /**
      * Handles a list of "password recipient info" class objects.

@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initPasswordRecipientInfo = (Module, modules) => {
     /**
      * Handle information about recipient that is defined by a password.

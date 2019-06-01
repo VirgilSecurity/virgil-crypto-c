@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initAsn1wr = (Module, modules) => {
     /**
      * This is MbedTLS implementation of ASN.1 writer.

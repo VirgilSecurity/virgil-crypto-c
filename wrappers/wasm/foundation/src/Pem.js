@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initPem = (Module, modules) => {
     /**
      * Simple PEM wrapper.

@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initRatchetMessage = (Module, modules) => {
     /**
      * Class represents ratchet message

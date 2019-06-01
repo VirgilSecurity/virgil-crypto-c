@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initRatchetCommon = (Module, modules) => {
     /**
      * Class with public constants

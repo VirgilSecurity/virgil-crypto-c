@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initKeyAsn1Deserializer = (Module, modules) => {
     /**
      * Implements PKCS#8 and SEC1 key deserialization from DER / PEM format.

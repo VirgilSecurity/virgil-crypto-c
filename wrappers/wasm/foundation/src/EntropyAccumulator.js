@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initEntropyAccumulator = (Module, modules) => {
     /**
      * Implementation based on a simple entropy accumulator.

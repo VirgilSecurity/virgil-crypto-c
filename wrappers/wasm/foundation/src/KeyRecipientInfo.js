@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initKeyRecipientInfo = (Module, modules) => {
     /**
      * Handle information about recipient that is defined by a Public Key.

@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initRatchetGroupSession = (Module, modules) => {
     /**
      * Ratchet group session.

@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initBase64 = (Module, modules) => {
     /**
      * Implementation of the Base64 algorithm RFC 1421 and RFC 2045.

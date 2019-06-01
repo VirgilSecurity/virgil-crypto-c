@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initAlgFactory = (Module, modules) => {
     /**
      * Create algorithms based on the given information.

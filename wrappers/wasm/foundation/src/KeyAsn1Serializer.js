@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initKeyAsn1Serializer = (Module, modules) => {
     /**
      * Implements key serialization in the ASN.1 format (DER / PEM):

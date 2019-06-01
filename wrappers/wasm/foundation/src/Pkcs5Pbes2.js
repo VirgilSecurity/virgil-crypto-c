@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initPkcs5Pbes2 = (Module, modules) => {
     /**
      * Virgil Security implementation of the PBES2 (RFC 8018) algorithm.

@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initAes256Cbc = (Module, modules) => {
     /**
      * Implementation of the symmetric cipher AES-256 bit in a CBC mode.

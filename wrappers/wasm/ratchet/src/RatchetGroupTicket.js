@@ -35,6 +35,8 @@
  */
 
 
+const precondition = require('./precondition');
+
 const initRatchetGroupTicket = (Module, modules) => {
     /**
      * Group ticket used to start group session or change participants.
