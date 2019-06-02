@@ -59,8 +59,8 @@ void restore_session(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session);
 void initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratchet_group_session_t ***sessions, vsc_buffer_t ***priv, vscr_ratchet_group_participants_info_t **infos);
 vscr_ratchet_group_participants_info_t *copy_participants_info_without_member(vscr_ratchet_group_participants_info_t *info, vscr_ratchet_participant_id_t id);
 vscr_ratchet_group_participants_info_t *copy_participants_info_with_free_space(vscr_ratchet_group_participants_info_t *info);
-void add_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t add_size, vscr_ratchet_group_session_t ***sessions, vsc_buffer_t ***priv, vscr_ratchet_group_participants_info_t *info);
-void remove_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t remove_size, vscr_ratchet_group_session_t ***sessions, vsc_buffer_t ***priv, vscr_ratchet_group_participants_info_t *info);
+void add_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t add_size, vscr_ratchet_group_session_t ***sessions, vsc_buffer_t ***priv, vscr_ratchet_group_participants_info_t **info);
+void remove_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t remove_size, vscr_ratchet_group_session_t ***sessions, vsc_buffer_t ***priv, vscr_ratchet_group_participants_info_t **info);
 void encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterations, vscr_ratchet_group_session_t **sessions, double lost_rate, double distribution_factor, double generate_distribution, vsc_buffer_t **priv);
 void restore_group_session(vscf_ctr_drbg_t *rng, vscr_ratchet_group_session_t **session, vsc_buffer_t *priv);
 

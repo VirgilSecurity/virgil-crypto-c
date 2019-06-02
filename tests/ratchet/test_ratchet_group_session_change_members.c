@@ -74,7 +74,7 @@ test__add_members__random_chat__should_continue_working(void) {
 
     size_t add_members_size = generate_number(rng, 2, 10);
 
-    add_random_members(rng, group_size, add_members_size, &sessions, &priv, info);
+    add_random_members(rng, group_size, add_members_size, &sessions, &priv, &info);
 
     size_t new_size = group_size + add_members_size;
 
@@ -110,7 +110,7 @@ test__remove_members__random_chat__should_continue_working(void) {
 
     size_t remove_members_size = generate_number(rng, 1, group_size - 2);
 
-    remove_random_members(rng, group_size, remove_members_size, &sessions, &priv, info);
+    remove_random_members(rng, group_size, remove_members_size, &sessions, &priv, &info);
 
     size_t new_size = group_size - remove_members_size;
 
@@ -480,6 +480,119 @@ test__remove_members__old_messages__should_continue_working(void) {
     vscf_ctr_drbg_destroy(&rng);
 }
 
+void
+test__remove_add_member__same_user__should_continue_working(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
+    vscr_ratchet_group_session_t **sessions = NULL;
+    vsc_buffer_t **priv = NULL;
+    vscr_ratchet_group_participants_info_t *info = NULL;
+
+    initialize_random_group_chat(rng, 3, &sessions, &priv, &info);
+    vscr_error_t error;
+    vscr_error_reset(&error);
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error.status);
+
+    vscr_ratchet_group_participants_info_t *add_info_empty = vscr_ratchet_group_participants_info_new_size(0);
+    vscr_ratchet_group_participants_info_t *add_info = vscr_ratchet_group_participants_info_new_size(1);
+
+    add_info->participants[0] = vscr_ratchet_group_participant_info_new();
+    memcpy(add_info->participants[0]->id, info->participants[2]->id, vscr_ratchet_common_PARTICIPANT_ID_LEN);
+    memcpy(add_info->participants[0]->pub_key, info->participants[2]->pub_key, vscr_ratchet_common_hidden_KEY_LEN);
+    add_info->count++;
+
+    vscr_ratchet_group_participants_ids_t *remove_ids_empty = vscr_ratchet_group_participants_ids_new_size(0);
+    vscr_ratchet_group_participants_ids_t *remove_ids = vscr_ratchet_group_participants_ids_new_size(1);
+    vscr_ratchet_group_participants_ids_add_id(
+            remove_ids, vsc_data(sessions[2]->my_id, vscr_ratchet_common_PARTICIPANT_ID_LEN));
+
+    for (size_t i = 0; i < 10; i++) {
+        vscr_ratchet_group_ticket_t *ticket1 = vscr_ratchet_group_session_create_group_ticket(sessions[0], &error);
+        const vscr_ratchet_group_message_t *info_msg1 = vscr_ratchet_group_ticket_get_ticket_message(ticket1);
+
+        TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+                vscr_ratchet_group_session_update_session_state(sessions[0], info_msg1, add_info_empty, remove_ids));
+        TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+                vscr_ratchet_group_session_update_session_state(sessions[1], info_msg1, add_info_empty, remove_ids));
+
+        vscr_ratchet_group_ticket_t *ticket2 = vscr_ratchet_group_session_create_group_ticket(sessions[0], &error);
+        const vscr_ratchet_group_message_t *info_msg2 = vscr_ratchet_group_ticket_get_ticket_message(ticket2);
+        TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+                vscr_ratchet_group_session_update_session_state(sessions[0], info_msg2, add_info, remove_ids_empty));
+        TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+                vscr_ratchet_group_session_update_session_state(sessions[1], info_msg2, add_info, remove_ids_empty));
+
+        vscr_ratchet_group_ticket_destroy(&ticket1);
+        vscr_ratchet_group_ticket_destroy(&ticket2);
+    }
+
+    vscr_ratchet_group_participants_info_destroy(&add_info);
+    vscr_ratchet_group_participants_info_destroy(&add_info_empty);
+    vscr_ratchet_group_participants_ids_destroy(&remove_ids);
+    vscr_ratchet_group_participants_ids_destroy(&remove_ids_empty);
+
+    for (size_t i = 0; i < 3; i++) {
+        vscr_ratchet_group_session_destroy(&sessions[i]);
+        vsc_buffer_destroy(&priv[i]);
+    }
+
+    vscr_ratchet_group_participants_info_destroy(&info);
+
+    vscr_dealloc(sessions);
+    vscr_dealloc(priv);
+
+    vscf_ctr_drbg_destroy(&rng);
+}
+
+void
+test__add_remove_members__random_actions__should_continue_working(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
+    vscr_ratchet_group_session_t **sessions = NULL;
+    vsc_buffer_t **priv = NULL;
+    vscr_ratchet_group_participants_info_t *info = NULL;
+
+    size_t group_size = generate_number(rng, 2, 10);
+
+    initialize_random_group_chat(rng, group_size, &sessions, &priv, &info);
+
+    encrypt_decrypt(rng, group_size, group_size * generate_number(rng, 5, 10), sessions, 0.75, 1.25, 0.25, priv);
+
+    for (size_t i = 0; i < 10; i++) {
+        size_t action = generate_number(rng, 0, 1);
+
+        if ((action == 0 || group_size < 3) && group_size < 15) {
+            size_t add_size = generate_number(rng, 1, 15 - group_size);
+
+            add_random_members(rng, group_size, add_size, &sessions, &priv, &info);
+
+            group_size += add_size;
+        } else {
+            size_t remove_size = generate_number(rng, 1, group_size - 2);
+
+            remove_random_members(rng, group_size, remove_size, &sessions, &priv, &info);
+
+            group_size -= remove_size;
+        }
+
+        encrypt_decrypt(rng, group_size, group_size * generate_number(rng, 2, 5), sessions, 0.75, 1.25, 0.25, priv);
+    }
+
+    for (size_t i = 0; i < group_size; i++) {
+        vscr_ratchet_group_session_destroy(&sessions[i]);
+        vsc_buffer_destroy(&priv[i]);
+    }
+
+    vscr_dealloc(sessions);
+    vscr_dealloc(priv);
+    vscr_ratchet_group_participants_info_destroy(&info);
+
+    vscf_ctr_drbg_destroy(&rng);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -496,6 +609,8 @@ main(void) {
     RUN_TEST(test__ill_be_back__random_chat__should_continue_working);
     RUN_TEST(test__change_members__out_of_order_msgs__should_continue_working);
     RUN_TEST(test__remove_members__old_messages__should_continue_working);
+    RUN_TEST(test__remove_add_member__same_user__should_continue_working);
+    RUN_TEST(test__add_remove_members__random_actions__should_continue_working);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

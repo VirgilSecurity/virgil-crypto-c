@@ -758,7 +758,7 @@ copy_participants_info_with_free_space(vscr_ratchet_group_participants_info_t *i
 
 void
 add_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t add_size, vscr_ratchet_group_session_t ***sessions,
-        vsc_buffer_t ***priv, vscr_ratchet_group_participants_info_t *info) {
+        vsc_buffer_t ***priv, vscr_ratchet_group_participants_info_t **info) {
     vscr_ratchet_group_session_t **old_sessions = *sessions;
     vsc_buffer_t **old_priv = *priv;
 
@@ -783,10 +783,10 @@ add_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t add_size, vscr_ratc
 
     vscr_ratchet_group_participants_info_t *new_info = vscr_ratchet_group_participants_info_new_size(size + add_size);
 
-    for (size_t i = 0; i < info->count; i++) {
+    for (size_t i = 0; i < (*info)->count; i++) {
         vscr_ratchet_group_participant_info_t *temp = vscr_ratchet_group_participant_info_new();
-        memcpy(temp->id, info->participants[i]->id, vscr_ratchet_common_PARTICIPANT_ID_LEN);
-        memcpy(temp->pub_key, info->participants[i]->pub_key, vscr_ratchet_common_hidden_KEY_LEN);
+        memcpy(temp->id, (*info)->participants[i]->id, vscr_ratchet_common_PARTICIPANT_ID_LEN);
+        memcpy(temp->pub_key, (*info)->participants[i]->pub_key, vscr_ratchet_common_hidden_KEY_LEN);
         new_info->participants[new_info->count++] = temp;
     }
 
@@ -832,7 +832,9 @@ add_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t add_size, vscr_ratc
         TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vscr_ratchet_group_session_get_session_id(session), session_id);
     }
 
-    vscr_ratchet_group_participants_info_destroy(&new_info);
+    vscr_ratchet_group_participants_info_destroy(info);
+    *info = new_info;
+
     vscr_dealloc(old_sessions);
     vscr_dealloc(old_priv);
     vscr_ratchet_group_ticket_destroy(&ticket);
@@ -841,7 +843,7 @@ add_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t add_size, vscr_ratc
 
 void
 remove_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t remove_size, vscr_ratchet_group_session_t ***sessions,
-        vsc_buffer_t ***priv, vscr_ratchet_group_participants_info_t *info) {
+        vsc_buffer_t ***priv, vscr_ratchet_group_participants_info_t **info) {
     vscr_ratchet_group_session_t **old_sessions = *sessions;
     vsc_buffer_t **old_priv = *priv;
 
@@ -894,8 +896,8 @@ remove_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t remove_size, vsc
             counter++;
 
             vscr_ratchet_group_participant_info_t *temp = vscr_ratchet_group_participant_info_new();
-            memcpy(temp->id, info->participants[i]->id, vscr_ratchet_common_PARTICIPANT_ID_LEN);
-            memcpy(temp->pub_key, info->participants[i]->pub_key, vscr_ratchet_common_hidden_KEY_LEN);
+            memcpy(temp->id, (*info)->participants[i]->id, vscr_ratchet_common_PARTICIPANT_ID_LEN);
+            memcpy(temp->pub_key, (*info)->participants[i]->pub_key, vscr_ratchet_common_hidden_KEY_LEN);
             new_info->participants[new_info->count++] = temp;
         }
     }
@@ -919,7 +921,8 @@ remove_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t remove_size, vsc
         TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vscr_ratchet_group_session_get_session_id(session), session_id);
     }
 
-    vscr_ratchet_group_participants_info_destroy(&new_info);
+    vscr_ratchet_group_participants_info_destroy(info);
+    *info = new_info;
     vscr_dealloc(permut);
     vscr_dealloc(old_sessions);
     vscr_dealloc(old_priv);

@@ -233,7 +233,7 @@ vscr_ratchet_group_participant_add_epoch(
     size_t shift = epoch - last_epoch;
 
     if (shift != 0) {
-        for (size_t i = 0; i < shift; i++) {
+        for (size_t i = 0; i < shift && i < vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT; i++) {
             vscr_ratchet_group_participant_epoch_destroy(
                     &self->epochs[vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT - i - 1]);
         }
