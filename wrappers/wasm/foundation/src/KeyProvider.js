@@ -95,6 +95,7 @@ const initKeyProvider = (Module, modules) => {
         }
 
         set ecies(ecies) {
+            precondition.ensureClass('ecies', ecies, modules.Ecies);
             Module._vscf_key_provider_release_ecies(this.ctxPtr)
             Module._vscf_key_provider_use_ecies(this.ctxPtr, ecies.ctxPtr)
         }
@@ -119,6 +120,8 @@ const initKeyProvider = (Module, modules) => {
          * Generate new private key from the given id.
          */
         generatePrivateKey(algId) {
+            precondition.ensureNumber('algId', algId);
+
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
             Module._vscf_error_reset(errorCtxPtr);

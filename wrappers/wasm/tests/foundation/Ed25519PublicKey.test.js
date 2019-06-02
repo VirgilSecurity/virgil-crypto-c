@@ -49,7 +49,7 @@ describe('Ed25519PublicKey', () => {
         'f22bd5b9648c906b1951deed256ce295114b0b699a068fc52c156b4ff3efa5ae035e48f447e9e21f6d6339e5508f6b273271f76fc90df95c0e965436482e1402',
         'hex',
       );
-      const result = ed25519PublicKey.verifyHash(digest, foundation.AlgId.Sha256, signature);
+      const result = ed25519PublicKey.verifyHash(digest, foundation.AlgId.SHA256, signature);
       expect(result).toBeTruthy();
     });
   });

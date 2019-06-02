@@ -93,6 +93,7 @@ const initMessageInfo = (Module, modules) => {
          * Add recipient that is defined by Public Key.
          */
         addKeyRecipient(keyRecipient) {
+            precondition.ensureClass('keyRecipient', keyRecipient, modules.KeyRecipientInfo);
             Module._vscf_message_info_add_key_recipient(this.ctxPtr, keyRecipient.ctxPtr);
         }
 
@@ -100,6 +101,7 @@ const initMessageInfo = (Module, modules) => {
          * Add recipient that is defined by password.
          */
         addPasswordRecipient(passwordRecipient) {
+            precondition.ensureClass('passwordRecipient', passwordRecipient, modules.PasswordRecipientInfo);
             Module._vscf_message_info_add_password_recipient(this.ctxPtr, passwordRecipient.ctxPtr);
         }
 
@@ -147,6 +149,7 @@ const initMessageInfo = (Module, modules) => {
          * Setup custom params.
          */
         setCustomParams(customParams) {
+            precondition.ensureClass('customParams', customParams, modules.MessageInfoCustomParams);
             Module._vscf_message_info_set_custom_params(this.ctxPtr, customParams.ctxPtr);
         }
 

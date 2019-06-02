@@ -92,6 +92,10 @@ const initEcAlgInfo = (Module, modules) => {
          * Create algorithm info with EC generic key identificator, EC domain group identificator.
          */
         static newWithMembers(algId, keyId, domainId) {
+            precondition.ensureNumber('algId', algId);
+            precondition.ensureNumber('keyId', keyId);
+            precondition.ensureNumber('domainId', domainId);
+
             let proxyResult;
             proxyResult = Module._vscf_ec_alg_info_new_with_members(algId, keyId, domainId);
 

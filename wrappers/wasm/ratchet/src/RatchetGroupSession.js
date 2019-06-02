@@ -254,6 +254,7 @@ const initRatchetGroupSession = (Module, modules) => {
          * NOTE: Identity private key and my id should be set separately.
          */
         setupSession(message) {
+            precondition.ensureClass('message', message, modules.RatchetGroupMessage);
             const proxyResult = Module._vscr_ratchet_group_session_setup_session(this.ctxPtr, message.ctxPtr);
             modules.RatchetError.handleStatusCode(proxyResult);
         }
@@ -301,6 +302,8 @@ const initRatchetGroupSession = (Module, modules) => {
          * Calculates size of buffer sufficient to store decrypted message
          */
         decryptLen(message) {
+            precondition.ensureClass('message', message, modules.RatchetGroupMessage);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_group_session_decrypt_len(this.ctxPtr, message.ctxPtr);
             return proxyResult;
@@ -310,6 +313,8 @@ const initRatchetGroupSession = (Module, modules) => {
          * Decrypts message
          */
         decrypt(message) {
+            precondition.ensureClass('message', message, modules.RatchetGroupMessage);
+
             const plainTextCapacity = this.decryptLen(message);
             const plainTextCtxPtr = Module._vsc_buffer_new_with_capacity(plainTextCapacity);
 

@@ -238,6 +238,7 @@ const initRsaPrivateKey = (Module, modules) => {
          */
         signHash(hashDigest, hashId) {
             precondition.ensureByteArray('hashDigest', hashDigest);
+            precondition.ensureNumber('hashId', hashId);
 
             //  Copy bytes from JS memory to the WASM memory.
             const hashDigestSize = hashDigest.length * hashDigest.BYTES_PER_ELEMENT;

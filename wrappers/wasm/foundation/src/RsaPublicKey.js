@@ -225,6 +225,7 @@ const initRsaPublicKey = (Module, modules) => {
          */
         verifyHash(hashDigest, hashId, signature) {
             precondition.ensureByteArray('hashDigest', hashDigest);
+            precondition.ensureNumber('hashId', hashId);
             precondition.ensureByteArray('signature', signature);
 
             //  Copy bytes from JS memory to the WASM memory.

@@ -288,4 +288,53 @@ function wasm_derive_interface_wrapper_class_name(return, wasm_project)
     return wasm_derive_class_name_str(cat(my.return.project ? my.wasm_project.name, "interface"))
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Return invocation that validate instance passed to the JS method.
+# ---------------------------------------------------------------------------
+function wasm_derive_instance_precondition(instance, wasm_instance, wasm_project)
+    check_arguments(my, "instance, wasm_instance, wasm_project", my)
+
+    if defined(my.instance.type)
+        if my.instance.type = "boolean"
+            my.ensure_method = "ensureBoolean"
+        else
+            my.ensure_method = "ensureNumber"
+        endif
+
+    elsif defined(my.instance.class)
+        if my.instance.class = "data"
+            my.ensure_method = "ensureByteArray"
+
+        elsif my.instance.class = "buffer"
+            my.ensure_method = "ensureByteArray"
+        else
+            my.ensure_method = "ensureClass"
+            my.class_name = wasm_derive_instance_class(my.instance)
+        endif
+
+    elsif defined(my.instance.interface)
+        #   TODO: my.ensure_method = "ensureInterface"
+
+    elsif defined(my.instance.enum)
+        my.ensure_method = "ensureNumber"
+
+    elsif defined(my.instance.impl)
+        my.ensure_method = "ensureClass"
+        my.class_name = wasm_derive_instance_class(my.instance)
+    endif
+
+    if defined(my.ensure_method)
+        my.precondition ?= "precondition."
+        my.precondition += my.ensure_method
+        my.precondition += "("
+        my.precondition +="'$(my.wasm_instance.name:)', $(my.wasm_instance.name:)"
+        if defined(my.class_name)
+            my.precondition +=", modules.$(my.class_name:)"
+        endif
+        my.precondition += ");"
+    endif
+
+    return my.precondition ?
+endfunction
+
 .endtemplate

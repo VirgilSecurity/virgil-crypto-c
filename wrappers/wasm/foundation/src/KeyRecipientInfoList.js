@@ -93,6 +93,7 @@ const initKeyRecipientInfoList = (Module, modules) => {
          * Note, ownership is transfered.
          */
         add(keyRecipientInfo) {
+            precondition.ensureClass('keyRecipientInfo', keyRecipientInfo, modules.KeyRecipientInfo);
             Module._vscf_key_recipient_info_list_add(this.ctxPtr, keyRecipientInfo.ctxPtr);
         }
 

@@ -93,6 +93,8 @@ const initPbeAlgInfo = (Module, modules) => {
          * cipher alg info.
          */
         static newWithMembers(algId, kdfAlgInfo, cipherAlgInfo) {
+            precondition.ensureNumber('algId', algId);
+
             let proxyResult;
             proxyResult = Module._vscf_pbe_alg_info_new_with_members(algId, kdfAlgInfo.ctxPtr, cipherAlgInfo.ctxPtr);
 

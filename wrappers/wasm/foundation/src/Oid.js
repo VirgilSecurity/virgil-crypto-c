@@ -47,6 +47,8 @@ const initOid = (Module, modules) => {
          * Return OID for given algorithm identifier.
          */
         static fromAlgId(algId) {
+            precondition.ensureNumber('algId', algId);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
@@ -96,6 +98,8 @@ const initOid = (Module, modules) => {
          * Return OID for a given identifier.
          */
         static fromId(oidId) {
+            precondition.ensureNumber('oidId', oidId);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
@@ -145,6 +149,8 @@ const initOid = (Module, modules) => {
          * Map oid identifier to the algorithm identifier.
          */
         static idToAlgId(oidId) {
+            precondition.ensureNumber('oidId', oidId);
+
             let proxyResult;
             proxyResult = Module._vscf_oid_id_to_alg_id(oidId);
             return proxyResult;

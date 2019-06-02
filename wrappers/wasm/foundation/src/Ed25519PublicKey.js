@@ -116,6 +116,7 @@ const initEd25519PublicKey = (Module, modules) => {
         }
 
         set ecies(ecies) {
+            precondition.ensureClass('ecies', ecies, modules.Ecies);
             Module._vscf_ed25519_public_key_release_ecies(this.ctxPtr)
             Module._vscf_ed25519_public_key_use_ecies(this.ctxPtr, ecies.ctxPtr)
         }
@@ -218,6 +219,7 @@ const initEd25519PublicKey = (Module, modules) => {
          */
         verifyHash(hashDigest, hashId, signature) {
             precondition.ensureByteArray('hashDigest', hashDigest);
+            precondition.ensureNumber('hashId', hashId);
             precondition.ensureByteArray('signature', signature);
 
             //  Copy bytes from JS memory to the WASM memory.

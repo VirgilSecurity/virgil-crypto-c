@@ -93,6 +93,7 @@ const initRawKey = (Module, modules) => {
          * Note, data is copied.
          */
         static newWithData(algId, rawKeyData) {
+            precondition.ensureNumber('algId', algId);
             precondition.ensureByteArray('rawKeyData', rawKeyData);
 
             //  Copy bytes from JS memory to the WASM memory.

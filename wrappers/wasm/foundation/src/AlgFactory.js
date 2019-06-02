@@ -102,6 +102,8 @@ const initAlgFactory = (Module, modules) => {
          * Create algorithm that implements "public key" interface.
          */
         static createPublicKeyFromRawKey(rawKey) {
+            precondition.ensureClass('rawKey', rawKey, modules.RawKey);
+
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
             Module._vscf_error_reset(errorCtxPtr);
@@ -125,6 +127,8 @@ const initAlgFactory = (Module, modules) => {
          * Create algorithm that implements "private key" interface.
          */
         static createPrivateKeyFromRawKey(rawKey) {
+            precondition.ensureClass('rawKey', rawKey, modules.RawKey);
+
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
             Module._vscf_error_reset(errorCtxPtr);

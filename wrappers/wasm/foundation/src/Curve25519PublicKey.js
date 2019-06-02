@@ -116,6 +116,7 @@ const initCurve25519PublicKey = (Module, modules) => {
         }
 
         set ecies(ecies) {
+            precondition.ensureClass('ecies', ecies, modules.Ecies);
             Module._vscf_curve25519_public_key_release_ecies(this.ctxPtr)
             Module._vscf_curve25519_public_key_use_ecies(this.ctxPtr, ecies.ctxPtr)
         }

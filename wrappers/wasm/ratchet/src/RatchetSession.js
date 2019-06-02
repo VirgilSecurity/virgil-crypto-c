@@ -185,6 +185,7 @@ const initRatchetSession = (Module, modules) => {
             precondition.ensureByteArray('receiverIdentityPrivateKey', receiverIdentityPrivateKey);
             precondition.ensureByteArray('receiverLongTermPrivateKey', receiverLongTermPrivateKey);
             precondition.ensureByteArray('receiverOneTimePrivateKey', receiverOneTimePrivateKey);
+            precondition.ensureClass('message', message, modules.RatchetMessage);
 
             //  Copy bytes from JS memory to the WASM memory.
             const senderIdentityPublicKeySize = senderIdentityPublicKey.length * senderIdentityPublicKey.BYTES_PER_ELEMENT;
@@ -325,6 +326,8 @@ const initRatchetSession = (Module, modules) => {
          * Calculates size of buffer sufficient to store decrypted message
          */
         decryptLen(message) {
+            precondition.ensureClass('message', message, modules.RatchetMessage);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_session_decrypt_len(this.ctxPtr, message.ctxPtr);
             return proxyResult;
@@ -334,6 +337,8 @@ const initRatchetSession = (Module, modules) => {
          * Decrypts message
          */
         decrypt(message) {
+            precondition.ensureClass('message', message, modules.RatchetMessage);
+
             const plainTextCapacity = this.decryptLen(message);
             const plainTextCtxPtr = Module._vsc_buffer_new_with_capacity(plainTextCapacity);
 

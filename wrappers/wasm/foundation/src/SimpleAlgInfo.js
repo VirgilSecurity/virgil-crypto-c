@@ -92,6 +92,8 @@ const initSimpleAlgInfo = (Module, modules) => {
          * Create algorithm info with identificator.
          */
         static newWithAlgId(algId) {
+            precondition.ensureNumber('algId', algId);
+
             let proxyResult;
             proxyResult = Module._vscf_simple_alg_info_new_with_alg_id(algId);
 

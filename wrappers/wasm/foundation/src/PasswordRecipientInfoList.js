@@ -93,6 +93,7 @@ const initPasswordRecipientInfoList = (Module, modules) => {
          * Note, ownership is transfered.
          */
         add(passwordRecipientInfo) {
+            precondition.ensureClass('passwordRecipientInfo', passwordRecipientInfo, modules.PasswordRecipientInfo);
             Module._vscf_password_recipient_info_list_add(this.ctxPtr, passwordRecipientInfo.ctxPtr);
         }
 

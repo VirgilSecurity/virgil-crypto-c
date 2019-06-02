@@ -116,6 +116,7 @@ const initEd25519PrivateKey = (Module, modules) => {
         }
 
         set ecies(ecies) {
+            precondition.ensureClass('ecies', ecies, modules.Ecies);
             Module._vscf_ed25519_private_key_release_ecies(this.ctxPtr)
             Module._vscf_ed25519_private_key_use_ecies(this.ctxPtr, ecies.ctxPtr)
         }
@@ -236,6 +237,7 @@ const initEd25519PrivateKey = (Module, modules) => {
          */
         signHash(hashDigest, hashId) {
             precondition.ensureByteArray('hashDigest', hashDigest);
+            precondition.ensureNumber('hashId', hashId);
 
             //  Copy bytes from JS memory to the WASM memory.
             const hashDigestSize = hashDigest.length * hashDigest.BYTES_PER_ELEMENT;

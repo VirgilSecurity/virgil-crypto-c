@@ -74,8 +74,15 @@ function ensureStringOrByteArray(arg, value) {
     }
 }
 
+function ensureClass(arg, value, cls) {
+    if (!(value instanceof cls)) {
+        throw new TypeError(`'${arg}' is not an instance of the class ${cls.name}`);
+    }
+}
+
 module.exports.ensureNumber = ensureNumber;
 module.exports.ensureString = ensureString;
 module.exports.ensureBoolean = ensureBoolean;
 module.exports.ensureByteArray = ensureByteArray;
 module.exports.ensureStringOrByteArray = ensureStringOrByteArray;
+module.exports.ensureClass = ensureClass;

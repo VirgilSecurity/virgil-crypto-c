@@ -93,6 +93,7 @@ const initSaltedKdfAlgInfo = (Module, modules) => {
          * salt and iteration count.
          */
         static newWithMembers(algId, hashAlgInfo, salt, iterationCount) {
+            precondition.ensureNumber('algId', algId);
             precondition.ensureByteArray('salt', salt);
             precondition.ensureNumber('iterationCount', iterationCount);
 

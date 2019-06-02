@@ -110,6 +110,8 @@ const initMessageInfoDerSerializer = (Module, modules) => {
          * Return buffer size enough to hold serialized message info.
          */
         serializedLen(messageInfo) {
+            precondition.ensureClass('messageInfo', messageInfo, modules.MessageInfo);
+
             let proxyResult;
             proxyResult = Module._vscf_message_info_der_serializer_serialized_len(this.ctxPtr, messageInfo.ctxPtr);
             return proxyResult;
@@ -119,6 +121,8 @@ const initMessageInfoDerSerializer = (Module, modules) => {
          * Serialize class "message info".
          */
         serialize(messageInfo) {
+            precondition.ensureClass('messageInfo', messageInfo, modules.MessageInfo);
+
             const outCapacity = this.serializedLen(messageInfo);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
