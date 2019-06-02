@@ -142,7 +142,7 @@ const initMessageInfoDerSerializer = (Module, modules) => {
          * and this means that there is no message info at the data beginning.
          */
         readPrefix(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
@@ -171,7 +171,7 @@ const initMessageInfoDerSerializer = (Module, modules) => {
          * Deserialize class "message info".
          */
         deserialize(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;

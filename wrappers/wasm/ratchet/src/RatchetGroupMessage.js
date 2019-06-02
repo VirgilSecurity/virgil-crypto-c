@@ -133,7 +133,7 @@ const initRatchetGroupMessage = (Module, modules) => {
          * This method should be called only for group info message type.
          */
         getPubKeyId(participantId) {
-            // assert(typeof participantId === 'Uint8Array')
+            precondition.ensureByteArray('participantId', participantId);
 
             //  Copy bytes from JS memory to the WASM memory.
             const participantIdSize = participantId.length * participantId.BYTES_PER_ELEMENT;
@@ -224,7 +224,7 @@ const initRatchetGroupMessage = (Module, modules) => {
          * Deserializes instance.
          */
         static deserialize(input) {
-            // assert(typeof input === 'Uint8Array')
+            precondition.ensureByteArray('input', input);
 
             //  Copy bytes from JS memory to the WASM memory.
             const inputSize = input.length * input.BYTES_PER_ELEMENT;

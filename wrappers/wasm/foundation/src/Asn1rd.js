@@ -92,7 +92,7 @@ const initAsn1rd = (Module, modules) => {
          * Reset all internal states and prepare to new ASN.1 reading operations.
          */
         reset(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
@@ -174,7 +174,7 @@ const initAsn1rd = (Module, modules) => {
          * Return element length.
          */
         readTag(tag) {
-            // assert(typeof tag === 'number')
+            precondition.ensureNumber('tag', tag);
 
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_tag(this.ctxPtr, tag);
@@ -187,7 +187,7 @@ const initAsn1rd = (Module, modules) => {
          * Return 0 if current position do not points to the requested tag.
          */
         readContextTag(tag) {
-            // assert(typeof tag === 'number')
+            precondition.ensureNumber('tag', tag);
 
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_context_tag(this.ctxPtr, tag);
@@ -394,7 +394,7 @@ const initAsn1rd = (Module, modules) => {
          * Read raw data of given length.
          */
         readData(len) {
-            // assert(typeof len === 'number')
+            precondition.ensureNumber('len', len);
 
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();

@@ -109,7 +109,7 @@ const initPheCipher = (Module, modules) => {
          * Returns buffer capacity needed to fit cipher text
          */
         encryptLen(plainTextLen) {
-            // assert(typeof plainTextLen === 'number')
+            precondition.ensureNumber('plainTextLen', plainTextLen);
 
             let proxyResult;
             proxyResult = Module._vsce_phe_cipher_encrypt_len(this.ctxPtr, plainTextLen);
@@ -120,7 +120,7 @@ const initPheCipher = (Module, modules) => {
          * Returns buffer capacity needed to fit plain text
          */
         decryptLen(cipherTextLen) {
-            // assert(typeof cipherTextLen === 'number')
+            precondition.ensureNumber('cipherTextLen', cipherTextLen);
 
             let proxyResult;
             proxyResult = Module._vsce_phe_cipher_decrypt_len(this.ctxPtr, cipherTextLen);
@@ -131,8 +131,8 @@ const initPheCipher = (Module, modules) => {
          * Encrypts data using account key
          */
         encrypt(plainText, accountKey) {
-            // assert(typeof plainText === 'Uint8Array')
-            // assert(typeof accountKey === 'Uint8Array')
+            precondition.ensureByteArray('plainText', plainText);
+            precondition.ensureByteArray('accountKey', accountKey);
 
             //  Copy bytes from JS memory to the WASM memory.
             const plainTextSize = plainText.length * plainText.BYTES_PER_ELEMENT;
@@ -182,8 +182,8 @@ const initPheCipher = (Module, modules) => {
          * Decrypts data using account key
          */
         decrypt(cipherText, accountKey) {
-            // assert(typeof cipherText === 'Uint8Array')
-            // assert(typeof accountKey === 'Uint8Array')
+            precondition.ensureByteArray('cipherText', cipherText);
+            precondition.ensureByteArray('accountKey', accountKey);
 
             //  Copy bytes from JS memory to the WASM memory.
             const cipherTextSize = cipherText.length * cipherText.BYTES_PER_ELEMENT;

@@ -116,7 +116,7 @@ const initKeyMaterialRng = (Module, modules) => {
          * Generate random bytes.
          */
         random(dataLen) {
-            // assert(typeof dataLen === 'number')
+            precondition.ensureNumber('dataLen', dataLen);
 
             const dataCapacity = dataLen;
             const dataCtxPtr = Module._vsc_buffer_new_with_capacity(dataCapacity);
@@ -146,7 +146,7 @@ const initKeyMaterialRng = (Module, modules) => {
          * Set a new key material.
          */
         resetKeyMaterial(keyMaterial) {
-            // assert(typeof keyMaterial === 'Uint8Array')
+            precondition.ensureByteArray('keyMaterial', keyMaterial);
 
             //  Copy bytes from JS memory to the WASM memory.
             const keyMaterialSize = keyMaterial.length * keyMaterial.BYTES_PER_ELEMENT;

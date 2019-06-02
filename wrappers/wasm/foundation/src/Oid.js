@@ -67,7 +67,7 @@ const initOid = (Module, modules) => {
          * Return algorithm identifier for given OID.
          */
         static toAlgId(oid) {
-            // assert(typeof oid === 'Uint8Array')
+            precondition.ensureByteArray('oid', oid);
 
             //  Copy bytes from JS memory to the WASM memory.
             const oidSize = oid.length * oid.BYTES_PER_ELEMENT;
@@ -116,7 +116,7 @@ const initOid = (Module, modules) => {
          * Return identifier for a given OID.
          */
         static toId(oid) {
-            // assert(typeof oid === 'Uint8Array')
+            precondition.ensureByteArray('oid', oid);
 
             //  Copy bytes from JS memory to the WASM memory.
             const oidSize = oid.length * oid.BYTES_PER_ELEMENT;
@@ -154,8 +154,8 @@ const initOid = (Module, modules) => {
          * Return true if given OIDs are equal.
          */
         static equal(lhs, rhs) {
-            // assert(typeof lhs === 'Uint8Array')
-            // assert(typeof rhs === 'Uint8Array')
+            precondition.ensureByteArray('lhs', lhs);
+            precondition.ensureByteArray('rhs', rhs);
 
             //  Copy bytes from JS memory to the WASM memory.
             const lhsSize = lhs.length * lhs.BYTES_PER_ELEMENT;

@@ -134,8 +134,8 @@ const initHmac = (Module, modules) => {
          * Calculate MAC over given data.
          */
         mac(key, data) {
-            // assert(typeof key === 'Uint8Array')
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('key', key);
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
@@ -184,7 +184,7 @@ const initHmac = (Module, modules) => {
          * Start a new MAC.
          */
         start(key) {
-            // assert(typeof key === 'Uint8Array')
+            precondition.ensureByteArray('key', key);
 
             //  Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
@@ -210,7 +210,7 @@ const initHmac = (Module, modules) => {
          * Add given data to the MAC.
          */
         update(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;

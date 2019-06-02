@@ -97,7 +97,7 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
          * Deserialize algorithm from the data.
          */
         deserialize(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;

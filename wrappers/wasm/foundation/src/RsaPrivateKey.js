@@ -181,7 +181,7 @@ const initRsaPrivateKey = (Module, modules) => {
          * Decrypt given data.
          */
         decrypt(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
@@ -217,7 +217,7 @@ const initRsaPrivateKey = (Module, modules) => {
          * Calculate required buffer length to hold the decrypted data.
          */
         decryptedLen(dataLen) {
-            // assert(typeof dataLen === 'number')
+            precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
             proxyResult = Module._vscf_rsa_private_key_decrypted_len(this.ctxPtr, dataLen);
@@ -237,7 +237,7 @@ const initRsaPrivateKey = (Module, modules) => {
          * Sign data given private key.
          */
         signHash(hashDigest, hashId) {
-            // assert(typeof hashDigest === 'Uint8Array')
+            precondition.ensureByteArray('hashDigest', hashDigest);
 
             //  Copy bytes from JS memory to the WASM memory.
             const hashDigestSize = hashDigest.length * hashDigest.BYTES_PER_ELEMENT;
@@ -321,7 +321,7 @@ const initRsaPrivateKey = (Module, modules) => {
          * RFC 3447 Appendix A.1.2.
          */
         importPrivateKey(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
@@ -356,7 +356,7 @@ const initRsaPrivateKey = (Module, modules) => {
          * Setup key length in bits that is used for key generation.
          */
         setKeygenParams(bitlen) {
-            // assert(typeof bitlen === 'number')
+            precondition.ensureNumber('bitlen', bitlen);
             Module._vscf_rsa_private_key_set_keygen_params(this.ctxPtr, bitlen);
         }
     }

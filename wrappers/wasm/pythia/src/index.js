@@ -37,7 +37,6 @@
 
 const PythiaModule = require('./libpythia');
 
-const initPrecondition = require('./precondition');
 const initPythiaError = require('./PythiaError');
 const initPythia = require('./Pythia');
 
@@ -47,7 +46,6 @@ const initProject = () => {
         pythiaModule.onRuntimeInitialized = () => {
             const modules = {};
 
-            modules.Precondition = initPrecondition(pythiaModule, modules);
             modules.PythiaError = initPythiaError(pythiaModule, modules);
             modules.Pythia = initPythia(pythiaModule, modules);
             resolve(modules);

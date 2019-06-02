@@ -93,8 +93,8 @@ const initSaltedKdfAlgInfo = (Module, modules) => {
          * salt and iteration count.
          */
         static newWithMembers(algId, hashAlgInfo, salt, iterationCount) {
-            // assert(typeof salt === 'Uint8Array')
-            // assert(typeof iterationCount === 'number')
+            precondition.ensureByteArray('salt', salt);
+            precondition.ensureNumber('iterationCount', iterationCount);
 
             //  Copy bytes from JS memory to the WASM memory.
             const saltSize = salt.length * salt.BYTES_PER_ELEMENT;

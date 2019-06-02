@@ -125,8 +125,8 @@ const initKdf2 = (Module, modules) => {
          * Derive key of the requested length from the given data.
          */
         derive(data, keyLen) {
-            // assert(typeof data === 'Uint8Array')
-            // assert(typeof keyLen === 'number')
+            precondition.ensureByteArray('data', data);
+            precondition.ensureNumber('keyLen', keyLen);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;

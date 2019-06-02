@@ -92,7 +92,7 @@ const initCipherAlgInfo = (Module, modules) => {
          * Create symmetric cipher algorithm info with identificator and input vector.
          */
         static newWithMembers(algId, nonce) {
-            // assert(typeof nonce === 'Uint8Array')
+            precondition.ensureByteArray('nonce', nonce);
 
             //  Copy bytes from JS memory to the WASM memory.
             const nonceSize = nonce.length * nonce.BYTES_PER_ELEMENT;

@@ -142,7 +142,7 @@ const initSha512 = (Module, modules) => {
          * Calculate hash over given data.
          */
         hash(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
@@ -184,7 +184,7 @@ const initSha512 = (Module, modules) => {
          * Add given data to the hash.
          */
         update(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;

@@ -125,8 +125,8 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
          * Derive key of the requested length from the given data.
          */
         derive(data, keyLen) {
-            // assert(typeof data === 'Uint8Array')
-            // assert(typeof keyLen === 'number')
+            precondition.ensureByteArray('data', data);
+            precondition.ensureNumber('keyLen', keyLen);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
@@ -161,8 +161,8 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
          * Prepare algorithm to derive new key.
          */
         reset(salt, iterationCount) {
-            // assert(typeof salt === 'Uint8Array')
-            // assert(typeof iterationCount === 'number')
+            precondition.ensureByteArray('salt', salt);
+            precondition.ensureNumber('iterationCount', iterationCount);
 
             //  Copy bytes from JS memory to the WASM memory.
             const saltSize = salt.length * salt.BYTES_PER_ELEMENT;
@@ -189,7 +189,7 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
          * Can be empty.
          */
         setInfo(info) {
-            // assert(typeof info === 'Uint8Array')
+            precondition.ensureByteArray('info', info);
 
             //  Copy bytes from JS memory to the WASM memory.
             const infoSize = info.length * info.BYTES_PER_ELEMENT;

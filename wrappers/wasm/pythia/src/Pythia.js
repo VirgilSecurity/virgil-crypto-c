@@ -146,7 +146,7 @@ const initPythia = (Module, modules) => {
          * This step is necessary to prevent 3rd-parties from knowledge of end user's password.
          */
         static blind(password) {
-            // assert(typeof password === 'Uint8Array')
+            precondition.ensureByteArray('password', password);
 
             //  Copy bytes from JS memory to the WASM memory.
             const passwordSize = password.length * password.BYTES_PER_ELEMENT;
@@ -190,8 +190,8 @@ const initPythia = (Module, modules) => {
          * Deblinds 'transformed password' value with previously returned 'blinding secret' from blind().
          */
         static deblind(transformedPassword, blindingSecret) {
-            // assert(typeof transformedPassword === 'Uint8Array')
-            // assert(typeof blindingSecret === 'Uint8Array')
+            precondition.ensureByteArray('transformedPassword', transformedPassword);
+            precondition.ensureByteArray('blindingSecret', blindingSecret);
 
             //  Copy bytes from JS memory to the WASM memory.
             const transformedPasswordSize = transformedPassword.length * transformedPassword.BYTES_PER_ELEMENT;
@@ -241,9 +241,9 @@ const initPythia = (Module, modules) => {
          * Computes transformation private and public key.
          */
         static computeTransformationKeyPair(transformationKeyId, pythiaSecret, pythiaScopeSecret) {
-            // assert(typeof transformationKeyId === 'Uint8Array')
-            // assert(typeof pythiaSecret === 'Uint8Array')
-            // assert(typeof pythiaScopeSecret === 'Uint8Array')
+            precondition.ensureByteArray('transformationKeyId', transformationKeyId);
+            precondition.ensureByteArray('pythiaSecret', pythiaSecret);
+            precondition.ensureByteArray('pythiaScopeSecret', pythiaScopeSecret);
 
             //  Copy bytes from JS memory to the WASM memory.
             const transformationKeyIdSize = transformationKeyId.length * transformationKeyId.BYTES_PER_ELEMENT;
@@ -315,9 +315,9 @@ const initPythia = (Module, modules) => {
          * Transforms blinded password using transformation private key.
          */
         static transform(blindedPassword, tweak, transformationPrivateKey) {
-            // assert(typeof blindedPassword === 'Uint8Array')
-            // assert(typeof tweak === 'Uint8Array')
-            // assert(typeof transformationPrivateKey === 'Uint8Array')
+            precondition.ensureByteArray('blindedPassword', blindedPassword);
+            precondition.ensureByteArray('tweak', tweak);
+            precondition.ensureByteArray('transformationPrivateKey', transformationPrivateKey);
 
             //  Copy bytes from JS memory to the WASM memory.
             const blindedPasswordSize = blindedPassword.length * blindedPassword.BYTES_PER_ELEMENT;
@@ -389,11 +389,11 @@ const initPythia = (Module, modules) => {
          * Generates proof that server possesses secret values that were used to transform password.
          */
         static prove(transformedPassword, blindedPassword, transformedTweak, transformationPrivateKey, transformationPublicKey) {
-            // assert(typeof transformedPassword === 'Uint8Array')
-            // assert(typeof blindedPassword === 'Uint8Array')
-            // assert(typeof transformedTweak === 'Uint8Array')
-            // assert(typeof transformationPrivateKey === 'Uint8Array')
-            // assert(typeof transformationPublicKey === 'Uint8Array')
+            precondition.ensureByteArray('transformedPassword', transformedPassword);
+            precondition.ensureByteArray('blindedPassword', blindedPassword);
+            precondition.ensureByteArray('transformedTweak', transformedTweak);
+            precondition.ensureByteArray('transformationPrivateKey', transformationPrivateKey);
+            precondition.ensureByteArray('transformationPublicKey', transformationPublicKey);
 
             //  Copy bytes from JS memory to the WASM memory.
             const transformedPasswordSize = transformedPassword.length * transformedPassword.BYTES_PER_ELEMENT;
@@ -494,12 +494,12 @@ const initPythia = (Module, modules) => {
          * assuming that client has previously stored transformation public key.
          */
         static verify(transformedPassword, blindedPassword, tweak, transformationPublicKey, proofValueC, proofValueU) {
-            // assert(typeof transformedPassword === 'Uint8Array')
-            // assert(typeof blindedPassword === 'Uint8Array')
-            // assert(typeof tweak === 'Uint8Array')
-            // assert(typeof transformationPublicKey === 'Uint8Array')
-            // assert(typeof proofValueC === 'Uint8Array')
-            // assert(typeof proofValueU === 'Uint8Array')
+            precondition.ensureByteArray('transformedPassword', transformedPassword);
+            precondition.ensureByteArray('blindedPassword', blindedPassword);
+            precondition.ensureByteArray('tweak', tweak);
+            precondition.ensureByteArray('transformationPublicKey', transformationPublicKey);
+            precondition.ensureByteArray('proofValueC', proofValueC);
+            precondition.ensureByteArray('proofValueU', proofValueU);
 
             //  Copy bytes from JS memory to the WASM memory.
             const transformedPasswordSize = transformedPassword.length * transformedPassword.BYTES_PER_ELEMENT;
@@ -611,8 +611,8 @@ const initPythia = (Module, modules) => {
          * This action should increment version of the 'pythia scope secret'.
          */
         static getPasswordUpdateToken(previousTransformationPrivateKey, newTransformationPrivateKey) {
-            // assert(typeof previousTransformationPrivateKey === 'Uint8Array')
-            // assert(typeof newTransformationPrivateKey === 'Uint8Array')
+            precondition.ensureByteArray('previousTransformationPrivateKey', previousTransformationPrivateKey);
+            precondition.ensureByteArray('newTransformationPrivateKey', newTransformationPrivateKey);
 
             //  Copy bytes from JS memory to the WASM memory.
             const previousTransformationPrivateKeySize = previousTransformationPrivateKey.length * previousTransformationPrivateKey.BYTES_PER_ELEMENT;
@@ -663,8 +663,8 @@ const initPythia = (Module, modules) => {
          * After this call, 'transform()' called with new arguments will return corresponding values.
          */
         static updateDeblindedWithToken(deblindedPassword, passwordUpdateToken) {
-            // assert(typeof deblindedPassword === 'Uint8Array')
-            // assert(typeof passwordUpdateToken === 'Uint8Array')
+            precondition.ensureByteArray('deblindedPassword', deblindedPassword);
+            precondition.ensureByteArray('passwordUpdateToken', passwordUpdateToken);
 
             //  Copy bytes from JS memory to the WASM memory.
             const deblindedPasswordSize = deblindedPassword.length * deblindedPassword.BYTES_PER_ELEMENT;

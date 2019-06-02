@@ -151,7 +151,7 @@ const initRatchetGroupSession = (Module, modules) => {
          * Sets identity private key.
          */
         setPrivateKey(myPrivateKey) {
-            // assert(typeof myPrivateKey === 'Uint8Array')
+            precondition.ensureByteArray('myPrivateKey', myPrivateKey);
 
             //  Copy bytes from JS memory to the WASM memory.
             const myPrivateKeySize = myPrivateKey.length * myPrivateKey.BYTES_PER_ELEMENT;
@@ -178,7 +178,7 @@ const initRatchetGroupSession = (Module, modules) => {
          * Sets my id.
          */
         setMyId(myId) {
-            // assert(typeof myId === 'Uint8Array')
+            precondition.ensureByteArray('myId', myId);
 
             //  Copy bytes from JS memory to the WASM memory.
             const myIdSize = myId.length * myId.BYTES_PER_ELEMENT;
@@ -262,7 +262,7 @@ const initRatchetGroupSession = (Module, modules) => {
          * Encrypts data
          */
         encrypt(plainText) {
-            // assert(typeof plainText === 'Uint8Array')
+            precondition.ensureByteArray('plainText', plainText);
 
             //  Copy bytes from JS memory to the WASM memory.
             const plainTextSize = plainText.length * plainText.BYTES_PER_ELEMENT;
@@ -363,7 +363,7 @@ const initRatchetGroupSession = (Module, modules) => {
          * - my private key
          */
         static deserialize(input) {
-            // assert(typeof input === 'Uint8Array')
+            precondition.ensureByteArray('input', input);
 
             //  Copy bytes from JS memory to the WASM memory.
             const inputSize = input.length * input.BYTES_PER_ELEMENT;

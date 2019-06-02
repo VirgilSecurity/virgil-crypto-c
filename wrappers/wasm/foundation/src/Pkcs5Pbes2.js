@@ -130,7 +130,7 @@ const initPkcs5Pbes2 = (Module, modules) => {
          * Encrypt given data.
          */
         encrypt(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
@@ -166,7 +166,7 @@ const initPkcs5Pbes2 = (Module, modules) => {
          * Calculate required buffer length to hold the encrypted data.
          */
         encryptedLen(dataLen) {
-            // assert(typeof dataLen === 'number')
+            precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
             proxyResult = Module._vscf_pkcs5_pbes2_encrypted_len(this.ctxPtr, dataLen);
@@ -177,7 +177,7 @@ const initPkcs5Pbes2 = (Module, modules) => {
          * Decrypt given data.
          */
         decrypt(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
@@ -213,7 +213,7 @@ const initPkcs5Pbes2 = (Module, modules) => {
          * Calculate required buffer length to hold the decrypted data.
          */
         decryptedLen(dataLen) {
-            // assert(typeof dataLen === 'number')
+            precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
             proxyResult = Module._vscf_pkcs5_pbes2_decrypted_len(this.ctxPtr, dataLen);
@@ -224,7 +224,7 @@ const initPkcs5Pbes2 = (Module, modules) => {
          * Configure cipher with a new password.
          */
         reset(pwd) {
-            // assert(typeof pwd === 'Uint8Array')
+            precondition.ensureByteArray('pwd', pwd);
 
             //  Copy bytes from JS memory to the WASM memory.
             const pwdSize = pwd.length * pwd.BYTES_PER_ELEMENT;

@@ -47,7 +47,7 @@ const initBase64 = (Module, modules) => {
          * Calculate length in bytes required to hold an encoded base64 string.
          */
         static encodedLen(dataLen) {
-            // assert(typeof dataLen === 'number')
+            precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
             proxyResult = Module._vscf_base64_encoded_len(dataLen);
@@ -59,7 +59,7 @@ const initBase64 = (Module, modules) => {
          * Note, written buffer is NOT null-terminated.
          */
         static encode(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
@@ -94,7 +94,7 @@ const initBase64 = (Module, modules) => {
          * Calculate length in bytes required to hold a decoded base64 string.
          */
         static decodedLen(strLen) {
-            // assert(typeof strLen === 'number')
+            precondition.ensureNumber('strLen', strLen);
 
             let proxyResult;
             proxyResult = Module._vscf_base64_decoded_len(strLen);
@@ -105,7 +105,7 @@ const initBase64 = (Module, modules) => {
          * Decode given data from the base64 format.
          */
         static decode(str) {
-            // assert(typeof str === 'Uint8Array')
+            precondition.ensureByteArray('str', str);
 
             //  Copy bytes from JS memory to the WASM memory.
             const strSize = str.length * str.BYTES_PER_ELEMENT;

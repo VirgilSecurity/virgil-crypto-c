@@ -117,8 +117,8 @@ const initRatchetGroupTicket = (Module, modules) => {
          * Add new participant to chat.
          */
         addNewParticipant(participantId, publicKey) {
-            // assert(typeof participantId === 'Uint8Array')
-            // assert(typeof publicKey === 'Uint8Array')
+            precondition.ensureByteArray('participantId', participantId);
+            precondition.ensureByteArray('publicKey', publicKey);
 
             //  Copy bytes from JS memory to the WASM memory.
             const participantIdSize = participantId.length * participantId.BYTES_PER_ELEMENT;
@@ -159,7 +159,7 @@ const initRatchetGroupTicket = (Module, modules) => {
          * Remove participant from chat.
          */
         removeParticipant(participantId) {
-            // assert(typeof participantId === 'Uint8Array')
+            precondition.ensureByteArray('participantId', participantId);
 
             //  Copy bytes from JS memory to the WASM memory.
             const participantIdSize = participantId.length * participantId.BYTES_PER_ELEMENT;

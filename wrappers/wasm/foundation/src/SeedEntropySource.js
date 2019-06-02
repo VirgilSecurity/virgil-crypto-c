@@ -103,7 +103,7 @@ const initSeedEntropySource = (Module, modules) => {
          * Gather entropy of the requested length.
          */
         gather(len) {
-            // assert(typeof len === 'number')
+            precondition.ensureNumber('len', len);
 
             const outCapacity = len;
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
@@ -125,7 +125,7 @@ const initSeedEntropySource = (Module, modules) => {
          * Set a new seed as an entropy source.
          */
         resetSeed(seed) {
-            // assert(typeof seed === 'Uint8Array')
+            precondition.ensureByteArray('seed', seed);
 
             //  Copy bytes from JS memory to the WASM memory.
             const seedSize = seed.length * seed.BYTES_PER_ELEMENT;

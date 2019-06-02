@@ -111,7 +111,7 @@ const initEntropyAccumulator = (Module, modules) => {
          * Gather entropy of the requested length.
          */
         gather(len) {
-            // assert(typeof len === 'number')
+            precondition.ensureNumber('len', len);
 
             const outCapacity = len;
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
@@ -142,7 +142,7 @@ const initEntropyAccumulator = (Module, modules) => {
          * from the source during accumulation.
          */
         addSource(source, threshold) {
-            // assert(typeof threshold === 'number')
+            precondition.ensureNumber('threshold', threshold);
             Module._vscf_entropy_accumulator_add_source(this.ctxPtr, source.ctxPtr, threshold);
         }
     }

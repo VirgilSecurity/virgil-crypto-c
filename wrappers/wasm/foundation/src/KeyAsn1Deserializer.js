@@ -97,7 +97,7 @@ const initKeyAsn1Deserializer = (Module, modules) => {
          * Deserialize given public key as an interchangeable format to the object.
          */
         deserializePublicKey(publicKeyData) {
-            // assert(typeof publicKeyData === 'Uint8Array')
+            precondition.ensureByteArray('publicKeyData', publicKeyData);
 
             //  Copy bytes from JS memory to the WASM memory.
             const publicKeyDataSize = publicKeyData.length * publicKeyData.BYTES_PER_ELEMENT;
@@ -136,7 +136,7 @@ const initKeyAsn1Deserializer = (Module, modules) => {
          * Deserialize given private key as an interchangeable format to the object.
          */
         deserializePrivateKey(privateKeyData) {
-            // assert(typeof privateKeyData === 'Uint8Array')
+            precondition.ensureByteArray('privateKeyData', privateKeyData);
 
             //  Copy bytes from JS memory to the WASM memory.
             const privateKeyDataSize = privateKeyData.length * privateKeyData.BYTES_PER_ELEMENT;

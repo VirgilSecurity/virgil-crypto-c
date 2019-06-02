@@ -92,7 +92,7 @@ const initPasswordRecipientInfo = (Module, modules) => {
          * Create object and define all properties.
          */
         static newWithMembers(keyEncryptionAlgorithm, encryptedKey) {
-            // assert(typeof encryptedKey === 'Uint8Array')
+            precondition.ensureByteArray('encryptedKey', encryptedKey);
 
             //  Copy bytes from JS memory to the WASM memory.
             const encryptedKeySize = encryptedKey.length * encryptedKey.BYTES_PER_ELEMENT;

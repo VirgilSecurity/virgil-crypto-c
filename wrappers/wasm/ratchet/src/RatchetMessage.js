@@ -169,7 +169,7 @@ const initRatchetMessage = (Module, modules) => {
          * Deserializes instance.
          */
         static deserialize(input) {
-            // assert(typeof input === 'Uint8Array')
+            precondition.ensureByteArray('input', input);
 
             //  Copy bytes from JS memory to the WASM memory.
             const inputSize = input.length * input.BYTES_PER_ELEMENT;

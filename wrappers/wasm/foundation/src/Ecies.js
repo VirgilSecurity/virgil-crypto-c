@@ -146,7 +146,7 @@ const initEcies = (Module, modules) => {
          * Encrypt given data.
          */
         encrypt(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
@@ -182,7 +182,7 @@ const initEcies = (Module, modules) => {
          * Calculate required buffer length to hold the encrypted data.
          */
         encryptedLen(dataLen) {
-            // assert(typeof dataLen === 'number')
+            precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
             proxyResult = Module._vscf_ecies_encrypted_len(this.ctxPtr, dataLen);
@@ -193,7 +193,7 @@ const initEcies = (Module, modules) => {
          * Decrypt given data.
          */
         decrypt(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
@@ -229,7 +229,7 @@ const initEcies = (Module, modules) => {
          * Calculate required buffer length to hold the decrypted data.
          */
         decryptedLen(dataLen) {
-            // assert(typeof dataLen === 'number')
+            precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
             proxyResult = Module._vscf_ecies_decrypted_len(this.ctxPtr, dataLen);

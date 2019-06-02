@@ -42,6 +42,15 @@ gsl from "cmake_format.gsl"
 
 
 # ===========================================================================
+#   Helpers.
+# ===========================================================================
+function wasm_module_is_not_helper(wasm_module)
+    check_arguments(my, "wasm_module", my)
+
+    return !string_in(my.wasm_module.name, "index, precondition")
+endfunction
+
+# ===========================================================================
 #   Map types.
 # ===========================================================================
 
@@ -388,7 +397,12 @@ function wasm_create_method_argument_for_primitive_type(argument, wasm_method, w
     new wasm_argument to my.wasm_method
         wasm_map_instance_type(my.argument, wasm_argument)
         .name = wasm_derive_method_argument_name(my.argument)
-        .code_precondition = "// assert(typeof $(wasm_argument.name:) === '$(wasm_argument.type:)')"
+
+        if my.argument.type = "boolean"
+            .code_precondition = "precondition.ensureBoolean('$(wasm_argument.name:)', $(wasm_argument.name:));"
+        else
+            .code_precondition = "precondition.ensureNumber('$(wasm_argument.name:)', $(wasm_argument.name:));"
+        endif
         my.wasm_method.c_arg_list += 0.name + ", "
     endnew
 endfunction
@@ -402,7 +416,7 @@ function wasm_create_method_argument_for_data(argument, wasm_method, wasm_class)
 
         .name = wasm_derive_method_argument_name(my.argument)
 
-        .code_precondition = "// assert(typeof $(wasm_argument.name:) === 'Uint8Array')"
+        .code_precondition = "precondition.ensureByteArray('$(wasm_argument.name:)', $(wasm_argument.name:));"
 
         .code_on_initialize = "
             //  Copy bytes from JS memory to the WASM memory.
@@ -462,7 +476,7 @@ function wasm_create_method_argument_for_readwrite_buffer(argument, wasm_method,
         wasm_map_instance_type(my.argument, wasm_argument)
         .name = wasm_derive_method_argument_name(my.argument)
 
-        .code_precondition = "// assert(typeof $(wasm_argument.name:) === 'Uint8Array')"
+        .code_precondition = "precondition.ensureByteArray('$(wasm_argument.name:)', $(wasm_argument.name:));"
 
         .code_on_initialize = "
             //  Copy bytes from JS memory to the WASM memory.
@@ -1377,7 +1391,7 @@ function wasm_create_index_module(wasm_project)
             ")
         endfor
 
-        for my.wasm_project.wasm_module where wasm_module.name <> "index"
+        for my.wasm_project.wasm_module where wasm_module_is_not_helper(wasm_module)
             my.code += format_left("
                 const init$(wasm_module.name:Pascal) = require('./$(wasm_module.name:)');
             ")
@@ -1651,22 +1665,23 @@ function wasm_create_precondition_module(wasm_project)
                     }
                 }
 
-                function ensureUint8Array(arg, value) {
-                    if (!(value instanceof Uint8Array)) {
-                        throw new TypeError(`'${arg}' is not an Uint8Array`);
+                function ensureByteArray(arg, value) {
+                    if (!(value instanceof Uint8Array || value instanceof Buffer)) {
+                        throw new TypeError(`'${arg}' is not an Uint8Array and not Buffer`);
                     }
                 }
 
-                function ensureStringOrUint8Array(arg, value) {
-                    if (!(typeof value === 'string' || value instanceof Uint8Array)) {
-                        throw new TypeError(`'${arg}' is not a string and not an Uint8Array`);
+                function ensureStringOrByteArray(arg, value) {
+                    if (!(typeof value === 'string' || value instanceof Uint8Array || value instanceof Buffer)) {
+                        throw new TypeError(`'${arg}' is not a string and not an Uint8Array and not Buffer`);
                     }
                 }
 
                 module.exports.ensureNumber = ensureNumber;
                 module.exports.ensureString = ensureString;
                 module.exports.ensureBoolean = ensureBoolean;
-                module.exports.ensureUint8Array = ensureUint8Array;
+                module.exports.ensureByteArray = ensureByteArray;
+                module.exports.ensureStringOrByteArray = ensureStringOrByteArray;
             "
         endnew
     endnew

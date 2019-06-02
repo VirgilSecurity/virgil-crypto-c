@@ -104,7 +104,7 @@ const initRecipientCipher = (Module, modules) => {
          * Add recipient defined with id and public key.
          */
         addKeyRecipient(recipientId, publicKey) {
-            // assert(typeof recipientId === 'Uint8Array')
+            precondition.ensureByteArray('recipientId', recipientId);
 
             //  Copy bytes from JS memory to the WASM memory.
             const recipientIdSize = recipientId.length * recipientId.BYTES_PER_ELEMENT;
@@ -197,7 +197,7 @@ const initRecipientCipher = (Module, modules) => {
          * "process encryption" and method "finish" during encryption.
          */
         encryptionOutLen(dataLen) {
-            // assert(typeof dataLen === 'number')
+            precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
             proxyResult = Module._vscf_recipient_cipher_encryption_out_len(this.ctxPtr, dataLen);
@@ -208,7 +208,7 @@ const initRecipientCipher = (Module, modules) => {
          * Process encryption of a new portion of data.
          */
         processEncryption(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
@@ -265,8 +265,8 @@ const initRecipientCipher = (Module, modules) => {
          * Message info can be empty if it was embedded to encrypted data.
          */
         startDecryptionWithKey(recipientId, privateKey, messageInfo) {
-            // assert(typeof recipientId === 'Uint8Array')
-            // assert(typeof messageInfo === 'Uint8Array')
+            precondition.ensureByteArray('recipientId', recipientId);
+            precondition.ensureByteArray('messageInfo', messageInfo);
 
             //  Copy bytes from JS memory to the WASM memory.
             const recipientIdSize = recipientId.length * recipientId.BYTES_PER_ELEMENT;
@@ -308,7 +308,7 @@ const initRecipientCipher = (Module, modules) => {
          * "process decryption" and method "finish" during decryption.
          */
         decryptionOutLen(dataLen) {
-            // assert(typeof dataLen === 'number')
+            precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
             proxyResult = Module._vscf_recipient_cipher_decryption_out_len(this.ctxPtr, dataLen);
@@ -320,7 +320,7 @@ const initRecipientCipher = (Module, modules) => {
          * Return error if data can not be encrypted or decrypted.
          */
         processDecryption(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;

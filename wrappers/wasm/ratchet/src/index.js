@@ -42,7 +42,6 @@ const initCtrDrbg = require('../foundation/CtrDrbg');
 const initHmac = require('../foundation/Hmac');
 const initHkdf = require('../foundation/Hkdf');
 const initSha512 = require('../foundation/Sha512');
-const initPrecondition = require('./precondition');
 const initRatchetError = require('./RatchetError');
 const initMsgType = require('./MsgType');
 const initGroupMsgType = require('./GroupMsgType');
@@ -65,7 +64,6 @@ const initProject = () => {
             modules.Hmac = initHmac(ratchetModule, modules);
             modules.Hkdf = initHkdf(ratchetModule, modules);
             modules.Sha512 = initSha512(ratchetModule, modules);
-            modules.Precondition = initPrecondition(ratchetModule, modules);
             modules.RatchetError = initRatchetError(ratchetModule, modules);
             modules.MsgType = initMsgType(ratchetModule, modules);
             modules.GroupMsgType = initGroupMsgType(ratchetModule, modules);

@@ -179,7 +179,7 @@ const initCurve25519PrivateKey = (Module, modules) => {
          * Decrypt given data.
          */
         decrypt(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
@@ -215,7 +215,7 @@ const initCurve25519PrivateKey = (Module, modules) => {
          * Calculate required buffer length to hold the decrypted data.
          */
         decryptedLen(dataLen) {
-            // assert(typeof dataLen === 'number')
+            precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
             proxyResult = Module._vscf_curve25519_private_key_decrypted_len(this.ctxPtr, dataLen);
@@ -274,7 +274,7 @@ const initCurve25519PrivateKey = (Module, modules) => {
          * RFC 3447 Appendix A.1.2.
          */
         importPrivateKey(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;

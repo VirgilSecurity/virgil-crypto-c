@@ -122,7 +122,7 @@ const initCtrDrbg = (Module, modules) => {
          * Generate random bytes.
          */
         random(dataLen) {
-            // assert(typeof dataLen === 'number')
+            precondition.ensureNumber('dataLen', dataLen);
 
             const dataCapacity = dataLen;
             const dataCtxPtr = Module._vsc_buffer_new_with_capacity(dataCapacity);
@@ -170,7 +170,7 @@ const initCtrDrbg = (Module, modules) => {
          * Default value is reseed interval.
          */
         setReseedInterval(interval) {
-            // assert(typeof interval === 'number')
+            precondition.ensureNumber('interval', interval);
             Module._vscf_ctr_drbg_set_reseed_interval(this.ctxPtr, interval);
         }
 
@@ -179,7 +179,7 @@ const initCtrDrbg = (Module, modules) => {
          * The default value is entropy len.
          */
         setEntropyLen(len) {
-            // assert(typeof len === 'number')
+            precondition.ensureNumber('len', len);
             Module._vscf_ctr_drbg_set_entropy_len(this.ctxPtr, len);
         }
     }

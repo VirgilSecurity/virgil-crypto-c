@@ -109,10 +109,10 @@ const initRatchetSession = (Module, modules) => {
          * Initiates session
          */
         initiate(senderIdentityPrivateKey, receiverIdentityPublicKey, receiverLongTermPublicKey, receiverOneTimePublicKey) {
-            // assert(typeof senderIdentityPrivateKey === 'Uint8Array')
-            // assert(typeof receiverIdentityPublicKey === 'Uint8Array')
-            // assert(typeof receiverLongTermPublicKey === 'Uint8Array')
-            // assert(typeof receiverOneTimePublicKey === 'Uint8Array')
+            precondition.ensureByteArray('senderIdentityPrivateKey', senderIdentityPrivateKey);
+            precondition.ensureByteArray('receiverIdentityPublicKey', receiverIdentityPublicKey);
+            precondition.ensureByteArray('receiverLongTermPublicKey', receiverLongTermPublicKey);
+            precondition.ensureByteArray('receiverOneTimePublicKey', receiverOneTimePublicKey);
 
             //  Copy bytes from JS memory to the WASM memory.
             const senderIdentityPrivateKeySize = senderIdentityPrivateKey.length * senderIdentityPrivateKey.BYTES_PER_ELEMENT;
@@ -181,10 +181,10 @@ const initRatchetSession = (Module, modules) => {
          * Responds to session initiation
          */
         respond(senderIdentityPublicKey, receiverIdentityPrivateKey, receiverLongTermPrivateKey, receiverOneTimePrivateKey, message) {
-            // assert(typeof senderIdentityPublicKey === 'Uint8Array')
-            // assert(typeof receiverIdentityPrivateKey === 'Uint8Array')
-            // assert(typeof receiverLongTermPrivateKey === 'Uint8Array')
-            // assert(typeof receiverOneTimePrivateKey === 'Uint8Array')
+            precondition.ensureByteArray('senderIdentityPublicKey', senderIdentityPublicKey);
+            precondition.ensureByteArray('receiverIdentityPrivateKey', receiverIdentityPrivateKey);
+            precondition.ensureByteArray('receiverLongTermPrivateKey', receiverLongTermPrivateKey);
+            precondition.ensureByteArray('receiverOneTimePrivateKey', receiverOneTimePrivateKey);
 
             //  Copy bytes from JS memory to the WASM memory.
             const senderIdentityPublicKeySize = senderIdentityPublicKey.length * senderIdentityPublicKey.BYTES_PER_ELEMENT;
@@ -286,7 +286,7 @@ const initRatchetSession = (Module, modules) => {
          * Encrypts data
          */
         encrypt(plainText) {
-            // assert(typeof plainText === 'Uint8Array')
+            precondition.ensureByteArray('plainText', plainText);
 
             //  Copy bytes from JS memory to the WASM memory.
             const plainTextSize = plainText.length * plainText.BYTES_PER_ELEMENT;
@@ -383,7 +383,7 @@ const initRatchetSession = (Module, modules) => {
          * NOTE: Deserialized session needs dependencies to be set. Check setup defaults
          */
         static deserialize(input) {
-            // assert(typeof input === 'Uint8Array')
+            precondition.ensureByteArray('input', input);
 
             //  Copy bytes from JS memory to the WASM memory.
             const inputSize = input.length * input.BYTES_PER_ELEMENT;

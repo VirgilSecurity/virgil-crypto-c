@@ -151,8 +151,8 @@ const initPheServer = (Module, modules) => {
          * Generates a new random enrollment and proof for a new user
          */
         getEnrollment(serverPrivateKey, serverPublicKey) {
-            // assert(typeof serverPrivateKey === 'Uint8Array')
-            // assert(typeof serverPublicKey === 'Uint8Array')
+            precondition.ensureByteArray('serverPrivateKey', serverPrivateKey);
+            precondition.ensureByteArray('serverPublicKey', serverPublicKey);
 
             //  Copy bytes from JS memory to the WASM memory.
             const serverPrivateKeySize = serverPrivateKey.length * serverPrivateKey.BYTES_PER_ELEMENT;
@@ -211,9 +211,9 @@ const initPheServer = (Module, modules) => {
          * Verifies existing user's password and generates response with proof
          */
         verifyPassword(serverPrivateKey, serverPublicKey, verifyPasswordRequest) {
-            // assert(typeof serverPrivateKey === 'Uint8Array')
-            // assert(typeof serverPublicKey === 'Uint8Array')
-            // assert(typeof verifyPasswordRequest === 'Uint8Array')
+            precondition.ensureByteArray('serverPrivateKey', serverPrivateKey);
+            precondition.ensureByteArray('serverPublicKey', serverPublicKey);
+            precondition.ensureByteArray('verifyPasswordRequest', verifyPasswordRequest);
 
             //  Copy bytes from JS memory to the WASM memory.
             const serverPrivateKeySize = serverPrivateKey.length * serverPrivateKey.BYTES_PER_ELEMENT;
@@ -286,7 +286,7 @@ const initPheServer = (Module, modules) => {
          * Updates server's private and public keys and issues an update token for use on client's side
          */
         rotateKeys(serverPrivateKey) {
-            // assert(typeof serverPrivateKey === 'Uint8Array')
+            precondition.ensureByteArray('serverPrivateKey', serverPrivateKey);
 
             //  Copy bytes from JS memory to the WASM memory.
             const serverPrivateKeySize = serverPrivateKey.length * serverPrivateKey.BYTES_PER_ELEMENT;

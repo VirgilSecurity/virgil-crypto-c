@@ -177,7 +177,7 @@ const initRsaPublicKey = (Module, modules) => {
          * Encrypt given data.
          */
         encrypt(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
@@ -213,7 +213,7 @@ const initRsaPublicKey = (Module, modules) => {
          * Calculate required buffer length to hold the encrypted data.
          */
         encryptedLen(dataLen) {
-            // assert(typeof dataLen === 'number')
+            precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
             proxyResult = Module._vscf_rsa_public_key_encrypted_len(this.ctxPtr, dataLen);
@@ -224,8 +224,8 @@ const initRsaPublicKey = (Module, modules) => {
          * Verify data with given public key and signature.
          */
         verifyHash(hashDigest, hashId, signature) {
-            // assert(typeof hashDigest === 'Uint8Array')
-            // assert(typeof signature === 'Uint8Array')
+            precondition.ensureByteArray('hashDigest', hashDigest);
+            precondition.ensureByteArray('signature', signature);
 
             //  Copy bytes from JS memory to the WASM memory.
             const hashDigestSize = hashDigest.length * hashDigest.BYTES_PER_ELEMENT;
@@ -307,7 +307,7 @@ const initRsaPublicKey = (Module, modules) => {
          * RFC 3447 Appendix A.1.1.
          */
         importPublicKey(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;

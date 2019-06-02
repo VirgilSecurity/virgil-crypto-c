@@ -93,7 +93,7 @@ const initRawKey = (Module, modules) => {
          * Note, data is copied.
          */
         static newWithData(algId, rawKeyData) {
-            // assert(typeof rawKeyData === 'Uint8Array')
+            precondition.ensureByteArray('rawKeyData', rawKeyData);
 
             //  Copy bytes from JS memory to the WASM memory.
             const rawKeyDataSize = rawKeyData.length * rawKeyData.BYTES_PER_ELEMENT;

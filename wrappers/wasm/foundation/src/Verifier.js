@@ -93,7 +93,7 @@ const initVerifier = (Module, modules) => {
          * Start verifying a signature.
          */
         reset(signature) {
-            // assert(typeof signature === 'Uint8Array')
+            precondition.ensureByteArray('signature', signature);
 
             //  Copy bytes from JS memory to the WASM memory.
             const signatureSize = signature.length * signature.BYTES_PER_ELEMENT;
@@ -120,7 +120,7 @@ const initVerifier = (Module, modules) => {
          * Add given data to the signed data.
          */
         update(data) {
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;

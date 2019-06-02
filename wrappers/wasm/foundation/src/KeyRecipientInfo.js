@@ -92,8 +92,8 @@ const initKeyRecipientInfo = (Module, modules) => {
          * Create object and define all properties.
          */
         static newWithMembers(recipientId, keyEncryptionAlgorithm, encryptedKey) {
-            // assert(typeof recipientId === 'Uint8Array')
-            // assert(typeof encryptedKey === 'Uint8Array')
+            precondition.ensureByteArray('recipientId', recipientId);
+            precondition.ensureByteArray('encryptedKey', encryptedKey);
 
             //  Copy bytes from JS memory to the WASM memory.
             const recipientIdSize = recipientId.length * recipientId.BYTES_PER_ELEMENT;

@@ -89,8 +89,8 @@ const initMessageInfoCustomParams = (Module, modules) => {
          * Add custom parameter with integer value.
          */
         addInt(key, value) {
-            // assert(typeof key === 'Uint8Array')
-            // assert(typeof value === 'number')
+            precondition.ensureByteArray('key', key);
+            precondition.ensureNumber('value', value);
 
             //  Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
@@ -116,8 +116,8 @@ const initMessageInfoCustomParams = (Module, modules) => {
          * Add custom parameter with UTF8 string value.
          */
         addString(key, value) {
-            // assert(typeof key === 'Uint8Array')
-            // assert(typeof value === 'Uint8Array')
+            precondition.ensureByteArray('key', key);
+            precondition.ensureByteArray('value', value);
 
             //  Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
@@ -157,8 +157,8 @@ const initMessageInfoCustomParams = (Module, modules) => {
          * Add custom parameter with octet string value.
          */
         addData(key, value) {
-            // assert(typeof key === 'Uint8Array')
-            // assert(typeof value === 'Uint8Array')
+            precondition.ensureByteArray('key', key);
+            precondition.ensureByteArray('value', value);
 
             //  Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
@@ -205,7 +205,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
          * Return custom parameter with integer value.
          */
         findInt(key) {
-            // assert(typeof key === 'Uint8Array')
+            precondition.ensureByteArray('key', key);
 
             //  Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
@@ -242,7 +242,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
          * Return custom parameter with UTF8 string value.
          */
         findString(key) {
-            // assert(typeof key === 'Uint8Array')
+            precondition.ensureByteArray('key', key);
 
             //  Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
@@ -286,7 +286,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
          * Return custom parameter with octet string value.
          */
         findData(key) {
-            // assert(typeof key === 'Uint8Array')
+            precondition.ensureByteArray('key', key);
 
             //  Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;

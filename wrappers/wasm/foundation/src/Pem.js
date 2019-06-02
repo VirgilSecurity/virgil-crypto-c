@@ -47,8 +47,8 @@ const initPem = (Module, modules) => {
          * Return length in bytes required to hold wrapped PEM format.
          */
         static wrappedLen(title, dataLen) {
-            // assert(typeof title === 'string')
-            // assert(typeof dataLen === 'number')
+            precondition.ensureNumber('title', title);
+            precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
             proxyResult = Module._vscf_pem_wrapped_len(title, dataLen);
@@ -61,8 +61,8 @@ const initPem = (Module, modules) => {
          * Note, written buffer is NOT null-terminated.
          */
         static wrap(title, data) {
-            // assert(typeof title === 'string')
-            // assert(typeof data === 'Uint8Array')
+            precondition.ensureNumber('title', title);
+            precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
@@ -97,7 +97,7 @@ const initPem = (Module, modules) => {
          * Return length in bytes required to hold unwrapped binary.
          */
         static unwrappedLen(pemLen) {
-            // assert(typeof pemLen === 'number')
+            precondition.ensureNumber('pemLen', pemLen);
 
             let proxyResult;
             proxyResult = Module._vscf_pem_unwrapped_len(pemLen);
@@ -108,7 +108,7 @@ const initPem = (Module, modules) => {
          * Takes PEM data and extract binary data from it.
          */
         static unwrap(pem) {
-            // assert(typeof pem === 'Uint8Array')
+            precondition.ensureByteArray('pem', pem);
 
             //  Copy bytes from JS memory to the WASM memory.
             const pemSize = pem.length * pem.BYTES_PER_ELEMENT;
@@ -144,7 +144,7 @@ const initPem = (Module, modules) => {
          * Returns PEM title if PEM data is valid, otherwise - empty data.
          */
         static title(pem) {
-            // assert(typeof pem === 'Uint8Array')
+            precondition.ensureByteArray('pem', pem);
 
             //  Copy bytes from JS memory to the WASM memory.
             const pemSize = pem.length * pem.BYTES_PER_ELEMENT;

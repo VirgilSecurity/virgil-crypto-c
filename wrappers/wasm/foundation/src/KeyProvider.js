@@ -111,7 +111,7 @@ const initKeyProvider = (Module, modules) => {
          * Setup parameters that is used during RSA key generation.
          */
         setRsaParams(bitlen) {
-            // assert(typeof bitlen === 'number')
+            precondition.ensureNumber('bitlen', bitlen);
             Module._vscf_key_provider_set_rsa_params(this.ctxPtr, bitlen);
         }
 
@@ -142,7 +142,7 @@ const initKeyProvider = (Module, modules) => {
          * Import private key from the PKCS#8 format.
          */
         importPrivateKey(keyData) {
-            // assert(typeof keyData === 'Uint8Array')
+            precondition.ensureByteArray('keyData', keyData);
 
             //  Copy bytes from JS memory to the WASM memory.
             const keyDataSize = keyData.length * keyData.BYTES_PER_ELEMENT;
@@ -181,7 +181,7 @@ const initKeyProvider = (Module, modules) => {
          * Import public key from the PKCS#8 format.
          */
         importPublicKey(keyData) {
-            // assert(typeof keyData === 'Uint8Array')
+            precondition.ensureByteArray('keyData', keyData);
 
             //  Copy bytes from JS memory to the WASM memory.
             const keyDataSize = keyData.length * keyData.BYTES_PER_ELEMENT;

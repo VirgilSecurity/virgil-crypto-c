@@ -92,7 +92,7 @@ const initFakeRandom = (Module, modules) => {
          * Generate random bytes.
          */
         random(dataLen) {
-            // assert(typeof dataLen === 'number')
+            precondition.ensureNumber('dataLen', dataLen);
 
             const dataCapacity = dataLen;
             const dataCtxPtr = Module._vsc_buffer_new_with_capacity(dataCapacity);
@@ -133,7 +133,7 @@ const initFakeRandom = (Module, modules) => {
          * Gather entropy of the requested length.
          */
         gather(len) {
-            // assert(typeof len === 'number')
+            precondition.ensureNumber('len', len);
 
             const outCapacity = len;
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
@@ -155,7 +155,7 @@ const initFakeRandom = (Module, modules) => {
          * Configure random number generator to generate sequence filled with given byte.
          */
         setupSourceByte(byteSource) {
-            // assert(typeof byteSource === 'number')
+            precondition.ensureNumber('byteSource', byteSource);
             Module._vscf_fake_random_setup_source_byte(this.ctxPtr, byteSource);
         }
 
@@ -164,7 +164,7 @@ const initFakeRandom = (Module, modules) => {
          * Note, that given data is used as circular source.
          */
         setupSourceData(dataSource) {
-            // assert(typeof dataSource === 'Uint8Array')
+            precondition.ensureByteArray('dataSource', dataSource);
 
             //  Copy bytes from JS memory to the WASM memory.
             const dataSourceSize = dataSource.length * dataSource.BYTES_PER_ELEMENT;

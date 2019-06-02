@@ -62,19 +62,20 @@ function ensureBoolean(arg, value) {
     }
 }
 
-function ensureUint8Array(arg, value) {
-    if (!(value instanceof Uint8Array)) {
-        throw new TypeError(`'${arg}' is not an Uint8Array`);
+function ensureByteArray(arg, value) {
+    if (!(value instanceof Uint8Array || value instanceof Buffer)) {
+        throw new TypeError(`'${arg}' is not an Uint8Array and not Buffer`);
     }
 }
 
-function ensureStringOrUint8Array(arg, value) {
-    if (!(typeof value === 'string' || value instanceof Uint8Array)) {
-        throw new TypeError(`'${arg}' is not a string and not an Uint8Array`);
+function ensureStringOrByteArray(arg, value) {
+    if (!(typeof value === 'string' || value instanceof Uint8Array || value instanceof Buffer)) {
+        throw new TypeError(`'${arg}' is not a string and not an Uint8Array and not Buffer`);
     }
 }
 
 module.exports.ensureNumber = ensureNumber;
 module.exports.ensureString = ensureString;
 module.exports.ensureBoolean = ensureBoolean;
-module.exports.ensureUint8Array = ensureUint8Array;
+module.exports.ensureByteArray = ensureByteArray;
+module.exports.ensureStringOrByteArray = ensureStringOrByteArray;

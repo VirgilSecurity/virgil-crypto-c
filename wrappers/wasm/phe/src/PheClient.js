@@ -116,8 +116,8 @@ const initPheClient = (Module, modules) => {
          * This function should be called only once
          */
         setKeys(clientPrivateKey, serverPublicKey) {
-            // assert(typeof clientPrivateKey === 'Uint8Array')
-            // assert(typeof serverPublicKey === 'Uint8Array')
+            precondition.ensureByteArray('clientPrivateKey', clientPrivateKey);
+            precondition.ensureByteArray('serverPublicKey', serverPublicKey);
 
             //  Copy bytes from JS memory to the WASM memory.
             const clientPrivateKeySize = clientPrivateKey.length * clientPrivateKey.BYTES_PER_ELEMENT;
@@ -189,8 +189,8 @@ const initPheClient = (Module, modules) => {
          * Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
          */
         enrollAccount(enrollmentResponse, password) {
-            // assert(typeof enrollmentResponse === 'Uint8Array')
-            // assert(typeof password === 'Uint8Array')
+            precondition.ensureByteArray('enrollmentResponse', enrollmentResponse);
+            precondition.ensureByteArray('password', password);
 
             //  Copy bytes from JS memory to the WASM memory.
             const enrollmentResponseSize = enrollmentResponse.length * enrollmentResponse.BYTES_PER_ELEMENT;
@@ -257,8 +257,8 @@ const initPheClient = (Module, modules) => {
          * Creates a request for further password verification at the PHE server side.
          */
         createVerifyPasswordRequest(password, enrollmentRecord) {
-            // assert(typeof password === 'Uint8Array')
-            // assert(typeof enrollmentRecord === 'Uint8Array')
+            precondition.ensureByteArray('password', password);
+            precondition.ensureByteArray('enrollmentRecord', enrollmentRecord);
 
             //  Copy bytes from JS memory to the WASM memory.
             const passwordSize = password.length * password.BYTES_PER_ELEMENT;
@@ -310,9 +310,9 @@ const initPheClient = (Module, modules) => {
          * If login failed account key will be empty
          */
         checkResponseAndDecrypt(password, enrollmentRecord, verifyPasswordResponse) {
-            // assert(typeof password === 'Uint8Array')
-            // assert(typeof enrollmentRecord === 'Uint8Array')
-            // assert(typeof verifyPasswordResponse === 'Uint8Array')
+            precondition.ensureByteArray('password', password);
+            precondition.ensureByteArray('enrollmentRecord', enrollmentRecord);
+            precondition.ensureByteArray('verifyPasswordResponse', verifyPasswordResponse);
 
             //  Copy bytes from JS memory to the WASM memory.
             const passwordSize = password.length * password.BYTES_PER_ELEMENT;
@@ -377,7 +377,7 @@ const initPheClient = (Module, modules) => {
          * Use output values to instantiate new client instance with new keys
          */
         rotateKeys(updateToken) {
-            // assert(typeof updateToken === 'Uint8Array')
+            precondition.ensureByteArray('updateToken', updateToken);
 
             //  Copy bytes from JS memory to the WASM memory.
             const updateTokenSize = updateToken.length * updateToken.BYTES_PER_ELEMENT;
@@ -421,8 +421,8 @@ const initPheClient = (Module, modules) => {
          * Updates EnrollmentRecord using server's update token
          */
         updateEnrollmentRecord(enrollmentRecord, updateToken) {
-            // assert(typeof enrollmentRecord === 'Uint8Array')
-            // assert(typeof updateToken === 'Uint8Array')
+            precondition.ensureByteArray('enrollmentRecord', enrollmentRecord);
+            precondition.ensureByteArray('updateToken', updateToken);
 
             //  Copy bytes from JS memory to the WASM memory.
             const enrollmentRecordSize = enrollmentRecord.length * enrollmentRecord.BYTES_PER_ELEMENT;
