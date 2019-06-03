@@ -46,13 +46,13 @@
 include_guard()
 
 option(PB_LIBRARY "Enable build of the 'nanopb' library" ON)
-option(PB_ENABLE_MALLOC "Enable support for dynamically allocated fields" OFF)
+option(PB_ENABLE_MALLOC "Enable support for dynamically allocated fields" ON)
 option(PB_NO_PACKED_STRUCTS "Define this if your CPU / compiler combination does not support unaligned memory access to packed structures." OFF)
 option(PB_MAX_REQUIRED_FIELDS "Increase the number of required fields that are tracked. A compiler warning will tell if you need this." OFF)
 option(PB_FIELD_16BIT "Add support for tag numbers > 255 and fields larger than 255 bytes." OFF)
 option(PB_FIELD_32BIT "Add support for tag numbers > 65536 and fields larger than 65536 bytes." ON)
-option(PB_NO_ERRMSG "Disable support for error messages in order to save some code space." OFF)
-option(PB_BUFFER_ONLY "Disable support for custom streams (support only memory buffers)." OFF)
+option(PB_NO_ERRMSG "Disable support for error messages in order to save some code space." ON)
+option(PB_BUFFER_ONLY "Disable support for custom streams (support only memory buffers)." ON)
 option(PB_OLD_CALLBACK_STYLE "Switch back to the old-style callback function signature. This was the default until nanopb-0.2.1." OFF)
 mark_as_advanced(
         PB_LIBRARY
