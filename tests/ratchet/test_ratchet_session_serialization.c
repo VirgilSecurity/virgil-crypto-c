@@ -134,15 +134,19 @@ test__serialization__big_session__overflow_doesnt_happen(void) {
 
     vscr_ratchet_session_t *session = vscr_ratchet_session_new();
 
+    vscr_ratchet_destroy(&session->ratchet);
     session->ratchet = vscr_ratchet_new();
 
+    vscr_ratchet_receiver_chain_destroy(&session->ratchet->receiver_chain);
     session->ratchet->receiver_chain = vscr_ratchet_receiver_chain_new();
     session->ratchet->receiver_chain->chain_key.index = UINT32_MAX;
     session->ratchet->prev_sender_chain_count = UINT32_MAX;
 
+    vscr_ratchet_sender_chain_destroy(&session->ratchet->sender_chain);
     session->ratchet->sender_chain = vscr_ratchet_sender_chain_new();
     session->ratchet->sender_chain->chain_key.index = UINT32_MAX;
 
+    vscr_ratchet_skipped_messages_destroy(&session->ratchet->skipped_messages);
     session->ratchet->skipped_messages = vscr_ratchet_skipped_messages_new();
     session->ratchet->skipped_messages->roots_count = vscr_ratchet_common_hidden_MAX_SKIPPED_DH;
 
@@ -164,15 +168,19 @@ test__serialization__big_random_session__overflow_doesnt_happen(void) {
 
     vscr_ratchet_session_t *session = vscr_ratchet_session_new();
 
+    vscr_ratchet_destroy(&session->ratchet);
     session->ratchet = vscr_ratchet_new();
 
+    vscr_ratchet_receiver_chain_destroy(&session->ratchet->receiver_chain);
     session->ratchet->receiver_chain = vscr_ratchet_receiver_chain_new();
     session->ratchet->receiver_chain->chain_key.index = UINT32_MAX;
     session->ratchet->prev_sender_chain_count = UINT32_MAX;
 
+    vscr_ratchet_sender_chain_destroy(&session->ratchet->sender_chain);
     session->ratchet->sender_chain = vscr_ratchet_sender_chain_new();
     session->ratchet->sender_chain->chain_key.index = UINT32_MAX;
 
+    vscr_ratchet_skipped_messages_destroy(&session->ratchet->skipped_messages);
     session->ratchet->skipped_messages = vscr_ratchet_skipped_messages_new();
 
     size_t root_count = generate_number(rng, 0, vscr_ratchet_common_hidden_MAX_SKIPPED_DH);

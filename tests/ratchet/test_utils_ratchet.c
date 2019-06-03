@@ -1170,6 +1170,7 @@ generate_full_epoch(vscf_ctr_drbg_t *rng, bool max) {
 
     epoch->epoch = UINT32_MAX;
     epoch->chain_key = generate_full_chain_key();
+    vscr_ratchet_skipped_messages_root_node_destroy(&epoch->skipped_messages);
     epoch->skipped_messages = generate_full_root_node(rng, max);
 
     return epoch;

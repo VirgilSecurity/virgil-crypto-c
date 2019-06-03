@@ -101,10 +101,12 @@ test__serialization__big_session__overflow_doesnt_happen(void) {
         vscr_ratchet_group_participant_t *participant = session->participants[i];
 
         for (size_t j = 0; j < vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT; j++) {
+            vscr_ratchet_group_participant_epoch_destroy(&participant->epochs[j]);
             participant->epochs[j] = generate_full_epoch(rng, true);
         }
     }
 
+    vscr_ratchet_chain_key_destroy(&session->my_chain_key);
     session->my_chain_key = generate_full_chain_key();
     session->my_epoch = UINT32_MAX;
 
@@ -115,7 +117,12 @@ test__serialization__big_session__overflow_doesnt_happen(void) {
     restore_group_session(rng, &session, priv[0]);
 
     for (size_t i = 0; i < participants_count; i++) {
-        vscr_ratchet_group_session_destroy(&sessions[i]);
+        if (i > 0) {
+            vscr_ratchet_group_session_destroy(&sessions[i]);
+        }
+        else {
+            vscr_ratchet_group_session_destroy(&session);
+        }
         vsc_buffer_destroy(&priv[i]);
     }
 
@@ -144,6 +151,8 @@ test__serialization__random_big_session__overflow_doesnt_happen(void) {
         vscr_ratchet_group_participant_t *participant = session->participants[i];
 
         for (size_t j = 0; j < vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT; j++) {
+            vscr_ratchet_group_participant_epoch_destroy(&participant->epochs[j]);
+
             if (generate_prob(rng) < 0.5)
                 continue;
 
@@ -151,6 +160,7 @@ test__serialization__random_big_session__overflow_doesnt_happen(void) {
         }
     }
 
+    vscr_ratchet_chain_key_destroy(&session->my_chain_key);
     session->my_chain_key = generate_full_chain_key();
     session->my_epoch = UINT32_MAX;
 
@@ -161,7 +171,12 @@ test__serialization__random_big_session__overflow_doesnt_happen(void) {
     restore_group_session(rng, &session, priv[0]);
 
     for (size_t i = 0; i < participants_count; i++) {
-        vscr_ratchet_group_session_destroy(&sessions[i]);
+        if (i > 0) {
+            vscr_ratchet_group_session_destroy(&sessions[i]);
+        }
+        else {
+            vscr_ratchet_group_session_destroy(&session);
+        }
         vsc_buffer_destroy(&priv[i]);
     }
 
