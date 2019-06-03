@@ -1,4 +1,5 @@
 const initPhe = require('../../phe');
+const { hexToUint8Array } = require('../utils');
 
 describe('PheCipher', () => {
   let phe;
@@ -25,9 +26,9 @@ describe('PheCipher', () => {
         serverKeyPair.serverPrivateKey,
         serverKeyPair.serverPublicKey,
       );
-      const password = Buffer.from('password');
+      const password = hexToUint8Array('70617373776f7264');
       const { enrollmentRecord, accountKey } = pheClient.enrollAccount(enrollment, password);
-      const data = Buffer.from('data');
+      const data = hexToUint8Array('64617461');
       const result = pheCipher.encrypt(data, accountKey);
       expect(result).toBeInstanceOf(Uint8Array);
     });
@@ -42,12 +43,12 @@ describe('PheCipher', () => {
         serverKeyPair.serverPrivateKey,
         serverKeyPair.serverPublicKey,
       );
-      const password = Buffer.from('password');
+      const password = hexToUint8Array('70617373776f7264');
       const { enrollmentRecord, accountKey } = pheClient.enrollAccount(enrollment, password);
-      const data = Buffer.from('data');
+      const data = hexToUint8Array('64617461');
       const encrypted = pheCipher.encrypt(data, accountKey);
       const result = pheCipher.decrypt(encrypted, accountKey);
-      expect(Buffer.compare(result, data)).toBe(0);
+      expect(result.toString()).toBe(data.toString());
     });
   });
 });

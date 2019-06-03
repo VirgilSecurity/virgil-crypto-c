@@ -1,4 +1,5 @@
 const initPhe = require('../../phe');
+const { hexToUint8Array } = require('../utils');
 
 describe('PheServer', () => {
   let phe;
@@ -38,7 +39,7 @@ describe('PheServer', () => {
         serverKeyPair.serverPrivateKey,
         serverKeyPair.serverPublicKey,
       );
-      const password = Buffer.from('password');
+      const password = hexToUint8Array('70617373776f7264');
       const { enrollmentRecord, accountKey } = pheClient.enrollAccount(enrollment, password);
       const request = pheClient.createVerifyPasswordRequest(password, enrollmentRecord);
       const response = pheServer.verifyPassword(serverKeyPair.serverPrivateKey, serverKeyPair.serverPublicKey, request);

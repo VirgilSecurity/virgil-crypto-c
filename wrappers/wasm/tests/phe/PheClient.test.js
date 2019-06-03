@@ -1,4 +1,5 @@
 const initPhe = require('../../phe');
+const { hexToUint8Array } = require('../utils');
 
 describe('PheClient', () => {
   let phe;
@@ -21,7 +22,7 @@ describe('PheClient', () => {
         serverKeyPair.serverPrivateKey,
         serverKeyPair.serverPublicKey,
       );
-      const password = Buffer.from('password');
+      const password = hexToUint8Array('70617373776f7264');
       const { enrollmentRecord, accountKey } = pheClient.enrollAccount(enrollment, password);
       expect(enrollmentRecord).toBeInstanceOf(Uint8Array);
       expect(accountKey).toBeInstanceOf(Uint8Array);
@@ -37,7 +38,7 @@ describe('PheClient', () => {
         serverKeyPair.serverPrivateKey,
         serverKeyPair.serverPublicKey,
       );
-      const password = Buffer.from('password');
+      const password = hexToUint8Array('70617373776f7264');
       const { enrollmentRecord, accountKey } = pheClient.enrollAccount(enrollment, password);
       const request = pheClient.createVerifyPasswordRequest(password, enrollmentRecord);
       expect(request).toBeInstanceOf(Uint8Array);
@@ -53,7 +54,7 @@ describe('PheClient', () => {
         serverKeyPair.serverPrivateKey,
         serverKeyPair.serverPublicKey,
       );
-      const password = Buffer.from('password');
+      const password = hexToUint8Array('70617373776f7264');
       const { enrollmentRecord, accountKey } = pheClient.enrollAccount(enrollment, password);
       const request = pheClient.createVerifyPasswordRequest(password, enrollmentRecord);
       const response = pheServer.verifyPassword(
@@ -62,7 +63,7 @@ describe('PheClient', () => {
         request,
       );
       const myAccountKey = pheClient.checkResponseAndDecrypt(password, enrollmentRecord, response);
-      expect(Buffer.compare(myAccountKey, accountKey)).toBe(0);
+      expect(myAccountKey.toString()).toBe(accountKey.toString());
     });
   });
 });
