@@ -854,7 +854,10 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     vscr_ratchet_deserialize(&session_pb->ratchet, session->ratchet);
 
 err:
-    pb_release(Session_fields, session_pb);
+    if (status) {
+        pb_release(Session_fields, session_pb);
+    }
+
     vscr_zeroize(session_pb, sizeof(Session));
     vscr_dealloc(session_pb);
 

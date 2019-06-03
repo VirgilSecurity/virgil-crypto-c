@@ -1132,7 +1132,10 @@ vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     }
 
 err:
-    pb_release(GroupSession_fields, session_pb);
+    if (status) {
+        pb_release(GroupSession_fields, session_pb);
+    }
+    
     vscr_zeroize(session_pb, sizeof(GroupSession));
     vscr_dealloc(session_pb);
 
