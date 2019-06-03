@@ -1,6 +1,14 @@
 # virgil-crypto-c ChangeLog (Sorted per date)
 
 
+## Version 0.7.1 released 2019-06-03
+
+### Bugfix
+
+- Lib/Foundation: Fix asn1 key deserializer - return status code when pass invalid key instead of fail on assertion
+- Lib/Foundation: Fix chunk encryption/decryption for AES256-GCM
+
+
 ## Version 0.7.0 released 2019-05-14
 
 ### Features

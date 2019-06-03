@@ -53,10 +53,10 @@ Implementation of the [Double Ratchet Algorithm](https://en.wikipedia.org/wiki/D
 
 | Library    | Platforms    | Languages / Binaries                                         |
 | ---------- | ------------ | ------------------------------------------------------------ |
-| foundation | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), Swift, Java |
-| pythia     | linux, macOS | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), Swift, Java |
-| phe        | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [PHP](https://cdn.virgilsecurity.com/virgil-crypto-c/php), Java |
-| ratchet    | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), Swift, Java |
+| foundation | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), Swift, [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto) |
+| pythia     | linux, macOS | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), Swift, [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto) |
+| phe        | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [PHP](https://cdn.virgilsecurity.com/virgil-crypto-c/php), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto) |
+| ratchet    | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), Swift, [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto) |
 
 
 
