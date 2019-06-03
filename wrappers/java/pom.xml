@@ -36,7 +36,7 @@
 	<groupId>com.virgilsecurity.crypto</groupId>
 	<artifactId>parent</artifactId>
 	<packaging>pom</packaging>
-	<version>0.7.0</version>
+	<version>0.7.1</version>
 
 	<name>Virgil Security Crypto Library</name>
 	<description>
