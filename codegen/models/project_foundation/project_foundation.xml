@@ -9,7 +9,7 @@
         wrappers="swift,java"
         >
 
-    <version major="0" minor="8" patch="0"/>
+    <version major="0" minor="7" patch="1"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.
