@@ -89,6 +89,8 @@ const initAlgInfoDerSerializer = (Module, modules) => {
         }
 
         set asn1Writer(asn1Writer) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('asn1Writer', asn1Writer, 'Foundation.Asn1Writer', modules.FoundationInterfaceTag.ASN1_WRITER, modules.FoundationInterface);
             Module._vscf_alg_info_der_serializer_release_asn1_writer(this.ctxPtr)
             Module._vscf_alg_info_der_serializer_use_asn1_writer(this.ctxPtr, asn1Writer.ctxPtr)
         }
@@ -97,6 +99,9 @@ const initAlgInfoDerSerializer = (Module, modules) => {
          * Return buffer size enough to hold serialized algorithm.
          */
         serializedLen(algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+
             let proxyResult;
             proxyResult = Module._vscf_alg_info_der_serializer_serialized_len(this.ctxPtr, algInfo.ctxPtr);
             return proxyResult;
@@ -106,6 +111,9 @@ const initAlgInfoDerSerializer = (Module, modules) => {
          * Serialize algorithm info to buffer class.
          */
         serialize(algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+
             const outCapacity = this.serializedLen(algInfo);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
@@ -125,6 +133,7 @@ const initAlgInfoDerSerializer = (Module, modules) => {
          * Setup predefined values to the uninitialized class dependencies.
          */
         setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_alg_info_der_serializer_setup_defaults(this.ctxPtr);
         }
 
@@ -134,6 +143,9 @@ const initAlgInfoDerSerializer = (Module, modules) => {
          * an output buffer.
          */
         serializeInplace(algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+
             let proxyResult;
             proxyResult = Module._vscf_alg_info_der_serializer_serialize_inplace(this.ctxPtr, algInfo.ctxPtr);
             return proxyResult;

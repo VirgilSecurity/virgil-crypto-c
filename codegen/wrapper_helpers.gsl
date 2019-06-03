@@ -218,8 +218,16 @@ endfunction
 #   Return .(UID) that refers to the C implementation method that returns
 #   implementation tag.
 # ---------------------------------------------------------------------------
-function impl_derive_c_method_implementation_tag()
+function impl_derive_c_method_tag()
     return make_ref_c(make_id("class", "impl", "method", "tag"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C implementation method that returns
+#   interface api.
+# ---------------------------------------------------------------------------
+function impl_derive_c_method_api()
+    return make_ref_c(make_id("class", "impl", "method", "api"))
 endfunction
 
 # ---------------------------------------------------------------------------

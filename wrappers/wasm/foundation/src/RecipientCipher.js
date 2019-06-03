@@ -91,11 +91,15 @@ const initRecipientCipher = (Module, modules) => {
         }
 
         set random(random) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_recipient_cipher_release_random(this.ctxPtr)
             Module._vscf_recipient_cipher_use_random(this.ctxPtr, random.ctxPtr)
         }
 
         set encryptionCipher(encryptionCipher) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('encryptionCipher', encryptionCipher, 'Foundation.Cipher', modules.FoundationInterfaceTag.CIPHER, modules.FoundationInterface);
             Module._vscf_recipient_cipher_release_encryption_cipher(this.ctxPtr)
             Module._vscf_recipient_cipher_use_encryption_cipher(this.ctxPtr, encryptionCipher.ctxPtr)
         }
@@ -104,7 +108,9 @@ const initRecipientCipher = (Module, modules) => {
          * Add recipient defined with id and public key.
          */
         addKeyRecipient(recipientId, publicKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('recipientId', recipientId);
+            precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
 
             //  Copy bytes from JS memory to the WASM memory.
             const recipientIdSize = recipientId.length * recipientId.BYTES_PER_ELEMENT;
@@ -130,6 +136,7 @@ const initRecipientCipher = (Module, modules) => {
          * Remove all recipients.
          */
         clearRecipients() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_recipient_cipher_clear_recipients(this.ctxPtr);
         }
 
@@ -138,6 +145,8 @@ const initRecipientCipher = (Module, modules) => {
          * The returned object can be used to add custom params or read it.
          */
         customParams() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_recipient_cipher_custom_params(this.ctxPtr);
 
@@ -151,6 +160,8 @@ const initRecipientCipher = (Module, modules) => {
          * Precondition: all recipients and custom parameters should be set.
          */
         messageInfoLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_recipient_cipher_message_info_len(this.ctxPtr);
             return proxyResult;
@@ -160,6 +171,7 @@ const initRecipientCipher = (Module, modules) => {
          * Start encryption process.
          */
         startEncryption() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_recipient_cipher_start_encryption(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
@@ -177,6 +189,8 @@ const initRecipientCipher = (Module, modules) => {
          * algorithm information, etc.
          */
         packMessageInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const messageInfoCapacity = this.messageInfoLen();
             const messageInfoCtxPtr = Module._vsc_buffer_new_with_capacity(messageInfoCapacity);
 
@@ -197,6 +211,7 @@ const initRecipientCipher = (Module, modules) => {
          * "process encryption" and method "finish" during encryption.
          */
         encryptionOutLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
@@ -208,6 +223,7 @@ const initRecipientCipher = (Module, modules) => {
          * Process encryption of a new portion of data.
          */
         processEncryption(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -244,6 +260,8 @@ const initRecipientCipher = (Module, modules) => {
          * Accomplish encryption.
          */
         finishEncryption() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const outCapacity = this.encryptionOutLen(0);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
@@ -265,7 +283,9 @@ const initRecipientCipher = (Module, modules) => {
          * Message info can be empty if it was embedded to encrypted data.
          */
         startDecryptionWithKey(recipientId, privateKey, messageInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('recipientId', recipientId);
+            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
             precondition.ensureByteArray('messageInfo', messageInfo);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -308,6 +328,7 @@ const initRecipientCipher = (Module, modules) => {
          * "process decryption" and method "finish" during decryption.
          */
         decryptionOutLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
@@ -320,6 +341,7 @@ const initRecipientCipher = (Module, modules) => {
          * Return error if data can not be encrypted or decrypted.
          */
         processDecryption(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -356,6 +378,8 @@ const initRecipientCipher = (Module, modules) => {
          * Accomplish decryption.
          */
         finishDecryption() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const outCapacity = this.decryptionOutLen(0);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 

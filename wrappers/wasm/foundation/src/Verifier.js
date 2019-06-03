@@ -93,6 +93,7 @@ const initVerifier = (Module, modules) => {
          * Start verifying a signature.
          */
         reset(signature) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('signature', signature);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -120,6 +121,7 @@ const initVerifier = (Module, modules) => {
          * Add given data to the signed data.
          */
         update(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -146,6 +148,9 @@ const initVerifier = (Module, modules) => {
          * Verify accumulated data.
          */
         verify(publicKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.VerifyHash', modules.FoundationInterfaceTag.VERIFY_HASH, modules.FoundationInterface);
+
             let proxyResult;
             proxyResult = Module._vscf_verifier_verify(this.ctxPtr, publicKey.ctxPtr);
 

@@ -108,11 +108,14 @@ const initSecp256r1PublicKey = (Module, modules) => {
         }
 
         set random(random) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_secp256r1_public_key_release_random(this.ctxPtr)
             Module._vscf_secp256r1_public_key_use_random(this.ctxPtr, random.ctxPtr)
         }
 
         set ecies(ecies) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('ecies', ecies, modules.Ecies);
             Module._vscf_secp256r1_public_key_release_ecies(this.ctxPtr)
             Module._vscf_secp256r1_public_key_use_ecies(this.ctxPtr, ecies.ctxPtr)
@@ -122,6 +125,8 @@ const initSecp256r1PublicKey = (Module, modules) => {
          * Provide algorithm identificator.
          */
         algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_secp256r1_public_key_alg_id(this.ctxPtr);
             return proxyResult;
@@ -131,6 +136,8 @@ const initSecp256r1PublicKey = (Module, modules) => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_secp256r1_public_key_produce_alg_info(this.ctxPtr);
 
@@ -142,6 +149,8 @@ const initSecp256r1PublicKey = (Module, modules) => {
          * Restore algorithm configuration from the given object.
          */
         restoreAlgInfo(algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
             const proxyResult = Module._vscf_secp256r1_public_key_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
@@ -150,6 +159,8 @@ const initSecp256r1PublicKey = (Module, modules) => {
          * Length of the key in bytes.
          */
         keyLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_secp256r1_public_key_key_len(this.ctxPtr);
             return proxyResult;
@@ -159,6 +170,8 @@ const initSecp256r1PublicKey = (Module, modules) => {
          * Length of the key in bits.
          */
         keyBitlen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_secp256r1_public_key_key_bitlen(this.ctxPtr);
             return proxyResult;
@@ -168,6 +181,7 @@ const initSecp256r1PublicKey = (Module, modules) => {
          * Encrypt given data.
          */
         encrypt(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -204,6 +218,7 @@ const initSecp256r1PublicKey = (Module, modules) => {
          * Calculate required buffer length to hold the encrypted data.
          */
         encryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
@@ -215,6 +230,7 @@ const initSecp256r1PublicKey = (Module, modules) => {
          * Verify data with given public key and signature.
          */
         verifyHash(hashDigest, hashId, signature) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('hashDigest', hashDigest);
             precondition.ensureNumber('hashId', hashId);
             precondition.ensureByteArray('signature', signature);
@@ -266,6 +282,8 @@ const initSecp256r1PublicKey = (Module, modules) => {
          * RFC 3447 Appendix A.1.1.
          */
         exportPublicKey() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const outCapacity = this.exportedPublicKeyLen();
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
@@ -286,6 +304,8 @@ const initSecp256r1PublicKey = (Module, modules) => {
          * Return length in bytes required to hold exported public key.
          */
         exportedPublicKeyLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_secp256r1_public_key_exported_public_key_len(this.ctxPtr);
             return proxyResult;
@@ -299,6 +319,7 @@ const initSecp256r1PublicKey = (Module, modules) => {
          * RFC 3447 Appendix A.1.1.
          */
         importPublicKey(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -326,6 +347,8 @@ const initSecp256r1PublicKey = (Module, modules) => {
          * Generate ephemeral private key of the same type.
          */
         generateEphemeralKey() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
             Module._vscf_error_reset(errorCtxPtr);
@@ -349,6 +372,7 @@ const initSecp256r1PublicKey = (Module, modules) => {
          * Setup predefined values to the uninitialized class dependencies.
          */
         setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_secp256r1_public_key_setup_defaults(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }

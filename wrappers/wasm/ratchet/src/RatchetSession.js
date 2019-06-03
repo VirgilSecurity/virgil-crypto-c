@@ -92,6 +92,8 @@ const initRatchetSession = (Module, modules) => {
          * Random used to generate keys
          */
         set rng(rng) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('rng', rng, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscr_ratchet_session_release_rng(this.ctxPtr)
             Module._vscr_ratchet_session_use_rng(this.ctxPtr, rng.ctxPtr)
         }
@@ -101,6 +103,7 @@ const initRatchetSession = (Module, modules) => {
          * - RNG: CTR DRBG
          */
         setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscr_ratchet_session_setup_defaults(this.ctxPtr);
             modules.RatchetError.handleStatusCode(proxyResult);
         }
@@ -109,6 +112,7 @@ const initRatchetSession = (Module, modules) => {
          * Initiates session
          */
         initiate(senderIdentityPrivateKey, receiverIdentityPublicKey, receiverLongTermPublicKey, receiverOneTimePublicKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('senderIdentityPrivateKey', senderIdentityPrivateKey);
             precondition.ensureByteArray('receiverIdentityPublicKey', receiverIdentityPublicKey);
             precondition.ensureByteArray('receiverLongTermPublicKey', receiverLongTermPublicKey);
@@ -181,6 +185,7 @@ const initRatchetSession = (Module, modules) => {
          * Responds to session initiation
          */
         respond(senderIdentityPublicKey, receiverIdentityPrivateKey, receiverLongTermPrivateKey, receiverOneTimePrivateKey, message) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('senderIdentityPublicKey', senderIdentityPublicKey);
             precondition.ensureByteArray('receiverIdentityPrivateKey', receiverIdentityPrivateKey);
             precondition.ensureByteArray('receiverLongTermPrivateKey', receiverLongTermPrivateKey);
@@ -254,6 +259,8 @@ const initRatchetSession = (Module, modules) => {
          * Returns flag that indicates is this session was initiated or responded
          */
         isInitiator() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_session_is_initiator(this.ctxPtr);
 
@@ -265,6 +272,8 @@ const initRatchetSession = (Module, modules) => {
          * Returns true if at least 1 response was successfully decrypted, false - otherwise
          */
         receivedFirstResponse() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_session_received_first_response(this.ctxPtr);
 
@@ -276,6 +285,8 @@ const initRatchetSession = (Module, modules) => {
          * Returns true if receiver had one time public key
          */
         receiverHasOneTimePublicKey() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_session_receiver_has_one_time_public_key(this.ctxPtr);
 
@@ -287,6 +298,7 @@ const initRatchetSession = (Module, modules) => {
          * Encrypts data
          */
         encrypt(plainText) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('plainText', plainText);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -326,6 +338,7 @@ const initRatchetSession = (Module, modules) => {
          * Calculates size of buffer sufficient to store decrypted message
          */
         decryptLen(message) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('message', message, modules.RatchetMessage);
 
             let proxyResult;
@@ -337,6 +350,7 @@ const initRatchetSession = (Module, modules) => {
          * Decrypts message
          */
         decrypt(message) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('message', message, modules.RatchetMessage);
 
             const plainTextCapacity = this.decryptLen(message);
@@ -359,6 +373,8 @@ const initRatchetSession = (Module, modules) => {
          * Calculates size of buffer sufficient to store session
          */
         serializeLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_session_serialize_len(this.ctxPtr);
             return proxyResult;
@@ -368,6 +384,8 @@ const initRatchetSession = (Module, modules) => {
          * Serializes session to buffer
          */
         serialize() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const outputCapacity = this.serializeLen();
             const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputCapacity);
 

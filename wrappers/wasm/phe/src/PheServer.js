@@ -93,6 +93,8 @@ const initPheServer = (Module, modules) => {
          * Random used for key generation, proofs, etc.
          */
         set random(random) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_phe_server_release_random(this.ctxPtr)
             Module._vsce_phe_server_use_random(this.ctxPtr, random.ctxPtr)
         }
@@ -101,11 +103,14 @@ const initPheServer = (Module, modules) => {
          * Random used for crypto operations to make them const-time
          */
         set operationRandom(operationRandom) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('operationRandom', operationRandom, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_phe_server_release_operation_random(this.ctxPtr)
             Module._vsce_phe_server_use_operation_random(this.ctxPtr, operationRandom.ctxPtr)
         }
 
         setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vsce_phe_server_setup_defaults(this.ctxPtr);
             modules.PheError.handleStatusCode(proxyResult);
         }
@@ -114,6 +119,8 @@ const initPheServer = (Module, modules) => {
          * Generates new NIST P-256 server key pair for some client
          */
         generateServerKeyPair() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const serverPrivateKeyCapacity = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
             const serverPrivateKeyCtxPtr = Module._vsc_buffer_new_with_capacity(serverPrivateKeyCapacity);
 
@@ -142,6 +149,8 @@ const initPheServer = (Module, modules) => {
          * Buffer size needed to fit EnrollmentResponse
          */
         enrollmentResponseLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vsce_phe_server_enrollment_response_len(this.ctxPtr);
             return proxyResult;
@@ -151,6 +160,7 @@ const initPheServer = (Module, modules) => {
          * Generates a new random enrollment and proof for a new user
          */
         getEnrollment(serverPrivateKey, serverPublicKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('serverPrivateKey', serverPrivateKey);
             precondition.ensureByteArray('serverPublicKey', serverPublicKey);
 
@@ -202,6 +212,8 @@ const initPheServer = (Module, modules) => {
          * Buffer size needed to fit VerifyPasswordResponse
          */
         verifyPasswordResponseLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vsce_phe_server_verify_password_response_len(this.ctxPtr);
             return proxyResult;
@@ -211,6 +223,7 @@ const initPheServer = (Module, modules) => {
          * Verifies existing user's password and generates response with proof
          */
         verifyPassword(serverPrivateKey, serverPublicKey, verifyPasswordRequest) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('serverPrivateKey', serverPrivateKey);
             precondition.ensureByteArray('serverPublicKey', serverPublicKey);
             precondition.ensureByteArray('verifyPasswordRequest', verifyPasswordRequest);
@@ -277,6 +290,8 @@ const initPheServer = (Module, modules) => {
          * Buffer size needed to fit UpdateToken
          */
         updateTokenLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vsce_phe_server_update_token_len(this.ctxPtr);
             return proxyResult;
@@ -286,6 +301,7 @@ const initPheServer = (Module, modules) => {
          * Updates server's private and public keys and issues an update token for use on client's side
          */
         rotateKeys(serverPrivateKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('serverPrivateKey', serverPrivateKey);
 
             //  Copy bytes from JS memory to the WASM memory.

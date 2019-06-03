@@ -289,6 +289,24 @@ function wasm_derive_interface_wrapper_class_name(return, wasm_project)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return invocation that validate that given context is not NULL.
+# ---------------------------------------------------------------------------
+function wasm_derive_ctx_precondition(ctx_name)
+    check_arguments(my, "ctx_name", my)
+
+    return "precondition.ensureNotNull('$(my.ctx_name:)', $(my.ctx_name:));"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return invocation that validate that given argument is a number.
+# ---------------------------------------------------------------------------
+function wasm_derive_number_precondition(arg_name)
+    check_arguments(my, "arg_name", my)
+
+    return "precondition.ensureNumber('$(my.arg_name:)', $(my.arg_name:));"
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return invocation that validate instance passed to the JS method.
 # ---------------------------------------------------------------------------
 function wasm_derive_instance_precondition(instance, wasm_instance, wasm_project)
@@ -309,18 +327,25 @@ function wasm_derive_instance_precondition(instance, wasm_instance, wasm_project
             my.ensure_method = "ensureByteArray"
         else
             my.ensure_method = "ensureClass"
-            my.class_name = wasm_derive_instance_class(my.instance)
+            my.ensure_class_name = wasm_derive_instance_class(my.instance)
         endif
 
     elsif defined(my.instance.interface)
-        #   TODO: my.ensure_method = "ensureInterface"
+        my.ensure_method = "ensureImplementInterface"
+        my.ensure_interface_checker = wasm_derive_interface_wrapper_class_name(my.instance, my.wasm_project)
+        my.ensure_interface_name = \
+                wasm_derive_project_name_str(my.instance.project ? my.wasm_project.name) + "." + \
+                wasm_derive_class_name_str(my.instance.interface)
+        my.ensure_interface_tag = \
+                "$(my.ensure_interface_checker:)Tag.$(wasm_derive_constant_name_str(my.instance.interface))"
+
 
     elsif defined(my.instance.enum)
         my.ensure_method = "ensureNumber"
 
     elsif defined(my.instance.impl)
         my.ensure_method = "ensureClass"
-        my.class_name = wasm_derive_instance_class(my.instance)
+        my.ensure_class_name = wasm_derive_instance_class(my.instance)
     endif
 
     if defined(my.ensure_method)
@@ -328,8 +353,13 @@ function wasm_derive_instance_precondition(instance, wasm_instance, wasm_project
         my.precondition += my.ensure_method
         my.precondition += "("
         my.precondition +="'$(my.wasm_instance.name:)', $(my.wasm_instance.name:)"
-        if defined(my.class_name)
-            my.precondition +=", modules.$(my.class_name:)"
+        if defined(my.ensure_class_name)
+            my.precondition +=", modules.$(my.ensure_class_name:)"
+        endif
+        if defined(my.ensure_interface_checker)
+            my.precondition +=", '$(my.ensure_interface_name:)'"
+            my.precondition +=", modules.$(my.ensure_interface_tag:)"
+            my.precondition +=", modules.$(my.ensure_interface_checker:)"
         endif
         my.precondition += ");"
     endif

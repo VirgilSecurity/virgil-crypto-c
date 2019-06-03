@@ -93,6 +93,8 @@ const initPheClient = (Module, modules) => {
          * Random used for key generation, proofs, etc.
          */
         set random(random) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_phe_client_release_random(this.ctxPtr)
             Module._vsce_phe_client_use_random(this.ctxPtr, random.ctxPtr)
         }
@@ -101,11 +103,14 @@ const initPheClient = (Module, modules) => {
          * Random used for crypto operations to make them const-time
          */
         set operationRandom(operationRandom) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('operationRandom', operationRandom, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_phe_client_release_operation_random(this.ctxPtr)
             Module._vsce_phe_client_use_operation_random(this.ctxPtr, operationRandom.ctxPtr)
         }
 
         setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vsce_phe_client_setup_defaults(this.ctxPtr);
             modules.PheError.handleStatusCode(proxyResult);
         }
@@ -116,6 +121,7 @@ const initPheClient = (Module, modules) => {
          * This function should be called only once
          */
         setKeys(clientPrivateKey, serverPublicKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('clientPrivateKey', clientPrivateKey);
             precondition.ensureByteArray('serverPublicKey', serverPublicKey);
 
@@ -158,6 +164,8 @@ const initPheClient = (Module, modules) => {
          * Generates client private key
          */
         generateClientPrivateKey() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const clientPrivateKeyCapacity = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
             const clientPrivateKeyCtxPtr = Module._vsc_buffer_new_with_capacity(clientPrivateKeyCapacity);
 
@@ -178,6 +186,8 @@ const initPheClient = (Module, modules) => {
          * Buffer size needed to fit EnrollmentRecord
          */
         enrollmentRecordLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vsce_phe_client_enrollment_record_len(this.ctxPtr);
             return proxyResult;
@@ -189,6 +199,7 @@ const initPheClient = (Module, modules) => {
          * Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
          */
         enrollAccount(enrollmentResponse, password) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('enrollmentResponse', enrollmentResponse);
             precondition.ensureByteArray('password', password);
 
@@ -248,6 +259,8 @@ const initPheClient = (Module, modules) => {
          * Buffer size needed to fit VerifyPasswordRequest
          */
         verifyPasswordRequestLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vsce_phe_client_verify_password_request_len(this.ctxPtr);
             return proxyResult;
@@ -257,6 +270,7 @@ const initPheClient = (Module, modules) => {
          * Creates a request for further password verification at the PHE server side.
          */
         createVerifyPasswordRequest(password, enrollmentRecord) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('password', password);
             precondition.ensureByteArray('enrollmentRecord', enrollmentRecord);
 
@@ -310,6 +324,7 @@ const initPheClient = (Module, modules) => {
          * If login failed account key will be empty
          */
         checkResponseAndDecrypt(password, enrollmentRecord, verifyPasswordResponse) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('password', password);
             precondition.ensureByteArray('enrollmentRecord', enrollmentRecord);
             precondition.ensureByteArray('verifyPasswordResponse', verifyPasswordResponse);
@@ -377,6 +392,7 @@ const initPheClient = (Module, modules) => {
          * Use output values to instantiate new client instance with new keys
          */
         rotateKeys(updateToken) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('updateToken', updateToken);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -421,6 +437,7 @@ const initPheClient = (Module, modules) => {
          * Updates EnrollmentRecord using server's update token
          */
         updateEnrollmentRecord(enrollmentRecord, updateToken) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('enrollmentRecord', enrollmentRecord);
             precondition.ensureByteArray('updateToken', updateToken);
 

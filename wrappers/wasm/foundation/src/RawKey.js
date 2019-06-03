@@ -125,6 +125,8 @@ const initRawKey = (Module, modules) => {
          * Returns asymmetric algorithm type that raw key belongs to.
          */
         algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_raw_key_alg_id(this.ctxPtr);
             return proxyResult;
@@ -134,6 +136,8 @@ const initRawKey = (Module, modules) => {
          * Return raw key data.
          */
         data() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);

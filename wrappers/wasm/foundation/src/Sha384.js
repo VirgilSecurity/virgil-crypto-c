@@ -114,6 +114,8 @@ const initSha384 = (Module, modules) => {
          * Provide algorithm identificator.
          */
         algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_sha384_alg_id(this.ctxPtr);
             return proxyResult;
@@ -123,6 +125,8 @@ const initSha384 = (Module, modules) => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_sha384_produce_alg_info(this.ctxPtr);
 
@@ -134,6 +138,8 @@ const initSha384 = (Module, modules) => {
          * Restore algorithm configuration from the given object.
          */
         restoreAlgInfo(algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
             const proxyResult = Module._vscf_sha384_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
@@ -177,6 +183,7 @@ const initSha384 = (Module, modules) => {
          * Start a new hashing.
          */
         start() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_sha384_start(this.ctxPtr);
         }
 
@@ -184,6 +191,7 @@ const initSha384 = (Module, modules) => {
          * Add given data to the hash.
          */
         update(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -210,6 +218,8 @@ const initSha384 = (Module, modules) => {
          * Accompilsh hashing and return it's result (a message digest).
          */
         finish() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const digestCapacity = this.DIGEST_LEN;
             const digestCtxPtr = Module._vsc_buffer_new_with_capacity(digestCapacity);
 

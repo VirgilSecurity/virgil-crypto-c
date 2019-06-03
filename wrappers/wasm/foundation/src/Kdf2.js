@@ -89,6 +89,8 @@ const initKdf2 = (Module, modules) => {
         }
 
         set hash(hash) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('hash', hash, 'Foundation.Hash', modules.FoundationInterfaceTag.HASH, modules.FoundationInterface);
             Module._vscf_kdf2_release_hash(this.ctxPtr)
             Module._vscf_kdf2_use_hash(this.ctxPtr, hash.ctxPtr)
         }
@@ -97,6 +99,8 @@ const initKdf2 = (Module, modules) => {
          * Provide algorithm identificator.
          */
         algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_kdf2_alg_id(this.ctxPtr);
             return proxyResult;
@@ -106,6 +110,8 @@ const initKdf2 = (Module, modules) => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_kdf2_produce_alg_info(this.ctxPtr);
 
@@ -117,6 +123,8 @@ const initKdf2 = (Module, modules) => {
          * Restore algorithm configuration from the given object.
          */
         restoreAlgInfo(algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
             const proxyResult = Module._vscf_kdf2_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
@@ -125,6 +133,7 @@ const initKdf2 = (Module, modules) => {
          * Derive key of the requested length from the given data.
          */
         derive(data, keyLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
             precondition.ensureNumber('keyLen', keyLen);
 

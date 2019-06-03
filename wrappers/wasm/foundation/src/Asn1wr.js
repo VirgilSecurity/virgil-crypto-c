@@ -92,6 +92,7 @@ const initAsn1wr = (Module, modules) => {
          * Reset all internal states and prepare to new ASN.1 writing operations.
          */
         reset(out, outLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('out', out);
             precondition.ensureNumber('outLen', outLen);
             Module._vscf_asn1wr_reset(this.ctxPtr, out, outLen);
@@ -107,6 +108,7 @@ const initAsn1wr = (Module, modules) => {
          * Returns length of the written bytes.
          */
         finish(doNotAdjust) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureBoolean('doNotAdjust', doNotAdjust);
 
             let proxyResult;
@@ -118,6 +120,8 @@ const initAsn1wr = (Module, modules) => {
          * Returns pointer to the inner buffer.
          */
         bytes() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_bytes(this.ctxPtr);
             return proxyResult;
@@ -127,6 +131,8 @@ const initAsn1wr = (Module, modules) => {
          * Returns total inner buffer length.
          */
         len() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_len(this.ctxPtr);
             return proxyResult;
@@ -136,6 +142,8 @@ const initAsn1wr = (Module, modules) => {
          * Returns how many bytes were already written to the ASN.1 structure.
          */
         writtenLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_written_len(this.ctxPtr);
             return proxyResult;
@@ -145,6 +153,8 @@ const initAsn1wr = (Module, modules) => {
          * Returns how many bytes are available for writing.
          */
         unwrittenLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_unwritten_len(this.ctxPtr);
             return proxyResult;
@@ -154,6 +164,8 @@ const initAsn1wr = (Module, modules) => {
          * Return true if status is not "success".
          */
         hasError() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_has_error(this.ctxPtr);
 
@@ -165,6 +177,7 @@ const initAsn1wr = (Module, modules) => {
          * Return error code.
          */
         status() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_asn1wr_status(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
@@ -174,6 +187,7 @@ const initAsn1wr = (Module, modules) => {
          * Return current writing position.
          */
         reserve(len) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
 
             let proxyResult;
@@ -186,6 +200,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeTag(tag) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('tag', tag);
 
             let proxyResult;
@@ -198,6 +213,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeContextTag(tag, len) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('tag', tag);
             precondition.ensureNumber('len', len);
 
@@ -211,6 +227,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeLen(len) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
 
             let proxyResult;
@@ -223,6 +240,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeInt(value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
 
             let proxyResult;
@@ -235,6 +253,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeInt8(value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
 
             let proxyResult;
@@ -247,6 +266,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeInt16(value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
 
             let proxyResult;
@@ -259,6 +279,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeInt32(value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
 
             let proxyResult;
@@ -271,6 +292,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeInt64(value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
 
             let proxyResult;
@@ -283,6 +305,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeUint(value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
 
             let proxyResult;
@@ -295,6 +318,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeUint8(value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
 
             let proxyResult;
@@ -307,6 +331,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeUint16(value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
 
             let proxyResult;
@@ -319,6 +344,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeUint32(value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
 
             let proxyResult;
@@ -331,6 +357,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeUint64(value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
 
             let proxyResult;
@@ -343,6 +370,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeBool(value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureBoolean('value', value);
 
             let proxyResult;
@@ -354,6 +382,8 @@ const initAsn1wr = (Module, modules) => {
          * Write ASN.1 type: NULL.
          */
         writeNull() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_null(this.ctxPtr);
             return proxyResult;
@@ -364,6 +394,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeOctetStr(value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('value', value);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -395,6 +426,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeOctetStrAsBitstring(value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('value', value);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -426,6 +458,7 @@ const initAsn1wr = (Module, modules) => {
          * Note, use this method carefully.
          */
         writeData(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -456,6 +489,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeUtf8Str(value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('value', value);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -486,6 +520,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeOid(value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('value', value);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -516,6 +551,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeSequence(len) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
 
             let proxyResult;
@@ -528,6 +564,7 @@ const initAsn1wr = (Module, modules) => {
          * Return count of written bytes.
          */
         writeSet(len) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
 
             let proxyResult;

@@ -93,6 +93,7 @@ const initHashBasedAlgInfo = (Module, modules) => {
          */
         static newWithMembers(algId, hashAlgInfo) {
             precondition.ensureNumber('algId', algId);
+            precondition.ensureImplementInterface('hashAlgInfo', hashAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
 
             let proxyResult;
             proxyResult = Module._vscf_hash_based_alg_info_new_with_members(algId, hashAlgInfo.ctxPtr);
@@ -105,6 +106,8 @@ const initHashBasedAlgInfo = (Module, modules) => {
          * Provide algorithm identificator.
          */
         algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_hash_based_alg_info_alg_id(this.ctxPtr);
             return proxyResult;
@@ -114,6 +117,8 @@ const initHashBasedAlgInfo = (Module, modules) => {
          * Return hash algorithm information.
          */
         hashAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_hash_based_alg_info_hash_alg_info(this.ctxPtr);
 

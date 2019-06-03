@@ -89,6 +89,8 @@ const initKeyAsn1Deserializer = (Module, modules) => {
         }
 
         set asn1Reader(asn1Reader) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('asn1Reader', asn1Reader, 'Foundation.Asn1Reader', modules.FoundationInterfaceTag.ASN1_READER, modules.FoundationInterface);
             Module._vscf_key_asn1_deserializer_release_asn1_reader(this.ctxPtr)
             Module._vscf_key_asn1_deserializer_use_asn1_reader(this.ctxPtr, asn1Reader.ctxPtr)
         }
@@ -97,6 +99,7 @@ const initKeyAsn1Deserializer = (Module, modules) => {
          * Deserialize given public key as an interchangeable format to the object.
          */
         deserializePublicKey(publicKeyData) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('publicKeyData', publicKeyData);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -136,6 +139,7 @@ const initKeyAsn1Deserializer = (Module, modules) => {
          * Deserialize given private key as an interchangeable format to the object.
          */
         deserializePrivateKey(privateKeyData) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('privateKeyData', privateKeyData);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -175,6 +179,7 @@ const initKeyAsn1Deserializer = (Module, modules) => {
          * Setup predefined values to the uninitialized class dependencies.
          */
         setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_key_asn1_deserializer_setup_defaults(this.ctxPtr);
         }
 
@@ -184,6 +189,8 @@ const initKeyAsn1Deserializer = (Module, modules) => {
          * an input buffer.
          */
         deserializePublicKeyInplace() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
             Module._vscf_error_reset(errorCtxPtr);
@@ -209,6 +216,8 @@ const initKeyAsn1Deserializer = (Module, modules) => {
          * an input buffer.
          */
         deserializePrivateKeyInplace() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
             Module._vscf_error_reset(errorCtxPtr);

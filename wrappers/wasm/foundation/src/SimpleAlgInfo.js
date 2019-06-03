@@ -105,6 +105,8 @@ const initSimpleAlgInfo = (Module, modules) => {
          * Provide algorithm identificator.
          */
         algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_simple_alg_info_alg_id(this.ctxPtr);
             return proxyResult;

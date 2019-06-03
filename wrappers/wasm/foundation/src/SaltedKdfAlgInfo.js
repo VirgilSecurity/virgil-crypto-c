@@ -94,6 +94,7 @@ const initSaltedKdfAlgInfo = (Module, modules) => {
          */
         static newWithMembers(algId, hashAlgInfo, salt, iterationCount) {
             precondition.ensureNumber('algId', algId);
+            precondition.ensureImplementInterface('hashAlgInfo', hashAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
             precondition.ensureByteArray('salt', salt);
             precondition.ensureNumber('iterationCount', iterationCount);
 
@@ -126,6 +127,8 @@ const initSaltedKdfAlgInfo = (Module, modules) => {
          * Provide algorithm identificator.
          */
         algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_salted_kdf_alg_info_alg_id(this.ctxPtr);
             return proxyResult;
@@ -135,6 +138,8 @@ const initSaltedKdfAlgInfo = (Module, modules) => {
          * Return hash algorithm information.
          */
         hashAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_salted_kdf_alg_info_hash_alg_info(this.ctxPtr);
 
@@ -146,6 +151,8 @@ const initSaltedKdfAlgInfo = (Module, modules) => {
          * Return KDF salt.
          */
         salt() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
@@ -167,6 +174,8 @@ const initSaltedKdfAlgInfo = (Module, modules) => {
          * Note, can be 0 if KDF does not need the iteration count.
          */
         iterationCount() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_salted_kdf_alg_info_iteration_count(this.ctxPtr);
             return proxyResult;

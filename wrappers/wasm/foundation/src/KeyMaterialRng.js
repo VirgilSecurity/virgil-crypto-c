@@ -116,6 +116,7 @@ const initKeyMaterialRng = (Module, modules) => {
          * Generate random bytes.
          */
         random(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             const dataCapacity = dataLen;
@@ -138,6 +139,7 @@ const initKeyMaterialRng = (Module, modules) => {
          * Retreive new seed data from the entropy sources.
          */
         reseed() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_key_material_rng_reseed(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
@@ -146,6 +148,7 @@ const initKeyMaterialRng = (Module, modules) => {
          * Set a new key material.
          */
         resetKeyMaterial(keyMaterial) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('keyMaterial', keyMaterial);
 
             //  Copy bytes from JS memory to the WASM memory.

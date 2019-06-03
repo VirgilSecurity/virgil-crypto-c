@@ -92,6 +92,7 @@ const initPasswordRecipientInfo = (Module, modules) => {
          * Create object and define all properties.
          */
         static newWithMembers(keyEncryptionAlgorithm, encryptedKey) {
+            precondition.ensureImplementInterface('keyEncryptionAlgorithm', keyEncryptionAlgorithm, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
             precondition.ensureByteArray('encryptedKey', encryptedKey);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -124,6 +125,8 @@ const initPasswordRecipientInfo = (Module, modules) => {
          * a data encryption key.
          */
         keyEncryptionAlgorithm() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_password_recipient_info_key_encryption_algorithm(this.ctxPtr);
 
@@ -135,6 +138,8 @@ const initPasswordRecipientInfo = (Module, modules) => {
          * Return an encrypted data encryption key.
          */
         encryptedKey() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);

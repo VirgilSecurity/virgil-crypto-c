@@ -92,6 +92,8 @@ const initRatchetGroupTicket = (Module, modules) => {
          * Random used to generate keys
          */
         set rng(rng) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('rng', rng, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscr_ratchet_group_ticket_release_rng(this.ctxPtr)
             Module._vscr_ratchet_group_ticket_use_rng(this.ctxPtr, rng.ctxPtr)
         }
@@ -101,6 +103,7 @@ const initRatchetGroupTicket = (Module, modules) => {
          * - RNG: CTR DRBG
          */
         setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscr_ratchet_group_ticket_setup_defaults(this.ctxPtr);
             modules.RatchetError.handleStatusCode(proxyResult);
         }
@@ -109,6 +112,7 @@ const initRatchetGroupTicket = (Module, modules) => {
          * Set this ticket to start new group session.
          */
         setupTicketAsNew() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscr_ratchet_group_ticket_setup_ticket_as_new(this.ctxPtr);
             modules.RatchetError.handleStatusCode(proxyResult);
         }
@@ -117,6 +121,7 @@ const initRatchetGroupTicket = (Module, modules) => {
          * Add new participant to chat.
          */
         addNewParticipant(participantId, publicKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('participantId', participantId);
             precondition.ensureByteArray('publicKey', publicKey);
 
@@ -159,6 +164,7 @@ const initRatchetGroupTicket = (Module, modules) => {
          * Remove participant from chat.
          */
         removeParticipant(participantId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('participantId', participantId);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -186,6 +192,8 @@ const initRatchetGroupTicket = (Module, modules) => {
          * Generates message that should be sent to all participants using secure channel.
          */
         getTicketMessage() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_group_ticket_get_ticket_message(this.ctxPtr);
 

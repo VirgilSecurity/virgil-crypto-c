@@ -124,6 +124,8 @@ const initCipherAlgInfo = (Module, modules) => {
          * Provide algorithm identificator.
          */
         algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_cipher_alg_info_alg_id(this.ctxPtr);
             return proxyResult;
@@ -133,6 +135,8 @@ const initCipherAlgInfo = (Module, modules) => {
          * Return IV.
          */
         nonce() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);

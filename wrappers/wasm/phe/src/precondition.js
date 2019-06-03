@@ -36,7 +36,7 @@
 
 
 function ensureNumber(arg, value) {
-    if (typeof value !== 'number') {
+    if (!(typeof value === 'number' || value instanceof Number)) {
         throw new TypeError(`'${arg}' is not a number`);
     }
     if (Number.isNaN(value)) {
@@ -50,8 +50,16 @@ function ensureNumber(arg, value) {
     }
 }
 
+function ensureNotNull(arg, value) {
+    ensureNumber(arg, value);
+
+    if (value == 0) {
+        throw new TypeError(`'${arg}' is NULL`);
+    }
+}
+
 function ensureString(arg, value) {
-    if (typeof value !== 'string') {
+    if (!(typeof value === 'string' || value instanceof String)) {
         throw new TypeError(`'${arg}' is not a string`);
     }
 }
@@ -63,14 +71,8 @@ function ensureBoolean(arg, value) {
 }
 
 function ensureByteArray(arg, value) {
-    if (!(value instanceof Uint8Array || value instanceof Buffer)) {
-        throw new TypeError(`'${arg}' is not an Uint8Array and not Buffer`);
-    }
-}
-
-function ensureStringOrByteArray(arg, value) {
-    if (!(typeof value === 'string' || value instanceof Uint8Array || value instanceof Buffer)) {
-        throw new TypeError(`'${arg}' is not a string and not an Uint8Array and not Buffer`);
+    if (!(value instanceof Uint8Array)) {
+        throw new TypeError(`'${arg}' is not an Uint8Array`);
     }
 }
 
@@ -78,11 +80,20 @@ function ensureClass(arg, value, cls) {
     if (!(value instanceof cls)) {
         throw new TypeError(`'${arg}' is not an instance of the class ${cls.name}`);
     }
+    ensureNotNull(arg, value.ctxPtr);
+}
+
+function ensureImplementInterface(arg, value, interfaceName, interfaceTag, interfaceChecker) {
+    ensureNotNull(arg, value.ctxPtr);
+    if (!interfaceChecker.isImplemented(value.ctxPtr, interfaceTag)) {
+        throw new TypeError(`'${arg}' does not implement interface '${interfaceName}'`);
+    }
 }
 
 module.exports.ensureNumber = ensureNumber;
 module.exports.ensureString = ensureString;
 module.exports.ensureBoolean = ensureBoolean;
 module.exports.ensureByteArray = ensureByteArray;
-module.exports.ensureStringOrByteArray = ensureStringOrByteArray;
 module.exports.ensureClass = ensureClass;
+module.exports.ensureNotNull = ensureNotNull;
+module.exports.ensureImplementInterface = ensureImplementInterface;

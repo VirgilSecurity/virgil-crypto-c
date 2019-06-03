@@ -92,6 +92,7 @@ const initFakeRandom = (Module, modules) => {
          * Generate random bytes.
          */
         random(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             const dataCapacity = dataLen;
@@ -114,6 +115,7 @@ const initFakeRandom = (Module, modules) => {
          * Retreive new seed data from the entropy sources.
          */
         reseed() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_fake_random_reseed(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
@@ -122,6 +124,8 @@ const initFakeRandom = (Module, modules) => {
          * Defines that implemented source is strong.
          */
         isStrong() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_fake_random_is_strong(this.ctxPtr);
 
@@ -133,6 +137,7 @@ const initFakeRandom = (Module, modules) => {
          * Gather entropy of the requested length.
          */
         gather(len) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
 
             const outCapacity = len;
@@ -155,6 +160,7 @@ const initFakeRandom = (Module, modules) => {
          * Configure random number generator to generate sequence filled with given byte.
          */
         setupSourceByte(byteSource) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('byteSource', byteSource);
             Module._vscf_fake_random_setup_source_byte(this.ctxPtr, byteSource);
         }
@@ -164,6 +170,7 @@ const initFakeRandom = (Module, modules) => {
          * Note, that given data is used as circular source.
          */
         setupSourceData(dataSource) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('dataSource', dataSource);
 
             //  Copy bytes from JS memory to the WASM memory.

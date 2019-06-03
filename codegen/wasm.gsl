@@ -150,6 +150,20 @@ function wasm_create_enum_constant(constant, constant_value, wasm_enum)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Create enumeration <wasm_precondition/>
+# ---------------------------------------------------------------------------
+function wasm_create_instance_precondition(instance, wasm_argument, wasm_project)
+    check_arguments(my, "instance, wasm_argument, wasm_project", my)
+
+    my.basic_precondition = wasm_derive_instance_precondition(my.instance, my.wasm_argument, my.wasm_project) ?
+    if defined(my.basic_precondition)
+        new wasm_precondition to my.wasm_argument
+            . = my.basic_precondition
+        endnew
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create class default constructor.
 # ---------------------------------------------------------------------------
 function wasm_create_class_default_constructor(class, wasm_class)
@@ -166,6 +180,10 @@ function wasm_create_class_default_constructor(class, wasm_class)
 
         new wasm_argument to wasm_constructor
             .name = "ctxPtr"
+
+            new wasm_precondition to wasm_argument
+                . = wasm_derive_ctx_precondition(wasm_argument.name)
+            endnew
         endnew
 
         new wasm_code to wasm_constructor
@@ -244,7 +262,8 @@ function wasm_create_class_constructors_with_c_context(class, wasm_class)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create class constructors with given C context.
+#   Create factory methods that create specific implementation class from
+#   the generic interface type, aka vscf_impl_t.
 # ---------------------------------------------------------------------------
 function wasm_create_custom_interface_class_constructors(source, wasm_class, wasm_project)
     check_arguments(my, "source, wasm_class, wasm_project", my)
@@ -262,10 +281,14 @@ function wasm_create_custom_interface_class_constructors(source, wasm_class, was
 
         new wasm_argument to wasm_method
             .name = "ctxPtr"
+
+            new wasm_precondition to wasm_argument
+                . = wasm_derive_ctx_precondition(wasm_argument.name)
+            endnew
         endnew
 
         my.code_switch_statement_begin = format_left("
-            const implTag = Module._$(impl_derive_c_method_implementation_tag())(ctxPtr);
+            const implTag = Module._$(impl_derive_c_method_tag())(ctxPtr);
             switch(implTag) {
         ")
 
@@ -301,6 +324,10 @@ function wasm_create_custom_interface_class_constructors(source, wasm_class, was
 
         new wasm_argument to wasm_method
             .name = "ctxPtr"
+
+            new wasm_precondition to wasm_argument
+                . = wasm_derive_ctx_precondition(wasm_argument.name)
+            endnew
         endnew
 
         new wasm_code to wasm_method
@@ -315,7 +342,51 @@ function wasm_create_custom_interface_class_constructors(source, wasm_class, was
     endnew
 
     new wasm_imported_function to my.wasm_class
-        .name = impl_derive_c_method_implementation_tag()
+        .name = impl_derive_c_method_tag()
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create helper methods:
+#       - that checks that interface is implemented within a given class.
+# ---------------------------------------------------------------------------
+function wasm_create_custom_interface_class_helpers(source, wasm_class, wasm_project)
+    check_arguments(my, "source, wasm_class, wasm_project", my)
+
+    new wasm_method to my.wasm_class
+        . = "
+            /**
+             * Return true if given class implements C interface with a given tag.
+             *
+             * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+             */
+        "
+        .name = "isImplemented"
+        .is_static = "1"
+
+        new wasm_argument to wasm_method
+            .name = "ctxPtr"
+
+            new wasm_precondition to wasm_argument
+                . = wasm_derive_ctx_precondition(wasm_argument.name)
+            endnew
+        endnew
+
+        new wasm_argument to wasm_method
+            .name = "interfaceTag"
+
+            new wasm_precondition to wasm_argument
+                . = wasm_derive_number_precondition(wasm_argument.name)
+            endnew
+        endnew
+
+        new wasm_code to wasm_method
+            . = "return Module._$(impl_derive_c_method_api())(ctxPtr, interfaceTag) != 0;"
+        endnew
+    endnew
+
+    new wasm_imported_function to my.wasm_class
+        .name = impl_derive_c_method_api()
     endnew
 endfunction
 
@@ -361,17 +432,21 @@ function wasm_create_class_dependency_method(dependency, class, wasm_class, wasm
 
         my.arg_name = wasm_derive_method_argument_name(my.dependency)
 
+        new wasm_precondition to wasm_method
+            . = wasm_derive_ctx_precondition("this.ctxPtr")
+        endnew
+
         new wasm_argument to wasm_method
             .name = my.arg_name
-            .code_precondition = wasm_derive_instance_precondition(my.dependency, wasm_argument, my.wasm_project) ?
+
+            wasm_map_instance_type(my.dependency, wasm_argument)
+            wasm_create_instance_precondition(my.dependency, wasm_argument, my.wasm_project)
         endnew
 
         new wasm_code to wasm_method
             my.code = ""
 
-            for wasm_method.wasm_argument where defined(wasm_argument.code_precondition)
-                my.code += format_left(wasm_argument.code_precondition)
-            endfor
+            my.code += wasm_format_prconditions(wasm_method) ? ""
 
             if my.dependency.has_observers & my.dependency.is_observers_return_status
                 my.result_var = "const proxyStatus = "
@@ -404,9 +479,10 @@ function wasm_create_method_argument_for_primitive_type(argument, wasm_method, w
     check_arguments(my, "argument, wasm_method, wasm_class, wasm_project", my)
 
     new wasm_argument to my.wasm_method
-        wasm_map_instance_type(my.argument, wasm_argument)
         .name = wasm_derive_method_argument_name(my.argument)
-        .code_precondition = wasm_derive_instance_precondition(my.argument, wasm_argument, my.wasm_project) ?
+
+        wasm_map_instance_type(my.argument, wasm_argument)
+        wasm_create_instance_precondition(my.argument, wasm_argument, my.wasm_project)
 
         my.wasm_method.c_arg_list += 0.name + ", "
     endnew
@@ -417,10 +493,10 @@ function wasm_create_method_argument_for_data(argument, wasm_method, wasm_class,
     check_arguments(my, "argument, wasm_method, wasm_class, wasm_project", my)
 
     new wasm_argument to my.wasm_method
-        wasm_map_instance_type(my.argument, wasm_argument)
-
         .name = wasm_derive_method_argument_name(my.argument)
-        .code_precondition = wasm_derive_instance_precondition(my.argument, wasm_argument, my.wasm_project) ?
+
+        wasm_map_instance_type(my.argument, wasm_argument)
+        wasm_create_instance_precondition(my.argument, wasm_argument, my.wasm_project)
 
         .code_on_initialize = "
             //  Copy bytes from JS memory to the WASM memory.
@@ -450,8 +526,9 @@ function wasm_create_method_return_for_writeonly_buffer(argument, wasm_method, w
     check_arguments(my, "argument, wasm_method, wasm_class, wasm_project", my)
 
     new wasm_return to my.wasm_method
-        wasm_map_instance_type(my.argument, wasm_return)
         .name = wasm_derive_method_argument_name(my.argument)
+
+        wasm_map_instance_type(my.argument, wasm_return)
 
         .code_on_initialize = "
             const $(0.name:)Capacity = $(wasm_derive_buffer_length_getter(my.argument, my.wasm_class));
@@ -477,9 +554,10 @@ function wasm_create_method_argument_for_readwrite_buffer(argument, wasm_method,
     check_arguments(my, "argument, wasm_method, wasm_class, wasm_project", my)
 
     new wasm_argument to my.wasm_method
-        wasm_map_instance_type(my.argument, wasm_argument)
         .name = wasm_derive_method_argument_name(my.argument)
-        .code_precondition = wasm_derive_instance_precondition(my.argument, wasm_argument, my.wasm_project) ?
+
+        wasm_map_instance_type(my.argument, wasm_argument)
+        wasm_create_instance_precondition(my.argument, wasm_argument, my.wasm_project)
 
         .code_on_initialize = "
             //  Copy bytes from JS memory to the WASM memory.
@@ -502,8 +580,9 @@ function wasm_create_method_argument_for_readwrite_buffer(argument, wasm_method,
     endnew
 
     new wasm_return to my.wasm_method
-        wasm_map_instance_type(my.argument, wasm_return)
         .name = "$(wasm_derive_method_argument_name(my.argument))Result"
+
+        wasm_map_instance_type(my.argument, wasm_return)
 
         .code_on_success = "
             const $(0.name:)Ptr = Module._vsc_buffer_bytes($(0.name:)CtxPtr);
@@ -518,9 +597,10 @@ function wasm_create_method_argument_for_class(argument, wasm_method, wasm_class
     check_arguments(my, "argument, wasm_method, wasm_class, wasm_project", my)
 
     new wasm_argument to my.wasm_method
-        wasm_map_instance_type(my.argument, wasm_argument)
         .name = wasm_derive_method_argument_name(my.argument)
-        .code_precondition = wasm_derive_instance_precondition(my.argument, wasm_argument, my.wasm_project) ?
+
+        wasm_map_instance_type(my.argument, wasm_argument)
+        wasm_create_instance_precondition(my.argument, wasm_argument, my.wasm_project)
 
         my.wasm_method.c_arg_list += "$(0.name:).ctxPtr" + ", "
     endnew
@@ -531,9 +611,10 @@ function wasm_create_method_argument_for_interface(argument, wasm_method, wasm_c
     check_arguments(my, "argument, wasm_method, wasm_class, wasm_project", my)
 
     new wasm_argument to my.wasm_method
-        wasm_map_instance_type(my.argument, wasm_argument)
         .name = wasm_derive_method_argument_name(my.argument)
-        .code_precondition = wasm_derive_instance_precondition(my.argument, wasm_argument, my.wasm_project) ?
+
+        wasm_map_instance_type(my.argument, wasm_argument)
+        wasm_create_instance_precondition(my.argument, wasm_argument, my.wasm_project)
 
         my.wasm_method.c_arg_list += "$(0.name:).ctxPtr" + ", "
     endnew
@@ -544,9 +625,10 @@ function wasm_create_method_argument_for_enum(argument, wasm_method, wasm_class,
     check_arguments(my, "argument, wasm_method, wasm_class, wasm_project", my)
 
     new wasm_argument to my.wasm_method
-        wasm_map_instance_type(my.argument, wasm_argument)
         .name = wasm_derive_method_argument_name(my.argument)
-        .code_precondition = wasm_derive_instance_precondition(my.argument, wasm_argument, my.wasm_project) ?
+
+        wasm_map_instance_type(my.argument, wasm_argument)
+        wasm_create_instance_precondition(my.argument, wasm_argument, my.wasm_project)
 
         my.wasm_method.c_arg_list += "$(0.name:)" + ", "
     endnew
@@ -797,6 +879,10 @@ function wasm_create_class_method(method, class, wasm_class, wasm_project)
         #
         if is_false(my.method.is_static)
             wasm_method.c_arg_list += "this.ctxPtr, "
+
+            new wasm_precondition to wasm_method
+                . = wasm_derive_ctx_precondition("this.ctxPtr")
+            endnew
         endif
 
         #
@@ -866,9 +952,7 @@ function wasm_create_class_method(method, class, wasm_class, wasm_project)
 
         #   Initialize locals.
         my.code = ""
-        for wasm_method.wasm_argument where defined(wasm_argument.code_precondition)
-            my.code += format_left(wasm_argument.code_precondition)
-        endfor
+        my.code += wasm_format_prconditions(wasm_method) ? ""
 
         for wasm_method.wasm_argument where defined(wasm_argument.code_on_initialize)
             my.code += terminator + format_left(wasm_argument.code_on_initialize)
@@ -1064,6 +1148,7 @@ function wasm_create_project_module(project, wrapper)
         .impl_tag_enum_name = wasm_derive_class_name_str(cat(wasm_project.name, "impl tag"))
         .error_class_name = wasm_derive_error_class_name(wasm_project)
         .interface_class_name = wasm_derive_class_name_str(cat(wasm_project.name, "interface"))
+        .interface_enum_tag_name = wasm_derive_class_name_str(cat(wasm_project.name, "interface tag"))
         .cmake_wasm_target = 0.lib_name
         .cmake_c_target = my.project.cmake_target
         .cmake_c_export_target = my.project.cmake_export_target
@@ -1452,6 +1537,37 @@ function wasm_create_interface_wrapper_module(source, wasm_project)
             .name = my.wasm_project.interface_class_name
 
             wasm_create_custom_interface_class_constructors(my.source, wasm_class, my.wasm_project)
+            wasm_create_custom_interface_class_helpers(my.source, wasm_class, my.wasm_project)
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create an enumeration with available interfaces.
+# ---------------------------------------------------------------------------
+function wasm_create_interface_tag_module(source, wasm_project)
+    check_arguments(my, "source, wasm_project", my)
+
+    new wasm_module to my.wasm_project
+        .name = my.wasm_project.interface_enum_tag_name
+        .source_file_name = 0.name + ".js"
+        .source_file_path = cat_path(my.wasm_project.src_source_dir, 0.source_file_name)
+
+        new wasm_license to wasm_module
+            . = wasm_format_license(my.wasm_project->license) ?
+        endnew
+
+        new wasm_enum to wasm_module
+            .name = my.wasm_project.interface_enum_tag_name
+
+            for my.source.interface by name
+                my.interface_tag_value ?= "1"
+                new wasm_constant to wasm_enum
+                    .name = wasm_derive_constant_name(interface)
+                    .value = my.interface_tag_value
+                endnew
+                my.interface_tag_value += 1
+            endfor
         endnew
     endnew
 endfunction
@@ -1645,7 +1761,7 @@ function wasm_create_precondition_module(wasm_project)
         new wasm_code to wasm_module
             . = "
                 function ensureNumber(arg, value) {
-                    if (typeof value !== 'number') {
+                    if (!(typeof value === 'number' || value instanceof Number)) {
                         throw new TypeError(`'${arg}' is not a number`);
                     }
                     if (Number.isNaN(value)) {
@@ -1659,8 +1775,16 @@ function wasm_create_precondition_module(wasm_project)
                     }
                 }
 
+                function ensureNotNull(arg, value) {
+                    ensureNumber(arg, value);
+
+                    if (value == 0) {
+                        throw new TypeError(`'${arg}' is NULL`);
+                    }
+                }
+
                 function ensureString(arg, value) {
-                    if (typeof value !== 'string') {
+                    if (!(typeof value === 'string' || value instanceof String)) {
                         throw new TypeError(`'${arg}' is not a string`);
                     }
                 }
@@ -1672,14 +1796,8 @@ function wasm_create_precondition_module(wasm_project)
                 }
 
                 function ensureByteArray(arg, value) {
-                    if (!(value instanceof Uint8Array || value instanceof Buffer)) {
-                        throw new TypeError(`'${arg}' is not an Uint8Array and not Buffer`);
-                    }
-                }
-
-                function ensureStringOrByteArray(arg, value) {
-                    if (!(typeof value === 'string' || value instanceof Uint8Array || value instanceof Buffer)) {
-                        throw new TypeError(`'${arg}' is not a string and not an Uint8Array and not Buffer`);
+                    if (!(value instanceof Uint8Array)) {
+                        throw new TypeError(`'${arg}' is not an Uint8Array`);
                     }
                 }
 
@@ -1687,14 +1805,23 @@ function wasm_create_precondition_module(wasm_project)
                     if (!(value instanceof cls)) {
                         throw new TypeError(`'${arg}' is not an instance of the class ${cls.name}`);
                     }
+                    ensureNotNull(arg, value.ctxPtr);
+                }
+
+                function ensureImplementInterface(arg, value, interfaceName, interfaceTag, interfaceChecker) {
+                    ensureNotNull(arg, value.ctxPtr);
+                    if (!interfaceChecker.isImplemented(value.ctxPtr, interfaceTag)) {
+                        throw new TypeError(`'${arg}' does not implement interface '${interfaceName}'`);
+                    }
                 }
 
                 module.exports.ensureNumber = ensureNumber;
                 module.exports.ensureString = ensureString;
                 module.exports.ensureBoolean = ensureBoolean;
                 module.exports.ensureByteArray = ensureByteArray;
-                module.exports.ensureStringOrByteArray = ensureStringOrByteArray;
                 module.exports.ensureClass = ensureClass;
+                module.exports.ensureNotNull = ensureNotNull;
+                module.exports.ensureImplementInterface = ensureImplementInterface;
             "
         endnew
     endnew
@@ -1711,6 +1838,7 @@ function wasm_create_custom_modules(source, wasm_project, meta)
     wasm_create_precondition_module(my.wasm_project)
 
     if count(my.source.implementation)
+        wasm_create_interface_tag_module(my.source, my.wasm_project)
         wasm_create_interface_wrapper_module(my.source, my.wasm_project)
         wasm_create_impl_tag_module(my.source, my.wasm_project)
     endif

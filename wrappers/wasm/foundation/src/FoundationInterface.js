@@ -183,6 +183,15 @@ const initFoundationInterface = (Module, modules) => {
         static newAndUseCContext(ctxPtr) {
             return new modules.FoundationInterface.newAndTakeCContext(Module._vscf_impl_shallow_copy(ctxPtr));
         }
+
+        /**
+         * Return true if given class implements C interface with a given tag.
+         *
+         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+         */
+        static isImplemented(ctxPtr, interfaceTag) {
+            return Module._vscf_impl_api(ctxPtr, interfaceTag) != 0;
+        }
     }
 
     return FoundationInterface;

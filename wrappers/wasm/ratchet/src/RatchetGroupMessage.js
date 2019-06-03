@@ -92,6 +92,8 @@ const initRatchetGroupMessage = (Module, modules) => {
          * Returns message type.
          */
         getType() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_group_message_get_type(this.ctxPtr);
             return proxyResult;
@@ -102,6 +104,8 @@ const initRatchetGroupMessage = (Module, modules) => {
          * This method should be called only for group info type.
          */
         getSessionId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
@@ -123,6 +127,8 @@ const initRatchetGroupMessage = (Module, modules) => {
          * This method should be called only for group info message type.
          */
         getPubKeyCount() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_group_message_get_pub_key_count(this.ctxPtr);
             return proxyResult;
@@ -133,6 +139,7 @@ const initRatchetGroupMessage = (Module, modules) => {
          * This method should be called only for group info message type.
          */
         getPubKeyId(participantId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('participantId', participantId);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -176,6 +183,8 @@ const initRatchetGroupMessage = (Module, modules) => {
          * This method should be called only for regular message type.
          */
         getSenderId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
@@ -196,6 +205,8 @@ const initRatchetGroupMessage = (Module, modules) => {
          * Buffer len to serialize this class.
          */
         serializeLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_group_message_serialize_len(this.ctxPtr);
             return proxyResult;
@@ -205,6 +216,8 @@ const initRatchetGroupMessage = (Module, modules) => {
          * Serializes instance.
          */
         serialize() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const outputCapacity = this.serializeLen();
             const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputCapacity);
 

@@ -17,6 +17,7 @@
     "_vscf_error_reset",
     "_vscf_impl_shallow_copy",
     "_vscf_impl_tag",
+    "_vscf_impl_api",
     "_vscf_raw_key_new",
     "_vscf_raw_key_shallow_copy",
     "_vscf_raw_key_delete",

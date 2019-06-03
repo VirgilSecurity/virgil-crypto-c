@@ -89,6 +89,8 @@ const initSigner = (Module, modules) => {
         }
 
         set hash(hash) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('hash', hash, 'Foundation.Hash', modules.FoundationInterfaceTag.HASH, modules.FoundationInterface);
             Module._vscf_signer_release_hash(this.ctxPtr)
             Module._vscf_signer_use_hash(this.ctxPtr, hash.ctxPtr)
         }
@@ -97,6 +99,7 @@ const initSigner = (Module, modules) => {
          * Start a processing a new signature.
          */
         reset() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_signer_reset(this.ctxPtr);
         }
 
@@ -104,6 +107,7 @@ const initSigner = (Module, modules) => {
          * Add given data to the signed data.
          */
         update(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -130,6 +134,9 @@ const initSigner = (Module, modules) => {
          * Return length of the signature.
          */
         signatureLen(privateKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.SignHash', modules.FoundationInterfaceTag.SIGN_HASH, modules.FoundationInterface);
+
             let proxyResult;
             proxyResult = Module._vscf_signer_signature_len(this.ctxPtr, privateKey.ctxPtr);
             return proxyResult;
@@ -139,6 +146,9 @@ const initSigner = (Module, modules) => {
          * Accomplish signing and return signature.
          */
         sign(privateKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.SignHash', modules.FoundationInterfaceTag.SIGN_HASH, modules.FoundationInterface);
+
             const signatureCapacity = this.signatureLen(privateKey);
             const signatureCtxPtr = Module._vsc_buffer_new_with_capacity(signatureCapacity);
 

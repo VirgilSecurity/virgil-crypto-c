@@ -92,6 +92,8 @@ const initSeedEntropySource = (Module, modules) => {
          * Defines that implemented source is strong.
          */
         isStrong() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_seed_entropy_source_is_strong(this.ctxPtr);
 
@@ -103,6 +105,7 @@ const initSeedEntropySource = (Module, modules) => {
          * Gather entropy of the requested length.
          */
         gather(len) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
 
             const outCapacity = len;
@@ -125,6 +128,7 @@ const initSeedEntropySource = (Module, modules) => {
          * Set a new seed as an entropy source.
          */
         resetSeed(seed) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('seed', seed);
 
             //  Copy bytes from JS memory to the WASM memory.

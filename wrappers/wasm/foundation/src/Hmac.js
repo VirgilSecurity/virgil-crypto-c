@@ -89,6 +89,8 @@ const initHmac = (Module, modules) => {
         }
 
         set hash(hash) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('hash', hash, 'Foundation.Hash', modules.FoundationInterfaceTag.HASH, modules.FoundationInterface);
             Module._vscf_hmac_release_hash(this.ctxPtr)
             Module._vscf_hmac_use_hash(this.ctxPtr, hash.ctxPtr)
         }
@@ -97,6 +99,8 @@ const initHmac = (Module, modules) => {
          * Provide algorithm identificator.
          */
         algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_hmac_alg_id(this.ctxPtr);
             return proxyResult;
@@ -106,6 +110,8 @@ const initHmac = (Module, modules) => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_hmac_produce_alg_info(this.ctxPtr);
 
@@ -117,6 +123,8 @@ const initHmac = (Module, modules) => {
          * Restore algorithm configuration from the given object.
          */
         restoreAlgInfo(algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
             const proxyResult = Module._vscf_hmac_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
@@ -125,6 +133,8 @@ const initHmac = (Module, modules) => {
          * Size of the digest (mac output) in bytes.
          */
         digestLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_hmac_digest_len(this.ctxPtr);
             return proxyResult;
@@ -134,6 +144,7 @@ const initHmac = (Module, modules) => {
          * Calculate MAC over given data.
          */
         mac(key, data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
             precondition.ensureByteArray('data', data);
 
@@ -184,6 +195,7 @@ const initHmac = (Module, modules) => {
          * Start a new MAC.
          */
         start(key) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -210,6 +222,7 @@ const initHmac = (Module, modules) => {
          * Add given data to the MAC.
          */
         update(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -236,6 +249,8 @@ const initHmac = (Module, modules) => {
          * Accomplish MAC and return it's result (a message digest).
          */
         finish() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const macCapacity = this.digestLen();
             const macCtxPtr = Module._vsc_buffer_new_with_capacity(macCapacity);
 
@@ -256,6 +271,7 @@ const initHmac = (Module, modules) => {
          * as the previous MAC operation.
          */
         reset() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_hmac_reset(this.ctxPtr);
         }
     }

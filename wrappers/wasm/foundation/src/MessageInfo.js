@@ -93,6 +93,7 @@ const initMessageInfo = (Module, modules) => {
          * Add recipient that is defined by Public Key.
          */
         addKeyRecipient(keyRecipient) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('keyRecipient', keyRecipient, modules.KeyRecipientInfo);
             Module._vscf_message_info_add_key_recipient(this.ctxPtr, keyRecipient.ctxPtr);
         }
@@ -101,6 +102,7 @@ const initMessageInfo = (Module, modules) => {
          * Add recipient that is defined by password.
          */
         addPasswordRecipient(passwordRecipient) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('passwordRecipient', passwordRecipient, modules.PasswordRecipientInfo);
             Module._vscf_message_info_add_password_recipient(this.ctxPtr, passwordRecipient.ctxPtr);
         }
@@ -109,6 +111,8 @@ const initMessageInfo = (Module, modules) => {
          * Set information about algorithm that was used for data encryption.
          */
         setDataEncryptionAlgInfo(dataEncryptionAlgInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('dataEncryptionAlgInfo', dataEncryptionAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
             Module._vscf_message_info_set_data_encryption_alg_info(this.ctxPtr, dataEncryptionAlgInfo.ctxPtr);
         }
 
@@ -116,6 +120,8 @@ const initMessageInfo = (Module, modules) => {
          * Return information about algorithm that was used for the data encryption.
          */
         dataEncryptionAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_message_info_data_encryption_alg_info(this.ctxPtr);
 
@@ -127,6 +133,8 @@ const initMessageInfo = (Module, modules) => {
          * Return list with a "key recipient info" elements.
          */
         keyRecipientInfoList() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_message_info_key_recipient_info_list(this.ctxPtr);
 
@@ -138,6 +146,8 @@ const initMessageInfo = (Module, modules) => {
          * Return list with a "password recipient info" elements.
          */
         passwordRecipientInfoList() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_message_info_password_recipient_info_list(this.ctxPtr);
 
@@ -149,6 +159,7 @@ const initMessageInfo = (Module, modules) => {
          * Setup custom params.
          */
         setCustomParams(customParams) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('customParams', customParams, modules.MessageInfoCustomParams);
             Module._vscf_message_info_set_custom_params(this.ctxPtr, customParams.ctxPtr);
         }
@@ -159,6 +170,8 @@ const initMessageInfo = (Module, modules) => {
          * If custom params object was not set then new empty object is created.
          */
         customParams() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_message_info_custom_params(this.ctxPtr);
 
@@ -170,6 +183,7 @@ const initMessageInfo = (Module, modules) => {
          * Remove all recipients.
          */
         clearRecipients() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_message_info_clear_recipients(this.ctxPtr);
         }
     }

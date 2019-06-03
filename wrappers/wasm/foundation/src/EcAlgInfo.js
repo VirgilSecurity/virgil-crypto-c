@@ -107,6 +107,8 @@ const initEcAlgInfo = (Module, modules) => {
          * Provide algorithm identificator.
          */
         algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_ec_alg_info_alg_id(this.ctxPtr);
             return proxyResult;
@@ -116,6 +118,8 @@ const initEcAlgInfo = (Module, modules) => {
          * Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
          */
         keyId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_ec_alg_info_key_id(this.ctxPtr);
             return proxyResult;
@@ -125,6 +129,8 @@ const initEcAlgInfo = (Module, modules) => {
          * Return EC domain group identificator.
          */
         domainId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_ec_alg_info_domain_id(this.ctxPtr);
             return proxyResult;

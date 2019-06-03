@@ -47,6 +47,8 @@ const initAlgFactory = (Module, modules) => {
          * Create algorithm that implements "hash stream" interface.
          */
         static createHashFromInfo(algInfo) {
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_hash_from_info(algInfo.ctxPtr);
 
@@ -58,6 +60,8 @@ const initAlgFactory = (Module, modules) => {
          * Create algorithm that implements "mac stream" interface.
          */
         static createMacFromInfo(algInfo) {
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_mac_from_info(algInfo.ctxPtr);
 
@@ -69,6 +73,8 @@ const initAlgFactory = (Module, modules) => {
          * Create algorithm that implements "kdf" interface.
          */
         static createKdfFromInfo(algInfo) {
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_kdf_from_info(algInfo.ctxPtr);
 
@@ -80,6 +86,8 @@ const initAlgFactory = (Module, modules) => {
          * Create algorithm that implements "salted kdf" interface.
          */
         static createSaltedKdfFromInfo(algInfo) {
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_salted_kdf_from_info(algInfo.ctxPtr);
 
@@ -91,6 +99,8 @@ const initAlgFactory = (Module, modules) => {
          * Create algorithm that implements "cipher" interface.
          */
         static createCipherFromInfo(algInfo) {
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_cipher_from_info(algInfo.ctxPtr);
 

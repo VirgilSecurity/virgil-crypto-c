@@ -149,6 +149,8 @@ const initAes256Gcm = (Module, modules) => {
          * Provide algorithm identificator.
          */
         algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_aes256_gcm_alg_id(this.ctxPtr);
             return proxyResult;
@@ -158,6 +160,8 @@ const initAes256Gcm = (Module, modules) => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_aes256_gcm_produce_alg_info(this.ctxPtr);
 
@@ -169,6 +173,8 @@ const initAes256Gcm = (Module, modules) => {
          * Restore algorithm configuration from the given object.
          */
         restoreAlgInfo(algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
             const proxyResult = Module._vscf_aes256_gcm_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
@@ -177,6 +183,7 @@ const initAes256Gcm = (Module, modules) => {
          * Encrypt given data.
          */
         encrypt(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -213,6 +220,7 @@ const initAes256Gcm = (Module, modules) => {
          * Calculate required buffer length to hold the encrypted data.
          */
         encryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
@@ -224,6 +232,7 @@ const initAes256Gcm = (Module, modules) => {
          * Decrypt given data.
          */
         decrypt(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -260,6 +269,7 @@ const initAes256Gcm = (Module, modules) => {
          * Calculate required buffer length to hold the decrypted data.
          */
         decryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
@@ -271,6 +281,7 @@ const initAes256Gcm = (Module, modules) => {
          * Setup IV or nonce.
          */
         setNonce(nonce) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('nonce', nonce);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -297,6 +308,7 @@ const initAes256Gcm = (Module, modules) => {
          * Set cipher encryption / decryption key.
          */
         setKey(key) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -323,6 +335,7 @@ const initAes256Gcm = (Module, modules) => {
          * Start sequential encryption.
          */
         startEncryption() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_aes256_gcm_start_encryption(this.ctxPtr);
         }
 
@@ -330,6 +343,7 @@ const initAes256Gcm = (Module, modules) => {
          * Start sequential decryption.
          */
         startDecryption() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_aes256_gcm_start_decryption(this.ctxPtr);
         }
 
@@ -337,6 +351,7 @@ const initAes256Gcm = (Module, modules) => {
          * Process encryption or decryption of the given data chunk.
          */
         update(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -374,6 +389,7 @@ const initAes256Gcm = (Module, modules) => {
          * Pass zero length to define buffer length of the method "finish".
          */
         outLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
@@ -387,6 +403,7 @@ const initAes256Gcm = (Module, modules) => {
          * Pass zero length to define buffer length of the method "finish".
          */
         encryptedOutLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
@@ -400,6 +417,7 @@ const initAes256Gcm = (Module, modules) => {
          * Pass zero length to define buffer length of the method "finish".
          */
         decryptedOutLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
@@ -411,6 +429,8 @@ const initAes256Gcm = (Module, modules) => {
          * Accomplish encryption or decryption process.
          */
         finish() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const outCapacity = this.outLen(0);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
@@ -432,6 +452,7 @@ const initAes256Gcm = (Module, modules) => {
          * If 'tag' is not given, then it will written to the 'enc'.
          */
         authEncrypt(data, authData) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
             precondition.ensureByteArray('authData', authData);
 
@@ -491,6 +512,7 @@ const initAes256Gcm = (Module, modules) => {
          * Calculate required buffer length to hold the authenticated encrypted data.
          */
         authEncryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
@@ -503,6 +525,7 @@ const initAes256Gcm = (Module, modules) => {
          * If 'tag' is not given, then it will be taken from the 'enc'.
          */
         authDecrypt(data, authData, tag) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
             precondition.ensureByteArray('authData', authData);
             precondition.ensureByteArray('tag', tag);
@@ -569,6 +592,7 @@ const initAes256Gcm = (Module, modules) => {
          * Calculate required buffer length to hold the authenticated decrypted data.
          */
         authDecryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;

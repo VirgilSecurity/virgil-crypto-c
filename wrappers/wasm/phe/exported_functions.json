@@ -14,6 +14,7 @@
     "_vsc_buffer_len",
     "_vscf_impl_shallow_copy",
     "_vscf_impl_tag",
+    "_vscf_impl_api",
     "_vscf_ctr_drbg_new",
     "_vscf_ctr_drbg_shallow_copy",
     "_vscf_ctr_drbg_delete",

@@ -92,6 +92,8 @@ const initRatchetMessage = (Module, modules) => {
          * Returns message type.
          */
         getType() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_message_get_type(this.ctxPtr);
             return proxyResult;
@@ -101,6 +103,8 @@ const initRatchetMessage = (Module, modules) => {
          * Returns long-term public key, if message is prekey message.
          */
         getLongTermPublicKey() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
@@ -121,6 +125,8 @@ const initRatchetMessage = (Module, modules) => {
          * Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
          */
         getOneTimePublicKey() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
@@ -141,6 +147,8 @@ const initRatchetMessage = (Module, modules) => {
          * Buffer len to serialize this class.
          */
         serializeLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_message_serialize_len(this.ctxPtr);
             return proxyResult;
@@ -150,6 +158,8 @@ const initRatchetMessage = (Module, modules) => {
          * Serializes instance.
          */
         serialize() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const outputCapacity = this.serializeLen();
             const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputCapacity);
 

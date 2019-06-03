@@ -108,16 +108,22 @@ const initRsaPrivateKey = (Module, modules) => {
         }
 
         set random(random) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_rsa_private_key_release_random(this.ctxPtr)
             Module._vscf_rsa_private_key_use_random(this.ctxPtr, random.ctxPtr)
         }
 
         set asn1rd(asn1rd) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('asn1rd', asn1rd, 'Foundation.Asn1Reader', modules.FoundationInterfaceTag.ASN1_READER, modules.FoundationInterface);
             Module._vscf_rsa_private_key_release_asn1rd(this.ctxPtr)
             Module._vscf_rsa_private_key_use_asn1rd(this.ctxPtr, asn1rd.ctxPtr)
         }
 
         set asn1wr(asn1wr) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('asn1wr', asn1wr, 'Foundation.Asn1Writer', modules.FoundationInterfaceTag.ASN1_WRITER, modules.FoundationInterface);
             Module._vscf_rsa_private_key_release_asn1wr(this.ctxPtr)
             Module._vscf_rsa_private_key_use_asn1wr(this.ctxPtr, asn1wr.ctxPtr)
         }
@@ -126,6 +132,8 @@ const initRsaPrivateKey = (Module, modules) => {
          * Provide algorithm identificator.
          */
         algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_rsa_private_key_alg_id(this.ctxPtr);
             return proxyResult;
@@ -135,6 +143,8 @@ const initRsaPrivateKey = (Module, modules) => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_rsa_private_key_produce_alg_info(this.ctxPtr);
 
@@ -146,6 +156,8 @@ const initRsaPrivateKey = (Module, modules) => {
          * Restore algorithm configuration from the given object.
          */
         restoreAlgInfo(algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
             const proxyResult = Module._vscf_rsa_private_key_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
@@ -154,6 +166,8 @@ const initRsaPrivateKey = (Module, modules) => {
          * Length of the key in bytes.
          */
         keyLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_rsa_private_key_key_len(this.ctxPtr);
             return proxyResult;
@@ -163,6 +177,8 @@ const initRsaPrivateKey = (Module, modules) => {
          * Length of the key in bits.
          */
         keyBitlen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_rsa_private_key_key_bitlen(this.ctxPtr);
             return proxyResult;
@@ -173,6 +189,7 @@ const initRsaPrivateKey = (Module, modules) => {
          * Note, this operation can be slow.
          */
         generateKey() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_rsa_private_key_generate_key(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
@@ -181,6 +198,7 @@ const initRsaPrivateKey = (Module, modules) => {
          * Decrypt given data.
          */
         decrypt(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -217,6 +235,7 @@ const initRsaPrivateKey = (Module, modules) => {
          * Calculate required buffer length to hold the decrypted data.
          */
         decryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
@@ -228,6 +247,8 @@ const initRsaPrivateKey = (Module, modules) => {
          * Return length in bytes required to hold signature.
          */
         signatureLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_rsa_private_key_signature_len(this.ctxPtr);
             return proxyResult;
@@ -237,6 +258,7 @@ const initRsaPrivateKey = (Module, modules) => {
          * Sign data given private key.
          */
         signHash(hashDigest, hashId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('hashDigest', hashDigest);
             precondition.ensureNumber('hashId', hashId);
 
@@ -274,6 +296,8 @@ const initRsaPrivateKey = (Module, modules) => {
          * Extract public part of the key.
          */
         extractPublicKey() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_rsa_private_key_extract_public_key(this.ctxPtr);
 
@@ -289,6 +313,8 @@ const initRsaPrivateKey = (Module, modules) => {
          * RFC 3447 Appendix A.1.2.
          */
         exportPrivateKey() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const outCapacity = this.exportedPrivateKeyLen();
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
@@ -309,6 +335,8 @@ const initRsaPrivateKey = (Module, modules) => {
          * Return length in bytes required to hold exported private key.
          */
         exportedPrivateKeyLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_rsa_private_key_exported_private_key_len(this.ctxPtr);
             return proxyResult;
@@ -322,6 +350,7 @@ const initRsaPrivateKey = (Module, modules) => {
          * RFC 3447 Appendix A.1.2.
          */
         importPrivateKey(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -349,6 +378,7 @@ const initRsaPrivateKey = (Module, modules) => {
          * Setup predefined values to the uninitialized class dependencies.
          */
         setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_rsa_private_key_setup_defaults(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
@@ -357,6 +387,7 @@ const initRsaPrivateKey = (Module, modules) => {
          * Setup key length in bits that is used for key generation.
          */
         setKeygenParams(bitlen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('bitlen', bitlen);
             Module._vscf_rsa_private_key_set_keygen_params(this.ctxPtr, bitlen);
         }

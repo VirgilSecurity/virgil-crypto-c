@@ -113,6 +113,8 @@ const initCtrDrbg = (Module, modules) => {
         }
 
         set entropySource(entropySource) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('entropySource', entropySource, 'Foundation.EntropySource', modules.FoundationInterfaceTag.ENTROPY_SOURCE, modules.FoundationInterface);
             Module._vscf_ctr_drbg_release_entropy_source(this.ctxPtr)
             const proxyStatus = Module._vscf_ctr_drbg_use_entropy_source(this.ctxPtr, entropySource.ctxPtr)
             modules.FoundationError.handleStatusCode(proxyStatus)
@@ -122,6 +124,7 @@ const initCtrDrbg = (Module, modules) => {
          * Generate random bytes.
          */
         random(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             const dataCapacity = dataLen;
@@ -144,6 +147,7 @@ const initCtrDrbg = (Module, modules) => {
          * Retreive new seed data from the entropy sources.
          */
         reseed() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_ctr_drbg_reseed(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
@@ -152,6 +156,7 @@ const initCtrDrbg = (Module, modules) => {
          * Setup predefined values to the uninitialized class dependencies.
          */
         setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_ctr_drbg_setup_defaults(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
@@ -162,6 +167,7 @@ const initCtrDrbg = (Module, modules) => {
          * Note, use this if your entropy source has sufficient throughput.
          */
         enablePredictionResistance() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_ctr_drbg_enable_prediction_resistance(this.ctxPtr);
         }
 
@@ -170,6 +176,7 @@ const initCtrDrbg = (Module, modules) => {
          * Default value is reseed interval.
          */
         setReseedInterval(interval) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('interval', interval);
             Module._vscf_ctr_drbg_set_reseed_interval(this.ctxPtr, interval);
         }
@@ -179,6 +186,7 @@ const initCtrDrbg = (Module, modules) => {
          * The default value is entropy len.
          */
         setEntropyLen(len) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
             Module._vscf_ctr_drbg_set_entropy_len(this.ctxPtr, len);
         }

@@ -89,21 +89,29 @@ const initEcies = (Module, modules) => {
         }
 
         set random(random) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_ecies_release_random(this.ctxPtr)
             Module._vscf_ecies_use_random(this.ctxPtr, random.ctxPtr)
         }
 
         set cipher(cipher) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('cipher', cipher, 'Foundation.Cipher', modules.FoundationInterfaceTag.CIPHER, modules.FoundationInterface);
             Module._vscf_ecies_release_cipher(this.ctxPtr)
             Module._vscf_ecies_use_cipher(this.ctxPtr, cipher.ctxPtr)
         }
 
         set mac(mac) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('mac', mac, 'Foundation.Mac', modules.FoundationInterfaceTag.MAC, modules.FoundationInterface);
             Module._vscf_ecies_release_mac(this.ctxPtr)
             Module._vscf_ecies_use_mac(this.ctxPtr, mac.ctxPtr)
         }
 
         set kdf(kdf) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('kdf', kdf, 'Foundation.Kdf', modules.FoundationInterfaceTag.KDF, modules.FoundationInterface);
             Module._vscf_ecies_release_kdf(this.ctxPtr)
             Module._vscf_ecies_use_kdf(this.ctxPtr, kdf.ctxPtr)
         }
@@ -118,6 +126,8 @@ const initEcies = (Module, modules) => {
          * "compute shared key".
          */
         set encryptionKey(encryptionKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('encryptionKey', encryptionKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
             Module._vscf_ecies_release_encryption_key(this.ctxPtr)
             Module._vscf_ecies_use_encryption_key(this.ctxPtr, encryptionKey.ctxPtr)
         }
@@ -128,6 +138,8 @@ const initEcies = (Module, modules) => {
          * Private Key must be conformed to the interface "compute shared key".
          */
         set decryptionKey(decryptionKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('decryptionKey', decryptionKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
             Module._vscf_ecies_release_decryption_key(this.ctxPtr)
             Module._vscf_ecies_use_decryption_key(this.ctxPtr, decryptionKey.ctxPtr)
         }
@@ -138,6 +150,8 @@ const initEcies = (Module, modules) => {
          * Ephemeral Key must be conformed to the interface "compute shared key".
          */
         set ephemeralKey(ephemeralKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('ephemeralKey', ephemeralKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
             Module._vscf_ecies_release_ephemeral_key(this.ctxPtr)
             Module._vscf_ecies_use_ephemeral_key(this.ctxPtr, ephemeralKey.ctxPtr)
         }
@@ -146,6 +160,7 @@ const initEcies = (Module, modules) => {
          * Encrypt given data.
          */
         encrypt(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -182,6 +197,7 @@ const initEcies = (Module, modules) => {
          * Calculate required buffer length to hold the encrypted data.
          */
         encryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
@@ -193,6 +209,7 @@ const initEcies = (Module, modules) => {
          * Decrypt given data.
          */
         decrypt(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -229,6 +246,7 @@ const initEcies = (Module, modules) => {
          * Calculate required buffer length to hold the decrypted data.
          */
         decryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
@@ -240,6 +258,7 @@ const initEcies = (Module, modules) => {
          * Setup predefined values to the uninitialized class dependencies.
          */
         setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_ecies_setup_defaults(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }

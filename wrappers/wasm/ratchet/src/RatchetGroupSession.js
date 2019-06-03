@@ -92,6 +92,8 @@ const initRatchetGroupSession = (Module, modules) => {
          * Random
          */
         set rng(rng) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('rng', rng, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscr_ratchet_group_session_release_rng(this.ctxPtr)
             Module._vscr_ratchet_group_session_use_rng(this.ctxPtr, rng.ctxPtr)
         }
@@ -100,6 +102,8 @@ const initRatchetGroupSession = (Module, modules) => {
          * Shows whether session was initialized.
          */
         isInitialized() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_group_session_is_initialized(this.ctxPtr);
 
@@ -111,6 +115,8 @@ const initRatchetGroupSession = (Module, modules) => {
          * Shows whether identity private key was set.
          */
         isPrivateKeySet() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_group_session_is_private_key_set(this.ctxPtr);
 
@@ -122,6 +128,8 @@ const initRatchetGroupSession = (Module, modules) => {
          * Shows whether my id was set.
          */
         isMyIdSet() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_group_session_is_my_id_set(this.ctxPtr);
 
@@ -133,6 +141,8 @@ const initRatchetGroupSession = (Module, modules) => {
          * Returns current epoch.
          */
         getCurrentEpoch() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_group_session_get_current_epoch(this.ctxPtr);
             return proxyResult;
@@ -143,6 +153,7 @@ const initRatchetGroupSession = (Module, modules) => {
          * - RNG: CTR DRBG
          */
         setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscr_ratchet_group_session_setup_defaults(this.ctxPtr);
             modules.RatchetError.handleStatusCode(proxyResult);
         }
@@ -151,6 +162,7 @@ const initRatchetGroupSession = (Module, modules) => {
          * Sets identity private key.
          */
         setPrivateKey(myPrivateKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('myPrivateKey', myPrivateKey);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -178,6 +190,7 @@ const initRatchetGroupSession = (Module, modules) => {
          * Sets my id.
          */
         setMyId(myId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('myId', myId);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -204,6 +217,8 @@ const initRatchetGroupSession = (Module, modules) => {
          * Returns my id.
          */
         getMyId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
@@ -224,6 +239,8 @@ const initRatchetGroupSession = (Module, modules) => {
          * Returns session id.
          */
         getSessionId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
@@ -244,6 +261,8 @@ const initRatchetGroupSession = (Module, modules) => {
          * Returns number of participants.
          */
         getParticipantsCount() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_group_session_get_participants_count(this.ctxPtr);
             return proxyResult;
@@ -254,6 +273,7 @@ const initRatchetGroupSession = (Module, modules) => {
          * NOTE: Identity private key and my id should be set separately.
          */
         setupSession(message) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('message', message, modules.RatchetGroupMessage);
             const proxyResult = Module._vscr_ratchet_group_session_setup_session(this.ctxPtr, message.ctxPtr);
             modules.RatchetError.handleStatusCode(proxyResult);
@@ -263,6 +283,7 @@ const initRatchetGroupSession = (Module, modules) => {
          * Encrypts data
          */
         encrypt(plainText) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('plainText', plainText);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -302,6 +323,7 @@ const initRatchetGroupSession = (Module, modules) => {
          * Calculates size of buffer sufficient to store decrypted message
          */
         decryptLen(message) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('message', message, modules.RatchetGroupMessage);
 
             let proxyResult;
@@ -313,6 +335,7 @@ const initRatchetGroupSession = (Module, modules) => {
          * Decrypts message
          */
         decrypt(message) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('message', message, modules.RatchetGroupMessage);
 
             const plainTextCapacity = this.decryptLen(message);
@@ -335,6 +358,8 @@ const initRatchetGroupSession = (Module, modules) => {
          * Calculates size of buffer sufficient to store session
          */
         serializeLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_group_session_serialize_len(this.ctxPtr);
             return proxyResult;
@@ -345,6 +370,8 @@ const initRatchetGroupSession = (Module, modules) => {
          * NOTE: Session changes its state every encrypt/decrypt operations. Be sure to save it.
          */
         serialize() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const outputCapacity = this.serializeLen();
             const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputCapacity);
 
@@ -408,6 +435,8 @@ const initRatchetGroupSession = (Module, modules) => {
          * NOTE: This ticket is not suitable for removing participants from this session.
          */
         createGroupTicketForAddingParticipants() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscr_ratchet_group_session_create_group_ticket_for_adding_participants(this.ctxPtr);
 
@@ -419,6 +448,8 @@ const initRatchetGroupSession = (Module, modules) => {
          * Creates ticket for adding and or removing participants to/from this session.
          */
         createGroupTicketForAddingOrRemovingParticipants() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const errorCtxSize = Module._vscr_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
             Module._vscr_error_reset(errorCtxPtr);

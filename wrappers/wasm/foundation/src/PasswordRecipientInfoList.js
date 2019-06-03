@@ -93,6 +93,7 @@ const initPasswordRecipientInfoList = (Module, modules) => {
          * Note, ownership is transfered.
          */
         add(passwordRecipientInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('passwordRecipientInfo', passwordRecipientInfo, modules.PasswordRecipientInfo);
             Module._vscf_password_recipient_info_list_add(this.ctxPtr, passwordRecipientInfo.ctxPtr);
         }
@@ -101,6 +102,8 @@ const initPasswordRecipientInfoList = (Module, modules) => {
          * Return true if given list has item.
          */
         hasItem() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_password_recipient_info_list_has_item(this.ctxPtr);
 
@@ -112,6 +115,8 @@ const initPasswordRecipientInfoList = (Module, modules) => {
          * Return list item.
          */
         item() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_password_recipient_info_list_item(this.ctxPtr);
 
@@ -123,6 +128,8 @@ const initPasswordRecipientInfoList = (Module, modules) => {
          * Return true if list has next item.
          */
         hasNext() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_password_recipient_info_list_has_next(this.ctxPtr);
 
@@ -134,6 +141,8 @@ const initPasswordRecipientInfoList = (Module, modules) => {
          * Return next list node if exists, or NULL otherwise.
          */
         next() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_password_recipient_info_list_next(this.ctxPtr);
 
@@ -145,6 +154,8 @@ const initPasswordRecipientInfoList = (Module, modules) => {
          * Return true if list has previous item.
          */
         hasPrev() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_password_recipient_info_list_has_prev(this.ctxPtr);
 
@@ -156,6 +167,8 @@ const initPasswordRecipientInfoList = (Module, modules) => {
          * Return previous list node if exists, or NULL otherwise.
          */
         prev() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_password_recipient_info_list_prev(this.ctxPtr);
 
@@ -167,6 +180,7 @@ const initPasswordRecipientInfoList = (Module, modules) => {
          * Remove all items.
          */
         clear() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_password_recipient_info_list_clear(this.ctxPtr);
         }
     }

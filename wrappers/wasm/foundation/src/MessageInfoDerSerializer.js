@@ -97,11 +97,15 @@ const initMessageInfoDerSerializer = (Module, modules) => {
         }
 
         set asn1Reader(asn1Reader) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('asn1Reader', asn1Reader, 'Foundation.Asn1Reader', modules.FoundationInterfaceTag.ASN1_READER, modules.FoundationInterface);
             Module._vscf_message_info_der_serializer_release_asn1_reader(this.ctxPtr)
             Module._vscf_message_info_der_serializer_use_asn1_reader(this.ctxPtr, asn1Reader.ctxPtr)
         }
 
         set asn1Writer(asn1Writer) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('asn1Writer', asn1Writer, 'Foundation.Asn1Writer', modules.FoundationInterfaceTag.ASN1_WRITER, modules.FoundationInterface);
             Module._vscf_message_info_der_serializer_release_asn1_writer(this.ctxPtr)
             Module._vscf_message_info_der_serializer_use_asn1_writer(this.ctxPtr, asn1Writer.ctxPtr)
         }
@@ -110,6 +114,7 @@ const initMessageInfoDerSerializer = (Module, modules) => {
          * Return buffer size enough to hold serialized message info.
          */
         serializedLen(messageInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('messageInfo', messageInfo, modules.MessageInfo);
 
             let proxyResult;
@@ -121,6 +126,7 @@ const initMessageInfoDerSerializer = (Module, modules) => {
          * Serialize class "message info".
          */
         serialize(messageInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('messageInfo', messageInfo, modules.MessageInfo);
 
             const outCapacity = this.serializedLen(messageInfo);
@@ -146,6 +152,7 @@ const initMessageInfoDerSerializer = (Module, modules) => {
          * and this means that there is no message info at the data beginning.
          */
         readPrefix(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -175,6 +182,7 @@ const initMessageInfoDerSerializer = (Module, modules) => {
          * Deserialize class "message info".
          */
         deserialize(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -214,6 +222,7 @@ const initMessageInfoDerSerializer = (Module, modules) => {
          * Setup predefined values to the uninitialized class dependencies.
          */
         setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_message_info_der_serializer_setup_defaults(this.ctxPtr);
         }
     }

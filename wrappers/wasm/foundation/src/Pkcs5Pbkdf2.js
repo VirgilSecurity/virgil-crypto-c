@@ -89,6 +89,8 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
         }
 
         set hmac(hmac) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('hmac', hmac, 'Foundation.Mac', modules.FoundationInterfaceTag.MAC, modules.FoundationInterface);
             Module._vscf_pkcs5_pbkdf2_release_hmac(this.ctxPtr)
             Module._vscf_pkcs5_pbkdf2_use_hmac(this.ctxPtr, hmac.ctxPtr)
         }
@@ -97,6 +99,8 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
          * Provide algorithm identificator.
          */
         algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_pkcs5_pbkdf2_alg_id(this.ctxPtr);
             return proxyResult;
@@ -106,6 +110,8 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_pkcs5_pbkdf2_produce_alg_info(this.ctxPtr);
 
@@ -117,6 +123,8 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
          * Restore algorithm configuration from the given object.
          */
         restoreAlgInfo(algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
             const proxyResult = Module._vscf_pkcs5_pbkdf2_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
@@ -125,6 +133,7 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
          * Derive key of the requested length from the given data.
          */
         derive(data, keyLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
             precondition.ensureNumber('keyLen', keyLen);
 
@@ -161,6 +170,7 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
          * Prepare algorithm to derive new key.
          */
         reset(salt, iterationCount) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('salt', salt);
             precondition.ensureNumber('iterationCount', iterationCount);
 
@@ -189,6 +199,7 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
          * Can be empty.
          */
         setInfo(info) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('info', info);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -215,6 +226,7 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
          * Setup predefined values to the uninitialized class dependencies.
          */
         setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_pkcs5_pbkdf2_setup_defaults(this.ctxPtr);
         }
     }

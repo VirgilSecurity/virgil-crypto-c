@@ -92,6 +92,7 @@ const initAsn1rd = (Module, modules) => {
          * Reset all internal states and prepare to new ASN.1 reading operations.
          */
         reset(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -118,6 +119,8 @@ const initAsn1rd = (Module, modules) => {
          * Return length in bytes how many bytes are left for reading.
          */
         leftLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_left_len(this.ctxPtr);
             return proxyResult;
@@ -127,6 +130,8 @@ const initAsn1rd = (Module, modules) => {
          * Return true if status is not "success".
          */
         hasError() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_has_error(this.ctxPtr);
 
@@ -138,6 +143,7 @@ const initAsn1rd = (Module, modules) => {
          * Return error code.
          */
         status() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_asn1rd_status(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
@@ -146,6 +152,8 @@ const initAsn1rd = (Module, modules) => {
          * Get tag of the current ASN.1 element.
          */
         getTag() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_get_tag(this.ctxPtr);
             return proxyResult;
@@ -155,6 +163,8 @@ const initAsn1rd = (Module, modules) => {
          * Get length of the current ASN.1 element.
          */
         getLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_get_len(this.ctxPtr);
             return proxyResult;
@@ -164,6 +174,8 @@ const initAsn1rd = (Module, modules) => {
          * Get length of the current ASN.1 element with tag and length itself.
          */
         getDataLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_get_data_len(this.ctxPtr);
             return proxyResult;
@@ -174,6 +186,7 @@ const initAsn1rd = (Module, modules) => {
          * Return element length.
          */
         readTag(tag) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('tag', tag);
 
             let proxyResult;
@@ -187,6 +200,7 @@ const initAsn1rd = (Module, modules) => {
          * Return 0 if current position do not points to the requested tag.
          */
         readContextTag(tag) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('tag', tag);
 
             let proxyResult;
@@ -198,6 +212,8 @@ const initAsn1rd = (Module, modules) => {
          * Read ASN.1 type: INTEGER.
          */
         readInt() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_int(this.ctxPtr);
             return proxyResult;
@@ -207,6 +223,8 @@ const initAsn1rd = (Module, modules) => {
          * Read ASN.1 type: INTEGER.
          */
         readInt8() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_int8(this.ctxPtr);
             return proxyResult;
@@ -216,6 +234,8 @@ const initAsn1rd = (Module, modules) => {
          * Read ASN.1 type: INTEGER.
          */
         readInt16() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_int16(this.ctxPtr);
             return proxyResult;
@@ -225,6 +245,8 @@ const initAsn1rd = (Module, modules) => {
          * Read ASN.1 type: INTEGER.
          */
         readInt32() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_int32(this.ctxPtr);
             return proxyResult;
@@ -234,6 +256,8 @@ const initAsn1rd = (Module, modules) => {
          * Read ASN.1 type: INTEGER.
          */
         readInt64() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_int64(this.ctxPtr);
             return proxyResult;
@@ -243,6 +267,8 @@ const initAsn1rd = (Module, modules) => {
          * Read ASN.1 type: INTEGER.
          */
         readUint() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_uint(this.ctxPtr);
             return proxyResult;
@@ -252,6 +278,8 @@ const initAsn1rd = (Module, modules) => {
          * Read ASN.1 type: INTEGER.
          */
         readUint8() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_uint8(this.ctxPtr);
             return proxyResult;
@@ -261,6 +289,8 @@ const initAsn1rd = (Module, modules) => {
          * Read ASN.1 type: INTEGER.
          */
         readUint16() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_uint16(this.ctxPtr);
             return proxyResult;
@@ -270,6 +300,8 @@ const initAsn1rd = (Module, modules) => {
          * Read ASN.1 type: INTEGER.
          */
         readUint32() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_uint32(this.ctxPtr);
             return proxyResult;
@@ -279,6 +311,8 @@ const initAsn1rd = (Module, modules) => {
          * Read ASN.1 type: INTEGER.
          */
         readUint64() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_uint64(this.ctxPtr);
             return proxyResult;
@@ -288,6 +322,8 @@ const initAsn1rd = (Module, modules) => {
          * Read ASN.1 type: BOOLEAN.
          */
         readBool() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_bool(this.ctxPtr);
 
@@ -299,6 +335,7 @@ const initAsn1rd = (Module, modules) => {
          * Read ASN.1 type: NULL.
          */
         readNull() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_asn1rd_read_null(this.ctxPtr);
         }
 
@@ -307,6 +344,7 @@ const initAsn1rd = (Module, modules) => {
          * Note, this method is safe to call even no more data is left for reading.
          */
         readNullOptional() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_asn1rd_read_null_optional(this.ctxPtr);
         }
 
@@ -314,6 +352,8 @@ const initAsn1rd = (Module, modules) => {
          * Read ASN.1 type: OCTET STRING.
          */
         readOctetStr() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
@@ -334,6 +374,8 @@ const initAsn1rd = (Module, modules) => {
          * Read ASN.1 type: BIT STRING.
          */
         readBitstringAsOctetStr() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
@@ -354,6 +396,8 @@ const initAsn1rd = (Module, modules) => {
          * Read ASN.1 type: UTF8String.
          */
         readUtf8Str() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
@@ -374,6 +418,8 @@ const initAsn1rd = (Module, modules) => {
          * Read ASN.1 type: OID.
          */
         readOid() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
@@ -394,6 +440,7 @@ const initAsn1rd = (Module, modules) => {
          * Read raw data of given length.
          */
         readData(len) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
 
             //  Create C structure vsc_data_t.
@@ -417,6 +464,8 @@ const initAsn1rd = (Module, modules) => {
          * Return element length.
          */
         readSequence() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_sequence(this.ctxPtr);
             return proxyResult;
@@ -427,6 +476,8 @@ const initAsn1rd = (Module, modules) => {
          * Return element length.
          */
         readSet() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_set(this.ctxPtr);
             return proxyResult;

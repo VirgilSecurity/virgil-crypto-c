@@ -94,6 +94,8 @@ const initPbeAlgInfo = (Module, modules) => {
          */
         static newWithMembers(algId, kdfAlgInfo, cipherAlgInfo) {
             precondition.ensureNumber('algId', algId);
+            precondition.ensureImplementInterface('kdfAlgInfo', kdfAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+            precondition.ensureImplementInterface('cipherAlgInfo', cipherAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
 
             let proxyResult;
             proxyResult = Module._vscf_pbe_alg_info_new_with_members(algId, kdfAlgInfo.ctxPtr, cipherAlgInfo.ctxPtr);
@@ -106,6 +108,8 @@ const initPbeAlgInfo = (Module, modules) => {
          * Provide algorithm identificator.
          */
         algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_pbe_alg_info_alg_id(this.ctxPtr);
             return proxyResult;
@@ -115,6 +119,8 @@ const initPbeAlgInfo = (Module, modules) => {
          * Return KDF algorithm information.
          */
         kdfAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_pbe_alg_info_kdf_alg_info(this.ctxPtr);
 
@@ -126,6 +132,8 @@ const initPbeAlgInfo = (Module, modules) => {
          * Return cipher algorithm information.
          */
         cipherAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_pbe_alg_info_cipher_alg_info(this.ctxPtr);
 

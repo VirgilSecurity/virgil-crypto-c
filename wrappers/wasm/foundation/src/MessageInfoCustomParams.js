@@ -89,6 +89,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
          * Add custom parameter with integer value.
          */
         addInt(key, value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
             precondition.ensureNumber('value', value);
 
@@ -116,6 +117,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
          * Add custom parameter with UTF8 string value.
          */
         addString(key, value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
             precondition.ensureByteArray('value', value);
 
@@ -157,6 +159,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
          * Add custom parameter with octet string value.
          */
         addData(key, value) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
             precondition.ensureByteArray('value', value);
 
@@ -198,6 +201,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
          * Remove all parameters.
          */
         clear() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_message_info_custom_params_clear(this.ctxPtr);
         }
 
@@ -205,6 +209,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
          * Return custom parameter with integer value.
          */
         findInt(key) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -242,6 +247,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
          * Return custom parameter with UTF8 string value.
          */
         findString(key) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -286,6 +292,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
          * Return custom parameter with octet string value.
          */
         findData(key) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
 
             //  Copy bytes from JS memory to the WASM memory.

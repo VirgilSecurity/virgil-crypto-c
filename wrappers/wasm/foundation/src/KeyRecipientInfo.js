@@ -93,6 +93,7 @@ const initKeyRecipientInfo = (Module, modules) => {
          */
         static newWithMembers(recipientId, keyEncryptionAlgorithm, encryptedKey) {
             precondition.ensureByteArray('recipientId', recipientId);
+            precondition.ensureImplementInterface('keyEncryptionAlgorithm', keyEncryptionAlgorithm, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
             precondition.ensureByteArray('encryptedKey', encryptedKey);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -138,6 +139,8 @@ const initKeyRecipientInfo = (Module, modules) => {
          * Return recipient identifier.
          */
         recipientId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
@@ -159,6 +162,8 @@ const initKeyRecipientInfo = (Module, modules) => {
          * a data encryption key.
          */
         keyEncryptionAlgorithm() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_key_recipient_info_key_encryption_algorithm(this.ctxPtr);
 
@@ -170,6 +175,8 @@ const initKeyRecipientInfo = (Module, modules) => {
          * Return an encrypted data encryption key.
          */
         encryptedKey() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             //  Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);

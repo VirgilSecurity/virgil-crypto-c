@@ -89,6 +89,8 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
         }
 
         set asn1Reader(asn1Reader) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('asn1Reader', asn1Reader, 'Foundation.Asn1Reader', modules.FoundationInterfaceTag.ASN1_READER, modules.FoundationInterface);
             Module._vscf_alg_info_der_deserializer_release_asn1_reader(this.ctxPtr)
             Module._vscf_alg_info_der_deserializer_use_asn1_reader(this.ctxPtr, asn1Reader.ctxPtr)
         }
@@ -97,6 +99,7 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
          * Deserialize algorithm from the data.
          */
         deserialize(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -136,6 +139,7 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
          * Setup predefined values to the uninitialized class dependencies.
          */
         setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_alg_info_der_deserializer_setup_defaults(this.ctxPtr);
         }
 
@@ -145,6 +149,8 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
          * an input buffer.
          */
         deserializeInplace() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
             Module._vscf_error_reset(errorCtxPtr);

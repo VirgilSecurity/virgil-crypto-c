@@ -37,6 +37,7 @@
 
 const FoundationModule = require('./libfoundation');
 
+const initFoundationInterfaceTag = require('./FoundationInterfaceTag');
 const initFoundationInterface = require('./FoundationInterface');
 const initFoundationImplTag = require('./FoundationImplTag');
 const initFoundationError = require('./FoundationError');
@@ -107,6 +108,7 @@ const initProject = () => {
         foundationModule.onRuntimeInitialized = () => {
             const modules = {};
 
+            modules.FoundationInterfaceTag = initFoundationInterfaceTag(foundationModule, modules);
             modules.FoundationInterface = initFoundationInterface(foundationModule, modules);
             modules.FoundationImplTag = initFoundationImplTag(foundationModule, modules);
             modules.FoundationError = initFoundationError(foundationModule, modules);

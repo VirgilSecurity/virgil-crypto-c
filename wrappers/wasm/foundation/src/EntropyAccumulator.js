@@ -100,6 +100,8 @@ const initEntropyAccumulator = (Module, modules) => {
          * Defines that implemented source is strong.
          */
         isStrong() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_entropy_accumulator_is_strong(this.ctxPtr);
 
@@ -111,6 +113,7 @@ const initEntropyAccumulator = (Module, modules) => {
          * Gather entropy of the requested length.
          */
         gather(len) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
 
             const outCapacity = len;
@@ -133,6 +136,7 @@ const initEntropyAccumulator = (Module, modules) => {
          * Setup predefined values to the uninitialized class dependencies.
          */
         setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_entropy_accumulator_setup_defaults(this.ctxPtr);
         }
 
@@ -142,6 +146,8 @@ const initEntropyAccumulator = (Module, modules) => {
          * from the source during accumulation.
          */
         addSource(source, threshold) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('source', source, 'Foundation.EntropySource', modules.FoundationInterfaceTag.ENTROPY_SOURCE, modules.FoundationInterface);
             precondition.ensureNumber('threshold', threshold);
             Module._vscf_entropy_accumulator_add_source(this.ctxPtr, source.ctxPtr, threshold);
         }

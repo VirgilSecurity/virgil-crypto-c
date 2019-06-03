@@ -89,11 +89,15 @@ const initPkcs5Pbes2 = (Module, modules) => {
         }
 
         set kdf(kdf) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('kdf', kdf, 'Foundation.SaltedKdf', modules.FoundationInterfaceTag.SALTED_KDF, modules.FoundationInterface);
             Module._vscf_pkcs5_pbes2_release_kdf(this.ctxPtr)
             Module._vscf_pkcs5_pbes2_use_kdf(this.ctxPtr, kdf.ctxPtr)
         }
 
         set cipher(cipher) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('cipher', cipher, 'Foundation.Cipher', modules.FoundationInterfaceTag.CIPHER, modules.FoundationInterface);
             Module._vscf_pkcs5_pbes2_release_cipher(this.ctxPtr)
             Module._vscf_pkcs5_pbes2_use_cipher(this.ctxPtr, cipher.ctxPtr)
         }
@@ -102,6 +106,8 @@ const initPkcs5Pbes2 = (Module, modules) => {
          * Provide algorithm identificator.
          */
         algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_pkcs5_pbes2_alg_id(this.ctxPtr);
             return proxyResult;
@@ -111,6 +117,8 @@ const initPkcs5Pbes2 = (Module, modules) => {
          * Produce object with algorithm information and configuration parameters.
          */
         produceAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
             let proxyResult;
             proxyResult = Module._vscf_pkcs5_pbes2_produce_alg_info(this.ctxPtr);
 
@@ -122,6 +130,8 @@ const initPkcs5Pbes2 = (Module, modules) => {
          * Restore algorithm configuration from the given object.
          */
         restoreAlgInfo(algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
             const proxyResult = Module._vscf_pkcs5_pbes2_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
@@ -130,6 +140,7 @@ const initPkcs5Pbes2 = (Module, modules) => {
          * Encrypt given data.
          */
         encrypt(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -166,6 +177,7 @@ const initPkcs5Pbes2 = (Module, modules) => {
          * Calculate required buffer length to hold the encrypted data.
          */
         encryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
@@ -177,6 +189,7 @@ const initPkcs5Pbes2 = (Module, modules) => {
          * Decrypt given data.
          */
         decrypt(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -213,6 +226,7 @@ const initPkcs5Pbes2 = (Module, modules) => {
          * Calculate required buffer length to hold the decrypted data.
          */
         decryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
 
             let proxyResult;
@@ -224,6 +238,7 @@ const initPkcs5Pbes2 = (Module, modules) => {
          * Configure cipher with a new password.
          */
         reset(pwd) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('pwd', pwd);
 
             //  Copy bytes from JS memory to the WASM memory.

@@ -93,6 +93,8 @@ const initPheCipher = (Module, modules) => {
          * Random used for salt generation
          */
         set random(random) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_phe_cipher_release_random(this.ctxPtr)
             Module._vsce_phe_cipher_use_random(this.ctxPtr, random.ctxPtr)
         }
@@ -101,6 +103,7 @@ const initPheCipher = (Module, modules) => {
          * Setups dependencies with default values.
          */
         setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vsce_phe_cipher_setup_defaults(this.ctxPtr);
             modules.PheError.handleStatusCode(proxyResult);
         }
@@ -109,6 +112,7 @@ const initPheCipher = (Module, modules) => {
          * Returns buffer capacity needed to fit cipher text
          */
         encryptLen(plainTextLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('plainTextLen', plainTextLen);
 
             let proxyResult;
@@ -120,6 +124,7 @@ const initPheCipher = (Module, modules) => {
          * Returns buffer capacity needed to fit plain text
          */
         decryptLen(cipherTextLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('cipherTextLen', cipherTextLen);
 
             let proxyResult;
@@ -131,6 +136,7 @@ const initPheCipher = (Module, modules) => {
          * Encrypts data using account key
          */
         encrypt(plainText, accountKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('plainText', plainText);
             precondition.ensureByteArray('accountKey', accountKey);
 
@@ -182,6 +188,7 @@ const initPheCipher = (Module, modules) => {
          * Decrypts data using account key
          */
         decrypt(cipherText, accountKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('cipherText', cipherText);
             precondition.ensureByteArray('accountKey', accountKey);
 

@@ -78,4 +78,25 @@ function wasm_format_argument_list (wasm_method)
     return my.arg_list
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Return formatted list of arguments without braces.
+# ---------------------------------------------------------------------------
+function wasm_format_prconditions(wasm_method, tab_count)
+    check_arguments(my, "wasm_method", my)
+
+    for my.wasm_method.wasm_precondition
+        my.preconditions ?= ""
+        my.preconditions += format_left(wasm_precondition., my.tab_count)
+    endfor
+
+    for my.wasm_method.wasm_argument
+        for wasm_argument.wasm_precondition
+            my.preconditions ?= ""
+            my.preconditions += format_left(wasm_precondition., my.tab_count)
+        endfor
+    endfor
+
+    return my.preconditions
+endfunction
+
 .endtemplate

@@ -92,6 +92,7 @@ const initRatchetKeyId = (Module, modules) => {
          * Computes 8 bytes key pair id from Curve25519 (in PKCS8 or raw format) public key
          */
         computePublicKeyId(publicKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('publicKey', publicKey);
 
             //  Copy bytes from JS memory to the WASM memory.
