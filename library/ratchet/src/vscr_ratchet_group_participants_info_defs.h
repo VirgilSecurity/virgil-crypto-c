@@ -88,9 +88,9 @@ struct vscr_ratchet_group_participants_info_t {
 
     vscr_ratchet_key_utils_t *key_utils;
 
-    size_t size;
+    uint32_t size;
 
-    size_t count;
+    uint32_t count;
 
     vscr_ratchet_group_participant_info_t **participants;
 };

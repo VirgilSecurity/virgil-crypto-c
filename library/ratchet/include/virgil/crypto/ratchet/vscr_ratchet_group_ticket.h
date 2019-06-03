@@ -174,11 +174,14 @@ vscr_ratchet_group_ticket_setup_defaults(vscr_ratchet_group_ticket_t *self) VSCR
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_ticket_setup_ticket_as_new(vscr_ratchet_group_ticket_t *self) VSCR_NODISCARD;
 
+//
+//  Set session id in case you want to use your own identifier, otherwise - id will be generated for you.
+//
 VSCR_PUBLIC void
 vscr_ratchet_group_ticket_set_session_id(vscr_ratchet_group_ticket_t *self, vsc_data_t session_id);
 
 //
-//  Generates message that should be sent to all participants using secure channel.
+//  Returns message that should be sent to all participants using secure channel.
 //
 VSCR_PUBLIC const vscr_ratchet_group_message_t *
 vscr_ratchet_group_ticket_get_ticket_message(const vscr_ratchet_group_ticket_t *self);

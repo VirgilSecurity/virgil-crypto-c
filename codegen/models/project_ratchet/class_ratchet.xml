@@ -102,7 +102,7 @@
 
     <method name="generate skipped keys" declaration="private">
         <argument name="receiver chain" class="ratchet receiver chain" access="readwrite"/>
-        <argument name="counter" type="size"/>
+        <argument name="counter" type="unsigned" size="4"/>
 
         <return enum="status"/>
     </method>

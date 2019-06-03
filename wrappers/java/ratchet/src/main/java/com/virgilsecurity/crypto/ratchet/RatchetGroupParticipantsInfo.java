@@ -38,6 +38,9 @@ package com.virgilsecurity.crypto.ratchet;
 
 import com.virgilsecurity.crypto.foundation.*;
 
+/*
+* Container for array of participants' info
+*/
 public class RatchetGroupParticipantsInfo implements AutoCloseable {
 
     public long cCtx;
@@ -57,7 +60,10 @@ public class RatchetGroupParticipantsInfo implements AutoCloseable {
         this.cCtx = cCtx;
     }
 
-    public RatchetGroupParticipantsInfo(int size) {
+    /*
+    * Creates new array for size elements
+    */
+    public RatchetGroupParticipantsInfo(long size) {
         super();
         this.cCtx = RatchetJNI.INSTANCE.ratchetGroupParticipantsInfo_new(size);
     }
@@ -67,6 +73,9 @@ public class RatchetGroupParticipantsInfo implements AutoCloseable {
         RatchetJNI.INSTANCE.ratchetGroupParticipantsInfo_close(this.cCtx);
     }
 
+    /*
+    * Add participant info
+    */
     public void addParticipant(byte[] id, byte[] pubKey) throws RatchetException {
         RatchetJNI.INSTANCE.ratchetGroupParticipantsInfo_addParticipant(this.cCtx, id, pubKey);
     }

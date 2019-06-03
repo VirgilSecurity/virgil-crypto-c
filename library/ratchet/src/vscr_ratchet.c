@@ -113,7 +113,7 @@ vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self,
 
 static vscr_status_t
 vscr_ratchet_generate_skipped_keys(vscr_ratchet_t *self, vscr_ratchet_receiver_chain_t *receiver_chain,
-        size_t counter) VSCR_NODISCARD;
+        uint32_t counter) VSCR_NODISCARD;
 
 //
 //  Return size of 'vscr_ratchet_t'.
@@ -697,7 +697,7 @@ vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self, vscr_ratchet_se
 
 static vscr_status_t
 vscr_ratchet_generate_skipped_keys(
-        vscr_ratchet_t *self, vscr_ratchet_receiver_chain_t *receiver_chain, size_t counter) {
+        vscr_ratchet_t *self, vscr_ratchet_receiver_chain_t *receiver_chain, uint32_t counter) {
 
     while (receiver_chain->chain_key.index < counter) {
         vscr_ratchet_message_key_t *skipped_message_key =

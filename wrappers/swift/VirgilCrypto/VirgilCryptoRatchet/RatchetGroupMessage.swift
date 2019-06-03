@@ -92,7 +92,7 @@ import VirgilCryptoFoundation
     }
 
     /// Returns message epoch.
-    @objc public func getEpoch() -> Int {
+    @objc public func getEpoch() -> UInt32 {
         let proxyResult = vscr_ratchet_group_message_get_epoch(self.c_ctx)
 
         return proxyResult

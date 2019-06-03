@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Container for array of participants ids
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -75,8 +81,11 @@ vscr_ratchet_group_participants_ids_init_ctx(vscr_ratchet_group_participants_ids
 static void
 vscr_ratchet_group_participants_ids_cleanup_ctx(vscr_ratchet_group_participants_ids_t *self);
 
+//
+//  Creates new array for size elements
+//
 static void
-vscr_ratchet_group_participants_ids_init_ctx_size(vscr_ratchet_group_participants_ids_t *self, size_t size);
+vscr_ratchet_group_participants_ids_init_ctx_size(vscr_ratchet_group_participants_ids_t *self, uint32_t size);
 
 //
 //  Return size of 'vscr_ratchet_group_participants_ids_t'.
@@ -141,9 +150,10 @@ vscr_ratchet_group_participants_ids_new(void) {
 
 //
 //  Perform initialization of pre-allocated context.
+//  Creates new array for size elements
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_participants_ids_init_size(vscr_ratchet_group_participants_ids_t *self, size_t size) {
+vscr_ratchet_group_participants_ids_init_size(vscr_ratchet_group_participants_ids_t *self, uint32_t size) {
 
     VSCR_ASSERT_PTR(self);
 
@@ -156,9 +166,10 @@ vscr_ratchet_group_participants_ids_init_size(vscr_ratchet_group_participants_id
 
 //
 //  Allocate class context and perform it's initialization.
+//  Creates new array for size elements
 //
 VSCR_PUBLIC vscr_ratchet_group_participants_ids_t *
-vscr_ratchet_group_participants_ids_new_size(size_t size) {
+vscr_ratchet_group_participants_ids_new_size(uint32_t size) {
 
     vscr_ratchet_group_participants_ids_t *self = (vscr_ratchet_group_participants_ids_t *) vscr_alloc(sizeof (vscr_ratchet_group_participants_ids_t));
     VSCR_ASSERT_ALLOC(self);
@@ -251,8 +262,11 @@ vscr_ratchet_group_participants_ids_cleanup_ctx(vscr_ratchet_group_participants_
     vscr_dealloc(self->ids);
 }
 
+//
+//  Creates new array for size elements
+//
 static void
-vscr_ratchet_group_participants_ids_init_ctx_size(vscr_ratchet_group_participants_ids_t *self, size_t size) {
+vscr_ratchet_group_participants_ids_init_ctx_size(vscr_ratchet_group_participants_ids_t *self, uint32_t size) {
 
     VSCR_ASSERT_PTR(self);
 
@@ -263,6 +277,9 @@ vscr_ratchet_group_participants_ids_init_ctx_size(vscr_ratchet_group_participant
     self->count = 0;
 }
 
+//
+//  Add participant id to array
+//
 VSCR_PUBLIC void
 vscr_ratchet_group_participants_ids_add_id(vscr_ratchet_group_participants_ids_t *self, vsc_data_t id) {
 

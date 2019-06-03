@@ -37,7 +37,7 @@
     <method name="get epoch" is_const="1">
         Returns message epoch.
 
-        <return type="size">
+        <return type="unsigned" size="4">
             Message epoch.
         </return>
     </method>

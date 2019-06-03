@@ -85,9 +85,9 @@ struct vscr_ratchet_group_participants_ids_t {
     //
     size_t refcnt;
 
-    size_t size;
+    uint32_t size;
 
-    size_t count;
+    uint32_t count;
 
     vscr_ratchet_participant_id_t *ids;
 };

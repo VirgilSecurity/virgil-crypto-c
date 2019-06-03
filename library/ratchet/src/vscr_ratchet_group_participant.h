@@ -136,11 +136,11 @@ VSCR_PUBLIC vscr_ratchet_group_participant_t *
 vscr_ratchet_group_participant_shallow_copy(vscr_ratchet_group_participant_t *self);
 
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_add_epoch(vscr_ratchet_group_participant_t *self, size_t epoch,
+vscr_ratchet_group_participant_add_epoch(vscr_ratchet_group_participant_t *self, uint32_t epoch,
         vscr_ratchet_chain_key_t **chain_key_ref);
 
 VSCR_PUBLIC vscr_ratchet_group_participant_epoch_t *
-vscr_ratchet_group_participant_find_epoch(const vscr_ratchet_group_participant_t *self, size_t epoch);
+vscr_ratchet_group_participant_find_epoch(const vscr_ratchet_group_participant_t *self, uint32_t epoch);
 
 VSCR_PUBLIC void
 vscr_ratchet_group_participant_serialize(const vscr_ratchet_group_participant_t *self, ParticipantData *data_pb);

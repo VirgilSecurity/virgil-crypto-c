@@ -412,27 +412,13 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_r
     return ret;
 }
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1serializeLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscr_ratchet_session_t /*2*/* ratchet_session_ctx = (vscr_ratchet_session_t /*2*/*) c_ctx;
-
-    jint ret = (jint) vscr_ratchet_session_serialize_len(ratchet_session_ctx /*a1*/);
-    return ret;
-}
-
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1serialize (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscr_ratchet_session_t /*2*/* ratchet_session_ctx = (vscr_ratchet_session_t /*2*/*) c_ctx;
 
-    // Wrap input buffers
-    vsc_buffer_t *output = vsc_buffer_new_with_capacity(vscr_ratchet_session_serialize_len((vscr_ratchet_session_t /*2*/ *) c_ctx /*3*/));
-
-    vscr_ratchet_session_serialize(ratchet_session_ctx /*a1*/, output /*a3*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(output));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(output), (jbyte*) vsc_buffer_bytes(output));
-    // Free resources
-    vsc_buffer_delete(output);
-
+    const vsc_buffer_t */*5*/ proxyResult = vscr_ratchet_session_serialize(ratchet_session_ctx /*a1*/);
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(proxyResult));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(proxyResult), (jbyte*) vsc_buffer_bytes(proxyResult));
     return ret;
 }
 
@@ -474,7 +460,7 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchet
     vscr_ratchet_group_participants_info_delete((vscr_ratchet_group_participants_info_t /*2*/ *) c_ctx /*5*/);
 }
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupParticipantsInfo_1new__I (JNIEnv *jenv, jobject jobj, jint jsize) {
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupParticipantsInfo_1new__J (JNIEnv *jenv, jobject jobj, jlong jsize) {
     jlong proxyResult = (jlong) vscr_ratchet_group_participants_info_new_size(jsize /*a9*/);
     return proxyResult;
 }
@@ -553,11 +539,11 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_r
     return ret;
 }
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupMessage_1getEpoch (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupMessage_1getEpoch (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscr_ratchet_group_message_t /*2*/* ratchet_group_message_ctx = (vscr_ratchet_group_message_t /*2*/*) c_ctx;
 
-    jint ret = (jint) vscr_ratchet_group_message_get_epoch(ratchet_group_message_ctx /*a1*/);
+    jlong ret = (jlong) vscr_ratchet_group_message_get_epoch(ratchet_group_message_ctx /*a1*/);
     return ret;
 }
 
@@ -699,7 +685,7 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchet
     vscr_ratchet_group_participants_ids_delete((vscr_ratchet_group_participants_ids_t /*2*/ *) c_ctx /*5*/);
 }
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupParticipantsIds_1new__I (JNIEnv *jenv, jobject jobj, jint jsize) {
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupParticipantsIds_1new__J (JNIEnv *jenv, jobject jobj, jlong jsize) {
     jlong proxyResult = (jlong) vscr_ratchet_group_participants_ids_new_size(jsize /*a9*/);
     return proxyResult;
 }
@@ -764,11 +750,11 @@ JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_rat
     return ret;
 }
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1getCurrentEpoch (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1getCurrentEpoch (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscr_ratchet_group_session_t /*2*/* ratchet_group_session_ctx = (vscr_ratchet_group_session_t /*2*/*) c_ctx;
 
-    jint ret = (jint) vscr_ratchet_group_session_get_current_epoch(ratchet_group_session_ctx /*a1*/);
+    jlong ret = (jlong) vscr_ratchet_group_session_get_current_epoch(ratchet_group_session_ctx /*a1*/);
     return ret;
 }
 
@@ -839,11 +825,11 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_r
     return ret;
 }
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1getParticipantsCount (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1getParticipantsCount (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscr_ratchet_group_session_t /*2*/* ratchet_group_session_ctx = (vscr_ratchet_group_session_t /*2*/*) c_ctx;
 
-    jint ret = (jint) vscr_ratchet_group_session_get_participants_count(ratchet_group_session_ctx /*a1*/);
+    jlong ret = (jlong) vscr_ratchet_group_session_get_participants_count(ratchet_group_session_ctx /*a1*/);
     return ret;
 }
 
@@ -1000,27 +986,13 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_r
     return ret;
 }
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1serializeLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscr_ratchet_group_session_t /*2*/* ratchet_group_session_ctx = (vscr_ratchet_group_session_t /*2*/*) c_ctx;
-
-    jint ret = (jint) vscr_ratchet_group_session_serialize_len(ratchet_group_session_ctx /*a1*/);
-    return ret;
-}
-
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1serialize (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscr_ratchet_group_session_t /*2*/* ratchet_group_session_ctx = (vscr_ratchet_group_session_t /*2*/*) c_ctx;
 
-    // Wrap input buffers
-    vsc_buffer_t *output = vsc_buffer_new_with_capacity(vscr_ratchet_group_session_serialize_len((vscr_ratchet_group_session_t /*2*/ *) c_ctx /*3*/));
-
-    vscr_ratchet_group_session_serialize(ratchet_group_session_ctx /*a1*/, output /*a3*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(output));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(output), (jbyte*) vsc_buffer_bytes(output));
-    // Free resources
-    vsc_buffer_delete(output);
-
+    const vsc_buffer_t */*5*/ proxyResult = vscr_ratchet_group_session_serialize(ratchet_group_session_ctx /*a1*/);
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(proxyResult));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(proxyResult), (jbyte*) vsc_buffer_bytes(proxyResult));
     return ret;
 }
 

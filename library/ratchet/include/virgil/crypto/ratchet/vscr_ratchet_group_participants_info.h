@@ -44,6 +44,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Container for array of participants' info
+// --------------------------------------------------------------------------
+
 #ifndef VSCR_RATCHET_GROUP_PARTICIPANTS_INFO_H_INCLUDED
 #define VSCR_RATCHET_GROUP_PARTICIPANTS_INFO_H_INCLUDED
 
@@ -104,15 +110,17 @@ vscr_ratchet_group_participants_info_new(void);
 
 //
 //  Perform initialization of pre-allocated context.
+//  Creates new array for size elements
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_participants_info_init_size(vscr_ratchet_group_participants_info_t *self, size_t size);
+vscr_ratchet_group_participants_info_init_size(vscr_ratchet_group_participants_info_t *self, uint32_t size);
 
 //
 //  Allocate class context and perform it's initialization.
+//  Creates new array for size elements
 //
 VSCR_PUBLIC vscr_ratchet_group_participants_info_t *
-vscr_ratchet_group_participants_info_new_size(size_t size);
+vscr_ratchet_group_participants_info_new_size(uint32_t size);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -134,6 +142,9 @@ vscr_ratchet_group_participants_info_destroy(vscr_ratchet_group_participants_inf
 VSCR_PUBLIC vscr_ratchet_group_participants_info_t *
 vscr_ratchet_group_participants_info_shallow_copy(vscr_ratchet_group_participants_info_t *self);
 
+//
+//  Add participant info
+//
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_participants_info_add_participant(vscr_ratchet_group_participants_info_t *self, vsc_data_t id,
         vsc_data_t pub_key) VSCR_NODISCARD;

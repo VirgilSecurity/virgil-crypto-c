@@ -34,7 +34,7 @@
     </method>
 
     <method name="setup ticket internal" scope="internal">
-        <argument name="epoch" type="size"/>
+        <argument name="epoch" type="unsigned" size="4"/>
         <argument name="session id" class="data"/>
 
         <return enum="status"/>
@@ -47,7 +47,11 @@
     </method>
 
     <method name="set session id">
-        <argument name="session id" class="data"/>
+        Set session id in case you want to use your own identifier, otherwise - id will be generated for you.
+
+        <argument name="session id" class="data">
+            Session id, should be 32 byte
+        </argument>
     </method>
 
     <method name="generate key" declaration="private">
@@ -55,7 +59,7 @@
     </method>
 
     <method name="get ticket message" is_const="1">
-        Generates message that should be sent to all participants using secure channel.
+        Returns message that should be sent to all participants using secure channel.
 
         <return class="ratchet group message" access="readonly">
             Ratchet group message.

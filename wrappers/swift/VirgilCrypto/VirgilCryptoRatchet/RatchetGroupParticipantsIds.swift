@@ -37,6 +37,7 @@ import Foundation
 import VSCRatchet
 import VirgilCryptoFoundation
 
+/// Container for array of participants ids
 @objc(VSCRRatchetGroupParticipantsIds) public class RatchetGroupParticipantsIds: NSObject {
 
     /// Handle underlying C context.
@@ -62,7 +63,8 @@ import VirgilCryptoFoundation
         super.init()
     }
 
-    public init(size: Int) {
+    /// Creates new array for size elements
+    public init(size: UInt32) {
         let proxyResult = vscr_ratchet_group_participants_ids_new_size(size)
 
         self.c_ctx = proxyResult!
@@ -73,6 +75,7 @@ import VirgilCryptoFoundation
         vscr_ratchet_group_participants_ids_delete(self.c_ctx)
     }
 
+    /// Add participant id to array
     @objc public func addId(id: Data) {
         id.withUnsafeBytes({ (idPointer: UnsafeRawBufferPointer) -> Void in
 

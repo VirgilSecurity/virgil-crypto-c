@@ -44,6 +44,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Container for array of participants ids
+// --------------------------------------------------------------------------
+
 #ifndef VSCR_RATCHET_GROUP_PARTICIPANTS_IDS_H_INCLUDED
 #define VSCR_RATCHET_GROUP_PARTICIPANTS_IDS_H_INCLUDED
 
@@ -103,15 +109,17 @@ vscr_ratchet_group_participants_ids_new(void);
 
 //
 //  Perform initialization of pre-allocated context.
+//  Creates new array for size elements
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_participants_ids_init_size(vscr_ratchet_group_participants_ids_t *self, size_t size);
+vscr_ratchet_group_participants_ids_init_size(vscr_ratchet_group_participants_ids_t *self, uint32_t size);
 
 //
 //  Allocate class context and perform it's initialization.
+//  Creates new array for size elements
 //
 VSCR_PUBLIC vscr_ratchet_group_participants_ids_t *
-vscr_ratchet_group_participants_ids_new_size(size_t size);
+vscr_ratchet_group_participants_ids_new_size(uint32_t size);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -133,6 +141,9 @@ vscr_ratchet_group_participants_ids_destroy(vscr_ratchet_group_participants_ids_
 VSCR_PUBLIC vscr_ratchet_group_participants_ids_t *
 vscr_ratchet_group_participants_ids_shallow_copy(vscr_ratchet_group_participants_ids_t *self);
 
+//
+//  Add participant id to array
+//
 VSCR_PUBLIC void
 vscr_ratchet_group_participants_ids_add_id(vscr_ratchet_group_participants_ids_t *self, vsc_data_t id);
 

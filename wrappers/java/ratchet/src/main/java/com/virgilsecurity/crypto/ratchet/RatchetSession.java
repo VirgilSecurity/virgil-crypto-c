@@ -137,13 +137,6 @@ public class RatchetSession implements AutoCloseable {
     }
 
     /*
-    * Calculates size of buffer sufficient to store session
-    */
-    public int serializeLen() {
-        return RatchetJNI.INSTANCE.ratchetSession_serializeLen(this.cCtx);
-    }
-
-    /*
     * Serializes session to buffer
     */
     public byte[] serialize() {

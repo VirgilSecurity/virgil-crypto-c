@@ -64,9 +64,10 @@ message ParticipantData {
 
 message GroupSession {
 	required uint32 version = 1;
-	required ParticipantEpoch my_epoch = 2;
-	repeated uint32 messages_count = 3;
-	required bytes session_id = 4;
-	required bytes my_id = 5;
-	repeated ParticipantData participants = 6;
+	required uint32 my_epoch = 2;
+	required ChainKey my_chain_key = 3;
+	repeated uint32 messages_count = 4;
+	required bytes session_id = 5;
+	required bytes my_id = 6;
+	repeated ParticipantData participants = 7;
 }

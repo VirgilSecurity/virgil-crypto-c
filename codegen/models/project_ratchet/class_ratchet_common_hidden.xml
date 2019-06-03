@@ -21,6 +21,9 @@
 
     <constant name="max cipher text len" value="32768"/>
 
+    <constant name="max group session len" value="4191503"/>
+    <constant name="max session len" value="42531"/>
+
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 

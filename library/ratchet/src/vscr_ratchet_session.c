@@ -55,7 +55,9 @@
 #include "vscr_assert.h"
 #include "vscr_ratchet_session_defs.h"
 #include "vscr_ratchet_x3dh.h"
+#include "vscr_ratchet_defs.h"
 #include "vscr_ratchet_message_defs.h"
+#include "vscr_ratchet_skipped_messages_defs.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
@@ -751,24 +753,12 @@ vscr_ratchet_session_decrypt(
 }
 
 //
-//  Calculates size of buffer sufficient to store session
-//
-VSCR_PUBLIC size_t
-vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *self) {
-
-    VSCR_UNUSED(self);
-
-    return Session_size;
-}
-
-//
 //  Serializes session to buffer
 //
-VSCR_PUBLIC void
-vscr_ratchet_session_serialize(vscr_ratchet_session_t *self, vsc_buffer_t *output) {
+VSCR_PUBLIC vsc_buffer_t *
+vscr_ratchet_session_serialize(vscr_ratchet_session_t *self) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_session_serialize_len(self));
 
     Session *session_pb = vscr_alloc(sizeof(Session));
 
@@ -792,13 +782,25 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *self, vsc_buffer_t *outpu
 
     vscr_ratchet_serialize(self->ratchet, &session_pb->ratchet);
 
+    size_t len = 0;
+    pb_get_encoded_size(&len, Session_fields, session_pb);
+
+    vsc_buffer_t *output = vsc_buffer_new_with_capacity(len);
+    vsc_buffer_make_secure(output);
+
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
 
     VSCR_ASSERT(pb_encode(&ostream, Session_fields, session_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);
 
+    for (size_t j = 0; j < session_pb->ratchet.skipped_messages.keys_count; j++) {
+        vscr_dealloc(session_pb->ratchet.skipped_messages.keys[j].message_keys);
+    }
+
     vscr_zeroize(session_pb, sizeof(Session));
     vscr_dealloc(session_pb);
+
+    return output;
 }
 
 //
@@ -810,7 +812,7 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     VSCR_ASSERT(vsc_data_is_valid(input));
 
-    if (input.len > Session_size) {
+    if (input.len > vscr_ratchet_common_hidden_MAX_SESSION_LEN) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
 
         return NULL;
@@ -852,6 +854,7 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     vscr_ratchet_deserialize(&session_pb->ratchet, session->ratchet);
 
 err:
+    pb_release(Session_fields, session_pb);
     vscr_zeroize(session_pb, sizeof(Session));
     vscr_dealloc(session_pb);
 

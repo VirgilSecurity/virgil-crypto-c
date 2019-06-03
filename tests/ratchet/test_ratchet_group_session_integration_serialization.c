@@ -34,16 +34,18 @@
 
 #define UNITY_BEGIN() UnityBegin(__FILENAME__)
 
-#include <virgil/crypto/ratchet/vscr_memory.h>
-#include <ed25519/ed25519.h>
-#include <virgil/crypto/ratchet/private/vscr_ratchet_group_message_defs.h>
-#include <virgil/crypto/foundation/vscf_raw_key.h>
 #include "unity.h"
 #include "test_utils.h"
 
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET_GROUP_SESSION
 #if TEST_DEPENDENCIES_AVAILABLE
 
+#include <virgil/crypto/ratchet/vscr_memory.h>
+#include <ed25519/ed25519.h>
+#include <virgil/crypto/ratchet/private/vscr_ratchet_group_message_defs.h>
+#include <virgil/crypto/foundation/vscf_raw_key.h>
+#include "vscr_ratchet_group_session_defs.h"
+#include "vscr_ratchet.h"
 #include "vscr_ratchet_message_defs.h"
 #include "vscr_ratchet_group_session.h"
 #include "vscr_ratchet_group_ticket.h"
@@ -81,6 +83,94 @@ test__serialization__random_group_chat_bad_network__decrypt_should_succeed(void)
     vscf_ctr_drbg_destroy(&rng);
 }
 
+void
+test__serialization__big_session__overflow_doesnt_happen(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
+    size_t participants_count = vscr_ratchet_common_MAX_PARTICIPANTS_COUNT;
+
+    vscr_ratchet_group_session_t **sessions = NULL;
+    vsc_buffer_t **priv = NULL;
+
+    initialize_random_group_chat(rng, participants_count, &sessions, &priv, NULL);
+
+    vscr_ratchet_group_session_t *session = sessions[0];
+
+    for (size_t i = 0; i < participants_count - 1; i++) {
+        vscr_ratchet_group_participant_t *participant = session->participants[i];
+
+        for (size_t j = 0; j < vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT; j++) {
+            participant->epochs[j] = generate_full_epoch(rng, true);
+        }
+    }
+
+    session->my_chain_key = generate_full_chain_key();
+    session->my_epoch = UINT32_MAX;
+
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_DH - 1; i++) {
+        session->messages_count[i] = UINT32_MAX;
+    }
+
+    restore_group_session(rng, &session, priv[0]);
+
+    for (size_t i = 0; i < participants_count; i++) {
+        vscr_ratchet_group_session_destroy(&sessions[i]);
+        vsc_buffer_destroy(&priv[i]);
+    }
+
+    vscr_dealloc(sessions);
+    vscr_dealloc(priv);
+
+    vscf_ctr_drbg_destroy(&rng);
+}
+
+void
+test__serialization__random_big_session__overflow_doesnt_happen(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
+    size_t participants_count = generate_number(
+            rng, vscr_ratchet_common_MIN_PARTICIPANTS_COUNT, vscr_ratchet_common_MAX_PARTICIPANTS_COUNT);
+
+    vscr_ratchet_group_session_t **sessions = NULL;
+    vsc_buffer_t **priv = NULL;
+
+    initialize_random_group_chat(rng, participants_count, &sessions, &priv, NULL);
+
+    vscr_ratchet_group_session_t *session = sessions[0];
+
+    for (size_t i = 0; i < participants_count - 1; i++) {
+        vscr_ratchet_group_participant_t *participant = session->participants[i];
+
+        for (size_t j = 0; j < vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT; j++) {
+            if (generate_prob(rng) < 0.5)
+                continue;
+
+            participant->epochs[j] = generate_full_epoch(rng, false);
+        }
+    }
+
+    session->my_chain_key = generate_full_chain_key();
+    session->my_epoch = UINT32_MAX;
+
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_DH - 1; i++) {
+        session->messages_count[i] = UINT32_MAX;
+    }
+
+    restore_group_session(rng, &session, priv[0]);
+
+    for (size_t i = 0; i < participants_count; i++) {
+        vscr_ratchet_group_session_destroy(&sessions[i]);
+        vsc_buffer_destroy(&priv[i]);
+    }
+
+    vscr_dealloc(sessions);
+    vscr_dealloc(priv);
+
+    vscf_ctr_drbg_destroy(&rng);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -93,6 +183,8 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__serialization__random_group_chat_bad_network__decrypt_should_succeed);
+    RUN_TEST(test__serialization__big_session__overflow_doesnt_happen);
+    RUN_TEST(test__serialization__random_big_session__overflow_doesnt_happen);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

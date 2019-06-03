@@ -74,7 +74,7 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_ticket_setup_ticket_internal(vscr_ratchet_group_ticket_t *self, size_t epoch,
+vscr_ratchet_group_ticket_setup_ticket_internal(vscr_ratchet_group_ticket_t *self, uint32_t epoch,
         vsc_data_t session_id) VSCR_NODISCARD;
 
 

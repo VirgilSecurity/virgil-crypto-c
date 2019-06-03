@@ -155,7 +155,7 @@ vscr_ratchet_group_message_get_sender_id(const vscr_ratchet_group_message_t *sel
 //
 //  Returns message epoch.
 //
-VSCR_PUBLIC size_t
+VSCR_PUBLIC uint32_t
 vscr_ratchet_group_message_get_epoch(const vscr_ratchet_group_message_t *self);
 
 //

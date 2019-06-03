@@ -89,6 +89,7 @@ import VirgilCryptoFoundation
         try RatchetError.handleStatus(fromC: proxyResult)
     }
 
+    /// Set session id in case you want to use your own identifier, otherwise - id will be generated for you.
     @objc public func setSessionId(sessionId: Data) {
         sessionId.withUnsafeBytes({ (sessionIdPointer: UnsafeRawBufferPointer) -> Void in
 
@@ -96,7 +97,7 @@ import VirgilCryptoFoundation
         })
     }
 
-    /// Generates message that should be sent to all participants using secure channel.
+    /// Returns message that should be sent to all participants using secure channel.
     @objc public func getTicketMessage() -> RatchetGroupMessage {
         let proxyResult = vscr_ratchet_group_ticket_get_ticket_message(self.c_ctx)
 

@@ -34,12 +34,12 @@
 
 #include <unity.h>
 #include <test_utils.h>
-#include <vscr_ratchet_group_session_defs.h>
-#include <vscr_ratchet_group_participants_info_defs.h>
 
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
+#include "vscr_ratchet_group_session_defs.h"
+#include "vscr_ratchet_group_participants_info_defs.h"
 #include "vscr_ratchet_group_ticket.h"
 #include "vscr_memory.h"
 #include "vscf_curve25519_private_key.h"
@@ -528,7 +528,8 @@ ratchet_group_session_cmp(
                 ratchet_session1->is_my_id_set == ratchet_session2->is_my_id_set &&
                 ratchet_session1->is_initialized == ratchet_session2->is_initialized &&
                 ratchet_session1->is_private_key_set == ratchet_session2->is_private_key_set &&
-                ratchet_epoch_cmp(ratchet_session1->my_epoch, ratchet_session2->my_epoch);
+                ratchet_session1->my_epoch == ratchet_session2->my_epoch &&
+                ratchet_chain_key_cmp(ratchet_session1->my_chain_key, ratchet_session2->my_chain_key);
 
     if (!flag) {
         return false;
@@ -624,9 +625,7 @@ restore_session(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session) {
 
     vscr_ratchet_session_t *session_ref = *session;
 
-    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vscr_ratchet_session_serialize_len(*session));
-
-    vscr_ratchet_session_serialize(*session, buffer);
+    vsc_buffer_t *buffer = vscr_ratchet_session_serialize(*session);
 
     *session = vscr_ratchet_session_deserialize(vsc_buffer_data(buffer), &error);
 
@@ -937,9 +936,7 @@ restore_group_session(vscf_ctr_drbg_t *rng, vscr_ratchet_group_session_t **sessi
 
     vscr_ratchet_group_session_t *session_ref = *session;
 
-    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vscr_ratchet_group_session_serialize_len(*session));
-
-    vscr_ratchet_group_session_serialize(*session, buffer);
+    vsc_buffer_t *buffer = vscr_ratchet_group_session_serialize(*session);
 
     *session = vscr_ratchet_group_session_deserialize(vsc_buffer_data(buffer), &error);
 
@@ -1128,6 +1125,54 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterat
     }
 
     vscr_dealloc(channels);
+}
+
+vscr_ratchet_message_key_t *
+generate_full_message_key(void) {
+    vscr_ratchet_message_key_t *message_key = vscr_ratchet_message_key_new();
+
+    message_key->index = UINT32_MAX;
+
+    return message_key;
+}
+
+vscr_ratchet_chain_key_t *
+generate_full_chain_key(void) {
+    vscr_ratchet_chain_key_t *chain_key = vscr_ratchet_chain_key_new();
+
+    chain_key->index = UINT32_MAX;
+
+    return chain_key;
+}
+
+vscr_ratchet_skipped_messages_root_node_t *
+generate_full_root_node(vscf_ctr_drbg_t *rng, bool max) {
+    vscr_ratchet_skipped_messages_root_node_t *skipped_messages = vscr_ratchet_skipped_messages_root_node_new();
+
+    size_t number;
+    if (max) {
+        number = vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES;
+    } else {
+        number = generate_number(rng, 0, vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES);
+    }
+
+    for (size_t i = 0; i < number; i++) {
+        vscr_ratchet_message_key_t *key = generate_full_message_key();
+        vscr_ratchet_skipped_messages_root_node_add_key(skipped_messages, key);
+    }
+
+    return skipped_messages;
+}
+
+vscr_ratchet_group_participant_epoch_t *
+generate_full_epoch(vscf_ctr_drbg_t *rng, bool max) {
+    vscr_ratchet_group_participant_epoch_t *epoch = vscr_ratchet_group_participant_epoch_new();
+
+    epoch->epoch = UINT32_MAX;
+    epoch->chain_key = generate_full_chain_key();
+    epoch->skipped_messages = generate_full_root_node(rng, max);
+
+    return epoch;
 }
 
 #endif
