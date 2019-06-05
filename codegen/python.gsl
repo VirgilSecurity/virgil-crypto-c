@@ -445,7 +445,7 @@ function python_class_derive_buffer_length_getter (class, method, argument, pyth
                 if ! string_empty (module_name)
                     .framework = ".$(module_name:)"
                 else
-                    .framework = "$(my.proxy_object:c)"
+                    .framework = ".$(my.proxy_object:c)"
                 endif
                 .lib = "$(my.proxy_object:)"
             endnew
@@ -2175,7 +2175,11 @@ function python_create_project_module (project, wrapper)
         endnew
 
         if directory.create (python_project.source_dir) = -1
-            echo_fatal ("Can not create directory: $(.source_dir_path:). ", my)
+            echo_fatal ("Can not create directory: $(.source_dir:). ", my)
+        endif
+
+        if directory.create (my.wrapper.libs_source_dir) = -1
+            echo_fatal ("Can not create directory: $(.libs_source_dir:). ", my)
         endif
 
         if directory.create (my.wrapper.utils_source_dir) = -1
@@ -2918,6 +2922,11 @@ function python_create_class_module (class, python_project, meta)
         endfor
     endnew
 
+    # Skip creating high level error class
+    if string_in (my.class.name, "error")
+        return
+    endif
+    
     # High level modules 
     new python_module to my.python_project
         .name = python_derive_module_name (my.class, my.python_project)

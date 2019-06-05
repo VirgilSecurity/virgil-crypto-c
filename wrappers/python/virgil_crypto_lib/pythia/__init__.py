@@ -36,4 +36,3 @@
 from .status import VirgilCryptoPythiaError
 from .status import Status
 from .pythia import Pythia
-from .error import Error

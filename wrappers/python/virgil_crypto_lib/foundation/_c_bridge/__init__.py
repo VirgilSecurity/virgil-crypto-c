@@ -59,8 +59,6 @@ from ._vscf_password_recipient_info_list import VscfPasswordRecipientInfoList
 from ._vscf_alg_factory import VscfAlgFactory
 from ._vscf_recipient_cipher import vscf_recipient_cipher_t
 from ._vscf_recipient_cipher import VscfRecipientCipher
-from ._vscf_list_key_value_node import vscf_list_key_value_node_t
-from ._vscf_list_key_value_node import VscfListKeyValueNode
 from ._vscf_message_info_custom_params import vscf_message_info_custom_params_t
 from ._vscf_message_info_custom_params import VscfMessageInfoCustomParams
 from ._vscf_key_provider import vscf_key_provider_t

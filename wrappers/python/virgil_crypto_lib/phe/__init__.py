@@ -35,7 +35,6 @@
 
 from .status import VirgilCryptoPheError
 from .status import Status
-from .error import Error
 from .common import Common
 from .server import Server
 from .client import Client
