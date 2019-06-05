@@ -1,7 +1,7 @@
 import unittest
 
 from virgil_crypto_lib.foundation import KeyProvider, KeyMaterialRng
-from virgil_crypto_lib.foundation._c_bridge import VscfAlgId
+from virgil_crypto_lib.foundation._c_bridge import VscfAlgId, VirgilCryptoFoundationError
 from virgil_crypto_lib.tests.data import TestData
 
 
@@ -134,6 +134,13 @@ class KeyProviderTest(unittest.TestCase):
         self.assertIsNotNone(exported_public_key)
 
         self.assertEqual(TestData.ED25519_PUBLIC_KEY_PKCS8_DER, exported_public_key)
+
+    def test_import_public_key_ed25519_from_corrupted_data(self):
+        key_provider = KeyProvider()
+        key_provider.setup_defaults()
+
+        test_data = bytearray("Lorem Ipsum is simply dummy text of the printing and typesetting industry.".encode())
+        self.assertRaises(VirgilCryptoFoundationError, key_provider.import_public_key, test_data)
 
     def test_import_private_key_ed25519_and_then_export(self):
         key_provider = KeyProvider()

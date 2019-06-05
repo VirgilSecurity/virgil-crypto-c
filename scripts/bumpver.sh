@@ -121,6 +121,17 @@ sed_replace "\(VIRGIL_CRYPTO_VERSION_LABEL\) *\"[a-zA-Z0-9_]*\"" "\1 \"${VERSION
 
 
 # ###########################################################################
+show_info "Change verion within XML in the main.xml."
+
+main_xml_file="${ROOT_DIR}/codegen/main.xml"
+
+main_version_from="version major=\"[0-9]*\".*minor=\"[0-9]*\".*patch=\"[0-9]*\""
+main_version_to="version major=\"${VERSION_MAJOR}\" minor=\"${VERSION_MINOR}\" patch=\"${VERSION_PATCH}\""
+
+sed_replace "${main_version_from}" "${main_version_to}" "${main_xml_file}"
+
+
+# ###########################################################################
 show_info "Change verion within XML project files."
 
 XML_PROJECT_FILES=$(find "${ROOT_DIR}/codegen/models" -name "project_*.xml" | tr '\n' ' ')

@@ -225,7 +225,11 @@ function python_insert_import (python_import)
     if is_true (my.python_import.import_all)
         python_insert_code ("from $(my.python_import.framework:) import *")
     else
-        python_insert_code ("import $(my.python_import.framework:)")
+        if defined (my.python_import.lib)
+            python_insert_code ("from $(my.python_import.framework:) import $(my.python_import.lib:)")
+        else
+            python_insert_code ("import $(my.python_import.framework:)")
+        endif
     endif
 endfunction
 
