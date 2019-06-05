@@ -1,5 +1,6 @@
 const path = require('path');
 
+const closureCompiler = require('@ampproject/rollup-plugin-closure-compiler');
 const builtinModules = require('builtin-modules');
 const commonjs = require('rollup-plugin-commonjs');
 const copy = require('rollup-plugin-copy');
@@ -26,7 +27,6 @@ if (!formats[format]) {
   throw new TypeError(`'${format}' is not a valid format`);
 }
 
-const packageJsonPath = path.join(__dirname, 'package.json');
 const sourcePath = path.join(__dirname, project);
 const inputPath = path.join(sourcePath, 'index.js');
 const wasmPath = path.join(sourcePath, `lib${project}.wasm`);
@@ -47,9 +47,10 @@ module.exports = {
       ignoreGlobal: true,
       ignore: id => typeof builtinModulesMap[id] !== 'undefined',
     }),
+    closureCompiler(),
     terser(),
     copy({
-      targets: [wasmPath, packageJsonPath],
+      targets: [wasmPath],
       outputFolder: outputPath,
     }),
   ],
