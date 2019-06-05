@@ -184,5 +184,5 @@ fi
 
 # ###########################################################################
 show_info "Change verion within VSCCrypto.podspec file."
-sed_replace "s.version\( *= *\)\"[0-9]*\.[0-9]*\.[0-9]\"" "s.version\1\"${VERSION}\"" "${ROOT_DIR}/VSCCrypto.podspec"
-
+sed_replace "s.version\( *= *\)\"[0-9]*\.[0-9]*\.[0-9]*\"" "s.version\1\"${VERSION}\"" "${ROOT_DIR}/VSCCrypto.podspec"
+sed_replace "\(s.source[^0-9]*\)[0-9]*\.[0-9]*\.[0-9]*" "\1${VERSION}" "${ROOT_DIR}/VSCCrypto.podspec"
