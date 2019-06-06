@@ -565,7 +565,7 @@ def build_LangPython_Windows(slave) {
                       -Bbuild -H.
                 cmake --build build --target install
 
-                rmdir wrappers\\python\\virgil_crypto_lib\\pythia
+                rmdir wrappers\\python\\virgil_crypto_lib\\_libs\\pythia
 
                 cd wrappers\\python
                 python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"
