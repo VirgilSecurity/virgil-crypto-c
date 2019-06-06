@@ -594,6 +594,7 @@ node("build-docker") {
 
         dir('wrappers/python') {
             docker.image("python:2.7").inside("--user root"){
+                sh "find virgil_crypto_lib/ -name '*.pyc' -delete"
                 sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
                 sh "python setup.py bdist_egg --plat-name manylinux1_i686"
                 sh "python setup.py bdist_egg --plat-name linux_x86_64"
@@ -601,6 +602,7 @@ node("build-docker") {
             }
 
             docker.image("python:3.4").inside("--user root"){
+                sh "find virgil_crypto_lib/ -name '*.pyc' -delete"
                 sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
                 sh "python setup.py bdist_egg --plat-name manylinux1_i686"
                 sh "python setup.py bdist_egg --plat-name linux_x86_64"
@@ -608,6 +610,7 @@ node("build-docker") {
             }
 
             docker.image("python:3.5").inside("--user root"){
+                sh "find virgil_crypto_lib/ -name '*.pyc' -delete"
                 sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
                 sh "python setup.py bdist_egg --plat-name manylinux1_i686"
                 sh "python setup.py bdist_egg --plat-name linux_x86_64"
@@ -615,6 +618,7 @@ node("build-docker") {
             }
 
             docker.image("python:3.6").inside("--user root"){
+                sh "find virgil_crypto_lib/ -name '*.pyc' -delete"
                 sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
                 sh "python setup.py bdist_egg --plat-name manylinux1_i686"
                 sh "python setup.py bdist_egg --plat-name linux_x86_64"
@@ -622,6 +626,7 @@ node("build-docker") {
             }
 
             docker.image("python:3.7").inside("--user root"){
+                sh "find virgil_crypto_lib/ -name '*.pyc' -delete"
                 sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
                 sh "python setup.py bdist_egg --plat-name manylinux1_i686"
                 sh "python setup.py bdist_egg --plat-name linux_x86_64"
@@ -639,22 +644,27 @@ node("build-docker") {
 
         dir('wrappers/python') {
             docker.image("python:2.7").inside("--user root"){
+                sh "find virgil_crypto_lib/ -name '*.pyc' -delete"
                 sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
             }
 
             docker.image("python:3.4").inside("--user root"){
+                sh "find virgil_crypto_lib/ -name '*.pyc' -delete"
                 sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
             }
 
             docker.image("python:3.5").inside("--user root"){
+                sh "find virgil_crypto_lib/ -name '*.pyc' -delete"
                 sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
             }
 
             docker.image("python:3.6").inside("--user root"){
+                sh "find virgil_crypto_lib/ -name '*.pyc' -delete"
                 sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
             }
 
             docker.image("python:3.7").inside("--user root"){
+                sh "find virgil_crypto_lib/ -name '*.pyc' -delete"
                 sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
             }
         }
@@ -669,26 +679,31 @@ node("build-docker") {
 
         dir('wrappers/python') {
             docker.image("python:2.7").inside("--user root"){
+                sh "find virgil_crypto_lib/ -name '*.pyc' -delete"
                 sh "python setup.py bdist_egg --plat-name win_amd64"
                 sh "python setup.py bdist_egg --plat-name win32"
             }
 
             docker.image("python:3.4").inside("--user root"){
+                sh "find virgil_crypto_lib/ -name '*.pyc' -delete"
                 sh "python setup.py bdist_egg --plat-name win_amd64"
                 sh "python setup.py bdist_egg --plat-name win32"
             }
 
             docker.image("python:3.5").inside("--user root"){
+                sh "find virgil_crypto_lib/ -name '*.pyc' -delete"
                 sh "python setup.py bdist_egg --plat-name win_amd64"
                 sh "python setup.py bdist_egg --plat-name win32"
             }
 
             docker.image("python:3.6").inside("--user root"){
+                sh "find virgil_crypto_lib/ -name '*.pyc' -delete"
                 sh "python setup.py bdist_egg --plat-name win_amd64"
                 sh "python setup.py bdist_egg --plat-name win32"
             }
 
             docker.image("python:3.7").inside("--user root"){
+                sh "find virgil_crypto_lib/ -name '*.pyc' -delete"
                 sh "python setup.py bdist_egg --plat-name win_amd64"
                 sh "python setup.py bdist_egg --plat-name win32"
             }
