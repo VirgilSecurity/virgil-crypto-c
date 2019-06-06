@@ -516,15 +516,8 @@ def build_LangPython_Linux(slave) {
                 python setup.py bdist_wheel --python-tag py2.py3 --plat-name linux_x86_64
                 python setup.py bdist_wheel --python-tag py2.py3 --plat-name manylinux1_i686
                 python setup.py bdist_wheel --python-tag py2.py3 --plat-name linux_i686
-
-                python setup.py bdist_egg --plat-name manylinux1_x86_64
-                python setup.py bdist_egg --plat-name linux_x86_64
-                python setup.py bdist_egg --plat-name manylinux1_i686
-                python setup.py bdist_egg --plat-name linux_i686
             '''
-            dir('wrappers/python'){
-                archiveArtifacts('dist/**')
-            }
+            stash includes: 'wrappers/python/**', excludes: 'dist/**, build/**', name: 'python_wrapper_linux'
             stash includes: 'wrappers/python/dist/**', name: 'python_linux'
         }
     }}
@@ -549,11 +542,8 @@ def build_LangPython_MacOS(slave) {
                 python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"
 
                 python setup.py bdist_wheel --python-tag py2.py3 --plat-name macosx_10_12_intel
-                python setup.py bdist_egg --plat-name macosx_10_12_intel
             '''
-            dir('wrappers/python'){
-                archiveArtifacts('dist/**')
-            }
+            stash includes: 'wrappers/python/**', excludes: 'dist/**, build/**', name: 'python_wrapper_macos'
             stash includes: 'wrappers/python/dist/**', name: 'python_macos'
         }
     }}
@@ -581,17 +571,131 @@ def build_LangPython_Windows(slave) {
                 cd wrappers/python
                 python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"
 
+                rmdir wrappers\\python\\virgil_crypto_lib\\pythia
+
                 python setup.py bdist_wheel --python-tag py2.py3 --plat-name win_amd64
                 python setup.py bdist_wheel --python-tag py2.py3 --plat-name win32
-                python setup.py bdist_egg --plat-name win_amd64
-                python setup.py bdist_egg --plat-name win32
             '''
-            dir('wrappers/python'){
-                archiveArtifacts('dist/**')
-            }
+            stash includes: 'wrappers/python/**', excludes: 'dist/**, build/**', name: 'python_wrapper_windows'
             stash includes: 'wrappers/python/dist/**', name: 'python_windows'
         }
     }}
+}
+
+
+// --------------------------------------------------------------------------
+//  Python eggs packaging
+// --------------------------------------------------------------------------
+node("build-docker") {
+    stage('Pack Python eggs') {
+        
+        // Linux
+        unstash 'python_wrapper_linux'
+
+        dir('wrappers/python') {
+            docker.image("python:2.7").inside("--user root"){
+                sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                sh "python setup.py bdist_egg --plat-name linux_x86_64"
+                sh "python setup.py bdist_egg --plat-name linux_i686"
+            }
+
+            docker.image("python:3.4").inside("--user root"){
+                sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                sh "python setup.py bdist_egg --plat-name linux_x86_64"
+                sh "python setup.py bdist_egg --plat-name linux_i686"
+            }
+
+            docker.image("python:3.5").inside("--user root"){
+                sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                sh "python setup.py bdist_egg --plat-name linux_x86_64"
+                sh "python setup.py bdist_egg --plat-name linux_i686"
+            }
+
+            docker.image("python:3.6").inside("--user root"){
+                sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                sh "python setup.py bdist_egg --plat-name linux_x86_64"
+                sh "python setup.py bdist_egg --plat-name linux_i686"
+            }
+
+            docker.image("python:3.7").inside("--user root"){
+                sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                sh "python setup.py bdist_egg --plat-name linux_x86_64"
+                sh "python setup.py bdist_egg --plat-name linux_i686"
+            }
+        }
+
+        // Clean workspace
+        docker.image('python:2.7').inside("--user root"){
+            clearContentUnix()
+        }
+
+        // MacOs
+        unstash 'python_wrapper_macos'
+
+        dir('wrappers/python') {
+            docker.image("python:2.7").inside("--user root"){
+                sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+            }
+
+            docker.image("python:3.4").inside("--user root"){
+                sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+            }
+
+            docker.image("python:3.5").inside("--user root"){
+                sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+            }
+
+            docker.image("python:3.6").inside("--user root"){
+                sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+            }
+
+            docker.image("python:3.7").inside("--user root"){
+                sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+            }
+        }
+
+        // Clean workspace
+        docker.image('python:2.7').inside("--user root"){
+            clearContentUnix()
+        }
+
+        // Windows
+        unstash 'python_wrapper_windows'
+
+        dir('wrappers/python') {
+            docker.image("python:2.7").inside("--user root"){
+                sh "python setup.py bdist_egg --plat-name win_amd64"
+                sh "python setup.py bdist_egg --plat-name win32"
+            }
+
+            docker.image("python:3.4").inside("--user root"){
+                sh "python setup.py bdist_egg --plat-name win_amd64"
+                sh "python setup.py bdist_egg --plat-name win32"
+            }
+
+            docker.image("python:3.5").inside("--user root"){
+                sh "python setup.py bdist_egg --plat-name win_amd64"
+                sh "python setup.py bdist_egg --plat-name win32"
+            }
+
+            docker.image("python:3.6").inside("--user root"){
+                sh "python setup.py bdist_egg --plat-name win_amd64"
+                sh "python setup.py bdist_egg --plat-name win32"
+            }
+
+            docker.image("python:3.7").inside("--user root"){
+                sh "python setup.py bdist_egg --plat-name win_amd64"
+                sh "python setup.py bdist_egg --plat-name win32"
+            }
+        }
+
+        stash includes: 'wrappers/python/dist/**', name: 'python_eggs'
+    }
 }
 
 
@@ -722,21 +826,30 @@ def deployPythonArtifacts() {
     return {
         node('master') {
             stage('Deploy Python artifacts') {
+
+                clearContentUnix()
+                unstash "python_linux"
+                unstash "python_macos"
+                unstash "python_windows"
+                unstash "python_eggs"
+
+                sh "cp -r wrappers/python/dist wrappers/python/python"
+
+                dir('wrappers/python'){
+                    archiveArtifacts('python/**')
+                }
+
                 echo "DEPLOY_PYTHON_ARTIFACTS = ${params.DEPLOY_PYTHON_ARTIFACTS}"
                 if (!params.DEPLOY_PYTHON_ARTIFACTS) {
                     echo "Skipped due to the false parameter: DEPLOY_PYTHON_ARTIFACTS"
                     return
                 }
-                clearContentUnix()
-                unstash "python_linux"
-                unstash "python_macos"
-                unstash "python_windows"
 
                 if (env.BRANCH_NAME == "master") {
                     sh """
                         env
                         cd wrappers/python
-                        twine upload -r pypitest dist/*
+                        twine upload dist/*
                     """
                 } else {
                     echo "Skipped due to the branch: $BRANCH_NAME is not master"

@@ -52,5 +52,6 @@ class LowLevelLibs(object):
         self.common = CDLL(os.path.join(self.__lib_path, "libvsc_common.{}".format(self.SHARED_OBJECT_EXTENSIONS[platform.system()])))
         self.foundation = CDLL(os.path.join(self.__lib_path, "libvsc_foundation.{}").format(self.SHARED_OBJECT_EXTENSIONS[platform.system()]))
         self.phe = CDLL(os.path.join(self.__lib_path, "libvsc_phe.{}".format(self.SHARED_OBJECT_EXTENSIONS[platform.system()])))
-        self.pythia = CDLL(os.path.join(self.__lib_path, "libvsc_pythia.{}".format(self.SHARED_OBJECT_EXTENSIONS[platform.system()])))
+        if platform.system() != "Windows":
+            self.pythia = CDLL(os.path.join(self.__lib_path, "libvsc_pythia.{}".format(self.SHARED_OBJECT_EXTENSIONS[platform.system()])))
         self.ratchet = CDLL(os.path.join(self.__lib_path, "libvsc_ratchet.{}".format(self.SHARED_OBJECT_EXTENSIONS[platform.system()])))
