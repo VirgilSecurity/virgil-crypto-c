@@ -517,10 +517,10 @@ def build_LangPython_Linux(slave) {
                 python setup.py bdist_wheel --python-tag py2.py3 --plat-name manylinux1_i686
                 python setup.py bdist_wheel --python-tag py2.py3 --plat-name linux_i686
 
-                python setup.py bdist_egg --python-tag py2.py3 --plat-name manylinux1_x86_64
-                python setup.py bdist_egg --python-tag py2.py3 --plat-name linux_x86_64
-                python setup.py bdist_egg --python-tag py2.py3 --plat-name manylinux1_i686
-                python setup.py bdist_egg --python-tag py2.py3 --plat-name linux_i686
+                python setup.py bdist_egg --plat-name manylinux1_x86_64
+                python setup.py bdist_egg --plat-name linux_x86_64
+                python setup.py bdist_egg --plat-name manylinux1_i686
+                python setup.py bdist_egg --plat-name linux_i686
             '''
             dir('wrappers/python'){
                 archiveArtifacts('dist/**')
@@ -549,7 +549,7 @@ def build_LangPython_MacOS(slave) {
                 python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"
 
                 python setup.py bdist_wheel --python-tag py2.py3 --plat-name macosx_10_12_intel
-                python setup.py bdist_egg --python-tag py2.py3 --plat-name macosx_10_12_intel
+                python setup.py bdist_egg --plat-name macosx_10_12_intel
             '''
             dir('wrappers/python'){
                 archiveArtifacts('dist/**')
@@ -583,8 +583,8 @@ def build_LangPython_Windows(slave) {
 
                 python setup.py bdist_wheel --python-tag py2.py3 --plat-name win_amd64
                 python setup.py bdist_wheel --python-tag py2.py3 --plat-name win32
-                python setup.py bdist_egg --python-tag py2.py3 --plat-name win_amd64
-                python setup.py bdist_egg --python-tag py2.py3 --plat-name win32
+                python setup.py bdist_egg --plat-name win_amd64
+                python setup.py bdist_egg --plat-name win32
             '''
             dir('wrappers/python'){
                 archiveArtifacts('dist/**')
