@@ -565,10 +565,10 @@ def build_LangPython_Windows(slave) {
                       -Bbuild -H.
                 cmake --build build --target install
 
-                cd wrappers/python
-                python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"
-
                 rmdir wrappers\\python\\virgil_crypto_lib\\pythia
+
+                cd wrappers\\python
+                python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"
             '''
             stash includes: 'wrappers/python/**', excludes: 'dist/**, build/**', name: 'python_wrapper_windows'
         }

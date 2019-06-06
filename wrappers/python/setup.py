@@ -20,6 +20,8 @@ setup(
         "tests/*",
         "_libs/*"
     ]},
+    include_package_data=True,
+    zip_safe=False,
     author=__author__,
     author_email="support@virgilsecurity.com",
     url="https://virgilsecurity.com/",
