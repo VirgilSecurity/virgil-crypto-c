@@ -502,9 +502,9 @@ def build_LangPython_Linux(slave) {
             unstash 'src'
             sh '''
                 cmake -DCMAKE_BUILD_TYPE=Release \
-                      -Cconfigs/python-config.cmake
+                      -Cconfigs/python-config.cmake \
                       -DCMAKE_INSTALL_PREFIX="wrappers/python/virgil_crypto_lib" \
-                      -DCMAKE_INSTALL_LIBDIR=_libs
+                      -DCMAKE_INSTALL_LIBDIR=_libs \
                       -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
 
@@ -539,9 +539,9 @@ def build_LangPython_MacOS(slave) {
             unstash 'src'
             sh '''
                 cmake -DCMAKE_BUILD_TYPE=Release \
-                      -Cconfigs/python-config.cmake
+                      -Cconfigs/python-config.cmake \
                       -DCMAKE_INSTALL_PREFIX="wrappers/python/virgil_crypto_lib" \
-                      -DCMAKE_INSTALL_LIBDIR=_libs
+                      -DCMAKE_INSTALL_LIBDIR=_libs \
                       -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
 
@@ -571,7 +571,7 @@ def build_LangPython_Windows(slave) {
                 set PATH=%PATH:"=%
                 call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
                 cmake -G"NMake Makefiles" ^
-                      -Cconfigs/python-config.cmake
+                      -Cconfigs/python-config.cmake ^
                       -DVIRGIL_LIB_PYTHIA=OFF ^
                       -DCMAKE_BUILD_TYPE=Release ^
                       -DCMAKE_INSTALL_PREFIX="wrappers\\python\\virgil_crypto_lib" ^
