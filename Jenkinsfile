@@ -507,7 +507,6 @@ def build_LangPython_Linux(slave) {
                       -DCMAKE_INSTALL_LIBDIR=_libs \
                       -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
-
                 cmake --build build --target install -- -j8
 
                 cd wrappers/python
@@ -544,7 +543,6 @@ def build_LangPython_MacOS(slave) {
                       -DCMAKE_INSTALL_LIBDIR=_libs \
                       -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
-
                 cmake --build build --target install -- -j8
 
                 cd wrappers/python
@@ -578,7 +576,6 @@ def build_LangPython_Windows(slave) {
                       -DCMAKE_INSTALL_LIBDIR=_libs ^
                       -DENABLE_CLANGFORMAT=OFF ^
                       -Bbuild -H.
-
                 cmake --build build --target install
 
                 cd wrappers/python
