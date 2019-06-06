@@ -47,24 +47,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Class 'phe client' types definition.
+//  Class 'simple swu' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_PHE_CLIENT_DEFS_H_INCLUDED
-#define VSCE_PHE_CLIENT_DEFS_H_INCLUDED
+#ifndef VSCF_SIMPLE_SWU_DEFS_H_INCLUDED
+#define VSCF_SIMPLE_SWU_DEFS_H_INCLUDED
 
-#include "vsce_library.h"
-#include "vsce_phe_hash.h"
+#include "vscf_library.h"
 
-#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
-#   include <virgil/crypto/foundation/private/vscf_simple_swu.h>
-#endif
-
-#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
-#   include <VSCFoundation/vscf_simple_swu.h>
-#endif
+#include <mbedtls/ecp.h>
+#include <mbedtls/bignum.h>
 
 // clang-format on
 //  @end
@@ -82,49 +74,31 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'phe client' context.
+//  Handle 'simple swu' context.
 //
-struct vsce_phe_client_t {
+struct vscf_simple_swu_t {
     //
     //  Function do deallocate self context.
     //
-    vsce_dealloc_fn self_dealloc_cb;
+    vscf_dealloc_fn self_dealloc_cb;
     //
     //  Reference counter.
     //
     size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *operation_random;
-
-    vscf_simple_swu_t *simple_swu;
-
-    vsce_phe_hash_t *phe_hash;
 
     mbedtls_ecp_group group;
 
-    byte client_private_key[vsce_phe_common_PHE_PRIVATE_KEY_LENGTH];
+    mbedtls_mpi a;
 
-    byte server_public_key[vsce_phe_common_PHE_PUBLIC_KEY_LENGTH];
+    mbedtls_mpi two;
 
-    bool keys_are_set;
+    mbedtls_mpi three;
 
-    mbedtls_mpi y;
+    mbedtls_mpi p34;
 
-    mbedtls_mpi y_inv;
+    mbedtls_mpi p14;
 
-    mbedtls_mpi minus_y;
-
-    mbedtls_ecp_point x;
-
-    mbedtls_mpi one;
-
-    mbedtls_mpi minus_one;
+    mbedtls_mpi mba;
 };
 
 
@@ -141,5 +115,5 @@ struct vsce_phe_client_t {
 
 
 //  @footer
-#endif // VSCE_PHE_CLIENT_DEFS_H_INCLUDED
+#endif // VSCF_SIMPLE_SWU_DEFS_H_INCLUDED
 //  @end

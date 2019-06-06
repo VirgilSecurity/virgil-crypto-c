@@ -124,6 +124,8 @@
     <class name="key provider"/>
     <class name="signer"/>
     <class name="verifier"/>
+    <class name="simple swu"/>
+    <class name="brainkey client"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>

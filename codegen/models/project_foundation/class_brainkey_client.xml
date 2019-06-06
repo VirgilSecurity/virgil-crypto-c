@@ -1,0 +1,10 @@
+<class name="brainkey client" context="internal">
+
+    <require impl="ctr drbg" scope="private"/>
+
+    <require module="buffer defs" scope="private" project="common"/>
+    <require module="mbedtls bridge random" scope="private"/>
+
+    <property name="simple swu" class="simple swu" project="foundation"/>
+
+</class>

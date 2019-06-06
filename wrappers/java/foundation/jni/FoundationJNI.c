@@ -2995,6 +2995,14 @@ JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJ
     return ret;
 }
 
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1new__ (JNIEnv *jenv, jobject jobj) {
+    return (jlong) vscf_brainkey_client_new();
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_brainkey_client_delete((vscf_brainkey_client_t /*2*/ *) c_ctx /*5*/);
+}
+
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1new__ (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscf_sha224_new();
 }

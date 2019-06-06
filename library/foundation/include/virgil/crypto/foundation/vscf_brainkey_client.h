@@ -44,14 +44,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_SIMPLE_SWU_H_INCLUDED
-#define VSCE_SIMPLE_SWU_H_INCLUDED
+#ifndef VSCF_BRAINKEY_CLIENT_H_INCLUDED
+#define VSCF_BRAINKEY_CLIENT_H_INCLUDED
 
-#include "vsce_library.h"
-#include "vsce_phe_common.h"
-
-#include <mbedtls/ecp.h>
-#include <mbedtls/bignum.h>
+#include "vscf_library.h"
 
 // clang-format on
 //  @end
@@ -69,56 +65,53 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'simple swu' context.
+//  Handle 'brainkey client' context.
 //
-typedef struct vsce_simple_swu_t vsce_simple_swu_t;
+typedef struct vscf_brainkey_client_t vscf_brainkey_client_t;
 
 //
-//  Return size of 'vsce_simple_swu_t'.
+//  Return size of 'vscf_brainkey_client_t'.
 //
-VSCE_PUBLIC size_t
-vsce_simple_swu_ctx_size(void);
+VSCF_PUBLIC size_t
+vscf_brainkey_client_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
-VSCE_PUBLIC void
-vsce_simple_swu_init(vsce_simple_swu_t *self);
+VSCF_PUBLIC void
+vscf_brainkey_client_init(vscf_brainkey_client_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
-VSCE_PUBLIC void
-vsce_simple_swu_cleanup(vsce_simple_swu_t *self);
+VSCF_PUBLIC void
+vscf_brainkey_client_cleanup(vscf_brainkey_client_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCE_PUBLIC vsce_simple_swu_t *
-vsce_simple_swu_new(void);
+VSCF_PUBLIC vscf_brainkey_client_t *
+vscf_brainkey_client_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
-VSCE_PUBLIC void
-vsce_simple_swu_delete(vsce_simple_swu_t *self);
+VSCF_PUBLIC void
+vscf_brainkey_client_delete(vscf_brainkey_client_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vsce_simple_swu_new ()'.
+//  This is a reverse action of the function 'vscf_brainkey_client_new ()'.
 //
-VSCE_PUBLIC void
-vsce_simple_swu_destroy(vsce_simple_swu_t **self_ref);
+VSCF_PUBLIC void
+vscf_brainkey_client_destroy(vscf_brainkey_client_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCE_PUBLIC vsce_simple_swu_t *
-vsce_simple_swu_shallow_copy(vsce_simple_swu_t *self);
-
-VSCE_PUBLIC void
-vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *self, const mbedtls_mpi *t, mbedtls_ecp_point *p);
+VSCF_PUBLIC vscf_brainkey_client_t *
+vscf_brainkey_client_shallow_copy(vscf_brainkey_client_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -134,5 +127,5 @@ vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *self, const mbedtls_mpi *t, m
 
 
 //  @footer
-#endif // VSCE_SIMPLE_SWU_H_INCLUDED
+#endif // VSCF_BRAINKEY_CLIENT_H_INCLUDED
 //  @end

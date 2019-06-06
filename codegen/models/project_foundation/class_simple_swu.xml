@@ -1,11 +1,13 @@
-<class name="simple swu" context="internal" scope="internal">
+<class name="simple swu" context="internal" scope="private">
 
-    <require class="phe common" scope="public"/>
-    <require impl="sha512" project="foundation" scope="private"/>
+    <require impl="sha512" scope="private"/>
     <require header="mbedtls/ecp.h" scope="context"/>
     <require header="mbedtls/bignum.h" scope="context"/>
     <require header="mbedtls/ecp.h" scope="public"/>
     <require header="mbedtls/bignum.h" scope="public"/>
+    <require module="buffer defs" scope="private" project="common"/>
+
+    <constant name="hash len" value="32"/>
 
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
     <property name="A" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
@@ -17,6 +19,11 @@
 
     <method name="bignum to point">
         <argument name="t" class="mbedtls_mpi" library="mbedtls" access="readonly"/>
+        <argument name="p" class="mbedtls_ecp_point" library="mbedtls" access="writeonly"/>
+    </method>
+
+    <method name="data to point" declaration="public">
+        <argument name="data" class="data"/>
         <argument name="p" class="mbedtls_ecp_point" library="mbedtls" access="writeonly"/>
     </method>
 

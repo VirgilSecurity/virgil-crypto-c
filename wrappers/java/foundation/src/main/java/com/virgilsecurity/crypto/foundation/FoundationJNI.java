@@ -597,6 +597,10 @@ public class FoundationJNI {
     */
     public native boolean verifier_verify(long cCtx, VerifyHash publicKey);
 
+    public native long brainkeyClient_new();
+
+    public native void brainkeyClient_close(long cCtx);
+
     public native long sha224_new();
 
     public native void sha224_close(long cCtx);

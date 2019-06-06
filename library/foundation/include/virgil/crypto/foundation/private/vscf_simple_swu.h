@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'simple swu' types definition.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,10 +44,29 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsce_simple_swu_defs.h"
+#ifndef VSCF_SIMPLE_SWU_H_INCLUDED
+#define VSCF_SIMPLE_SWU_H_INCLUDED
+
+#include "vscf_library.h"
+
+#include <mbedtls/ecp.h>
+#include <mbedtls/bignum.h>
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +75,81 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Public integral constants.
+//
+enum {
+    vscf_simple_swu_HASH_LEN = 32
+};
+
+//
+//  Handle 'simple swu' context.
+//
+typedef struct vscf_simple_swu_t vscf_simple_swu_t;
+
+//
+//  Return size of 'vscf_simple_swu_t'.
+//
+VSCF_PUBLIC size_t
+vscf_simple_swu_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCF_PUBLIC void
+vscf_simple_swu_init(vscf_simple_swu_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCF_PUBLIC void
+vscf_simple_swu_cleanup(vscf_simple_swu_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCF_PUBLIC vscf_simple_swu_t *
+vscf_simple_swu_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if context was allocated by the caller.
+//
+VSCF_PUBLIC void
+vscf_simple_swu_delete(vscf_simple_swu_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscf_simple_swu_new ()'.
+//
+VSCF_PUBLIC void
+vscf_simple_swu_destroy(vscf_simple_swu_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCF_PUBLIC vscf_simple_swu_t *
+vscf_simple_swu_shallow_copy(vscf_simple_swu_t *self);
+
+VSCF_PUBLIC void
+vscf_simple_swu_bignum_to_point(vscf_simple_swu_t *self, const mbedtls_mpi *t, mbedtls_ecp_point *p);
+
+VSCF_PUBLIC void
+vscf_simple_swu_data_to_point(vscf_simple_swu_t *self, vsc_data_t data, mbedtls_ecp_point *p);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_SIMPLE_SWU_H_INCLUDED
 //  @end

@@ -142,6 +142,8 @@ option(VSCF_MESSAGE_INFO_CUSTOM_PARAMS "Enable class 'message info custom params
 option(VSCF_KEY_PROVIDER "Enable class 'key provider'." ON)
 option(VSCF_SIGNER "Enable class 'signer'." ON)
 option(VSCF_VERIFIER "Enable class 'verifier'." ON)
+option(VSCF_SIMPLE_SWU "Enable class 'simple swu'." ON)
+option(VSCF_BRAINKEY_CLIENT "Enable class 'brainkey client'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREAD
@@ -240,6 +242,8 @@ mark_as_advanced(
         VSCF_KEY_PROVIDER
         VSCF_SIGNER
         VSCF_VERIFIER
+        VSCF_SIMPLE_SWU
+        VSCF_BRAINKEY_CLIENT
         )
 
 if(VSCF_MULTI_THREAD AND NOT MBEDTLS_THREADING_C)
@@ -2749,6 +2753,24 @@ if(VSCF_VERIFIER AND NOT VSCF_VERIFY_HASH)
     message("--")
     message("Feature VSCF_VERIFIER depends on the feature:")
     message("     VSCF_VERIFY_HASH - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_SIMPLE_SWU AND NOT VSCF_SHA512)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_SIMPLE_SWU depends on the feature:")
+    message("     VSCF_SHA512 - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_BRAINKEY_CLIENT AND NOT VSCF_CTR_DRBG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_BRAINKEY_CLIENT depends on the feature:")
+    message("     VSCF_CTR_DRBG - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
