@@ -1,9 +1,16 @@
 from setuptools import setup, find_packages
 from virgil_crypto_lib import __version__, __author__
+from setuptools.dist import Distribution
+
+
+class BinaryDistribution(Distribution):
+    def is_pure(self):
+        return False
 
 setup(
     name="virgil-crypto-lib",
     version=__version__,
+    distclass=BinaryDistribution,
     packages=find_packages(exclude=["doc-source"]),
     package_data={"virgil_crypto_lib": [
         "tests/*",
