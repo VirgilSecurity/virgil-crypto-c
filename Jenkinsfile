@@ -588,7 +588,11 @@ def build_LangPython_Windows(slave) {
 // --------------------------------------------------------------------------
 node("build-docker") {
     stage('Pack Python eggs') {
-        
+        // Clean workspace
+        docker.image('python:2.7').inside("--user root"){
+            clearContentUnix()
+        }
+
         // Linux
         unstash 'python_wrapper_linux'
 
