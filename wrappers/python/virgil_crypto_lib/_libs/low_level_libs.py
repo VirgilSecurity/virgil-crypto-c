@@ -43,15 +43,40 @@ class LowLevelLibs(object):
     SHARED_OBJECT_EXTENSIONS = {
         "Linux": "so",
         "Darwin": "dylib",
-        "Windows": "dll"
+        "Windows": "lib"
+    }
+
+    LIB_PREFIXES = {
+        "Linux": "libvsc",
+        "Darwin": "libvsc",
+        "Windows": "vsc"
     }
 
     def __init__(self):
         """Create underlying C context."""
         self.__lib_path = os.path.dirname(os.path.realpath(__file__))
-        self.common = CDLL(os.path.join(self.__lib_path, "libvsc_common.{}".format(self.SHARED_OBJECT_EXTENSIONS[platform.system()])))
-        self.foundation = CDLL(os.path.join(self.__lib_path, "libvsc_foundation.{}").format(self.SHARED_OBJECT_EXTENSIONS[platform.system()]))
-        self.phe = CDLL(os.path.join(self.__lib_path, "libvsc_phe.{}".format(self.SHARED_OBJECT_EXTENSIONS[platform.system()])))
+        self.common = CDLL(os.path.join(self.__lib_path, "{0}_common.{1}".format(
+            self.LIB_PREFIXES[platform.system()],
+            self.SHARED_OBJECT_EXTENSIONS[platform.system()]))
+        )
+
+        self.foundation = CDLL(os.path.join(self.__lib_path, "{0}_foundation.{1}").format(
+            self.LIB_PREFIXES[platform.system()],
+            self.SHARED_OBJECT_EXTENSIONS[platform.system()])
+        )
+
+        self.phe = CDLL(os.path.join(self.__lib_path, "{0}_phe.{1}".format(
+            self.LIB_PREFIXES[platform.system()],
+            self.SHARED_OBJECT_EXTENSIONS[platform.system()]))
+        )
+
         if platform.system() != "Windows":
-            self.pythia = CDLL(os.path.join(self.__lib_path, "libvsc_pythia.{}".format(self.SHARED_OBJECT_EXTENSIONS[platform.system()])))
-        self.ratchet = CDLL(os.path.join(self.__lib_path, "libvsc_ratchet.{}".format(self.SHARED_OBJECT_EXTENSIONS[platform.system()])))
+            self.pythia = CDLL(os.path.join(self.__lib_path, "{0}_pythia.{1}".format(
+                self.LIB_PREFIXES[platform.system()],
+                self.SHARED_OBJECT_EXTENSIONS[platform.system()]))
+            )
+
+        self.ratchet = CDLL(os.path.join(self.__lib_path, "{0}_ratchet.{1}".format(
+            self.LIB_PREFIXES[platform.system()],
+            self.SHARED_OBJECT_EXTENSIONS[platform.system()]))
+        )
