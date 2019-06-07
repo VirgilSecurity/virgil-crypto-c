@@ -77,7 +77,7 @@ vscr_ratchet_x3dh_compute_initiator_x3dh_secret(const vscr_ratchet_private_key_t
 
     size_t shared_secret_count = receiver_has_one_time_key ? 4 : 3;
 
-    VSCR_ASSERT(vsc_buffer_capacity(shared_secret) >= shared_secret_count * ED25519_DH_LEN);
+    VSCR_ASSERT(vsc_buffer_unused_len(shared_secret) >= shared_secret_count * ED25519_DH_LEN);
 
     vscr_status_t status = vscr_status_SUCCESS;
 
@@ -133,7 +133,7 @@ vscr_ratchet_x3dh_compute_responder_x3dh_secret(const vscr_ratchet_public_key_t 
 
     size_t shared_secret_count = receiver_has_one_time_key ? 4 : 3;
 
-    VSCR_ASSERT(vsc_buffer_capacity(shared_secret) >= shared_secret_count * ED25519_DH_LEN);
+    VSCR_ASSERT(vsc_buffer_unused_len(shared_secret) >= shared_secret_count * ED25519_DH_LEN);
 
     vscr_status_t status = vscr_status_SUCCESS;
 

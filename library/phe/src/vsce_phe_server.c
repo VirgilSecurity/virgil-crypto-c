@@ -411,13 +411,13 @@ vsce_phe_server_generate_server_key_pair(
     }
 
     mbedtls_status = mbedtls_mpi_write_binary(
-            &priv, vsc_buffer_unused_bytes(server_private_key), vsc_buffer_capacity(server_private_key));
+            &priv, vsc_buffer_unused_bytes(server_private_key), vsc_buffer_unused_len(server_private_key));
     vsc_buffer_inc_used(server_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, &pub, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            vsc_buffer_unused_bytes(server_public_key), vsc_buffer_capacity(server_public_key));
+            vsc_buffer_unused_bytes(server_public_key), vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     vsc_buffer_inc_used(server_public_key, olen);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
@@ -1075,7 +1075,7 @@ vsce_phe_server_rotate_keys(vsce_phe_server_t *self, vsc_data_t server_private_k
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_status = mbedtls_mpi_write_binary(
-            &new_x, vsc_buffer_unused_bytes(new_server_private_key), vsc_buffer_capacity(new_server_private_key));
+            &new_x, vsc_buffer_unused_bytes(new_server_private_key), vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_inc_used(new_server_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
@@ -1088,7 +1088,7 @@ vsce_phe_server_rotate_keys(vsce_phe_server_t *self, vsc_data_t server_private_k
 
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, &new_X, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            vsc_buffer_unused_bytes(new_server_public_key), vsc_buffer_capacity(new_server_public_key));
+            vsc_buffer_unused_bytes(new_server_public_key), vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     vsc_buffer_inc_used(new_server_public_key, vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
