@@ -43,7 +43,7 @@ class LowLevelLibs(object):
     SHARED_OBJECT_EXTENSIONS = {
         "Linux": "so",
         "Darwin": "dylib",
-        "Windows": "lib"
+        "Windows": "dll"
     }
 
     LIB_PREFIXES = {
