@@ -164,6 +164,11 @@ for source_file in ${PHP_SOURCE_FILES}; do
 done
 
 # ###########################################################################
+show_info "Change verion within Python wrapper files."
+
+sed_replace "__version__ = \".*\"" "__version__ = \"${VERSION_FULL}\"" "${ROOT_DIR}/wrappers/python/virgil_crypto_lib/__init__.py" 
+
+# ###########################################################################
 show_info "Change verion within Java project files."
 pushd ${ROOT_DIR}/wrappers/java >/dev/null
 if [ -z "${VERSION_LABEL}" ]; then
