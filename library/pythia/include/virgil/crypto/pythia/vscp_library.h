@@ -94,7 +94,7 @@ extern "C" {
 #       else
 #           define VSCP_PUBLIC __declspec(dllexport)
 #       endif
-#   elif !defined(c_global_macros_internal_build)
+#   elif !defined(VSCP_INTERNAL_BUILD)
 #       ifdef __GNUC__
 #           define VSCP_PUBLIC __attribute__ ((dllimport))
 #       else
