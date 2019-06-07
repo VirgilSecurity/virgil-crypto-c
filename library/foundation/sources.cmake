@@ -460,6 +460,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_brainkey_server.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -761,6 +766,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_BASE64}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_base64.h>"
             "$<$<BOOL:${VSCF_BRAINKEY_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_brainkey_client.h>"
             "$<$<BOOL:${VSCF_BRAINKEY_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_brainkey_client_defs.h>"
+            "$<$<BOOL:${VSCF_BRAINKEY_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_brainkey_server.h>"
+            "$<$<BOOL:${VSCF_BRAINKEY_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_brainkey_server_defs.h>"
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_envelope.h>"
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_envelope_defs.h>"
             "$<$<BOOL:${VSCF_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error.h>"
@@ -1005,6 +1012,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_BASE64}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_base64.c>"
             "$<$<BOOL:${VSCF_BRAINKEY_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_brainkey_client.c>"
             "$<$<BOOL:${VSCF_BRAINKEY_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_brainkey_client_defs.c>"
+            "$<$<BOOL:${VSCF_BRAINKEY_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_brainkey_server.c>"
+            "$<$<BOOL:${VSCF_BRAINKEY_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_brainkey_server_defs.c>"
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_envelope.c>"
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_envelope_defs.c>"
             "$<$<BOOL:${VSCF_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_error.c>"

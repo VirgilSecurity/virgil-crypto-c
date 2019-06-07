@@ -228,7 +228,17 @@ enum vscf_status_t {
     //
     //  Signature format is corrupted.
     //
-    vscf_status_ERROR_BAD_SIGNATURE = -308
+    vscf_status_ERROR_BAD_SIGNATURE = -308,
+    vscf_status_ERROR_INVALID_BRAINKEY_PASSWORD_LEN = -401,
+    vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_LEN = -402,
+    vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN = -403,
+    vscf_status_ERROR_INVALID_BRAINKEY_KEY_NAME_LEN = -404,
+    vscf_status_ERROR_BRAINKEY_INTERNAL = -405,
+    vscf_status_ERROR_BRAINKEY_INVALID_POINT = -406,
+    vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN = -407,
+    vscf_status_ERROR_INVALID_BRAINKEY_POINT_BUFFER_LEN = -408,
+    vscf_status_ERROR_INVALID_BRAINKEY_SEED_BUFFER_LEN = -409,
+    vscf_status_ERROR_INVALID_IDENTITY_SECRET = -410
 };
 typedef enum vscf_status_t vscf_status_t;
 

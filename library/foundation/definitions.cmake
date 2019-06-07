@@ -151,6 +151,7 @@ target_compile_definitions(foundation
             "VSCF_VERIFIER=$<BOOL:${VSCF_VERIFIER}>"
             "VSCF_SIMPLE_SWU=$<BOOL:${VSCF_SIMPLE_SWU}>"
             "VSCF_BRAINKEY_CLIENT=$<BOOL:${VSCF_BRAINKEY_CLIENT}>"
+            "VSCF_BRAINKEY_SERVER=$<BOOL:${VSCF_BRAINKEY_SERVER}>"
         PRIVATE
             $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCF_BUILD_SHARED_LIBS>
         )

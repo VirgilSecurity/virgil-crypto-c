@@ -80,6 +80,7 @@ framework module VSCFoundation {
     header "vscf_alg_factory.h"
     header "vscf_base64.h"
     header "vscf_brainkey_client.h"
+    header "vscf_brainkey_server.h"
     header "vscf_error.h"
     header "vscf_key_provider.h"
     header "vscf_key_recipient_info.h"

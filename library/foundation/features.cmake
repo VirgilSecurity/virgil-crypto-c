@@ -144,6 +144,7 @@ option(VSCF_SIGNER "Enable class 'signer'." ON)
 option(VSCF_VERIFIER "Enable class 'verifier'." ON)
 option(VSCF_SIMPLE_SWU "Enable class 'simple swu'." ON)
 option(VSCF_BRAINKEY_CLIENT "Enable class 'brainkey client'." ON)
+option(VSCF_BRAINKEY_SERVER "Enable class 'brainkey server'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREAD
@@ -244,6 +245,7 @@ mark_as_advanced(
         VSCF_VERIFIER
         VSCF_SIMPLE_SWU
         VSCF_BRAINKEY_CLIENT
+        VSCF_BRAINKEY_SERVER
         )
 
 if(VSCF_MULTI_THREAD AND NOT MBEDTLS_THREADING_C)
@@ -2770,6 +2772,33 @@ if(VSCF_BRAINKEY_CLIENT AND NOT VSCF_CTR_DRBG)
     message("-- error --")
     message("--")
     message("Feature VSCF_BRAINKEY_CLIENT depends on the feature:")
+    message("     VSCF_CTR_DRBG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_BRAINKEY_CLIENT AND NOT VSCF_HKDF)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_BRAINKEY_CLIENT depends on the feature:")
+    message("     VSCF_HKDF - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_BRAINKEY_CLIENT AND NOT VSCF_SHA512)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_BRAINKEY_CLIENT depends on the feature:")
+    message("     VSCF_SHA512 - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_BRAINKEY_SERVER AND NOT VSCF_CTR_DRBG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_BRAINKEY_SERVER depends on the feature:")
     message("     VSCF_CTR_DRBG - which is disabled.")
     message("--")
     message(FATAL_ERROR)

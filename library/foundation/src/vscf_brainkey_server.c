@@ -44,16 +44,14 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_brainkey_client.h"
+#include "vscf_brainkey_server.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_random.h"
 #include "vscf_random.h"
-#include "vscf_brainkey_client_defs.h"
+#include "vscf_brainkey_server_defs.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_mbedtls_bridge_random.h"
-#include "vscf_hkdf.h"
-#include "vscf_sha512.h"
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
@@ -69,11 +67,11 @@
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscf_brainkey_client_init() is called.
+//  Note, this method is called automatically when method vscf_brainkey_server_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscf_brainkey_client_init_ctx(vscf_brainkey_client_t *self);
+vscf_brainkey_server_init_ctx(vscf_brainkey_server_t *self);
 
 //
 //  Release all inner resources.
@@ -81,43 +79,43 @@ vscf_brainkey_client_init_ctx(vscf_brainkey_client_t *self);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscf_brainkey_client_cleanup_ctx(vscf_brainkey_client_t *self);
+vscf_brainkey_server_cleanup_ctx(vscf_brainkey_server_t *self);
 
 static mbedtls_ecp_group *
-vscf_brainkey_client_get_op_group(vscf_brainkey_client_t *self);
+vscf_brainkey_server_get_op_group(vscf_brainkey_server_t *self);
 
 static void
-vscf_brainkey_client_free_op_group(mbedtls_ecp_group *op_group);
+vscf_brainkey_server_free_op_group(mbedtls_ecp_group *op_group);
 
 //
-//  Return size of 'vscf_brainkey_client_t'.
+//  Return size of 'vscf_brainkey_server_t'.
 //
 VSCF_PUBLIC size_t
-vscf_brainkey_client_ctx_size(void) {
+vscf_brainkey_server_ctx_size(void) {
 
-    return sizeof(vscf_brainkey_client_t);
+    return sizeof(vscf_brainkey_server_t);
 }
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCF_PUBLIC void
-vscf_brainkey_client_init(vscf_brainkey_client_t *self) {
+vscf_brainkey_server_init(vscf_brainkey_server_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_brainkey_client_t));
+    vscf_zeroize(self, sizeof(vscf_brainkey_server_t));
 
     self->refcnt = 1;
 
-    vscf_brainkey_client_init_ctx(self);
+    vscf_brainkey_server_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCF_PUBLIC void
-vscf_brainkey_client_cleanup(vscf_brainkey_client_t *self) {
+vscf_brainkey_server_cleanup(vscf_brainkey_server_t *self) {
 
     if (self == NULL) {
         return;
@@ -128,25 +126,25 @@ vscf_brainkey_client_cleanup(vscf_brainkey_client_t *self) {
     }
 
     if (--self->refcnt == 0) {
-        vscf_brainkey_client_cleanup_ctx(self);
+        vscf_brainkey_server_cleanup_ctx(self);
 
-        vscf_brainkey_client_release_random(self);
-        vscf_brainkey_client_release_operation_random(self);
+        vscf_brainkey_server_release_random(self);
+        vscf_brainkey_server_release_operation_random(self);
 
-        vscf_zeroize(self, sizeof(vscf_brainkey_client_t));
+        vscf_zeroize(self, sizeof(vscf_brainkey_server_t));
     }
 }
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCF_PUBLIC vscf_brainkey_client_t *
-vscf_brainkey_client_new(void) {
+VSCF_PUBLIC vscf_brainkey_server_t *
+vscf_brainkey_server_new(void) {
 
-    vscf_brainkey_client_t *self = (vscf_brainkey_client_t *) vscf_alloc(sizeof (vscf_brainkey_client_t));
+    vscf_brainkey_server_t *self = (vscf_brainkey_server_t *) vscf_alloc(sizeof (vscf_brainkey_server_t));
     VSCF_ASSERT_ALLOC(self);
 
-    vscf_brainkey_client_init(self);
+    vscf_brainkey_server_init(self);
 
     self->self_dealloc_cb = vscf_dealloc;
 
@@ -158,7 +156,7 @@ vscf_brainkey_client_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCF_PUBLIC void
-vscf_brainkey_client_delete(vscf_brainkey_client_t *self) {
+vscf_brainkey_server_delete(vscf_brainkey_server_t *self) {
 
     if (self == NULL) {
         return;
@@ -166,7 +164,7 @@ vscf_brainkey_client_delete(vscf_brainkey_client_t *self) {
 
     vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscf_brainkey_client_cleanup(self);
+    vscf_brainkey_server_cleanup(self);
 
     if (self->refcnt == 0 && self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
@@ -175,24 +173,24 @@ vscf_brainkey_client_delete(vscf_brainkey_client_t *self) {
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscf_brainkey_client_new ()'.
+//  This is a reverse action of the function 'vscf_brainkey_server_new ()'.
 //
 VSCF_PUBLIC void
-vscf_brainkey_client_destroy(vscf_brainkey_client_t **self_ref) {
+vscf_brainkey_server_destroy(vscf_brainkey_server_t **self_ref) {
 
     VSCF_ASSERT_PTR(self_ref);
 
-    vscf_brainkey_client_t *self = *self_ref;
+    vscf_brainkey_server_t *self = *self_ref;
     *self_ref = NULL;
 
-    vscf_brainkey_client_delete(self);
+    vscf_brainkey_server_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCF_PUBLIC vscf_brainkey_client_t *
-vscf_brainkey_client_shallow_copy(vscf_brainkey_client_t *self) {
+VSCF_PUBLIC vscf_brainkey_server_t *
+vscf_brainkey_server_shallow_copy(vscf_brainkey_server_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -207,7 +205,7 @@ vscf_brainkey_client_shallow_copy(vscf_brainkey_client_t *self) {
 //  Note, ownership is shared.
 //
 VSCF_PUBLIC void
-vscf_brainkey_client_use_random(vscf_brainkey_client_t *self, vscf_impl_t *random) {
+vscf_brainkey_server_use_random(vscf_brainkey_server_t *self, vscf_impl_t *random) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
@@ -225,7 +223,7 @@ vscf_brainkey_client_use_random(vscf_brainkey_client_t *self, vscf_impl_t *rando
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_brainkey_client_take_random(vscf_brainkey_client_t *self, vscf_impl_t *random) {
+vscf_brainkey_server_take_random(vscf_brainkey_server_t *self, vscf_impl_t *random) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
@@ -240,7 +238,7 @@ vscf_brainkey_client_take_random(vscf_brainkey_client_t *self, vscf_impl_t *rand
 //  Release dependency to the interface 'random'.
 //
 VSCF_PUBLIC void
-vscf_brainkey_client_release_random(vscf_brainkey_client_t *self) {
+vscf_brainkey_server_release_random(vscf_brainkey_server_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -253,7 +251,7 @@ vscf_brainkey_client_release_random(vscf_brainkey_client_t *self) {
 //  Note, ownership is shared.
 //
 VSCF_PUBLIC void
-vscf_brainkey_client_use_operation_random(vscf_brainkey_client_t *self, vscf_impl_t *operation_random) {
+vscf_brainkey_server_use_operation_random(vscf_brainkey_server_t *self, vscf_impl_t *operation_random) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(operation_random);
@@ -271,7 +269,7 @@ vscf_brainkey_client_use_operation_random(vscf_brainkey_client_t *self, vscf_imp
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_brainkey_client_take_operation_random(vscf_brainkey_client_t *self, vscf_impl_t *operation_random) {
+vscf_brainkey_server_take_operation_random(vscf_brainkey_server_t *self, vscf_impl_t *operation_random) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(operation_random);
@@ -286,7 +284,7 @@ vscf_brainkey_client_take_operation_random(vscf_brainkey_client_t *self, vscf_im
 //  Release dependency to the interface 'random'.
 //
 VSCF_PUBLIC void
-vscf_brainkey_client_release_operation_random(vscf_brainkey_client_t *self) {
+vscf_brainkey_server_release_operation_random(vscf_brainkey_server_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -303,15 +301,13 @@ vscf_brainkey_client_release_operation_random(vscf_brainkey_client_t *self) {
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscf_brainkey_client_init() is called.
+//  Note, this method is called automatically when method vscf_brainkey_server_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscf_brainkey_client_init_ctx(vscf_brainkey_client_t *self) {
+vscf_brainkey_server_init_ctx(vscf_brainkey_server_t *self) {
 
     VSCF_ASSERT_PTR(self);
-
-    self->simple_swu = vscf_simple_swu_new();
 
     mbedtls_ecp_group_init(&self->group);
     int mbedtls_status = mbedtls_ecp_group_load(&self->group, MBEDTLS_ECP_DP_SECP256R1);
@@ -324,17 +320,15 @@ vscf_brainkey_client_init_ctx(vscf_brainkey_client_t *self) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscf_brainkey_client_cleanup_ctx(vscf_brainkey_client_t *self) {
+vscf_brainkey_server_cleanup_ctx(vscf_brainkey_server_t *self) {
 
     VSCF_ASSERT_PTR(self);
-
-    vscf_simple_swu_destroy(&self->simple_swu);
 
     mbedtls_ecp_group_free(&self->group);
 }
 
 VSCF_PUBLIC vscf_status_t
-vscf_brainkey_client_setup_defaults(vscf_brainkey_client_t *self) {
+vscf_brainkey_server_setup_defaults(vscf_brainkey_server_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -346,7 +340,7 @@ vscf_brainkey_client_setup_defaults(vscf_brainkey_client_t *self) {
         return vscf_status_ERROR_RANDOM_FAILED;
     }
 
-    vscf_brainkey_client_take_random(self, vscf_ctr_drbg_impl(rng1));
+    vscf_brainkey_server_take_random(self, vscf_ctr_drbg_impl(rng1));
 
     vscf_ctr_drbg_t *rng2 = vscf_ctr_drbg_new();
     status = vscf_ctr_drbg_setup_defaults(rng2);
@@ -356,197 +350,136 @@ vscf_brainkey_client_setup_defaults(vscf_brainkey_client_t *self) {
         return vscf_status_ERROR_RANDOM_FAILED;
     }
 
-    vscf_brainkey_client_take_operation_random(self, vscf_ctr_drbg_impl(rng2));
+    vscf_brainkey_server_take_operation_random(self, vscf_ctr_drbg_impl(rng2));
 
     return vscf_status_SUCCESS;
 }
 
 VSCF_PUBLIC vscf_status_t
-vscf_brainkey_client_blind(
-        vscf_brainkey_client_t *self, vsc_data_t password, vsc_buffer_t *deblind_factor, vsc_buffer_t *blinded_point) {
+vscf_brainkey_server_generate_identity_secret(vscf_brainkey_server_t *self, vsc_buffer_t *identity_secret) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(deblind_factor);
-    VSCF_ASSERT_PTR(blinded_point);
-    VSCF_ASSERT(vsc_data_is_valid(password));
+    VSCF_ASSERT_PTR(identity_secret);
 
     vscf_status_t status = vscf_status_SUCCESS;
 
-    if (password.len == 0 || password.len > vscf_brainkey_client_MAX_PASSWORD_LEN) {
-        status = vscf_status_ERROR_INVALID_BRAINKEY_PASSWORD_LEN;
-        goto input_err;
-    }
-
-    if (vsc_buffer_unused_len(deblind_factor) < vscf_brainkey_client_MPI_LEN) {
+    if (vsc_buffer_unused_len(identity_secret) < vscf_brainkey_server_MPI_LEN) {
         status = vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN;
         goto input_err;
     }
 
-    if (vsc_buffer_unused_len(blinded_point) < vscf_brainkey_client_POINT_LEN) {
-        status = vscf_status_ERROR_INVALID_BRAINKEY_POINT_BUFFER_LEN;
-        goto input_err;
-    }
-
-    mbedtls_ecp_point P;
-    mbedtls_ecp_point_init(&P);
-
-    mbedtls_mpi r;
-    mbedtls_mpi_init(&r);
-
-    mbedtls_ecp_point A;
-    mbedtls_ecp_point_init(&A);
-
-    mbedtls_mpi rInv;
-    mbedtls_mpi_init(&rInv);
-
-    vscf_simple_swu_data_to_point(self->simple_swu, password, &P);
+    mbedtls_mpi x;
+    mbedtls_mpi_init(&x);
 
     int mbedtls_status = 0;
-    mbedtls_status = mbedtls_ecp_gen_privkey(&self->group, &r, vscf_mbedtls_bridge_random, self->random);
+    mbedtls_status = mbedtls_ecp_gen_privkey(&self->group, &x, vscf_mbedtls_bridge_random, self->random);
 
     if (mbedtls_status != 0) {
         status = vscf_status_ERROR_RANDOM_FAILED;
         goto err;
     }
 
-    mbedtls_status = mbedtls_mpi_inv_mod(&rInv, &r, &self->group.N);
-
-    if (mbedtls_status != 0) {
-        status = vscf_status_ERROR_BRAINKEY_INTERNAL;
-        goto err;
-    }
-
-    mbedtls_ecp_group *op_group = vscf_brainkey_client_get_op_group(self);
-
-    mbedtls_status = mbedtls_ecp_mul(op_group, &A, &r, &P, vscf_mbedtls_bridge_random, self->operation_random);
-
-    vscf_brainkey_client_free_op_group(op_group);
-
-    if (mbedtls_status != 0) {
-        status = vscf_status_ERROR_BRAINKEY_INTERNAL;
-        goto err;
-    }
-
-    size_t olen = 0;
-    mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, &A, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            vsc_buffer_unused_bytes(blinded_point), vscf_brainkey_client_POINT_LEN);
-    vsc_buffer_inc_used(blinded_point, vscf_brainkey_client_POINT_LEN);
-    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCF_ASSERT(olen == vscf_brainkey_client_POINT_LEN);
-
     mbedtls_status = mbedtls_mpi_write_binary(
-            &rInv, vsc_buffer_unused_bytes(deblind_factor), vsc_buffer_unused_len(deblind_factor));
-    vsc_buffer_inc_used(deblind_factor, vscf_brainkey_client_MPI_LEN);
+            &x, vsc_buffer_unused_bytes(identity_secret), vsc_buffer_unused_len(identity_secret));
+    vsc_buffer_inc_used(identity_secret, vscf_brainkey_server_MPI_LEN);
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
 err:
-    mbedtls_ecp_point_free(&A);
-    mbedtls_mpi_free(&rInv);
-    mbedtls_mpi_free(&r);
-    mbedtls_ecp_point_free(&P);
+    mbedtls_mpi_free(&x);
 
 input_err:
     return status;
 }
 
 VSCF_PUBLIC vscf_status_t
-vscf_brainkey_client_deblind(vscf_brainkey_client_t *self, vsc_data_t hardened_point, vsc_data_t deblind_factor,
-        vsc_data_t key_name, vsc_buffer_t *seed) {
+vscf_brainkey_server_harden(vscf_brainkey_server_t *self, vsc_data_t identity_secret, vsc_data_t blinded_point,
+        vsc_buffer_t *hardened_point) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(seed);
-    VSCF_ASSERT(vsc_data_is_valid(deblind_factor));
-    VSCF_ASSERT(vsc_data_is_valid(hardened_point));
-    VSCF_ASSERT(vsc_data_is_valid(key_name));
+    VSCF_ASSERT_PTR(hardened_point);
+    VSCF_ASSERT(vsc_data_is_valid(identity_secret));
+    VSCF_ASSERT(vsc_data_is_valid(blinded_point));
 
     vscf_status_t status = vscf_status_SUCCESS;
 
-    if (key_name.len > vscf_brainkey_client_MAX_KEY_NAME_LEN) {
-        status = vscf_status_ERROR_INVALID_BRAINKEY_KEY_NAME_LEN;
-        goto input_err;
-    }
-
-    if (deblind_factor.len != vscf_brainkey_client_MPI_LEN) {
+    if (identity_secret.len != vscf_brainkey_server_MPI_LEN) {
         status = vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_LEN;
         goto input_err;
     }
 
-    if (hardened_point.len != vscf_brainkey_client_POINT_LEN) {
+    if (blinded_point.len != vscf_brainkey_server_POINT_LEN) {
         status = vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN;
         goto input_err;
     }
 
-    if (vsc_buffer_unused_len(seed) < vscf_brainkey_client_SEED_LEN) {
-        status = vscf_status_ERROR_INVALID_BRAINKEY_SEED_BUFFER_LEN;
+    if (vsc_buffer_unused_len(hardened_point) < vscf_brainkey_server_POINT_LEN) {
+        status = vscf_status_ERROR_INVALID_BRAINKEY_POINT_BUFFER_LEN;
         goto input_err;
     }
+
+    mbedtls_ecp_point A;
+    mbedtls_ecp_point_init(&A);
 
     mbedtls_ecp_point Y;
     mbedtls_ecp_point_init(&Y);
 
-    mbedtls_ecp_point S;
-    mbedtls_ecp_point_init(&S);
+    mbedtls_mpi x;
+    mbedtls_mpi_init(&x);
 
-    mbedtls_mpi rInv;
-    mbedtls_mpi_init(&rInv);
-
-    int mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &Y, hardened_point.bytes, hardened_point.len);
-    if (mbedtls_status != 0) {
-        status = vscf_status_ERROR_BRAINKEY_INVALID_POINT;
-        goto err;
-    }
-
-    mbedtls_status = mbedtls_ecp_check_pubkey(&self->group, &Y);
-    if (mbedtls_status != 0) {
-        status = vscf_status_ERROR_BRAINKEY_INVALID_POINT;
-        goto err;
-    }
-
-    mbedtls_status = mbedtls_mpi_read_binary(&rInv, deblind_factor.bytes, deblind_factor.len);
+    int mbedtls_status = mbedtls_mpi_read_binary(&x, identity_secret.bytes, identity_secret.len);
     if (mbedtls_status != 0) {
         status = vscf_status_ERROR_BRAINKEY_INTERNAL;
         goto err;
     }
 
-    mbedtls_ecp_group *op_group = vscf_brainkey_client_get_op_group(self);
+    mbedtls_status = mbedtls_ecp_check_privkey(&self->group, &x);
+    if (mbedtls_status != 0) {
+        // FIXME
+        status = vscf_status_ERROR_BRAINKEY_INVALID_POINT;
+        goto err;
+    }
 
-    mbedtls_status = mbedtls_ecp_mul(op_group, &S, &rInv, &Y, vscf_mbedtls_bridge_random, self->operation_random);
+    mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &A, blinded_point.bytes, blinded_point.len);
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INVALID_POINT;
+        goto err;
+    }
 
-    vscf_brainkey_client_free_op_group(op_group);
+    mbedtls_status = mbedtls_ecp_check_pubkey(&self->group, &A);
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INVALID_POINT;
+        goto err;
+    }
+
+    mbedtls_ecp_group *op_group = vscf_brainkey_server_get_op_group(self);
+
+    mbedtls_status = mbedtls_ecp_mul(op_group, &Y, &x, &A, vscf_mbedtls_bridge_random, self->operation_random);
+
+    vscf_brainkey_server_free_op_group(op_group);
 
     if (mbedtls_status != 0) {
         status = vscf_status_ERROR_BRAINKEY_INTERNAL;
         goto err;
     }
-
-    byte point[vscf_brainkey_client_POINT_LEN];
 
     size_t olen = 0;
-    mbedtls_status = mbedtls_ecp_point_write_binary(
-            &self->group, &S, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, point, vscf_brainkey_client_POINT_LEN);
+    mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, &Y, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+            vsc_buffer_unused_bytes(hardened_point), vscf_brainkey_server_POINT_LEN);
+    vsc_buffer_inc_used(hardened_point, vscf_brainkey_server_POINT_LEN);
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCF_ASSERT(olen == vscf_brainkey_client_POINT_LEN);
-
-    vscf_hkdf_t *hkdf = vscf_hkdf_new();
-    vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
-
-    vscf_hkdf_derive(hkdf, vsc_data(point, sizeof(point)), vscf_brainkey_client_SEED_LEN, seed);
-
-    vscf_hkdf_destroy(&hkdf);
-
-    vscf_zeroize(point, sizeof(point));
+    VSCF_ASSERT(olen == vscf_brainkey_server_POINT_LEN);
 
 err:
-    mbedtls_mpi_free(&rInv);
-    mbedtls_ecp_point_free(&S);
+    mbedtls_mpi_free(&x);
     mbedtls_ecp_point_free(&Y);
+    mbedtls_ecp_point_free(&A);
 
 input_err:
     return status;
 }
 
 static mbedtls_ecp_group *
-vscf_brainkey_client_get_op_group(vscf_brainkey_client_t *self) {
+vscf_brainkey_server_get_op_group(vscf_brainkey_server_t *self) {
 
 #if VSCF_MULTI_THREAD
     VSCF_UNUSED(self);
@@ -563,7 +496,7 @@ vscf_brainkey_client_get_op_group(vscf_brainkey_client_t *self) {
 }
 
 static void
-vscf_brainkey_client_free_op_group(mbedtls_ecp_group *op_group) {
+vscf_brainkey_server_free_op_group(mbedtls_ecp_group *op_group) {
 
 #if VSCF_MULTI_THREAD
     mbedtls_ecp_group_free(op_group);

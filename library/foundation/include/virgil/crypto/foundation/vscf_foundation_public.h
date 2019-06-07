@@ -74,6 +74,7 @@
 #include "vscf_auth_encrypt.h"
 #include "vscf_base64.h"
 #include "vscf_brainkey_client.h"
+#include "vscf_brainkey_server.h"
 #include "vscf_cipher.h"
 #include "vscf_cipher_alg_info.h"
 #include "vscf_cipher_auth.h"

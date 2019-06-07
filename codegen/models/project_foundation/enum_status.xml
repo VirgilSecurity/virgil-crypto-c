@@ -157,4 +157,34 @@
     <constant name="error bad signature" value="-308">
         Signature format is corrupted.
     </constant>
+
+    <constant name="error invalid brainkey password len" value="-401">
+    </constant>
+
+    <constant name="error invalid brainkey factor len" value="-402">
+    </constant>
+
+    <constant name="error invalid brainkey point len" value="-403">
+    </constant>
+
+    <constant name="error invalid brainkey key name len" value="-404">
+    </constant>
+
+    <constant name="error brainkey internal" value="-405">
+    </constant>
+
+    <constant name="error brainkey invalid point" value="-406">
+    </constant>
+
+    <constant name="error invalid brainkey factor buffer len" value="-407">
+    </constant>
+
+    <constant name="error invalid brainkey point buffer len" value="-408">
+    </constant>
+
+    <constant name="error invalid brainkey seed buffer len" value="-409">
+    </constant>
+
+    <constant name="error invalid identity secret" value="-410">
+    </constant>
 </enum>

@@ -47,15 +47,17 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Class 'brainkey client' types definition.
+//  Class 'brainkey server' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_BRAINKEY_CLIENT_DEFS_H_INCLUDED
-#define VSCF_BRAINKEY_CLIENT_DEFS_H_INCLUDED
+#ifndef VSCF_BRAINKEY_SERVER_DEFS_H_INCLUDED
+#define VSCF_BRAINKEY_SERVER_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_simple_swu.h"
 #include "vscf_impl.h"
+
+#include <mbedtls/ecp.h>
+#include <mbedtls/bignum.h>
 
 // clang-format on
 //  @end
@@ -73,9 +75,9 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'brainkey client' context.
+//  Handle 'brainkey server' context.
 //
-struct vscf_brainkey_client_t {
+struct vscf_brainkey_server_t {
     //
     //  Function do deallocate self context.
     //
@@ -94,8 +96,6 @@ struct vscf_brainkey_client_t {
     vscf_impl_t *operation_random;
 
     mbedtls_ecp_group group;
-
-    vscf_simple_swu_t *simple_swu;
 };
 
 
@@ -112,5 +112,5 @@ struct vscf_brainkey_client_t {
 
 
 //  @footer
-#endif // VSCF_BRAINKEY_CLIENT_DEFS_H_INCLUDED
+#endif // VSCF_BRAINKEY_SERVER_DEFS_H_INCLUDED
 //  @end
