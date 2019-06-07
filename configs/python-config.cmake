@@ -23,6 +23,7 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 set(BUILD_SHARED_LIBS ON CACHE BOOL "")
+set(VIRGIL_C_TESTING OFF CACHE BOOL "")
 set(VIRGIL_INSTALL_HDRS OFF CACHE BOOL "")
 set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "")
 set(VIRGIL_INSTALL_DEPS_HDRS OFF CACHE BOOL "")
