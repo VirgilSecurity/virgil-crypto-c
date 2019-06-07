@@ -450,8 +450,8 @@ input_err:
 }
 
 VSCF_PUBLIC vscf_status_t
-vscf_brainkey_client_deblind(vscf_brainkey_client_t *self, vsc_data_t hardened_point, vsc_data_t deblind_factor,
-        vsc_data_t key_name, vsc_buffer_t *seed) {
+vscf_brainkey_client_deblind(vscf_brainkey_client_t *self, vsc_data_t password, vsc_data_t hardened_point,
+        vsc_data_t deblind_factor, vsc_data_t key_name, vsc_buffer_t *seed) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(seed);
@@ -460,6 +460,11 @@ vscf_brainkey_client_deblind(vscf_brainkey_client_t *self, vsc_data_t hardened_p
     VSCF_ASSERT(vsc_data_is_valid(key_name));
 
     vscf_status_t status = vscf_status_SUCCESS;
+
+    if (password.len == 0 || password.len > vscf_brainkey_client_MAX_PASSWORD_LEN) {
+        status = vscf_status_ERROR_INVALID_BRAINKEY_PASSWORD_LEN;
+        goto input_err;
+    }
 
     if (key_name.len > vscf_brainkey_client_MAX_KEY_NAME_LEN) {
         status = vscf_status_ERROR_INVALID_BRAINKEY_KEY_NAME_LEN;
@@ -530,6 +535,8 @@ vscf_brainkey_client_deblind(vscf_brainkey_client_t *self, vsc_data_t hardened_p
     vscf_hkdf_t *hkdf = vscf_hkdf_new();
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
 
+    vscf_hkdf_reset(hkdf, password, 0);
+    vscf_hkdf_set_info(hkdf, key_name);
     vscf_hkdf_derive(hkdf, vsc_data(point, sizeof(point)), vscf_brainkey_client_SEED_LEN, seed);
 
     vscf_hkdf_destroy(&hkdf);

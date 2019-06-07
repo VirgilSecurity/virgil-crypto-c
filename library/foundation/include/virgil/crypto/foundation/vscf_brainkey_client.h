@@ -190,8 +190,8 @@ vscf_brainkey_client_blind(vscf_brainkey_client_t *self, vsc_data_t password, vs
         vsc_buffer_t *blinded_point) VSCF_NODISCARD;
 
 VSCF_PUBLIC vscf_status_t
-vscf_brainkey_client_deblind(vscf_brainkey_client_t *self, vsc_data_t hardened_point, vsc_data_t deblind_factor,
-        vsc_data_t key_name, vsc_buffer_t *seed) VSCF_NODISCARD;
+vscf_brainkey_client_deblind(vscf_brainkey_client_t *self, vsc_data_t password, vsc_data_t hardened_point,
+        vsc_data_t deblind_factor, vsc_data_t key_name, vsc_buffer_t *seed) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

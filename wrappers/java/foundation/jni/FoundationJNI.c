@@ -3003,6 +3003,227 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_b
     vscf_brainkey_client_delete((vscf_brainkey_client_t /*2*/ *) c_ctx /*5*/);
 }
 
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ random = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+
+    vscf_brainkey_client_release_random((vscf_brainkey_client_t /*2*/ *) c_ctx);
+    vscf_brainkey_client_use_random((vscf_brainkey_client_t /*2*/ *) c_ctx, random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1setOperationRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joperationRandom) {
+    jclass operation_random_cls = (*jenv)->GetObjectClass(jenv, joperationRandom);
+    if (NULL == operation_random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID operation_random_fidCtx = (*jenv)->GetFieldID(jenv, operation_random_cls, "cCtx", "J");
+    if (NULL == operation_random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ operation_random = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, joperationRandom, operation_random_fidCtx);
+
+    vscf_brainkey_client_release_operation_random((vscf_brainkey_client_t /*2*/ *) c_ctx);
+    vscf_brainkey_client_use_operation_random((vscf_brainkey_client_t /*2*/ *) c_ctx, operation_random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_brainkey_client_t /*2*/* brainkey_client_ctx = (vscf_brainkey_client_t /*2*/*) c_ctx;
+
+    vscf_status_t status = vscf_brainkey_client_setup_defaults(brainkey_client_ctx /*a1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1blind (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jpassword) {
+    // Cast class context
+    vscf_brainkey_client_t /*2*/* brainkey_client_ctx = (vscf_brainkey_client_t /*2*/*) c_ctx;
+
+    // Wrap input data
+    byte* password_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpassword, NULL);
+    vsc_data_t password = vsc_data(password_arr, (*jenv)->GetArrayLength(jenv, jpassword));
+
+    vsc_buffer_t *deblind_factor = vsc_buffer_new_with_capacity(vscf_brainkey_client_MPI_LEN);
+
+    vsc_buffer_t *blinded_point = vsc_buffer_new_with_capacity(vscf_brainkey_client_POINT_LEN);
+
+    vscf_status_t status = vscf_brainkey_client_blind(brainkey_client_ctx /*a1*/, password /*a3*/, deblind_factor /*a3*/, blinded_point /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/BrainkeyClientBlindResult");
+    if (NULL == cls) {
+        VSCF_ASSERT("Class BrainkeyClientBlindResult not found.");
+    }
+    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "()V");
+    jobject newObj = (*jenv)->NewObject(jenv, cls, methodID);
+    jfieldID fidDeblindFactor = (*jenv)->GetFieldID(jenv, cls, "deblindFactor", "[B");
+    jbyteArray jDeblindFactorArr = (*jenv)->NewByteArray(jenv, vsc_buffer_len(deblind_factor));
+    (*jenv)->SetByteArrayRegion (jenv, jDeblindFactorArr, 0, vsc_buffer_len(deblind_factor), (jbyte*) vsc_buffer_bytes(deblind_factor));
+    (*jenv)->SetObjectField(jenv, newObj, fidDeblindFactor, jDeblindFactorArr);
+    jfieldID fidBlindedPoint = (*jenv)->GetFieldID(jenv, cls, "blindedPoint", "[B");
+    jbyteArray jBlindedPointArr = (*jenv)->NewByteArray(jenv, vsc_buffer_len(blinded_point));
+    (*jenv)->SetByteArrayRegion (jenv, jBlindedPointArr, 0, vsc_buffer_len(blinded_point), (jbyte*) vsc_buffer_bytes(blinded_point));
+    (*jenv)->SetObjectField(jenv, newObj, fidBlindedPoint, jBlindedPointArr);
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jpassword, (jbyte*) password_arr, 0);
+
+    vsc_buffer_delete(deblind_factor);
+
+    vsc_buffer_delete(blinded_point);
+
+    return newObj;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1deblind (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jpassword, jbyteArray jhardenedPoint, jbyteArray jdeblindFactor, jbyteArray jkeyName) {
+    // Cast class context
+    vscf_brainkey_client_t /*2*/* brainkey_client_ctx = (vscf_brainkey_client_t /*2*/*) c_ctx;
+
+    // Wrap input data
+    byte* password_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpassword, NULL);
+    vsc_data_t password = vsc_data(password_arr, (*jenv)->GetArrayLength(jenv, jpassword));
+
+    byte* hardened_point_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jhardenedPoint, NULL);
+    vsc_data_t hardened_point = vsc_data(hardened_point_arr, (*jenv)->GetArrayLength(jenv, jhardenedPoint));
+
+    byte* deblind_factor_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdeblindFactor, NULL);
+    vsc_data_t deblind_factor = vsc_data(deblind_factor_arr, (*jenv)->GetArrayLength(jenv, jdeblindFactor));
+
+    byte* key_name_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jkeyName, NULL);
+    vsc_data_t key_name = vsc_data(key_name_arr, (*jenv)->GetArrayLength(jenv, jkeyName));
+
+    vsc_buffer_t *seed = vsc_buffer_new_with_capacity(vscf_brainkey_client_POINT_LEN);
+
+    vscf_status_t status = vscf_brainkey_client_deblind(brainkey_client_ctx /*a1*/, password /*a3*/, hardened_point /*a3*/, deblind_factor /*a3*/, key_name /*a3*/, seed /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(seed));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(seed), (jbyte*) vsc_buffer_bytes(seed));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jpassword, (jbyte*) password_arr, 0);
+
+    (*jenv)->ReleaseByteArrayElements(jenv, jhardenedPoint, (jbyte*) hardened_point_arr, 0);
+
+    (*jenv)->ReleaseByteArrayElements(jenv, jdeblindFactor, (jbyte*) deblind_factor_arr, 0);
+
+    (*jenv)->ReleaseByteArrayElements(jenv, jkeyName, (jbyte*) key_name_arr, 0);
+
+    vsc_buffer_delete(seed);
+
+    return ret;
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1new__ (JNIEnv *jenv, jobject jobj) {
+    return (jlong) vscf_brainkey_server_new();
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_brainkey_server_delete((vscf_brainkey_server_t /*2*/ *) c_ctx /*5*/);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ random = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+
+    vscf_brainkey_server_release_random((vscf_brainkey_server_t /*2*/ *) c_ctx);
+    vscf_brainkey_server_use_random((vscf_brainkey_server_t /*2*/ *) c_ctx, random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1setOperationRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joperationRandom) {
+    jclass operation_random_cls = (*jenv)->GetObjectClass(jenv, joperationRandom);
+    if (NULL == operation_random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID operation_random_fidCtx = (*jenv)->GetFieldID(jenv, operation_random_cls, "cCtx", "J");
+    if (NULL == operation_random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ operation_random = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, joperationRandom, operation_random_fidCtx);
+
+    vscf_brainkey_server_release_operation_random((vscf_brainkey_server_t /*2*/ *) c_ctx);
+    vscf_brainkey_server_use_operation_random((vscf_brainkey_server_t /*2*/ *) c_ctx, operation_random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_brainkey_server_t /*2*/* brainkey_server_ctx = (vscf_brainkey_server_t /*2*/*) c_ctx;
+
+    vscf_status_t status = vscf_brainkey_server_setup_defaults(brainkey_server_ctx /*a1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1generateIdentitySecret (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_brainkey_server_t /*2*/* brainkey_server_ctx = (vscf_brainkey_server_t /*2*/*) c_ctx;
+
+    // Wrap input buffers
+    vsc_buffer_t *identity_secret = vsc_buffer_new_with_capacity(vscf_brainkey_client_MPI_LEN);
+
+    vscf_status_t status = vscf_brainkey_server_generate_identity_secret(brainkey_server_ctx /*a1*/, identity_secret /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(identity_secret));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(identity_secret), (jbyte*) vsc_buffer_bytes(identity_secret));
+    // Free resources
+    vsc_buffer_delete(identity_secret);
+
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1harden (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jidentitySecret, jbyteArray jblindedPoint) {
+    // Cast class context
+    vscf_brainkey_server_t /*2*/* brainkey_server_ctx = (vscf_brainkey_server_t /*2*/*) c_ctx;
+
+    // Wrap input data
+    byte* identity_secret_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jidentitySecret, NULL);
+    vsc_data_t identity_secret = vsc_data(identity_secret_arr, (*jenv)->GetArrayLength(jenv, jidentitySecret));
+
+    byte* blinded_point_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jblindedPoint, NULL);
+    vsc_data_t blinded_point = vsc_data(blinded_point_arr, (*jenv)->GetArrayLength(jenv, jblindedPoint));
+
+    vsc_buffer_t *hardened_point = vsc_buffer_new_with_capacity(vscf_brainkey_client_POINT_LEN);
+
+    vscf_status_t status = vscf_brainkey_server_harden(brainkey_server_ctx /*a1*/, identity_secret /*a3*/, blinded_point /*a3*/, hardened_point /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(hardened_point));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(hardened_point), (jbyte*) vsc_buffer_bytes(hardened_point));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jidentitySecret, (jbyte*) identity_secret_arr, 0);
+
+    (*jenv)->ReleaseByteArrayElements(jenv, jblindedPoint, (jbyte*) blinded_point_arr, 0);
+
+    vsc_buffer_delete(hardened_point);
+
+    return ret;
+}
+
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1new__ (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscf_sha224_new();
 }

@@ -434,8 +434,7 @@ vscf_brainkey_server_harden(vscf_brainkey_server_t *self, vsc_data_t identity_se
 
     mbedtls_status = mbedtls_ecp_check_privkey(&self->group, &x);
     if (mbedtls_status != 0) {
-        // FIXME
-        status = vscf_status_ERROR_BRAINKEY_INVALID_POINT;
+        status = vscf_status_ERROR_INVALID_IDENTITY_SECRET;
         goto err;
     }
 

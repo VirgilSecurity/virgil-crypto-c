@@ -44,6 +44,9 @@
     </method>
 
     <method name="deblind">
+        <argument name="password" class="data">
+            User's password (or its hash)
+        </argument>
         <argument name="hardened point" class="data">
         </argument>
         <argument name="deblind factor" class="data">

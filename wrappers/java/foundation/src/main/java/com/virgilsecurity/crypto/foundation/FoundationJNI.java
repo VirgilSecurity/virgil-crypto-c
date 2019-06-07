@@ -601,6 +601,42 @@ public class FoundationJNI {
 
     public native void brainkeyClient_close(long cCtx);
 
+    /*
+    * Random used for key generation, proofs, etc.
+    */
+    public native void brainkeyClient_setRandom(long cCtx, Random random);
+
+    /*
+    * Random used for crypto operations to make them const-time
+    */
+    public native void brainkeyClient_setOperationRandom(long cCtx, Random operationRandom);
+
+    public native void brainkeyClient_setupDefaults(long cCtx) throws FoundationException;
+
+    public native BrainkeyClientBlindResult brainkeyClient_blind(long cCtx, byte[] password) throws FoundationException;
+
+    public native byte[] brainkeyClient_deblind(long cCtx, byte[] password, byte[] hardenedPoint, byte[] deblindFactor, byte[] keyName) throws FoundationException;
+
+    public native long brainkeyServer_new();
+
+    public native void brainkeyServer_close(long cCtx);
+
+    /*
+    * Random used for key generation, proofs, etc.
+    */
+    public native void brainkeyServer_setRandom(long cCtx, Random random);
+
+    /*
+    * Random used for crypto operations to make them const-time
+    */
+    public native void brainkeyServer_setOperationRandom(long cCtx, Random operationRandom);
+
+    public native void brainkeyServer_setupDefaults(long cCtx) throws FoundationException;
+
+    public native byte[] brainkeyServer_generateIdentitySecret(long cCtx) throws FoundationException;
+
+    public native byte[] brainkeyServer_harden(long cCtx, byte[] identitySecret, byte[] blindedPoint) throws FoundationException;
+
     public native long sha224_new();
 
     public native void sha224_close(long cCtx);

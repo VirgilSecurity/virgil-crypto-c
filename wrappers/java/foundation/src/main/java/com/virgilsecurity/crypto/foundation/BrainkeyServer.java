@@ -36,21 +36,21 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-public class BrainkeyClient implements AutoCloseable {
+public class BrainkeyServer implements AutoCloseable {
 
     public long cCtx;
 
     /* Create underlying C context. */
-    public BrainkeyClient() {
+    public BrainkeyServer() {
         super();
-        this.cCtx = FoundationJNI.INSTANCE.brainkeyClient_new();
+        this.cCtx = FoundationJNI.INSTANCE.brainkeyServer_new();
     }
 
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public BrainkeyClient(long cCtx) {
+    public BrainkeyServer(long cCtx) {
         super();
         this.cCtx = cCtx;
     }
@@ -63,47 +63,35 @@ public class BrainkeyClient implements AutoCloseable {
         return 32;
     }
 
-    public int getSeedLen() {
-        return 32;
-    }
-
-    public int getMaxPasswordLen() {
-        return 128;
-    }
-
-    public int getMaxKeyNameLen() {
-        return 128;
-    }
-
     /* Close resource. */
     public void close() {
-        FoundationJNI.INSTANCE.brainkeyClient_close(this.cCtx);
+        FoundationJNI.INSTANCE.brainkeyServer_close(this.cCtx);
     }
 
     /*
     * Random used for key generation, proofs, etc.
     */
     public void setRandom(Random random) {
-        FoundationJNI.INSTANCE.brainkeyClient_setRandom(this.cCtx, random);
+        FoundationJNI.INSTANCE.brainkeyServer_setRandom(this.cCtx, random);
     }
 
     /*
     * Random used for crypto operations to make them const-time
     */
     public void setOperationRandom(Random operationRandom) {
-        FoundationJNI.INSTANCE.brainkeyClient_setOperationRandom(this.cCtx, operationRandom);
+        FoundationJNI.INSTANCE.brainkeyServer_setOperationRandom(this.cCtx, operationRandom);
     }
 
     public void setupDefaults() throws FoundationException {
-        FoundationJNI.INSTANCE.brainkeyClient_setupDefaults(this.cCtx);
+        FoundationJNI.INSTANCE.brainkeyServer_setupDefaults(this.cCtx);
     }
 
-    public BrainkeyClientBlindResult blind(byte[] password) throws FoundationException {
-        return FoundationJNI.INSTANCE.brainkeyClient_blind(this.cCtx, password);
+    public byte[] generateIdentitySecret() throws FoundationException {
+        return FoundationJNI.INSTANCE.brainkeyServer_generateIdentitySecret(this.cCtx);
     }
 
-    public byte[] deblind(byte[] password, byte[] hardenedPoint, byte[] deblindFactor, byte[] keyName) throws FoundationException {
-        return FoundationJNI.INSTANCE.brainkeyClient_deblind(this.cCtx, password, hardenedPoint, deblindFactor, keyName);
+    public byte[] harden(byte[] identitySecret, byte[] blindedPoint) throws FoundationException {
+        return FoundationJNI.INSTANCE.brainkeyServer_harden(this.cCtx, identitySecret, blindedPoint);
     }
 }
 

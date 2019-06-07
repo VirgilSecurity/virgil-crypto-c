@@ -155,6 +155,26 @@ import VSCFoundation
     /// Signature format is corrupted.
     case errorBadSignature = -308
 
+    case errorInvalidBrainkeyPasswordLen = -401
+
+    case errorInvalidBrainkeyFactorLen = -402
+
+    case errorInvalidBrainkeyPointLen = -403
+
+    case errorInvalidBrainkeyKeyNameLen = -404
+
+    case errorBrainkeyInternal = -405
+
+    case errorBrainkeyInvalidPoint = -406
+
+    case errorInvalidBrainkeyFactorBufferLen = -407
+
+    case errorInvalidBrainkeyPointBufferLen = -408
+
+    case errorInvalidBrainkeySeedBufferLen = -409
+
+    case errorInvalidIdentitySecret = -410
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscf_status_t) {
         self.init(rawValue: Int(status.rawValue))!
