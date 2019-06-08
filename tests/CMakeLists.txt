@@ -59,9 +59,6 @@ if(TARGET vsc::phe)
     add_subdirectory(phe)
 endif()
 
-add_subdirectory(benchmark/picobench)
-add_subdirectory(benchmark/benchmark)
 add_subdirectory(benchmark/sha512_benchmark)
-add_subdirectory(benchmark/sha512_picobenchmark)
 
 

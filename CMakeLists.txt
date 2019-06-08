@@ -171,6 +171,11 @@ if(VIRGIL_LIB_ED25519)
 endif()
 
 #
+# Google benchmark
+#
+add_subdirectory("thirdparty/benchmark")
+
+#
 # Protobuf
 #
 add_subdirectory("thirdparty/nanopb")
