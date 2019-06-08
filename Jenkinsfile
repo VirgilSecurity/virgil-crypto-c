@@ -561,6 +561,7 @@ def build_LangPython_Windows(slave) {
                       -DCMAKE_BUILD_TYPE=Release ^
                       -DCMAKE_INSTALL_PREFIX="wrappers\\python\\virgil_crypto_lib" ^
                       -DCMAKE_INSTALL_LIBDIR=_libs ^
+                      -DCMAKE_INSTALL_BINDIR=_libs ^
                       -DENABLE_CLANGFORMAT=OFF ^
                       -Bbuild -H.
                 cmake --build build --target install
