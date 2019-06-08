@@ -753,6 +753,7 @@ node("build-docker") {
 
         // Windows
         unstash 'python_wrapper_windows'
+        sh "rm -rf wrappers/python/virgil_crypto_lib/pythia"
 
         dir('wrappers/python') {
             docker.image("python:2.7").inside("--user root"){
