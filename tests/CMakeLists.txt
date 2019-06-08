@@ -59,6 +59,8 @@ if(TARGET vsc::phe)
     add_subdirectory(phe)
 endif()
 
-add_subdirectory(benchmark/sha512_benchmark)
+if (ENABLE_BENCHMARK)
+    add_subdirectory(benchmark/sha512_benchmark)
+endif()
 
 
