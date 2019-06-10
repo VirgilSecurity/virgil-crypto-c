@@ -17,41 +17,53 @@ if (typeof project !== 'string') {
   throw new TypeError(`'$(project)' is not a valid project`);
 }
 
-const format = process.env.FORMAT;
-const formats = {
-  cjs: 'cjs',
-  es: 'es',
-  umd: 'umd',
-};
-if (!formats[format]) {
-  throw new TypeError(`'${format}' is not a valid format`);
-}
+const format = 'es';
 
 const sourcePath = path.join(__dirname, project);
-const inputPath = path.join(sourcePath, 'index.js');
-const wasmPath = path.join(sourcePath, `lib${project}.wasm`);
 const outputPath = path.join(__dirname, 'dist');
-const outputFilePath = path.join(outputPath, `${project}.${format}.js`);
-const umdName = project;
 
-module.exports = {
-  input: inputPath,
-  output: {
-    format,
-    file: outputFilePath,
-    name: umdName,
+const wasmInputPath = path.join(sourcePath, 'index.js');
+const wasmFilePath = path.join(sourcePath, `lib${project}.wasm`);
+const wasmOutputPath = path.join(outputPath, `${project}.js`);
+
+const asmjsInputPath = path.join(sourcePath, 'asmjs.js');
+const asmjsOutputPath = path.join(outputPath, `${project}.asmjs.js`);
+
+module.exports = [
+  {
+    input: wasmInputPath,
+    output: {
+      format,
+      file: wasmOutputPath,
+    },
+    plugins: [
+      nodeResolve(),
+      commonjs({
+        ignoreGlobal: true,
+        ignore: id => typeof builtinModulesMap[id] !== 'undefined',
+      }),
+      closureCompiler(),
+      terser(),
+      copy({
+        targets: [wasmFilePath],
+        outputFolder: outputPath,
+      }),
+    ],
   },
-  plugins: [
-    nodeResolve(),
-    commonjs({
-      ignoreGlobal: true,
-      ignore: id => typeof builtinModulesMap[id] !== 'undefined',
-    }),
-    closureCompiler(),
-    terser(),
-    copy({
-      targets: [wasmPath],
-      outputFolder: outputPath,
-    }),
-  ],
-};
+  {
+    input: asmjsInputPath,
+    output: {
+      format,
+      file: asmjsOutputPath,
+    },
+    plugins: [
+      nodeResolve(),
+      commonjs({
+        ignoreGlobal: true,
+        ignore: id => typeof builtinModulesMap[id] !== 'undefined',
+      }),
+      closureCompiler(),
+      terser(),
+    ],
+  },
+];
