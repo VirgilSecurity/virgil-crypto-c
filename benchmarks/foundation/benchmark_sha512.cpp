@@ -36,16 +36,17 @@
 #include "benchmark/benchmark.h"
 
 #include "vscf_sha512.h"
-#include "test_data_sha512.h"
+
+#include "benchmark_data.h"
 
 static void
-benchmark__hash_stream__vector_3(benchmark::State &state) {
+benchmark__hash_stream__512_bytes_at_once(benchmark::State &state) {
     vscf_sha512_t *sha512 = vscf_sha512_new();
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
 
     for (auto _ : state) {
         vscf_sha512_start(sha512);
-        vscf_sha512_update(sha512, test_sha512_VECTOR_3_INPUT);
+        vscf_sha512_update(sha512, benchmark_ANY_DATA_512_BYTES);
         vscf_sha512_finish(sha512, digest);
 
         vsc_buffer_reset(digest);
@@ -54,6 +55,5 @@ benchmark__hash_stream__vector_3(benchmark::State &state) {
     vsc_buffer_destroy(&digest);
     vscf_sha512_destroy(&sha512);
 }
-BENCHMARK(benchmark__hash_stream__vector_3);
 
-BENCHMARK_MAIN();
+BENCHMARK(benchmark__hash_stream__512_bytes_at_once);

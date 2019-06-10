@@ -32,20 +32,19 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.11)
-project(virgil_crypto_c_foundation_benchmarks LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-macro(_add_benchmark benchmark)
-    add_executable(${benchmark} ${benchmark}.cpp)
-    target_add_filename_definitions(${benchmark})
-    target_link_libraries(${benchmark} test_data_foundation vsc::foundation benchmark)
-    set_target_properties(${benchmark} PROPERTIES CXX_STANDARD 11)
-    add_test(NAME ${benchmark} COMMAND ${benchmark})
+project(benchmark_data_foundation VERSION ${virgil_crypto_c_foundation_benchmarks_VERSION} LANGUAGES C)
 
-    if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
-        add_clangformat(${benchmark})
-    endif()
-endmacro()
+add_library(benchmark_data_foundation "")
+target_sources(benchmark_data_foundation
+        PRIVATE
+            "${CMAKE_CURRENT_LIST_DIR}/benchmark_data.h"
+            "${CMAKE_CURRENT_LIST_DIR}/benchmark_data.c"
+        )
 
-_add_benchmark(benchmark_sha512)
-_add_benchmark(bencmark_sha512_shallow_copy)
+target_include_directories(benchmark_data_foundation
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+        )
+
+target_link_libraries(benchmark_data_foundation vsc::common)

@@ -43,18 +43,30 @@ ExternalProject_Add(benchmark-ext
         CMAKE_ARGS
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/benchmark"
             "-DCMAKE_BUILD_TYPE=Release"
+            "-DBENCHMARK_ENABLE_INSTALL=ON"
             "-DBENCHMARK_ENABLE_GTEST_TESTS=OFF"
             "-DBENCHMARK_ENABLE_TESTING=OFF"
 )
 
-add_library(benchmark IMPORTED STATIC GLOBAL)
-add_dependencies(benchmark benchmark-ext)
-
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/benchmark/include)
 
-set_target_properties(benchmark
+add_library(benchmark::benchmark IMPORTED STATIC GLOBAL)
+add_dependencies(benchmark::benchmark benchmark-ext)
+set_target_properties(benchmark::benchmark
         PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES
+            ${CMAKE_CURRENT_BINARY_DIR}/benchmark/include
         IMPORTED_LOCATION
             ${CMAKE_CURRENT_BINARY_DIR}/benchmark/lib/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark${CMAKE_STATIC_LIBRARY_SUFFIX}
+        )
+
+add_library(benchmark::benchmark_main IMPORTED STATIC GLOBAL)
+set_target_properties(benchmark::benchmark_main
+        PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES
-            ${CMAKE_CURRENT_BINARY_DIR}/benchmark/include)
+            ${CMAKE_CURRENT_BINARY_DIR}/benchmark/include
+        INTERFACE_LINK_LIBRARIES
+            benchmark::benchmark
+        IMPORTED_LOCATION
+            ${CMAKE_CURRENT_BINARY_DIR}/benchmark/lib/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark_main${CMAKE_STATIC_LIBRARY_SUFFIX}
+        )
