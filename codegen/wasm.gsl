@@ -47,7 +47,7 @@ gsl from "cmake_format.gsl"
 function wasm_module_is_not_helper(wasm_module)
     check_arguments(my, "wasm_module", my)
 
-    return !string_in(my.wasm_module.name, "index, precondition")
+    return !string_in(my.wasm_module.name, "asmjs, index, precondition")
 endfunction
 
 # ===========================================================================
@@ -1141,6 +1141,7 @@ function wasm_create_project_module(project, wrapper)
         .name = my.project.name
         .prefix = my.project.prefix
         .lib_name = "lib$(0.name:c)"
+        .asmjs_lib_name = "lib$(0.name:c).asmjs"
         .module_name = "$(0.name:Pascal)Module"
         .description = string_to_singleline(wasm_project)
         .source_dir = cat_path(my.wrapper.source_dir, 0.name)
@@ -1518,6 +1519,72 @@ function wasm_create_index_module(wasm_project)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Create module describing "asmjs.js".
+# ---------------------------------------------------------------------------
+function wasm_create_asmjs_module(wasm_project)
+    check_arguments(my, "wasm_project", my)
+
+    echo_info("Create custom <wasm_module/>: 'asmjs'", my)
+
+    new wasm_module to my.wasm_project
+        .name = "asmjs"
+        .source_file_name = 0.name + ".js"
+        .source_file_path = cat_path(my.wasm_project.src_source_dir, 0.source_file_name)
+
+        new wasm_license to wasm_module
+            . = wasm_format_license(my.wasm_project->license) ?
+        endnew
+
+        my.module_inst = "$(my.wasm_project.name:Camel)Module"
+
+        my.code = ""
+        my.code += format_left("
+            const $(my.wasm_project.module_name:) = require('./$(my.wasm_project.asmjs_lib_name:)');
+        ")
+
+        my.code += terminator
+
+        for my.wasm_project.wasm_imported_class
+            my.code += format_left("
+                const init$(wasm_imported_class.name:Pascal) = \
+                        require('$(wasm_imported_class.source_dir)/$(wasm_imported_class.name:)');
+            ")
+
+            my.init_code ?= ""
+            my.init_code += format_left("
+                  modules.$(wasm_imported_class.name:Pascal) =\
+                        init$(wasm_imported_class.name:Pascal)($(my.module_inst:), modules);
+            ")
+        endfor
+
+        for my.wasm_project.wasm_module where wasm_module_is_not_helper(wasm_module)
+            my.code += format_left("
+                const init$(wasm_module.name:Pascal) = require('./$(wasm_module.name:)');
+            ")
+
+            my.init_code ?= ""
+            my.init_code += format_left("
+                  modules.$(wasm_module.name:Pascal) = init$(wasm_module.name:Pascal)($(my.module_inst:), modules);
+            ")
+        endfor
+
+        my.code += terminator + format_left("
+            const initProject = () => {
+                const $(my.module_inst:) = new $(my.wasm_project.module_name:)();
+                const modules = {};
+                $(format_left(my.init_code, 4))
+                return Promise.resolve(modules);
+            };
+            module.exports = initProject;
+        ")
+
+        new wasm_code to wasm_module
+            . = my.code
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create a class that takes a generic C interface type, aka vscf_impl_t,
 #   and create correspond specific JS class.
 # ---------------------------------------------------------------------------
@@ -1717,6 +1784,7 @@ function wasm_create_project_cmake_module(wasm_project)
                 target_sources($(my.wasm_project.cmake_wasm_target:) PRIVATE \
                         "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
                 target_link_libraries($(my.wasm_project.cmake_wasm_target:)
+                        "-s WASM=1"
                         "-s EXPORTED_FUNCTIONS=\\\\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\\\\""
                         "-s MODULARIZE=1"
                         "-s EXPORT_NAME=$(my.wasm_project.module_name:)"
@@ -1724,6 +1792,19 @@ function wasm_create_project_cmake_module(wasm_project)
                         "$<$<CONFIG:Debug>:--emrun>"
                         $(my.wasm_project.cmake_c_export_target:)
                         )
+                add_executable($(my.wasm_project.cmake_wasm_target:).asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+                target_sources($(my.wasm_project.cmake_wasm_target:).asmjs PRIVATE \
+                        "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+                target_link_libraries($(my.wasm_project.cmake_wasm_target:).asmjs
+                        "-s WASM=0"
+                        "-s EXPORTED_FUNCTIONS=\\\\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\\\\""
+                        "-s MODULARIZE=1"
+                        "-s EXPORT_NAME=$(my.wasm_project.module_name:)"
+                        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+                        "$<$<CONFIG:Debug>:--emrun>"
+                        $(my.wasm_project.cmake_c_export_target:)
+                        )
+
 
                 add_custom_command(TARGET $(my.wasm_project.cmake_wasm_target:) POST_BUILD
                         COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -1853,6 +1934,7 @@ function wasm_finalize_custom_modules(source, wasm_project, meta)
 
     wasm_create_exported_functions_module(my.wasm_project)
     wasm_create_index_module(my.wasm_project)
+    wasm_create_asmjs_module(my.wasm_project)
 endfunction
 
 # ---------------------------------------------------------------------------

@@ -67,6 +67,7 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/fake.c" "")
 add_executable(libfoundation "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
 target_sources(libfoundation PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
 target_link_libraries(libfoundation
+        "-s WASM=1"
         "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
         "-s MODULARIZE=1"
         "-s EXPORT_NAME=FoundationModule"
@@ -74,6 +75,18 @@ target_link_libraries(libfoundation
         "$<$<CONFIG:Debug>:--emrun>"
         vsc::foundation
         )
+add_executable(libfoundation.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+target_sources(libfoundation.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+target_link_libraries(libfoundation.asmjs
+        "-s WASM=0"
+        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
+        "-s MODULARIZE=1"
+        "-s EXPORT_NAME=FoundationModule"
+        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+        "$<$<CONFIG:Debug>:--emrun>"
+        vsc::foundation
+        )
+
 
 add_custom_command(TARGET libfoundation POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory

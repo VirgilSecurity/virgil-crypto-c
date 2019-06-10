@@ -67,6 +67,7 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/fake.c" "")
 add_executable(libphe "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
 target_sources(libphe PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
 target_link_libraries(libphe
+        "-s WASM=1"
         "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
         "-s MODULARIZE=1"
         "-s EXPORT_NAME=PheModule"
@@ -74,6 +75,18 @@ target_link_libraries(libphe
         "$<$<CONFIG:Debug>:--emrun>"
         vsc::phe
         )
+add_executable(libphe.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+target_sources(libphe.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+target_link_libraries(libphe.asmjs
+        "-s WASM=0"
+        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
+        "-s MODULARIZE=1"
+        "-s EXPORT_NAME=PheModule"
+        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+        "$<$<CONFIG:Debug>:--emrun>"
+        vsc::phe
+        )
+
 
 add_custom_command(TARGET libphe POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory

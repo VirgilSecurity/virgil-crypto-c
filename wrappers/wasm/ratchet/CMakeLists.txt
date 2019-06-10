@@ -67,6 +67,7 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/fake.c" "")
 add_executable(libratchet "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
 target_sources(libratchet PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
 target_link_libraries(libratchet
+        "-s WASM=1"
         "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
         "-s MODULARIZE=1"
         "-s EXPORT_NAME=RatchetModule"
@@ -74,6 +75,18 @@ target_link_libraries(libratchet
         "$<$<CONFIG:Debug>:--emrun>"
         vsc::ratchet
         )
+add_executable(libratchet.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+target_sources(libratchet.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+target_link_libraries(libratchet.asmjs
+        "-s WASM=0"
+        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
+        "-s MODULARIZE=1"
+        "-s EXPORT_NAME=RatchetModule"
+        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+        "$<$<CONFIG:Debug>:--emrun>"
+        vsc::ratchet
+        )
+
 
 add_custom_command(TARGET libratchet POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
