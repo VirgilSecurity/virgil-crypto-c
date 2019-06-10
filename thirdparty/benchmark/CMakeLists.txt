@@ -35,27 +35,29 @@
 #
 
 project(benchmark_framework)
-set(BENCHMARK_VERSION 1.2.0)
 
 include(ExternalProject)
-ExternalProject_Add(
-        benchmark
-        GIT_REPOSITORY https://github.com/google/benchmark.git
-        GIT_TAG v${BENCHMARK_VERSION}
-        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/benchmark-${BENCHMARK_VERSION}
-        INSTALL_DIR "${CMAKE_BINARY_DIR}"
-        CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/benchmark-${BENCHMARK_VERSION}"
+ExternalProject_Add(benchmark
+        GIT_REPOSITORY
+            https://github.com/google/benchmark.git
+        INSTALL_DIR
+            "${CMAKE_BINARY_DIR}"
+        CMAKE_ARGS
+            "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark"
+            "-DCMAKE_BUILD_TYPE=Release"
+            "-DBENCHMARK_ENABLE_GTEST_TESTS=OFF"
+            "-DBENCHMARK_ENABLE_TESTING=OFF"
 )
 
-add_library(${PROJECT_NAME} IMPORTED STATIC GLOBAL)
-add_dependencies(${PROJECT_NAME} benchmark)
+add_library(benchmark_framework IMPORTED STATIC GLOBAL)
+add_dependencies(benchmark_framework benchmark)
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(benchmark_framework
         INTERFACE
-        ${CMAKE_BINARY_DIR}/benchmark-${BENCHMARK_VERSION}/lib/libbenchmark.a)
+        ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark/lib/libbenchmark${CMAKE_STATIC_LIBRARY_SUFFIX})
 
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/benchmark-${BENCHMARK_VERSION}/include)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark/include)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
-        IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/benchmark-${BENCHMARK_VERSION}/lib/libbenchmark.a
-        INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/benchmark-${BENCHMARK_VERSION}/include)
+set_target_properties(benchmark_framework PROPERTIES
+        IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark/lib/libbenchmark${CMAKE_STATIC_LIBRARY_SUFFIX}
+        INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark/include)
