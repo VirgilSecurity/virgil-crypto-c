@@ -105,6 +105,8 @@ test__full_flow__random_pwd__should_not_fail(void) {
 
     vscf_brainkey_server_destroy(&server);
     vscf_brainkey_client_destroy(&client);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 void
@@ -155,6 +157,8 @@ test__key_name__random_name__should_not_be_equal(void) {
 
     vscf_brainkey_server_destroy(&server);
     vscf_brainkey_client_destroy(&client);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 void
@@ -203,6 +207,8 @@ test__identity_secret__random_secret__should_not_be_equal(void) {
 
     vscf_brainkey_server_destroy(&server);
     vscf_brainkey_client_destroy(&client);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
