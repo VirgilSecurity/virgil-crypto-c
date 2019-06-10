@@ -48,3 +48,4 @@ macro(_add_benchmark benchmark)
 endmacro()
 
 _add_benchmark(benchmark_sha512)
+_add_benchmark(bencmark_sha512_shallow_copy)

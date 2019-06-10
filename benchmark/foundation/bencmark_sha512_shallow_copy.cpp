@@ -39,21 +39,34 @@
 #include "test_data_sha512.h"
 
 static void
-benchmark__hash_stream__vector_3(benchmark::State &state) {
+benchmark__shallow_copy(benchmark::State &state) {
     vscf_sha512_t *sha512 = vscf_sha512_new();
-    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
 
     for (auto _ : state) {
-        vscf_sha512_start(sha512);
-        vscf_sha512_update(sha512, test_sha512_VECTOR_3_INPUT);
-        vscf_sha512_finish(sha512, digest);
-
-        vsc_buffer_reset(digest);
+        vscf_sha512_t *sha512_copy = vscf_sha512_shallow_copy(sha512);
+        state.PauseTiming();
+        vscf_sha512_delete(sha512_copy);
+        state.ResumeTiming();
     }
 
-    vsc_buffer_destroy(&digest);
     vscf_sha512_destroy(&sha512);
 }
-BENCHMARK(benchmark__hash_stream__vector_3);
+
+static void
+benchmark__shallow_copy_delete(benchmark::State &state) {
+    vscf_sha512_t *sha512 = vscf_sha512_new();
+
+    for (auto _ : state) {
+        state.PauseTiming();
+        vscf_sha512_t *sha512_copy = vscf_sha512_shallow_copy(sha512);
+        state.ResumeTiming();
+        vscf_sha512_delete(sha512_copy);
+    }
+
+    vscf_sha512_destroy(&sha512);
+}
+
+BENCHMARK(benchmark__shallow_copy);
+BENCHMARK(benchmark__shallow_copy_delete);
 
 BENCHMARK_MAIN();
