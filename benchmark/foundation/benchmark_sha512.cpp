@@ -39,20 +39,22 @@
 #include "test_data_sha512.h"
 
 static void
-benchmark__hash_stream__vector_3__success(benchmark::State &state) {
+benchmark__hash_stream__vector_3(benchmark::State &state) {
     vscf_sha512_t *sha512 = vscf_sha512_new();
-    while (state.KeepRunning()) {
-        vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
 
+    while (state.KeepRunning()) {
         vscf_sha512_start(sha512);
         vscf_sha512_update(sha512, test_sha512_VECTOR_3_INPUT);
         vscf_sha512_finish(sha512, digest);
 
-        vsc_buffer_destroy(&digest);
+        vsc_buffer_reset(digest);
     }
+
+    vsc_buffer_destroy(&digest);
     vscf_sha512_destroy(&sha512);
 }
-BENCHMARK(benchmark__hash_stream__vector_3__success);
+BENCHMARK(benchmark__hash_stream__vector_3);
 
 int
 main(int argc, const char **argv) {

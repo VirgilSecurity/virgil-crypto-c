@@ -74,7 +74,7 @@ option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
 option(ENABLE_TESTING "On/Off integration tests." ON)
 option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
 option(ENABLE_PROFILING "On/Off GProf compilation options." OFF)
-option(ENABLE_BENCHMARK "On/Off execution of benchmark tests." OFF)
+option(ENABLE_BENCHMARK "On/Off execution of benchmarks." OFF)
 
 #
 # Code formatting
@@ -216,10 +216,10 @@ if(VIRGIL_C_TESTING AND NOT CMAKE_CROSSCOMPILING)
 endif()
 
 # ---------------------------------------------------------------------------
-#   Benchmarks tests
+#   Benchmarks
 # ---------------------------------------------------------------------------
 
-if (VIRGIL_C_TESTING AND NOT CMAKE_CROSSCOMPILING AND ENABLE_BENCHMARK)
+if(ENABLE_BENCHMARK AND NOT CMAKE_CROSSCOMPILING)
     add_subdirectory("benchmark")
 endif()
 

@@ -35,19 +35,19 @@
 cmake_minimum_required(VERSION 3.11)
 project(virgil_crypto_c_foundation_benchmarks LANGUAGES CXX)
 
-macro(_add_benchmark test)
-    add_executable(${test} ${test}.cpp)
-    target_add_filename_definitions(${test})
-    target_link_libraries(${test} test_utils test_data_foundation vsc::foundation benchmark)
-    target_link_directories(${test}
+macro(_add_benchmark benchmark)
+    add_executable(${benchmark} ${benchmark}.cpp)
+    target_add_filename_definitions(${benchmark})
+    target_link_libraries(${benchmark} test_data_foundation vsc::foundation benchmark)
+    target_link_directories(${benchmark}
             PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}../benchmark/include/benchmark>
             )
-    set_target_properties(${test} PROPERTIES CXX_STANDARD 11)
-    add_test (NAME ${test} COMMAND ${test})
+    set_target_properties(${benchmark} PROPERTIES CXX_STANDARD 11)
+    add_test (NAME ${benchmark} COMMAND ${benchmark})
 
     if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
-        add_clangformat(${test})
+        add_clangformat(${benchmark})
     endif()
 endmacro()
 
