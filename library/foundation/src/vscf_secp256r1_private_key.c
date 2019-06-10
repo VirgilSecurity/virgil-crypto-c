@@ -259,6 +259,13 @@ vscf_secp256r1_private_key_decrypt(vscf_secp256r1_private_key_t *self, vsc_data_
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_secp256r1_private_key_decrypted_len(self, data.len));
 
+    //
+    //  Release the decryption key just for case.
+    //  This is an attempt to fix floating bug that causes crash because of
+    //  decryption key is already there.
+    //  TODO: Clarify why this happens and make an appropriate fix.
+    //
+    vscf_ecies_release_decryption_key(self->ecies);
     vscf_ecies_use_decryption_key(self->ecies, vscf_secp256r1_private_key_impl(self));
     vscf_status_t status = vscf_ecies_decrypt(self->ecies, data, out);
     vscf_ecies_release_decryption_key(self->ecies);
