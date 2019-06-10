@@ -34,14 +34,12 @@
 # Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 #
 
-project(benchmark_framework)
-
 include(ExternalProject)
-ExternalProject_Add(benchmark
+ExternalProject_Add(benchmark-ext
         GIT_REPOSITORY
             https://github.com/google/benchmark.git
-        INSTALL_DIR
-            "${CMAKE_BINARY_DIR}"
+        GIT_TAG
+            v1.5.0
         CMAKE_ARGS
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark"
             "-DCMAKE_BUILD_TYPE=Release"
@@ -49,15 +47,16 @@ ExternalProject_Add(benchmark
             "-DBENCHMARK_ENABLE_TESTING=OFF"
 )
 
-add_library(benchmark_framework IMPORTED STATIC GLOBAL)
-add_dependencies(benchmark_framework benchmark)
-
-target_link_libraries(benchmark_framework
-        INTERFACE
-        ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark/lib/libbenchmark${CMAKE_STATIC_LIBRARY_SUFFIX})
+add_library(benchmark IMPORTED STATIC GLOBAL)
+add_dependencies(benchmark benchmark-ext)
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark/include)
 
-set_target_properties(benchmark_framework PROPERTIES
-        IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark/lib/libbenchmark${CMAKE_STATIC_LIBRARY_SUFFIX}
-        INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark/include)
+set_target_properties(benchmark
+        PROPERTIES
+        IMPORTED_LOCATION
+            ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark/lib/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark${CMAKE_STATIC_LIBRARY_SUFFIX}
+        INTERFACE_INCLUDE_DIRECTORIES
+            ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark/include)
+
+add_subdirectory(foundation)

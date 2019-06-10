@@ -74,7 +74,7 @@ option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
 option(ENABLE_TESTING "On/Off integration tests." ON)
 option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
 option(ENABLE_PROFILING "On/Off GProf compilation options." OFF)
-option(ENABLE_BENCHMARK "On/Off execution of benchmark tests using c++ google benchmark lib. " OFF)
+option(ENABLE_BENCHMARK "On/Off execution of benchmark tests." OFF)
 
 #
 # Code formatting
@@ -172,13 +172,6 @@ if(VIRGIL_LIB_ED25519)
 endif()
 
 #
-# Google benchmark
-#
-if (ENABLE_BENCHMARK)
-    add_subdirectory("thirdparty/benchmark")
-endif()
-
-#
 # Protobuf
 #
 add_subdirectory("thirdparty/nanopb")
@@ -220,6 +213,14 @@ endif()
 
 if(VIRGIL_C_TESTING AND NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(tests)
+endif()
+
+# ---------------------------------------------------------------------------
+#   Benchmarks tests
+# ---------------------------------------------------------------------------
+
+if (VIRGIL_C_TESTING AND NOT CMAKE_CROSSCOMPILING AND ENABLE_BENCHMARK)
+    add_subdirectory("benchmark")
 endif()
 
 # ---------------------------------------------------------------------------

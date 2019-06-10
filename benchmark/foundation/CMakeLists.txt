@@ -32,32 +32,23 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.11)
+project(virgil_crypto_c_foundation_benchmarks LANGUAGES CXX)
 
-project(virgil_crypto_c_tests VERSION ${virgil_crypto_VERSION} LANGUAGES C)
+macro(_add_benchmark test)
+    add_executable(${test} ${test}.cpp)
+    target_add_filename_definitions(${test})
+    target_link_libraries(${test} test_utils test_data_foundation vsc::foundation benchmark)
+    target_link_directories(${test}
+            PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}../benchmark/include/benchmark>
+            )
+    set_target_properties(${test} PROPERTIES CXX_STANDARD 11)
+    add_test (NAME ${test} COMMAND ${test})
 
-add_subdirectory(unity)
-add_subdirectory(test_utils)
+    if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
+        add_clangformat(${test})
+    endif()
+endmacro()
 
-if(TARGET vsc::common)
-    add_subdirectory(common)
-endif()
-
-if(TARGET vsc::foundation)
-    add_subdirectory(foundation)
-endif()
-
-if(TARGET vsc::pythia)
-    add_subdirectory(pythia)
-endif()
-
-if(TARGET vsc::ratchet)
-    add_subdirectory(ratchet)
-endif()
-
-if(TARGET vsc::phe)
-    add_subdirectory(phe)
-endif()
-
-
-
+_add_benchmark(benchmark_sha512)
