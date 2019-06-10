@@ -41,7 +41,7 @@ ExternalProject_Add(benchmark-ext
         GIT_TAG
             v1.5.0
         CMAKE_ARGS
-            "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/benchmark"
+            "-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/benchmark"
             "-DCMAKE_BUILD_TYPE=Release"
             "-DBENCHMARK_ENABLE_GTEST_TESTS=OFF"
             "-DBENCHMARK_ENABLE_TESTING=OFF"
@@ -50,11 +50,11 @@ ExternalProject_Add(benchmark-ext
 add_library(benchmark IMPORTED STATIC GLOBAL)
 add_dependencies(benchmark benchmark-ext)
 
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/benchmark/include)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/benchmark/include)
 
 set_target_properties(benchmark
         PROPERTIES
         IMPORTED_LOCATION
-            ${CMAKE_BINARY_DIR}/benchmark/lib/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark${CMAKE_STATIC_LIBRARY_SUFFIX}
+            ${CMAKE_CURRENT_BINARY_DIR}/benchmark/lib/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark${CMAKE_STATIC_LIBRARY_SUFFIX}
         INTERFACE_INCLUDE_DIRECTORIES
-            ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark/include)
+            ${CMAKE_CURRENT_BINARY_DIR}/benchmark/include)

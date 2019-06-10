@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_c_benchmarks VERSION ${virgil_crypto_VERSION} LANGUAGES C)
+project(virgil_crypto_c_benchmarks VERSION ${virgil_crypto_VERSION} LANGUAGES CXX)
 
 add_subdirectory(benchmark)
 
