@@ -38,6 +38,9 @@ project(virgil_crypto_c_foundation_tests VERSION ${virgil_crypto_c_tests_VERSION
 
 add_subdirectory(data)
 
+# ---------------------------------------------------------------------------
+#   Single thread tests
+# ---------------------------------------------------------------------------
 macro(_add_test test)
     add_executable(${test} ${test}.c)
     target_add_filename_definitions(${test})
@@ -90,3 +93,15 @@ _add_test (test_curve25519_private_key)
 _add_test (test_curve25519_public_key)
 _add_test (test_secp256r1_private_key)
 _add_test (test_secp256r1_public_key)
+
+# ---------------------------------------------------------------------------
+#   Multi-threading tests
+# ---------------------------------------------------------------------------
+if (VIRGIL_C_MT_TESTING)
+    macro(_add_test_mt test)
+        _add_test(${test})
+        target_link_libraries(${test} Threads::Threads)
+    endmacro()
+
+    _add_test_mt(test_mt_refcnt)
+endif()
