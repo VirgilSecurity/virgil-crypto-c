@@ -55,7 +55,9 @@
 #include "vscr_assert.h"
 #include "vscr_ratchet_session_defs.h"
 #include "vscr_ratchet_x3dh.h"
+#include "vscr_ratchet_defs.h"
 #include "vscr_ratchet_message_defs.h"
+#include "vscr_ratchet_skipped_messages_defs.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
@@ -407,8 +409,6 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
     memcpy(self->receiver_long_term_public_key, vsc_buffer_bytes(receiver_long_term_public_key_raw),
             vsc_buffer_len(receiver_long_term_public_key_raw));
 
-    size_t shared_secret_count = 3;
-
     vsc_buffer_t *receiver_one_time_public_key_raw = NULL;
 
     if (receiver_one_time_public_key.len != 0) {
@@ -419,8 +419,6 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
             status = vscr_error_status(&error_ctx);
             goto key_err4;
         }
-
-        shared_secret_count = 4;
 
         self->receiver_has_one_time_public_key = true;
         memcpy(self->receiver_one_time_public_key, vsc_buffer_bytes(receiver_one_time_public_key_raw),
@@ -446,26 +444,22 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_id
         goto rng_err;
     }
 
-    vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_count * ED25519_DH_LEN);
-    vsc_buffer_make_secure(shared_secret);
+    vscr_ratchet_symmetric_key_t shared_key;
 
     status = vscr_ratchet_x3dh_compute_initiator_x3dh_secret(vsc_buffer_bytes(sender_identity_private_key_raw),
             vsc_buffer_bytes(ephemeral_private_key), vsc_buffer_bytes(receiver_identity_public_key_raw),
             vsc_buffer_bytes(receiver_long_term_public_key_raw), receiver_one_time_public_key_raw != NULL,
-            receiver_one_time_public_key_raw ? vsc_buffer_bytes(receiver_one_time_public_key_raw) : NULL,
-            shared_secret);
+            receiver_one_time_public_key_raw ? vsc_buffer_bytes(receiver_one_time_public_key_raw) : NULL, shared_key);
 
     if (status != vscr_status_SUCCESS) {
         goto x3dh_err;
     }
 
-    status = vscr_ratchet_initiate(self->ratchet, vsc_buffer_data(shared_secret));
+    status = vscr_ratchet_initiate(self->ratchet, shared_key, vsc_buffer_bytes(receiver_long_term_public_key_raw));
 
     self->is_initiator = true;
 
 x3dh_err:
-    vsc_buffer_destroy(&shared_secret);
-
 rng_err:
     vsc_buffer_destroy(&ephemeral_private_key);
 
@@ -480,6 +474,8 @@ key_err2:
 
 key_err1:
     vsc_buffer_destroy(&sender_identity_private_key_raw);
+
+    vscr_zeroize(shared_key, sizeof(shared_key));
 
     return status;
 }
@@ -557,7 +553,6 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_ide
 
     vsc_buffer_t *receiver_one_time_private_key_raw = NULL;
 
-    size_t shared_secret_count = 3;
     if (receiver_one_time_private_key.len != 0) {
         receiver_one_time_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
                 self->key_utils, receiver_one_time_private_key, false, true, false, &error_ctx);
@@ -566,8 +561,6 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_ide
             status = vscr_error_status(&error_ctx);
             goto key_err4;
         }
-
-        shared_secret_count = 4;
 
         self->receiver_has_one_time_public_key = true;
         curve_status = curve25519_get_pubkey(
@@ -581,27 +574,23 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_ide
         self->receiver_has_one_time_public_key = false;
     }
 
-    vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_count * ED25519_DH_LEN);
-    vsc_buffer_make_secure(shared_secret);
+    vscr_ratchet_symmetric_key_t shared_key;
 
     status = vscr_ratchet_x3dh_compute_responder_x3dh_secret(vsc_buffer_bytes(sender_identity_public_key_raw),
             self->sender_ephemeral_public_key, vsc_buffer_bytes(receiver_identity_private_key_raw),
             vsc_buffer_bytes(receiver_long_term_private_key_raw), receiver_one_time_private_key_raw != NULL,
-            receiver_one_time_private_key_raw ? vsc_buffer_bytes(receiver_one_time_private_key_raw) : NULL,
-            shared_secret);
+            receiver_one_time_private_key_raw ? vsc_buffer_bytes(receiver_one_time_private_key_raw) : NULL, shared_key);
 
     if (status != vscr_status_SUCCESS) {
         goto x3dh_err;
     }
 
-    status = vscr_ratchet_respond(
-            self->ratchet, vsc_buffer_data(shared_secret), &message->message_pb.regular_message, message->header_pb);
+    status = vscr_ratchet_respond(self->ratchet, shared_key, vsc_buffer_data(receiver_long_term_private_key_raw).bytes,
+            &message->message_pb.regular_message, message->header_pb);
 
     self->is_initiator = false;
 
 x3dh_err:
-    vsc_buffer_destroy(&shared_secret);
-
 key_err4:
     vsc_buffer_destroy(&receiver_one_time_private_key_raw);
 
@@ -615,6 +604,8 @@ key_err1:
     vsc_buffer_destroy(&sender_identity_public_key_raw);
 
 msg_type_err:
+    vscr_zeroize(shared_key, sizeof(shared_key));
+
     return status;
 }
 
@@ -762,24 +753,12 @@ vscr_ratchet_session_decrypt(
 }
 
 //
-//  Calculates size of buffer sufficient to store session
-//
-VSCR_PUBLIC size_t
-vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *self) {
-
-    VSCR_UNUSED(self);
-
-    return Session_size;
-}
-
-//
 //  Serializes session to buffer
 //
-VSCR_PUBLIC void
-vscr_ratchet_session_serialize(vscr_ratchet_session_t *self, vsc_buffer_t *output) {
+VSCR_PUBLIC vsc_buffer_t *
+vscr_ratchet_session_serialize(vscr_ratchet_session_t *self) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_session_serialize_len(self));
 
     Session *session_pb = vscr_alloc(sizeof(Session));
 
@@ -803,13 +782,25 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *self, vsc_buffer_t *outpu
 
     vscr_ratchet_serialize(self->ratchet, &session_pb->ratchet);
 
+    size_t len = 0;
+    pb_get_encoded_size(&len, Session_fields, session_pb);
+
+    vsc_buffer_t *output = vsc_buffer_new_with_capacity(len);
+    vsc_buffer_make_secure(output);
+
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
 
     VSCR_ASSERT(pb_encode(&ostream, Session_fields, session_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);
 
+    for (size_t j = 0; j < session_pb->ratchet.skipped_messages.keys_count; j++) {
+        vscr_dealloc(session_pb->ratchet.skipped_messages.keys[j].message_keys);
+    }
+
     vscr_zeroize(session_pb, sizeof(Session));
     vscr_dealloc(session_pb);
+
+    return output;
 }
 
 //
@@ -821,7 +812,7 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     VSCR_ASSERT(vsc_data_is_valid(input));
 
-    if (input.len > Session_size) {
+    if (input.len > vscr_ratchet_common_hidden_MAX_SESSION_LEN) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
 
         return NULL;
@@ -863,6 +854,10 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     vscr_ratchet_deserialize(&session_pb->ratchet, session->ratchet);
 
 err:
+    if (status) {
+        pb_release(Session_fields, session_pb);
+    }
+
     vscr_zeroize(session_pb, sizeof(Session));
     vscr_dealloc(session_pb);
 

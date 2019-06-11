@@ -89,29 +89,15 @@ import VirgilCryptoFoundation
         try RatchetError.handleStatus(fromC: proxyResult)
     }
 
-    /// Add new participant to chat.
-    @objc public func addNewParticipant(participantId: Data, publicKey: Data) throws {
-        let proxyResult = participantId.withUnsafeBytes({ (participantIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
-            publicKey.withUnsafeBytes({ (publicKeyPointer: UnsafeRawBufferPointer) -> vscr_status_t in
+    /// Set session id in case you want to use your own identifier, otherwise - id will be generated for you.
+    @objc public func setSessionId(sessionId: Data) {
+        sessionId.withUnsafeBytes({ (sessionIdPointer: UnsafeRawBufferPointer) -> Void in
 
-                return vscr_ratchet_group_ticket_add_new_participant(self.c_ctx, vsc_data(participantIdPointer.bindMemory(to: byte.self).baseAddress, participantId.count), vsc_data(publicKeyPointer.bindMemory(to: byte.self).baseAddress, publicKey.count))
-            })
+            vscr_ratchet_group_ticket_set_session_id(self.c_ctx, vsc_data(sessionIdPointer.bindMemory(to: byte.self).baseAddress, sessionId.count))
         })
-
-        try RatchetError.handleStatus(fromC: proxyResult)
     }
 
-    /// Remove participant from chat.
-    @objc public func removeParticipant(participantId: Data) throws {
-        let proxyResult = participantId.withUnsafeBytes({ (participantIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
-
-            return vscr_ratchet_group_ticket_remove_participant(self.c_ctx, vsc_data(participantIdPointer.bindMemory(to: byte.self).baseAddress, participantId.count))
-        })
-
-        try RatchetError.handleStatus(fromC: proxyResult)
-    }
-
-    /// Generates message that should be sent to all participants using secure channel.
+    /// Returns message that should be sent to all participants using secure channel.
     @objc public func getTicketMessage() -> RatchetGroupMessage {
         let proxyResult = vscr_ratchet_group_ticket_get_ticket_message(self.c_ctx)
 

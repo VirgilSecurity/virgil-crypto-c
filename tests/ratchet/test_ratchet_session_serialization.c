@@ -40,6 +40,9 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
+#include "vscr_ratchet_skipped_messages_defs.h"
+#include "vscr_ratchet_session_defs.h"
+#include "vscr_ratchet_defs.h"
 #include "vscr_ratchet_message_defs.h"
 #include "vscr_ratchet_session.h"
 #include "test_utils_ratchet.h"
@@ -124,6 +127,77 @@ test__serialization__randomly_skipped_messages__should_work_after_restore(void) 
     vscf_ctr_drbg_destroy(&rng);
 }
 
+void
+test__serialization__big_session__overflow_doesnt_happen(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
+    vscr_ratchet_session_t *session = vscr_ratchet_session_new();
+
+    vscr_ratchet_destroy(&session->ratchet);
+    session->ratchet = vscr_ratchet_new();
+
+    vscr_ratchet_receiver_chain_destroy(&session->ratchet->receiver_chain);
+    session->ratchet->receiver_chain = vscr_ratchet_receiver_chain_new();
+    session->ratchet->receiver_chain->chain_key.index = UINT32_MAX;
+    session->ratchet->prev_sender_chain_count = UINT32_MAX;
+
+    vscr_ratchet_sender_chain_destroy(&session->ratchet->sender_chain);
+    session->ratchet->sender_chain = vscr_ratchet_sender_chain_new();
+    session->ratchet->sender_chain->chain_key.index = UINT32_MAX;
+
+    vscr_ratchet_skipped_messages_destroy(&session->ratchet->skipped_messages);
+    session->ratchet->skipped_messages = vscr_ratchet_skipped_messages_new();
+    session->ratchet->skipped_messages->roots_count = vscr_ratchet_common_hidden_MAX_SKIPPED_DH;
+
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_DH; i++) {
+        session->ratchet->skipped_messages->root_nodes[i] = generate_full_root_node(rng, true);
+    }
+
+    restore_session(rng, &session);
+
+    vscr_ratchet_session_destroy(&session);
+
+    vscf_ctr_drbg_destroy(&rng);
+}
+
+void
+test__serialization__big_random_session__overflow_doesnt_happen(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
+    vscr_ratchet_session_t *session = vscr_ratchet_session_new();
+
+    vscr_ratchet_destroy(&session->ratchet);
+    session->ratchet = vscr_ratchet_new();
+
+    vscr_ratchet_receiver_chain_destroy(&session->ratchet->receiver_chain);
+    session->ratchet->receiver_chain = vscr_ratchet_receiver_chain_new();
+    session->ratchet->receiver_chain->chain_key.index = UINT32_MAX;
+    session->ratchet->prev_sender_chain_count = UINT32_MAX;
+
+    vscr_ratchet_sender_chain_destroy(&session->ratchet->sender_chain);
+    session->ratchet->sender_chain = vscr_ratchet_sender_chain_new();
+    session->ratchet->sender_chain->chain_key.index = UINT32_MAX;
+
+    vscr_ratchet_skipped_messages_destroy(&session->ratchet->skipped_messages);
+    session->ratchet->skipped_messages = vscr_ratchet_skipped_messages_new();
+
+    size_t root_count = generate_number(rng, 0, vscr_ratchet_common_hidden_MAX_SKIPPED_DH);
+
+    session->ratchet->skipped_messages->roots_count = root_count;
+
+    for (size_t i = 0; i < root_count; i++) {
+        session->ratchet->skipped_messages->root_nodes[i] = generate_full_root_node(rng, false);
+    }
+
+    restore_session(rng, &session);
+
+    vscr_ratchet_session_destroy(&session);
+
+    vscf_ctr_drbg_destroy(&rng);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -137,6 +211,8 @@ main(void) {
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__serialization__1_out_of_order_msg__decrypted_should_match);
     RUN_TEST(test__serialization__randomly_skipped_messages__should_work_after_restore);
+    RUN_TEST(test__serialization__big_session__overflow_doesnt_happen);
+    RUN_TEST(test__serialization__big_random_session__overflow_doesnt_happen);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

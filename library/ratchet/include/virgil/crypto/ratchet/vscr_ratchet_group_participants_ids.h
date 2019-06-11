@@ -44,17 +44,24 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_GROUP_PARTICIPANT_DATA_H_INCLUDED
-#define VSCR_RATCHET_GROUP_PARTICIPANT_DATA_H_INCLUDED
+
+//  @description
+// --------------------------------------------------------------------------
+//  Container for array of participants ids
+// --------------------------------------------------------------------------
+
+#ifndef VSCR_RATCHET_GROUP_PARTICIPANTS_IDS_H_INCLUDED
+#define VSCR_RATCHET_GROUP_PARTICIPANTS_IDS_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_typedefs.h"
-#include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_common.h"
-#include "vscr_ratchet_common.h"
-#include "vscr_ratchet_chain_key.h"
-#include "vscr_ratchet_group_participant_epoch.h"
-#include "vscr_ratchet_group_participant_data.h"
+
+#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
@@ -72,84 +79,73 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet group participant data' context.
+//  Handle 'ratchet group participants ids' context.
 //
-typedef struct vscr_ratchet_group_participant_data_t vscr_ratchet_group_participant_data_t;
-struct vscr_ratchet_group_participant_data_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscr_ratchet_participant_id_t id;
-
-    vscr_ratchet_public_key_t pub_key;
-
-    vscr_ratchet_group_participant_epoch_t *epoches[vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT];
-};
+typedef struct vscr_ratchet_group_participants_ids_t vscr_ratchet_group_participants_ids_t;
 
 //
-//  Return size of 'vscr_ratchet_group_participant_data_t'.
+//  Return size of 'vscr_ratchet_group_participants_ids_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_group_participant_data_ctx_size(void);
+vscr_ratchet_group_participants_ids_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_init(vscr_ratchet_group_participant_data_t *self);
+vscr_ratchet_group_participants_ids_init(vscr_ratchet_group_participants_ids_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_cleanup(vscr_ratchet_group_participant_data_t *self);
+vscr_ratchet_group_participants_ids_cleanup(vscr_ratchet_group_participants_ids_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_group_participant_data_t *
-vscr_ratchet_group_participant_data_new(void);
+VSCR_PUBLIC vscr_ratchet_group_participants_ids_t *
+vscr_ratchet_group_participants_ids_new(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//  Creates new array for size elements
+//
+VSCR_PUBLIC void
+vscr_ratchet_group_participants_ids_init_size(vscr_ratchet_group_participants_ids_t *self, uint32_t size);
+
+//
+//  Allocate class context and perform it's initialization.
+//  Creates new array for size elements
+//
+VSCR_PUBLIC vscr_ratchet_group_participants_ids_t *
+vscr_ratchet_group_participants_ids_new_size(uint32_t size);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_delete(vscr_ratchet_group_participant_data_t *self);
+vscr_ratchet_group_participants_ids_delete(vscr_ratchet_group_participants_ids_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_group_participant_data_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_group_participants_ids_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_destroy(vscr_ratchet_group_participant_data_t **self_ref);
+vscr_ratchet_group_participants_ids_destroy(vscr_ratchet_group_participants_ids_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_group_participant_data_t *
-vscr_ratchet_group_participant_data_shallow_copy(vscr_ratchet_group_participant_data_t *self);
+VSCR_PUBLIC vscr_ratchet_group_participants_ids_t *
+vscr_ratchet_group_participants_ids_shallow_copy(vscr_ratchet_group_participants_ids_t *self);
 
+//
+//  Add participant id to array
+//
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_add_epoch(vscr_ratchet_group_participant_data_t *self, size_t epoch,
-        vscr_ratchet_chain_key_t **chain_key_ref);
-
-VSCR_PUBLIC vscr_ratchet_group_participant_epoch_t *
-vscr_ratchet_group_participant_data_find_epoch(const vscr_ratchet_group_participant_data_t *self, size_t epoch);
-
-VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_serialize(const vscr_ratchet_group_participant_data_t *self,
-        ParticipantData *data_pb);
-
-VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_deserialize(const ParticipantData *data_pb,
-        vscr_ratchet_group_participant_data_t *data);
+vscr_ratchet_group_participants_ids_add_id(vscr_ratchet_group_participants_ids_t *self, vsc_data_t id);
 
 
 // --------------------------------------------------------------------------
@@ -165,5 +161,5 @@ vscr_ratchet_group_participant_data_deserialize(const ParticipantData *data_pb,
 
 
 //  @footer
-#endif // VSCR_RATCHET_GROUP_PARTICIPANT_DATA_H_INCLUDED
+#endif // VSCR_RATCHET_GROUP_PARTICIPANTS_IDS_H_INCLUDED
 //  @end

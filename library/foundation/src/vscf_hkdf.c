@@ -59,6 +59,7 @@
 #include "vscf_hash_based_alg_info.h"
 #include "vscf_hash.h"
 #include "vscf_hkdf_defs.h"
+#include "vscf_hkdf_private.h"
 #include "vscf_hkdf_internal.h"
 
 // clang-format on
@@ -77,18 +78,6 @@
 enum {
     vscf_hkdf_HASH_COUNTER_MAX = 255
 };
-
-//
-//  Extracts fixed-length pseudorandom key from keying material.
-//
-static void
-vscf_hkdf_extract(vscf_hkdf_t *self, vsc_data_t data, vsc_buffer_t *pr_key);
-
-//
-//  Expands the pseudorandom key to the desired length.
-//
-static void
-vscf_hkdf_expand(vscf_hkdf_t *self, vsc_buffer_t *pr_key, vsc_buffer_t *key, size_t key_len);
 
 
 // --------------------------------------------------------------------------
@@ -129,7 +118,7 @@ vscf_hkdf_cleanup_ctx(vscf_hkdf_t *self) {
 //
 //  Extracts fixed-length pseudorandom key from keying material.
 //
-static void
+VSCF_PRIVATE void
 vscf_hkdf_extract(vscf_hkdf_t *self, vsc_data_t data, vsc_buffer_t *pr_key) {
 
     VSCF_ASSERT_PTR(self);
@@ -150,7 +139,7 @@ vscf_hkdf_extract(vscf_hkdf_t *self, vsc_data_t data, vsc_buffer_t *pr_key) {
 //
 //  Expands the pseudorandom key to the desired length.
 //
-static void
+VSCF_PRIVATE void
 vscf_hkdf_expand(vscf_hkdf_t *self, vsc_buffer_t *pr_key, vsc_buffer_t *key, size_t key_len) {
 
     VSCF_ASSERT_PTR(self);

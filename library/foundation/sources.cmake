@@ -692,6 +692,7 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_HASH_BASED_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_hash_based_alg_info_defs.h>"
             "$<$<BOOL:${VSCF_HKDF}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_hkdf.h>"
             "$<$<BOOL:${VSCF_HKDF}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_hkdf_internal.h>"
+            "$<$<BOOL:${VSCF_HKDF}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_hkdf_private.h>"
             "$<$<BOOL:${VSCF_HKDF}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_hkdf_defs.h>"
             "$<$<BOOL:${VSCF_HMAC}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_hmac.h>"
             "$<$<BOOL:${VSCF_HMAC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac_internal.h>"
