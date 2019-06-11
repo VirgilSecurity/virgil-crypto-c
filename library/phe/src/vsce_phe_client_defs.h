@@ -57,14 +57,14 @@
 #include "vsce_atomic.h"
 #include "vsce_phe_hash.h"
 
+#include <virgil/crypto/foundation/private/vscf_simple_swu.h>
+
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
-#   include <virgil/crypto/foundation/vscf_simple_swu.h>
 #endif
 
 #if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <VSCFoundation/vscf_impl.h>
-#   include <VSCFoundation/vscf_simple_swu.h>
 #endif
 
 // clang-format on

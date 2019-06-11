@@ -57,14 +57,7 @@
 #include "vsce_atomic.h"
 
 #include <mbedtls/bignum.h>
-
-#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_simple_swu.h>
-#endif
-
-#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_simple_swu.h>
-#endif
+#include <virgil/crypto/foundation/private/vscf_simple_swu.h>
 
 // clang-format on
 //  @end
