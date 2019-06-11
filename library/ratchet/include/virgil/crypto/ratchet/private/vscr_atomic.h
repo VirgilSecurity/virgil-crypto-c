@@ -70,7 +70,7 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-#if defined(VSCR_HAVE_STDATOMIC_H) && !defined(__STDC_NO_ATOMICS__) && VSCR_MULTI_THREADING
+#if VSCR_HAVE_STDATOMIC_H && !defined(__STDC_NO_ATOMICS__) && VSCR_MULTI_THREADING
 #   define VSCR_ATOMIC _Atomic
 #   define VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(obj, expected, desired) atomic_compare_exchange_weak((obj), (expected), (desired))
 #else
