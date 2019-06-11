@@ -7,7 +7,7 @@
         <macros name="atomic"/>
         <macros name="compare exchange weak"/>
         <code>
-            #if defined(.(c_global_macros_have_stdatomic_h)) &amp;&amp; !defined(__STDC_NO_ATOMICS__) &amp;&amp; .(c_global_macros_multi_threading)
+            #if .(c_global_macros_have_stdatomic_h) &amp;&amp; !defined(__STDC_NO_ATOMICS__) &amp;&amp; .(c_global_macros_multi_threading)
             #   define .(c_class_atomic_macros_atomic) _Atomic
             #   define .(c_class_atomic_macros_compare_exchange_weak)(obj, expected, desired) atomic_compare_exchange_weak((obj), (expected), (desired))
             #else
