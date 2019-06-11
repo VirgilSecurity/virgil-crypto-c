@@ -38,14 +38,14 @@
 
         <constant name="hash counter max" value="255"/>
 
-        <method name="extract">
+        <method name="extract" scope="private" declaration="public" visibility="private">
             Extracts fixed-length pseudorandom key from keying material.
 
             <argument name="data" class="data"/>
             <argument name="pr key" class="buffer"/>
         </method>
 
-        <method name="expand">
+        <method name="expand" scope="private" declaration="public" visibility="private">
             Expands the pseudorandom key to the desired length.
 
             <argument name="pr key" class="buffer"/>

@@ -52,14 +52,6 @@
 #include "vscr_ratchet_message_key.h"
 #include "vscr_status.h"
 
-#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#endif
-
 // clang-format on
 //  @end
 
@@ -123,10 +115,6 @@ vscr_ratchet_keys_destroy(vscr_ratchet_keys_t **self_ref);
 //
 VSCR_PUBLIC vscr_ratchet_keys_t *
 vscr_ratchet_keys_shallow_copy(vscr_ratchet_keys_t *self);
-
-VSCR_PUBLIC void
-vscr_ratchet_keys_derive_initial_keys(vsc_data_t shared_secret, vscr_ratchet_symmetric_key_t root_key,
-        vscr_ratchet_symmetric_key_t chain_key);
 
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_keys_create_chain_key(const vscr_ratchet_symmetric_key_t root_key,

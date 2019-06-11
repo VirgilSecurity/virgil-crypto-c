@@ -11,16 +11,18 @@
     <constant name="max skipped dh" value="5"/>
     <constant name="max message gap" value="2000"/>
 
-    <constant name="max epoches count" value="5"/>
-    <constant name="max skipped epoches count" value="4"/>
+    <constant name="max epochs count" value="5"/>
+    <constant name="max skipped epochs count" value="4"/>
 
     <constant name="prekey message len" value="139"/>
 
     <constant name="max group regular message len" value="32918"/>
-    <constant name="max group info message len" value="11049"/>
-    <constant name="min participant len" value="106"/>
+    <constant name="max group info message len" value="82"/>
 
     <constant name="max cipher text len" value="32768"/>
+
+    <constant name="max group session len" value="4191503"/>
+    <constant name="max session len" value="42531"/>
 
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>

@@ -236,7 +236,7 @@ vscr_ratchet_group_participant_epoch_serialize(
     }
 
     vscr_ratchet_skipped_messages_root_node_serialize(
-            self->skipped_messages, data_pb->message_keys, &data_pb->message_keys_count);
+            self->skipped_messages, &data_pb->message_keys, &data_pb->message_keys_count);
 }
 
 VSCR_PUBLIC void

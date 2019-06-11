@@ -117,6 +117,26 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_BAD_SIGNATURE = -308;
 
+    public static final int ERROR_INVALID_BRAINKEY_PASSWORD_LEN = -401;
+
+    public static final int ERROR_INVALID_BRAINKEY_FACTOR_LEN = -402;
+
+    public static final int ERROR_INVALID_BRAINKEY_POINT_LEN = -403;
+
+    public static final int ERROR_INVALID_BRAINKEY_KEY_NAME_LEN = -404;
+
+    public static final int ERROR_BRAINKEY_INTERNAL = -405;
+
+    public static final int ERROR_BRAINKEY_INVALID_POINT = -406;
+
+    public static final int ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN = -407;
+
+    public static final int ERROR_INVALID_BRAINKEY_POINT_BUFFER_LEN = -408;
+
+    public static final int ERROR_INVALID_BRAINKEY_SEED_BUFFER_LEN = -409;
+
+    public static final int ERROR_INVALID_IDENTITY_SECRET = -410;
+
     private int statusCode;
 
     /* Create new instance. */
@@ -207,6 +227,26 @@ public class FoundationException extends RuntimeException {
             return "A custom parameter with a given key is found, but the requested value type does not correspond to the actual type.";
         case ERROR_BAD_SIGNATURE:
             return "Signature format is corrupted.";
+        case ERROR_INVALID_BRAINKEY_PASSWORD_LEN:
+            return "Brainkey password length is out of range.";
+        case ERROR_INVALID_BRAINKEY_FACTOR_LEN:
+            return "Brainkey number length should be 32 byte.";
+        case ERROR_INVALID_BRAINKEY_POINT_LEN:
+            return "Brainkey point length should be 65 bytes.";
+        case ERROR_INVALID_BRAINKEY_KEY_NAME_LEN:
+            return "Brainkey name is out of range.";
+        case ERROR_BRAINKEY_INTERNAL:
+            return "Brainkey internal error.";
+        case ERROR_BRAINKEY_INVALID_POINT:
+            return "Brainkey point is invalid.";
+        case ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN:
+            return "Brainkey number buffer length capacity should be >= 32 byte.";
+        case ERROR_INVALID_BRAINKEY_POINT_BUFFER_LEN:
+            return "Brainkey point buffer length capacity should be >= 32 byte.";
+        case ERROR_INVALID_BRAINKEY_SEED_BUFFER_LEN:
+            return "Brainkey seed buffer length capacity should be >= 32 byte.";
+        case ERROR_INVALID_IDENTITY_SECRET:
+            return "Brainkey identity secret is invalid.";
         default:
             return "Unknown error";
         }

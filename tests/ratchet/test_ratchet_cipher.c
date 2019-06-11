@@ -74,9 +74,9 @@ test__encrypt_decrypt__rnd_data__should_match(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
     for (size_t i = 0; i < 100; i++) {
-        vsc_buffer_t *key = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_KEY_LEN);
+        vsc_buffer_t *key = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_SHARED_KEY_LEN);
 
-        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, vscr_ratchet_common_hidden_KEY_LEN, key));
+        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, vscr_ratchet_common_hidden_SHARED_KEY_LEN, key));
 
         vsc_buffer_t *plain_text = NULL;
         generate_random_data(rng, &plain_text);

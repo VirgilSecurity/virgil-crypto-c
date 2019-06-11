@@ -1,0 +1,29 @@
+<class name="ratchet group participants ids" context="internal">
+    Container for array of participants ids
+
+    <require class="ratchet common" scope="context"/>
+    <require module="ratchet typedefs" scope="context"/>
+
+    <property name="size" type="unsigned" size="4" access="readwrite"/>
+    <property name="count" type="unsigned" size="4" access="readwrite"/>
+    <property name="ids" class="vscr_ratchet_participant_id_t" is_reference="0" library="internal" access="readwrite">
+        <array/>
+    </property>
+
+    <method name="add id">
+        Add participant id to array
+
+        <argument name="id" class="data">
+            Participant id. Should be 32 byte
+        </argument>
+    </method>
+
+    <constructor name="size">
+        Creates new array for size elements
+
+        <argument name="size" type="unsigned" size="4">
+            Number of elements in array
+        </argument>
+    </constructor>
+
+</class>

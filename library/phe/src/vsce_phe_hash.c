@@ -128,8 +128,6 @@ vsce_phe_hash_cleanup(vsce_phe_hash_t *self) {
     if (--self->refcnt == 0) {
         vsce_phe_hash_cleanup_ctx(self);
 
-        vsce_phe_hash_release_simple_swu(self);
-
         vsce_zeroize(self, sizeof(vsce_phe_hash_t));
     }
 }
@@ -198,44 +196,6 @@ vsce_phe_hash_shallow_copy(vsce_phe_hash_t *self) {
     return self;
 }
 
-//
-//  Setup dependency to the class 'simple swu' with shared ownership.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_use_simple_swu(vsce_phe_hash_t *self, vsce_simple_swu_t *simple_swu) {
-
-    VSCE_ASSERT_PTR(self);
-    VSCE_ASSERT_PTR(simple_swu);
-    VSCE_ASSERT(self->simple_swu == NULL);
-
-    self->simple_swu = vsce_simple_swu_shallow_copy(simple_swu);
-}
-
-//
-//  Setup dependency to the class 'simple swu' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_take_simple_swu(vsce_phe_hash_t *self, vsce_simple_swu_t *simple_swu) {
-
-    VSCE_ASSERT_PTR(self);
-    VSCE_ASSERT_PTR(simple_swu);
-    VSCE_ASSERT_PTR(self->simple_swu == NULL);
-
-    self->simple_swu = simple_swu;
-}
-
-//
-//  Release dependency to the class 'simple swu'.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_release_simple_swu(vsce_phe_hash_t *self) {
-
-    VSCE_ASSERT_PTR(self);
-
-    vsce_simple_swu_destroy(&self->simple_swu);
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -254,7 +214,7 @@ vsce_phe_hash_init_ctx(vsce_phe_hash_t *self) {
 
     VSCE_ASSERT_PTR(self);
 
-    vsce_phe_hash_take_simple_swu(self, vsce_simple_swu_new());
+    self->simple_swu = vscf_simple_swu_new();
 
     mbedtls_ecp_group_init(&self->group);
 
@@ -272,6 +232,8 @@ static void
 vsce_phe_hash_cleanup_ctx(vsce_phe_hash_t *self) {
 
     VSCE_ASSERT_PTR(self);
+
+    vscf_simple_swu_destroy(&self->simple_swu);
 
     mbedtls_ecp_group_free(&self->group);
 }
@@ -309,33 +271,6 @@ vsce_phe_hash_derive_account_key(vsce_phe_hash_t *self, const mbedtls_ecp_point 
 }
 
 VSCE_PUBLIC void
-vsce_phe_hash_data_to_point(vsce_phe_hash_t *self, vsc_data_t data, mbedtls_ecp_point *p) {
-
-    VSCE_ASSERT_PTR(self);
-
-    byte buffer[vscf_sha512_DIGEST_LEN];
-    vsc_buffer_t buff;
-    vsc_buffer_init(&buff);
-    vsc_buffer_use(&buff, buffer, sizeof(buffer));
-
-    vscf_sha512_hash(data, &buff);
-
-    mbedtls_mpi t;
-    mbedtls_mpi_init(&t);
-
-    vsc_data_t buff_data = vsc_data_slice_beg(vsc_buffer_data(&buff), 0, vsce_phe_common_PHE_HASH_LEN);
-    int mbedtls_status = 0;
-    mbedtls_status = mbedtls_mpi_read_binary(&t, buff_data.bytes, buff_data.len);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-
-    vsce_simple_swu_bignum_to_point(self->simple_swu, &t, p);
-
-    mbedtls_mpi_free(&t);
-    vsc_buffer_delete(&buff);
-    vsce_zeroize(buffer, sizeof(buffer));
-}
-
-VSCE_PUBLIC void
 vsce_phe_hash_hc0(vsce_phe_hash_t *self, vsc_data_t nc, vsc_data_t password, mbedtls_ecp_point *hc0) {
 
     VSCE_ASSERT_PTR(self);
@@ -369,7 +304,7 @@ vsce_phe_hash_hc0(vsce_phe_hash_t *self, vsc_data_t nc, vsc_data_t password, mbe
 
     VSCE_ASSERT(vsc_buffer_unused_len(&buff) == 0);
 
-    vsce_phe_hash_data_to_point(self, vsc_buffer_data(&buff), hc0);
+    vscf_simple_swu_data_to_point(self->simple_swu, vsc_buffer_data(&buff), hc0);
 
     vsc_buffer_delete(&buff);
     vsce_zeroize(buffer, sizeof(buffer));
@@ -409,7 +344,7 @@ vsce_phe_hash_hc1(vsce_phe_hash_t *self, vsc_data_t nc, vsc_data_t password, mbe
 
     VSCE_ASSERT(vsc_buffer_unused_len(&buff) == 0);
 
-    vsce_phe_hash_data_to_point(self, vsc_buffer_data(&buff), hc1);
+    vscf_simple_swu_data_to_point(self->simple_swu, vsc_buffer_data(&buff), hc1);
 
     vsc_buffer_delete(&buff);
     vsce_zeroize(buffer, sizeof(buffer));
@@ -439,7 +374,7 @@ vsce_phe_hash_hs0(vsce_phe_hash_t *self, vsc_data_t ns, mbedtls_ecp_point *hs0) 
 
     VSCE_ASSERT(vsc_buffer_unused_len(&buff) == 0);
 
-    vsce_phe_hash_data_to_point(self, vsc_buffer_data(&buff), hs0);
+    vscf_simple_swu_data_to_point(self->simple_swu, vsc_buffer_data(&buff), hs0);
 
     vsc_buffer_delete(&buff);
     vsce_zeroize(buffer, sizeof(buffer));
@@ -469,7 +404,7 @@ vsce_phe_hash_hs1(vsce_phe_hash_t *self, vsc_data_t ns, mbedtls_ecp_point *hs1) 
 
     VSCE_ASSERT(vsc_buffer_unused_len(&buff) == 0);
 
-    vsce_phe_hash_data_to_point(self, vsc_buffer_data(&buff), hs1);
+    vscf_simple_swu_data_to_point(self->simple_swu, vsc_buffer_data(&buff), hs1);
 
     vsc_buffer_delete(&buff);
     vsce_zeroize(buffer, sizeof(buffer));

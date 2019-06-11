@@ -44,7 +44,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_ratchet_group_participant_data.h"
+#include "vscr_ratchet_group_participant.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 
@@ -60,11 +60,11 @@
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_group_participant_data_init() is called.
+//  Note, this method is called automatically when method vscr_ratchet_group_participant_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_group_participant_data_init_ctx(vscr_ratchet_group_participant_data_t *self);
+vscr_ratchet_group_participant_init_ctx(vscr_ratchet_group_participant_t *self);
 
 //
 //  Release all inner resources.
@@ -72,37 +72,37 @@ vscr_ratchet_group_participant_data_init_ctx(vscr_ratchet_group_participant_data
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_group_participant_data_cleanup_ctx(vscr_ratchet_group_participant_data_t *self);
+vscr_ratchet_group_participant_cleanup_ctx(vscr_ratchet_group_participant_t *self);
 
 //
-//  Return size of 'vscr_ratchet_group_participant_data_t'.
+//  Return size of 'vscr_ratchet_group_participant_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_group_participant_data_ctx_size(void) {
+vscr_ratchet_group_participant_ctx_size(void) {
 
-    return sizeof(vscr_ratchet_group_participant_data_t);
+    return sizeof(vscr_ratchet_group_participant_t);
 }
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_init(vscr_ratchet_group_participant_data_t *self) {
+vscr_ratchet_group_participant_init(vscr_ratchet_group_participant_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    vscr_zeroize(self, sizeof(vscr_ratchet_group_participant_data_t));
+    vscr_zeroize(self, sizeof(vscr_ratchet_group_participant_t));
 
     self->refcnt = 1;
 
-    vscr_ratchet_group_participant_data_init_ctx(self);
+    vscr_ratchet_group_participant_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_cleanup(vscr_ratchet_group_participant_data_t *self) {
+vscr_ratchet_group_participant_cleanup(vscr_ratchet_group_participant_t *self) {
 
     if (self == NULL) {
         return;
@@ -113,22 +113,22 @@ vscr_ratchet_group_participant_data_cleanup(vscr_ratchet_group_participant_data_
     }
 
     if (--self->refcnt == 0) {
-        vscr_ratchet_group_participant_data_cleanup_ctx(self);
+        vscr_ratchet_group_participant_cleanup_ctx(self);
 
-        vscr_zeroize(self, sizeof(vscr_ratchet_group_participant_data_t));
+        vscr_zeroize(self, sizeof(vscr_ratchet_group_participant_t));
     }
 }
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_group_participant_data_t *
-vscr_ratchet_group_participant_data_new(void) {
+VSCR_PUBLIC vscr_ratchet_group_participant_t *
+vscr_ratchet_group_participant_new(void) {
 
-    vscr_ratchet_group_participant_data_t *self = (vscr_ratchet_group_participant_data_t *) vscr_alloc(sizeof (vscr_ratchet_group_participant_data_t));
+    vscr_ratchet_group_participant_t *self = (vscr_ratchet_group_participant_t *) vscr_alloc(sizeof (vscr_ratchet_group_participant_t));
     VSCR_ASSERT_ALLOC(self);
 
-    vscr_ratchet_group_participant_data_init(self);
+    vscr_ratchet_group_participant_init(self);
 
     self->self_dealloc_cb = vscr_dealloc;
 
@@ -140,7 +140,7 @@ vscr_ratchet_group_participant_data_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_delete(vscr_ratchet_group_participant_data_t *self) {
+vscr_ratchet_group_participant_delete(vscr_ratchet_group_participant_t *self) {
 
     if (self == NULL) {
         return;
@@ -148,7 +148,7 @@ vscr_ratchet_group_participant_data_delete(vscr_ratchet_group_participant_data_t
 
     vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscr_ratchet_group_participant_data_cleanup(self);
+    vscr_ratchet_group_participant_cleanup(self);
 
     if (self->refcnt == 0 && self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
@@ -157,24 +157,24 @@ vscr_ratchet_group_participant_data_delete(vscr_ratchet_group_participant_data_t
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_group_participant_data_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_group_participant_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_destroy(vscr_ratchet_group_participant_data_t **self_ref) {
+vscr_ratchet_group_participant_destroy(vscr_ratchet_group_participant_t **self_ref) {
 
     VSCR_ASSERT_PTR(self_ref);
 
-    vscr_ratchet_group_participant_data_t *self = *self_ref;
+    vscr_ratchet_group_participant_t *self = *self_ref;
     *self_ref = NULL;
 
-    vscr_ratchet_group_participant_data_delete(self);
+    vscr_ratchet_group_participant_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_group_participant_data_t *
-vscr_ratchet_group_participant_data_shallow_copy(vscr_ratchet_group_participant_data_t *self) {
+VSCR_PUBLIC vscr_ratchet_group_participant_t *
+vscr_ratchet_group_participant_shallow_copy(vscr_ratchet_group_participant_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
@@ -193,11 +193,11 @@ vscr_ratchet_group_participant_data_shallow_copy(vscr_ratchet_group_participant_
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_group_participant_data_init() is called.
+//  Note, this method is called automatically when method vscr_ratchet_group_participant_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_group_participant_data_init_ctx(vscr_ratchet_group_participant_data_t *self) {
+vscr_ratchet_group_participant_init_ctx(vscr_ratchet_group_participant_t *self) {
 
     VSCR_ASSERT_PTR(self);
 }
@@ -208,93 +208,91 @@ vscr_ratchet_group_participant_data_init_ctx(vscr_ratchet_group_participant_data
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_group_participant_data_cleanup_ctx(vscr_ratchet_group_participant_data_t *self) {
+vscr_ratchet_group_participant_cleanup_ctx(vscr_ratchet_group_participant_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT; i++) {
-        vscr_ratchet_group_participant_epoch_destroy(&self->epoches[i]);
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT; i++) {
+        vscr_ratchet_group_participant_epoch_destroy(&self->epochs[i]);
     }
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_add_epoch(
-        vscr_ratchet_group_participant_data_t *self, size_t epoch, vscr_ratchet_chain_key_t **chain_key_ref) {
+vscr_ratchet_group_participant_add_epoch(
+        vscr_ratchet_group_participant_t *self, uint32_t epoch, vscr_ratchet_chain_key_t **chain_key_ref) {
 
     VSCR_ASSERT_PTR(self);
 
     size_t last_epoch = 0;
 
-    if (self->epoches[0]) {
-        last_epoch = self->epoches[0]->epoch;
+    if (self->epochs[0]) {
+        last_epoch = self->epochs[0]->epoch;
         VSCR_ASSERT(epoch > last_epoch);
     }
 
     size_t shift = epoch - last_epoch;
 
     if (shift != 0) {
-        for (size_t i = 0; i < shift; i++) {
+        for (size_t i = 0; i < shift && i < vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT; i++) {
             vscr_ratchet_group_participant_epoch_destroy(
-                    &self->epoches[vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT - i - 1]);
+                    &self->epochs[vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT - i - 1]);
         }
 
-        for (size_t i = vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT - 1; i >= shift; i--) {
-            self->epoches[i] = self->epoches[i - shift];
+        for (size_t i = vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT - 1; i >= shift; i--) {
+            self->epochs[i] = self->epochs[i - shift];
         }
     }
 
-    self->epoches[0] = vscr_ratchet_group_participant_epoch_new();
-    self->epoches[0]->epoch = epoch;
-    self->epoches[0]->chain_key = *chain_key_ref;
+    self->epochs[0] = vscr_ratchet_group_participant_epoch_new();
+    self->epochs[0]->epoch = epoch;
+    self->epochs[0]->chain_key = *chain_key_ref;
     *chain_key_ref = NULL;
 }
 
 VSCR_PUBLIC vscr_ratchet_group_participant_epoch_t *
-vscr_ratchet_group_participant_data_find_epoch(const vscr_ratchet_group_participant_data_t *self, size_t epoch) {
+vscr_ratchet_group_participant_find_epoch(const vscr_ratchet_group_participant_t *self, uint32_t epoch) {
 
     VSCR_ASSERT_PTR(self);
 
-    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT; i++) {
-        if (self->epoches[i] && self->epoches[i]->epoch == epoch)
-            return self->epoches[i];
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT; i++) {
+        if (self->epochs[i] && self->epochs[i]->epoch == epoch)
+            return self->epochs[i];
     }
 
     return NULL;
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_serialize(
-        const vscr_ratchet_group_participant_data_t *self, ParticipantData *data_pb) {
+vscr_ratchet_group_participant_serialize(const vscr_ratchet_group_participant_t *self, ParticipantData *data_pb) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(data_pb);
 
-    memcpy(data_pb->id, self->id, sizeof(self->id));
-    memcpy(data_pb->pub_key, self->pub_key, sizeof(self->pub_key));
+    memcpy(data_pb->id, self->info.id, sizeof(self->info.id));
+    memcpy(data_pb->pub_key, self->info.pub_key, sizeof(self->info.pub_key));
 
-    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT; i++) {
-        if (self->epoches[i]) {
-            vscr_ratchet_group_participant_epoch_serialize(self->epoches[i], &data_pb->epoches[i]);
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT; i++) {
+        if (self->epochs[i]) {
+            vscr_ratchet_group_participant_epoch_serialize(self->epochs[i], &data_pb->epochs[i]);
         } else {
-            data_pb->epoches[i].is_empty = true;
+            data_pb->epochs[i].is_empty = true;
         }
     }
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_deserialize(
-        const ParticipantData *data_pb, vscr_ratchet_group_participant_data_t *data) {
+vscr_ratchet_group_participant_deserialize(const ParticipantData *data_pb, vscr_ratchet_group_participant_t *data) {
 
     VSCR_ASSERT_PTR(data_pb);
     VSCR_ASSERT_PTR(data);
 
-    memcpy(data->id, data_pb->id, sizeof(data->id));
-    memcpy(data->pub_key, data_pb->pub_key, sizeof(data->pub_key));
+    memcpy(data->info.id, data_pb->id, sizeof(data->info.id));
+    memcpy(data->info.pub_key, data_pb->pub_key, sizeof(data->info.pub_key));
 
-    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT; i++) {
-        if (!data_pb->epoches[i].is_empty) {
-            data->epoches[i] = vscr_ratchet_group_participant_epoch_new();
-            vscr_ratchet_group_participant_epoch_deserialize(&data_pb->epoches[i], data->epoches[i]);
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT; i++) {
+        if (!data_pb->epochs[i].is_empty) {
+            data->epochs[i] = vscr_ratchet_group_participant_epoch_new();
+            vscr_ratchet_group_participant_epoch_deserialize(&data_pb->epochs[i], data->epochs[i]);
         }
     }
 }
