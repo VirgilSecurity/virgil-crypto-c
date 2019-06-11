@@ -53,6 +53,7 @@
 #ifndef VSC_COMMON_PRIVATE_H_INCLUDED
 #define VSC_COMMON_PRIVATE_H_INCLUDED
 
+#include "vsc_atomic.h"
 #include "vsc_buffer_defs.h"
 
 // clang-format on

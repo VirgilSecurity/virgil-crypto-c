@@ -1,6 +1,6 @@
 <class name="phe client" context="internal">
     Class for client-side PHE crypto operations.
-    This class is thread-safe in case if VSCE_MULTI_THREAD defined
+    This class is thread-safe in case if .(c_global_macros_multi_threading) defined.
 
     <require class="phe common" scope="public"/>
     <require impl="ctr drbg" project="foundation" scope="private"/>

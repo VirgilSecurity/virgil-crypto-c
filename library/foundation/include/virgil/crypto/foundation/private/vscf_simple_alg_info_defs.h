@@ -59,6 +59,7 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_simple_alg_info.h"
+#include "vscf_atomic.h"
 #include "vscf_alg_id.h"
 
 // clang-format on
@@ -87,7 +88,7 @@ struct vscf_simple_alg_info_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
     //
     //  Implementation specific context.
     //

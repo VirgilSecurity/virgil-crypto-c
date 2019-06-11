@@ -68,6 +68,16 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+#cmakedefine01 VSCF_HAVE_ASSERT_H
+#if VSCF_HAVE_ASSERT_H
+#   include <assert.h>
+#endif
+
+#cmakedefine01 VSCF_HAVE_STDATOMIC_H
+#if VSCF_HAVE_STDATOMIC_H
+#   include <stdatomic.h>
+#endif
+
 //
 //  Defines namespace include prefix for project 'common'.
 //

@@ -97,7 +97,7 @@ _add_test (test_secp256r1_public_key)
 # ---------------------------------------------------------------------------
 #   Multi-threading tests
 # ---------------------------------------------------------------------------
-if (VIRGIL_C_MT_TESTING)
+if (VIRGIL_C_MT_TESTING AND VSCF_MULTI_THREADING)
     macro(_add_test_mt test)
         _add_test(${test})
         target_link_libraries(${test} Threads::Threads)

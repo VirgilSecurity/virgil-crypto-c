@@ -115,15 +115,9 @@ vscf_list_key_value_node_cleanup(vscf_list_key_value_node_t *self) {
         return;
     }
 
-    if (self->refcnt == 0) {
-        return;
-    }
+    vscf_list_key_value_node_cleanup_ctx(self);
 
-    if (--self->refcnt == 0) {
-        vscf_list_key_value_node_cleanup_ctx(self);
-
-        vscf_zeroize(self, sizeof(vscf_list_key_value_node_t));
-    }
+    vscf_zeroize(self, sizeof(vscf_list_key_value_node_t));
 }
 
 //
@@ -144,7 +138,7 @@ vscf_list_key_value_node_new(void) {
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
 vscf_list_key_value_node_delete(vscf_list_key_value_node_t *self) {
@@ -153,11 +147,27 @@ vscf_list_key_value_node_delete(vscf_list_key_value_node_t *self) {
         return;
     }
 
+    size_t old_counter = self->refcnt;
+    size_t new_counter = old_counter > 0 ? old_counter - 1 : old_counter;
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        new_counter = old_counter > 0 ? old_counter - 1 : old_counter;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0 || (new_counter == old_counter)) {
+        return;
+    }
+
     vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
     vscf_list_key_value_node_cleanup(self);
 
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+    if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
     }
 }
@@ -185,7 +195,17 @@ vscf_list_key_value_node_shallow_copy(vscf_list_key_value_node_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
     ++self->refcnt;
+    #endif
 
     return self;
 }

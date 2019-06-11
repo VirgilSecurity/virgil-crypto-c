@@ -49,6 +49,10 @@ if(NOT TARGET pythia)
     message(FATAL_ERROR "Expected target 'pythia' to be defined first.")
 endif()
 
+include(CheckIncludeFiles)
+check_include_files(assert.h VSCP_HAVE_ASSERT_H)
+check_include_files(stdatomic.h VSCP_HAVE_STDATOMIC_H)
+
 configure_file(
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_platform.h.in"
         "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/pythia/vscp_platform.h"
@@ -99,6 +103,7 @@ target_sources(pythia
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_assert.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_library.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_memory.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/vscp_atomic.h"
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/pythia/vscp_platform.h"
             "$<$<BOOL:${VSCP_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_error.h>"
             "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_pythia.h>"

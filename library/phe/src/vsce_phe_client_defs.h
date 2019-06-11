@@ -54,6 +54,7 @@
 #define VSCE_PHE_CLIENT_DEFS_H_INCLUDED
 
 #include "vsce_library.h"
+#include "vsce_atomic.h"
 #include "vsce_phe_hash.h"
 
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -90,7 +91,7 @@ struct vsce_phe_client_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCE_ATOMIC size_t refcnt;
     //
     //  Dependency to the interface 'random'.
     //

@@ -53,7 +53,7 @@ target_compile_definitions(foundation
         PUBLIC
             $<BUILD_INTERFACE:VSCF_INTERNAL_BUILD>
             "VSCF_LIBRARY=$<BOOL:${VSCF_LIBRARY}>"
-            "VSCF_MULTI_THREAD=$<BOOL:${VSCF_MULTI_THREAD}>"
+            "VSCF_MULTI_THREADING=$<BOOL:${VSCF_MULTI_THREADING}>"
             "VSCF_CIPHER=$<BOOL:${VSCF_CIPHER}>"
             "VSCF_AUTH_ENCRYPT=$<BOOL:${VSCF_AUTH_ENCRYPT}>"
             "VSCF_AUTH_DECRYPT=$<BOOL:${VSCF_AUTH_DECRYPT}>"

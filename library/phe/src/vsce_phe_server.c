@@ -40,7 +40,7 @@
 //  @description
 // --------------------------------------------------------------------------
 //  Class for server-side PHE crypto operations.
-//  This class is thread-safe in case if VSCE_MULTI_THREAD defined
+//  This class is thread-safe in case if VSCE_MULTI_THREADING defined.
 // --------------------------------------------------------------------------
 
 
@@ -141,18 +141,12 @@ vsce_phe_server_cleanup(vsce_phe_server_t *self) {
         return;
     }
 
-    if (self->refcnt == 0) {
-        return;
-    }
+    vsce_phe_server_cleanup_ctx(self);
 
-    if (--self->refcnt == 0) {
-        vsce_phe_server_cleanup_ctx(self);
+    vsce_phe_server_release_random(self);
+    vsce_phe_server_release_operation_random(self);
 
-        vsce_phe_server_release_random(self);
-        vsce_phe_server_release_operation_random(self);
-
-        vsce_zeroize(self, sizeof(vsce_phe_server_t));
-    }
+    vsce_zeroize(self, sizeof(vsce_phe_server_t));
 }
 
 //
@@ -173,7 +167,7 @@ vsce_phe_server_new(void) {
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCE_PUBLIC void
 vsce_phe_server_delete(vsce_phe_server_t *self) {
@@ -182,11 +176,27 @@ vsce_phe_server_delete(vsce_phe_server_t *self) {
         return;
     }
 
+    size_t old_counter = self->refcnt;
+    size_t new_counter = old_counter > 0 ? old_counter - 1 : old_counter;
+    #if defined(VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        new_counter = old_counter > 0 ? old_counter - 1 : old_counter;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0 || (new_counter == old_counter)) {
+        return;
+    }
+
     vsce_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
     vsce_phe_server_cleanup(self);
 
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+    if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
     }
 }
@@ -214,7 +224,17 @@ vsce_phe_server_shallow_copy(vsce_phe_server_t *self) {
 
     VSCE_ASSERT_PTR(self);
 
+    #if defined(VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
     ++self->refcnt;
+    #endif
 
     return self;
 }
@@ -1112,7 +1132,7 @@ priv_err:
 static mbedtls_ecp_group *
 vsce_phe_server_get_op_group(vsce_phe_server_t *self) {
 
-#if VSCE_MULTI_THREAD
+#if VSCE_MULTI_THREADING
     VSCE_UNUSED(self);
 
     mbedtls_ecp_group *new_group = (mbedtls_ecp_group *)vsce_alloc(sizeof(mbedtls_ecp_group));
@@ -1129,8 +1149,10 @@ vsce_phe_server_get_op_group(vsce_phe_server_t *self) {
 static void
 vsce_phe_server_free_op_group(mbedtls_ecp_group *op_group) {
 
-#if VSCE_MULTI_THREAD
+#if VSCE_MULTI_THREADING
     mbedtls_ecp_group_free(op_group);
     vsce_dealloc(op_group);
+#else
+    VSCE_UNUSED(op_group);
 #endif
 }

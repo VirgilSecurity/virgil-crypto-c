@@ -121,17 +121,11 @@ vsce_phe_hash_cleanup(vsce_phe_hash_t *self) {
         return;
     }
 
-    if (self->refcnt == 0) {
-        return;
-    }
+    vsce_phe_hash_cleanup_ctx(self);
 
-    if (--self->refcnt == 0) {
-        vsce_phe_hash_cleanup_ctx(self);
+    vsce_phe_hash_release_simple_swu(self);
 
-        vsce_phe_hash_release_simple_swu(self);
-
-        vsce_zeroize(self, sizeof(vsce_phe_hash_t));
-    }
+    vsce_zeroize(self, sizeof(vsce_phe_hash_t));
 }
 
 //
@@ -152,7 +146,7 @@ vsce_phe_hash_new(void) {
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCE_PUBLIC void
 vsce_phe_hash_delete(vsce_phe_hash_t *self) {
@@ -161,11 +155,27 @@ vsce_phe_hash_delete(vsce_phe_hash_t *self) {
         return;
     }
 
+    size_t old_counter = self->refcnt;
+    size_t new_counter = old_counter > 0 ? old_counter - 1 : old_counter;
+    #if defined(VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        new_counter = old_counter > 0 ? old_counter - 1 : old_counter;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0 || (new_counter == old_counter)) {
+        return;
+    }
+
     vsce_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
     vsce_phe_hash_cleanup(self);
 
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+    if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
     }
 }
@@ -193,7 +203,17 @@ vsce_phe_hash_shallow_copy(vsce_phe_hash_t *self) {
 
     VSCE_ASSERT_PTR(self);
 
+    #if defined(VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
     ++self->refcnt;
+    #endif
 
     return self;
 }

@@ -54,6 +54,7 @@
 #define VSCE_SIMPLE_SWU_DEFS_H_INCLUDED
 
 #include "vsce_library.h"
+#include "vsce_atomic.h"
 
 #include <mbedtls/ecp.h>
 #include <mbedtls/bignum.h>
@@ -84,7 +85,7 @@ struct vsce_simple_swu_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCE_ATOMIC size_t refcnt;
 
     mbedtls_ecp_group group;
 

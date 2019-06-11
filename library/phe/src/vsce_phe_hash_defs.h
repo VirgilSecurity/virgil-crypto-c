@@ -54,6 +54,7 @@
 #define VSCE_PHE_HASH_DEFS_H_INCLUDED
 
 #include "vsce_library.h"
+#include "vsce_atomic.h"
 #include "vsce_simple_swu.h"
 
 #include <mbedtls/bignum.h>
@@ -84,7 +85,7 @@ struct vsce_phe_hash_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCE_ATOMIC size_t refcnt;
     //
     //  Dependency to the class 'simple swu'.
     //

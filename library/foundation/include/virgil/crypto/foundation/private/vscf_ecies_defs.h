@@ -59,6 +59,7 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_ecies.h"
+#include "vscf_atomic.h"
 #include "vscf_ecies_envelope.h"
 #include "vscf_impl.h"
 
@@ -88,7 +89,7 @@ struct vscf_ecies_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
     //
     //  Dependency to the interface 'random'.
     //

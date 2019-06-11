@@ -157,6 +157,13 @@ function context_append_project (context, project)
         .uid = "namespace"
         .ref = my.project.namespace
     endnew
+
+    for my.project.feature
+        new uid to my.context
+            .uid = "c_global_macros_$(make_id(feature.name))"
+            .ref = "$(cat(my.project.prefix, feature.name):c,UPPER)"
+        endnew
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
