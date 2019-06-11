@@ -295,17 +295,23 @@ endfunction
 function c_module_add_system_include_from_header (c_module, header, is_public_instance, projects_api, require_definition)
     check_arguments (my, "c_module, header, is_public_instance, projects_api", my)
 
+    if ! defined (my.header.system)
+        return
+    endif
+
     my.c_include = my.c_module->c_include(file = my.header.system) ?
 
     if ! defined (my.c_include)
-        my.condition_uid = make_id ("c global macros import project", my.header.project, "from framework")
-        my.condition = projects_api_find_resolved_name (my.projects_api, my.condition_uid)
+        if defined (my.header.framework)
+            my.condition_uid = make_id ("c global macros import project", my.header.project, "from framework")
+            my.condition = "!$(projects_api_find_resolved_name (my.projects_api, my.condition_uid))"
+        endif
 
         new c_include to my.c_module
             .file = my.header.system
             .scope = "private"
             .is_system = "1"
-            .if = "!" + my.condition
+            .if = my.condition ?
 
             my.c_include = c_include
         endnew
@@ -320,6 +326,10 @@ endfunction
 # ---------------------------------------------------------------------------
 function c_module_add_framework_include_from_header (c_module, header, is_public_instance, projects_api, require_definition)
     check_arguments (my, "c_module, header, is_public_instance, projects_api", my)
+
+    if ! defined (my.header.framework)
+        return
+    endif
 
     my.c_include = my.c_module->c_include(file = my.header.framework) ?
 
