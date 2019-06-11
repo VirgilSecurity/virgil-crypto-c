@@ -44,22 +44,21 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_PHE_HASH_H_INCLUDED
-#define VSCE_PHE_HASH_H_INCLUDED
+#ifndef VSCF_BRAINKEY_CLIENT_H_INCLUDED
+#define VSCF_BRAINKEY_CLIENT_H_INCLUDED
 
-#include "vsce_library.h"
-#include "vsce_phe_common.h"
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
 
-#include <mbedtls/ecp.h>
-
-#if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
-#if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -78,78 +77,121 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'phe hash' context.
+//  Public integral constants.
 //
-typedef struct vsce_phe_hash_t vsce_phe_hash_t;
+enum {
+    vscf_brainkey_client_POINT_LEN = 65,
+    vscf_brainkey_client_MPI_LEN = 32,
+    vscf_brainkey_client_SEED_LEN = 32,
+    vscf_brainkey_client_MAX_PASSWORD_LEN = 128,
+    vscf_brainkey_client_MAX_KEY_NAME_LEN = 128
+};
 
 //
-//  Return size of 'vsce_phe_hash_t'.
+//  Handle 'brainkey client' context.
 //
-VSCE_PUBLIC size_t
-vsce_phe_hash_ctx_size(void);
+typedef struct vscf_brainkey_client_t vscf_brainkey_client_t;
+
+//
+//  Return size of 'vscf_brainkey_client_t'.
+//
+VSCF_PUBLIC size_t
+vscf_brainkey_client_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
-VSCE_PUBLIC void
-vsce_phe_hash_init(vsce_phe_hash_t *self);
+VSCF_PUBLIC void
+vscf_brainkey_client_init(vscf_brainkey_client_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
-VSCE_PUBLIC void
-vsce_phe_hash_cleanup(vsce_phe_hash_t *self);
+VSCF_PUBLIC void
+vscf_brainkey_client_cleanup(vscf_brainkey_client_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCE_PUBLIC vsce_phe_hash_t *
-vsce_phe_hash_new(void);
+VSCF_PUBLIC vscf_brainkey_client_t *
+vscf_brainkey_client_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
-VSCE_PUBLIC void
-vsce_phe_hash_delete(vsce_phe_hash_t *self);
+VSCF_PUBLIC void
+vscf_brainkey_client_delete(vscf_brainkey_client_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vsce_phe_hash_new ()'.
+//  This is a reverse action of the function 'vscf_brainkey_client_new ()'.
 //
-VSCE_PUBLIC void
-vsce_phe_hash_destroy(vsce_phe_hash_t **self_ref);
+VSCF_PUBLIC void
+vscf_brainkey_client_destroy(vscf_brainkey_client_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCE_PUBLIC vsce_phe_hash_t *
-vsce_phe_hash_shallow_copy(vsce_phe_hash_t *self);
+VSCF_PUBLIC vscf_brainkey_client_t *
+vscf_brainkey_client_shallow_copy(vscf_brainkey_client_t *self);
 
-VSCE_PUBLIC void
-vsce_phe_hash_derive_account_key(vsce_phe_hash_t *self, const mbedtls_ecp_point *m, vsc_buffer_t *account_key);
+//
+//  Random used for key generation, proofs, etc.
+//
+//  Note, ownership is shared.
+//
+VSCF_PUBLIC void
+vscf_brainkey_client_use_random(vscf_brainkey_client_t *self, vscf_impl_t *random);
 
-VSCE_PUBLIC void
-vsce_phe_hash_hc0(vsce_phe_hash_t *self, vsc_data_t nc, vsc_data_t password, mbedtls_ecp_point *hc0);
+//
+//  Random used for key generation, proofs, etc.
+//
+//  Note, ownership is transfered.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_brainkey_client_take_random(vscf_brainkey_client_t *self, vscf_impl_t *random);
 
-VSCE_PUBLIC void
-vsce_phe_hash_hc1(vsce_phe_hash_t *self, vsc_data_t nc, vsc_data_t password, mbedtls_ecp_point *hc1);
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_brainkey_client_release_random(vscf_brainkey_client_t *self);
 
-VSCE_PUBLIC void
-vsce_phe_hash_hs0(vsce_phe_hash_t *self, vsc_data_t ns, mbedtls_ecp_point *hs0);
+//
+//  Random used for crypto operations to make them const-time
+//
+//  Note, ownership is shared.
+//
+VSCF_PUBLIC void
+vscf_brainkey_client_use_operation_random(vscf_brainkey_client_t *self, vscf_impl_t *operation_random);
 
-VSCE_PUBLIC void
-vsce_phe_hash_hs1(vsce_phe_hash_t *self, vsc_data_t ns, mbedtls_ecp_point *hs1);
+//
+//  Random used for crypto operations to make them const-time
+//
+//  Note, ownership is transfered.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_brainkey_client_take_operation_random(vscf_brainkey_client_t *self, vscf_impl_t *operation_random);
 
-VSCE_PUBLIC void
-vsce_phe_hash_hash_z_success(vsce_phe_hash_t *self, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
-        const mbedtls_ecp_point *c1, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
-        const mbedtls_ecp_point *term3, mbedtls_mpi *z);
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_brainkey_client_release_operation_random(vscf_brainkey_client_t *self);
 
-VSCE_PUBLIC void
-vsce_phe_hash_hash_z_failure(vsce_phe_hash_t *self, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
-        const mbedtls_ecp_point *c1, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
-        const mbedtls_ecp_point *term3, const mbedtls_ecp_point *term4, mbedtls_mpi *z);
+VSCF_PUBLIC vscf_status_t
+vscf_brainkey_client_setup_defaults(vscf_brainkey_client_t *self) VSCF_NODISCARD;
+
+VSCF_PUBLIC vscf_status_t
+vscf_brainkey_client_blind(vscf_brainkey_client_t *self, vsc_data_t password, vsc_buffer_t *deblind_factor,
+        vsc_buffer_t *blinded_point) VSCF_NODISCARD;
+
+VSCF_PUBLIC vscf_status_t
+vscf_brainkey_client_deblind(vscf_brainkey_client_t *self, vsc_data_t password, vsc_data_t hardened_point,
+        vsc_data_t deblind_factor, vsc_data_t key_name, vsc_buffer_t *seed) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------
@@ -165,5 +207,5 @@ vsce_phe_hash_hash_z_failure(vsce_phe_hash_t *self, vsc_data_t server_public_key
 
 
 //  @footer
-#endif // VSCE_PHE_HASH_H_INCLUDED
+#endif // VSCF_BRAINKEY_CLIENT_H_INCLUDED
 //  @end

@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'brainkey server' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,35 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'phe client' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSCE_PHE_CLIENT_DEFS_H_INCLUDED
-#define VSCE_PHE_CLIENT_DEFS_H_INCLUDED
-
-#include "vsce_library.h"
-#include "vsce_phe_hash.h"
-
-#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
-#   include <virgil/crypto/foundation/private/vscf_simple_swu.h>
-#endif
-
-#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
-#   include <VSCFoundation/vscf_simple_swu.h>
-#endif
+#include "vscf_brainkey_server_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -81,65 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'phe client' context.
-//
-struct vsce_phe_client_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vsce_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *operation_random;
-
-    vscf_simple_swu_t *simple_swu;
-
-    vsce_phe_hash_t *phe_hash;
-
-    mbedtls_ecp_group group;
-
-    byte client_private_key[vsce_phe_common_PHE_PRIVATE_KEY_LENGTH];
-
-    byte server_public_key[vsce_phe_common_PHE_PUBLIC_KEY_LENGTH];
-
-    bool keys_are_set;
-
-    mbedtls_mpi y;
-
-    mbedtls_mpi y_inv;
-
-    mbedtls_mpi minus_y;
-
-    mbedtls_ecp_point x;
-
-    mbedtls_mpi one;
-
-    mbedtls_mpi minus_one;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCE_PHE_CLIENT_DEFS_H_INCLUDED
 //  @end

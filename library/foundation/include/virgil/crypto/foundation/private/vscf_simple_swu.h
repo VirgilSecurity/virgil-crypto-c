@@ -44,26 +44,20 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#ifndef VSCF_SIMPLE_SWU_H_INCLUDED
+#define VSCF_SIMPLE_SWU_H_INCLUDED
 
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'phe client' types definition.
-// --------------------------------------------------------------------------
+#include "vscf_library.h"
 
-#ifndef VSCE_PHE_CLIENT_DEFS_H_INCLUDED
-#define VSCE_PHE_CLIENT_DEFS_H_INCLUDED
+#include <mbedtls/ecp.h>
+#include <mbedtls/bignum.h>
 
-#include "vsce_library.h"
-#include "vsce_phe_hash.h"
-
-#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
-#   include <virgil/crypto/foundation/private/vscf_simple_swu.h>
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
-#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
-#   include <VSCFoundation/vscf_simple_swu.h>
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 // clang-format on
@@ -82,50 +76,66 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'phe client' context.
+//  Public integral constants.
 //
-struct vsce_phe_client_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vsce_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *operation_random;
-
-    vscf_simple_swu_t *simple_swu;
-
-    vsce_phe_hash_t *phe_hash;
-
-    mbedtls_ecp_group group;
-
-    byte client_private_key[vsce_phe_common_PHE_PRIVATE_KEY_LENGTH];
-
-    byte server_public_key[vsce_phe_common_PHE_PUBLIC_KEY_LENGTH];
-
-    bool keys_are_set;
-
-    mbedtls_mpi y;
-
-    mbedtls_mpi y_inv;
-
-    mbedtls_mpi minus_y;
-
-    mbedtls_ecp_point x;
-
-    mbedtls_mpi one;
-
-    mbedtls_mpi minus_one;
+enum {
+    vscf_simple_swu_HASH_LEN = 32
 };
+
+//
+//  Handle 'simple swu' context.
+//
+typedef struct vscf_simple_swu_t vscf_simple_swu_t;
+
+//
+//  Return size of 'vscf_simple_swu_t'.
+//
+VSCF_PUBLIC size_t
+vscf_simple_swu_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCF_PUBLIC void
+vscf_simple_swu_init(vscf_simple_swu_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCF_PUBLIC void
+vscf_simple_swu_cleanup(vscf_simple_swu_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCF_PUBLIC vscf_simple_swu_t *
+vscf_simple_swu_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if context was allocated by the caller.
+//
+VSCF_PUBLIC void
+vscf_simple_swu_delete(vscf_simple_swu_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscf_simple_swu_new ()'.
+//
+VSCF_PUBLIC void
+vscf_simple_swu_destroy(vscf_simple_swu_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCF_PUBLIC vscf_simple_swu_t *
+vscf_simple_swu_shallow_copy(vscf_simple_swu_t *self);
+
+VSCF_PUBLIC void
+vscf_simple_swu_bignum_to_point(vscf_simple_swu_t *self, const mbedtls_mpi *t, mbedtls_ecp_point *p);
+
+VSCF_PUBLIC void
+vscf_simple_swu_data_to_point(vscf_simple_swu_t *self, vsc_data_t data, mbedtls_ecp_point *p);
 
 
 // --------------------------------------------------------------------------
@@ -141,5 +151,5 @@ struct vsce_phe_client_t {
 
 
 //  @footer
-#endif // VSCE_PHE_CLIENT_DEFS_H_INCLUDED
+#endif // VSCF_SIMPLE_SWU_H_INCLUDED
 //  @end
