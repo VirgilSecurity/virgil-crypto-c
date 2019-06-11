@@ -3179,7 +3179,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     vscf_brainkey_server_t /*2*/* brainkey_server_ctx = (vscf_brainkey_server_t /*2*/*) c_ctx;
 
     // Wrap input buffers
-    vsc_buffer_t *identity_secret = vsc_buffer_new_with_capacity(vscf_brainkey_client_MPI_LEN);
+    vsc_buffer_t *identity_secret = vsc_buffer_new_with_capacity(vscf_brainkey_server_MPI_LEN);
 
     vscf_status_t status = vscf_brainkey_server_generate_identity_secret(brainkey_server_ctx /*a1*/, identity_secret /*a3*/);
     if (status != vscf_status_SUCCESS) {
@@ -3205,7 +3205,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     byte* blinded_point_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jblindedPoint, NULL);
     vsc_data_t blinded_point = vsc_data(blinded_point_arr, (*jenv)->GetArrayLength(jenv, jblindedPoint));
 
-    vsc_buffer_t *hardened_point = vsc_buffer_new_with_capacity(vscf_brainkey_client_POINT_LEN);
+    vsc_buffer_t *hardened_point = vsc_buffer_new_with_capacity(vscf_brainkey_server_POINT_LEN);
 
     vscf_status_t status = vscf_brainkey_server_harden(brainkey_server_ctx /*a1*/, identity_secret /*a3*/, blinded_point /*a3*/, hardened_point /*a3*/);
     if (status != vscf_status_SUCCESS) {

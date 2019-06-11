@@ -53,8 +53,6 @@
 #include "vscf_ctr_drbg.h"
 #include "vscf_mbedtls_bridge_random.h"
 
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
-
 // clang-format on
 //  @end
 

@@ -88,7 +88,7 @@ import VSCFoundation
     }
 
     @objc public func generateIdentitySecret() throws -> Data {
-        let identitySecretCount = BrainkeyClient.mpiLen
+        let identitySecretCount = BrainkeyServer.mpiLen
         var identitySecret = Data(count: identitySecretCount)
         var identitySecretBuf = vsc_buffer_new()
         defer {
@@ -109,7 +109,7 @@ import VSCFoundation
     }
 
     @objc public func harden(identitySecret: Data, blindedPoint: Data) throws -> Data {
-        let hardenedPointCount = BrainkeyClient.pointLen
+        let hardenedPointCount = BrainkeyServer.pointLen
         var hardenedPoint = Data(count: hardenedPointCount)
         var hardenedPointBuf = vsc_buffer_new()
         defer {

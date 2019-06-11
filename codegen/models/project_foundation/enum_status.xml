@@ -159,32 +159,42 @@
     </constant>
 
     <constant name="error invalid brainkey password len" value="-401">
+        Brainkey password length is out of range.
     </constant>
 
     <constant name="error invalid brainkey factor len" value="-402">
+        Brainkey number length should be 32 byte.
     </constant>
 
     <constant name="error invalid brainkey point len" value="-403">
+        Brainkey point length should be 65 bytes.
     </constant>
 
     <constant name="error invalid brainkey key name len" value="-404">
+        Brainkey name is out of range.
     </constant>
 
     <constant name="error brainkey internal" value="-405">
+        Brainkey internal error.
     </constant>
 
     <constant name="error brainkey invalid point" value="-406">
+        Brainkey point is invalid.
     </constant>
 
     <constant name="error invalid brainkey factor buffer len" value="-407">
+        Brainkey number buffer length capacity should be >= 32 byte.
     </constant>
 
     <constant name="error invalid brainkey point buffer len" value="-408">
+        Brainkey point buffer length capacity should be >= 32 byte.
     </constant>
 
     <constant name="error invalid brainkey seed buffer len" value="-409">
+        Brainkey seed buffer length capacity should be >= 32 byte.
     </constant>
 
     <constant name="error invalid identity secret" value="-410">
+        Brainkey identity secret is invalid.
     </constant>
 </enum>

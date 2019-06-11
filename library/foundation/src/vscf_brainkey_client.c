@@ -55,8 +55,6 @@
 #include "vscf_hkdf.h"
 #include "vscf_sha512.h"
 
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
-
 // clang-format on
 //  @end
 

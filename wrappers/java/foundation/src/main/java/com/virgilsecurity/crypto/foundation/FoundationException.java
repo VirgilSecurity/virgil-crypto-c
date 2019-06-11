@@ -228,25 +228,25 @@ public class FoundationException extends RuntimeException {
         case ERROR_BAD_SIGNATURE:
             return "Signature format is corrupted.";
         case ERROR_INVALID_BRAINKEY_PASSWORD_LEN:
-            return "";
+            return "Brainkey password length is out of range.";
         case ERROR_INVALID_BRAINKEY_FACTOR_LEN:
-            return "";
+            return "Brainkey number length should be 32 byte.";
         case ERROR_INVALID_BRAINKEY_POINT_LEN:
-            return "";
+            return "Brainkey point length should be 65 bytes.";
         case ERROR_INVALID_BRAINKEY_KEY_NAME_LEN:
-            return "";
+            return "Brainkey name is out of range.";
         case ERROR_BRAINKEY_INTERNAL:
-            return "";
+            return "Brainkey internal error.";
         case ERROR_BRAINKEY_INVALID_POINT:
-            return "";
+            return "Brainkey point is invalid.";
         case ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN:
-            return "";
+            return "Brainkey number buffer length capacity should be >= 32 byte.";
         case ERROR_INVALID_BRAINKEY_POINT_BUFFER_LEN:
-            return "";
+            return "Brainkey point buffer length capacity should be >= 32 byte.";
         case ERROR_INVALID_BRAINKEY_SEED_BUFFER_LEN:
-            return "";
+            return "Brainkey seed buffer length capacity should be >= 32 byte.";
         case ERROR_INVALID_IDENTITY_SECRET:
-            return "";
+            return "Brainkey identity secret is invalid.";
         default:
             return "Unknown error";
         }

@@ -2,7 +2,6 @@
 
     <require impl="ctr drbg" scope="private"/>
 
-    <require module="buffer defs" scope="private" project="common"/>
     <require module="mbedtls bridge random" scope="private"/>
 
     <require header="mbedtls/ecp.h" scope="context"/>
@@ -26,7 +25,7 @@
 
     <method name="generate identity secret">
         <argument name="identity secret" class="buffer" access="writeonly">
-            <length constant="mpi len" class="brainkey client"/>
+            <length constant="mpi len" class="self"/>
         </argument>
 
         <return enum="status">
@@ -42,7 +41,7 @@
         </argument>
 
         <argument name="hardened point" class="buffer" access="writeonly">
-            <length constant="point len" class="brainkey client"/>
+            <length constant="point len" class="self"/>
         </argument>
 
         <return enum="status">

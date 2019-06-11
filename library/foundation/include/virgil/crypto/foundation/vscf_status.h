@@ -229,15 +229,45 @@ enum vscf_status_t {
     //  Signature format is corrupted.
     //
     vscf_status_ERROR_BAD_SIGNATURE = -308,
+    //
+    //  Brainkey password length is out of range.
+    //
     vscf_status_ERROR_INVALID_BRAINKEY_PASSWORD_LEN = -401,
+    //
+    //  Brainkey number length should be 32 byte.
+    //
     vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_LEN = -402,
+    //
+    //  Brainkey point length should be 65 bytes.
+    //
     vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN = -403,
+    //
+    //  Brainkey name is out of range.
+    //
     vscf_status_ERROR_INVALID_BRAINKEY_KEY_NAME_LEN = -404,
+    //
+    //  Brainkey internal error.
+    //
     vscf_status_ERROR_BRAINKEY_INTERNAL = -405,
+    //
+    //  Brainkey point is invalid.
+    //
     vscf_status_ERROR_BRAINKEY_INVALID_POINT = -406,
+    //
+    //  Brainkey number buffer length capacity should be >= 32 byte.
+    //
     vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN = -407,
+    //
+    //  Brainkey point buffer length capacity should be >= 32 byte.
+    //
     vscf_status_ERROR_INVALID_BRAINKEY_POINT_BUFFER_LEN = -408,
+    //
+    //  Brainkey seed buffer length capacity should be >= 32 byte.
+    //
     vscf_status_ERROR_INVALID_BRAINKEY_SEED_BUFFER_LEN = -409,
+    //
+    //  Brainkey identity secret is invalid.
+    //
     vscf_status_ERROR_INVALID_IDENTITY_SECRET = -410
 };
 typedef enum vscf_status_t vscf_status_t;

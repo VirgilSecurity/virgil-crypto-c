@@ -1,4 +1,4 @@
-<class name="simple swu" context="internal" scope="private">
+<class name="simple swu" context="internal" scope="private" visibility="private">
 
     <require impl="sha512" scope="private"/>
     <require header="mbedtls/ecp.h" scope="context"/>

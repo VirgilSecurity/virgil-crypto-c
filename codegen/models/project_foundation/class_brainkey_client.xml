@@ -2,7 +2,6 @@
 
     <require impl="ctr drbg" scope="private"/>
 
-    <require module="buffer defs" scope="private" project="common"/>
     <require module="mbedtls bridge random" scope="private"/>
     <require impl="hkdf" scope="private"/>
     <require impl="sha512" scope="private"/>
@@ -32,10 +31,10 @@
             User's password (or its hash)
         </argument>
         <argument name="deblind factor" class="buffer" access="writeonly">
-            <length constant="mpi len" class="brainkey client"/>
+            <length constant="mpi len" class="self"/>
         </argument>
         <argument name="blinded point" class="buffer" access="writeonly">
-            <length constant="point len" class="brainkey client"/>
+            <length constant="point len" class="self"/>
         </argument>
 
         <return enum="status">
@@ -55,7 +54,7 @@
 
         </argument>
         <argument name="seed" class="buffer" access="writeonly">
-            <length constant="point len" class="brainkey client"/>
+            <length constant="point len" class="self"/>
         </argument>
 
         <return enum="status">
