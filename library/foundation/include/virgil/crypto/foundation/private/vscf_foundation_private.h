@@ -141,6 +141,7 @@
 #include "vscf_sign_hash_api.h"
 #include "vscf_signer_defs.h"
 #include "vscf_simple_alg_info_defs.h"
+#include "vscf_simple_swu.h"
 #include "vscf_verifier_defs.h"
 #include "vscf_verify_hash_api.h"
 

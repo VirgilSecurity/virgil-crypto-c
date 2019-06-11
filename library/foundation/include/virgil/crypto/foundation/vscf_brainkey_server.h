@@ -44,14 +44,22 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_SIMPLE_SWU_H_INCLUDED
-#define VSCE_SIMPLE_SWU_H_INCLUDED
+#ifndef VSCF_BRAINKEY_SERVER_H_INCLUDED
+#define VSCF_BRAINKEY_SERVER_H_INCLUDED
 
-#include "vsce_library.h"
-#include "vsce_phe_common.h"
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
 
-#include <mbedtls/ecp.h>
-#include <mbedtls/bignum.h>
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
@@ -69,56 +77,118 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'simple swu' context.
+//  Public integral constants.
 //
-typedef struct vsce_simple_swu_t vsce_simple_swu_t;
+enum {
+    vscf_brainkey_server_POINT_LEN = 65,
+    vscf_brainkey_server_MPI_LEN = 32
+};
 
 //
-//  Return size of 'vsce_simple_swu_t'.
+//  Handle 'brainkey server' context.
 //
-VSCE_PUBLIC size_t
-vsce_simple_swu_ctx_size(void);
+typedef struct vscf_brainkey_server_t vscf_brainkey_server_t;
+
+//
+//  Return size of 'vscf_brainkey_server_t'.
+//
+VSCF_PUBLIC size_t
+vscf_brainkey_server_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
-VSCE_PUBLIC void
-vsce_simple_swu_init(vsce_simple_swu_t *self);
+VSCF_PUBLIC void
+vscf_brainkey_server_init(vscf_brainkey_server_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
-VSCE_PUBLIC void
-vsce_simple_swu_cleanup(vsce_simple_swu_t *self);
+VSCF_PUBLIC void
+vscf_brainkey_server_cleanup(vscf_brainkey_server_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCE_PUBLIC vsce_simple_swu_t *
-vsce_simple_swu_new(void);
+VSCF_PUBLIC vscf_brainkey_server_t *
+vscf_brainkey_server_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
-VSCE_PUBLIC void
-vsce_simple_swu_delete(vsce_simple_swu_t *self);
+VSCF_PUBLIC void
+vscf_brainkey_server_delete(vscf_brainkey_server_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vsce_simple_swu_new ()'.
+//  This is a reverse action of the function 'vscf_brainkey_server_new ()'.
 //
-VSCE_PUBLIC void
-vsce_simple_swu_destroy(vsce_simple_swu_t **self_ref);
+VSCF_PUBLIC void
+vscf_brainkey_server_destroy(vscf_brainkey_server_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCE_PUBLIC vsce_simple_swu_t *
-vsce_simple_swu_shallow_copy(vsce_simple_swu_t *self);
+VSCF_PUBLIC vscf_brainkey_server_t *
+vscf_brainkey_server_shallow_copy(vscf_brainkey_server_t *self);
 
-VSCE_PUBLIC void
-vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *self, const mbedtls_mpi *t, mbedtls_ecp_point *p);
+//
+//  Random used for key generation, proofs, etc.
+//
+//  Note, ownership is shared.
+//
+VSCF_PUBLIC void
+vscf_brainkey_server_use_random(vscf_brainkey_server_t *self, vscf_impl_t *random);
+
+//
+//  Random used for key generation, proofs, etc.
+//
+//  Note, ownership is transfered.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_brainkey_server_take_random(vscf_brainkey_server_t *self, vscf_impl_t *random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_brainkey_server_release_random(vscf_brainkey_server_t *self);
+
+//
+//  Random used for crypto operations to make them const-time
+//
+//  Note, ownership is shared.
+//
+VSCF_PUBLIC void
+vscf_brainkey_server_use_operation_random(vscf_brainkey_server_t *self, vscf_impl_t *operation_random);
+
+//
+//  Random used for crypto operations to make them const-time
+//
+//  Note, ownership is transfered.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_brainkey_server_take_operation_random(vscf_brainkey_server_t *self, vscf_impl_t *operation_random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_brainkey_server_release_operation_random(vscf_brainkey_server_t *self);
+
+VSCF_PUBLIC vscf_status_t
+vscf_brainkey_server_setup_defaults(vscf_brainkey_server_t *self) VSCF_NODISCARD;
+
+VSCF_PUBLIC vscf_status_t
+vscf_brainkey_server_generate_identity_secret(vscf_brainkey_server_t *self,
+        vsc_buffer_t *identity_secret) VSCF_NODISCARD;
+
+VSCF_PUBLIC vscf_status_t
+vscf_brainkey_server_harden(vscf_brainkey_server_t *self, vsc_data_t identity_secret, vsc_data_t blinded_point,
+        vsc_buffer_t *hardened_point) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------
@@ -134,5 +204,5 @@ vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *self, const mbedtls_mpi *t, m
 
 
 //  @footer
-#endif // VSCE_SIMPLE_SWU_H_INCLUDED
+#endif // VSCF_BRAINKEY_SERVER_H_INCLUDED
 //  @end

@@ -58,10 +58,12 @@
 
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
+#   include <virgil/crypto/foundation/private/vscf_simple_swu.h>
 #endif
 
 #if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <VSCFoundation/vscf_impl.h>
+#   include <VSCFoundation/vscf_simple_swu.h>
 #endif
 
 // clang-format on
@@ -99,6 +101,8 @@ struct vsce_phe_client_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *operation_random;
+
+    vscf_simple_swu_t *simple_swu;
 
     vsce_phe_hash_t *phe_hash;
 
