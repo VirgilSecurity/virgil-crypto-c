@@ -37,19 +37,15 @@
 
 #include "unity.h"
 #include "test_utils.h"
-#include "test_data_simple_swu.h"
-#include "test_data_simple_swu.h"
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCF_SIMPLE_SWU &&VSCF_RANDOM &&VSCF_CTR_DRBG
+#if TEST_DEPENDENCIES_AVAILABLE
 
 #include <mbedtls/ecp.h>
 #include <mbedtls/bignum.h>
-
-#define TEST_DEPENDENCIES_AVAILABLE VSCE_SIMPLE_SWU &&VSCF_RANDOM &&VSCF_CTR_DRBG
-#if TEST_DEPENDENCIES_AVAILABLE
-
-#include "vsce_simple_swu.h"
-
-#include <virgil/crypto/foundation/vscf_random.h>
-#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
+#include "test_data_simple_swu.h"
+#include "vscf_simple_swu.h"
+#include "vscf_ctr_drbg.h"
 
 
 // --------------------------------------------------------------------------
@@ -69,7 +65,7 @@ test__simple_swu__random_hashes__should_be_on_curve(void) {
     size_t len = 32;
     vsc_buffer_t *t_buf = vsc_buffer_new_with_capacity(len);
 
-    vsce_simple_swu_t *simple_swu = vsce_simple_swu_new();
+    vscf_simple_swu_t *simple_swu = vscf_simple_swu_new();
 
     for (int i = 0; i < iterations; i++) {
         mbedtls_mpi t;
@@ -90,7 +86,7 @@ test__simple_swu__random_hashes__should_be_on_curve(void) {
 
         mbedtls_ecp_point p;
         mbedtls_ecp_point_init(&p);
-        vsce_simple_swu_bignum_to_point(simple_swu, &t, &p);
+        vscf_simple_swu_bignum_to_point(simple_swu, &t, &p);
 
         TEST_ASSERT(mbedtls_ecp_check_pubkey(&group, &p) == 0);
 
@@ -98,7 +94,7 @@ test__simple_swu__random_hashes__should_be_on_curve(void) {
         mbedtls_mpi_free(&t);
     }
 
-    vsce_simple_swu_destroy(&simple_swu);
+    vscf_simple_swu_destroy(&simple_swu);
 
     vsc_buffer_destroy(&t_buf);
     mbedtls_ecp_group_free(&group);
@@ -118,8 +114,8 @@ test__simple_swu__const_hash1__should_match(void) {
     mbedtls_ecp_point p;
     mbedtls_ecp_point_init(&p);
 
-    vsce_simple_swu_t *simple_swu = vsce_simple_swu_new();
-    vsce_simple_swu_bignum_to_point(simple_swu, &t, &p);
+    vscf_simple_swu_t *simple_swu = vscf_simple_swu_new();
+    vscf_simple_swu_bignum_to_point(simple_swu, &t, &p);
 
     mbedtls_mpi x1_exp, y1_exp;
     mbedtls_mpi_init(&x1_exp);
@@ -133,7 +129,7 @@ test__simple_swu__const_hash1__should_match(void) {
     TEST_ASSERT(mbedtls_mpi_cmp_mpi(&p.Y, &y1_exp) == 0);
     TEST_ASSERT(mbedtls_mpi_cmp_int(&p.Z, 1) == 0);
 
-    vsce_simple_swu_destroy(&simple_swu);
+    vscf_simple_swu_destroy(&simple_swu);
     mbedtls_ecp_point_free(&p);
     mbedtls_mpi_free(&x1_exp);
     mbedtls_mpi_free(&y1_exp);
@@ -154,8 +150,8 @@ test__simple_swu__const_hash2__should_match(void) {
     mbedtls_ecp_point p;
     mbedtls_ecp_point_init(&p);
 
-    vsce_simple_swu_t *simple_swu = vsce_simple_swu_new();
-    vsce_simple_swu_bignum_to_point(simple_swu, &t, &p);
+    vscf_simple_swu_t *simple_swu = vscf_simple_swu_new();
+    vscf_simple_swu_bignum_to_point(simple_swu, &t, &p);
 
     mbedtls_mpi x1_exp, y1_exp;
     mbedtls_mpi_init(&x1_exp);
@@ -169,7 +165,7 @@ test__simple_swu__const_hash2__should_match(void) {
     TEST_ASSERT(mbedtls_mpi_cmp_mpi(&p.Y, &y1_exp) == 0);
     TEST_ASSERT(mbedtls_mpi_cmp_int(&p.Z, 1) == 0);
 
-    vsce_simple_swu_destroy(&simple_swu);
+    vscf_simple_swu_destroy(&simple_swu);
     mbedtls_ecp_point_free(&p);
     mbedtls_mpi_free(&x1_exp);
     mbedtls_mpi_free(&y1_exp);

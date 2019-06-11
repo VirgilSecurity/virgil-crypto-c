@@ -131,8 +131,6 @@ target_sources(phe
             "$<$<BOOL:${VSCE_PHE_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_hash_defs.h>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_server.h>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_server_defs.h>"
-            "$<$<BOOL:${VSCE_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_simple_swu.h>"
-            "$<$<BOOL:${VSCE_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_simple_swu_defs.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_status.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_public.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/private/vsce_phe_private.h"
@@ -151,8 +149,6 @@ target_sources(phe
             "$<$<BOOL:${VSCE_PHE_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_hash_defs.c>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_server.c>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_server_defs.c>"
-            "$<$<BOOL:${VSCE_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_simple_swu.c>"
-            "$<$<BOOL:${VSCE_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_simple_swu_defs.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_status.c"
         )
 

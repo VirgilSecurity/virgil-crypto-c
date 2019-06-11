@@ -39,7 +39,7 @@ package com.virgilsecurity.crypto.foundation;
 /*
 * Implementation of the RNG using deterministic random bit generators
 * based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
-* This class is thread-safe if the build option VSCF_MULTI_THREAD was enabled.
+* This class is thread-safe if the build option VSCF_MULTI_THREADING was enabled.
 */
 public class CtrDrbg implements AutoCloseable, Random {
 

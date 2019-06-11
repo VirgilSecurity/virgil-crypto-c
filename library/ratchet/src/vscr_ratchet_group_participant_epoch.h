@@ -85,7 +85,7 @@ struct vscr_ratchet_group_participant_epoch_t {
     //
     VSCR_ATOMIC size_t refcnt;
 
-    size_t epoch;
+    uint32_t epoch;
 
     vscr_ratchet_chain_key_t *chain_key;
 

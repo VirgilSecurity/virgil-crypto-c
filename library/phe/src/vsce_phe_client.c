@@ -348,6 +348,7 @@ vsce_phe_client_init_ctx(vsce_phe_client_t *self) {
 
     VSCE_ASSERT_PTR(self);
 
+    self->simple_swu = vscf_simple_swu_new();
     self->phe_hash = vsce_phe_hash_new();
 
     mbedtls_ecp_group_init(&self->group);
@@ -381,6 +382,7 @@ vsce_phe_client_cleanup_ctx(vsce_phe_client_t *self) {
 
     VSCE_ASSERT_PTR(self);
 
+    vscf_simple_swu_destroy(&self->simple_swu);
     mbedtls_ecp_group_free(&self->group);
     vsce_phe_hash_destroy(&self->phe_hash);
 
@@ -615,7 +617,7 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *self, vsc_data_t enrollment_re
     mbedtls_ecp_point M;
     mbedtls_ecp_point_init(&M);
 
-    vsce_phe_hash_data_to_point(self->phe_hash, vsc_buffer_data(&rnd_m), &M);
+    vscf_simple_swu_data_to_point(self->simple_swu, vsc_buffer_data(&rnd_m), &M);
 
     vsce_phe_hash_derive_account_key(self->phe_hash, &M, account_key);
 

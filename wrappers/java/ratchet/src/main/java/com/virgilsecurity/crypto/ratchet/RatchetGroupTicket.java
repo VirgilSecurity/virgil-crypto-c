@@ -88,21 +88,14 @@ public class RatchetGroupTicket implements AutoCloseable {
     }
 
     /*
-    * Add new participant to chat.
+    * Set session id in case you want to use your own identifier, otherwise - id will be generated for you.
     */
-    public void addNewParticipant(byte[] participantId, byte[] publicKey) throws RatchetException {
-        RatchetJNI.INSTANCE.ratchetGroupTicket_addNewParticipant(this.cCtx, participantId, publicKey);
+    public void setSessionId(byte[] sessionId) {
+        RatchetJNI.INSTANCE.ratchetGroupTicket_setSessionId(this.cCtx, sessionId);
     }
 
     /*
-    * Remove participant from chat.
-    */
-    public void removeParticipant(byte[] participantId) throws RatchetException {
-        RatchetJNI.INSTANCE.ratchetGroupTicket_removeParticipant(this.cCtx, participantId);
-    }
-
-    /*
-    * Generates message that should be sent to all participants using secure channel.
+    * Returns message that should be sent to all participants using secure channel.
     */
     public RatchetGroupMessage getTicketMessage() {
         return RatchetJNI.INSTANCE.ratchetGroupTicket_getTicketMessage(this.cCtx);

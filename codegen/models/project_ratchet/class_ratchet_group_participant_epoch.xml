@@ -4,7 +4,7 @@
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common" scope="public"/>
 
-    <property name="epoch" type="size" access="readwrite"/>
+    <property name="epoch" type="unsigned" size="4" access="readwrite"/>
     <property name="chain key" class="ratchet chain key" access="readwrite"/>
     <property name="skipped messages" class="ratchet skipped messages root node" access="readwrite"/>
 

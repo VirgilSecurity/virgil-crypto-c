@@ -55,9 +55,16 @@
 
 #include "vsce_library.h"
 #include "vsce_atomic.h"
-#include "vsce_simple_swu.h"
 
 #include <mbedtls/bignum.h>
+
+#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_simple_swu.h>
+#endif
+
+#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_simple_swu.h>
+#endif
 
 // clang-format on
 //  @end
@@ -86,12 +93,10 @@ struct vsce_phe_hash_t {
     //  Reference counter.
     //
     VSCE_ATOMIC size_t refcnt;
-    //
-    //  Dependency to the class 'simple swu'.
-    //
-    vsce_simple_swu_t *simple_swu;
 
     mbedtls_ecp_group group;
+
+    vscf_simple_swu_t *simple_swu;
 };
 
 

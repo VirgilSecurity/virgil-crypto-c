@@ -226,16 +226,10 @@ vscr_ratchet_session_decrypt(vscr_ratchet_session_t *self, const vscr_ratchet_me
         vsc_buffer_t *plain_text) VSCR_NODISCARD;
 
 //
-//  Calculates size of buffer sufficient to store session
-//
-VSCR_PUBLIC size_t
-vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *self);
-
-//
 //  Serializes session to buffer
 //
-VSCR_PUBLIC void
-vscr_ratchet_session_serialize(vscr_ratchet_session_t *self, vsc_buffer_t *output);
+VSCR_PUBLIC vsc_buffer_t *
+vscr_ratchet_session_serialize(vscr_ratchet_session_t *self);
 
 //
 //  Deserializes session from buffer.

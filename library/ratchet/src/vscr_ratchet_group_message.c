@@ -302,57 +302,6 @@ vscr_ratchet_group_message_get_session_id(const vscr_ratchet_group_message_t *se
 }
 
 //
-//  Returns number of public keys.
-//  This method should be called only for group info message type.
-//
-VSCR_PUBLIC size_t
-vscr_ratchet_group_message_get_pub_key_count(const vscr_ratchet_group_message_t *self) {
-
-    VSCR_ASSERT_PTR(self);
-
-    VSCR_ASSERT(self->message_pb.has_group_info);
-    return self->message_pb.group_info.participants_count;
-}
-
-//
-//  Returns public key id for some participant id.
-//  This method should be called only for group info message type.
-//
-VSCR_PUBLIC vsc_buffer_t *
-vscr_ratchet_group_message_get_pub_key_id(
-        const vscr_ratchet_group_message_t *self, vsc_data_t participant_id, vscr_error_t *error) {
-
-    VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(self->key_id);
-    VSCR_ASSERT(participant_id.len == vscr_ratchet_common_PARTICIPANT_ID_LEN);
-
-    VSCR_ASSERT(self->message_pb.has_group_info);
-    const MessageGroupInfo *info = &self->message_pb.group_info;
-
-    for (size_t i = 0; i < info->participants_count; i++) {
-        if (memcmp(info->participants[i].id, participant_id.bytes, participant_id.len) == 0) {
-
-            vsc_buffer_t *key_id = vsc_buffer_new_with_capacity(vscr_ratchet_common_KEY_ID_LEN);
-
-            vscr_status_t status = vscr_ratchet_key_id_compute_public_key_id(self->key_id,
-                    vsc_data(info->participants[i].pub_key, sizeof(info->participants[i].pub_key)), key_id);
-
-            if (status == vscr_status_SUCCESS) {
-                return key_id;
-            }
-
-            VSCR_ERROR_SAFE_UPDATE(error, status);
-
-            return NULL;
-        }
-    }
-
-    VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE);
-
-    return NULL;
-}
-
-//
 //  Returns message sender id.
 //  This method should be called only for regular message type.
 //
@@ -364,6 +313,22 @@ vscr_ratchet_group_message_get_sender_id(const vscr_ratchet_group_message_t *sel
     VSCR_ASSERT_PTR(self->header_pb);
 
     return vsc_data(self->header_pb->sender_id, sizeof(self->header_pb->sender_id));
+}
+
+//
+//  Returns message epoch.
+//
+VSCR_PUBLIC uint32_t
+vscr_ratchet_group_message_get_epoch(const vscr_ratchet_group_message_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+
+    if (self->message_pb.has_regular_message) {
+        VSCR_ASSERT_PTR(self->header_pb);
+        return self->header_pb->epoch;
+    } else {
+        return self->message_pb.group_info.epoch;
+    }
 }
 
 VSCR_PUBLIC void
@@ -402,11 +367,7 @@ vscr_ratchet_group_message_serialize_len(const vscr_ratchet_group_message_t *sel
     VSCR_ASSERT(self->message_pb.has_group_info != self->message_pb.has_regular_message);
 
     if (self->message_pb.has_group_info) {
-        const MessageGroupInfo *info = &self->message_pb.group_info;
-
-        return vscr_ratchet_common_hidden_MAX_GROUP_INFO_MESSAGE_LEN -
-               (vscr_ratchet_common_MAX_PARTICIPANTS_COUNT - info->participants_count) *
-                       vscr_ratchet_common_hidden_MIN_PARTICIPANT_LEN;
+        return vscr_ratchet_common_hidden_MAX_GROUP_INFO_MESSAGE_LEN;
     } else if (self->message_pb.has_regular_message) {
         VSCR_ASSERT(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN >=
                     vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg));
@@ -472,29 +433,7 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
         goto err;
     }
 
-    if (message->message_pb.has_group_info) {
-        MessageGroupInfo *info = &message->message_pb.group_info;
-
-        if (info->participants_count > vscr_ratchet_common_MAX_PARTICIPANTS_COUNT) {
-            status = vscr_status_ERROR_TOO_MANY_PARTICIPANTS;
-            goto err;
-        }
-
-        if (info->participants_count < vscr_ratchet_common_MIN_PARTICIPANTS_COUNT) {
-            status = vscr_status_ERROR_TOO_FEW_PARTICIPANTS;
-            goto err;
-        }
-
-        // Checking for duplicates
-        for (size_t i = 0; i < info->participants_count; i++) {
-            for (size_t j = 0; j < i; j++) {
-                if (memcmp(info->participants[i].id, info->participants[j].id, sizeof(info->participants[i].id)) == 0) {
-                    status = vscr_status_ERROR_DUPLICATE_ID;
-                    goto err;
-                }
-            }
-        }
-    } else {
+    if (message->message_pb.has_regular_message) {
         pb_istream_t sub_istream = pb_istream_from_buffer(
                 message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
 

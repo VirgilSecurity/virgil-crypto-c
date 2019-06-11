@@ -459,6 +459,16 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_brainkey_client.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_brainkey_server.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -687,6 +697,7 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_HASH_BASED_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_hash_based_alg_info_defs.h>"
             "$<$<BOOL:${VSCF_HKDF}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_hkdf.h>"
             "$<$<BOOL:${VSCF_HKDF}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_hkdf_internal.h>"
+            "$<$<BOOL:${VSCF_HKDF}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_hkdf_private.h>"
             "$<$<BOOL:${VSCF_HKDF}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_hkdf_defs.h>"
             "$<$<BOOL:${VSCF_HMAC}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_hmac.h>"
             "$<$<BOOL:${VSCF_HMAC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac_internal.h>"
@@ -759,6 +770,10 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_SIMPLE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_simple_alg_info_defs.h>"
             "$<$<BOOL:${VSCF_ALG_FACTORY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_factory.h>"
             "$<$<BOOL:${VSCF_BASE64}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_base64.h>"
+            "$<$<BOOL:${VSCF_BRAINKEY_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_brainkey_client.h>"
+            "$<$<BOOL:${VSCF_BRAINKEY_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_brainkey_client_defs.h>"
+            "$<$<BOOL:${VSCF_BRAINKEY_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_brainkey_server.h>"
+            "$<$<BOOL:${VSCF_BRAINKEY_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_brainkey_server_defs.h>"
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_envelope.h>"
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_envelope_defs.h>"
             "$<$<BOOL:${VSCF_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error.h>"
@@ -792,6 +807,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_recipient_cipher_defs.h>"
             "$<$<BOOL:${VSCF_SIGNER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_signer.h>"
             "$<$<BOOL:${VSCF_SIGNER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_signer_defs.h>"
+            "$<$<BOOL:${VSCF_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_simple_swu.h>"
+            "$<$<BOOL:${VSCF_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_simple_swu_defs.h>"
             "$<$<BOOL:${VSCF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_verifier.h>"
             "$<$<BOOL:${VSCF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_verifier_defs.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_status.h"
@@ -999,6 +1016,10 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_SIMPLE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_simple_alg_info_defs.c>"
             "$<$<BOOL:${VSCF_ALG_FACTORY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_factory.c>"
             "$<$<BOOL:${VSCF_BASE64}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_base64.c>"
+            "$<$<BOOL:${VSCF_BRAINKEY_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_brainkey_client.c>"
+            "$<$<BOOL:${VSCF_BRAINKEY_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_brainkey_client_defs.c>"
+            "$<$<BOOL:${VSCF_BRAINKEY_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_brainkey_server.c>"
+            "$<$<BOOL:${VSCF_BRAINKEY_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_brainkey_server_defs.c>"
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_envelope.c>"
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_envelope_defs.c>"
             "$<$<BOOL:${VSCF_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_error.c>"
@@ -1032,6 +1053,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_recipient_cipher_defs.c>"
             "$<$<BOOL:${VSCF_SIGNER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_signer.c>"
             "$<$<BOOL:${VSCF_SIGNER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_signer_defs.c>"
+            "$<$<BOOL:${VSCF_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_simple_swu.c>"
+            "$<$<BOOL:${VSCF_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_simple_swu_defs.c>"
             "$<$<BOOL:${VSCF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_verifier.c>"
             "$<$<BOOL:${VSCF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_verifier_defs.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_status.c"

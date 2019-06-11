@@ -89,19 +89,19 @@ public class RatchetException extends RuntimeException {
 
     public static final int ERROR_CANNOT_DECRYPT_OWN_MESSAGES = -22;
 
-    public static final int ERROR_DUPLICATE_ID = -23;
+    public static final int ERROR_INVALID_SIGNATURE = -23;
 
-    public static final int ERROR_INVALID_SIGNATURE = -24;
+    public static final int ERROR_CANNOT_REMOVE_MYSELF = -24;
 
-    public static final int ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE = -25;
+    public static final int ERROR_EPOCH_MISMATCH = -25;
 
-    public static final int ERROR_EPOCH_MISMATCH = -26;
+    public static final int ERROR_EPOCH_NOT_FOUND = -26;
 
-    public static final int ERROR_PARTICIPANT_NOT_FOUND = -27;
+    public static final int ERROR_SESSION_ID_MISMATCH = -27;
 
-    public static final int ERROR_EPOCH_NOT_FOUND = -28;
+    public static final int ERROR_SIMULTANEOUS_GROUP_USER_OPERATION = -28;
 
-    public static final int ERROR_SESSION_ID_MISMATCH = -29;
+    public static final int ERROR_MYSELF_IS_INCLUDED_IN_INFO = -29;
 
     private int statusCode;
 
@@ -163,20 +163,20 @@ public class RatchetException extends RuntimeException {
             return "Sender not found.";
         case ERROR_CANNOT_DECRYPT_OWN_MESSAGES:
             return "Cannot decrypt own messages.";
-        case ERROR_DUPLICATE_ID:
-            return "Duplicate id.";
         case ERROR_INVALID_SIGNATURE:
             return "Invalid signature.";
-        case ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE:
-            return "User is not present in group message.";
+        case ERROR_CANNOT_REMOVE_MYSELF:
+            return "Cannot remove myself.";
         case ERROR_EPOCH_MISMATCH:
             return "Epoch mismatch.";
-        case ERROR_PARTICIPANT_NOT_FOUND:
-            return "Participant not found.";
         case ERROR_EPOCH_NOT_FOUND:
             return "Epoch not found.";
         case ERROR_SESSION_ID_MISMATCH:
             return "Session id mismatch.";
+        case ERROR_SIMULTANEOUS_GROUP_USER_OPERATION:
+            return "Simultaneous group user operation.";
+        case ERROR_MYSELF_IS_INCLUDED_IN_INFO:
+            return "Myself is included in info.";
         default:
             return "Unknown error";
         }

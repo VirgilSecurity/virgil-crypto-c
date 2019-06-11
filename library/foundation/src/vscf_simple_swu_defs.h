@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'simple swu' types definition.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,10 +44,28 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsce_simple_swu_defs.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'simple swu' types definition.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_SIMPLE_SWU_DEFS_H_INCLUDED
+#define VSCF_SIMPLE_SWU_DEFS_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_atomic.h"
+
+#include <mbedtls/ecp.h>
+#include <mbedtls/bignum.h>
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +74,47 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handle 'simple swu' context.
+//
+struct vscf_simple_swu_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscf_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    VSCF_ATOMIC size_t refcnt;
+
+    mbedtls_ecp_group group;
+
+    mbedtls_mpi a;
+
+    mbedtls_mpi two;
+
+    mbedtls_mpi three;
+
+    mbedtls_mpi p34;
+
+    mbedtls_mpi p14;
+
+    mbedtls_mpi mba;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_SIMPLE_SWU_DEFS_H_INCLUDED
 //  @end

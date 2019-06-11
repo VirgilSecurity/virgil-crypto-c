@@ -9,7 +9,7 @@
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 
-    <property name="roots count" type="size" access="readwrite"/>
+    <property name="roots count" type="unsigned" size="4" access="readwrite"/>
     <property name="public keys" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_max_skipped_dh)"/>
     </property>
@@ -18,7 +18,7 @@
     </property>
 
     <method name="find key" is_const="1">
-        <argument name="counter" type="size"/>
+        <argument name="counter" type="unsigned" size="4"/>
         <argument name="public key" class="const vscr_ratchet_public_key_t" is_reference="0" is_const="1" library="internal" access="readonly"/>
 
         <return class="ratchet message key" access="readwrite"/>
@@ -27,7 +27,7 @@
     <method name="find public key" is_const="1" scope="private">
         <argument name="public key" class="const vscr_ratchet_public_key_t" is_reference="0" is_const="1" library="internal" access="readonly"/>
 
-        <return type="size"/>
+        <return type="unsigned" size="4"/>
     </method>
 
     <method name="delete key">

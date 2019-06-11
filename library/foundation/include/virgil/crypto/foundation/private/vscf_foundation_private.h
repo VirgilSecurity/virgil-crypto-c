@@ -92,6 +92,7 @@
 #include "vscf_hash_api.h"
 #include "vscf_hash_based_alg_info_defs.h"
 #include "vscf_hkdf_defs.h"
+#include "vscf_hkdf_private.h"
 #include "vscf_hmac_defs.h"
 #include "vscf_impl_private.h"
 #include "vscf_kdf_api.h"
@@ -141,6 +142,7 @@
 #include "vscf_sign_hash_api.h"
 #include "vscf_signer_defs.h"
 #include "vscf_simple_alg_info_defs.h"
+#include "vscf_simple_swu.h"
 #include "vscf_verifier_defs.h"
 #include "vscf_verify_hash_api.h"
 

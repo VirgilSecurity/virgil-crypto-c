@@ -44,14 +44,19 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_SIMPLE_SWU_H_INCLUDED
-#define VSCE_SIMPLE_SWU_H_INCLUDED
 
-#include "vsce_library.h"
-#include "vsce_phe_common.h"
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'ratchet group participants ids' types definition.
+// --------------------------------------------------------------------------
 
-#include <mbedtls/ecp.h>
-#include <mbedtls/bignum.h>
+#ifndef VSCR_RATCHET_GROUP_PARTICIPANTS_IDS_DEFS_H_INCLUDED
+#define VSCR_RATCHET_GROUP_PARTICIPANTS_IDS_DEFS_H_INCLUDED
+
+#include "vscr_library.h"
+#include "vscr_atomic.h"
+#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_typedefs.h"
 
 // clang-format on
 //  @end
@@ -69,56 +74,24 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'simple swu' context.
+//  Handle 'ratchet group participants ids' context.
 //
-typedef struct vsce_simple_swu_t vsce_simple_swu_t;
+struct vscr_ratchet_group_participants_ids_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    VSCR_ATOMIC size_t refcnt;
 
-//
-//  Return size of 'vsce_simple_swu_t'.
-//
-VSCE_PUBLIC size_t
-vsce_simple_swu_ctx_size(void);
+    uint32_t size;
 
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCE_PUBLIC void
-vsce_simple_swu_init(vsce_simple_swu_t *self);
+    uint32_t count;
 
-//
-//  Release all inner resources including class dependencies.
-//
-VSCE_PUBLIC void
-vsce_simple_swu_cleanup(vsce_simple_swu_t *self);
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCE_PUBLIC vsce_simple_swu_t *
-vsce_simple_swu_new(void);
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if the context was statically allocated.
-//
-VSCE_PUBLIC void
-vsce_simple_swu_delete(vsce_simple_swu_t *self);
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vsce_simple_swu_new ()'.
-//
-VSCE_PUBLIC void
-vsce_simple_swu_destroy(vsce_simple_swu_t **self_ref);
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCE_PUBLIC vsce_simple_swu_t *
-vsce_simple_swu_shallow_copy(vsce_simple_swu_t *self);
-
-VSCE_PUBLIC void
-vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *self, const mbedtls_mpi *t, mbedtls_ecp_point *p);
+    vscr_ratchet_participant_id_t *ids;
+};
 
 
 // --------------------------------------------------------------------------
@@ -134,5 +107,5 @@ vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *self, const mbedtls_mpi *t, m
 
 
 //  @footer
-#endif // VSCE_SIMPLE_SWU_H_INCLUDED
+#endif // VSCR_RATCHET_GROUP_PARTICIPANTS_IDS_DEFS_H_INCLUDED
 //  @end

@@ -165,33 +165,33 @@ enum vscr_status_t {
     //
     vscr_status_ERROR_CANNOT_DECRYPT_OWN_MESSAGES = -22,
     //
-    //  Duplicate id.
-    //
-    vscr_status_ERROR_DUPLICATE_ID = -23,
-    //
     //  Invalid signature.
     //
-    vscr_status_ERROR_INVALID_SIGNATURE = -24,
+    vscr_status_ERROR_INVALID_SIGNATURE = -23,
     //
-    //  User is not present in group message.
+    //  Cannot remove myself.
     //
-    vscr_status_ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE = -25,
+    vscr_status_ERROR_CANNOT_REMOVE_MYSELF = -24,
     //
     //  Epoch mismatch.
     //
-    vscr_status_ERROR_EPOCH_MISMATCH = -26,
-    //
-    //  Participant not found.
-    //
-    vscr_status_ERROR_PARTICIPANT_NOT_FOUND = -27,
+    vscr_status_ERROR_EPOCH_MISMATCH = -25,
     //
     //  Epoch not found.
     //
-    vscr_status_ERROR_EPOCH_NOT_FOUND = -28,
+    vscr_status_ERROR_EPOCH_NOT_FOUND = -26,
     //
     //  Session id mismatch.
     //
-    vscr_status_ERROR_SESSION_ID_MISMATCH = -29
+    vscr_status_ERROR_SESSION_ID_MISMATCH = -27,
+    //
+    //  Simultaneous group user operation.
+    //
+    vscr_status_ERROR_SIMULTANEOUS_GROUP_USER_OPERATION = -28,
+    //
+    //  Myself is included in info.
+    //
+    vscr_status_ERROR_MYSELF_IS_INCLUDED_IN_INFO = -29
 };
 typedef enum vscr_status_t vscr_status_t;
 

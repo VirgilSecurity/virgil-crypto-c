@@ -57,6 +57,9 @@
 
 #include <virgil/crypto/foundation/vscf_key_asn1_deserializer.h>
 #include <ed25519/ed25519.h>
+#include <virgil/crypto/foundation/vscf_sha512.h>
+#include <virgil/crypto/foundation/vscf_hkdf.h>
+#include <virgil/crypto/foundation/private/vscf_hkdf_private.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 // clang-format on
@@ -253,6 +256,10 @@ VSCR_PUBLIC vsc_buffer_t *
 vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519,
         bool curve25519, bool convert_to_curve25519, vscr_error_t *error) {
 
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(self->key_asn1_deserializer);
+    VSCR_ASSERT(vsc_data_is_valid(data));
+
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
 
@@ -316,6 +323,10 @@ VSCR_PUBLIC vsc_buffer_t *
 vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519,
         bool curve25519, bool convert_to_curve25519, vscr_error_t *error) {
 
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(self->key_asn1_deserializer);
+    VSCR_ASSERT(vsc_data_is_valid(data));
+
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
 
@@ -378,4 +389,29 @@ err:
     vscf_raw_key_destroy(&raw_key);
 
     return result;
+}
+
+VSCR_PUBLIC vscr_ratchet_chain_key_t *
+vscr_ratchet_key_utils_derive_participant_key(
+        const vscr_ratchet_symmetric_key_t root_key, const vscr_ratchet_participant_id_t participant_id) {
+
+    vscf_hkdf_t *hkdf = vscf_hkdf_new();
+    vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
+
+    vscr_ratchet_chain_key_t *chain_key = vscr_ratchet_chain_key_new();
+
+    vsc_buffer_t buffer;
+    vsc_buffer_init(&buffer);
+    vsc_buffer_use(&buffer, chain_key->key, vscr_ratchet_common_hidden_SHARED_KEY_LEN);
+
+    vscf_hkdf_set_info(hkdf, vsc_data(participant_id, vscr_ratchet_common_PARTICIPANT_ID_LEN));
+    // FIXME
+    vscf_hkdf_derive(hkdf, vsc_data(root_key, vscr_ratchet_common_hidden_SHARED_KEY_LEN),
+            vscr_ratchet_common_hidden_SHARED_KEY_LEN, &buffer);
+
+    vsc_buffer_delete(&buffer);
+
+    vscf_hkdf_destroy(&hkdf);
+
+    return chain_key;
 }

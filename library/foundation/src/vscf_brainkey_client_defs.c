@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'brainkey client' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,28 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'simple swu' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSCE_SIMPLE_SWU_DEFS_H_INCLUDED
-#define VSCE_SIMPLE_SWU_DEFS_H_INCLUDED
-
-#include "vsce_library.h"
-#include "vsce_atomic.h"
-
-#include <mbedtls/ecp.h>
-#include <mbedtls/bignum.h>
+#include "vscf_brainkey_client_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -74,47 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'simple swu' context.
-//
-struct vsce_simple_swu_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vsce_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    VSCE_ATOMIC size_t refcnt;
-
-    mbedtls_ecp_group group;
-
-    mbedtls_mpi a;
-
-    mbedtls_mpi two;
-
-    mbedtls_mpi three;
-
-    mbedtls_mpi p34;
-
-    mbedtls_mpi p14;
-
-    mbedtls_mpi mba;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCE_SIMPLE_SWU_DEFS_H_INCLUDED
 //  @end

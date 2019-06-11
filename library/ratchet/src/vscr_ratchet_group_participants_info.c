@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Container for array of participants' info
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,9 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_ratchet_group_participant_data.h"
+#include "vscr_ratchet_group_participants_info.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
+#include "vscr_ratchet_group_participants_info_defs.h"
 
 // clang-format on
 //  @end
@@ -60,11 +67,11 @@
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_group_participant_data_init() is called.
+//  Note, this method is called automatically when method vscr_ratchet_group_participants_info_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_group_participant_data_init_ctx(vscr_ratchet_group_participant_data_t *self);
+vscr_ratchet_group_participants_info_init_ctx(vscr_ratchet_group_participants_info_t *self);
 
 //
 //  Release all inner resources.
@@ -72,57 +79,96 @@ vscr_ratchet_group_participant_data_init_ctx(vscr_ratchet_group_participant_data
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_group_participant_data_cleanup_ctx(vscr_ratchet_group_participant_data_t *self);
+vscr_ratchet_group_participants_info_cleanup_ctx(vscr_ratchet_group_participants_info_t *self);
 
 //
-//  Return size of 'vscr_ratchet_group_participant_data_t'.
+//  Creates new array for size elements
+//
+static void
+vscr_ratchet_group_participants_info_init_ctx_size(vscr_ratchet_group_participants_info_t *self, uint32_t size);
+
+//
+//  Return size of 'vscr_ratchet_group_participants_info_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_group_participant_data_ctx_size(void) {
+vscr_ratchet_group_participants_info_ctx_size(void) {
 
-    return sizeof(vscr_ratchet_group_participant_data_t);
+    return sizeof(vscr_ratchet_group_participants_info_t);
 }
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_init(vscr_ratchet_group_participant_data_t *self) {
+vscr_ratchet_group_participants_info_init(vscr_ratchet_group_participants_info_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    vscr_zeroize(self, sizeof(vscr_ratchet_group_participant_data_t));
+    vscr_zeroize(self, sizeof(vscr_ratchet_group_participants_info_t));
 
     self->refcnt = 1;
 
-    vscr_ratchet_group_participant_data_init_ctx(self);
+    vscr_ratchet_group_participants_info_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_cleanup(vscr_ratchet_group_participant_data_t *self) {
+vscr_ratchet_group_participants_info_cleanup(vscr_ratchet_group_participants_info_t *self) {
 
     if (self == NULL) {
         return;
     }
 
-    vscr_ratchet_group_participant_data_cleanup_ctx(self);
+    vscr_ratchet_group_participants_info_cleanup_ctx(self);
 
-    vscr_zeroize(self, sizeof(vscr_ratchet_group_participant_data_t));
+    vscr_zeroize(self, sizeof(vscr_ratchet_group_participants_info_t));
 }
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_group_participant_data_t *
-vscr_ratchet_group_participant_data_new(void) {
+VSCR_PUBLIC vscr_ratchet_group_participants_info_t *
+vscr_ratchet_group_participants_info_new(void) {
 
-    vscr_ratchet_group_participant_data_t *self = (vscr_ratchet_group_participant_data_t *) vscr_alloc(sizeof (vscr_ratchet_group_participant_data_t));
+    vscr_ratchet_group_participants_info_t *self = (vscr_ratchet_group_participants_info_t *) vscr_alloc(sizeof (vscr_ratchet_group_participants_info_t));
     VSCR_ASSERT_ALLOC(self);
 
-    vscr_ratchet_group_participant_data_init(self);
+    vscr_ratchet_group_participants_info_init(self);
+
+    self->self_dealloc_cb = vscr_dealloc;
+
+    return self;
+}
+
+//
+//  Perform initialization of pre-allocated context.
+//  Creates new array for size elements
+//
+VSCR_PUBLIC void
+vscr_ratchet_group_participants_info_init_size(vscr_ratchet_group_participants_info_t *self, uint32_t size) {
+
+    VSCR_ASSERT_PTR(self);
+
+    vscr_zeroize(self, sizeof(vscr_ratchet_group_participants_info_t));
+
+    self->refcnt = 1;
+
+    vscr_ratchet_group_participants_info_init_ctx_size(self, size);
+}
+
+//
+//  Allocate class context and perform it's initialization.
+//  Creates new array for size elements
+//
+VSCR_PUBLIC vscr_ratchet_group_participants_info_t *
+vscr_ratchet_group_participants_info_new_size(uint32_t size) {
+
+    vscr_ratchet_group_participants_info_t *self = (vscr_ratchet_group_participants_info_t *) vscr_alloc(sizeof (vscr_ratchet_group_participants_info_t));
+    VSCR_ASSERT_ALLOC(self);
+
+    vscr_ratchet_group_participants_info_init_size(self, size);
 
     self->self_dealloc_cb = vscr_dealloc;
 
@@ -134,7 +180,7 @@ vscr_ratchet_group_participant_data_new(void) {
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_delete(vscr_ratchet_group_participant_data_t *self) {
+vscr_ratchet_group_participants_info_delete(vscr_ratchet_group_participants_info_t *self) {
 
     if (self == NULL) {
         return;
@@ -158,7 +204,7 @@ vscr_ratchet_group_participant_data_delete(vscr_ratchet_group_participant_data_t
 
     vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscr_ratchet_group_participant_data_cleanup(self);
+    vscr_ratchet_group_participants_info_cleanup(self);
 
     if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
@@ -167,24 +213,24 @@ vscr_ratchet_group_participant_data_delete(vscr_ratchet_group_participant_data_t
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_group_participant_data_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_group_participants_info_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_destroy(vscr_ratchet_group_participant_data_t **self_ref) {
+vscr_ratchet_group_participants_info_destroy(vscr_ratchet_group_participants_info_t **self_ref) {
 
     VSCR_ASSERT_PTR(self_ref);
 
-    vscr_ratchet_group_participant_data_t *self = *self_ref;
+    vscr_ratchet_group_participants_info_t *self = *self_ref;
     *self_ref = NULL;
 
-    vscr_ratchet_group_participant_data_delete(self);
+    vscr_ratchet_group_participants_info_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_group_participant_data_t *
-vscr_ratchet_group_participant_data_shallow_copy(vscr_ratchet_group_participant_data_t *self) {
+VSCR_PUBLIC vscr_ratchet_group_participants_info_t *
+vscr_ratchet_group_participants_info_shallow_copy(vscr_ratchet_group_participants_info_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
@@ -213,13 +259,14 @@ vscr_ratchet_group_participant_data_shallow_copy(vscr_ratchet_group_participant_
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_group_participant_data_init() is called.
+//  Note, this method is called automatically when method vscr_ratchet_group_participants_info_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_group_participant_data_init_ctx(vscr_ratchet_group_participant_data_t *self) {
+vscr_ratchet_group_participants_info_init_ctx(vscr_ratchet_group_participants_info_t *self) {
 
     VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(false);
 }
 
 //
@@ -228,93 +275,66 @@ vscr_ratchet_group_participant_data_init_ctx(vscr_ratchet_group_participant_data
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_group_participant_data_cleanup_ctx(vscr_ratchet_group_participant_data_t *self) {
+vscr_ratchet_group_participants_info_cleanup_ctx(vscr_ratchet_group_participants_info_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT; i++) {
-        vscr_ratchet_group_participant_epoch_destroy(&self->epoches[i]);
+    for (size_t i = 0; i < self->count; i++) {
+        vscr_ratchet_group_participant_info_destroy(&self->participants[i]);
     }
+
+    vscr_dealloc(self->participants);
+    vscr_ratchet_key_utils_destroy(&self->key_utils);
 }
 
-VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_add_epoch(
-        vscr_ratchet_group_participant_data_t *self, size_t epoch, vscr_ratchet_chain_key_t **chain_key_ref) {
+//
+//  Creates new array for size elements
+//
+static void
+vscr_ratchet_group_participants_info_init_ctx_size(vscr_ratchet_group_participants_info_t *self, uint32_t size) {
 
     VSCR_ASSERT_PTR(self);
 
-    size_t last_epoch = 0;
+    self->key_utils = vscr_ratchet_key_utils_new();
 
-    if (self->epoches[0]) {
-        last_epoch = self->epoches[0]->epoch;
-        VSCR_ASSERT(epoch > last_epoch);
+    if (size != 0) {
+        self->participants = vscr_alloc(size * sizeof(vscr_ratchet_group_participant_info_t *));
     }
-
-    size_t shift = epoch - last_epoch;
-
-    if (shift != 0) {
-        for (size_t i = 0; i < shift; i++) {
-            vscr_ratchet_group_participant_epoch_destroy(
-                    &self->epoches[vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT - i - 1]);
-        }
-
-        for (size_t i = vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT - 1; i >= shift; i--) {
-            self->epoches[i] = self->epoches[i - shift];
-        }
-    }
-
-    self->epoches[0] = vscr_ratchet_group_participant_epoch_new();
-    self->epoches[0]->epoch = epoch;
-    self->epoches[0]->chain_key = *chain_key_ref;
-    *chain_key_ref = NULL;
+    self->size = size;
+    self->count = 0;
 }
 
-VSCR_PUBLIC vscr_ratchet_group_participant_epoch_t *
-vscr_ratchet_group_participant_data_find_epoch(const vscr_ratchet_group_participant_data_t *self, size_t epoch) {
+//
+//  Add participant info
+//
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_group_participants_info_add_participant(
+        vscr_ratchet_group_participants_info_t *self, vsc_data_t id, vsc_data_t pub_key) {
 
     VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->count < self->size);
+    VSCR_ASSERT_PTR(self->key_utils);
+    VSCR_ASSERT(vsc_data_is_valid(id));
+    VSCR_ASSERT(id.len == vscr_ratchet_common_PARTICIPANT_ID_LEN);
 
-    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT; i++) {
-        if (self->epoches[i] && self->epoches[i]->epoch == epoch)
-            return self->epoches[i];
+    vscr_error_t error;
+    vscr_error_reset(&error);
+
+    vsc_buffer_t *public_key =
+            vscr_ratchet_key_utils_extract_ratchet_public_key(self->key_utils, pub_key, true, false, false, &error);
+
+    if (!public_key) {
+        return error.status;
     }
 
-    return NULL;
-}
+    vscr_ratchet_group_participant_info_t *info = vscr_ratchet_group_participant_info_new();
 
-VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_serialize(
-        const vscr_ratchet_group_participant_data_t *self, ParticipantData *data_pb) {
+    memcpy(info->pub_key, vsc_buffer_bytes(public_key), vscr_ratchet_common_hidden_KEY_LEN);
+    memcpy(info->id, id.bytes, id.len);
 
-    VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(data_pb);
+    self->participants[self->count++] = info;
 
-    memcpy(data_pb->id, self->id, sizeof(self->id));
-    memcpy(data_pb->pub_key, self->pub_key, sizeof(self->pub_key));
+    vsc_buffer_destroy(&public_key);
 
-    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT; i++) {
-        if (self->epoches[i]) {
-            vscr_ratchet_group_participant_epoch_serialize(self->epoches[i], &data_pb->epoches[i]);
-        } else {
-            data_pb->epoches[i].is_empty = true;
-        }
-    }
-}
-
-VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_deserialize(
-        const ParticipantData *data_pb, vscr_ratchet_group_participant_data_t *data) {
-
-    VSCR_ASSERT_PTR(data_pb);
-    VSCR_ASSERT_PTR(data);
-
-    memcpy(data->id, data_pb->id, sizeof(data->id));
-    memcpy(data->pub_key, data_pb->pub_key, sizeof(data->pub_key));
-
-    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT; i++) {
-        if (!data_pb->epoches[i].is_empty) {
-            data->epoches[i] = vscr_ratchet_group_participant_epoch_new();
-            vscr_ratchet_group_participant_epoch_deserialize(&data_pb->epoches[i], data->epoches[i]);
-        }
-    }
+    return vscr_status_SUCCESS;
 }

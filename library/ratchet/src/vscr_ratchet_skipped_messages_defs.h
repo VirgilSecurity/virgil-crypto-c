@@ -87,7 +87,7 @@ struct vscr_ratchet_skipped_messages_t {
     //
     VSCR_ATOMIC size_t refcnt;
 
-    size_t roots_count;
+    uint32_t roots_count;
 
     vscr_ratchet_public_key_t public_keys[vscr_ratchet_common_hidden_MAX_SKIPPED_DH];
 
