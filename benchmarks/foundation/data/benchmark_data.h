@@ -38,6 +38,7 @@
 extern const vsc_data_t benchmark_ANY_DATA_512_BYTES;
 extern const vsc_data_t benchmark_data_recipient_cipher_ED25519_PUBLIC_KEY;
 extern const vsc_data_t benchmark_data_recipient_cipher_ED25519_RECIPIENT_ID;
+extern const vsc_data_t benchmark_signer_RSA2048_PRIVATE_KEY_PKCS8;
 extern const vsc_data_t benchmark_data_recipient_cipher_MESSAGE;
 extern const vsc_data_t benchmark_data_recipient_cipher_ED25519_PRIVATE_KEY;
 extern const vsc_data_t benchmark_signer_ED25519_PRIVATE_KEY_PKCS8;

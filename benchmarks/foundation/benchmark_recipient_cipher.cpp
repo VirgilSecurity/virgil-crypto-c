@@ -49,7 +49,6 @@ benchmark__encrypt(benchmark::State &state) {
 
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
-
     vscf_error_t error;
     vscf_error_reset(&error);
 
@@ -59,6 +58,48 @@ benchmark__encrypt(benchmark::State &state) {
     vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
     vscf_recipient_cipher_add_key_recipient(
             recipient_cipher, benchmark_data_recipient_cipher_ED25519_RECIPIENT_ID, public_key);
+
+    for (auto _ : state) {
+        vscf_recipient_cipher_start_encryption(recipient_cipher);
+        size_t message_info_len = vscf_recipient_cipher_message_info_len(recipient_cipher);
+        size_t enc_msg_len = vscf_recipient_cipher_encryption_out_len(
+                                     recipient_cipher, benchmark_data_recipient_cipher_MESSAGE.len) +
+                             vscf_recipient_cipher_encryption_out_len(recipient_cipher, 0);
+
+        vsc_buffer_t *enc_msg = vsc_buffer_new_with_capacity(message_info_len + enc_msg_len);
+        vscf_recipient_cipher_pack_message_info(recipient_cipher, enc_msg);
+        vscf_recipient_cipher_process_encryption(recipient_cipher, benchmark_data_recipient_cipher_MESSAGE, enc_msg);
+        vscf_recipient_cipher_finish_encryption(recipient_cipher, enc_msg);
+        vsc_buffer_reset(enc_msg); // where destroy buffer if destroy time is almost same?
+        // vsc_buffer_destroy(&enc_msg);
+    }
+
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+    vscf_impl_destroy(&public_key);
+    vscf_raw_key_destroy(&raw_public_key);
+    vscf_key_asn1_deserializer_destroy(&key_deserializer);
+}
+
+static void
+benchmark__encrypt_30_recipients(benchmark::State &state) {
+
+    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_raw_key_t *raw_public_key = vscf_key_asn1_deserializer_deserialize_public_key(
+            key_deserializer, benchmark_data_recipient_cipher_ED25519_PUBLIC_KEY, NULL);
+    vscf_impl_t *public_key = vscf_alg_factory_create_public_key_from_raw_key(raw_public_key, &error);
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+
+
+    for (size_t i = 0; i < 30; ++i) { // change keys and recipient id
+        vscf_recipient_cipher_add_key_recipient(
+                recipient_cipher, benchmark_data_recipient_cipher_ED25519_RECIPIENT_ID, public_key);
+    }
+
 
     for (auto _ : state) {
         vscf_recipient_cipher_start_encryption(recipient_cipher);
@@ -140,4 +181,6 @@ benchmark__decrypt(benchmark::State &state) {
 }
 
 BENCHMARK(benchmark__encrypt);
+BENCHMARK(benchmark__encrypt_30_recipients);
+
 BENCHMARK(benchmark__decrypt);
