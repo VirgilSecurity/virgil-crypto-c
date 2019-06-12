@@ -36,7 +36,13 @@ before_script:
   - valgrind --version
 
 script:
-  - cmake -H. -Bbuild -DENABLE_HEAVY_TESTS=OFF
+  - CMAKE_ARGS="-DENABLE_HEAVY_TESTS=OFF"
+  - if [ "${CC}" = "gcc" ]; then CMAKE_ARGS+=" -DVSC_MULTI_THREADING=OFF"; fi
+  - if [ "${CC}" = "gcc" ]; then CMAKE_ARGS+=" -DVSCF_MULTI_THREADING=OFF"; fi
+  - if [ "${CC}" = "gcc" ]; then CMAKE_ARGS+=" -DVSCP_MULTI_THREADING=OFF"; fi
+  - if [ "${CC}" = "gcc" ]; then CMAKE_ARGS+=" -DVSCR_MULTI_THREADING=OFF"; fi
+  - if [ "${CC}" = "gcc" ]; then CMAKE_ARGS+=" -DVSCE_MULTI_THREADING=OFF"; fi
+  - cmake -H. -Bbuild ${CMAKE_ARGS}
   - cmake --build build -- -j8
     && pushd build
     && ctest -T memcheck --output-on-failure
