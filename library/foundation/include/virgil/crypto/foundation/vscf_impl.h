@@ -56,7 +56,6 @@
 
 #include "vscf_library.h"
 #include "vscf_api.h"
-#include "stdatomic.h"
 
 // clang-format on
 //  @end

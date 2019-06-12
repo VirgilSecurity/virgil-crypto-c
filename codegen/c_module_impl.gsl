@@ -311,11 +311,6 @@ function c_module_impl_create (meta, destination)
         .name = my.names.module_impl
         .of_class = my.names.class_impl
 
-        new c_include
-            .file = "stdatomic.h"
-            is_system = "1"
-        endnew
-
         new require
             .module = my.names.module_library
         endnew
