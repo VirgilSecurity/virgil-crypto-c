@@ -519,6 +519,6 @@ vscf_brainkey_server_free_op_group(mbedtls_ecp_group *op_group) {
     mbedtls_ecp_group_free(op_group);
     vscf_dealloc(op_group);
 #else
-    VSCE_UNUSED(op_group);
+    VSCF_UNUSED(op_group);
 #endif
 }
