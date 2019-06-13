@@ -83,7 +83,7 @@ struct vscr_ratchet_skipped_messages_root_node_t {
     //
     size_t refcnt;
 
-    size_t count;
+    uint32_t count;
 
     vscr_ratchet_message_key_node_t *first;
 
@@ -135,7 +135,8 @@ VSCR_PUBLIC vscr_ratchet_skipped_messages_root_node_t *
 vscr_ratchet_skipped_messages_root_node_shallow_copy(vscr_ratchet_skipped_messages_root_node_t *self);
 
 VSCR_PUBLIC vscr_ratchet_message_key_t *
-vscr_ratchet_skipped_messages_root_node_find_key(const vscr_ratchet_skipped_messages_root_node_t *self, size_t counter);
+vscr_ratchet_skipped_messages_root_node_find_key(const vscr_ratchet_skipped_messages_root_node_t *self,
+        uint32_t counter);
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_messages_root_node_delete_key(vscr_ratchet_skipped_messages_root_node_t *self,
@@ -147,7 +148,7 @@ vscr_ratchet_skipped_messages_root_node_add_key(vscr_ratchet_skipped_messages_ro
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_messages_root_node_serialize(const vscr_ratchet_skipped_messages_root_node_t *self,
-        MessageKey *skipped_messages_pb, pb_size_t *count);
+        MessageKey **skipped_messages_pb, pb_size_t *count);
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_messages_root_node_deserialize(const MessageKey *skipped_messages_pb, pb_size_t count,

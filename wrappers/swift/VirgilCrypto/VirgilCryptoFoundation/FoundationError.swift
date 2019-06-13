@@ -155,6 +155,36 @@ import VSCFoundation
     /// Signature format is corrupted.
     case errorBadSignature = -308
 
+    /// Brainkey password length is out of range.
+    case errorInvalidBrainkeyPasswordLen = -401
+
+    /// Brainkey number length should be 32 byte.
+    case errorInvalidBrainkeyFactorLen = -402
+
+    /// Brainkey point length should be 65 bytes.
+    case errorInvalidBrainkeyPointLen = -403
+
+    /// Brainkey name is out of range.
+    case errorInvalidBrainkeyKeyNameLen = -404
+
+    /// Brainkey internal error.
+    case errorBrainkeyInternal = -405
+
+    /// Brainkey point is invalid.
+    case errorBrainkeyInvalidPoint = -406
+
+    /// Brainkey number buffer length capacity should be >= 32 byte.
+    case errorInvalidBrainkeyFactorBufferLen = -407
+
+    /// Brainkey point buffer length capacity should be >= 32 byte.
+    case errorInvalidBrainkeyPointBufferLen = -408
+
+    /// Brainkey seed buffer length capacity should be >= 32 byte.
+    case errorInvalidBrainkeySeedBufferLen = -409
+
+    /// Brainkey identity secret is invalid.
+    case errorInvalidIdentitySecret = -410
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscf_status_t) {
         self.init(rawValue: Int(status.rawValue))!

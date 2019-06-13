@@ -65,7 +65,6 @@
 
     <class name="error"/>
     <class name="phe common"/>
-    <class name="simple swu"/>
     <class name="phe hash"/>
     <class name="phe server"/>
     <class name="phe client"/>

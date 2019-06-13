@@ -44,14 +44,24 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_SIMPLE_SWU_H_INCLUDED
-#define VSCE_SIMPLE_SWU_H_INCLUDED
 
-#include "vsce_library.h"
-#include "vsce_phe_common.h"
+//  @description
+// --------------------------------------------------------------------------
+//  Container for array of participants ids
+// --------------------------------------------------------------------------
 
-#include <mbedtls/ecp.h>
-#include <mbedtls/bignum.h>
+#ifndef VSCR_RATCHET_GROUP_PARTICIPANTS_IDS_H_INCLUDED
+#define VSCR_RATCHET_GROUP_PARTICIPANTS_IDS_H_INCLUDED
+
+#include "vscr_library.h"
+
+#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
@@ -69,56 +79,73 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'simple swu' context.
+//  Handle 'ratchet group participants ids' context.
 //
-typedef struct vsce_simple_swu_t vsce_simple_swu_t;
+typedef struct vscr_ratchet_group_participants_ids_t vscr_ratchet_group_participants_ids_t;
 
 //
-//  Return size of 'vsce_simple_swu_t'.
+//  Return size of 'vscr_ratchet_group_participants_ids_t'.
 //
-VSCE_PUBLIC size_t
-vsce_simple_swu_ctx_size(void);
+VSCR_PUBLIC size_t
+vscr_ratchet_group_participants_ids_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
-VSCE_PUBLIC void
-vsce_simple_swu_init(vsce_simple_swu_t *self);
+VSCR_PUBLIC void
+vscr_ratchet_group_participants_ids_init(vscr_ratchet_group_participants_ids_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
-VSCE_PUBLIC void
-vsce_simple_swu_cleanup(vsce_simple_swu_t *self);
+VSCR_PUBLIC void
+vscr_ratchet_group_participants_ids_cleanup(vscr_ratchet_group_participants_ids_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCE_PUBLIC vsce_simple_swu_t *
-vsce_simple_swu_new(void);
+VSCR_PUBLIC vscr_ratchet_group_participants_ids_t *
+vscr_ratchet_group_participants_ids_new(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//  Creates new array for size elements
+//
+VSCR_PUBLIC void
+vscr_ratchet_group_participants_ids_init_size(vscr_ratchet_group_participants_ids_t *self, uint32_t size);
+
+//
+//  Allocate class context and perform it's initialization.
+//  Creates new array for size elements
+//
+VSCR_PUBLIC vscr_ratchet_group_participants_ids_t *
+vscr_ratchet_group_participants_ids_new_size(uint32_t size);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
-VSCE_PUBLIC void
-vsce_simple_swu_delete(vsce_simple_swu_t *self);
+VSCR_PUBLIC void
+vscr_ratchet_group_participants_ids_delete(vscr_ratchet_group_participants_ids_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vsce_simple_swu_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_group_participants_ids_new ()'.
 //
-VSCE_PUBLIC void
-vsce_simple_swu_destroy(vsce_simple_swu_t **self_ref);
+VSCR_PUBLIC void
+vscr_ratchet_group_participants_ids_destroy(vscr_ratchet_group_participants_ids_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCE_PUBLIC vsce_simple_swu_t *
-vsce_simple_swu_shallow_copy(vsce_simple_swu_t *self);
+VSCR_PUBLIC vscr_ratchet_group_participants_ids_t *
+vscr_ratchet_group_participants_ids_shallow_copy(vscr_ratchet_group_participants_ids_t *self);
 
-VSCE_PUBLIC void
-vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *self, const mbedtls_mpi *t, mbedtls_ecp_point *p);
+//
+//  Add participant id to array
+//
+VSCR_PUBLIC void
+vscr_ratchet_group_participants_ids_add_id(vscr_ratchet_group_participants_ids_t *self, vsc_data_t id);
 
 
 // --------------------------------------------------------------------------
@@ -134,5 +161,5 @@ vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *self, const mbedtls_mpi *t, m
 
 
 //  @footer
-#endif // VSCE_SIMPLE_SWU_H_INCLUDED
+#endif // VSCR_RATCHET_GROUP_PARTICIPANTS_IDS_H_INCLUDED
 //  @end

@@ -1,0 +1,73 @@
+<class name="brainkey client" context="internal">
+
+    <require impl="ctr drbg" scope="private"/>
+
+    <require module="mbedtls bridge random" scope="private"/>
+    <require impl="hkdf" scope="private"/>
+    <require impl="sha512" scope="private"/>
+
+    <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="simple swu" class="simple swu" project="foundation"/>
+
+    <constant name="point len" value="65"/>
+    <constant name="mpi len" value="32"/>
+    <constant name="seed len" value="32"/>
+    <constant name="max password len" value="128"/>
+    <constant name="max key name len" value="128"/>
+
+    <dependency name="random" interface="random">
+        Random used for key generation, proofs, etc.
+    </dependency>
+    <dependency name="operation random" interface="random">
+        Random used for crypto operations to make them const-time
+    </dependency>
+
+    <method name="setup defaults">
+        <return enum="status"/>
+    </method>
+
+    <method name="blind">
+        <argument name="password" class="data">
+            User's password (or its hash)
+        </argument>
+        <argument name="deblind factor" class="buffer" access="writeonly">
+            <length constant="mpi len" class="self"/>
+        </argument>
+        <argument name="blinded point" class="buffer" access="writeonly">
+            <length constant="point len" class="self"/>
+        </argument>
+
+        <return enum="status">
+
+        </return>
+    </method>
+
+    <method name="deblind">
+        <argument name="password" class="data">
+            User's password (or its hash)
+        </argument>
+        <argument name="hardened point" class="data">
+        </argument>
+        <argument name="deblind factor" class="data">
+        </argument>
+        <argument name="key name" class="data">
+
+        </argument>
+        <argument name="seed" class="buffer" access="writeonly">
+            <length constant="point len" class="self"/>
+        </argument>
+
+        <return enum="status">
+
+        </return>
+    </method>
+
+    <method name="get op group" declaration="private">
+        <return class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
+    </method>
+
+    <method name="free op group" declaration="private" is_static="1">
+        <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
+    </method>
+
+</class>

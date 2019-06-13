@@ -1,21 +1,14 @@
 syntax = "proto2";
 
-message MessageParticipantInfo {
-    required bytes id = 1;
-    required bytes key = 2;
-    required bytes pub_key = 3;
-    required uint32 index = 4;
-}
-
 message MessageGroupInfo {
     required bytes session_id = 1;
     required uint32 epoch = 2;
-    repeated MessageParticipantInfo participants = 3;
+    required bytes key = 3;
 }
 
 message RegularGroupMessageHeader {
     required uint32 epoch = 1;
-    repeated uint32 prev_epoches_msgs = 2;
+    repeated uint32 prev_epochs_msgs = 2;
     required uint32 counter = 3;
     required bytes sender_id = 4;
 }

@@ -5,6 +5,9 @@
     <require class="ratchet common hidden" scope="context"/>
     <require impl="key asn1 deserializer" scope="private" project="foundation"/>
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
+    <require impl="sha512" project="foundation" scope="private"/>
+    <require impl="hkdf" project="foundation" scope="private"/>
+    <require module="hkdf private" scope="private" project="foundation"/>
     <require module="buffer defs" scope="private" project="common"/>
 
     <property name="key asn1 deserializer" impl="key asn1 deserializer" project="foundation"/>
@@ -27,5 +30,12 @@
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="buffer" access="disown"/>
+    </method>
+
+    <method name="derive participant key" is_static="1">
+        <argument name="root key" class="const vscr_ratchet_symmetric_key_t" is_reference="0" library="internal"/>
+        <argument name="participant id" class="const vscr_ratchet_participant_id_t" is_reference="0" library="internal"/>
+
+        <return class="ratchet chain key" access="disown"/>
     </method>
 </class>

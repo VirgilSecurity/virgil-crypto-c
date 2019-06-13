@@ -44,17 +44,22 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_GROUP_PARTICIPANT_DATA_H_INCLUDED
-#define VSCR_RATCHET_GROUP_PARTICIPANT_DATA_H_INCLUDED
+#ifndef VSCF_BRAINKEY_SERVER_H_INCLUDED
+#define VSCF_BRAINKEY_SERVER_H_INCLUDED
 
-#include "vscr_library.h"
-#include "vscr_ratchet_typedefs.h"
-#include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_common.h"
-#include "vscr_ratchet_common.h"
-#include "vscr_ratchet_chain_key.h"
-#include "vscr_ratchet_group_participant_epoch.h"
-#include "vscr_ratchet_group_participant_data.h"
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
@@ -72,84 +77,118 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet group participant data' context.
+//  Public integral constants.
 //
-typedef struct vscr_ratchet_group_participant_data_t vscr_ratchet_group_participant_data_t;
-struct vscr_ratchet_group_participant_data_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscr_ratchet_participant_id_t id;
-
-    vscr_ratchet_public_key_t pub_key;
-
-    vscr_ratchet_group_participant_epoch_t *epoches[vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT];
+enum {
+    vscf_brainkey_server_POINT_LEN = 65,
+    vscf_brainkey_server_MPI_LEN = 32
 };
 
 //
-//  Return size of 'vscr_ratchet_group_participant_data_t'.
+//  Handle 'brainkey server' context.
 //
-VSCR_PUBLIC size_t
-vscr_ratchet_group_participant_data_ctx_size(void);
+typedef struct vscf_brainkey_server_t vscf_brainkey_server_t;
+
+//
+//  Return size of 'vscf_brainkey_server_t'.
+//
+VSCF_PUBLIC size_t
+vscf_brainkey_server_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
-VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_init(vscr_ratchet_group_participant_data_t *self);
+VSCF_PUBLIC void
+vscf_brainkey_server_init(vscf_brainkey_server_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
-VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_cleanup(vscr_ratchet_group_participant_data_t *self);
+VSCF_PUBLIC void
+vscf_brainkey_server_cleanup(vscf_brainkey_server_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_group_participant_data_t *
-vscr_ratchet_group_participant_data_new(void);
+VSCF_PUBLIC vscf_brainkey_server_t *
+vscf_brainkey_server_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
-VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_delete(vscr_ratchet_group_participant_data_t *self);
+VSCF_PUBLIC void
+vscf_brainkey_server_delete(vscf_brainkey_server_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_group_participant_data_new ()'.
+//  This is a reverse action of the function 'vscf_brainkey_server_new ()'.
 //
-VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_destroy(vscr_ratchet_group_participant_data_t **self_ref);
+VSCF_PUBLIC void
+vscf_brainkey_server_destroy(vscf_brainkey_server_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_group_participant_data_t *
-vscr_ratchet_group_participant_data_shallow_copy(vscr_ratchet_group_participant_data_t *self);
+VSCF_PUBLIC vscf_brainkey_server_t *
+vscf_brainkey_server_shallow_copy(vscf_brainkey_server_t *self);
 
-VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_add_epoch(vscr_ratchet_group_participant_data_t *self, size_t epoch,
-        vscr_ratchet_chain_key_t **chain_key_ref);
+//
+//  Random used for key generation, proofs, etc.
+//
+//  Note, ownership is shared.
+//
+VSCF_PUBLIC void
+vscf_brainkey_server_use_random(vscf_brainkey_server_t *self, vscf_impl_t *random);
 
-VSCR_PUBLIC vscr_ratchet_group_participant_epoch_t *
-vscr_ratchet_group_participant_data_find_epoch(const vscr_ratchet_group_participant_data_t *self, size_t epoch);
+//
+//  Random used for key generation, proofs, etc.
+//
+//  Note, ownership is transfered.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_brainkey_server_take_random(vscf_brainkey_server_t *self, vscf_impl_t *random);
 
-VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_serialize(const vscr_ratchet_group_participant_data_t *self,
-        ParticipantData *data_pb);
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_brainkey_server_release_random(vscf_brainkey_server_t *self);
 
-VSCR_PUBLIC void
-vscr_ratchet_group_participant_data_deserialize(const ParticipantData *data_pb,
-        vscr_ratchet_group_participant_data_t *data);
+//
+//  Random used for crypto operations to make them const-time
+//
+//  Note, ownership is shared.
+//
+VSCF_PUBLIC void
+vscf_brainkey_server_use_operation_random(vscf_brainkey_server_t *self, vscf_impl_t *operation_random);
+
+//
+//  Random used for crypto operations to make them const-time
+//
+//  Note, ownership is transfered.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_brainkey_server_take_operation_random(vscf_brainkey_server_t *self, vscf_impl_t *operation_random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_brainkey_server_release_operation_random(vscf_brainkey_server_t *self);
+
+VSCF_PUBLIC vscf_status_t
+vscf_brainkey_server_setup_defaults(vscf_brainkey_server_t *self) VSCF_NODISCARD;
+
+VSCF_PUBLIC vscf_status_t
+vscf_brainkey_server_generate_identity_secret(vscf_brainkey_server_t *self,
+        vsc_buffer_t *identity_secret) VSCF_NODISCARD;
+
+VSCF_PUBLIC vscf_status_t
+vscf_brainkey_server_harden(vscf_brainkey_server_t *self, vsc_data_t identity_secret, vsc_data_t blinded_point,
+        vsc_buffer_t *hardened_point) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------
@@ -165,5 +204,5 @@ vscr_ratchet_group_participant_data_deserialize(const ParticipantData *data_pb,
 
 
 //  @footer
-#endif // VSCR_RATCHET_GROUP_PARTICIPANT_DATA_H_INCLUDED
+#endif // VSCF_BRAINKEY_SERVER_H_INCLUDED
 //  @end

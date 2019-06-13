@@ -6,7 +6,7 @@
     External library: https://github.com/nanopb/nanopb
 
 
-    <feature name="ENABLE_MALLOC" default="off">
+    <feature name="ENABLE_MALLOC" default="on">
         Enable support for dynamically allocated fields
     </feature>
 
@@ -26,11 +26,11 @@
         Add support for tag numbers > 65536 and fields larger than 65536 bytes.
     </feature>
 
-    <feature name="NO_ERRMSG" default="off">
+    <feature name="NO_ERRMSG" default="on">
         Disable support for error messages in order to save some code space.
     </feature>
 
-    <feature name="BUFFER_ONLY" default="off">
+    <feature name="BUFFER_ONLY" default="on">
         Disable support for custom streams (support only memory buffers).
     </feature>
 

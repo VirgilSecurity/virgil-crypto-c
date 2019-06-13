@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'simple swu' types definition.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,10 +44,26 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsce_simple_swu_defs.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'brainkey client' types definition.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_BRAINKEY_CLIENT_DEFS_H_INCLUDED
+#define VSCF_BRAINKEY_CLIENT_DEFS_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_simple_swu.h"
+#include "vscf_impl.h"
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +72,45 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handle 'brainkey client' context.
+//
+struct vscf_brainkey_client_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscf_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *random;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *operation_random;
+
+    mbedtls_ecp_group group;
+
+    vscf_simple_swu_t *simple_swu;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_BRAINKEY_CLIENT_DEFS_H_INCLUDED
 //  @end
