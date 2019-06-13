@@ -788,7 +788,7 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *self) {
     vsc_buffer_t *output = vsc_buffer_new_with_capacity(len);
     vsc_buffer_make_secure(output);
 
-    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
+    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_unused_len(output));
 
     VSCR_ASSERT(pb_encode(&ostream, Session_fields, session_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);
