@@ -73,6 +73,13 @@ public class RatchetMessage implements AutoCloseable {
     }
 
     /*
+    * Returns message counter in current asymmetric ratchet round.
+    */
+    public long getCounter() {
+        return RatchetJNI.INSTANCE.ratchetMessage_getCounter(this.cCtx);
+    }
+
+    /*
     * Returns long-term public key, if message is prekey message.
     */
     public byte[] getLongTermPublicKey() {

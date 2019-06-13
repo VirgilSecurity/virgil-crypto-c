@@ -276,9 +276,13 @@ VSCR_PUBLIC vsc_data_t
 vscr_ratchet_group_message_get_session_id(const vscr_ratchet_group_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(self->message_pb.has_group_info);
 
-    return vsc_data(self->message_pb.group_info.session_id, sizeof(self->message_pb.group_info.session_id));
+    if (self->message_pb.has_group_info) {
+        return vsc_data(self->message_pb.group_info.session_id, sizeof(self->message_pb.group_info.session_id));
+    } else {
+        VSCR_ASSERT_PTR(self->header_pb);
+        return vsc_data(self->header_pb->session_id, sizeof(self->header_pb->session_id));
+    }
 }
 
 //
@@ -289,10 +293,31 @@ VSCR_PUBLIC vsc_data_t
 vscr_ratchet_group_message_get_sender_id(const vscr_ratchet_group_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(self->message_pb.has_regular_message);
+
+    if (!self->message_pb.has_regular_message) {
+        return vsc_data_empty();
+    }
+
     VSCR_ASSERT_PTR(self->header_pb);
 
     return vsc_data(self->header_pb->sender_id, sizeof(self->header_pb->sender_id));
+}
+
+//
+//  Returns message counter in current epoch.
+//
+VSCR_PUBLIC uint32_t
+vscr_ratchet_group_message_get_counter(const vscr_ratchet_group_message_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+
+    if (!self->message_pb.has_regular_message) {
+        return 0;
+    }
+
+    VSCR_ASSERT_PTR(self->header_pb);
+
+    return self->header_pb->counter;
 }
 
 //
@@ -351,8 +376,7 @@ vscr_ratchet_group_message_serialize_len(const vscr_ratchet_group_message_t *sel
     } else if (self->message_pb.has_regular_message) {
         VSCR_ASSERT(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN >=
                     vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg));
-        return vscr_ratchet_common_hidden_MAX_GROUP_REGULAR_MESSAGE_LEN -
-               vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN +
+        return vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN - vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN +
                vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg);
     }
 

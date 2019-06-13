@@ -795,6 +795,7 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     msg->header_pb->epoch = self->my_epoch;
     msg->header_pb->counter = self->my_chain_key->index;
     memcpy(msg->header_pb->sender_id, self->my_id, sizeof(self->my_id));
+    memcpy(msg->header_pb->session_id, self->session_id, sizeof(self->session_id));
 
     for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHS_COUNT; i++) {
         msg->header_pb->prev_epochs_msgs[i] = self->messages_count[i];
@@ -878,6 +879,10 @@ vscr_ratchet_group_session_decrypt(
 
     const RegularGroupMessage *group_message = &message->message_pb.regular_message;
     const RegularGroupMessageHeader *header = message->header_pb;
+
+    if (memcmp(header->session_id, self->session_id, sizeof(self->session_id)) != 0) {
+        return vscr_status_ERROR_SESSION_ID_MISMATCH;
+    }
 
     if (memcmp(header->sender_id, self->my_id, sizeof(self->my_id)) == 0) {
         return vscr_status_ERROR_CANNOT_DECRYPT_OWN_MESSAGES;

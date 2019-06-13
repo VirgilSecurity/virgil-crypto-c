@@ -71,6 +71,11 @@ public class RatchetJNI {
     public native MsgType ratchetMessage_getType(long cCtx);
 
     /*
+    * Returns message counter in current asymmetric ratchet round.
+    */
+    public native long ratchetMessage_getCounter(long cCtx);
+
+    /*
     * Returns long-term public key, if message is prekey message.
     */
     public native byte[] ratchetMessage_getLongTermPublicKey(long cCtx);
@@ -192,6 +197,11 @@ public class RatchetJNI {
     * This method should be called only for regular message type.
     */
     public native byte[] ratchetGroupMessage_getSenderId(long cCtx);
+
+    /*
+    * Returns message counter in current epoch.
+    */
+    public native long ratchetGroupMessage_getCounter(long cCtx);
 
     /*
     * Returns message epoch.
