@@ -267,7 +267,11 @@ VSCR_PUBLIC uint32_t
 vscr_ratchet_message_get_counter(const vscr_ratchet_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(!self->message_pb.has_prekey_message);
+
+    if (self->message_pb.has_prekey_message) {
+        return 0;
+    }
+
     VSCR_ASSERT_PTR(self->header_pb);
 
     return self->header_pb->counter;
