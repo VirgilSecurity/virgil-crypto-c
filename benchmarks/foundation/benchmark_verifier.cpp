@@ -44,7 +44,7 @@
 
 
 static void
-benchmark__reset__with_ed25519_sha384_signature__format_is_valid(benchmark::State &state) {
+benchmark__verify__ed25519_sha384_signature(benchmark::State &state) {
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
     VSCF_UNUSED(vscf_key_provider_setup_defaults(key_provider));
 
@@ -64,7 +64,7 @@ benchmark__reset__with_ed25519_sha384_signature__format_is_valid(benchmark::Stat
 }
 
 static void
-benchmark__verify__ed25519_sha384_signature_v2_compat_with_public_key(benchmark::State &state) {
+benchmark__verify__ed25519_sha384_v2_compat_signature(benchmark::State &state) {
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
     vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
 
@@ -85,7 +85,7 @@ benchmark__verify__ed25519_sha384_signature_v2_compat_with_public_key(benchmark:
 }
 
 static void
-benchmark__verify__rsa2048_sha384_signature_with_public_key(benchmark::State &state) {
+benchmark__verify__rsa2048_sha384_signature(benchmark::State &state) {
 
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
     vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
@@ -107,7 +107,7 @@ benchmark__verify__rsa2048_sha384_signature_with_public_key(benchmark::State &st
 }
 
 static void
-benchmark__verify__rsa2048_sha384_signature_v2_compat_with_public_key(benchmark::State &state) {
+benchmark__verify__rsa2048_sha384_v2_compat_signature(benchmark::State &state) {
 
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
     vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
@@ -129,7 +129,7 @@ benchmark__verify__rsa2048_sha384_signature_v2_compat_with_public_key(benchmark:
 }
 
 
-BENCHMARK(benchmark__reset__with_ed25519_sha384_signature__format_is_valid);
-BENCHMARK(benchmark__verify__ed25519_sha384_signature_v2_compat_with_public_key);
-BENCHMARK(benchmark__verify__rsa2048_sha384_signature_with_public_key);
-BENCHMARK(benchmark__verify__rsa2048_sha384_signature_v2_compat_with_public_key);
+BENCHMARK(benchmark__verify__ed25519_sha384_signature);
+BENCHMARK(benchmark__verify__ed25519_sha384_v2_compat_signature);
+BENCHMARK(benchmark__verify__rsa2048_sha384_signature);
+BENCHMARK(benchmark__verify__rsa2048_sha384_v2_compat_signature);

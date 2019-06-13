@@ -45,7 +45,7 @@
 
 
 static void
-benchmark__encrypt_1_key_recipient(benchmark::State &state) {
+benchmark__encrypt__for_1_key_recipient(benchmark::State &state) {
 
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
@@ -77,7 +77,7 @@ benchmark__encrypt_1_key_recipient(benchmark::State &state) {
 }
 
 static void
-benchmark__encrypt_30_key_recipients(benchmark::State &state) {
+benchmark__encrypt__for_30_key_recipients(benchmark::State &state) {
 
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
@@ -115,7 +115,7 @@ benchmark__encrypt_30_key_recipients(benchmark::State &state) {
 }
 
 static void
-benchmark__decrypt(benchmark::State &state) {
+benchmark__decrypt__for_key_recipient(benchmark::State &state) {
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
 
@@ -168,7 +168,7 @@ benchmark__decrypt(benchmark::State &state) {
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
 }
 
-BENCHMARK(benchmark__encrypt_1_key_recipient);
-BENCHMARK(benchmark__encrypt_30_key_recipients);
+BENCHMARK(benchmark__encrypt__for_1_key_recipient);
+BENCHMARK(benchmark__encrypt__for_30_key_recipients);
 
-BENCHMARK(benchmark__decrypt);
+BENCHMARK(benchmark__decrypt__for_key_recipient);
