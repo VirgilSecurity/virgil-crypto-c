@@ -52,3 +52,6 @@ endmacro()
 
 _add_benchmark(benchmark_sha512)
 _add_benchmark(benchmark_sha512_refcnt)
+_add_benchmark(benchmark_recipient_cipher)
+_add_benchmark(benchmark_signer)
+_add_benchmark(benchmark_verifier)
