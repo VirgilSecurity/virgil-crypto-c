@@ -50,7 +50,7 @@
 static void
 benchmark__sign__with_sha384_and_ed25519_private_key(benchmark::State &state) {
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    vscf_key_provider_setup_defaults(key_provider);
+    VSCF_UNUSED(vscf_key_provider_setup_defaults(key_provider));
 
     vscf_impl_t *private_key =
             vscf_key_provider_import_private_key(key_provider, benchmark_signer_ED25519_PRIVATE_KEY_PKCS8, NULL);
@@ -62,7 +62,7 @@ benchmark__sign__with_sha384_and_ed25519_private_key(benchmark::State &state) {
     for (auto _ : state) {
         vscf_signer_reset(signer);
         vscf_signer_update(signer, benchmark_signer_DATA);
-        vscf_signer_sign(signer, private_key, signature);
+        VSCF_UNUSED(vscf_signer_sign(signer, private_key, signature));
 
         vsc_buffer_reset(signature);
     }
@@ -93,7 +93,7 @@ benchmark__sign__with_sha384_and_rsa2048_private_key(benchmark::State &state) {
     for (auto _ : state) {
         vscf_signer_reset(signer);
         vscf_signer_update(signer, benchmark_signer_DATA);
-        vscf_signer_sign(signer, private_key, signature);
+        VSCF_UNUSED(vscf_signer_sign(signer, private_key, signature));
 
         vsc_buffer_reset(signature);
     }

@@ -46,14 +46,14 @@
 static void
 benchmark__reset__with_ed25519_sha384_signature__format_is_valid(benchmark::State &state) {
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    vscf_key_provider_setup_defaults(key_provider);
+    VSCF_UNUSED(vscf_key_provider_setup_defaults(key_provider));
 
     vscf_impl_t *public_key =
             vscf_key_provider_import_public_key(key_provider, benchmark_signer_ED25519_PUBLIC_KEY_PKCS8, NULL);
     vscf_verifier_t *verifier = vscf_verifier_new();
 
     for (auto _ : state) {
-        vscf_verifier_reset(verifier, benchmark_signer_ED25519_SHA384_SIGNATURE);
+        VSCF_UNUSED(vscf_verifier_reset(verifier, benchmark_signer_ED25519_SHA384_SIGNATURE));
         vscf_verifier_update(verifier, benchmark_signer_DATA);
         vscf_verifier_verify(verifier, public_key);
     }
@@ -74,7 +74,7 @@ benchmark__verify__ed25519_sha384_signature_v2_compat_with_public_key(benchmark:
     vscf_verifier_t *verifier = vscf_verifier_new();
 
     for (auto _ : state) {
-        vscf_verifier_reset(verifier, benchmark_signer_ED25519_SHA384_SIGNATURE_V2_COMPAT);
+        VSCF_UNUSED(vscf_verifier_reset(verifier, benchmark_signer_ED25519_SHA384_SIGNATURE_V2_COMPAT));
         vscf_verifier_update(verifier, benchmark_signer_DATA);
         vscf_verifier_verify(verifier, public_key);
     }
@@ -96,7 +96,7 @@ benchmark__verify__rsa2048_sha384_signature_with_public_key(benchmark::State &st
     vscf_verifier_t *verifier = vscf_verifier_new();
 
     for (auto _ : state) {
-        vscf_verifier_reset(verifier, benchmark_signer_RSA2048_SHA384_SIGNATURE);
+        VSCF_UNUSED(vscf_verifier_reset(verifier, benchmark_signer_RSA2048_SHA384_SIGNATURE));
         vscf_verifier_update(verifier, benchmark_signer_DATA);
         vscf_verifier_verify(verifier, public_key);
     }
@@ -118,7 +118,7 @@ benchmark__verify__rsa2048_sha384_signature_v2_compat_with_public_key(benchmark:
     vscf_verifier_t *verifier = vscf_verifier_new();
 
     for (auto _ : state) {
-        vscf_verifier_reset(verifier, benchmark_signer_RSA2048_SHA384_SIGNATURE_V2_COMPAT);
+        VSCF_UNUSED(vscf_verifier_reset(verifier, benchmark_signer_RSA2048_SHA384_SIGNATURE_V2_COMPAT));
         vscf_verifier_update(verifier, benchmark_signer_DATA);
         vscf_verifier_verify(verifier, public_key);
     }

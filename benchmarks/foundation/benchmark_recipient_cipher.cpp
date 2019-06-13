@@ -45,7 +45,7 @@
 
 
 static void
-benchmark__encrypt(benchmark::State &state) {
+benchmark__encrypt_1_key_recipient(benchmark::State &state) {
 
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
@@ -59,21 +59,17 @@ benchmark__encrypt(benchmark::State &state) {
     vscf_recipient_cipher_add_key_recipient(
             recipient_cipher, benchmark_data_recipient_cipher_ED25519_RECIPIENT_ID, public_key);
 
+    vsc_buffer_t *enc_msg = vsc_buffer_new_with_capacity(500);
+
     for (auto _ : state) {
-        vscf_recipient_cipher_start_encryption(recipient_cipher);
-        size_t message_info_len = vscf_recipient_cipher_message_info_len(recipient_cipher);
-        size_t enc_msg_len = vscf_recipient_cipher_encryption_out_len(
-                                     recipient_cipher, benchmark_data_recipient_cipher_MESSAGE.len) +
-                             vscf_recipient_cipher_encryption_out_len(recipient_cipher, 0);
-
-        vsc_buffer_t *enc_msg = vsc_buffer_new_with_capacity(message_info_len + enc_msg_len);
+        VSCF_UNUSED(vscf_recipient_cipher_start_encryption(recipient_cipher));
         vscf_recipient_cipher_pack_message_info(recipient_cipher, enc_msg);
-        vscf_recipient_cipher_process_encryption(recipient_cipher, benchmark_data_recipient_cipher_MESSAGE, enc_msg);
-        vscf_recipient_cipher_finish_encryption(recipient_cipher, enc_msg);
-        vsc_buffer_reset(enc_msg); // where destroy buffer if destroy time is almost same?
-        // vsc_buffer_destroy(&enc_msg);
+        VSCF_UNUSED(vscf_recipient_cipher_process_encryption(
+                recipient_cipher, benchmark_data_recipient_cipher_MESSAGE, enc_msg));
+        VSCF_UNUSED(vscf_recipient_cipher_finish_encryption(recipient_cipher, enc_msg));
+        vsc_buffer_reset(enc_msg);
     }
-
+    vsc_buffer_destroy(&enc_msg);
     vscf_recipient_cipher_destroy(&recipient_cipher);
     vscf_impl_destroy(&public_key);
     vscf_raw_key_destroy(&raw_public_key);
@@ -81,7 +77,7 @@ benchmark__encrypt(benchmark::State &state) {
 }
 
 static void
-benchmark__encrypt_30_recipients(benchmark::State &state) {
+benchmark__encrypt_30_key_recipients(benchmark::State &state) {
 
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
@@ -96,26 +92,22 @@ benchmark__encrypt_30_recipients(benchmark::State &state) {
 
 
     for (size_t i = 0; i < 30; ++i) { // change keys and recipient id
-        vscf_recipient_cipher_add_key_recipient(
-                recipient_cipher, benchmark_data_recipient_cipher_ED25519_RECIPIENT_ID, public_key);
+        auto id = vsc_data((byte *)&i, sizeof(i));
+        vscf_recipient_cipher_add_key_recipient(recipient_cipher, id, public_key);
     }
 
+    vsc_buffer_t *enc_msg = vsc_buffer_new_with_capacity(11000);
 
     for (auto _ : state) {
-        vscf_recipient_cipher_start_encryption(recipient_cipher);
-        size_t message_info_len = vscf_recipient_cipher_message_info_len(recipient_cipher);
-        size_t enc_msg_len = vscf_recipient_cipher_encryption_out_len(
-                                     recipient_cipher, benchmark_data_recipient_cipher_MESSAGE.len) +
-                             vscf_recipient_cipher_encryption_out_len(recipient_cipher, 0);
-
-        vsc_buffer_t *enc_msg = vsc_buffer_new_with_capacity(message_info_len + enc_msg_len);
+        VSCF_UNUSED(vscf_recipient_cipher_start_encryption(recipient_cipher));
         vscf_recipient_cipher_pack_message_info(recipient_cipher, enc_msg);
-        vscf_recipient_cipher_process_encryption(recipient_cipher, benchmark_data_recipient_cipher_MESSAGE, enc_msg);
-        vscf_recipient_cipher_finish_encryption(recipient_cipher, enc_msg);
-        vsc_buffer_reset(enc_msg); // where destroy buffer if destroy time is almost same?
-        // vsc_buffer_destroy(&enc_msg);
+        VSCF_UNUSED(vscf_recipient_cipher_process_encryption(
+                recipient_cipher, benchmark_data_recipient_cipher_MESSAGE, enc_msg));
+        VSCF_UNUSED(vscf_recipient_cipher_finish_encryption(recipient_cipher, enc_msg));
+        vsc_buffer_reset(enc_msg);
     }
 
+    vsc_buffer_destroy(&enc_msg);
     vscf_recipient_cipher_destroy(&recipient_cipher);
     vscf_impl_destroy(&public_key);
     vscf_raw_key_destroy(&raw_public_key);
@@ -139,7 +131,7 @@ benchmark__decrypt(benchmark::State &state) {
             recipient_cipher, benchmark_data_recipient_cipher_ED25519_RECIPIENT_ID, public_key);
 
     // encrypt
-    vscf_recipient_cipher_start_encryption(recipient_cipher);
+    VSCF_UNUSED(vscf_recipient_cipher_start_encryption(recipient_cipher));
     size_t message_info_len = vscf_recipient_cipher_message_info_len(recipient_cipher);
     size_t enc_msg_len =
             vscf_recipient_cipher_encryption_out_len(recipient_cipher, benchmark_data_recipient_cipher_MESSAGE.len) +
@@ -147,8 +139,9 @@ benchmark__decrypt(benchmark::State &state) {
 
     vsc_buffer_t *enc_msg = vsc_buffer_new_with_capacity(message_info_len + enc_msg_len);
     vscf_recipient_cipher_pack_message_info(recipient_cipher, enc_msg);
-    vscf_recipient_cipher_process_encryption(recipient_cipher, benchmark_data_recipient_cipher_MESSAGE, enc_msg);
-    vscf_recipient_cipher_finish_encryption(recipient_cipher, enc_msg);
+    VSCF_UNUSED(vscf_recipient_cipher_process_encryption(
+            recipient_cipher, benchmark_data_recipient_cipher_MESSAGE, enc_msg));
+    VSCF_UNUSED(vscf_recipient_cipher_finish_encryption(recipient_cipher, enc_msg));
     //
 
     vscf_raw_key_t *raw_private_key = vscf_key_asn1_deserializer_deserialize_private_key(
@@ -158,29 +151,24 @@ benchmark__decrypt(benchmark::State &state) {
     vscf_recipient_cipher_release_random(recipient_cipher);
     vscf_recipient_cipher_release_encryption_cipher(recipient_cipher);
 
-
+    vsc_buffer_t *dec_msg = vsc_buffer_new_with_capacity(1100);
     for (auto _ : state) {
-        vsc_buffer_t *dec_msg = vsc_buffer_new_with_capacity(
-                vscf_recipient_cipher_decryption_out_len(recipient_cipher, vsc_buffer_len(enc_msg)) +
-                vscf_recipient_cipher_decryption_out_len(recipient_cipher, 0));
+        VSCF_UNUSED(vscf_recipient_cipher_start_decryption_with_key(
+                recipient_cipher, benchmark_data_recipient_cipher_ED25519_RECIPIENT_ID, private_key, vsc_data_empty()));
 
-        vscf_recipient_cipher_start_decryption_with_key(
-                recipient_cipher, benchmark_data_recipient_cipher_ED25519_RECIPIENT_ID, private_key, vsc_data_empty());
+        VSCF_UNUSED(vscf_recipient_cipher_process_decryption(recipient_cipher, vsc_buffer_data(enc_msg), dec_msg));
+        VSCF_UNUSED(vscf_recipient_cipher_finish_decryption(recipient_cipher, dec_msg));
 
-        vscf_recipient_cipher_process_decryption(recipient_cipher, vsc_buffer_data(enc_msg), dec_msg);
-        vscf_recipient_cipher_finish_decryption(recipient_cipher, dec_msg);
-
-        vsc_buffer_reset(dec_msg); // where destroy buffer if destroy time is almost same?
-        // vsc_buffer_destroy(&dec_msg);
+        vsc_buffer_reset(dec_msg);
     }
-
+    vsc_buffer_destroy(&dec_msg);
     vscf_recipient_cipher_destroy(&recipient_cipher);
     vscf_impl_destroy(&public_key);
     vscf_raw_key_destroy(&raw_public_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
 }
 
-BENCHMARK(benchmark__encrypt);
-BENCHMARK(benchmark__encrypt_30_recipients);
+BENCHMARK(benchmark__encrypt_1_key_recipient);
+BENCHMARK(benchmark__encrypt_30_key_recipients);
 
 BENCHMARK(benchmark__decrypt);
