@@ -89,6 +89,13 @@ public class RatchetGroupMessage implements AutoCloseable {
     }
 
     /*
+    * Returns message counter in current epoch.
+    */
+    public long getCounter() {
+        return RatchetJNI.INSTANCE.ratchetGroupMessage_getCounter(this.cCtx);
+    }
+
+    /*
     * Returns message epoch.
     */
     public long getEpoch() {

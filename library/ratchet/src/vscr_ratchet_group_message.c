@@ -296,6 +296,19 @@ vscr_ratchet_group_message_get_sender_id(const vscr_ratchet_group_message_t *sel
 }
 
 //
+//  Returns message counter in current epoch.
+//
+VSCR_PUBLIC uint32_t
+vscr_ratchet_group_message_get_counter(const vscr_ratchet_group_message_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->message_pb.has_regular_message);
+    VSCR_ASSERT_PTR(self->header_pb);
+
+    return self->header_pb->counter;
+}
+
+//
 //  Returns message epoch.
 //
 VSCR_PUBLIC uint32_t

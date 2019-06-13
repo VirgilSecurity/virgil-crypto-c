@@ -91,6 +91,13 @@ import VirgilCryptoFoundation
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
+    /// Returns message counter in current epoch.
+    @objc public func getCounter() -> UInt32 {
+        let proxyResult = vscr_ratchet_group_message_get_counter(self.c_ctx)
+
+        return proxyResult
+    }
+
     /// Returns message epoch.
     @objc public func getEpoch() -> UInt32 {
         let proxyResult = vscr_ratchet_group_message_get_epoch(self.c_ctx)

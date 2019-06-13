@@ -261,6 +261,19 @@ vscr_ratchet_message_get_type(const vscr_ratchet_message_t *self) {
 }
 
 //
+//  Returns message counter in current asymmetric ratchet round.
+//
+VSCR_PUBLIC uint32_t
+vscr_ratchet_message_get_counter(const vscr_ratchet_message_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(!self->message_pb.has_prekey_message);
+    VSCR_ASSERT_PTR(self->header_pb);
+
+    return self->header_pb->counter;
+}
+
+//
 //  Returns long-term public key, if message is prekey message.
 //
 VSCR_PUBLIC vsc_data_t
