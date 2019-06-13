@@ -411,7 +411,7 @@ vsce_phe_server_generate_server_key_pair(
     }
 
     mbedtls_status = mbedtls_mpi_write_binary(
-            &priv, vsc_buffer_unused_bytes(server_private_key), vsc_buffer_unused_len(server_private_key));
+            &priv, vsc_buffer_unused_bytes(server_private_key), vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_inc_used(server_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
