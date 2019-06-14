@@ -94,7 +94,7 @@ PHP_FUNCTION(vscf_sha256_new_php) {
 //  Wrap method: vscf_sha256_delete_php
 //
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
-        arginfo_vsce_sha256_delete_php /*name*/,
+        arginfo_vscf_sha256_delete_php /*name*/,
         0 /*_unused*/,
         1 /*required_num_args*/,
         IS_VOID /*type*/,
@@ -103,7 +103,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
 ZEND_END_ARG_INFO()
 
 
-PHP_FUNCTION(vsce_sha256_delete_php) {
+PHP_FUNCTION(vscf_sha256_delete_php) {
     //
     //  Declare input arguments
     //
@@ -119,10 +119,77 @@ PHP_FUNCTION(vsce_sha256_delete_php) {
     //
     //  Fetch for type checking and then release
     //
-    vsce_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_SHA256_PHP_RES_NAME, le_vsce_sha256);
-    VSCE_ASSERT_PTR(sha256);
+    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_SHA256_PHP_RES_NAME, le_vscf_sha256);
+    VSCF_ASSERT_PTR(sha256);
     zend_list_close(Z_RES_P(in_cctx));
     RETURN_TRUE;
+}
+
+//
+//  Wrap method: vscf_sha256_hash
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_sha256_hash_php /*name*/,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_STRING /*type*/,
+        0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, data, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vscf_sha256_hash_php) {
+    //
+    //  Declare input arguments
+    //
+    char *in_data = NULL;
+    size_t in_data_len = 0;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_STRING_EX(in_data, in_data_len, 1 /*check_null*/, 0 /*deref and separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Proxy call
+    //
+    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_SHA256_PHP_RES_NAME, le_vscf_sha256);
+    VSCF_ASSERT_PTR(sha256);
+
+    //  Allocate output buffer for output 'digest'
+    zend_string *out_digest = zend_string_alloc(vscf_sha256_DIGEST_LEN, 0);
+    vsc_buffer_t *digest = vsc_buffer_new();
+    vsc_buffer_use(digest, (byte *)ZSTR_VAL(out_digest), ZSTR_LEN(out_digest));
+
+    vscf_status_t status = vscf_sha256_hash(sha256, digest);
+
+    //
+    //  Handle error
+    //
+    if(status != __STATUS__) {
+        zend_throw_exception(NULL, "SHA256 error", status);
+        goto fail;
+    }
+
+    //
+    //  Correct string length to the actual
+    //
+    ZSTR_LEN(out_digest) = vsc_buffer_len(digest);
+
+    //
+    //  Write returned result
+    //
+    RETVAL_STR(out_digest);
+
+    goto success;
+
+fail:
+    zend_string_free(out_digest);
+success:
+    vsc_buffer_destroy(&digest);
 }
 
 //
@@ -155,10 +222,63 @@ PHP_FUNCTION(vscf_sha256_start_php) {
     //
     //  Proxy call
     //
-    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_SHA256_PHP_RES_NAME, le_vsce_sha256);
+    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_SHA256_PHP_RES_NAME, le_vscf_sha256);
     VSCF_ASSERT_PTR(sha256);
 
     vscf_status_t status = vscf_sha256_start(sha256);
+    if(status != vscf_status_SUCCESS) {
+        zend_throw_exception(NULL, "SHA256 error", status);
+        RETURN_FALSE;
+    }
+
+    RETURN_TRUE;
+}
+
+//
+//  Wrap method: vscf_sha256_update
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_sha256_update_php /*name*/,
+        0 /*return_reference*/,
+        2 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+
+    ZEND_ARG_INFO(0, c_ctx)
+    ZEND_ARG_TYPE_INFO(0, data, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vscf_sha256_update_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+    char *in_data = NULL;
+    size_t in_data_len = 0;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+        Z_PARAM_STRING_EX(in_data, in_data_len, 1 /*check_null*/, 0 /*deref and separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Proxy call
+    //
+    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_SHA256_PHP_RES_NAME, le_vscf_sha256);
+    VSCF_ASSERT_PTR(sha256);
+
+    vsc_data_t data = vsc_data((const byte*)in_data, in_data_len);
+    vscf_status_t status = vscf_sha256_update(sha256, data);
+
+    //
+    //  Handle error
+    //
+
+    vscf_status_t status = vscf_sha256_update(sha256, data);
     if(status != vscf_status_SUCCESS) {
         zend_throw_exception(NULL, "SHA256 error", status);
         RETURN_FALSE;
@@ -198,7 +318,7 @@ PHP_FUNCTION(vscf_sha256_finish_php) {
     //  Proxy call
     //
     vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_SHA256_PHP_RES_NAME, le_vscf_sha256);
-    VSCE_ASSERT_PTR(sha256);
+    VSCF_ASSERT_PTR(sha256);
 
     //  Allocate output buffer for output 'digest'
     zend_string *out_digest = zend_string_alloc(vscf_sha256_DIGEST_LEN, 0);
