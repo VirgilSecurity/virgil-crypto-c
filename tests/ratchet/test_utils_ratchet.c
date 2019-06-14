@@ -668,9 +668,13 @@ initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratch
         vsc_buffer_destroy(&pub);
     }
 
+    vsc_buffer_t *session_id = vsc_buffer_new_with_capacity(vscr_ratchet_common_SESSION_ID_LEN);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscf_ctr_drbg_random(rng, vscr_ratchet_common_SESSION_ID_LEN, session_id));
+
     vscr_ratchet_group_ticket_t *ticket = vscr_ratchet_group_ticket_new();
     vscr_ratchet_group_ticket_use_rng(ticket, vscf_ctr_drbg_impl(rng));
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_ticket_setup_ticket_as_new(ticket));
+    TEST_ASSERT_EQUAL(
+            vscr_status_SUCCESS, vscr_ratchet_group_ticket_setup_ticket_as_new(ticket, vsc_buffer_data(session_id)));
     const vscr_ratchet_group_message_t *msg_start = vscr_ratchet_group_ticket_get_ticket_message(ticket);
 
     for (size_t i = 0; i < group_size; i++) {
