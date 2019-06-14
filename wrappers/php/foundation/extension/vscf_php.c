@@ -36,7 +36,7 @@
 // --------------------------------------------------------------------------
 // @end
 
-
+#include "vscf_sha256.h"
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_alg_id.h"
@@ -169,7 +169,7 @@ PHP_FUNCTION(vscf_sha256_hash_php) {
     //
     //  Handle error
     //
-    if(status != __STATUS__) {
+    if(status != vscf_status_SUCCESS) {
         zend_throw_exception(NULL, "SHA256 error", status);
         goto fail;
     }
@@ -272,8 +272,6 @@ PHP_FUNCTION(vscf_sha256_update_php) {
     VSCF_ASSERT_PTR(sha256);
 
     vsc_data_t data = vsc_data((const byte*)in_data, in_data_len);
-    vscf_status_t status = vscf_sha256_update(sha256, data);
-
     //
     //  Handle error
     //

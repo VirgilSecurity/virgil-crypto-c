@@ -35,72 +35,24 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-/**
- * Class SHA256
- */
-class SHA256 implements Alg, Hash
+require_once 'SHA256.php';
+
+class SHA256Test extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var
-     */
-    private $c_ctx;
 
-    const DIGEST_LEN = 32;
-    const BLOCK_LEN = 64;
-
-    /**
-     * SHA256 constructor.
-     * Allocate implementation context and perform it's initialization.
-     * Postcondition: check memory allocation result.
-     * @return void
-     */
-    public function __construct()
+    protected function setUp()
     {
-        $this->c_ctx = vscf_sha256_new_php();
+
     }
 
-    /**
-     * SHA256 destructor.
-     * Delete given implementation context and it's dependencies.
-     * This is a reverse action of the function 'vscf_sha256_new()'.
-     * @return void
-     */
-    public function __destruct()
+    protected function tearDown()
     {
-        vscf_sha256_delete_php($this->c_ctx);
+
     }
 
-    /**
-     * Calculate hash over given data.
-     * @param string $string
-     * @return string
-     */
-    public function hash(string $string): string {
-        return vscf_sha256_hash_php($string);
+    public function testTest()
+    {
+        $this->assertEquals(true, true);
     }
 
-    /**
-     * Start a new hashing.
-     * @return void
-     */
-    public function start() {
-        vscf_sha256_start_php($this->c_ctx);
-    }
-
-    /**
-     * Add given data to the hash.
-     * @param string $string
-     * @return void
-     */
-    public function update(string $string) {
-        vscf_sha256_update_php($this->c_ctx, $string);
-    }
-
-    /**
-     * Accompilsh hashing and return it's result (a message digest).
-     * @return string
-     */
-    public function finish(): string {
-        return vscf_sha256_finish_php($this->c_ctx);
-    }
 }

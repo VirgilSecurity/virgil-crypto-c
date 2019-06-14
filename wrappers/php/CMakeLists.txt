@@ -89,3 +89,4 @@ endif()
 # ---------------------------------------------------------------------------
 add_subdirectory(pythia)
 add_subdirectory(phe)
+add_subdirectory(foundation)
