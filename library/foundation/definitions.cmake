@@ -152,6 +152,7 @@ target_compile_definitions(foundation
             "VSCF_SIMPLE_SWU=$<BOOL:${VSCF_SIMPLE_SWU}>"
             "VSCF_BRAINKEY_CLIENT=$<BOOL:${VSCF_BRAINKEY_CLIENT}>"
             "VSCF_BRAINKEY_SERVER=$<BOOL:${VSCF_BRAINKEY_SERVER}>"
+            "VSCF_GROUP_SESSION=$<BOOL:${VSCF_GROUP_SESSION}>"
         PRIVATE
             $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCF_BUILD_SHARED_LIBS>
         )

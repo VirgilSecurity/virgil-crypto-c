@@ -1,0 +1,11 @@
+<class name="group session" context="internal">
+
+    <dependency name="rng" interface="random">
+        Random
+    </dependency>
+
+    <require header="GroupMessage.pb.h" scope="private"/>
+    <require header="pb_decode.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
+
+</class>

@@ -127,6 +127,7 @@
     <class name="simple swu"/>
     <class name="brainkey client"/>
     <class name="brainkey server"/>
+    <class name="group session"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>

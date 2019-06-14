@@ -145,6 +145,7 @@ option(VSCF_VERIFIER "Enable class 'verifier'." ON)
 option(VSCF_SIMPLE_SWU "Enable class 'simple swu'." ON)
 option(VSCF_BRAINKEY_CLIENT "Enable class 'brainkey client'." ON)
 option(VSCF_BRAINKEY_SERVER "Enable class 'brainkey server'." ON)
+option(VSCF_GROUP_SESSION "Enable class 'group session'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREAD
@@ -246,6 +247,7 @@ mark_as_advanced(
         VSCF_SIMPLE_SWU
         VSCF_BRAINKEY_CLIENT
         VSCF_BRAINKEY_SERVER
+        VSCF_GROUP_SESSION
         )
 
 if(VSCF_MULTI_THREAD AND NOT MBEDTLS_THREADING_C)

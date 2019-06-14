@@ -637,6 +637,15 @@ public class FoundationJNI {
 
     public native byte[] brainkeyServer_harden(long cCtx, byte[] identitySecret, byte[] blindedPoint) throws FoundationException;
 
+    public native long groupSession_new();
+
+    public native void groupSession_close(long cCtx);
+
+    /*
+    * Random
+    */
+    public native void groupSession_setRng(long cCtx, Random rng);
+
     public native long sha224_new();
 
     public native void sha224_close(long cCtx);
