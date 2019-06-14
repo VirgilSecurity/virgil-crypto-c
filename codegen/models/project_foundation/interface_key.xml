@@ -1,7 +1,11 @@
 <interface name="key">
-    Common information about asymmetric key.
+    Basic key type.
 
-    <inherit interface="alg"/>
+    <method name="alg id" is_const="1">
+        Algorithm identifier the key belongs to.
+
+        <return enum="alg id"/>
+    </method>
 
     <method name="key len" is_const="1">
         Length of the key in bytes.
@@ -9,10 +13,15 @@
         <return type="size"/>
     </method>
 
-
     <method name="key bitlen" is_const="1">
         Length of the key in bits.
 
         <return type="size"/>
+    </method>
+
+    <method name="impl tag" is_const="1" visibility="private">
+        Return tag of an associated algorithm that can handle this key.
+
+        <return enum="impl/tag"/>
     </method>
 </interface>

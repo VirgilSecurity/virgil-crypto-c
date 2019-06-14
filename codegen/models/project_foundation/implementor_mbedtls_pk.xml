@@ -2,49 +2,17 @@
     Asymmetric cryptography implementation with ARM mbedTLS.
 
     <implementation name="rsa public key">
-        <require library="mbedtls" feature="RSA C"/>
-        <require library="mbedtls" feature="BIGNUM C"/>
-        <require library="mbedtls" feature="PKCS1 V21"/>
+        Handles RSA public key.
 
         <require header="mbedtls/rsa.h" scope="context"/>
 
-        <require class="asn1rd"/>
-        <require class="asn1wr"/>
-        <require class="mbedtls bignum asn1 reader"/>
-        <require class="mbedtls bignum asn1 writer"/>
-        <require class="mbedtls md"/>
-        <require class="simple alg info"/>
-        <require enum="asn1 tag"/>
-        <require impl="ctr drbg"/>
-        <require impl="rsa private key"/>
-        <require interface="alg info"/>
-        <require interface="alg"/>
-        <require module="mbedtls bridge random"/>
-
+        <property name="impl tag" enum="impl/tag"/>
         <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" is_reference="0"/>
 
-        <dependency name="hash" interface="hash"/>
-        <dependency name="random" interface="random"/>
-        <dependency name="asn1rd" interface="asn1 reader"/>
-        <dependency name="asn1wr" interface="asn1 writer"/>
-
-        <method name="setup defaults" declaration="public">
-            Setup predefined values to the uninitialized class dependencies.
-
-            <return enum="status"/>
-        </method>
-
-        <interface name="alg"/>
         <interface name="key"/>
-        <interface name="encrypt"/>
-        <interface name="verify hash"/>
-        <interface name="public key">
-            <constant name="can import public key" value="true"/>
-            <constant name="can export public key" value="true"/>
-        </interface>
-        <interface name="generate ephemeral key"/>
+        <interface name="public key"/>
 
-        <method name="key exponent">
+        <method name="key exponent" visibility="public">
             Return public key exponent.
 
             <return type="size"/>
@@ -53,12 +21,24 @@
 
 
     <implementation name="rsa private key">
+        Handles RSA private key.
+
+        <require header="mbedtls/rsa.h" scope="context"/>
+
+        <property name="impl tag" enum="impl/tag"/>
+        <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" is_reference="0"/>
+
+        <interface name="key"/>
+        <interface name="private key"/>
+    </implementation>
+
+
+    <implementation name="rsa">
+        RSA implementation.
+
         <require library="mbedtls" feature="RSA C"/>
         <require library="mbedtls" feature="BIGNUM C"/>
         <require library="mbedtls" feature="PKCS1 V21"/>
-
-        <require header="mbedtls/bignum.h"/>
-        <require header="mbedtls/rsa.h" scope="context"/>
 
         <require class="asn1rd"/>
         <require class="asn1wr"/>
@@ -68,18 +48,14 @@
         <require class="simple alg info"/>
         <require enum="asn1 tag"/>
         <require impl="ctr drbg"/>
+        <require impl="rsa public key" require_definition="private"/>
+        <require impl="rsa private key" require_definition="private"/>
         <require interface="alg info"/>
         <require interface="alg"/>
         <require module="mbedtls bridge random"/>
-        <require module="rsa public key defs"/>
 
-        <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" is_reference="0"/>
-        <property name="gen bitlen" type="size"/>
-        <property name="gen exponent" type="size"/>
-
+        <dependency name="hash" interface="hash"/>
         <dependency name="random" interface="random"/>
-        <dependency name="asn1rd" interface="asn1 reader"/>
-        <dependency name="asn1wr" interface="asn1 writer"/>
 
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.
@@ -88,81 +64,60 @@
         </method>
 
         <interface name="alg"/>
-        <interface name="key"/>
-        <interface name="generate key"/>
-        <interface name="decrypt"/>
-        <interface name="sign hash"/>
-        <interface name="private key">
-            <constant name="can import private key" value="true"/>
-            <constant name="can export private key" value="true"/>
-        </interface>
-
-        <method name="set keygen params" visibility="public" declaration="public">
-            Setup key length in bits that is used for key generation.
-
-            <argument name="bitlen" type="size"/>
-        </method>
-
-        <method name="set keygen exponent" visibility="private" declaration="public">
-            Setup key exponent that is used for key generation.
-            Note, this method is used internally.
-
-            <argument name="exponent" type="size"/>
-        </method>
-    </implementation>
-
-    <implementation name="secp256r1 public key">
-        <require library="mbedtls" feature="ECP C"/>
-        <require library="mbedtls" feature="ECDH C"/>
-        <require library="mbedtls" feature="ECDSA C"/>
-        <require library="mbedtls" feature="ECP DP SECP256R1 ENABLED"/>
-        <require library="mbedtls" feature="BIGNUM C"/>
-
-        <require header="mbedtls/ecp.h" scope="context"/>
-        <require header="mbedtls/ecdh.h" scope="context"/>
-        <require header="mbedtls/ecdsa.h" scope="context"/>
-
-        <require class="asn1rd"/>
-        <require class="asn1wr"/>
-        <require class="mbedtls bignum asn1 reader"/>
-        <require class="mbedtls bignum asn1 writer"/>
-        <require class="mbedtls md"/>
-        <require class="ec alg info"/>
-        <require enum="asn1 tag"/>
-        <require impl="ctr drbg"/>
-        <require impl="secp256r1 private key"/>
-        <require interface="alg info"/>
-        <require interface="alg"/>
-        <require module="mbedtls bridge random"/>
-
-        <constant name="key len" value="32"/>
-        <constant name="key bitlen" value="256"/>
-
-        <property name="ecp group" class="mbedtls_ecp_group" library="mbedtls" is_reference="0"/>
-        <property name="ecp" class="mbedtls_ecp_point" library="mbedtls" is_reference="0"/>
-
-        <dependency name="random" interface="random"/>
-        <dependency name="ecies" impl="ecies"/>
-
-        <method name="setup defaults" declaration="public">
-            Setup predefined values to the uninitialized class dependencies.
-
-            <return enum="status"/>
-        </method>
-
-        <interface name="alg"/>
-        <interface name="key"/>
-        <interface name="encrypt"/>
-        <interface name="verify hash"/>
-        <interface name="public key">
+        <interface name="key alg">
             <constant name="can import public key" value="true"/>
             <constant name="can export public key" value="true"/>
+            <constant name="can import private key" value="true"/>
+            <constant name="can export private key" value="true"/>
         </interface>
-        <interface name="generate ephemeral key"/>
+        <interface name="key cipher"/>
+        <interface name="key signer"/>
+        <interface name="compute shared key"/>
+
+        <method name="generate key">
+            Generate new private key.
+            Note, this operation might be slow.
+
+            <argument name="bitlen" type="size"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return interface="private key" access="disown"/>
+        </method>
     </implementation>
 
 
-    <implementation name="secp256r1 private key">
+    <implementation name="ecc public key">
+        Handles ECC public key.
+
+        <require header="mbedtls/ecp.h" scope="context"/>
+
+        <property name="impl tag" enum="impl/tag"/>
+        <property name="ecc grp" class="mbedtls_ecp_group" library="mbedtls" is_reference="0"/>
+        <property name="ecc public" class="mbedtls_ecp_point" library="mbedtls" is_reference="0"/>
+
+        <interface name="key"/>
+        <interface name="public key"/>
+    </implementation>
+
+
+    <implementation name="ecc private key">
+        Handles ECC private key.
+
+        <require header="mbedtls/ecp.h" scope="context"/>
+
+        <property name="impl tag" enum="impl/tag"/>
+        <property name="keypair" class="mbedtls_ecp_keypair" library="mbedtls" is_reference="0"/>
+
+        <interface name="key"/>
+        <interface name="private key"/>
+    </implementation>
+
+
+    <implementation name="ecc">
+        Elliptic curve cryptography implementation.
+        Supported curves:
+            - secp256r1.
+
         <require library="mbedtls" feature="ECP C"/>
         <require library="mbedtls" feature="ECDH C"/>
         <require library="mbedtls" feature="ECDSA C"/>
@@ -179,19 +134,14 @@
         <require class="mbedtls bignum asn1 writer"/>
         <require class="mbedtls md"/>
         <require class="ec alg info"/>
+        <require class="ec alg info"/>
         <require enum="asn1 tag"/>
         <require impl="ctr drbg"/>
         <require interface="alg info"/>
         <require interface="alg"/>
         <require module="mbedtls bridge random"/>
-        <require module="secp256r1 public key defs"/>
-
-
-        <constant name="key len" value="32"/>
-        <constant name="key bitlen" value="256"/>
-        <constant name="shared key len" value="32"/>
-
-        <property name="ecp keypair" class="mbedtls_ecp_keypair" library="mbedtls" is_reference="0"/>
+        <require impl="ecc public key" require_definition="private"/>
+        <require impl="ecc private key" require_definition="private"/>
 
         <dependency name="random" interface="random"/>
         <dependency name="ecies" impl="ecies"/>
@@ -203,14 +153,27 @@
         </method>
 
         <interface name="alg"/>
-        <interface name="key"/>
-        <interface name="generate key"/>
-        <interface name="decrypt"/>
-        <interface name="sign hash"/>
-        <interface name="private key">
+        <interface name="key alg">
+            <constant name="can import public key" value="true"/>
+            <constant name="can export public key" value="true"/>
             <constant name="can import private key" value="true"/>
             <constant name="can export private key" value="true"/>
         </interface>
+        <interface name="key cipher"/>
+        <interface name="key signer"/>
         <interface name="compute shared key"/>
+
+        <method name="generate key" is_const="1">
+            Generate new private key.
+            Supported algorithm ids:
+                - secp256r1.
+
+            Note, this operation might be slow.
+
+            <argument name="alg id" enum="alg id"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return interface="private key" access="disown"/>
+        </method>
     </implementation>
 </implementor>

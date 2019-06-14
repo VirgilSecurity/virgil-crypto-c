@@ -1,8 +1,9 @@
 <interface name="random">
     Common interface to get random data.
 
-    <method name="random">
+    <method name="random" is_const="1">
         Generate random bytes.
+        All RNG implementations must be thread-safe.
 
         <argument name="data len" type="size"/>
         <argument name="data" class="buffer">

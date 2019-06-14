@@ -1,14 +1,11 @@
 <class name="signer">
     Sign data of any size.
 
-    <require impl="sha512"/>
+    <require class="alg factory"/>
     <require interface="alg"/>
     <require interface="sign hash"/>
 
     <dependency name="hash" interface="hash"/>
-
-    <property name="asn1wr" impl="asn1wr"/>
-    <property name="alg info der serializer" impl="alg info der serializer"/>
 
     <method name="reset">
         Start a processing a new signature.
@@ -31,7 +28,7 @@
     <method name="sign">
         Accomplish signing and return signature.
 
-        <argument name="private key" interface="sign hash" access="readwrite"/>
+        <argument name="private key" interface="key signer"/>
         <argument name="signature" class="buffer">
             <length method="signature len">
                 <proxy argument="private key" to="private key"/>

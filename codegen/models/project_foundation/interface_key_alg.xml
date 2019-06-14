@@ -1,0 +1,103 @@
+<interface name="key alg">
+    Common information about asymmetric key algorithm.
+
+    <inherit interface="alg"/>
+
+    <constant name="can import public key" type="boolean">
+        Defines whether a public key can be imported or not.
+    </constant>
+
+    <constant name="can export public key" type="boolean">
+        Define whether a public key can be exported or not.
+    </constant>
+
+    <constant name="can import private key" type="boolean">
+        Define whether a private key can be imported or not.
+    </constant>
+
+    <constant name="can export private key" type="boolean">
+        Define whether a private key can be exported or not.
+    </constant>
+
+
+    <method name="extract public key" is_const="1">
+        Extract public key from the private key.
+
+        <argument name="private key" interface="private key"/>
+
+        <return interface="public key" access="disown"/>
+    </method>
+
+
+    <method name="generate ephemeral key" is_const="1">
+        Generate ephemeral private key of the same type.
+        Note, this operation might be slow.
+
+        <argument name="public key" interface="public key" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="private key" access="disown"/>
+    </method>
+
+
+    <method name="import public key">
+        Import public key from the raw binary format.
+
+        Return public key that is adopted and optimized to be used
+        with this particular algorithm.
+
+        Binary format must be defined in the key specification.
+        For instance, RSA public key must be imported from the format defined in
+        RFC 3447 Appendix A.1.1.
+
+        <argument name="raw key" impl="raw public key"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="public key" access="disown"/>
+    </method>
+
+
+    <method name="export public key" is_const="1">
+        Export public key in the raw binary format.
+
+        Binary format must be defined in the key specification.
+        For instance, RSA public key must be exported in format defined in
+        RFC 3447 Appendix A.1.1.
+
+        <argument name="public key" interface="public key"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return impl="raw public key" access="disown"/>
+    </method>
+
+
+    <method name="import private key">
+        Import private key from the raw binary format.
+
+        Return private key that is adopted and optimized to be used
+        with this particular algorithm.
+
+        Binary format must be defined in the key specification.
+        For instance, RSA private key must be imported from the format defined in
+        RFC 3447 Appendix A.1.2.
+
+        <argument name="raw key" impl="raw private key"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="private key" access="disown"/>
+    </method>
+
+
+    <method name="export private key" is_const="1">
+        Export private key in the raw binary format.
+
+        Binary format must be defined in the key specification.
+        For instance, RSA private key must be exported in format defined in
+        RFC 3447 Appendix A.1.2.
+
+        <argument name="private key" interface="private key"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return impl="raw private key" access="disown"/>
+    </method>
+</interface>

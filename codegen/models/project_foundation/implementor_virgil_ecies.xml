@@ -4,14 +4,12 @@
     <implementation name="ecies">
         Virgil implementation of the ECIES algorithm.
 
-        <interface name="encrypt"/>
-        <interface name="decrypt"/>
+        <interface name="key cipher"/>
 
         <require class="alg factory"/>
-        <require interface="generate ephemeral key"/>
+        <require class="ecies envelope"/>
         <require interface="compute shared key"/>
-        <require interface="encrypt"/>
-        <require interface="decrypt"/>
+        <require interface="key cipher"/>
         <require interface="private key"/>
         <require impl="kdf2"/>
         <require impl="sha384"/>
@@ -25,29 +23,12 @@
         <dependency name="mac" interface="mac"/>
         <dependency name="kdf" interface="kdf"/>
 
-        <dependency name="encryption key" interface="public key">
-            Set public key that is used for data encryption.
-
-            If ephemeral key is not defined, then Public Key, must be conformed
-            to the interface "generate ephemeral key".
-
-            In turn, Ephemeral Key must be conformed to the interface
-            "compute shared key".
-        </dependency>
-
-        <dependency name="decryption key" interface="private key">
-            Set private key that used for data decryption.
-
-            Private Key must be conformed to the interface "compute shared key".
-        </dependency>
 
         <dependency name="ephemeral key" interface="private key">
-            Set private key that used for data decryption.
-
-            Ephemeral Key must be conformed to the interface "compute shared key".
+            Set ephemeral key that used for data encryption.
+            Public and ephemeral keys should belong to the same curve.
         </dependency>
 
-        <property name="envelope" class="ecies envelope"/>
 
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.

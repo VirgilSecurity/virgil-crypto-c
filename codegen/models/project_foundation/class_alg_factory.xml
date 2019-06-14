@@ -20,14 +20,10 @@
     <require impl="pbe alg info"/>
     <require impl="pkcs5 pbkdf2"/>
     <require impl="pkcs5 pbes2"/>
-    <require impl="rsa public key"/>
-    <require impl="rsa private key"/>
-    <require impl="ed25519 public key"/>
-    <require impl="ed25519 private key"/>
-    <require impl="curve25519 public key"/>
-    <require impl="curve25519 private key"/>
-    <require impl="secp256r1 public key"/>
-    <require impl="secp256r1 private key"/>
+    <require impl="rsa"/>
+    <require impl="ed25519"/>
+    <require impl="curve25519"/>
+    <require impl="ecc"/>
 
     <method name="create hash from info" is_static="1">
         Create algorithm that implements "hash stream" interface.
@@ -72,7 +68,7 @@
     <method name="create public key from raw key" is_static="1">
         Create algorithm that implements "public key" interface.
 
-        <argument name="raw key" class="raw key"/>
+        <argument name="raw public key" class="raw public key"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="public key" access="disown"/>
@@ -81,7 +77,7 @@
     <method name="create private key from raw key" is_static="1">
         Create algorithm that implements "private key" interface.
 
-        <argument name="raw key" class="raw key"/>
+        <argument name="raw private key" class="raw private key"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="private key" access="disown"/>

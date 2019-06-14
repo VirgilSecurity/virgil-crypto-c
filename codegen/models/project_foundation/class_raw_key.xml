@@ -1,9 +1,8 @@
-<class name="raw key">
-    Provide implementation agnostic representation of the asymmetric key.
+<class name="raw public key">
+    Provide implementation agnostic representation of the asymmetric public key.
 
     <property name="alg id" enum="alg id"/>
     <property name="bytes" class="buffer"/>
-
 
     <constructor name="with data">
         Creates raw key defined with algorithm and data.
@@ -33,5 +32,10 @@
         Return raw key data.
 
         <return class="data"/>
+    </method>
+
+
+    <method name="to public key" is_const="1">
+        Return
     </method>
 </class>

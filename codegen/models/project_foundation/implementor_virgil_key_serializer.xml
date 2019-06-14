@@ -1,6 +1,65 @@
 <implementor name="virgil key serialization" is_default="1">
     Virgil Security implementation of the public and private key serialization formats.
 
+    <implementation name="raw public key">
+        Handles interchangeable public key representation.
+
+        <property name="impl tag" enum="impl/tag"/>
+        <property name="bytes" type="byte">
+            <array length="given"/>
+        </property>
+        <property name="len" type="size"/>
+
+        <interface name="key"/>
+        <interface name="public key"/>
+
+        <constructor name="with data">
+            Creates raw key defined with an algorithm and data.
+            Note, data is copied.
+
+            <argument name="alg id" enum="alg id"/>
+            <argument name="impl tag" enum="impl/tag"/>
+            <argument name="raw public key data" class="data"/>
+        </constructor>
+
+        <method name="data" is_const="1">
+            Return raw key data.
+
+            <return class="data"/>
+        </method>
+    </implementation>
+
+
+    <implementation name="raw private key">
+        Handles interchangeable private key representation.
+
+        <property name="impl tag" enum="impl/tag"/>
+        <property name="bytes" type="byte">
+            <array length="given"/>
+        </property>
+        <property name="len" type="size"/>
+
+        <interface name="key"/>
+        <interface name="private key"/>
+
+        <constructor name="with data">
+            Creates raw key defined with an algorithm and data.
+            Note, data is copied.
+
+            <argument name="alg id" enum="alg id"/>
+            <argument name="impl tag" enum="impl/tag"/>
+            <argument name="raw private key data" class="data"/>
+        </constructor>
+
+
+        <method name="data" is_const="1">
+            Return raw key data.
+
+            <return class="data"/>
+        </method>
+    </implementation>
+
+
     <implementation name="pkcs8 serializer">
         Implements PKCS#8 key serialization to DER format.
 
@@ -178,7 +237,7 @@
 
             <argument name="error" class="error" access="readwrite"/>
 
-            <return class="raw key" access="disown"/>
+            <return class="raw public key" access="disown"/>
         </method>
 
         <method name="deserialize private key inplace" declaration="public">
@@ -188,7 +247,7 @@
 
             <argument name="error" class="error" access="readwrite"/>
 
-            <return class="raw key" access="disown"/>
+            <return class="raw private key" access="disown"/>
         </method>
 
         <method name="deserialize pkcs8 private key inplace">
@@ -198,7 +257,7 @@
             <argument name="version" type="integer"/>
             <argument name="error" class="error" access="readwrite"/>
 
-            <return class="raw key" access="disown"/>
+            <return class="raw private key" access="disown"/>
         </method>
 
         <method name="deserialize sec1 private key inplace">
@@ -208,7 +267,7 @@
             <argument name="version" type="integer"/>
             <argument name="error" class="error" access="readwrite"/>
 
-            <return class="raw key" access="disown"/>
+            <return class="raw private key" access="disown"/>
         </method>
     </implementation>
 </implementor>
