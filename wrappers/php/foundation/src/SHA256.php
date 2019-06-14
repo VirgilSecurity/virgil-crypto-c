@@ -43,164 +43,61 @@ class SHA256 implements Alg, Hash
     /**
      * @var
      */
-    private $hashCtx;
+    private $c_ctx;
 
-    //
-    //  Allocate implementation context and perform it's initialization.
-    //  Postcondition: check memory allocation result.
-    //
     /**
      * SHA256 constructor.
+     * Allocate implementation context and perform it's initialization.
+     * Postcondition: check memory allocation result.
+     * @return void
      */
     public function __construct()
     {
-        $this->hashCtx = vscf_sha256_new_php();
+        $this->c_ctx = vscf_sha256_new_php();
     }
 
-    //
-    //  Destroy given implementation context and it's dependencies.
-    //  This is a reverse action of the function 'vscf_sha256_new()'.
-    //  Given reference is nullified.
-    //
     /**
      * SHA256 destructor.
+     * Delete given implementation context and it's dependencies.
+     * This is a reverse action of the function 'vscf_sha256_new()'.
+     * @return void
      */
     public function __destruct()
     {
-        vscf_sha256_destroy_php($this->hashCtx);
+        vscf_sha256_delete_php($this->c_ctx);
     }
 
-    //
-    //  Return size of 'vscf_sha256_t' type.
-    //
     /**
-     * @return mixed
-     */
-    public function implSize() {
-        return vscf_sha256_impl_size_php(); // ! void
-    }
-
-    //
-    //  Cast to the 'vscf_impl_t' type.
-    //
-    /**
-     * @return mixed
-     */
-    public function impl() {
-        return vscf_sha256_impl_php($this->hashCtx);
-    }
-
-    //
-    //  Perform initialization of preallocated implementation context.
-    //
-    /**
-     * @return mixed
-     */
-    public function init() {
-        return vscf_sha256_init_php($this->hashCtx);
-    }
-
-    //
-    //  Cleanup implementation context and release dependencies.
-    //  This is a reverse action of the function 'vscf_sha256_init()'.
-    //
-    /**
-     * @return mixed
-     */
-    public function cleanup() {
-        return vscf_sha256_cleanup_php($this->hashCtx);
-    }
-
-    //
-    //  Delete given implementation context and it's dependencies.
-    //  This is a reverse action of the function 'vscf_sha256_new()'.
-    //
-    /**
-     * @return mixed
-     */
-    public function delete() {
-        return vscf_sha256_delete_php($this->hashCtx);
-    }
-
-    //
-    //  Copy given implementation context by increasing reference counter.
-    //  If deep copy is required interface 'clonable' can be used.
-    //
-    /**
-     * @return mixed
-     */
-    public function shallowCopy() {
-        return vscf_sha256_shallow_copy_php($this->hashCtx);
-    }
-
-    //
-    //  Provide algorithm identificator.
-    //
-    /**
-     * @return mixed
-     */
-    public function algId() {
-        return vscf_sha256_alg_id_php($this->hashCtx); // ! const vscf_sha256_t *self
-    }
-
-    //
-    //  Produce object with algorithm information and configuration parameters.
-    //
-    /**
-     * @return mixed
-     */
-    public function produceAlgInfo() {
-        return vscf_sha256_produce_alg_info_php($this->hashCtx); // ! const vscf_sha256_t *self
-    }
-
-    //
-    //  Restore algorithm configuration from the given object.
-    //
-    /**
-     * @return mixed
-     */
-    public function restoreAlgInfo() {
-        return vscf_sha256_restore_alg_info_php($this->hashCtx); // ! vscf_sha256_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
-    }
-
-    //
-    //  Calculate hash over given data.
-    //
-    /**
+     * Calculate hash over given data.
+     * @param string $string
      * @return string
      */
-    public function hash(): string {
-        return vscf_sha256_hash_php($this->hashCtx); // ! vsc_data_t data, vsc_buffer_t *digest
+    public function hash(string $string): string {
+        return vscf_sha256_hash_php($string);
     }
 
-    //
-    //  Start a new hashing.
-    //
     /**
-     * @return mixed
+     * Start a new hashing.
+     * @return void
      */
     public function start() {
-        return vscf_sha256_start_php($this->hashCtx);
+        vscf_sha256_start_php($this->c_ctx);
     }
 
-    //
-    //  Add given data to the hash.
-    //
     /**
-     * @return mixed
+     * Add given data to the hash.
+     * @param string $string
+     * @return void
      */
-    public function update() {
-        return vscf_sha256_update_php($this->hashCtx); // ! vscf_sha256_t *self, vsc_data_t data
+    public function update(string $string) {
+        vscf_sha256_update_php($this->c_ctx, $string);
     }
 
-    //
-    //  Accompilsh hashing and return it's result (a message digest).
-    //
     /**
+     * Accompilsh hashing and return it's result (a message digest).
      * @return string
      */
     public function finish(): string {
-        return vscf_sha256_finish_php($this->hashCtx); // ! vscf_sha256_t *self, vsc_buffer_t *digest
+        return vscf_sha256_finish_php($this->c_ctx);
     }
-
 }
