@@ -83,18 +83,13 @@ import VirgilCryptoFoundation
     }
 
     /// Set this ticket to start new group session.
-    @objc public func setupTicketAsNew() throws {
-        let proxyResult = vscr_ratchet_group_ticket_setup_ticket_as_new(self.c_ctx)
+    @objc public func setupTicketAsNew(sessionId: Data) throws {
+        let proxyResult = sessionId.withUnsafeBytes({ (sessionIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
+
+            return vscr_ratchet_group_ticket_setup_ticket_as_new(self.c_ctx, vsc_data(sessionIdPointer.bindMemory(to: byte.self).baseAddress, sessionId.count))
+        })
 
         try RatchetError.handleStatus(fromC: proxyResult)
-    }
-
-    /// Set session id in case you want to use your own identifier, otherwise - id will be generated for you.
-    @objc public func setSessionId(sessionId: Data) {
-        sessionId.withUnsafeBytes({ (sessionIdPointer: UnsafeRawBufferPointer) -> Void in
-
-            vscr_ratchet_group_ticket_set_session_id(self.c_ctx, vsc_data(sessionIdPointer.bindMemory(to: byte.self).baseAddress, sessionId.count))
-        })
     }
 
     /// Returns message that should be sent to all participants using secure channel.

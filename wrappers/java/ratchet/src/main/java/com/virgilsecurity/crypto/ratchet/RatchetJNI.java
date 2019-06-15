@@ -241,12 +241,7 @@ public class RatchetJNI {
     /*
     * Set this ticket to start new group session.
     */
-    public native void ratchetGroupTicket_setupTicketAsNew(long cCtx) throws RatchetException;
-
-    /*
-    * Set session id in case you want to use your own identifier, otherwise - id will be generated for you.
-    */
-    public native void ratchetGroupTicket_setSessionId(long cCtx, byte[] sessionId);
+    public native void ratchetGroupTicket_setupTicketAsNew(long cCtx, byte[] sessionId) throws RatchetException;
 
     /*
     * Returns message that should be sent to all participants using secure channel.
