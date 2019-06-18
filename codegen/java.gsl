@@ -1187,6 +1187,11 @@ function java_create_class_constructor (class, constructor, destination, java_pr
         . = java_format_description (my.constructor) ?
         .visibility = "public"
 
+        if count (my.constructor.argument) = 1 & java_derive_instance_type (my.constructor->argument) = "long"
+            # This constructor conflicts with cCtx constructor. Add cCtx parameter to avoid conflict
+            java_create_jni_context_argument (java_constructor, my.java_project, my.meta)
+        endif
+
         for my.constructor.argument
             java_create_argument (argument, java_constructor, my.java_project, my.meta)
         endfor

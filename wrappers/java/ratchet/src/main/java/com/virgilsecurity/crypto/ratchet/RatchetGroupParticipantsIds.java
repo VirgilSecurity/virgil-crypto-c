@@ -63,7 +63,7 @@ public class RatchetGroupParticipantsIds implements AutoCloseable {
     /*
     * Creates new array for size elements
     */
-    public RatchetGroupParticipantsIds(long size) {
+    public RatchetGroupParticipantsIds(long cCtx, long size) {
         super();
         this.cCtx = RatchetJNI.INSTANCE.ratchetGroupParticipantsIds_new(size);
     }
