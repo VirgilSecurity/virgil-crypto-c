@@ -35,6 +35,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
+require_once 'Alg.php';
+require_once 'Hash.php';
+
 /**
  * Class SHA256
  */

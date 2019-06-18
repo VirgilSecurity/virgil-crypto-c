@@ -39,20 +39,74 @@ require_once 'SHA256.php';
 
 class SHA256Test extends \PHPUnit\Framework\TestCase
 {
+    private $SHA256;
+    private $testVector1;
+    private $testVector2;
+    private $testVector1Base64EncodedResult;
+    private $testVector2Base64EncodedResult;
 
     protected function setUp()
     {
-
+        $this->SHA256 = new SHA256();
+        $this->testVector1 = "";
+        $this->testVector1Base64EncodedResult = "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=";
+        $this->testVector2 = "abc";
+        $this->testVector2Base64EncodedResult = "ungWv48Bz+pBQUDeXa4iI7ADYaOWF3qctBD/YfIAFa0=";
     }
 
     protected function tearDown()
     {
-
+        unset($this->SHA256);
     }
 
-    public function testTest()
+    public function testValidReturnsNotNull()
     {
-        $this->assertEquals(true, true);
+        $this->assertNotNull($this->SHA256);
     }
 
+    public function testDigestLenAlwaysEquals32()
+    {
+        $this->assertEquals(32, SHA256::DIGEST_LEN);
+    }
+
+    public function testBlockLenAlwaysEquals64()
+    {
+        $this->assertEquals(64, SHA256::BLOCK_LEN);
+    }
+
+    public function testHashVector1Success()
+    {
+        $res = $this->SHA256->hash($this->testVector1);
+
+        $this->assertEquals(32, strlen($res));
+        $this->assertEquals(base64_decode($this->testVector1Base64EncodedResult), $res);
+    }
+
+    public function testHashVector2Success()
+    {
+        $res = $this->SHA256->hash($this->testVector2);
+
+        $this->assertEquals(32, strlen($res));
+        $this->assertEquals(base64_decode($this->testVector2Base64EncodedResult), $res);
+    }
+
+    public function testHashSteamVector1Success()
+    {
+        $this->SHA256->start();
+        $this->SHA256->update($this->testVector1);
+        $res = $this->SHA256->finish();
+
+        $this->assertEquals(32, strlen($res));
+        $this->assertEquals(base64_decode($this->testVector1Base64EncodedResult), $res);
+    }
+
+    public function testHashSteamVector2Success()
+    {
+        $this->SHA256->start();
+        $this->SHA256->update($this->testVector2);
+        $res = $this->SHA256->finish();
+
+        $this->assertEquals(32, strlen($res));
+        $this->assertEquals(base64_decode($this->testVector2Base64EncodedResult), $res);
+    }
 }

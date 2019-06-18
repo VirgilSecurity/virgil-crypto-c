@@ -36,6 +36,7 @@
 // --------------------------------------------------------------------------
 // @end
 
+#include "vscf_assert.h"
 #include "vscf_sha256.h"
 #include "vscf_library.h"
 #include "vscf_impl.h"
@@ -73,7 +74,7 @@ PHP_MSHUTDOWN_FUNCTION(vscf_php);
 //  Functions wrapping
 // --------------------------------------------------------------------------
 //
-//  Wrap method: vscf_sha256_new_php
+//  Wrap method: vscf_sha256_new
 //
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         arginfo_vscf_sha256_new_php /*name*/,
@@ -91,7 +92,7 @@ PHP_FUNCTION(vscf_sha256_new_php) {
 }
 
 //
-//  Wrap method: vscf_sha256_delete_php
+//  Wrap method: vscf_sha256_delete
 //
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         arginfo_vscf_sha256_delete_php /*name*/,
@@ -153,26 +154,14 @@ PHP_FUNCTION(vscf_sha256_hash_php) {
         Z_PARAM_STRING_EX(in_data, in_data_len, 1 /*check_null*/, 0 /*deref and separate*/)
     ZEND_PARSE_PARAMETERS_END();
 
-    //
-    //  Proxy call
-    //
-    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_SHA256_PHP_RES_NAME, le_vscf_sha256);
-    VSCF_ASSERT_PTR(sha256);
+    vsc_data_t data = vsc_data((const byte*)in_data, in_data_len);
 
     //  Allocate output buffer for output 'digest'
     zend_string *out_digest = zend_string_alloc(vscf_sha256_DIGEST_LEN, 0);
     vsc_buffer_t *digest = vsc_buffer_new();
     vsc_buffer_use(digest, (byte *)ZSTR_VAL(out_digest), ZSTR_LEN(out_digest));
 
-    vscf_status_t status = vscf_sha256_hash(sha256, digest);
-
-    //
-    //  Handle error
-    //
-    if(status != vscf_status_SUCCESS) {
-        zend_throw_exception(NULL, "SHA256 error", status);
-        goto fail;
-    }
+    vscf_sha256_hash(data, digest);
 
     //
     //  Correct string length to the actual
@@ -184,12 +173,8 @@ PHP_FUNCTION(vscf_sha256_hash_php) {
     //
     RETVAL_STR(out_digest);
 
-    goto success;
-
-fail:
-    zend_string_free(out_digest);
-success:
     vsc_buffer_destroy(&digest);
+    
 }
 
 //
@@ -225,11 +210,7 @@ PHP_FUNCTION(vscf_sha256_start_php) {
     vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_SHA256_PHP_RES_NAME, le_vscf_sha256);
     VSCF_ASSERT_PTR(sha256);
 
-    vscf_status_t status = vscf_sha256_start(sha256);
-    if(status != vscf_status_SUCCESS) {
-        zend_throw_exception(NULL, "SHA256 error", status);
-        RETURN_FALSE;
-    }
+    vscf_sha256_start(sha256);
 
     RETURN_TRUE;
 }
@@ -272,15 +253,8 @@ PHP_FUNCTION(vscf_sha256_update_php) {
     VSCF_ASSERT_PTR(sha256);
 
     vsc_data_t data = vsc_data((const byte*)in_data, in_data_len);
-    //
-    //  Handle error
-    //
 
-    vscf_status_t status = vscf_sha256_update(sha256, data);
-    if(status != vscf_status_SUCCESS) {
-        zend_throw_exception(NULL, "SHA256 error", status);
-        RETURN_FALSE;
-    }
+    vscf_sha256_update(sha256, data);
 
     RETURN_TRUE;
 }
@@ -323,15 +297,7 @@ PHP_FUNCTION(vscf_sha256_finish_php) {
     vsc_buffer_t *digest = vsc_buffer_new();
     vsc_buffer_use(digest, (byte *)ZSTR_VAL(out_digest), ZSTR_LEN(out_digest));
 
-    vscf_status_t status = vscf_sha256_finish(sha256, digest);
-
-    //
-    //  Handle error
-    //
-    if(status != vscf_status_SUCCESS) {
-        zend_throw_exception(NULL, "SHA256 error", status);
-        goto fail;
-    }
+    vscf_sha256_finish(sha256, digest);
 
     //
     //  Correct string length to the actual
@@ -343,11 +309,6 @@ PHP_FUNCTION(vscf_sha256_finish_php) {
     //
     RETVAL_STR(out_digest);
 
-    goto success;
-
-fail:
-    zend_string_free(out_digest);
-success:
     vsc_buffer_destroy(&digest);
 }
 
@@ -357,6 +318,11 @@ success:
 // --------------------------------------------------------------------------
 static zend_function_entry vscf_php_functions[] = {
     PHP_FE(vscf_sha256_new_php, arginfo_vscf_sha256_new_php)
+    PHP_FE(vscf_sha256_delete_php, arginfo_vscf_sha256_delete_php)
+    PHP_FE(vscf_sha256_hash_php, arginfo_vscf_sha256_hash_php)
+    PHP_FE(vscf_sha256_start_php, arginfo_vscf_sha256_start_php)
+    PHP_FE(vscf_sha256_update_php, arginfo_vscf_sha256_update_php)
+    PHP_FE(vscf_sha256_finish_php, arginfo_vscf_sha256_finish_php)
     PHP_FE_END
 };
 

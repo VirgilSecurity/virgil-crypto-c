@@ -40,6 +40,5 @@
  */
 interface Hash
 {
-    const DIGEST_LEN = 32;
-    const BLOCK_LEN = 64;
+
 }
