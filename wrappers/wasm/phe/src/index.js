@@ -35,7 +35,7 @@
  */
 
 
-const PheModule = require('./libphe');
+const PheModule = require(process.env.PROJECT_MODULE);
 
 const initFoundationInterface = require('../foundation/FoundationInterface');
 const initCtrDrbg = require('../foundation/CtrDrbg');

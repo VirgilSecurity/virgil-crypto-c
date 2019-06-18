@@ -67,6 +67,31 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/fake.c" "")
 add_executable(libratchet "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
 target_sources(libratchet PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
 target_link_libraries(libratchet
+        "-s ENVIRONMENT=node"
+        "-s WASM=1"
+        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
+        "-s MODULARIZE=1"
+        "-s EXPORT_NAME=RatchetModule"
+        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+        "$<$<CONFIG:Debug>:--emrun>"
+        vsc::ratchet
+        )
+add_executable(libratchet.browser "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+target_sources(libratchet.browser PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+target_link_libraries(libratchet.browser
+        "-s ENVIRONMENT=web"
+        "-s WASM=1"
+        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
+        "-s MODULARIZE=1"
+        "-s EXPORT_NAME=RatchetModule"
+        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+        "$<$<CONFIG:Debug>:--emrun>"
+        vsc::ratchet
+        )
+add_executable(libratchet.worker "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+target_sources(libratchet.worker PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+target_link_libraries(libratchet.worker
+        "-s ENVIRONMENT=worker"
         "-s WASM=1"
         "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
         "-s MODULARIZE=1"
@@ -78,7 +103,35 @@ target_link_libraries(libratchet
 add_executable(libratchet.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
 target_sources(libratchet.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
 target_link_libraries(libratchet.asmjs
+        "-s ENVIRONMENT=node"
         "-s WASM=0"
+        "-s SINGLE_FILE=1"
+        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
+        "-s MODULARIZE=1"
+        "-s EXPORT_NAME=RatchetModule"
+        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+        "$<$<CONFIG:Debug>:--emrun>"
+        vsc::ratchet
+        )
+add_executable(libratchet.browser.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+target_sources(libratchet.browser.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+target_link_libraries(libratchet.browser.asmjs
+        "-s ENVIRONMENT=web"
+        "-s WASM=0"
+        "-s SINGLE_FILE=1"
+        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
+        "-s MODULARIZE=1"
+        "-s EXPORT_NAME=RatchetModule"
+        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+        "$<$<CONFIG:Debug>:--emrun>"
+        vsc::ratchet
+        )
+add_executable(libratchet.shell.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+target_sources(libratchet.shell.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+target_link_libraries(libratchet.shell.asmjs
+        "-s ENVIRONMENT=shell"
+        "-s WASM=0"
+        "-s SINGLE_FILE=1"
         "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
         "-s MODULARIZE=1"
         "-s EXPORT_NAME=RatchetModule"

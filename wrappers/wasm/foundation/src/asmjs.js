@@ -35,7 +35,7 @@
  */
 
 
-const FoundationModule = require('./libfoundation.asmjs');
+const FoundationModule = require(process.env.PROJECT_MODULE);
 
 const initFoundationInterfaceTag = require('./FoundationInterfaceTag');
 const initFoundationInterface = require('./FoundationInterface');

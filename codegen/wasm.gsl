@@ -1465,7 +1465,7 @@ function wasm_create_index_module(wasm_project)
 
         my.code = ""
         my.code += format_left("
-            const $(my.wasm_project.module_name:) = require('./$(my.wasm_project.lib_name:)');
+            const $(my.wasm_project.module_name:) = require(process.env.PROJECT_MODULE);
         ")
 
         my.code += terminator
@@ -1539,7 +1539,7 @@ function wasm_create_asmjs_module(wasm_project)
 
         my.code = ""
         my.code += format_left("
-            const $(my.wasm_project.module_name:) = require('./$(my.wasm_project.asmjs_lib_name:)');
+            const $(my.wasm_project.module_name:) = require(process.env.PROJECT_MODULE);
         ")
 
         my.code += terminator
@@ -1784,6 +1784,33 @@ function wasm_create_project_cmake_module(wasm_project)
                 target_sources($(my.wasm_project.cmake_wasm_target:) PRIVATE \
                         "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
                 target_link_libraries($(my.wasm_project.cmake_wasm_target:)
+                        "-s ENVIRONMENT=node"
+                        "-s WASM=1"
+                        "-s EXPORTED_FUNCTIONS=\\\\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\\\\""
+                        "-s MODULARIZE=1"
+                        "-s EXPORT_NAME=$(my.wasm_project.module_name:)"
+                        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+                        "$<$<CONFIG:Debug>:--emrun>"
+                        $(my.wasm_project.cmake_c_export_target:)
+                        )
+                add_executable($(my.wasm_project.cmake_wasm_target:).browser "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+                target_sources($(my.wasm_project.cmake_wasm_target:).browser PRIVATE \
+                        "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+                target_link_libraries($(my.wasm_project.cmake_wasm_target:).browser
+                        "-s ENVIRONMENT=web"
+                        "-s WASM=1"
+                        "-s EXPORTED_FUNCTIONS=\\\\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\\\\""
+                        "-s MODULARIZE=1"
+                        "-s EXPORT_NAME=$(my.wasm_project.module_name:)"
+                        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+                        "$<$<CONFIG:Debug>:--emrun>"
+                        $(my.wasm_project.cmake_c_export_target:)
+                        )
+                add_executable($(my.wasm_project.cmake_wasm_target:).worker "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+                target_sources($(my.wasm_project.cmake_wasm_target:).worker PRIVATE \
+                        "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+                target_link_libraries($(my.wasm_project.cmake_wasm_target:).worker
+                        "-s ENVIRONMENT=worker"
                         "-s WASM=1"
                         "-s EXPORTED_FUNCTIONS=\\\\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\\\\""
                         "-s MODULARIZE=1"
@@ -1796,7 +1823,37 @@ function wasm_create_project_cmake_module(wasm_project)
                 target_sources($(my.wasm_project.cmake_wasm_target:).asmjs PRIVATE \
                         "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
                 target_link_libraries($(my.wasm_project.cmake_wasm_target:).asmjs
+                        "-s ENVIRONMENT=node"
                         "-s WASM=0"
+                        "-s SINGLE_FILE=1"
+                        "-s EXPORTED_FUNCTIONS=\\\\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\\\\""
+                        "-s MODULARIZE=1"
+                        "-s EXPORT_NAME=$(my.wasm_project.module_name:)"
+                        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+                        "$<$<CONFIG:Debug>:--emrun>"
+                        $(my.wasm_project.cmake_c_export_target:)
+                        )
+                add_executable($(my.wasm_project.cmake_wasm_target:).browser.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+                target_sources($(my.wasm_project.cmake_wasm_target:).browser.asmjs PRIVATE \
+                        "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+                target_link_libraries($(my.wasm_project.cmake_wasm_target:).browser.asmjs
+                        "-s ENVIRONMENT=web"
+                        "-s WASM=0"
+                        "-s SINGLE_FILE=1"
+                        "-s EXPORTED_FUNCTIONS=\\\\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\\\\""
+                        "-s MODULARIZE=1"
+                        "-s EXPORT_NAME=$(my.wasm_project.module_name:)"
+                        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+                        "$<$<CONFIG:Debug>:--emrun>"
+                        $(my.wasm_project.cmake_c_export_target:)
+                        )
+                add_executable($(my.wasm_project.cmake_wasm_target:).shell.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+                target_sources($(my.wasm_project.cmake_wasm_target:).shell.asmjs PRIVATE \
+                        "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+                target_link_libraries($(my.wasm_project.cmake_wasm_target:).shell.asmjs
+                        "-s ENVIRONMENT=shell"
+                        "-s WASM=0"
+                        "-s SINGLE_FILE=1"
                         "-s EXPORTED_FUNCTIONS=\\\\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\\\\""
                         "-s MODULARIZE=1"
                         "-s EXPORT_NAME=$(my.wasm_project.module_name:)"

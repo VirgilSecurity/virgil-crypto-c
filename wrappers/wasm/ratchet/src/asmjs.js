@@ -35,7 +35,7 @@
  */
 
 
-const RatchetModule = require('./libratchet.asmjs');
+const RatchetModule = require(process.env.PROJECT_MODULE);
 
 const initFoundationInterface = require('../foundation/FoundationInterface');
 const initCtrDrbg = require('../foundation/CtrDrbg');

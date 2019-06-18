@@ -35,7 +35,7 @@
  */
 
 
-const PythiaModule = require('./libpythia.asmjs');
+const PythiaModule = require(process.env.PROJECT_MODULE);
 
 const initPythiaError = require('./PythiaError');
 const initPythia = require('./Pythia');

@@ -67,6 +67,31 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/fake.c" "")
 add_executable(libphe "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
 target_sources(libphe PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
 target_link_libraries(libphe
+        "-s ENVIRONMENT=node"
+        "-s WASM=1"
+        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
+        "-s MODULARIZE=1"
+        "-s EXPORT_NAME=PheModule"
+        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+        "$<$<CONFIG:Debug>:--emrun>"
+        vsc::phe
+        )
+add_executable(libphe.browser "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+target_sources(libphe.browser PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+target_link_libraries(libphe.browser
+        "-s ENVIRONMENT=web"
+        "-s WASM=1"
+        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
+        "-s MODULARIZE=1"
+        "-s EXPORT_NAME=PheModule"
+        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+        "$<$<CONFIG:Debug>:--emrun>"
+        vsc::phe
+        )
+add_executable(libphe.worker "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+target_sources(libphe.worker PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+target_link_libraries(libphe.worker
+        "-s ENVIRONMENT=worker"
         "-s WASM=1"
         "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
         "-s MODULARIZE=1"
@@ -78,7 +103,35 @@ target_link_libraries(libphe
 add_executable(libphe.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
 target_sources(libphe.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
 target_link_libraries(libphe.asmjs
+        "-s ENVIRONMENT=node"
         "-s WASM=0"
+        "-s SINGLE_FILE=1"
+        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
+        "-s MODULARIZE=1"
+        "-s EXPORT_NAME=PheModule"
+        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+        "$<$<CONFIG:Debug>:--emrun>"
+        vsc::phe
+        )
+add_executable(libphe.browser.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+target_sources(libphe.browser.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+target_link_libraries(libphe.browser.asmjs
+        "-s ENVIRONMENT=web"
+        "-s WASM=0"
+        "-s SINGLE_FILE=1"
+        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
+        "-s MODULARIZE=1"
+        "-s EXPORT_NAME=PheModule"
+        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+        "$<$<CONFIG:Debug>:--emrun>"
+        vsc::phe
+        )
+add_executable(libphe.shell.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+target_sources(libphe.shell.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+target_link_libraries(libphe.shell.asmjs
+        "-s ENVIRONMENT=shell"
+        "-s WASM=0"
+        "-s SINGLE_FILE=1"
         "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
         "-s MODULARIZE=1"
         "-s EXPORT_NAME=PheModule"
