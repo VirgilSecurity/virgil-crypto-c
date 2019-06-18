@@ -104,6 +104,7 @@ _add_test (test_simple_swu)
 if (VIRGIL_C_MT_TESTING AND VSCF_MULTI_THREADING)
     macro(_add_test_mt test)
         _add_test(${test})
+        set_tests_properties(${test} PROPERTIES LABELS "multi-threading")
         target_link_libraries(${test} Threads::Threads)
     endmacro()
 
