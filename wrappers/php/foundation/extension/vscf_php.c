@@ -38,6 +38,8 @@
 
 #include "vscf_assert.h"
 #include "vscf_sha256.h"
+#include "vscf_kdf1.h"
+
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_alg_id.h"
@@ -55,12 +57,14 @@ const char VSCF_PHP_VERSION[] = "0.1.0";
 const char VSCF_PHP_EXTNAME[] = "vscf_php";
 
 const char VSCF_SHA256_PHP_RES_NAME[] = "vscf_sha256_t";
+const char VSCF_KDF1_PHP_RES_NAME[] = "vscf_kdf1_t";
 
 
 // --------------------------------------------------------------------------
 //  Registered resources
 // --------------------------------------------------------------------------
 int le_vscf_sha256;
+int le_vscf_kdf1;
 
 
 // --------------------------------------------------------------------------
@@ -312,17 +316,74 @@ PHP_FUNCTION(vscf_sha256_finish_php) {
     vsc_buffer_destroy(&digest);
 }
 
+//
+//  Wrap method: vscf_kdf1_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_kdf1_new_php /*name*/,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vscf_kdf1_new_php) {
+    vscf_kdf1_t *kdf1 = vscf_kdf1_new();
+    zend_resource *kdf1_res = zend_register_resource(kdf1, le_vscf_kdf1);
+    RETVAL_RES(kdf1_res);
+}
+
+//
+//  Wrap method: vscf_kdf1_delete
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_kdf1_delete_php /*name*/,
+        0 /*_unused*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+    ZEND_ARG_INFO(0, c_ctx)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vscf_kdf1_delete_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Fetch for type checking and then release
+    //
+    vscf_kdf1_t *kdf1 = zend_fetch_resource_ex(in_cctx, VSCF_SHA256_PHP_RES_NAME, le_vscf_kdf1);
+    VSCF_ASSERT_PTR(kdf1);
+    zend_list_close(Z_RES_P(in_cctx));
+    RETURN_TRUE;
+}
+
 
 // --------------------------------------------------------------------------
 //  Define all function entries
 // --------------------------------------------------------------------------
 static zend_function_entry vscf_php_functions[] = {
+    // SHA256
     PHP_FE(vscf_sha256_new_php, arginfo_vscf_sha256_new_php)
     PHP_FE(vscf_sha256_delete_php, arginfo_vscf_sha256_delete_php)
     PHP_FE(vscf_sha256_hash_php, arginfo_vscf_sha256_hash_php)
     PHP_FE(vscf_sha256_start_php, arginfo_vscf_sha256_start_php)
     PHP_FE(vscf_sha256_update_php, arginfo_vscf_sha256_update_php)
     PHP_FE(vscf_sha256_finish_php, arginfo_vscf_sha256_finish_php)
+    // KDF1
+    PHP_FE(vscf_kdf1_new_php, arginfo_vscf_kdf1_new_php)
+    PHP_FE(vscf_kdf1_delete_php, arginfo_vscf_kdf1_delete_php)
     PHP_FE_END
 };
 
@@ -357,10 +418,17 @@ static void vscf_sha256_dtor_php(zend_resource *rsrc) {
     vscf_sha256_delete((vscf_sha256_t *)rsrc->ptr);
 }
 
+static void vscf_kdf1_dtor_php(zend_resource *rsrc) {
+    vscf_kdf1_delete((vscf_kdf1_t *)rsrc->ptr);
+}
+
 PHP_MINIT_FUNCTION(vscf_php) {
 
     le_vscf_sha256 = zend_register_list_destructors_ex(
             vscf_sha256_dtor_php, NULL, VSCF_SHA256_PHP_RES_NAME, module_number);
+
+    le_vscf_kdf1 = zend_register_list_destructors_ex(
+            vscf_kdf1_dtor_php, NULL, VSCF_KDF1_PHP_RES_NAME, module_number);
 
     return SUCCESS;
 }
