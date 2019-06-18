@@ -315,7 +315,7 @@ vscr_ratchet_group_session_init_ctx(vscr_ratchet_group_session_t *self) {
 
     self->key_utils = vscr_ratchet_key_utils_new();
     self->cipher = vscr_ratchet_cipher_new();
-    self->padding = vscr_ratchet_padding_new();
+    self->padding = vscf_message_padding_new();
     self->is_initialized = false;
     self->is_private_key_set = false;
     self->is_my_id_set = false;
@@ -342,7 +342,7 @@ vscr_ratchet_group_session_cleanup_ctx(vscr_ratchet_group_session_t *self) {
     vscr_ratchet_chain_key_destroy(&self->my_chain_key);
     vscr_ratchet_key_utils_destroy(&self->key_utils);
     vscr_ratchet_cipher_destroy(&self->cipher);
-    vscr_ratchet_padding_destroy(&self->padding);
+    vscf_message_padding_destroy(&self->padding);
 }
 
 //
@@ -354,7 +354,7 @@ vscr_ratchet_group_session_did_setup_rng(vscr_ratchet_group_session_t *self) {
     VSCR_ASSERT_PTR(self);
 
     if (self->rng) {
-        vscr_ratchet_padding_use_rng(self->padding, self->rng);
+        vscf_message_padding_use_rng(self->padding, self->rng);
     }
 }
 
@@ -811,7 +811,7 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     vscr_ratchet_keys_advance_chain_key(self->my_chain_key);
 
     regular_message->cipher_text.arg = vsc_buffer_new_with_capacity(
-            vscr_ratchet_cipher_encrypt_len(self->cipher, vscr_ratchet_padding_padded_len(plain_text.len)));
+            vscr_ratchet_cipher_encrypt_len(self->cipher, vscf_message_padding_padded_len(plain_text.len)));
 
     pb_ostream_t ostream = pb_ostream_from_buffer(regular_message->header.bytes, sizeof(regular_message->header.bytes));
 

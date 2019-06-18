@@ -326,7 +326,7 @@ vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, const vscr_ratchet_symm
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_cipher_pad_then_encrypt(vscr_ratchet_cipher_t *self, vscr_ratchet_padding_t *padding, vsc_data_t data,
+vscr_ratchet_cipher_pad_then_encrypt(vscr_ratchet_cipher_t *self, vscf_message_padding_t *padding, vsc_data_t data,
         const vscr_ratchet_message_key_t *key, vsc_data_t ad, vsc_buffer_t *cipher_text) {
 
     VSCR_ASSERT_PTR(self);
@@ -334,24 +334,27 @@ vscr_ratchet_cipher_pad_then_encrypt(vscr_ratchet_cipher_t *self, vscr_ratchet_p
     VSCR_ASSERT_PTR(key);
     VSCR_ASSERT_PTR(cipher_text);
 
-    size_t size = vscr_ratchet_padding_padded_len(data.len);
+    size_t size = vscf_message_padding_padded_len(data.len);
     vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
     vsc_buffer_make_secure(temp);
 
     vsc_buffer_write_data(temp, data);
 
-    vscr_status_t result = vscr_ratchet_padding_add_padding(padding, temp);
+    vscr_status_t status;
 
-    if (result != vscr_status_SUCCESS) {
+    vscf_status_t f_status = vscf_message_padding_add_padding(padding, temp);
+
+    if (f_status != vscf_status_SUCCESS) {
+        status = vscr_status_ERROR_INVALID_PADDING;
         goto err;
     }
 
-    result = vscr_ratchet_cipher_encrypt(self, key->key, vsc_buffer_data(temp), ad, cipher_text);
+    status = vscr_ratchet_cipher_encrypt(self, key->key, vsc_buffer_data(temp), ad, cipher_text);
 
 err:
     vsc_buffer_destroy(&temp);
 
-    return result;
+    return status;
 }
 
 VSCR_PUBLIC vscr_status_t
@@ -372,7 +375,12 @@ vscr_ratchet_cipher_decrypt_then_remove_pad(vscr_ratchet_cipher_t *self, vsc_dat
         goto err;
     }
 
-    result = vscr_ratchet_padding_remove_padding(vsc_buffer_data(temp), plain_text);
+    vscf_status_t f_status = vscf_message_padding_remove_padding(vsc_buffer_data(temp), plain_text);
+
+    if (f_status != vscf_status_SUCCESS) {
+        result = vscr_status_ERROR_INVALID_PADDING;
+        goto err;
+    }
 
 err:
     vsc_buffer_destroy(&temp);

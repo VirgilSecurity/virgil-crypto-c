@@ -66,5 +66,52 @@ public class GroupSession implements AutoCloseable {
     public void setRng(Random rng) {
         FoundationJNI.INSTANCE.groupSession_setRng(this.cCtx, rng);
     }
+
+    /*
+    * Returns current epoch.
+    */
+    public long getCurrentEpoch() {
+        return FoundationJNI.INSTANCE.groupSession_getCurrentEpoch(this.cCtx);
+    }
+
+    /*
+    * Setups default dependencies:
+    * - RNG: CTR DRBG
+    */
+    public void setupDefaults() throws FoundationException {
+        FoundationJNI.INSTANCE.groupSession_setupDefaults(this.cCtx);
+    }
+
+    /*
+    * Returns session id.
+    */
+    public byte[] getSessionId() {
+        return FoundationJNI.INSTANCE.groupSession_getSessionId(this.cCtx);
+    }
+
+    public void addEpoch(GroupSessionMessage message) throws FoundationException {
+        FoundationJNI.INSTANCE.groupSession_addEpoch(this.cCtx, message);
+    }
+
+    /*
+    * Encrypts data
+    */
+    public GroupSessionMessage encrypt(byte[] plainText, byte[] privateKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.groupSession_encrypt(this.cCtx, plainText, privateKey);
+    }
+
+    /*
+    * Calculates size of buffer sufficient to store decrypted message
+    */
+    public int decryptLen(GroupSessionMessage message) {
+        return FoundationJNI.INSTANCE.groupSession_decryptLen(this.cCtx, message);
+    }
+
+    /*
+    * Decrypts message
+    */
+    public byte[] decrypt(GroupSessionMessage message, byte[] publicKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.groupSession_decrypt(this.cCtx, message, publicKey);
+    }
 }
 

@@ -1,0 +1,10 @@
+<enum name="group msg type" definition="public">
+    Represents group message type
+
+    <constant name="group info" value="1">
+    </constant>
+
+    <constant name="regular" value="2">
+    </constant>
+
+</enum>

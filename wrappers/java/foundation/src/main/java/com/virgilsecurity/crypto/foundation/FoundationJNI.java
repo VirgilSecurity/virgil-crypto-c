@@ -637,6 +637,26 @@ public class FoundationJNI {
 
     public native byte[] brainkeyServer_harden(long cCtx, byte[] identitySecret, byte[] blindedPoint) throws FoundationException;
 
+    public native long groupSessionMessage_new();
+
+    public native void groupSessionMessage_close(long cCtx);
+
+    /*
+    * Returns message type.
+    */
+    public native GroupMsgType groupSessionMessage_getType(long cCtx);
+
+    /*
+    * Returns session id.
+    * This method should be called only for group info type.
+    */
+    public native byte[] groupSessionMessage_getSessionId(long cCtx);
+
+    /*
+    * Returns message epoch.
+    */
+    public native long groupSessionMessage_getEpoch(long cCtx);
+
     public native long groupSession_new();
 
     public native void groupSession_close(long cCtx);
@@ -645,6 +665,39 @@ public class FoundationJNI {
     * Random
     */
     public native void groupSession_setRng(long cCtx, Random rng);
+
+    /*
+    * Returns current epoch.
+    */
+    public native long groupSession_getCurrentEpoch(long cCtx);
+
+    /*
+    * Setups default dependencies:
+    * - RNG: CTR DRBG
+    */
+    public native void groupSession_setupDefaults(long cCtx) throws FoundationException;
+
+    /*
+    * Returns session id.
+    */
+    public native byte[] groupSession_getSessionId(long cCtx);
+
+    public native void groupSession_addEpoch(long cCtx, GroupSessionMessage message) throws FoundationException;
+
+    /*
+    * Encrypts data
+    */
+    public native GroupSessionMessage groupSession_encrypt(long cCtx, byte[] plainText, byte[] privateKey) throws FoundationException;
+
+    /*
+    * Calculates size of buffer sufficient to store decrypted message
+    */
+    public native int groupSession_decryptLen(long cCtx, GroupSessionMessage message);
+
+    /*
+    * Decrypts message
+    */
+    public native byte[] groupSession_decrypt(long cCtx, GroupSessionMessage message, byte[] publicKey) throws FoundationException;
 
     public native long sha224_new();
 

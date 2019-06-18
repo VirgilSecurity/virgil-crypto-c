@@ -268,7 +268,11 @@ enum vscf_status_t {
     //
     //  Brainkey identity secret is invalid.
     //
-    vscf_status_ERROR_INVALID_IDENTITY_SECRET = -410
+    vscf_status_ERROR_INVALID_IDENTITY_SECRET = -410,
+    //
+    //  Invalid padding.
+    //
+    vscf_status_ERROR_INVALID_PADDING = -501
 };
 typedef enum vscf_status_t vscf_status_t;
 

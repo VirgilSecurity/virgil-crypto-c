@@ -48,7 +48,20 @@
 #define VSCF_GROUP_SESSION_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_group_session_message.h"
+#include "vscf_error.h"
 #include "vscf_impl.h"
+#include "vscf_status.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -136,6 +149,48 @@ vscf_group_session_take_rng(vscf_group_session_t *self, vscf_impl_t *rng);
 //
 VSCF_PUBLIC void
 vscf_group_session_release_rng(vscf_group_session_t *self);
+
+//
+//  Returns current epoch.
+//
+VSCF_PUBLIC uint32_t
+vscf_group_session_get_current_epoch(const vscf_group_session_t *self);
+
+//
+//  Setups default dependencies:
+//  - RNG: CTR DRBG
+//
+VSCF_PUBLIC vscf_status_t
+vscf_group_session_setup_defaults(vscf_group_session_t *self) VSCF_NODISCARD;
+
+//
+//  Returns session id.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_group_session_get_session_id(const vscf_group_session_t *self);
+
+VSCF_PUBLIC vscf_status_t
+vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_session_message_t *message) VSCF_NODISCARD;
+
+//
+//  Encrypts data
+//
+VSCF_PUBLIC vscf_group_session_message_t *
+vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vsc_data_t private_key,
+        vscf_error_t *error);
+
+//
+//  Calculates size of buffer sufficient to store decrypted message
+//
+VSCF_PUBLIC size_t
+vscf_group_session_decrypt_len(vscf_group_session_t *self, const vscf_group_session_message_t *message);
+
+//
+//  Decrypts message
+//
+VSCF_PUBLIC vscf_status_t
+vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_message_t *message,
+        vsc_data_t public_key, vsc_buffer_t *plain_text) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

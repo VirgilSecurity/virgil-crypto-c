@@ -1,0 +1,14 @@
+<module name="group session typedefs" scope="internal">
+    Typedefs for group session.
+    
+    <c_include file="stdint.h" is_system="1"/>
+    
+    <c_alias name="vscf_group_session_public_key_t[32]" type="uint8_t" declaration="public"/>
+
+    <c_alias name="vscf_group_session_private_key_t[32]" type="uint8_t" declaration="public"/>
+
+    <c_alias name="vscf_group_session_symmetric_key_t[32]" type="uint8_t" declaration="public"/>
+
+    <c_alias name="vscf_group_session_id_t[32]" type="uint8_t" declaration="public"/>
+
+</module>

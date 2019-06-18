@@ -49,6 +49,7 @@
 #include "vscf_assert.h"
 #include "vscf_random.h"
 #include "vscf_group_session_defs.h"
+#include "vscf_ctr_drbg.h"
 
 #include <GroupMessage.pb.h>
 #include <pb_decode.h>
@@ -265,4 +266,112 @@ static void
 vscf_group_session_cleanup_ctx(vscf_group_session_t *self) {
 
     VSCF_ASSERT_PTR(self);
+}
+
+//
+//  Returns current epoch.
+//
+VSCF_PUBLIC uint32_t
+vscf_group_session_get_current_epoch(const vscf_group_session_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (self->last_epoch == NULL) {
+        return 0;
+    }
+
+    return self->last_epoch->value->epoch_number;
+}
+
+//
+//  Setups default dependencies:
+//  - RNG: CTR DRBG
+//
+VSCF_PUBLIC vscf_status_t
+vscf_group_session_setup_defaults(vscf_group_session_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(self->rng == NULL);
+
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    vscf_status_t status = vscf_ctr_drbg_setup_defaults(rng);
+
+    if (status != vscf_status_SUCCESS) {
+        vscf_ctr_drbg_destroy(&rng);
+        return vscf_status_ERROR_RANDOM_FAILED;
+    }
+
+    vscf_group_session_take_rng(self, vscf_ctr_drbg_impl(rng));
+
+    return vscf_status_SUCCESS;
+}
+
+//
+//  Returns session id.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_group_session_get_session_id(const vscf_group_session_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    //  TODO: This is STUB. Implement me.
+
+    return vsc_data_empty();
+}
+
+VSCF_PUBLIC vscf_status_t
+vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_session_message_t *message) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(message);
+
+    //  TODO: This is STUB. Implement me.
+
+    return vscf_status_SUCCESS;
+}
+
+//
+//  Encrypts data
+//
+VSCF_PUBLIC vscf_group_session_message_t *
+vscf_group_session_encrypt(
+        vscf_group_session_t *self, vsc_data_t plain_text, vsc_data_t private_key, vscf_error_t *error) {
+
+    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(private_key));
+    VSCF_ASSERT(vsc_data_is_valid(plain_text));
+
+    VSCF_UNUSED(error);
+
+    return NULL;
+}
+
+//
+//  Calculates size of buffer sufficient to store decrypted message
+//
+VSCF_PUBLIC size_t
+vscf_group_session_decrypt_len(vscf_group_session_t *self, const vscf_group_session_message_t *message) {
+
+    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(message);
+
+    return 0;
+}
+
+//
+//  Decrypts message
+//
+VSCF_PUBLIC vscf_status_t
+vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_message_t *message,
+        vsc_data_t public_key, vsc_buffer_t *plain_text) {
+
+    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(public_key));
+    VSCF_ASSERT_PTR(message);
+    VSCF_ASSERT_PTR(plain_text);
+
+    return vscf_status_SUCCESS;
 }

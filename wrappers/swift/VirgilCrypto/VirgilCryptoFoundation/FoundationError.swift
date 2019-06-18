@@ -185,6 +185,9 @@ import VSCFoundation
     /// Brainkey identity secret is invalid.
     case errorInvalidIdentitySecret = -410
 
+    /// Invalid padding.
+    case errorInvalidPadding = -501
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscf_status_t) {
         self.init(rawValue: Int(status.rawValue))!

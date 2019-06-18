@@ -294,7 +294,7 @@ vscr_ratchet_init_ctx(vscr_ratchet_t *self) {
 
     self->skipped_messages = vscr_ratchet_skipped_messages_new();
     self->cipher = vscr_ratchet_cipher_new();
-    self->padding = vscr_ratchet_padding_new();
+    self->padding = vscf_message_padding_new();
 }
 
 //
@@ -311,7 +311,7 @@ vscr_ratchet_cleanup_ctx(vscr_ratchet_t *self) {
     vscr_ratchet_receiver_chain_destroy(&self->receiver_chain);
     vscr_ratchet_skipped_messages_destroy(&self->skipped_messages);
     vscr_ratchet_cipher_destroy(&self->cipher);
-    vscr_ratchet_padding_destroy(&self->padding);
+    vscf_message_padding_destroy(&self->padding);
 }
 
 //
@@ -323,7 +323,7 @@ vscr_ratchet_did_setup_rng(vscr_ratchet_t *self) {
     VSCR_ASSERT_PTR(self);
 
     if (self->rng) {
-        vscr_ratchet_padding_use_rng(self->padding, self->rng);
+        vscf_message_padding_use_rng(self->padding, self->rng);
     }
 }
 
@@ -492,7 +492,7 @@ vscr_ratchet_encrypt_len(vscr_ratchet_t *self, size_t plain_text_len) {
 
     VSCR_ASSERT_PTR(self);
 
-    return vscr_ratchet_cipher_encrypt_len(self->cipher, vscr_ratchet_padding_padded_len(plain_text_len));
+    return vscr_ratchet_cipher_encrypt_len(self->cipher, vscf_message_padding_padded_len(plain_text_len));
 }
 
 VSCR_PUBLIC vscr_status_t

@@ -145,7 +145,12 @@ option(VSCF_VERIFIER "Enable class 'verifier'." ON)
 option(VSCF_SIMPLE_SWU "Enable class 'simple swu'." ON)
 option(VSCF_BRAINKEY_CLIENT "Enable class 'brainkey client'." ON)
 option(VSCF_BRAINKEY_SERVER "Enable class 'brainkey server'." ON)
+option(VSCF_MESSAGE_PADDING "Enable class 'message padding'." ON)
+option(VSCF_MESSAGE_CIPHER "Enable class 'message cipher'." ON)
+option(VSCF_GROUP_SESSION_MESSAGE "Enable class 'group session message'." ON)
 option(VSCF_GROUP_SESSION "Enable class 'group session'." ON)
+option(VSCF_GROUP_SESSION_EPOCH "Enable class 'group session epoch'." ON)
+option(VSCF_GROUP_SESSION_EPOCH_NODE "Enable class 'group session epoch node'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREAD
@@ -247,7 +252,12 @@ mark_as_advanced(
         VSCF_SIMPLE_SWU
         VSCF_BRAINKEY_CLIENT
         VSCF_BRAINKEY_SERVER
+        VSCF_MESSAGE_PADDING
+        VSCF_MESSAGE_CIPHER
+        VSCF_GROUP_SESSION_MESSAGE
         VSCF_GROUP_SESSION
+        VSCF_GROUP_SESSION_EPOCH
+        VSCF_GROUP_SESSION_EPOCH_NODE
         )
 
 if(VSCF_MULTI_THREAD AND NOT MBEDTLS_THREADING_C)
@@ -2801,6 +2811,33 @@ if(VSCF_BRAINKEY_SERVER AND NOT VSCF_CTR_DRBG)
     message("-- error --")
     message("--")
     message("Feature VSCF_BRAINKEY_SERVER depends on the feature:")
+    message("     VSCF_CTR_DRBG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_MESSAGE_CIPHER AND NOT VSCF_SHA512)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_MESSAGE_CIPHER depends on the feature:")
+    message("     VSCF_SHA512 - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_MESSAGE_CIPHER AND NOT VSCF_HKDF)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_MESSAGE_CIPHER depends on the feature:")
+    message("     VSCF_HKDF - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_GROUP_SESSION AND NOT VSCF_CTR_DRBG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_GROUP_SESSION depends on the feature:")
     message("     VSCF_CTR_DRBG - which is disabled.")
     message("--")
     message(FATAL_ERROR)

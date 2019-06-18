@@ -71,4 +71,80 @@ import VSCFoundation
         vscf_group_session_release_rng(self.c_ctx)
         vscf_group_session_use_rng(self.c_ctx, rng.c_ctx)
     }
+
+    /// Returns current epoch.
+    @objc public func getCurrentEpoch() -> UInt32 {
+        let proxyResult = vscf_group_session_get_current_epoch(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Setups default dependencies:
+    /// - RNG: CTR DRBG
+    @objc public func setupDefaults() throws {
+        let proxyResult = vscf_group_session_setup_defaults(self.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+    }
+
+    /// Returns session id.
+    @objc public func getSessionId() -> Data {
+        let proxyResult = vscf_group_session_get_session_id(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
+    @objc public func addEpoch(message: GroupSessionMessage) throws {
+        let proxyResult = vscf_group_session_add_epoch(self.c_ctx, message.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+    }
+
+    /// Encrypts data
+    @objc public func encrypt(plainText: Data, privateKey: Data) throws -> GroupSessionMessage {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = plainText.withUnsafeBytes({ (plainTextPointer: UnsafeRawBufferPointer) in
+            privateKey.withUnsafeBytes({ (privateKeyPointer: UnsafeRawBufferPointer) in
+
+                return vscf_group_session_encrypt(self.c_ctx, vsc_data(plainTextPointer.bindMemory(to: byte.self).baseAddress, plainText.count), vsc_data(privateKeyPointer.bindMemory(to: byte.self).baseAddress, privateKey.count), &error)
+            })
+        })
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return GroupSessionMessage.init(take: proxyResult!)
+    }
+
+    /// Calculates size of buffer sufficient to store decrypted message
+    @objc public func decryptLen(message: GroupSessionMessage) -> Int {
+        let proxyResult = vscf_group_session_decrypt_len(self.c_ctx, message.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Decrypts message
+    @objc public func decrypt(message: GroupSessionMessage, publicKey: Data) throws -> Data {
+        let plainTextCount = self.decryptLen(message: message)
+        var plainText = Data(count: plainTextCount)
+        var plainTextBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(plainTextBuf)
+        }
+
+        let proxyResult = publicKey.withUnsafeBytes({ (publicKeyPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            plainText.withUnsafeMutableBytes({ (plainTextPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+                vsc_buffer_init(plainTextBuf)
+                vsc_buffer_use(plainTextBuf, plainTextPointer.bindMemory(to: byte.self).baseAddress, plainTextCount)
+
+                return vscf_group_session_decrypt(self.c_ctx, message.c_ctx, vsc_data(publicKeyPointer.bindMemory(to: byte.self).baseAddress, publicKey.count), plainTextBuf)
+            })
+        })
+        plainText.count = vsc_buffer_len(plainTextBuf)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+
+        return plainText
+    }
 }

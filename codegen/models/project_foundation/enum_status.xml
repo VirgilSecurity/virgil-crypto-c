@@ -197,4 +197,9 @@
     <constant name="error invalid identity secret" value="-410">
         Brainkey identity secret is invalid.
     </constant>
+
+    <constant name="error invalid padding" value="-501">
+        Invalid padding.
+    </constant>
+
 </enum>

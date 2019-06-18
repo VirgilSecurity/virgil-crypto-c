@@ -475,6 +475,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_group_session_message.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_provider.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -565,6 +570,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_group_msg_type.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_foundation_public.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -574,6 +584,7 @@ target_sources(foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_assert.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_library.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_memory.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_group_session_typedefs.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_mbedtls_bridge_random.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_mbedtls_bridge_entropy.h"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_entropy_poll.h"
@@ -779,6 +790,11 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error.h>"
             "$<$<BOOL:${VSCF_GROUP_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_group_session.h>"
             "$<$<BOOL:${VSCF_GROUP_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_group_session_defs.h>"
+            "$<$<BOOL:${VSCF_GROUP_SESSION_EPOCH}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_group_session_epoch.h>"
+            "$<$<BOOL:${VSCF_GROUP_SESSION_EPOCH_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_group_session_epoch_node.h>"
+            "$<$<BOOL:${VSCF_GROUP_SESSION_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_group_session_message.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_group_session_message_internal.h"
+            "$<$<BOOL:${VSCF_GROUP_SESSION_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_group_session_message_defs.h>"
             "$<$<BOOL:${VSCF_KEY_PROVIDER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_provider.h>"
             "$<$<BOOL:${VSCF_KEY_PROVIDER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_provider_defs.h>"
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_recipient_info.h>"
@@ -792,10 +808,14 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_READER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_reader.h>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_WRITER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_writer.h>"
             "$<$<BOOL:${VSCF_MBEDTLS_MD}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_md.h>"
+            "$<$<BOOL:${VSCF_MESSAGE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_message_cipher.h>"
+            "$<$<BOOL:${VSCF_MESSAGE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_cipher_defs.h>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_message_info.h>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_message_info_defs.h>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_CUSTOM_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_message_info_custom_params.h>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_CUSTOM_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_message_info_custom_params_defs.h>"
+            "$<$<BOOL:${VSCF_MESSAGE_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_message_padding.h>"
+            "$<$<BOOL:${VSCF_MESSAGE_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_padding_defs.h>"
             "$<$<BOOL:${VSCF_OID}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_oid.h>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_password_recipient_info.h>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_password_recipient_info_defs.h>"
@@ -818,12 +838,14 @@ target_sources(foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_id.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_oid_id.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_recipient_cipher_decryption_state.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_group_msg_type.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_foundation_public.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_foundation_private.h"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_library.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_memory.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_group_session_typedefs.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_random.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_entropy.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_entropy_poll.c"
@@ -1027,6 +1049,10 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_error.c>"
             "$<$<BOOL:${VSCF_GROUP_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_group_session.c>"
             "$<$<BOOL:${VSCF_GROUP_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_group_session_defs.c>"
+            "$<$<BOOL:${VSCF_GROUP_SESSION_EPOCH}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_group_session_epoch.c>"
+            "$<$<BOOL:${VSCF_GROUP_SESSION_EPOCH_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_group_session_epoch_node.c>"
+            "$<$<BOOL:${VSCF_GROUP_SESSION_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_group_session_message.c>"
+            "$<$<BOOL:${VSCF_GROUP_SESSION_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_group_session_message_defs.c>"
             "$<$<BOOL:${VSCF_KEY_PROVIDER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_provider.c>"
             "$<$<BOOL:${VSCF_KEY_PROVIDER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_provider_defs.c>"
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_info.c>"
@@ -1040,10 +1066,14 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_READER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_reader.c>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_WRITER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_writer.c>"
             "$<$<BOOL:${VSCF_MBEDTLS_MD}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_md.c>"
+            "$<$<BOOL:${VSCF_MESSAGE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_cipher.c>"
+            "$<$<BOOL:${VSCF_MESSAGE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_cipher_defs.c>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info.c>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_defs.c>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_CUSTOM_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_custom_params.c>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_CUSTOM_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_custom_params_defs.c>"
+            "$<$<BOOL:${VSCF_MESSAGE_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_padding.c>"
+            "$<$<BOOL:${VSCF_MESSAGE_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_padding_defs.c>"
             "$<$<BOOL:${VSCF_OID}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_oid.c>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_password_recipient_info.c>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_password_recipient_info_defs.c>"
@@ -1066,6 +1096,7 @@ target_sources(foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_id.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_oid_id.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_recipient_cipher_decryption_state.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_group_msg_type.c"
         )
 
 target_include_directories(foundation

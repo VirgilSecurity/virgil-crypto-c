@@ -137,6 +137,8 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_INVALID_IDENTITY_SECRET = -410;
 
+    public static final int ERROR_INVALID_PADDING = -501;
+
     private int statusCode;
 
     /* Create new instance. */
@@ -247,6 +249,8 @@ public class FoundationException extends RuntimeException {
             return "Brainkey seed buffer length capacity should be >= 32 byte.";
         case ERROR_INVALID_IDENTITY_SECRET:
             return "Brainkey identity secret is invalid.";
+        case ERROR_INVALID_PADDING:
+            return "Invalid padding.";
         default:
             return "Unknown error";
         }
