@@ -70,13 +70,19 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-#if VSCP_HAVE_STDATOMIC_H && !defined(__STDC_NO_ATOMICS__) && VSCP_MULTI_THREADING
-#   define VSCP_ATOMIC _Atomic
-#   define VSCP_ATOMIC_COMPARE_EXCHANGE_WEAK(obj, expected, desired) atomic_compare_exchange_weak((obj), (expected), (desired))
-#else
-#   if VSCP_MULTI_THREADING
+#if VSCP_MULTI_THREADING
+#   if VSCP_HAVE_STDATOMIC_H && !defined(__STDC_NO_ATOMICS__)
+#       define VSCP_ATOMIC _Atomic
+#       define VSCP_ATOMIC_COMPARE_EXCHANGE_WEAK(obj, expected, desired) atomic_compare_exchange_weak(obj, expected, desired)
+#   elif defined(__GNUC__) || defined(__clang__)
+#       define VSCP_ATOMIC_COMPARE_EXCHANGE_WEAK(obj, expected, desired) __atomic_compare_exchange_n(obj, expected, desired, 1, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST)
+#   else
 #       warning "Atomic operations are not suppored for this platform, but CMake option VSCP_MULTI_THREADING is ON."
 #   endif
+#   ifndef VSCP_ATOMIC
+#       define VSCP_ATOMIC
+#   endif
+#else
 #   define VSCP_ATOMIC
 #endif
 
