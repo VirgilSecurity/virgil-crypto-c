@@ -36,18 +36,17 @@ before_script:
   - valgrind --version
 
 script:
-  - CMAKE_ARGS="-DENABLE_HEAVY_TESTS=OFF"
-  - if [ "${CC}" = "gcc" ]; then CMAKE_ARGS+=" -DVSC_MULTI_THREADING=OFF"; fi
-  - if [ "${CC}" = "gcc" ]; then CMAKE_ARGS+=" -DVSCF_MULTI_THREADING=OFF"; fi
-  - if [ "${CC}" = "gcc" ]; then CMAKE_ARGS+=" -DVSCP_MULTI_THREADING=OFF"; fi
-  - if [ "${CC}" = "gcc" ]; then CMAKE_ARGS+=" -DVSCR_MULTI_THREADING=OFF"; fi
-  - if [ "${CC}" = "gcc" ]; then CMAKE_ARGS+=" -DVSCE_MULTI_THREADING=OFF"; fi
-  - cmake -H. -Bbuild ${CMAKE_ARGS}
+  - cmake -H. -Bbuild -DENABLE_HEAVY_TESTS=OFF -DVIRGIL_C_MT_TESTING=OFF
   - cmake --build build -- -j8
     && pushd build
     && ctest -T memcheck --output-on-failure
-    && cat Testing/Temporary/MemoryChecker.*.log
     && popd
+  - cmake -H. -Bbuild -DVIRGIL_C_MT_TESTING=ON
+  - cmake --build build -- -j8
+    && pushd build
+    && ctest -L multi-threading --output-on-failure
+    && popd
+  - cat build/Testing/Temporary/MemoryChecker.*.log
 
 after_success:
   - cmake --build build --target cloc
