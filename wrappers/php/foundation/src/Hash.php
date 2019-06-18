@@ -35,10 +35,12 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
+require_once 'CCtx.php';
+
 /**
  * Interface Hash
  */
-interface Hash
+interface Hash extends CCtx
 {
 
 }

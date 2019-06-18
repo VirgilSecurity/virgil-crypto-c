@@ -36,48 +36,12 @@
  */
 
 /**
- * Class KDF1
+ * Interface CCtx
  */
-class KDF1
+interface CCtx
 {
     /**
-     * @var
+     * @return mixed
      */
-    private $c_ctx;
-
-    /**
-     * KDF1 constructor.
-     */
-    public function __construct()
-    {
-        $this->c_ctx = vscf_kdf1_new_php();
-    }
-
-    /**
-     * KDF1 destructor.
-     */
-    public function __destruct()
-    {
-        vscf_kdf1_delete_php($this->c_ctx);
-    }
-
-    /**
-     * Setup dependency to the interface 'hash' with shared ownership.
-     * @param Hash $hash
-     */
-    public function useHash(Hash $hash)
-    {
-        vscf_kdf1_take_hash($this->c_ctx, $hash->getCCtx());
-    }
-
-    /**
-     * Derive key of the requested length from the given data.
-     * @param string $data
-     * @param int $size
-     * @return string
-     */
-    public function derive(string $data, int $size): string
-    {
-        return vscf_kdf1_derive_php($this->c_ctx, $data, $size);
-    }
+    public function getCCtx();
 }

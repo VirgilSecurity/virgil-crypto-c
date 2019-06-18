@@ -74,6 +74,14 @@ class SHA256 implements Alg, Hash
     }
 
     /**
+     * @return mixed
+     */
+    public function getCCtx()
+    {
+        return $this->c_ctx;
+    }
+
+    /**
      * Calculate hash over given data.
      * @param string $string
      * @return string
