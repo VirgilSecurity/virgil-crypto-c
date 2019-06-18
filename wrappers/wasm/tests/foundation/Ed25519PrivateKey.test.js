@@ -1,4 +1,4 @@
-const initFoundation = require('../../foundation');
+const initFoundation = require('../../dist/foundation/node.cjs');
 const { hexToUint8Array } = require('../utils');
 
 describe('Ed25519PrivateKey', () => {

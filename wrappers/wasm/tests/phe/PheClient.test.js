@@ -1,4 +1,4 @@
-const initPhe = require('../../phe');
+const initPhe = require('../../dist/phe/node.cjs');
 const { hexToUint8Array } = require('../utils');
 
 describe('PheClient', () => {

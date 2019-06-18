@@ -8,12 +8,17 @@
   "private": true,
   "scripts": {
     "test": "jest",
-    "build": "rollup -c",
-    "clean": "rimraf dist"
+    "build:foundation": "cross-env PROJECT=foundation rollup -c",
+    "build:phe": "cross-env PROJECT=phe rollup -c",
+    "build:pythia": "cross-env PROJECT=pythia rollup -c",
+    "build:ratchet": "cross-env PROJECT=ratchet rollup -c",
+    "clean": "rimraf dist",
+    "prepare": "npm run clean && npm run build:foundation && npm run build:phe && npm run build:pythia && npm run build:ratchet"
   },
   "devDependencies": {
     "@ampproject/rollup-plugin-closure-compiler": "^0.9.0",
     "builtin-modules": "^3.1.0",
+    "cross-env": "^5.2.0",
     "jest": "^24.8.0",
     "rimraf": "^2.6.3",
     "rollup": "^1.12.3",
