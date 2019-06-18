@@ -88,9 +88,26 @@ function c_module_platform_create (project, destination, meta)
         .has_cmakedefine = "1"
         .name = my.names.module_platform
 
-
         c_module_platform_create_cmake_include_file_check("assert.h", module)
         c_module_platform_create_cmake_include_file_check("stdatomic.h", module)
+
+        for my.project.feature
+            new macroses to module
+                new macros to macroses
+                    .name = feature.name
+                    .of_class = "global"
+                endnew
+
+                new code to macroses
+                    my.macros_c_name = make_ref_c(make_id("global macros", feature.name))
+                    . = "
+                        #ifndef $(my.macros_c_name:)
+                        #cmakedefine01 $(my.macros_c_name:)
+                        #endif
+                    "
+                endnew
+            endnew
+        endfor
 
         for my.project.require where defined (require.project) & string_equal (require.feature, "library")
             new macroses to module

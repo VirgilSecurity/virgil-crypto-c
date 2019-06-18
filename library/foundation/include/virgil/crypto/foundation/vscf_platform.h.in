@@ -78,6 +78,402 @@ extern "C" {
 #   include <stdatomic.h>
 #endif
 
+#ifndef VSCF_MULTI_THREADING
+#cmakedefine01 VSCF_MULTI_THREADING
+#endif
+
+#ifndef VSCF_CIPHER
+#cmakedefine01 VSCF_CIPHER
+#endif
+
+#ifndef VSCF_AUTH_ENCRYPT
+#cmakedefine01 VSCF_AUTH_ENCRYPT
+#endif
+
+#ifndef VSCF_AUTH_DECRYPT
+#cmakedefine01 VSCF_AUTH_DECRYPT
+#endif
+
+#ifndef VSCF_CIPHER_AUTH
+#cmakedefine01 VSCF_CIPHER_AUTH
+#endif
+
+#ifndef VSCF_CIPHER_AUTH_INFO
+#cmakedefine01 VSCF_CIPHER_AUTH_INFO
+#endif
+
+#ifndef VSCF_CIPHER_INFO
+#cmakedefine01 VSCF_CIPHER_INFO
+#endif
+
+#ifndef VSCF_DECRYPT
+#cmakedefine01 VSCF_DECRYPT
+#endif
+
+#ifndef VSCF_ENCRYPT
+#cmakedefine01 VSCF_ENCRYPT
+#endif
+
+#ifndef VSCF_SALTED_KDF
+#cmakedefine01 VSCF_SALTED_KDF
+#endif
+
+#ifndef VSCF_HASH
+#cmakedefine01 VSCF_HASH
+#endif
+
+#ifndef VSCF_MAC
+#cmakedefine01 VSCF_MAC
+#endif
+
+#ifndef VSCF_KDF
+#cmakedefine01 VSCF_KDF
+#endif
+
+#ifndef VSCF_RANDOM
+#cmakedefine01 VSCF_RANDOM
+#endif
+
+#ifndef VSCF_ENTROPY_SOURCE
+#cmakedefine01 VSCF_ENTROPY_SOURCE
+#endif
+
+#ifndef VSCF_KEY
+#cmakedefine01 VSCF_KEY
+#endif
+
+#ifndef VSCF_PUBLIC_KEY
+#cmakedefine01 VSCF_PUBLIC_KEY
+#endif
+
+#ifndef VSCF_PRIVATE_KEY
+#cmakedefine01 VSCF_PRIVATE_KEY
+#endif
+
+#ifndef VSCF_SIGN_HASH
+#cmakedefine01 VSCF_SIGN_HASH
+#endif
+
+#ifndef VSCF_VERIFY_HASH
+#cmakedefine01 VSCF_VERIFY_HASH
+#endif
+
+#ifndef VSCF_GENERATE_KEY
+#cmakedefine01 VSCF_GENERATE_KEY
+#endif
+
+#ifndef VSCF_GENERATE_EPHEMERAL_KEY
+#cmakedefine01 VSCF_GENERATE_EPHEMERAL_KEY
+#endif
+
+#ifndef VSCF_COMPUTE_SHARED_KEY
+#cmakedefine01 VSCF_COMPUTE_SHARED_KEY
+#endif
+
+#ifndef VSCF_KEY_SERIALIZER
+#cmakedefine01 VSCF_KEY_SERIALIZER
+#endif
+
+#ifndef VSCF_KEY_DESERIALIZER
+#cmakedefine01 VSCF_KEY_DESERIALIZER
+#endif
+
+#ifndef VSCF_ASN1_READER
+#cmakedefine01 VSCF_ASN1_READER
+#endif
+
+#ifndef VSCF_ASN1_WRITER
+#cmakedefine01 VSCF_ASN1_WRITER
+#endif
+
+#ifndef VSCF_ALG
+#cmakedefine01 VSCF_ALG
+#endif
+
+#ifndef VSCF_ALG_INFO
+#cmakedefine01 VSCF_ALG_INFO
+#endif
+
+#ifndef VSCF_ALG_INFO_SERIALIZER
+#cmakedefine01 VSCF_ALG_INFO_SERIALIZER
+#endif
+
+#ifndef VSCF_ALG_INFO_DESERIALIZER
+#cmakedefine01 VSCF_ALG_INFO_DESERIALIZER
+#endif
+
+#ifndef VSCF_MESSAGE_INFO_SERIALIZER
+#cmakedefine01 VSCF_MESSAGE_INFO_SERIALIZER
+#endif
+
+#ifndef VSCF_SHA224
+#cmakedefine01 VSCF_SHA224
+#endif
+
+#ifndef VSCF_SHA256
+#cmakedefine01 VSCF_SHA256
+#endif
+
+#ifndef VSCF_SHA384
+#cmakedefine01 VSCF_SHA384
+#endif
+
+#ifndef VSCF_SHA512
+#cmakedefine01 VSCF_SHA512
+#endif
+
+#ifndef VSCF_AES256_GCM
+#cmakedefine01 VSCF_AES256_GCM
+#endif
+
+#ifndef VSCF_AES256_CBC
+#cmakedefine01 VSCF_AES256_CBC
+#endif
+
+#ifndef VSCF_ASN1RD
+#cmakedefine01 VSCF_ASN1RD
+#endif
+
+#ifndef VSCF_ASN1WR
+#cmakedefine01 VSCF_ASN1WR
+#endif
+
+#ifndef VSCF_RSA_PUBLIC_KEY
+#cmakedefine01 VSCF_RSA_PUBLIC_KEY
+#endif
+
+#ifndef VSCF_RSA_PRIVATE_KEY
+#cmakedefine01 VSCF_RSA_PRIVATE_KEY
+#endif
+
+#ifndef VSCF_SECP256R1_PUBLIC_KEY
+#cmakedefine01 VSCF_SECP256R1_PUBLIC_KEY
+#endif
+
+#ifndef VSCF_SECP256R1_PRIVATE_KEY
+#cmakedefine01 VSCF_SECP256R1_PRIVATE_KEY
+#endif
+
+#ifndef VSCF_ENTROPY_ACCUMULATOR
+#cmakedefine01 VSCF_ENTROPY_ACCUMULATOR
+#endif
+
+#ifndef VSCF_CTR_DRBG
+#cmakedefine01 VSCF_CTR_DRBG
+#endif
+
+#ifndef VSCF_HMAC
+#cmakedefine01 VSCF_HMAC
+#endif
+
+#ifndef VSCF_HKDF
+#cmakedefine01 VSCF_HKDF
+#endif
+
+#ifndef VSCF_KDF1
+#cmakedefine01 VSCF_KDF1
+#endif
+
+#ifndef VSCF_KDF2
+#cmakedefine01 VSCF_KDF2
+#endif
+
+#ifndef VSCF_FAKE_RANDOM
+#cmakedefine01 VSCF_FAKE_RANDOM
+#endif
+
+#ifndef VSCF_PKCS5_PBKDF2
+#cmakedefine01 VSCF_PKCS5_PBKDF2
+#endif
+
+#ifndef VSCF_PKCS5_PBES2
+#cmakedefine01 VSCF_PKCS5_PBES2
+#endif
+
+#ifndef VSCF_SEED_ENTROPY_SOURCE
+#cmakedefine01 VSCF_SEED_ENTROPY_SOURCE
+#endif
+
+#ifndef VSCF_KEY_MATERIAL_RNG
+#cmakedefine01 VSCF_KEY_MATERIAL_RNG
+#endif
+
+#ifndef VSCF_PKCS8_SERIALIZER
+#cmakedefine01 VSCF_PKCS8_SERIALIZER
+#endif
+
+#ifndef VSCF_SEC1_SERIALIZER
+#cmakedefine01 VSCF_SEC1_SERIALIZER
+#endif
+
+#ifndef VSCF_KEY_ASN1_SERIALIZER
+#cmakedefine01 VSCF_KEY_ASN1_SERIALIZER
+#endif
+
+#ifndef VSCF_KEY_ASN1_DESERIALIZER
+#cmakedefine01 VSCF_KEY_ASN1_DESERIALIZER
+#endif
+
+#ifndef VSCF_ED25519_PUBLIC_KEY
+#cmakedefine01 VSCF_ED25519_PUBLIC_KEY
+#endif
+
+#ifndef VSCF_ED25519_PRIVATE_KEY
+#cmakedefine01 VSCF_ED25519_PRIVATE_KEY
+#endif
+
+#ifndef VSCF_CURVE25519_PUBLIC_KEY
+#cmakedefine01 VSCF_CURVE25519_PUBLIC_KEY
+#endif
+
+#ifndef VSCF_CURVE25519_PRIVATE_KEY
+#cmakedefine01 VSCF_CURVE25519_PRIVATE_KEY
+#endif
+
+#ifndef VSCF_ECIES
+#cmakedefine01 VSCF_ECIES
+#endif
+
+#ifndef VSCF_SIMPLE_ALG_INFO
+#cmakedefine01 VSCF_SIMPLE_ALG_INFO
+#endif
+
+#ifndef VSCF_HASH_BASED_ALG_INFO
+#cmakedefine01 VSCF_HASH_BASED_ALG_INFO
+#endif
+
+#ifndef VSCF_CIPHER_ALG_INFO
+#cmakedefine01 VSCF_CIPHER_ALG_INFO
+#endif
+
+#ifndef VSCF_SALTED_KDF_ALG_INFO
+#cmakedefine01 VSCF_SALTED_KDF_ALG_INFO
+#endif
+
+#ifndef VSCF_PBE_ALG_INFO
+#cmakedefine01 VSCF_PBE_ALG_INFO
+#endif
+
+#ifndef VSCF_EC_ALG_INFO
+#cmakedefine01 VSCF_EC_ALG_INFO
+#endif
+
+#ifndef VSCF_ALG_INFO_DER_SERIALIZER
+#cmakedefine01 VSCF_ALG_INFO_DER_SERIALIZER
+#endif
+
+#ifndef VSCF_ALG_INFO_DER_DESERIALIZER
+#cmakedefine01 VSCF_ALG_INFO_DER_DESERIALIZER
+#endif
+
+#ifndef VSCF_MESSAGE_INFO_DER_SERIALIZER
+#cmakedefine01 VSCF_MESSAGE_INFO_DER_SERIALIZER
+#endif
+
+#ifndef VSCF_ERROR
+#cmakedefine01 VSCF_ERROR
+#endif
+
+#ifndef VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
+#cmakedefine01 VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
+#endif
+
+#ifndef VSCF_MBEDTLS_BIGNUM_ASN1_READER
+#cmakedefine01 VSCF_MBEDTLS_BIGNUM_ASN1_READER
+#endif
+
+#ifndef VSCF_MBEDTLS_MD
+#cmakedefine01 VSCF_MBEDTLS_MD
+#endif
+
+#ifndef VSCF_RAW_KEY
+#cmakedefine01 VSCF_RAW_KEY
+#endif
+
+#ifndef VSCF_OID
+#cmakedefine01 VSCF_OID
+#endif
+
+#ifndef VSCF_BASE64
+#cmakedefine01 VSCF_BASE64
+#endif
+
+#ifndef VSCF_PEM
+#cmakedefine01 VSCF_PEM
+#endif
+
+#ifndef VSCF_PEM_TITLE
+#cmakedefine01 VSCF_PEM_TITLE
+#endif
+
+#ifndef VSCF_MESSAGE_INFO
+#cmakedefine01 VSCF_MESSAGE_INFO
+#endif
+
+#ifndef VSCF_KEY_RECIPIENT_INFO
+#cmakedefine01 VSCF_KEY_RECIPIENT_INFO
+#endif
+
+#ifndef VSCF_KEY_RECIPIENT_INFO_LIST
+#cmakedefine01 VSCF_KEY_RECIPIENT_INFO_LIST
+#endif
+
+#ifndef VSCF_PASSWORD_RECIPIENT_INFO
+#cmakedefine01 VSCF_PASSWORD_RECIPIENT_INFO
+#endif
+
+#ifndef VSCF_PASSWORD_RECIPIENT_INFO_LIST
+#cmakedefine01 VSCF_PASSWORD_RECIPIENT_INFO_LIST
+#endif
+
+#ifndef VSCF_ALG_FACTORY
+#cmakedefine01 VSCF_ALG_FACTORY
+#endif
+
+#ifndef VSCF_ECIES_ENVELOPE
+#cmakedefine01 VSCF_ECIES_ENVELOPE
+#endif
+
+#ifndef VSCF_RECIPIENT_CIPHER
+#cmakedefine01 VSCF_RECIPIENT_CIPHER
+#endif
+
+#ifndef VSCF_KEY_RECIPIENT_LIST
+#cmakedefine01 VSCF_KEY_RECIPIENT_LIST
+#endif
+
+#ifndef VSCF_LIST_KEY_VALUE_NODE
+#cmakedefine01 VSCF_LIST_KEY_VALUE_NODE
+#endif
+
+#ifndef VSCF_MESSAGE_INFO_CUSTOM_PARAMS
+#cmakedefine01 VSCF_MESSAGE_INFO_CUSTOM_PARAMS
+#endif
+
+#ifndef VSCF_KEY_PROVIDER
+#cmakedefine01 VSCF_KEY_PROVIDER
+#endif
+
+#ifndef VSCF_SIGNER
+#cmakedefine01 VSCF_SIGNER
+#endif
+
+#ifndef VSCF_VERIFIER
+#cmakedefine01 VSCF_VERIFIER
+#endif
+
+#ifndef VSCF_SIMPLE_SWU
+#cmakedefine01 VSCF_SIMPLE_SWU
+#endif
+
+#ifndef VSCF_BRAINKEY_CLIENT
+#cmakedefine01 VSCF_BRAINKEY_CLIENT
+#endif
+
+#ifndef VSCF_BRAINKEY_SERVER
+#cmakedefine01 VSCF_BRAINKEY_SERVER
+#endif
+
 //
 //  Defines namespace include prefix for project 'common'.
 //

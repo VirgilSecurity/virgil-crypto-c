@@ -78,6 +78,18 @@ extern "C" {
 #   include <stdatomic.h>
 #endif
 
+#ifndef VSC_MULTI_THREADING
+#cmakedefine01 VSC_MULTI_THREADING
+#endif
+
+#ifndef VSC_DATA
+#cmakedefine01 VSC_DATA
+#endif
+
+#ifndef VSC_BUFFER
+#cmakedefine01 VSC_BUFFER
+#endif
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

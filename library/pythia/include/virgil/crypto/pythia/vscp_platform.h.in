@@ -78,6 +78,18 @@ extern "C" {
 #   include <stdatomic.h>
 #endif
 
+#ifndef VSCP_MULTI_THREADING
+#cmakedefine01 VSCP_MULTI_THREADING
+#endif
+
+#ifndef VSCP_PYTHIA
+#cmakedefine01 VSCP_PYTHIA
+#endif
+
+#ifndef VSCP_ERROR
+#cmakedefine01 VSCP_ERROR
+#endif
+
 //
 //  Defines namespace include prefix for project 'common'.
 //
