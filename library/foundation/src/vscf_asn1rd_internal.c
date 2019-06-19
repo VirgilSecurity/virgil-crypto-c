@@ -303,9 +303,11 @@ vscf_asn1rd_delete(vscf_asn1rd_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if ((new_counter > 0) || (0 == old_counter)) {
+    if (new_counter > 0) {
         return;
     }
+
+    VSCF_ASSERT(old_counter != 0);
 
     vscf_asn1rd_cleanup(self);
 

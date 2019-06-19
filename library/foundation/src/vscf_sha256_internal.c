@@ -234,9 +234,11 @@ vscf_sha256_delete(vscf_sha256_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if ((new_counter > 0) || (0 == old_counter)) {
+    if (new_counter > 0) {
         return;
     }
+
+    VSCF_ASSERT(old_counter != 0);
 
     vscf_sha256_cleanup(self);
 

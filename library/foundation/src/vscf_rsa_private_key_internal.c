@@ -354,9 +354,11 @@ vscf_rsa_private_key_delete(vscf_rsa_private_key_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if ((new_counter > 0) || (0 == old_counter)) {
+    if (new_counter > 0) {
         return;
     }
+
+    VSCF_ASSERT(old_counter != 0);
 
     vscf_rsa_private_key_cleanup(self);
 
@@ -433,7 +435,7 @@ vscf_rsa_private_key_take_random(vscf_rsa_private_key_t *self, vscf_impl_t *rand
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(self->random == NULL);
+    VSCF_ASSERT(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
@@ -475,7 +477,7 @@ vscf_rsa_private_key_take_asn1rd(vscf_rsa_private_key_t *self, vscf_impl_t *asn1
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1rd);
-    VSCF_ASSERT_PTR(self->asn1rd == NULL);
+    VSCF_ASSERT(self->asn1rd == NULL);
 
     VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1rd));
 
@@ -517,7 +519,7 @@ vscf_rsa_private_key_take_asn1wr(vscf_rsa_private_key_t *self, vscf_impl_t *asn1
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1wr);
-    VSCF_ASSERT_PTR(self->asn1wr == NULL);
+    VSCF_ASSERT(self->asn1wr == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1wr));
 

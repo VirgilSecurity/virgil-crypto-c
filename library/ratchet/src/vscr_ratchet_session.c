@@ -186,9 +186,11 @@ vscr_ratchet_session_delete(vscr_ratchet_session_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if ((new_counter > 0) || (0 == old_counter)) {
+    if (new_counter > 0) {
         return;
     }
+
+    VSCR_ASSERT(old_counter != 0);
 
     vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
@@ -267,7 +269,7 @@ vscr_ratchet_session_take_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(rng);
-    VSCR_ASSERT_PTR(self->rng == NULL);
+    VSCR_ASSERT(self->rng == NULL);
 
     VSCR_ASSERT(vscf_random_is_implemented(rng));
 

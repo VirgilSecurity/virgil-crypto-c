@@ -238,9 +238,11 @@ vscf_hmac_delete(vscf_hmac_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if ((new_counter > 0) || (0 == old_counter)) {
+    if (new_counter > 0) {
         return;
     }
+
+    VSCF_ASSERT(old_counter != 0);
 
     vscf_hmac_cleanup(self);
 
@@ -317,7 +319,7 @@ vscf_hmac_take_hash(vscf_hmac_t *self, vscf_impl_t *hash) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(self->hash == NULL);
+    VSCF_ASSERT(self->hash == NULL);
 
     VSCF_ASSERT(vscf_hash_is_implemented(hash));
 

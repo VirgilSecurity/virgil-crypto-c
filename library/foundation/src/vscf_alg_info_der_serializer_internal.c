@@ -188,9 +188,11 @@ vscf_alg_info_der_serializer_delete(vscf_alg_info_der_serializer_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if ((new_counter > 0) || (0 == old_counter)) {
+    if (new_counter > 0) {
         return;
     }
+
+    VSCF_ASSERT(old_counter != 0);
 
     vscf_alg_info_der_serializer_cleanup(self);
 
@@ -267,7 +269,7 @@ vscf_alg_info_der_serializer_take_asn1_writer(vscf_alg_info_der_serializer_t *se
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT_PTR(self->asn1_writer == NULL);
+    VSCF_ASSERT(self->asn1_writer == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
 

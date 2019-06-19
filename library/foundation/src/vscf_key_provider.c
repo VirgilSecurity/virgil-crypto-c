@@ -179,9 +179,11 @@ vscf_key_provider_delete(vscf_key_provider_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if ((new_counter > 0) || (0 == old_counter)) {
+    if (new_counter > 0) {
         return;
     }
+
+    VSCF_ASSERT(old_counter != 0);
 
     vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
@@ -254,7 +256,7 @@ vscf_key_provider_take_random(vscf_key_provider_t *self, vscf_impl_t *random) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(self->random == NULL);
+    VSCF_ASSERT(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
@@ -294,7 +296,7 @@ vscf_key_provider_take_ecies(vscf_key_provider_t *self, vscf_ecies_t *ecies) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(ecies);
-    VSCF_ASSERT_PTR(self->ecies == NULL);
+    VSCF_ASSERT(self->ecies == NULL);
 
     self->ecies = ecies;
 }

@@ -166,9 +166,11 @@ vscf_brainkey_server_delete(vscf_brainkey_server_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if ((new_counter > 0) || (0 == old_counter)) {
+    if (new_counter > 0) {
         return;
     }
+
+    VSCF_ASSERT(old_counter != 0);
 
     vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
@@ -245,7 +247,7 @@ vscf_brainkey_server_take_random(vscf_brainkey_server_t *self, vscf_impl_t *rand
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(self->random == NULL);
+    VSCF_ASSERT(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
@@ -291,7 +293,7 @@ vscf_brainkey_server_take_operation_random(vscf_brainkey_server_t *self, vscf_im
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(operation_random);
-    VSCF_ASSERT_PTR(self->operation_random == NULL);
+    VSCF_ASSERT(self->operation_random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(operation_random));
 

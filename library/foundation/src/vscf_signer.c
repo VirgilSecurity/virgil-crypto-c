@@ -165,9 +165,11 @@ vscf_signer_delete(vscf_signer_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if ((new_counter > 0) || (0 == old_counter)) {
+    if (new_counter > 0) {
         return;
     }
+
+    VSCF_ASSERT(old_counter != 0);
 
     vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
@@ -240,7 +242,7 @@ vscf_signer_take_hash(vscf_signer_t *self, vscf_impl_t *hash) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(self->hash == NULL);
+    VSCF_ASSERT(self->hash == NULL);
 
     VSCF_ASSERT(vscf_hash_is_implemented(hash));
 

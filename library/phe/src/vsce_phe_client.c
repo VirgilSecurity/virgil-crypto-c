@@ -187,9 +187,11 @@ vsce_phe_client_delete(vsce_phe_client_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if ((new_counter > 0) || (0 == old_counter)) {
+    if (new_counter > 0) {
         return;
     }
+
+    VSCE_ASSERT(old_counter != 0);
 
     vsce_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
@@ -266,7 +268,7 @@ vsce_phe_client_take_random(vsce_phe_client_t *self, vscf_impl_t *random) {
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT_PTR(random);
-    VSCE_ASSERT_PTR(self->random == NULL);
+    VSCE_ASSERT(self->random == NULL);
 
     VSCE_ASSERT(vscf_random_is_implemented(random));
 
@@ -312,7 +314,7 @@ vsce_phe_client_take_operation_random(vsce_phe_client_t *self, vscf_impl_t *oper
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT_PTR(operation_random);
-    VSCE_ASSERT_PTR(self->operation_random == NULL);
+    VSCE_ASSERT(self->operation_random == NULL);
 
     VSCE_ASSERT(vscf_random_is_implemented(operation_random));
 

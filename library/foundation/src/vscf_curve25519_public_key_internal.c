@@ -322,9 +322,11 @@ vscf_curve25519_public_key_delete(vscf_curve25519_public_key_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if ((new_counter > 0) || (0 == old_counter)) {
+    if (new_counter > 0) {
         return;
     }
+
+    VSCF_ASSERT(old_counter != 0);
 
     vscf_curve25519_public_key_cleanup(self);
 
@@ -401,7 +403,7 @@ vscf_curve25519_public_key_take_random(vscf_curve25519_public_key_t *self, vscf_
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(self->random == NULL);
+    VSCF_ASSERT(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
@@ -441,7 +443,7 @@ vscf_curve25519_public_key_take_ecies(vscf_curve25519_public_key_t *self, vscf_e
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(ecies);
-    VSCF_ASSERT_PTR(self->ecies == NULL);
+    VSCF_ASSERT(self->ecies == NULL);
 
     self->ecies = ecies;
 }

@@ -185,9 +185,11 @@ vscf_ec_alg_info_delete(vscf_ec_alg_info_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if ((new_counter > 0) || (0 == old_counter)) {
+    if (new_counter > 0) {
         return;
     }
+
+    VSCF_ASSERT(old_counter != 0);
 
     vscf_ec_alg_info_cleanup(self);
 

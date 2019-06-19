@@ -237,9 +237,11 @@ vsc_buffer_delete(vsc_buffer_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if ((new_counter > 0) || (0 == old_counter)) {
+    if (new_counter > 0) {
         return;
     }
+
+    VSC_ASSERT(old_counter != 0);
 
     vsc_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 

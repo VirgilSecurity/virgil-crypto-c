@@ -205,9 +205,11 @@ vscf_ctr_drbg_delete(vscf_ctr_drbg_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if ((new_counter > 0) || (0 == old_counter)) {
+    if (new_counter > 0) {
         return;
     }
+
+    VSCF_ASSERT(old_counter != 0);
 
     vscf_ctr_drbg_cleanup(self);
 
@@ -286,7 +288,7 @@ vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_so
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(entropy_source);
-    VSCF_ASSERT_PTR(self->entropy_source == NULL);
+    VSCF_ASSERT(self->entropy_source == NULL);
 
     VSCF_ASSERT(vscf_entropy_source_is_implemented(entropy_source));
 

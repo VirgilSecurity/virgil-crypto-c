@@ -165,9 +165,11 @@ vsce_phe_hash_delete(vsce_phe_hash_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if ((new_counter > 0) || (0 == old_counter)) {
+    if (new_counter > 0) {
         return;
     }
+
+    VSCE_ASSERT(old_counter != 0);
 
     vsce_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 

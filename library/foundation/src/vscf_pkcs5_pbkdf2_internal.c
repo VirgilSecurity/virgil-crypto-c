@@ -247,9 +247,11 @@ vscf_pkcs5_pbkdf2_delete(vscf_pkcs5_pbkdf2_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if ((new_counter > 0) || (0 == old_counter)) {
+    if (new_counter > 0) {
         return;
     }
+
+    VSCF_ASSERT(old_counter != 0);
 
     vscf_pkcs5_pbkdf2_cleanup(self);
 
@@ -326,7 +328,7 @@ vscf_pkcs5_pbkdf2_take_hmac(vscf_pkcs5_pbkdf2_t *self, vscf_impl_t *hmac) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hmac);
-    VSCF_ASSERT_PTR(self->hmac == NULL);
+    VSCF_ASSERT(self->hmac == NULL);
 
     VSCF_ASSERT(vscf_mac_is_implemented(hmac));
 

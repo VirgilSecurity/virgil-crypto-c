@@ -212,9 +212,11 @@ vscf_recipient_cipher_delete(vscf_recipient_cipher_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if ((new_counter > 0) || (0 == old_counter)) {
+    if (new_counter > 0) {
         return;
     }
+
+    VSCF_ASSERT(old_counter != 0);
 
     vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
@@ -287,7 +289,7 @@ vscf_recipient_cipher_take_random(vscf_recipient_cipher_t *self, vscf_impl_t *ra
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(self->random == NULL);
+    VSCF_ASSERT(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
@@ -329,7 +331,7 @@ vscf_recipient_cipher_take_encryption_cipher(vscf_recipient_cipher_t *self, vscf
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(encryption_cipher);
-    VSCF_ASSERT_PTR(self->encryption_cipher == NULL);
+    VSCF_ASSERT(self->encryption_cipher == NULL);
 
     VSCF_ASSERT(vscf_cipher_is_implemented(encryption_cipher));
 
