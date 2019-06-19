@@ -76,8 +76,11 @@ extern "C" {
 #       define VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(obj, expected, desired) atomic_compare_exchange_weak(obj, expected, desired)
 #   elif defined(__GNUC__) || defined(__clang__)
 #       define VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(obj, expected, desired) __atomic_compare_exchange_n(obj, expected, desired, 1, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST)
+#   elif defined(_MSC_VER) && !defined(__INTEL_COMPILER)
+#       pragma intrinsic(_InterlockedCompareExchange)
+#       define VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(obj, expected, desired) ((*expected = _InterlockedCompareExchange(obj, desired, *expected)) != desired)
 #   else
-#       warning "Atomic operations are not suppored for this platform, but CMake option VSCR_MULTI_THREADING is ON."
+#       error "Atomic operations are not suppored for this platform, but CMake option VSCR_MULTI_THREADING is ON."
 #   endif
 #   ifndef VSCR_ATOMIC
 #       define VSCR_ATOMIC

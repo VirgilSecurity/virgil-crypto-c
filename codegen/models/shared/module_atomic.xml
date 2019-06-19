@@ -13,8 +13,11 @@
             #       define .(c_class_atomic_macros_compare_exchange_weak)(obj, expected, desired) atomic_compare_exchange_weak(obj, expected, desired)
             #   elif defined(__GNUC__) || defined(__clang__)
             #       define .(c_class_atomic_macros_compare_exchange_weak)(obj, expected, desired) __atomic_compare_exchange_n(obj, expected, desired, 1, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST)
+            #   elif defined(_MSC_VER) &amp;&amp; !defined(__INTEL_COMPILER)
+            #       pragma intrinsic(_InterlockedCompareExchange)
+            #       define .(c_class_atomic_macros_compare_exchange_weak)(obj, expected, desired) ((*expected = _InterlockedCompareExchange(obj, desired, *expected)) != desired)
             #   else
-            #       warning "Atomic operations are not suppored for this platform, but CMake option .(c_global_macros_multi_threading) is ON."
+            #       error "Atomic operations are not suppored for this platform, but CMake option .(c_global_macros_multi_threading) is ON."
             #   endif
             #   ifndef .(c_class_atomic_macros_atomic)
             #       define .(c_class_atomic_macros_atomic)
