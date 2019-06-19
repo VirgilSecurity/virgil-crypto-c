@@ -52,7 +52,7 @@ void *
 impl_shallow_copy_delete(void *ctx) {
     vscf_impl_t *impl = (vscf_impl_t *)ctx;
 
-    for (size_t i = 0; i < 100000; ++i) {
+    for (size_t i = 0; i < 1000000; ++i) {
         (void)vscf_impl_shallow_copy(impl);
         vscf_impl_delete(impl);
     }
@@ -61,7 +61,7 @@ impl_shallow_copy_delete(void *ctx) {
 }
 
 void
-test__sha256__shallow_copy_delete_100000_times_3_threads__no_crash(void) {
+test__sha256__shallow_copy_delete_1000000_times_3_threads__no_crash(void) {
     vscf_sha256_t *sha256 = vscf_sha256_new();
 
     pthread_t t1;
@@ -85,7 +85,7 @@ void *
 signer_shallow_copy_delete(void *ctx) {
     vscf_signer_t *signer = (vscf_signer_t *)ctx;
 
-    for (size_t i = 0; i < 100000; ++i) {
+    for (size_t i = 0; i < 1000000; ++i) {
         (void)vscf_signer_shallow_copy(signer);
         vscf_signer_delete(signer);
     }
@@ -94,7 +94,7 @@ signer_shallow_copy_delete(void *ctx) {
 }
 
 void
-test__signer__shallow_copy_delete_100000_times_3_threads__no_crash(void) {
+test__signer__shallow_copy_delete_1000000_times_3_threads__no_crash(void) {
     vscf_signer_t *signer = vscf_signer_new();
 
     pthread_t t1;
@@ -124,8 +124,8 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__sha256__shallow_copy_delete_100000_times_3_threads__no_crash);
-    RUN_TEST(test__signer__shallow_copy_delete_100000_times_3_threads__no_crash);
+    RUN_TEST(test__sha256__shallow_copy_delete_1000000_times_3_threads__no_crash);
+    RUN_TEST(test__signer__shallow_copy_delete_1000000_times_3_threads__no_crash);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
