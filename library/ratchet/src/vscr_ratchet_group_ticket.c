@@ -93,6 +93,12 @@ vscr_ratchet_group_ticket_init_ctx(vscr_ratchet_group_ticket_t *self);
 static void
 vscr_ratchet_group_ticket_cleanup_ctx(vscr_ratchet_group_ticket_t *self);
 
+//
+//  Set session id in case you want to use your own identifier, otherwise - id will be generated for you.
+//
+static void
+vscr_ratchet_group_ticket_set_session_id(vscr_ratchet_group_ticket_t *self, vsc_data_t session_id);
+
 static vscr_status_t
 vscr_ratchet_group_ticket_generate_key(vscr_ratchet_group_ticket_t *self) VSCR_NODISCARD;
 
@@ -350,29 +356,16 @@ vscr_ratchet_group_ticket_setup_ticket_internal(
 //  Set this ticket to start new group session.
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_ticket_setup_ticket_as_new(vscr_ratchet_group_ticket_t *self) {
+vscr_ratchet_group_ticket_setup_ticket_as_new(vscr_ratchet_group_ticket_t *self, vsc_data_t session_id) {
 
     VSCR_ASSERT(self);
     VSCR_ASSERT(self->rng);
 
-    vscr_status_t status = vscr_status_SUCCESS;
     vscr_ratchet_group_message_set_type(self->msg, vscr_group_msg_type_GROUP_INFO);
 
-    vsc_buffer_t *session_id = vsc_buffer_new_with_capacity(vscr_ratchet_common_SESSION_ID_LEN);
+    vscr_ratchet_group_ticket_set_session_id(self, session_id);
 
-    vscf_status_t f_status = vscf_random(self->rng, vscr_ratchet_common_SESSION_ID_LEN, session_id);
-
-    if (f_status != vscf_status_SUCCESS) {
-        status = vscr_status_ERROR_RNG_FAILED;
-        goto err;
-    }
-
-    vscr_ratchet_group_ticket_set_session_id(self, vsc_buffer_data(session_id));
-
-    status = vscr_ratchet_group_ticket_generate_key(self);
-
-err:
-    vsc_buffer_destroy(&session_id);
+    vscr_status_t status = vscr_ratchet_group_ticket_generate_key(self);
 
     return status;
 }
@@ -380,7 +373,7 @@ err:
 //
 //  Set session id in case you want to use your own identifier, otherwise - id will be generated for you.
 //
-VSCR_PUBLIC void
+static void
 vscr_ratchet_group_ticket_set_session_id(vscr_ratchet_group_ticket_t *self, vsc_data_t session_id) {
 
     VSCR_ASSERT(self);

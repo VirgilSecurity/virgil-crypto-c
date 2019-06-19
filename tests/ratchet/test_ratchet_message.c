@@ -242,6 +242,7 @@ test__methods__fixed_prekey_msg__should_return_correct_values(void) {
     msg1->message_pb.regular_message.cipher_text.arg = vsc_buffer_new_with_data(test_data_ratchet_message_data);
 
     TEST_ASSERT_EQUAL(vscr_msg_type_PREKEY, vscr_ratchet_message_get_type(msg1));
+    TEST_ASSERT_EQUAL(0, vscr_ratchet_message_get_counter(msg1));
 
     TEST_ASSERT_EQUAL_DATA(test_data_ratchet_message_raw_key2, vscr_ratchet_message_get_long_term_public_key(msg1));
     TEST_ASSERT_EQUAL_DATA(test_data_ratchet_message_raw_key1, vscr_ratchet_message_get_one_time_public_key(msg1));
@@ -273,6 +274,7 @@ test__methods__fixed_prekey_msg_no_one_time__should_return_correct_values(void) 
     msg1->message_pb.regular_message.cipher_text.arg = vsc_buffer_new_with_data(test_data_ratchet_message_data);
 
     TEST_ASSERT_EQUAL(vscr_msg_type_PREKEY, vscr_ratchet_message_get_type(msg1));
+    TEST_ASSERT_EQUAL(0, vscr_ratchet_message_get_counter(msg1));
 
     TEST_ASSERT_EQUAL_DATA(test_data_ratchet_message_raw_key1, vscr_ratchet_message_get_long_term_public_key(msg1));
 
@@ -296,6 +298,7 @@ test__methods__fixed_regular_msg__should_return_correct_values(void) {
     TEST_ASSERT_EQUAL(vscr_msg_type_REGULAR, vscr_ratchet_message_get_type(msg1));
     TEST_ASSERT_EQUAL(0, vscr_ratchet_message_get_one_time_public_key(msg1).len);
     TEST_ASSERT_EQUAL(0, vscr_ratchet_message_get_long_term_public_key(msg1).len);
+    TEST_ASSERT_EQUAL(msg1->header_pb->counter, vscr_ratchet_message_get_counter(msg1));
 
     vscr_ratchet_message_destroy(&msg1);
 }

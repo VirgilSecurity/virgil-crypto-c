@@ -22,6 +22,14 @@
         </return>
     </method>
 
+    <method name="get counter" is_const="1">
+        Returns message counter in current asymmetric ratchet round.
+
+        <return type="unsigned" size="4">
+            Message counter.
+        </return>
+    </method>
+
     <method name="get long-term public key">
         Returns long-term public key, if message is prekey message.
 

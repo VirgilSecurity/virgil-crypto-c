@@ -498,7 +498,7 @@ vsce_phe_client_generate_client_private_key(vsce_phe_client_t *self, vsc_buffer_
     }
 
     mbedtls_status = mbedtls_mpi_write_binary(
-            &priv, vsc_buffer_unused_bytes(client_private_key), vsc_buffer_capacity(client_private_key));
+            &priv, vsc_buffer_unused_bytes(client_private_key), vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_inc_used(client_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
@@ -644,8 +644,8 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *self, vsc_data_t enrollment_re
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
-    pb_ostream_t ostream =
-            pb_ostream_from_buffer(vsc_buffer_unused_bytes(enrollment_record), vsc_buffer_capacity(enrollment_record));
+    pb_ostream_t ostream = pb_ostream_from_buffer(
+            vsc_buffer_unused_bytes(enrollment_record), vsc_buffer_unused_len(enrollment_record));
     VSCE_ASSERT(pb_encode(&ostream, EnrollmentRecord_fields, &record));
     vsc_buffer_inc_used(enrollment_record, ostream.bytes_written);
     vsce_zeroize(&record, sizeof(record));
@@ -749,7 +749,7 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *self, vsc_data
     memcpy(request.ns, record.ns, sizeof(record.ns));
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
-            vsc_buffer_unused_bytes(verify_password_request), vsc_buffer_capacity(verify_password_request));
+            vsc_buffer_unused_bytes(verify_password_request), vsc_buffer_unused_len(verify_password_request));
     VSCE_ASSERT(pb_encode(&ostream, VerifyPasswordRequest_fields, &request));
     vsc_buffer_inc_used(verify_password_request, ostream.bytes_written);
     vsce_zeroize(&request, sizeof(request));
@@ -1248,7 +1248,7 @@ vsce_phe_client_rotate_keys(vsce_phe_client_t *self, vsc_data_t update_token, vs
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_status = mbedtls_mpi_write_binary(
-            &new_y, vsc_buffer_unused_bytes(new_client_private_key), vsc_buffer_capacity(new_client_private_key));
+            &new_y, vsc_buffer_unused_bytes(new_client_private_key), vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_inc_used(new_client_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
@@ -1260,7 +1260,7 @@ vsce_phe_client_rotate_keys(vsce_phe_client_t *self, vsc_data_t update_token, vs
 
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, &new_X, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            vsc_buffer_unused_bytes(new_server_public_key), vsc_buffer_capacity(new_server_public_key));
+            vsc_buffer_unused_bytes(new_server_public_key), vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     vsc_buffer_inc_used(new_server_public_key, olen);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
@@ -1397,7 +1397,7 @@ vsce_phe_client_update_enrollment_record(vsce_phe_client_t *self, vsc_data_t enr
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
-            vsc_buffer_unused_bytes(new_enrollment_record), vsc_buffer_capacity(new_enrollment_record));
+            vsc_buffer_unused_bytes(new_enrollment_record), vsc_buffer_unused_len(new_enrollment_record));
 
     VSCE_ASSERT(pb_encode(&ostream, EnrollmentRecord_fields, &new_record));
     vsc_buffer_inc_used(new_enrollment_record, ostream.bytes_written);

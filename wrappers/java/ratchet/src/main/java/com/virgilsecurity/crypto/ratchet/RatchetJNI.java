@@ -71,6 +71,11 @@ public class RatchetJNI {
     public native MsgType ratchetMessage_getType(long cCtx);
 
     /*
+    * Returns message counter in current asymmetric ratchet round.
+    */
+    public native long ratchetMessage_getCounter(long cCtx);
+
+    /*
     * Returns long-term public key, if message is prekey message.
     */
     public native byte[] ratchetMessage_getLongTermPublicKey(long cCtx);
@@ -194,6 +199,11 @@ public class RatchetJNI {
     public native byte[] ratchetGroupMessage_getSenderId(long cCtx);
 
     /*
+    * Returns message counter in current epoch.
+    */
+    public native long ratchetGroupMessage_getCounter(long cCtx);
+
+    /*
     * Returns message epoch.
     */
     public native long ratchetGroupMessage_getEpoch(long cCtx);
@@ -231,12 +241,7 @@ public class RatchetJNI {
     /*
     * Set this ticket to start new group session.
     */
-    public native void ratchetGroupTicket_setupTicketAsNew(long cCtx) throws RatchetException;
-
-    /*
-    * Set session id in case you want to use your own identifier, otherwise - id will be generated for you.
-    */
-    public native void ratchetGroupTicket_setSessionId(long cCtx, byte[] sessionId);
+    public native void ratchetGroupTicket_setupTicketAsNew(long cCtx, byte[] sessionId) throws RatchetException;
 
     /*
     * Returns message that should be sent to all participants using secure channel.

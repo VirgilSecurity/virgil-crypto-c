@@ -96,7 +96,7 @@ public class RatchetCommon {
     * Max group message length
     */
     public int getMaxGroupMessageLen() {
-        return 32918;
+        return 32952;
     }
 }
 

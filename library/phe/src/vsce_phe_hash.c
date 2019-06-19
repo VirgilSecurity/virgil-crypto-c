@@ -264,7 +264,7 @@ vsce_phe_hash_derive_account_key(vsce_phe_hash_t *self, const mbedtls_ecp_point 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT_PTR(m);
     VSCE_ASSERT(vsc_buffer_len(account_key) == 0);
-    VSCE_ASSERT(vsc_buffer_capacity(account_key) >= vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
+    VSCE_ASSERT(vsc_buffer_unused_len(account_key) >= vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
 
     byte M_buffer[vsce_phe_common_PHE_POINT_LENGTH];
     vsc_buffer_t M_buf;
@@ -282,7 +282,7 @@ vsce_phe_hash_derive_account_key(vsce_phe_hash_t *self, const mbedtls_ecp_point 
 
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
     vscf_hkdf_set_info(hkdf, k_kdf_info_client_key);
-    vscf_hkdf_derive(hkdf, vsc_buffer_data(&M_buf), vsc_buffer_capacity(account_key), account_key);
+    vscf_hkdf_derive(hkdf, vsc_buffer_data(&M_buf), vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH, account_key);
 
     vsc_buffer_delete(&M_buf);
     vscf_hkdf_destroy(&hkdf);
@@ -462,7 +462,7 @@ vsce_phe_hash_derive_z(vsce_phe_hash_t *self, vsc_data_t buffer, bool success, m
 
         vscf_hkdf_reset(hkdf, domain, 0);
         vscf_hkdf_set_info(hkdf, k_kdf_info_z);
-        vscf_hkdf_derive(hkdf, vsc_buffer_data(&key), vsc_buffer_capacity(&z_buff), &z_buff);
+        vscf_hkdf_derive(hkdf, vsc_buffer_data(&key), vsce_phe_common_PHE_HASH_LEN, &z_buff);
 
         mbedtls_status = mbedtls_mpi_read_binary(z, vsc_buffer_bytes(&z_buff), vsc_buffer_len(&z_buff));
         VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);

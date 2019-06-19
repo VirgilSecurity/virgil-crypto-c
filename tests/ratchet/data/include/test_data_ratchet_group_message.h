@@ -39,13 +39,9 @@
 
 extern const vsc_data_t test_data_ratchet_group_message_signature;
 extern const vsc_data_t test_data_ratchet_group_message_sender_id;
+extern const vsc_data_t test_data_ratchet_group_message_session_id;
 extern const vsc_data_t test_data_ratchet_group_message_id;
 extern const vsc_data_t test_data_ratchet_group_message_data;
-extern const vsc_data_t test_data_ratchet_group_message_pub_key1;
-extern const vsc_data_t test_data_ratchet_group_message_pub_key2;
 extern const vsc_data_t test_data_ratchet_group_message_key1;
-extern const vsc_data_t test_data_ratchet_group_message_key2;
-extern const vsc_data_t test_data_ratchet_group_message_id1;
-extern const vsc_data_t test_data_ratchet_group_message_id2;
 
 #endif //VIRGIL_CRYPTO_TEST_DATA_RATCHET_MESSAGE_H
