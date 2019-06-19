@@ -184,7 +184,7 @@ vscf_alg_info_der_deserializer_delete(vscf_alg_info_der_deserializer_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if (new_counter > 0 || (new_counter == old_counter)) {
+    if ((new_counter > 0) || (0 == old_counter)) {
         return;
     }
 

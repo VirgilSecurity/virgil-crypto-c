@@ -173,7 +173,7 @@ vscr_ratchet_cipher_delete(vscr_ratchet_cipher_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if (new_counter > 0 || (new_counter == old_counter)) {
+    if ((new_counter > 0) || (0 == old_counter)) {
         return;
     }
 

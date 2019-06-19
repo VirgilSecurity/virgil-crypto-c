@@ -622,7 +622,7 @@ function _X13_add_method_delete (class, destination, meta)
             $(my.counter:) = new_counter;
             #endif
 
-            if (new_counter > 0 || (new_counter == old_counter)) {
+            if ((new_counter > 0) || (0 == old_counter)) {
                 return;
             }
 

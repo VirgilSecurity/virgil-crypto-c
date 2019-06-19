@@ -152,7 +152,7 @@ vscr_ratchet_skipped_messages_root_node_delete(vscr_ratchet_skipped_messages_roo
     self->refcnt = new_counter;
     #endif
 
-    if (new_counter > 0 || (new_counter == old_counter)) {
+    if ((new_counter > 0) || (0 == old_counter)) {
         return;
     }
 

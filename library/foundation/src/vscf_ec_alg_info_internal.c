@@ -185,7 +185,7 @@ vscf_ec_alg_info_delete(vscf_ec_alg_info_t *self) {
     self->refcnt = new_counter;
     #endif
 
-    if (new_counter > 0 || (new_counter == old_counter)) {
+    if ((new_counter > 0) || (0 == old_counter)) {
         return;
     }
 
