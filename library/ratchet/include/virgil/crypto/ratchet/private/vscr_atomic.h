@@ -78,6 +78,7 @@ extern "C" {
 #       define VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(obj, expected, desired) __atomic_compare_exchange_n(obj, expected, desired, 1, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST)
 #   elif defined(_MSC_VER) && !defined(__INTEL_COMPILER)
 #       pragma intrinsic(_InterlockedCompareExchange)                                                                                                               \
+                                                                                                                                                                    \
         inline bool vscr_atomic_compare_exchange_weak(volatile long *obj, long* expected, long desired) {                                                           \
             const long expected_local = *expected;                                                                                                                  \
             const long old = _InterlockedCompareExchange(obj, desired, expected_local);                                                                             \
