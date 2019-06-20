@@ -43,10 +43,14 @@
     <method name="setup ticket as new">
         Set this ticket to start new group session.
 
+        <argument name="session id" class="data">
+            Session id, should be 32 byte
+        </argument>
+
         <return enum="status"/>
     </method>
 
-    <method name="set session id">
+    <method name="set session id" declaration="private">
         Set session id in case you want to use your own identifier, otherwise - id will be generated for you.
 
         <argument name="session id" class="data">
