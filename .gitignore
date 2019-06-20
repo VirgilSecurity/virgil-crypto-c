@@ -1,5 +1,6 @@
 #####
 build*/
+cmake-build*/
 install*/
 .depends_cache/
 codegen/generated/

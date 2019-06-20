@@ -82,6 +82,7 @@ option(ENABLE_BENCHMARKING "On/Off execution of benchmarks." OFF)
 option(ENABLE_CLANGFORMAT "On/Off formatting source code with clangformat." ON)
 
 option(VIRGIL_C_TESTING "On/Off C library integration tests." ON)
+option(VIRGIL_C_MT_TESTING "On/Off C library multi-threading tests." OFF)
 option(VIRGIL_PHP_TESTING "On/Off PHP wrapper integration tests." ON)
 
 #

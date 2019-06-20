@@ -54,6 +54,7 @@
 #define VSCF_LIST_KEY_VALUE_NODE_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_atomic.h"
 #include "vscf_list_key_value_node.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -90,7 +91,7 @@ struct vscf_list_key_value_node_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
 
     vsc_buffer_t *key;
 

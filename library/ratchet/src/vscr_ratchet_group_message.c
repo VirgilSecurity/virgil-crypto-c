@@ -130,15 +130,9 @@ vscr_ratchet_group_message_cleanup(vscr_ratchet_group_message_t *self) {
         return;
     }
 
-    if (self->refcnt == 0) {
-        return;
-    }
+    vscr_ratchet_group_message_cleanup_ctx(self);
 
-    if (--self->refcnt == 0) {
-        vscr_ratchet_group_message_cleanup_ctx(self);
-
-        vscr_zeroize(self, sizeof(vscr_ratchet_group_message_t));
-    }
+    vscr_zeroize(self, sizeof(vscr_ratchet_group_message_t));
 }
 
 //
@@ -159,7 +153,7 @@ vscr_ratchet_group_message_new(void) {
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
 vscr_ratchet_group_message_delete(vscr_ratchet_group_message_t *self) {
@@ -168,11 +162,30 @@ vscr_ratchet_group_message_delete(vscr_ratchet_group_message_t *self) {
         return;
     }
 
+    size_t old_counter = self->refcnt;
+    VSCR_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCR_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
     vscr_ratchet_group_message_cleanup(self);
 
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+    if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
     }
 }
@@ -200,7 +213,17 @@ vscr_ratchet_group_message_shallow_copy(vscr_ratchet_group_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
+    #if defined(VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
     ++self->refcnt;
+    #endif
 
     return self;
 }
@@ -276,9 +299,13 @@ VSCR_PUBLIC vsc_data_t
 vscr_ratchet_group_message_get_session_id(const vscr_ratchet_group_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(self->message_pb.has_group_info);
 
-    return vsc_data(self->message_pb.group_info.session_id, sizeof(self->message_pb.group_info.session_id));
+    if (self->message_pb.has_group_info) {
+        return vsc_data(self->message_pb.group_info.session_id, sizeof(self->message_pb.group_info.session_id));
+    } else {
+        VSCR_ASSERT_PTR(self->header_pb);
+        return vsc_data(self->header_pb->session_id, sizeof(self->header_pb->session_id));
+    }
 }
 
 //
@@ -289,10 +316,31 @@ VSCR_PUBLIC vsc_data_t
 vscr_ratchet_group_message_get_sender_id(const vscr_ratchet_group_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT(self->message_pb.has_regular_message);
+
+    if (!self->message_pb.has_regular_message) {
+        return vsc_data_empty();
+    }
+
     VSCR_ASSERT_PTR(self->header_pb);
 
     return vsc_data(self->header_pb->sender_id, sizeof(self->header_pb->sender_id));
+}
+
+//
+//  Returns message counter in current epoch.
+//
+VSCR_PUBLIC uint32_t
+vscr_ratchet_group_message_get_counter(const vscr_ratchet_group_message_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+
+    if (!self->message_pb.has_regular_message) {
+        return 0;
+    }
+
+    VSCR_ASSERT_PTR(self->header_pb);
+
+    return self->header_pb->counter;
 }
 
 //
@@ -351,8 +399,7 @@ vscr_ratchet_group_message_serialize_len(const vscr_ratchet_group_message_t *sel
     } else if (self->message_pb.has_regular_message) {
         VSCR_ASSERT(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN >=
                     vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg));
-        return vscr_ratchet_common_hidden_MAX_GROUP_REGULAR_MESSAGE_LEN -
-               vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN +
+        return vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN - vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN +
                vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg);
     }
 

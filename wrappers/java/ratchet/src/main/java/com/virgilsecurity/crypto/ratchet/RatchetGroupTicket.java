@@ -83,15 +83,8 @@ public class RatchetGroupTicket implements AutoCloseable {
     /*
     * Set this ticket to start new group session.
     */
-    public void setupTicketAsNew() throws RatchetException {
-        RatchetJNI.INSTANCE.ratchetGroupTicket_setupTicketAsNew(this.cCtx);
-    }
-
-    /*
-    * Set session id in case you want to use your own identifier, otherwise - id will be generated for you.
-    */
-    public void setSessionId(byte[] sessionId) {
-        RatchetJNI.INSTANCE.ratchetGroupTicket_setSessionId(this.cCtx, sessionId);
+    public void setupTicketAsNew(byte[] sessionId) throws RatchetException {
+        RatchetJNI.INSTANCE.ratchetGroupTicket_setupTicketAsNew(this.cCtx, sessionId);
     }
 
     /*

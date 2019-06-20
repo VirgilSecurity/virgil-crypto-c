@@ -66,6 +66,7 @@
 #include "vscf_asn1_writer_api.h"
 #include "vscf_asn1rd_defs.h"
 #include "vscf_asn1wr_defs.h"
+#include "vscf_atomic.h"
 #include "vscf_auth_decrypt_api.h"
 #include "vscf_auth_encrypt_api.h"
 #include "vscf_cipher_alg_info_defs.h"

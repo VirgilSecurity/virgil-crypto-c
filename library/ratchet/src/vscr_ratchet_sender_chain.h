@@ -48,6 +48,7 @@
 #define VSCR_RATCHET_SENDER_CHAIN_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_atomic.h"
 #include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_sender_chain.h"
@@ -84,7 +85,7 @@ struct vscr_ratchet_sender_chain_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCR_ATOMIC size_t refcnt;
 
     vscr_ratchet_private_key_t private_key;
 
@@ -119,7 +120,7 @@ vscr_ratchet_sender_chain_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
 vscr_ratchet_sender_chain_delete(vscr_ratchet_sender_chain_t *self);

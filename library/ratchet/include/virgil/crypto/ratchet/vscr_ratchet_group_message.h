@@ -114,7 +114,7 @@ vscr_ratchet_group_message_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
 vscr_ratchet_group_message_delete(vscr_ratchet_group_message_t *self);
@@ -151,6 +151,12 @@ vscr_ratchet_group_message_get_session_id(const vscr_ratchet_group_message_t *se
 //
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_group_message_get_sender_id(const vscr_ratchet_group_message_t *self);
+
+//
+//  Returns message counter in current epoch.
+//
+VSCR_PUBLIC uint32_t
+vscr_ratchet_group_message_get_counter(const vscr_ratchet_group_message_t *self);
 
 //
 //  Returns message epoch.

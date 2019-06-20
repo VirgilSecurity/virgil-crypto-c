@@ -40,7 +40,7 @@
 //  @description
 // --------------------------------------------------------------------------
 //  Class for client-side PHE crypto operations.
-//  This class is thread-safe in case if VSCE_MULTI_THREAD defined
+//  This class is thread-safe in case if VSCE_MULTI_THREADING defined.
 // --------------------------------------------------------------------------
 
 
@@ -140,18 +140,12 @@ vsce_phe_client_cleanup(vsce_phe_client_t *self) {
         return;
     }
 
-    if (self->refcnt == 0) {
-        return;
-    }
+    vsce_phe_client_cleanup_ctx(self);
 
-    if (--self->refcnt == 0) {
-        vsce_phe_client_cleanup_ctx(self);
+    vsce_phe_client_release_random(self);
+    vsce_phe_client_release_operation_random(self);
 
-        vsce_phe_client_release_random(self);
-        vsce_phe_client_release_operation_random(self);
-
-        vsce_zeroize(self, sizeof(vsce_phe_client_t));
-    }
+    vsce_zeroize(self, sizeof(vsce_phe_client_t));
 }
 
 //
@@ -172,7 +166,7 @@ vsce_phe_client_new(void) {
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCE_PUBLIC void
 vsce_phe_client_delete(vsce_phe_client_t *self) {
@@ -181,11 +175,30 @@ vsce_phe_client_delete(vsce_phe_client_t *self) {
         return;
     }
 
+    size_t old_counter = self->refcnt;
+    VSCE_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCE_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vsce_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
     vsce_phe_client_cleanup(self);
 
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+    if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
     }
 }
@@ -213,7 +226,17 @@ vsce_phe_client_shallow_copy(vsce_phe_client_t *self) {
 
     VSCE_ASSERT_PTR(self);
 
+    #if defined(VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
     ++self->refcnt;
+    #endif
 
     return self;
 }
@@ -246,7 +269,7 @@ vsce_phe_client_take_random(vsce_phe_client_t *self, vscf_impl_t *random) {
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT_PTR(random);
-    VSCE_ASSERT_PTR(self->random == NULL);
+    VSCE_ASSERT(self->random == NULL);
 
     VSCE_ASSERT(vscf_random_is_implemented(random));
 
@@ -292,7 +315,7 @@ vsce_phe_client_take_operation_random(vsce_phe_client_t *self, vscf_impl_t *oper
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT_PTR(operation_random);
-    VSCE_ASSERT_PTR(self->operation_random == NULL);
+    VSCE_ASSERT(self->operation_random == NULL);
 
     VSCE_ASSERT(vscf_random_is_implemented(operation_random));
 
@@ -478,7 +501,7 @@ vsce_phe_client_generate_client_private_key(vsce_phe_client_t *self, vsc_buffer_
     }
 
     mbedtls_status = mbedtls_mpi_write_binary(
-            &priv, vsc_buffer_unused_bytes(client_private_key), vsc_buffer_capacity(client_private_key));
+            &priv, vsc_buffer_unused_bytes(client_private_key), vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_inc_used(client_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
@@ -624,8 +647,8 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *self, vsc_data_t enrollment_re
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
-    pb_ostream_t ostream =
-            pb_ostream_from_buffer(vsc_buffer_unused_bytes(enrollment_record), vsc_buffer_capacity(enrollment_record));
+    pb_ostream_t ostream = pb_ostream_from_buffer(
+            vsc_buffer_unused_bytes(enrollment_record), vsc_buffer_unused_len(enrollment_record));
     VSCE_ASSERT(pb_encode(&ostream, EnrollmentRecord_fields, &record));
     vsc_buffer_inc_used(enrollment_record, ostream.bytes_written);
     vsce_zeroize(&record, sizeof(record));
@@ -729,7 +752,7 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *self, vsc_data
     memcpy(request.ns, record.ns, sizeof(record.ns));
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
-            vsc_buffer_unused_bytes(verify_password_request), vsc_buffer_capacity(verify_password_request));
+            vsc_buffer_unused_bytes(verify_password_request), vsc_buffer_unused_len(verify_password_request));
     VSCE_ASSERT(pb_encode(&ostream, VerifyPasswordRequest_fields, &request));
     vsc_buffer_inc_used(verify_password_request, ostream.bytes_written);
     vsce_zeroize(&request, sizeof(request));
@@ -1228,7 +1251,7 @@ vsce_phe_client_rotate_keys(vsce_phe_client_t *self, vsc_data_t update_token, vs
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_status = mbedtls_mpi_write_binary(
-            &new_y, vsc_buffer_unused_bytes(new_client_private_key), vsc_buffer_capacity(new_client_private_key));
+            &new_y, vsc_buffer_unused_bytes(new_client_private_key), vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_inc_used(new_client_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
@@ -1240,7 +1263,7 @@ vsce_phe_client_rotate_keys(vsce_phe_client_t *self, vsc_data_t update_token, vs
 
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, &new_X, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            vsc_buffer_unused_bytes(new_server_public_key), vsc_buffer_capacity(new_server_public_key));
+            vsc_buffer_unused_bytes(new_server_public_key), vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     vsc_buffer_inc_used(new_server_public_key, olen);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
@@ -1377,7 +1400,7 @@ vsce_phe_client_update_enrollment_record(vsce_phe_client_t *self, vsc_data_t enr
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
-            vsc_buffer_unused_bytes(new_enrollment_record), vsc_buffer_capacity(new_enrollment_record));
+            vsc_buffer_unused_bytes(new_enrollment_record), vsc_buffer_unused_len(new_enrollment_record));
 
     VSCE_ASSERT(pb_encode(&ostream, EnrollmentRecord_fields, &new_record));
     vsc_buffer_inc_used(new_enrollment_record, ostream.bytes_written);
@@ -1408,7 +1431,7 @@ pb_err:
 static mbedtls_ecp_group *
 vsce_phe_client_get_op_group(vsce_phe_client_t *self) {
 
-#if VSCE_MULTI_THREAD
+#if VSCE_MULTI_THREADING
     VSCE_UNUSED(self);
 
     mbedtls_ecp_group *new_group = (mbedtls_ecp_group *)vsce_alloc(sizeof(mbedtls_ecp_group));
@@ -1425,8 +1448,10 @@ vsce_phe_client_get_op_group(vsce_phe_client_t *self) {
 static void
 vsce_phe_client_free_op_group(mbedtls_ecp_group *op_group) {
 
-#if VSCE_MULTI_THREAD
+#if VSCE_MULTI_THREADING
     mbedtls_ecp_group_free(op_group);
     vsce_dealloc(op_group);
+#else
+    VSCE_UNUSED(op_group);
 #endif
 }
