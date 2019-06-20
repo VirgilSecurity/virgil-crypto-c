@@ -54,6 +54,7 @@
 #define VSCR_RATCHET_GROUP_PARTICIPANTS_INFO_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_atomic.h"
 #include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet_group_participant_info.h"
@@ -84,7 +85,7 @@ struct vscr_ratchet_group_participants_info_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCR_ATOMIC size_t refcnt;
 
     vscr_ratchet_key_utils_t *key_utils;
 

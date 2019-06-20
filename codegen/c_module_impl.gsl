@@ -270,10 +270,22 @@ function _L24_add_method_shallow_copy (meta, destination)
         component_create_return_impl (method, my.meta)
 
         new code
+            my.counter = ".(_argument_impl)->$(my.names.c_property_ref_counter:)"
+
             . = "\
             .(c_class_assert_macros_ptr) (.(_argument_impl));
 
-            ++.(_argument_impl)->$(my.names.c_property_ref_counter:);
+            #if defined(.(c_class_atomic_macros_compare_exchange_weak))
+            //  CAS loop
+            size_t old_counter;
+            size_t new_counter;
+            do {
+                old_counter = $(my.counter:);
+                new_counter = old_counter + 1;
+            } while (!.(c_class_atomic_macros_compare_exchange_weak)(&$(my.counter:), &old_counter, new_counter));
+            #else
+            ++$(my.counter:);
+            #endif
 
             return .(_argument_impl);
             "
@@ -319,6 +331,11 @@ function c_module_impl_create (meta, destination)
 
         new require
             .module = my.names.module_assert
+            .scope = "private"
+        endnew
+
+        new require
+            .module = my.names.module_atomic
             .scope = "private"
         endnew
 

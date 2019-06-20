@@ -131,7 +131,7 @@ vsc_buffer_new_with_data(vsc_data_t data);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSC_PUBLIC void
 vsc_buffer_delete(vsc_buffer_t *self);

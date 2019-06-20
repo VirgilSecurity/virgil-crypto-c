@@ -272,15 +272,7 @@ vscf_curve25519_public_key_init(vscf_curve25519_public_key_t *self) {
 VSCF_PUBLIC void
 vscf_curve25519_public_key_cleanup(vscf_curve25519_public_key_t *self) {
 
-    if (self == NULL || self->info == NULL) {
-        return;
-    }
-
-    if (self->refcnt == 0) {
-        return;
-    }
-
-    if (--self->refcnt > 0) {
+    if (self == NULL) {
         return;
     }
 
@@ -314,11 +306,32 @@ vscf_curve25519_public_key_new(void) {
 VSCF_PUBLIC void
 vscf_curve25519_public_key_delete(vscf_curve25519_public_key_t *self) {
 
+    if (self == NULL) {
+        return;
+    }
+
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscf_curve25519_public_key_cleanup(self);
 
-    if (self && (self->refcnt == 0)) {
-        vscf_dealloc(self);
-    }
+    vscf_dealloc(self);
 }
 
 //
@@ -391,7 +404,7 @@ vscf_curve25519_public_key_take_random(vscf_curve25519_public_key_t *self, vscf_
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(self->random == NULL);
+    VSCF_ASSERT(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
@@ -431,7 +444,7 @@ vscf_curve25519_public_key_take_ecies(vscf_curve25519_public_key_t *self, vscf_e
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(ecies);
-    VSCF_ASSERT_PTR(self->ecies == NULL);
+    VSCF_ASSERT(self->ecies == NULL);
 
     self->ecies = ecies;
 }

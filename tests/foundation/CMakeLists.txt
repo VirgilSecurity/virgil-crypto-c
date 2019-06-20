@@ -38,6 +38,9 @@ project(virgil_crypto_c_foundation_tests VERSION ${virgil_crypto_c_tests_VERSION
 
 add_subdirectory(data)
 
+# ---------------------------------------------------------------------------
+#   Single thread tests
+# ---------------------------------------------------------------------------
 macro(_add_test test)
     add_executable(${test} ${test}.c)
     target_add_filename_definitions(${test})
@@ -95,3 +98,20 @@ _add_test (test_brainkey_client)
 _add_test (test_brainkey_server)
 _add_test (test_simple_swu)
 _add_test (test_group_session)
+
+# ---------------------------------------------------------------------------
+#   Multi-threading tests
+# ---------------------------------------------------------------------------
+if (VIRGIL_C_MT_TESTING AND VSCF_MULTI_THREADING)
+    macro(_add_test_mt test)
+        _add_test(${test})
+        set_tests_properties(${test} PROPERTIES LABELS "multi-threading")
+        target_link_libraries(${test} Threads::Threads)
+    endmacro()
+
+    if(CMAKE_USE_WIN32_THREADS_INIT)
+        _add_test_mt(test_mt_win32_refcnt)
+    else()
+        _add_test_mt(test_mt_refcnt)
+    endif()
+endif()

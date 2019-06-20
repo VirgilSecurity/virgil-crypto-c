@@ -54,6 +54,7 @@
 #define VSCF_MESSAGE_CIPHER_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_atomic.h"
 #include "vscf_aes256_gcm.h"
 
 // clang-format on
@@ -82,7 +83,7 @@ struct vscf_message_cipher_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
 
     vscf_aes256_gcm_t *aes256_gcm;
 };

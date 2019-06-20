@@ -54,6 +54,7 @@
 #define VSCF_GROUP_SESSION_TICKET_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_atomic.h"
 #include "vscf_group_session_typedefs.h"
 #include "vscf_group_session_message.h"
 #include "vscf_impl.h"
@@ -84,7 +85,7 @@ struct vscf_group_session_ticket_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
     //
     //  Dependency to the interface 'random'.
     //

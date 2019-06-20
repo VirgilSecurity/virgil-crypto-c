@@ -38,6 +38,9 @@ import VSCFoundation
 
 @objc(VSCFGroupSession) public class GroupSession: NSObject {
 
+    /// Sender id len
+    @objc public static let senderIdLen: Int = 32
+
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
@@ -101,14 +104,16 @@ import VSCFoundation
     }
 
     /// Encrypts data
-    @objc public func encrypt(plainText: Data, privateKey: Data) throws -> GroupSessionMessage {
+    @objc public func encrypt(plainText: Data, privateKey: Data, senderId: Data) throws -> GroupSessionMessage {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
         let proxyResult = plainText.withUnsafeBytes({ (plainTextPointer: UnsafeRawBufferPointer) in
             privateKey.withUnsafeBytes({ (privateKeyPointer: UnsafeRawBufferPointer) in
+                senderId.withUnsafeBytes({ (senderIdPointer: UnsafeRawBufferPointer) in
 
-                return vscf_group_session_encrypt(self.c_ctx, vsc_data(plainTextPointer.bindMemory(to: byte.self).baseAddress, plainText.count), vsc_data(privateKeyPointer.bindMemory(to: byte.self).baseAddress, privateKey.count), &error)
+                    return vscf_group_session_encrypt(self.c_ctx, vsc_data(plainTextPointer.bindMemory(to: byte.self).baseAddress, plainText.count), vsc_data(privateKeyPointer.bindMemory(to: byte.self).baseAddress, privateKey.count), vsc_data(senderIdPointer.bindMemory(to: byte.self).baseAddress, senderId.count), &error)
+                })
             })
         })
 
@@ -125,7 +130,7 @@ import VSCFoundation
     }
 
     /// Decrypts message
-    @objc public func decrypt(message: GroupSessionMessage, publicKey: Data) throws -> Data {
+    @objc public func decrypt(message: GroupSessionMessage, publicKey: Data, senderId: Data) throws -> Data {
         let plainTextCount = self.decryptLen(message: message)
         var plainText = Data(count: plainTextCount)
         var plainTextBuf = vsc_buffer_new()
@@ -134,11 +139,13 @@ import VSCFoundation
         }
 
         let proxyResult = publicKey.withUnsafeBytes({ (publicKeyPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            plainText.withUnsafeMutableBytes({ (plainTextPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-                vsc_buffer_init(plainTextBuf)
-                vsc_buffer_use(plainTextBuf, plainTextPointer.bindMemory(to: byte.self).baseAddress, plainTextCount)
+            senderId.withUnsafeBytes({ (senderIdPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                plainText.withUnsafeMutableBytes({ (plainTextPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+                    vsc_buffer_init(plainTextBuf)
+                    vsc_buffer_use(plainTextBuf, plainTextPointer.bindMemory(to: byte.self).baseAddress, plainTextCount)
 
-                return vscf_group_session_decrypt(self.c_ctx, message.c_ctx, vsc_data(publicKeyPointer.bindMemory(to: byte.self).baseAddress, publicKey.count), plainTextBuf)
+                    return vscf_group_session_decrypt(self.c_ctx, message.c_ctx, vsc_data(publicKeyPointer.bindMemory(to: byte.self).baseAddress, publicKey.count), vsc_data(senderIdPointer.bindMemory(to: byte.self).baseAddress, senderId.count), plainTextBuf)
+                })
             })
         })
         plainText.count = vsc_buffer_len(plainTextBuf)
@@ -146,5 +153,17 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: proxyResult)
 
         return plainText
+    }
+
+    /// Creates ticket with new key for adding or removing participants.
+    @objc public func createGroupTicket() throws -> GroupSessionTicket {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = vscf_group_session_create_group_ticket(self.c_ctx, &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return GroupSessionTicket.init(take: proxyResult!)
     }
 }

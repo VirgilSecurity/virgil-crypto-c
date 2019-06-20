@@ -48,6 +48,7 @@
 #define VSCF_GROUP_SESSION_EPOCH_NODE_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_atomic.h"
 #include "vscf_group_session_epoch.h"
 #include "vscf_group_session_epoch_node.h"
 
@@ -78,7 +79,7 @@ struct vscf_group_session_epoch_node_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
 
     vscf_group_session_epoch_t *value;
 
@@ -113,7 +114,7 @@ vscf_group_session_epoch_node_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
 vscf_group_session_epoch_node_delete(vscf_group_session_epoch_node_t *self);

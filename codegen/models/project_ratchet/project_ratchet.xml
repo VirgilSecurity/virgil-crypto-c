@@ -50,9 +50,15 @@
     <require project="common" feature="library"/>
     <require project="foundation" feature="library"/>
 
+    <feature name="multi threading" default="on">
+        Enable multi-threading safety for ratchet library.
+    </feature>
+
+
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
+    <module name="atomic" from="shared"/>
 
     <module name="ratchet typedefs"/>
 

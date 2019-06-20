@@ -54,6 +54,7 @@
 #define VSCF_GROUP_SESSION_MESSAGE_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_atomic.h"
 
 #include <GroupMessage.pb.h>
 
@@ -83,7 +84,7 @@ struct vscf_group_session_message_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
 
     GroupMessage message_pb;
 

@@ -653,9 +653,40 @@ public class FoundationJNI {
     public native byte[] groupSessionMessage_getSessionId(long cCtx);
 
     /*
+    * Returns message sender id.
+    * This method should be called only for regular message type.
+    */
+    public native byte[] groupSessionMessage_getSenderId(long cCtx);
+
+    /*
     * Returns message epoch.
     */
     public native long groupSessionMessage_getEpoch(long cCtx);
+
+    public native long groupSessionTicket_new();
+
+    public native void groupSessionTicket_close(long cCtx);
+
+    /*
+    * Random used to generate keys
+    */
+    public native void groupSessionTicket_setRng(long cCtx, Random rng);
+
+    /*
+    * Setups default dependencies:
+    * - RNG: CTR DRBG
+    */
+    public native void groupSessionTicket_setupDefaults(long cCtx) throws FoundationException;
+
+    /*
+    * Set this ticket to start new group session.
+    */
+    public native void groupSessionTicket_setupTicketAsNew(long cCtx, byte[] sessionId) throws FoundationException;
+
+    /*
+    * Returns message that should be sent to all participants using secure channel.
+    */
+    public native GroupSessionMessage groupSessionTicket_getTicketMessage(long cCtx);
 
     public native long groupSession_new();
 
@@ -687,7 +718,7 @@ public class FoundationJNI {
     /*
     * Encrypts data
     */
-    public native GroupSessionMessage groupSession_encrypt(long cCtx, byte[] plainText, byte[] privateKey) throws FoundationException;
+    public native GroupSessionMessage groupSession_encrypt(long cCtx, byte[] plainText, byte[] privateKey, byte[] senderId) throws FoundationException;
 
     /*
     * Calculates size of buffer sufficient to store decrypted message
@@ -697,7 +728,12 @@ public class FoundationJNI {
     /*
     * Decrypts message
     */
-    public native byte[] groupSession_decrypt(long cCtx, GroupSessionMessage message, byte[] publicKey) throws FoundationException;
+    public native byte[] groupSession_decrypt(long cCtx, GroupSessionMessage message, byte[] publicKey, byte[] senderId) throws FoundationException;
+
+    /*
+    * Creates ticket with new key for adding or removing participants.
+    */
+    public native GroupSessionTicket groupSession_createGroupTicket(long cCtx) throws FoundationException;
 
     public native long sha224_new();
 

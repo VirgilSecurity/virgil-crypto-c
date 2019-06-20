@@ -49,6 +49,10 @@ if(NOT TARGET ratchet)
     message(FATAL_ERROR "Expected target 'ratchet' to be defined first.")
 endif()
 
+include(CheckIncludeFiles)
+check_include_files(assert.h VSCR_HAVE_ASSERT_H)
+check_include_files(stdatomic.h VSCR_HAVE_STDATOMIC_H)
+
 configure_file(
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_platform.h.in"
         "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/ratchet/vscr_platform.h"
@@ -149,6 +153,7 @@ target_sources(ratchet
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_assert.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_library.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_memory.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/private/vscr_atomic.h"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_typedefs.h"
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/ratchet/vscr_platform.h"
             "$<$<BOOL:${VSCR_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_error.h>"

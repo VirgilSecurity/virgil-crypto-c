@@ -79,6 +79,14 @@ public class GroupSessionMessage implements AutoCloseable {
     }
 
     /*
+    * Returns message sender id.
+    * This method should be called only for regular message type.
+    */
+    public byte[] getSenderId() {
+        return FoundationJNI.INSTANCE.groupSessionMessage_getSenderId(this.cCtx);
+    }
+
+    /*
     * Returns message epoch.
     */
     public long getEpoch() {

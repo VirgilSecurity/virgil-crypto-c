@@ -82,6 +82,14 @@ import VSCFoundation
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
+    /// Returns message sender id.
+    /// This method should be called only for regular message type.
+    @objc public func getSenderId() -> Data {
+        let proxyResult = vscf_group_session_message_get_sender_id(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
     /// Returns message epoch.
     @objc public func getEpoch() -> UInt32 {
         let proxyResult = vscf_group_session_message_get_epoch(self.c_ctx)

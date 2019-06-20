@@ -119,8 +119,7 @@ test__serialization__big_session__overflow_doesnt_happen(void) {
     for (size_t i = 0; i < participants_count; i++) {
         if (i > 0) {
             vscr_ratchet_group_session_destroy(&sessions[i]);
-        }
-        else {
+        } else {
             vscr_ratchet_group_session_destroy(&session);
         }
         vsc_buffer_destroy(&priv[i]);
@@ -173,8 +172,7 @@ test__serialization__random_big_session__overflow_doesnt_happen(void) {
     for (size_t i = 0; i < participants_count; i++) {
         if (i > 0) {
             vscr_ratchet_group_session_destroy(&sessions[i]);
-        }
-        else {
+        } else {
             vscr_ratchet_group_session_destroy(&session);
         }
         vsc_buffer_destroy(&priv[i]);

@@ -48,6 +48,7 @@
 #define VSCF_GROUP_SESSION_EPOCH_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_atomic.h"
 #include "vscf_group_session_typedefs.h"
 
 // clang-format on
@@ -77,7 +78,7 @@ struct vscf_group_session_epoch_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
 
     vscf_group_session_symmetric_key_t key;
 
@@ -110,7 +111,7 @@ vscf_group_session_epoch_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
 vscf_group_session_epoch_delete(vscf_group_session_epoch_t *self);

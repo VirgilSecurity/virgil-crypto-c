@@ -55,6 +55,13 @@ public class GroupSession implements AutoCloseable {
         this.cCtx = cCtx;
     }
 
+    /*
+    * Sender id len
+    */
+    public int getSenderIdLen() {
+        return 32;
+    }
+
     /* Close resource. */
     public void close() {
         FoundationJNI.INSTANCE.groupSession_close(this.cCtx);
@@ -96,8 +103,8 @@ public class GroupSession implements AutoCloseable {
     /*
     * Encrypts data
     */
-    public GroupSessionMessage encrypt(byte[] plainText, byte[] privateKey) throws FoundationException {
-        return FoundationJNI.INSTANCE.groupSession_encrypt(this.cCtx, plainText, privateKey);
+    public GroupSessionMessage encrypt(byte[] plainText, byte[] privateKey, byte[] senderId) throws FoundationException {
+        return FoundationJNI.INSTANCE.groupSession_encrypt(this.cCtx, plainText, privateKey, senderId);
     }
 
     /*
@@ -110,8 +117,15 @@ public class GroupSession implements AutoCloseable {
     /*
     * Decrypts message
     */
-    public byte[] decrypt(GroupSessionMessage message, byte[] publicKey) throws FoundationException {
-        return FoundationJNI.INSTANCE.groupSession_decrypt(this.cCtx, message, publicKey);
+    public byte[] decrypt(GroupSessionMessage message, byte[] publicKey, byte[] senderId) throws FoundationException {
+        return FoundationJNI.INSTANCE.groupSession_decrypt(this.cCtx, message, publicKey, senderId);
+    }
+
+    /*
+    * Creates ticket with new key for adding or removing participants.
+    */
+    public GroupSessionTicket createGroupTicket() throws FoundationException {
+        return FoundationJNI.INSTANCE.groupSession_createGroupTicket(this.cCtx);
     }
 }
 

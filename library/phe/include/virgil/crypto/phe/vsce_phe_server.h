@@ -48,7 +48,7 @@
 //  @description
 // --------------------------------------------------------------------------
 //  Class for server-side PHE crypto operations.
-//  This class is thread-safe in case if VSCE_MULTI_THREAD defined
+//  This class is thread-safe in case if VSCE_MULTI_THREADING defined.
 // --------------------------------------------------------------------------
 
 #ifndef VSCE_PHE_SERVER_H_INCLUDED
@@ -122,7 +122,7 @@ vsce_phe_server_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCE_PUBLIC void
 vsce_phe_server_delete(vsce_phe_server_t *self);
