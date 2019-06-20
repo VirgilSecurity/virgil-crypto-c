@@ -141,12 +141,15 @@ vscr_ratchet_message_key_delete(vscr_ratchet_message_key_t *self) {
     }
 
     size_t old_counter = self->refcnt;
-    size_t new_counter = old_counter > 0 ? old_counter - 1 : old_counter;
+    VSCR_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
     #if defined(VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
     while (!VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
         old_counter = self->refcnt;
-        new_counter = old_counter > 0 ? old_counter - 1 : old_counter;
+        VSCR_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
     }
     #else
     self->refcnt = new_counter;
@@ -155,8 +158,6 @@ vscr_ratchet_message_key_delete(vscr_ratchet_message_key_t *self) {
     if (new_counter > 0) {
         return;
     }
-
-    VSCR_ASSERT(old_counter != 0);
 
     vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 

@@ -805,12 +805,15 @@ function _Z19_add_method_delete (impl, declaration, definition, destination, met
                 }
 
                 size_t old_counter = $(my.counter:);
-                size_t new_counter = old_counter > 0 ? old_counter - 1 : old_counter;
+                .(c_class_assert_macros_assert)(old_counter != 0);
+                size_t new_counter = old_counter - 1;
+
                 #if defined(.(c_class_atomic_macros_compare_exchange_weak))
                 //  CAS loop
                 while (!.(c_class_atomic_macros_compare_exchange_weak)(&$(my.counter:), &old_counter, new_counter)) {
                     old_counter = $(my.counter:);
-                    new_counter = old_counter > 0 ? old_counter - 1 : old_counter;
+                    .(c_class_assert_macros_assert)(old_counter != 0);
+                    new_counter = old_counter - 1;
                 }
                 #else
                 $(my.counter:) = new_counter;
@@ -819,8 +822,6 @@ function _Z19_add_method_delete (impl, declaration, definition, destination, met
                 if (new_counter > 0) {
                     return;
                 }
-
-                .(c_class_assert_macros_assert)(old_counter != 0);
 
                 $(my.refs.c_implementation_method_cleanup)($(my.arg_impl));
 

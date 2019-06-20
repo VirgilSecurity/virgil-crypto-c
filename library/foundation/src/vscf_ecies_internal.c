@@ -218,12 +218,15 @@ vscf_ecies_delete(vscf_ecies_t *self) {
     }
 
     size_t old_counter = self->refcnt;
-    size_t new_counter = old_counter > 0 ? old_counter - 1 : old_counter;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
     #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
     while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
         old_counter = self->refcnt;
-        new_counter = old_counter > 0 ? old_counter - 1 : old_counter;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
     }
     #else
     self->refcnt = new_counter;
@@ -232,8 +235,6 @@ vscf_ecies_delete(vscf_ecies_t *self) {
     if (new_counter > 0) {
         return;
     }
-
-    VSCF_ASSERT(old_counter != 0);
 
     vscf_ecies_cleanup(self);
 
