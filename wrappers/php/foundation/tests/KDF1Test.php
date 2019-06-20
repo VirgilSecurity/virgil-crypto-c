@@ -36,14 +36,19 @@
  */
 
 require_once 'KDF1.php';
+require_once 'SHA256.php';
 
 class KDF1Test extends \PHPUnit\Framework\TestCase
 {
     private $KDF1;
+    private $SHA256;
 
     protected function setUp()
     {
         $this->KDF1 = new KDF1();
+        $this->SHA256 = new SHA256();
+
+        $this->KDF1->useHash($this->SHA256);
     }
 
     protected function tearDown()
@@ -51,8 +56,20 @@ class KDF1Test extends \PHPUnit\Framework\TestCase
         unset($this->KDF1);
     }
 
-    public function testValidReturnsNotNull()
+    public function testDeriveSha256Vector1Success()
     {
-        $this->assertNotNull($this->KDF1);
+        $hash = $this->SHA256->hash("");
+        $keyLen = 10;
+        $key = $this->KDF1->derive($hash, $keyLen);
+        $this->assertEquals($keyLen, strlen($key));
+    }
+
+    public function testDeriveSha256Vector2Success()
+    {
+        $hash = $this->SHA256->hash("abc");
+        $keyLen = 10;
+
+        $key = $this->KDF1->derive($hash, $keyLen);
+        $this->assertEquals($keyLen, strlen($key));
     }
 }

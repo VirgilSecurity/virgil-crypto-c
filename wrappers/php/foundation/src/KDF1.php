@@ -64,8 +64,9 @@ class KDF1
     /**
      * Setup dependency to the interface 'hash' with shared ownership.
      * @param Hash $hash
+     * @return void
      */
-    public function useHash(Hash $hash)
+    public function useHash(Hash $hash): void
     {
         vscf_kdf1_take_hash($this->c_ctx, $hash->getCCtx());
     }
