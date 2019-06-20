@@ -50,6 +50,7 @@
 #include "vscf_library.h"
 #include "vscf_group_session_message.h"
 #include "vscf_error.h"
+#include "vscf_group_session_ticket.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
 
@@ -77,6 +78,16 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Public integral constants.
+//
+enum {
+    //
+    //  Sender id len
+    //
+    vscf_group_session_SENDER_ID_LEN = 32
+};
 
 //
 //  Handle 'group session' context.
@@ -177,7 +188,7 @@ vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_sessio
 //
 VSCF_PUBLIC vscf_group_session_message_t *
 vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vsc_data_t private_key,
-        vscf_error_t *error);
+        vsc_data_t sender_id, vscf_error_t *error);
 
 //
 //  Calculates size of buffer sufficient to store decrypted message
@@ -190,7 +201,13 @@ vscf_group_session_decrypt_len(vscf_group_session_t *self, const vscf_group_sess
 //
 VSCF_PUBLIC vscf_status_t
 vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_message_t *message,
-        vsc_data_t public_key, vsc_buffer_t *plain_text) VSCF_NODISCARD;
+        vsc_data_t public_key, vsc_data_t sender_id, vsc_buffer_t *plain_text) VSCF_NODISCARD;
+
+//
+//  Creates ticket with new key for adding or removing participants.
+//
+VSCF_PUBLIC vscf_group_session_ticket_t *
+vscf_group_session_create_group_ticket(const vscf_group_session_t *self, vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------

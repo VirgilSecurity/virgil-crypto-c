@@ -47,15 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Class 'group session' types definition.
+//  Class 'group session ticket' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_GROUP_SESSION_DEFS_H_INCLUDED
-#define VSCF_GROUP_SESSION_DEFS_H_INCLUDED
+#ifndef VSCF_GROUP_SESSION_TICKET_DEFS_H_INCLUDED
+#define VSCF_GROUP_SESSION_TICKET_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_group_session_typedefs.h"
-#include "vscf_group_session_epoch_node.h"
+#include "vscf_group_session_message.h"
 #include "vscf_impl.h"
 
 // clang-format on
@@ -74,9 +74,9 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'group session' context.
+//  Handle 'group session ticket' context.
 //
-struct vscf_group_session_t {
+struct vscf_group_session_ticket_t {
     //
     //  Function do deallocate self context.
     //
@@ -90,13 +90,7 @@ struct vscf_group_session_t {
     //
     vscf_impl_t *rng;
 
-    bool is_initialized;
-
-    vscf_group_session_id_t session_id;
-
-    vscf_group_session_epoch_node_t *last_epoch;
-
-    vscf_group_session_epoch_node_t *first_epoch;
+    vscf_group_session_message_t *msg;
 };
 
 
@@ -113,5 +107,5 @@ struct vscf_group_session_t {
 
 
 //  @footer
-#endif // VSCF_GROUP_SESSION_DEFS_H_INCLUDED
+#endif // VSCF_GROUP_SESSION_TICKET_DEFS_H_INCLUDED
 //  @end

@@ -2,5 +2,6 @@
 
     <property name="value" class="group session epoch" access="readwrite"/>
     <property name="prev" class="self" access="readwrite"/>
+    <property name="next" class="self" access="readwrite"/>
 
 </class>

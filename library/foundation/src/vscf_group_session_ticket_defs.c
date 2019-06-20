@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'group session ticket' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,27 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'group session' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_GROUP_SESSION_DEFS_H_INCLUDED
-#define VSCF_GROUP_SESSION_DEFS_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_group_session_typedefs.h"
-#include "vscf_group_session_epoch_node.h"
-#include "vscf_impl.h"
+#include "vscf_group_session_ticket_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -73,45 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'group session' context.
-//
-struct vscf_group_session_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscf_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *rng;
-
-    bool is_initialized;
-
-    vscf_group_session_id_t session_id;
-
-    vscf_group_session_epoch_node_t *last_epoch;
-
-    vscf_group_session_epoch_node_t *first_epoch;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_GROUP_SESSION_DEFS_H_INCLUDED
 //  @end

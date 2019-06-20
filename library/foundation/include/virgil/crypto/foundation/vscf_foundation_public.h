@@ -99,6 +99,7 @@
 #include "vscf_group_msg_type.h"
 #include "vscf_group_session.h"
 #include "vscf_group_session_message.h"
+#include "vscf_group_session_ticket.h"
 #include "vscf_hash.h"
 #include "vscf_hash_based_alg_info.h"
 #include "vscf_hkdf.h"

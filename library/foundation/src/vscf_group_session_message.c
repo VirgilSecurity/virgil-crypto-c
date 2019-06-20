@@ -58,6 +58,7 @@
 
 #include <pb_decode.h>
 #include <pb_encode.h>
+#include <virgil/crypto/common/vsc_buffer.h>
 
 // clang-format on
 //  @end
@@ -211,6 +212,14 @@ static void
 vscf_group_session_message_init_ctx(vscf_group_session_message_t *self) {
 
     VSCF_ASSERT_PTR(self);
+
+    GroupMessage msg = GroupMessage_init_zero;
+
+    self->message_pb = msg;
+    // FIXME
+    self->message_pb.version = 1;
+    // FIXME
+    //    vscr_ratchet_group_message_set_pb_encode_callback(self);
 }
 
 //
@@ -222,6 +231,14 @@ static void
 vscf_group_session_message_cleanup_ctx(vscf_group_session_message_t *self) {
 
     VSCF_ASSERT_PTR(self);
+
+    if (self->message_pb.has_regular_message) {
+        if (self->message_pb.regular_message.cipher_text.arg) {
+            vsc_buffer_destroy((vsc_buffer_t **)&self->message_pb.regular_message.cipher_text.arg);
+        }
+    }
+
+    vscf_dealloc(self->header_pb);
 }
 
 //
@@ -230,10 +247,14 @@ vscf_group_session_message_cleanup_ctx(vscf_group_session_message_t *self) {
 VSCF_PUBLIC vscf_group_msg_type_t
 vscf_group_session_message_get_type(const vscf_group_session_message_t *self) {
 
-    //  TODO: This is STUB. Implement me.
     VSCF_ASSERT_PTR(self);
 
-    return vscf_group_msg_type_GROUP_INFO;
+    if (self->message_pb.has_regular_message) {
+        return vscf_group_msg_type_REGULAR;
+    } else {
+        VSCF_ASSERT(self->message_pb.has_group_info);
+        return vscf_group_msg_type_GROUP_INFO;
+    }
 }
 
 //
@@ -243,10 +264,33 @@ vscf_group_session_message_get_type(const vscf_group_session_message_t *self) {
 VSCF_PUBLIC vsc_data_t
 vscf_group_session_message_get_session_id(const vscf_group_session_message_t *self) {
 
-    //  TODO: This is STUB. Implement me.
     VSCF_ASSERT_PTR(self);
 
-    return vsc_data_empty();
+    if (self->message_pb.has_group_info) {
+        return vsc_data(self->message_pb.group_info.session_id, sizeof(self->message_pb.group_info.session_id));
+    } else {
+        VSCF_ASSERT_PTR(self->header_pb);
+        return vsc_data(self->header_pb->session_id, sizeof(self->header_pb->session_id));
+    }
+}
+
+//
+//  Returns message sender id.
+//  This method should be called only for regular message type.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_group_session_message_get_sender_id(const vscf_group_session_message_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (!self->message_pb.has_regular_message) {
+        // FIXME
+        return vsc_data_empty();
+    }
+
+    VSCF_ASSERT_PTR(self->header_pb);
+
+    return vsc_data(self->header_pb->sender_id, sizeof(self->header_pb->sender_id));
 }
 
 //
@@ -255,16 +299,39 @@ vscf_group_session_message_get_session_id(const vscf_group_session_message_t *se
 VSCF_PUBLIC uint32_t
 vscf_group_session_message_get_epoch(const vscf_group_session_message_t *self) {
 
-    //  TODO: This is STUB. Implement me.
     VSCF_ASSERT_PTR(self);
 
-    return 0;
+    if (self->message_pb.has_regular_message) {
+        VSCF_ASSERT_PTR(self->header_pb);
+        return self->header_pb->epoch;
+    } else {
+        return self->message_pb.group_info.epoch;
+    }
 }
 
 VSCF_PUBLIC void
 vscf_group_session_message_set_type(vscf_group_session_message_t *self, vscf_group_msg_type_t type) {
 
-    //  TODO: This is STUB. Implement me.
     VSCF_ASSERT_PTR(self);
-    VSCF_UNUSED(type);
+
+    GroupMessage msg = GroupMessage_init_zero;
+    self->message_pb = msg;
+
+    switch (type) {
+    case vscf_group_msg_type_REGULAR:
+        self->message_pb.has_regular_message = true;
+        self->message_pb.has_group_info = false;
+        self->header_pb = vscf_alloc(sizeof(RegularGroupMessageHeader));
+        RegularGroupMessageHeader hdr = RegularGroupMessageHeader_init_zero;
+        *self->header_pb = hdr;
+        break;
+
+    case vscf_group_msg_type_GROUP_INFO:
+        self->message_pb.has_regular_message = false;
+        self->message_pb.has_group_info = true;
+        break;
+    }
+
+    // FIXME
+    //    vscf_ratchet_group_message_set_pb_encode_callback(self);
 }

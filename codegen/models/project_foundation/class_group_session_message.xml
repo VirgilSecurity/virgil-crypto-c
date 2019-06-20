@@ -5,6 +5,8 @@
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
+    <require class="buffer" project="common" scope="private"/>
+
     <property name="message pb" class="GroupMessage" library="nanopb" access="readwrite" is_reference="0"/>
     <property name="header pb" class="RegularGroupMessageHeader" library="nanopb" access="readwrite"/>
 
@@ -19,6 +21,13 @@
     <method name="get session id" is_const="1">
         Returns session id.
         This method should be called only for group info type.
+
+        <return class="data" access="readwrite"/>
+    </method>
+
+    <method name="get sender id" is_const="1">
+        Returns message sender id.
+        This method should be called only for regular message type.
 
         <return class="data" access="readwrite"/>
     </method>

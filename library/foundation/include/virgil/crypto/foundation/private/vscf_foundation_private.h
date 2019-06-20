@@ -89,6 +89,7 @@
 #include "vscf_generate_ephemeral_key_api.h"
 #include "vscf_generate_key_api.h"
 #include "vscf_group_session_message_defs.h"
+#include "vscf_group_session_ticket_defs.h"
 #include "vscf_hash_api.h"
 #include "vscf_hash_based_alg_info_defs.h"
 #include "vscf_hkdf_defs.h"

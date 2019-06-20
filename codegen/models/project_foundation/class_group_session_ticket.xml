@@ -1,0 +1,63 @@
+<class name="group session ticket" context="private">
+    Group ticket used to start group session or change participants.
+
+    <require module="group session typedefs" scope="context"/>
+
+    <require module="buffer defs" project="common" scope="private"/>
+    <require module="group session message" scope="private"/>
+
+    <require module="group session message defs" scope="private"/>
+    <require module="group session message internal" scope="private"/>
+
+    <require header="GroupMessage.pb.h" scope="private"/>
+    <require header="pb_decode.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
+
+    <require impl="ctr drbg" scope="private"/>
+
+    <dependency name="rng" interface="random">
+        Random used to generate keys
+    </dependency>
+
+    <property name="msg" class="group session message" access="readwrite"/>
+
+    <method name="setup defaults">
+        Setups default dependencies:
+        - RNG: CTR DRBG
+
+        <return enum="status"/>
+    </method>
+
+    <method name="setup ticket internal" scope="internal">
+        <argument name="epoch" type="unsigned" size="4"/>
+        <argument name="session id" class="data"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="setup ticket as new">
+        Set this ticket to start new group session.
+
+        <argument name="session id" class="data">
+            Session id, should be 32 byte
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="set session id" declaration="private">
+        <argument name="session id" class="data"/>
+    </method>
+
+    <method name="generate key" declaration="private">
+        <return enum="status"/>
+    </method>
+
+    <method name="get ticket message" is_const="1">
+        Returns message that should be sent to all participants using secure channel.
+
+        <return class="group session message" access="readonly">
+            Ratchet group message.
+        </return>
+    </method>
+</class>

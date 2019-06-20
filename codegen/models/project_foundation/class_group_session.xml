@@ -1,5 +1,9 @@
 <class name="group session" context="internal">
 
+    <constant name="sender id len" value="32">
+        Sender id len
+    </constant>
+
     <require module="group session typedefs" scope="context"/>
 
     <require impl="ctr drbg" scope="private"/>
@@ -8,12 +12,18 @@
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
+    <require module="group session message defs" scope="private"/>
+    <require module="group session message internal" scope="private"/>
+    <require module="group session ticket internal" scope="private"/>
+
     <dependency name="rng" interface="random">
         Random
     </dependency>
 
+    <property name="is initialized" type="boolean" access="readwrite"/>
     <property name="session id" class="vscf_group_session_id_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="last epoch" class="group session epoch node" access="readwrite"/>
+    <property name="first epoch" class="group session epoch node" access="readwrite"/>
 
     <method name="get current epoch" is_const="1">
         Returns current epoch.
@@ -60,6 +70,10 @@
             Ed25519 PKCS8 identity private key
         </argument>
 
+        <argument name="sender id" class="data">
+            Sender identifier. 32 bytes
+        </argument>
+
         <argument name="error" class="error" access="readwrite">
             Error context to return error
         </argument>
@@ -92,6 +106,10 @@
             Ed25519 PKCS8 identity public key
         </argument>
 
+        <argument name="sender id" class="data">
+            Sender identifier. 32 bytes
+        </argument>
+
         <argument name="plain text" class="buffer">
             Decrypted data
 
@@ -102,6 +120,18 @@
 
         <return enum="status">
             Error
+        </return>
+    </method>
+
+    <method name="create group ticket" is_const="1">
+        Creates ticket with new key for adding or removing participants.
+
+        <argument name="error" class="error" access="readwrite">
+            Error context to return error
+        </argument>
+
+        <return class="group session ticket" access="disown">
+            Ticket
         </return>
     </method>
 

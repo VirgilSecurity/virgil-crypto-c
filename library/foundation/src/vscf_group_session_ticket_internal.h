@@ -44,19 +44,19 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#ifndef VSCF_GROUP_SESSION_TICKET_INTERNAL_H_INCLUDED
+#define VSCF_GROUP_SESSION_TICKET_INTERNAL_H_INCLUDED
 
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'group session' types definition.
-// --------------------------------------------------------------------------
+#include "vscf_group_session_ticket.h"
+#include "vscf_status.h"
 
-#ifndef VSCF_GROUP_SESSION_DEFS_H_INCLUDED
-#define VSCF_GROUP_SESSION_DEFS_H_INCLUDED
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
 
-#include "vscf_library.h"
-#include "vscf_group_session_typedefs.h"
-#include "vscf_group_session_epoch_node.h"
-#include "vscf_impl.h"
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
@@ -73,31 +73,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'group session' context.
-//
-struct vscf_group_session_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscf_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *rng;
-
-    bool is_initialized;
-
-    vscf_group_session_id_t session_id;
-
-    vscf_group_session_epoch_node_t *last_epoch;
-
-    vscf_group_session_epoch_node_t *first_epoch;
-};
+VSCF_PUBLIC vscf_status_t
+vscf_group_session_ticket_setup_ticket_internal(vscf_group_session_ticket_t *self, uint32_t epoch,
+        vsc_data_t session_id) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------
@@ -113,5 +91,5 @@ struct vscf_group_session_t {
 
 
 //  @footer
-#endif // VSCF_GROUP_SESSION_DEFS_H_INCLUDED
+#endif // VSCF_GROUP_SESSION_TICKET_INTERNAL_H_INCLUDED
 //  @end

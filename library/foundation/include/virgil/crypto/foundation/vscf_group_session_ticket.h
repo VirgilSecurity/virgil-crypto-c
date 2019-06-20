@@ -44,12 +44,28 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_GROUP_SESSION_EPOCH_NODE_H_INCLUDED
-#define VSCF_GROUP_SESSION_EPOCH_NODE_H_INCLUDED
+
+//  @description
+// --------------------------------------------------------------------------
+//  Group ticket used to start group session or change participants.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_GROUP_SESSION_TICKET_H_INCLUDED
+#define VSCF_GROUP_SESSION_TICKET_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_group_session_epoch.h"
-#include "vscf_group_session_epoch_node.h"
+#include "vscf_group_session_message.h"
+#include "vscf_group_session_message.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
@@ -67,69 +83,95 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'group session epoch node' context.
+//  Handle 'group session ticket' context.
 //
-typedef struct vscf_group_session_epoch_node_t vscf_group_session_epoch_node_t;
-struct vscf_group_session_epoch_node_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscf_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscf_group_session_epoch_t *value;
-
-    vscf_group_session_epoch_node_t *prev;
-
-    vscf_group_session_epoch_node_t *next;
-};
+typedef struct vscf_group_session_ticket_t vscf_group_session_ticket_t;
 
 //
-//  Return size of 'vscf_group_session_epoch_node_t'.
+//  Return size of 'vscf_group_session_ticket_t'.
 //
 VSCF_PUBLIC size_t
-vscf_group_session_epoch_node_ctx_size(void);
+vscf_group_session_ticket_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCF_PUBLIC void
-vscf_group_session_epoch_node_init(vscf_group_session_epoch_node_t *self);
+vscf_group_session_ticket_init(vscf_group_session_ticket_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCF_PUBLIC void
-vscf_group_session_epoch_node_cleanup(vscf_group_session_epoch_node_t *self);
+vscf_group_session_ticket_cleanup(vscf_group_session_ticket_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCF_PUBLIC vscf_group_session_epoch_node_t *
-vscf_group_session_epoch_node_new(void);
+VSCF_PUBLIC vscf_group_session_ticket_t *
+vscf_group_session_ticket_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCF_PUBLIC void
-vscf_group_session_epoch_node_delete(vscf_group_session_epoch_node_t *self);
+vscf_group_session_ticket_delete(vscf_group_session_ticket_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscf_group_session_epoch_node_new ()'.
+//  This is a reverse action of the function 'vscf_group_session_ticket_new ()'.
 //
 VSCF_PUBLIC void
-vscf_group_session_epoch_node_destroy(vscf_group_session_epoch_node_t **self_ref);
+vscf_group_session_ticket_destroy(vscf_group_session_ticket_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCF_PUBLIC vscf_group_session_epoch_node_t *
-vscf_group_session_epoch_node_shallow_copy(vscf_group_session_epoch_node_t *self);
+VSCF_PUBLIC vscf_group_session_ticket_t *
+vscf_group_session_ticket_shallow_copy(vscf_group_session_ticket_t *self);
+
+//
+//  Random used to generate keys
+//
+//  Note, ownership is shared.
+//
+VSCF_PUBLIC void
+vscf_group_session_ticket_use_rng(vscf_group_session_ticket_t *self, vscf_impl_t *rng);
+
+//
+//  Random used to generate keys
+//
+//  Note, ownership is transfered.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_group_session_ticket_take_rng(vscf_group_session_ticket_t *self, vscf_impl_t *rng);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_group_session_ticket_release_rng(vscf_group_session_ticket_t *self);
+
+//
+//  Setups default dependencies:
+//  - RNG: CTR DRBG
+//
+VSCF_PUBLIC vscf_status_t
+vscf_group_session_ticket_setup_defaults(vscf_group_session_ticket_t *self) VSCF_NODISCARD;
+
+//
+//  Set this ticket to start new group session.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_group_session_ticket_setup_ticket_as_new(vscf_group_session_ticket_t *self, vsc_data_t session_id) VSCF_NODISCARD;
+
+//
+//  Returns message that should be sent to all participants using secure channel.
+//
+VSCF_PUBLIC const vscf_group_session_message_t *
+vscf_group_session_ticket_get_ticket_message(const vscf_group_session_ticket_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -145,5 +187,5 @@ vscf_group_session_epoch_node_shallow_copy(vscf_group_session_epoch_node_t *self
 
 
 //  @footer
-#endif // VSCF_GROUP_SESSION_EPOCH_NODE_H_INCLUDED
+#endif // VSCF_GROUP_SESSION_TICKET_H_INCLUDED
 //  @end

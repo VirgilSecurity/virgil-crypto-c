@@ -148,6 +148,7 @@ option(VSCF_BRAINKEY_SERVER "Enable class 'brainkey server'." ON)
 option(VSCF_MESSAGE_PADDING "Enable class 'message padding'." ON)
 option(VSCF_MESSAGE_CIPHER "Enable class 'message cipher'." ON)
 option(VSCF_GROUP_SESSION_MESSAGE "Enable class 'group session message'." ON)
+option(VSCF_GROUP_SESSION_TICKET "Enable class 'group session ticket'." ON)
 option(VSCF_GROUP_SESSION "Enable class 'group session'." ON)
 option(VSCF_GROUP_SESSION_EPOCH "Enable class 'group session epoch'." ON)
 option(VSCF_GROUP_SESSION_EPOCH_NODE "Enable class 'group session epoch node'." ON)
@@ -255,6 +256,7 @@ mark_as_advanced(
         VSCF_MESSAGE_PADDING
         VSCF_MESSAGE_CIPHER
         VSCF_GROUP_SESSION_MESSAGE
+        VSCF_GROUP_SESSION_TICKET
         VSCF_GROUP_SESSION
         VSCF_GROUP_SESSION_EPOCH
         VSCF_GROUP_SESSION_EPOCH_NODE
@@ -2830,6 +2832,24 @@ if(VSCF_MESSAGE_CIPHER AND NOT VSCF_HKDF)
     message("--")
     message("Feature VSCF_MESSAGE_CIPHER depends on the feature:")
     message("     VSCF_HKDF - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_GROUP_SESSION_MESSAGE AND NOT VSC_BUFFER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_GROUP_SESSION_MESSAGE depends on the feature:")
+    message("     VSC_BUFFER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_GROUP_SESSION_TICKET AND NOT VSCF_CTR_DRBG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_GROUP_SESSION_TICKET depends on the feature:")
+    message("     VSCF_CTR_DRBG - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

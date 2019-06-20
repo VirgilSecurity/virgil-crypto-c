@@ -1,7 +1,7 @@
 MessageGroupInfo.session_id max_size:32 fixed_length:true
 MessageGroupInfo.key max_size:32 fixed_length:true
 
-RegularGroupMessage.header max_size:104 fixed_length:false
+RegularGroupMessage.header max_size:74 fixed_length:false
 RegularGroupMessage.signature max_size:64 fixed_length:true
 
 RegularGroupMessageHeader.session_id max_size:32 fixed_length:true

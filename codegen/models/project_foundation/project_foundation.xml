@@ -133,6 +133,7 @@
     <class name="message padding"/>
     <class name="message cipher"/>
     <class name="group session message"/>
+    <class name="group session ticket"/>
     <class name="group session"/>
     <class name="group session epoch"/>
     <class name="group session epoch node"/>

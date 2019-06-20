@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Group ticket used to start group session or change participants.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,16 +50,17 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_group_session.h"
+#include "vscf_group_session_ticket.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
+#include "vscf_group_session_ticket_internal.h"
 #include "vscf_random.h"
-#include "vscf_group_session_defs.h"
-#include "vscf_ctr_drbg.h"
+#include "vscf_group_session_ticket_defs.h"
 #include "vscf_group_session_message_defs.h"
 #include "vscf_group_session_message_internal.h"
-#include "vscf_group_session_ticket_internal.h"
+#include "vscf_ctr_drbg.h"
 
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <GroupMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
@@ -70,11 +77,11 @@
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscf_group_session_init() is called.
+//  Note, this method is called automatically when method vscf_group_session_ticket_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscf_group_session_init_ctx(vscf_group_session_t *self);
+vscf_group_session_ticket_init_ctx(vscf_group_session_ticket_t *self);
 
 //
 //  Release all inner resources.
@@ -82,37 +89,43 @@ vscf_group_session_init_ctx(vscf_group_session_t *self);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscf_group_session_cleanup_ctx(vscf_group_session_t *self);
+vscf_group_session_ticket_cleanup_ctx(vscf_group_session_ticket_t *self);
+
+static void
+vscf_group_session_ticket_set_session_id(vscf_group_session_ticket_t *self, vsc_data_t session_id);
+
+static vscf_status_t
+vscf_group_session_ticket_generate_key(vscf_group_session_ticket_t *self) VSCF_NODISCARD;
 
 //
-//  Return size of 'vscf_group_session_t'.
+//  Return size of 'vscf_group_session_ticket_t'.
 //
 VSCF_PUBLIC size_t
-vscf_group_session_ctx_size(void) {
+vscf_group_session_ticket_ctx_size(void) {
 
-    return sizeof(vscf_group_session_t);
+    return sizeof(vscf_group_session_ticket_t);
 }
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCF_PUBLIC void
-vscf_group_session_init(vscf_group_session_t *self) {
+vscf_group_session_ticket_init(vscf_group_session_ticket_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_group_session_t));
+    vscf_zeroize(self, sizeof(vscf_group_session_ticket_t));
 
     self->refcnt = 1;
 
-    vscf_group_session_init_ctx(self);
+    vscf_group_session_ticket_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCF_PUBLIC void
-vscf_group_session_cleanup(vscf_group_session_t *self) {
+vscf_group_session_ticket_cleanup(vscf_group_session_ticket_t *self) {
 
     if (self == NULL) {
         return;
@@ -123,24 +136,24 @@ vscf_group_session_cleanup(vscf_group_session_t *self) {
     }
 
     if (--self->refcnt == 0) {
-        vscf_group_session_cleanup_ctx(self);
+        vscf_group_session_ticket_cleanup_ctx(self);
 
-        vscf_group_session_release_rng(self);
+        vscf_group_session_ticket_release_rng(self);
 
-        vscf_zeroize(self, sizeof(vscf_group_session_t));
+        vscf_zeroize(self, sizeof(vscf_group_session_ticket_t));
     }
 }
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCF_PUBLIC vscf_group_session_t *
-vscf_group_session_new(void) {
+VSCF_PUBLIC vscf_group_session_ticket_t *
+vscf_group_session_ticket_new(void) {
 
-    vscf_group_session_t *self = (vscf_group_session_t *) vscf_alloc(sizeof (vscf_group_session_t));
+    vscf_group_session_ticket_t *self = (vscf_group_session_ticket_t *) vscf_alloc(sizeof (vscf_group_session_ticket_t));
     VSCF_ASSERT_ALLOC(self);
 
-    vscf_group_session_init(self);
+    vscf_group_session_ticket_init(self);
 
     self->self_dealloc_cb = vscf_dealloc;
 
@@ -152,7 +165,7 @@ vscf_group_session_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCF_PUBLIC void
-vscf_group_session_delete(vscf_group_session_t *self) {
+vscf_group_session_ticket_delete(vscf_group_session_ticket_t *self) {
 
     if (self == NULL) {
         return;
@@ -160,7 +173,7 @@ vscf_group_session_delete(vscf_group_session_t *self) {
 
     vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscf_group_session_cleanup(self);
+    vscf_group_session_ticket_cleanup(self);
 
     if (self->refcnt == 0 && self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
@@ -169,24 +182,24 @@ vscf_group_session_delete(vscf_group_session_t *self) {
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscf_group_session_new ()'.
+//  This is a reverse action of the function 'vscf_group_session_ticket_new ()'.
 //
 VSCF_PUBLIC void
-vscf_group_session_destroy(vscf_group_session_t **self_ref) {
+vscf_group_session_ticket_destroy(vscf_group_session_ticket_t **self_ref) {
 
     VSCF_ASSERT_PTR(self_ref);
 
-    vscf_group_session_t *self = *self_ref;
+    vscf_group_session_ticket_t *self = *self_ref;
     *self_ref = NULL;
 
-    vscf_group_session_delete(self);
+    vscf_group_session_ticket_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCF_PUBLIC vscf_group_session_t *
-vscf_group_session_shallow_copy(vscf_group_session_t *self) {
+VSCF_PUBLIC vscf_group_session_ticket_t *
+vscf_group_session_ticket_shallow_copy(vscf_group_session_ticket_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -196,12 +209,12 @@ vscf_group_session_shallow_copy(vscf_group_session_t *self) {
 }
 
 //
-//  Random
+//  Random used to generate keys
 //
 //  Note, ownership is shared.
 //
 VSCF_PUBLIC void
-vscf_group_session_use_rng(vscf_group_session_t *self, vscf_impl_t *rng) {
+vscf_group_session_ticket_use_rng(vscf_group_session_ticket_t *self, vscf_impl_t *rng) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(rng);
@@ -213,13 +226,13 @@ vscf_group_session_use_rng(vscf_group_session_t *self, vscf_impl_t *rng) {
 }
 
 //
-//  Random
+//  Random used to generate keys
 //
 //  Note, ownership is transfered.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_group_session_take_rng(vscf_group_session_t *self, vscf_impl_t *rng) {
+vscf_group_session_ticket_take_rng(vscf_group_session_ticket_t *self, vscf_impl_t *rng) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(rng);
@@ -234,7 +247,7 @@ vscf_group_session_take_rng(vscf_group_session_t *self, vscf_impl_t *rng) {
 //  Release dependency to the interface 'random'.
 //
 VSCF_PUBLIC void
-vscf_group_session_release_rng(vscf_group_session_t *self) {
+vscf_group_session_ticket_release_rng(vscf_group_session_ticket_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -251,13 +264,15 @@ vscf_group_session_release_rng(vscf_group_session_t *self) {
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscf_group_session_init() is called.
+//  Note, this method is called automatically when method vscf_group_session_ticket_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscf_group_session_init_ctx(vscf_group_session_t *self) {
+vscf_group_session_ticket_init_ctx(vscf_group_session_ticket_t *self) {
 
     VSCF_ASSERT_PTR(self);
+
+    self->msg = vscf_group_session_message_new();
 }
 
 //
@@ -266,24 +281,11 @@ vscf_group_session_init_ctx(vscf_group_session_t *self) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscf_group_session_cleanup_ctx(vscf_group_session_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-}
-
-//
-//  Returns current epoch.
-//
-VSCF_PUBLIC uint32_t
-vscf_group_session_get_current_epoch(const vscf_group_session_t *self) {
+vscf_group_session_ticket_cleanup_ctx(vscf_group_session_ticket_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    if (self->last_epoch == NULL) {
-        return 0;
-    }
-
-    return self->last_epoch->value->epoch_number;
+    vscf_group_session_message_destroy(&self->msg);
 }
 
 //
@@ -291,7 +293,7 @@ vscf_group_session_get_current_epoch(const vscf_group_session_t *self) {
 //  - RNG: CTR DRBG
 //
 VSCF_PUBLIC vscf_status_t
-vscf_group_session_setup_defaults(vscf_group_session_t *self) {
+vscf_group_session_ticket_setup_defaults(vscf_group_session_ticket_t *self) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(self->rng == NULL);
@@ -304,132 +306,82 @@ vscf_group_session_setup_defaults(vscf_group_session_t *self) {
         return vscf_status_ERROR_RANDOM_FAILED;
     }
 
-    vscf_group_session_take_rng(self, vscf_ctr_drbg_impl(rng));
+    vscf_group_session_ticket_take_rng(self, vscf_ctr_drbg_impl(rng));
 
     return vscf_status_SUCCESS;
-}
-
-//
-//  Returns session id.
-//
-VSCF_PUBLIC vsc_data_t
-vscf_group_session_get_session_id(const vscf_group_session_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    //  TODO: Check if is_initialized
-
-    return vsc_data(self->session_id, sizeof(self->session_id));
 }
 
 VSCF_PUBLIC vscf_status_t
-vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_session_message_t *message) {
+vscf_group_session_ticket_setup_ticket_internal(
+        vscf_group_session_ticket_t *self, uint32_t epoch, vsc_data_t session_id) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(message);
-    VSCF_ASSERT(message->message_pb.has_group_info);
+    VSCF_ASSERT_PTR(self->rng);
 
-    //  TODO: Add checks
-    //  TODO: Add max number of epoches limit
-    //  TODO: Set session_id if not initialized
+    vscf_group_session_message_set_type(self->msg, vscf_group_msg_type_GROUP_INFO);
 
-    vscf_group_session_epoch_t *value = vscf_group_session_epoch_new();
-    value->epoch_number = message->message_pb.group_info.epoch;
-    memcpy(value->key, message->message_pb.group_info.key, sizeof(value->key));
+    vscf_group_session_ticket_set_session_id(self, session_id);
+    self->msg->message_pb.group_info.epoch = epoch;
 
-    vscf_group_session_epoch_node_t *new_node = vscf_group_session_epoch_node_new();
-
-    new_node->value = value;
-    new_node->prev = self->last_epoch;
-
-    self->last_epoch = new_node;
-
-    return vscf_status_SUCCESS;
+    return vscf_group_session_ticket_generate_key(self);
 }
 
 //
-//  Encrypts data
-//
-VSCF_PUBLIC vscf_group_session_message_t *
-vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vsc_data_t private_key,
-        vsc_data_t sender_id, vscf_error_t *error) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->last_epoch);
-    VSCF_ASSERT(vsc_data_is_valid(sender_id));
-    VSCF_ASSERT(vsc_data_is_valid(private_key));
-    VSCF_ASSERT(vsc_data_is_valid(plain_text));
-
-    vscf_group_session_message_t *msg = vscf_group_session_message_new();
-
-    vscf_group_session_message_set_type(msg, vscf_group_msg_type_REGULAR);
-
-    memcpy(msg->header_pb->session_id, self->session_id, sizeof(msg->header_pb->session_id));
-    VSCF_ASSERT(sender_id.len == sizeof(msg->header_pb->sender_id));
-    memcpy(msg->header_pb->sender_id, sender_id.bytes, sizeof(msg->header_pb->sender_id));
-    msg->header_pb->epoch = self->last_epoch->value->epoch_number;
-
-    pb_ostream_t header_stream = pb_ostream_from_buffer(
-            msg->message_pb.regular_message.header.bytes, sizeof(msg->message_pb.regular_message.header));
-
-    VSCF_ASSERT(pb_encode(&header_stream, RegularGroupMessageHeader_fields, msg->header_pb));
-
-    msg->message_pb.regular_message.header.size = header_stream.bytes_written;
-
-    VSCF_UNUSED(error);
-
-    return msg;
-}
-
-//
-//  Calculates size of buffer sufficient to store decrypted message
-//
-VSCF_PUBLIC size_t
-vscf_group_session_decrypt_len(vscf_group_session_t *self, const vscf_group_session_message_t *message) {
-
-    //  TODO: Check if session_id match
-    //  TODO: This is STUB. Implement me.
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(message);
-
-    return 0;
-}
-
-//
-//  Decrypts message
+//  Set this ticket to start new group session.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_message_t *message,
-        vsc_data_t public_key, vsc_data_t sender_id, vsc_buffer_t *plain_text) {
+vscf_group_session_ticket_setup_ticket_as_new(vscf_group_session_ticket_t *self, vsc_data_t session_id) {
 
-    //  TODO: This is STUB. Implement me.
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(vsc_data_is_valid(public_key));
-    VSCF_ASSERT(vsc_data_is_valid(sender_id));
-    VSCF_ASSERT_PTR(message);
-    VSCF_ASSERT_PTR(plain_text);
+    VSCF_ASSERT_PTR(self->rng);
 
-    return vscf_status_SUCCESS;
+    vscf_group_session_message_set_type(self->msg, vscf_group_msg_type_GROUP_INFO);
+
+    vscf_group_session_ticket_set_session_id(self, session_id);
+
+    vscf_status_t status = vscf_group_session_ticket_generate_key(self);
+
+    return status;
 }
 
-//
-//  Creates ticket with new key for adding or removing participants.
-//
-VSCF_PUBLIC vscf_group_session_ticket_t *
-vscf_group_session_create_group_ticket(const vscf_group_session_t *self, vscf_error_t *error) {
+static void
+vscf_group_session_ticket_set_session_id(vscf_group_session_ticket_t *self, vsc_data_t session_id) {
 
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->last_epoch);
+    VSCF_ASSERT(self);
+    VSCF_ASSERT(session_id.len == sizeof(vscf_group_session_id_t));
 
-    vscf_group_session_ticket_t *ticket = vscf_group_session_ticket_new();
-    vscf_group_session_ticket_use_rng(ticket, self->rng);
+    memcpy(self->msg->message_pb.group_info.session_id, session_id.bytes, session_id.len);
+}
 
-    vscf_status_t status = vscf_group_session_ticket_setup_ticket_internal(
-            ticket, self->last_epoch->value->epoch_number + 1, vsc_data(self->session_id, sizeof(self->session_id)));
+static vscf_status_t
+vscf_group_session_ticket_generate_key(vscf_group_session_ticket_t *self) {
 
-    if (status != vscf_status_SUCCESS) {
-        VSCF_ERROR_SAFE_UPDATE(error, status);
-        return NULL;
+    VSCF_ASSERT(self);
+    VSCF_ASSERT(self->rng);
+
+    vsc_buffer_t root_key;
+    vsc_buffer_init(&root_key);
+    vsc_buffer_use(&root_key, self->msg->message_pb.group_info.key, sizeof(vscf_group_session_symmetric_key_t));
+
+    vscf_status_t f_status = vscf_random(self->rng, sizeof(vscf_group_session_symmetric_key_t), &root_key);
+
+    vsc_buffer_delete(&root_key);
+
+    if (f_status != vscf_status_SUCCESS) {
+        return vscf_status_ERROR_RANDOM_FAILED;
     }
 
-    return ticket;
+    return vscf_status_SUCCESS;
+}
+
+//
+//  Returns message that should be sent to all participants using secure channel.
+//
+VSCF_PUBLIC const vscf_group_session_message_t *
+vscf_group_session_ticket_get_ticket_message(const vscf_group_session_ticket_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->msg);
+
+    return self->msg;
 }
