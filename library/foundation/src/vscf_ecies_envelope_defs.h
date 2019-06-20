@@ -54,6 +54,7 @@
 #define VSCF_ECIES_ENVELOPE_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_atomic.h"
 #include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -90,7 +91,7 @@ struct vscf_ecies_envelope_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
 
     vscf_impl_t *ephemeral_public_key;
 

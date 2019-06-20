@@ -54,6 +54,7 @@
 #define VSCF_PASSWORD_RECIPIENT_INFO_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_atomic.h"
 #include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -90,7 +91,7 @@ struct vscf_password_recipient_info_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
 
     vscf_impl_t *key_encryption_algorithm;
 

@@ -108,7 +108,7 @@ vsce_phe_hash_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCE_PUBLIC void
 vsce_phe_hash_delete(vsce_phe_hash_t *self);

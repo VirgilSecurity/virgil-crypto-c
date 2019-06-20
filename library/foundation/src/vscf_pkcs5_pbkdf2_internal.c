@@ -198,15 +198,7 @@ vscf_pkcs5_pbkdf2_init(vscf_pkcs5_pbkdf2_t *self) {
 VSCF_PUBLIC void
 vscf_pkcs5_pbkdf2_cleanup(vscf_pkcs5_pbkdf2_t *self) {
 
-    if (self == NULL || self->info == NULL) {
-        return;
-    }
-
-    if (self->refcnt == 0) {
-        return;
-    }
-
-    if (--self->refcnt > 0) {
+    if (self == NULL) {
         return;
     }
 
@@ -239,11 +231,32 @@ vscf_pkcs5_pbkdf2_new(void) {
 VSCF_PUBLIC void
 vscf_pkcs5_pbkdf2_delete(vscf_pkcs5_pbkdf2_t *self) {
 
+    if (self == NULL) {
+        return;
+    }
+
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscf_pkcs5_pbkdf2_cleanup(self);
 
-    if (self && (self->refcnt == 0)) {
-        vscf_dealloc(self);
-    }
+    vscf_dealloc(self);
 }
 
 //
@@ -316,7 +329,7 @@ vscf_pkcs5_pbkdf2_take_hmac(vscf_pkcs5_pbkdf2_t *self, vscf_impl_t *hmac) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hmac);
-    VSCF_ASSERT_PTR(self->hmac == NULL);
+    VSCF_ASSERT(self->hmac == NULL);
 
     VSCF_ASSERT(vscf_mac_is_implemented(hmac));
 

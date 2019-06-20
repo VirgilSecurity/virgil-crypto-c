@@ -46,6 +46,7 @@
 include_guard()
 
 option(VSCR_LIBRARY "Enable build of the 'ratchet' library" ON)
+option(VSCR_MULTI_THREADING "Enable multi-threading safety for ratchet library." ON)
 option(VSCR_RATCHET_COMMON "Enable class 'ratchet common'." ON)
 option(VSCR_RATCHET_COMMON_HIDDEN "Enable class 'ratchet common hidden'." ON)
 option(VSCR_RATCHET_KEY_UTILS "Enable class 'ratchet key utils'." ON)
@@ -75,6 +76,7 @@ option(VSCR_RATCHET_GROUP_PARTICIPANTS_IDS "Enable class 'ratchet group particip
 option(VSCR_RATCHET_GROUP_SESSION "Enable class 'ratchet group session'." ON)
 mark_as_advanced(
         VSCR_LIBRARY
+        VSCR_MULTI_THREADING
         VSCR_RATCHET_COMMON
         VSCR_RATCHET_COMMON_HIDDEN
         VSCR_RATCHET_KEY_UTILS

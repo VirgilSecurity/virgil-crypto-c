@@ -165,18 +165,12 @@ vscf_recipient_cipher_cleanup(vscf_recipient_cipher_t *self) {
         return;
     }
 
-    if (self->refcnt == 0) {
-        return;
-    }
+    vscf_recipient_cipher_cleanup_ctx(self);
 
-    if (--self->refcnt == 0) {
-        vscf_recipient_cipher_cleanup_ctx(self);
+    vscf_recipient_cipher_release_random(self);
+    vscf_recipient_cipher_release_encryption_cipher(self);
 
-        vscf_recipient_cipher_release_random(self);
-        vscf_recipient_cipher_release_encryption_cipher(self);
-
-        vscf_zeroize(self, sizeof(vscf_recipient_cipher_t));
-    }
+    vscf_zeroize(self, sizeof(vscf_recipient_cipher_t));
 }
 
 //
@@ -197,7 +191,7 @@ vscf_recipient_cipher_new(void) {
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
 vscf_recipient_cipher_delete(vscf_recipient_cipher_t *self) {
@@ -206,11 +200,30 @@ vscf_recipient_cipher_delete(vscf_recipient_cipher_t *self) {
         return;
     }
 
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
     vscf_recipient_cipher_cleanup(self);
 
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+    if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
     }
 }
@@ -238,7 +251,17 @@ vscf_recipient_cipher_shallow_copy(vscf_recipient_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
     ++self->refcnt;
+    #endif
 
     return self;
 }
@@ -267,7 +290,7 @@ vscf_recipient_cipher_take_random(vscf_recipient_cipher_t *self, vscf_impl_t *ra
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(self->random == NULL);
+    VSCF_ASSERT(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
@@ -309,7 +332,7 @@ vscf_recipient_cipher_take_encryption_cipher(vscf_recipient_cipher_t *self, vscf
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(encryption_cipher);
-    VSCF_ASSERT_PTR(self->encryption_cipher == NULL);
+    VSCF_ASSERT(self->encryption_cipher == NULL);
 
     VSCF_ASSERT(vscf_cipher_is_implemented(encryption_cipher));
 

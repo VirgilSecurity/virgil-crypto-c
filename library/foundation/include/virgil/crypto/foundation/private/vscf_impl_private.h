@@ -55,6 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
+#include "vscf_atomic.h"
 #include "vscf_api.h"
 
 // clang-format on
@@ -124,7 +125,7 @@ struct vscf_impl_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
 };
 
 

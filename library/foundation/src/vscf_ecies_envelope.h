@@ -164,7 +164,7 @@ vscf_ecies_envelope_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
 vscf_ecies_envelope_delete(vscf_ecies_envelope_t *self);

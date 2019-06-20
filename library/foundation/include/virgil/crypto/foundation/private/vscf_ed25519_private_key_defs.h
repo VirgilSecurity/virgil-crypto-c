@@ -59,6 +59,7 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_ed25519_private_key.h"
+#include "vscf_atomic.h"
 #include "vscf_impl.h"
 #include "vscf_ecies.h"
 
@@ -90,7 +91,7 @@ struct vscf_ed25519_private_key_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
     //
     //  Dependency to the interface 'random'.
     //

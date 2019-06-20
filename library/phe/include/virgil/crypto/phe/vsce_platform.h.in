@@ -68,6 +68,44 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+#cmakedefine01 VSCE_HAVE_ASSERT_H
+#if VSCE_HAVE_ASSERT_H
+#   include <assert.h>
+#endif
+
+#cmakedefine01 VSCE_HAVE_STDATOMIC_H
+#if VSCE_HAVE_STDATOMIC_H
+#   include <stdatomic.h>
+#endif
+
+#ifndef VSCE_MULTI_THREADING
+#cmakedefine01 VSCE_MULTI_THREADING
+#endif
+
+#ifndef VSCE_ERROR
+#cmakedefine01 VSCE_ERROR
+#endif
+
+#ifndef VSCE_PHE_COMMON
+#cmakedefine01 VSCE_PHE_COMMON
+#endif
+
+#ifndef VSCE_PHE_HASH
+#cmakedefine01 VSCE_PHE_HASH
+#endif
+
+#ifndef VSCE_PHE_SERVER
+#cmakedefine01 VSCE_PHE_SERVER
+#endif
+
+#ifndef VSCE_PHE_CLIENT
+#cmakedefine01 VSCE_PHE_CLIENT
+#endif
+
+#ifndef VSCE_PHE_CIPHER
+#cmakedefine01 VSCE_PHE_CIPHER
+#endif
+
 //
 //  Defines namespace include prefix for project 'common'.
 //

@@ -54,6 +54,7 @@
 #define VSCR_RATCHET_PADDING_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_atomic.h"
 #include "vscr_ratchet_common_hidden.h"
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -90,7 +91,7 @@ struct vscr_ratchet_padding_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCR_ATOMIC size_t refcnt;
     //
     //  Dependency to the interface 'random'.
     //

@@ -53,6 +53,7 @@ target_compile_definitions(pythia
         PUBLIC
             $<BUILD_INTERFACE:VSCP_INTERNAL_BUILD>
             "VSCP_LIBRARY=$<BOOL:${VSCP_LIBRARY}>"
+            "VSCP_MULTI_THREADING=$<BOOL:${VSCP_MULTI_THREADING}>"
             "VSCP_PYTHIA=$<BOOL:${VSCP_PYTHIA}>"
             "VSCP_ERROR=$<BOOL:${VSCP_ERROR}>"
         PRIVATE

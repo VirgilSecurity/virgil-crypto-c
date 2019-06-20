@@ -142,7 +142,7 @@ vscf_raw_key_new_with_buffer(vscf_alg_id_t alg_id, vsc_buffer_t *buffer);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
 vscf_raw_key_delete(vscf_raw_key_t *self);

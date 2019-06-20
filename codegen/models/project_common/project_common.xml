@@ -50,6 +50,11 @@
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
+    <module name="atomic" from="shared"/>
+
+    <feature name="multi threading" default="on">
+        Enable multi-threading safety for foundation library.
+    </feature>
 
     <class name="data"/>
     <class name="buffer"/>

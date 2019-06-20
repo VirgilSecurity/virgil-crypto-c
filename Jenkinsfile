@@ -138,6 +138,7 @@ def build_LangC_Windows(slave) {
                       -DVIRGIL_LIB_PYTHIA=OFF ^
                       -DCPACK_OUTPUT_FILE_PREFIX=c ^
                       -DENABLE_CLANGFORMAT=OFF ^
+                      -DVIRGIL_C_MT_TESTING=ON ^
                       -Bbuild -H.
                 cmake --build build
                 cd build

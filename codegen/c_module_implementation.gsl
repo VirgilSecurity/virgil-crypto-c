@@ -394,6 +394,7 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
             . = "Reference counter."
             .name = my.names.property_ref_counter
             .type = "size"
+            .is_atomic = "1"
         endnew
 
         c_dependency_add_properties (my.impl, struct, my.meta)
@@ -412,15 +413,20 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
     endnew
 
     if my.definition <> "external"
+        new require to my.destination
+            .module = my.names.module_atomic
+            .scope = my.definition
+        endnew
+
         for my.impl.context
             for context.require
-                my.copied_require = item_copy_to(require, module)
+                my.copied_require = item_copy_to(require, my.destination)
                 my.copied_require.scope = my.definition
             endfor
         endfor
 
         for my.impl.require where 0.scope="context"
-            my.copied_require = item_copy_to(require, module)
+            my.copied_require = item_copy_to(require, my.destination)
             my.copied_require.scope = my.definition
         endfor
     endif
@@ -575,15 +581,7 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
             my.type_impl = my.refs.c_implementation_struct_impl
 
             my.impl_check_precondition = "\
-                if ($(my.arg_impl) == NULL || $(my.arg_impl)->$(my.names.c_property_info:) == NULL) {
-                    return;
-                }
-
-                if ($(my.arg_impl)->$(my.names.c_property_ref_counter:) == 0) {
-                    return;
-                }
-
-                if (--$(my.arg_impl)->$(my.names.c_property_ref_counter:) > 0) {
+                if ($(my.arg_impl) == NULL) {
                     return;
                 }
             "
@@ -799,13 +797,35 @@ function _Z19_add_method_delete (impl, declaration, definition, destination, met
 
         new code
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
+            my.counter = "$(my.arg_impl)->$(my.names.c_property_ref_counter:)"
 
-            . = "\
-            $(my.refs.c_implementation_method_cleanup)($(my.arg_impl));
+            . = "
+                if ($(my.arg_impl) == NULL) {
+                    return;
+                }
 
-            if ($(my.arg_impl) && ($(my.arg_impl)->$(my.names.c_property_ref_counter:) == 0)) {
+                size_t old_counter = $(my.counter:);
+                .(c_class_assert_macros_assert)(old_counter != 0);
+                size_t new_counter = old_counter - 1;
+
+                #if defined(.(c_class_atomic_macros_compare_exchange_weak))
+                //  CAS loop
+                while (!.(c_class_atomic_macros_compare_exchange_weak)(&$(my.counter:), &old_counter, new_counter)) {
+                    old_counter = $(my.counter:);
+                    .(c_class_assert_macros_assert)(old_counter != 0);
+                    new_counter = old_counter - 1;
+                }
+                #else
+                $(my.counter:) = new_counter;
+                #endif
+
+                if (new_counter > 0) {
+                    return;
+                }
+
+                $(my.refs.c_implementation_method_cleanup)($(my.arg_impl));
+
                 .(c_global_method_dealloc)($(my.arg_impl));
-            }
             "
         endnew
     endnew

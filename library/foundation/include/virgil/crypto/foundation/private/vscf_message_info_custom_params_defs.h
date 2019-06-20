@@ -54,6 +54,7 @@
 #define VSCF_MESSAGE_INFO_CUSTOM_PARAMS_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_atomic.h"
 #include "vscf_list_key_value_node.h"
 
 // clang-format on
@@ -82,7 +83,7 @@ struct vscf_message_info_custom_params_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
 
     vscf_list_key_value_node_t *key_value_node;
 };
