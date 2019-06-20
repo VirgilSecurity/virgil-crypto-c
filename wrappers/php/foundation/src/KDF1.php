@@ -68,7 +68,7 @@ class KDF1
      */
     public function useHash(Hash $hash): void
     {
-        vscf_kdf1_take_hash($this->c_ctx, $hash->getCCtx());
+        vscf_kdf1_use_hash_php($this->c_ctx, $hash->getCCtx());
     }
 
     /**

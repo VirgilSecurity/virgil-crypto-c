@@ -442,7 +442,7 @@ PHP_FUNCTION(vscf_kdf1_derive_php) {
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
         Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
         Z_PARAM_STRING_EX(in_data, in_data_len, 1 /*check_null*/, 0 /*deref and separate*/)
-        Z_PARAM_LONG_EX(key_len, 0, 1, 0)
+        Z_PARAM_LONG(key_len)
     ZEND_PARSE_PARAMETERS_END();
 
     //
