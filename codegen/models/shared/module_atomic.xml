@@ -4,6 +4,21 @@
     <require module="library"/>
 
     <method name="compare exchange weak" declaration="external" definition="external"/>
+    <code definition="public">
+        #if defined(_MSC_VER) &amp;&amp; !defined(__INTEL_COMPILER)
+        #   pragma intrinsic(_InterlockedCompareExchange)
+            inline bool .(c_class_atomic_method_compare_exchange_weak)(volatile long *obj, long* expected, long desired) {
+                const long expected_local = *expected;
+                const long old = _InterlockedCompareExchange(obj, desired, expected_local);
+                if (old == expected_local) {
+                    return true;
+                } else {
+                    *expected = old;
+                    return false;
+                }
+            }
+        #endif
+    </code>
 
     <macroses>
         <macros name="atomic"/>
@@ -16,18 +31,6 @@
             #   elif defined(__GNUC__) || defined(__clang__)
             #       define .(c_class_atomic_macros_compare_exchange_weak)(obj, expected, desired) __atomic_compare_exchange_n(obj, expected, desired, 1, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST)
             #   elif defined(_MSC_VER) &amp;&amp; !defined(__INTEL_COMPILER)
-            #       pragma intrinsic(_InterlockedCompareExchange)
-
-                    inline bool .(c_class_atomic_method_compare_exchange_weak)(volatile long *obj, long* expected, long desired) {
-                        const long expected_local = *expected;
-                        const long old = _InterlockedCompareExchange(obj, desired, expected_local);
-                        if (old == expected_local) {
-                            return true;
-                        } else {
-                            *expected = old;
-                            return false;
-                        }
-                    }
             #       define .(c_class_atomic_macros_compare_exchange_weak)(obj, expected, desired) .(c_class_atomic_method_compare_exchange_weak)(obj, expected, desired)
             #   else
             #       error "Atomic operations are not suppored for this platform, but CMake option .(c_global_macros_multi_threading) is ON."

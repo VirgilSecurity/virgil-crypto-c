@@ -219,6 +219,10 @@ function c_module_create (source, destination, project)
                 c_component_create_macros (macros, c_module)
             endfor
 
+            for module.code
+                copy code to c_module as c_code
+            endfor
+
             for module.macroses
                 c_component_create_macroses (macroses, c_module)
             endfor

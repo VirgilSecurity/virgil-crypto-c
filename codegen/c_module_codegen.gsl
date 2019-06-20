@@ -64,6 +64,11 @@ function c_module_generate_header (c_module)
         c_insert_alias (c_alias)
     endfor
 
+    for my.c_module.c_code where definition = "public"
+        newline ()
+        c_insert_code (c_code)
+    endfor
+
     for my.c_module.c_macroses where definition = "public"
         newline ()
         c_insert_macros (c_macroses)
@@ -134,6 +139,11 @@ function c_module_generate_source (c_module)
     for my.c_module.c_alias where declaration = "private"
         newline ()
         c_insert_alias (c_alias)
+    endfor
+
+    for my.c_module.c_code where definition = "private"
+        newline ()
+        c_insert_code (c_code)
     endfor
 
     for my.c_module.c_macroses where definition = "private"
