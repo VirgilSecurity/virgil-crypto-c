@@ -5,7 +5,7 @@
 
     <method name="compare exchange weak" declaration="external" definition="external"/>
     <code definition="public">
-        #if defined(_MSC_VER) &amp;&amp; !defined(__INTEL_COMPILER)
+        #if .(c_global_macros_multi_threading) &amp;&amp; defined(_MSC_VER) &amp;&amp; !defined(__INTEL_COMPILER)
         #   pragma intrinsic(_InterlockedCompareExchange)
             inline bool .(c_class_atomic_method_compare_exchange_weak)(volatile long *obj, long* expected, long desired) {
                 const long expected_local = *expected;

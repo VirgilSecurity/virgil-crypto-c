@@ -70,7 +70,7 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)
+#if VSCP_MULTI_THREADING && defined(_MSC_VER) && !defined(__INTEL_COMPILER)
 #   pragma intrinsic(_InterlockedCompareExchange)
     inline bool vscp_atomic_compare_exchange_weak(volatile long *obj, long* expected, long desired) {
         const long expected_local = *expected;
