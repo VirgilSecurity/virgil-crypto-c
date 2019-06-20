@@ -48,7 +48,7 @@
 #include "vscf_signer.h"
 
 // --------------------------------------------------------------------------
-DWORD
+DWORD WINAPI
 impl_shallow_copy_delete(LPVOID ctx) {
     vscf_impl_t *impl = (vscf_impl_t *)ctx;
 
@@ -85,7 +85,7 @@ test__sha256__shallow_copy_delete_1000000_times_3_threads__no_crash(void) {
 }
 
 // --------------------------------------------------------------------------
-DWORD
+DWORD WINAPI
 signer_shallow_copy_delete(LPVOID ctx) {
     vscf_signer_t *signer = (vscf_signer_t *)ctx;
 
