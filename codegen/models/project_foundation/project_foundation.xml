@@ -115,6 +115,7 @@
     <class name="password recipient info"/>
     <class name="password recipient info list"/>
     <class name="alg factory"/>
+    <class name="ecies"/>
     <class name="ecies envelope"/>
     <class name="recipient cipher"/>
     <class name="key recipient list"/>
@@ -124,6 +125,7 @@
     <class name="signer"/>
     <class name="verifier"/>
     <class name="simple swu"/>
+    <class name="raw key"/>
     <class name="brainkey client"/>
     <class name="brainkey server"/>
 
@@ -133,7 +135,6 @@
     <implementor name="virgil"/>
     <implementor name="virgil key serializer"/>
     <implementor name="ed25519"/>
-    <implementor name="virgil ecies"/>
 
     <implementor name="alg info"/>
     <implementor name="alg info der"/>

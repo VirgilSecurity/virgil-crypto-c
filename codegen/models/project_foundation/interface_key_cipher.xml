@@ -1,6 +1,8 @@
 <interface name="key cipher">
     Provide data encryption and decryption interface with asymmetric keys.
 
+    <inherit interface="key alg"/>
+
     <method name="can encrypt" is_const="1">
         Check if algorithm can encrypt data with a given key.
 
@@ -62,7 +64,7 @@
     </method>
 
 
-    <method name="decrypted len">
+    <method name="decrypted len" is_const="1">
         Calculate required buffer length to hold the decrypted data.
 
         <argument name="private key" interface="private key"/>

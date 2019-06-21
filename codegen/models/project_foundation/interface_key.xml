@@ -7,13 +7,13 @@
         <return enum="alg id"/>
     </method>
 
-    <method name="key len" is_const="1">
+    <method name="len" is_const="1">
         Length of the key in bytes.
 
         <return type="size"/>
     </method>
 
-    <method name="key bitlen" is_const="1">
+    <method name="bitlen" is_const="1">
         Length of the key in bits.
 
         <return type="size"/>

@@ -56,8 +56,6 @@
 #include "vscf_library.h"
 #include "vscf_atomic.h"
 #include "vscf_impl.h"
-#include "vscf_asn1rd.h"
-#include "vscf_alg_info_der_deserializer.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -96,10 +94,6 @@ struct vscf_verifier_t {
     VSCF_ATOMIC size_t refcnt;
 
     vscf_impl_t *hash;
-
-    vscf_asn1rd_t *asn1rd;
-
-    vscf_alg_info_der_deserializer_t *alg_info_der_deserializer;
 
     vsc_buffer_t *raw_signature;
 };

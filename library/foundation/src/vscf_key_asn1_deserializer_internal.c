@@ -234,7 +234,6 @@ vscf_key_asn1_deserializer_destroy(vscf_key_asn1_deserializer_t **self_ref) {
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_key_asn1_deserializer_t *
 vscf_key_asn1_deserializer_shallow_copy(vscf_key_asn1_deserializer_t *self) {
@@ -260,6 +259,16 @@ vscf_key_asn1_deserializer_impl(vscf_key_asn1_deserializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
     return (vscf_impl_t *)(self);
+}
+
+//
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_key_asn1_deserializer_impl_const(const vscf_key_asn1_deserializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    return (const vscf_impl_t *)(self);
 }
 
 //

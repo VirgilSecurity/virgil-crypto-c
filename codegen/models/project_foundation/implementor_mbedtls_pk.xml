@@ -48,8 +48,8 @@
         <require class="simple alg info"/>
         <require enum="asn1 tag"/>
         <require impl="ctr drbg"/>
-        <require impl="rsa public key" require_definition="private"/>
-        <require impl="rsa private key" require_definition="private"/>
+        <require module="rsa public key defs" scope="private"/>
+        <require module="rsa private key defs" scope="private"/>
         <require interface="alg info"/>
         <require interface="alg"/>
         <require module="mbedtls bridge random"/>
@@ -74,7 +74,7 @@
         <interface name="key signer"/>
         <interface name="compute shared key"/>
 
-        <method name="generate key">
+        <method name="generate key" declaration="public" is_const="1">
             Generate new private key.
             Note, this operation might be slow.
 
@@ -134,17 +134,16 @@
         <require class="mbedtls bignum asn1 writer"/>
         <require class="mbedtls md"/>
         <require class="ec alg info"/>
-        <require class="ec alg info"/>
         <require enum="asn1 tag"/>
         <require impl="ctr drbg"/>
         <require interface="alg info"/>
         <require interface="alg"/>
         <require module="mbedtls bridge random"/>
-        <require impl="ecc public key" require_definition="private"/>
-        <require impl="ecc private key" require_definition="private"/>
+        <require module="ecc public key defs" scope="private"/>
+        <require module="ecc private key defs" scope="private"/>
 
         <dependency name="random" interface="random"/>
-        <dependency name="ecies" impl="ecies"/>
+        <dependency name="ecies" class="ecies"/>
 
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.
@@ -163,7 +162,7 @@
         <interface name="key signer"/>
         <interface name="compute shared key"/>
 
-        <method name="generate key" is_const="1">
+        <method name="generate key" declaration="public" is_const="1">
             Generate new private key.
             Supported algorithm ids:
                 - secp256r1.

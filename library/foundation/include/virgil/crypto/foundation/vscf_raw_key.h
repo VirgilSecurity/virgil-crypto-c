@@ -116,7 +116,7 @@ vscf_raw_key_new(void);
 //  Note, data is copied.
 //
 VSCF_PUBLIC void
-vscf_raw_key_init_with_data(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_data_t raw_key_data);
+vscf_raw_key_init_with_data(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_data_t raw_key_data, bool is_public);
 
 //
 //  Allocate class context and perform it's initialization.
@@ -124,21 +124,21 @@ vscf_raw_key_init_with_data(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_data
 //  Note, data is copied.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_raw_key_new_with_data(vscf_alg_id_t alg_id, vsc_data_t raw_key_data);
+vscf_raw_key_new_with_data(vscf_alg_id_t alg_id, vsc_data_t raw_key_data, bool is_public);
 
 //
 //  Perform initialization of pre-allocated context.
 //  Creates raw key defined with algorithm and buffer.
 //
 VSCF_PRIVATE void
-vscf_raw_key_init_with_buffer(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_buffer_t *buffer);
+vscf_raw_key_init_with_buffer(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_buffer_t **buffer_ref, bool is_public);
 
 //
 //  Allocate class context and perform it's initialization.
 //  Creates raw key defined with algorithm and buffer.
 //
 VSCF_PRIVATE vscf_raw_key_t *
-vscf_raw_key_new_with_buffer(vscf_alg_id_t alg_id, vsc_buffer_t *buffer);
+vscf_raw_key_new_with_buffer(vscf_alg_id_t alg_id, vsc_buffer_t **buffer_ref, bool is_public);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -171,6 +171,12 @@ vscf_raw_key_alg_id(const vscf_raw_key_t *self);
 //
 VSCF_PUBLIC vsc_data_t
 vscf_raw_key_data(const vscf_raw_key_t *self);
+
+//
+//  Return true if handle public key.
+//
+VSCF_PUBLIC bool
+vscf_raw_key_is_public(const vscf_raw_key_t *self);
 
 
 // --------------------------------------------------------------------------

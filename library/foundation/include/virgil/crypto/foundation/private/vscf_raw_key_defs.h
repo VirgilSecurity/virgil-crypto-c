@@ -93,9 +93,11 @@ struct vscf_raw_key_t {
     //
     VSCF_ATOMIC size_t refcnt;
 
+    vsc_buffer_t *bytes;
+
     vscf_alg_id_t alg_id;
 
-    vsc_buffer_t *bytes;
+    bool is_public;
 };
 
 

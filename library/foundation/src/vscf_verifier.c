@@ -58,7 +58,9 @@
 #include "vscf_alg_factory.h"
 #include "vscf_alg.h"
 #include "vscf_hash.h"
-#include "vscf_verify_hash.h"
+#include "vscf_key_signer.h"
+#include "vscf_asn1rd.h"
+#include "vscf_alg_info_der_deserializer.h"
 
 // clang-format on
 //  @end
@@ -300,13 +302,9 @@ vscf_verifier_reset(vscf_verifier_t *self, vsc_data_t signature) {
 //  Add given data to the signed data.
 //
 VSCF_PUBLIC void
-vscf_verifier_update(vscf_verifier_t *self, vsc_data_t data) {
+vscf_verifier_append_data(vscf_verifier_t *self, vsc_data_t data) {
 
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->hash);
-    VSCF_ASSERT(vsc_data_is_valid(data));
-
-    vscf_hash_update(self->hash, data);
+    //  TODO: This is STUB. Implement me.
 }
 
 //

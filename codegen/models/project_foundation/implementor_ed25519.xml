@@ -1,6 +1,55 @@
 <implementor name="ed25519 pk" is_default="1">
     Provide implementation based on the library ed25519
 
+
+    <implementation name="raw public key">
+        Handles interchangeable public key representation.
+
+        <property name="raw key" class="raw key"/>
+        <property name="impl tag" enum="impl/tag"/>
+
+        <interface name="key"/>
+        <interface name="public key"/>
+
+        <constructor name="with raw key" visibility="private">
+            Creates fully defined raw public key.
+
+            <argument name="impl tag" enum="impl/tag"/>
+            <argument name="raw key" class="raw key"/>
+        </constructor>
+
+        <method name="data" is_const="1" declaration="public">
+            Return key data.
+
+            <return class="data"/>
+        </method>
+    </implementation>
+
+
+    <implementation name="raw private key">
+        Handles interchangeable private key representation.
+
+        <property name="raw key" class="raw key"/>
+        <property name="impl tag" enum="impl/tag"/>
+
+        <interface name="key"/>
+        <interface name="private key"/>
+
+        <constructor name="with raw key" visibility="private">
+            Creates fully defined raw public key.
+
+            <argument name="impl tag" enum="impl/tag"/>
+            <argument name="raw key" class="raw key"/>
+        </constructor>
+
+        <method name="data" is_const="1" declaration="public">
+            Return key data.
+
+            <return class="data"/>
+        </method>
+    </implementation>
+
+
     <implementation name="ed25519">
         This is implementation of Ed25519 elliptic curve algorithms.
 
@@ -10,11 +59,11 @@
         <require interface="alg info"/>
         <require impl="ctr drbg"/>
         <require module="buffer defs" project="common"/>
-        <require impl="raw public key" require_definition="private"/>
-        <require impl="raw private key" require_definition="private"/>
+        <require module="raw public key defs" scope="private"/>
+        <require module="raw private key defs" scope="private"/>
 
         <dependency name="random" interface="random"/>
-        <dependency name="ecies" impl="ecies"/>
+        <dependency name="ecies" class="ecies"/>
 
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.
@@ -33,7 +82,7 @@
         <interface name="key signer"/>
         <interface name="compute shared key"/>
 
-        <method name="generate key">
+        <method name="generate key" declaration="public" is_const="1">
             Generate new private key.
             Note, this operation might be slow.
 
@@ -53,11 +102,11 @@
         <require interface="alg info"/>
         <require impl="ctr drbg"/>
         <require module="buffer defs" project="common"/>
-        <require impl="raw public key" require_definition="private"/>
-        <require impl="raw private key" require_definition="private"/>
+        <require module="raw public key defs" scope="private"/>
+        <require module="raw private key defs" scope="private"/>
 
         <dependency name="random" interface="random"/>
-        <dependency name="ecies" impl="ecies"/>
+        <dependency name="ecies" class="ecies"/>
 
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.
@@ -75,7 +124,7 @@
         <interface name="key cipher"/>
         <interface name="compute shared key"/>
 
-        <method name="generate key">
+        <method name="generate key" declaration="public" is_const="1">
             Generate new private key.
             Note, this operation might be slow.
 

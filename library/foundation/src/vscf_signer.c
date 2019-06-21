@@ -55,9 +55,9 @@
 #include "vscf_assert.h"
 #include "vscf_hash.h"
 #include "vscf_signer_defs.h"
-#include "vscf_sha512.h"
+#include "vscf_alg_factory.h"
 #include "vscf_alg.h"
-#include "vscf_sign_hash.h"
+#include "vscf_key_signer.h"
 
 // clang-format on
 //  @end
@@ -317,20 +317,16 @@ vscf_signer_reset(vscf_signer_t *self) {
 //  Add given data to the signed data.
 //
 VSCF_PUBLIC void
-vscf_signer_update(vscf_signer_t *self, vsc_data_t data) {
+vscf_signer_append_data(vscf_signer_t *self, vsc_data_t data) {
 
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->hash);
-    VSCF_ASSERT(vsc_data_is_valid(data));
-
-    vscf_hash_update(self->hash, data);
+    //  TODO: This is STUB. Implement me.
 }
 
 //
 //  Return length of the signature.
 //
 VSCF_PUBLIC size_t
-vscf_signer_signature_len(vscf_signer_t *self, const vscf_impl_t *private_key) {
+vscf_signer_signature_len(const vscf_signer_t *self, const vscf_impl_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
@@ -348,7 +344,7 @@ vscf_signer_signature_len(vscf_signer_t *self, const vscf_impl_t *private_key) {
 //  Accomplish signing and return signature.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_signer_sign(vscf_signer_t *self, vscf_impl_t *private_key, vsc_buffer_t *signature) {
+vscf_signer_sign(const vscf_signer_t *self, const vscf_impl_t *private_key, vsc_buffer_t *signature) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->hash);

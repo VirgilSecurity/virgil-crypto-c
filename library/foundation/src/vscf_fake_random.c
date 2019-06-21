@@ -132,9 +132,10 @@ vscf_fake_random_setup_source_data(vscf_fake_random_t *self, vsc_data_t data_sou
 
 //
 //  Generate random bytes.
+//  All RNG implementations must be thread-safe.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_fake_random_random(vscf_fake_random_t *self, size_t data_len, vsc_buffer_t *data) {
+vscf_fake_random_random(const vscf_fake_random_t *self, size_t data_len, vsc_buffer_t *data) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(data);
@@ -163,7 +164,7 @@ vscf_fake_random_random(vscf_fake_random_t *self, size_t data_len, vsc_buffer_t 
 }
 
 //
-//  Retreive new seed data from the entropy sources.
+//  Retrieve new seed data from the entropy sources.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_fake_random_reseed(vscf_fake_random_t *self) {

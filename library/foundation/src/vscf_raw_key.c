@@ -86,13 +86,14 @@ vscf_raw_key_cleanup_ctx(vscf_raw_key_t *self);
 //  Note, data is copied.
 //
 static void
-vscf_raw_key_init_ctx_with_data(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_data_t raw_key_data);
+vscf_raw_key_init_ctx_with_data(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_data_t raw_key_data, bool is_public);
 
 //
 //  Creates raw key defined with algorithm and buffer.
 //
 static void
-vscf_raw_key_init_ctx_with_buffer(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_buffer_t *buffer);
+vscf_raw_key_init_ctx_with_buffer(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_buffer_t **buffer_ref,
+        bool is_public);
 
 //
 //  Return size of 'vscf_raw_key_t'.
@@ -155,7 +156,7 @@ vscf_raw_key_new(void) {
 //  Note, data is copied.
 //
 VSCF_PUBLIC void
-vscf_raw_key_init_with_data(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_data_t raw_key_data) {
+vscf_raw_key_init_with_data(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_data_t raw_key_data, bool is_public) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -163,7 +164,7 @@ vscf_raw_key_init_with_data(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_data
 
     self->refcnt = 1;
 
-    vscf_raw_key_init_ctx_with_data(self, alg_id, raw_key_data);
+    vscf_raw_key_init_ctx_with_data(self, alg_id, raw_key_data, is_public);
 }
 
 //
@@ -172,12 +173,12 @@ vscf_raw_key_init_with_data(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_data
 //  Note, data is copied.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_raw_key_new_with_data(vscf_alg_id_t alg_id, vsc_data_t raw_key_data) {
+vscf_raw_key_new_with_data(vscf_alg_id_t alg_id, vsc_data_t raw_key_data, bool is_public) {
 
     vscf_raw_key_t *self = (vscf_raw_key_t *) vscf_alloc(sizeof (vscf_raw_key_t));
     VSCF_ASSERT_ALLOC(self);
 
-    vscf_raw_key_init_with_data(self, alg_id, raw_key_data);
+    vscf_raw_key_init_with_data(self, alg_id, raw_key_data, is_public);
 
     self->self_dealloc_cb = vscf_dealloc;
 
@@ -189,7 +190,7 @@ vscf_raw_key_new_with_data(vscf_alg_id_t alg_id, vsc_data_t raw_key_data) {
 //  Creates raw key defined with algorithm and buffer.
 //
 VSCF_PRIVATE void
-vscf_raw_key_init_with_buffer(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_buffer_t *buffer) {
+vscf_raw_key_init_with_buffer(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_buffer_t **buffer_ref, bool is_public) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -197,7 +198,7 @@ vscf_raw_key_init_with_buffer(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_bu
 
     self->refcnt = 1;
 
-    vscf_raw_key_init_ctx_with_buffer(self, alg_id, buffer);
+    vscf_raw_key_init_ctx_with_buffer(self, alg_id, buffer_ref, is_public);
 }
 
 //
@@ -205,12 +206,12 @@ vscf_raw_key_init_with_buffer(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_bu
 //  Creates raw key defined with algorithm and buffer.
 //
 VSCF_PRIVATE vscf_raw_key_t *
-vscf_raw_key_new_with_buffer(vscf_alg_id_t alg_id, vsc_buffer_t *buffer) {
+vscf_raw_key_new_with_buffer(vscf_alg_id_t alg_id, vsc_buffer_t **buffer_ref, bool is_public) {
 
     vscf_raw_key_t *self = (vscf_raw_key_t *) vscf_alloc(sizeof (vscf_raw_key_t));
     VSCF_ASSERT_ALLOC(self);
 
-    vscf_raw_key_init_with_buffer(self, alg_id, buffer);
+    vscf_raw_key_init_with_buffer(self, alg_id, buffer_ref, is_public);
 
     self->self_dealloc_cb = vscf_dealloc;
 
@@ -330,7 +331,7 @@ vscf_raw_key_cleanup_ctx(vscf_raw_key_t *self) {
 //  Note, data is copied.
 //
 static void
-vscf_raw_key_init_ctx_with_data(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_data_t raw_key_data) {
+vscf_raw_key_init_ctx_with_data(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_data_t raw_key_data, bool is_public) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
@@ -346,7 +347,8 @@ vscf_raw_key_init_ctx_with_data(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_
 //  Creates raw key defined with algorithm and buffer.
 //
 static void
-vscf_raw_key_init_ctx_with_buffer(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_buffer_t *buffer) {
+vscf_raw_key_init_ctx_with_buffer(
+        vscf_raw_key_t *self, vscf_alg_id_t alg_id, vsc_buffer_t **buffer_ref, bool is_public) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
@@ -354,7 +356,7 @@ vscf_raw_key_init_ctx_with_buffer(vscf_raw_key_t *self, vscf_alg_id_t alg_id, vs
     VSCF_ASSERT(vsc_buffer_is_valid(buffer));
 
     self->alg_id = alg_id;
-    self->bytes = vsc_buffer_shallow_copy(buffer);
+    self->bytes = buffer;
 
     vsc_buffer_make_secure(self->bytes);
 }
@@ -381,4 +383,13 @@ vscf_raw_key_data(const vscf_raw_key_t *self) {
     VSCF_ASSERT(vsc_buffer_is_valid(self->bytes));
 
     return vsc_buffer_data(self->bytes);
+}
+
+//
+//  Return true if handle public key.
+//
+VSCF_PUBLIC bool
+vscf_raw_key_is_public(const vscf_raw_key_t *self) {
+
+    //  TODO: This is STUB. Implement me.
 }

@@ -250,7 +250,6 @@ vscf_sec1_serializer_destroy(vscf_sec1_serializer_t **self_ref) {
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_sec1_serializer_t *
 vscf_sec1_serializer_shallow_copy(vscf_sec1_serializer_t *self) {
@@ -276,6 +275,16 @@ vscf_sec1_serializer_impl(vscf_sec1_serializer_t *self) {
 
     VSCF_ASSERT_PTR(self);
     return (vscf_impl_t *)(self);
+}
+
+//
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_sec1_serializer_impl_const(const vscf_sec1_serializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    return (const vscf_impl_t *)(self);
 }
 
 //

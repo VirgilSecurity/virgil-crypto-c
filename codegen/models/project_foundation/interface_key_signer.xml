@@ -2,6 +2,8 @@
     Provide an interface for signing and verifying data digest
     with asymmetric keys.
 
+    <inherit interface="key alg"/>
+
     <method name="can sign" is_const="1">
         Check if algorithm can sign data digest with a given key.
 

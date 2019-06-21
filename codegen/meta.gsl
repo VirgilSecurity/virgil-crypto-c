@@ -153,7 +153,8 @@ function _X17_add_entity_common (meta)
         _X17_add_smart_name (entity, "method", "take")
         _X17_add_smart_name (entity, "method", "init ctx")
         _X17_add_smart_name (entity, "method", "cleanup ctx")
-        _X17_add_smart_name (entity, "method", "shallow_copy")
+        _X17_add_smart_name (entity, "method", "shallow copy")
+        _X17_add_smart_name (entity, "method", "shallow copy const")
 
         _X17_add_smart_name (entity, "enum", "tag")
         _X17_add_smart_name (entity, "enum constant", "begin")
@@ -254,6 +255,7 @@ function _X17_add_entity_impl (meta)
         _X17_add_smart_name (entity, "property", "impl tag")
 
         _X17_add_smart_name (entity, "method", "impl")
+        _X17_add_smart_name (entity, "method", "impl const")
         _X17_add_smart_name (entity, "method", "impl size")
         _X17_add_smart_name (entity, "method", "is implemented")
 
@@ -266,6 +268,7 @@ function _X17_add_entity_impl (meta)
         _X17_add_smart_link (entity, "class impl enum tag")
         _X17_add_smart_link (entity, "class impl enum tag constant begin")
         _X17_add_smart_link (entity, "class impl enum tag constant end")
+
         return entity
     endnew
 endfunction
@@ -465,6 +468,7 @@ function _X17_add_entity_implementation (meta, implementation)
         _X17_add_link (entity, "implementation method delete", make_id ("class", my.name, "method delete"))
         _X17_add_link (entity, "implementation method destroy", make_id ("class", my.name, "method destroy"))
         _X17_add_link (entity, "implementation method find api", make_id ("class", my.name, "method find api"))
+        _X17_add_link (entity, "implementation method shallow copy", make_id ("class", my.name, "method shallow copy"))
 
         #   Private variables
         _X17_add_smart_name (entity, "implementation variable", "api array")
@@ -546,6 +550,7 @@ function _X17_add_entity_class (meta, class)
         _X17_add_link (entity, "class method cleanup ctx", make_id ("class", my.class.name, "method cleanup ctx"))
         _X17_add_link (entity, "class method new", make_id ("class", my.class.name, "method new"))
         _X17_add_link (entity, "class method delete", make_id ("class", my.class.name, "method delete"))
+        _X17_add_link (entity, "class method shallow copy", make_id ("class", my.class.name, "method shallow copy"))
 
         _X17_add_smart_name (entity, "class property", "self dealloc")
         _X17_add_link (entity, "class property self dealloc", \

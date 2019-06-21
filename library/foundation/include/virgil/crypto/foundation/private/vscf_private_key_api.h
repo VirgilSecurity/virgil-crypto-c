@@ -57,17 +57,6 @@
 #include "vscf_api.h"
 #include "vscf_impl.h"
 #include "vscf_key.h"
-#include "vscf_status.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#   include <VSCCommon/vsc_data.h>
-#endif
 
 // clang-format on
 //  @end
@@ -83,34 +72,6 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Callback. Extract public part of the key.
-//
-typedef vscf_impl_t * (*vscf_private_key_api_extract_public_key_fn)(const vscf_impl_t *impl);
-
-//
-//  Callback. Export private key in the binary format.
-//
-//          Binary format must be defined in the key specification.
-//          For instance, RSA private key must be exported in format defined in
-//          RFC 3447 Appendix A.1.2.
-//
-typedef vscf_status_t (*vscf_private_key_api_export_private_key_fn)(const vscf_impl_t *impl, vsc_buffer_t *out);
-
-//
-//  Callback. Return length in bytes required to hold exported private key.
-//
-typedef size_t (*vscf_private_key_api_exported_private_key_len_fn)(const vscf_impl_t *impl);
-
-//
-//  Callback. Import private key from the binary format.
-//
-//          Binary format must be defined in the key specification.
-//          For instance, RSA private key must be imported from the format defined in
-//          RFC 3447 Appendix A.1.2.
-//
-typedef vscf_status_t (*vscf_private_key_api_import_private_key_fn)(vscf_impl_t *impl, vsc_data_t data);
 
 //
 //  Contains API requirements of the interface 'private key'.
@@ -129,38 +90,6 @@ struct vscf_private_key_api_t {
     //  Link to the inherited interface API 'key'.
     //
     const vscf_key_api_t *key_api;
-    //
-    //  Extract public part of the key.
-    //
-    vscf_private_key_api_extract_public_key_fn extract_public_key_cb;
-    //
-    //  Export private key in the binary format.
-    //
-    //  Binary format must be defined in the key specification.
-    //  For instance, RSA private key must be exported in format defined in
-    //  RFC 3447 Appendix A.1.2.
-    //
-    vscf_private_key_api_export_private_key_fn export_private_key_cb;
-    //
-    //  Return length in bytes required to hold exported private key.
-    //
-    vscf_private_key_api_exported_private_key_len_fn exported_private_key_len_cb;
-    //
-    //  Import private key from the binary format.
-    //
-    //  Binary format must be defined in the key specification.
-    //  For instance, RSA private key must be imported from the format defined in
-    //  RFC 3447 Appendix A.1.2.
-    //
-    vscf_private_key_api_import_private_key_fn import_private_key_cb;
-    //
-    //  Define whether a private key can be exported or not.
-    //
-    bool can_export_private_key;
-    //
-    //  Define whether a private key can be imported or not.
-    //
-    bool can_import_private_key;
 };
 
 

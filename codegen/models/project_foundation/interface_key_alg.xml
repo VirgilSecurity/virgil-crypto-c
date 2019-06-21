@@ -24,6 +24,7 @@
         Extract public key from the private key.
 
         <argument name="private key" interface="private key"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return interface="public key" access="disown"/>
     </method>
@@ -33,7 +34,7 @@
         Generate ephemeral private key of the same type.
         Note, this operation might be slow.
 
-        <argument name="public key" interface="public key" access="readwrite"/>
+        <argument name="key" interface="key"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="private key" access="disown"/>
@@ -50,7 +51,7 @@
         For instance, RSA public key must be imported from the format defined in
         RFC 3447 Appendix A.1.1.
 
-        <argument name="raw key" impl="raw public key"/>
+        <argument name="raw key" class="raw key"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="public key" access="disown"/>
@@ -67,7 +68,7 @@
         <argument name="public key" interface="public key"/>
         <argument name="error" class="error" access="readwrite"/>
 
-        <return impl="raw public key" access="disown"/>
+        <return class="raw key" access="disown"/>
     </method>
 
 
@@ -81,7 +82,7 @@
         For instance, RSA private key must be imported from the format defined in
         RFC 3447 Appendix A.1.2.
 
-        <argument name="raw key" impl="raw private key"/>
+        <argument name="raw key" class="raw key"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="private key" access="disown"/>
@@ -98,6 +99,6 @@
         <argument name="private key" interface="private key"/>
         <argument name="error" class="error" access="readwrite"/>
 
-        <return impl="raw private key" access="disown"/>
+        <return class="raw key" access="disown"/>
     </method>
 </interface>

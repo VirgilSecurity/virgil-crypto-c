@@ -102,10 +102,11 @@ static const vscf_random_api_t random_api = {
     vscf_impl_tag_CTR_DRBG,
     //
     //  Generate random bytes.
+    //  All RNG implementations must be thread-safe.
     //
     (vscf_random_api_random_fn)vscf_ctr_drbg_random,
     //
-    //  Retreive new seed data from the entropy sources.
+    //  Retrieve new seed data from the entropy sources.
     //
     (vscf_random_api_reseed_fn)vscf_ctr_drbg_reseed
 };
@@ -235,7 +236,6 @@ vscf_ctr_drbg_destroy(vscf_ctr_drbg_t **self_ref) {
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_ctr_drbg_t *
 vscf_ctr_drbg_shallow_copy(vscf_ctr_drbg_t *self) {
@@ -261,6 +261,16 @@ vscf_ctr_drbg_impl(vscf_ctr_drbg_t *self) {
 
     VSCF_ASSERT_PTR(self);
     return (vscf_impl_t *)(self);
+}
+
+//
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_ctr_drbg_impl_const(const vscf_ctr_drbg_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    return (const vscf_impl_t *)(self);
 }
 
 //

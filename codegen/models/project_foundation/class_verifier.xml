@@ -5,11 +5,11 @@
     <require class="alg factory"/>
     <require interface="alg"/>
     <require interface="hash"/>
-    <require interface="verify hash"/>
+    <require interface="key signer"/>
+    <require impl="asn1rd"/>
+    <require impl="alg info der deserializer"/>
 
     <property name="hash" interface="hash"/>
-    <property name="asn1rd" impl="asn1rd"/>
-    <property name="alg info der deserializer" impl="alg info der deserializer"/>
     <property name="raw signature" class="buffer"/>
 
     <method name="reset">
@@ -20,7 +20,7 @@
         <return enum="status"/>
     </method>
 
-    <method name="update">
+    <method name="append data">
         Add given data to the signed data.
 
         <argument name="data" class="data"/>

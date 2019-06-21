@@ -14,7 +14,7 @@
     </method>
 
     <method name="reseed">
-        Retreive new seed data from the entropy sources.
+        Retrieve new seed data from the entropy sources.
 
         <return enum="status"/>
     </method>

@@ -47,7 +47,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'ecies' implementation.
+//  Virgil implementation of the ECIES algorithm.
 // --------------------------------------------------------------------------
 
 #ifndef VSCF_ECIES_H_INCLUDED
@@ -83,60 +83,50 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Handle 'ecies' context.
 //
 typedef struct vscf_ecies_t vscf_ecies_t;
 
 //
-//  Return size of 'vscf_ecies_t' type.
+//  Return size of 'vscf_ecies_t'.
 //
 VSCF_PUBLIC size_t
-vscf_ecies_impl_size(void);
+vscf_ecies_ctx_size(void);
 
 //
-//  Cast to the 'vscf_impl_t' type.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_ecies_impl(vscf_ecies_t *self);
-
-//
-//  Perform initialization of preallocated implementation context.
+//  Perform initialization of pre-allocated context.
 //
 VSCF_PUBLIC void
 vscf_ecies_init(vscf_ecies_t *self);
 
 //
-//  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_ecies_init()'.
+//  Release all inner resources including class dependencies.
 //
 VSCF_PUBLIC void
 vscf_ecies_cleanup(vscf_ecies_t *self);
 
 //
-//  Allocate implementation context and perform it's initialization.
-//  Postcondition: check memory allocation result.
+//  Allocate context and perform it's initialization.
 //
 VSCF_PUBLIC vscf_ecies_t *
 vscf_ecies_new(void);
 
 //
-//  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_ecies_new()'.
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
 vscf_ecies_delete(vscf_ecies_t *self);
 
 //
-//  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_ecies_new()'.
-//  Given reference is nullified.
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscf_ecies_new ()'.
 //
 VSCF_PUBLIC void
 vscf_ecies_destroy(vscf_ecies_t **self_ref);
 
 //
-//  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
+//  Copy given class context by increasing reference counter.
 //
 VSCF_PUBLIC vscf_ecies_t *
 vscf_ecies_shallow_copy(vscf_ecies_t *self);
@@ -218,71 +208,8 @@ VSCF_PUBLIC void
 vscf_ecies_release_kdf(vscf_ecies_t *self);
 
 //
-//  Set public key that is used for data encryption.
-//
-//  If ephemeral key is not defined, then Public Key, must be conformed
-//  to the interface "generate ephemeral key".
-//
-//  In turn, Ephemeral Key must be conformed to the interface
-//  "compute shared key".
-//
-//  Note, ownership is shared.
-//
-VSCF_PUBLIC void
-vscf_ecies_use_encryption_key(vscf_ecies_t *self, vscf_impl_t *encryption_key);
-
-//
-//  Set public key that is used for data encryption.
-//
-//  If ephemeral key is not defined, then Public Key, must be conformed
-//  to the interface "generate ephemeral key".
-//
-//  In turn, Ephemeral Key must be conformed to the interface
-//  "compute shared key".
-//
-//  Note, ownership is transfered.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_ecies_take_encryption_key(vscf_ecies_t *self, vscf_impl_t *encryption_key);
-
-//
-//  Release dependency to the interface 'public key'.
-//
-VSCF_PUBLIC void
-vscf_ecies_release_encryption_key(vscf_ecies_t *self);
-
-//
-//  Set private key that used for data decryption.
-//
-//  Private Key must be conformed to the interface "compute shared key".
-//
-//  Note, ownership is shared.
-//
-VSCF_PUBLIC void
-vscf_ecies_use_decryption_key(vscf_ecies_t *self, vscf_impl_t *decryption_key);
-
-//
-//  Set private key that used for data decryption.
-//
-//  Private Key must be conformed to the interface "compute shared key".
-//
-//  Note, ownership is transfered.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_ecies_take_decryption_key(vscf_ecies_t *self, vscf_impl_t *decryption_key);
-
-//
-//  Release dependency to the interface 'private key'.
-//
-VSCF_PUBLIC void
-vscf_ecies_release_decryption_key(vscf_ecies_t *self);
-
-//
-//  Set private key that used for data decryption.
-//
-//  Ephemeral Key must be conformed to the interface "compute shared key".
+//  Set ephemeral key that used for data encryption.
+//  Public and ephemeral keys should belong to the same curve.
 //
 //  Note, ownership is shared.
 //
@@ -290,9 +217,8 @@ VSCF_PUBLIC void
 vscf_ecies_use_ephemeral_key(vscf_ecies_t *self, vscf_impl_t *ephemeral_key);
 
 //
-//  Set private key that used for data decryption.
-//
-//  Ephemeral Key must be conformed to the interface "compute shared key".
+//  Set ephemeral key that used for data encryption.
+//  Public and ephemeral keys should belong to the same curve.
 //
 //  Note, ownership is transfered.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
@@ -313,28 +239,38 @@ VSCF_PUBLIC vscf_status_t
 vscf_ecies_setup_defaults(vscf_ecies_t *self) VSCF_NODISCARD;
 
 //
-//  Encrypt given data.
+//  Configure ECIES with default algorithms.
 //
-VSCF_PUBLIC vscf_status_t
-vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
+VSCF_PUBLIC void
+vscf_ecies_configure_defaults(vscf_ecies_t *self);
 
 //
 //  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_ecies_encrypted_len(vscf_ecies_t *self, size_t data_len);
+vscf_ecies_encrypted_len(const vscf_ecies_t *self, const vscf_impl_t *public_key,
+        const vscf_impl_t *compute_shared_key_ctx, size_t data_len);
 
 //
-//  Decrypt given data.
+//  Encrypt data with a given public key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ecies_decrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_ecies_encrypt(const vscf_ecies_t *self, const vscf_impl_t *public_key, const vscf_impl_t *compute_shared_key_ctx,
+        vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Calculate required buffer length to hold the decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_ecies_decrypted_len(vscf_ecies_t *self, size_t data_len);
+vscf_ecies_decrypted_len(const vscf_ecies_t *self, const vscf_impl_t *private_key,
+        const vscf_impl_t *compute_shared_key_ctx, size_t data_len);
+
+//
+//  Decrypt given data.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_ecies_decrypt(const vscf_ecies_t *self, const vscf_impl_t *private_key, const vscf_impl_t *compute_shared_key_ctx,
+        vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

@@ -47,20 +47,14 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'ecies' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
+//  Class 'ecies' types definition.
 // --------------------------------------------------------------------------
 
 #ifndef VSCF_ECIES_DEFS_H_INCLUDED
 #define VSCF_ECIES_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_ecies.h"
 #include "vscf_atomic.h"
-#include "vscf_ecies_envelope.h"
 #include "vscf_impl.h"
 
 // clang-format on
@@ -79,13 +73,13 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Handle 'ecies' context.
 //
 struct vscf_ecies_t {
     //
-    //  Compile-time known information about this implementation.
+    //  Function do deallocate self context.
     //
-    const vscf_impl_info_t *info;
+    vscf_dealloc_fn self_dealloc_cb;
     //
     //  Reference counter.
     //
@@ -107,21 +101,9 @@ struct vscf_ecies_t {
     //
     vscf_impl_t *kdf;
     //
-    //  Dependency to the interface 'public key'.
-    //
-    vscf_impl_t *encryption_key;
-    //
-    //  Dependency to the interface 'private key'.
-    //
-    vscf_impl_t *decryption_key;
-    //
     //  Dependency to the interface 'private key'.
     //
     vscf_impl_t *ephemeral_key;
-    //
-    //  Implementation specific context.
-    //
-    vscf_ecies_envelope_t *envelope;
 };
 
 

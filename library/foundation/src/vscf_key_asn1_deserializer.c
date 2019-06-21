@@ -55,8 +55,6 @@
 #include "vscf_memory.h"
 #include "vscf_alg.h"
 #include "vscf_alg_info.h"
-#include "vscf_public_key.h"
-#include "vscf_private_key.h"
 #include "vscf_alg_info_der_deserializer.h"
 #include "vscf_asn1_tag.h"
 #include "vscf_oid.h"
@@ -500,7 +498,7 @@ vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(
 //
 //  Deserialize given public key as an interchangeable format to the object.
 //
-VSCF_PUBLIC vscf_raw_key_t *
+VSCF_PUBLIC vscf_raw_public_key_t *
 vscf_key_asn1_deserializer_deserialize_public_key(
         vscf_key_asn1_deserializer_t *self, vsc_data_t public_key_data, vscf_error_t *error) {
 
@@ -541,7 +539,7 @@ vscf_key_asn1_deserializer_deserialize_public_key(
 //
 //  Deserialize given private key as an interchangeable format to the object.
 //
-VSCF_PUBLIC vscf_raw_key_t *
+VSCF_PUBLIC vscf_raw_public_key_t *
 vscf_key_asn1_deserializer_deserialize_private_key(
         vscf_key_asn1_deserializer_t *self, vsc_data_t private_key_data, vscf_error_t *error) {
 

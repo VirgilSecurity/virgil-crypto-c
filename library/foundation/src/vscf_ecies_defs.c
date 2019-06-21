@@ -39,10 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'ecies' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
+//  Class 'ecies' types definition.
 // --------------------------------------------------------------------------
 
 

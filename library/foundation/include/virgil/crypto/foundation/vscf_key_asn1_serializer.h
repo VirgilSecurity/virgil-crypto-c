@@ -54,6 +54,7 @@
 #define VSCF_KEY_ASN1_SERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_raw_key.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
@@ -99,6 +100,12 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_key_asn1_serializer_impl(vscf_key_asn1_serializer_t *self);
 
 //
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_key_asn1_serializer_impl_const(const vscf_key_asn1_serializer_t *self);
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -135,7 +142,6 @@ vscf_key_asn1_serializer_destroy(vscf_key_asn1_serializer_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_key_asn1_serializer_t *
 vscf_key_asn1_serializer_shallow_copy(vscf_key_asn1_serializer_t *self);
@@ -171,8 +177,8 @@ vscf_key_asn1_serializer_setup_defaults(vscf_key_asn1_serializer_t *self);
 //  an output buffer.
 //
 VSCF_PUBLIC size_t
-vscf_key_asn1_serializer_serialize_public_key_inplace(vscf_key_asn1_serializer_t *self, const vscf_impl_t *public_key,
-        vscf_error_t *error);
+vscf_key_asn1_serializer_serialize_public_key_inplace(vscf_key_asn1_serializer_t *self,
+        const vscf_raw_key_t *public_key, vscf_error_t *error);
 
 //
 //  Serialize Private Key by using internal ASN.1 writer.
@@ -180,8 +186,8 @@ vscf_key_asn1_serializer_serialize_public_key_inplace(vscf_key_asn1_serializer_t
 //  an output buffer.
 //
 VSCF_PUBLIC size_t
-vscf_key_asn1_serializer_serialize_private_key_inplace(vscf_key_asn1_serializer_t *self, const vscf_impl_t *private_key,
-        vscf_error_t *error);
+vscf_key_asn1_serializer_serialize_private_key_inplace(vscf_key_asn1_serializer_t *self,
+        const vscf_raw_key_t *private_key, vscf_error_t *error);
 
 //
 //  Calculate buffer size enough to hold serialized public key.

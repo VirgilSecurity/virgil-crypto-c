@@ -112,6 +112,12 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_ctr_drbg_impl(vscf_ctr_drbg_t *self);
 
 //
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_ctr_drbg_impl_const(const vscf_ctr_drbg_t *self);
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -148,7 +154,6 @@ vscf_ctr_drbg_destroy(vscf_ctr_drbg_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_ctr_drbg_t *
 vscf_ctr_drbg_shallow_copy(vscf_ctr_drbg_t *self);
@@ -202,12 +207,13 @@ vscf_ctr_drbg_set_entropy_len(vscf_ctr_drbg_t *self, size_t len);
 
 //
 //  Generate random bytes.
+//  All RNG implementations must be thread-safe.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ctr_drbg_random(vscf_ctr_drbg_t *self, size_t data_len, vsc_buffer_t *data) VSCF_NODISCARD;
+vscf_ctr_drbg_random(const vscf_ctr_drbg_t *self, size_t data_len, vsc_buffer_t *data) VSCF_NODISCARD;
 
 //
-//  Retreive new seed data from the entropy sources.
+//  Retrieve new seed data from the entropy sources.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_ctr_drbg_reseed(vscf_ctr_drbg_t *self) VSCF_NODISCARD;

@@ -55,8 +55,6 @@
 #include "vscf_memory.h"
 #include "vscf_alg.h"
 #include "vscf_asn1_writer.h"
-#include "vscf_public_key.h"
-#include "vscf_private_key.h"
 #include "vscf_asn1wr.h"
 #include "vscf_pkcs8_serializer.h"
 #include "vscf_sec1_serializer.h"
@@ -156,7 +154,7 @@ vscf_key_asn1_serializer_setup_defaults(vscf_key_asn1_serializer_t *self) {
 //
 VSCF_PUBLIC size_t
 vscf_key_asn1_serializer_serialize_public_key_inplace(
-        vscf_key_asn1_serializer_t *self, const vscf_impl_t *public_key, vscf_error_t *error) {
+        vscf_key_asn1_serializer_t *self, const vscf_raw_key_t *public_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
@@ -181,7 +179,7 @@ vscf_key_asn1_serializer_serialize_public_key_inplace(
 //
 VSCF_PUBLIC size_t
 vscf_key_asn1_serializer_serialize_private_key_inplace(
-        vscf_key_asn1_serializer_t *self, const vscf_impl_t *private_key, vscf_error_t *error) {
+        vscf_key_asn1_serializer_t *self, const vscf_raw_key_t *private_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);

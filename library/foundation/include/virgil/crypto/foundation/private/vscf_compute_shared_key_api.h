@@ -56,6 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
+#include "vscf_key_alg.h"
 #include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -83,15 +84,16 @@ extern "C" {
 
 //
 //  Callback. Compute shared key for 2 asymmetric keys.
-//          Note, shared key can be used only for symmetric cryptography.
+//          Note, computed shared key can be used only within symmetric cryptography.
 //
-typedef vscf_status_t (*vscf_compute_shared_key_api_compute_shared_key_fn)(vscf_impl_t *impl,
-        const vscf_impl_t *public_key, vsc_buffer_t *shared_key);
+typedef vscf_status_t (*vscf_compute_shared_key_api_compute_shared_key_fn)(const vscf_impl_t *impl,
+        vscf_impl_t *public_key, vscf_impl_t *private_key, vsc_buffer_t *shared_key);
 
 //
 //  Callback. Return number of bytes required to hold shared key.
+//          Expect Public Key or Private Key.
 //
-typedef size_t (*vscf_compute_shared_key_api_shared_key_len_fn)(vscf_impl_t *impl);
+typedef size_t (*vscf_compute_shared_key_api_shared_key_len_fn)(const vscf_impl_t *impl, const vscf_impl_t *key);
 
 //
 //  Contains API requirements of the interface 'compute shared key'.
@@ -107,12 +109,17 @@ struct vscf_compute_shared_key_api_t {
     //
     vscf_impl_tag_t impl_tag;
     //
+    //  Link to the inherited interface API 'key alg'.
+    //
+    const vscf_key_alg_api_t *key_alg_api;
+    //
     //  Compute shared key for 2 asymmetric keys.
-    //  Note, shared key can be used only for symmetric cryptography.
+    //  Note, computed shared key can be used only within symmetric cryptography.
     //
     vscf_compute_shared_key_api_compute_shared_key_fn compute_shared_key_cb;
     //
     //  Return number of bytes required to hold shared key.
+    //  Expect Public Key or Private Key.
     //
     vscf_compute_shared_key_api_shared_key_len_fn shared_key_len_cb;
 };

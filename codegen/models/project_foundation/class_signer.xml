@@ -3,7 +3,7 @@
 
     <require class="alg factory"/>
     <require interface="alg"/>
-    <require interface="sign hash"/>
+    <require interface="key signer"/>
 
     <dependency name="hash" interface="hash"/>
 
@@ -11,24 +11,24 @@
         Start a processing a new signature.
     </method>
 
-    <method name="update">
+    <method name="append data">
         Add given data to the signed data.
 
         <argument name="data" class="data"/>
     </method>
 
-    <method name="signature len">
+    <method name="signature len" is_const="1">
         Return length of the signature.
 
-        <argument name="private key" interface="sign hash"/>
+        <argument name="private key" interface="private key"/>
 
         <return type="size"/>
     </method>
 
-    <method name="sign">
+    <method name="sign" is_const="1">
         Accomplish signing and return signature.
 
-        <argument name="private key" interface="key signer"/>
+        <argument name="private key" interface="private key"/>
         <argument name="signature" class="buffer">
             <length method="signature len">
                 <proxy argument="private key" to="private key"/>

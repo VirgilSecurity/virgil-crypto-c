@@ -40,7 +40,6 @@
 //  @description
 // --------------------------------------------------------------------------
 //  Provide interface to compute shared key for 2 asymmetric keys.
-//  Assume that this interface is implemented on the private key.
 // --------------------------------------------------------------------------
 
 
@@ -67,29 +66,31 @@
 
 //
 //  Compute shared key for 2 asymmetric keys.
-//  Note, shared key can be used only for symmetric cryptography.
+//  Note, computed shared key can be used only within symmetric cryptography.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_compute_shared_key(vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_buffer_t *shared_key) {
+vscf_compute_shared_key(const vscf_impl_t *impl, vscf_impl_t *public_key, vscf_impl_t *private_key,
+        vsc_buffer_t *shared_key) {
 
     const vscf_compute_shared_key_api_t *compute_shared_key_api = vscf_compute_shared_key_api(impl);
     VSCF_ASSERT_PTR (compute_shared_key_api);
 
     VSCF_ASSERT_PTR (compute_shared_key_api->compute_shared_key_cb);
-    return compute_shared_key_api->compute_shared_key_cb (impl, public_key, shared_key);
+    return compute_shared_key_api->compute_shared_key_cb (impl, public_key, private_key, shared_key);
 }
 
 //
 //  Return number of bytes required to hold shared key.
+//  Expect Public Key or Private Key.
 //
 VSCF_PUBLIC size_t
-vscf_compute_shared_key_shared_key_len(vscf_impl_t *impl) {
+vscf_compute_shared_key_shared_key_len(const vscf_impl_t *impl, const vscf_impl_t *key) {
 
     const vscf_compute_shared_key_api_t *compute_shared_key_api = vscf_compute_shared_key_api(impl);
     VSCF_ASSERT_PTR (compute_shared_key_api);
 
     VSCF_ASSERT_PTR (compute_shared_key_api->shared_key_len_cb);
-    return compute_shared_key_api->shared_key_len_cb (impl);
+    return compute_shared_key_api->shared_key_len_cb (impl, key);
 }
 
 //
@@ -102,6 +103,17 @@ vscf_compute_shared_key_api(const vscf_impl_t *impl) {
 
     const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_COMPUTE_SHARED_KEY);
     return (const vscf_compute_shared_key_api_t *) api;
+}
+
+//
+//  Return key alg API.
+//
+VSCF_PUBLIC const vscf_key_alg_api_t *
+vscf_compute_shared_key_key_alg_api(const vscf_compute_shared_key_api_t *compute_shared_key_api) {
+
+    VSCF_ASSERT_PTR (compute_shared_key_api);
+
+    return compute_shared_key_api->key_alg_api;
 }
 
 //
