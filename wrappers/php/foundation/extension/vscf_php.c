@@ -56,15 +56,12 @@
 const char VSCF_PHP_VERSION[] = "0.1.0";
 const char VSCF_PHP_EXTNAME[] = "vscf_php";
 
-const char VSCF_SHA256_PHP_RES_NAME[] = "vscf_sha256_t";
-const char VSCF_KDF1_PHP_RES_NAME[] = "vscf_kdf1_t";
-
+const char VSCF_PHP_RES_NAME[] = "vscf_php";
 
 // --------------------------------------------------------------------------
 //  Registered resources
 // --------------------------------------------------------------------------
-int le_vscf_sha256;
-int le_vscf_kdf1;
+int le_vscf_foundation;
 
 
 // --------------------------------------------------------------------------
@@ -91,7 +88,7 @@ ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_sha256_new_php) {
     vscf_sha256_t *sha256 = vscf_sha256_new();
-    zend_resource *sha256_res = zend_register_resource(sha256, le_vscf_sha256);
+    zend_resource *sha256_res = zend_register_resource(sha256, le_vscf_foundation);
     RETVAL_RES(sha256_res);
 }
 
@@ -124,7 +121,7 @@ PHP_FUNCTION(vscf_sha256_delete_php) {
     //
     //  Fetch for type checking and then release
     //
-    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_SHA256_PHP_RES_NAME, le_vscf_sha256);
+    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_PHP_RES_NAME, le_vscf_foundation);
     VSCF_ASSERT_PTR(sha256);
     zend_list_close(Z_RES_P(in_cctx));
     RETURN_TRUE;
@@ -211,7 +208,7 @@ PHP_FUNCTION(vscf_sha256_start_php) {
     //
     //  Proxy call
     //
-    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_SHA256_PHP_RES_NAME, le_vscf_sha256);
+    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_PHP_RES_NAME, le_vscf_foundation);
     VSCF_ASSERT_PTR(sha256);
 
     vscf_sha256_start(sha256);
@@ -253,7 +250,7 @@ PHP_FUNCTION(vscf_sha256_update_php) {
     //
     //  Proxy call
     //
-    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_SHA256_PHP_RES_NAME, le_vscf_sha256);
+    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_PHP_RES_NAME, le_vscf_foundation);
     VSCF_ASSERT_PTR(sha256);
 
     vsc_data_t data = vsc_data((const byte*)in_data, in_data_len);
@@ -293,7 +290,7 @@ PHP_FUNCTION(vscf_sha256_finish_php) {
     //
     //  Proxy call
     //
-    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_SHA256_PHP_RES_NAME, le_vscf_sha256);
+    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_PHP_RES_NAME, le_vscf_foundation);
     VSCF_ASSERT_PTR(sha256);
 
     //  Allocate output buffer for output 'digest'
@@ -330,7 +327,7 @@ ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_kdf1_new_php) {
     vscf_kdf1_t *kdf1 = vscf_kdf1_new();
-    zend_resource *kdf1_res = zend_register_resource(kdf1, le_vscf_kdf1);
+    zend_resource *kdf1_res = zend_register_resource(kdf1, le_vscf_foundation);
     RETVAL_RES(kdf1_res);
 }
 
@@ -363,7 +360,7 @@ PHP_FUNCTION(vscf_kdf1_delete_php) {
     //
     //  Fetch for type checking and then release
     //
-    vscf_kdf1_t *kdf1 = zend_fetch_resource_ex(in_cctx, VSCF_SHA256_PHP_RES_NAME, le_vscf_kdf1);
+    vscf_kdf1_t *kdf1 = zend_fetch_resource_ex(in_cctx, VSCF_PHP_RES_NAME, le_vscf_foundation);
     VSCF_ASSERT_PTR(kdf1);
     zend_list_close(Z_RES_P(in_cctx));
     RETURN_TRUE;
@@ -402,9 +399,11 @@ PHP_FUNCTION(vscf_kdf1_use_hash_php) {
     //
     //  Proxy call
     //
-    vscf_kdf1_t *vscf_kdf1 = zend_fetch_resource_ex(in_cctx, VSCF_KDF1_PHP_RES_NAME, le_vscf_kdf1);
-    vscf_impl_t *hash = zend_fetch_resource_ex(in_cctx2, VSCF_KDF1_PHP_RES_NAME, le_vscf_kdf1);
+    vscf_kdf1_t *vscf_kdf1 = zend_fetch_resource_ex(in_cctx, VSCF_PHP_RES_NAME, le_vscf_foundation);
     VSCF_ASSERT_PTR(vscf_kdf1);
+
+    vscf_impl_t *hash = zend_fetch_resource_ex(in_cctx2, VSCF_PHP_RES_NAME, le_vscf_foundation);
+    VSCF_ASSERT_PTR(hash);
 
     vscf_kdf1_use_hash(vscf_kdf1, hash);
 
@@ -448,7 +447,7 @@ PHP_FUNCTION(vscf_kdf1_derive_php) {
     //
     //  Proxy call
     //
-    vscf_kdf1_t *vscf_kdf1 = zend_fetch_resource_ex(in_cctx, VSCF_KDF1_PHP_RES_NAME, le_vscf_kdf1);
+    vscf_kdf1_t *vscf_kdf1 = zend_fetch_resource_ex(in_cctx, VSCF_PHP_RES_NAME, le_vscf_foundation);
     VSCF_ASSERT_PTR(vscf_kdf1);
 
     vsc_data_t data = vsc_data((const byte*)in_data, in_data_len);
@@ -520,21 +519,14 @@ ZEND_GET_MODULE(vscf_php)
 // --------------------------------------------------------------------------
 //  Extension init functions definition
 // --------------------------------------------------------------------------
-static void vscf_sha256_dtor_php(zend_resource *rsrc) {
-    vscf_sha256_delete((vscf_sha256_t *)rsrc->ptr);
-}
-
-static void vscf_kdf1_dtor_php(zend_resource *rsrc) {
-    vscf_kdf1_delete((vscf_kdf1_t *)rsrc->ptr);
+static void vscf_dtor_php(zend_resource *rsrc) {
+    vscf_impl_delete((vscf_impl_t *)rsrc->ptr);
 }
 
 PHP_MINIT_FUNCTION(vscf_php) {
 
-    le_vscf_sha256 = zend_register_list_destructors_ex(
-            vscf_sha256_dtor_php, NULL, VSCF_SHA256_PHP_RES_NAME, module_number);
-
-    le_vscf_kdf1 = zend_register_list_destructors_ex(
-            vscf_kdf1_dtor_php, NULL, VSCF_KDF1_PHP_RES_NAME, module_number);
+    le_vscf_foundation = zend_register_list_destructors_ex(
+            vscf_dtor_php, NULL, VSCF_PHP_RES_NAME, module_number);
 
     return SUCCESS;
 }

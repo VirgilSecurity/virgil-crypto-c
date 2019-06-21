@@ -35,41 +35,51 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-require_once 'KDF1.php';
-require_once 'SHA256.php';
-
-class KDF1Test extends \PHPUnit\Framework\TestCase
+/**
+ * Class Kdf1
+ */
+class Kdf1
 {
-    private $KDF1;
-    private $SHA256;
+    /**
+     * @var
+     */
+    private $c_ctx;
 
-    protected function setUp()
+    /**
+     * KDF1 constructor.
+     */
+    public function __construct()
     {
-        $this->KDF1 = new KDF1();
-        $this->SHA256 = new SHA256();
-
-        $this->KDF1->useHash($this->SHA256);
+        $this->c_ctx = vscf_kdf1_new_php();
     }
 
-    protected function tearDown()
+    /**
+     * KDF1 destructor.
+     */
+    public function __destruct()
     {
-        unset($this->KDF1);
+        vscf_kdf1_delete_php($this->c_ctx);
     }
 
-    public function testDeriveSha256Vector1Success()
+    /**
+     * Setup dependency to the interface 'hash' with shared ownership.
+     * @param Hash $hash
+     * @return void
+     */
+    public function useHash(Hash $hash): void
     {
-        $hash = $this->SHA256->hash("");
-        $keyLen = 10;
-        $key = $this->KDF1->derive($hash, $keyLen);
-        $this->assertEquals($keyLen, strlen($key));
+        $c_ctx = $hash->getCCtx();
+        vscf_kdf1_use_hash_php($this->c_ctx, $c_ctx);
     }
 
-    public function testDeriveSha256Vector2Success()
+    /**
+     * Derive key of the requested length from the given data.
+     * @param string $data
+     * @param int $size
+     * @return string
+     */
+    public function derive(string $data, int $size): string
     {
-        $hash = $this->SHA256->hash("abc");
-        $keyLen = 10;
-
-        $key = $this->KDF1->derive($hash, $keyLen);
-        $this->assertEquals($keyLen, strlen($key));
+        return vscf_kdf1_derive_php($this->c_ctx, $data, $size);
     }
 }

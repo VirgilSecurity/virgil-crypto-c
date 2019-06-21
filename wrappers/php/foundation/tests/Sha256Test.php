@@ -35,9 +35,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-require_once 'SHA256.php';
+require_once 'Sha256.php';
 
-class SHA256Test extends \PHPUnit\Framework\TestCase
+class Sha256Test extends \PHPUnit\Framework\TestCase
 {
     private $SHA256;
     private $testVector1;
@@ -47,7 +47,7 @@ class SHA256Test extends \PHPUnit\Framework\TestCase
 
     protected function setUp()
     {
-        $this->SHA256 = new SHA256();
+        $this->SHA256 = new Sha256();
         $this->testVector1 = "";
         $this->testVector1Base64EncodedResult = "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=";
         $this->testVector2 = "abc";
@@ -66,12 +66,12 @@ class SHA256Test extends \PHPUnit\Framework\TestCase
 
     public function testDigestLenAlwaysEquals32()
     {
-        $this->assertEquals(32, SHA256::DIGEST_LEN);
+        $this->assertEquals(32, Sha256::DIGEST_LEN);
     }
 
     public function testBlockLenAlwaysEquals64()
     {
-        $this->assertEquals(64, SHA256::BLOCK_LEN);
+        $this->assertEquals(64, Sha256::BLOCK_LEN);
     }
 
     public function testHashVector1Success()

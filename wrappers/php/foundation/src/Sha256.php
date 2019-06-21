@@ -39,9 +39,9 @@ require_once 'Alg.php';
 require_once 'Hash.php';
 
 /**
- * Class SHA256
+ * Class Sha256
  */
-class SHA256 implements Alg, Hash
+class Sha256 implements Alg, Hash
 {
     /**
      * @var

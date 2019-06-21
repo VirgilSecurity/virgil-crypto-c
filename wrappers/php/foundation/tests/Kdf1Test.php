@@ -35,50 +35,52 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-/**
- * Class KDF1
- */
-class KDF1
+require_once 'Kdf1.php';
+require_once 'Sha256.php';
+
+class Kdf1Test extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var
-     */
-    private $c_ctx;
+    private $KDF1;
+    private $SHA256;
+    private $testVector1;
+    private $testVector2;
+    private $testVector1KeyBase64Encoded;
+    private $testVector2KeyBase64Encoded;
+    private $keyLen1;
+    private $keyLen2;
 
-    /**
-     * KDF1 constructor.
-     */
-    public function __construct()
+    protected function setUp()
     {
-        $this->c_ctx = vscf_kdf1_new_php();
+        $this->KDF1 = new KDF1();
+        $this->SHA256 = new Sha256();
+        $this->testVector1 = "";
+        $this->testVector2 = "abc";
+        $this->keyLen1 = 32;
+        $this->keyLen2 = 64;
+        $this->testVector1KeyBase64Encoded = "07/pjo8c6JFhSFRWmiD19FCNarQCW4crezqCgu91sSo=";
+        $this->testVector2KeyBase64Encoded = "fJu7Nt0wRqF+qvXPV4sJstqLd69OYIdTOZD4JmxENNTPcbRcHS1TXNgGiDXbeyIsXazG1XmtpW5PWq2k4sYRJw==";
     }
 
-    /**
-     * KDF1 destructor.
-     */
-    public function __destruct()
+    protected function tearDown()
     {
-        vscf_kdf1_delete_php($this->c_ctx);
+        unset($this->KDF1);
     }
 
-    /**
-     * Setup dependency to the interface 'hash' with shared ownership.
-     * @param Hash $hash
-     * @return void
-     */
-    public function useHash(Hash $hash): void
+    public function testDeriveSha256Vector1Success()
     {
-        vscf_kdf1_use_hash_php($this->c_ctx, $hash->getCCtx());
+        $this->KDF1->useHash($this->SHA256);
+        $hash = $this->SHA256->hash($this->testVector1);
+        $key = $this->KDF1->derive($hash, $this->keyLen1);
+        $this->assertEquals($this->keyLen1, strlen($key));
+        $this->assertEquals(base64_decode($this->testVector1KeyBase64Encoded), $key);
     }
 
-    /**
-     * Derive key of the requested length from the given data.
-     * @param string $data
-     * @param int $size
-     * @return string
-     */
-    public function derive(string $data, int $size): string
+    public function testDeriveSha256Vector2Success()
     {
-        return vscf_kdf1_derive_php($this->c_ctx, $data, $size);
+        $this->KDF1->useHash($this->SHA256);
+        $hash = $this->SHA256->hash($this->testVector2);
+        $key = $this->KDF1->derive($hash, $this->keyLen2);
+        $this->assertEquals($this->keyLen2, strlen($key));
+        $this->assertEquals(base64_decode($this->testVector2KeyBase64Encoded), $key);
     }
 }
