@@ -40,6 +40,8 @@
 #include "vscf_sha256.h"
 #include "vscf_kdf1.h"
 
+#include "vscf_base64.h"
+
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_alg_id.h"
@@ -56,12 +58,22 @@
 const char VSCF_PHP_VERSION[] = "0.1.0";
 const char VSCF_PHP_EXTNAME[] = "vscf_php";
 
-const char VSCF_PHP_RES_NAME[] = "vscf_php";
+const char VSCF_IMPL_PHP_RES_NAME[] = "vscf_php";
+const char VSCF_BASE64_PHP_RES_NAME[] = "vscf_php_base64";
 
 // --------------------------------------------------------------------------
 //  Registered resources
 // --------------------------------------------------------------------------
-int le_vscf_foundation;
+int le_vscf_impl;
+int le_vscf_base64;
+
+zend_class_entry* my_exception_ce;
+
+extension.onStartup([]() {
+    zend_class_entry ce;
+    INIT_CLASS_ENTRY(ce, "MyExtension\\Exceptions\\CustomOne", NULL);
+    my_exception_ce = zend_register_internal_class_ex(&ce, zend_exception_get_default(), NULL);
+});
 
 
 // --------------------------------------------------------------------------
@@ -70,6 +82,160 @@ int le_vscf_foundation;
 PHP_MINIT_FUNCTION(vscf_php);
 PHP_MSHUTDOWN_FUNCTION(vscf_php);
 
+#define VSCF_HANDLE_STATUS(status) \
+do { \
+    if(status != vscf_status_SUCCESS) {  \
+    vscf_handle_throw_exception(status); \
+        goto fail;\
+    } \
+} while (false)
+
+void
+vscf_handle_throw_exception(vscf_status_t status) {
+        switch(status) {
+            case vscf_status_ERROR_BAD_ARGUMENTS:
+                zend_throw_exception(NULL, "Foundation: This error should not be returned if assertions is enabled.", status);
+                break;
+            case vscf_status_ERROR_UNINITIALIZED:
+                zend_throw_exception(NULL, "Foundation: Can be used to define that not all context prerequisites are satisfied. Note, this error should not be returned if assertions is enabled.", status);
+                break;
+            case vscf_status_ERROR_UNHANDLED_THIRDPARTY_ERROR:
+                zend_throw_exception(NULL, "Foundation: Define that error code from one of third-party module was not handled. Note, this error should not be returned if assertions is enabled.", status);
+                break;
+            case vscf_status_ERROR_SMALL_BUFFER:
+                zend_throw_exception(NULL, "Foundation: Buffer capacity is not enough to hold result.", status);
+                break;
+            case vscf_status_ERROR_UNSUPPORTED_ALGORITHM:
+                zend_throw_exception(NULL, "Foundation: Unsupported algorithm.", status);
+                break;
+            case vscf_status_ERROR_AUTH_FAILED:
+                zend_throw_exception(NULL, "Foundation: Authentication failed during decryption.", status);
+                break;
+            case vscf_status_ERROR_OUT_OF_DATA:
+                zend_throw_exception(NULL, "Foundation: Attempt to read data out of buffer bounds.", status);
+                break;
+           case vscf_status_ERROR_BAD_ASN1:
+                zend_throw_exception(NULL, "Foundation:  ASN.1 encoded data is corrupted.", status);
+                break;
+            case vscf_status_ERROR_ASN1_LOSSY_TYPE_NARROWING:
+                zend_throw_exception(NULL, "Foundation: Attempt to read ASN.1 type that is bigger then requested C type.", status);
+                break;
+            case vscf_status_ERROR_BAD_PKCS1_PUBLIC_KEY:
+                zend_throw_exception(NULL, "Foundation: ASN.1 representation of PKCS#1 public key is corrupted.", status);
+                break;
+            case vscf_status_ERROR_BAD_PKCS1_PRIVATE_KEY:
+                zend_throw_exception(NULL, "Foundation: ASN.1 representation of PKCS#1 private key is corrupted.", status);
+                break;
+            case vscf_status_ERROR_BAD_PKCS8_PUBLIC_KEY:
+                zend_throw_exception(NULL, "Foundation: ASN.1 representation of PKCS#8 public key is corrupted.", status);
+                break;
+            case vscf_status_ERROR_BAD_PKCS8_PRIVATE_KEY:
+                zend_throw_exception(NULL, "Foundation: ASN.1 representation of PKCS#8 private key is corrupted.", status);
+                break;
+            case vscf_status_ERROR_BAD_ENCRYPTED_DATA:
+                zend_throw_exception(NULL, "Foundation: Encrypted data is corrupted.", status);
+                break;
+            case vscf_status_ERROR_RANDOM_FAILED:
+                zend_throw_exception(NULL, "Foundation: Underlying random operation returns error.", status);
+                break;
+            case vscf_status_ERROR_KEY_GENERATION_FAILED:
+                zend_throw_exception(NULL, "Foundation: Generation of the private or secret key failed.", status);
+                break;
+            case vscf_status_ERROR_ENTROPY_SOURCE_FAILED:
+                zend_throw_exception(NULL, "Foundation: One of the entropy sources failed.", status);
+                break;
+            case vscf_status_ERROR_RNG_REQUESTED_DATA_TOO_BIG:
+                zend_throw_exception(NULL, "Foundation: Requested data to be generated is too big.", status);
+                break;
+            case vscf_status_ERROR_BAD_BASE64:
+                zend_throw_exception(NULL, "Foundation: Base64 encoded string contains invalid characters.", status);
+                break;
+            case vscf_status_ERROR_BAD_PEM:
+                zend_throw_exception(NULL, "Foundation: PEM data is corrupted.", status);
+                break;
+            case vscf_status_ERROR_SHARED_KEY_EXCHANGE_FAILED:
+                zend_throw_exception(NULL, "Foundation: Exchange key return zero.", status);
+                break;
+            case vscf_status_ERROR_BAD_ED25519_PUBLIC_KEY:
+                zend_throw_exception(NULL, "Foundation: Ed25519 public key is corrupted.", status);
+                break;
+            case vscf_status_ERROR_BAD_ED25519_PRIVATE_KEY:
+                zend_throw_exception(NULL, "Foundation: Ed25519 private key is corrupted.", status);
+                break;
+            case vscf_status_ERROR_BAD_CURVE25519_PUBLIC_KEY:
+                zend_throw_exception(NULL, "Foundation: CURVE25519 public key is corrupted.", status);
+                break;
+            case vscf_status_ERROR_BAD_CURVE25519_PRIVATE_KEY:
+                zend_throw_exception(NULL, "Foundation: CURVE25519 private key is corrupted.", status);
+                break;
+            case vscf_status_ERROR_BAD_SEC1_PUBLIC_KEY:
+                zend_throw_exception(NULL, "Foundation: Elliptic curve public key format is corrupted see RFC 5480.", status);
+                break;
+            case vscf_status_ERROR_BAD_SEC1_PRIVATE_KEY:
+                zend_throw_exception(NULL, "Foundation: Elliptic curve public key format is corrupted see RFC 5915.", status);
+                break;
+            case vscf_status_ERROR_BAD_DER_PUBLIC_KEY:
+                zend_throw_exception(NULL, "Foundation: ASN.1 representation of a public key is corrupted.", status);
+                break;
+            case vscf_status_ERROR_BAD_DER_PRIVATE_KEY:
+                zend_throw_exception(NULL, "Foundation: ASN.1 representation of a private key is corrupted.", status);
+                break;
+            case vscf_status_ERROR_NO_MESSAGE_INFO:
+                zend_throw_exception(NULL, "Foundation: Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.", status);
+                break;
+            case vscf_status_ERROR_BAD_MESSAGE_INFO:
+                zend_throw_exception(NULL, "Foundation:  Message info is corrupted.", status);
+                break;
+            case vscf_status_ERROR_KEY_RECIPIENT_IS_NOT_FOUND:
+                zend_throw_exception(NULL, "Foundation: Recipient defined with id is not found within message info during data decryption.", status);
+                break;
+            case vscf_status_ERROR_KEY_RECIPIENT_PRIVATE_KEY_IS_WRONG:
+                zend_throw_exception(NULL, "Foundation: Content encryption key can not be decrypted with a given private key.", status);
+                break;
+            case vscf_status_ERROR_PASSWORD_RECIPIENT_PASSWORD_IS_WRONG:
+                zend_throw_exception(NULL, "Foundation: Content encryption key can not be decrypted with a given password.", status);
+                break;
+            case vscf_status_ERROR_MESSAGE_INFO_CUSTOM_PARAM_NOT_FOUND:
+                zend_throw_exception(NULL, "Foundation: Custom parameter with a given key is not found within message info.", status);
+                break;
+            case vscf_status_ERROR_MESSAGE_INFO_CUSTOM_PARAM_TYPE_MISMATCH:
+                zend_throw_exception(NULL, "Foundation: A custom parameter with a given key is found, but the requested value type does not correspond to the actual type.", status);
+                break;
+            case vscf_status_ERROR_BAD_SIGNATURE:
+                zend_throw_exception(NULL, "Foundation: Signature format is corrupted.", status);
+                break;
+            case vscf_status_ERROR_INVALID_BRAINKEY_PASSWORD_LEN:
+                zend_throw_exception(NULL, "Foundation: Brainkey password length is out of range.", status);
+                break;
+            case vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_LEN:
+                zend_throw_exception(NULL, "Foundation: Brainkey number length should be 32 byte.", status);
+                break;
+            case vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN:
+                zend_throw_exception(NULL, "Foundation: Brainkey point length should be 65 bytes.", status);
+                break;
+            case vscf_status_ERROR_INVALID_BRAINKEY_KEY_NAME_LEN:
+                zend_throw_exception(NULL, "Foundation: Brainkey name is out of range.", status);
+                break;
+            case vscf_status_ERROR_BRAINKEY_INTERNAL:
+                zend_throw_exception(NULL, "Foundation: Brainkey internal error.", status);
+                break;
+            case vscf_status_ERROR_BRAINKEY_INVALID_POINT:
+                zend_throw_exception(NULL, "Foundation: Brainkey point is invalid.", status);
+                break;
+            case vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN:
+                zend_throw_exception(NULL, "Foundation: Brainkey number buffer length capacity should be >= 32 byte.", status);
+                break;
+            case vscf_status_ERROR_INVALID_BRAINKEY_POINT_BUFFER_LEN:
+                zend_throw_exception(NULL, "Foundation: Brainkey point buffer length capacity should be >= 32 byte.", status);
+                break;
+            case vscf_status_ERROR_INVALID_BRAINKEY_SEED_BUFFER_LEN:
+                zend_throw_exception(NULL, "Foundation: Brainkey seed buffer length capacity should be >= 32 byte.", status);
+                break;
+            case vscf_status_ERROR_INVALID_IDENTITY_SECRET:
+                zend_throw_exception(NULL, "Foundation: Brainkey identity secret is invalid.", status);
+                break;
+    }
+}
 
 // --------------------------------------------------------------------------
 //  Functions wrapping
@@ -88,7 +254,7 @@ ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_sha256_new_php) {
     vscf_sha256_t *sha256 = vscf_sha256_new();
-    zend_resource *sha256_res = zend_register_resource(sha256, le_vscf_foundation);
+    zend_resource *sha256_res = zend_register_resource(sha256, le_vscf_impl);
     RETVAL_RES(sha256_res);
 }
 
@@ -121,7 +287,7 @@ PHP_FUNCTION(vscf_sha256_delete_php) {
     //
     //  Fetch for type checking and then release
     //
-    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_PHP_RES_NAME, le_vscf_foundation);
+    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_IMPL_PHP_RES_NAME, le_vscf_impl);
     VSCF_ASSERT_PTR(sha256);
     zend_list_close(Z_RES_P(in_cctx));
     RETURN_TRUE;
@@ -175,7 +341,6 @@ PHP_FUNCTION(vscf_sha256_hash_php) {
     RETVAL_STR(out_digest);
 
     vsc_buffer_destroy(&digest);
-    
 }
 
 //
@@ -208,7 +373,7 @@ PHP_FUNCTION(vscf_sha256_start_php) {
     //
     //  Proxy call
     //
-    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_PHP_RES_NAME, le_vscf_foundation);
+    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_IMPL_PHP_RES_NAME, le_vscf_impl);
     VSCF_ASSERT_PTR(sha256);
 
     vscf_sha256_start(sha256);
@@ -250,7 +415,7 @@ PHP_FUNCTION(vscf_sha256_update_php) {
     //
     //  Proxy call
     //
-    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_PHP_RES_NAME, le_vscf_foundation);
+    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_IMPL_PHP_RES_NAME, le_vscf_impl);
     VSCF_ASSERT_PTR(sha256);
 
     vsc_data_t data = vsc_data((const byte*)in_data, in_data_len);
@@ -290,7 +455,7 @@ PHP_FUNCTION(vscf_sha256_finish_php) {
     //
     //  Proxy call
     //
-    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_PHP_RES_NAME, le_vscf_foundation);
+    vscf_sha256_t *sha256 = zend_fetch_resource_ex(in_cctx, VSCF_IMPL_PHP_RES_NAME, le_vscf_impl);
     VSCF_ASSERT_PTR(sha256);
 
     //  Allocate output buffer for output 'digest'
@@ -327,7 +492,7 @@ ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_kdf1_new_php) {
     vscf_kdf1_t *kdf1 = vscf_kdf1_new();
-    zend_resource *kdf1_res = zend_register_resource(kdf1, le_vscf_foundation);
+    zend_resource *kdf1_res = zend_register_resource(kdf1, le_vscf_impl);
     RETVAL_RES(kdf1_res);
 }
 
@@ -360,7 +525,7 @@ PHP_FUNCTION(vscf_kdf1_delete_php) {
     //
     //  Fetch for type checking and then release
     //
-    vscf_kdf1_t *kdf1 = zend_fetch_resource_ex(in_cctx, VSCF_PHP_RES_NAME, le_vscf_foundation);
+    vscf_kdf1_t *kdf1 = zend_fetch_resource_ex(in_cctx, VSCF_IMPL_PHP_RES_NAME, le_vscf_impl);
     VSCF_ASSERT_PTR(kdf1);
     zend_list_close(Z_RES_P(in_cctx));
     RETURN_TRUE;
@@ -399,10 +564,10 @@ PHP_FUNCTION(vscf_kdf1_use_hash_php) {
     //
     //  Proxy call
     //
-    vscf_kdf1_t *vscf_kdf1 = zend_fetch_resource_ex(in_cctx, VSCF_PHP_RES_NAME, le_vscf_foundation);
+    vscf_kdf1_t *vscf_kdf1 = zend_fetch_resource_ex(in_cctx, VSCF_IMPL_PHP_RES_NAME, le_vscf_impl);
     VSCF_ASSERT_PTR(vscf_kdf1);
 
-    vscf_impl_t *hash = zend_fetch_resource_ex(in_cctx2, VSCF_PHP_RES_NAME, le_vscf_foundation);
+    vscf_impl_t *hash = zend_fetch_resource_ex(in_cctx2, VSCF_IMPL_PHP_RES_NAME, le_vscf_impl);
     VSCF_ASSERT_PTR(hash);
 
     vscf_kdf1_use_hash(vscf_kdf1, hash);
@@ -447,7 +612,7 @@ PHP_FUNCTION(vscf_kdf1_derive_php) {
     //
     //  Proxy call
     //
-    vscf_kdf1_t *vscf_kdf1 = zend_fetch_resource_ex(in_cctx, VSCF_PHP_RES_NAME, le_vscf_foundation);
+    vscf_kdf1_t *vscf_kdf1 = zend_fetch_resource_ex(in_cctx, VSCF_IMPL_PHP_RES_NAME, le_vscf_impl);
     VSCF_ASSERT_PTR(vscf_kdf1);
 
     vsc_data_t data = vsc_data((const byte*)in_data, in_data_len);
@@ -472,23 +637,136 @@ PHP_FUNCTION(vscf_kdf1_derive_php) {
     vsc_buffer_destroy(&key);    
 }
 
+//
+//  Wrap method: vscf_base64_encode
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_base64_encode_php /*name*/,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_STRING /*type*/,
+        0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, data, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vscf_base64_encode_php) {
+    //
+    //  Declare input arguments
+    //
+    char *in_data = NULL;
+    size_t in_data_len = 0;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_STRING_EX(in_data, in_data_len, 1 /*check_null*/, 0 /*deref and separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    vsc_data_t data = vsc_data((const byte*)in_data, in_data_len);
+
+    //  Allocate output buffer for output 'str'
+    zend_string *out_str = zend_string_alloc(vscf_base64_encoded_len(in_data_len), 0);
+    vsc_buffer_t *str = vsc_buffer_new();
+    vsc_buffer_use(str, (byte *)ZSTR_VAL(out_str), ZSTR_LEN(out_str));
+
+    vscf_base64_encode(data, str);
+
+    //
+    //  Correct string length to the actual
+    //
+    ZSTR_LEN(out_str) = vsc_buffer_len(str);
+
+    //
+    //  Write returned result
+    //
+    RETVAL_STR(out_str);
+
+    vsc_buffer_destroy(&str);
+}
+
+//
+//  Wrap method: vscf_base64_decode
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_base64_decode_php /*name*/,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_STRING /*type*/,
+        0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, str, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vscf_base64_decode_php) {
+    //
+    //  Declare input arguments
+    //
+    char *in_str = NULL;
+    size_t in_str_len = 0;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_STRING_EX(in_str, in_str_len, 1 /*check_null*/, 0 /*deref and separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    vsc_data_t str = vsc_data((const byte*)in_str, in_str_len);
+
+    //  Allocate output buffer for output 'data'
+    zend_string *out_data = zend_string_alloc(vscf_base64_decoded_len(in_str_len), 0);
+    vsc_buffer_t *data = vsc_buffer_new();
+    vsc_buffer_use(data, (byte *)ZSTR_VAL(out_data), ZSTR_LEN(out_data));
+
+    vscf_status_t status = vscf_base64_decode(str, data);
+
+    //
+    //  Handle error
+    //
+
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    //  Correct string length to the actual
+    //
+    ZSTR_LEN(out_data) = vsc_buffer_len(data);
+
+    //
+    //  Write returned result
+    //
+    RETVAL_STR(out_data);
+
+    goto success;
+
+fail:
+    zend_string_free(out_data);
+success:
+    vsc_buffer_destroy(&data);
+}
 
 // --------------------------------------------------------------------------
 //  Define all function entries
 // --------------------------------------------------------------------------
 static zend_function_entry vscf_php_functions[] = {
-    // SHA256
+    // Sha256
     PHP_FE(vscf_sha256_new_php, arginfo_vscf_sha256_new_php)
     PHP_FE(vscf_sha256_delete_php, arginfo_vscf_sha256_delete_php)
     PHP_FE(vscf_sha256_hash_php, arginfo_vscf_sha256_hash_php)
     PHP_FE(vscf_sha256_start_php, arginfo_vscf_sha256_start_php)
     PHP_FE(vscf_sha256_update_php, arginfo_vscf_sha256_update_php)
     PHP_FE(vscf_sha256_finish_php, arginfo_vscf_sha256_finish_php)
-    // KDF1
+    // Kdf1
     PHP_FE(vscf_kdf1_new_php, arginfo_vscf_kdf1_new_php)
     PHP_FE(vscf_kdf1_delete_php, arginfo_vscf_kdf1_delete_php)
     PHP_FE(vscf_kdf1_use_hash_php, arginfo_vscf_kdf1_use_hash_php)
     PHP_FE(vscf_kdf1_derive_php, arginfo_vscf_kdf1_derive_php)
+    // Base64
+    PHP_FE(vscf_base64_encode_php, arginfo_vscf_base64_encode_php)
+    PHP_FE(vscf_base64_decode_php, arginfo_vscf_base64_decode_php)
     PHP_FE_END
 };
 
@@ -525,8 +803,8 @@ static void vscf_dtor_php(zend_resource *rsrc) {
 
 PHP_MINIT_FUNCTION(vscf_php) {
 
-    le_vscf_foundation = zend_register_list_destructors_ex(
-            vscf_dtor_php, NULL, VSCF_PHP_RES_NAME, module_number);
+    le_vscf_impl = zend_register_list_destructors_ex(
+            vscf_dtor_php, NULL, VSCF_IMPL_PHP_RES_NAME, module_number);
 
     return SUCCESS;
 }
