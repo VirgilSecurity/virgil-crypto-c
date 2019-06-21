@@ -402,20 +402,50 @@ vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_sessio
 
     //  TODO: Add checks
     //  TODO: Add max number of epoches limit
-    //  TODO: Set session_id if not initialized
+
+    vscf_status_t status = vscf_status_SUCCESS;
+
+    uint32_t msg_epoch = message->message_pb.group_info.epoch;
+
+    vscf_group_session_epoch_node_t *left = NULL, *right = NULL;
+
+    if (self->last_epoch == NULL) {
+        memcpy(self->session_id, message->message_pb.group_info.session_id, sizeof(self->session_id));
+    } else {
+        left = self->last_epoch;
+
+        while (left != NULL && left->value->epoch_number >= msg_epoch) {
+            if (left->value->epoch_number == msg_epoch) {
+                // FIXME
+                status = vscf_status_ERROR_RANDOM_FAILED;
+                goto err;
+            }
+
+            right = left;
+            left = left->prev;
+        }
+    }
 
     vscf_group_session_epoch_t *value = vscf_group_session_epoch_new();
     value->epoch_number = message->message_pb.group_info.epoch;
     memcpy(value->key, message->message_pb.group_info.key, sizeof(value->key));
 
     vscf_group_session_epoch_node_t *new_node = vscf_group_session_epoch_node_new();
-
     new_node->value = value;
-    new_node->prev = self->last_epoch;
 
-    self->last_epoch = new_node;
+    new_node->prev = left;
+    new_node->next = right;
 
-    return vscf_status_SUCCESS;
+    if (right == NULL) {
+        self->last_epoch = new_node;
+    }
+
+    if (left == NULL) {
+        self->first_epoch = new_node;
+    }
+
+err:
+    return status;
 }
 
 //
@@ -432,7 +462,6 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
     VSCF_ASSERT(vsc_data_is_valid(plain_text));
 
     // TODO: Check plain_text len
-    // TODO: Add signature
 
     vscf_status_t status;
 
@@ -531,13 +560,13 @@ err:
 VSCF_PUBLIC size_t
 vscf_group_session_decrypt_len(vscf_group_session_t *self, const vscf_group_session_message_t *message) {
 
-    //  TODO: This is STUB. Implement me.
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message);
     VSCF_ASSERT(message->message_pb.has_regular_message);
     VSCF_ASSERT_PTR(message->header_pb);
 
-    return vsc_buffer_len(message->message_pb.regular_message.cipher_text.arg);
+    return vscf_message_cipher_decrypt_len(
+            self->cipher, vsc_buffer_len(message->message_pb.regular_message.cipher_text.arg));
 }
 
 //
@@ -557,6 +586,18 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
     VSCF_ASSERT_PTR(self->last_epoch);
 
     if (memcmp(self->session_id, message->header_pb->session_id, sizeof(self->session_id)) != 0) {
+        // FIXME
+        return vscf_status_ERROR_RANDOM_FAILED;
+    }
+
+    uint32_t msg_epoch = message->header_pb->epoch;
+    vscf_group_session_epoch_node_t *epoch = self->last_epoch;
+
+    while (epoch != NULL && epoch->value->epoch_number > msg_epoch) {
+        epoch = epoch->prev;
+    }
+
+    if (epoch == NULL || epoch->value->epoch_number != msg_epoch) {
         // FIXME
         return vscf_status_ERROR_RANDOM_FAILED;
     }
@@ -593,10 +634,9 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
     }
 
     // TODO: Check length
-    // TODO: Find epoch
 
     status = vscf_message_cipher_decrypt_then_remove_pad(self->cipher,
-            vsc_buffer_data(message->message_pb.regular_message.cipher_text.arg), self->last_epoch->value->key,
+            vsc_buffer_data(message->message_pb.regular_message.cipher_text.arg), epoch->value->key,
             message->header_pb->salt,
             vsc_data(message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size),
             plain_text);
