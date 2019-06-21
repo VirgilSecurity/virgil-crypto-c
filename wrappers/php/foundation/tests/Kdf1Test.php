@@ -63,6 +63,7 @@ class Kdf1Test extends \PHPUnit\Framework\TestCase
 
     protected function tearDown()
     {
+        unset($this->sha256);
         unset($this->kdf1);
     }
 
