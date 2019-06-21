@@ -46,15 +46,6 @@ public class RsaPublicKey implements AutoCloseable, Alg, Key, Encrypt, VerifyHas
         this.cCtx = FoundationJNI.INSTANCE.rsaPublicKey_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public RsaPublicKey(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
     public void setHash(Hash hash) {
         FoundationJNI.INSTANCE.rsaPublicKey_setHash(this.cCtx, hash);
     }
@@ -76,6 +67,16 @@ public class RsaPublicKey implements AutoCloseable, Alg, Key, Encrypt, VerifyHas
     */
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.rsaPublicKey_setupDefaults(this.cCtx);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static RsaPublicKey getInstance(long cCtx) {
+        RsaPublicKey newInstance = new RsaPublicKey();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

@@ -55,9 +55,10 @@ public class Aes256Cbc implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Aes256Cbc(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static Aes256Cbc getInstance(long cCtx) {
+        Aes256Cbc newInstance = new Aes256Cbc();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

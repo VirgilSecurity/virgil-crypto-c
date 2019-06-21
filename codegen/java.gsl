@@ -1072,31 +1072,6 @@ function java_create_class_field_context (destination, class)
     endnew
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Create <java_constructor/> that takes underlying C context.
-# ---------------------------------------------------------------------------
-function java_create_class_constructor_context (destination, java_project, meta)
-    check_arguments (my, "destination, java_project, meta", my)
-
-    new java_constructor to my.destination
-        . = "/* Take C context that implements this interface */"
-        .visibility = "public"
-
-        new java_argument to java_constructor
-            .name = "cCtx"
-            .type = "long"
-        endnew
-
-        new java_code
-            . = "
-                super();
-                this.cCtx = cCtx;
-            "
-        endnew
-
-        return java_constructor
-    endnew
-endfunction
 
 # ---------------------------------------------------------------------------
 #   Create enumeration <java_constant/> from the entity <constant/>
@@ -1151,24 +1126,31 @@ function java_create_class_default_constructor (java_class, class, java_project,
         endnew
     endnew
 
-    new java_constructor to my.java_class
+    new java_method to my.java_class
         . = "
             /*
             * Acquire C context.
             * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
             */
         "
+        .name = "getInstance"
         .visibility = "public"
+        .static = "static"
 
-        new java_argument to java_constructor
+        new java_argument to java_method
             .name = "cCtx"
             .type = java_derive_class_context_type (my.class)
         endnew
 
-        new java_code to java_constructor
+        new java_return to java_method
+            .type = my.java_class.name
+        endnew
+
+        new java_code to java_method
             . = "\
-                super();
-                this.cCtx = cCtx;
+                $(my.java_class.name:) newInstance = new $(my.java_class.name:)();
+                newInstance.cCtx = cCtx;
+                return newInstance;
             "
         endnew
     endnew
@@ -1186,11 +1168,6 @@ function java_create_class_constructor (class, constructor, destination, java_pr
     new java_constructor to my.destination
         . = java_format_description (my.constructor) ?
         .visibility = "public"
-
-        if count (my.constructor.argument) = 1 & java_derive_instance_type (my.constructor->argument) = "long"
-            # This constructor conflicts with cCtx constructor. Add cCtx parameter to avoid conflict
-            java_create_jni_context_argument (java_constructor, my.java_project, my.meta)
-        endif
 
         for my.constructor.argument
             java_create_argument (argument, java_constructor, my.java_project, my.meta)

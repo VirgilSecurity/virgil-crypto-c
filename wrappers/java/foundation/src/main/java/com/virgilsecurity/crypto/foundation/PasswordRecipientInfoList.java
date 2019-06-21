@@ -53,9 +53,10 @@ public class PasswordRecipientInfoList implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public PasswordRecipientInfoList(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static PasswordRecipientInfoList getInstance(long cCtx) {
+        PasswordRecipientInfoList newInstance = new PasswordRecipientInfoList();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

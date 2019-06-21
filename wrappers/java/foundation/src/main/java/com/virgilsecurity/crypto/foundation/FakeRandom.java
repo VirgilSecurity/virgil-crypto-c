@@ -50,15 +50,6 @@ public class FakeRandom implements AutoCloseable, Random, EntropySource {
     }
 
     /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public FakeRandom(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
-    /*
     * Configure random number generator to generate sequence filled with given byte.
     */
     public void setupSourceByte(byte byteSource) {
@@ -71,6 +62,16 @@ public class FakeRandom implements AutoCloseable, Random, EntropySource {
     */
     public void setupSourceData(byte[] dataSource) {
         FoundationJNI.INSTANCE.fakeRandom_setupSourceData(this.cCtx, dataSource);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static FakeRandom getInstance(long cCtx) {
+        FakeRandom newInstance = new FakeRandom();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */
