@@ -40,8 +40,8 @@ require_once 'Sha256.php';
 
 class Kdf1Test extends \PHPUnit\Framework\TestCase
 {
-    private $KDF1;
-    private $SHA256;
+    private $kdf1;
+    private $sha256;
     private $testVector1;
     private $testVector2;
     private $testVector1KeyBase64Encoded;
@@ -51,8 +51,8 @@ class Kdf1Test extends \PHPUnit\Framework\TestCase
 
     protected function setUp()
     {
-        $this->KDF1 = new KDF1();
-        $this->SHA256 = new Sha256();
+        $this->kdf1 = new KDF1();
+        $this->sha256 = new Sha256();
         $this->testVector1 = "";
         $this->testVector2 = "abc";
         $this->keyLen1 = 32;
@@ -63,23 +63,23 @@ class Kdf1Test extends \PHPUnit\Framework\TestCase
 
     protected function tearDown()
     {
-        unset($this->KDF1);
+        unset($this->kdf1);
     }
 
     public function testDeriveSha256Vector1Success()
     {
-        $this->KDF1->useHash($this->SHA256);
-        $hash = $this->SHA256->hash($this->testVector1);
-        $key = $this->KDF1->derive($hash, $this->keyLen1);
+        $this->kdf1->useHash($this->sha256);
+        $hash = $this->sha256->hash($this->testVector1);
+        $key = $this->kdf1->derive($hash, $this->keyLen1);
         $this->assertEquals($this->keyLen1, strlen($key));
         $this->assertEquals(base64_decode($this->testVector1KeyBase64Encoded), $key);
     }
 
     public function testDeriveSha256Vector2Success()
     {
-        $this->KDF1->useHash($this->SHA256);
-        $hash = $this->SHA256->hash($this->testVector2);
-        $key = $this->KDF1->derive($hash, $this->keyLen2);
+        $this->kdf1->useHash($this->sha256);
+        $hash = $this->sha256->hash($this->testVector2);
+        $key = $this->kdf1->derive($hash, $this->keyLen2);
         $this->assertEquals($this->keyLen2, strlen($key));
         $this->assertEquals(base64_decode($this->testVector2KeyBase64Encoded), $key);
     }

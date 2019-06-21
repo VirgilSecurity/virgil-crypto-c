@@ -39,7 +39,7 @@ require_once 'Sha256.php';
 
 class Sha256Test extends \PHPUnit\Framework\TestCase
 {
-    private $SHA256;
+    private $sha256;
     private $testVector1;
     private $testVector2;
     private $testVector1Base64EncodedResult;
@@ -47,7 +47,7 @@ class Sha256Test extends \PHPUnit\Framework\TestCase
 
     protected function setUp()
     {
-        $this->SHA256 = new Sha256();
+        $this->sha256 = new Sha256();
         $this->testVector1 = "";
         $this->testVector1Base64EncodedResult = "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=";
         $this->testVector2 = "abc";
@@ -56,12 +56,12 @@ class Sha256Test extends \PHPUnit\Framework\TestCase
 
     protected function tearDown()
     {
-        unset($this->SHA256);
+        unset($this->sha256);
     }
 
     public function testValidReturnsNotNull()
     {
-        $this->assertNotNull($this->SHA256);
+        $this->assertNotNull($this->sha256);
     }
 
     public function testDigestLenAlwaysEquals32()
@@ -76,7 +76,7 @@ class Sha256Test extends \PHPUnit\Framework\TestCase
 
     public function testHashVector1Success()
     {
-        $res = $this->SHA256->hash($this->testVector1);
+        $res = $this->sha256->hash($this->testVector1);
 
         $this->assertEquals(32, strlen($res));
         $this->assertEquals(base64_decode($this->testVector1Base64EncodedResult), $res);
@@ -84,7 +84,7 @@ class Sha256Test extends \PHPUnit\Framework\TestCase
 
     public function testHashVector2Success()
     {
-        $res = $this->SHA256->hash($this->testVector2);
+        $res = $this->sha256->hash($this->testVector2);
 
         $this->assertEquals(32, strlen($res));
         $this->assertEquals(base64_decode($this->testVector2Base64EncodedResult), $res);
@@ -92,9 +92,9 @@ class Sha256Test extends \PHPUnit\Framework\TestCase
 
     public function testHashSteamVector1Success()
     {
-        $this->SHA256->start();
-        $this->SHA256->update($this->testVector1);
-        $res = $this->SHA256->finish();
+        $this->sha256->start();
+        $this->sha256->update($this->testVector1);
+        $res = $this->sha256->finish();
 
         $this->assertEquals(32, strlen($res));
         $this->assertEquals(base64_decode($this->testVector1Base64EncodedResult), $res);
@@ -102,9 +102,9 @@ class Sha256Test extends \PHPUnit\Framework\TestCase
 
     public function testHashSteamVector2Success()
     {
-        $this->SHA256->start();
-        $this->SHA256->update($this->testVector2);
-        $res = $this->SHA256->finish();
+        $this->sha256->start();
+        $this->sha256->update($this->testVector2);
+        $res = $this->sha256->finish();
 
         $this->assertEquals(32, strlen($res));
         $this->assertEquals(base64_decode($this->testVector2Base64EncodedResult), $res);
