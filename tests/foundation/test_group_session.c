@@ -138,7 +138,7 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, vscf_group_session_t **sessions, vsc_buffe
         vscf_error_reset(&error);
 
         vscf_group_session_message_t *msg = vscf_group_session_encrypt(sessions[sender], vsc_buffer_data(plain_text),
-                vsc_buffer_data(priv[i]), vsc_buffer_data(ids[sender]), &error);
+                vsc_buffer_data(priv[sender]), vsc_buffer_data(ids[sender]), &error);
 
         TEST_ASSERT(msg != NULL);
         TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error.status);
@@ -156,6 +156,7 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, vscf_group_session_t **sessions, vsc_buffe
             vsc_buffer_destroy(&decrypted);
         }
 
+        vscf_group_session_message_destroy(&msg);
         vsc_buffer_destroy(&plain_text);
     }
 }
@@ -194,6 +195,7 @@ initialize_random_group_session(vscf_ctr_drbg_t *rng, vscf_group_session_t ***se
     }
 
     vscf_group_session_ticket_destroy(&ticket);
+    vsc_buffer_destroy(&session_id);
 }
 
 void
@@ -223,6 +225,8 @@ test__encrypt_decrypt__random_size__should_match(void) {
     vscf_dealloc(priv);
     vscf_dealloc(pub);
     vscf_dealloc(ids);
+
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

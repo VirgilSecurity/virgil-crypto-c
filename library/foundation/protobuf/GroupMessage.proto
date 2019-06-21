@@ -10,6 +10,7 @@ message RegularGroupMessageHeader {
     required bytes session_id = 1;
     required uint32 epoch = 2;
     required bytes sender_id = 3;
+    required bytes salt = 4;
 }
 
 message RegularGroupMessage {

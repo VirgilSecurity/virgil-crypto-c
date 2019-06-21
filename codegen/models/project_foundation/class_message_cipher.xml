@@ -22,10 +22,12 @@
 
     <method name="setup cipher" declaration="private">
         <argument name="key" class="const vscf_group_session_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="salt" class="const vscf_group_session_salt_t" is_reference="0" library="internal" access="readonly"/>
     </method>
 
     <method name="encrypt" declaration="private">
         <argument name="key" class="const vscf_group_session_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="salt" class="const vscf_group_session_salt_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="plain text" class="data"/>
         <argument name="additional data" class="data"/>
 
@@ -40,6 +42,7 @@
 
     <method name="decrypt" declaration="private">
         <argument name="key" class="const vscf_group_session_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="salt" class="const vscf_group_session_salt_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="cipher text" class="data"/>
         <argument name="additional data" class="data"/>
 
@@ -56,6 +59,7 @@
         <argument name="padding" class="message padding" access="readwrite"/>
         <argument name="data" class="data"/>
         <argument name="key" class="const vscf_group_session_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="salt" class="const vscf_group_session_salt_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="ad" class="data"/>
         <argument name="cipher text" class="buffer" access="readwrite"/>
 
@@ -65,6 +69,7 @@
     <method name="decrypt then remove pad" scope="private">
         <argument name="data" class="data"/>
         <argument name="key" class="const vscf_group_session_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="salt" class="const vscf_group_session_salt_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="ad" class="data"/>
         <argument name="plain text" class="buffer" access="readwrite"/>
 

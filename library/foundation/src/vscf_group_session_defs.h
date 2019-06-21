@@ -56,6 +56,8 @@
 #include "vscf_library.h"
 #include "vscf_atomic.h"
 #include "vscf_group_session_typedefs.h"
+#include "vscf_message_cipher.h"
+#include "vscf_message_padding.h"
 #include "vscf_group_session_epoch_node.h"
 #include "vscf_impl.h"
 
@@ -90,6 +92,10 @@ struct vscf_group_session_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *rng;
+
+    vscf_message_cipher_t *cipher;
+
+    vscf_message_padding_t *padding;
 
     bool is_initialized;
 

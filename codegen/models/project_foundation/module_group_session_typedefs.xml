@@ -11,4 +11,6 @@
 
     <c_alias name="vscf_group_session_id_t[32]" type="uint8_t" declaration="public"/>
 
+    <c_alias name="vscf_group_session_salt_t[32]" type="uint8_t" declaration="public"/>
+
 </module>

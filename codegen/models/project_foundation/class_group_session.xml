@@ -16,10 +16,12 @@
     <require module="group session message internal" scope="private"/>
     <require module="group session ticket internal" scope="private"/>
 
-    <dependency name="rng" interface="random">
+    <dependency name="rng" interface="random" has_observers="1">
         Random
     </dependency>
 
+    <property name="cipher" class="message cipher" access="readwrite"/>
+    <property name="padding" class="message padding" access="readwrite"/>
     <property name="is initialized" type="boolean" access="readwrite"/>
     <property name="session id" class="vscf_group_session_id_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="last epoch" class="group session epoch node" access="readwrite"/>

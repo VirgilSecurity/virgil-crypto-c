@@ -90,6 +90,11 @@ extern "C" {
     typedef uint8_t vscf_group_session_id_t[32];
 #endif // VSCF_GROUP_SESSION_ID_T_32__DEFINED
 
+#ifndef VSCF_GROUP_SESSION_SALT_T_32__DEFINED
+#define VSCF_GROUP_SESSION_SALT_T_32__DEFINED
+    typedef uint8_t vscf_group_session_salt_t[32];
+#endif // VSCF_GROUP_SESSION_SALT_T_32__DEFINED
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

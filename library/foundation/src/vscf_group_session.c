@@ -85,6 +85,18 @@ static void
 vscf_group_session_cleanup_ctx(vscf_group_session_t *self);
 
 //
+//  This method is called when interface 'random' was setup.
+//
+static void
+vscf_group_session_did_setup_rng(vscf_group_session_t *self);
+
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vscf_group_session_did_release_rng(vscf_group_session_t *self);
+
+//
 //  Return size of 'vscf_group_session_t'.
 //
 VSCF_PUBLIC size_t
@@ -233,6 +245,8 @@ vscf_group_session_use_rng(vscf_group_session_t *self, vscf_impl_t *rng) {
     VSCF_ASSERT(vscf_random_is_implemented(rng));
 
     self->rng = vscf_impl_shallow_copy(rng);
+
+    vscf_group_session_did_setup_rng(self);
 }
 
 //
@@ -251,6 +265,8 @@ vscf_group_session_take_rng(vscf_group_session_t *self, vscf_impl_t *rng) {
     VSCF_ASSERT(vscf_random_is_implemented(rng));
 
     self->rng = rng;
+
+    vscf_group_session_did_setup_rng(self);
 }
 
 //
@@ -262,6 +278,8 @@ vscf_group_session_release_rng(vscf_group_session_t *self) {
     VSCF_ASSERT_PTR(self);
 
     vscf_impl_destroy(&self->rng);
+
+    vscf_group_session_did_release_rng(self);
 }
 
 
@@ -281,6 +299,9 @@ static void
 vscf_group_session_init_ctx(vscf_group_session_t *self) {
 
     VSCF_ASSERT_PTR(self);
+
+    self->cipher = vscf_message_cipher_new();
+    self->padding = vscf_message_padding_new();
 }
 
 //
@@ -292,6 +313,32 @@ static void
 vscf_group_session_cleanup_ctx(vscf_group_session_t *self) {
 
     VSCF_ASSERT_PTR(self);
+
+    vscf_message_cipher_destroy(&self->cipher);
+    vscf_message_padding_destroy(&self->padding);
+    vscf_group_session_epoch_node_destroy(&self->last_epoch);
+}
+
+//
+//  This method is called when interface 'random' was setup.
+//
+static void
+vscf_group_session_did_setup_rng(vscf_group_session_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (self->rng) {
+        vscf_message_padding_use_rng(self->padding, self->rng);
+    }
+}
+
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vscf_group_session_did_release_rng(vscf_group_session_t *self) {
+
+    VSCF_UNUSED(self);
 }
 
 //
@@ -382,10 +429,24 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
     VSCF_ASSERT(vsc_data_is_valid(private_key));
     VSCF_ASSERT(vsc_data_is_valid(plain_text));
 
+    // TODO: Check plain_text len
+
+    vscf_status_t status;
+
+    // FIXME
+    vsc_buffer_t *salt = vsc_buffer_new_with_capacity(32);
+
+    status = vscf_random(self->rng, 32, salt);
+
+    if (status != vscf_status_SUCCESS) {
+        goto err;
+    }
+
     vscf_group_session_message_t *msg = vscf_group_session_message_new();
 
     vscf_group_session_message_set_type(msg, vscf_group_msg_type_REGULAR);
 
+    memcpy(msg->header_pb->salt, vsc_buffer_bytes(salt), sizeof(msg->header_pb->salt));
     memcpy(msg->header_pb->session_id, self->session_id, sizeof(msg->header_pb->session_id));
     VSCF_ASSERT(sender_id.len == sizeof(msg->header_pb->sender_id));
     memcpy(msg->header_pb->sender_id, sender_id.bytes, sizeof(msg->header_pb->sender_id));
@@ -398,7 +459,32 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
 
     msg->message_pb.regular_message.header.size = header_stream.bytes_written;
 
-    VSCF_UNUSED(error);
+    size_t len = vscf_message_cipher_encrypt_len(self->cipher, vscf_message_padding_padded_len(plain_text.len));
+
+    vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(len);
+
+    status = vscf_message_cipher_pad_then_encrypt(self->cipher, self->padding, plain_text, self->last_epoch->value->key,
+            vsc_buffer_bytes(salt),
+            vsc_data(msg->message_pb.regular_message.header.bytes, msg->message_pb.regular_message.header.size),
+            cipher_text);
+
+    if (status != vscf_status_SUCCESS) {
+        goto err1;
+    }
+
+    msg->message_pb.regular_message.cipher_text.arg = vsc_buffer_shallow_copy(cipher_text);
+
+err1:
+    vsc_buffer_destroy(&cipher_text);
+
+err:
+    vsc_buffer_destroy(&salt);
+
+    if (status != vscf_status_SUCCESS) {
+        VSCF_ERROR_SAFE_UPDATE(error, status);
+        vscf_group_session_message_destroy(&msg);
+        return NULL;
+    }
 
     return msg;
 }
@@ -409,12 +495,13 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
 VSCF_PUBLIC size_t
 vscf_group_session_decrypt_len(vscf_group_session_t *self, const vscf_group_session_message_t *message) {
 
-    //  TODO: Check if session_id match
     //  TODO: This is STUB. Implement me.
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message);
+    VSCF_ASSERT(message->message_pb.has_regular_message);
+    VSCF_ASSERT_PTR(message->header_pb);
 
-    return 0;
+    return vsc_buffer_len(message->message_pb.regular_message.cipher_text.arg);
 }
 
 //
@@ -429,9 +516,26 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
     VSCF_ASSERT(vsc_data_is_valid(public_key));
     VSCF_ASSERT(vsc_data_is_valid(sender_id));
     VSCF_ASSERT_PTR(message);
+    VSCF_ASSERT(message->message_pb.has_regular_message);
+    VSCF_ASSERT_PTR(message->header_pb);
     VSCF_ASSERT_PTR(plain_text);
+    VSCF_ASSERT_PTR(self->last_epoch);
 
-    return vscf_status_SUCCESS;
+    if (memcmp(self->session_id, message->header_pb->session_id, sizeof(self->session_id)) != 0) {
+        // FIXME
+        return vscf_status_ERROR_RANDOM_FAILED;
+    }
+
+    // TODO: Check length
+
+    // TODO: Find epoch
+    vscf_status_t status = vscf_message_cipher_decrypt_then_remove_pad(self->cipher,
+            vsc_buffer_data(message->message_pb.regular_message.cipher_text.arg), self->last_epoch->value->key,
+            message->header_pb->salt,
+            vsc_data(message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size),
+            plain_text);
+
+    return status;
 }
 
 //
