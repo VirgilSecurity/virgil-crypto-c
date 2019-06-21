@@ -39,8 +39,8 @@
 #include "vscf_assert.h"
 #include "vscf_sha256.h"
 #include "vscf_kdf1.h"
-
 #include "vscf_base64.h"
+#include "vscf_key_asn1_deserializer.h"
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
@@ -60,20 +60,14 @@ const char VSCF_PHP_EXTNAME[] = "vscf_php";
 
 const char VSCF_IMPL_PHP_RES_NAME[] = "vscf_php";
 const char VSCF_BASE64_PHP_RES_NAME[] = "vscf_php_base64";
+const char VSCF_KEY_ASN1_DESERIALIZER_PHP_RES_NAME[] = "vscf_php_key_asn1_deserializer";
 
 // --------------------------------------------------------------------------
 //  Registered resources
 // --------------------------------------------------------------------------
 int le_vscf_impl;
 int le_vscf_base64;
-
-zend_class_entry* my_exception_ce;
-
-extension.onStartup([]() {
-    zend_class_entry ce;
-    INIT_CLASS_ENTRY(ce, "MyExtension\\Exceptions\\CustomOne", NULL);
-    my_exception_ce = zend_register_internal_class_ex(&ce, zend_exception_get_default(), NULL);
-});
+int le_vscf_key_asn1_deserializer;
 
 
 // --------------------------------------------------------------------------
@@ -748,6 +742,59 @@ success:
     vsc_buffer_destroy(&data);
 }
 
+//
+//  Wrap method: vscf_key_asn1_deserializer_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_key_asn1_deserializer_new_php /*name*/,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vscf_key_asn1_deserializer_new_php) {
+    vscf_key_asn1_deserializer_t *key_asn1_deserializer = vscf_key_asn1_deserializer_new();
+    zend_resource *key_asn1_deserializer_res = zend_register_resource(key_asn1_deserializer, le_vscf_key_asn1_deserializer);
+    RETVAL_RES(key_asn1_deserializer_res);
+}
+
+//
+//  Wrap method: vscf_key_asn1_deserializer_delete
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_key_asn1_deserializer_delete_php /*name*/,
+        0 /*_unused*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+    ZEND_ARG_INFO(0, c_ctx)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vscf_key_asn1_deserializer_delete_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Fetch for type checking and then release
+    //
+    vscf_key_asn1_deserializer_t *key_asn1_deserializer = zend_fetch_resource_ex(in_cctx, VSCF_KEY_ASN1_DESERIALIZER_PHP_RES_NAME, le_vscf_key_asn1_deserializer);
+    VSCF_ASSERT_PTR(key_asn1_deserializer);
+    zend_list_close(Z_RES_P(in_cctx));
+    RETURN_TRUE;
+}
+
 // --------------------------------------------------------------------------
 //  Define all function entries
 // --------------------------------------------------------------------------
@@ -767,6 +814,9 @@ static zend_function_entry vscf_php_functions[] = {
     // Base64
     PHP_FE(vscf_base64_encode_php, arginfo_vscf_base64_encode_php)
     PHP_FE(vscf_base64_decode_php, arginfo_vscf_base64_decode_php)
+    // KEY_ASN1_DESERIALIZER
+    PHP_FE(vscf_key_asn1_deserializer_new_php, arginfo_vscf_key_asn1_deserializer_new_php)
+    PHP_FE(vscf_key_asn1_deserializer_delete_php, arginfo_vscf_key_asn1_deserializer_delete_php)
     PHP_FE_END
 };
 
@@ -801,10 +851,17 @@ static void vscf_dtor_php(zend_resource *rsrc) {
     vscf_impl_delete((vscf_impl_t *)rsrc->ptr);
 }
 
+static void vscf_key_asn1_deserializer_dtor_php(zend_resource *rsrc) {
+    vscf_key_asn1_deserializer_delete((vscf_key_asn1_deserializer_t *)rsrc->ptr);
+}
+
 PHP_MINIT_FUNCTION(vscf_php) {
 
     le_vscf_impl = zend_register_list_destructors_ex(
             vscf_dtor_php, NULL, VSCF_IMPL_PHP_RES_NAME, module_number);
+
+    le_vscf_key_asn1_deserializer = zend_register_list_destructors_ex(
+            vscf_key_asn1_deserializer_dtor_php, NULL, VSCF_KEY_ASN1_DESERIALIZER_PHP_RES_NAME, module_number);
 
     return SUCCESS;
 }
