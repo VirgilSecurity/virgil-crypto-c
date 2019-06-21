@@ -57,6 +57,8 @@
 #include <GroupMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
+#include <ed25519/ed25519.h>
+#include <virgil/crypto/foundation/vscf_foundation_public.h>
 
 // clang-format on
 //  @end
@@ -430,8 +432,29 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
     VSCF_ASSERT(vsc_data_is_valid(plain_text));
 
     // TODO: Check plain_text len
+    // TODO: Add signature
 
     vscf_status_t status;
+
+    vscf_key_asn1_deserializer_t *deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(deserializer);
+
+    vscf_error_t asn1_error;
+    vscf_error_reset(&asn1_error);
+
+    vscf_raw_key_t *raw_key =
+            vscf_key_asn1_deserializer_deserialize_private_key(deserializer, private_key, &asn1_error);
+
+    if (asn1_error.status != vscf_status_SUCCESS) {
+        status = asn1_error.status;
+        goto err;
+    }
+
+    if (vscf_raw_key_alg_id(raw_key) != vscf_alg_id_ED25519) {
+        // FIXME
+        status = vscf_status_ERROR_RANDOM_FAILED;
+        goto err;
+    }
 
     // FIXME
     vsc_buffer_t *salt = vsc_buffer_new_with_capacity(32);
@@ -439,7 +462,7 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
     status = vscf_random(self->rng, 32, salt);
 
     if (status != vscf_status_SUCCESS) {
-        goto err;
+        goto err1;
     }
 
     vscf_group_session_message_t *msg = vscf_group_session_message_new();
@@ -472,13 +495,26 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
         goto err1;
     }
 
+    int ed_status = ed25519_sign(msg->message_pb.regular_message.signature, vscf_raw_key_data(raw_key).bytes,
+            vsc_buffer_bytes(cipher_text), vsc_buffer_len(cipher_text));
+
+    if (ed_status != 0) {
+        // FIXME
+        status = ed_status == 1 ? vscf_status_ERROR_RANDOM_FAILED : vscf_status_ERROR_RANDOM_FAILED;
+        goto err2;
+    }
+
     msg->message_pb.regular_message.cipher_text.arg = vsc_buffer_shallow_copy(cipher_text);
 
-err1:
+err2:
     vsc_buffer_destroy(&cipher_text);
 
-err:
+err1:
     vsc_buffer_destroy(&salt);
+
+err:
+    vscf_raw_key_destroy(&raw_key);
+    vscf_key_asn1_deserializer_destroy(&deserializer);
 
     if (status != vscf_status_SUCCESS) {
         VSCF_ERROR_SAFE_UPDATE(error, status);
@@ -511,7 +547,6 @@ VSCF_PUBLIC vscf_status_t
 vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_message_t *message,
         vsc_data_t public_key, vsc_data_t sender_id, vsc_buffer_t *plain_text) {
 
-    //  TODO: This is STUB. Implement me.
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(public_key));
     VSCF_ASSERT(vsc_data_is_valid(sender_id));
@@ -526,14 +561,49 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
         return vscf_status_ERROR_RANDOM_FAILED;
     }
 
-    // TODO: Check length
+    vscf_status_t status = vscf_status_SUCCESS;
 
+    vscf_key_asn1_deserializer_t *deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_raw_key_t *raw_key = vscf_key_asn1_deserializer_deserialize_public_key(deserializer, public_key, &error);
+
+    if (error.status != vscf_status_SUCCESS) {
+        status = error.status;
+        goto err;
+    }
+
+    if (vscf_raw_key_alg_id(raw_key) != vscf_alg_id_ED25519) {
+        // FIXME
+        status = vscf_status_ERROR_RANDOM_FAILED;
+        goto err;
+    }
+
+    int ed_status = ed25519_verify(message->message_pb.regular_message.signature, vscf_raw_key_data(raw_key).bytes,
+            vsc_buffer_bytes(message->message_pb.regular_message.cipher_text.arg),
+            vsc_buffer_len(message->message_pb.regular_message.cipher_text.arg));
+
+    if (ed_status != 0) {
+        // FIXME
+        status = ed_status == 1 ? vscf_status_ERROR_RANDOM_FAILED : vscf_status_ERROR_RANDOM_FAILED;
+        goto err;
+    }
+
+    // TODO: Check length
     // TODO: Find epoch
-    vscf_status_t status = vscf_message_cipher_decrypt_then_remove_pad(self->cipher,
+
+    status = vscf_message_cipher_decrypt_then_remove_pad(self->cipher,
             vsc_buffer_data(message->message_pb.regular_message.cipher_text.arg), self->last_epoch->value->key,
             message->header_pb->salt,
             vsc_data(message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size),
             plain_text);
+
+err:
+    vscf_raw_key_destroy(&raw_key);
+    vscf_key_asn1_deserializer_destroy(&deserializer);
 
     return status;
 }

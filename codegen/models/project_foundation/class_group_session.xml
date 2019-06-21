@@ -16,6 +16,9 @@
     <require module="group session message internal" scope="private"/>
     <require module="group session ticket internal" scope="private"/>
 
+    <require impl="ed25519 public key" scope="private"/>
+    <require impl="ed25519 private key" scope="private"/>
+
     <dependency name="rng" interface="random" has_observers="1">
         Random
     </dependency>
