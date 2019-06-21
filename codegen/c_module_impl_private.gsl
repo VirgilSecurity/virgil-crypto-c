@@ -132,6 +132,7 @@ function  _A12_add_struct_impl (meta, destination)
             "
             .name = my.names.property_ref_counter
             .type = "size"
+            .is_atomic = "1"
         endnew
     endnew
 endfunction
@@ -224,6 +225,10 @@ function c_module_impl_private_create (meta, destination)
 
         new require
             .module = my.names.module_impl
+        endnew
+
+        new require
+            .module = my.names.module_atomic
         endnew
 
         _A12_add_struct_info (my.meta, module)

@@ -53,6 +53,8 @@
 #ifndef VSCE_PHE_PRIVATE_H_INCLUDED
 #define VSCE_PHE_PRIVATE_H_INCLUDED
 
+#include "vsce_atomic.h"
+
 // clang-format on
 //  @end
 

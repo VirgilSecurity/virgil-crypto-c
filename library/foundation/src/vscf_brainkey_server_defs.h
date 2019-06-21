@@ -54,6 +54,7 @@
 #define VSCF_BRAINKEY_SERVER_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_atomic.h"
 #include "vscf_impl.h"
 
 #include <mbedtls/ecp.h>
@@ -85,7 +86,7 @@ struct vscf_brainkey_server_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
     //
     //  Dependency to the interface 'random'.
     //

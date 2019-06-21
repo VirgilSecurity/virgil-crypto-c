@@ -48,6 +48,7 @@
 #define VSCR_RATCHET_GROUP_PARTICIPANT_EPOCH_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_atomic.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_common.h"
@@ -82,7 +83,7 @@ struct vscr_ratchet_group_participant_epoch_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCR_ATOMIC size_t refcnt;
 
     uint32_t epoch;
 
@@ -117,7 +118,7 @@ vscr_ratchet_group_participant_epoch_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
 vscr_ratchet_group_participant_epoch_delete(vscr_ratchet_group_participant_epoch_t *self);

@@ -54,6 +54,7 @@
 #define VSCF_KEY_RECIPIENT_INFO_LIST_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_atomic.h"
 #include "vscf_key_recipient_info.h"
 #include "vscf_key_recipient_info_list.h"
 
@@ -83,7 +84,7 @@ struct vscf_key_recipient_info_list_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
 
     vscf_key_recipient_info_t *item;
 

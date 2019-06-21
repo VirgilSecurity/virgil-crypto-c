@@ -295,15 +295,7 @@ vscf_rsa_public_key_init(vscf_rsa_public_key_t *self) {
 VSCF_PUBLIC void
 vscf_rsa_public_key_cleanup(vscf_rsa_public_key_t *self) {
 
-    if (self == NULL || self->info == NULL) {
-        return;
-    }
-
-    if (self->refcnt == 0) {
-        return;
-    }
-
-    if (--self->refcnt > 0) {
+    if (self == NULL) {
         return;
     }
 
@@ -339,11 +331,32 @@ vscf_rsa_public_key_new(void) {
 VSCF_PUBLIC void
 vscf_rsa_public_key_delete(vscf_rsa_public_key_t *self) {
 
+    if (self == NULL) {
+        return;
+    }
+
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscf_rsa_public_key_cleanup(self);
 
-    if (self && (self->refcnt == 0)) {
-        vscf_dealloc(self);
-    }
+    vscf_dealloc(self);
 }
 
 //
@@ -416,7 +429,7 @@ vscf_rsa_public_key_take_hash(vscf_rsa_public_key_t *self, vscf_impl_t *hash) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(self->hash == NULL);
+    VSCF_ASSERT(self->hash == NULL);
 
     VSCF_ASSERT(vscf_hash_is_implemented(hash));
 
@@ -458,7 +471,7 @@ vscf_rsa_public_key_take_random(vscf_rsa_public_key_t *self, vscf_impl_t *random
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(self->random == NULL);
+    VSCF_ASSERT(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
@@ -500,7 +513,7 @@ vscf_rsa_public_key_take_asn1rd(vscf_rsa_public_key_t *self, vscf_impl_t *asn1rd
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1rd);
-    VSCF_ASSERT_PTR(self->asn1rd == NULL);
+    VSCF_ASSERT(self->asn1rd == NULL);
 
     VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1rd));
 
@@ -542,7 +555,7 @@ vscf_rsa_public_key_take_asn1wr(vscf_rsa_public_key_t *self, vscf_impl_t *asn1wr
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1wr);
-    VSCF_ASSERT_PTR(self->asn1wr == NULL);
+    VSCF_ASSERT(self->asn1wr == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1wr));
 

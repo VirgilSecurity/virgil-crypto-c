@@ -40,7 +40,7 @@ import com.virgilsecurity.crypto.foundation.*;
 
 /*
 * Class for server-side PHE crypto operations.
-* This class is thread-safe in case if VSCE_MULTI_THREAD defined
+* This class is thread-safe in case if VSCE_MULTI_THREADING defined.
 */
 public class PheServer implements AutoCloseable {
 

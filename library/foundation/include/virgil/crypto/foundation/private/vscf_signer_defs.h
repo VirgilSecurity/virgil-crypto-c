@@ -54,6 +54,7 @@
 #define VSCF_SIGNER_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_atomic.h"
 #include "vscf_impl.h"
 #include "vscf_asn1wr.h"
 #include "vscf_alg_info_der_serializer.h"
@@ -84,7 +85,7 @@ struct vscf_signer_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
     //
     //  Dependency to the interface 'hash'.
     //

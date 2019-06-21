@@ -156,15 +156,7 @@ vscf_ctr_drbg_init(vscf_ctr_drbg_t *self) {
 VSCF_PUBLIC void
 vscf_ctr_drbg_cleanup(vscf_ctr_drbg_t *self) {
 
-    if (self == NULL || self->info == NULL) {
-        return;
-    }
-
-    if (self->refcnt == 0) {
-        return;
-    }
-
-    if (--self->refcnt > 0) {
+    if (self == NULL) {
         return;
     }
 
@@ -197,11 +189,32 @@ vscf_ctr_drbg_new(void) {
 VSCF_PUBLIC void
 vscf_ctr_drbg_delete(vscf_ctr_drbg_t *self) {
 
+    if (self == NULL) {
+        return;
+    }
+
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscf_ctr_drbg_cleanup(self);
 
-    if (self && (self->refcnt == 0)) {
-        vscf_dealloc(self);
-    }
+    vscf_dealloc(self);
 }
 
 //
@@ -276,7 +289,7 @@ vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_so
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(entropy_source);
-    VSCF_ASSERT_PTR(self->entropy_source == NULL);
+    VSCF_ASSERT(self->entropy_source == NULL);
 
     VSCF_ASSERT(vscf_entropy_source_is_implemented(entropy_source));
 

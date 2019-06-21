@@ -155,15 +155,7 @@ vscf_key_asn1_deserializer_init(vscf_key_asn1_deserializer_t *self) {
 VSCF_PUBLIC void
 vscf_key_asn1_deserializer_cleanup(vscf_key_asn1_deserializer_t *self) {
 
-    if (self == NULL || self->info == NULL) {
-        return;
-    }
-
-    if (self->refcnt == 0) {
-        return;
-    }
-
-    if (--self->refcnt > 0) {
+    if (self == NULL) {
         return;
     }
 
@@ -196,11 +188,32 @@ vscf_key_asn1_deserializer_new(void) {
 VSCF_PUBLIC void
 vscf_key_asn1_deserializer_delete(vscf_key_asn1_deserializer_t *self) {
 
+    if (self == NULL) {
+        return;
+    }
+
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscf_key_asn1_deserializer_cleanup(self);
 
-    if (self && (self->refcnt == 0)) {
-        vscf_dealloc(self);
-    }
+    vscf_dealloc(self);
 }
 
 //
@@ -275,7 +288,7 @@ vscf_key_asn1_deserializer_take_asn1_reader(vscf_key_asn1_deserializer_t *self, 
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1_reader);
-    VSCF_ASSERT_PTR(self->asn1_reader == NULL);
+    VSCF_ASSERT(self->asn1_reader == NULL);
 
     VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
 

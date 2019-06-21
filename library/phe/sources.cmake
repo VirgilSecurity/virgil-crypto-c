@@ -49,6 +49,10 @@ if(NOT TARGET phe)
     message(FATAL_ERROR "Expected target 'phe' to be defined first.")
 endif()
 
+include(CheckIncludeFiles)
+check_include_files(assert.h VSCE_HAVE_ASSERT_H)
+check_include_files(stdatomic.h VSCE_HAVE_STDATOMIC_H)
+
 configure_file(
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_platform.h.in"
         "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/phe/vsce_platform.h"
@@ -114,6 +118,7 @@ target_sources(phe
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_assert.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_library.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_memory.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/private/vsce_atomic.h"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_const.h"
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/phe/vsce_platform.h"
             "$<$<BOOL:${VSCE_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_error.h>"

@@ -133,17 +133,11 @@ vsce_phe_cipher_cleanup(vsce_phe_cipher_t *self) {
         return;
     }
 
-    if (self->refcnt == 0) {
-        return;
-    }
+    vsce_phe_cipher_cleanup_ctx(self);
 
-    if (--self->refcnt == 0) {
-        vsce_phe_cipher_cleanup_ctx(self);
+    vsce_phe_cipher_release_random(self);
 
-        vsce_phe_cipher_release_random(self);
-
-        vsce_zeroize(self, sizeof(vsce_phe_cipher_t));
-    }
+    vsce_zeroize(self, sizeof(vsce_phe_cipher_t));
 }
 
 //
@@ -164,7 +158,7 @@ vsce_phe_cipher_new(void) {
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCE_PUBLIC void
 vsce_phe_cipher_delete(vsce_phe_cipher_t *self) {
@@ -173,11 +167,30 @@ vsce_phe_cipher_delete(vsce_phe_cipher_t *self) {
         return;
     }
 
+    size_t old_counter = self->refcnt;
+    VSCE_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCE_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vsce_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
     vsce_phe_cipher_cleanup(self);
 
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+    if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
     }
 }
@@ -205,7 +218,17 @@ vsce_phe_cipher_shallow_copy(vsce_phe_cipher_t *self) {
 
     VSCE_ASSERT_PTR(self);
 
+    #if defined(VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
     ++self->refcnt;
+    #endif
 
     return self;
 }
@@ -238,7 +261,7 @@ vsce_phe_cipher_take_random(vsce_phe_cipher_t *self, vscf_impl_t *random) {
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT_PTR(random);
-    VSCE_ASSERT_PTR(self->random == NULL);
+    VSCE_ASSERT(self->random == NULL);
 
     VSCE_ASSERT(vscf_random_is_implemented(random));
 
