@@ -67,7 +67,7 @@ class Kdf1Test extends \PHPUnit\Framework\TestCase
         unset($this->kdf1);
     }
 
-    public function testDeriveSha256Vector1Success()
+    public function test_Derive_WithSha256AndKeyLength32Vector1_DerivedLength32()
     {
         $this->kdf1->useHash($this->sha256);
         $hash = $this->sha256->hash($this->testVector1);
@@ -76,7 +76,7 @@ class Kdf1Test extends \PHPUnit\Framework\TestCase
         $this->assertEquals(base64_decode($this->testVector1KeyBase64Encoded), $key);
     }
 
-    public function testDeriveSha256Vector2Success()
+    public function test_Derive_WithSha256AndKeyLength32Vector2_DerivedLength64()
     {
         $this->kdf1->useHash($this->sha256);
         $hash = $this->sha256->hash($this->testVector2);
