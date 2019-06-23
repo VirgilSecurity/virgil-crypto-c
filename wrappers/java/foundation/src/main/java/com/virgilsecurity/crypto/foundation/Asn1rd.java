@@ -53,9 +53,10 @@ public class Asn1rd implements AutoCloseable, Asn1Reader {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Asn1rd(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static Asn1rd getInstance(long cCtx) {
+        Asn1rd newInstance = new Asn1rd();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

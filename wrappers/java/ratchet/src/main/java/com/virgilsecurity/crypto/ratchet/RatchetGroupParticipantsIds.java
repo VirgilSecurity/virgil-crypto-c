@@ -52,20 +52,21 @@ public class RatchetGroupParticipantsIds implements AutoCloseable {
     }
 
     /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public RatchetGroupParticipantsIds(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
-    /*
     * Creates new array for size elements
     */
     public RatchetGroupParticipantsIds(long size) {
         super();
         this.cCtx = RatchetJNI.INSTANCE.ratchetGroupParticipantsIds_new(size);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static RatchetGroupParticipantsIds getInstance(long cCtx) {
+        RatchetGroupParticipantsIds newInstance = new RatchetGroupParticipantsIds();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

@@ -49,15 +49,6 @@ public class KeyAsn1Deserializer implements AutoCloseable, KeyDeserializer {
         this.cCtx = FoundationJNI.INSTANCE.keyAsn1Deserializer_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public KeyAsn1Deserializer(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
     public void setAsn1Reader(Asn1Reader asn1Reader) {
         FoundationJNI.INSTANCE.keyAsn1Deserializer_setAsn1Reader(this.cCtx, asn1Reader);
     }
@@ -85,6 +76,16 @@ public class KeyAsn1Deserializer implements AutoCloseable, KeyDeserializer {
     */
     public RawKey deserializePrivateKeyInplace() throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePrivateKeyInplace(this.cCtx);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static KeyAsn1Deserializer getInstance(long cCtx) {
+        KeyAsn1Deserializer newInstance = new KeyAsn1Deserializer();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

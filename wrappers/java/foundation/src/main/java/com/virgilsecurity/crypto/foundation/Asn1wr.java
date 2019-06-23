@@ -53,9 +53,10 @@ public class Asn1wr implements AutoCloseable, Asn1Writer {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Asn1wr(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static Asn1wr getInstance(long cCtx) {
+        Asn1wr newInstance = new Asn1wr();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

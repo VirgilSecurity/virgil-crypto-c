@@ -50,15 +50,6 @@ public class EcAlgInfo implements AutoCloseable, AlgInfo {
     }
 
     /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public EcAlgInfo(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
-    /*
     * Create algorithm info with EC generic key identificator, EC domain group identificator.
     */
     public EcAlgInfo(AlgId algId, OidId keyId, OidId domainId) {
@@ -78,6 +69,16 @@ public class EcAlgInfo implements AutoCloseable, AlgInfo {
     */
     public OidId domainId() {
         return FoundationJNI.INSTANCE.ecAlgInfo_domainId(this.cCtx);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static EcAlgInfo getInstance(long cCtx) {
+        EcAlgInfo newInstance = new EcAlgInfo();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

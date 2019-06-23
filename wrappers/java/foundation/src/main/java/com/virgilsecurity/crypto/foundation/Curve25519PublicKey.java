@@ -49,15 +49,6 @@ public class Curve25519PublicKey implements AutoCloseable, Alg, Key, Encrypt, Pu
         this.cCtx = FoundationJNI.INSTANCE.curve25519PublicKey_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public Curve25519PublicKey(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
     public void setRandom(Random random) {
         FoundationJNI.INSTANCE.curve25519PublicKey_setRandom(this.cCtx, random);
     }
@@ -71,6 +62,16 @@ public class Curve25519PublicKey implements AutoCloseable, Alg, Key, Encrypt, Pu
     */
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.curve25519PublicKey_setupDefaults(this.cCtx);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static Curve25519PublicKey getInstance(long cCtx) {
+        Curve25519PublicKey newInstance = new Curve25519PublicKey();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

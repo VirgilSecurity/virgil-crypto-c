@@ -50,20 +50,21 @@ public class PasswordRecipientInfo implements AutoCloseable {
     }
 
     /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public PasswordRecipientInfo(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
-    /*
     * Create object and define all properties.
     */
     public PasswordRecipientInfo(AlgInfo keyEncryptionAlgorithm, byte[] encryptedKey) {
         super();
         this.cCtx = FoundationJNI.INSTANCE.passwordRecipientInfo_new(keyEncryptionAlgorithm, encryptedKey);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static PasswordRecipientInfo getInstance(long cCtx) {
+        PasswordRecipientInfo newInstance = new PasswordRecipientInfo();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

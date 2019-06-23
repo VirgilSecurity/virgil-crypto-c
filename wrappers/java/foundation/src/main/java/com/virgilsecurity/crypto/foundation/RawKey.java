@@ -50,21 +50,22 @@ public class RawKey implements AutoCloseable {
     }
 
     /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public RawKey(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
-    /*
     * Creates raw key defined with algorithm and data.
     * Note, data is copied.
     */
     public RawKey(AlgId algId, byte[] rawKeyData) {
         super();
         this.cCtx = FoundationJNI.INSTANCE.rawKey_new(algId, rawKeyData);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static RawKey getInstance(long cCtx) {
+        RawKey newInstance = new RawKey();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

@@ -49,15 +49,6 @@ public class Ed25519PrivateKey implements AutoCloseable, Alg, Key, GenerateKey, 
         this.cCtx = FoundationJNI.INSTANCE.ed25519PrivateKey_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public Ed25519PrivateKey(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
     public void setRandom(Random random) {
         FoundationJNI.INSTANCE.ed25519PrivateKey_setRandom(this.cCtx, random);
     }
@@ -71,6 +62,16 @@ public class Ed25519PrivateKey implements AutoCloseable, Alg, Key, GenerateKey, 
     */
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.ed25519PrivateKey_setupDefaults(this.cCtx);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static Ed25519PrivateKey getInstance(long cCtx) {
+        Ed25519PrivateKey newInstance = new Ed25519PrivateKey();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

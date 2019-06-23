@@ -49,17 +49,18 @@ public class Hmac implements AutoCloseable, Alg, Mac {
         this.cCtx = FoundationJNI.INSTANCE.hmac_new();
     }
 
+    public void setHash(Hash hash) {
+        FoundationJNI.INSTANCE.hmac_setHash(this.cCtx, hash);
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Hmac(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
-    public void setHash(Hash hash) {
-        FoundationJNI.INSTANCE.hmac_setHash(this.cCtx, hash);
+    public static Hmac getInstance(long cCtx) {
+        Hmac newInstance = new Hmac();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */
