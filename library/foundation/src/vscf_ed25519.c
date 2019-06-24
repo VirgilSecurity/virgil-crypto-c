@@ -283,8 +283,8 @@ vscf_ed25519_signature_len(const vscf_ed25519_t *self, const vscf_impl_t *privat
 //  Sign data digest with a given private key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ed25519_sign(const vscf_ed25519_t *self, const vscf_impl_t *private_key, vscf_alg_id_t hash_id, vsc_data_t digest,
-        vsc_buffer_t *signature) {
+vscf_ed25519_sign_hash(const vscf_ed25519_t *self, const vscf_impl_t *private_key, vscf_alg_id_t hash_id,
+        vsc_data_t digest, vsc_buffer_t *signature) {
 
     //  TODO: This is STUB. Implement me.
 }
@@ -302,8 +302,8 @@ vscf_ed25519_can_verify(const vscf_ed25519_t *self, const vscf_impl_t *public_ke
 //  Verify data digest with a given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_ed25519_verify(const vscf_ed25519_t *self, const vscf_impl_t *public_key, vscf_alg_id_t hash_id, vsc_data_t digest,
-        vsc_data_t signature) {
+vscf_ed25519_verify_hash(const vscf_ed25519_t *self, const vscf_impl_t *public_key, vscf_alg_id_t hash_id,
+        vsc_data_t digest, vsc_data_t signature) {
 
     //  TODO: This is STUB. Implement me.
 }
@@ -313,8 +313,8 @@ vscf_ed25519_verify(const vscf_ed25519_t *self, const vscf_impl_t *public_key, v
 //  Note, computed shared key can be used only within symmetric cryptography.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ed25519_compute_shared_key(
-        const vscf_ed25519_t *self, vscf_impl_t *public_key, vscf_impl_t *private_key, vsc_buffer_t *shared_key) {
+vscf_ed25519_compute_shared_key(const vscf_ed25519_t *self, const vscf_impl_t *public_key,
+        const vscf_impl_t *private_key, vsc_buffer_t *shared_key) {
 
     //  TODO: This is STUB. Implement me.
 }

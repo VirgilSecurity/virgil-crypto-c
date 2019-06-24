@@ -98,7 +98,11 @@ struct vscf_ecc_private_key_t {
     //
     //  Implementation specific context.
     //
-    mbedtls_ecp_keypair keypair;
+    mbedtls_ecp_group ecc_grp;
+    //
+    //  Implementation specific context.
+    //
+    mbedtls_mpi ecc_priv;
 };
 
 

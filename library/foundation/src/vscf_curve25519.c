@@ -451,8 +451,8 @@ vscf_curve25519_decrypted_len(const vscf_curve25519_t *self, const vscf_impl_t *
 //  Note, computed shared key can be used only within symmetric cryptography.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_curve25519_compute_shared_key(
-        const vscf_curve25519_t *self, vscf_impl_t *public_key, vscf_impl_t *private_key, vsc_buffer_t *shared_key) {
+vscf_curve25519_compute_shared_key(const vscf_curve25519_t *self, const vscf_impl_t *public_key,
+        const vscf_impl_t *private_key, vsc_buffer_t *shared_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);

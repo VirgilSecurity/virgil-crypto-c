@@ -47,29 +47,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provide an interface for signing and verifying data digest
-//  with asymmetric keys.
+//  Bridge between MbedTLS ECP module and virgil foundation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_KEY_SIGNER_H_INCLUDED
-#define VSCF_KEY_SIGNER_H_INCLUDED
+#ifndef VSCF_MBEDTLS_ECP_H_INCLUDED
+#define VSCF_MBEDTLS_ECP_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_key_alg.h"
 #include "vscf_alg_id.h"
-#include "vscf_status.h"
-#include "vscf_api.h"
 
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#include <mbedtls/ecp.h>
 
 // clang-format on
 //  @end
@@ -87,66 +74,16 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'key signer'.
+//  Map "alg id" to correspond "mbedtls_ecp_group_id".
 //
-typedef struct vscf_key_signer_api_t vscf_key_signer_api_t;
+VSCF_PUBLIC mbedtls_ecp_group_id
+vscf_mbedtls_ecp_group_id_from_alg_id(vscf_alg_id_t alg_id);
 
 //
-//  Check if algorithm can sign data digest with a given key.
+//  Map "mbedtls_ecp_group_id" to correspond "alg id".
 //
-VSCF_PUBLIC bool
-vscf_key_signer_can_sign(const vscf_impl_t *impl, const vscf_impl_t *private_key);
-
-//
-//  Return length in bytes required to hold signature.
-//  Return zero if a given private key can not produce signatures.
-//
-VSCF_PUBLIC size_t
-vscf_key_signer_signature_len(const vscf_impl_t *impl, const vscf_impl_t *private_key);
-
-//
-//  Sign data digest with a given private key.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_key_signer_sign_hash(const vscf_impl_t *impl, const vscf_impl_t *private_key, vscf_alg_id_t hash_id,
-        vsc_data_t digest, vsc_buffer_t *signature) VSCF_NODISCARD;
-
-//
-//  Check if algorithm can verify data digest with a given key.
-//
-VSCF_PUBLIC bool
-vscf_key_signer_can_verify(const vscf_impl_t *impl, const vscf_impl_t *public_key);
-
-//
-//  Verify data digest with a given public key and signature.
-//
-VSCF_PUBLIC bool
-vscf_key_signer_verify_hash(const vscf_impl_t *impl, const vscf_impl_t *public_key, vscf_alg_id_t hash_id,
-        vsc_data_t digest, vsc_data_t signature);
-
-//
-//  Return key signer API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_key_signer_api_t *
-vscf_key_signer_api(const vscf_impl_t *impl);
-
-//
-//  Return key alg API.
-//
-VSCF_PUBLIC const vscf_key_alg_api_t *
-vscf_key_signer_key_alg_api(const vscf_key_signer_api_t *key_signer_api);
-
-//
-//  Check if given object implements interface 'key signer'.
-//
-VSCF_PUBLIC bool
-vscf_key_signer_is_implemented(const vscf_impl_t *impl);
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_key_signer_api_tag(const vscf_key_signer_api_t *key_signer_api);
+VSCF_PUBLIC vscf_alg_id_t
+vscf_mbedtls_ecp_group_id_to_alg_id(mbedtls_ecp_group_id grp_id);
 
 
 // --------------------------------------------------------------------------
@@ -162,5 +99,5 @@ vscf_key_signer_api_tag(const vscf_key_signer_api_t *key_signer_api);
 
 
 //  @footer
-#endif // VSCF_KEY_SIGNER_H_INCLUDED
+#endif // VSCF_MBEDTLS_ECP_H_INCLUDED
 //  @end

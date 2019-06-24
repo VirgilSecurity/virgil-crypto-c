@@ -99,7 +99,7 @@ typedef size_t (*vscf_key_signer_api_signature_len_fn)(const vscf_impl_t *impl, 
 //
 //  Callback. Sign data digest with a given private key.
 //
-typedef vscf_status_t (*vscf_key_signer_api_sign_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key,
+typedef vscf_status_t (*vscf_key_signer_api_sign_hash_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key,
         vscf_alg_id_t hash_id, vsc_data_t digest, vsc_buffer_t *signature);
 
 //
@@ -110,7 +110,7 @@ typedef bool (*vscf_key_signer_api_can_verify_fn)(const vscf_impl_t *impl, const
 //
 //  Callback. Verify data digest with a given public key and signature.
 //
-typedef bool (*vscf_key_signer_api_verify_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key,
+typedef bool (*vscf_key_signer_api_verify_hash_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key,
         vscf_alg_id_t hash_id, vsc_data_t digest, vsc_data_t signature);
 
 //
@@ -142,7 +142,7 @@ struct vscf_key_signer_api_t {
     //
     //  Sign data digest with a given private key.
     //
-    vscf_key_signer_api_sign_fn sign_cb;
+    vscf_key_signer_api_sign_hash_fn sign_hash_cb;
     //
     //  Check if algorithm can verify data digest with a given key.
     //
@@ -150,7 +150,7 @@ struct vscf_key_signer_api_t {
     //
     //  Verify data digest with a given public key and signature.
     //
-    vscf_key_signer_api_verify_fn verify_cb;
+    vscf_key_signer_api_verify_hash_fn verify_hash_cb;
 };
 
 

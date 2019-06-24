@@ -87,7 +87,7 @@ extern "C" {
 //          Note, computed shared key can be used only within symmetric cryptography.
 //
 typedef vscf_status_t (*vscf_compute_shared_key_api_compute_shared_key_fn)(const vscf_impl_t *impl,
-        vscf_impl_t *public_key, vscf_impl_t *private_key, vsc_buffer_t *shared_key);
+        const vscf_impl_t *public_key, const vscf_impl_t *private_key, vsc_buffer_t *shared_key);
 
 //
 //  Callback. Return number of bytes required to hold shared key.

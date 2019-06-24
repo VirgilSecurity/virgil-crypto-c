@@ -1,0 +1,21 @@
+<class name="mbedtls ecp" scope="internal">
+    Bridge between MbedTLS ECP module and virgil foundation.
+
+    <require header="mbedtls/ecp.h" scope="public"/>
+
+    <method name="group id from alg id" is_static="1">
+        Map "alg id" to correspond "mbedtls_ecp_group_id".
+
+        <argument name="alg id" enum="alg id"/>
+
+        <return enum="mbedtls_ecp_group_id" library="mbedtls"/>
+    </method>
+
+    <method name="group id to alg id" is_static="1">
+        Map "mbedtls_ecp_group_id" to correspond  "alg id".
+
+        <argument name="grp id" enum="mbedtls_ecp_group_id" library="mbedtls"/>
+
+        <return enum="alg id"/>
+    </method>
+</class>

@@ -123,6 +123,7 @@ option(VSCF_ERROR "Enable class 'error'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
 option(VSCF_MBEDTLS_MD "Enable class 'mbedtls md'." ON)
+option(VSCF_MBEDTLS_ECP "Enable class 'mbedtls ecp'." ON)
 option(VSCF_OID "Enable class 'oid'." ON)
 option(VSCF_BASE64 "Enable class 'base64'." ON)
 option(VSCF_PEM "Enable class 'pem'." ON)
@@ -225,6 +226,7 @@ mark_as_advanced(
         VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
         VSCF_MBEDTLS_BIGNUM_ASN1_READER
         VSCF_MBEDTLS_MD
+        VSCF_MBEDTLS_ECP
         VSCF_OID
         VSCF_BASE64
         VSCF_PEM
@@ -691,6 +693,24 @@ if(VSCF_RSA AND NOT VSCF_ALG)
     message(FATAL_ERROR)
 endif()
 
+if(VSCF_ECC_PUBLIC_KEY AND NOT VSCF_MBEDTLS_ECP)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ECC_PUBLIC_KEY depends on the feature:")
+    message("     VSCF_MBEDTLS_ECP - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ECC_PRIVATE_KEY AND NOT VSCF_MBEDTLS_ECP)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ECC_PRIVATE_KEY depends on the feature:")
+    message("     VSCF_MBEDTLS_ECP - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCF_ECC AND NOT MBEDTLS_ECP_C)
     message("-- error --")
     message("--")
@@ -781,11 +801,20 @@ if(VSCF_ECC AND NOT VSCF_MBEDTLS_MD)
     message(FATAL_ERROR)
 endif()
 
-if(VSCF_ECC AND NOT VSCF_EC_ALG_INFO)
+if(VSCF_ECC AND NOT VSCF_MBEDTLS_ECP)
     message("-- error --")
     message("--")
     message("Feature VSCF_ECC depends on the feature:")
-    message("     VSCF_EC_ALG_INFO - which is disabled.")
+    message("     VSCF_MBEDTLS_ECP - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ECC AND NOT VSCF_SIMPLE_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ECC depends on the feature:")
+    message("     VSCF_SIMPLE_ALG_INFO - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

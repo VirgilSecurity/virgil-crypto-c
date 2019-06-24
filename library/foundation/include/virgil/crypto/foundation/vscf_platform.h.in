@@ -386,6 +386,10 @@ extern "C" {
 #cmakedefine01 VSCF_MBEDTLS_MD
 #endif
 
+#ifndef VSCF_MBEDTLS_ECP
+#cmakedefine01 VSCF_MBEDTLS_ECP
+#endif
+
 #ifndef VSCF_OID
 #cmakedefine01 VSCF_OID
 #endif

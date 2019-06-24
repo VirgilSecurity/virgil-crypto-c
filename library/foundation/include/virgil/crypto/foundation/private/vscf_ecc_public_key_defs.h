@@ -102,7 +102,7 @@ struct vscf_ecc_public_key_t {
     //
     //  Implementation specific context.
     //
-    mbedtls_ecp_point ecc_public;
+    mbedtls_ecp_point ecc_pub;
 };
 
 

@@ -62,13 +62,13 @@
 #include "vscf_alg_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 // clang-format on
@@ -359,7 +359,7 @@ vscf_ecc_signature_len(const vscf_ecc_t *self, const vscf_impl_t *private_key);
 //  Sign data digest with a given private key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ecc_sign(const vscf_ecc_t *self, const vscf_impl_t *private_key, vscf_alg_id_t hash_id, vsc_data_t digest,
+vscf_ecc_sign_hash(const vscf_ecc_t *self, const vscf_impl_t *private_key, vscf_alg_id_t hash_id, vsc_data_t digest,
         vsc_buffer_t *signature) VSCF_NODISCARD;
 
 //
@@ -372,7 +372,7 @@ vscf_ecc_can_verify(const vscf_ecc_t *self, const vscf_impl_t *public_key);
 //  Verify data digest with a given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_ecc_verify(const vscf_ecc_t *self, const vscf_impl_t *public_key, vscf_alg_id_t hash_id, vsc_data_t digest,
+vscf_ecc_verify_hash(const vscf_ecc_t *self, const vscf_impl_t *public_key, vscf_alg_id_t hash_id, vsc_data_t digest,
         vsc_data_t signature);
 
 //
@@ -380,7 +380,7 @@ vscf_ecc_verify(const vscf_ecc_t *self, const vscf_impl_t *public_key, vscf_alg_
 //  Note, computed shared key can be used only within symmetric cryptography.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ecc_compute_shared_key(const vscf_ecc_t *self, vscf_impl_t *public_key, vscf_impl_t *private_key,
+vscf_ecc_compute_shared_key(const vscf_ecc_t *self, const vscf_impl_t *public_key, const vscf_impl_t *private_key,
         vsc_buffer_t *shared_key) VSCF_NODISCARD;
 
 //

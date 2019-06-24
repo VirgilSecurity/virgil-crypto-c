@@ -265,7 +265,7 @@ static const vscf_key_signer_api_t key_signer_api = {
     //
     //  Sign data digest with a given private key.
     //
-    (vscf_key_signer_api_sign_fn)vscf_rsa_sign,
+    (vscf_key_signer_api_sign_hash_fn)vscf_rsa_sign_hash,
     //
     //  Check if algorithm can verify data digest with a given key.
     //
@@ -273,7 +273,7 @@ static const vscf_key_signer_api_t key_signer_api = {
     //
     //  Verify data digest with a given public key and signature.
     //
-    (vscf_key_signer_api_verify_fn)vscf_rsa_verify
+    (vscf_key_signer_api_verify_hash_fn)vscf_rsa_verify_hash
 };
 
 //

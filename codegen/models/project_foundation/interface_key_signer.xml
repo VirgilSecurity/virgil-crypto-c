@@ -23,7 +23,7 @@
     </method>
 
 
-    <method name="sign" is_const="1">
+    <method name="sign hash" is_const="1">
         Sign data digest with a given private key.
 
         <argument name="private key" interface="private key"/>
@@ -46,7 +46,7 @@
     </method>
 
 
-    <method name="verify" is_const="1">
+    <method name="verify hash" is_const="1">
         Verify data digest with a given public key and signature.
 
         <argument name="public key" interface="public key"/>

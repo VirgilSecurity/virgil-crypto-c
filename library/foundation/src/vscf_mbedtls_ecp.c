@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'ecc public key' implementation.
+//  Bridge between MbedTLS ECP module and virgil foundation.
 // --------------------------------------------------------------------------
 
 
@@ -50,12 +50,9 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_ecc_public_key.h"
-#include "vscf_assert.h"
-#include "vscf_memory.h"
 #include "vscf_mbedtls_ecp.h"
-#include "vscf_ecc_public_key_defs.h"
-#include "vscf_ecc_public_key_internal.h"
+#include "vscf_memory.h"
+#include "vscf_assert.h"
 
 // clang-format on
 //  @end
@@ -76,70 +73,19 @@
 
 
 //
-//  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_ecc_public_key_init() is called.
-//  Note, that context is already zeroed.
+//  Map "alg id" to correspond "mbedtls_ecp_group_id".
 //
-VSCF_PRIVATE void
-vscf_ecc_public_key_init_ctx(vscf_ecc_public_key_t *self) {
+VSCF_PUBLIC mbedtls_ecp_group_id
+vscf_mbedtls_ecp_group_id_from_alg_id(vscf_alg_id_t alg_id) {
 
-    VSCF_ASSERT_PTR(self);
-
-    self->impl_tag = vscf_impl_tag_ECC;
-    mbedtls_ecp_group_init(&self->ecc_grp);
-    mbedtls_ecp_point_init(&self->ecc_pub);
+    //  TODO: This is STUB. Implement me.
 }
 
 //
-//  Release resources of the implementation specific context.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-VSCF_PRIVATE void
-vscf_ecc_public_key_cleanup_ctx(vscf_ecc_public_key_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    mbedtls_ecp_group_free(&self->ecc_grp);
-    mbedtls_ecp_point_free(&self->ecc_pub);
-}
-
-//
-//  Algorithm identifier the key belongs to.
+//  Map "mbedtls_ecp_group_id" to correspond "alg id".
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_ecc_public_key_alg_id(const vscf_ecc_public_key_t *self) {
+vscf_mbedtls_ecp_group_id_to_alg_id(mbedtls_ecp_group_id grp_id) {
 
-    VSCF_ASSERT_PTR(self);
-    return vscf_mbedtls_ecp_group_id_to_alg_id(self->ecc_grp.id);
-}
-
-//
-//  Length of the key in bytes.
-//
-VSCF_PUBLIC size_t
-vscf_ecc_public_key_len(const vscf_ecc_public_key_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    return self->ecc_grp.pbits / 8;
-}
-
-//
-//  Length of the key in bits.
-//
-VSCF_PUBLIC size_t
-vscf_ecc_public_key_bitlen(const vscf_ecc_public_key_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    return self->ecc_grp.pbits;
-}
-
-//
-//  Return tag of an associated algorithm that can handle this key.
-//
-VSCF_PRIVATE vscf_impl_tag_t
-vscf_ecc_public_key_impl_tag(const vscf_ecc_public_key_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    return self->impl_tag;
+    //  TODO: This is STUB. Implement me.
 }

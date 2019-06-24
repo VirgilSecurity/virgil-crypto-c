@@ -130,6 +130,7 @@ target_compile_definitions(foundation
             "VSCF_MBEDTLS_BIGNUM_ASN1_WRITER=$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_WRITER}>"
             "VSCF_MBEDTLS_BIGNUM_ASN1_READER=$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_READER}>"
             "VSCF_MBEDTLS_MD=$<BOOL:${VSCF_MBEDTLS_MD}>"
+            "VSCF_MBEDTLS_ECP=$<BOOL:${VSCF_MBEDTLS_ECP}>"
             "VSCF_OID=$<BOOL:${VSCF_OID}>"
             "VSCF_BASE64=$<BOOL:${VSCF_BASE64}>"
             "VSCF_PEM=$<BOOL:${VSCF_PEM}>"

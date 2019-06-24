@@ -355,7 +355,7 @@ vscf_rsa_signature_len(const vscf_rsa_t *self, const vscf_impl_t *private_key);
 //  Sign data digest with a given private key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_rsa_sign(const vscf_rsa_t *self, const vscf_impl_t *private_key, vscf_alg_id_t hash_id, vsc_data_t digest,
+vscf_rsa_sign_hash(const vscf_rsa_t *self, const vscf_impl_t *private_key, vscf_alg_id_t hash_id, vsc_data_t digest,
         vsc_buffer_t *signature) VSCF_NODISCARD;
 
 //
@@ -368,7 +368,7 @@ vscf_rsa_can_verify(const vscf_rsa_t *self, const vscf_impl_t *public_key);
 //  Verify data digest with a given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_rsa_verify(const vscf_rsa_t *self, const vscf_impl_t *public_key, vscf_alg_id_t hash_id, vsc_data_t digest,
+vscf_rsa_verify_hash(const vscf_rsa_t *self, const vscf_impl_t *public_key, vscf_alg_id_t hash_id, vsc_data_t digest,
         vsc_data_t signature);
 
 //
@@ -376,7 +376,7 @@ vscf_rsa_verify(const vscf_rsa_t *self, const vscf_impl_t *public_key, vscf_alg_
 //  Note, computed shared key can be used only within symmetric cryptography.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_rsa_compute_shared_key(const vscf_rsa_t *self, vscf_impl_t *public_key, vscf_impl_t *private_key,
+vscf_rsa_compute_shared_key(const vscf_rsa_t *self, const vscf_impl_t *public_key, const vscf_impl_t *private_key,
         vsc_buffer_t *shared_key) VSCF_NODISCARD;
 
 //

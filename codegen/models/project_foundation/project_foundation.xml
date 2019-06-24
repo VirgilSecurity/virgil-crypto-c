@@ -105,6 +105,7 @@
     <class name="mbedtls bignum asn1 writer"/>
     <class name="mbedtls bignum asn1 reader"/>
     <class name="mbedtls md"/>
+    <class name="mbedtls ecp"/>
     <class name="oid"/>
     <class name="base64"/>
     <class name="pem"/>
