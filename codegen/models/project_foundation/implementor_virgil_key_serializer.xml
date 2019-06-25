@@ -6,7 +6,6 @@
 
         <interface name="key serializer"/>
 
-        <require interface="alg"/>
         <require class="raw key"/>
         <require enum="asn1 tag"/>
         <require class="oid"/>
@@ -48,7 +47,6 @@
 
         <interface name="key serializer"/>
 
-        <require interface="alg"/>
         <require class="raw key"/>
         <require enum="asn1 tag"/>
         <require class="oid"/>
@@ -89,7 +87,7 @@
         <method name="is ec key" is_static="1">
             Return true if given key is an Elliptic Curve key defined in the SEC 1.
 
-            <argument name="key" interface="alg"/>
+            <argument name="key" class="raw key"/>
 
             <return type="boolean"/>
         </method>
@@ -104,7 +102,6 @@
 
         <interface name="key serializer"/>
 
-        <require interface="alg"/>
         <require interface="asn1 writer"/>
         <require class="raw key"/>
         <require impl="asn1wr"/>
@@ -149,7 +146,6 @@
 
         <interface name="key deserializer"/>
 
-        <require interface="alg"/>
         <require interface="alg info"/>
         <require class="raw key"/>
         <require impl="alg info der deserializer"/>

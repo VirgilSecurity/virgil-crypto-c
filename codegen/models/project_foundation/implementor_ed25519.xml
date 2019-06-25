@@ -5,7 +5,7 @@
     <implementation name="raw public key">
         Handles interchangeable public key representation.
 
-        <property name="raw key" class="raw key"/>
+        <property name="raw key" class="raw key" access="readonly"/>
         <property name="impl tag" enum="impl/tag"/>
 
         <interface name="key"/>
@@ -29,7 +29,7 @@
     <implementation name="raw private key">
         Handles interchangeable private key representation.
 
-        <property name="raw key" class="raw key"/>
+        <property name="raw key" class="raw key" access="readonly"/>
         <property name="impl tag" enum="impl/tag"/>
 
         <interface name="key"/>

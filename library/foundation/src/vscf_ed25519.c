@@ -88,7 +88,34 @@
 VSCF_PUBLIC vscf_status_t
 vscf_ed25519_setup_defaults(vscf_ed25519_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        vscf_status_t status = vscf_ctr_drbg_setup_defaults(random);
+
+        if (status != vscf_status_SUCCESS) {
+            vscf_ctr_drbg_destroy(&random);
+            return status;
+        }
+
+        self->random = vscf_ctr_drbg_impl(random);
+    }
+
+    if (NULL == self->ecies) {
+        vscf_ecies_t *ecies = vscf_ecies_new();
+        vscf_ecies_use_random(ecies, self->random);
+        vscf_status_t status = vscf_ecies_setup_defaults(ecies);
+
+        if (status != vscf_status_SUCCESS) {
+            vscf_ecies_destroy(&ecies);
+            return status;
+        }
+
+        self->ecies = ecies;
+    }
+
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -98,7 +125,20 @@ vscf_ed25519_setup_defaults(vscf_ed25519_t *self) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_ed25519_generate_key(const vscf_ed25519_t *self, vscf_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
+
+    vsc_buffer_t *key_buf = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
+
+    vscf_status_t status = vscf_random(self->random, ED25519_KEY_LEN, key_buf);
+    if (status != vscf_status_SUCCESS) {
+        vsc_buffer_destroy(&key_buf);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_KEY_GENERATION_FAILED);
+        return NULL;
+    }
+
+    vscf_raw_key_t *raw_key = vscf_raw_key_new_private_with_buffer(vscf_alg_id_ED25519, &key_buf);
+    return vscf_raw_private_key_impl(vscf_raw_private_key_new_with_raw_key(self->info->impl_tag, raw_key));
 }
 
 //
@@ -107,7 +147,8 @@ vscf_ed25519_generate_key(const vscf_ed25519_t *self, vscf_error_t *error) {
 VSCF_PUBLIC vscf_alg_id_t
 vscf_ed25519_alg_id(const vscf_ed25519_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    return vscf_alg_id_ED25519;
 }
 
 //
@@ -116,7 +157,8 @@ vscf_ed25519_alg_id(const vscf_ed25519_t *self) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_ed25519_produce_alg_info(const vscf_ed25519_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ED25519));
 }
 
 //
@@ -125,7 +167,11 @@ vscf_ed25519_produce_alg_info(const vscf_ed25519_t *self) {
 VSCF_PUBLIC vscf_status_t
 vscf_ed25519_restore_alg_info(vscf_ed25519_t *self, const vscf_impl_t *alg_info) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_ED25519);
+
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -134,7 +180,25 @@ vscf_ed25519_restore_alg_info(vscf_ed25519_t *self, const vscf_impl_t *alg_info)
 VSCF_PUBLIC vscf_impl_t *
 vscf_ed25519_extract_public_key(const vscf_ed25519_t *self, const vscf_impl_t *private_key, vscf_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+
+    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
+        return NULL;
+    }
+
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
+    vsc_data_t private_key_data = vscf_raw_private_key_data((const vscf_raw_private_key_t *)(private_key));
+
+    vsc_buffer_t *key_buf = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
+
+    int ret = ed25519_get_pubkey(vsc_buffer_unused_bytes(key_buf), private_key_data.bytes);
+    VSCF_ASSERT(ret == 0);
+
+    vscf_raw_key_t *raw_key = vscf_raw_key_new_public_with_buffer(vscf_alg_id_ED25519, &key_buf);
+    return vscf_raw_public_key_impl(vscf_raw_public_key_new_with_raw_key(self->info->impl_tag, raw_key));
 }
 
 //
@@ -144,7 +208,16 @@ vscf_ed25519_extract_public_key(const vscf_ed25519_t *self, const vscf_impl_t *p
 VSCF_PUBLIC vscf_impl_t *
 vscf_ed25519_generate_ephemeral_key(const vscf_ed25519_t *self, const vscf_impl_t *key, vscf_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(key);
+    VSCF_ASSERT(vscf_key_is_implemented(key));
+
+    if (vscf_key_impl_tag(key) != self->info->impl_tag) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
+        return NULL;
+    }
+
+    return vscf_ed25519_generate_key(self, error);
 }
 
 //
@@ -160,7 +233,27 @@ vscf_ed25519_generate_ephemeral_key(const vscf_ed25519_t *self, const vscf_impl_
 VSCF_PUBLIC vscf_impl_t *
 vscf_ed25519_import_public_key(vscf_ed25519_t *self, const vscf_raw_key_t *raw_key, vscf_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(raw_key);
+    VSCF_ASSERT(vscf_raw_key_is_public(raw_key));
+
+    vsc_data_t raw_key_data = vscf_raw_key_data(raw_key);
+    VSCF_ASSERT(vsc_data_is_valid(raw_key_data));
+
+    if (vscf_raw_key_alg_id(raw_key) != vscf_alg_id_ED25519) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM);
+        return NULL;
+    }
+
+    if (!vsc_data_is_valid(raw_key_data) || (raw_key_data.len != ED25519_KEY_LEN)) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ED25519_PUBLIC_KEY);
+        return NULL;
+    }
+
+    vscf_raw_public_key_t *public_key = vscf_raw_public_key_new_with_raw_key(
+            self->info->impl_tag, vscf_raw_key_shallow_copy((vscf_raw_key_t *)raw_key));
+
+    return vscf_raw_public_key_impl(public_key);
 }
 
 //
@@ -173,7 +266,19 @@ vscf_ed25519_import_public_key(vscf_ed25519_t *self, const vscf_raw_key_t *raw_k
 VSCF_PUBLIC vscf_raw_key_t *
 vscf_ed25519_export_public_key(const vscf_ed25519_t *self, const vscf_impl_t *public_key, vscf_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+
+    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM);
+        return NULL;
+    }
+
+    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
+    vscf_raw_public_key_t *raw_public_key = (vscf_raw_public_key_t *)(public_key);
+
+    return vscf_raw_key_shallow_copy((vscf_raw_key_t *)raw_public_key->raw_key);
 }
 
 //
@@ -189,7 +294,27 @@ vscf_ed25519_export_public_key(const vscf_ed25519_t *self, const vscf_impl_t *pu
 VSCF_PUBLIC vscf_impl_t *
 vscf_ed25519_import_private_key(vscf_ed25519_t *self, const vscf_raw_key_t *raw_key, vscf_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(raw_key);
+    VSCF_ASSERT(!vscf_raw_key_is_public(raw_key));
+
+    vsc_data_t raw_key_data = vscf_raw_key_data(raw_key);
+    VSCF_ASSERT(vsc_data_is_valid(raw_key_data));
+
+    if (vscf_raw_key_alg_id(raw_key) != vscf_alg_id_ED25519) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
+        return NULL;
+    }
+
+    if (!vsc_data_is_valid(raw_key_data) || (raw_key_data.len != ED25519_KEY_LEN)) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ED25519_PRIVATE_KEY);
+        return NULL;
+    }
+
+    vscf_raw_private_key_t *private_key = vscf_raw_private_key_new_with_raw_key(
+            self->info->impl_tag, vscf_raw_key_shallow_copy((vscf_raw_key_t *)raw_key));
+
+    return vscf_raw_private_key_impl(private_key);
 }
 
 //
@@ -202,7 +327,19 @@ vscf_ed25519_import_private_key(vscf_ed25519_t *self, const vscf_raw_key_t *raw_
 VSCF_PUBLIC vscf_raw_key_t *
 vscf_ed25519_export_private_key(const vscf_ed25519_t *self, const vscf_impl_t *private_key, vscf_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+
+    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
+        return NULL;
+    }
+
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
+    vscf_raw_private_key_t *raw_private_key = (vscf_raw_private_key_t *)(private_key);
+
+    return vscf_raw_key_shallow_copy((vscf_raw_key_t *)raw_private_key->raw_key);
 }
 
 //
@@ -211,7 +348,12 @@ vscf_ed25519_export_private_key(const vscf_ed25519_t *self, const vscf_impl_t *p
 VSCF_PUBLIC bool
 vscf_ed25519_can_encrypt(const vscf_ed25519_t *self, const vscf_impl_t *public_key) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+
+    bool is_my_impl = vscf_key_impl_tag(public_key) == self->info->impl_tag;
+    return is_my_impl;
 }
 
 //
@@ -220,7 +362,21 @@ vscf_ed25519_can_encrypt(const vscf_ed25519_t *self, const vscf_impl_t *public_k
 VSCF_PUBLIC vscf_status_t
 vscf_ed25519_encrypt(const vscf_ed25519_t *self, const vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_PTR(self->ecies);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_ed25519_encrypted_len(self, public_key, data.len));
+
+    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
+        return vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM;
+    }
+
+    vscf_status_t status = vscf_ecies_encrypt(self->ecies, public_key, vscf_ed25519_impl_const(self), data, out);
+    return status;
 }
 
 //
@@ -229,7 +385,11 @@ vscf_ed25519_encrypt(const vscf_ed25519_t *self, const vscf_impl_t *public_key, 
 VSCF_PUBLIC size_t
 vscf_ed25519_encrypted_len(const vscf_ed25519_t *self, const vscf_impl_t *public_key, size_t data_len) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->ecies);
+    VSCF_ASSERT_PTR(public_key);
+
+    return vscf_ecies_encrypted_len(self->ecies, public_key, vscf_ed25519_impl_const(self), data_len);
 }
 
 //
@@ -239,7 +399,12 @@ vscf_ed25519_encrypted_len(const vscf_ed25519_t *self, const vscf_impl_t *public
 VSCF_PUBLIC bool
 vscf_ed25519_can_decrypt(const vscf_ed25519_t *self, const vscf_impl_t *private_key) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+
+    bool is_my_impl = vscf_key_impl_tag(private_key) == self->info->impl_tag;
+    return is_my_impl;
 }
 
 //
@@ -248,7 +413,22 @@ vscf_ed25519_can_decrypt(const vscf_ed25519_t *self, const vscf_impl_t *private_
 VSCF_PUBLIC vscf_status_t
 vscf_ed25519_decrypt(const vscf_ed25519_t *self, const vscf_impl_t *private_key, vsc_data_t data, vsc_buffer_t *out) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_PTR(self->ecies);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_ed25519_decrypted_len(self, private_key, data.len));
+
+    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
+        return vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM;
+    }
+
+
+    vscf_status_t status = vscf_ecies_decrypt(self->ecies, private_key, vscf_ed25519_impl_const(self), data, out);
+    return status;
 }
 
 //
@@ -257,7 +437,11 @@ vscf_ed25519_decrypt(const vscf_ed25519_t *self, const vscf_impl_t *private_key,
 VSCF_PUBLIC size_t
 vscf_ed25519_decrypted_len(const vscf_ed25519_t *self, const vscf_impl_t *private_key, size_t data_len) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->ecies);
+    VSCF_ASSERT_PTR(private_key);
+
+    return vscf_ecies_decrypted_len(self->ecies, private_key, vscf_ed25519_impl_const(self), data_len);
 }
 
 //
@@ -266,7 +450,12 @@ vscf_ed25519_decrypted_len(const vscf_ed25519_t *self, const vscf_impl_t *privat
 VSCF_PUBLIC bool
 vscf_ed25519_can_sign(const vscf_ed25519_t *self, const vscf_impl_t *private_key) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+
+    bool is_my_impl = vscf_key_impl_tag(private_key) == self->info->impl_tag;
+    return is_my_impl;
 }
 
 //
@@ -276,7 +465,10 @@ vscf_ed25519_can_sign(const vscf_ed25519_t *self, const vscf_impl_t *private_key
 VSCF_PUBLIC size_t
 vscf_ed25519_signature_len(const vscf_ed25519_t *self, const vscf_impl_t *private_key) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+
+    return ED25519_SIG_LEN;
 }
 
 //
@@ -286,7 +478,27 @@ VSCF_PUBLIC vscf_status_t
 vscf_ed25519_sign_hash(const vscf_ed25519_t *self, const vscf_impl_t *private_key, vscf_alg_id_t hash_id,
         vsc_data_t digest, vsc_buffer_t *signature) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(hash_id != vscf_alg_id_NONE);
+    VSCF_ASSERT(vsc_data_is_valid(digest));
+    VSCF_ASSERT_PTR(signature);
+    VSCF_ASSERT(vsc_buffer_is_valid(signature));
+    VSCF_ASSERT(vsc_buffer_unused_len(signature) >= vscf_ed25519_signature_len(self, private_key));
+
+    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
+        return vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM;
+    }
+
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
+    vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)private_key);
+    VSCF_ASSERT(private_key_data.len == ED25519_KEY_LEN);
+
+    const int ret = ed25519_sign(vsc_buffer_unused_bytes(signature), private_key_data.bytes, digest.bytes, digest.len);
+    VSCF_ASSERT(ret == 0);
+    vsc_buffer_inc_used(signature, vscf_ed25519_signature_len(self, private_key));
+
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -295,7 +507,12 @@ vscf_ed25519_sign_hash(const vscf_ed25519_t *self, const vscf_impl_t *private_ke
 VSCF_PUBLIC bool
 vscf_ed25519_can_verify(const vscf_ed25519_t *self, const vscf_impl_t *public_key) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+
+    bool is_my_impl = vscf_key_impl_tag(public_key) == self->info->impl_tag;
+    return is_my_impl;
 }
 
 //
@@ -305,7 +522,25 @@ VSCF_PUBLIC bool
 vscf_ed25519_verify_hash(const vscf_ed25519_t *self, const vscf_impl_t *public_key, vscf_alg_id_t hash_id,
         vsc_data_t digest, vsc_data_t signature) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(hash_id != vscf_alg_id_NONE);
+    VSCF_ASSERT(vsc_data_is_valid(digest));
+    VSCF_ASSERT(vsc_data_is_valid(signature));
+
+    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
+        return false;
+    }
+
+    if (signature.len != ED25519_SIG_LEN) {
+        return false;
+    }
+
+    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
+    vsc_data_t public_key_data = vscf_raw_public_key_data((vscf_raw_public_key_t *)public_key);
+    VSCF_ASSERT(public_key_data.len == ED25519_KEY_LEN);
+
+    int ret = ed25519_verify(signature.bytes, public_key_data.bytes, digest.bytes, digest.len);
+    return (ret == 0);
 }
 
 //
@@ -316,7 +551,49 @@ VSCF_PUBLIC vscf_status_t
 vscf_ed25519_compute_shared_key(const vscf_ed25519_t *self, const vscf_impl_t *public_key,
         const vscf_impl_t *private_key, vsc_buffer_t *shared_key) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_PTR(vsc_buffer_is_valid(shared_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= vscf_ed25519_shared_key_len(self, public_key));
+
+
+    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
+        return vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM;
+    }
+
+    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
+    vsc_data_t public_key_data = vscf_raw_public_key_data((vscf_raw_public_key_t *)public_key);
+    VSCF_ASSERT(public_key_data.len == ED25519_KEY_LEN);
+
+
+    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
+        return vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM;
+    }
+
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
+    vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)private_key);
+    VSCF_ASSERT(private_key_data.len == ED25519_KEY_LEN);
+
+
+    unsigned char x25519_public_key[ED25519_KEY_LEN] = {0x00};
+    unsigned char x25519_private_key[ED25519_KEY_LEN] = {0x00};
+
+    ed25519_pubkey_to_curve25519(x25519_public_key, public_key_data.bytes);
+    ed25519_key_to_curve25519(x25519_private_key, private_key_data.bytes);
+
+    const int status =
+            curve25519_key_exchange(vsc_buffer_unused_bytes(shared_key), x25519_public_key, x25519_private_key);
+
+    if (status != 0) {
+        return vscf_status_ERROR_SHARED_KEY_EXCHANGE_FAILED;
+    }
+
+    vsc_buffer_inc_used(shared_key, vscf_ed25519_shared_key_len(self, public_key));
+
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -326,5 +603,9 @@ vscf_ed25519_compute_shared_key(const vscf_ed25519_t *self, const vscf_impl_t *p
 VSCF_PUBLIC size_t
 vscf_ed25519_shared_key_len(const vscf_ed25519_t *self, const vscf_impl_t *key) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(key);
+    VSCF_ASSERT(vscf_key_is_implemented(key));
+
+    return ED25519_DH_LEN;
 }

@@ -57,7 +57,7 @@
 #include "vscf_api.h"
 #include "vscf_impl.h"
 #include "vscf_error.h"
-#include "vscf_raw_public_key.h"
+#include "vscf_raw_key.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -85,13 +85,13 @@ extern "C" {
 //
 //  Callback. Deserialize given public key as an interchangeable format to the object.
 //
-typedef vscf_raw_public_key_t * (*vscf_key_deserializer_api_deserialize_public_key_fn)(vscf_impl_t *impl,
+typedef vscf_raw_key_t * (*vscf_key_deserializer_api_deserialize_public_key_fn)(vscf_impl_t *impl,
         vsc_data_t public_key_data, vscf_error_t *error);
 
 //
 //  Callback. Deserialize given private key as an interchangeable format to the object.
 //
-typedef vscf_raw_public_key_t * (*vscf_key_deserializer_api_deserialize_private_key_fn)(vscf_impl_t *impl,
+typedef vscf_raw_key_t * (*vscf_key_deserializer_api_deserialize_private_key_fn)(vscf_impl_t *impl,
         vsc_data_t private_key_data, vscf_error_t *error);
 
 //

@@ -67,7 +67,7 @@
 //
 //  Deserialize given public key as an interchangeable format to the object.
 //
-VSCF_PUBLIC vscf_raw_public_key_t *
+VSCF_PUBLIC vscf_raw_key_t *
 vscf_key_deserializer_deserialize_public_key(vscf_impl_t *impl, vsc_data_t public_key_data, vscf_error_t *error) {
 
     const vscf_key_deserializer_api_t *key_deserializer_api = vscf_key_deserializer_api(impl);
@@ -80,7 +80,7 @@ vscf_key_deserializer_deserialize_public_key(vscf_impl_t *impl, vsc_data_t publi
 //
 //  Deserialize given private key as an interchangeable format to the object.
 //
-VSCF_PUBLIC vscf_raw_public_key_t *
+VSCF_PUBLIC vscf_raw_key_t *
 vscf_key_deserializer_deserialize_private_key(vscf_impl_t *impl, vsc_data_t private_key_data, vscf_error_t *error) {
 
     const vscf_key_deserializer_api_t *key_deserializer_api = vscf_key_deserializer_api(impl);

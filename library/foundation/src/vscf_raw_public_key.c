@@ -82,7 +82,9 @@
 VSCF_PRIVATE void
 vscf_raw_public_key_init_ctx(vscf_raw_public_key_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+
+    self->impl_tag = vscf_impl_tag_BEGIN;
 }
 
 //
@@ -93,7 +95,7 @@ vscf_raw_public_key_init_ctx(vscf_raw_public_key_t *self) {
 VSCF_PRIVATE void
 vscf_raw_public_key_cleanup_ctx(vscf_raw_public_key_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
 }
 
 //
@@ -103,7 +105,14 @@ VSCF_PUBLIC void
 vscf_raw_public_key_init_ctx_with_raw_key(
         vscf_raw_public_key_t *self, vscf_impl_tag_t impl_tag, const vscf_raw_key_t *raw_key) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(impl_tag != vscf_impl_tag_BEGIN);
+    VSCF_ASSERT_PTR(raw_key);
+    VSCF_ASSERT(vscf_raw_key_alg_id(raw_key) != vscf_alg_id_NONE);
+    VSCF_ASSERT(vscf_raw_key_is_public(raw_key));
+
+    self->impl_tag = impl_tag;
+    self->raw_key = vscf_raw_key_shallow_copy((vscf_raw_key_t *)raw_key);
 }
 
 //
@@ -112,7 +121,10 @@ vscf_raw_public_key_init_ctx_with_raw_key(
 VSCF_PUBLIC vsc_data_t
 vscf_raw_public_key_data(const vscf_raw_public_key_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->raw_key);
+
+    return vscf_raw_key_data(self->raw_key);
 }
 
 //
@@ -121,7 +133,10 @@ vscf_raw_public_key_data(const vscf_raw_public_key_t *self) {
 VSCF_PUBLIC vscf_alg_id_t
 vscf_raw_public_key_alg_id(const vscf_raw_public_key_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->raw_key);
+
+    return vscf_raw_key_alg_id(self->raw_key);
 }
 
 //
@@ -130,7 +145,10 @@ vscf_raw_public_key_alg_id(const vscf_raw_public_key_t *self) {
 VSCF_PUBLIC size_t
 vscf_raw_public_key_len(const vscf_raw_public_key_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->raw_key);
+
+    return vscf_raw_key_data(self->raw_key).len;
 }
 
 //
@@ -139,7 +157,10 @@ vscf_raw_public_key_len(const vscf_raw_public_key_t *self) {
 VSCF_PUBLIC size_t
 vscf_raw_public_key_bitlen(const vscf_raw_public_key_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->raw_key);
+
+    return vscf_raw_key_data(self->raw_key).len * 8;
 }
 
 //
@@ -148,5 +169,7 @@ vscf_raw_public_key_bitlen(const vscf_raw_public_key_t *self) {
 VSCF_PRIVATE vscf_impl_tag_t
 vscf_raw_public_key_impl_tag(const vscf_raw_public_key_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+
+    return self->impl_tag;
 }

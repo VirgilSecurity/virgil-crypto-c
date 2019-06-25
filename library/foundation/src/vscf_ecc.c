@@ -435,7 +435,8 @@ vscf_ecc_export_public_key(const vscf_ecc_t *self, const vscf_impl_t *public_key
     VSCF_ASSERT(out_len <= vsc_buffer_unused_len(buffer));
     vsc_buffer_inc_used(buffer, out_len);
 
-    return vscf_raw_key_new_with_buffer(vscf_mbedtls_ecp_group_id_to_alg_id(ecc_public_key->ecc_grp.id), &buffer, true);
+    return vscf_raw_key_new_public_with_buffer(
+            vscf_mbedtls_ecp_group_id_to_alg_id(ecc_public_key->ecc_grp.id), &buffer);
 }
 
 //
@@ -518,8 +519,8 @@ vscf_ecc_export_private_key(const vscf_ecc_t *self, const vscf_impl_t *private_k
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
     vsc_buffer_inc_used(buffer, buffer_len);
 
-    return vscf_raw_key_new_with_buffer(
-            vscf_mbedtls_ecp_group_id_to_alg_id(ecc_private_key->ecc_grp.id), &buffer, true);
+    return vscf_raw_key_new_private_with_buffer(
+            vscf_mbedtls_ecp_group_id_to_alg_id(ecc_private_key->ecc_grp.id), &buffer);
 }
 
 //

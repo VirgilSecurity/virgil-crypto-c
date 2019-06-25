@@ -195,7 +195,7 @@ vscf_pkcs8_serializer_serialize_private_key_inplace(vscf_pkcs8_serializer_t *sel
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs8_serializer_serialized_public_key_len(vscf_pkcs8_serializer_t *self, const vscf_impl_t *public_key);
+vscf_pkcs8_serializer_serialized_public_key_len(vscf_pkcs8_serializer_t *self, const vscf_raw_key_t *public_key);
 
 //
 //  Serialize given public key to an interchangeable format.
@@ -203,7 +203,7 @@ vscf_pkcs8_serializer_serialized_public_key_len(vscf_pkcs8_serializer_t *self, c
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_pkcs8_serializer_serialize_public_key(vscf_pkcs8_serializer_t *self, const vscf_impl_t *public_key,
+vscf_pkcs8_serializer_serialize_public_key(vscf_pkcs8_serializer_t *self, const vscf_raw_key_t *public_key,
         vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
@@ -212,7 +212,7 @@ vscf_pkcs8_serializer_serialize_public_key(vscf_pkcs8_serializer_t *self, const 
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs8_serializer_serialized_private_key_len(vscf_pkcs8_serializer_t *self, const vscf_impl_t *private_key);
+vscf_pkcs8_serializer_serialized_private_key_len(vscf_pkcs8_serializer_t *self, const vscf_raw_key_t *private_key);
 
 //
 //  Serialize given private key to an interchangeable format.
@@ -220,7 +220,7 @@ vscf_pkcs8_serializer_serialized_private_key_len(vscf_pkcs8_serializer_t *self, 
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_pkcs8_serializer_serialize_private_key(vscf_pkcs8_serializer_t *self, const vscf_impl_t *private_key,
+vscf_pkcs8_serializer_serialize_private_key(vscf_pkcs8_serializer_t *self, const vscf_raw_key_t *private_key,
         vsc_buffer_t *out) VSCF_NODISCARD;
 
 

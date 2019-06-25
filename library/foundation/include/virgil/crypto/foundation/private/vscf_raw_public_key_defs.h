@@ -93,7 +93,7 @@ struct vscf_raw_public_key_t {
     //
     //  Implementation specific context.
     //
-    vscf_raw_key_t *raw_key;
+    const vscf_raw_key_t *raw_key;
     //
     //  Implementation specific context.
     //

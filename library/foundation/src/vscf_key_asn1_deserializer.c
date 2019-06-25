@@ -53,7 +53,6 @@
 #include "vscf_key_asn1_deserializer.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_alg.h"
 #include "vscf_alg_info.h"
 #include "vscf_alg_info_der_deserializer.h"
 #include "vscf_asn1_tag.h"
@@ -230,7 +229,7 @@ vscf_key_asn1_deserializer_deserialize_public_key_inplace(vscf_key_asn1_deserial
         return NULL;
     }
 
-    return vscf_raw_key_new_with_data(alg_id, public_key_bits);
+    return vscf_raw_key_new_public_with_data(alg_id, public_key_bits);
 }
 
 //
@@ -379,7 +378,7 @@ vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(
 
         vsc_data_t private_key_data = vscf_asn1_reader_read_octet_str(self->asn1_reader);
         vscf_alg_id_t alg_id = vscf_oid_id_to_alg_id(alg_oid_id);
-        raw_key = vscf_raw_key_new_with_data(alg_id, private_key_data);
+        raw_key = vscf_raw_key_new_private_with_data(alg_id, private_key_data);
     }
 
     if (raw_key == NULL) {
@@ -492,13 +491,13 @@ vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(
     const vscf_alg_id_t alg_id = vscf_oid_id_to_alg_id(named_curve_id);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
-    return vscf_raw_key_new_with_data(alg_id, private_key_data);
+    return vscf_raw_key_new_private_with_data(alg_id, private_key_data);
 }
 
 //
 //  Deserialize given public key as an interchangeable format to the object.
 //
-VSCF_PUBLIC vscf_raw_public_key_t *
+VSCF_PUBLIC vscf_raw_key_t *
 vscf_key_asn1_deserializer_deserialize_public_key(
         vscf_key_asn1_deserializer_t *self, vsc_data_t public_key_data, vscf_error_t *error) {
 
@@ -539,7 +538,7 @@ vscf_key_asn1_deserializer_deserialize_public_key(
 //
 //  Deserialize given private key as an interchangeable format to the object.
 //
-VSCF_PUBLIC vscf_raw_public_key_t *
+VSCF_PUBLIC vscf_raw_key_t *
 vscf_key_asn1_deserializer_deserialize_private_key(
         vscf_key_asn1_deserializer_t *self, vsc_data_t private_key_data, vscf_error_t *error) {
 

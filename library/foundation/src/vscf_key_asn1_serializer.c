@@ -53,7 +53,6 @@
 #include "vscf_key_asn1_serializer.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_alg.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_asn1wr.h"
 #include "vscf_pkcs8_serializer.h"
@@ -158,12 +157,12 @@ vscf_key_asn1_serializer_serialize_public_key_inplace(
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
-    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT(vscf_raw_key_is_public(public_key));
     VSCF_ASSERT(vscf_asn1_writer_unwritten_len(self->asn1_writer) >=
                 vscf_key_asn1_serializer_serialized_public_key_len(self, public_key));
 
 
-    vscf_alg_id_t alg_id = vscf_alg_alg_id(public_key);
+    vscf_alg_id_t alg_id = vscf_raw_key_alg_id(public_key);
     switch (alg_id) {
     case vscf_alg_id_SECP256R1:
         return vscf_sec1_serializer_serialize_public_key_inplace(self->sec1_serializer, public_key, error);
@@ -183,11 +182,11 @@ vscf_key_asn1_serializer_serialize_private_key_inplace(
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT(vscf_raw_key_is_private(private_key));
     VSCF_ASSERT(vscf_asn1_writer_unwritten_len(self->asn1_writer) >=
                 vscf_key_asn1_serializer_serialized_private_key_len(self, private_key));
 
-    vscf_alg_id_t alg_id = vscf_alg_alg_id(private_key);
+    vscf_alg_id_t alg_id = vscf_raw_key_alg_id(private_key);
     switch (alg_id) {
     case vscf_alg_id_SECP256R1:
         return vscf_sec1_serializer_serialize_private_key_inplace(self->sec1_serializer, private_key, error);
@@ -202,13 +201,13 @@ vscf_key_asn1_serializer_serialize_private_key_inplace(
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_key_asn1_serializer_serialized_public_key_len(vscf_key_asn1_serializer_t *self, const vscf_impl_t *public_key) {
+vscf_key_asn1_serializer_serialized_public_key_len(vscf_key_asn1_serializer_t *self, const vscf_raw_key_t *public_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
-    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT(vscf_raw_key_is_public(public_key));
 
-    vscf_alg_id_t alg_id = vscf_alg_alg_id(public_key);
+    vscf_alg_id_t alg_id = vscf_raw_key_alg_id(public_key);
     switch (alg_id) {
     case vscf_alg_id_SECP256R1:
         return vscf_sec1_serializer_serialized_public_key_len(self->sec1_serializer, public_key);
@@ -224,17 +223,17 @@ vscf_key_asn1_serializer_serialized_public_key_len(vscf_key_asn1_serializer_t *s
 //
 VSCF_PUBLIC vscf_status_t
 vscf_key_asn1_serializer_serialize_public_key(
-        vscf_key_asn1_serializer_t *self, const vscf_impl_t *public_key, vsc_buffer_t *out) {
+        vscf_key_asn1_serializer_t *self, const vscf_raw_key_t *public_key, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
-    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT(vscf_raw_key_is_public(public_key));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_key_asn1_serializer_serialized_public_key_len(self, public_key));
 
 
-    vscf_alg_id_t alg_id = vscf_alg_alg_id(public_key);
+    vscf_alg_id_t alg_id = vscf_raw_key_alg_id(public_key);
     switch (alg_id) {
     case vscf_alg_id_SECP256R1:
         return vscf_sec1_serializer_serialize_public_key(self->sec1_serializer, public_key, out);
@@ -249,13 +248,14 @@ vscf_key_asn1_serializer_serialize_public_key(
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_key_asn1_serializer_serialized_private_key_len(vscf_key_asn1_serializer_t *self, const vscf_impl_t *private_key) {
+vscf_key_asn1_serializer_serialized_private_key_len(
+        vscf_key_asn1_serializer_t *self, const vscf_raw_key_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT(vscf_raw_key_is_private(private_key));
 
-    vscf_alg_id_t alg_id = vscf_alg_alg_id(private_key);
+    vscf_alg_id_t alg_id = vscf_raw_key_alg_id(private_key);
     switch (alg_id) {
     case vscf_alg_id_SECP256R1:
         return vscf_sec1_serializer_serialized_private_key_len(self->sec1_serializer, private_key);
@@ -271,16 +271,16 @@ vscf_key_asn1_serializer_serialized_private_key_len(vscf_key_asn1_serializer_t *
 //
 VSCF_PUBLIC vscf_status_t
 vscf_key_asn1_serializer_serialize_private_key(
-        vscf_key_asn1_serializer_t *self, const vscf_impl_t *private_key, vsc_buffer_t *out) {
+        vscf_key_asn1_serializer_t *self, const vscf_raw_key_t *private_key, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT(vscf_raw_key_is_private(private_key));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_key_asn1_serializer_serialized_private_key_len(self, private_key));
 
-    vscf_alg_id_t alg_id = vscf_alg_alg_id(private_key);
+    vscf_alg_id_t alg_id = vscf_raw_key_alg_id(private_key);
     switch (alg_id) {
     case vscf_alg_id_SECP256R1:
         return vscf_sec1_serializer_serialize_private_key(self->sec1_serializer, private_key, out);

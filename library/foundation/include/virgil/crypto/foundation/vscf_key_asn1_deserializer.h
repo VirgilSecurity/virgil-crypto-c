@@ -57,7 +57,6 @@
 #include "vscf_raw_key.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
-#include "vscf_raw_public_key.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -190,14 +189,14 @@ vscf_key_asn1_deserializer_deserialize_private_key_inplace(vscf_key_asn1_deseria
 //
 //  Deserialize given public key as an interchangeable format to the object.
 //
-VSCF_PUBLIC vscf_raw_public_key_t *
+VSCF_PUBLIC vscf_raw_key_t *
 vscf_key_asn1_deserializer_deserialize_public_key(vscf_key_asn1_deserializer_t *self, vsc_data_t public_key_data,
         vscf_error_t *error);
 
 //
 //  Deserialize given private key as an interchangeable format to the object.
 //
-VSCF_PUBLIC vscf_raw_public_key_t *
+VSCF_PUBLIC vscf_raw_key_t *
 vscf_key_asn1_deserializer_deserialize_private_key(vscf_key_asn1_deserializer_t *self, vsc_data_t private_key_data,
         vscf_error_t *error);
 
