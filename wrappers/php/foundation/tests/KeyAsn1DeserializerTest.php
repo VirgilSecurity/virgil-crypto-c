@@ -44,10 +44,16 @@ class KeyAsn1DeserializerTest extends \PHPUnit\Framework\TestCase
     protected function setUp()
     {
         $this->keyAsn1Deserializer = new KeyAsn1Deserializer();
+        $this->keyAsn1Deserializer->setupDefaults();
     }
 
     protected function tearDown()
     {
         unset($this->keyAsn1Deserializer);
     }
+
+//    public function test_trueIsTrue()
+//    {
+//        $this->assertEquals(true, true);
+//    }
 }
