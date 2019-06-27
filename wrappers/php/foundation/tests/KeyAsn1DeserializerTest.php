@@ -40,11 +40,13 @@ require_once 'KeyAsn1Deserializer.php';
 class KeyAsn1DeserializerTest extends \PHPUnit\Framework\TestCase
 {
     private $keyAsn1Deserializer;
+    private $invalidKey;
 
     protected function setUp()
     {
         $this->keyAsn1Deserializer = new KeyAsn1Deserializer();
         $this->keyAsn1Deserializer->setupDefaults();
+        $this->invalidKey = "qwerty";
     }
 
     protected function tearDown()
@@ -52,8 +54,15 @@ class KeyAsn1DeserializerTest extends \PHPUnit\Framework\TestCase
         unset($this->keyAsn1Deserializer);
     }
 
-//    public function test_trueIsTrue()
-//    {
-//        $this->assertEquals(true, true);
-//    }
+    public function test_deserializePublicKey_invalidData_throwsExceptions()
+    {
+        $this->expectException(Exception::class);
+        $this->keyAsn1Deserializer->deserializePublicKey($this->invalidKey);
+    }
+
+    public function test_deserializePrivateKey_invalidData_throwsExceptions()
+    {
+        $this->expectException(Exception::class);
+        $this->keyAsn1Deserializer->deserializePrivateKey($this->invalidKey);
+    }
 }
