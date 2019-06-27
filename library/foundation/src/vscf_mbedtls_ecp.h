@@ -55,6 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_alg_id.h"
+#include "vscf_status.h"
 
 #include <mbedtls/ecp.h>
 
@@ -84,6 +85,12 @@ vscf_mbedtls_ecp_group_id_from_alg_id(vscf_alg_id_t alg_id);
 //
 VSCF_PUBLIC vscf_alg_id_t
 vscf_mbedtls_ecp_group_id_to_alg_id(mbedtls_ecp_group_id grp_id);
+
+//
+//  Validate if "alg id" belongs to ECC.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_mbedtls_ecp_group_load(vscf_alg_id_t alg_id, mbedtls_ecp_group *ecc_grp) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

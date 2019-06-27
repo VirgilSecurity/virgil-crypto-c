@@ -1,55 +1,6 @@
 <implementor name="ed25519 pk" is_default="1">
     Provide implementation based on the library ed25519
 
-
-    <implementation name="raw public key">
-        Handles interchangeable public key representation.
-
-        <property name="raw key" class="raw key" access="readonly"/>
-        <property name="impl tag" enum="impl/tag"/>
-
-        <interface name="key"/>
-        <interface name="public key"/>
-
-        <constructor name="with raw key" visibility="private">
-            Creates fully defined raw public key.
-
-            <argument name="impl tag" enum="impl/tag"/>
-            <argument name="raw key" class="raw key"/>
-        </constructor>
-
-        <method name="data" is_const="1" declaration="public">
-            Return key data.
-
-            <return class="data"/>
-        </method>
-    </implementation>
-
-
-    <implementation name="raw private key">
-        Handles interchangeable private key representation.
-
-        <property name="raw key" class="raw key" access="readonly"/>
-        <property name="impl tag" enum="impl/tag"/>
-
-        <interface name="key"/>
-        <interface name="private key"/>
-
-        <constructor name="with raw key" visibility="private">
-            Creates fully defined raw public key.
-
-            <argument name="impl tag" enum="impl/tag"/>
-            <argument name="raw key" class="raw key"/>
-        </constructor>
-
-        <method name="data" is_const="1" declaration="public">
-            Return key data.
-
-            <return class="data"/>
-        </method>
-    </implementation>
-
-
     <implementation name="ed25519">
         This is implementation of Ed25519 elliptic curve algorithms.
 
@@ -57,6 +8,8 @@
         <require header="ed25519/ed25519.h" scope="context"/>
         <require class="simple alg info"/>
         <require interface="alg info"/>
+        <require interface="public key"/>
+        <require interface="private key"/>
         <require impl="ctr drbg"/>
         <require module="buffer defs" project="common"/>
         <require module="raw public key defs" scope="private"/>
@@ -100,6 +53,8 @@
         <require header="ed25519/ed25519.h" scope="context"/>
         <require class="simple alg info"/>
         <require interface="alg info"/>
+        <require interface="public key"/>
+        <require interface="private key"/>
         <require impl="ctr drbg"/>
         <require module="buffer defs" project="common"/>
         <require module="raw public key defs" scope="private"/>

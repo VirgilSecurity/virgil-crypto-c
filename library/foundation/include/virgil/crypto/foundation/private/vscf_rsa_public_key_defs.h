@@ -94,11 +94,15 @@ struct vscf_rsa_public_key_t {
     //
     //  Implementation specific context.
     //
-    vscf_impl_tag_t impl_tag;
+    vscf_impl_t *alg_info;
     //
     //  Implementation specific context.
     //
     mbedtls_rsa_context rsa_ctx;
+    //
+    //  Implementation specific context.
+    //
+    vscf_impl_tag_t impl_tag;
 };
 
 

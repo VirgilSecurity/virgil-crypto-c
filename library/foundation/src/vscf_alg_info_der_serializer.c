@@ -62,7 +62,7 @@
 #include "vscf_simple_alg_info.h"
 #include "vscf_salted_kdf_alg_info.h"
 #include "vscf_pbe_alg_info.h"
-#include "vscf_ec_alg_info.h"
+#include "vscf_ecc_alg_info.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_alg_info_der_serializer_defs.h"
 #include "vscf_alg_info_der_serializer_internal.h"
@@ -203,15 +203,15 @@ vscf_alg_info_der_serializer_serialize_pbes2_alg_info(vscf_alg_info_der_serializ
 //  "AlgorithmIdentifier" with "ECParameters" from the RFC 5480.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_ec_alg_info_len(vscf_alg_info_der_serializer_t *self,
+vscf_alg_info_der_serializer_serialized_ecc_alg_info_len(vscf_alg_info_der_serializer_t *self,
         const vscf_impl_t *alg_info);
 
 //
-//  Serialize class "ec alg info" to the ASN.1 structure
+//  Serialize class "ecc alg info" to the ASN.1 structure
 //  "AlgorithmIdentifier" with "ECParameters" from the RFC 5480.
 //
 static size_t
-vscf_alg_info_der_serializer_serialize_ec_alg_info(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialize_ecc_alg_info(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 
 // --------------------------------------------------------------------------
@@ -795,7 +795,7 @@ vscf_alg_info_der_serializer_serialize_pbes2_alg_info(
 //  "AlgorithmIdentifier" with "ECParameters" from the RFC 5480.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_ec_alg_info_len(
+vscf_alg_info_der_serializer_serialized_ecc_alg_info_len(
         vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
@@ -812,11 +812,11 @@ vscf_alg_info_der_serializer_serialized_ec_alg_info_len(
 }
 
 //
-//  Serialize class "ec alg info" to the ASN.1 structure
+//  Serialize class "ecc alg info" to the ASN.1 structure
 //  "AlgorithmIdentifier" with "ECParameters" from the RFC 5480.
 //
 static size_t
-vscf_alg_info_der_serializer_serialize_ec_alg_info(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+vscf_alg_info_der_serializer_serialize_ecc_alg_info(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
 
     //  ECAlgorithms ALGORITHM-IDENTIFIER ::= {
     //      {ECParameters IDENTIFIED BY id-ecPublicKey},
@@ -838,14 +838,14 @@ vscf_alg_info_der_serializer_serialize_ec_alg_info(vscf_alg_info_der_serializer_
     vscf_impl_t *asn1_writer = self->asn1_writer;
 
     VSCF_ASSERT(vscf_asn1_writer_unwritten_len(asn1_writer) >=
-                vscf_alg_info_der_serializer_serialized_ec_alg_info_len(self, alg_info));
+                vscf_alg_info_der_serializer_serialized_ecc_alg_info_len(self, alg_info));
 
 
-    const vscf_ec_alg_info_t *ec_alg_info = (const vscf_ec_alg_info_t *)alg_info;
+    const vscf_ecc_alg_info_t *ecc_alg_info = (const vscf_ecc_alg_info_t *)alg_info;
 
     size_t len = 0;
-    vscf_oid_id_t ec_id = vscf_ec_alg_info_key_id(ec_alg_info);
-    vscf_oid_id_t ec_domain_id = vscf_ec_alg_info_domain_id(ec_alg_info);
+    vscf_oid_id_t ec_id = vscf_ecc_alg_info_key_id(ecc_alg_info);
+    vscf_oid_id_t ec_domain_id = vscf_ecc_alg_info_domain_id(ecc_alg_info);
 
     VSCF_ASSERT(ec_id == vscf_oid_id_EC_GENERIC_KEY);
     switch (ec_domain_id) {
@@ -893,7 +893,7 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
         return vscf_alg_info_der_serializer_serialize_simple_alg_info(self, alg_info);
 
     case vscf_alg_id_SECP256R1:
-        return vscf_alg_info_der_serializer_serialize_ec_alg_info(self, alg_info);
+        return vscf_alg_info_der_serializer_serialize_ecc_alg_info(self, alg_info);
 
     case vscf_alg_id_KDF1:
     case vscf_alg_id_KDF2:
@@ -950,7 +950,7 @@ vscf_alg_info_der_serializer_serialized_len(vscf_alg_info_der_serializer_t *self
         return vscf_alg_info_der_serializer_serialized_simple_alg_info_len(self, alg_info);
 
     case vscf_alg_id_SECP256R1:
-        return vscf_alg_info_der_serializer_serialized_ec_alg_info_len(self, alg_info);
+        return vscf_alg_info_der_serializer_serialized_ecc_alg_info_len(self, alg_info);
 
     case vscf_alg_id_KDF1:
     case vscf_alg_id_KDF2:

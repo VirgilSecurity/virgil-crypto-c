@@ -7,8 +7,19 @@
         Check if algorithm can encrypt data with a given key.
 
         <argument name="public key" interface="public key"/>
+        <argument name="data len" type="size"/>
 
         <return type="boolean"/>
+    </method>
+
+
+    <method name="encrypted len" is_const="1">
+        Calculate required buffer length to hold the encrypted data.
+
+        <argument name="public key" interface="public key"/>
+        <argument name="data len" type="size"/>
+
+        <return type="size"/>
     </method>
 
 
@@ -28,23 +39,24 @@
     </method>
 
 
-    <method name="encrypted len" is_const="1">
-        Calculate required buffer length to hold the encrypted data.
-
-        <argument name="public key" interface="public key"/>
-        <argument name="data len" type="size"/>
-
-        <return type="size"/>
-    </method>
-
-
     <method name="can decrypt" is_const="1">
         Check if algorithm can decrypt data with a given key.
         However, success result of decryption is not guaranteed.
 
         <argument name="private key" interface="private key"/>
+        <argument name="data len" type="size"/>
 
         <return type="boolean"/>
+    </method>
+
+
+    <method name="decrypted len" is_const="1">
+        Calculate required buffer length to hold the decrypted data.
+
+        <argument name="private key" interface="private key"/>
+        <argument name="data len" type="size"/>
+
+        <return type="size"/>
     </method>
 
 
@@ -61,15 +73,5 @@
         </argument>
 
         <return enum="status"/>
-    </method>
-
-
-    <method name="decrypted len" is_const="1">
-        Calculate required buffer length to hold the decrypted data.
-
-        <argument name="private key" interface="private key"/>
-        <argument name="data len" type="size"/>
-
-        <return type="size"/>
     </method>
 </interface>

@@ -70,7 +70,7 @@
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_key_serializer_serialized_public_key_len(vscf_impl_t *impl, const vscf_raw_key_t *public_key) {
+vscf_key_serializer_serialized_public_key_len(vscf_impl_t *impl, const vscf_raw_public_key_t *public_key) {
 
     const vscf_key_serializer_api_t *key_serializer_api = vscf_key_serializer_api(impl);
     VSCF_ASSERT_PTR (key_serializer_api);
@@ -85,7 +85,8 @@ vscf_key_serializer_serialized_public_key_len(vscf_impl_t *impl, const vscf_raw_
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_serializer_serialize_public_key(vscf_impl_t *impl, const vscf_raw_key_t *public_key, vsc_buffer_t *out) {
+vscf_key_serializer_serialize_public_key(vscf_impl_t *impl, const vscf_raw_public_key_t *public_key,
+        vsc_buffer_t *out) {
 
     const vscf_key_serializer_api_t *key_serializer_api = vscf_key_serializer_api(impl);
     VSCF_ASSERT_PTR (key_serializer_api);
@@ -100,7 +101,7 @@ vscf_key_serializer_serialize_public_key(vscf_impl_t *impl, const vscf_raw_key_t
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_key_serializer_serialized_private_key_len(vscf_impl_t *impl, const vscf_raw_key_t *private_key) {
+vscf_key_serializer_serialized_private_key_len(vscf_impl_t *impl, const vscf_raw_private_key_t *private_key) {
 
     const vscf_key_serializer_api_t *key_serializer_api = vscf_key_serializer_api(impl);
     VSCF_ASSERT_PTR (key_serializer_api);
@@ -115,7 +116,8 @@ vscf_key_serializer_serialized_private_key_len(vscf_impl_t *impl, const vscf_raw
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_serializer_serialize_private_key(vscf_impl_t *impl, const vscf_raw_key_t *private_key, vsc_buffer_t *out) {
+vscf_key_serializer_serialize_private_key(vscf_impl_t *impl, const vscf_raw_private_key_t *private_key,
+        vsc_buffer_t *out) {
 
     const vscf_key_serializer_api_t *key_serializer_api = vscf_key_serializer_api(impl);
     VSCF_ASSERT_PTR (key_serializer_api);

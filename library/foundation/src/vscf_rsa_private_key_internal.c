@@ -93,6 +93,10 @@ static const vscf_key_api_t key_api = {
     //
     (vscf_key_api_alg_id_fn)vscf_rsa_private_key_alg_id,
     //
+    //  Return algorithm information that can be used for serialization.
+    //
+    (vscf_key_api_alg_info_fn)vscf_rsa_private_key_alg_info,
+    //
     //  Length of the key in bytes.
     //
     (vscf_key_api_len_fn)vscf_rsa_private_key_len,
@@ -103,7 +107,12 @@ static const vscf_key_api_t key_api = {
     //
     //  Return tag of an associated algorithm that can handle this key.
     //
-    (vscf_key_api_impl_tag_fn)vscf_rsa_private_key_impl_tag
+    (vscf_key_api_impl_tag_fn)vscf_rsa_private_key_impl_tag,
+    //
+    //  Check that key is valid.
+    //  Note, this operation can be slow.
+    //
+    (vscf_key_api_is_valid_fn)vscf_rsa_private_key_is_valid
 };
 
 //
@@ -122,7 +131,11 @@ static const vscf_private_key_api_t private_key_api = {
     //
     //  Link to the inherited interface API 'key'.
     //
-    &key_api
+    &key_api,
+    //
+    //  Extract public key from the private key.
+    //
+    (vscf_private_key_api_extract_public_key_fn)vscf_rsa_private_key_extract_public_key
 };
 
 //
@@ -254,15 +267,6 @@ vscf_rsa_private_key_shallow_copy(vscf_rsa_private_key_t *self) {
 
     // Proxy to the parent implementation.
     return (vscf_rsa_private_key_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
-}
-
-//
-//  Returns instance of the implemented interface 'private key'.
-//
-VSCF_PUBLIC const vscf_private_key_api_t *
-vscf_rsa_private_key_private_key_api(void) {
-
-    return &private_key_api;
 }
 
 //

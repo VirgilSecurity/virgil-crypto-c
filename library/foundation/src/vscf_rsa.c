@@ -53,18 +53,16 @@
 #include "vscf_rsa.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_asn1rd.h"
-#include "vscf_asn1wr.h"
-#include "vscf_mbedtls_bignum_asn1_reader.h"
-#include "vscf_mbedtls_bignum_asn1_writer.h"
 #include "vscf_mbedtls_md.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_asn1_tag.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_rsa_public_key_defs.h"
 #include "vscf_rsa_private_key_defs.h"
-#include "vscf_alg_info.h"
 #include "vscf_alg.h"
+#include "vscf_alg_info.h"
+#include "vscf_public_key.h"
+#include "vscf_private_key.h"
 #include "vscf_mbedtls_bridge_random.h"
 #include "vscf_hash.h"
 #include "vscf_random.h"
@@ -95,7 +93,19 @@
 VSCF_PUBLIC vscf_status_t
 vscf_rsa_setup_defaults(vscf_rsa_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        vscf_status_t status = vscf_ctr_drbg_setup_defaults(random);
+        if (status != vscf_status_SUCCESS) {
+            vscf_ctr_drbg_destroy(&random);
+            return status;
+        }
+        self->random = vscf_ctr_drbg_impl(random);
+    }
+
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -105,7 +115,21 @@ vscf_rsa_setup_defaults(vscf_rsa_t *self) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_rsa_generate_key(const vscf_rsa_t *self, size_t bitlen, vscf_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
+
+    vscf_rsa_private_key_t *rsa_private_key = vscf_rsa_private_key_new();
+
+    const int mbed_status = mbedtls_rsa_gen_key(
+            &rsa_private_key->rsa_ctx, vscf_mbedtls_bridge_random, self->random, (unsigned int)bitlen, 65537);
+
+    if (mbed_status) {
+        vscf_rsa_private_key_destroy(&rsa_private_key);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_KEY_GENERATION_FAILED);
+        return NULL;
+    }
+
+    return vscf_rsa_private_key_impl(rsa_private_key);
 }
 
 //
@@ -114,7 +138,9 @@ vscf_rsa_generate_key(const vscf_rsa_t *self, size_t bitlen, vscf_error_t *error
 VSCF_PUBLIC vscf_alg_id_t
 vscf_rsa_alg_id(const vscf_rsa_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+
+    return vscf_alg_id_RSA;
 }
 
 //
@@ -123,7 +149,8 @@ vscf_rsa_alg_id(const vscf_rsa_t *self) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_rsa_produce_alg_info(const vscf_rsa_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_RSA));
 }
 
 //
@@ -132,16 +159,11 @@ vscf_rsa_produce_alg_info(const vscf_rsa_t *self) {
 VSCF_PUBLIC vscf_status_t
 vscf_rsa_restore_alg_info(vscf_rsa_t *self, const vscf_impl_t *alg_info) {
 
-    //  TODO: This is STUB. Implement me.
-}
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_RSA);
 
-//
-//  Extract public key from the private key.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_extract_public_key(const vscf_rsa_t *self, const vscf_impl_t *private_key, vscf_error_t *error) {
-
-    //  TODO: This is STUB. Implement me.
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -151,7 +173,28 @@ vscf_rsa_extract_public_key(const vscf_rsa_t *self, const vscf_impl_t *private_k
 VSCF_PUBLIC vscf_impl_t *
 vscf_rsa_generate_ephemeral_key(const vscf_rsa_t *self, const vscf_impl_t *key, vscf_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT_PTR(key);
+    VSCF_ASSERT(vscf_key_is_implemented(key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(key));
+
+    if (vscf_key_impl_tag(key) != self->info->impl_tag) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
+        return NULL;
+    }
+
+    size_t bitlen = 0;
+    if (vscf_impl_tag(key) == vscf_impl_tag_RSA_PUBLIC_KEY) {
+        const vscf_rsa_public_key_t *rsa_public_key = (const vscf_rsa_public_key_t *)key;
+        bitlen = mbedtls_rsa_get_len(&rsa_public_key->rsa_ctx);
+    } else {
+        VSCF_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RSA_PRIVATE_KEY);
+        const vscf_rsa_private_key_t *rsa_private_key = (const vscf_rsa_private_key_t *)key;
+        bitlen = mbedtls_rsa_get_len(&rsa_private_key->rsa_ctx);
+    }
+
+    return vscf_rsa_generate_key(self, bitlen, error);
 }
 
 //
@@ -165,22 +208,47 @@ vscf_rsa_generate_ephemeral_key(const vscf_rsa_t *self, const vscf_impl_t *key, 
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_import_public_key(vscf_rsa_t *self, const vscf_raw_key_t *raw_key, vscf_error_t *error) {
+vscf_rsa_import_public_key(vscf_rsa_t *self, const vscf_raw_public_key_t *raw_key, vscf_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(raw_key);
+    VSCF_ASSERT(vscf_raw_public_key_is_valid(raw_key));
+
+    vscf_rsa_public_key_t *rsa_public_key = vscf_rsa_public_key_new();
+    const vscf_status_t status = vscf_rsa_public_key_import(rsa_public_key, raw_key);
+
+    if (status == vscf_status_SUCCESS) {
+        return vscf_rsa_public_key_impl(rsa_public_key);
+    }
+
+    vscf_rsa_public_key_destroy(&rsa_public_key);
+    VSCF_ERROR_SAFE_UPDATE(error, status);
+    return NULL;
 }
 
 //
-//  Export public key in the raw binary format.
+//  Export public key to the raw binary format.
 //
 //  Binary format must be defined in the key specification.
 //  For instance, RSA public key must be exported in format defined in
 //  RFC 3447 Appendix A.1.1.
 //
-VSCF_PUBLIC vscf_raw_key_t *
+VSCF_PUBLIC vscf_raw_public_key_t *
 vscf_rsa_export_public_key(const vscf_rsa_t *self, const vscf_impl_t *public_key, vscf_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+
+    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
+        return NULL;
+    }
+
+    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_RSA_PUBLIC_KEY);
+    const vscf_rsa_public_key_t *rsa_public_key = (const vscf_rsa_public_key_t *)public_key;
+
+    return vscf_rsa_public_key_export(rsa_public_key);
 }
 
 //
@@ -194,9 +262,22 @@ vscf_rsa_export_public_key(const vscf_rsa_t *self, const vscf_impl_t *public_key
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_import_private_key(vscf_rsa_t *self, const vscf_raw_key_t *raw_key, vscf_error_t *error) {
+vscf_rsa_import_private_key(vscf_rsa_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(raw_key);
+    VSCF_ASSERT(vscf_raw_private_key_is_valid(raw_key));
+
+    vscf_rsa_private_key_t *rsa_private_key = vscf_rsa_private_key_new();
+    const vscf_status_t status = vscf_rsa_private_key_import(rsa_private_key, raw_key);
+
+    if (status == vscf_status_SUCCESS) {
+        return vscf_rsa_private_key_impl(rsa_private_key);
+    }
+
+    vscf_rsa_private_key_destroy(&rsa_private_key);
+    VSCF_ERROR_SAFE_UPDATE(error, status);
+    return NULL;
 }
 
 //
@@ -206,28 +287,45 @@ vscf_rsa_import_private_key(vscf_rsa_t *self, const vscf_raw_key_t *raw_key, vsc
 //  For instance, RSA private key must be exported in format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_raw_key_t *
+VSCF_PUBLIC vscf_raw_private_key_t *
 vscf_rsa_export_private_key(const vscf_rsa_t *self, const vscf_impl_t *private_key, vscf_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+
+    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
+        return NULL;
+    }
+
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RSA_PRIVATE_KEY);
+    const vscf_rsa_private_key_t *rsa_private_key = (const vscf_rsa_private_key_t *)private_key;
+
+    return vscf_rsa_private_key_export(rsa_private_key);
 }
 
 //
 //  Check if algorithm can encrypt data with a given key.
 //
 VSCF_PUBLIC bool
-vscf_rsa_can_encrypt(const vscf_rsa_t *self, const vscf_impl_t *public_key) {
+vscf_rsa_can_encrypt(const vscf_rsa_t *self, const vscf_impl_t *public_key, size_t data_len) {
 
-    //  TODO: This is STUB. Implement me.
-}
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
 
-//
-//  Encrypt data with a given public key.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_rsa_encrypt(const vscf_rsa_t *self, const vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out) {
+    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
+        return false;
+    }
 
-    //  TODO: This is STUB. Implement me.
+    const size_t hash_len = 64; // MBEDTLS_MD_SHA512
+    if (vscf_key_len(public_key) >= data_len + 2 * hash_len + 2) {
+        return true;
+    }
+
+    return false;
 }
 
 //
@@ -236,7 +334,51 @@ vscf_rsa_encrypt(const vscf_rsa_t *self, const vscf_impl_t *public_key, vsc_data
 VSCF_PUBLIC size_t
 vscf_rsa_encrypted_len(const vscf_rsa_t *self, const vscf_impl_t *public_key, size_t data_len) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT(vscf_rsa_can_encrypt(self, public_key, data_len));
+
+    return vscf_key_len(public_key);
+}
+
+//
+//  Encrypt data with a given public key.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_rsa_encrypt(const vscf_rsa_t *self, const vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_rsa_can_encrypt(self, public_key, data.len));
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_rsa_encrypted_len(self, public_key, data.len));
+
+
+    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_RSA_PUBLIC_KEY);
+    vscf_rsa_public_key_t *rsa_public_key = (vscf_rsa_public_key_t *)public_key;
+
+    mbedtls_rsa_context rsa = rsa_public_key->rsa_ctx;
+    mbedtls_rsa_set_padding(&rsa, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_SHA512);
+
+    const int mbed_status = mbedtls_rsa_rsaes_oaep_encrypt(&rsa_public_key->rsa_ctx, vscf_mbedtls_bridge_random,
+            self->random, MBEDTLS_RSA_PUBLIC, NULL, 0, data.len, data.bytes, vsc_buffer_unused_bytes(out));
+
+    switch (mbed_status) {
+    case 0:
+        vsc_buffer_inc_used(out, vscf_key_len(public_key));
+        return vscf_status_SUCCESS;
+
+    case MBEDTLS_ERR_RSA_RNG_FAILED:
+        return vscf_status_ERROR_RANDOM_FAILED;
+
+    default:
+        VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
+        return vscf_status_ERROR_BAD_ARGUMENTS;
+    }
 }
 
 //
@@ -244,18 +386,19 @@ vscf_rsa_encrypted_len(const vscf_rsa_t *self, const vscf_impl_t *public_key, si
 //  However, success result of decryption is not guaranteed.
 //
 VSCF_PUBLIC bool
-vscf_rsa_can_decrypt(const vscf_rsa_t *self, const vscf_impl_t *private_key) {
+vscf_rsa_can_decrypt(const vscf_rsa_t *self, const vscf_impl_t *private_key, size_t data_len) {
 
-    //  TODO: This is STUB. Implement me.
-}
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
 
-//
-//  Decrypt given data.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_rsa_decrypt(const vscf_rsa_t *self, const vscf_impl_t *private_key, vsc_data_t data, vsc_buffer_t *out) {
+    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
+        return false;
+    }
 
-    //  TODO: This is STUB. Implement me.
+
+    return data_len <= vscf_key_len(private_key);
 }
 
 //
@@ -264,7 +407,51 @@ vscf_rsa_decrypt(const vscf_rsa_t *self, const vscf_impl_t *private_key, vsc_dat
 VSCF_PUBLIC size_t
 vscf_rsa_decrypted_len(const vscf_rsa_t *self, const vscf_impl_t *private_key, size_t data_len) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT(vscf_rsa_can_decrypt(self, private_key, data_len));
+
+    return vscf_key_len(private_key);
+}
+
+//
+//  Decrypt given data.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_rsa_decrypt(const vscf_rsa_t *self, const vscf_impl_t *private_key, vsc_data_t data, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_rsa_can_encrypt(self, private_key, data.len));
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_rsa_encrypted_len(self, private_key, data.len));
+
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RSA_PRIVATE_KEY);
+    vscf_rsa_private_key_t *rsa_private_key = (vscf_rsa_private_key_t *)private_key;
+
+    mbedtls_rsa_context rsa = rsa_private_key->rsa_ctx;
+    mbedtls_rsa_set_padding(&rsa, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_SHA512);
+
+    size_t out_len = 0;
+    const int mbed_status =
+            mbedtls_rsa_rsaes_oaep_decrypt(&rsa, vscf_mbedtls_bridge_random, self->random, MBEDTLS_RSA_PRIVATE, NULL, 0,
+                    &out_len, data.bytes, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
+
+    switch (mbed_status) {
+    case 0:
+        vsc_buffer_inc_used(out, out_len);
+        return vscf_status_SUCCESS;
+
+    case MBEDTLS_ERR_RSA_RNG_FAILED:
+        return vscf_status_ERROR_RANDOM_FAILED;
+
+    default:
+        return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
+    }
 }
 
 //
@@ -273,7 +460,13 @@ vscf_rsa_decrypted_len(const vscf_rsa_t *self, const vscf_impl_t *private_key, s
 VSCF_PUBLIC bool
 vscf_rsa_can_sign(const vscf_rsa_t *self, const vscf_impl_t *private_key) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
+
+    bool is_my_impl = vscf_key_impl_tag(private_key) == self->info->impl_tag;
+    return is_my_impl;
 }
 
 //
@@ -283,7 +476,12 @@ vscf_rsa_can_sign(const vscf_rsa_t *self, const vscf_impl_t *private_key) {
 VSCF_PUBLIC size_t
 vscf_rsa_signature_len(const vscf_rsa_t *self, const vscf_impl_t *private_key) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
+
+    return vscf_key_len(private_key);
 }
 
 //
@@ -293,7 +491,39 @@ VSCF_PUBLIC vscf_status_t
 vscf_rsa_sign_hash(const vscf_rsa_t *self, const vscf_impl_t *private_key, vscf_alg_id_t hash_id, vsc_data_t digest,
         vsc_buffer_t *signature) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_rsa_can_sign(self, private_key));
+    VSCF_ASSERT(hash_id != vscf_alg_id_NONE);
+    VSCF_ASSERT(vsc_data_is_valid(digest));
+    VSCF_ASSERT_PTR(signature);
+    VSCF_ASSERT(vsc_buffer_is_valid(signature));
+    VSCF_ASSERT(vsc_buffer_unused_len(signature) >= vscf_rsa_signature_len(self, private_key));
+
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RSA_PRIVATE_KEY);
+    vscf_rsa_private_key_t *rsa_private_key = (vscf_rsa_private_key_t *)private_key;
+
+    mbedtls_rsa_context rsa = rsa_private_key->rsa_ctx;
+    mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(hash_id);
+    mbedtls_rsa_set_padding(&rsa, MBEDTLS_RSA_PKCS_V21, md_alg);
+
+    const int mbed_status = mbedtls_rsa_rsassa_pss_sign(&rsa, vscf_mbedtls_bridge_random, self->random,
+            MBEDTLS_RSA_PRIVATE, md_alg, (unsigned int)digest.len, digest.bytes, vsc_buffer_unused_bytes(signature));
+
+    VSCF_ASSERT_ALLOC(mbed_status != MBEDTLS_ERR_MD_ALLOC_FAILED);
+
+    switch (mbed_status) {
+    case 0:
+        vsc_buffer_inc_used(signature, vscf_rsa_signature_len(self, private_key));
+        return vscf_status_SUCCESS;
+
+    case MBEDTLS_ERR_RSA_RNG_FAILED:
+        return vscf_status_ERROR_RANDOM_FAILED;
+
+    default:
+        return vscf_status_ERROR_BAD_ARGUMENTS;
+    }
 }
 
 //
@@ -302,7 +532,13 @@ vscf_rsa_sign_hash(const vscf_rsa_t *self, const vscf_impl_t *private_key, vscf_
 VSCF_PUBLIC bool
 vscf_rsa_can_verify(const vscf_rsa_t *self, const vscf_impl_t *public_key) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT(vscf_key_is_valid(public_key));
+
+    bool is_my_impl = vscf_key_impl_tag(public_key) == self->info->impl_tag;
+    return is_my_impl;
 }
 
 //
@@ -312,26 +548,26 @@ VSCF_PUBLIC bool
 vscf_rsa_verify_hash(const vscf_rsa_t *self, const vscf_impl_t *public_key, vscf_alg_id_t hash_id, vsc_data_t digest,
         vsc_data_t signature) {
 
-    //  TODO: This is STUB. Implement me.
-}
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_rsa_can_verify(self, public_key));
+    VSCF_ASSERT(vsc_data_is_valid(digest));
+    VSCF_ASSERT(vsc_data_is_valid(signature));
 
-//
-//  Compute shared key for 2 asymmetric keys.
-//  Note, computed shared key can be used only within symmetric cryptography.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_rsa_compute_shared_key(const vscf_rsa_t *self, const vscf_impl_t *public_key, const vscf_impl_t *private_key,
-        vsc_buffer_t *shared_key) {
+    if (signature.len != vscf_rsa_signature_len(self, public_key)) {
+        return false;
+    }
 
-    //  TODO: This is STUB. Implement me.
-}
+    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_RSA_PUBLIC_KEY);
+    vscf_rsa_public_key_t *rsa_public_key = (vscf_rsa_public_key_t *)public_key;
 
-//
-//  Return number of bytes required to hold shared key.
-//  Expect Public Key or Private Key.
-//
-VSCF_PUBLIC size_t
-vscf_rsa_shared_key_len(const vscf_rsa_t *self, const vscf_impl_t *key) {
+    mbedtls_rsa_context rsa = rsa_public_key->rsa_ctx;
+    mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(hash_id);
+    mbedtls_rsa_set_padding(&rsa, MBEDTLS_RSA_PKCS_V21, md_alg);
 
-    //  TODO: This is STUB. Implement me.
+    int result = mbedtls_rsa_rsassa_pss_verify(&rsa, vscf_mbedtls_bridge_random, self->random, MBEDTLS_RSA_PUBLIC,
+            md_alg, (unsigned int)digest.len, digest.bytes, signature.bytes);
+
+    return result == 0 ? true : false;
 }

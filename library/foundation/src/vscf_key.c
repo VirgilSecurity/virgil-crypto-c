@@ -78,6 +78,19 @@ vscf_key_alg_id(const vscf_impl_t *impl) {
 }
 
 //
+//  Return algorithm information that can be used for serialization.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_key_alg_info(const vscf_impl_t *impl) {
+
+    const vscf_key_api_t *key_api = vscf_key_api(impl);
+    VSCF_ASSERT_PTR (key_api);
+
+    VSCF_ASSERT_PTR (key_api->alg_info_cb);
+    return key_api->alg_info_cb (impl);
+}
+
+//
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
@@ -114,6 +127,20 @@ vscf_key_impl_tag(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (key_api->impl_tag_cb);
     return key_api->impl_tag_cb (impl);
+}
+
+//
+//  Check that key is valid.
+//  Note, this operation can be slow.
+//
+VSCF_PUBLIC bool
+vscf_key_is_valid(const vscf_impl_t *impl) {
+
+    const vscf_key_api_t *key_api = vscf_key_api(impl);
+    VSCF_ASSERT_PTR (key_api);
+
+    VSCF_ASSERT_PTR (key_api->is_valid_cb);
+    return key_api->is_valid_cb (impl);
 }
 
 //

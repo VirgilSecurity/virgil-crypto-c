@@ -55,6 +55,8 @@
 #include "vscf_memory.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_alg_info.h"
+#include "vscf_public_key.h"
+#include "vscf_private_key.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_raw_public_key_defs.h"
 #include "vscf_raw_private_key_defs.h"
@@ -128,17 +130,33 @@ vscf_curve25519_generate_key(const vscf_curve25519_t *self, vscf_error_t *error)
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
 
-    vsc_buffer_t *key_buf = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
+    vsc_buffer_t *private_key_buf = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
 
-    vscf_status_t status = vscf_random(self->random, ED25519_KEY_LEN, key_buf);
+    vscf_status_t status = vscf_random(self->random, ED25519_KEY_LEN, private_key_buf);
     if (status != vscf_status_SUCCESS) {
-        vsc_buffer_destroy(&key_buf);
+        vsc_buffer_destroy(&private_key_buf);
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_KEY_GENERATION_FAILED);
         return NULL;
+    } else {
+        vsc_buffer_inc_used(private_key_buf, ED25519_KEY_LEN);
     }
 
-    vscf_raw_key_t *raw_key = vscf_raw_key_new_private_with_buffer(vscf_alg_id_CURVE25519, &key_buf);
-    return vscf_raw_private_key_impl(vscf_raw_private_key_new_with_raw_key(self->info->impl_tag, raw_key));
+    vsc_buffer_t *public_key_buf = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
+    const int ret = curve25519_get_pubkey(vsc_buffer_unused_bytes(public_key_buf), vsc_buffer_bytes(private_key_buf));
+    VSCF_ASSERT(ret == 0);
+
+    vscf_impl_t *pub_alg_info = vscf_curve25519_produce_alg_info(self);
+    vscf_impl_t *priv_alg_info = vscf_impl_shallow_copy(pub_alg_info);
+
+    vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_buffer(&public_key_buf, &pub_alg_info);
+    vscf_raw_private_key_t *raw_private_key = vscf_raw_private_key_new_with_buffer(&private_key_buf, &priv_alg_info);
+
+    raw_public_key->impl_tag = self->info->impl_tag;
+    raw_private_key->impl_tag = self->info->impl_tag;
+
+    vscf_raw_private_key_set_public_key(raw_private_key, &raw_public_key);
+
+    return vscf_raw_private_key_impl(raw_private_key);
 }
 
 //
@@ -175,33 +193,6 @@ vscf_curve25519_restore_alg_info(vscf_curve25519_t *self, const vscf_impl_t *alg
 }
 
 //
-//  Extract public key from the private key.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_extract_public_key(const vscf_curve25519_t *self, const vscf_impl_t *private_key, vscf_error_t *error) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
-
-    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
-        return NULL;
-    }
-
-    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
-    vsc_data_t private_key_data = vscf_raw_private_key_data((const vscf_raw_private_key_t *)(private_key));
-
-    vsc_buffer_t *key_buf = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
-
-    int ret = curve25519_get_pubkey(vsc_buffer_unused_bytes(key_buf), private_key_data.bytes);
-    VSCF_ASSERT(ret == 0);
-
-    vscf_raw_key_t *raw_key = vscf_raw_key_new_public_with_buffer(vscf_alg_id_CURVE25519, &key_buf);
-    return vscf_raw_public_key_impl(vscf_raw_public_key_new_with_raw_key(self->info->impl_tag, raw_key));
-}
-
-//
 //  Generate ephemeral private key of the same type.
 //  Note, this operation might be slow.
 //
@@ -231,44 +222,41 @@ vscf_curve25519_generate_ephemeral_key(const vscf_curve25519_t *self, const vscf
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_import_public_key(vscf_curve25519_t *self, const vscf_raw_key_t *raw_key, vscf_error_t *error) {
+vscf_curve25519_import_public_key(vscf_curve25519_t *self, const vscf_raw_public_key_t *raw_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(raw_key);
-    VSCF_ASSERT(vscf_raw_key_is_public(raw_key));
+    VSCF_ASSERT_SAFE(vscf_raw_public_key_is_valid(raw_key));
 
-    vsc_data_t raw_key_data = vscf_raw_key_data(raw_key);
-    VSCF_ASSERT(vsc_data_is_valid(raw_key_data));
-
-    if (vscf_raw_key_alg_id(raw_key) != vscf_alg_id_CURVE25519) {
+    if (vscf_raw_public_key_alg_id(raw_key) != vscf_alg_id_CURVE25519) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM);
         return NULL;
     }
 
-    if (!vsc_data_is_valid(raw_key_data) || (raw_key_data.len != ED25519_KEY_LEN)) {
+    vsc_data_t raw_key_data = vscf_raw_public_key_data(raw_key);
+    if (raw_key_data.len != ED25519_KEY_LEN) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_CURVE25519_PUBLIC_KEY);
         return NULL;
     }
 
-    vscf_raw_public_key_t *public_key = vscf_raw_public_key_new_with_raw_key(
-            self->info->impl_tag, vscf_raw_key_shallow_copy((vscf_raw_key_t *)raw_key));
-
+    vscf_raw_public_key_t *public_key = vscf_raw_public_key_new_with_redefined_impl_tag(raw_key, self->info->impl_tag);
     return vscf_raw_public_key_impl(public_key);
 }
 
 //
-//  Export public key in the raw binary format.
+//  Export public key to the raw binary format.
 //
 //  Binary format must be defined in the key specification.
 //  For instance, RSA public key must be exported in format defined in
 //  RFC 3447 Appendix A.1.1.
 //
-VSCF_PUBLIC vscf_raw_key_t *
+VSCF_PUBLIC vscf_raw_public_key_t *
 vscf_curve25519_export_public_key(const vscf_curve25519_t *self, const vscf_impl_t *public_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
 
     if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM);
@@ -278,7 +266,7 @@ vscf_curve25519_export_public_key(const vscf_curve25519_t *self, const vscf_impl
     VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
     vscf_raw_public_key_t *raw_public_key = (vscf_raw_public_key_t *)(public_key);
 
-    return vscf_raw_key_shallow_copy((vscf_raw_key_t *)raw_public_key->raw_key);
+    return vscf_raw_public_key_shallow_copy(raw_public_key);
 }
 
 //
@@ -292,27 +280,25 @@ vscf_curve25519_export_public_key(const vscf_curve25519_t *self, const vscf_impl
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_import_private_key(vscf_curve25519_t *self, const vscf_raw_key_t *raw_key, vscf_error_t *error) {
+vscf_curve25519_import_private_key(
+        vscf_curve25519_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(raw_key);
-    VSCF_ASSERT(!vscf_raw_key_is_public(raw_key));
+    VSCF_ASSERT_SAFE(vscf_raw_private_key_is_valid(raw_key));
 
-    vsc_data_t raw_key_data = vscf_raw_key_data(raw_key);
-    VSCF_ASSERT(vsc_data_is_valid(raw_key_data));
-
-    if (vscf_raw_key_alg_id(raw_key) != vscf_alg_id_CURVE25519) {
+    if (vscf_raw_private_key_alg_id(raw_key) != vscf_alg_id_CURVE25519) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
         return NULL;
     }
-
-    if (!vsc_data_is_valid(raw_key_data) || (raw_key_data.len != ED25519_KEY_LEN)) {
+    vsc_data_t raw_key_data = vscf_raw_private_key_data(raw_key);
+    if (raw_key_data.len != ED25519_KEY_LEN) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_CURVE25519_PRIVATE_KEY);
         return NULL;
     }
 
-    vscf_raw_private_key_t *private_key = vscf_raw_private_key_new_with_raw_key(
-            self->info->impl_tag, vscf_raw_key_shallow_copy((vscf_raw_key_t *)raw_key));
+    vscf_raw_private_key_t *private_key =
+            vscf_raw_private_key_new_with_redefined_impl_tag(raw_key, self->info->impl_tag);
 
     return vscf_raw_private_key_impl(private_key);
 }
@@ -324,12 +310,13 @@ vscf_curve25519_import_private_key(vscf_curve25519_t *self, const vscf_raw_key_t
 //  For instance, RSA private key must be exported in format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_raw_key_t *
+VSCF_PUBLIC vscf_raw_private_key_t *
 vscf_curve25519_export_private_key(const vscf_curve25519_t *self, const vscf_impl_t *private_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
 
     if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
@@ -339,45 +326,23 @@ vscf_curve25519_export_private_key(const vscf_curve25519_t *self, const vscf_imp
     VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
     vscf_raw_private_key_t *raw_private_key = (vscf_raw_private_key_t *)(private_key);
 
-    return vscf_raw_key_shallow_copy((vscf_raw_key_t *)raw_private_key->raw_key);
+    return vscf_raw_private_key_shallow_copy(raw_private_key);
 }
 
 //
 //  Check if algorithm can encrypt data with a given key.
 //
 VSCF_PUBLIC bool
-vscf_curve25519_can_encrypt(const vscf_curve25519_t *self, const vscf_impl_t *public_key) {
+vscf_curve25519_can_encrypt(const vscf_curve25519_t *self, const vscf_impl_t *public_key, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
+    VSCF_UNUSED(data_len);
 
     bool is_my_impl = vscf_key_impl_tag(public_key) == self->info->impl_tag;
     return is_my_impl;
-}
-
-//
-//  Encrypt data with a given public key.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_curve25519_encrypt(
-        const vscf_curve25519_t *self, const vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(public_key);
-    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
-    VSCF_ASSERT_PTR(self->ecies);
-    VSCF_ASSERT(vsc_data_is_valid(data));
-    VSCF_ASSERT_PTR(out);
-    VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_curve25519_encrypted_len(self, public_key, data.len));
-
-    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
-        return vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM;
-    }
-
-    vscf_status_t status = vscf_ecies_encrypt(self->ecies, public_key, vscf_curve25519_impl_const(self), data, out);
-    return status;
 }
 
 //
@@ -389,8 +354,30 @@ vscf_curve25519_encrypted_len(const vscf_curve25519_t *self, const vscf_impl_t *
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->ecies);
     VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
+    VSCF_UNUSED(data_len);
 
     return vscf_ecies_encrypted_len(self->ecies, public_key, vscf_curve25519_impl_const(self), data_len);
+}
+
+//
+//  Encrypt data with a given public key.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_curve25519_encrypt(
+        const vscf_curve25519_t *self, const vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_curve25519_can_encrypt(self, public_key, data.len));
+    VSCF_ASSERT_PTR(self->ecies);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_curve25519_encrypted_len(self, public_key, data.len));
+
+    vscf_status_t status = vscf_ecies_encrypt(self->ecies, public_key, vscf_curve25519_impl_const(self), data, out);
+    return status;
 }
 
 //
@@ -398,39 +385,16 @@ vscf_curve25519_encrypted_len(const vscf_curve25519_t *self, const vscf_impl_t *
 //  However, success result of decryption is not guaranteed.
 //
 VSCF_PUBLIC bool
-vscf_curve25519_can_decrypt(const vscf_curve25519_t *self, const vscf_impl_t *private_key) {
+vscf_curve25519_can_decrypt(const vscf_curve25519_t *self, const vscf_impl_t *private_key, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
+    VSCF_UNUSED(data_len);
 
     bool is_my_impl = vscf_key_impl_tag(private_key) == self->info->impl_tag;
     return is_my_impl;
-}
-
-//
-//  Decrypt given data.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_curve25519_decrypt(
-        const vscf_curve25519_t *self, const vscf_impl_t *private_key, vsc_data_t data, vsc_buffer_t *out) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
-    VSCF_ASSERT_PTR(self->ecies);
-    VSCF_ASSERT(vsc_data_is_valid(data));
-    VSCF_ASSERT_PTR(out);
-    VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_curve25519_decrypted_len(self, private_key, data.len));
-
-    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
-        return vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM;
-    }
-
-
-    vscf_status_t status = vscf_ecies_decrypt(self->ecies, private_key, vscf_curve25519_impl_const(self), data, out);
-    return status;
 }
 
 //
@@ -442,8 +406,29 @@ vscf_curve25519_decrypted_len(const vscf_curve25519_t *self, const vscf_impl_t *
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->ecies);
     VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_curve25519_can_decrypt(self, private_key, data_len));
 
     return vscf_ecies_decrypted_len(self->ecies, private_key, vscf_curve25519_impl_const(self), data_len);
+}
+
+//
+//  Decrypt given data.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_curve25519_decrypt(
+        const vscf_curve25519_t *self, const vscf_impl_t *private_key, vsc_data_t data, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_curve25519_can_decrypt(self, private_key, data.len));
+    VSCF_ASSERT_PTR(self->ecies);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_curve25519_decrypted_len(self, private_key, data.len));
+
+    vscf_status_t status = vscf_ecies_decrypt(self->ecies, private_key, vscf_curve25519_impl_const(self), data, out);
+    return status;
 }
 
 //
@@ -457,8 +442,10 @@ vscf_curve25519_compute_shared_key(const vscf_curve25519_t *self, const vscf_imp
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
     VSCF_ASSERT_PTR(vsc_buffer_is_valid(shared_key));
     VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= vscf_curve25519_shared_key_len(self, public_key));
 
@@ -475,7 +462,7 @@ vscf_curve25519_compute_shared_key(const vscf_curve25519_t *self, const vscf_imp
         return vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM;
     }
 
-    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
     vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)private_key);
 
     const int status =

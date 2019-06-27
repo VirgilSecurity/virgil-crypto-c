@@ -1166,7 +1166,7 @@ char* getAlgInfoClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* 
     case vscf_impl_tag_PBE_ALG_INFO:
         strcat (classFullName, "PbeAlgInfo");
         break;
-    case vscf_impl_tag_EC_ALG_INFO:
+    case vscf_impl_tag_ECC_ALG_INFO:
         strcat (classFullName, "EcAlgInfo");
         break;
     default:
@@ -9088,9 +9088,9 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecAlgInfo_1keyId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
-    vscf_ec_alg_info_t /*9*/* ec_alg_info_ctx = (vscf_ec_alg_info_t /*9*/*) c_ctx;
+    vscf_ecc_alg_info_t /*9*/* ec_alg_info_ctx = (vscf_ecc_alg_info_t /*9*/*) c_ctx;
 
-    const vscf_oid_id_t proxyResult = vscf_ec_alg_info_key_id(ec_alg_info_ctx /*a1*/);
+    const vscf_oid_id_t proxyResult = vscf_ecc_alg_info_key_id(ec_alg_info_ctx /*a1*/);
     jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/OidId");
     if (NULL == cls) {
         VSCF_ASSERT("Enum OidId not found.");
@@ -9106,9 +9106,9 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecAlgInfo_1domainId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
-    vscf_ec_alg_info_t /*9*/* ec_alg_info_ctx = (vscf_ec_alg_info_t /*9*/*) c_ctx;
+    vscf_ecc_alg_info_t /*9*/* ec_alg_info_ctx = (vscf_ecc_alg_info_t /*9*/*) c_ctx;
 
-    const vscf_oid_id_t proxyResult = vscf_ec_alg_info_domain_id(ec_alg_info_ctx /*a1*/);
+    const vscf_oid_id_t proxyResult = vscf_ecc_alg_info_domain_id(ec_alg_info_ctx /*a1*/);
     jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/OidId");
     if (NULL == cls) {
         VSCF_ASSERT("Enum OidId not found.");
@@ -9123,11 +9123,11 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
 }
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecAlgInfo_1new__ (JNIEnv *jenv, jobject jobj) {
-    return (jlong) vscf_ec_alg_info_new();
+    return (jlong) vscf_ecc_alg_info_new();
 }
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecAlgInfo_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_ec_alg_info_delete((vscf_ec_alg_info_t /*9*/ *) c_ctx /*5*/);
+    vscf_ecc_alg_info_delete((vscf_ecc_alg_info_t /*9*/ *) c_ctx /*5*/);
 }
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecAlgInfo_1new__Lcom_virgilsecurity_crypto_foundation_AlgId_2Lcom_virgilsecurity_crypto_foundation_OidId_2Lcom_virgilsecurity_crypto_foundation_OidId_2 (JNIEnv *jenv, jobject jobj, jobject jalgId, jobject jkeyId, jobject jdomainId) {
@@ -9144,15 +9144,15 @@ JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_
     jmethodID domain_id_methodID = (*jenv)->GetMethodID(jenv, domain_id_cls, "getCode", "()I");
     vscf_oid_id_t /*8*/ domain_id = (vscf_oid_id_t /*8*/) (*jenv)->CallIntMethod(jenv, jdomainId, domain_id_methodID);
 
-    jlong proxyResult = (jlong) vscf_ec_alg_info_new_with_members(alg_id /*a7*/, key_id /*a7*/, domain_id /*a7*/);
+    jlong proxyResult = (jlong) vscf_ecc_alg_info_new_with_members(alg_id /*a7*/, key_id /*a7*/, domain_id /*a7*/);
     return proxyResult;
 }
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecAlgInfo_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
-    vscf_ec_alg_info_t /*9*/* ec_alg_info_ctx = (vscf_ec_alg_info_t /*9*/*) c_ctx;
+    vscf_ecc_alg_info_t /*9*/* ec_alg_info_ctx = (vscf_ecc_alg_info_t /*9*/*) c_ctx;
 
-    const vscf_alg_id_t proxyResult = vscf_ec_alg_info_alg_id(ec_alg_info_ctx /*a1*/);
+    const vscf_alg_id_t proxyResult = vscf_ecc_alg_info_alg_id(ec_alg_info_ctx /*a1*/);
     jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/AlgId");
     if (NULL == cls) {
         VSCF_ASSERT("Enum AlgId not found.");

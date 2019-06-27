@@ -55,7 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_atomic.h"
-#include "vscf_alg_id.h"
+#include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -95,7 +95,7 @@ struct vscf_raw_key_t {
 
     vsc_buffer_t *bytes;
 
-    vscf_alg_id_t alg_id;
+    vscf_impl_t *alg_info;
 
     bool is_public;
 };

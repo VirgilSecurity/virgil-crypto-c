@@ -47,26 +47,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Public and private key deserialization from an interchangeable format.
+//  This module contains 'ecc alg info' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_KEY_DESERIALIZER_H_INCLUDED
-#define VSCF_KEY_DESERIALIZER_H_INCLUDED
+#ifndef VSCF_ECC_ALG_INFO_H_INCLUDED
+#define VSCF_ECC_ALG_INFO_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
-#include "vscf_raw_public_key.h"
-#include "vscf_raw_private_key.h"
-#include "vscf_api.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#endif
+#include "vscf_alg_id.h"
+#include "vscf_oid_id.h"
 
 // clang-format on
 //  @end
@@ -84,39 +74,101 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'key deserializer'.
+//  Handles implementation details.
 //
-typedef struct vscf_key_deserializer_api_t vscf_key_deserializer_api_t;
+typedef struct vscf_ecc_alg_info_t vscf_ecc_alg_info_t;
 
 //
-//  Deserialize given public key as an interchangeable format to the object.
+//  Return size of 'vscf_ecc_alg_info_t' type.
 //
-VSCF_PUBLIC vscf_raw_public_key_t *
-vscf_key_deserializer_deserialize_public_key(vscf_impl_t *impl, vsc_data_t public_key_data, vscf_error_t *error);
+VSCF_PUBLIC size_t
+vscf_ecc_alg_info_impl_size(void);
 
 //
-//  Deserialize given private key as an interchangeable format to the object.
+//  Cast to the 'vscf_impl_t' type.
 //
-VSCF_PUBLIC vscf_raw_private_key_t *
-vscf_key_deserializer_deserialize_private_key(vscf_impl_t *impl, vsc_data_t private_key_data, vscf_error_t *error);
+VSCF_PUBLIC vscf_impl_t *
+vscf_ecc_alg_info_impl(vscf_ecc_alg_info_t *self);
 
 //
-//  Return key deserializer API, or NULL if it is not implemented.
+//  Cast to the const 'vscf_impl_t' type.
 //
-VSCF_PUBLIC const vscf_key_deserializer_api_t *
-vscf_key_deserializer_api(const vscf_impl_t *impl);
+VSCF_PUBLIC const vscf_impl_t *
+vscf_ecc_alg_info_impl_const(const vscf_ecc_alg_info_t *self);
 
 //
-//  Check if given object implements interface 'key deserializer'.
+//  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC bool
-vscf_key_deserializer_is_implemented(const vscf_impl_t *impl);
+VSCF_PUBLIC void
+vscf_ecc_alg_info_init(vscf_ecc_alg_info_t *self);
 
 //
-//  Returns interface unique identifier.
+//  Cleanup implementation context and release dependencies.
+//  This is a reverse action of the function 'vscf_ecc_alg_info_init()'.
 //
-VSCF_PUBLIC vscf_api_tag_t
-vscf_key_deserializer_api_tag(const vscf_key_deserializer_api_t *key_deserializer_api);
+VSCF_PUBLIC void
+vscf_ecc_alg_info_cleanup(vscf_ecc_alg_info_t *self);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSCF_PUBLIC vscf_ecc_alg_info_t *
+vscf_ecc_alg_info_new(void);
+
+//
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_ecc_alg_info_new()'.
+//
+VSCF_PUBLIC void
+vscf_ecc_alg_info_delete(vscf_ecc_alg_info_t *self);
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_ecc_alg_info_new()'.
+//  Given reference is nullified.
+//
+VSCF_PUBLIC void
+vscf_ecc_alg_info_destroy(vscf_ecc_alg_info_t **self_ref);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//
+VSCF_PUBLIC vscf_ecc_alg_info_t *
+vscf_ecc_alg_info_shallow_copy(vscf_ecc_alg_info_t *self);
+
+//
+//  Perform initialization of pre-allocated context.
+//  Create algorithm info with EC generic key identificator, EC domain group identificator.
+//
+VSCF_PUBLIC void
+vscf_ecc_alg_info_init_with_members(vscf_ecc_alg_info_t *self, vscf_alg_id_t alg_id, vscf_oid_id_t key_id,
+        vscf_oid_id_t domain_id);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Create algorithm info with EC generic key identificator, EC domain group identificator.
+//
+VSCF_PUBLIC vscf_ecc_alg_info_t *
+vscf_ecc_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_oid_id_t key_id, vscf_oid_id_t domain_id);
+
+//
+//  Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
+//
+VSCF_PUBLIC vscf_oid_id_t
+vscf_ecc_alg_info_key_id(const vscf_ecc_alg_info_t *self);
+
+//
+//  Return EC domain group identificator.
+//
+VSCF_PUBLIC vscf_oid_id_t
+vscf_ecc_alg_info_domain_id(const vscf_ecc_alg_info_t *self);
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_ecc_alg_info_alg_id(const vscf_ecc_alg_info_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -132,5 +184,5 @@ vscf_key_deserializer_api_tag(const vscf_key_deserializer_api_t *key_deserialize
 
 
 //  @footer
-#endif // VSCF_KEY_DESERIALIZER_H_INCLUDED
+#endif // VSCF_ECC_ALG_INFO_H_INCLUDED
 //  @end

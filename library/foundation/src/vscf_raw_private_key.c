@@ -99,20 +99,65 @@ vscf_raw_private_key_cleanup_ctx(vscf_raw_private_key_t *self) {
 }
 
 //
-//  Creates fully defined raw public key.
+//  Creates raw key defined with data and algorithm.
+//  Note, data is copied.
 //
 VSCF_PUBLIC void
-vscf_raw_private_key_init_ctx_with_raw_key(
-        vscf_raw_private_key_t *self, vscf_impl_tag_t impl_tag, const vscf_raw_key_t *raw_key) {
+vscf_raw_private_key_init_ctx_with_data(vscf_raw_private_key_t *self, vsc_data_t key_data, vscf_impl_t **alg_info_ref) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(impl_tag != vscf_impl_tag_BEGIN);
-    VSCF_ASSERT_PTR(raw_key);
-    VSCF_ASSERT(vscf_raw_key_alg_id(raw_key) != vscf_alg_id_NONE);
-    VSCF_ASSERT(vscf_raw_key_is_private(raw_key));
+    VSCF_ASSERT(vsc_data_is_valid(key_data));
+    VSCF_ASSERT(!vsc_data_is_empty(key_data));
+    VSCF_ASSERT_PTR(alg_info_ref);
+    VSCF_ASSERT_PTR(*alg_info_ref);
 
+    self->alg_info = *alg_info_ref;
+    self->buffer = vsc_buffer_new_with_data(key_data);
+
+    *alg_info_ref = NULL;
+}
+
+//
+//  Creates raw key defined with buffer and algorithm.
+//  Note, data is not copied.
+//
+VSCF_PUBLIC void
+vscf_raw_private_key_init_ctx_with_buffer(
+        vscf_raw_private_key_t *self, vsc_buffer_t **key_data_ref, vscf_impl_t **alg_info_ref) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(key_data_ref);
+    VSCF_ASSERT_PTR(*key_data_ref);
+    VSCF_ASSERT(vsc_buffer_is_valid(*key_data_ref));
+    VSCF_ASSERT(vsc_buffer_len(*key_data_ref) > 0);
+    VSCF_ASSERT_PTR(alg_info_ref);
+    VSCF_ASSERT_PTR(*alg_info_ref);
+
+    self->alg_info = *alg_info_ref;
+    self->buffer = *key_data_ref;
+
+    *alg_info_ref = NULL;
+    *key_data_ref = NULL;
+}
+
+//
+//  Creates raw key defined another raw key and new impl tag.
+//  Note, data is not copied, but new instance of key is created.s
+//
+VSCF_PUBLIC void
+vscf_raw_private_key_init_ctx_with_redefined_impl_tag(
+        vscf_raw_private_key_t *self, const vscf_raw_private_key_t *other, vscf_impl_tag_t impl_tag) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(other);
+    VSCF_ASSERT_PTR(other->alg_info);
+    VSCF_ASSERT_PTR(other->public_key);
+    VSCF_ASSERT(vscf_impl_tag_BEGIN < impl_tag && impl_tag < vscf_impl_tag_END);
+
+    self->buffer = vsc_buffer_shallow_copy((vsc_buffer_t *)other->buffer);
+    self->alg_info = vscf_impl_shallow_copy((vscf_impl_t *)other->alg_info);
+    self->public_key = vscf_raw_public_key_shallow_copy((vscf_raw_public_key_t *)other->public_key);
     self->impl_tag = impl_tag;
-    self->raw_key = vscf_raw_key_shallow_copy((vscf_raw_key_t *)raw_key);
 }
 
 //
@@ -122,9 +167,47 @@ VSCF_PUBLIC vsc_data_t
 vscf_raw_private_key_data(const vscf_raw_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->raw_key);
+    VSCF_ASSERT_PTR(self->buffer);
 
-    return vscf_raw_key_data(self->raw_key);
+    return vsc_buffer_data(self->buffer);
+}
+
+//
+//  Return true if private key contains public key.
+//
+VSCF_PUBLIC bool
+vscf_raw_private_key_has_public_key(const vscf_raw_private_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return self->public_key != NULL;
+}
+
+//
+//  Setup public key related to the private key.
+//
+VSCF_PUBLIC void
+vscf_raw_private_key_set_public_key(vscf_raw_private_key_t *self, vscf_raw_public_key_t **raw_public_key_ref) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(raw_public_key_ref);
+    VSCF_ASSERT_PTR(*raw_public_key_ref);
+    VSCF_ASSERT_SAFE(vscf_raw_public_key_is_valid(*raw_public_key_ref));
+
+    vscf_raw_public_key_destroy((vscf_raw_public_key_t **)&self->public_key);
+    self->public_key = *raw_public_key_ref;
+}
+
+//
+//  Return public key related to the private key.
+//
+VSCF_PUBLIC const vscf_raw_public_key_t *
+vscf_raw_private_key_get_public_key(const vscf_raw_private_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vscf_raw_private_key_has_public_key(self));
+
+    return self->public_key;
 }
 
 //
@@ -134,9 +217,21 @@ VSCF_PUBLIC vscf_alg_id_t
 vscf_raw_private_key_alg_id(const vscf_raw_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->raw_key);
+    VSCF_ASSERT_PTR(self->alg_info);
 
-    return vscf_raw_key_alg_id(self->raw_key);
+    return vscf_alg_info_alg_id(self->alg_info);
+}
+
+//
+//  Return algorithm information that can be used for serialization.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_raw_private_key_alg_info(const vscf_raw_private_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->alg_info);
+
+    return self->alg_info;
 }
 
 //
@@ -146,9 +241,9 @@ VSCF_PUBLIC size_t
 vscf_raw_private_key_len(const vscf_raw_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->raw_key);
+    VSCF_ASSERT_PTR(self->buffer);
 
-    return vscf_raw_key_data(self->raw_key).len;
+    return vsc_buffer_len(self->buffer);
 }
 
 //
@@ -158,9 +253,9 @@ VSCF_PUBLIC size_t
 vscf_raw_private_key_bitlen(const vscf_raw_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->raw_key);
+    VSCF_ASSERT_PTR(self->buffer);
 
-    return vscf_raw_key_data(self->raw_key).len * 8;
+    return 8 * vsc_buffer_len(self->buffer);
 }
 
 //
@@ -172,4 +267,41 @@ vscf_raw_private_key_impl_tag(const vscf_raw_private_key_t *self) {
     VSCF_ASSERT_PTR(self);
 
     return self->impl_tag;
+}
+
+//
+//  Check that key is valid.
+//  Note, this operation can be slow.
+//
+VSCF_PUBLIC bool
+vscf_raw_private_key_is_valid(const vscf_raw_private_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->alg_info || vscf_alg_info_alg_id(self->alg_info) == vscf_alg_id_NONE) {
+        return false;
+    }
+
+    if (NULL == self->buffer || vsc_buffer_len(self->buffer) == 0) {
+        return false;
+    }
+
+    if (vscf_raw_private_key_has_public_key(self)) {
+        const bool is_valid_public_key = vscf_raw_public_key_is_valid(self->public_key);
+        return is_valid_public_key;
+    }
+
+    return true;
+}
+
+//
+//  Extract public key from the private key.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_raw_private_key_extract_public_key(const vscf_raw_private_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_SAFE(vscf_raw_private_key_is_valid(self));
+
+    return vscf_impl_shallow_copy((vscf_impl_t *)self->public_key);
 }

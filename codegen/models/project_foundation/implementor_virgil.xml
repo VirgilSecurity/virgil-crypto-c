@@ -223,4 +223,111 @@
             <argument name="key material" class="data"/>
         </method>
     </implementation>
+
+
+    <implementation name="raw public key">
+        Handles interchangeable public key representation.
+
+        <require interface="alg info" scope="public"/>
+
+        <property name="buffer" class="buffer" access="readonly"/>
+        <property name="alg info" interface="alg info" access="readonly"/>
+        <property name="impl tag" enum="impl/tag"/>
+
+        <interface name="key"/>
+        <interface name="public key"/>
+
+        <constructor name="with data" visibility="private">
+            Creates raw key defined with data and algorithm.
+            Note, data is copied.
+
+            <argument name="key data" class="data"/>
+            <argument name="alg info" interface="alg info" access="disown"/>
+        </constructor>
+
+        <constructor name="with buffer" visibility="private">
+            Creates raw key defined with buffer and algorithm.
+            Note, data is not copied.
+
+            <argument name="key data" class="buffer" access="disown"/>
+            <argument name="alg info" interface="alg info" access="disown"/>
+        </constructor>
+
+        <constructor name="with redefined impl tag" visibility="private">
+            Creates raw key defined another raw key and new impl tag.
+            Note, data is not copied, but new instance of key is created.s
+
+            <argument name="other" class="self" access="readonly"/>
+            <argument name="impl tag" enum="impl/tag"/>
+        </constructor>
+
+        <method name="data" is_const="1" declaration="public">
+            Return key data.
+
+            <return class="data"/>
+        </method>
+    </implementation>
+
+
+    <implementation name="raw private key">
+        Handles interchangeable private key representation.
+
+        <require interface="alg info" scope="public"/>
+
+        <property name="buffer" class="buffer" access="readonly"/>
+        <property name="alg info" interface="alg info" access="readonly"/>
+        <property name="public key" impl="raw public key" access="readonly"/>
+        <property name="impl tag" enum="impl/tag"/>
+
+        <interface name="key"/>
+        <interface name="private key"/>
+
+        <constructor name="with data" visibility="private">
+            Creates raw key defined with data and algorithm.
+            Note, data is copied.
+
+            <argument name="key data" class="data"/>
+            <argument name="alg info" interface="alg info" access="disown"/>
+        </constructor>
+
+        <constructor name="with buffer" visibility="private">
+            Creates raw key defined with buffer and algorithm.
+            Note, data is not copied.
+
+            <argument name="key data" class="buffer" access="disown"/>
+            <argument name="alg info" interface="alg info" access="disown"/>
+        </constructor>
+
+        <constructor name="with redefined impl tag" visibility="private">
+            Creates raw key defined another raw key and new impl tag.
+            Note, data is not copied, but new instance of key is created.s
+
+            <argument name="other" class="self" access="readonly"/>
+            <argument name="impl tag" enum="impl/tag"/>
+        </constructor>
+
+        <method name="data" is_const="1" declaration="public">
+            Return key data.
+
+            <return class="data"/>
+        </method>
+
+        <method name="has public key" is_const="1" declaration="public">
+            Return true if private key contains public key.
+
+            <return type="boolean"/>
+        </method>
+
+        <method name="set public key" declaration="public">
+            Setup public key related to the private key.
+
+            <argument name="raw public key" impl="raw public key" access="disown"/>
+        </method>
+
+        <method name="get public key" declaration="public" is_const="1">
+            Return public key related to the private key.
+
+            <return impl="raw public key"/>
+        </method>
+    </implementation>
 </implementor>

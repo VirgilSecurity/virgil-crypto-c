@@ -60,8 +60,16 @@
 #include "vscf_impl_private.h"
 #include "vscf_raw_private_key.h"
 #include "vscf_atomic.h"
-#include "vscf_raw_key.h"
 #include "vscf_impl.h"
+#include "vscf_raw_public_key.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -93,7 +101,15 @@ struct vscf_raw_private_key_t {
     //
     //  Implementation specific context.
     //
-    const vscf_raw_key_t *raw_key;
+    const vsc_buffer_t *buffer;
+    //
+    //  Implementation specific context.
+    //
+    const vscf_impl_t *alg_info;
+    //
+    //  Implementation specific context.
+    //
+    const vscf_raw_public_key_t *public_key;
     //
     //  Implementation specific context.
     //

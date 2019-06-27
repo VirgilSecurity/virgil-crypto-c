@@ -54,9 +54,10 @@
 #define VSCF_KEY_ASN1_SERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_raw_key.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
+#include "vscf_raw_public_key.h"
+#include "vscf_raw_private_key.h"
 #include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -178,7 +179,7 @@ vscf_key_asn1_serializer_setup_defaults(vscf_key_asn1_serializer_t *self);
 //
 VSCF_PUBLIC size_t
 vscf_key_asn1_serializer_serialize_public_key_inplace(vscf_key_asn1_serializer_t *self,
-        const vscf_raw_key_t *public_key, vscf_error_t *error);
+        const vscf_raw_public_key_t *public_key, vscf_error_t *error);
 
 //
 //  Serialize Private Key by using internal ASN.1 writer.
@@ -187,7 +188,7 @@ vscf_key_asn1_serializer_serialize_public_key_inplace(vscf_key_asn1_serializer_t
 //
 VSCF_PUBLIC size_t
 vscf_key_asn1_serializer_serialize_private_key_inplace(vscf_key_asn1_serializer_t *self,
-        const vscf_raw_key_t *private_key, vscf_error_t *error);
+        const vscf_raw_private_key_t *private_key, vscf_error_t *error);
 
 //
 //  Calculate buffer size enough to hold serialized public key.
@@ -195,7 +196,8 @@ vscf_key_asn1_serializer_serialize_private_key_inplace(vscf_key_asn1_serializer_
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_key_asn1_serializer_serialized_public_key_len(vscf_key_asn1_serializer_t *self, const vscf_raw_key_t *public_key);
+vscf_key_asn1_serializer_serialized_public_key_len(vscf_key_asn1_serializer_t *self,
+        const vscf_raw_public_key_t *public_key);
 
 //
 //  Serialize given public key to an interchangeable format.
@@ -203,7 +205,7 @@ vscf_key_asn1_serializer_serialized_public_key_len(vscf_key_asn1_serializer_t *s
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_asn1_serializer_serialize_public_key(vscf_key_asn1_serializer_t *self, const vscf_raw_key_t *public_key,
+vscf_key_asn1_serializer_serialize_public_key(vscf_key_asn1_serializer_t *self, const vscf_raw_public_key_t *public_key,
         vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
@@ -213,7 +215,7 @@ vscf_key_asn1_serializer_serialize_public_key(vscf_key_asn1_serializer_t *self, 
 //
 VSCF_PUBLIC size_t
 vscf_key_asn1_serializer_serialized_private_key_len(vscf_key_asn1_serializer_t *self,
-        const vscf_raw_key_t *private_key);
+        const vscf_raw_private_key_t *private_key);
 
 //
 //  Serialize given private key to an interchangeable format.
@@ -221,8 +223,8 @@ vscf_key_asn1_serializer_serialized_private_key_len(vscf_key_asn1_serializer_t *
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_asn1_serializer_serialize_private_key(vscf_key_asn1_serializer_t *self, const vscf_raw_key_t *private_key,
-        vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_key_asn1_serializer_serialize_private_key(vscf_key_asn1_serializer_t *self,
+        const vscf_raw_private_key_t *private_key, vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

@@ -20,16 +20,6 @@
     </constant>
 
 
-    <method name="extract public key" is_const="1">
-        Extract public key from the private key.
-
-        <argument name="private key" interface="private key"/>
-        <argument name="error" class="error" access="readwrite"/>
-
-        <return interface="public key" access="disown"/>
-    </method>
-
-
     <method name="generate ephemeral key" is_const="1">
         Generate ephemeral private key of the same type.
         Note, this operation might be slow.
@@ -51,7 +41,7 @@
         For instance, RSA public key must be imported from the format defined in
         RFC 3447 Appendix A.1.1.
 
-        <argument name="raw key" class="raw key"/>
+        <argument name="raw key" impl="raw public key"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="public key" access="disown"/>
@@ -59,7 +49,7 @@
 
 
     <method name="export public key" is_const="1">
-        Export public key in the raw binary format.
+        Export public key to the raw binary format.
 
         Binary format must be defined in the key specification.
         For instance, RSA public key must be exported in format defined in
@@ -68,7 +58,7 @@
         <argument name="public key" interface="public key"/>
         <argument name="error" class="error" access="readwrite"/>
 
-        <return class="raw key" access="disown"/>
+        <return class="raw public key" access="disown"/>
     </method>
 
 
@@ -82,7 +72,7 @@
         For instance, RSA private key must be imported from the format defined in
         RFC 3447 Appendix A.1.2.
 
-        <argument name="raw key" class="raw key"/>
+        <argument name="raw key" class="raw private key"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="private key" access="disown"/>
@@ -99,6 +89,6 @@
         <argument name="private key" interface="private key"/>
         <argument name="error" class="error" access="readwrite"/>
 
-        <return class="raw key" access="disown"/>
+        <return class="raw private key" access="disown"/>
     </method>
 </interface>

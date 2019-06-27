@@ -93,6 +93,10 @@ static const vscf_key_api_t key_api = {
     //
     (vscf_key_api_alg_id_fn)vscf_rsa_public_key_alg_id,
     //
+    //  Return algorithm information that can be used for serialization.
+    //
+    (vscf_key_api_alg_info_fn)vscf_rsa_public_key_alg_info,
+    //
     //  Length of the key in bytes.
     //
     (vscf_key_api_len_fn)vscf_rsa_public_key_len,
@@ -103,7 +107,12 @@ static const vscf_key_api_t key_api = {
     //
     //  Return tag of an associated algorithm that can handle this key.
     //
-    (vscf_key_api_impl_tag_fn)vscf_rsa_public_key_impl_tag
+    (vscf_key_api_impl_tag_fn)vscf_rsa_public_key_impl_tag,
+    //
+    //  Check that key is valid.
+    //  Note, this operation can be slow.
+    //
+    (vscf_key_api_is_valid_fn)vscf_rsa_public_key_is_valid
 };
 
 //

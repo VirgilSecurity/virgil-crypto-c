@@ -128,10 +128,6 @@ static const vscf_key_alg_api_t key_alg_api = {
     //
     &alg_api,
     //
-    //  Extract public key from the private key.
-    //
-    (vscf_key_alg_api_extract_public_key_fn)vscf_ed25519_extract_public_key,
-    //
     //  Generate ephemeral private key of the same type.
     //  Note, this operation might be slow.
     //
@@ -148,7 +144,7 @@ static const vscf_key_alg_api_t key_alg_api = {
     //
     (vscf_key_alg_api_import_public_key_fn)vscf_ed25519_import_public_key,
     //
-    //  Export public key in the raw binary format.
+    //  Export public key to the raw binary format.
     //
     //  Binary format must be defined in the key specification.
     //  For instance, RSA public key must be exported in format defined in
@@ -214,26 +210,26 @@ static const vscf_key_cipher_api_t key_cipher_api = {
     //
     (vscf_key_cipher_api_can_encrypt_fn)vscf_ed25519_can_encrypt,
     //
-    //  Encrypt data with a given public key.
-    //
-    (vscf_key_cipher_api_encrypt_fn)vscf_ed25519_encrypt,
-    //
     //  Calculate required buffer length to hold the encrypted data.
     //
     (vscf_key_cipher_api_encrypted_len_fn)vscf_ed25519_encrypted_len,
+    //
+    //  Encrypt data with a given public key.
+    //
+    (vscf_key_cipher_api_encrypt_fn)vscf_ed25519_encrypt,
     //
     //  Check if algorithm can decrypt data with a given key.
     //  However, success result of decryption is not guaranteed.
     //
     (vscf_key_cipher_api_can_decrypt_fn)vscf_ed25519_can_decrypt,
     //
-    //  Decrypt given data.
-    //
-    (vscf_key_cipher_api_decrypt_fn)vscf_ed25519_decrypt,
-    //
     //  Calculate required buffer length to hold the decrypted data.
     //
-    (vscf_key_cipher_api_decrypted_len_fn)vscf_ed25519_decrypted_len
+    (vscf_key_cipher_api_decrypted_len_fn)vscf_ed25519_decrypted_len,
+    //
+    //  Decrypt given data.
+    //
+    (vscf_key_cipher_api_decrypt_fn)vscf_ed25519_decrypt
 };
 
 //

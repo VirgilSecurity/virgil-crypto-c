@@ -56,6 +56,8 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_public_key.h"
+#include "vscf_raw_public_key.h"
+#include "vscf_status.h"
 #include "vscf_alg_id.h"
 
 // clang-format on
@@ -144,10 +146,44 @@ VSCF_PUBLIC const vscf_public_key_api_t *
 vscf_rsa_public_key_public_key_api(void);
 
 //
+//  Return public key exponent.
+//
+VSCF_PUBLIC size_t
+vscf_rsa_public_key_key_exponent(vscf_rsa_public_key_t *self);
+
+//
+//  Import public key from the raw binary format.
+//
+//  RSAPublicKey ::= SEQUENCE {
+//      modulus INTEGER, -- n
+//      publicExponent INTEGER -- e
+//  }
+//
+VSCF_PUBLIC vscf_status_t
+vscf_rsa_public_key_import(vscf_rsa_public_key_t *self, const vscf_raw_public_key_t *raw_public_key) VSCF_NODISCARD;
+
+//
+//  Export public key in the raw binary format.
+//
+//  RSAPublicKey ::= SEQUENCE {
+//      modulus INTEGER, -- n
+//      publicExponent INTEGER -- e
+//  }
+//
+VSCF_PUBLIC vscf_raw_public_key_t *
+vscf_rsa_public_key_export(const vscf_rsa_public_key_t *self);
+
+//
 //  Algorithm identifier the key belongs to.
 //
 VSCF_PUBLIC vscf_alg_id_t
 vscf_rsa_public_key_alg_id(const vscf_rsa_public_key_t *self);
+
+//
+//  Return algorithm information that can be used for serialization.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_rsa_public_key_alg_info(const vscf_rsa_public_key_t *self);
 
 //
 //  Length of the key in bytes.
@@ -166,6 +202,13 @@ vscf_rsa_public_key_bitlen(const vscf_rsa_public_key_t *self);
 //
 VSCF_PRIVATE vscf_impl_tag_t
 vscf_rsa_public_key_impl_tag(const vscf_rsa_public_key_t *self);
+
+//
+//  Check that key is valid.
+//  Note, this operation can be slow.
+//
+VSCF_PUBLIC bool
+vscf_rsa_public_key_is_valid(const vscf_rsa_public_key_t *self);
 
 
 // --------------------------------------------------------------------------

@@ -56,8 +56,17 @@
 
 #include "vscf_library.h"
 #include "vscf_raw_private_key.h"
-#include "vscf_raw_key.h"
 #include "vscf_impl.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -91,11 +100,27 @@ VSCF_PRIVATE void
 vscf_raw_private_key_cleanup_ctx(vscf_raw_private_key_t *self);
 
 //
-//  Creates fully defined raw public key.
+//  Creates raw key defined with data and algorithm.
+//  Note, data is copied.
 //
 VSCF_PUBLIC void
-vscf_raw_private_key_init_ctx_with_raw_key(vscf_raw_private_key_t *self, vscf_impl_tag_t impl_tag,
-        const vscf_raw_key_t *raw_key);
+vscf_raw_private_key_init_ctx_with_data(vscf_raw_private_key_t *self, vsc_data_t key_data, vscf_impl_t **alg_info_ref);
+
+//
+//  Creates raw key defined with buffer and algorithm.
+//  Note, data is not copied.
+//
+VSCF_PUBLIC void
+vscf_raw_private_key_init_ctx_with_buffer(vscf_raw_private_key_t *self, vsc_buffer_t **key_data_ref,
+        vscf_impl_t **alg_info_ref);
+
+//
+//  Creates raw key defined another raw key and new impl tag.
+//  Note, data is not copied, but new instance of key is created.s
+//
+VSCF_PUBLIC void
+vscf_raw_private_key_init_ctx_with_redefined_impl_tag(vscf_raw_private_key_t *self, const vscf_raw_private_key_t *other,
+        vscf_impl_tag_t impl_tag);
 
 
 // --------------------------------------------------------------------------

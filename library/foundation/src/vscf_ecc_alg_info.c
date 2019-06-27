@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'ecc public key' implementation.
+//  This module contains 'ecc alg info' implementation.
 // --------------------------------------------------------------------------
 
 
@@ -50,12 +50,11 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_ecc_public_key.h"
+#include "vscf_ecc_alg_info.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_mbedtls_ecp.h"
-#include "vscf_ecc_public_key_defs.h"
-#include "vscf_ecc_public_key_internal.h"
+#include "vscf_ecc_alg_info_defs.h"
+#include "vscf_ecc_alg_info_internal.h"
 
 // clang-format on
 //  @end
@@ -77,17 +76,17 @@
 
 //
 //  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_ecc_public_key_init() is called.
+//  Note, this method is called automatically when method vscf_ecc_alg_info_init() is called.
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_ecc_public_key_init_ctx(vscf_ecc_public_key_t *self) {
+vscf_ecc_alg_info_init_ctx(vscf_ecc_alg_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    self->impl_tag = vscf_impl_tag_ECC;
-    mbedtls_ecp_group_init(&self->ecc_grp);
-    mbedtls_ecp_point_init(&self->ecc_pub);
+    self->alg_id = vscf_alg_id_NONE;
+    self->key_id = vscf_oid_id_NONE;
+    self->domain_id = vscf_oid_id_NONE;
 }
 
 //
@@ -96,79 +95,61 @@ vscf_ecc_public_key_init_ctx(vscf_ecc_public_key_t *self) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_ecc_public_key_cleanup_ctx(vscf_ecc_public_key_t *self) {
+vscf_ecc_alg_info_cleanup_ctx(vscf_ecc_alg_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
-
-    mbedtls_ecp_group_free(&self->ecc_grp);
-    mbedtls_ecp_point_free(&self->ecc_pub);
 }
 
 //
-//  Algorithm identifier the key belongs to.
+//  Create algorithm info with EC generic key identificator, EC domain group identificator.
+//
+VSCF_PUBLIC void
+vscf_ecc_alg_info_init_ctx_with_members(
+        vscf_ecc_alg_info_t *self, vscf_alg_id_t alg_id, vscf_oid_id_t key_id, vscf_oid_id_t domain_id) {
+
+    VSCF_ASSERT_PTR(self);
+
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+    VSCF_ASSERT(key_id != vscf_oid_id_NONE);
+    VSCF_ASSERT(domain_id != vscf_oid_id_NONE);
+
+    self->key_id = key_id;
+    self->domain_id = domain_id;
+    self->alg_id = alg_id;
+}
+
+//
+//  Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
+//
+VSCF_PUBLIC vscf_oid_id_t
+vscf_ecc_alg_info_key_id(const vscf_ecc_alg_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(self->key_id != vscf_oid_id_NONE);
+
+    return self->key_id;
+}
+
+//
+//  Return EC domain group identificator.
+//
+VSCF_PUBLIC vscf_oid_id_t
+vscf_ecc_alg_info_domain_id(const vscf_ecc_alg_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(self->domain_id != vscf_oid_id_NONE);
+
+    return self->domain_id;
+}
+
+//
+//  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_ecc_public_key_alg_id(const vscf_ecc_public_key_t *self) {
+vscf_ecc_alg_info_alg_id(const vscf_ecc_alg_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    return vscf_mbedtls_ecp_group_id_to_alg_id(self->ecc_grp.id);
-}
+    VSCF_ASSERT(self->alg_id != vscf_alg_id_NONE);
 
-//
-//  Return algorithm information that can be used for serialization.
-//
-VSCF_PUBLIC const vscf_impl_t *
-vscf_ecc_public_key_alg_info(const vscf_ecc_public_key_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->alg_info);
-
-    return self->alg_info;
-}
-
-//
-//  Length of the key in bytes.
-//
-VSCF_PUBLIC size_t
-vscf_ecc_public_key_len(const vscf_ecc_public_key_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    return self->ecc_grp.pbits / 8;
-}
-
-//
-//  Length of the key in bits.
-//
-VSCF_PUBLIC size_t
-vscf_ecc_public_key_bitlen(const vscf_ecc_public_key_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    return self->ecc_grp.pbits;
-}
-
-//
-//  Return tag of an associated algorithm that can handle this key.
-//
-VSCF_PRIVATE vscf_impl_tag_t
-vscf_ecc_public_key_impl_tag(const vscf_ecc_public_key_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    return self->impl_tag;
-}
-
-//
-//  Check that key is valid.
-//  Note, this operation can be slow.
-//
-VSCF_PUBLIC bool
-vscf_ecc_public_key_is_valid(const vscf_ecc_public_key_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    if (self->impl_tag != vscf_impl_tag_ECC) {
-        return false;
-    }
-
-    const bool is_valid = mbedtls_ecp_check_pubkey(&self->ecc_grp, &self->ecc_pub) == 0;
-    return is_valid;
+    return self->alg_id;
 }

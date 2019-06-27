@@ -56,10 +56,11 @@
 #include "vscf_library.h"
 #include "vscf_ecies.h"
 #include "vscf_error.h"
-#include "vscf_raw_key.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
 #include "vscf_alg_id.h"
+#include "vscf_raw_public_key.h"
+#include "vscf_raw_private_key.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -242,12 +243,6 @@ VSCF_PUBLIC vscf_status_t
 vscf_curve25519_restore_alg_info(vscf_curve25519_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
 
 //
-//  Extract public key from the private key.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_extract_public_key(const vscf_curve25519_t *self, const vscf_impl_t *private_key, vscf_error_t *error);
-
-//
 //  Generate ephemeral private key of the same type.
 //  Note, this operation might be slow.
 //
@@ -265,16 +260,16 @@ vscf_curve25519_generate_ephemeral_key(const vscf_curve25519_t *self, const vscf
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_import_public_key(vscf_curve25519_t *self, const vscf_raw_key_t *raw_key, vscf_error_t *error);
+vscf_curve25519_import_public_key(vscf_curve25519_t *self, const vscf_raw_public_key_t *raw_key, vscf_error_t *error);
 
 //
-//  Export public key in the raw binary format.
+//  Export public key to the raw binary format.
 //
 //  Binary format must be defined in the key specification.
 //  For instance, RSA public key must be exported in format defined in
 //  RFC 3447 Appendix A.1.1.
 //
-VSCF_PUBLIC vscf_raw_key_t *
+VSCF_PUBLIC vscf_raw_public_key_t *
 vscf_curve25519_export_public_key(const vscf_curve25519_t *self, const vscf_impl_t *public_key, vscf_error_t *error);
 
 //
@@ -288,7 +283,7 @@ vscf_curve25519_export_public_key(const vscf_curve25519_t *self, const vscf_impl
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_import_private_key(vscf_curve25519_t *self, const vscf_raw_key_t *raw_key, vscf_error_t *error);
+vscf_curve25519_import_private_key(vscf_curve25519_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error);
 
 //
 //  Export private key in the raw binary format.
@@ -297,14 +292,20 @@ vscf_curve25519_import_private_key(vscf_curve25519_t *self, const vscf_raw_key_t
 //  For instance, RSA private key must be exported in format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_raw_key_t *
+VSCF_PUBLIC vscf_raw_private_key_t *
 vscf_curve25519_export_private_key(const vscf_curve25519_t *self, const vscf_impl_t *private_key, vscf_error_t *error);
 
 //
 //  Check if algorithm can encrypt data with a given key.
 //
 VSCF_PUBLIC bool
-vscf_curve25519_can_encrypt(const vscf_curve25519_t *self, const vscf_impl_t *public_key);
+vscf_curve25519_can_encrypt(const vscf_curve25519_t *self, const vscf_impl_t *public_key, size_t data_len);
+
+//
+//  Calculate required buffer length to hold the encrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_curve25519_encrypted_len(const vscf_curve25519_t *self, const vscf_impl_t *public_key, size_t data_len);
 
 //
 //  Encrypt data with a given public key.
@@ -314,17 +315,17 @@ vscf_curve25519_encrypt(const vscf_curve25519_t *self, const vscf_impl_t *public
         vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
-//  Calculate required buffer length to hold the encrypted data.
-//
-VSCF_PUBLIC size_t
-vscf_curve25519_encrypted_len(const vscf_curve25519_t *self, const vscf_impl_t *public_key, size_t data_len);
-
-//
 //  Check if algorithm can decrypt data with a given key.
 //  However, success result of decryption is not guaranteed.
 //
 VSCF_PUBLIC bool
-vscf_curve25519_can_decrypt(const vscf_curve25519_t *self, const vscf_impl_t *private_key);
+vscf_curve25519_can_decrypt(const vscf_curve25519_t *self, const vscf_impl_t *private_key, size_t data_len);
+
+//
+//  Calculate required buffer length to hold the decrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_curve25519_decrypted_len(const vscf_curve25519_t *self, const vscf_impl_t *private_key, size_t data_len);
 
 //
 //  Decrypt given data.
@@ -332,12 +333,6 @@ vscf_curve25519_can_decrypt(const vscf_curve25519_t *self, const vscf_impl_t *pr
 VSCF_PUBLIC vscf_status_t
 vscf_curve25519_decrypt(const vscf_curve25519_t *self, const vscf_impl_t *private_key, vsc_data_t data,
         vsc_buffer_t *out) VSCF_NODISCARD;
-
-//
-//  Calculate required buffer length to hold the decrypted data.
-//
-VSCF_PUBLIC size_t
-vscf_curve25519_decrypted_len(const vscf_curve25519_t *self, const vscf_impl_t *private_key, size_t data_len);
 
 //
 //  Compute shared key for 2 asymmetric keys.

@@ -54,6 +54,7 @@
 #include "vscf_assert.h"
 #include "vscf_memory.h"
 #include "vscf_mbedtls_ecp.h"
+#include "vscf_ecc_public_key_defs.h"
 #include "vscf_ecc_private_key_defs.h"
 #include "vscf_ecc_private_key_internal.h"
 
@@ -115,6 +116,18 @@ vscf_ecc_private_key_alg_id(const vscf_ecc_private_key_t *self) {
 }
 
 //
+//  Return algorithm information that can be used for serialization.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_ecc_private_key_alg_info(const vscf_ecc_private_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->alg_info);
+
+    return self->alg_info;
+}
+
+//
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
@@ -142,4 +155,41 @@ vscf_ecc_private_key_impl_tag(const vscf_ecc_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
     return self->impl_tag;
+}
+
+//
+//  Check that key is valid.
+//  Note, this operation can be slow.
+//
+VSCF_PUBLIC bool
+vscf_ecc_private_key_is_valid(const vscf_ecc_private_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (self->impl_tag != vscf_impl_tag_ECC) {
+        return false;
+    }
+
+    const bool is_valid = mbedtls_ecp_check_privkey(&self->ecc_grp, &self->ecc_priv) == 0;
+    return is_valid;
+}
+
+//
+//  Extract public key from the private key.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_ecc_private_key_extract_public_key(const vscf_ecc_private_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_SAFE(vscf_ecc_private_key_is_valid(self));
+
+    vscf_ecc_public_key_t *ecc_public_key = vscf_ecc_public_key_new();
+
+    int mbed_status = mbedtls_ecp_group_copy(&ecc_public_key->ecc_grp, &self->ecc_grp);
+    VSCF_ASSERT_ALLOC(mbed_status == 0);
+
+    mbed_status = mbedtls_ecp_copy(&ecc_public_key->ecc_pub, &self->ecc_pub);
+    VSCF_ASSERT_ALLOC(mbed_status == 0);
+
+    return vscf_ecc_public_key_impl(ecc_public_key);
 }

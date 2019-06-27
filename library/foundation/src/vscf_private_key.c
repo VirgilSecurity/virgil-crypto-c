@@ -65,6 +65,19 @@
 // --------------------------------------------------------------------------
 
 //
+//  Extract public key from the private key.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_private_key_extract_public_key(const vscf_impl_t *impl) {
+
+    const vscf_private_key_api_t *private_key_api = vscf_private_key_api(impl);
+    VSCF_ASSERT_PTR (private_key_api);
+
+    VSCF_ASSERT_PTR (private_key_api->extract_public_key_cb);
+    return private_key_api->extract_public_key_cb (impl);
+}
+
+//
 //  Return private key API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_private_key_api_t *

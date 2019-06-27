@@ -7,6 +7,12 @@
         <return enum="alg id"/>
     </method>
 
+    <method name="alg info" is_const="1">
+        Return algorithm information that can be used for serialization.
+
+        <return interface="alg info"/>
+    </method>
+
     <method name="len" is_const="1">
         Length of the key in bytes.
 
@@ -23,5 +29,12 @@
         Return tag of an associated algorithm that can handle this key.
 
         <return enum="impl/tag"/>
+    </method>
+
+    <method name="is valid" is_const="1">
+        Check that key is valid.
+        Note, this operation can be slow.
+
+        <return type="boolean"/>
     </method>
 </interface>

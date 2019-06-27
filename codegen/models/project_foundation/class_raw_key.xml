@@ -1,8 +1,11 @@
 <class name="raw key">
     Provide implementation agnostic representation of the asymmetric key.
 
+    <require interface="alg info"/>
+
+
     <property name="bytes" class="buffer"/>
-    <property name="alg id" enum="alg id"/>
+    <property name="alg info" interface="alg info"/>
     <property name="is public" type="boolean"/>
 
 
@@ -10,8 +13,8 @@
         Creates raw key defined with algorithm and data.
         Note, data is copied.
 
-        <argument name="alg id" enum="alg id"/>
         <argument name="raw key data" class="data"/>
+        <argument name="alg info" interface="alg info" access="disown"/>
     </constructor>
 
 
@@ -19,25 +22,32 @@
         Creates raw key defined with algorithm and data.
         Note, data is copied.
 
-        <argument name="alg id" enum="alg id"/>
         <argument name="raw key data" class="data"/>
+        <argument name="alg info" interface="alg info" access="disown"/>
     </constructor>
 
 
     <constructor name="public with buffer" visibility="private">
         Creates raw key defined with algorithm and buffer.
 
-        <argument name="alg id" enum="alg id"/>
         <argument name="buffer" class="buffer" access="disown"/>
+        <argument name="alg info" interface="alg info" access="disown"/>
     </constructor>
 
 
     <constructor name="private with buffer" visibility="private">
         Creates raw key defined with algorithm and buffer.
 
-        <argument name="alg id" enum="alg id"/>
         <argument name="buffer" class="buffer" access="disown"/>
+        <argument name="alg info" interface="alg info" access="disown"/>
     </constructor>
+
+
+    <method name="is valid" is_const="1">
+        Return true if raw key handles key data.
+
+        <return type="boolean"/>
+    </method>
 
 
     <method name="alg id" is_const="1">

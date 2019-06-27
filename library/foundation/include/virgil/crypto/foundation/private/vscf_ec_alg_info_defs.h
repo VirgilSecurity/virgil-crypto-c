@@ -58,7 +58,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
-#include "vscf_ec_alg_info.h"
+#include "vscf_ecc_alg_info.h"
 #include "vscf_atomic.h"
 #include "vscf_alg_id.h"
 #include "vscf_oid_id.h"
@@ -81,7 +81,7 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-struct vscf_ec_alg_info_t {
+struct vscf_ecc_alg_info_t {
     //
     //  Compile-time known information about this implementation.
     //

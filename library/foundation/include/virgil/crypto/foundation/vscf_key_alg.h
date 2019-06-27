@@ -57,7 +57,8 @@
 #include "vscf_impl.h"
 #include "vscf_alg.h"
 #include "vscf_error.h"
-#include "vscf_raw_key.h"
+#include "vscf_raw_public_key.h"
+#include "vscf_raw_private_key.h"
 #include "vscf_api.h"
 
 // clang-format on
@@ -81,12 +82,6 @@ extern "C" {
 typedef struct vscf_key_alg_api_t vscf_key_alg_api_t;
 
 //
-//  Extract public key from the private key.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_key_alg_extract_public_key(const vscf_impl_t *impl, const vscf_impl_t *private_key, vscf_error_t *error);
-
-//
 //  Generate ephemeral private key of the same type.
 //  Note, this operation might be slow.
 //
@@ -104,16 +99,16 @@ vscf_key_alg_generate_ephemeral_key(const vscf_impl_t *impl, const vscf_impl_t *
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_alg_import_public_key(vscf_impl_t *impl, const vscf_raw_key_t *raw_key, vscf_error_t *error);
+vscf_key_alg_import_public_key(vscf_impl_t *impl, const vscf_raw_public_key_t *raw_key, vscf_error_t *error);
 
 //
-//  Export public key in the raw binary format.
+//  Export public key to the raw binary format.
 //
 //  Binary format must be defined in the key specification.
 //  For instance, RSA public key must be exported in format defined in
 //  RFC 3447 Appendix A.1.1.
 //
-VSCF_PUBLIC vscf_raw_key_t *
+VSCF_PUBLIC vscf_raw_public_key_t *
 vscf_key_alg_export_public_key(const vscf_impl_t *impl, const vscf_impl_t *public_key, vscf_error_t *error);
 
 //
@@ -127,7 +122,7 @@ vscf_key_alg_export_public_key(const vscf_impl_t *impl, const vscf_impl_t *publi
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_alg_import_private_key(vscf_impl_t *impl, const vscf_raw_key_t *raw_key, vscf_error_t *error);
+vscf_key_alg_import_private_key(vscf_impl_t *impl, const vscf_raw_private_key_t *raw_key, vscf_error_t *error);
 
 //
 //  Export private key in the raw binary format.
@@ -136,7 +131,7 @@ vscf_key_alg_import_private_key(vscf_impl_t *impl, const vscf_raw_key_t *raw_key
 //  For instance, RSA private key must be exported in format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC vscf_raw_key_t *
+VSCF_PUBLIC vscf_raw_private_key_t *
 vscf_key_alg_export_private_key(const vscf_impl_t *impl, const vscf_impl_t *private_key, vscf_error_t *error);
 
 //

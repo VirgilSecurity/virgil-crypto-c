@@ -76,99 +76,99 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_ec_alg_info_t vscf_ec_alg_info_t;
+typedef struct vscf_ecc_alg_info_t vscf_ecc_alg_info_t;
 
 //
-//  Return size of 'vscf_ec_alg_info_t' type.
+//  Return size of 'vscf_ecc_alg_info_t' type.
 //
 VSCF_PUBLIC size_t
-vscf_ec_alg_info_impl_size(void);
+vscf_ecc_alg_info_impl_size(void);
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ec_alg_info_impl(vscf_ec_alg_info_t *self);
+vscf_ecc_alg_info_impl(vscf_ecc_alg_info_t *self);
 
 //
 //  Cast to the const 'vscf_impl_t' type.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_ec_alg_info_impl_const(const vscf_ec_alg_info_t *self);
+vscf_ecc_alg_info_impl_const(const vscf_ecc_alg_info_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_ec_alg_info_init(vscf_ec_alg_info_t *self);
+vscf_ecc_alg_info_init(vscf_ecc_alg_info_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_ec_alg_info_init()'.
+//  This is a reverse action of the function 'vscf_ecc_alg_info_init()'.
 //
 VSCF_PUBLIC void
-vscf_ec_alg_info_cleanup(vscf_ec_alg_info_t *self);
+vscf_ecc_alg_info_cleanup(vscf_ecc_alg_info_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_ec_alg_info_t *
-vscf_ec_alg_info_new(void);
+VSCF_PUBLIC vscf_ecc_alg_info_t *
+vscf_ecc_alg_info_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_ec_alg_info_new()'.
+//  This is a reverse action of the function 'vscf_ecc_alg_info_new()'.
 //
 VSCF_PUBLIC void
-vscf_ec_alg_info_delete(vscf_ec_alg_info_t *self);
+vscf_ecc_alg_info_delete(vscf_ecc_alg_info_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_ec_alg_info_new()'.
+//  This is a reverse action of the function 'vscf_ecc_alg_info_new()'.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_ec_alg_info_destroy(vscf_ec_alg_info_t **self_ref);
+vscf_ecc_alg_info_destroy(vscf_ecc_alg_info_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //
-VSCF_PUBLIC vscf_ec_alg_info_t *
-vscf_ec_alg_info_shallow_copy(vscf_ec_alg_info_t *self);
+VSCF_PUBLIC vscf_ecc_alg_info_t *
+vscf_ecc_alg_info_shallow_copy(vscf_ecc_alg_info_t *self);
 
 //
 //  Perform initialization of pre-allocated context.
 //  Create algorithm info with EC generic key identificator, EC domain group identificator.
 //
 VSCF_PUBLIC void
-vscf_ec_alg_info_init_with_members(vscf_ec_alg_info_t *self, vscf_alg_id_t alg_id, vscf_oid_id_t key_id,
+vscf_ecc_alg_info_init_with_members(vscf_ecc_alg_info_t *self, vscf_alg_id_t alg_id, vscf_oid_id_t key_id,
         vscf_oid_id_t domain_id);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Create algorithm info with EC generic key identificator, EC domain group identificator.
 //
-VSCF_PUBLIC vscf_ec_alg_info_t *
-vscf_ec_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_oid_id_t key_id, vscf_oid_id_t domain_id);
+VSCF_PUBLIC vscf_ecc_alg_info_t *
+vscf_ecc_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_oid_id_t key_id, vscf_oid_id_t domain_id);
 
 //
 //  Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
 //
 VSCF_PUBLIC vscf_oid_id_t
-vscf_ec_alg_info_key_id(const vscf_ec_alg_info_t *self);
+vscf_ecc_alg_info_key_id(const vscf_ecc_alg_info_t *self);
 
 //
 //  Return EC domain group identificator.
 //
 VSCF_PUBLIC vscf_oid_id_t
-vscf_ec_alg_info_domain_id(const vscf_ec_alg_info_t *self);
+vscf_ecc_alg_info_domain_id(const vscf_ecc_alg_info_t *self);
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_ec_alg_info_alg_id(const vscf_ec_alg_info_t *self);
+vscf_ecc_alg_info_alg_id(const vscf_ecc_alg_info_t *self);
 
 
 // --------------------------------------------------------------------------

@@ -85,6 +85,12 @@ VSCF_PUBLIC vscf_alg_id_t
 vscf_key_alg_id(const vscf_impl_t *impl);
 
 //
+//  Return algorithm information that can be used for serialization.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_key_alg_info(const vscf_impl_t *impl);
+
+//
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
@@ -101,6 +107,13 @@ vscf_key_bitlen(const vscf_impl_t *impl);
 //
 VSCF_PRIVATE vscf_impl_tag_t
 vscf_key_impl_tag(const vscf_impl_t *impl);
+
+//
+//  Check that key is valid.
+//  Note, this operation can be slow.
+//
+VSCF_PUBLIC bool
+vscf_key_is_valid(const vscf_impl_t *impl);
 
 //
 //  Return key API, or NULL if it is not implemented.

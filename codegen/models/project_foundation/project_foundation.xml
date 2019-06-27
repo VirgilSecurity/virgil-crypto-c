@@ -126,7 +126,6 @@
     <class name="signer"/>
     <class name="verifier"/>
     <class name="simple swu"/>
-    <class name="raw key"/>
     <class name="brainkey client"/>
     <class name="brainkey server"/>
 

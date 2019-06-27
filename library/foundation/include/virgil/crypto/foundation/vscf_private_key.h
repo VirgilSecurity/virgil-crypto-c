@@ -79,6 +79,12 @@ extern "C" {
 typedef struct vscf_private_key_api_t vscf_private_key_api_t;
 
 //
+//  Extract public key from the private key.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_private_key_extract_public_key(const vscf_impl_t *impl);
+
+//
 //  Return private key API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_private_key_api_t *

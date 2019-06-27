@@ -98,6 +98,10 @@ struct vscf_ecc_public_key_t {
     //
     //  Implementation specific context.
     //
+    vscf_impl_t *alg_info;
+    //
+    //  Implementation specific context.
+    //
     mbedtls_ecp_group ecc_grp;
     //
     //  Implementation specific context.

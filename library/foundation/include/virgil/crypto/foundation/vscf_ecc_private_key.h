@@ -54,8 +54,8 @@
 #define VSCF_ECC_PRIVATE_KEY_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_alg_info.h"
 #include "vscf_impl.h"
-#include "vscf_private_key.h"
 #include "vscf_alg_id.h"
 
 // clang-format on
@@ -138,16 +138,16 @@ VSCF_PUBLIC vscf_ecc_private_key_t *
 vscf_ecc_private_key_shallow_copy(vscf_ecc_private_key_t *self);
 
 //
-//  Returns instance of the implemented interface 'private key'.
-//
-VSCF_PUBLIC const vscf_private_key_api_t *
-vscf_ecc_private_key_private_key_api(void);
-
-//
 //  Algorithm identifier the key belongs to.
 //
 VSCF_PUBLIC vscf_alg_id_t
 vscf_ecc_private_key_alg_id(const vscf_ecc_private_key_t *self);
+
+//
+//  Return algorithm information that can be used for serialization.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_ecc_private_key_alg_info(const vscf_ecc_private_key_t *self);
 
 //
 //  Length of the key in bytes.
@@ -166,6 +166,19 @@ vscf_ecc_private_key_bitlen(const vscf_ecc_private_key_t *self);
 //
 VSCF_PRIVATE vscf_impl_tag_t
 vscf_ecc_private_key_impl_tag(const vscf_ecc_private_key_t *self);
+
+//
+//  Check that key is valid.
+//  Note, this operation can be slow.
+//
+VSCF_PUBLIC bool
+vscf_ecc_private_key_is_valid(const vscf_ecc_private_key_t *self);
+
+//
+//  Extract public key from the private key.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_ecc_private_key_extract_public_key(const vscf_ecc_private_key_t *self);
 
 
 // --------------------------------------------------------------------------

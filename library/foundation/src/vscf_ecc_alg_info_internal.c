@@ -51,14 +51,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_ecc_public_key_internal.h"
+#include "vscf_ecc_alg_info_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_ecc_public_key_defs.h"
-#include "vscf_key.h"
-#include "vscf_key_api.h"
-#include "vscf_public_key.h"
-#include "vscf_public_key_api.h"
+#include "vscf_ecc_alg_info_defs.h"
+#include "vscf_alg_info.h"
+#include "vscf_alg_info_api.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -73,143 +71,103 @@
 // --------------------------------------------------------------------------
 
 static const vscf_api_t *
-vscf_ecc_public_key_find_api(vscf_api_tag_t api_tag);
+vscf_ecc_alg_info_find_api(vscf_api_tag_t api_tag);
 
 //
-//  Configuration of the interface API 'key api'.
+//  Configuration of the interface API 'alg info api'.
 //
-static const vscf_key_api_t key_api = {
+static const vscf_alg_info_api_t alg_info_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key' MUST be equal to the 'vscf_api_tag_KEY'.
+    //  For interface 'alg_info' MUST be equal to the 'vscf_api_tag_ALG_INFO'.
     //
-    vscf_api_tag_KEY,
+    vscf_api_tag_ALG_INFO,
     //
     //  Implementation unique identifier, MUST be second in the structure.
     //
-    vscf_impl_tag_ECC_PUBLIC_KEY,
+    vscf_impl_tag_ECC_ALG_INFO,
     //
-    //  Algorithm identifier the key belongs to.
+    //  Provide algorithm identificator.
     //
-    (vscf_key_api_alg_id_fn)vscf_ecc_public_key_alg_id,
-    //
-    //  Return algorithm information that can be used for serialization.
-    //
-    (vscf_key_api_alg_info_fn)vscf_ecc_public_key_alg_info,
-    //
-    //  Length of the key in bytes.
-    //
-    (vscf_key_api_len_fn)vscf_ecc_public_key_len,
-    //
-    //  Length of the key in bits.
-    //
-    (vscf_key_api_bitlen_fn)vscf_ecc_public_key_bitlen,
-    //
-    //  Return tag of an associated algorithm that can handle this key.
-    //
-    (vscf_key_api_impl_tag_fn)vscf_ecc_public_key_impl_tag,
-    //
-    //  Check that key is valid.
-    //  Note, this operation can be slow.
-    //
-    (vscf_key_api_is_valid_fn)vscf_ecc_public_key_is_valid
+    (vscf_alg_info_api_alg_id_fn)vscf_ecc_alg_info_alg_id
 };
 
 //
-//  Configuration of the interface API 'public key api'.
-//
-static const vscf_public_key_api_t public_key_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'public_key' MUST be equal to the 'vscf_api_tag_PUBLIC_KEY'.
-    //
-    vscf_api_tag_PUBLIC_KEY,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_ECC_PUBLIC_KEY,
-    //
-    //  Link to the inherited interface API 'key'.
-    //
-    &key_api
-};
-
-//
-//  Compile-time known information about 'ecc public key' implementation.
+//  Compile-time known information about 'ecc alg info' implementation.
 //
 static const vscf_impl_info_t info = {
     //
     //  Implementation unique identifier, MUST be first in the structure.
     //
-    vscf_impl_tag_ECC_PUBLIC_KEY,
+    vscf_impl_tag_ECC_ALG_INFO,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
     //
-    vscf_ecc_public_key_find_api,
+    vscf_ecc_alg_info_find_api,
     //
     //  Release acquired inner resources.
     //
-    (vscf_impl_cleanup_fn)vscf_ecc_public_key_cleanup,
+    (vscf_impl_cleanup_fn)vscf_ecc_alg_info_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vscf_impl_delete_fn)vscf_ecc_public_key_delete
+    (vscf_impl_delete_fn)vscf_ecc_alg_info_delete
 };
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_ecc_public_key_init(vscf_ecc_public_key_t *self) {
+vscf_ecc_alg_info_init(vscf_ecc_alg_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_ecc_public_key_t));
+    vscf_zeroize(self, sizeof(vscf_ecc_alg_info_t));
 
     self->info = &info;
     self->refcnt = 1;
 
-    vscf_ecc_public_key_init_ctx(self);
+    vscf_ecc_alg_info_init_ctx(self);
 }
 
 //
 //  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_ecc_public_key_init()'.
+//  This is a reverse action of the function 'vscf_ecc_alg_info_init()'.
 //
 VSCF_PUBLIC void
-vscf_ecc_public_key_cleanup(vscf_ecc_public_key_t *self) {
+vscf_ecc_alg_info_cleanup(vscf_ecc_alg_info_t *self) {
 
     if (self == NULL) {
         return;
     }
 
-    vscf_ecc_public_key_cleanup_ctx(self);
+    vscf_ecc_alg_info_cleanup_ctx(self);
 
-    vscf_zeroize(self, sizeof(vscf_ecc_public_key_t));
+    vscf_zeroize(self, sizeof(vscf_ecc_alg_info_t));
 }
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_ecc_public_key_t *
-vscf_ecc_public_key_new(void) {
+VSCF_PUBLIC vscf_ecc_alg_info_t *
+vscf_ecc_alg_info_new(void) {
 
-    vscf_ecc_public_key_t *self = (vscf_ecc_public_key_t *) vscf_alloc(sizeof (vscf_ecc_public_key_t));
+    vscf_ecc_alg_info_t *self = (vscf_ecc_alg_info_t *) vscf_alloc(sizeof (vscf_ecc_alg_info_t));
     VSCF_ASSERT_ALLOC(self);
 
-    vscf_ecc_public_key_init(self);
+    vscf_ecc_alg_info_init(self);
 
     return self;
 }
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_ecc_public_key_new()'.
+//  This is a reverse action of the function 'vscf_ecc_alg_info_new()'.
 //
 VSCF_PUBLIC void
-vscf_ecc_public_key_delete(vscf_ecc_public_key_t *self) {
+vscf_ecc_alg_info_delete(vscf_ecc_alg_info_t *self) {
 
     if (self == NULL) {
         return;
@@ -234,60 +192,83 @@ vscf_ecc_public_key_delete(vscf_ecc_public_key_t *self) {
         return;
     }
 
-    vscf_ecc_public_key_cleanup(self);
+    vscf_ecc_alg_info_cleanup(self);
 
     vscf_dealloc(self);
 }
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_ecc_public_key_new()'.
+//  This is a reverse action of the function 'vscf_ecc_alg_info_new()'.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_ecc_public_key_destroy(vscf_ecc_public_key_t **self_ref) {
+vscf_ecc_alg_info_destroy(vscf_ecc_alg_info_t **self_ref) {
 
     VSCF_ASSERT_PTR(self_ref);
 
-    vscf_ecc_public_key_t *self = *self_ref;
+    vscf_ecc_alg_info_t *self = *self_ref;
     *self_ref = NULL;
 
-    vscf_ecc_public_key_delete(self);
+    vscf_ecc_alg_info_delete(self);
 }
 
 //
 //  Copy given implementation context by increasing reference counter.
 //
-VSCF_PUBLIC vscf_ecc_public_key_t *
-vscf_ecc_public_key_shallow_copy(vscf_ecc_public_key_t *self) {
+VSCF_PUBLIC vscf_ecc_alg_info_t *
+vscf_ecc_alg_info_shallow_copy(vscf_ecc_alg_info_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_ecc_public_key_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
+    return (vscf_ecc_alg_info_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
-//  Returns instance of the implemented interface 'public key'.
+//  Perform initialization of pre-allocated context.
+//  Create algorithm info with EC generic key identificator, EC domain group identificator.
 //
-VSCF_PUBLIC const vscf_public_key_api_t *
-vscf_ecc_public_key_public_key_api(void) {
+VSCF_PUBLIC void
+vscf_ecc_alg_info_init_with_members(vscf_ecc_alg_info_t *self, vscf_alg_id_t alg_id, vscf_oid_id_t key_id,
+        vscf_oid_id_t domain_id) {
 
-    return &public_key_api;
+    VSCF_ASSERT_PTR(self);
+
+    vscf_zeroize(self, sizeof(vscf_ecc_alg_info_t));
+
+    self->info = &info;
+    self->refcnt = 1;
+
+    vscf_ecc_alg_info_init_ctx_with_members(self, alg_id, key_id, domain_id);
 }
 
 //
-//  Return size of 'vscf_ecc_public_key_t' type.
+//  Allocate implementation context and perform it's initialization.
+//  Create algorithm info with EC generic key identificator, EC domain group identificator.
+//
+VSCF_PUBLIC vscf_ecc_alg_info_t *
+vscf_ecc_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_oid_id_t key_id, vscf_oid_id_t domain_id) {
+
+    vscf_ecc_alg_info_t *self = vscf_ecc_alg_info_new();
+
+    vscf_ecc_alg_info_init_with_members(self, alg_id, key_id, domain_id);
+
+    return self;
+}
+
+//
+//  Return size of 'vscf_ecc_alg_info_t' type.
 //
 VSCF_PUBLIC size_t
-vscf_ecc_public_key_impl_size(void) {
+vscf_ecc_alg_info_impl_size(void) {
 
-    return sizeof (vscf_ecc_public_key_t);
+    return sizeof (vscf_ecc_alg_info_t);
 }
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ecc_public_key_impl(vscf_ecc_public_key_t *self) {
+vscf_ecc_alg_info_impl(vscf_ecc_alg_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
     return (vscf_impl_t *)(self);
@@ -297,20 +278,18 @@ vscf_ecc_public_key_impl(vscf_ecc_public_key_t *self) {
 //  Cast to the const 'vscf_impl_t' type.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_ecc_public_key_impl_const(const vscf_ecc_public_key_t *self) {
+vscf_ecc_alg_info_impl_const(const vscf_ecc_alg_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
     return (const vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *
-vscf_ecc_public_key_find_api(vscf_api_tag_t api_tag) {
+vscf_ecc_alg_info_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
-        case vscf_api_tag_KEY:
-            return (const vscf_api_t *) &key_api;
-        case vscf_api_tag_PUBLIC_KEY:
-            return (const vscf_api_t *) &public_key_api;
+        case vscf_api_tag_ALG_INFO:
+            return (const vscf_api_t *) &alg_info_api;
         default:
             return NULL;
     }

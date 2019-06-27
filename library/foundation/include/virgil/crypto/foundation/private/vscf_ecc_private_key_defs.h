@@ -98,11 +98,19 @@ struct vscf_ecc_private_key_t {
     //
     //  Implementation specific context.
     //
+    vscf_impl_t *alg_info;
+    //
+    //  Implementation specific context.
+    //
     mbedtls_ecp_group ecc_grp;
     //
     //  Implementation specific context.
     //
     mbedtls_mpi ecc_priv;
+    //
+    //  Implementation specific context.
+    //
+    mbedtls_ecp_point ecc_pub;
 };
 
 

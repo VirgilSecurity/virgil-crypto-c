@@ -87,13 +87,8 @@ extern "C" {
 //
 //  Callback. Check if algorithm can encrypt data with a given key.
 //
-typedef bool (*vscf_key_cipher_api_can_encrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key);
-
-//
-//  Callback. Encrypt data with a given public key.
-//
-typedef vscf_status_t (*vscf_key_cipher_api_encrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key,
-        vsc_data_t data, vsc_buffer_t *out);
+typedef bool (*vscf_key_cipher_api_can_encrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key,
+        size_t data_len);
 
 //
 //  Callback. Calculate required buffer length to hold the encrypted data.
@@ -102,22 +97,29 @@ typedef size_t (*vscf_key_cipher_api_encrypted_len_fn)(const vscf_impl_t *impl, 
         size_t data_len);
 
 //
+//  Callback. Encrypt data with a given public key.
+//
+typedef vscf_status_t (*vscf_key_cipher_api_encrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key,
+        vsc_data_t data, vsc_buffer_t *out);
+
+//
 //  Callback. Check if algorithm can decrypt data with a given key.
 //          However, success result of decryption is not guaranteed.
 //
-typedef bool (*vscf_key_cipher_api_can_decrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key);
-
-//
-//  Callback. Decrypt given data.
-//
-typedef vscf_status_t (*vscf_key_cipher_api_decrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key,
-        vsc_data_t data, vsc_buffer_t *out);
+typedef bool (*vscf_key_cipher_api_can_decrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key,
+        size_t data_len);
 
 //
 //  Callback. Calculate required buffer length to hold the decrypted data.
 //
 typedef size_t (*vscf_key_cipher_api_decrypted_len_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key,
         size_t data_len);
+
+//
+//  Callback. Decrypt given data.
+//
+typedef vscf_status_t (*vscf_key_cipher_api_decrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key,
+        vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Contains API requirements of the interface 'key cipher'.
@@ -141,26 +143,26 @@ struct vscf_key_cipher_api_t {
     //
     vscf_key_cipher_api_can_encrypt_fn can_encrypt_cb;
     //
-    //  Encrypt data with a given public key.
-    //
-    vscf_key_cipher_api_encrypt_fn encrypt_cb;
-    //
     //  Calculate required buffer length to hold the encrypted data.
     //
     vscf_key_cipher_api_encrypted_len_fn encrypted_len_cb;
+    //
+    //  Encrypt data with a given public key.
+    //
+    vscf_key_cipher_api_encrypt_fn encrypt_cb;
     //
     //  Check if algorithm can decrypt data with a given key.
     //  However, success result of decryption is not guaranteed.
     //
     vscf_key_cipher_api_can_decrypt_fn can_decrypt_cb;
     //
-    //  Decrypt given data.
-    //
-    vscf_key_cipher_api_decrypt_fn decrypt_cb;
-    //
     //  Calculate required buffer length to hold the decrypted data.
     //
     vscf_key_cipher_api_decrypted_len_fn decrypted_len_cb;
+    //
+    //  Decrypt given data.
+    //
+    vscf_key_cipher_api_decrypt_fn decrypt_cb;
 };
 
 

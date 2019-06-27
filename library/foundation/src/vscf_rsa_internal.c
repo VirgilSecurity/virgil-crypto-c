@@ -63,8 +63,6 @@
 #include "vscf_key_cipher_api.h"
 #include "vscf_key_signer.h"
 #include "vscf_key_signer_api.h"
-#include "vscf_compute_shared_key.h"
-#include "vscf_compute_shared_key_api.h"
 #include "vscf_hash.h"
 #include "vscf_random.h"
 #include "vscf_impl.h"
@@ -128,10 +126,6 @@ static const vscf_key_alg_api_t key_alg_api = {
     //
     &alg_api,
     //
-    //  Extract public key from the private key.
-    //
-    (vscf_key_alg_api_extract_public_key_fn)vscf_rsa_extract_public_key,
-    //
     //  Generate ephemeral private key of the same type.
     //  Note, this operation might be slow.
     //
@@ -148,7 +142,7 @@ static const vscf_key_alg_api_t key_alg_api = {
     //
     (vscf_key_alg_api_import_public_key_fn)vscf_rsa_import_public_key,
     //
-    //  Export public key in the raw binary format.
+    //  Export public key to the raw binary format.
     //
     //  Binary format must be defined in the key specification.
     //  For instance, RSA public key must be exported in format defined in
@@ -214,26 +208,26 @@ static const vscf_key_cipher_api_t key_cipher_api = {
     //
     (vscf_key_cipher_api_can_encrypt_fn)vscf_rsa_can_encrypt,
     //
-    //  Encrypt data with a given public key.
-    //
-    (vscf_key_cipher_api_encrypt_fn)vscf_rsa_encrypt,
-    //
     //  Calculate required buffer length to hold the encrypted data.
     //
     (vscf_key_cipher_api_encrypted_len_fn)vscf_rsa_encrypted_len,
+    //
+    //  Encrypt data with a given public key.
+    //
+    (vscf_key_cipher_api_encrypt_fn)vscf_rsa_encrypt,
     //
     //  Check if algorithm can decrypt data with a given key.
     //  However, success result of decryption is not guaranteed.
     //
     (vscf_key_cipher_api_can_decrypt_fn)vscf_rsa_can_decrypt,
     //
-    //  Decrypt given data.
-    //
-    (vscf_key_cipher_api_decrypt_fn)vscf_rsa_decrypt,
-    //
     //  Calculate required buffer length to hold the decrypted data.
     //
-    (vscf_key_cipher_api_decrypted_len_fn)vscf_rsa_decrypted_len
+    (vscf_key_cipher_api_decrypted_len_fn)vscf_rsa_decrypted_len,
+    //
+    //  Decrypt given data.
+    //
+    (vscf_key_cipher_api_decrypt_fn)vscf_rsa_decrypt
 };
 
 //
@@ -274,35 +268,6 @@ static const vscf_key_signer_api_t key_signer_api = {
     //  Verify data digest with a given public key and signature.
     //
     (vscf_key_signer_api_verify_hash_fn)vscf_rsa_verify_hash
-};
-
-//
-//  Configuration of the interface API 'compute shared key api'.
-//
-static const vscf_compute_shared_key_api_t compute_shared_key_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'compute_shared_key' MUST be equal to the 'vscf_api_tag_COMPUTE_SHARED_KEY'.
-    //
-    vscf_api_tag_COMPUTE_SHARED_KEY,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_RSA,
-    //
-    //  Link to the inherited interface API 'key alg'.
-    //
-    &key_alg_api,
-    //
-    //  Compute shared key for 2 asymmetric keys.
-    //  Note, computed shared key can be used only within symmetric cryptography.
-    //
-    (vscf_compute_shared_key_api_compute_shared_key_fn)vscf_rsa_compute_shared_key,
-    //
-    //  Return number of bytes required to hold shared key.
-    //  Expect Public Key or Private Key.
-    //
-    (vscf_compute_shared_key_api_shared_key_len_fn)vscf_rsa_shared_key_len
 };
 
 //
@@ -554,8 +519,6 @@ vscf_rsa_find_api(vscf_api_tag_t api_tag) {
     switch(api_tag) {
         case vscf_api_tag_ALG:
             return (const vscf_api_t *) &alg_api;
-        case vscf_api_tag_COMPUTE_SHARED_KEY:
-            return (const vscf_api_t *) &compute_shared_key_api;
         case vscf_api_tag_KEY_ALG:
             return (const vscf_api_t *) &key_alg_api;
         case vscf_api_tag_KEY_CIPHER:

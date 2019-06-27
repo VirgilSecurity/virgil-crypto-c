@@ -2,4 +2,10 @@
     Contains private part of the key.
 
     <inherit interface="key"/>
+
+    <method name="extract public key" is_const="1">
+        Extract public key from the private key.
+
+        <return interface="public key" access="disown"/>
+    </method>
 </interface>

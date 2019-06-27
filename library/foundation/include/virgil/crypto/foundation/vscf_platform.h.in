@@ -302,6 +302,14 @@ extern "C" {
 #cmakedefine01 VSCF_KEY_MATERIAL_RNG
 #endif
 
+#ifndef VSCF_RAW_PUBLIC_KEY
+#cmakedefine01 VSCF_RAW_PUBLIC_KEY
+#endif
+
+#ifndef VSCF_RAW_PRIVATE_KEY
+#cmakedefine01 VSCF_RAW_PRIVATE_KEY
+#endif
+
 #ifndef VSCF_PKCS8_SERIALIZER
 #cmakedefine01 VSCF_PKCS8_SERIALIZER
 #endif
@@ -316,14 +324,6 @@ extern "C" {
 
 #ifndef VSCF_KEY_ASN1_DESERIALIZER
 #cmakedefine01 VSCF_KEY_ASN1_DESERIALIZER
-#endif
-
-#ifndef VSCF_RAW_PUBLIC_KEY
-#cmakedefine01 VSCF_RAW_PUBLIC_KEY
-#endif
-
-#ifndef VSCF_RAW_PRIVATE_KEY
-#cmakedefine01 VSCF_RAW_PRIVATE_KEY
 #endif
 
 #ifndef VSCF_ED25519
@@ -354,8 +354,8 @@ extern "C" {
 #cmakedefine01 VSCF_PBE_ALG_INFO
 #endif
 
-#ifndef VSCF_EC_ALG_INFO
-#cmakedefine01 VSCF_EC_ALG_INFO
+#ifndef VSCF_ECC_ALG_INFO
+#cmakedefine01 VSCF_ECC_ALG_INFO
 #endif
 
 #ifndef VSCF_ALG_INFO_DER_SERIALIZER
@@ -468,10 +468,6 @@ extern "C" {
 
 #ifndef VSCF_SIMPLE_SWU
 #cmakedefine01 VSCF_SIMPLE_SWU
-#endif
-
-#ifndef VSCF_RAW_KEY
-#cmakedefine01 VSCF_RAW_KEY
 #endif
 
 #ifndef VSCF_BRAINKEY_CLIENT

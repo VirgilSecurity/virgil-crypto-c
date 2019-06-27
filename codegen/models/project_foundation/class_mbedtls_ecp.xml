@@ -18,4 +18,13 @@
 
         <return enum="alg id"/>
     </method>
+
+    <method name="group load" is_static="1">
+        Validate if "alg id" belongs to ECC.
+
+        <argument name="alg id" enum="alg id"/>
+        <argument name="ecc grp" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
+
+        <return enum="status"/>
+    </method>
 </class>

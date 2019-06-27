@@ -79,6 +79,11 @@ extern "C" {
 typedef vscf_alg_id_t (*vscf_key_api_alg_id_fn)(const vscf_impl_t *impl);
 
 //
+//  Callback. Return algorithm information that can be used for serialization.
+//
+typedef const vscf_impl_t * (*vscf_key_api_alg_info_fn)(const vscf_impl_t *impl);
+
+//
 //  Callback. Length of the key in bytes.
 //
 typedef size_t (*vscf_key_api_len_fn)(const vscf_impl_t *impl);
@@ -92,6 +97,12 @@ typedef size_t (*vscf_key_api_bitlen_fn)(const vscf_impl_t *impl);
 //  Callback. Return tag of an associated algorithm that can handle this key.
 //
 typedef vscf_impl_tag_t (*vscf_key_api_impl_tag_fn)(const vscf_impl_t *impl);
+
+//
+//  Callback. Check that key is valid.
+//          Note, this operation can be slow.
+//
+typedef bool (*vscf_key_api_is_valid_fn)(const vscf_impl_t *impl);
 
 //
 //  Contains API requirements of the interface 'key'.
@@ -111,6 +122,10 @@ struct vscf_key_api_t {
     //
     vscf_key_api_alg_id_fn alg_id_cb;
     //
+    //  Return algorithm information that can be used for serialization.
+    //
+    vscf_key_api_alg_info_fn alg_info_cb;
+    //
     //  Length of the key in bytes.
     //
     vscf_key_api_len_fn len_cb;
@@ -122,6 +137,11 @@ struct vscf_key_api_t {
     //  Return tag of an associated algorithm that can handle this key.
     //
     vscf_key_api_impl_tag_fn impl_tag_cb;
+    //
+    //  Check that key is valid.
+    //  Note, this operation can be slow.
+    //
+    vscf_key_api_is_valid_fn is_valid_cb;
 };
 
 

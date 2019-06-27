@@ -47,26 +47,17 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Public and private key deserialization from an interchangeable format.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_KEY_DESERIALIZER_H_INCLUDED
-#define VSCF_KEY_DESERIALIZER_H_INCLUDED
+#ifndef VSCF_ECC_ALG_INFO_INTERNAL_H_INCLUDED
+#define VSCF_ECC_ALG_INFO_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_error.h"
-#include "vscf_raw_public_key.h"
-#include "vscf_raw_private_key.h"
-#include "vscf_api.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#endif
+#include "vscf_ecc_alg_info.h"
+#include "vscf_alg_id.h"
+#include "vscf_oid_id.h"
 
 // clang-format on
 //  @end
@@ -84,39 +75,27 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'key deserializer'.
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_ecc_alg_info_init() is called.
+//  Note, that context is already zeroed.
 //
-typedef struct vscf_key_deserializer_api_t vscf_key_deserializer_api_t;
+VSCF_PRIVATE void
+vscf_ecc_alg_info_init_ctx(vscf_ecc_alg_info_t *self);
 
 //
-//  Deserialize given public key as an interchangeable format to the object.
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
 //
-VSCF_PUBLIC vscf_raw_public_key_t *
-vscf_key_deserializer_deserialize_public_key(vscf_impl_t *impl, vsc_data_t public_key_data, vscf_error_t *error);
+VSCF_PRIVATE void
+vscf_ecc_alg_info_cleanup_ctx(vscf_ecc_alg_info_t *self);
 
 //
-//  Deserialize given private key as an interchangeable format to the object.
+//  Create algorithm info with EC generic key identificator, EC domain group identificator.
 //
-VSCF_PUBLIC vscf_raw_private_key_t *
-vscf_key_deserializer_deserialize_private_key(vscf_impl_t *impl, vsc_data_t private_key_data, vscf_error_t *error);
-
-//
-//  Return key deserializer API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_key_deserializer_api_t *
-vscf_key_deserializer_api(const vscf_impl_t *impl);
-
-//
-//  Check if given object implements interface 'key deserializer'.
-//
-VSCF_PUBLIC bool
-vscf_key_deserializer_is_implemented(const vscf_impl_t *impl);
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_key_deserializer_api_tag(const vscf_key_deserializer_api_t *key_deserializer_api);
+VSCF_PUBLIC void
+vscf_ecc_alg_info_init_ctx_with_members(vscf_ecc_alg_info_t *self, vscf_alg_id_t alg_id, vscf_oid_id_t key_id,
+        vscf_oid_id_t domain_id);
 
 
 // --------------------------------------------------------------------------
@@ -132,5 +111,5 @@ vscf_key_deserializer_api_tag(const vscf_key_deserializer_api_t *key_deserialize
 
 
 //  @footer
-#endif // VSCF_KEY_DESERIALIZER_H_INCLUDED
+#endif // VSCF_ECC_ALG_INFO_INTERNAL_H_INCLUDED
 //  @end

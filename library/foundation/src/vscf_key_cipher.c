@@ -68,26 +68,13 @@
 //  Check if algorithm can encrypt data with a given key.
 //
 VSCF_PUBLIC bool
-vscf_key_cipher_can_encrypt(const vscf_impl_t *impl, const vscf_impl_t *public_key) {
+vscf_key_cipher_can_encrypt(const vscf_impl_t *impl, const vscf_impl_t *public_key, size_t data_len) {
 
     const vscf_key_cipher_api_t *key_cipher_api = vscf_key_cipher_api(impl);
     VSCF_ASSERT_PTR (key_cipher_api);
 
     VSCF_ASSERT_PTR (key_cipher_api->can_encrypt_cb);
-    return key_cipher_api->can_encrypt_cb (impl, public_key);
-}
-
-//
-//  Encrypt data with a given public key.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_key_cipher_encrypt(const vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out) {
-
-    const vscf_key_cipher_api_t *key_cipher_api = vscf_key_cipher_api(impl);
-    VSCF_ASSERT_PTR (key_cipher_api);
-
-    VSCF_ASSERT_PTR (key_cipher_api->encrypt_cb);
-    return key_cipher_api->encrypt_cb (impl, public_key, data, out);
+    return key_cipher_api->can_encrypt_cb (impl, public_key, data_len);
 }
 
 //
@@ -104,30 +91,30 @@ vscf_key_cipher_encrypted_len(const vscf_impl_t *impl, const vscf_impl_t *public
 }
 
 //
+//  Encrypt data with a given public key.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_key_cipher_encrypt(const vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out) {
+
+    const vscf_key_cipher_api_t *key_cipher_api = vscf_key_cipher_api(impl);
+    VSCF_ASSERT_PTR (key_cipher_api);
+
+    VSCF_ASSERT_PTR (key_cipher_api->encrypt_cb);
+    return key_cipher_api->encrypt_cb (impl, public_key, data, out);
+}
+
+//
 //  Check if algorithm can decrypt data with a given key.
 //  However, success result of decryption is not guaranteed.
 //
 VSCF_PUBLIC bool
-vscf_key_cipher_can_decrypt(const vscf_impl_t *impl, const vscf_impl_t *private_key) {
+vscf_key_cipher_can_decrypt(const vscf_impl_t *impl, const vscf_impl_t *private_key, size_t data_len) {
 
     const vscf_key_cipher_api_t *key_cipher_api = vscf_key_cipher_api(impl);
     VSCF_ASSERT_PTR (key_cipher_api);
 
     VSCF_ASSERT_PTR (key_cipher_api->can_decrypt_cb);
-    return key_cipher_api->can_decrypt_cb (impl, private_key);
-}
-
-//
-//  Decrypt given data.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_key_cipher_decrypt(const vscf_impl_t *impl, const vscf_impl_t *private_key, vsc_data_t data, vsc_buffer_t *out) {
-
-    const vscf_key_cipher_api_t *key_cipher_api = vscf_key_cipher_api(impl);
-    VSCF_ASSERT_PTR (key_cipher_api);
-
-    VSCF_ASSERT_PTR (key_cipher_api->decrypt_cb);
-    return key_cipher_api->decrypt_cb (impl, private_key, data, out);
+    return key_cipher_api->can_decrypt_cb (impl, private_key, data_len);
 }
 
 //
@@ -141,6 +128,19 @@ vscf_key_cipher_decrypted_len(const vscf_impl_t *impl, const vscf_impl_t *privat
 
     VSCF_ASSERT_PTR (key_cipher_api->decrypted_len_cb);
     return key_cipher_api->decrypted_len_cb (impl, private_key, data_len);
+}
+
+//
+//  Decrypt given data.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_key_cipher_decrypt(const vscf_impl_t *impl, const vscf_impl_t *private_key, vsc_data_t data, vsc_buffer_t *out) {
+
+    const vscf_key_cipher_api_t *key_cipher_api = vscf_key_cipher_api(impl);
+    VSCF_ASSERT_PTR (key_cipher_api);
+
+    VSCF_ASSERT_PTR (key_cipher_api->decrypt_cb);
+    return key_cipher_api->decrypt_cb (impl, private_key, data, out);
 }
 
 //

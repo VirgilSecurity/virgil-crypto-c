@@ -268,12 +268,13 @@ vscf_alg_factory_create_cipher_from_info(const vscf_impl_t *alg_info) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_alg_factory_create_public_key_from_raw_key(const vscf_raw_public_key_t *raw_public_key, vscf_error_t *error) {
 
-    VSCF_ASSERT_PTR(raw_key);
+    VSCF_ASSERT_PTR(raw_public_key);
+    VSCF_ASSERT(vscf_raw_public_key_is_valid(raw_public_key));
 
     vscf_status_t status = vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
     vscf_impl_t *public_key = NULL;
 
-    const vscf_alg_id_t alg_id = vscf_raw_key_alg_id(raw_key);
+    const vscf_alg_id_t alg_id = vscf_raw_public_key_alg_id(raw_public_key);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
     if (alg_id == vscf_alg_id_RSA) {
@@ -301,7 +302,7 @@ vscf_alg_factory_create_public_key_from_raw_key(const vscf_raw_public_key_t *raw
     }
 
     if (status == vscf_status_SUCCESS) {
-        status = vscf_public_key_import_public_key(public_key, vscf_raw_key_data(raw_key));
+        status = vscf_public_key_import_public_key(public_key, vscf_raw_key_data(raw_public_key));
     }
 
     if (status == vscf_status_SUCCESS) {

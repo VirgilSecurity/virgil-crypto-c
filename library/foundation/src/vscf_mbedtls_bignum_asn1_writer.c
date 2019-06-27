@@ -79,7 +79,7 @@
 //  Returns size of written data.
 //
 VSCF_PUBLIC size_t
-vscf_mbedtls_bignum_write_asn1(vscf_impl_t *asn1wr, const mbedtls_mpi *bignum, vscf_error_t *error) {
+vscf_mbedtls_bignum_write_asn1(vscf_impl_t *asn1wr, const mbedtls_mpi *bignum) {
 
     VSCF_ASSERT_PTR(bignum);
     VSCF_ASSERT_PTR(asn1wr);

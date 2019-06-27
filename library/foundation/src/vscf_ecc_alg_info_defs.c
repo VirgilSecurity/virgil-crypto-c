@@ -37,6 +37,15 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'ecc alg info' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,37 +53,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Public and private key deserialization from an interchangeable format.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_KEY_DESERIALIZER_H_INCLUDED
-#define VSCF_KEY_DESERIALIZER_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_error.h"
-#include "vscf_raw_public_key.h"
-#include "vscf_raw_private_key.h"
-#include "vscf_api.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#endif
+#include "vscf_ecc_alg_info_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -83,54 +65,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Contains API requirements of the interface 'key deserializer'.
-//
-typedef struct vscf_key_deserializer_api_t vscf_key_deserializer_api_t;
-
-//
-//  Deserialize given public key as an interchangeable format to the object.
-//
-VSCF_PUBLIC vscf_raw_public_key_t *
-vscf_key_deserializer_deserialize_public_key(vscf_impl_t *impl, vsc_data_t public_key_data, vscf_error_t *error);
-
-//
-//  Deserialize given private key as an interchangeable format to the object.
-//
-VSCF_PUBLIC vscf_raw_private_key_t *
-vscf_key_deserializer_deserialize_private_key(vscf_impl_t *impl, vsc_data_t private_key_data, vscf_error_t *error);
-
-//
-//  Return key deserializer API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_key_deserializer_api_t *
-vscf_key_deserializer_api(const vscf_impl_t *impl);
-
-//
-//  Check if given object implements interface 'key deserializer'.
-//
-VSCF_PUBLIC bool
-vscf_key_deserializer_is_implemented(const vscf_impl_t *impl);
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_key_deserializer_api_tag(const vscf_key_deserializer_api_t *key_deserializer_api);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_KEY_DESERIALIZER_H_INCLUDED
 //  @end
