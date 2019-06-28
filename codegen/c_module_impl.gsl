@@ -296,6 +296,36 @@ function _L24_add_method_shallow_copy (meta, destination)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Add function that 'copy' implementation object by increasing ref counter
+#   with const semantic.
+# ---------------------------------------------------------------------------
+function _L24_add_method_shallow_copy_const (meta, destination)
+    check_arguments (my, "meta, destination", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        .name = my.names.method_shallow_copy_const
+        .is_const = "1"
+
+        . = "
+        Copy implementation object by increasing reference counter.
+        Reference counter is internally synchronized, so constness is presumed.
+        "
+
+        component_create_argument_impl (method, my.meta)
+        component_create_return_impl (method, my.meta)
+
+        new code
+            . = "\
+                return .(c_class_impl_method_shallow_copy)((.(c_class_impl_struct_impl) *).(_argument_impl));
+            "
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create module with functionality common for all 'implementation' objects.
 # ---------------------------------------------------------------------------
 function c_module_impl_create (meta, destination)
@@ -349,6 +379,7 @@ function c_module_impl_create (meta, destination)
         _L24_add_method_delete (my.meta, module)
         _L24_add_method_destroy (my.meta, module)
         _L24_add_method_shallow_copy (my.meta, module)
+        _L24_add_method_shallow_copy_const (my.meta, module)
     endnew
 endfunction
 

@@ -1,38 +1,52 @@
 <class name="ecies">
     Virgil implementation of the ECIES algorithm.
 
-    <require class="ecies envelope"/>
     <require interface="compute shared key"/>
     <require interface="public key"/>
     <require interface="private key"/>
+    <require interface="key alg"/>
+    <require interface="key cipher"/>
     <require impl="kdf2"/>
     <require impl="sha384"/>
     <require impl="hmac"/>
     <require impl="aes256 cbc"/>
     <require impl="ctr drbg"/>
-    <require module="ecies envelope defs"/>
+    <require class="key alg factory"/>
+    <require class="ecies envelope"/>
 
     <dependency name="random" interface="random"/>
     <dependency name="cipher" interface="cipher"/>
     <dependency name="mac" interface="mac"/>
     <dependency name="kdf" interface="kdf"/>
 
-
     <dependency name="ephemeral key" interface="private key">
         Set ephemeral key that used for data encryption.
         Public and ephemeral keys should belong to the same curve.
+        This dependency is optional.
     </dependency>
 
+    <property name="key alg" interface="key alg" access="readonly">
+        Weak reference to the key algorithm.
+    </property>
 
-    <method name="setup defaults" declaration="public">
-        Setup predefined values to the uninitialized class dependencies.
 
-        <return enum="status"/>
+    <method name="set key alg">
+        Set weak reference to the key algorithm.
+        Key algorithm MUST support shared key computation as well.
+
+        <argument name="key alg" interface="key alg"/>
     </method>
 
 
-    <method name="configure defaults">
-        Configure ECIES with default algorithms.
+    <method name="release key alg">
+        Release weak reference to the key algorithm.
+    </method>
+
+
+    <method name="setup defaults">
+        Setup predefined values to the uninitialized class dependencies.
+
+        <return enum="status"/>
     </method>
 
 
@@ -40,7 +54,6 @@
         Calculate required buffer length to hold the encrypted data.
 
         <argument name="public key" interface="public key"/>
-        <argument name="compute shared key ctx" interface="compute shared key"/>
         <argument name="data len" type="size"/>
 
         <return type="size"/>
@@ -51,7 +64,6 @@
         Encrypt data with a given public key.
 
         <argument name="public key" interface="public key"/>
-        <argument name="compute shared key ctx" interface="compute shared key"/>
         <argument name="data" class="data"/>
         <argument name="out" class="buffer">
             <length method="encrypted len">
@@ -69,7 +81,6 @@
         Calculate required buffer length to hold the decrypted data.
 
         <argument name="private key" interface="private key"/>
-        <argument name="compute shared key ctx" interface="compute shared key"/>
         <argument name="data len" type="size"/>
 
         <return type="size"/>
@@ -80,7 +91,6 @@
         Decrypt given data.
 
         <argument name="private key" interface="private key"/>
-        <argument name="compute shared key ctx" interface="compute shared key"/>
         <argument name="data" class="data"/>
         <argument name="out" class="buffer">
             <length method="decrypted len">

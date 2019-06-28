@@ -210,6 +210,7 @@ vscf_ecies_release_kdf(vscf_ecies_t *self);
 //
 //  Set ephemeral key that used for data encryption.
 //  Public and ephemeral keys should belong to the same curve.
+//  This dependency is optional.
 //
 //  Note, ownership is shared.
 //
@@ -219,6 +220,7 @@ vscf_ecies_use_ephemeral_key(vscf_ecies_t *self, vscf_impl_t *ephemeral_key);
 //
 //  Set ephemeral key that used for data encryption.
 //  Public and ephemeral keys should belong to the same curve.
+//  This dependency is optional.
 //
 //  Note, ownership is transfered.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
@@ -233,44 +235,49 @@ VSCF_PUBLIC void
 vscf_ecies_release_ephemeral_key(vscf_ecies_t *self);
 
 //
+//  Set weak reference to the key algorithm.
+//  Key algorithm MUST support shared key computation as well.
+//
+VSCF_PUBLIC void
+vscf_ecies_set_key_alg(vscf_ecies_t *self, const vscf_impl_t *key_alg);
+
+//
+//  Release weak reference to the key algorithm.
+//
+VSCF_PUBLIC void
+vscf_ecies_release_key_alg(vscf_ecies_t *self);
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_ecies_setup_defaults(vscf_ecies_t *self) VSCF_NODISCARD;
 
 //
-//  Configure ECIES with default algorithms.
-//
-VSCF_PUBLIC void
-vscf_ecies_configure_defaults(vscf_ecies_t *self);
-
-//
 //  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_ecies_encrypted_len(const vscf_ecies_t *self, const vscf_impl_t *public_key,
-        const vscf_impl_t *compute_shared_key_ctx, size_t data_len);
+vscf_ecies_encrypted_len(const vscf_ecies_t *self, const vscf_impl_t *public_key, size_t data_len);
 
 //
 //  Encrypt data with a given public key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ecies_encrypt(const vscf_ecies_t *self, const vscf_impl_t *public_key, const vscf_impl_t *compute_shared_key_ctx,
-        vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_ecies_encrypt(const vscf_ecies_t *self, const vscf_impl_t *public_key, vsc_data_t data,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Calculate required buffer length to hold the decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_ecies_decrypted_len(const vscf_ecies_t *self, const vscf_impl_t *private_key,
-        const vscf_impl_t *compute_shared_key_ctx, size_t data_len);
+vscf_ecies_decrypted_len(const vscf_ecies_t *self, const vscf_impl_t *private_key, size_t data_len);
 
 //
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ecies_decrypt(const vscf_ecies_t *self, const vscf_impl_t *private_key, const vscf_impl_t *compute_shared_key_ctx,
-        vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_ecies_decrypt(const vscf_ecies_t *self, const vscf_impl_t *private_key, vsc_data_t data,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

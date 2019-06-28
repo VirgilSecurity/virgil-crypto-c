@@ -16,7 +16,7 @@
         <require module="raw private key defs" scope="private"/>
 
         <dependency name="random" interface="random"/>
-        <dependency name="ecies" class="ecies"/>
+        <dependency name="ecies" class="ecies" has_observers="1"/>
 
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.
@@ -26,7 +26,7 @@
 
         <interface name="alg"/>
         <interface name="key alg">
-            <constant name="can import public key" value="true"/>
+        <constant name="can import public key" value="true"/>
             <constant name="can export public key" value="true"/>
             <constant name="can import private key" value="true"/>
             <constant name="can export private key" value="true"/>
@@ -61,7 +61,7 @@
         <require module="raw private key defs" scope="private"/>
 
         <dependency name="random" interface="random"/>
-        <dependency name="ecies" class="ecies"/>
+        <dependency name="ecies" class="ecies" has_observers="1"/>
 
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.

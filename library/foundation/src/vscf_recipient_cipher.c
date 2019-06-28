@@ -68,6 +68,7 @@
 #include "vscf_aes256_gcm.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_alg_factory.h"
+#include "vscf_key_alg_factory.h"
 
 // clang-format on
 //  @end

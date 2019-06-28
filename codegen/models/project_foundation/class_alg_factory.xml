@@ -64,22 +64,4 @@
 
         <return interface="cipher" access="disown"/>
     </method>
-
-    <method name="create public key from raw key" is_static="1">
-        Create algorithm that implements "public key" interface.
-
-        <argument name="raw public key" class="raw public key"/>
-        <argument name="error" class="error" access="readwrite"/>
-
-        <return interface="public key" access="disown"/>
-    </method>
-
-    <method name="create private key from raw key" is_static="1">
-        Create algorithm that implements "private key" interface.
-
-        <argument name="raw private key" class="raw private key"/>
-        <argument name="error" class="error" access="readwrite"/>
-
-        <return interface="private key" access="disown"/>
-    </method>
 </class>

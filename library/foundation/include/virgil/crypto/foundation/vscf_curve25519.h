@@ -260,7 +260,8 @@ vscf_curve25519_generate_ephemeral_key(const vscf_curve25519_t *self, const vscf
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_import_public_key(vscf_curve25519_t *self, const vscf_raw_public_key_t *raw_key, vscf_error_t *error);
+vscf_curve25519_import_public_key(const vscf_curve25519_t *self, const vscf_raw_public_key_t *raw_key,
+        vscf_error_t *error);
 
 //
 //  Export public key to the raw binary format.
@@ -283,7 +284,8 @@ vscf_curve25519_export_public_key(const vscf_curve25519_t *self, const vscf_impl
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_import_private_key(vscf_curve25519_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error);
+vscf_curve25519_import_private_key(const vscf_curve25519_t *self, const vscf_raw_private_key_t *raw_key,
+        vscf_error_t *error);
 
 //
 //  Export private key in the raw binary format.

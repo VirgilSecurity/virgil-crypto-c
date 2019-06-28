@@ -37,13 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  This module contains common functionality for all 'implementation' object.
-//  It is also enumerate all available implementations within crypto libary.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -51,14 +44,27 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Create a bridge between "raw keys" and algorithms that can import them.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_KEY_ALG_FACTORY_H_INCLUDED
+#define VSCF_KEY_ALG_FACTORY_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_error.h"
+#include "vscf_alg_id.h"
 #include "vscf_impl.h"
-#include "vscf_api_private.h"
-#include "vscf_impl_private.h"
-#include "vscf_assert.h"
-#include "vscf_atomic.h"
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -68,111 +74,44 @@
 // --------------------------------------------------------------------------
 
 //
-//  Return 'API' object that is fulfiled with a meta information
-//  specific to the given implementation object.
-//  Or NULL if object does not implement requested 'API'.
-//
-VSCF_PUBLIC const vscf_api_t *
-vscf_impl_api(const vscf_impl_t *impl, vscf_api_tag_t api_tag) {
-
-    VSCF_ASSERT_PTR(impl);
-    VSCF_ASSERT_PTR(impl->info);
-
-    if (impl->info->find_api_cb == NULL) {
-        return NULL;
-    }
-
-    return impl->info->find_api_cb(api_tag);
-}
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_impl_tag(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-    VSCF_ASSERT_PTR (impl->info);
-
-    return impl->info->impl_tag;
-}
-
-//
-//  Cleanup implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_cleanup(vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-    VSCF_ASSERT_PTR (impl->info);
-    VSCF_ASSERT_PTR (impl->info->self_cleanup_cb);
-
-    impl->info->self_cleanup_cb (impl);
-}
-
-//
-//  Delete implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_delete(vscf_impl_t *impl) {
-
-    if (impl) {
-        VSCF_ASSERT_PTR (impl->info);
-        VSCF_ASSERT_PTR (impl->info->self_delete_cb);
-        impl->info->self_delete_cb (impl);
-    }
-}
-
-//
-//  Destroy implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_destroy(vscf_impl_t **impl_ref) {
-
-    VSCF_ASSERT_PTR (impl_ref);
-
-    vscf_impl_t* impl = *impl_ref;
-    *impl_ref = NULL;
-
-    vscf_impl_delete (impl);
-}
-
-//
-//  Copy implementation object by increasing reference counter.
+//  Create a key algorithm based on an identifier.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_impl_shallow_copy(vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
-    //  CAS loop
-    size_t old_counter;
-    size_t new_counter;
-    do {
-        old_counter = impl->refcnt;
-        new_counter = old_counter + 1;
-    } while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&impl->refcnt, &old_counter, new_counter));
-    #else
-    ++impl->refcnt;
-    #endif
-
-    return impl;
-}
+vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t *random, vscf_error_t *error);
 
 //
-//  Copy implementation object by increasing reference counter.
-//  Reference counter is internally synchronized, so constness is presumed.
+//  Create a key algorithm correspond to a specific key.
 //
-VSCF_PUBLIC const vscf_impl_t *
-vscf_impl_shallow_copy_const(const vscf_impl_t *impl) {
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_alg_factory_create_for_key(const vscf_impl_t *key, const vscf_impl_t *random);
 
-    return vscf_impl_shallow_copy((vscf_impl_t *)impl);
-}
+//
+//  Create a key algorithm that can import "raw public key".
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_alg_factory_create_for_public_key(const vscf_impl_t *public_key, const vscf_impl_t *random,
+        vscf_error_t *error);
+
+//
+//  Create a key algorithm that can import "raw private key".
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_alg_factory_create_for_private_key(const vscf_impl_t *private_key, const vscf_impl_t *random,
+        vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_KEY_ALG_FACTORY_H_INCLUDED
 //  @end

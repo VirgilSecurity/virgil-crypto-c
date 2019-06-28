@@ -31,7 +31,7 @@
     </method>
 
 
-    <method name="import public key">
+    <method name="import public key" is_const="1">
         Import public key from the raw binary format.
 
         Return public key that is adopted and optimized to be used
@@ -62,7 +62,7 @@
     </method>
 
 
-    <method name="import private key">
+    <method name="import private key" is_const="1">
         Import private key from the raw binary format.
 
         Return private key that is adopted and optimized to be used

@@ -89,7 +89,7 @@ vscf_key_alg_generate_ephemeral_key(const vscf_impl_t *impl, const vscf_impl_t *
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_alg_import_public_key(vscf_impl_t *impl, const vscf_raw_public_key_t *raw_key, vscf_error_t *error) {
+vscf_key_alg_import_public_key(const vscf_impl_t *impl, const vscf_raw_public_key_t *raw_key, vscf_error_t *error) {
 
     const vscf_key_alg_api_t *key_alg_api = vscf_key_alg_api(impl);
     VSCF_ASSERT_PTR (key_alg_api);
@@ -126,7 +126,7 @@ vscf_key_alg_export_public_key(const vscf_impl_t *impl, const vscf_impl_t *publi
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_alg_import_private_key(vscf_impl_t *impl, const vscf_raw_private_key_t *raw_key, vscf_error_t *error) {
+vscf_key_alg_import_private_key(const vscf_impl_t *impl, const vscf_raw_private_key_t *raw_key, vscf_error_t *error) {
 
     const vscf_key_alg_api_t *key_alg_api = vscf_key_alg_api(impl);
     VSCF_ASSERT_PTR (key_alg_api);

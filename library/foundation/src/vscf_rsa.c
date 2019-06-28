@@ -208,7 +208,7 @@ vscf_rsa_generate_ephemeral_key(const vscf_rsa_t *self, const vscf_impl_t *key, 
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_import_public_key(vscf_rsa_t *self, const vscf_raw_public_key_t *raw_key, vscf_error_t *error) {
+vscf_rsa_import_public_key(const vscf_rsa_t *self, const vscf_raw_public_key_t *raw_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(raw_key);
@@ -262,7 +262,7 @@ vscf_rsa_export_public_key(const vscf_rsa_t *self, const vscf_impl_t *public_key
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_import_private_key(vscf_rsa_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error) {
+vscf_rsa_import_private_key(const vscf_rsa_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(raw_key);

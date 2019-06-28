@@ -83,6 +83,7 @@ framework module VSCFoundation {
     header "vscf_brainkey_server.h"
     header "vscf_ecies.h"
     header "vscf_error.h"
+    header "vscf_key_alg_factory.h"
     header "vscf_key_provider.h"
     header "vscf_key_recipient_info.h"
     header "vscf_key_recipient_info_list.h"

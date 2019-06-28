@@ -85,6 +85,27 @@
 
 
 //
+//  This method is called when class 'ecies' was setup.
+//
+VSCF_PRIVATE void
+vscf_curve25519_did_setup_ecies(vscf_curve25519_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->ecies);
+
+    vscf_ecies_set_key_alg(self->ecies, vscf_curve25519_impl(self));
+}
+
+//
+//  This method is called when class 'ecies' was released.
+//
+VSCF_PRIVATE void
+vscf_curve25519_did_release_ecies(vscf_curve25519_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+}
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
@@ -222,7 +243,8 @@ vscf_curve25519_generate_ephemeral_key(const vscf_curve25519_t *self, const vscf
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_import_public_key(vscf_curve25519_t *self, const vscf_raw_public_key_t *raw_key, vscf_error_t *error) {
+vscf_curve25519_import_public_key(
+        const vscf_curve25519_t *self, const vscf_raw_public_key_t *raw_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(raw_key);
@@ -281,7 +303,7 @@ vscf_curve25519_export_public_key(const vscf_curve25519_t *self, const vscf_impl
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_curve25519_import_private_key(
-        vscf_curve25519_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error) {
+        const vscf_curve25519_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(raw_key);
@@ -357,7 +379,7 @@ vscf_curve25519_encrypted_len(const vscf_curve25519_t *self, const vscf_impl_t *
     VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
     VSCF_UNUSED(data_len);
 
-    return vscf_ecies_encrypted_len(self->ecies, public_key, vscf_curve25519_impl_const(self), data_len);
+    return vscf_ecies_encrypted_len(self->ecies, public_key, data_len);
 }
 
 //
@@ -376,7 +398,7 @@ vscf_curve25519_encrypt(
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_curve25519_encrypted_len(self, public_key, data.len));
 
-    vscf_status_t status = vscf_ecies_encrypt(self->ecies, public_key, vscf_curve25519_impl_const(self), data, out);
+    vscf_status_t status = vscf_ecies_encrypt(self->ecies, public_key, data, out);
     return status;
 }
 
@@ -408,7 +430,7 @@ vscf_curve25519_decrypted_len(const vscf_curve25519_t *self, const vscf_impl_t *
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_curve25519_can_decrypt(self, private_key, data_len));
 
-    return vscf_ecies_decrypted_len(self->ecies, private_key, vscf_curve25519_impl_const(self), data_len);
+    return vscf_ecies_decrypted_len(self->ecies, private_key, data_len);
 }
 
 //
@@ -427,7 +449,7 @@ vscf_curve25519_decrypt(
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_curve25519_decrypted_len(self, private_key, data.len));
 
-    vscf_status_t status = vscf_ecies_decrypt(self->ecies, private_key, vscf_curve25519_impl_const(self), data, out);
+    vscf_status_t status = vscf_ecies_decrypt(self->ecies, private_key, data, out);
     return status;
 }
 

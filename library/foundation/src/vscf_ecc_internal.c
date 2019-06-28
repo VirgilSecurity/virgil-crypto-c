@@ -80,6 +80,18 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  This method is called when class 'ecies' was setup.
+//
+VSCF_PRIVATE void
+vscf_ecc_did_setup_ecies(vscf_ecc_t *self);
+
+//
+//  This method is called when class 'ecies' was released.
+//
+VSCF_PRIVATE void
+vscf_ecc_did_release_ecies(vscf_ecc_t *self);
+
 static const vscf_api_t *
 vscf_ecc_find_api(vscf_api_tag_t api_tag);
 
@@ -513,6 +525,8 @@ vscf_ecc_use_ecies(vscf_ecc_t *self, vscf_ecies_t *ecies) {
     VSCF_ASSERT(self->ecies == NULL);
 
     self->ecies = vscf_ecies_shallow_copy(ecies);
+
+    vscf_ecc_did_setup_ecies(self);
 }
 
 //
@@ -527,6 +541,8 @@ vscf_ecc_take_ecies(vscf_ecc_t *self, vscf_ecies_t *ecies) {
     VSCF_ASSERT(self->ecies == NULL);
 
     self->ecies = ecies;
+
+    vscf_ecc_did_setup_ecies(self);
 }
 
 //
@@ -538,6 +554,8 @@ vscf_ecc_release_ecies(vscf_ecc_t *self) {
     VSCF_ASSERT_PTR(self);
 
     vscf_ecies_destroy(&self->ecies);
+
+    vscf_ecc_did_release_ecies(self);
 }
 
 static const vscf_api_t *

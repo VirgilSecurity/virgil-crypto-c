@@ -1,4 +1,4 @@
-<class name="ecies envelope" scope="internal">
+<class name="ecies envelope" scope="internal" context="public" lifecycle="none">
      Provides function to process ECIES envelope ASN.1 structure:
 
          ECIES-Envelope-Schema DEFINITIONS EXPLICIT TAGS ::=
@@ -63,46 +63,12 @@
     <require impl="hash based alg info"/>
     <require class="alg factory"/>
 
-    <property name="ephemeral public key" interface="public key"/>
+    <property name="ephemeral public key" impl="raw public key"/>
+    <property name="cipher" interface="alg info"/>
     <property name="kdf" interface="alg info"/>
     <property name="mac" interface="alg info"/>
     <property name="mac digest" class="buffer"/>
-    <property name="cipher" interface="alg info"/>
     <property name="encrypted content" class="buffer"/>
-
-    <method name="set ephemeral public key">
-        Set "ephemeral public ke".
-
-        <argument name="ephemeral public key" interface="public key" access="disown"/>
-    </method>
-
-    <method name="set kdf">
-        Set "kdf" algorithm information.
-
-        <argument name="kdf" interface="alg info" access="disown"/>
-    </method>
-
-    <method name="set mac">
-        Set "mac" algorithm information.
-
-        <argument name="mac" interface="alg info" access="disown"/>
-    </method>
-
-    <method name="set mac digest">
-        Set "mac" digest.
-        <argument name="mac digest" class="buffer" access="disown"/>
-    </method>
-
-    <method name="set cipher">
-        Set "cipher" algorithm information.
-
-        <argument name="cipher" interface="alg info" access="disown"/>
-    </method>
-
-    <method name="set encrypted content">
-        Set "encrypted content".
-        <argument name="encrypted content" class="buffer" access="disown"/>
-    </method>
 
     <method name="packed len">
         Return buffer length required to hold packed ECIES-Envelope.

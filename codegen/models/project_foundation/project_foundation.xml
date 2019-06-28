@@ -116,6 +116,7 @@
     <class name="password recipient info"/>
     <class name="password recipient info list"/>
     <class name="alg factory"/>
+    <class name="key alg factory"/>
     <class name="ecies"/>
     <class name="ecies envelope"/>
     <class name="recipient cipher"/>

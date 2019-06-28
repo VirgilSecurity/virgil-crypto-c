@@ -1,0 +1,42 @@
+<class name="key alg factory">
+    Create a bridge between "raw keys" and algorithms that can import them.
+
+    <method name="create from alg id" is_static="1">
+        Create a key algorithm based on an identifier.
+
+        <argument name="alg id" enum="alg id"/>
+        <argument name="random" interface="random"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="key alg" access="disown"/>
+    </method>
+
+    <method name="create for key" is_static="1">
+        Create a key algorithm correspond to a specific key.
+
+        <argument name="key" interface="key"/>
+        <argument name="random" interface="random"/>
+
+        <return interface="key alg" access="disown"/>
+    </method>
+
+    <method name="create for public key" is_static="1">
+        Create a key algorithm that can import "raw public key".
+
+        <argument name="public key" interface="public key"/>
+        <argument name="random" interface="random"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="key alg" access="disown"/>
+    </method>
+
+    <method name="create for private key" is_static="1">
+        Create a key algorithm that can import "raw private key".
+
+        <argument name="private key" interface="public key"/>
+        <argument name="random" interface="random"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="key alg" access="disown"/>
+    </method>
+</class>

@@ -93,8 +93,8 @@ typedef vscf_impl_t * (*vscf_key_alg_api_generate_ephemeral_key_fn)(const vscf_i
 //          For instance, RSA public key must be imported from the format defined in
 //          RFC 3447 Appendix A.1.1.
 //
-typedef vscf_impl_t * (*vscf_key_alg_api_import_public_key_fn)(vscf_impl_t *impl, const vscf_raw_public_key_t *raw_key,
-        vscf_error_t *error);
+typedef vscf_impl_t * (*vscf_key_alg_api_import_public_key_fn)(const vscf_impl_t *impl,
+        const vscf_raw_public_key_t *raw_key, vscf_error_t *error);
 
 //
 //  Callback. Export public key to the raw binary format.
@@ -116,7 +116,7 @@ typedef vscf_raw_public_key_t * (*vscf_key_alg_api_export_public_key_fn)(const v
 //          For instance, RSA private key must be imported from the format defined in
 //          RFC 3447 Appendix A.1.2.
 //
-typedef vscf_impl_t * (*vscf_key_alg_api_import_private_key_fn)(vscf_impl_t *impl,
+typedef vscf_impl_t * (*vscf_key_alg_api_import_private_key_fn)(const vscf_impl_t *impl,
         const vscf_raw_private_key_t *raw_key, vscf_error_t *error);
 
 //

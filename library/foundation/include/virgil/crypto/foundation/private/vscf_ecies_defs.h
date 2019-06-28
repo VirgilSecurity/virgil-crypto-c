@@ -104,6 +104,10 @@ struct vscf_ecies_t {
     //  Dependency to the interface 'private key'.
     //
     vscf_impl_t *ephemeral_key;
+    //
+    //  Weak reference to the key algorithm.
+    //
+    const vscf_impl_t *key_alg;
 };
 
 

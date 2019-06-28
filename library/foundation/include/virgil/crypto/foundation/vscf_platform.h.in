@@ -430,6 +430,10 @@ extern "C" {
 #cmakedefine01 VSCF_ALG_FACTORY
 #endif
 
+#ifndef VSCF_KEY_ALG_FACTORY
+#cmakedefine01 VSCF_KEY_ALG_FACTORY
+#endif
+
 #ifndef VSCF_ECIES
 #cmakedefine01 VSCF_ECIES
 #endif

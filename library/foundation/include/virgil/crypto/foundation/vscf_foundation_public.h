@@ -105,6 +105,7 @@
 #include "vscf_kdf2.h"
 #include "vscf_key.h"
 #include "vscf_key_alg.h"
+#include "vscf_key_alg_factory.h"
 #include "vscf_key_asn1_deserializer.h"
 #include "vscf_key_asn1_serializer.h"
 #include "vscf_key_cipher.h"
