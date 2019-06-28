@@ -398,6 +398,150 @@ test__deserialize_private_key__secp256r1_pem__equals_to_secp256r1_private_key(vo
 #endif
 }
 
+void
+test__deserialize_private_key__secp256r1_pk8param__equals_to_secp256r1_private_key(void) {
+#if VSCF_SECP256R1_PUBLIC_KEY
+    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_raw_key_t *raw_private_key = vscf_key_asn1_deserializer_deserialize_private_key(
+            key_deserializer, test_prvpk8_PRIVATE_KEY_PKCS8_DER, &error);
+
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_NOT_NULL(raw_private_key);
+    TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_private_key), vscf_alg_id_SECP256R1);
+    TEST_ASSERT_EQUAL_DATA(test_prvpk8_PRIVATE_KEY, vscf_raw_key_data(raw_private_key));
+
+    vscf_raw_key_destroy(&raw_private_key);
+    vscf_key_asn1_deserializer_destroy(&key_deserializer);
+#else
+    TEST_IGNORE_MESSAGE("VSCF_SECP256R1_PUBLIC_KEY is disabled");
+#endif
+}
+
+void
+test__deserialize_private_key__secp256r1_pk8param_der__equals_to_secp256r1_pk8param_private_key(void) {
+#if VSCF_SECP256R1_PRIVATE_KEY
+    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_raw_key_t *raw_private_key = vscf_key_asn1_deserializer_deserialize_private_key(
+            key_deserializer, test_prvpk8_PRIVATE_KEY_PKCS8_PEM, &error);
+
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_NOT_NULL(raw_private_key);
+    TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_private_key), vscf_alg_id_SECP256R1);
+    TEST_ASSERT_EQUAL_DATA(test_prvpk8_PRIVATE_KEY, vscf_raw_key_data(raw_private_key));
+
+    vscf_raw_key_destroy(&raw_private_key);
+    vscf_key_asn1_deserializer_destroy(&key_deserializer);
+#else
+    TEST_IGNORE_MESSAGE("VSCF_SECP256R1_PRIVATE_KEY is disabled");
+#endif
+}
+
+void
+test__deserialize_private_key__secp256r1_pk8nopubparam__equals_to_secp256r1_private_key(void) {
+#if VSCF_SECP256R1_PUBLIC_KEY
+    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_raw_key_t *raw_private_key = vscf_key_asn1_deserializer_deserialize_private_key(
+            key_deserializer, test_prvpk8_PRIVATE_KEY_PKCS8_DER_NOPUBPARAMS, &error);
+
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_NOT_NULL(raw_private_key);
+    TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_private_key), vscf_alg_id_SECP256R1);
+    TEST_ASSERT_EQUAL_DATA(test_prvpk8_PRIVATE_KEY, vscf_raw_key_data(raw_private_key));
+
+    vscf_raw_key_destroy(&raw_private_key);
+    vscf_key_asn1_deserializer_destroy(&key_deserializer);
+#else
+    TEST_IGNORE_MESSAGE("VSCF_SECP256R1_PUBLIC_KEY is disabled");
+#endif
+}
+
+void
+test__deserialize_private_key__secp256r1_pk8nopubparam_der__equals_to_secp256r1_pk8param_private_key(void) {
+#if VSCF_SECP256R1_PRIVATE_KEY
+    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_raw_key_t *raw_private_key = vscf_key_asn1_deserializer_deserialize_private_key(
+            key_deserializer, test_prvpk8_PRIVATE_KEY_PKCS8_PEM_NOPUBPARAMS, &error);
+
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_NOT_NULL(raw_private_key);
+    TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_private_key), vscf_alg_id_SECP256R1);
+    TEST_ASSERT_EQUAL_DATA(test_prvpk8_PRIVATE_KEY, vscf_raw_key_data(raw_private_key));
+
+    vscf_raw_key_destroy(&raw_private_key);
+    vscf_key_asn1_deserializer_destroy(&key_deserializer);
+#else
+    TEST_IGNORE_MESSAGE("VSCF_SECP256R1_PRIVATE_KEY is disabled");
+#endif
+}
+
+void
+test__deserialize_private_key__secp256r1_pk8nopub__equals_to_secp256r1_private_key(void) {
+#if VSCF_SECP256R1_PUBLIC_KEY
+    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_raw_key_t *raw_private_key = vscf_key_asn1_deserializer_deserialize_private_key(
+            key_deserializer, test_prvpk8_PRIVATE_KEY_PKCS8_DER_NOPUB, &error);
+
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_NOT_NULL(raw_private_key);
+    TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_private_key), vscf_alg_id_SECP256R1);
+    TEST_ASSERT_EQUAL_DATA(test_prvpk8_PRIVATE_KEY, vscf_raw_key_data(raw_private_key));
+
+    vscf_raw_key_destroy(&raw_private_key);
+    vscf_key_asn1_deserializer_destroy(&key_deserializer);
+#else
+    TEST_IGNORE_MESSAGE("VSCF_SECP256R1_PUBLIC_KEY is disabled");
+#endif
+}
+
+void
+test__deserialize_private_key__secp256r1_pk8nopub_der__equals_to_secp256r1_pk8param_private_key(void) {
+#if VSCF_SECP256R1_PRIVATE_KEY
+    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_raw_key_t *raw_private_key = vscf_key_asn1_deserializer_deserialize_private_key(
+            key_deserializer, test_prvpk8_PRIVATE_KEY_PKCS8_PEM_NOPUB, &error);
+
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_NOT_NULL(raw_private_key);
+    TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_private_key), vscf_alg_id_SECP256R1);
+    TEST_ASSERT_EQUAL_DATA(test_prvpk8_PRIVATE_KEY, vscf_raw_key_data(raw_private_key));
+
+    vscf_raw_key_destroy(&raw_private_key);
+    vscf_key_asn1_deserializer_destroy(&key_deserializer);
+#else
+    TEST_IGNORE_MESSAGE("VSCF_SECP256R1_PRIVATE_KEY is disabled");
+#endif
+}
+
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
@@ -427,9 +571,16 @@ main(void) {
     RUN_TEST(test__deserialize_public_key__secp256r1_pem__equals_to_secp256r1_public_key);
     RUN_TEST(test__deserialize_private_key__secp256r1_der__equals_to_secp256r1_private_key);
     RUN_TEST(test__deserialize_private_key__secp256r1_pem__equals_to_secp256r1_private_key);
+
+    RUN_TEST(test__deserialize_private_key__secp256r1_pk8param__equals_to_secp256r1_private_key);
+    RUN_TEST(test__deserialize_private_key__secp256r1_pk8param_der__equals_to_secp256r1_pk8param_private_key);
+    RUN_TEST(test__deserialize_private_key__secp256r1_pk8nopubparam__equals_to_secp256r1_private_key);
+    RUN_TEST(test__deserialize_private_key__secp256r1_pk8nopubparam_der__equals_to_secp256r1_pk8param_private_key);
+    RUN_TEST(test__deserialize_private_key__secp256r1_pk8nopub__equals_to_secp256r1_private_key);
+    RUN_TEST(test__deserialize_private_key__secp256r1_pk8nopub_der__equals_to_secp256r1_pk8param_private_key);
 #else
+
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
-
     return UNITY_END();
 }

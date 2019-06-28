@@ -43,6 +43,7 @@ extern const vsc_data_t test_secp256r1_MESSAGE_SHA256_DIGEST;
 extern const vsc_data_t test_secp256r1_SHA256_SIGNATURE;
 extern const vsc_data_t test_secp256r1_ENCRYPTED_MESSAGE;
 
+extern const vsc_data_t test_prvpk8_PRIVATE_KEY;
 
 //
 //  SEC1 format
@@ -51,3 +52,10 @@ extern const vsc_data_t test_secp256r1_PUBLIC_KEY_SEC1_DER;
 extern const vsc_data_t test_secp256r1_PRIVATE_KEY_SEC1_DER;
 extern const vsc_data_t test_secp256r1_PUBLIC_KEY_SEC1_PEM;
 extern const vsc_data_t test_secp256r1_PRIVATE_KEY_SEC1_PEM;
+
+extern const vsc_data_t test_prvpk8_PRIVATE_KEY_PKCS8_PEM;
+extern const vsc_data_t test_prvpk8_PRIVATE_KEY_PKCS8_DER;
+extern const vsc_data_t test_prvpk8_PRIVATE_KEY_PKCS8_PEM_NOPUBPARAMS;
+extern const vsc_data_t test_prvpk8_PRIVATE_KEY_PKCS8_DER_NOPUBPARAMS;
+extern const vsc_data_t test_prvpk8_PRIVATE_KEY_PKCS8_PEM_NOPUB;
+extern const vsc_data_t test_prvpk8_PRIVATE_KEY_PKCS8_DER_NOPUB;
