@@ -57,6 +57,8 @@
 #include "vscf_error.h"
 #include "vscf_alg_id.h"
 #include "vscf_impl.h"
+#include "vscf_raw_public_key.h"
+#include "vscf_raw_private_key.h"
 
 // clang-format on
 //  @end
@@ -83,20 +85,20 @@ vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t 
 //  Create a key algorithm correspond to a specific key.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_alg_factory_create_for_key(const vscf_impl_t *key, const vscf_impl_t *random);
+vscf_key_alg_factory_create_from_key(const vscf_impl_t *key, const vscf_impl_t *random, vscf_error_t *error);
 
 //
 //  Create a key algorithm that can import "raw public key".
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_alg_factory_create_for_public_key(const vscf_impl_t *public_key, const vscf_impl_t *random,
+vscf_key_alg_factory_create_from_raw_public_key(const vscf_raw_public_key_t *public_key, const vscf_impl_t *random,
         vscf_error_t *error);
 
 //
 //  Create a key algorithm that can import "raw private key".
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_alg_factory_create_for_private_key(const vscf_impl_t *private_key, const vscf_impl_t *random,
+vscf_key_alg_factory_create_from_raw_private_key(const vscf_raw_private_key_t *private_key, const vscf_impl_t *random,
         vscf_error_t *error);
 
 

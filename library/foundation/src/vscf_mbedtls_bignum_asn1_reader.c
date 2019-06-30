@@ -87,12 +87,10 @@ vscf_mbedtls_bignum_read_asn1(vscf_impl_t *asn1rd, mbedtls_mpi *bignum) {
     size_t len = vscf_asn1_reader_read_tag(asn1rd, vscf_asn1_tag_INTEGER);
     vsc_data_t data = vscf_asn1_reader_read_data(asn1rd, len);
 
-    if (NULL == data.bytes) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_asn1_reader_status(asn1rd));
+    if (vscf_asn1_reader_has_error(asn1rd)) {
         return;
     }
 
     int ret = mbedtls_mpi_read_binary(bignum, data.bytes, data.len);
-
     VSCF_ASSERT_ALLOC(ret != MBEDTLS_ERR_MPI_ALLOC_FAILED);
 }

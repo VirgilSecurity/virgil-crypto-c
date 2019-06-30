@@ -64,7 +64,6 @@
 #include "vscf_public_key.h"
 #include "vscf_private_key.h"
 #include "vscf_mbedtls_bridge_random.h"
-#include "vscf_hash.h"
 #include "vscf_random.h"
 #include "vscf_rsa_defs.h"
 #include "vscf_rsa_internal.h"

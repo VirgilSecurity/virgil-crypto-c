@@ -175,7 +175,7 @@ vscf_rsa_private_key_import(vscf_rsa_private_key_t *self, const vscf_raw_private
 
     const int is_rsa_valid = mbedtls_rsa_complete(&self->rsa_ctx);
 
-    return is_rsa_valid ? vscf_status_SUCCESS : vscf_status_ERROR_BAD_PKCS1_PRIVATE_KEY;
+    return is_rsa_valid == 0 ? vscf_status_SUCCESS : vscf_status_ERROR_BAD_PKCS1_PRIVATE_KEY;
 }
 
 //

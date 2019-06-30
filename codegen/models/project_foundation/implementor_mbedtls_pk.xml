@@ -127,7 +127,6 @@
         <require interface="private key"/>
         <require module="mbedtls bridge random"/>
 
-        <dependency name="hash" interface="hash"/>
         <dependency name="random" interface="random"/>
 
         <method name="setup defaults" declaration="public">

@@ -173,25 +173,6 @@ VSCF_PUBLIC vscf_rsa_t *
 vscf_rsa_shallow_copy(vscf_rsa_t *self);
 
 //
-//  Setup dependency to the interface 'hash' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_rsa_use_hash(vscf_rsa_t *self, vscf_impl_t *hash);
-
-//
-//  Setup dependency to the interface 'hash' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_rsa_take_hash(vscf_rsa_t *self, vscf_impl_t *hash);
-
-//
-//  Release dependency to the interface 'hash'.
-//
-VSCF_PUBLIC void
-vscf_rsa_release_hash(vscf_rsa_t *self);
-
-//
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCF_PUBLIC void

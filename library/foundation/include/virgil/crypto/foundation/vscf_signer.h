@@ -151,6 +151,25 @@ VSCF_PUBLIC void
 vscf_signer_release_hash(vscf_signer_t *self);
 
 //
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_signer_use_random(vscf_signer_t *self, vscf_impl_t *random);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_signer_take_random(vscf_signer_t *self, vscf_impl_t *random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_signer_release_random(vscf_signer_t *self);
+
+//
 //  Start a processing a new signature.
 //
 VSCF_PUBLIC void

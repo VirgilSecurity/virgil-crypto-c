@@ -56,6 +56,8 @@
 #include "vscf_library.h"
 #include "vscf_atomic.h"
 #include "vscf_impl.h"
+#include "vscf_asn1wr.h"
+#include "vscf_alg_info_der_serializer.h"
 
 // clang-format on
 //  @end
@@ -88,6 +90,14 @@ struct vscf_signer_t {
     //  Dependency to the interface 'hash'.
     //
     vscf_impl_t *hash;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *random;
+
+    vscf_asn1wr_t *asn1wr;
+
+    vscf_alg_info_der_serializer_t *alg_info_der_serializer;
 };
 
 

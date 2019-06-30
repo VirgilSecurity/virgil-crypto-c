@@ -1,40 +1,48 @@
 <class name="key alg factory">
     Create a bridge between "raw keys" and algorithms that can import them.
 
+    <require interface="key"/>
+    <require interface="random"/>
+    <require impl="rsa"/>
+    <require impl="ecc"/>
+    <require impl="ed25519"/>
+    <require impl="curve25519"/>
+
     <method name="create from alg id" is_static="1">
         Create a key algorithm based on an identifier.
 
         <argument name="alg id" enum="alg id"/>
-        <argument name="random" interface="random"/>
+        <argument name="random" interface="random" is_optional="1"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="key alg" access="disown"/>
     </method>
 
-    <method name="create for key" is_static="1">
+    <method name="create from key" is_static="1">
         Create a key algorithm correspond to a specific key.
 
         <argument name="key" interface="key"/>
-        <argument name="random" interface="random"/>
-
-        <return interface="key alg" access="disown"/>
-    </method>
-
-    <method name="create for public key" is_static="1">
-        Create a key algorithm that can import "raw public key".
-
-        <argument name="public key" interface="public key"/>
-        <argument name="random" interface="random"/>
+        <argument name="random" interface="random" is_optional="1"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="key alg" access="disown"/>
     </method>
 
-    <method name="create for private key" is_static="1">
+    <method name="create from raw public key" is_static="1">
+        Create a key algorithm that can import "raw public key".
+
+        <argument name="public key" class="raw public key"/>
+        <argument name="random" interface="random" is_optional="1"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="key alg" access="disown"/>
+    </method>
+
+    <method name="create from raw private key" is_static="1">
         Create a key algorithm that can import "raw private key".
 
-        <argument name="private key" interface="public key"/>
-        <argument name="random" interface="random"/>
+        <argument name="private key" class="raw private key"/>
+        <argument name="random" interface="random" is_optional="1"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="key alg" access="disown"/>

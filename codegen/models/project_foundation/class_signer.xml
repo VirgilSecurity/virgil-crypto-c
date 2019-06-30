@@ -1,11 +1,20 @@
 <class name="signer">
     Sign data of any size.
 
-    <require class="alg factory"/>
     <require interface="alg"/>
+    <require interface="key"/>
+    <require interface="key alg"/>
     <require interface="key signer"/>
+    <require interface="private key"/>
+    <require impl="sha512"/>
+    <require class="alg factory"/>
+    <require class="key alg factory"/>
 
     <dependency name="hash" interface="hash"/>
+    <dependency name="random" interface="random"/>
+
+    <property name="asn1wr" impl="asn1wr"/>
+    <property name="alg info der serializer" impl="alg info der serializer"/>
 
     <method name="reset">
         Start a processing a new signature.

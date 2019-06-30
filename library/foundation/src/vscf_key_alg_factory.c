@@ -53,6 +53,12 @@
 #include "vscf_key_alg_factory.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
+#include "vscf_key.h"
+#include "vscf_random.h"
+#include "vscf_rsa.h"
+#include "vscf_ecc.h"
+#include "vscf_ed25519.h"
+#include "vscf_curve25519.h"
 
 // clang-format on
 //  @end
@@ -78,34 +84,131 @@
 VSCF_PUBLIC vscf_impl_t *
 vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t *random, vscf_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    vscf_ecies_t *ecies = NULL;
+
+    if (alg_id != vscf_alg_id_RSA) {
+        vscf_ecies_t *ecies = vscf_ecies_new();
+        if (random) {
+            vscf_ecies_use_random(ecies, (vscf_impl_t *)random);
+        }
+        const vscf_status_t status = vscf_ecies_setup_defaults(ecies);
+        if (status != vscf_status_SUCCESS) {
+            VSCF_ERROR_SAFE_UPDATE(error, status);
+            vscf_ecies_destroy(&ecies);
+        }
+    }
+
+    switch (alg_id) {
+    case vscf_alg_id_RSA: {
+        vscf_rsa_t *rsa = vscf_rsa_new();
+        if (random) {
+            vscf_rsa_use_random(rsa, (vscf_impl_t *)random);
+        }
+        return vscf_rsa_impl(rsa);
+    }
+
+    case vscf_alg_id_ECC:
+    case vscf_alg_id_SECP256R1: {
+        vscf_ecc_t *ecc = vscf_ecc_new();
+        if (random) {
+            vscf_ecc_use_random(ecc, (vscf_impl_t *)random);
+        }
+        vscf_ecc_take_ecies(ecc, ecies);
+        return vscf_ecc_impl(ecc);
+    }
+
+    case vscf_alg_id_ED25519: {
+        vscf_ed25519_t *ed25519 = vscf_ed25519_new();
+        if (random) {
+            vscf_ed25519_use_random(ed25519, (vscf_impl_t *)random);
+        }
+        vscf_ed25519_take_ecies(ed25519, ecies);
+        return vscf_ed25519_impl(ed25519);
+    }
+
+    case vscf_alg_id_CURVE25519: {
+        vscf_curve25519_t *curve25519 = vscf_curve25519_new();
+        if (random) {
+            vscf_curve25519_use_random(curve25519, (vscf_impl_t *)random);
+        }
+        vscf_curve25519_take_ecies(curve25519, ecies);
+        return vscf_curve25519_impl(curve25519);
+    }
+
+    default:
+        vscf_ecies_destroy(&ecies);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        return NULL;
+    }
 }
 
 //
 //  Create a key algorithm correspond to a specific key.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_alg_factory_create_for_key(const vscf_impl_t *key, const vscf_impl_t *random) {
+vscf_key_alg_factory_create_from_key(const vscf_impl_t *key, const vscf_impl_t *random, vscf_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(key);
+    VSCF_ASSERT(vscf_key_is_implemented(key));
+    VSCF_ASSERT(vscf_key_alg_id(key) != vscf_alg_id_NONE);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    const vscf_impl_tag_t impl_tag = vscf_key_impl_tag(key);
+    switch (impl_tag) {
+    case vscf_impl_tag_RSA:
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_RSA, random, error);
+
+    case vscf_impl_tag_ECC:
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_ECC, random, error);
+
+    case vscf_impl_tag_ED25519:
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_ED25519, random, error);
+
+    case vscf_impl_tag_CURVE25519:
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_CURVE25519, random, error);
+
+    default:
+        VSCF_ASSERT(0 && "Unexpected implementation tag.");
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        return NULL;
+    }
 }
 
 //
 //  Create a key algorithm that can import "raw public key".
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_alg_factory_create_for_public_key(
-        const vscf_impl_t *public_key, const vscf_impl_t *random, vscf_error_t *error) {
+vscf_key_alg_factory_create_from_raw_public_key(
+        const vscf_raw_public_key_t *public_key, const vscf_impl_t *random, vscf_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_raw_public_key_is_valid(public_key));
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    vscf_impl_t *key_alg =
+            vscf_key_alg_factory_create_from_alg_id(vscf_raw_public_key_alg_id(public_key), random, error);
+    return key_alg;
 }
 
 //
 //  Create a key algorithm that can import "raw private key".
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_alg_factory_create_for_private_key(
-        const vscf_impl_t *private_key, const vscf_impl_t *random, vscf_error_t *error) {
+vscf_key_alg_factory_create_from_raw_private_key(
+        const vscf_raw_private_key_t *private_key, const vscf_impl_t *random, vscf_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_raw_private_key_is_valid(private_key));
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    vscf_impl_t *key_alg =
+            vscf_key_alg_factory_create_from_alg_id(vscf_raw_private_key_alg_id(private_key), random, error);
+    return key_alg;
 }

@@ -2,6 +2,7 @@
     Provide functionality for private key generation and importing that
     relies on the software default implementations.
 
+    <require interface="key alg"/>
     <require interface="public key"/>
     <require interface="private key"/>
     <require interface="key serializer"/>
@@ -13,6 +14,7 @@
     <require impl="ecc"/>
     <require impl="key asn1 deserializer"/>
     <require impl="key asn1 serializer"/>
+    <require class="key alg factory"/>
 
     <dependency name="random" interface="random"/>
     <dependency name="ecies" class="ecies"/>

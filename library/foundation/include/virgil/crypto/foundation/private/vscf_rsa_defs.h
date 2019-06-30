@@ -90,10 +90,6 @@ struct vscf_rsa_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
-    //  Dependency to the interface 'hash'.
-    //
-    vscf_impl_t *hash;
-    //
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *random;

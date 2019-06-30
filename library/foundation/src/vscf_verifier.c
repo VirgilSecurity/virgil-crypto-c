@@ -55,12 +55,14 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_verifier_defs.h"
-#include "vscf_alg_factory.h"
 #include "vscf_alg.h"
 #include "vscf_hash.h"
 #include "vscf_key_signer.h"
 #include "vscf_asn1rd.h"
 #include "vscf_alg_info_der_deserializer.h"
+#include "vscf_alg_factory.h"
+#include "vscf_key_alg_factory.h"
+#include "vscf_public_key.h"
 
 // clang-format on
 //  @end
@@ -304,7 +306,11 @@ vscf_verifier_reset(vscf_verifier_t *self, vsc_data_t signature) {
 VSCF_PUBLIC void
 vscf_verifier_append_data(vscf_verifier_t *self, vsc_data_t data) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->hash);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+
+    vscf_hash_update(self->hash, data);
 }
 
 //
@@ -317,7 +323,7 @@ vscf_verifier_verify(vscf_verifier_t *self, vscf_impl_t *public_key) {
     VSCF_ASSERT_PTR(self->hash);
     VSCF_ASSERT_PTR(self->raw_signature);
     VSCF_ASSERT_PTR(public_key);
-    VSCF_ASSERT(vscf_verify_hash_is_implemented(public_key));
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
 
     //
     //  Get digest.
@@ -325,9 +331,17 @@ vscf_verifier_verify(vscf_verifier_t *self, vscf_impl_t *public_key) {
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hash_digest_len(vscf_hash_api(self->hash)));
     vscf_hash_finish(self->hash, digest);
 
-    bool is_valid = vscf_verify_hash(
-            public_key, vsc_buffer_data(digest), vscf_alg_alg_id(self->hash), vsc_buffer_data(self->raw_signature));
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
+    vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_key(public_key, NULL, &error);
+    VSCF_ASSERT(vscf_error_has_error(&error));
+    VSCF_ASSERT(vscf_key_signer_is_implemented(key_alg));
+
+    bool is_valid = vscf_key_signer_verify_hash(key_alg, public_key, vscf_alg_alg_id(self->hash),
+            vsc_buffer_data(digest), vsc_buffer_data(self->raw_signature));
+
+    vscf_impl_destroy(&key_alg);
     vsc_buffer_destroy(&digest);
 
     return is_valid;

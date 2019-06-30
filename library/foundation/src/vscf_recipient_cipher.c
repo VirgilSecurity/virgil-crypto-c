@@ -63,6 +63,7 @@
 #include "vscf_private_key.h"
 #include "vscf_encrypt.h"
 #include "vscf_decrypt.h"
+#include "vscf_key_cipher.h"
 #include "vscf_message_info_der_serializer.h"
 #include "vscf_key_recipient_list.h"
 #include "vscf_aes256_gcm.h"
@@ -474,7 +475,8 @@ vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self) {
         self->encryption_cipher = vscf_aes256_gcm_impl(vscf_aes256_gcm_new());
     }
 
-    vscf_status_t status = vscf_status_SUCCESS;
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     //
     //  Generate cipher key and nonce.
@@ -490,15 +492,15 @@ vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self) {
     cipher_key = vsc_buffer_new_with_capacity(cipher_key_len);
     vsc_buffer_make_secure(cipher_key);
 
-    status = vscf_random(self->random, cipher_key_len, cipher_key);
-    if (status != vscf_status_SUCCESS) {
+    error.status = vscf_random(self->random, cipher_key_len, cipher_key);
+    if (vscf_error_has_error(&error)) {
         goto failed_generate_cipher_key;
     }
 
     cipher_nonce = vsc_buffer_new_with_capacity(cipher_nonce_len);
 
-    status = vscf_random(self->random, cipher_nonce_len, cipher_nonce);
-    if (status != vscf_status_SUCCESS) {
+    error.status = vscf_random(self->random, cipher_nonce_len, cipher_nonce);
+    if (vscf_error_has_error(&error)) {
         goto failed_generate_cipher_nonce;
     }
 
@@ -513,22 +515,27 @@ vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self) {
         vsc_data_t recipient_id = vscf_key_recipient_list_recipient_id(curr);
         vscf_impl_t *recipient_public_key = vscf_key_recipient_list_recipient_public_key(curr);
 
-        const size_t encrypted_key_len = vscf_encrypt_encrypted_len(recipient_public_key, cipher_key_len);
-        vsc_buffer_t *encrypted_key = vsc_buffer_new_with_capacity(encrypted_key_len);
-        status = vscf_encrypt(recipient_public_key, vsc_buffer_data(cipher_key), encrypted_key);
+        vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_key(recipient_public_key, self->random, &error);
+        if (vscf_error_has_error(&error)) {
+            goto failed_build_message_info;
+        }
+        VSCF_ASSERT(vscf_key_cipher_is_implemented(key_alg));
 
-        if (status != vscf_status_SUCCESS) {
+        const size_t encrypted_key_len = vscf_key_cipher_encrypted_len(key_alg, recipient_public_key, cipher_key_len);
+        vsc_buffer_t *encrypted_key = vsc_buffer_new_with_capacity(encrypted_key_len);
+        error.status =
+                vscf_key_cipher_encrypt(key_alg, recipient_public_key, vsc_buffer_data(cipher_key), encrypted_key);
+        vscf_impl_destroy(&key_alg);
+
+        if (vscf_error_has_error(&error)) {
             vsc_buffer_destroy(&encrypted_key);
             goto failed_build_message_info;
         }
 
-        vscf_impl_t *key_encryption_algorithm = vscf_alg_produce_alg_info(recipient_public_key);
-        vscf_key_recipient_info_t *recipient_info = vscf_key_recipient_info_new_with_members(
-                recipient_id, &key_encryption_algorithm, vsc_buffer_data(encrypted_key));
+        vscf_key_recipient_info_t *recipient_info = vscf_key_recipient_info_new_with_buffer(
+                recipient_id, vscf_key_alg_info(recipient_public_key), &encrypted_key);
 
         vscf_message_info_add_key_recipient(self->message_info, &recipient_info);
-
-        vsc_buffer_destroy(&encrypted_key);
     }
 
     //
@@ -562,7 +569,7 @@ failed_generate_cipher_nonce:
 failed_generate_cipher_key:
     vsc_buffer_destroy(&cipher_key);
 
-    return status;
+    return vscf_error_status(&error);
 }
 
 //

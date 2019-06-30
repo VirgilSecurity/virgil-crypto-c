@@ -78,7 +78,14 @@
 VSCF_PUBLIC mbedtls_ecp_group_id
 vscf_mbedtls_ecp_group_id_from_alg_id(vscf_alg_id_t alg_id) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+
+    switch (alg_id) {
+    case vscf_alg_id_SECP256R1:
+        return MBEDTLS_ECP_DP_SECP256R1;
+    default:
+        return MBEDTLS_ECP_DP_NONE;
+    }
 }
 
 //
@@ -87,7 +94,14 @@ vscf_mbedtls_ecp_group_id_from_alg_id(vscf_alg_id_t alg_id) {
 VSCF_PUBLIC vscf_alg_id_t
 vscf_mbedtls_ecp_group_id_to_alg_id(mbedtls_ecp_group_id grp_id) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT(grp_id != MBEDTLS_ECP_DP_NONE);
+
+    switch (grp_id) {
+    case MBEDTLS_ECP_DP_SECP256R1:
+        return vscf_alg_id_SECP256R1;
+    default:
+        return vscf_alg_id_NONE;
+    }
 }
 
 //
@@ -96,5 +110,15 @@ vscf_mbedtls_ecp_group_id_to_alg_id(mbedtls_ecp_group_id grp_id) {
 VSCF_PUBLIC vscf_status_t
 vscf_mbedtls_ecp_group_load(vscf_alg_id_t alg_id, mbedtls_ecp_group *ecc_grp) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+    VSCF_ASSERT_PTR(ecc_grp);
+
+    const mbedtls_ecp_group_id grp_id = vscf_mbedtls_ecp_group_id_from_alg_id(alg_id);
+    const int mbed_status = mbedtls_ecp_group_load(ecc_grp, grp_id);
+
+    if (grp_id == MBEDTLS_ECP_DP_NONE || mbed_status != 0) {
+        return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+    }
+
+    return vscf_status_SUCCESS;
 }

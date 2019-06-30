@@ -54,10 +54,16 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_hash.h"
+#include "vscf_random.h"
 #include "vscf_signer_defs.h"
-#include "vscf_alg_factory.h"
 #include "vscf_alg.h"
+#include "vscf_key.h"
+#include "vscf_key_alg.h"
 #include "vscf_key_signer.h"
+#include "vscf_private_key.h"
+#include "vscf_sha512.h"
+#include "vscf_alg_factory.h"
+#include "vscf_key_alg_factory.h"
 
 // clang-format on
 //  @end
@@ -122,6 +128,7 @@ vscf_signer_cleanup(vscf_signer_t *self) {
     vscf_signer_cleanup_ctx(self);
 
     vscf_signer_release_hash(self);
+    vscf_signer_release_random(self);
 
     vscf_zeroize(self, sizeof(vscf_signer_t));
 }
@@ -261,6 +268,48 @@ vscf_signer_release_hash(vscf_signer_t *self) {
     vscf_impl_destroy(&self->hash);
 }
 
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_signer_use_random(vscf_signer_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = vscf_impl_shallow_copy(random);
+}
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_signer_take_random(vscf_signer_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = random;
+}
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_signer_release_random(vscf_signer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->random);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -319,7 +368,11 @@ vscf_signer_reset(vscf_signer_t *self) {
 VSCF_PUBLIC void
 vscf_signer_append_data(vscf_signer_t *self, vsc_data_t data) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->hash);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+
+    vscf_hash_update(self->hash, data);
 }
 
 //
@@ -330,12 +383,21 @@ vscf_signer_signature_len(const vscf_signer_t *self, const vscf_impl_t *private_
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT(vscf_sign_hash_is_implemented(private_key));
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
 
-    size_t signature_len = vscf_sign_hash_signature_len(private_key);
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_key(private_key, self->random, &error);
+    VSCF_ASSERT(vscf_error_has_error(&error));
+    VSCF_ASSERT(vscf_key_signer_is_implemented(key_alg));
+
+    size_t signature_len = vscf_key_signer_signature_len(key_alg, private_key);
     size_t len = 1 + 1 +                //  VirgilSignature ::= SEQUENCE {
                  1 + 1 + 32 + 2 +       //      digestAlgorithm ::= AlgorithmIdentifier,
                  1 + 4 + signature_len; //      signature ::= OCTET STRING }
+
+    vscf_impl_destroy(&key_alg);
 
     return len;
 }
@@ -350,7 +412,7 @@ vscf_signer_sign(const vscf_signer_t *self, const vscf_impl_t *private_key, vsc_
     VSCF_ASSERT_PTR(self->hash);
     VSCF_ASSERT_PTR(self->asn1wr);
     VSCF_ASSERT_PTR(self->alg_info_der_serializer);
-    VSCF_ASSERT(vscf_sign_hash_is_implemented(private_key));
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
     VSCF_ASSERT_PTR(signature);
     VSCF_ASSERT(vsc_buffer_is_valid(signature));
     VSCF_ASSERT(vsc_buffer_unused_len(signature) >= vscf_signer_signature_len(self, private_key));
@@ -364,10 +426,18 @@ vscf_signer_sign(const vscf_signer_t *self, const vscf_impl_t *private_key, vsc_
     //
     // Get raw signature.
     //
-    vsc_buffer_t *raw_signature = vsc_buffer_new_with_capacity(vscf_sign_hash_signature_len(private_key));
-    vscf_status_t status =
-            vscf_sign_hash(private_key, vsc_buffer_data(digest), vscf_alg_alg_id(self->hash), raw_signature);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
+    vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_key(private_key, self->random, &error);
+    VSCF_ASSERT(vscf_error_has_error(&error));
+    VSCF_ASSERT(vscf_key_signer_is_implemented(key_alg));
+
+    vsc_buffer_t *raw_signature = vsc_buffer_new_with_capacity(vscf_key_signer_signature_len(key_alg, private_key));
+    vscf_status_t status = vscf_key_signer_sign_hash(
+            key_alg, private_key, vscf_alg_alg_id(self->hash), vsc_buffer_data(digest), raw_signature);
+
+    vscf_impl_destroy(&key_alg);
     vsc_buffer_destroy(&digest);
     if (status != vscf_status_SUCCESS) {
         vsc_buffer_destroy(&raw_signature);

@@ -2972,7 +2972,7 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_v
     byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
     vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
 
-    vscf_verifier_update(verifier_ctx /*a1*/, data /*a3*/);
+    vscf_verifier_append_data(verifier_ctx /*a1*/, data /*a3*/);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
 }

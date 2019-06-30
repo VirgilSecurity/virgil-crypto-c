@@ -2,15 +2,19 @@
     Verify data of any size.
     Compatible with the class "signer".
 
-    <require class="alg factory"/>
     <require interface="alg"/>
     <require interface="hash"/>
     <require interface="key signer"/>
+    <require interface="public key"/>
     <require impl="asn1rd"/>
     <require impl="alg info der deserializer"/>
+    <require class="alg factory"/>
+    <require class="key alg factory"/>
 
     <property name="hash" interface="hash"/>
     <property name="raw signature" class="buffer"/>
+    <property name="asn1rd" impl="asn1rd"/>
+    <property name="alg info der deserializer" impl="alg info der deserializer"/>
 
     <method name="reset">
         Start verifying a signature.
