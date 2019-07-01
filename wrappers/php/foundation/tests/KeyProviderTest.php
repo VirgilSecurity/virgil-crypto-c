@@ -44,6 +44,7 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
     protected function setUp()
     {
         $this->keyProvider = new KeyProvider();
+        $this->keyProvider->setupDefaults();
     }
 
     protected function tearDown()

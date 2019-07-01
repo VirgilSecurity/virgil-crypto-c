@@ -1038,6 +1038,52 @@ PHP_FUNCTION(vscf_key_provider_delete_php) {
     RETURN_TRUE;
 }
 
+//
+//  Wrap method: vscf_key_provider_setup_defaults
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_key_provider_setup_defaults_php /*name*/,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+
+    ZEND_ARG_INFO(0, c_ctx)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vscf_key_provider_setup_defaults_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Proxy call
+    //
+    vscf_key_provider_t *vscf_key_provider = zend_fetch_resource_ex(in_cctx, VSCF_KEY_PROVIDER_PHP_RES_NAME, le_vscf_key_provider);
+    VSCF_ASSERT_PTR(vscf_key_provider);
+
+    vscf_status_t status = vscf_key_provider_setup_defaults(vscf_key_provider);
+
+    //
+    //  Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    RETURN_TRUE;
+
+fail:
+    RETURN_TRUE;
+}
+
 // --------------------------------------------------------------------------
 //  Define all function entries
 // --------------------------------------------------------------------------
@@ -1066,6 +1112,7 @@ static zend_function_entry vscf_php_functions[] = {
     // KEY_ASN1_DESERIALIZER
     PHP_FE(vscf_key_provider_new_php, arginfo_vscf_key_provider_new_php)
     PHP_FE(vscf_key_provider_delete_php, arginfo_vscf_key_provider_delete_php)
+    PHP_FE(vscf_key_provider_setup_defaults_php, arginfo_vscf_key_provider_setup_defaults_php)
     PHP_FE_END
 };
 
