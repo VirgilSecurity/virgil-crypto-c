@@ -57,7 +57,8 @@
 static bool
 reg_msg_hdr_cmp(RegularGroupMessageHeader *msg1, RegularGroupMessageHeader *msg2) {
     return memcmp(msg1->session_id, msg2->session_id, sizeof(msg1->session_id)) == 0 &&
-           memcmp(msg1->sender_id, msg2->sender_id, sizeof(msg1->sender_id)) == 0 && msg1->counter == msg2->counter &&
+           memcmp(msg1->sender_id, msg2->sender_id, sizeof(msg1->sender_id)) == 0
+           && msg1->counter == msg2->counter && msg1->epoch == msg2->epoch &&
            msg1->prev_epochs_msgs[0] == msg2->prev_epochs_msgs[0] &&
            msg1->prev_epochs_msgs[1] == msg2->prev_epochs_msgs[1] &&
            msg1->prev_epochs_msgs[2] == msg2->prev_epochs_msgs[2] &&
@@ -69,6 +70,7 @@ reg_msg_cmp(RegularGroupMessage *msg1, RegularGroupMessage *msg2) {
 
     return vsc_buffer_len(msg1->cipher_text.arg) == vsc_buffer_len(msg2->cipher_text.arg) &&
            memcmp(&msg1->header, &msg2->header, sizeof(msg1->header)) == 0 &&
+            memcmp(&msg1->signature, &msg2->signature, sizeof(msg1->signature)) == 0 &&
            memcmp(vsc_buffer_bytes(msg1->cipher_text.arg), vsc_buffer_bytes(msg2->cipher_text.arg),
                    vsc_buffer_len(msg1->cipher_text.arg)) == 0;
 }

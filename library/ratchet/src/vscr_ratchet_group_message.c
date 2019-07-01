@@ -451,8 +451,6 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
-    vscr_ratchet_group_message_set_pb_decode_callback(message);
-
     bool pb_status = pb_decode(&istream, GroupMessage_fields, &message->message_pb);
 
     if (!pb_status || message->message_pb.has_group_info == message->message_pb.has_regular_message) {

@@ -388,9 +388,12 @@ VSCF_PUBLIC vsc_data_t
 vscf_group_session_get_session_id(const vscf_group_session_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    //  TODO: Check if is_initialized
 
-    return vsc_data(self->session_id, sizeof(self->session_id));
+    if (self->last_epoch == NULL) {
+        return vsc_data_empty();
+    } else {
+        return vsc_data(self->session_id, sizeof(self->session_id));
+    }
 }
 
 VSCF_PUBLIC vscf_status_t
@@ -401,7 +404,7 @@ vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_sessio
     VSCF_ASSERT(message->message_pb.has_group_info);
 
     //  TODO: Add checks
-    //  TODO: Add max number of epoches limit
+    //  TODO: Add max number of epochs limit
 
     vscf_status_t status = vscf_status_SUCCESS;
 

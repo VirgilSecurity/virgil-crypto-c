@@ -54,7 +54,11 @@
 #define VSCF_GROUP_SESSION_MESSAGE_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_error.h"
+#include "vscf_group_session_message.h"
 #include "vscf_group_msg_type.h"
+
+#include <virgil/crypto/common/vsc_buffer.h>
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -62,6 +66,7 @@
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -153,6 +158,24 @@ vscf_group_session_message_get_sender_id(const vscf_group_session_message_t *sel
 //
 VSCF_PUBLIC uint32_t
 vscf_group_session_message_get_epoch(const vscf_group_session_message_t *self);
+
+//
+//  Buffer len to serialize this class.
+//
+VSCF_PUBLIC size_t
+vscf_group_session_message_serialize_len(const vscf_group_session_message_t *self);
+
+//
+//  Serializes instance.
+//
+VSCF_PUBLIC void
+vscf_group_session_message_serialize(const vscf_group_session_message_t *self, vsc_buffer_t *output);
+
+//
+//  Deserializes instance.
+//
+VSCF_PUBLIC vscf_group_session_message_t *
+vscf_group_session_message_deserialize(vsc_data_t input, vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------

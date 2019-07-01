@@ -339,9 +339,7 @@ vscf_message_padding_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buf
     VSCF_ASSERT(vsc_data_is_valid(decrypted_text));
 
     if (decrypted_text.len < vscf_message_padding_PADDING_SIZE_LEN) {
-        //        return vscf_status_ERROR_INVALID_PADDING;
-        // FIXME
-        return vscf_status_ERROR_BRAINKEY_INTERNAL;
+        return vscf_status_ERROR_INVALID_PADDING;
     }
 
     uint32_t plain_text_len = 0;
@@ -353,21 +351,15 @@ vscf_message_padding_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buf
     bool pb_res = pb_decode_fixed32(&stream, &plain_text_len);
 
     if (!pb_res) {
-        //        return vscf_status_ERROR_INVALID_PADDING;
-        // FIXME
-        return vscf_status_ERROR_BRAINKEY_INTERNAL;
+        return vscf_status_ERROR_INVALID_PADDING;
     }
 
     if (plain_text_len >= decrypted_text.len - vscf_message_padding_PADDING_SIZE_LEN) {
-        //        return vscf_status_ERROR_INVALID_PADDING;
-        // FIXME
-        return vscf_status_ERROR_BRAINKEY_INTERNAL;
+        return vscf_status_ERROR_INVALID_PADDING;
     }
 
     if (vsc_buffer_unused_len(buffer) < plain_text_len) {
-        //        return vscf_status_ERROR_INVALID_PADDING;
-        // FIXME
-        return vscf_status_ERROR_BRAINKEY_INTERNAL;
+        return vscf_status_ERROR_INVALID_PADDING;
     }
 
     vsc_buffer_write_data(buffer, vsc_data_slice_beg(decrypted_text, 0, plain_text_len));

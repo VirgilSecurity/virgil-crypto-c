@@ -385,8 +385,6 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
-    vscr_ratchet_message_set_pb_decode_callback(message);
-
     vscr_status_t status = vscr_status_SUCCESS;
 
     bool pb_status = pb_decode(&istream, Message_fields, &message->message_pb);

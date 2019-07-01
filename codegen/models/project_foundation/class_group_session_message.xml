@@ -44,4 +44,57 @@
         <argument name="type" enum="group msg type"/>
     </method>
 
+    <method name="serialize len" is_const="1">
+        Buffer len to serialize this class.
+
+        <return type="size">
+            Buffer len to serialize this class.
+        </return>
+    </method>
+
+    <method name="serialize" is_const="1">
+        Serializes instance.
+
+        <argument name="output" class="buffer">
+            Buffer for result. Capacity should be >= serialize len.
+
+            <length method="serialize len"/>
+        </argument>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        Deserializes instance.
+
+        <argument name="input" class="data">
+            Data with serialized instance.
+        </argument>
+        <argument name="error" class="error" access="readwrite">
+            Error context.
+        </argument>
+
+        <return class="self" access="disown">
+            Deserialized instance
+        </return>
+    </method>
+
+    <method name="set pb encode callback" declaration="private"/>
+    <method name="set pb decode callback" declaration="private"/>
+
+    <method name="buffer decode callback" declaration="private" is_static="1">
+        <argument name="stream" class="pb_istream_t" library="nanopb" access="readwrite"/>
+        <argument name="field" class="pb_field_t" library="nanopb"/>
+        <argument name="arg" class="void*" library="nanopb" access="readwrite"/>
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="buffer encode callback" is_static="1" declaration="private">
+        <argument name="stream" class="pb_ostream_t" library="nanopb" access="readwrite"/>
+        <argument name="field" class="pb_field_t" library="nanopb"/>
+        <argument name="arg" class="any" access="readwrite">
+            <array length="given" access="readonly"/>
+        </argument>
+
+        <return type="boolean"/>
+    </method>
 </class>

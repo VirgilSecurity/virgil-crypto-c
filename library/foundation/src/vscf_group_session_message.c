@@ -58,7 +58,6 @@
 
 #include <pb_decode.h>
 #include <pb_encode.h>
-#include <virgil/crypto/common/vsc_buffer.h>
 
 // clang-format on
 //  @end
@@ -85,6 +84,18 @@ vscf_group_session_message_init_ctx(vscf_group_session_message_t *self);
 //
 static void
 vscf_group_session_message_cleanup_ctx(vscf_group_session_message_t *self);
+
+static bool
+vscf_group_session_message_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void**arg);
+
+static void
+vscf_group_session_message_set_pb_encode_callback(vscf_group_session_message_t *self);
+
+static void
+vscf_group_session_message_set_pb_decode_callback(vscf_group_session_message_t *self);
+
+static bool
+vscf_group_session_message_buffer_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg);
 
 //
 //  Return size of 'vscf_group_session_message_t'.
@@ -241,8 +252,7 @@ vscf_group_session_message_init_ctx(vscf_group_session_message_t *self) {
     self->message_pb = msg;
     // FIXME
     self->message_pb.version = 1;
-    // FIXME
-    //    vscr_ratchet_group_message_set_pb_encode_callback(self);
+    vscf_group_session_message_set_pb_encode_callback(self);
 }
 
 //
@@ -355,6 +365,131 @@ vscf_group_session_message_set_type(vscf_group_session_message_t *self, vscf_gro
         break;
     }
 
+    vscf_group_session_message_set_pb_encode_callback(self);
+}
+
+//
+//  Buffer len to serialize this class.
+//
+VSCF_PUBLIC size_t
+vscf_group_session_message_serialize_len(const vscf_group_session_message_t *self) {
+
+    //  TODO: This is STUB. Implement me.
+    VSCF_UNUSED(self);
+
+    return 50000;
+}
+
+//
+//  Serializes instance.
+//
+VSCF_PUBLIC void
+vscf_group_session_message_serialize(const vscf_group_session_message_t *self, vsc_buffer_t *output) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(output);
+    VSCF_ASSERT(vsc_buffer_unused_len(output) >= vscf_group_session_message_serialize_len(self));
+    VSCF_ASSERT_PTR(self->header_pb);
+
+    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
+
+    VSCF_ASSERT(pb_encode(&ostream, GroupMessage_fields, &self->message_pb));
+    vsc_buffer_inc_used(output, ostream.bytes_written);
+}
+
+//
+//  Deserializes instance.
+//
+VSCF_PUBLIC vscf_group_session_message_t *
+vscf_group_session_message_deserialize(vsc_data_t input, vscf_error_t *error) {
+
+    VSCF_ASSERT(vsc_data_is_valid(input));
+
     // FIXME
-    //    vscf_ratchet_group_message_set_pb_encode_callback(self);
+    //    if (input.len > vscr_ratchet_common_MAX_MESSAGE_LEN) {
+    //        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+    //
+    //        return NULL;
+    //    }
+
+    vscf_group_session_message_t *message = vscf_group_session_message_new();
+    vscf_group_session_message_set_pb_decode_callback(message);
+
+    pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
+
+    vscf_status_t status = vscf_status_SUCCESS;
+
+    bool pb_status = pb_decode(&istream, GroupMessage_fields, &message->message_pb);
+
+    if (!pb_status || message->message_pb.has_group_info == message->message_pb.has_regular_message) {
+        // FIXME
+        status = vscf_status_ERROR_INVALID_PADDING;
+        goto err;
+    }
+
+    if (message->message_pb.has_regular_message) {
+        pb_istream_t sub_istream = pb_istream_from_buffer(
+                message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
+
+        message->header_pb = vscf_alloc(sizeof(RegularGroupMessageHeader));
+        pb_status = pb_decode(&sub_istream, RegularGroupMessageHeader_fields, message->header_pb);
+
+        if (!pb_status) {
+            // FIXME
+            status = vscf_status_ERROR_INVALID_PADDING;
+            goto err;
+        }
+    }
+
+    vscf_group_session_message_set_pb_encode_callback(message);
+
+err:
+    if (status != vscf_status_SUCCESS) {
+        VSCF_ERROR_SAFE_UPDATE(error, status);
+        vscf_group_session_message_destroy(&message);
+    }
+
+    return message;
+}
+
+static void
+vscf_group_session_message_set_pb_encode_callback(vscf_group_session_message_t *self) {
+
+    self->message_pb.regular_message.cipher_text.funcs.encode = vscf_group_session_message_buffer_encode_callback;
+}
+
+static void
+vscf_group_session_message_set_pb_decode_callback(vscf_group_session_message_t *self) {
+
+    self->message_pb.regular_message.cipher_text.funcs.decode = vscf_group_session_message_buffer_decode_callback;
+}
+
+static bool
+vscf_group_session_message_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void **arg) {
+
+    VSCF_ASSERT_PTR(stream);
+    VSCF_ASSERT_PTR(arg);
+    VSCF_UNUSED(field);
+
+    if (stream->bytes_left > 50000 /* FIXME */)
+        return false;
+
+    *arg = vsc_buffer_new_with_data(vsc_data(stream->state, stream->bytes_left));
+    stream->state = (byte *)stream->state + stream->bytes_left;
+    stream->bytes_left = 0;
+
+    return true;
+}
+
+static bool
+vscf_group_session_message_buffer_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg) {
+
+    VSCF_ASSERT_PTR(stream);
+    VSCF_ASSERT_PTR(arg);
+    VSCF_ASSERT_PTR(field);
+
+    if (!pb_encode_tag_for_field(stream, field))
+        return false;
+
+    return pb_encode_string(stream, vsc_buffer_bytes(*arg), vsc_buffer_len(*arg));
 }
