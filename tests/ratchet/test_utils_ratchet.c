@@ -42,8 +42,6 @@
 #include "vscr_ratchet_group_participants_info_defs.h"
 #include "vscr_ratchet_group_ticket.h"
 #include "vscr_memory.h"
-#include "vscf_curve25519_private_key.h"
-#include "vscf_curve25519_public_key.h"
 #include "vscr_ratchet_skipped_messages_defs.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_pkcs8_serializer.h"
