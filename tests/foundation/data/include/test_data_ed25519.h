@@ -43,6 +43,7 @@ extern const vsc_data_t test_ed25519_MESSAGE;
 extern const vsc_data_t test_ed25519_MESSAGE_SHA256_DIGEST;
 extern const vsc_data_t test_ed25519_SHA256_SIGNATURE;
 extern const vsc_data_t test_ed25519_ENCRYPTED_MESSAGE;
+extern const vsc_data_t test_ed25519_ENCRYPTED_MESSAGE_WITH_AB_RANDOM;
 
 
 //

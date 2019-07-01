@@ -135,7 +135,7 @@ vscf_ed25519_setup_defaults(vscf_ed25519_t *self) {
             return status;
         }
 
-        self->ecies = ecies;
+        vscf_ed25519_take_ecies(self, ecies);
     }
 
     return vscf_status_SUCCESS;
@@ -507,7 +507,7 @@ vscf_ed25519_sign_hash(const vscf_ed25519_t *self, const vscf_impl_t *private_ke
     VSCF_ASSERT(vsc_buffer_is_valid(signature));
     VSCF_ASSERT(vsc_buffer_unused_len(signature) >= vscf_ed25519_signature_len(self, private_key));
 
-    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
     vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)private_key);
     VSCF_ASSERT(private_key_data.len == ED25519_KEY_LEN);
 

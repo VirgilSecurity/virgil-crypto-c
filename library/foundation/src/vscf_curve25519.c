@@ -135,7 +135,7 @@ vscf_curve25519_setup_defaults(vscf_curve25519_t *self) {
             return status;
         }
 
-        self->ecies = ecies;
+        vscf_curve25519_take_ecies(self, ecies);
     }
 
     return vscf_status_SUCCESS;

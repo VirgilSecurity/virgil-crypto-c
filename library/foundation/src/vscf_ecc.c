@@ -173,7 +173,7 @@ vscf_ecc_setup_defaults(vscf_ecc_t *self) {
             return status;
         }
 
-        self->ecies = ecies;
+        vscf_ecc_take_ecies(self, ecies);
     }
 
     return vscf_status_SUCCESS;
@@ -202,8 +202,9 @@ vscf_ecc_write_signature(const mbedtls_mpi *r, const mbedtls_mpi *s, vsc_buffer_
     len += vscf_mbedtls_bignum_write_asn1(vscf_asn1wr_impl(&asn1wr), s);
     len += vscf_mbedtls_bignum_write_asn1(vscf_asn1wr_impl(&asn1wr), r);
 
-    vscf_asn1wr_write_sequence(&asn1wr, len);
+    len += vscf_asn1wr_write_sequence(&asn1wr, len);
     VSCF_ASSERT(!vscf_asn1wr_has_error(&asn1wr));
+    vsc_buffer_inc_used(signature, len);
     vscf_asn1wr_finish(&asn1wr, vsc_buffer_is_reverse(signature));
 
     vscf_asn1wr_cleanup(&asn1wr);
@@ -264,8 +265,8 @@ vscf_ecc_generate_key(const vscf_ecc_t *self, vscf_alg_id_t alg_id, vscf_error_t
         return NULL;
     }
 
-    const int mbed_status = mbedtls_ecp_gen_privkey(
-            &private_key->ecc_grp, &private_key->ecc_priv, vscf_mbedtls_bridge_random, self->random);
+    const int mbed_status = mbedtls_ecp_gen_keypair(&private_key->ecc_grp, &private_key->ecc_priv,
+            &private_key->ecc_pub, vscf_mbedtls_bridge_random, self->random);
     VSCF_ASSERT_ALLOC(status != MBEDTLS_ERR_MPI_ALLOC_FAILED);
 
     if (mbed_status != 0) {
@@ -273,6 +274,9 @@ vscf_ecc_generate_key(const vscf_ecc_t *self, vscf_alg_id_t alg_id, vscf_error_t
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_KEY_GENERATION_FAILED);
         return NULL;
     }
+
+    private_key->alg_info = vscf_ecc_produce_alg_info_for_key(self, vscf_ecc_private_key_impl(private_key));
+    private_key->impl_tag = self->info->impl_tag;
 
     return vscf_ecc_private_key_impl(private_key);
 }
@@ -489,6 +493,9 @@ vscf_ecc_import_private_key(const vscf_ecc_t *self, const vscf_raw_private_key_t
         return NULL;
     }
 
+    ecc_private_key->alg_info = vscf_impl_shallow_copy((vscf_impl_t *)vscf_raw_private_key_alg_info(raw_key));
+    ecc_private_key->impl_tag = self->info->impl_tag;
+
     return vscf_ecc_private_key_impl(ecc_private_key);
 }
 
@@ -694,7 +701,7 @@ vscf_ecc_sign_hash(const vscf_ecc_t *self, const vscf_impl_t *private_key, vscf_
     VSCF_ASSERT(vsc_buffer_unused_len(signature) >= vscf_ecc_signature_len(self, private_key));
     VSCF_ASSERT(vsc_data_is_valid(digest));
 
-    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_ECC_PUBLIC_KEY);
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_ECC_PRIVATE_KEY);
     const vscf_ecc_private_key_t *ecc_private_key = (const vscf_ecc_private_key_t *)private_key;
 
 
@@ -821,7 +828,7 @@ vscf_ecc_compute_shared_key(const vscf_ecc_t *self, const vscf_impl_t *public_ke
         return vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM;
     }
 
-    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_ECC_PRIVATE_KEY);
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_ECC_PRIVATE_KEY);
     const vscf_ecc_private_key_t *ecc_private_key = (const vscf_ecc_private_key_t *)private_key;
 
     if (ecc_public_key->ecc_grp.id != ecc_private_key->ecc_grp.id) {

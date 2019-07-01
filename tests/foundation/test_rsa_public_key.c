@@ -179,7 +179,7 @@ test__rsa_public_key_verify_hash__with_imported_2048_PUBLIC_KEY_PKCS1_and_random
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(public_key);
 
-    //  Sign
+    //  Verify
     bool verify_result = vscf_rsa_verify_hash(
             rsa, public_key, vscf_alg_id_SHA512, test_rsa_DATA_1_SHA512_DIGEST, test_rsa_2048_DATA_1_SHA512_SIGNATURE);
 

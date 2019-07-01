@@ -181,9 +181,12 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_ecc_private_key_extract_public_key(const vscf_ecc_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->alg_info);
     VSCF_ASSERT_SAFE(vscf_ecc_private_key_is_valid(self));
 
     vscf_ecc_public_key_t *ecc_public_key = vscf_ecc_public_key_new();
+    ecc_public_key->alg_info = vscf_impl_shallow_copy((vscf_impl_t *)self->alg_info);
+    ecc_public_key->impl_tag = self->impl_tag;
 
     int mbed_status = mbedtls_ecp_group_copy(&ecc_public_key->ecc_grp, &self->ecc_grp);
     VSCF_ASSERT_ALLOC(mbed_status == 0);

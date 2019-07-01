@@ -39,7 +39,7 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCF_KEY_ASN1_DESERIALIZER &&VSCF_ASN1RD
+#define TEST_DEPENDENCIES_AVAILABLE VSCF_KEY_ASN1_DESERIALIZER
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_key_asn1_deserializer.h"
@@ -55,7 +55,6 @@
 // --------------------------------------------------------------------------
 void
 test__deserialize_public_key__rsa2048_der__equals_to_rsa_2048_public_key_pkcs1_der(void) {
-#if VSCF_RSA_PUBLIC_KEY
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
 
@@ -72,14 +71,10 @@ test__deserialize_public_key__rsa2048_der__equals_to_rsa_2048_public_key_pkcs1_d
 
     vscf_raw_public_key_destroy(&raw_public_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
-#else
-    TEST_IGNORE_MESSAGE("VSCF_RSA_PUBLIC_KEY is disabled");
-#endif
 }
 
 void
 test__deserialize_public_key__rsa2048_pem__equals_to_rsa_2048_public_key_pkcs1_der(void) {
-#if VSCF_RSA_PUBLIC_KEY
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
 
@@ -96,14 +91,10 @@ test__deserialize_public_key__rsa2048_pem__equals_to_rsa_2048_public_key_pkcs1_d
 
     vscf_raw_public_key_destroy(&raw_public_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
-#else
-    TEST_IGNORE_MESSAGE("VSCF_RSA_PUBLIC_KEY is disabled");
-#endif
 }
 
 void
 test__deserialize_private_key__rsa2048_der__equals_to_rsa_2048_private_key_pkcs1_der(void) {
-#if VSCF_RSA_PRIVATE_KEY
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
 
@@ -120,14 +111,10 @@ test__deserialize_private_key__rsa2048_der__equals_to_rsa_2048_private_key_pkcs1
 
     vscf_raw_private_key_destroy(&raw_private_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
-#else
-    TEST_IGNORE_MESSAGE("VSCF_RSA_PRIVATE_KEY is disabled");
-#endif
 }
 
 void
 test__deserialize_private_key__rsa2048_pem__equals_to_rsa_2048_private_key_pkcs1_der(void) {
-#if VSCF_RSA_PRIVATE_KEY
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
 
@@ -144,9 +131,6 @@ test__deserialize_private_key__rsa2048_pem__equals_to_rsa_2048_private_key_pkcs1
 
     vscf_raw_private_key_destroy(&raw_private_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
-#else
-    TEST_IGNORE_MESSAGE("VSCF_RSA_PRIVATE_KEY is disabled");
-#endif
 }
 
 // --------------------------------------------------------------------------
@@ -154,7 +138,6 @@ test__deserialize_private_key__rsa2048_pem__equals_to_rsa_2048_private_key_pkcs1
 // --------------------------------------------------------------------------
 void
 test__deserialize_public_key__ed25519_der__equals_to_ed25519_public_key(void) {
-#if VSCF_ED25519_PUBLIC_KEY
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
 
@@ -171,14 +154,10 @@ test__deserialize_public_key__ed25519_der__equals_to_ed25519_public_key(void) {
 
     vscf_raw_public_key_destroy(&raw_public_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
-#else
-    TEST_IGNORE_MESSAGE("VSCF_ED25519_PUBLIC_KEY is disabled");
-#endif
 }
 
 void
 test__deserialize_public_key__ed25519_pem__equals_to_ed25519_public_key(void) {
-#if VSCF_ED25519_PUBLIC_KEY
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
 
@@ -195,14 +174,10 @@ test__deserialize_public_key__ed25519_pem__equals_to_ed25519_public_key(void) {
 
     vscf_raw_public_key_destroy(&raw_public_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
-#else
-    TEST_IGNORE_MESSAGE("VSCF_ED25519_PUBLIC_KEY is disabled");
-#endif
 }
 
 void
 test__deserialize_private_key__ed25519_der__equals_to_ed25519_private_key(void) {
-#if VSCF_ED25519_PRIVATE_KEY
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
 
@@ -219,14 +194,10 @@ test__deserialize_private_key__ed25519_der__equals_to_ed25519_private_key(void) 
 
     vscf_raw_private_key_destroy(&raw_private_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
-#else
-    TEST_IGNORE_MESSAGE("VSCF_ED25519_PRIVATE_KEY is disabled");
-#endif
 }
 
 void
 test__deserialize_private_key__ed25519_pem__equals_to_ed25519_private_key(void) {
-#if VSCF_ED25519_PRIVATE_KEY
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
 
@@ -243,9 +214,6 @@ test__deserialize_private_key__ed25519_pem__equals_to_ed25519_private_key(void) 
 
     vscf_raw_private_key_destroy(&raw_private_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
-#else
-    TEST_IGNORE_MESSAGE("VSCF_ED25519_PRIVATE_KEY is disabled");
-#endif
 }
 
 // --------------------------------------------------------------------------
@@ -253,7 +221,6 @@ test__deserialize_private_key__ed25519_pem__equals_to_ed25519_private_key(void) 
 // --------------------------------------------------------------------------
 void
 test__deserialize_public_key__curve25519_der__equals_to_curve25519_public_key(void) {
-#if VSCF_CURVE25519_PUBLIC_KEY
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
 
@@ -270,14 +237,10 @@ test__deserialize_public_key__curve25519_der__equals_to_curve25519_public_key(vo
 
     vscf_raw_public_key_destroy(&raw_public_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
-#else
-    TEST_IGNORE_MESSAGE("VSCF_CURVE25519_PUBLIC_KEY is disabled");
-#endif
 }
 
 void
 test__deserialize_private_key__curve25519_der__equals_to_curve25519_private_key(void) {
-#if VSCF_CURVE25519_PRIVATE_KEY
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
 
@@ -294,9 +257,6 @@ test__deserialize_private_key__curve25519_der__equals_to_curve25519_private_key(
 
     vscf_raw_private_key_destroy(&raw_private_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
-#else
-    TEST_IGNORE_MESSAGE("VSCF_CURVE25519_PRIVATE_KEY is disabled");
-#endif
 }
 
 // --------------------------------------------------------------------------
@@ -304,7 +264,6 @@ test__deserialize_private_key__curve25519_der__equals_to_curve25519_private_key(
 // --------------------------------------------------------------------------
 void
 test__deserialize_public_key__secp256r1_der__equals_to_secp256r1_public_key(void) {
-#if VSCF_SECP256R1_PUBLIC_KEY
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
 
@@ -321,14 +280,10 @@ test__deserialize_public_key__secp256r1_der__equals_to_secp256r1_public_key(void
 
     vscf_raw_public_key_destroy(&raw_public_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
-#else
-    TEST_IGNORE_MESSAGE("VSCF_SECP256R1_PUBLIC_KEY is disabled");
-#endif
 }
 
 void
 test__deserialize_public_key__secp256r1_pem__equals_to_secp256r1_public_key(void) {
-#if VSCF_SECP256R1_PUBLIC_KEY
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
 
@@ -345,14 +300,10 @@ test__deserialize_public_key__secp256r1_pem__equals_to_secp256r1_public_key(void
 
     vscf_raw_public_key_destroy(&raw_public_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
-#else
-    TEST_IGNORE_MESSAGE("VSCF_SECP256R1_PUBLIC_KEY is disabled");
-#endif
 }
 
 void
 test__deserialize_private_key__secp256r1_der__equals_to_secp256r1_private_key(void) {
-#if VSCF_SECP256R1_PRIVATE_KEY
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
 
@@ -369,14 +320,10 @@ test__deserialize_private_key__secp256r1_der__equals_to_secp256r1_private_key(vo
 
     vscf_raw_private_key_destroy(&raw_private_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
-#else
-    TEST_IGNORE_MESSAGE("VSCF_SECP256R1_PRIVATE_KEY is disabled");
-#endif
 }
 
 void
 test__deserialize_private_key__secp256r1_pem__equals_to_secp256r1_private_key(void) {
-#if VSCF_SECP256R1_PRIVATE_KEY
     vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
 
@@ -393,9 +340,6 @@ test__deserialize_private_key__secp256r1_pem__equals_to_secp256r1_private_key(vo
 
     vscf_raw_private_key_destroy(&raw_private_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
-#else
-    TEST_IGNORE_MESSAGE("VSCF_SECP256R1_PRIVATE_KEY is disabled");
-#endif
 }
 
 
