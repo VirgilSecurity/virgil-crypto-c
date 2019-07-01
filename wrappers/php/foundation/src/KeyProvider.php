@@ -77,7 +77,7 @@ class KeyProvider
      */
     public function setRsaParams(int $bitlen): void
     {
-        vsсf_key_provider_set_rsa_params_php($this->c_ctx, $bitlen);
+        vscf_key_provider_set_rsa_params_php($this->c_ctx, $bitlen);
     }
 
     /**

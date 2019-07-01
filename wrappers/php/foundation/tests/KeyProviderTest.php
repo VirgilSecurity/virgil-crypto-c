@@ -45,6 +45,7 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
     {
         $this->keyProvider = new KeyProvider();
         $this->keyProvider->setupDefaults();
+        $this->keyProvider->setRsaParams(2048);
     }
 
     protected function tearDown()
