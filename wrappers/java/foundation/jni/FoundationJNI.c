@@ -3561,12 +3561,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class GroupSessionMessage not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/GroupSessionMessage;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class GroupSessionMessage has no constructor with C context parameter.");
+        VSCF_ASSERT("Class GroupSessionMessage has no 'getInstance' method.");
     }
     vscf_group_session_message_shallow_copy((vscf_group_session_message_t */*5*/) proxyResult);
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -3673,12 +3673,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class GroupSessionMessage not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/GroupSessionMessage;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class GroupSessionMessage has no constructor with C context parameter.");
+        VSCF_ASSERT("Class GroupSessionMessage has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jplainText, (jbyte*) plain_text_arr, 0);
 
@@ -3764,12 +3764,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class GroupSessionTicket not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/GroupSessionTicket;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class GroupSessionTicket has no constructor with C context parameter.");
+        VSCF_ASSERT("Class GroupSessionTicket has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 

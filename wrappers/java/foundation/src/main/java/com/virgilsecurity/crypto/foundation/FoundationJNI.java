@@ -695,7 +695,7 @@ public class FoundationJNI {
     /*
     * Random
     */
-    public native void groupSession_setRng(long cCtx, Random rng);
+    public native void groupSession_setRng(long cCtx, Random rng) throws FoundationException;
 
     /*
     * Returns current epoch.

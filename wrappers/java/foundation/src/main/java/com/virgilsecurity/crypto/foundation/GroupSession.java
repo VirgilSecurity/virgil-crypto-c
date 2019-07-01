@@ -47,19 +47,20 @@ public class GroupSession implements AutoCloseable {
     }
 
     /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public GroupSession(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
-    /*
     * Sender id len
     */
     public int getSenderIdLen() {
         return 32;
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static GroupSession getInstance(long cCtx) {
+        GroupSession newInstance = new GroupSession();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

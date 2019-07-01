@@ -53,9 +53,10 @@ public class GroupSessionMessage implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public GroupSessionMessage(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static GroupSessionMessage getInstance(long cCtx) {
+        GroupSessionMessage newInstance = new GroupSessionMessage();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */
