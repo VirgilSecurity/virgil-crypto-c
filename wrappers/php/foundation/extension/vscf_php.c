@@ -41,6 +41,7 @@
 #include "vscf_kdf1.h"
 #include "vscf_base64.h"
 #include "vscf_key_asn1_deserializer.h"
+#include "vscf_key_provider.h"
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
@@ -63,6 +64,7 @@ const char VSCF_PHP_EXTNAME[] = "vscf_php";
 const char VSCF_IMPL_PHP_RES_NAME[] = "vscf_php";
 const char VSCF_BASE64_PHP_RES_NAME[] = "vscf_php_base64";
 const char VSCF_KEY_ASN1_DESERIALIZER_PHP_RES_NAME[] = "vscf_php_key_asn1_deserializer";
+const char VSCF_KEY_PROVIDER_PHP_RES_NAME[] = "vscf_php_key_provider";
 
 // --------------------------------------------------------------------------
 //  Registered resources
@@ -70,7 +72,7 @@ const char VSCF_KEY_ASN1_DESERIALIZER_PHP_RES_NAME[] = "vscf_php_key_asn1_deseri
 int le_vscf_impl;
 int le_vscf_base64;
 int le_vscf_key_asn1_deserializer;
-
+int le_vscf_key_provider;
 
 // --------------------------------------------------------------------------
 //  Extension init functions declaration
@@ -983,6 +985,59 @@ success:
     vsc_buffer_destroy(&raw_key);
 }
 
+//
+//  Wrap method: vscf_key_provider_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_key_provider_new_php /*name*/,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vscf_key_provider_new_php) {
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    zend_resource *key_provider_res = zend_register_resource(key_provider, le_vscf_key_provider);
+    RETVAL_RES(key_provider_res);
+}
+
+//
+//  Wrap method: vscf_key_provider_delete
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_key_provider_delete_php /*name*/,
+        0 /*_unused*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+    ZEND_ARG_INFO(0, c_ctx)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vscf_key_provider_delete_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Fetch for type checking and then release
+    //
+    vscf_key_provider_t *key_provider = zend_fetch_resource_ex(in_cctx, VSCF_KEY_PROVIDER_PHP_RES_NAME, le_vscf_key_provider);
+    VSCF_ASSERT_PTR(key_provider);
+    zend_list_close(Z_RES_P(in_cctx));
+    RETURN_TRUE;
+}
+
 // --------------------------------------------------------------------------
 //  Define all function entries
 // --------------------------------------------------------------------------
@@ -1008,6 +1063,9 @@ static zend_function_entry vscf_php_functions[] = {
     PHP_FE(vscf_key_asn1_deserializer_setup_defaults_php, arginfo_vscf_key_asn1_deserializer_setup_defaults_php)
     PHP_FE(vscf_key_asn1_deserializer_deserialize_public_key_php, arginfo_vscf_key_asn1_deserializer_deserialize_public_key_php)
     PHP_FE(vscf_key_asn1_deserializer_deserialize_private_key_php, arginfo_vscf_key_asn1_deserializer_deserialize_private_key_php)
+    // KEY_ASN1_DESERIALIZER
+    PHP_FE(vscf_key_provider_new_php, arginfo_vscf_key_provider_new_php)
+    PHP_FE(vscf_key_provider_delete_php, arginfo_vscf_key_provider_delete_php)
     PHP_FE_END
 };
 
@@ -1046,6 +1104,10 @@ static void vscf_key_asn1_deserializer_dtor_php(zend_resource *rsrc) {
     vscf_key_asn1_deserializer_delete((vscf_key_asn1_deserializer_t *)rsrc->ptr);
 }
 
+static void vscf_key_provider_dtor_php(zend_resource *rsrc) {
+    vscf_key_provider_delete((vscf_key_provider_t *)rsrc->ptr);
+}
+
 PHP_MINIT_FUNCTION(vscf_php) {
 
     le_vscf_impl = zend_register_list_destructors_ex(
@@ -1053,6 +1115,9 @@ PHP_MINIT_FUNCTION(vscf_php) {
 
     le_vscf_key_asn1_deserializer = zend_register_list_destructors_ex(
             vscf_key_asn1_deserializer_dtor_php, NULL, VSCF_KEY_ASN1_DESERIALIZER_PHP_RES_NAME, module_number);
+
+    le_vscf_key_provider = zend_register_list_destructors_ex(
+            vscf_key_provider_dtor_php, NULL, VSCF_KEY_PROVIDER_PHP_RES_NAME, module_number);    
 
     return SUCCESS;
 }
