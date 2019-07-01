@@ -81,13 +81,14 @@ public class FakeRandom implements AutoCloseable, Random, EntropySource {
 
     /*
     * Generate random bytes.
+    * All RNG implementations must be thread-safe.
     */
     public byte[] random(int dataLen) throws FoundationException {
         return FoundationJNI.INSTANCE.fakeRandom_random(this.cCtx, dataLen);
     }
 
     /*
-    * Retreive new seed data from the entropy sources.
+    * Retrieve new seed data from the entropy sources.
     */
     public void reseed() throws FoundationException {
         FoundationJNI.INSTANCE.fakeRandom_reseed(this.cCtx);

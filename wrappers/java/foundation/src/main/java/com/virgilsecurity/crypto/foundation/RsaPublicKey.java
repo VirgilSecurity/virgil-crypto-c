@@ -36,7 +36,10 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-public class RsaPublicKey implements AutoCloseable, Alg, Key, Encrypt, VerifyHash, PublicKey, GenerateEphemeralKey {
+/*
+* Handles RSA public key.
+*/
+public class RsaPublicKey implements AutoCloseable, Key, PublicKey {
 
     public long cCtx;
 
@@ -46,27 +49,35 @@ public class RsaPublicKey implements AutoCloseable, Alg, Key, Encrypt, VerifyHas
         this.cCtx = FoundationJNI.INSTANCE.rsaPublicKey_new();
     }
 
-    public void setHash(Hash hash) {
-        FoundationJNI.INSTANCE.rsaPublicKey_setHash(this.cCtx, hash);
-    }
-
-    public void setRandom(Random random) {
-        FoundationJNI.INSTANCE.rsaPublicKey_setRandom(this.cCtx, random);
-    }
-
-    public void setAsn1rd(Asn1Reader asn1rd) {
-        FoundationJNI.INSTANCE.rsaPublicKey_setAsn1rd(this.cCtx, asn1rd);
-    }
-
-    public void setAsn1wr(Asn1Writer asn1wr) {
-        FoundationJNI.INSTANCE.rsaPublicKey_setAsn1wr(this.cCtx, asn1wr);
+    /*
+    * Return public key exponent.
+    */
+    public int keyExponent() {
+        return FoundationJNI.INSTANCE.rsaPublicKey_keyExponent(this.cCtx);
     }
 
     /*
-    * Setup predefined values to the uninitialized class dependencies.
+    * Import public key from the raw binary format.
+    *
+    * RSAPublicKey ::= SEQUENCE {
+    * modulus INTEGER, -- n
+    * publicExponent INTEGER -- e
+    * }
     */
-    public void setupDefaults() throws FoundationException {
-        FoundationJNI.INSTANCE.rsaPublicKey_setupDefaults(this.cCtx);
+    public void import(RawPublicKey rawPublicKey) throws FoundationException {
+        FoundationJNI.INSTANCE.rsaPublicKey_import(this.cCtx, rawPublicKey);
+    }
+
+    /*
+    * Export public key in the raw binary format.
+    *
+    * RSAPublicKey ::= SEQUENCE {
+    * modulus INTEGER, -- n
+    * publicExponent INTEGER -- e
+    * }
+    */
+    public RawPublicKey export() {
+        return FoundationJNI.INSTANCE.rsaPublicKey_export(this.cCtx);
     }
 
     /*
@@ -85,109 +96,39 @@ public class RsaPublicKey implements AutoCloseable, Alg, Key, Encrypt, VerifyHas
     }
 
     /*
-    * Provide algorithm identificator.
+    * Algorithm identifier the key belongs to.
     */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.rsaPublicKey_algId(this.cCtx);
     }
 
     /*
-    * Produce object with algorithm information and configuration parameters.
+    * Return algorithm information that can be used for serialization.
     */
-    public AlgInfo produceAlgInfo() {
-        return FoundationJNI.INSTANCE.rsaPublicKey_produceAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Restore algorithm configuration from the given object.
-    */
-    public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
-        FoundationJNI.INSTANCE.rsaPublicKey_restoreAlgInfo(this.cCtx, algInfo);
+    public AlgInfo algInfo() {
+        return FoundationJNI.INSTANCE.rsaPublicKey_algInfo(this.cCtx);
     }
 
     /*
     * Length of the key in bytes.
     */
-    public int keyLen() {
-        return FoundationJNI.INSTANCE.rsaPublicKey_keyLen(this.cCtx);
+    public int len() {
+        return FoundationJNI.INSTANCE.rsaPublicKey_len(this.cCtx);
     }
 
     /*
     * Length of the key in bits.
     */
-    public int keyBitlen() {
-        return FoundationJNI.INSTANCE.rsaPublicKey_keyBitlen(this.cCtx);
+    public int bitlen() {
+        return FoundationJNI.INSTANCE.rsaPublicKey_bitlen(this.cCtx);
     }
 
     /*
-    * Encrypt given data.
+    * Check that key is valid.
+    * Note, this operation can be slow.
     */
-    public byte[] encrypt(byte[] data) throws FoundationException {
-        return FoundationJNI.INSTANCE.rsaPublicKey_encrypt(this.cCtx, data);
-    }
-
-    /*
-    * Calculate required buffer length to hold the encrypted data.
-    */
-    public int encryptedLen(int dataLen) {
-        return FoundationJNI.INSTANCE.rsaPublicKey_encryptedLen(this.cCtx, dataLen);
-    }
-
-    /*
-    * Verify data with given public key and signature.
-    */
-    public boolean verifyHash(byte[] hashDigest, AlgId hashId, byte[] signature) {
-        return FoundationJNI.INSTANCE.rsaPublicKey_verifyHash(this.cCtx, hashDigest, hashId, signature);
-    }
-
-    /*
-    * Defines whether a public key can be imported or not.
-    */
-    public boolean getCanImportPublicKey() {
-        return true;
-    }
-
-    /*
-    * Define whether a public key can be exported or not.
-    */
-    public boolean getCanExportPublicKey() {
-        return true;
-    }
-
-    /*
-    * Export public key in the binary format.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    public byte[] exportPublicKey() throws FoundationException {
-        return FoundationJNI.INSTANCE.rsaPublicKey_exportPublicKey(this.cCtx);
-    }
-
-    /*
-    * Return length in bytes required to hold exported public key.
-    */
-    public int exportedPublicKeyLen() {
-        return FoundationJNI.INSTANCE.rsaPublicKey_exportedPublicKeyLen(this.cCtx);
-    }
-
-    /*
-    * Import public key from the binary format.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be imported from the format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    public void importPublicKey(byte[] data) throws FoundationException {
-        FoundationJNI.INSTANCE.rsaPublicKey_importPublicKey(this.cCtx, data);
-    }
-
-    /*
-    * Generate ephemeral private key of the same type.
-    */
-    public PrivateKey generateEphemeralKey() throws FoundationException {
-        return FoundationJNI.INSTANCE.rsaPublicKey_generateEphemeralKey(this.cCtx);
+    public boolean isValid() {
+        return FoundationJNI.INSTANCE.rsaPublicKey_isValid(this.cCtx);
     }
 }
 

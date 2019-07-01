@@ -36,15 +36,15 @@
 import Foundation
 import VSCFoundation
 
-/// Provide implementation agnostic representation of the asymmetric key.
-@objc(VSCFRawKey) public class RawKey: NSObject {
+/// Handles interchangeable public key representation.
+@objc(VSCFRawPublicKey) public class RawPublicKey: NSObject, Key, PublicKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
     /// Create underlying C context.
     public override init() {
-        self.c_ctx = vscf_raw_key_new()
+        self.c_ctx = vscf_raw_public_key_new()
         super.init()
     }
 
@@ -58,37 +58,55 @@ import VSCFoundation
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscf_raw_key_shallow_copy(c_ctx)
+        self.c_ctx = vscf_raw_public_key_shallow_copy(c_ctx)
         super.init()
-    }
-
-    /// Creates raw key defined with algorithm and data.
-    /// Note, data is copied.
-    public init(algId: AlgId, rawKeyData: Data) {
-        let proxyResult = rawKeyData.withUnsafeBytes({ (rawKeyDataPointer: UnsafeRawBufferPointer) -> OpaquePointer? in
-
-            return vscf_raw_key_new_with_data(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), vsc_data(rawKeyDataPointer.bindMemory(to: byte.self).baseAddress, rawKeyData.count))
-        })
-
-        self.c_ctx = proxyResult!
     }
 
     /// Release underlying C context.
     deinit {
-        vscf_raw_key_delete(self.c_ctx)
+        vscf_raw_public_key_delete(self.c_ctx)
     }
 
-    /// Returns asymmetric algorithm type that raw key belongs to.
+    /// Return key data.
+    @objc public func data() -> Data {
+        let proxyResult = vscf_raw_public_key_data(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
+    /// Algorithm identifier the key belongs to.
     @objc public func algId() -> AlgId {
-        let proxyResult = vscf_raw_key_alg_id(self.c_ctx)
+        let proxyResult = vscf_raw_public_key_alg_id(self.c_ctx)
 
         return AlgId.init(fromC: proxyResult)
     }
 
-    /// Return raw key data.
-    @objc public func data() -> Data {
-        let proxyResult = vscf_raw_key_data(self.c_ctx)
+    /// Return algorithm information that can be used for serialization.
+    @objc public func algInfo() -> AlgInfo {
+        let proxyResult = vscf_raw_public_key_alg_info(self.c_ctx)
 
-        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+    }
+
+    /// Length of the key in bytes.
+    @objc public func len() -> Int {
+        let proxyResult = vscf_raw_public_key_len(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Length of the key in bits.
+    @objc public func bitlen() -> Int {
+        let proxyResult = vscf_raw_public_key_bitlen(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Check that key is valid.
+    /// Note, this operation can be slow.
+    @objc public func isValid() -> Bool {
+        let proxyResult = vscf_raw_public_key_is_valid(self.c_ctx)
+
+        return proxyResult
     }
 }

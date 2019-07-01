@@ -37,54 +37,74 @@
 package com.virgilsecurity.crypto.foundation;
 
 /*
-* Provide implementation agnostic representation of the asymmetric key.
+* Handles ECC private key.
 */
-public class RawKey implements AutoCloseable {
+public class EccPrivateKey implements AutoCloseable, Key, PrivateKey {
 
     public long cCtx;
 
     /* Create underlying C context. */
-    public RawKey() {
+    public EccPrivateKey() {
         super();
-        this.cCtx = FoundationJNI.INSTANCE.rawKey_new();
-    }
-
-    /*
-    * Creates raw key defined with algorithm and data.
-    * Note, data is copied.
-    */
-    public RawKey(AlgId algId, byte[] rawKeyData) {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.rawKey_new(algId, rawKeyData);
+        this.cCtx = FoundationJNI.INSTANCE.eccPrivateKey_new();
     }
 
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static RawKey getInstance(long cCtx) {
-        RawKey newInstance = new RawKey();
+    public static EccPrivateKey getInstance(long cCtx) {
+        EccPrivateKey newInstance = new EccPrivateKey();
         newInstance.cCtx = cCtx;
         return newInstance;
     }
 
     /* Close resource. */
     public void close() {
-        FoundationJNI.INSTANCE.rawKey_close(this.cCtx);
+        FoundationJNI.INSTANCE.eccPrivateKey_close(this.cCtx);
     }
 
     /*
-    * Returns asymmetric algorithm type that raw key belongs to.
+    * Algorithm identifier the key belongs to.
     */
     public AlgId algId() {
-        return FoundationJNI.INSTANCE.rawKey_algId(this.cCtx);
+        return FoundationJNI.INSTANCE.eccPrivateKey_algId(this.cCtx);
     }
 
     /*
-    * Return raw key data.
+    * Return algorithm information that can be used for serialization.
     */
-    public byte[] data() {
-        return FoundationJNI.INSTANCE.rawKey_data(this.cCtx);
+    public AlgInfo algInfo() {
+        return FoundationJNI.INSTANCE.eccPrivateKey_algInfo(this.cCtx);
+    }
+
+    /*
+    * Length of the key in bytes.
+    */
+    public int len() {
+        return FoundationJNI.INSTANCE.eccPrivateKey_len(this.cCtx);
+    }
+
+    /*
+    * Length of the key in bits.
+    */
+    public int bitlen() {
+        return FoundationJNI.INSTANCE.eccPrivateKey_bitlen(this.cCtx);
+    }
+
+    /*
+    * Check that key is valid.
+    * Note, this operation can be slow.
+    */
+    public boolean isValid() {
+        return FoundationJNI.INSTANCE.eccPrivateKey_isValid(this.cCtx);
+    }
+
+    /*
+    * Extract public key from the private key.
+    */
+    public PublicKey extractPublicKey() {
+        return FoundationJNI.INSTANCE.eccPrivateKey_extractPublicKey(this.cCtx);
     }
 }
 

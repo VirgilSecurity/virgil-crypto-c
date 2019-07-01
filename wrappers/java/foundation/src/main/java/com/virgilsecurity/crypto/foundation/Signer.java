@@ -68,6 +68,10 @@ public class Signer implements AutoCloseable {
         FoundationJNI.INSTANCE.signer_setHash(this.cCtx, hash);
     }
 
+    public void setRandom(Random random) {
+        FoundationJNI.INSTANCE.signer_setRandom(this.cCtx, random);
+    }
+
     /*
     * Start a processing a new signature.
     */
@@ -78,21 +82,21 @@ public class Signer implements AutoCloseable {
     /*
     * Add given data to the signed data.
     */
-    public void update(byte[] data) {
-        FoundationJNI.INSTANCE.signer_update(this.cCtx, data);
+    public void appendData(byte[] data) {
+        FoundationJNI.INSTANCE.signer_appendData(this.cCtx, data);
     }
 
     /*
     * Return length of the signature.
     */
-    public int signatureLen(SignHash privateKey) {
+    public int signatureLen(PrivateKey privateKey) {
         return FoundationJNI.INSTANCE.signer_signatureLen(this.cCtx, privateKey);
     }
 
     /*
     * Accomplish signing and return signature.
     */
-    public byte[] sign(SignHash privateKey) throws FoundationException {
+    public byte[] sign(PrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.signer_sign(this.cCtx, privateKey);
     }
 }

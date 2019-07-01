@@ -5,7 +5,7 @@
     <property name="key encryption algorithm" interface="alg info" access="readonly"/>
     <property name="encrypted key" class="buffer"/>
 
-    <constructor name="with buffer">
+    <constructor name="with buffer" visibility="private">
         Create object and define all properties.
 
         <argument name="recipient id" class="data"/>

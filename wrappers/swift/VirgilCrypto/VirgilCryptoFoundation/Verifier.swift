@@ -79,15 +79,15 @@ import VSCFoundation
     }
 
     /// Add given data to the signed data.
-    @objc public func update(data: Data) {
+    @objc public func appendData(data: Data) {
         data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
 
-            vscf_verifier_update(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count))
+            vscf_verifier_append_data(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count))
         })
     }
 
     /// Verify accumulated data.
-    @objc public func verify(publicKey: VerifyHash) -> Bool {
+    @objc public func verify(publicKey: PublicKey) -> Bool {
         let proxyResult = vscf_verifier_verify(self.c_ctx, publicKey.c_ctx)
 
         return proxyResult

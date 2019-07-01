@@ -102,6 +102,7 @@ vscf_rsa_public_key_cleanup_ctx(vscf_rsa_public_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
+    vscf_impl_destroy(&self->alg_info);
     mbedtls_rsa_free(&self->rsa_ctx);
 }
 

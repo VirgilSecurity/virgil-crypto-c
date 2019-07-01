@@ -37,14 +37,39 @@
 package com.virgilsecurity.crypto.foundation;
 
 /*
-* Interface for private or secret key generation.
+* Provide data encryption and decryption interface with asymmetric keys.
 */
-public interface GenerateKey {
+public interface KeyCipher extends KeyAlg {
 
     /*
-    * Generate new private or secret key.
-    * Note, this operation can be slow.
+    * Check if algorithm can encrypt data with a given key.
     */
-    void generateKey() throws FoundationException;
+    boolean canEncrypt(PublicKey publicKey, int dataLen);
+
+    /*
+    * Calculate required buffer length to hold the encrypted data.
+    */
+    int encryptedLen(PublicKey publicKey, int dataLen);
+
+    /*
+    * Encrypt data with a given public key.
+    */
+    byte[] encrypt(PublicKey publicKey, byte[] data) throws FoundationException;
+
+    /*
+    * Check if algorithm can decrypt data with a given key.
+    * However, success result of decryption is not guaranteed.
+    */
+    boolean canDecrypt(PrivateKey privateKey, int dataLen);
+
+    /*
+    * Calculate required buffer length to hold the decrypted data.
+    */
+    int decryptedLen(PrivateKey privateKey, int dataLen);
+
+    /*
+    * Decrypt given data.
+    */
+    byte[] decrypt(PrivateKey privateKey, byte[] data) throws FoundationException;
 }
 

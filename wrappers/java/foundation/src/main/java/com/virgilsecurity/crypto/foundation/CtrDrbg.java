@@ -118,13 +118,14 @@ public class CtrDrbg implements AutoCloseable, Random {
 
     /*
     * Generate random bytes.
+    * All RNG implementations must be thread-safe.
     */
     public byte[] random(int dataLen) throws FoundationException {
         return FoundationJNI.INSTANCE.ctrDrbg_random(this.cCtx, dataLen);
     }
 
     /*
-    * Retreive new seed data from the entropy sources.
+    * Retrieve new seed data from the entropy sources.
     */
     public void reseed() throws FoundationException {
         FoundationJNI.INSTANCE.ctrDrbg_reseed(this.cCtx);

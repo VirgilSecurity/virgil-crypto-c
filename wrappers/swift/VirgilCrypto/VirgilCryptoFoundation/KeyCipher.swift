@@ -36,10 +36,25 @@
 import Foundation
 import VSCFoundation
 
-/// Interface for private or secret key generation.
-@objc(VSCFGenerateKey) public protocol GenerateKey : CContext {
+/// Provide data encryption and decryption interface with asymmetric keys.
+@objc(VSCFKeyCipher) public protocol KeyCipher : KeyAlg {
 
-    /// Generate new private or secret key.
-    /// Note, this operation can be slow.
-    @objc func generateKey() throws
+    /// Check if algorithm can encrypt data with a given key.
+    @objc func canEncrypt(publicKey: PublicKey, dataLen: Int) -> Bool
+
+    /// Calculate required buffer length to hold the encrypted data.
+    @objc func encryptedLen(publicKey: PublicKey, dataLen: Int) -> Int
+
+    /// Encrypt data with a given public key.
+    @objc func encrypt(publicKey: PublicKey, data: Data) throws -> Data
+
+    /// Check if algorithm can decrypt data with a given key.
+    /// However, success result of decryption is not guaranteed.
+    @objc func canDecrypt(privateKey: PrivateKey, dataLen: Int) -> Bool
+
+    /// Calculate required buffer length to hold the decrypted data.
+    @objc func decryptedLen(privateKey: PrivateKey, dataLen: Int) -> Int
+
+    /// Decrypt given data.
+    @objc func decrypt(privateKey: PrivateKey, data: Data) throws -> Data
 }

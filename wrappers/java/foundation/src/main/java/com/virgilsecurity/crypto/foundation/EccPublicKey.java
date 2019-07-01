@@ -37,18 +37,67 @@
 package com.virgilsecurity.crypto.foundation;
 
 /*
-* Provide interface for signing data with private key.
+* Handles ECC public key.
 */
-public interface SignHash {
+public class EccPublicKey implements AutoCloseable, Key, PublicKey {
+
+    public long cCtx;
+
+    /* Create underlying C context. */
+    public EccPublicKey() {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.eccPublicKey_new();
+    }
 
     /*
-    * Return length in bytes required to hold signature.
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    int signatureLen();
+    public static EccPublicKey getInstance(long cCtx) {
+        EccPublicKey newInstance = new EccPublicKey();
+        newInstance.cCtx = cCtx;
+        return newInstance;
+    }
+
+    /* Close resource. */
+    public void close() {
+        FoundationJNI.INSTANCE.eccPublicKey_close(this.cCtx);
+    }
 
     /*
-    * Sign data given private key.
+    * Algorithm identifier the key belongs to.
     */
-    byte[] signHash(byte[] hashDigest, AlgId hashId) throws FoundationException;
+    public AlgId algId() {
+        return FoundationJNI.INSTANCE.eccPublicKey_algId(this.cCtx);
+    }
+
+    /*
+    * Return algorithm information that can be used for serialization.
+    */
+    public AlgInfo algInfo() {
+        return FoundationJNI.INSTANCE.eccPublicKey_algInfo(this.cCtx);
+    }
+
+    /*
+    * Length of the key in bytes.
+    */
+    public int len() {
+        return FoundationJNI.INSTANCE.eccPublicKey_len(this.cCtx);
+    }
+
+    /*
+    * Length of the key in bits.
+    */
+    public int bitlen() {
+        return FoundationJNI.INSTANCE.eccPublicKey_bitlen(this.cCtx);
+    }
+
+    /*
+    * Check that key is valid.
+    * Note, this operation can be slow.
+    */
+    public boolean isValid() {
+        return FoundationJNI.INSTANCE.eccPublicKey_isValid(this.cCtx);
+    }
 }
 

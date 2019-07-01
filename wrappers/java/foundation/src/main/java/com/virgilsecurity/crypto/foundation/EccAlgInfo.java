@@ -37,13 +37,60 @@
 package com.virgilsecurity.crypto.foundation;
 
 /*
-* Provide interface for verifying data with public key.
+* Handle algorithm information about ECP.
 */
-public interface VerifyHash {
+public class EccAlgInfo implements AutoCloseable, AlgInfo {
+
+    public long cCtx;
+
+    /* Create underlying C context. */
+    public EccAlgInfo() {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.eccAlgInfo_new();
+    }
 
     /*
-    * Verify data with given public key and signature.
+    * Create algorithm info with EC generic key identificator, EC domain group identificator.
     */
-    boolean verifyHash(byte[] hashDigest, AlgId hashId, byte[] signature);
+    public EccAlgInfo(AlgId algId, OidId keyId, OidId domainId) {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.eccAlgInfo_new(algId, keyId, domainId);
+    }
+
+    /*
+    * Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
+    */
+    public OidId keyId() {
+        return FoundationJNI.INSTANCE.eccAlgInfo_keyId(this.cCtx);
+    }
+
+    /*
+    * Return EC domain group identificator.
+    */
+    public OidId domainId() {
+        return FoundationJNI.INSTANCE.eccAlgInfo_domainId(this.cCtx);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static EccAlgInfo getInstance(long cCtx) {
+        EccAlgInfo newInstance = new EccAlgInfo();
+        newInstance.cCtx = cCtx;
+        return newInstance;
+    }
+
+    /* Close resource. */
+    public void close() {
+        FoundationJNI.INSTANCE.eccAlgInfo_close(this.cCtx);
+    }
+
+    /*
+    * Provide algorithm identificator.
+    */
+    public AlgId algId() {
+        return FoundationJNI.INSTANCE.eccAlgInfo_algId(this.cCtx);
+    }
 }
 

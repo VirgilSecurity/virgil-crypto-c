@@ -44,11 +44,11 @@ public interface KeyDeserializer {
     /*
     * Deserialize given public key as an interchangeable format to the object.
     */
-    RawKey deserializePublicKey(byte[] publicKeyData) throws FoundationException;
+    RawPublicKey deserializePublicKey(byte[] publicKeyData) throws FoundationException;
 
     /*
     * Deserialize given private key as an interchangeable format to the object.
     */
-    RawKey deserializePrivateKey(byte[] privateKeyData) throws FoundationException;
+    RawPrivateKey deserializePrivateKey(byte[] privateKeyData) throws FoundationException;
 }
 

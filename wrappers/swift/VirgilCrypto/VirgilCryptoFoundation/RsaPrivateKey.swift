@@ -36,16 +36,11 @@
 import Foundation
 import VSCFoundation
 
-@objc(VSCFRsaPrivateKey) public class RsaPrivateKey: NSObject, Alg, Key, GenerateKey, Decrypt, SignHash, PrivateKey {
+/// Handles RSA private key.
+@objc(VSCFRsaPrivateKey) public class RsaPrivateKey: NSObject, Key, PrivateKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
-
-    /// Define whether a private key can be imported or not.
-    @objc public let canImportPrivateKey: Bool = true
-
-    /// Define whether a private key can be exported or not.
-    @objc public let canExportPrivateKey: Bool = true
 
     /// Create underlying C context.
     public override init() {
@@ -72,189 +67,84 @@ import VSCFoundation
         vscf_rsa_private_key_delete(self.c_ctx)
     }
 
-    @objc public func setRandom(random: Random) {
-        vscf_rsa_private_key_release_random(self.c_ctx)
-        vscf_rsa_private_key_use_random(self.c_ctx, random.c_ctx)
-    }
-
-    @objc public func setAsn1rd(asn1rd: Asn1Reader) {
-        vscf_rsa_private_key_release_asn1rd(self.c_ctx)
-        vscf_rsa_private_key_use_asn1rd(self.c_ctx, asn1rd.c_ctx)
-    }
-
-    @objc public func setAsn1wr(asn1wr: Asn1Writer) {
-        vscf_rsa_private_key_release_asn1wr(self.c_ctx)
-        vscf_rsa_private_key_use_asn1wr(self.c_ctx, asn1wr.c_ctx)
-    }
-
-    /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_rsa_private_key_setup_defaults(self.c_ctx)
+    /// Import public key from the raw binary format.
+    ///
+    /// RSAPrivateKey ::= SEQUENCE {
+    ///      version Version,
+    ///      modulus INTEGER, -- n
+    ///      publicExponent INTEGER, -- e
+    ///      privateExponent INTEGER, -- d
+    ///      prime1 INTEGER, -- p
+    ///      prime2 INTEGER, -- q
+    ///      exponent1 INTEGER, -- d mod (p-1)
+    ///      exponent2 INTEGER, -- d mod (q-1)
+    ///      coefficient INTEGER -- (inverse of q) mod p
+    ///  }
+    @objc public func import(rawPrivateKey: RawPrivateKey) throws {
+        let proxyResult = vscf_rsa_private_key_import(self.c_ctx, rawPrivateKey.c_ctx)
 
         try FoundationError.handleStatus(fromC: proxyResult)
     }
 
-    /// Setup key length in bits that is used for key generation.
-    @objc public func setKeygenParams(bitlen: Int) {
-        vscf_rsa_private_key_set_keygen_params(self.c_ctx, bitlen)
+    /// Export public key in the raw binary format.
+    ///
+    /// RSAPrivateKey ::= SEQUENCE {
+    ///      version Version,
+    ///      modulus INTEGER, -- n
+    ///      publicExponent INTEGER, -- e
+    ///      privateExponent INTEGER, -- d
+    ///      prime1 INTEGER, -- p
+    ///      prime2 INTEGER, -- q
+    ///      exponent1 INTEGER, -- d mod (p-1)
+    ///      exponent2 INTEGER, -- d mod (q-1)
+    ///      coefficient INTEGER -- (inverse of q) mod p
+    ///  }
+    @objc public func export() -> RawPrivateKey {
+        let proxyResult = vscf_rsa_private_key_export(self.c_ctx)
+
+        return RawPrivateKey.init(take: proxyResult!)
     }
 
-    /// Provide algorithm identificator.
+    /// Algorithm identifier the key belongs to.
     @objc public func algId() -> AlgId {
         let proxyResult = vscf_rsa_private_key_alg_id(self.c_ctx)
 
         return AlgId.init(fromC: proxyResult)
     }
 
-    /// Produce object with algorithm information and configuration parameters.
-    @objc public func produceAlgInfo() -> AlgInfo {
-        let proxyResult = vscf_rsa_private_key_produce_alg_info(self.c_ctx)
+    /// Return algorithm information that can be used for serialization.
+    @objc public func algInfo() -> AlgInfo {
+        let proxyResult = vscf_rsa_private_key_alg_info(self.c_ctx)
 
         return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
-    /// Restore algorithm configuration from the given object.
-    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
-        let proxyResult = vscf_rsa_private_key_restore_alg_info(self.c_ctx, algInfo.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
-    }
-
     /// Length of the key in bytes.
-    @objc public func keyLen() -> Int {
-        let proxyResult = vscf_rsa_private_key_key_len(self.c_ctx)
+    @objc public func len() -> Int {
+        let proxyResult = vscf_rsa_private_key_len(self.c_ctx)
 
         return proxyResult
     }
 
     /// Length of the key in bits.
-    @objc public func keyBitlen() -> Int {
-        let proxyResult = vscf_rsa_private_key_key_bitlen(self.c_ctx)
+    @objc public func bitlen() -> Int {
+        let proxyResult = vscf_rsa_private_key_bitlen(self.c_ctx)
 
         return proxyResult
     }
 
-    /// Generate new private or secret key.
+    /// Check that key is valid.
     /// Note, this operation can be slow.
-    @objc public func generateKey() throws {
-        let proxyResult = vscf_rsa_private_key_generate_key(self.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
-    }
-
-    /// Decrypt given data.
-    @objc public func decrypt(data: Data) throws -> Data {
-        let outCount = self.decryptedLen(dataLen: data.count)
-        var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(outBuf)
-        }
-
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-                vsc_buffer_init(outBuf)
-                vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
-
-                return vscf_rsa_private_key_decrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
-            })
-        })
-        out.count = vsc_buffer_len(outBuf)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
-
-        return out
-    }
-
-    /// Calculate required buffer length to hold the decrypted data.
-    @objc public func decryptedLen(dataLen: Int) -> Int {
-        let proxyResult = vscf_rsa_private_key_decrypted_len(self.c_ctx, dataLen)
+    @objc public func isValid() -> Bool {
+        let proxyResult = vscf_rsa_private_key_is_valid(self.c_ctx)
 
         return proxyResult
     }
 
-    /// Return length in bytes required to hold signature.
-    @objc public func signatureLen() -> Int {
-        let proxyResult = vscf_rsa_private_key_signature_len(self.c_ctx)
-
-        return proxyResult
-    }
-
-    /// Sign data given private key.
-    @objc public func signHash(hashDigest: Data, hashId: AlgId) throws -> Data {
-        let signatureCount = self.signatureLen()
-        var signature = Data(count: signatureCount)
-        var signatureBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(signatureBuf)
-        }
-
-        let proxyResult = hashDigest.withUnsafeBytes({ (hashDigestPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            signature.withUnsafeMutableBytes({ (signaturePointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-                vsc_buffer_init(signatureBuf)
-                vsc_buffer_use(signatureBuf, signaturePointer.bindMemory(to: byte.self).baseAddress, signatureCount)
-
-                return vscf_rsa_private_key_sign_hash(self.c_ctx, vsc_data(hashDigestPointer.bindMemory(to: byte.self).baseAddress, hashDigest.count), vscf_alg_id_t(rawValue: UInt32(hashId.rawValue)), signatureBuf)
-            })
-        })
-        signature.count = vsc_buffer_len(signatureBuf)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
-
-        return signature
-    }
-
-    /// Extract public part of the key.
+    /// Extract public key from the private key.
     @objc public func extractPublicKey() -> PublicKey {
         let proxyResult = vscf_rsa_private_key_extract_public_key(self.c_ctx)
 
         return FoundationImplementation.wrapPublicKey(take: proxyResult!)
-    }
-
-    /// Export private key in the binary format.
-    ///
-    /// Binary format must be defined in the key specification.
-    /// For instance, RSA private key must be exported in format defined in
-    /// RFC 3447 Appendix A.1.2.
-    @objc public func exportPrivateKey() throws -> Data {
-        let outCount = self.exportedPrivateKeyLen()
-        var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(outBuf)
-        }
-
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_init(outBuf)
-            vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
-
-            return vscf_rsa_private_key_export_private_key(self.c_ctx, outBuf)
-        })
-        out.count = vsc_buffer_len(outBuf)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
-
-        return out
-    }
-
-    /// Return length in bytes required to hold exported private key.
-    @objc public func exportedPrivateKeyLen() -> Int {
-        let proxyResult = vscf_rsa_private_key_exported_private_key_len(self.c_ctx)
-
-        return proxyResult
-    }
-
-    /// Import private key from the binary format.
-    ///
-    /// Binary format must be defined in the key specification.
-    /// For instance, RSA private key must be imported from the format defined in
-    /// RFC 3447 Appendix A.1.2.
-    @objc public func importPrivateKey(data: Data) throws {
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-
-            return vscf_rsa_private_key_import_private_key(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count))
-        })
-
-        try FoundationError.handleStatus(fromC: proxyResult)
     }
 }

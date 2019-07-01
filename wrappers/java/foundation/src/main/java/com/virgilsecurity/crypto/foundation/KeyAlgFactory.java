@@ -37,15 +37,36 @@
 package com.virgilsecurity.crypto.foundation;
 
 /*
-* Provide interface to compute shared key for 2 asymmetric keys.
-*
-* Assume that this interface is implemented on the private key.
+* Create a bridge between "raw keys" and algorithms that can import them.
 */
-public interface GenerateEphemeralKey {
+public class KeyAlgFactory {
 
     /*
-    * Generate ephemeral private key of the same type.
+    * Create a key algorithm based on an identifier.
     */
-    PrivateKey generateEphemeralKey() throws FoundationException;
+    public static KeyAlg createFromAlgId(AlgId algId, Random random) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyAlgFactory_createFromAlgId(algId, random);
+    }
+
+    /*
+    * Create a key algorithm correspond to a specific key.
+    */
+    public static KeyAlg createFromKey(Key key, Random random) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyAlgFactory_createFromKey(key, random);
+    }
+
+    /*
+    * Create a key algorithm that can import "raw public key".
+    */
+    public static KeyAlg createFromRawPublicKey(RawPublicKey publicKey, Random random) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyAlgFactory_createFromRawPublicKey(publicKey, random);
+    }
+
+    /*
+    * Create a key algorithm that can import "raw private key".
+    */
+    public static KeyAlg createFromRawPrivateKey(RawPrivateKey privateKey, Random random) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyAlgFactory_createFromRawPrivateKey(privateKey, random);
+    }
 }
 

@@ -37,60 +37,74 @@
 package com.virgilsecurity.crypto.foundation;
 
 /*
-* Handle algorithm information about ECP.
+* Handles interchangeable public key representation.
 */
-public class EcAlgInfo implements AutoCloseable, AlgInfo {
+public class RawPublicKey implements AutoCloseable, Key, PublicKey {
 
     public long cCtx;
 
     /* Create underlying C context. */
-    public EcAlgInfo() {
+    public RawPublicKey() {
         super();
-        this.cCtx = FoundationJNI.INSTANCE.ecAlgInfo_new();
+        this.cCtx = FoundationJNI.INSTANCE.rawPublicKey_new();
     }
 
     /*
-    * Create algorithm info with EC generic key identificator, EC domain group identificator.
+    * Return key data.
     */
-    public EcAlgInfo(AlgId algId, OidId keyId, OidId domainId) {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.ecAlgInfo_new(algId, keyId, domainId);
-    }
-
-    /*
-    * Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
-    */
-    public OidId keyId() {
-        return FoundationJNI.INSTANCE.ecAlgInfo_keyId(this.cCtx);
-    }
-
-    /*
-    * Return EC domain group identificator.
-    */
-    public OidId domainId() {
-        return FoundationJNI.INSTANCE.ecAlgInfo_domainId(this.cCtx);
+    public byte[] data() {
+        return FoundationJNI.INSTANCE.rawPublicKey_data(this.cCtx);
     }
 
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static EcAlgInfo getInstance(long cCtx) {
-        EcAlgInfo newInstance = new EcAlgInfo();
+    public static RawPublicKey getInstance(long cCtx) {
+        RawPublicKey newInstance = new RawPublicKey();
         newInstance.cCtx = cCtx;
         return newInstance;
     }
 
     /* Close resource. */
     public void close() {
-        FoundationJNI.INSTANCE.ecAlgInfo_close(this.cCtx);
+        FoundationJNI.INSTANCE.rawPublicKey_close(this.cCtx);
     }
 
     /*
-    * Provide algorithm identificator.
+    * Algorithm identifier the key belongs to.
     */
     public AlgId algId() {
-        return FoundationJNI.INSTANCE.ecAlgInfo_algId(this.cCtx);
+        return FoundationJNI.INSTANCE.rawPublicKey_algId(this.cCtx);
+    }
+
+    /*
+    * Return algorithm information that can be used for serialization.
+    */
+    public AlgInfo algInfo() {
+        return FoundationJNI.INSTANCE.rawPublicKey_algInfo(this.cCtx);
+    }
+
+    /*
+    * Length of the key in bytes.
+    */
+    public int len() {
+        return FoundationJNI.INSTANCE.rawPublicKey_len(this.cCtx);
+    }
+
+    /*
+    * Length of the key in bits.
+    */
+    public int bitlen() {
+        return FoundationJNI.INSTANCE.rawPublicKey_bitlen(this.cCtx);
+    }
+
+    /*
+    * Check that key is valid.
+    * Note, this operation can be slow.
+    */
+    public boolean isValid() {
+        return FoundationJNI.INSTANCE.rawPublicKey_isValid(this.cCtx);
     }
 }
 

@@ -75,14 +75,14 @@ public class Verifier implements AutoCloseable {
     /*
     * Add given data to the signed data.
     */
-    public void update(byte[] data) {
-        FoundationJNI.INSTANCE.verifier_update(this.cCtx, data);
+    public void appendData(byte[] data) {
+        FoundationJNI.INSTANCE.verifier_appendData(this.cCtx, data);
     }
 
     /*
     * Verify accumulated data.
     */
-    public boolean verify(VerifyHash publicKey) {
+    public boolean verify(PublicKey publicKey) {
         return FoundationJNI.INSTANCE.verifier_verify(this.cCtx, publicKey);
     }
 }

@@ -1049,7 +1049,7 @@ function java_create_interface_implementation (implementation, java_class, java_
             java_create_class_method_from_constant (constant, my.java_class, my.java_project, my.meta)
         endfor
 
-        for interface.method where 0.scope = "public"
+        for interface.method where 0.declaration = "public" & 0.visibility = "public"
             java_create_class_method (my.implementation, method, my.java_class, my.java_project, my.meta)
         endfor
     endfor
@@ -1530,7 +1530,7 @@ function java_create_exception_module (enum, java_project, meta)
                     .static = "static"
                     .final = "final"
                 endnew
-                
+
                 my.case_result = string_to_singleline(constant.?"")
                 my.message_code += format_left("\
                     case $(my.constant_name:):
@@ -1580,12 +1580,12 @@ function java_create_exception_module (enum, java_project, meta)
                     .is_reference = "0"
                 endnew
             endnew
-            
+
             new java_method to java_class
                 . = ""
                 .name = java_derive_getter_name_str ("message")
                 .visibility = "public"
-                
+
                 new java_return to java_method
                     .type = "String"
                     .access = "readonly"
@@ -1640,7 +1640,7 @@ function java_create_interface_module (interface, java_project, meta)
                 java_create_class_method_from_constant (constant, java_interface, my.java_project, my.meta)
             endfor
 
-            for my.interface.method
+            for my.interface.method where method.declaration = "public" & method.visibility = "public"
                 java_create_interface_method (my.interface, method, java_interface, my.java_project, my.meta)
             endfor
 

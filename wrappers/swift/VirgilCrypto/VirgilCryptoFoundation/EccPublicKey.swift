@@ -36,15 +36,15 @@
 import Foundation
 import VSCFoundation
 
-/// Handle algorithm information about ECP.
-@objc(VSCFEcAlgInfo) public class EcAlgInfo: NSObject, AlgInfo {
+/// Handles ECC public key.
+@objc(VSCFEccPublicKey) public class EccPublicKey: NSObject, Key, PublicKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
     /// Create underlying C context.
     public override init() {
-        self.c_ctx = vscf_ec_alg_info_new()
+        self.c_ctx = vscf_ecc_public_key_new()
         super.init()
     }
 
@@ -58,40 +58,48 @@ import VSCFoundation
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscf_ec_alg_info_shallow_copy(c_ctx)
+        self.c_ctx = vscf_ecc_public_key_shallow_copy(c_ctx)
         super.init()
-    }
-
-    /// Create algorithm info with EC generic key identificator, EC domain group identificator.
-    public init(algId: AlgId, keyId: OidId, domainId: OidId) {
-        let proxyResult = vscf_ec_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), vscf_oid_id_t(rawValue: UInt32(keyId.rawValue)), vscf_oid_id_t(rawValue: UInt32(domainId.rawValue)))
-
-        self.c_ctx = proxyResult!
     }
 
     /// Release underlying C context.
     deinit {
-        vscf_ec_alg_info_delete(self.c_ctx)
+        vscf_ecc_public_key_delete(self.c_ctx)
     }
 
-    /// Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
-    @objc public func keyId() -> OidId {
-        let proxyResult = vscf_ec_alg_info_key_id(self.c_ctx)
-
-        return OidId.init(fromC: proxyResult)
-    }
-
-    /// Return EC domain group identificator.
-    @objc public func domainId() -> OidId {
-        let proxyResult = vscf_ec_alg_info_domain_id(self.c_ctx)
-
-        return OidId.init(fromC: proxyResult)
-    }
-
-    /// Provide algorithm identificator.
+    /// Algorithm identifier the key belongs to.
     @objc public func algId() -> AlgId {
-        let proxyResult = vscf_ec_alg_info_alg_id(self.c_ctx)
+        let proxyResult = vscf_ecc_public_key_alg_id(self.c_ctx)
 
         return AlgId.init(fromC: proxyResult)
+    }
+
+    /// Return algorithm information that can be used for serialization.
+    @objc public func algInfo() -> AlgInfo {
+        let proxyResult = vscf_ecc_public_key_alg_info(self.c_ctx)
+
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+    }
+
+    /// Length of the key in bytes.
+    @objc public func len() -> Int {
+        let proxyResult = vscf_ecc_public_key_len(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Length of the key in bits.
+    @objc public func bitlen() -> Int {
+        let proxyResult = vscf_ecc_public_key_bitlen(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Check that key is valid.
+    /// Note, this operation can be slow.
+    @objc public func isValid() -> Bool {
+        let proxyResult = vscf_ecc_public_key_is_valid(self.c_ctx)
+
+        return proxyResult
     }
 }

@@ -96,6 +96,9 @@ VSCF_PRIVATE void
 vscf_raw_private_key_cleanup_ctx(vscf_raw_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy((vscf_impl_t **)(&self->alg_info));
+    vsc_buffer_destroy((vsc_buffer_t **)(&self->buffer));
 }
 
 //

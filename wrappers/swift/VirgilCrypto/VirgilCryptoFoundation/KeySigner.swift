@@ -36,12 +36,23 @@
 import Foundation
 import VSCFoundation
 
-/// Provide interface for signing data with private key.
-@objc(VSCFSignHash) public protocol SignHash : CContext {
+/// Provide an interface for signing and verifying data digest
+/// with asymmetric keys.
+@objc(VSCFKeySigner) public protocol KeySigner : KeyAlg {
+
+    /// Check if algorithm can sign data digest with a given key.
+    @objc func canSign(privateKey: PrivateKey) -> Bool
 
     /// Return length in bytes required to hold signature.
-    @objc func signatureLen() -> Int
+    /// Return zero if a given private key can not produce signatures.
+    @objc func signatureLen(key: Key) -> Int
 
-    /// Sign data given private key.
-    @objc func signHash(hashDigest: Data, hashId: AlgId) throws -> Data
+    /// Sign data digest with a given private key.
+    @objc func signHash(privateKey: PrivateKey, hashId: AlgId, digest: Data) throws -> Data
+
+    /// Check if algorithm can verify data digest with a given key.
+    @objc func canVerify(publicKey: PublicKey) -> Bool
+
+    /// Verify data digest with a given public key and signature.
+    @objc func verifyHash(publicKey: PublicKey, hashId: AlgId, digest: Data, signature: Data) -> Bool
 }
