@@ -407,7 +407,6 @@ vscf_recipient_cipher_add_key_recipient(
     VSCF_ASSERT(vsc_data_is_valid(recipient_id));
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
-    VSCF_ASSERT(vscf_encrypt_is_implemented(public_key));
 
     if (NULL == self->key_recipients) {
         self->key_recipients = vscf_key_recipient_list_new();
@@ -655,7 +654,6 @@ vscf_recipient_cipher_start_decryption_with_key(
     VSCF_ASSERT_PTR(vsc_data_is_valid(recipient_id));
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
-    VSCF_ASSERT(vscf_decrypt_is_implemented(private_key));
 
     vsc_buffer_destroy(&self->decryption_recipient_id);
     vscf_impl_destroy(&self->decryption_recipient_key);
@@ -817,6 +815,9 @@ vscf_recipient_cipher_decrypt_data_encryption_key_with_private_key(vscf_recipien
 
     vsc_data_t recipient_id = vsc_buffer_data(self->decryption_recipient_id);
 
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
     //
     //  Iterate recipients.
     //
@@ -834,20 +835,31 @@ vscf_recipient_cipher_decrypt_data_encryption_key_with_private_key(vscf_recipien
             const vscf_impl_t *encryption_algorithm = vscf_key_recipient_info_key_encryption_algorithm(recipient_info);
 
             vscf_alg_id_t encryption_algorithm_alg_id = vscf_alg_info_alg_id(encryption_algorithm);
-            vscf_alg_id_t decryption_algorithm_alg_id = vscf_alg_alg_id(self->decryption_recipient_key);
+            vscf_alg_id_t decryption_algorithm_alg_id = vscf_key_alg_id(self->decryption_recipient_key);
 
             if (encryption_algorithm_alg_id != decryption_algorithm_alg_id) {
                 return vscf_status_ERROR_BAD_MESSAGE_INFO;
+            }
+
+            vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_key(self->decryption_recipient_key, NULL, &error);
+            if (vscf_error_has_error(&error)) {
+                return vscf_error_status(&error);
             }
 
             //
             //  Decrypt decryption key.
             //
             vsc_data_t encrypted_key = vscf_key_recipient_info_encrypted_key(recipient_info);
-            size_t decryption_key_len = vscf_decrypt_decrypted_len(self->decryption_recipient_key, encrypted_key.len);
+
+            const size_t decryption_key_len =
+                    vscf_key_cipher_decrypted_len(key_alg, self->decryption_recipient_key, encrypted_key.len);
             vsc_buffer_t *decryption_key = vsc_buffer_new_with_capacity(decryption_key_len);
             vsc_buffer_make_secure(decryption_key);
-            vscf_status_t status = vscf_decrypt(self->decryption_recipient_key, encrypted_key, decryption_key);
+
+            vscf_status_t status =
+                    vscf_key_cipher_decrypt(key_alg, self->decryption_recipient_key, encrypted_key, decryption_key);
+
+            vscf_impl_destroy(&key_alg);
 
             if (status != vscf_status_SUCCESS) {
                 vsc_buffer_destroy(&decryption_key);
