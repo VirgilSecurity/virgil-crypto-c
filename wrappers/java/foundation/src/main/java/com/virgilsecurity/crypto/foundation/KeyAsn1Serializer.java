@@ -51,15 +51,6 @@ public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
         this.cCtx = FoundationJNI.INSTANCE.keyAsn1Serializer_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public KeyAsn1Serializer(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
     public void setAsn1Writer(Asn1Writer asn1Writer) {
         FoundationJNI.INSTANCE.keyAsn1Serializer_setAsn1Writer(this.cCtx, asn1Writer);
     }
@@ -87,6 +78,16 @@ public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
     */
     public int serializePrivateKeyInplace(PrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePrivateKeyInplace(this.cCtx, privateKey);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static KeyAsn1Serializer getInstance(long cCtx) {
+        KeyAsn1Serializer newInstance = new KeyAsn1Serializer();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

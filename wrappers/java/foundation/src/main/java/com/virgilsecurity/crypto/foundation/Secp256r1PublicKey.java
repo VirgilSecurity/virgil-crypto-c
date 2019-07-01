@@ -46,15 +46,6 @@ public class Secp256r1PublicKey implements AutoCloseable, Alg, Key, Encrypt, Ver
         this.cCtx = FoundationJNI.INSTANCE.secp256r1PublicKey_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public Secp256r1PublicKey(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
     public int getKeyLen() {
         return 32;
     }
@@ -76,6 +67,16 @@ public class Secp256r1PublicKey implements AutoCloseable, Alg, Key, Encrypt, Ver
     */
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.secp256r1PublicKey_setupDefaults(this.cCtx);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static Secp256r1PublicKey getInstance(long cCtx) {
+        Secp256r1PublicKey newInstance = new Secp256r1PublicKey();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

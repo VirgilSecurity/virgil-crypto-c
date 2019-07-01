@@ -50,20 +50,21 @@ public class SimpleAlgInfo implements AutoCloseable, AlgInfo {
     }
 
     /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public SimpleAlgInfo(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
-    /*
     * Create algorithm info with identificator.
     */
     public SimpleAlgInfo(AlgId algId) {
         super();
         this.cCtx = FoundationJNI.INSTANCE.simpleAlgInfo_new(algId);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static SimpleAlgInfo getInstance(long cCtx) {
+        SimpleAlgInfo newInstance = new SimpleAlgInfo();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

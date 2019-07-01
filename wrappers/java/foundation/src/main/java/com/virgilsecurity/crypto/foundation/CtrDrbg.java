@@ -52,15 +52,6 @@ public class CtrDrbg implements AutoCloseable, Random {
     }
 
     /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public CtrDrbg(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
-    /*
     * The interval before reseed is performed by default.
     */
     public int getReseedInterval() {
@@ -108,6 +99,16 @@ public class CtrDrbg implements AutoCloseable, Random {
     */
     public void setEntropyLen(int len) {
         FoundationJNI.INSTANCE.ctrDrbg_setEntropyLen(this.cCtx, len);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static CtrDrbg getInstance(long cCtx) {
+        CtrDrbg newInstance = new CtrDrbg();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

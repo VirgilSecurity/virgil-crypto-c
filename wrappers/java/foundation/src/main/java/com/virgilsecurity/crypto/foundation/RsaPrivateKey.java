@@ -46,15 +46,6 @@ public class RsaPrivateKey implements AutoCloseable, Alg, Key, GenerateKey, Decr
         this.cCtx = FoundationJNI.INSTANCE.rsaPrivateKey_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public RsaPrivateKey(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
     public void setRandom(Random random) {
         FoundationJNI.INSTANCE.rsaPrivateKey_setRandom(this.cCtx, random);
     }
@@ -79,6 +70,16 @@ public class RsaPrivateKey implements AutoCloseable, Alg, Key, GenerateKey, Decr
     */
     public void setKeygenParams(int bitlen) {
         FoundationJNI.INSTANCE.rsaPrivateKey_setKeygenParams(this.cCtx, bitlen);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static RsaPrivateKey getInstance(long cCtx) {
+        RsaPrivateKey newInstance = new RsaPrivateKey();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

@@ -49,15 +49,6 @@ public class Ecies implements AutoCloseable, Encrypt, Decrypt {
         this.cCtx = FoundationJNI.INSTANCE.ecies_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public Ecies(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
     public void setRandom(Random random) {
         FoundationJNI.INSTANCE.ecies_setRandom(this.cCtx, random);
     }
@@ -110,6 +101,16 @@ public class Ecies implements AutoCloseable, Encrypt, Decrypt {
     */
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.ecies_setupDefaults(this.cCtx);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static Ecies getInstance(long cCtx) {
+        Ecies newInstance = new Ecies();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */
