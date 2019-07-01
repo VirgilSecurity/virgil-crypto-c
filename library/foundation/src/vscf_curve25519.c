@@ -312,16 +312,32 @@ vscf_curve25519_import_private_key(
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
         return NULL;
     }
+
     vsc_data_t raw_key_data = vscf_raw_private_key_data(raw_key);
     if (raw_key_data.len != ED25519_KEY_LEN) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_CURVE25519_PRIVATE_KEY);
         return NULL;
     }
 
-    vscf_raw_private_key_t *private_key =
-            vscf_raw_private_key_new_with_redefined_impl_tag(raw_key, self->info->impl_tag);
+    //  Extract public key
+    vsc_buffer_t *public_key_buf = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
+    const int ret =
+            curve25519_get_pubkey(vsc_buffer_unused_bytes(public_key_buf), vscf_raw_private_key_data(raw_key).bytes);
+    VSCF_ASSERT(ret == 0);
+    vsc_buffer_inc_used(public_key_buf, ED25519_KEY_LEN);
 
-    return vscf_raw_private_key_impl(private_key);
+    vscf_impl_t *alg_info = (vscf_impl_t *)vscf_raw_private_key_alg_info(raw_key);
+    VSCF_ASSERT_PTR(alg_info);
+
+    vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_buffer(&public_key_buf, &alg_info);
+    raw_public_key->impl_tag = self->info->impl_tag;
+
+    //  Configure privat key
+    vscf_raw_private_key_t *raw_private_key =
+            vscf_raw_private_key_new_with_redefined_impl_tag(raw_key, self->info->impl_tag);
+    vscf_raw_private_key_set_public_key(raw_private_key, &raw_public_key);
+
+    return vscf_raw_private_key_impl(raw_private_key);
 }
 
 //

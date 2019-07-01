@@ -662,7 +662,7 @@ vscf_ecies_encrypt(const vscf_ecies_t *self, const vscf_impl_t *public_key, vsc_
     //
     //  Configure and write envelope.
     //
-    vscf_impl_t *ephemeral_public_key = vscf_private_key_extract_public_key(self->ephemeral_key);
+    vscf_impl_t *ephemeral_public_key = vscf_private_key_extract_public_key(ephemeral_key);
     vscf_raw_public_key_t *raw_ephemeral_public_key =
             vscf_key_alg_export_public_key(self->key_alg, ephemeral_public_key, &error);
     vscf_impl_destroy(&ephemeral_public_key);

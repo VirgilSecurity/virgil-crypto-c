@@ -151,13 +151,15 @@ vscf_raw_private_key_init_ctx_with_redefined_impl_tag(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(other);
     VSCF_ASSERT_PTR(other->alg_info);
-    VSCF_ASSERT_PTR(other->public_key);
     VSCF_ASSERT(vscf_impl_tag_BEGIN < impl_tag && impl_tag < vscf_impl_tag_END);
 
     self->buffer = vsc_buffer_shallow_copy((vsc_buffer_t *)other->buffer);
     self->alg_info = vscf_impl_shallow_copy((vscf_impl_t *)other->alg_info);
-    self->public_key = vscf_raw_public_key_shallow_copy((vscf_raw_public_key_t *)other->public_key);
     self->impl_tag = impl_tag;
+
+    if (other->public_key) {
+        self->public_key = vscf_raw_public_key_shallow_copy((vscf_raw_public_key_t *)other->public_key);
+    }
 }
 
 //
