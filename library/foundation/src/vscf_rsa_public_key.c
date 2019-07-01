@@ -290,5 +290,5 @@ vscf_rsa_public_key_is_valid(const vscf_rsa_public_key_t *self) {
         return false;
     }
 
-    return mbedtls_rsa_check_pubkey(&self->rsa_ctx);
+    return mbedtls_rsa_check_pubkey(&self->rsa_ctx) == 0;
 }

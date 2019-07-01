@@ -154,17 +154,16 @@ vscf_curve25519_generate_key(const vscf_curve25519_t *self, vscf_error_t *error)
     vsc_buffer_t *private_key_buf = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
 
     vscf_status_t status = vscf_random(self->random, ED25519_KEY_LEN, private_key_buf);
-    if (status != vscf_status_SUCCESS) {
+    if (status != vscf_status_SUCCESS || vsc_buffer_len(private_key_buf) != ED25519_KEY_LEN) {
         vsc_buffer_destroy(&private_key_buf);
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_KEY_GENERATION_FAILED);
         return NULL;
-    } else {
-        vsc_buffer_inc_used(private_key_buf, ED25519_KEY_LEN);
     }
 
     vsc_buffer_t *public_key_buf = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
     const int ret = curve25519_get_pubkey(vsc_buffer_unused_bytes(public_key_buf), vsc_buffer_bytes(private_key_buf));
     VSCF_ASSERT(ret == 0);
+    vsc_buffer_inc_used(public_key_buf, ED25519_KEY_LEN);
 
     vscf_impl_t *pub_alg_info = vscf_curve25519_produce_alg_info(self);
     vscf_impl_t *priv_alg_info = vscf_impl_shallow_copy(pub_alg_info);
@@ -345,7 +344,7 @@ vscf_curve25519_export_private_key(const vscf_curve25519_t *self, const vscf_imp
         return NULL;
     }
 
-    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
     vscf_raw_private_key_t *raw_private_key = (vscf_raw_private_key_t *)(private_key);
 
     return vscf_raw_private_key_shallow_copy(raw_private_key);

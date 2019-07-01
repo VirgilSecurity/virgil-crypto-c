@@ -58,11 +58,11 @@
 #include "vscf_alg.h"
 #include "vscf_hash.h"
 #include "vscf_key_signer.h"
+#include "vscf_public_key.h"
 #include "vscf_asn1rd.h"
 #include "vscf_alg_info_der_deserializer.h"
 #include "vscf_alg_factory.h"
 #include "vscf_key_alg_factory.h"
-#include "vscf_public_key.h"
 
 // clang-format on
 //  @end
@@ -335,7 +335,7 @@ vscf_verifier_verify(vscf_verifier_t *self, vscf_impl_t *public_key) {
     vscf_error_reset(&error);
 
     vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_key(public_key, NULL, &error);
-    VSCF_ASSERT(vscf_error_has_error(&error));
+    VSCF_ASSERT(!vscf_error_has_error(&error));
     VSCF_ASSERT(vscf_key_signer_is_implemented(key_alg));
 
     bool is_valid = vscf_key_signer_verify_hash(key_alg, public_key, vscf_alg_alg_id(self->hash),

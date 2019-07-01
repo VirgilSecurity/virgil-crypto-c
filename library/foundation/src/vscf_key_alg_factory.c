@@ -85,13 +85,15 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t *random, vscf_error_t *error) {
 
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    if (random) {
+        VSCF_ASSERT(vscf_random_is_implemented(random));
+    }
 
     vscf_ecies_t *ecies = NULL;
 
     if (alg_id != vscf_alg_id_RSA) {
-        vscf_ecies_t *ecies = vscf_ecies_new();
+        ecies = vscf_ecies_new();
         if (random) {
             vscf_ecies_use_random(ecies, (vscf_impl_t *)random);
         }
@@ -155,8 +157,10 @@ vscf_key_alg_factory_create_from_key(const vscf_impl_t *key, const vscf_impl_t *
     VSCF_ASSERT_PTR(key);
     VSCF_ASSERT(vscf_key_is_implemented(key));
     VSCF_ASSERT(vscf_key_alg_id(key) != vscf_alg_id_NONE);
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    if (random) {
+        VSCF_ASSERT(vscf_random_is_implemented(random));
+    }
 
     const vscf_impl_tag_t impl_tag = vscf_key_impl_tag(key);
     switch (impl_tag) {
@@ -188,8 +192,10 @@ vscf_key_alg_factory_create_from_raw_public_key(
 
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_raw_public_key_is_valid(public_key));
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    if (random) {
+        VSCF_ASSERT(vscf_random_is_implemented(random));
+    }
 
     vscf_impl_t *key_alg =
             vscf_key_alg_factory_create_from_alg_id(vscf_raw_public_key_alg_id(public_key), random, error);
@@ -205,8 +211,10 @@ vscf_key_alg_factory_create_from_raw_private_key(
 
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_raw_private_key_is_valid(private_key));
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    if (random) {
+        VSCF_ASSERT(vscf_random_is_implemented(random));
+    }
 
     vscf_impl_t *key_alg =
             vscf_key_alg_factory_create_from_alg_id(vscf_raw_private_key_alg_id(private_key), random, error);

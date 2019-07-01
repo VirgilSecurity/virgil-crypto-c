@@ -17,7 +17,7 @@
         Return length in bytes required to hold signature.
         Return zero if a given private key can not produce signatures.
 
-        <argument name="private key" interface="private key"/>
+        <argument name="key" interface="key"/>
 
         <return type="size"/>
     </method>

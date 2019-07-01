@@ -389,7 +389,7 @@ vscf_signer_signature_len(const vscf_signer_t *self, const vscf_impl_t *private_
     vscf_error_reset(&error);
 
     vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_key(private_key, self->random, &error);
-    VSCF_ASSERT(vscf_error_has_error(&error));
+    VSCF_ASSERT(!vscf_error_has_error(&error));
     VSCF_ASSERT(vscf_key_signer_is_implemented(key_alg));
 
     size_t signature_len = vscf_key_signer_signature_len(key_alg, private_key);
@@ -430,7 +430,7 @@ vscf_signer_sign(const vscf_signer_t *self, const vscf_impl_t *private_key, vsc_
     vscf_error_reset(&error);
 
     vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_key(private_key, self->random, &error);
-    VSCF_ASSERT(vscf_error_has_error(&error));
+    VSCF_ASSERT(!vscf_error_has_error(&error));
     VSCF_ASSERT(vscf_key_signer_is_implemented(key_alg));
 
     vsc_buffer_t *raw_signature = vsc_buffer_new_with_capacity(vscf_key_signer_signature_len(key_alg, private_key));

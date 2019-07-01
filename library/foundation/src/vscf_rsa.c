@@ -118,6 +118,7 @@ vscf_rsa_generate_key(const vscf_rsa_t *self, size_t bitlen, vscf_error_t *error
     VSCF_ASSERT_PTR(self->random);
 
     vscf_rsa_private_key_t *rsa_private_key = vscf_rsa_private_key_new();
+    rsa_private_key->alg_info = vscf_rsa_produce_alg_info(self);
 
     const int mbed_status = mbedtls_rsa_gen_key(
             &rsa_private_key->rsa_ctx, vscf_mbedtls_bridge_random, self->random, (unsigned int)bitlen, 65537);
@@ -214,6 +215,7 @@ vscf_rsa_import_public_key(const vscf_rsa_t *self, const vscf_raw_public_key_t *
     VSCF_ASSERT(vscf_raw_public_key_is_valid(raw_key));
 
     vscf_rsa_public_key_t *rsa_public_key = vscf_rsa_public_key_new();
+    rsa_public_key->impl_tag = self->info->impl_tag;
     const vscf_status_t status = vscf_rsa_public_key_import(rsa_public_key, raw_key);
 
     if (status == vscf_status_SUCCESS) {
@@ -363,8 +365,8 @@ vscf_rsa_encrypt(const vscf_rsa_t *self, const vscf_impl_t *public_key, vsc_data
     mbedtls_rsa_context rsa = rsa_public_key->rsa_ctx;
     mbedtls_rsa_set_padding(&rsa, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_SHA512);
 
-    const int mbed_status = mbedtls_rsa_rsaes_oaep_encrypt(&rsa_public_key->rsa_ctx, vscf_mbedtls_bridge_random,
-            self->random, MBEDTLS_RSA_PUBLIC, NULL, 0, data.len, data.bytes, vsc_buffer_unused_bytes(out));
+    const int mbed_status = mbedtls_rsa_rsaes_oaep_encrypt(&rsa, vscf_mbedtls_bridge_random, self->random,
+            MBEDTLS_RSA_PUBLIC, NULL, 0, data.len, data.bytes, vsc_buffer_unused_bytes(out));
 
     switch (mbed_status) {
     case 0:
@@ -423,11 +425,11 @@ vscf_rsa_decrypt(const vscf_rsa_t *self, const vscf_impl_t *private_key, vsc_dat
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
     VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT(vscf_rsa_can_encrypt(self, private_key, data.len));
+    VSCF_ASSERT(vscf_rsa_can_decrypt(self, private_key, data.len));
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_rsa_encrypted_len(self, private_key, data.len));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_rsa_decrypted_len(self, private_key, data.len));
 
     VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RSA_PRIVATE_KEY);
     vscf_rsa_private_key_t *rsa_private_key = (vscf_rsa_private_key_t *)private_key;
@@ -473,14 +475,14 @@ vscf_rsa_can_sign(const vscf_rsa_t *self, const vscf_impl_t *private_key) {
 //  Return zero if a given private key can not produce signatures.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_signature_len(const vscf_rsa_t *self, const vscf_impl_t *private_key) {
+vscf_rsa_signature_len(const vscf_rsa_t *self, const vscf_impl_t *key) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
-    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
+    VSCF_ASSERT_PTR(key);
+    VSCF_ASSERT(vscf_key_is_implemented(key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(key));
 
-    return vscf_key_len(private_key);
+    return vscf_key_len(key);
 }
 
 //
@@ -491,7 +493,6 @@ vscf_rsa_sign_hash(const vscf_rsa_t *self, const vscf_impl_t *private_key, vscf_
         vsc_buffer_t *signature) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->random);
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_rsa_can_sign(self, private_key));
     VSCF_ASSERT(hash_id != vscf_alg_id_NONE);
@@ -507,8 +508,17 @@ vscf_rsa_sign_hash(const vscf_rsa_t *self, const vscf_impl_t *private_key, vscf_
     mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(hash_id);
     mbedtls_rsa_set_padding(&rsa, MBEDTLS_RSA_PKCS_V21, md_alg);
 
-    const int mbed_status = mbedtls_rsa_rsassa_pss_sign(&rsa, vscf_mbedtls_bridge_random, self->random,
-            MBEDTLS_RSA_PRIVATE, md_alg, (unsigned int)digest.len, digest.bytes, vsc_buffer_unused_bytes(signature));
+
+    int (*f_rng)(void *, byte *, size_t) = NULL;
+    void *p_rng = NULL;
+
+    if (self->random) {
+        f_rng = vscf_mbedtls_bridge_random;
+        p_rng = self->random;
+    }
+
+    const int mbed_status = mbedtls_rsa_rsassa_pss_sign(&rsa, f_rng, p_rng, MBEDTLS_RSA_PRIVATE, md_alg,
+            (unsigned int)digest.len, digest.bytes, vsc_buffer_unused_bytes(signature));
 
     VSCF_ASSERT_ALLOC(mbed_status != MBEDTLS_ERR_MD_ALLOC_FAILED);
 
@@ -548,7 +558,6 @@ vscf_rsa_verify_hash(const vscf_rsa_t *self, const vscf_impl_t *public_key, vscf
         vsc_data_t signature) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->random);
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_rsa_can_verify(self, public_key));
     VSCF_ASSERT(vsc_data_is_valid(digest));
@@ -565,8 +574,8 @@ vscf_rsa_verify_hash(const vscf_rsa_t *self, const vscf_impl_t *public_key, vscf
     mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(hash_id);
     mbedtls_rsa_set_padding(&rsa, MBEDTLS_RSA_PKCS_V21, md_alg);
 
-    int result = mbedtls_rsa_rsassa_pss_verify(&rsa, vscf_mbedtls_bridge_random, self->random, MBEDTLS_RSA_PUBLIC,
-            md_alg, (unsigned int)digest.len, digest.bytes, signature.bytes);
+    int result = mbedtls_rsa_rsassa_pss_verify(
+            &rsa, NULL, NULL, MBEDTLS_RSA_PUBLIC, md_alg, (unsigned int)digest.len, digest.bytes, signature.bytes);
 
     return result == 0 ? true : false;
 }

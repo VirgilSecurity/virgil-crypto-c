@@ -640,7 +640,7 @@ test__asn1wr_write_octet_str_as_bitstring__argument_bitstring__returns_encoded_b
 
     vscf_asn1wr_reset(asn1wr, vsc_buffer_unused_bytes(asn1), vsc_buffer_unused_len(asn1));
 
-    size_t len = vscf_asn1wr_write_octet_str_as_bitstring(asn1wr, test_asn1_decoded_BIT_STRING);
+    vscf_asn1wr_write_octet_str_as_bitstring(asn1wr, test_asn1_decoded_BIT_STRING);
     size_t writtenBytes = vscf_asn1wr_finish(asn1wr, false);
     vsc_buffer_inc_used(asn1, writtenBytes);
 

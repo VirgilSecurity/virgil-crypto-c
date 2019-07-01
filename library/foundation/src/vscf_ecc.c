@@ -665,18 +665,17 @@ vscf_ecc_can_sign(const vscf_ecc_t *self, const vscf_impl_t *private_key) {
 //  Return zero if a given private key can not produce signatures.
 //
 VSCF_PUBLIC size_t
-vscf_ecc_signature_len(const vscf_ecc_t *self, const vscf_impl_t *private_key) {
+vscf_ecc_signature_len(const vscf_ecc_t *self, const vscf_impl_t *key) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT(vscf_ecc_can_sign(self, private_key));
+    VSCF_ASSERT_PTR(key);
 
     //  ECDSA-Sig-Value ::= SEQUENCE {
     //      r INTEGER,
     //      s INTEGER
     //  }
 
-    size_t len = 2 * vscf_key_len(private_key) + 9 /* mbedTLS requirement */;
+    size_t len = 2 * vscf_key_len(key) + 9 /* mbedTLS requirement */;
     return len;
 }
 

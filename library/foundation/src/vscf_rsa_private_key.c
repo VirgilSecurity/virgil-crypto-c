@@ -173,9 +173,11 @@ vscf_rsa_private_key_import(vscf_rsa_private_key_t *self, const vscf_raw_private
     /* Complete the RSA private key */
     self->rsa_ctx.len = mbedtls_mpi_size(&self->rsa_ctx.N);
 
-    const int is_rsa_valid = mbedtls_rsa_complete(&self->rsa_ctx);
+    if (mbedtls_rsa_complete(&self->rsa_ctx) != 0 || mbedtls_rsa_check_privkey(&self->rsa_ctx) != 0) {
+        return vscf_status_ERROR_BAD_PKCS1_PRIVATE_KEY;
+    }
 
-    return is_rsa_valid == 0 ? vscf_status_SUCCESS : vscf_status_ERROR_BAD_PKCS1_PRIVATE_KEY;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -352,7 +354,7 @@ vscf_rsa_private_key_is_valid(const vscf_rsa_private_key_t *self) {
         return false;
     }
 
-    return mbedtls_rsa_check_privkey(&self->rsa_ctx);
+    return mbedtls_rsa_check_privkey(&self->rsa_ctx) == 0;
 }
 
 //
@@ -362,6 +364,7 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_rsa_private_key_extract_public_key(const vscf_rsa_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->alg_info);
     VSCF_ASSERT_SAFE(vscf_rsa_private_key_is_valid(self));
 
     vscf_rsa_public_key_t *rsa_public_key = vscf_rsa_public_key_new();
@@ -372,6 +375,8 @@ vscf_rsa_private_key_extract_public_key(const vscf_rsa_private_key_t *self) {
     VSCF_ASSERT_ALLOC((copy_n_ret == 0) && (copy_e_ret == 0));
 
     rsa_public_key->rsa_ctx.len = self->rsa_ctx.len;
+    rsa_public_key->alg_info = vscf_impl_shallow_copy(self->alg_info);
+    rsa_public_key->impl_tag = self->impl_tag;
 
     return vscf_rsa_public_key_impl(rsa_public_key);
 }

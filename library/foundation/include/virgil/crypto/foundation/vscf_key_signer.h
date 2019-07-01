@@ -102,7 +102,7 @@ vscf_key_signer_can_sign(const vscf_impl_t *impl, const vscf_impl_t *private_key
 //  Return zero if a given private key can not produce signatures.
 //
 VSCF_PUBLIC size_t
-vscf_key_signer_signature_len(const vscf_impl_t *impl, const vscf_impl_t *private_key);
+vscf_key_signer_signature_len(const vscf_impl_t *impl, const vscf_impl_t *key);
 
 //
 //  Sign data digest with a given private key.
