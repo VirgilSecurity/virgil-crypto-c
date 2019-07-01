@@ -97,8 +97,6 @@ struct vscf_group_session_t {
 
     vscf_message_padding_t *padding;
 
-    bool is_initialized;
-
     vscf_group_session_id_t session_id;
 
     vscf_group_session_epoch_node_t *last_epoch;

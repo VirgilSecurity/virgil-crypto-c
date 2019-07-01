@@ -16,8 +16,8 @@
     <require module="group session message internal" scope="private"/>
     <require module="group session ticket internal" scope="private"/>
 
-    <require impl="ed25519 public key" scope="private"/>
-    <require impl="ed25519 private key" scope="private"/>
+    <require impl="key asn1 deserializer" scope="private"/>
+    <require header="ed25519/ed25519.h" scope="private"/>
 
     <dependency name="rng" interface="random" has_observers="1">
         Random
@@ -25,7 +25,6 @@
 
     <property name="cipher" class="message cipher" access="readwrite"/>
     <property name="padding" class="message padding" access="readwrite"/>
-    <property name="is initialized" type="boolean" access="readwrite"/>
     <property name="session id" class="vscf_group_session_id_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="last epoch" class="group session epoch node" access="readwrite"/>
     <property name="first epoch" class="group session epoch node" access="readwrite"/>

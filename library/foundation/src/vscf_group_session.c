@@ -53,12 +53,12 @@
 #include "vscf_group_session_message_defs.h"
 #include "vscf_group_session_message_internal.h"
 #include "vscf_group_session_ticket_internal.h"
+#include "vscf_key_asn1_deserializer.h"
 
 #include <GroupMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include <ed25519/ed25519.h>
-#include <virgil/crypto/foundation/vscf_foundation_public.h>
 
 // clang-format on
 //  @end
