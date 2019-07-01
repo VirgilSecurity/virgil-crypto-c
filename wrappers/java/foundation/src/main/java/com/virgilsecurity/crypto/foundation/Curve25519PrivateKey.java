@@ -49,15 +49,6 @@ public class Curve25519PrivateKey implements AutoCloseable, Alg, Key, GenerateKe
         this.cCtx = FoundationJNI.INSTANCE.curve25519PrivateKey_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public Curve25519PrivateKey(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
     public void setRandom(Random random) {
         FoundationJNI.INSTANCE.curve25519PrivateKey_setRandom(this.cCtx, random);
     }
@@ -71,6 +62,16 @@ public class Curve25519PrivateKey implements AutoCloseable, Alg, Key, GenerateKe
     */
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.curve25519PrivateKey_setupDefaults(this.cCtx);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static Curve25519PrivateKey getInstance(long cCtx) {
+        Curve25519PrivateKey newInstance = new Curve25519PrivateKey();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

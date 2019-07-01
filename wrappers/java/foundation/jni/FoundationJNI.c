@@ -138,15 +138,22 @@ char* getAlgClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ct
 jobject wrapAlg (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getAlgClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getHashClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -179,15 +186,22 @@ char* getHashClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_c
 jobject wrapHash (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getHashClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getEncryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -232,15 +246,22 @@ char* getEncryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* 
 jobject wrapEncrypt (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getEncryptClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getDecryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -285,15 +306,22 @@ char* getDecryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* 
 jobject wrapDecrypt (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getDecryptClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getCipherInfoClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -320,15 +348,22 @@ char* getCipherInfoClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*
 jobject wrapCipherInfo (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getCipherInfoClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getCipherClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -355,15 +390,22 @@ char* getCipherClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c
 jobject wrapCipher (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getCipherClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getCipherAuthInfoClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -387,15 +429,22 @@ char* getCipherAuthInfoClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t 
 jobject wrapCipherAuthInfo (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getCipherAuthInfoClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getAuthEncryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -419,15 +468,22 @@ char* getAuthEncryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1
 jobject wrapAuthEncrypt (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getAuthEncryptClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getAuthDecryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -451,15 +507,22 @@ char* getAuthDecryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1
 jobject wrapAuthDecrypt (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getAuthDecryptClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getCipherAuthClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -483,15 +546,22 @@ char* getCipherAuthClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*
 jobject wrapCipherAuth (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getCipherAuthClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getAsn1ReaderClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -515,15 +585,22 @@ char* getAsn1ReaderClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*
 jobject wrapAsn1Reader (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getAsn1ReaderClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getAsn1WriterClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -547,15 +624,22 @@ char* getAsn1WriterClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*
 jobject wrapAsn1Writer (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getAsn1WriterClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -600,15 +684,22 @@ char* getKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ct
 jobject wrapKey (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getKeyClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getVerifyHashClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -638,15 +729,22 @@ char* getVerifyHashClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*
 jobject wrapVerifyHash (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getVerifyHashClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getPublicKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -679,15 +777,22 @@ char* getPublicKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/
 jobject wrapPublicKey (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getPublicKeyClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getGenerateEphemeralKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -720,15 +825,22 @@ char* getGenerateEphemeralKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_i
 jobject wrapGenerateEphemeralKey (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getGenerateEphemeralKeyClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getGenerateKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -761,15 +873,22 @@ char* getGenerateKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1
 jobject wrapGenerateKey (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getGenerateKeyClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getSignHashClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -799,15 +918,22 @@ char* getSignHashClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/*
 jobject wrapSignHash (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getSignHashClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getPrivateKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -840,15 +966,22 @@ char* getPrivateKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*
 jobject wrapPrivateKey (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getPrivateKeyClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getComputeSharedKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -878,15 +1011,22 @@ char* getComputeSharedKeyClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_
 jobject wrapComputeSharedKey (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getComputeSharedKeyClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getEntropySourceClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -916,15 +1056,22 @@ char* getEntropySourceClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /
 jobject wrapEntropySource (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getEntropySourceClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getRandomClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -954,15 +1101,22 @@ char* getRandomClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c
 jobject wrapRandom (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getRandomClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getMacClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -986,15 +1140,22 @@ char* getMacClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ct
 jobject wrapMac (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getMacClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getKdfClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -1027,15 +1188,22 @@ char* getKdfClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ct
 jobject wrapKdf (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getKdfClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getSaltedKdfClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -1062,15 +1230,22 @@ char* getSaltedKdfClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/
 jobject wrapSaltedKdf (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getSaltedKdfClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getKeySerializerClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -1100,15 +1275,22 @@ char* getKeySerializerClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /
 jobject wrapKeySerializer (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getKeySerializerClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getKeyDeserializerClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -1132,15 +1314,22 @@ char* getKeyDeserializerClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t
 jobject wrapKeyDeserializer (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getKeyDeserializerClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getAlgInfoClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -1179,15 +1368,22 @@ char* getAlgInfoClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* 
 jobject wrapAlgInfo (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getAlgInfoClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getAlgInfoSerializerClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -1211,15 +1407,22 @@ char* getAlgInfoSerializerClassName (JNIEnv *jenv, jobject jobj, const vscf_impl
 jobject wrapAlgInfoSerializer (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getAlgInfoSerializerClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getAlgInfoDeserializerClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -1243,15 +1446,22 @@ char* getAlgInfoDeserializerClassName (JNIEnv *jenv, jobject jobj, const vscf_im
 jobject wrapAlgInfoDeserializer (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getAlgInfoDeserializerClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 char* getMessageInfoSerializerClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
@@ -1275,15 +1485,22 @@ char* getMessageInfoSerializerClassName (JNIEnv *jenv, jobject jobj, const vscf_
 jobject wrapMessageInfoSerializer (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ctx) {
     char *classFullName = getMessageInfoSerializerClassName(jenv, jobj, c_ctx);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
-    free(classFullName);
     if (NULL == cls) {
+        free(classFullName);
         VSCF_ASSERT("Class not found.");
     }
-    jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, "<init>", "(J)V");
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
     if (NULL == methodID) {
-        VSCF_ASSERT("Class has no constructor with C context parameter.");
+        VSCF_ASSERT("Class has no 'getInstance' method.");
     }
-    return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
 }
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawKey_1new__ (JNIEnv *jenv, jobject jobj) {
@@ -1660,12 +1877,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class KeyRecipientInfoList not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/KeyRecipientInfoList;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class KeyRecipientInfoList has no constructor with C context parameter.");
+        VSCF_ASSERT("Class KeyRecipientInfoList has no 'getInstance' method.");
     }
     vscf_key_recipient_info_list_shallow_copy((vscf_key_recipient_info_list_t */*5*/) proxyResult);
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -1678,12 +1895,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class PasswordRecipientInfoList not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/PasswordRecipientInfoList;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class PasswordRecipientInfoList has no constructor with C context parameter.");
+        VSCF_ASSERT("Class PasswordRecipientInfoList has no 'getInstance' method.");
     }
     vscf_password_recipient_info_list_shallow_copy((vscf_password_recipient_info_list_t */*5*/) proxyResult);
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -1713,12 +1930,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class MessageInfoCustomParams not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/MessageInfoCustomParams;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class MessageInfoCustomParams has no constructor with C context parameter.");
+        VSCF_ASSERT("Class MessageInfoCustomParams has no 'getInstance' method.");
     }
     vscf_message_info_custom_params_shallow_copy((vscf_message_info_custom_params_t */*5*/) proxyResult);
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -1847,12 +2064,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class KeyRecipientInfo not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/KeyRecipientInfo;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class KeyRecipientInfo has no constructor with C context parameter.");
+        VSCF_ASSERT("Class KeyRecipientInfo has no 'getInstance' method.");
     }
     vscf_key_recipient_info_shallow_copy((vscf_key_recipient_info_t */*5*/) proxyResult);
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -1873,12 +2090,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class KeyRecipientInfoList not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/KeyRecipientInfoList;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class KeyRecipientInfoList has no constructor with C context parameter.");
+        VSCF_ASSERT("Class KeyRecipientInfoList has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -1899,12 +2116,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class KeyRecipientInfoList not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/KeyRecipientInfoList;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class KeyRecipientInfoList has no constructor with C context parameter.");
+        VSCF_ASSERT("Class KeyRecipientInfoList has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -2015,12 +2232,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class PasswordRecipientInfo not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/PasswordRecipientInfo;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class PasswordRecipientInfo has no constructor with C context parameter.");
+        VSCF_ASSERT("Class PasswordRecipientInfo has no 'getInstance' method.");
     }
     vscf_password_recipient_info_shallow_copy((vscf_password_recipient_info_t */*5*/) proxyResult);
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -2041,12 +2258,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class PasswordRecipientInfoList not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/PasswordRecipientInfoList;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class PasswordRecipientInfoList has no constructor with C context parameter.");
+        VSCF_ASSERT("Class PasswordRecipientInfoList has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -2067,12 +2284,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class PasswordRecipientInfoList not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/PasswordRecipientInfoList;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class PasswordRecipientInfoList has no constructor with C context parameter.");
+        VSCF_ASSERT("Class PasswordRecipientInfoList has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -2293,12 +2510,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class MessageInfoCustomParams not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/MessageInfoCustomParams;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class MessageInfoCustomParams has no constructor with C context parameter.");
+        VSCF_ASSERT("Class MessageInfoCustomParams has no 'getInstance' method.");
     }
     vscf_message_info_custom_params_shallow_copy((vscf_message_info_custom_params_t */*5*/) proxyResult);
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -7827,12 +8044,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class RawKey not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/RawKey;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
+        VSCF_ASSERT("Class RawKey has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -7853,12 +8070,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class RawKey not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/RawKey;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
+        VSCF_ASSERT("Class RawKey has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -7891,12 +8108,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class RawKey not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/RawKey;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
+        VSCF_ASSERT("Class RawKey has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jpublicKeyData, (jbyte*) public_key_data_arr, 0);
 
@@ -7924,12 +8141,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class RawKey not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/RawKey;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class RawKey has no constructor with C context parameter.");
+        VSCF_ASSERT("Class RawKey has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jprivateKeyData, (jbyte*) private_key_data_arr, 0);
 
@@ -9786,12 +10003,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_cls) {
         VSCF_ASSERT("Class MessageInfo not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/MessageInfo;");
     if (NULL == result_methodID) {
-        VSCF_ASSERT("Class MessageInfo has no constructor with C context parameter.");
+        VSCF_ASSERT("Class MessageInfo has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
 

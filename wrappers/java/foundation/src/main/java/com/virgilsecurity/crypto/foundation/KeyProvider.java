@@ -54,9 +54,10 @@ public class KeyProvider implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public KeyProvider(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static KeyProvider getInstance(long cCtx) {
+        KeyProvider newInstance = new KeyProvider();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

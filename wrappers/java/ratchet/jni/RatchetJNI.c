@@ -195,12 +195,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_cls) {
         VSCR_ASSERT("Class RatchetMessage not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/ratchet/RatchetMessage;");
     if (NULL == result_methodID) {
-        VSCR_ASSERT("Class RatchetMessage has no constructor with C context parameter.");
+        VSCR_ASSERT("Class RatchetMessage has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jinput, (jbyte*) input_arr, 0);
 
@@ -360,12 +360,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_cls) {
         VSCR_ASSERT("Class RatchetMessage not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/ratchet/RatchetMessage;");
     if (NULL == result_methodID) {
-        VSCR_ASSERT("Class RatchetMessage has no constructor with C context parameter.");
+        VSCR_ASSERT("Class RatchetMessage has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jplainText, (jbyte*) plain_text_arr, 0);
 
@@ -448,12 +448,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_cls) {
         VSCR_ASSERT("Class RatchetSession not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/ratchet/RatchetSession;");
     if (NULL == result_methodID) {
-        VSCR_ASSERT("Class RatchetSession has no constructor with C context parameter.");
+        VSCR_ASSERT("Class RatchetSession has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jinput, (jbyte*) input_arr, 0);
 
@@ -605,12 +605,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_cls) {
         VSCR_ASSERT("Class RatchetGroupMessage not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/ratchet/RatchetGroupMessage;");
     if (NULL == result_methodID) {
-        VSCR_ASSERT("Class RatchetGroupMessage has no constructor with C context parameter.");
+        VSCR_ASSERT("Class RatchetGroupMessage has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jinput, (jbyte*) input_arr, 0);
 
@@ -677,12 +677,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_cls) {
         VSCR_ASSERT("Class RatchetGroupMessage not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/ratchet/RatchetGroupMessage;");
     if (NULL == result_methodID) {
-        VSCR_ASSERT("Class RatchetGroupMessage has no constructor with C context parameter.");
+        VSCR_ASSERT("Class RatchetGroupMessage has no 'getInstance' method.");
     }
     vscr_ratchet_group_message_shallow_copy((vscr_ratchet_group_message_t */*5*/) proxyResult);
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 
@@ -935,12 +935,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_cls) {
         VSCR_ASSERT("Class RatchetGroupMessage not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/ratchet/RatchetGroupMessage;");
     if (NULL == result_methodID) {
-        VSCR_ASSERT("Class RatchetGroupMessage has no constructor with C context parameter.");
+        VSCR_ASSERT("Class RatchetGroupMessage has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jplainText, (jbyte*) plain_text_arr, 0);
 
@@ -1023,12 +1023,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_cls) {
         VSCR_ASSERT("Class RatchetGroupSession not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/ratchet/RatchetGroupSession;");
     if (NULL == result_methodID) {
-        VSCR_ASSERT("Class RatchetGroupSession has no constructor with C context parameter.");
+        VSCR_ASSERT("Class RatchetGroupSession has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jinput, (jbyte*) input_arr, 0);
 
@@ -1052,12 +1052,12 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
     if (NULL == result_cls) {
         VSCR_ASSERT("Class RatchetGroupTicket not found.");
     }
-    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "(J)V");
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/ratchet/RatchetGroupTicket;");
     if (NULL == result_methodID) {
-        VSCR_ASSERT("Class RatchetGroupTicket has no constructor with C context parameter.");
+        VSCR_ASSERT("Class RatchetGroupTicket has no 'getInstance' method.");
     }
 
-    jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
 

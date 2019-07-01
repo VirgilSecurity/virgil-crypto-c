@@ -49,15 +49,6 @@ public class Pkcs5Pbes2 implements AutoCloseable, Alg, Encrypt, Decrypt {
         this.cCtx = FoundationJNI.INSTANCE.pkcs5Pbes2_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public Pkcs5Pbes2(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
     public void setKdf(SaltedKdf kdf) {
         FoundationJNI.INSTANCE.pkcs5Pbes2_setKdf(this.cCtx, kdf);
     }
@@ -71,6 +62,16 @@ public class Pkcs5Pbes2 implements AutoCloseable, Alg, Encrypt, Decrypt {
     */
     public void reset(byte[] pwd) {
         FoundationJNI.INSTANCE.pkcs5Pbes2_reset(this.cCtx, pwd);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static Pkcs5Pbes2 getInstance(long cCtx) {
+        Pkcs5Pbes2 newInstance = new Pkcs5Pbes2();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

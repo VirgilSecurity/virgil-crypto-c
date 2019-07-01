@@ -52,15 +52,6 @@ public class KeyMaterialRng implements AutoCloseable, Random {
     }
 
     /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public KeyMaterialRng(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
-    /*
     * Minimum length in bytes for the key material.
     */
     public int getKeyMaterialLenMin() {
@@ -79,6 +70,16 @@ public class KeyMaterialRng implements AutoCloseable, Random {
     */
     public void resetKeyMaterial(byte[] keyMaterial) {
         FoundationJNI.INSTANCE.keyMaterialRng_resetKeyMaterial(this.cCtx, keyMaterial);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static KeyMaterialRng getInstance(long cCtx) {
+        KeyMaterialRng newInstance = new KeyMaterialRng();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */
