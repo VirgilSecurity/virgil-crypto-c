@@ -4,6 +4,8 @@
         Sender id len
     </constant>
 
+    <require module="buffer defs" scope="private" project="common"/>
+
     <require module="group session typedefs" scope="context"/>
 
     <require impl="ctr drbg" scope="private"/>

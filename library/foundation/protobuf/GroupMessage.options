@@ -8,3 +8,5 @@ RegularGroupMessageHeader.session_id max_size:32 fixed_length:true
 RegularGroupMessageHeader.salt max_size:32 fixed_length:true
 RegularGroupMessageHeader.sender_id max_size:32 fixed_length:true
 RegularGroupMessageHeader.prev_epochs_msgs max_count:4 fixed_count:true
+
+RegularGroupMessage.cipher_text max_size:1024 type:FT_POINTER

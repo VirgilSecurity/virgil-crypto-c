@@ -59,6 +59,7 @@
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include <ed25519/ed25519.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 // clang-format on
 //  @end
@@ -516,19 +517,23 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
 
     size_t len = vscf_message_cipher_encrypt_len(self->cipher, vscf_message_padding_padded_len(plain_text.len));
 
-    vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(len);
+    msg->message_pb.regular_message.cipher_text = vscf_alloc(sizeof(pb_bytes_array_t) + len);
+
+    vsc_buffer_t cipher_text;
+    vsc_buffer_init(&cipher_text);
+    vsc_buffer_use(&cipher_text, msg->message_pb.regular_message.cipher_text->bytes, len);
 
     status = vscf_message_cipher_pad_then_encrypt(self->cipher, self->padding, plain_text, self->last_epoch->value->key,
             vsc_buffer_bytes(salt),
             vsc_data(msg->message_pb.regular_message.header.bytes, msg->message_pb.regular_message.header.size),
-            cipher_text);
+            &cipher_text);
 
     if (status != vscf_status_SUCCESS) {
         goto err1;
     }
 
     int ed_status = ed25519_sign(msg->message_pb.regular_message.signature, vscf_raw_key_data(raw_key).bytes,
-            vsc_buffer_bytes(cipher_text), vsc_buffer_len(cipher_text));
+            vsc_buffer_bytes(&cipher_text), vsc_buffer_len(&cipher_text));
 
     if (ed_status != 0) {
         // FIXME
@@ -536,10 +541,10 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
         goto err2;
     }
 
-    msg->message_pb.regular_message.cipher_text.arg = vsc_buffer_shallow_copy(cipher_text);
+    msg->message_pb.regular_message.cipher_text->size = vsc_buffer_len(&cipher_text);
 
 err2:
-    vsc_buffer_destroy(&cipher_text);
+    vsc_buffer_delete(&cipher_text);
 
 err1:
     vsc_buffer_destroy(&salt);
@@ -568,8 +573,7 @@ vscf_group_session_decrypt_len(vscf_group_session_t *self, const vscf_group_sess
     VSCF_ASSERT(message->message_pb.has_regular_message);
     VSCF_ASSERT_PTR(message->header_pb);
 
-    return vscf_message_cipher_decrypt_len(
-            self->cipher, vsc_buffer_len(message->message_pb.regular_message.cipher_text.arg));
+    return vscf_message_cipher_decrypt_len(self->cipher, message->message_pb.regular_message.cipher_text->size);
 }
 
 //
@@ -627,8 +631,8 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
     }
 
     int ed_status = ed25519_verify(message->message_pb.regular_message.signature, vscf_raw_key_data(raw_key).bytes,
-            vsc_buffer_bytes(message->message_pb.regular_message.cipher_text.arg),
-            vsc_buffer_len(message->message_pb.regular_message.cipher_text.arg));
+            message->message_pb.regular_message.cipher_text->bytes,
+            message->message_pb.regular_message.cipher_text->size);
 
     if (ed_status != 0) {
         // FIXME
@@ -639,8 +643,9 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
     // TODO: Check length
 
     status = vscf_message_cipher_decrypt_then_remove_pad(self->cipher,
-            vsc_buffer_data(message->message_pb.regular_message.cipher_text.arg), epoch->value->key,
-            message->header_pb->salt,
+            vsc_data(message->message_pb.regular_message.cipher_text->bytes,
+                    message->message_pb.regular_message.cipher_text->size),
+            epoch->value->key, message->header_pb->salt,
             vsc_data(message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size),
             plain_text);
 

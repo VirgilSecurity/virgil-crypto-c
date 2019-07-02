@@ -40,6 +40,7 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCF_GROUP_SESSION_MESSAGE
 #if TEST_DEPENDENCIES_AVAILABLE
 
+#include "vscf_memory.h"
 #include "test_data_group_session.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_group_session_message.h"
@@ -62,11 +63,10 @@ reg_msg_hdr_cmp(RegularGroupMessageHeader *msg1, RegularGroupMessageHeader *msg2
 static bool
 reg_msg_cmp(RegularGroupMessage *msg1, RegularGroupMessage *msg2) {
 
-    return vsc_buffer_len(msg1->cipher_text.arg) == vsc_buffer_len(msg2->cipher_text.arg) &&
+    return msg1->cipher_text->size == msg2->cipher_text->size &&
            memcmp(&msg1->header, &msg2->header, sizeof(msg1->header)) == 0 &&
            memcmp(&msg1->signature, &msg2->signature, sizeof(msg1->signature)) == 0 &&
-           memcmp(vsc_buffer_bytes(msg1->cipher_text.arg), vsc_buffer_bytes(msg2->cipher_text.arg),
-                   vsc_buffer_len(msg1->cipher_text.arg)) == 0;
+           memcmp(msg1->cipher_text->bytes, msg2->cipher_text->bytes, msg1->cipher_text->size) == 0;
 }
 
 static bool
@@ -119,8 +119,12 @@ test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
             test_data_group_session_session_signature.len);
     memcpy(msg1->header_pb->sender_id, test_data_group_session_session_sender_id.bytes,
             test_data_group_session_session_sender_id.len);
-    msg1->message_pb.regular_message.cipher_text.arg =
-            vsc_buffer_new_with_data(test_data_group_session_session_cipher_text);
+
+    msg1->message_pb.regular_message.cipher_text =
+            vscf_alloc(sizeof(pb_bytes_array_t) + test_data_group_session_session_cipher_text.len);
+    msg1->message_pb.regular_message.cipher_text->size = test_data_group_session_session_cipher_text.len;
+    memcpy(msg1->message_pb.regular_message.cipher_text->bytes, test_data_group_session_session_cipher_text.bytes,
+            test_data_group_session_session_cipher_text.len);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
             msg1->message_pb.regular_message.header.bytes, sizeof(msg1->message_pb.regular_message.header.bytes));

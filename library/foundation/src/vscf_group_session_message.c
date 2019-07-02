@@ -85,18 +85,6 @@ vscf_group_session_message_init_ctx(vscf_group_session_message_t *self);
 static void
 vscf_group_session_message_cleanup_ctx(vscf_group_session_message_t *self);
 
-static bool
-vscf_group_session_message_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void**arg);
-
-static void
-vscf_group_session_message_set_pb_encode_callback(vscf_group_session_message_t *self);
-
-static void
-vscf_group_session_message_set_pb_decode_callback(vscf_group_session_message_t *self);
-
-static bool
-vscf_group_session_message_buffer_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg);
-
 //
 //  Return size of 'vscf_group_session_message_t'.
 //
@@ -252,7 +240,6 @@ vscf_group_session_message_init_ctx(vscf_group_session_message_t *self) {
     self->message_pb = msg;
     // FIXME
     self->message_pb.version = 1;
-    vscf_group_session_message_set_pb_encode_callback(self);
 }
 
 //
@@ -265,12 +252,7 @@ vscf_group_session_message_cleanup_ctx(vscf_group_session_message_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    if (self->message_pb.has_regular_message) {
-        if (self->message_pb.regular_message.cipher_text.arg) {
-            vsc_buffer_destroy((vsc_buffer_t **)&self->message_pb.regular_message.cipher_text.arg);
-        }
-    }
-
+    pb_release(GroupMessage_fields, &self->message_pb);
     vscf_dealloc(self->header_pb);
 }
 
@@ -364,8 +346,6 @@ vscf_group_session_message_set_type(vscf_group_session_message_t *self, vscf_gro
         self->message_pb.has_group_info = true;
         break;
     }
-
-    vscf_group_session_message_set_pb_encode_callback(self);
 }
 
 //
@@ -416,7 +396,6 @@ vscf_group_session_message_deserialize(vsc_data_t input, vscf_error_t *error) {
     //    }
 
     vscf_group_session_message_t *message = vscf_group_session_message_new();
-    vscf_group_session_message_set_pb_decode_callback(message);
 
     pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
@@ -444,8 +423,6 @@ vscf_group_session_message_deserialize(vsc_data_t input, vscf_error_t *error) {
         }
     }
 
-    vscf_group_session_message_set_pb_encode_callback(message);
-
 err:
     if (status != vscf_status_SUCCESS) {
         VSCF_ERROR_SAFE_UPDATE(error, status);
@@ -453,46 +430,4 @@ err:
     }
 
     return message;
-}
-
-static void
-vscf_group_session_message_set_pb_encode_callback(vscf_group_session_message_t *self) {
-
-    self->message_pb.regular_message.cipher_text.funcs.encode = vscf_group_session_message_buffer_encode_callback;
-}
-
-static void
-vscf_group_session_message_set_pb_decode_callback(vscf_group_session_message_t *self) {
-
-    self->message_pb.regular_message.cipher_text.funcs.decode = vscf_group_session_message_buffer_decode_callback;
-}
-
-static bool
-vscf_group_session_message_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void **arg) {
-
-    VSCF_ASSERT_PTR(stream);
-    VSCF_ASSERT_PTR(arg);
-    VSCF_UNUSED(field);
-
-    if (stream->bytes_left > 50000 /* FIXME */)
-        return false;
-
-    *arg = vsc_buffer_new_with_data(vsc_data(stream->state, stream->bytes_left));
-    stream->state = (byte *)stream->state + stream->bytes_left;
-    stream->bytes_left = 0;
-
-    return true;
-}
-
-static bool
-vscf_group_session_message_buffer_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg) {
-
-    VSCF_ASSERT_PTR(stream);
-    VSCF_ASSERT_PTR(arg);
-    VSCF_ASSERT_PTR(field);
-
-    if (!pb_encode_tag_for_field(stream, field))
-        return false;
-
-    return pb_encode_string(stream, vsc_buffer_bytes(*arg), vsc_buffer_len(*arg));
 }
