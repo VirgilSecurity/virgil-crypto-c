@@ -104,6 +104,7 @@ vscf_ecc_private_key_cleanup_ctx(vscf_ecc_private_key_t *self) {
     vscf_impl_destroy(&self->alg_info);
     mbedtls_ecp_group_free(&self->ecc_grp);
     mbedtls_mpi_free(&self->ecc_priv);
+    mbedtls_ecp_point_free(&self->ecc_pub);
 }
 
 //
