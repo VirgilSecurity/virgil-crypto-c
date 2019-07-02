@@ -34,13 +34,13 @@
 
 #define UNITY_BEGIN() UnityBegin(__FILENAME__)
 
-#include <virgil/crypto/ratchet/vscr_memory.h>
 #include "unity.h"
 #include "test_utils.h"
 
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
+#include "vscr_memory.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_message_defs.h"
 #include "vscr_ratchet_message.h"
@@ -337,9 +337,6 @@ test__serialize_deserialize__prekey_msg_overflow__should_be_equal(void) {
     msg1->message_pb.version = UINT32_MAX;
     msg1->message_pb.has_prekey_message = true;
     msg1->message_pb.prekey_message.has_receiver_one_time_key = true;
-
-    vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
-    vsc_buffer_inc_used(cipher_text, vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
 
     msg1->message_pb.regular_message.cipher_text =
             vscr_alloc(sizeof(pb_bytes_array_t) + vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
