@@ -389,9 +389,12 @@ vscf_group_session_message_serialize(const vscf_group_session_message_t *self, v
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(output);
     VSCF_ASSERT(vsc_buffer_unused_len(output) >= vscf_group_session_message_serialize_len(self));
-    VSCF_ASSERT_PTR(self->header_pb);
 
-    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
+    if (self->message_pb.has_regular_message) {
+        VSCF_ASSERT(self->message_pb.regular_message.header.size > 0);
+    }
+
+    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_unused_len(output));
 
     VSCF_ASSERT(pb_encode(&ostream, GroupMessage_fields, &self->message_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);

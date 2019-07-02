@@ -360,7 +360,7 @@ vscr_ratchet_message_serialize(const vscr_ratchet_message_t *self, vsc_buffer_t 
     VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_message_serialize_len(self));
     VSCR_ASSERT_PTR(self->header_pb);
 
-    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
+    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_unused_len(output));
 
     VSCR_ASSERT(pb_encode(&ostream, Message_fields, &self->message_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);

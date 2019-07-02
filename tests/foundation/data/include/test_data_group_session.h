@@ -40,3 +40,4 @@ extern const vsc_data_t test_data_group_session_session_salt;
 extern const vsc_data_t test_data_group_session_session_signature;
 extern const vsc_data_t test_data_group_session_session_sender_id;
 extern const vsc_data_t test_data_group_session_session_cipher_text;
+extern const vsc_data_t test_data_group_session_session_key;

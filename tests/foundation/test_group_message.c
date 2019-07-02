@@ -145,37 +145,37 @@ test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
     vsc_buffer_destroy(&buff);
 }
 
-// void
-// test__serialize_deserialize__fixed_group_info_msg__should_be_equal(void) {
-//    vscr_ratchet_group_message_t *msg1 = vscr_ratchet_group_message_new();
-//
-//    vscr_ratchet_group_message_set_type(msg1, vscr_group_msg_type_GROUP_INFO);
-//
-//    msg1->message_pb.version = 5;
-//
-//    msg1->message_pb.group_info.epoch = 3;
-//    memcpy(msg1->message_pb.group_info.session_id, test_data_ratchet_group_message_id.bytes,
-//            test_data_ratchet_group_message_id.len);
-//    memcpy(msg1->message_pb.group_info.key, test_data_ratchet_group_message_key1.bytes,
-//            test_data_ratchet_group_message_key1.len);
-//
-//    size_t len = vscr_ratchet_group_message_serialize_len(msg1);
-//    vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);
-//    vscr_ratchet_group_message_serialize(msg1, buff);
-//
-//    vscr_error_t error;
-//    vscr_error_reset(&error);
-//
-//    vscr_ratchet_group_message_t *msg2 = vscr_ratchet_group_message_deserialize(vsc_buffer_data(buff), &error);
-//    TEST_ASSERT(msg2 != NULL);
-//    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
-//
-//    TEST_ASSERT(msg_cmp(msg1, msg2));
-//
-//    vscr_ratchet_group_message_destroy(&msg1);
-//    vscr_ratchet_group_message_destroy(&msg2);
-//    vsc_buffer_destroy(&buff);
-//}
+void
+test__serialize_deserialize__fixed_group_info_msg__should_be_equal(void) {
+    vscf_group_session_message_t *msg1 = vscf_group_session_message_new();
+
+    vscf_group_session_message_set_type(msg1, vscf_group_msg_type_GROUP_INFO);
+
+    msg1->message_pb.version = 5;
+
+    msg1->message_pb.group_info.epoch = 3;
+    memcpy(msg1->message_pb.group_info.session_id, test_data_group_session_session_id.bytes,
+            test_data_group_session_session_id.len);
+    memcpy(msg1->message_pb.group_info.key, test_data_group_session_session_key.bytes,
+            test_data_group_session_session_key.len);
+
+    size_t len = vscf_group_session_message_serialize_len(msg1);
+    vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);
+    vscf_group_session_message_serialize(msg1, buff);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_group_session_message_t *msg2 = vscf_group_session_message_deserialize(vsc_buffer_data(buff), &error);
+    TEST_ASSERT(msg2 != NULL);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+
+    TEST_ASSERT(msg_cmp(msg1, msg2));
+
+    vscf_group_session_message_destroy(&msg1);
+    vscf_group_session_message_destroy(&msg2);
+    vsc_buffer_destroy(&buff);
+}
 //
 // void
 // test__serialize_deserialize__group_info_overflow__should_be_equal(void) {
@@ -320,7 +320,7 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__serialize_deserialize__fixed_regular_msg__should_be_equal);
-//    RUN_TEST(test__serialize_deserialize__fixed_group_info_msg__should_be_equal);
+    RUN_TEST(test__serialize_deserialize__fixed_group_info_msg__should_be_equal);
 //    RUN_TEST(test__serialize_deserialize__group_info_overflow__should_be_equal);
 //    RUN_TEST(test__serialize_deserialize__regular_overflow__should_be_equal);
 //    RUN_TEST(test__methods__fixed_regular_msg__should_return_correct_values);
