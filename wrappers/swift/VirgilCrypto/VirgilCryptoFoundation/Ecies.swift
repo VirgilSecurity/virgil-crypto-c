@@ -122,7 +122,7 @@ import VSCFoundation
 
     /// Encrypt data with a given public key.
     @objc public func encrypt(publicKey: PublicKey, data: Data) throws -> Data {
-        let outCount = self.encryptedLen(publicKey: publicKey, computeSharedKeyCtx: computeSharedKeyCtx, dataLen: data.count)
+        let outCount = self.encryptedLen(publicKey: publicKey, dataLen: data.count)
         var out = Data(count: outCount)
         var outBuf = vsc_buffer_new()
         defer {
@@ -153,7 +153,7 @@ import VSCFoundation
 
     /// Decrypt given data.
     @objc public func decrypt(privateKey: PrivateKey, data: Data) throws -> Data {
-        let outCount = self.decryptedLen(privateKey: privateKey, computeSharedKeyCtx: computeSharedKeyCtx, dataLen: data.count)
+        let outCount = self.decryptedLen(privateKey: privateKey, dataLen: data.count)
         var out = Data(count: outCount)
         var outBuf = vsc_buffer_new()
         defer {
