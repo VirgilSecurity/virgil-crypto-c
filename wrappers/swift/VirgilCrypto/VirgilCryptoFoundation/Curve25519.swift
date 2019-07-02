@@ -293,7 +293,7 @@ import VSCFoundation
     /// Compute shared key for 2 asymmetric keys.
     /// Note, computed shared key can be used only within symmetric cryptography.
     @objc public func computeSharedKey(publicKey: PublicKey, privateKey: PrivateKey) throws -> Data {
-        let sharedKeyCount = self.sharedKeyLen(publicKey: publicKey, privateKey: privateKey)
+        let sharedKeyCount = self.sharedKeyLen(key: privateKey)
         var sharedKey = Data(count: sharedKeyCount)
         var sharedKeyBuf = vsc_buffer_new()
         defer {

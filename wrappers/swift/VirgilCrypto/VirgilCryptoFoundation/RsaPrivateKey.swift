@@ -67,44 +67,6 @@ import VSCFoundation
         vscf_rsa_private_key_delete(self.c_ctx)
     }
 
-    /// Import public key from the raw binary format.
-    ///
-    /// RSAPrivateKey ::= SEQUENCE {
-    ///      version Version,
-    ///      modulus INTEGER, -- n
-    ///      publicExponent INTEGER, -- e
-    ///      privateExponent INTEGER, -- d
-    ///      prime1 INTEGER, -- p
-    ///      prime2 INTEGER, -- q
-    ///      exponent1 INTEGER, -- d mod (p-1)
-    ///      exponent2 INTEGER, -- d mod (q-1)
-    ///      coefficient INTEGER -- (inverse of q) mod p
-    ///  }
-    @objc public func import(rawPrivateKey: RawPrivateKey) throws {
-        let proxyResult = vscf_rsa_private_key_import(self.c_ctx, rawPrivateKey.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
-    }
-
-    /// Export public key in the raw binary format.
-    ///
-    /// RSAPrivateKey ::= SEQUENCE {
-    ///      version Version,
-    ///      modulus INTEGER, -- n
-    ///      publicExponent INTEGER, -- e
-    ///      privateExponent INTEGER, -- d
-    ///      prime1 INTEGER, -- p
-    ///      prime2 INTEGER, -- q
-    ///      exponent1 INTEGER, -- d mod (p-1)
-    ///      exponent2 INTEGER, -- d mod (q-1)
-    ///      coefficient INTEGER -- (inverse of q) mod p
-    ///  }
-    @objc public func export() -> RawPrivateKey {
-        let proxyResult = vscf_rsa_private_key_export(self.c_ctx)
-
-        return RawPrivateKey.init(take: proxyResult!)
-    }
-
     /// Algorithm identifier the key belongs to.
     @objc public func algId() -> AlgId {
         let proxyResult = vscf_rsa_private_key_alg_id(self.c_ctx)

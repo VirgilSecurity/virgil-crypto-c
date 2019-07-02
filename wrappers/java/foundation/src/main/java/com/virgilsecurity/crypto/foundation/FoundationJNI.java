@@ -1425,40 +1425,6 @@ public class FoundationJNI {
     */
     public native boolean rsaPublicKey_isValid(long cCtx);
 
-    /*
-    * Import public key from the raw binary format.
-    *
-    * RSAPrivateKey ::= SEQUENCE {
-    * version Version,
-    * modulus INTEGER, -- n
-    * publicExponent INTEGER, -- e
-    * privateExponent INTEGER, -- d
-    * prime1 INTEGER, -- p
-    * prime2 INTEGER, -- q
-    * exponent1 INTEGER, -- d mod (p-1)
-    * exponent2 INTEGER, -- d mod (q-1)
-    * coefficient INTEGER -- (inverse of q) mod p
-    * }
-    */
-    public native void rsaPrivateKey_import(long cCtx, RawPrivateKey rawPrivateKey) throws FoundationException;
-
-    /*
-    * Export public key in the raw binary format.
-    *
-    * RSAPrivateKey ::= SEQUENCE {
-    * version Version,
-    * modulus INTEGER, -- n
-    * publicExponent INTEGER, -- e
-    * privateExponent INTEGER, -- d
-    * prime1 INTEGER, -- p
-    * prime2 INTEGER, -- q
-    * exponent1 INTEGER, -- d mod (p-1)
-    * exponent2 INTEGER, -- d mod (q-1)
-    * coefficient INTEGER -- (inverse of q) mod p
-    * }
-    */
-    public native RawPrivateKey rsaPrivateKey_export(long cCtx);
-
     public native long rsaPrivateKey_new();
 
     public native void rsaPrivateKey_close(long cCtx);

@@ -153,7 +153,7 @@ vscf_rsa_private_key_shallow_copy(vscf_rsa_private_key_t *self);
 //       coefficient INTEGER -- (inverse of q) mod p
 //   }
 //
-VSCF_PUBLIC vscf_status_t
+VSCF_PRIVATE vscf_status_t
 vscf_rsa_private_key_import(vscf_rsa_private_key_t *self, const vscf_raw_private_key_t *raw_private_key) VSCF_NODISCARD;
 
 //
@@ -171,7 +171,7 @@ vscf_rsa_private_key_import(vscf_rsa_private_key_t *self, const vscf_raw_private
 //       coefficient INTEGER -- (inverse of q) mod p
 //   }
 //
-VSCF_PUBLIC vscf_raw_private_key_t *
+VSCF_PRIVATE vscf_raw_private_key_t *
 vscf_rsa_private_key_export(const vscf_rsa_private_key_t *self);
 
 //

@@ -302,7 +302,7 @@ import VSCFoundation
 
     /// Sign data digest with a given private key.
     @objc public func signHash(privateKey: PrivateKey, hashId: AlgId, digest: Data) throws -> Data {
-        let signatureCount = self.signatureLen()
+        let signatureCount = self.signatureLen(key: privateKey)
         var signature = Data(count: signatureCount)
         var signatureBuf = vsc_buffer_new()
         defer {

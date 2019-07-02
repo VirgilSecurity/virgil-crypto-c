@@ -30,7 +30,9 @@
         <argument name="hash id" enum="alg id"/>
         <argument name="digest" class="data"/>
         <argument name="signature" class="buffer">
-            <length method="signature len"/>
+            <length method="signature len">
+                <proxy argument="private key" to="key"/>
+            </length>
         </argument>
 
         <return enum="status"/>

@@ -5235,35 +5235,6 @@ JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJ
     return ret;
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1import (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrawPrivateKey) {
-    // Cast class context
-    vscf_rsa_private_key_t /*9*/* rsa_private_key_ctx = (vscf_rsa_private_key_t /*9*/*) c_ctx;
-
-    vscf_status_t status = vscf_rsa_private_key_import(rsa_private_key_ctx /*a1*/, raw_private_key /*a6*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-        return;
-    }
-}
-
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1export (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_rsa_private_key_t /*9*/* rsa_private_key_ctx = (vscf_rsa_private_key_t /*9*/*) c_ctx;
-
-    const vscf_raw_private_key_t * /*7*/ proxyResult = vscf_rsa_private_key_export(rsa_private_key_ctx /*a1*/);
-    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/RawPrivateKey");
-    if (NULL == result_cls) {
-        VSCF_ASSERT("Class RawPrivateKey not found.");
-    }
-    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/RawPrivateKey;");
-    if (NULL == result_methodID) {
-        VSCF_ASSERT("Class RawPrivateKey has no 'getInstance' method.");
-    }
-
-    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
-    return ret;
-}
-
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1new__ (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscf_rsa_private_key_new();
 }
@@ -5776,7 +5747,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     byte* digest_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdigest, NULL);
     vsc_data_t digest = vsc_data(digest_arr, (*jenv)->GetArrayLength(jenv, jdigest));
 
-    vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_rsa_signature_len((vscf_rsa_t /*9*/ *) c_ctx /*3*/));
+    vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_rsa_signature_len((vscf_rsa_t /*9*/ *) c_ctx /*3*/, private_key/*a*/));
 
     vscf_status_t status = vscf_rsa_sign_hash(rsa_ctx /*a1*/, private_key /*a6*/, hash_id /*a7*/, digest /*a3*/, signature /*a3*/);
     if (status != vscf_status_SUCCESS) {
@@ -6438,7 +6409,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     byte* digest_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdigest, NULL);
     vsc_data_t digest = vsc_data(digest_arr, (*jenv)->GetArrayLength(jenv, jdigest));
 
-    vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_ecc_signature_len((vscf_ecc_t /*9*/ *) c_ctx /*3*/));
+    vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_ecc_signature_len((vscf_ecc_t /*9*/ *) c_ctx /*3*/, private_key/*a*/));
 
     vscf_status_t status = vscf_ecc_sign_hash(ecc_ctx /*a1*/, private_key /*a6*/, hash_id /*a7*/, digest /*a3*/, signature /*a3*/);
     if (status != vscf_status_SUCCESS) {
@@ -6533,7 +6504,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     vscf_impl_t */*6*/ private_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
 
     // Wrap input buffers
-    vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(vscf_ecc_shared_key_len((vscf_ecc_t /*9*/ *) c_ctx /*3*/, public_key/*a*/, private_key/*a*/));
+    vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(vscf_ecc_shared_key_len((vscf_ecc_t /*9*/ *) c_ctx /*3*/, private_key/*a*/));
 
     vscf_status_t status = vscf_ecc_compute_shared_key(ecc_ctx /*a1*/, public_key /*a6*/, private_key /*a6*/, shared_key /*a3*/);
     if (status != vscf_status_SUCCESS) {
@@ -8799,7 +8770,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     byte* digest_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdigest, NULL);
     vsc_data_t digest = vsc_data(digest_arr, (*jenv)->GetArrayLength(jenv, jdigest));
 
-    vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_ed25519_signature_len((vscf_ed25519_t /*9*/ *) c_ctx /*3*/));
+    vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_ed25519_signature_len((vscf_ed25519_t /*9*/ *) c_ctx /*3*/, private_key/*a*/));
 
     vscf_status_t status = vscf_ed25519_sign_hash(ed25519_ctx /*a1*/, private_key /*a6*/, hash_id /*a7*/, digest /*a3*/, signature /*a3*/);
     if (status != vscf_status_SUCCESS) {
@@ -8894,7 +8865,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     vscf_impl_t */*6*/ private_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
 
     // Wrap input buffers
-    vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(vscf_ed25519_shared_key_len((vscf_ed25519_t /*9*/ *) c_ctx /*3*/, public_key/*a*/, private_key/*a*/));
+    vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(vscf_ed25519_shared_key_len((vscf_ed25519_t /*9*/ *) c_ctx /*3*/, private_key/*a*/));
 
     vscf_status_t status = vscf_ed25519_compute_shared_key(ed25519_ctx /*a1*/, public_key /*a6*/, private_key /*a6*/, shared_key /*a3*/);
     if (status != vscf_status_SUCCESS) {
@@ -9351,7 +9322,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     vscf_impl_t */*6*/ private_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
 
     // Wrap input buffers
-    vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(vscf_curve25519_shared_key_len((vscf_curve25519_t /*9*/ *) c_ctx /*3*/, public_key/*a*/, private_key/*a*/));
+    vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(vscf_curve25519_shared_key_len((vscf_curve25519_t /*9*/ *) c_ctx /*3*/, private_key/*a*/));
 
     vscf_status_t status = vscf_curve25519_compute_shared_key(curve25519_ctx /*a1*/, public_key /*a6*/, private_key /*a6*/, shared_key /*a3*/);
     if (status != vscf_status_SUCCESS) {

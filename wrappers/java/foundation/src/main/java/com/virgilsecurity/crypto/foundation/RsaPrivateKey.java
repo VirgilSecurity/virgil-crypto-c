@@ -50,44 +50,6 @@ public class RsaPrivateKey implements AutoCloseable, Key, PrivateKey {
     }
 
     /*
-    * Import public key from the raw binary format.
-    *
-    * RSAPrivateKey ::= SEQUENCE {
-    * version Version,
-    * modulus INTEGER, -- n
-    * publicExponent INTEGER, -- e
-    * privateExponent INTEGER, -- d
-    * prime1 INTEGER, -- p
-    * prime2 INTEGER, -- q
-    * exponent1 INTEGER, -- d mod (p-1)
-    * exponent2 INTEGER, -- d mod (q-1)
-    * coefficient INTEGER -- (inverse of q) mod p
-    * }
-    */
-    public void import(RawPrivateKey rawPrivateKey) throws FoundationException {
-        FoundationJNI.INSTANCE.rsaPrivateKey_import(this.cCtx, rawPrivateKey);
-    }
-
-    /*
-    * Export public key in the raw binary format.
-    *
-    * RSAPrivateKey ::= SEQUENCE {
-    * version Version,
-    * modulus INTEGER, -- n
-    * publicExponent INTEGER, -- e
-    * privateExponent INTEGER, -- d
-    * prime1 INTEGER, -- p
-    * prime2 INTEGER, -- q
-    * exponent1 INTEGER, -- d mod (p-1)
-    * exponent2 INTEGER, -- d mod (q-1)
-    * coefficient INTEGER -- (inverse of q) mod p
-    * }
-    */
-    public RawPrivateKey export() {
-        return FoundationJNI.INSTANCE.rsaPrivateKey_export(this.cCtx);
-    }
-
-    /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
