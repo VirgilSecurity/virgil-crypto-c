@@ -24,7 +24,7 @@
             <return type="size"/>
         </method>
 
-        <method name="import" declaration="public">
+        <method name="import" declaration="public" visibility="private">
             Import public key from the raw binary format.
 
             RSAPublicKey ::= SEQUENCE {
@@ -37,7 +37,7 @@
             <return enum="status"/>
         </method>
 
-        <method name="export" declaration="public" is_const="1">
+        <method name="export" declaration="public" visibility="private" is_const="1">
             Export public key in the raw binary format.
 
             RSAPublicKey ::= SEQUENCE {

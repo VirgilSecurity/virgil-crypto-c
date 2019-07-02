@@ -1395,26 +1395,6 @@ public class FoundationJNI {
     */
     public native int rsaPublicKey_keyExponent(long cCtx);
 
-    /*
-    * Import public key from the raw binary format.
-    *
-    * RSAPublicKey ::= SEQUENCE {
-    * modulus INTEGER, -- n
-    * publicExponent INTEGER -- e
-    * }
-    */
-    public native void rsaPublicKey_import(long cCtx, RawPublicKey rawPublicKey) throws FoundationException;
-
-    /*
-    * Export public key in the raw binary format.
-    *
-    * RSAPublicKey ::= SEQUENCE {
-    * modulus INTEGER, -- n
-    * publicExponent INTEGER -- e
-    * }
-    */
-    public native RawPublicKey rsaPublicKey_export(long cCtx);
-
     public native long rsaPublicKey_new();
 
     public native void rsaPublicKey_close(long cCtx);

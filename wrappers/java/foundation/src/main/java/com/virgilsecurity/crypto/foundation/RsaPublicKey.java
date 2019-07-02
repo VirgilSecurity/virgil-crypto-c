@@ -57,30 +57,6 @@ public class RsaPublicKey implements AutoCloseable, Key, PublicKey {
     }
 
     /*
-    * Import public key from the raw binary format.
-    *
-    * RSAPublicKey ::= SEQUENCE {
-    * modulus INTEGER, -- n
-    * publicExponent INTEGER -- e
-    * }
-    */
-    public void import(RawPublicKey rawPublicKey) throws FoundationException {
-        FoundationJNI.INSTANCE.rsaPublicKey_import(this.cCtx, rawPublicKey);
-    }
-
-    /*
-    * Export public key in the raw binary format.
-    *
-    * RSAPublicKey ::= SEQUENCE {
-    * modulus INTEGER, -- n
-    * publicExponent INTEGER -- e
-    * }
-    */
-    public RawPublicKey export() {
-        return FoundationJNI.INSTANCE.rsaPublicKey_export(this.cCtx);
-    }
-
-    /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */

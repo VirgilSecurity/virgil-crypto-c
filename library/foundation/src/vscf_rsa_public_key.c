@@ -144,7 +144,7 @@ vscf_rsa_public_key_key_exponent(vscf_rsa_public_key_t *self) {
 //      publicExponent INTEGER -- e
 //  }
 //
-VSCF_PUBLIC vscf_status_t
+VSCF_PRIVATE vscf_status_t
 vscf_rsa_public_key_import(vscf_rsa_public_key_t *self, const vscf_raw_public_key_t *raw_public_key) {
 
     VSCF_ASSERT_PTR(self);
@@ -193,7 +193,7 @@ vscf_rsa_public_key_import(vscf_rsa_public_key_t *self, const vscf_raw_public_ke
 //      publicExponent INTEGER -- e
 //  }
 //
-VSCF_PUBLIC vscf_raw_public_key_t *
+VSCF_PRIVATE vscf_raw_public_key_t *
 vscf_rsa_public_key_export(const vscf_rsa_public_key_t *self) {
 
     VSCF_ASSERT_PTR(self);

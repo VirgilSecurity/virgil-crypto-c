@@ -74,30 +74,6 @@ import VSCFoundation
         return proxyResult
     }
 
-    /// Import public key from the raw binary format.
-    ///
-    /// RSAPublicKey ::= SEQUENCE {
-    ///     modulus INTEGER, -- n
-    ///     publicExponent INTEGER -- e
-    /// }
-    @objc public func import(rawPublicKey: RawPublicKey) throws {
-        let proxyResult = vscf_rsa_public_key_import(self.c_ctx, rawPublicKey.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
-    }
-
-    /// Export public key in the raw binary format.
-    ///
-    /// RSAPublicKey ::= SEQUENCE {
-    ///     modulus INTEGER, -- n
-    ///     publicExponent INTEGER -- e
-    /// }
-    @objc public func export() -> RawPublicKey {
-        let proxyResult = vscf_rsa_public_key_export(self.c_ctx)
-
-        return RawPublicKey.init(take: proxyResult!)
-    }
-
     /// Algorithm identifier the key belongs to.
     @objc public func algId() -> AlgId {
         let proxyResult = vscf_rsa_public_key_alg_id(self.c_ctx)

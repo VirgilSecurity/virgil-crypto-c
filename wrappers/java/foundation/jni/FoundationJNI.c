@@ -5175,35 +5175,6 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_r
     return ret;
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1import (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrawPublicKey) {
-    // Cast class context
-    vscf_rsa_public_key_t /*9*/* rsa_public_key_ctx = (vscf_rsa_public_key_t /*9*/*) c_ctx;
-
-    vscf_status_t status = vscf_rsa_public_key_import(rsa_public_key_ctx /*a1*/, raw_public_key /*a6*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-        return;
-    }
-}
-
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1export (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_rsa_public_key_t /*9*/* rsa_public_key_ctx = (vscf_rsa_public_key_t /*9*/*) c_ctx;
-
-    const vscf_raw_public_key_t * /*7*/ proxyResult = vscf_rsa_public_key_export(rsa_public_key_ctx /*a1*/);
-    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/RawPublicKey");
-    if (NULL == result_cls) {
-        VSCF_ASSERT("Class RawPublicKey not found.");
-    }
-    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/RawPublicKey;");
-    if (NULL == result_methodID) {
-        VSCF_ASSERT("Class RawPublicKey has no 'getInstance' method.");
-    }
-
-    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
-    return ret;
-}
-
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1new__ (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscf_rsa_public_key_new();
 }
