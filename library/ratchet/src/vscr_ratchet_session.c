@@ -711,8 +711,9 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *self, vsc_data_t plain_text
         }
     }
 
-    regular_message->cipher_text.arg =
-            vsc_buffer_new_with_capacity(vscr_ratchet_encrypt_len(self->ratchet, plain_text.len));
+    size_t len = vscr_ratchet_encrypt_len(self->ratchet, plain_text.len);
+    regular_message->cipher_text = vscr_alloc(sizeof(pb_bytes_array_t) + len);
+    regular_message->cipher_text->size = len;
 
     vscr_status_t result = vscr_ratchet_encrypt(self->ratchet, plain_text, regular_message, ratchet_message->header_pb);
 
@@ -738,7 +739,7 @@ vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *self, const vscr_ratche
     VSCR_ASSERT_PTR(self->ratchet);
     VSCR_ASSERT_PTR(message);
 
-    size_t cipher_text_len = vsc_buffer_len(message->message_pb.regular_message.cipher_text.arg);
+    size_t cipher_text_len = message->message_pb.regular_message.cipher_text->size;
 
     VSCR_ASSERT(cipher_text_len <= vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
 

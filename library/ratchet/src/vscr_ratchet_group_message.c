@@ -87,15 +87,6 @@ vscr_ratchet_group_message_init_ctx(vscr_ratchet_group_message_t *self);
 static void
 vscr_ratchet_group_message_cleanup_ctx(vscr_ratchet_group_message_t *self);
 
-static bool
-vscr_ratchet_group_message_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void**arg);
-
-static void
-vscr_ratchet_group_message_set_pb_encode_callback(vscr_ratchet_group_message_t *self);
-
-static void
-vscr_ratchet_group_message_set_pb_decode_callback(vscr_ratchet_group_message_t *self);
-
 //
 //  Return size of 'vscr_ratchet_group_message_t'.
 //
@@ -250,7 +241,6 @@ vscr_ratchet_group_message_init_ctx(vscr_ratchet_group_message_t *self) {
 
     self->message_pb = msg;
     self->message_pb.version = vscr_ratchet_common_hidden_GROUP_MESSAGE_VERSION;
-    vscr_ratchet_group_message_set_pb_encode_callback(self);
     self->key_id = vscr_ratchet_key_id_new();
 }
 
@@ -264,13 +254,8 @@ vscr_ratchet_group_message_cleanup_ctx(vscr_ratchet_group_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    if (self->message_pb.has_regular_message) {
-        if (self->message_pb.regular_message.cipher_text.arg) {
-            vsc_buffer_destroy((vsc_buffer_t **)&self->message_pb.regular_message.cipher_text.arg);
-        }
-    }
-
     vscr_dealloc(self->header_pb);
+    pb_release(GroupMessage_fields, &self->message_pb);
 
     vscr_ratchet_key_id_destroy(&self->key_id);
 }
@@ -381,8 +366,6 @@ vscr_ratchet_group_message_set_type(vscr_ratchet_group_message_t *self, vscr_gro
         self->message_pb.has_group_info = true;
         break;
     }
-
-    vscr_ratchet_group_message_set_pb_encode_callback(self);
 }
 
 //
@@ -394,18 +377,10 @@ vscr_ratchet_group_message_serialize_len(const vscr_ratchet_group_message_t *sel
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(self->message_pb.has_group_info != self->message_pb.has_regular_message);
 
-    if (self->message_pb.has_group_info) {
-        return vscr_ratchet_common_hidden_MAX_GROUP_INFO_MESSAGE_LEN;
-    } else if (self->message_pb.has_regular_message) {
-        VSCR_ASSERT(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN >=
-                    vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg));
-        return vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN - vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN +
-               vsc_buffer_len(self->message_pb.regular_message.cipher_text.arg);
-    }
+    size_t len = 0;
+    VSCR_ASSERT(pb_get_encoded_size(&len, GroupMessage_fields, &self->message_pb));
 
-    VSCR_ASSERT(false);
-
-    return 0;
+    return len;
 }
 
 //
@@ -447,8 +422,6 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     vscr_ratchet_group_message_t *message = vscr_ratchet_group_message_new();
 
-    vscr_ratchet_group_message_set_pb_decode_callback(message);
-
     pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
     bool pb_status = pb_decode(&istream, GroupMessage_fields, &message->message_pb);
@@ -471,8 +444,6 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
         }
     }
 
-    vscr_ratchet_group_message_set_pb_encode_callback(message);
-
 err:
     if (status != vscr_status_SUCCESS) {
         VSCR_ERROR_SAFE_UPDATE(error, status);
@@ -480,23 +451,4 @@ err:
     }
 
     return message;
-}
-
-static bool
-vscr_ratchet_group_message_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void **arg) {
-
-    return vscr_ratchet_common_hidden_buffer_decode_callback(
-            stream, field, arg, vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
-}
-
-static void
-vscr_ratchet_group_message_set_pb_encode_callback(vscr_ratchet_group_message_t *self) {
-
-    self->message_pb.regular_message.cipher_text.funcs.encode = vscr_ratchet_common_hidden_buffer_encode_callback;
-}
-
-static void
-vscr_ratchet_group_message_set_pb_decode_callback(vscr_ratchet_group_message_t *self) {
-
-    self->message_pb.regular_message.cipher_text.funcs.decode = vscr_ratchet_group_message_buffer_decode_callback;
 }

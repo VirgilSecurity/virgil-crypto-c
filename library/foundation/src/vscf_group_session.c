@@ -528,6 +528,8 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
             vsc_data(msg->message_pb.regular_message.header.bytes, msg->message_pb.regular_message.header.size),
             &cipher_text);
 
+    msg->message_pb.regular_message.cipher_text->size = vsc_buffer_len(&cipher_text);
+
     if (status != vscf_status_SUCCESS) {
         goto err1;
     }
@@ -540,8 +542,6 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
         status = ed_status == 1 ? vscf_status_ERROR_RANDOM_FAILED : vscf_status_ERROR_RANDOM_FAILED;
         goto err2;
     }
-
-    msg->message_pb.regular_message.cipher_text->size = vsc_buffer_len(&cipher_text);
 
 err2:
     vsc_buffer_delete(&cipher_text);
