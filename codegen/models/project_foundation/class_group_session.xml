@@ -4,6 +4,10 @@
         Sender id len
     </constant>
 
+    <constant name="max plain text len" value="30000">
+        Max plain text len
+    </constant>
+
     <require module="buffer defs" scope="private" project="common"/>
 
     <require module="group session typedefs" scope="context"/>

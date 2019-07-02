@@ -1,6 +1,10 @@
 <class name="group session message" context="private">
     Class represents group session message
 
+    <constant name="max message len" value="30222">
+        Max message len
+    </constant>
+
     <require header="GroupMessage.pb.h" scope="context"/>
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>

@@ -85,6 +85,16 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Public integral constants.
+//
+enum {
+    //
+    //  Max message len
+    //
+    vscf_group_session_message_MAX_MESSAGE_LEN = 30222
+};
+
+//
 //  Handle 'group session message' context.
 //
 typedef struct vscf_group_session_message_t vscf_group_session_message_t;

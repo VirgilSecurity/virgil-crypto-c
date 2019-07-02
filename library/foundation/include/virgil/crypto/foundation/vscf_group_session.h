@@ -86,7 +86,11 @@ enum {
     //
     //  Sender id len
     //
-    vscf_group_session_SENDER_ID_LEN = 32
+    vscf_group_session_SENDER_ID_LEN = 32,
+    //
+    //  Max plain text len
+    //
+    vscf_group_session_MAX_PLAIN_TEXT_LEN = 30000
 };
 
 //

@@ -712,7 +712,7 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *self, vsc_data_t plain_text
     }
 
     size_t len = vscr_ratchet_encrypt_len(self->ratchet, plain_text.len);
-    regular_message->cipher_text = vscr_alloc(sizeof(pb_bytes_array_t) + len);
+    regular_message->cipher_text = vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(len));
     regular_message->cipher_text->size = len;
 
     vscr_status_t result = vscr_ratchet_encrypt(self->ratchet, plain_text, regular_message, ratchet_message->header_pb);

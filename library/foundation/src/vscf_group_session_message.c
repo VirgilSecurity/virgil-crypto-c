@@ -354,10 +354,13 @@ vscf_group_session_message_set_type(vscf_group_session_message_t *self, vscf_gro
 VSCF_PUBLIC size_t
 vscf_group_session_message_serialize_len(const vscf_group_session_message_t *self) {
 
-    //  TODO: This is STUB. Implement me.
-    VSCF_UNUSED(self);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(self->message_pb.has_group_info != self->message_pb.has_regular_message);
 
-    return 50000;
+    size_t len = 0;
+    VSCF_ASSERT(pb_get_encoded_size(&len, GroupMessage_fields, &self->message_pb));
+
+    return len;
 }
 
 //
@@ -388,12 +391,11 @@ vscf_group_session_message_deserialize(vsc_data_t input, vscf_error_t *error) {
 
     VSCF_ASSERT(vsc_data_is_valid(input));
 
-    // FIXME
-    //    if (input.len > vscr_ratchet_common_MAX_MESSAGE_LEN) {
-    //        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
-    //
-    //        return NULL;
-    //    }
+    if (input.len > vscf_group_session_message_MAX_MESSAGE_LEN) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_PROTOBUF);
+
+        return NULL;
+    }
 
     vscf_group_session_message_t *message = vscf_group_session_message_new();
 
@@ -404,8 +406,7 @@ vscf_group_session_message_deserialize(vsc_data_t input, vscf_error_t *error) {
     bool pb_status = pb_decode(&istream, GroupMessage_fields, &message->message_pb);
 
     if (!pb_status || message->message_pb.has_group_info == message->message_pb.has_regular_message) {
-        // FIXME
-        status = vscf_status_ERROR_INVALID_PADDING;
+        status = vscf_status_ERROR_PROTOBUF;
         goto err;
     }
 
@@ -417,8 +418,7 @@ vscf_group_session_message_deserialize(vsc_data_t input, vscf_error_t *error) {
         pb_status = pb_decode(&sub_istream, RegularGroupMessageHeader_fields, message->header_pb);
 
         if (!pb_status) {
-            // FIXME
-            status = vscf_status_ERROR_INVALID_PADDING;
+            status = vscf_status_ERROR_PROTOBUF;
             goto err;
         }
     }

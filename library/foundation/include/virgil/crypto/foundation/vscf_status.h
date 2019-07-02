@@ -272,7 +272,11 @@ enum vscf_status_t {
     //
     //  Invalid padding.
     //
-    vscf_status_ERROR_INVALID_PADDING = -501
+    vscf_status_ERROR_INVALID_PADDING = -501,
+    //
+    //  Invalid padding.
+    //
+    vscf_status_ERROR_PROTOBUF = -601
 };
 typedef enum vscf_status_t vscf_status_t;
 

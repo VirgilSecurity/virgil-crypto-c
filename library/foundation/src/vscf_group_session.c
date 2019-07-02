@@ -55,11 +55,11 @@
 #include "vscf_group_session_ticket_internal.h"
 #include "vscf_key_asn1_deserializer.h"
 
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <GroupMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include <ed25519/ed25519.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 // clang-format on
 //  @end
@@ -517,7 +517,7 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
 
     size_t len = vscf_message_cipher_encrypt_len(self->cipher, vscf_message_padding_padded_len(plain_text.len));
 
-    msg->message_pb.regular_message.cipher_text = vscf_alloc(sizeof(pb_bytes_array_t) + len);
+    msg->message_pb.regular_message.cipher_text = vscf_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(len));
 
     vsc_buffer_t cipher_text;
     vsc_buffer_init(&cipher_text);

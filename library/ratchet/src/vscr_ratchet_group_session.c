@@ -834,7 +834,7 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     vscr_ratchet_keys_advance_chain_key(self->my_chain_key);
 
     size_t len = vscr_ratchet_cipher_encrypt_len(self->cipher, vscf_message_padding_padded_len(plain_text.len));
-    regular_message->cipher_text = vscr_alloc(sizeof(pb_bytes_array_t) + len);
+    regular_message->cipher_text = vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(len));
 
     pb_ostream_t ostream = pb_ostream_from_buffer(regular_message->header.bytes, sizeof(regular_message->header.bytes));
 

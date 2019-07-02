@@ -129,7 +129,7 @@ test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
             test_data_ratchet_group_message_sender_id.len);
 
     msg1->message_pb.regular_message.cipher_text =
-            vscr_alloc(sizeof(pb_bytes_array_t) + test_data_ratchet_group_message_data.len);
+            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(test_data_ratchet_group_message_data.len));
     msg1->message_pb.regular_message.cipher_text->size = test_data_ratchet_group_message_data.len;
     memcpy(msg1->message_pb.regular_message.cipher_text->bytes, test_data_ratchet_group_message_data.bytes,
             test_data_ratchet_group_message_data.len);
@@ -252,7 +252,7 @@ test__serialize_deserialize__regular_overflow__should_be_equal(void) {
     msg1->message_pb.regular_message.header.size = ostream.bytes_written;
 
     msg1->message_pb.regular_message.cipher_text =
-            vscr_alloc(sizeof(pb_bytes_array_t) + vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
+            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN));
     msg1->message_pb.regular_message.cipher_text->size = vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN;
 
     size_t len = vscr_ratchet_group_message_serialize_len(msg1);
