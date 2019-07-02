@@ -68,7 +68,6 @@
         <argument name="out" class="buffer">
             <length method="encrypted len">
                 <proxy argument="public key" to="public key"/>
-                <proxy argument="compute shared key ctx" to="compute shared key ctx"/>
                 <proxy argument="data" to="data len" cast="data_length"/>
             </length>
         </argument>
@@ -95,7 +94,6 @@
         <argument name="out" class="buffer">
             <length method="decrypted len">
                 <proxy argument="private key" to="private key"/>
-                <proxy argument="compute shared key ctx" to="compute shared key ctx"/>
                 <proxy argument="data" to="data len" cast="data_length"/>
             </length>
         </argument>
