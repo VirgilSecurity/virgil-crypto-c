@@ -230,8 +230,8 @@
 
         <require interface="alg info" scope="public"/>
 
-        <property name="buffer" class="buffer" access="readonly"/>
-        <property name="alg info" interface="alg info" access="readonly"/>
+        <property name="buffer" class="buffer"/>
+        <property name="alg info" interface="alg info"/>
         <property name="impl tag" enum="impl/tag"/>
 
         <interface name="key"/>
@@ -274,9 +274,9 @@
 
         <require interface="alg info" scope="public"/>
 
-        <property name="buffer" class="buffer" access="readonly"/>
-        <property name="alg info" interface="alg info" access="readonly"/>
-        <property name="public key" impl="raw public key" access="readonly"/>
+        <property name="buffer" class="buffer"/>
+        <property name="alg info" interface="alg info"/>
+        <property name="public key" impl="raw public key"/>
         <property name="impl tag" enum="impl/tag"/>
 
         <interface name="key"/>

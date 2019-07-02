@@ -97,8 +97,8 @@ vscf_raw_public_key_cleanup_ctx(vscf_raw_public_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy((vscf_impl_t **)(&self->alg_info));
-    vsc_buffer_destroy((vsc_buffer_t **)(&self->buffer));
+    vscf_impl_destroy(&self->alg_info);
+    vsc_buffer_destroy(&self->buffer);
 }
 
 //

@@ -655,6 +655,16 @@ vscf_recipient_cipher_start_decryption_with_key(
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
 
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        vscf_status_t status = vscf_ctr_drbg_setup_defaults(random);
+        if (status != vscf_status_SUCCESS) {
+            vscf_ctr_drbg_destroy(&random);
+            return status;
+        }
+        self->random = vscf_ctr_drbg_impl(random);
+    }
+
     vsc_buffer_destroy(&self->decryption_recipient_id);
     vscf_impl_destroy(&self->decryption_recipient_key);
     vsc_buffer_destroy(&self->message_info_buffer);
@@ -809,6 +819,7 @@ static vscf_status_t
 vscf_recipient_cipher_decrypt_data_encryption_key_with_private_key(vscf_recipient_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
     VSCF_ASSERT_PTR(self->message_info);
     VSCF_ASSERT_PTR(self->decryption_recipient_id);
     VSCF_ASSERT_PTR(self->decryption_recipient_key);
@@ -841,7 +852,8 @@ vscf_recipient_cipher_decrypt_data_encryption_key_with_private_key(vscf_recipien
                 return vscf_status_ERROR_BAD_MESSAGE_INFO;
             }
 
-            vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_key(self->decryption_recipient_key, NULL, &error);
+            vscf_impl_t *key_alg =
+                    vscf_key_alg_factory_create_from_key(self->decryption_recipient_key, self->random, &error);
             if (vscf_error_has_error(&error)) {
                 return vscf_error_status(&error);
             }

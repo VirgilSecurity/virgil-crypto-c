@@ -100,11 +100,11 @@ struct vscf_raw_public_key_t {
     //
     //  Implementation specific context.
     //
-    const vsc_buffer_t *buffer;
+    vsc_buffer_t *buffer;
     //
     //  Implementation specific context.
     //
-    const vscf_impl_t *alg_info;
+    vscf_impl_t *alg_info;
     //
     //  Implementation specific context.
     //

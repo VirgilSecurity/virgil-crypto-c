@@ -418,12 +418,6 @@ vscf_signer_sign(const vscf_signer_t *self, const vscf_impl_t *private_key, vsc_
     VSCF_ASSERT(vsc_buffer_unused_len(signature) >= vscf_signer_signature_len(self, private_key));
 
     //
-    //  Get digest.
-    //
-    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hash_digest_len(vscf_hash_api(self->hash)));
-    vscf_hash_finish(self->hash, digest);
-
-    //
     // Get raw signature.
     //
     vscf_error_t error;
@@ -431,7 +425,17 @@ vscf_signer_sign(const vscf_signer_t *self, const vscf_impl_t *private_key, vsc_
 
     vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_key(private_key, self->random, &error);
     VSCF_ASSERT(!vscf_error_has_error(&error));
-    VSCF_ASSERT(vscf_key_signer_is_implemented(key_alg));
+
+    if (!vscf_key_signer_is_implemented(key_alg)) {
+        vscf_impl_destroy(&key_alg);
+        return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+    }
+
+    //
+    //  Get digest.
+    //
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hash_digest_len(vscf_hash_api(self->hash)));
+    vscf_hash_finish(self->hash, digest);
 
     vsc_buffer_t *raw_signature = vsc_buffer_new_with_capacity(vscf_key_signer_signature_len(key_alg, private_key));
     vscf_status_t status = vscf_key_signer_sign_hash(

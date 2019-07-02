@@ -324,7 +324,7 @@ vscf_ed25519_import_private_key(
     VSCF_ASSERT(ret == 0);
     vsc_buffer_inc_used(public_key_buf, ED25519_KEY_LEN);
 
-    vscf_impl_t *alg_info = (vscf_impl_t *)vscf_raw_private_key_alg_info(raw_key);
+    vscf_impl_t *alg_info = vscf_impl_shallow_copy((vscf_impl_t *)vscf_raw_private_key_alg_info(raw_key));
     VSCF_ASSERT_PTR(alg_info);
 
     vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_buffer(&public_key_buf, &alg_info);

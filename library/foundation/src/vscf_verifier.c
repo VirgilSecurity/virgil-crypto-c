@@ -325,18 +325,23 @@ vscf_verifier_verify(vscf_verifier_t *self, vscf_impl_t *public_key) {
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
 
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_key(public_key, NULL, &error);
+    VSCF_ASSERT(!vscf_error_has_error(&error));
+
+    if (!vscf_key_signer_is_implemented(key_alg)) {
+        vscf_impl_destroy(&key_alg);
+        return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+    }
+
     //
     //  Get digest.
     //
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hash_digest_len(vscf_hash_api(self->hash)));
     vscf_hash_finish(self->hash, digest);
 
-    vscf_error_t error;
-    vscf_error_reset(&error);
-
-    vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_key(public_key, NULL, &error);
-    VSCF_ASSERT(!vscf_error_has_error(&error));
-    VSCF_ASSERT(vscf_key_signer_is_implemented(key_alg));
 
     bool is_valid = vscf_key_signer_verify_hash(key_alg, public_key, vscf_alg_alg_id(self->hash),
             vsc_buffer_data(digest), vsc_buffer_data(self->raw_signature));

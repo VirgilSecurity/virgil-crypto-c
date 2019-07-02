@@ -97,8 +97,9 @@ vscf_raw_private_key_cleanup_ctx(vscf_raw_private_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy((vscf_impl_t **)(&self->alg_info));
-    vsc_buffer_destroy((vsc_buffer_t **)(&self->buffer));
+    vscf_impl_destroy(&self->alg_info);
+    vsc_buffer_destroy(&self->buffer);
+    vscf_raw_public_key_destroy(&self->public_key);
 }
 
 //
@@ -199,7 +200,7 @@ vscf_raw_private_key_set_public_key(vscf_raw_private_key_t *self, vscf_raw_publi
     VSCF_ASSERT_PTR(*raw_public_key_ref);
     VSCF_ASSERT_SAFE(vscf_raw_public_key_is_valid(*raw_public_key_ref));
 
-    vscf_raw_public_key_destroy((vscf_raw_public_key_t **)&self->public_key);
+    vscf_raw_public_key_destroy(&self->public_key);
     self->public_key = *raw_public_key_ref;
 }
 
