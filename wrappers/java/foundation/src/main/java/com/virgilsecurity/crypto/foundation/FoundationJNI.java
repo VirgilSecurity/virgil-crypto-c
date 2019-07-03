@@ -688,6 +688,123 @@ public class FoundationJNI {
 
     public native byte[] brainkeyServer_harden(long cCtx, byte[] identitySecret, byte[] blindedPoint) throws FoundationException;
 
+    public native long groupSessionMessage_new();
+
+    public native void groupSessionMessage_close(long cCtx);
+
+    /*
+    * Returns message type.
+    */
+    public native GroupMsgType groupSessionMessage_getType(long cCtx);
+
+    /*
+    * Returns session id.
+    * This method should be called only for group info type.
+    */
+    public native byte[] groupSessionMessage_getSessionId(long cCtx);
+
+    /*
+    * Returns message sender id.
+    * This method should be called only for regular message type.
+    */
+    public native byte[] groupSessionMessage_getSenderId(long cCtx);
+
+    /*
+    * Returns message epoch.
+    */
+    public native long groupSessionMessage_getEpoch(long cCtx);
+
+    /*
+    * Buffer len to serialize this class.
+    */
+    public native int groupSessionMessage_serializeLen(long cCtx);
+
+    /*
+    * Serializes instance.
+    */
+    public native byte[] groupSessionMessage_serialize(long cCtx);
+
+    /*
+    * Deserializes instance.
+    */
+    public native GroupSessionMessage groupSessionMessage_deserialize(byte[] input) throws FoundationException;
+
+    public native long groupSessionTicket_new();
+
+    public native void groupSessionTicket_close(long cCtx);
+
+    /*
+    * Random used to generate keys
+    */
+    public native void groupSessionTicket_setRng(long cCtx, Random rng);
+
+    /*
+    * Setups default dependencies:
+    * - RNG: CTR DRBG
+    */
+    public native void groupSessionTicket_setupDefaults(long cCtx) throws FoundationException;
+
+    /*
+    * Set this ticket to start new group session.
+    */
+    public native void groupSessionTicket_setupTicketAsNew(long cCtx, byte[] sessionId) throws FoundationException;
+
+    /*
+    * Returns message that should be sent to all participants using secure channel.
+    */
+    public native GroupSessionMessage groupSessionTicket_getTicketMessage(long cCtx);
+
+    public native long groupSession_new();
+
+    public native void groupSession_close(long cCtx);
+
+    /*
+    * Random
+    */
+    public native void groupSession_setRng(long cCtx, Random rng) throws FoundationException;
+
+    /*
+    * Returns current epoch.
+    */
+    public native long groupSession_getCurrentEpoch(long cCtx);
+
+    /*
+    * Setups default dependencies:
+    * - RNG: CTR DRBG
+    */
+    public native void groupSession_setupDefaults(long cCtx) throws FoundationException;
+
+    /*
+    * Returns session id.
+    */
+    public native byte[] groupSession_getSessionId(long cCtx);
+
+    /*
+    * Adds epoch. New epoch should be generated for member removal or proactive to rotate encryption key.
+    * Epoch message should be encrypted and signed by trusted group chat member (admin).
+    */
+    public native void groupSession_addEpoch(long cCtx, GroupSessionMessage message) throws FoundationException;
+
+    /*
+    * Encrypts data
+    */
+    public native GroupSessionMessage groupSession_encrypt(long cCtx, byte[] plainText, byte[] privateKey, byte[] senderId) throws FoundationException;
+
+    /*
+    * Calculates size of buffer sufficient to store decrypted message
+    */
+    public native int groupSession_decryptLen(long cCtx, GroupSessionMessage message);
+
+    /*
+    * Decrypts message
+    */
+    public native byte[] groupSession_decrypt(long cCtx, GroupSessionMessage message, byte[] publicKey, byte[] senderId) throws FoundationException;
+
+    /*
+    * Creates ticket with new key for removing participants or proactive to rotate encryption key.
+    */
+    public native GroupSessionTicket groupSession_createGroupTicket(long cCtx) throws FoundationException;
+
     public native long sha224_new();
 
     public native void sha224_close(long cCtx);

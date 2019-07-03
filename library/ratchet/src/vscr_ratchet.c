@@ -317,7 +317,7 @@ vscr_ratchet_init_ctx(vscr_ratchet_t *self) {
 
     self->skipped_messages = vscr_ratchet_skipped_messages_new();
     self->cipher = vscr_ratchet_cipher_new();
-    self->padding = vscr_ratchet_padding_new();
+    self->padding = vscf_message_padding_new();
 }
 
 //
@@ -334,7 +334,7 @@ vscr_ratchet_cleanup_ctx(vscr_ratchet_t *self) {
     vscr_ratchet_receiver_chain_destroy(&self->receiver_chain);
     vscr_ratchet_skipped_messages_destroy(&self->skipped_messages);
     vscr_ratchet_cipher_destroy(&self->cipher);
-    vscr_ratchet_padding_destroy(&self->padding);
+    vscf_message_padding_destroy(&self->padding);
 }
 
 //
@@ -346,7 +346,7 @@ vscr_ratchet_did_setup_rng(vscr_ratchet_t *self) {
     VSCR_ASSERT_PTR(self);
 
     if (self->rng) {
-        vscr_ratchet_padding_use_rng(self->padding, self->rng);
+        vscf_message_padding_use_rng(self->padding, self->rng);
     }
 }
 
@@ -392,9 +392,9 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet
 
     vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(new_chain_key);
 
-    vscr_status_t result =
-            vscr_ratchet_cipher_decrypt_then_remove_pad(self->cipher, vsc_buffer_data(message->cipher_text.arg),
-                    message_key, vsc_data(message->header.bytes, message->header.size), buffer);
+    vscr_status_t result = vscr_ratchet_cipher_decrypt_then_remove_pad(self->cipher,
+            vsc_data(message->cipher_text->bytes, message->cipher_text->size), message_key,
+            vsc_data(message->header.bytes, message->header.size), buffer);
 
     vscr_ratchet_chain_key_destroy(&new_chain_key);
     vscr_ratchet_message_key_destroy(&message_key);
@@ -469,8 +469,7 @@ vscr_ratchet_respond(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_k
     // At this moment decrypting message using symmetric authenticated encryption is the only way to check
     // message authenticity. Further in decrypt method first message will be decrypted for the second time.
 
-    vsc_buffer_t *msg_buffer =
-            vsc_buffer_new_with_capacity(vscr_ratchet_decrypt_len(self, vsc_buffer_len(message->cipher_text.arg)));
+    vsc_buffer_t *msg_buffer = vsc_buffer_new_with_capacity(vscr_ratchet_decrypt_len(self, message->cipher_text->size));
     vsc_buffer_make_secure(msg_buffer);
     status = vscr_ratchet_decrypt_for_existing_chain(
             self, &receiver_chain->chain_key, message, regular_message_header, msg_buffer);
@@ -515,7 +514,7 @@ vscr_ratchet_encrypt_len(vscr_ratchet_t *self, size_t plain_text_len) {
 
     VSCR_ASSERT_PTR(self);
 
-    return vscr_ratchet_cipher_encrypt_len(self->cipher, vscr_ratchet_padding_padded_len(plain_text_len));
+    return vscr_ratchet_cipher_encrypt_len(self->cipher, vscf_message_padding_padded_len(plain_text_len));
 }
 
 VSCR_PUBLIC vscr_status_t
@@ -564,8 +563,16 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
 
     regular_message->header.size = ostream.bytes_written;
 
+    vsc_buffer_t buffer;
+    vsc_buffer_init(&buffer);
+    vsc_buffer_use(&buffer, regular_message->cipher_text->bytes, regular_message->cipher_text->size);
+
     result = vscr_ratchet_cipher_pad_then_encrypt(self->cipher, self->padding, plain_text, message_key,
-            vsc_data(regular_message->header.bytes, regular_message->header.size), regular_message->cipher_text.arg);
+            vsc_data(regular_message->header.bytes, regular_message->header.size), &buffer);
+
+    regular_message->cipher_text->size = vsc_buffer_len(&buffer);
+
+    vsc_buffer_delete(&buffer);
 
 err1:
     vscr_ratchet_message_key_destroy(&message_key);
@@ -607,8 +614,9 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
             }
         } else {
             vscr_status_t result = vscr_ratchet_cipher_decrypt_then_remove_pad(self->cipher,
-                    vsc_buffer_data(regular_message->cipher_text.arg), skipped_message_key,
-                    vsc_data(regular_message->header.bytes, regular_message->header.size), plain_text);
+                    vsc_data(regular_message->cipher_text->bytes, regular_message->cipher_text->size),
+                    skipped_message_key, vsc_data(regular_message->header.bytes, regular_message->header.size),
+                    plain_text);
 
             if (result != vscr_status_SUCCESS) {
                 return result;

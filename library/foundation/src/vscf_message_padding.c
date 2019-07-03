@@ -44,13 +44,15 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_ratchet_padding.h"
-#include "vscr_memory.h"
-#include "vscr_assert.h"
-#include "vscr_ratchet_padding_defs.h"
+#include "vscf_message_padding.h"
+#include "vscf_memory.h"
+#include "vscf_assert.h"
+#include "vscf_random.h"
+#include "vscf_message_padding_defs.h"
 
-#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
+#include <pb_decode.h>
+#include <pb_encode.h>
 
 // clang-format on
 //  @end
@@ -64,11 +66,11 @@
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_padding_init() is called.
+//  Note, this method is called automatically when method vscf_message_padding_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_padding_init_ctx(vscr_ratchet_padding_t *self);
+vscf_message_padding_init_ctx(vscf_message_padding_t *self);
 
 //
 //  Release all inner resources.
@@ -76,61 +78,61 @@ vscr_ratchet_padding_init_ctx(vscr_ratchet_padding_t *self);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_padding_cleanup_ctx(vscr_ratchet_padding_t *self);
+vscf_message_padding_cleanup_ctx(vscf_message_padding_t *self);
 
 //
-//  Return size of 'vscr_ratchet_padding_t'.
+//  Return size of 'vscf_message_padding_t'.
 //
-VSCR_PUBLIC size_t
-vscr_ratchet_padding_ctx_size(void) {
+VSCF_PUBLIC size_t
+vscf_message_padding_ctx_size(void) {
 
-    return sizeof(vscr_ratchet_padding_t);
+    return sizeof(vscf_message_padding_t);
 }
 
 //
 //  Perform initialization of pre-allocated context.
 //
-VSCR_PUBLIC void
-vscr_ratchet_padding_init(vscr_ratchet_padding_t *self) {
+VSCF_PUBLIC void
+vscf_message_padding_init(vscf_message_padding_t *self) {
 
-    VSCR_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self);
 
-    vscr_zeroize(self, sizeof(vscr_ratchet_padding_t));
+    vscf_zeroize(self, sizeof(vscf_message_padding_t));
 
     self->refcnt = 1;
 
-    vscr_ratchet_padding_init_ctx(self);
+    vscf_message_padding_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
-VSCR_PUBLIC void
-vscr_ratchet_padding_cleanup(vscr_ratchet_padding_t *self) {
+VSCF_PUBLIC void
+vscf_message_padding_cleanup(vscf_message_padding_t *self) {
 
     if (self == NULL) {
         return;
     }
 
-    vscr_ratchet_padding_cleanup_ctx(self);
+    vscf_message_padding_cleanup_ctx(self);
 
-    vscr_ratchet_padding_release_rng(self);
+    vscf_message_padding_release_rng(self);
 
-    vscr_zeroize(self, sizeof(vscr_ratchet_padding_t));
+    vscf_zeroize(self, sizeof(vscf_message_padding_t));
 }
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_padding_t *
-vscr_ratchet_padding_new(void) {
+VSCF_PUBLIC vscf_message_padding_t *
+vscf_message_padding_new(void) {
 
-    vscr_ratchet_padding_t *self = (vscr_ratchet_padding_t *) vscr_alloc(sizeof (vscr_ratchet_padding_t));
-    VSCR_ASSERT_ALLOC(self);
+    vscf_message_padding_t *self = (vscf_message_padding_t *) vscf_alloc(sizeof (vscf_message_padding_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscr_ratchet_padding_init(self);
+    vscf_message_padding_init(self);
 
-    self->self_dealloc_cb = vscr_dealloc;
+    self->self_dealloc_cb = vscf_dealloc;
 
     return self;
 }
@@ -139,22 +141,22 @@ vscr_ratchet_padding_new(void) {
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //
-VSCR_PUBLIC void
-vscr_ratchet_padding_delete(vscr_ratchet_padding_t *self) {
+VSCF_PUBLIC void
+vscf_message_padding_delete(vscf_message_padding_t *self) {
 
     if (self == NULL) {
         return;
     }
 
     size_t old_counter = self->refcnt;
-    VSCR_ASSERT(old_counter != 0);
+    VSCF_ASSERT(old_counter != 0);
     size_t new_counter = old_counter - 1;
 
-    #if defined(VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
-    while (!VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
         old_counter = self->refcnt;
-        VSCR_ASSERT(old_counter != 0);
+        VSCF_ASSERT(old_counter != 0);
         new_counter = old_counter - 1;
     }
     #else
@@ -165,9 +167,9 @@ vscr_ratchet_padding_delete(vscr_ratchet_padding_t *self) {
         return;
     }
 
-    vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
+    vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscr_ratchet_padding_cleanup(self);
+    vscf_message_padding_cleanup(self);
 
     if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
@@ -176,35 +178,35 @@ vscr_ratchet_padding_delete(vscr_ratchet_padding_t *self) {
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_padding_new ()'.
+//  This is a reverse action of the function 'vscf_message_padding_new ()'.
 //
-VSCR_PUBLIC void
-vscr_ratchet_padding_destroy(vscr_ratchet_padding_t **self_ref) {
+VSCF_PUBLIC void
+vscf_message_padding_destroy(vscf_message_padding_t **self_ref) {
 
-    VSCR_ASSERT_PTR(self_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscr_ratchet_padding_t *self = *self_ref;
+    vscf_message_padding_t *self = *self_ref;
     *self_ref = NULL;
 
-    vscr_ratchet_padding_delete(self);
+    vscf_message_padding_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_padding_t *
-vscr_ratchet_padding_shallow_copy(vscr_ratchet_padding_t *self) {
+VSCF_PUBLIC vscf_message_padding_t *
+vscf_message_padding_shallow_copy(vscf_message_padding_t *self) {
 
-    VSCR_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self);
 
-    #if defined(VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
     size_t old_counter;
     size_t new_counter;
     do {
         old_counter = self->refcnt;
         new_counter = old_counter + 1;
-    } while (!VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    } while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
     #else
     ++self->refcnt;
     #endif
@@ -215,14 +217,14 @@ vscr_ratchet_padding_shallow_copy(vscr_ratchet_padding_t *self) {
 //
 //  Setup dependency to the interface 'random' with shared ownership.
 //
-VSCR_PUBLIC void
-vscr_ratchet_padding_use_rng(vscr_ratchet_padding_t *self, vscf_impl_t *rng) {
+VSCF_PUBLIC void
+vscf_message_padding_use_rng(vscf_message_padding_t *self, vscf_impl_t *rng) {
 
-    VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(rng);
-    VSCR_ASSERT(self->rng == NULL);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(rng);
+    VSCF_ASSERT(self->rng == NULL);
 
-    VSCR_ASSERT(vscf_random_is_implemented(rng));
+    VSCF_ASSERT(vscf_random_is_implemented(rng));
 
     self->rng = vscf_impl_shallow_copy(rng);
 }
@@ -231,14 +233,14 @@ vscr_ratchet_padding_use_rng(vscr_ratchet_padding_t *self, vscf_impl_t *rng) {
 //  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCR_PUBLIC void
-vscr_ratchet_padding_take_rng(vscr_ratchet_padding_t *self, vscf_impl_t *rng) {
+VSCF_PUBLIC void
+vscf_message_padding_take_rng(vscf_message_padding_t *self, vscf_impl_t *rng) {
 
-    VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(rng);
-    VSCR_ASSERT(self->rng == NULL);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(rng);
+    VSCF_ASSERT(self->rng == NULL);
 
-    VSCR_ASSERT(vscf_random_is_implemented(rng));
+    VSCF_ASSERT(vscf_random_is_implemented(rng));
 
     self->rng = rng;
 }
@@ -246,10 +248,10 @@ vscr_ratchet_padding_take_rng(vscr_ratchet_padding_t *self, vscf_impl_t *rng) {
 //
 //  Release dependency to the interface 'random'.
 //
-VSCR_PUBLIC void
-vscr_ratchet_padding_release_rng(vscr_ratchet_padding_t *self) {
+VSCF_PUBLIC void
+vscf_message_padding_release_rng(vscf_message_padding_t *self) {
 
-    VSCR_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self);
 
     vscf_impl_destroy(&self->rng);
 }
@@ -264,13 +266,13 @@ vscr_ratchet_padding_release_rng(vscr_ratchet_padding_t *self) {
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_padding_init() is called.
+//  Note, this method is called automatically when method vscf_message_padding_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_padding_init_ctx(vscr_ratchet_padding_t *self) {
+vscf_message_padding_init_ctx(vscf_message_padding_t *self) {
 
-    VSCR_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self);
 }
 
 //
@@ -279,85 +281,88 @@ vscr_ratchet_padding_init_ctx(vscr_ratchet_padding_t *self) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_padding_cleanup_ctx(vscr_ratchet_padding_t *self) {
+vscf_message_padding_cleanup_ctx(vscf_message_padding_t *self) {
 
-    VSCR_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self);
 }
 
-VSCR_PUBLIC size_t
-vscr_ratchet_padding_padded_len(size_t plain_text_len) {
+VSCF_PUBLIC size_t
+vscf_message_padding_padded_len(size_t plain_text_len) {
 
-    size_t full_size = plain_text_len + vscr_ratchet_padding_PADDING_SIZE_LEN;
+    size_t full_size = plain_text_len + vscf_message_padding_PADDING_SIZE_LEN;
 
-    size_t factor = full_size / vscr_ratchet_padding_PADDING_FACTOR + 1;
+    size_t factor = full_size / vscf_message_padding_PADDING_FACTOR + 1;
 
-    return factor * vscr_ratchet_padding_PADDING_FACTOR;
+    return factor * vscf_message_padding_PADDING_FACTOR;
 }
 
-VSCR_PUBLIC vscr_status_t
-vscr_ratchet_padding_add_padding(vscr_ratchet_padding_t *self, vsc_buffer_t *plain_text) {
+VSCF_PUBLIC vscf_status_t
+vscf_message_padding_add_padding(vscf_message_padding_t *self, vsc_buffer_t *plain_text) {
 
-    VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(self->rng);
-    VSCR_ASSERT_PTR(plain_text);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->rng);
+    VSCF_ASSERT_PTR(plain_text);
 
     size_t initial_len = vsc_buffer_len(plain_text);
-    uint32_t padded_len = (uint32_t)vscr_ratchet_padding_padded_len(vsc_buffer_len(plain_text));
+    uint32_t padded_len = (uint32_t)vscf_message_padding_padded_len(vsc_buffer_len(plain_text));
 
-    VSCR_ASSERT(vsc_buffer_capacity(plain_text) >= padded_len);
+    VSCF_ASSERT(vsc_buffer_capacity(plain_text) >= padded_len);
 
-    size_t rest_len = padded_len - vsc_buffer_len(plain_text) - vscr_ratchet_padding_PADDING_SIZE_LEN;
+    size_t rest_len = padded_len - vsc_buffer_len(plain_text) - vscf_message_padding_PADDING_SIZE_LEN;
 
-    VSCR_ASSERT(rest_len != 0);
+    VSCF_ASSERT(rest_len != 0);
 
     vscf_status_t status = vscf_random(self->rng, rest_len, plain_text);
 
     if (status != vscf_status_SUCCESS) {
-        return vscr_status_ERROR_RNG_FAILED;
+        return vscf_status_ERROR_RANDOM_FAILED;
     }
 
-    VSCR_ASSERT(vsc_buffer_unused_len(plain_text) == vscr_ratchet_padding_PADDING_SIZE_LEN);
+    VSCF_ASSERT(vsc_buffer_unused_len(plain_text) == vscf_message_padding_PADDING_SIZE_LEN);
 
     pb_ostream_t stream =
-            pb_ostream_from_buffer(vsc_buffer_unused_bytes(plain_text), vscr_ratchet_padding_PADDING_SIZE_LEN);
+            pb_ostream_from_buffer(vsc_buffer_unused_bytes(plain_text), vscf_message_padding_PADDING_SIZE_LEN);
 
     bool pb_res = pb_encode_fixed32(&stream, &initial_len);
 
-    VSCR_ASSERT(pb_res);
+    VSCF_ASSERT(pb_res);
 
-    vsc_buffer_inc_used(plain_text, vscr_ratchet_padding_PADDING_SIZE_LEN);
+    vsc_buffer_inc_used(plain_text, vscf_message_padding_PADDING_SIZE_LEN);
 
-    return vscr_status_SUCCESS;
+    return vscf_status_SUCCESS;
 }
 
-VSCR_PUBLIC vscr_status_t
-vscr_ratchet_padding_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buffer) {
+VSCF_PUBLIC vscf_status_t
+vscf_message_padding_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buffer) {
 
-    if (decrypted_text.len < vscr_ratchet_padding_PADDING_SIZE_LEN) {
-        return vscr_status_ERROR_INVALID_PADDING;
+    VSCF_ASSERT_PTR(buffer);
+    VSCF_ASSERT(vsc_data_is_valid(decrypted_text));
+
+    if (decrypted_text.len < vscf_message_padding_PADDING_SIZE_LEN) {
+        return vscf_status_ERROR_INVALID_PADDING;
     }
 
     uint32_t plain_text_len = 0;
 
     pb_istream_t stream =
-            pb_istream_from_buffer(vsc_data_slice_end(decrypted_text, 0, vscr_ratchet_padding_PADDING_SIZE_LEN).bytes,
-                    vscr_ratchet_padding_PADDING_SIZE_LEN);
+            pb_istream_from_buffer(vsc_data_slice_end(decrypted_text, 0, vscf_message_padding_PADDING_SIZE_LEN).bytes,
+                    vscf_message_padding_PADDING_SIZE_LEN);
 
     bool pb_res = pb_decode_fixed32(&stream, &plain_text_len);
 
     if (!pb_res) {
-        return vscr_status_ERROR_INVALID_PADDING;
+        return vscf_status_ERROR_INVALID_PADDING;
     }
 
-    if (plain_text_len >= decrypted_text.len - vscr_ratchet_padding_PADDING_SIZE_LEN) {
-        return vscr_status_ERROR_INVALID_PADDING;
+    if (plain_text_len >= decrypted_text.len - vscf_message_padding_PADDING_SIZE_LEN) {
+        return vscf_status_ERROR_INVALID_PADDING;
     }
 
     if (vsc_buffer_unused_len(buffer) < plain_text_len) {
-        return vscr_status_ERROR_INVALID_PADDING;
+        return vscf_status_ERROR_INVALID_PADDING;
     }
 
     vsc_buffer_write_data(buffer, vsc_data_slice_beg(decrypted_text, 0, plain_text_len));
 
-    return vscr_status_SUCCESS;
+    return vscf_status_SUCCESS;
 }

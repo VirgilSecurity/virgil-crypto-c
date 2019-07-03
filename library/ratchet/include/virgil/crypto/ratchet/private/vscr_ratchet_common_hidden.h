@@ -89,13 +89,6 @@ enum {
     vscr_ratchet_common_hidden_MAX_SESSION_LEN = 42531
 };
 
-VSCR_PUBLIC bool
-vscr_ratchet_common_hidden_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void**arg,
-        size_t max_size);
-
-VSCR_PUBLIC bool
-vscr_ratchet_common_hidden_buffer_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

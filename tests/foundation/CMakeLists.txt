@@ -98,6 +98,8 @@ _add_test (test_brainkey)
 _add_test (test_brainkey_client)
 _add_test (test_brainkey_server)
 _add_test (test_simple_swu)
+_add_test (test_group_session)
+_add_test (test_group_message)
 
 # ---------------------------------------------------------------------------
 #   Multi-threading tests

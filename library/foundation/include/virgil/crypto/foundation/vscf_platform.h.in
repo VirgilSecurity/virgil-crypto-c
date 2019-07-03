@@ -482,6 +482,34 @@ extern "C" {
 #cmakedefine01 VSCF_BRAINKEY_SERVER
 #endif
 
+#ifndef VSCF_MESSAGE_PADDING
+#cmakedefine01 VSCF_MESSAGE_PADDING
+#endif
+
+#ifndef VSCF_MESSAGE_CIPHER
+#cmakedefine01 VSCF_MESSAGE_CIPHER
+#endif
+
+#ifndef VSCF_GROUP_SESSION_MESSAGE
+#cmakedefine01 VSCF_GROUP_SESSION_MESSAGE
+#endif
+
+#ifndef VSCF_GROUP_SESSION_TICKET
+#cmakedefine01 VSCF_GROUP_SESSION_TICKET
+#endif
+
+#ifndef VSCF_GROUP_SESSION
+#cmakedefine01 VSCF_GROUP_SESSION
+#endif
+
+#ifndef VSCF_GROUP_SESSION_EPOCH
+#cmakedefine01 VSCF_GROUP_SESSION_EPOCH
+#endif
+
+#ifndef VSCF_GROUP_SESSION_EPOCH_NODE
+#cmakedefine01 VSCF_GROUP_SESSION_EPOCH_NODE
+#endif
+
 //
 //  Defines namespace include prefix for project 'common'.
 //

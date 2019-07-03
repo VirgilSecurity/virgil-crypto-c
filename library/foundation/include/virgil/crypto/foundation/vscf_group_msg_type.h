@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'ratchet padding' types definition.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,10 +44,22 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_ratchet_padding_defs.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Represents group message type
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_GROUP_MSG_TYPE_H_INCLUDED
+#define VSCF_GROUP_MSG_TYPE_H_INCLUDED
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +68,35 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Represents group message type
+//
+enum vscf_group_msg_type_t {
+    //
+    //  Group info type with encryption key.
+    //  This type of message should be encrypted before transferring.
+    //
+    vscf_group_msg_type_GROUP_INFO = 1,
+    //
+    //  Regular group message with encrypted text.
+    //
+    vscf_group_msg_type_REGULAR = 2
+};
+typedef enum vscf_group_msg_type_t vscf_group_msg_type_t;
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_GROUP_MSG_TYPE_H_INCLUDED
 //  @end

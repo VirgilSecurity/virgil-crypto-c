@@ -58,7 +58,7 @@
     </method>
 
     <method name="pad then encrypt" scope="private">
-        <argument name="padding" class="ratchet padding" access="readwrite"/>
+        <argument name="padding" class="message padding" project="foundation" access="readwrite"/>
         <argument name="data" class="data"/>
         <argument name="key" class="ratchet message key"/>
         <argument name="ad" class="data"/>

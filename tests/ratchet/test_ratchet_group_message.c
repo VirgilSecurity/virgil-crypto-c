@@ -58,7 +58,7 @@ static bool
 reg_msg_hdr_cmp(RegularGroupMessageHeader *msg1, RegularGroupMessageHeader *msg2) {
     return memcmp(msg1->session_id, msg2->session_id, sizeof(msg1->session_id)) == 0 &&
            memcmp(msg1->sender_id, msg2->sender_id, sizeof(msg1->sender_id)) == 0 && msg1->counter == msg2->counter &&
-           msg1->prev_epochs_msgs[0] == msg2->prev_epochs_msgs[0] &&
+           msg1->epoch == msg2->epoch && msg1->prev_epochs_msgs[0] == msg2->prev_epochs_msgs[0] &&
            msg1->prev_epochs_msgs[1] == msg2->prev_epochs_msgs[1] &&
            msg1->prev_epochs_msgs[2] == msg2->prev_epochs_msgs[2] &&
            msg1->prev_epochs_msgs[3] == msg2->prev_epochs_msgs[3] && msg1->epoch == msg2->epoch;
@@ -67,10 +67,10 @@ reg_msg_hdr_cmp(RegularGroupMessageHeader *msg1, RegularGroupMessageHeader *msg2
 static bool
 reg_msg_cmp(RegularGroupMessage *msg1, RegularGroupMessage *msg2) {
 
-    return vsc_buffer_len(msg1->cipher_text.arg) == vsc_buffer_len(msg2->cipher_text.arg) &&
+    return msg1->cipher_text->size == msg2->cipher_text->size &&
            memcmp(&msg1->header, &msg2->header, sizeof(msg1->header)) == 0 &&
-           memcmp(vsc_buffer_bytes(msg1->cipher_text.arg), vsc_buffer_bytes(msg2->cipher_text.arg),
-                   vsc_buffer_len(msg1->cipher_text.arg)) == 0;
+           memcmp(&msg1->signature, &msg2->signature, sizeof(msg1->signature)) == 0 &&
+           memcmp(msg1->cipher_text->bytes, msg2->cipher_text->bytes, msg1->cipher_text->size) == 0;
 }
 
 static bool
@@ -127,7 +127,12 @@ test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
             test_data_ratchet_group_message_signature.len);
     memcpy(msg1->header_pb->sender_id, test_data_ratchet_group_message_sender_id.bytes,
             test_data_ratchet_group_message_sender_id.len);
-    msg1->message_pb.regular_message.cipher_text.arg = vsc_buffer_new_with_data(test_data_ratchet_group_message_data);
+
+    msg1->message_pb.regular_message.cipher_text =
+            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(test_data_ratchet_group_message_data.len));
+    msg1->message_pb.regular_message.cipher_text->size = test_data_ratchet_group_message_data.len;
+    memcpy(msg1->message_pb.regular_message.cipher_text->bytes, test_data_ratchet_group_message_data.bytes,
+            test_data_ratchet_group_message_data.len);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
             msg1->message_pb.regular_message.header.bytes, sizeof(msg1->message_pb.regular_message.header.bytes));
@@ -241,15 +246,14 @@ test__serialize_deserialize__regular_overflow__should_be_equal(void) {
     memcpy(msg1->header_pb->sender_id, test_data_ratchet_group_message_sender_id.bytes,
             test_data_ratchet_group_message_sender_id.len);
 
-    vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
-    vsc_buffer_inc_used(cipher_text, vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
-
     pb_ostream_t ostream = pb_ostream_from_buffer(
             msg1->message_pb.regular_message.header.bytes, sizeof(msg1->message_pb.regular_message.header.bytes));
     TEST_ASSERT(pb_encode(&ostream, RegularGroupMessageHeader_fields, msg1->header_pb));
     msg1->message_pb.regular_message.header.size = ostream.bytes_written;
 
-    msg1->message_pb.regular_message.cipher_text.arg = cipher_text;
+    msg1->message_pb.regular_message.cipher_text =
+            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN));
+    msg1->message_pb.regular_message.cipher_text->size = vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN;
 
     size_t len = vscr_ratchet_group_message_serialize_len(msg1);
     vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);

@@ -141,6 +141,24 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_INVALID_IDENTITY_SECRET = -410;
 
+    public static final int ERROR_INVALID_PADDING = -501;
+
+    public static final int ERROR_PROTOBUF = -601;
+
+    public static final int ERROR_SESSION_ID_DOESNT_MATCH = -701;
+
+    public static final int ERROR_EPOCH_NOT_FOUND = -702;
+
+    public static final int ERROR_WRONG_KEY_TYPE = -703;
+
+    public static final int ERROR_INVALID_SIGNATURE = -704;
+
+    public static final int ERROR_ED25519 = -705;
+
+    public static final int ERROR_DUPLICATE_EPOCH = -706;
+
+    public static final int ERROR_PLAIN_TEXT_TOO_LONG = -707;
+
     private int statusCode;
 
     /* Create new instance. */
@@ -255,6 +273,24 @@ public class FoundationException extends RuntimeException {
             return "Brainkey seed buffer length capacity should be >= 32 byte.";
         case ERROR_INVALID_IDENTITY_SECRET:
             return "Brainkey identity secret is invalid.";
+        case ERROR_INVALID_PADDING:
+            return "Invalid padding.";
+        case ERROR_PROTOBUF:
+            return "Protobuf error.";
+        case ERROR_SESSION_ID_DOESNT_MATCH:
+            return "Session id doesnt match.";
+        case ERROR_EPOCH_NOT_FOUND:
+            return "Epoch not found.";
+        case ERROR_WRONG_KEY_TYPE:
+            return "Wrong key type.";
+        case ERROR_INVALID_SIGNATURE:
+            return "Invalid signature.";
+        case ERROR_ED25519:
+            return "Ed25519 error.";
+        case ERROR_DUPLICATE_EPOCH:
+            return "Duplicate epoch.";
+        case ERROR_PLAIN_TEXT_TOO_LONG:
+            return "Plain text too long.";
         default:
             return "Unknown error";
         }

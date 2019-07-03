@@ -6,3 +6,5 @@ PrekeyMessage.sender_identity_key max_size:32 fixed_length:true
 PrekeyMessage.sender_ephemeral_key max_size:32 fixed_length:true
 PrekeyMessage.receiver_long_term_key max_size:32 fixed_length:true
 PrekeyMessage.receiver_one_time_key max_size:32 fixed_length:true
+
+RegularMessage.cipher_text max_size:32975 type:FT_POINTER
