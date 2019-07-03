@@ -195,6 +195,14 @@ enum vscf_status_t {
     //
     vscf_status_ERROR_BAD_DER_PRIVATE_KEY = -224,
     //
+    //  Key algorithm does not accept given type of public key.
+    //
+    vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM = -225,
+    //
+    //  Key algorithm does not accept given type of private key.
+    //
+    vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM = -226,
+    //
     //  Decryption failed, because message info was not given explicitly,
     //  and was not part of an encrypted message.
     //

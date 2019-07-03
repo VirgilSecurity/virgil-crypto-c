@@ -36,7 +36,7 @@
 import Foundation
 import VSCFoundation
 
-/// Group ticket used to start group session or change participants.
+/// Group ticket used to start group session, remove participants or proactive to rotate encryption key.
 @objc(VSCFGroupSessionTicket) public class GroupSessionTicket: NSObject {
 
     /// Handle underlying C context.

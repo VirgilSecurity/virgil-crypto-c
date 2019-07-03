@@ -92,25 +92,17 @@ struct vscf_rsa_public_key_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
-    //  Dependency to the interface 'hash'.
+    //  Implementation specific context.
     //
-    vscf_impl_t *hash;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-    //
-    //  Dependency to the interface 'asn1 reader'.
-    //
-    vscf_impl_t *asn1rd;
-    //
-    //  Dependency to the interface 'asn1 writer'.
-    //
-    vscf_impl_t *asn1wr;
+    vscf_impl_t *alg_info;
     //
     //  Implementation specific context.
     //
     mbedtls_rsa_context rsa_ctx;
+    //
+    //  Implementation specific context.
+    //
+    vscf_impl_tag_t impl_tag;
 };
 
 

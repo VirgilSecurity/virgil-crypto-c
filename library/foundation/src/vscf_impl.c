@@ -160,6 +160,16 @@ vscf_impl_shallow_copy(vscf_impl_t *impl) {
     return impl;
 }
 
+//
+//  Copy implementation object by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_impl_shallow_copy_const(const vscf_impl_t *impl) {
+
+    return vscf_impl_shallow_copy((vscf_impl_t *)impl);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

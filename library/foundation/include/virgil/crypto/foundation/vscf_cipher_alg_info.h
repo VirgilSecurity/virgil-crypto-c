@@ -98,6 +98,12 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_cipher_alg_info_impl(vscf_cipher_alg_info_t *self);
 
 //
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_cipher_alg_info_impl_const(const vscf_cipher_alg_info_t *self);
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -134,7 +140,6 @@ vscf_cipher_alg_info_destroy(vscf_cipher_alg_info_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_cipher_alg_info_t *
 vscf_cipher_alg_info_shallow_copy(vscf_cipher_alg_info_t *self);

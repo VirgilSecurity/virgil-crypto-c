@@ -46,27 +46,27 @@ public interface KeySerializer {
     *
     * Precondition: public key must be exportable.
     */
-    int serializedPublicKeyLen(PublicKey publicKey);
+    int serializedPublicKeyLen(RawPublicKey publicKey);
 
     /*
     * Serialize given public key to an interchangeable format.
     *
     * Precondition: public key must be exportable.
     */
-    byte[] serializePublicKey(PublicKey publicKey) throws FoundationException;
+    byte[] serializePublicKey(RawPublicKey publicKey) throws FoundationException;
 
     /*
     * Calculate buffer size enough to hold serialized private key.
     *
     * Precondition: private key must be exportable.
     */
-    int serializedPrivateKeyLen(PrivateKey privateKey);
+    int serializedPrivateKeyLen(RawPrivateKey privateKey);
 
     /*
     * Serialize given private key to an interchangeable format.
     *
     * Precondition: private key must be exportable.
     */
-    byte[] serializePrivateKey(PrivateKey privateKey) throws FoundationException;
+    byte[] serializePrivateKey(RawPrivateKey privateKey) throws FoundationException;
 }
 

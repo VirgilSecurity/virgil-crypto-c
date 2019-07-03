@@ -90,6 +90,10 @@ struct vscf_signer_t {
     //  Dependency to the interface 'hash'.
     //
     vscf_impl_t *hash;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *random;
 
     vscf_asn1wr_t *asn1wr;
 

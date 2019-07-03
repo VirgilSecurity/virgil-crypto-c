@@ -36,6 +36,7 @@
 import Foundation
 import VSCFoundation
 
+/// Group chat encryption session.
 @objc(VSCFGroupSession) public class GroupSession: NSObject {
 
     /// Sender id len
@@ -103,6 +104,8 @@ import VSCFoundation
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
+    /// Adds epoch. New epoch should be generated for member removal or proactive to rotate encryption key.
+    /// Epoch message should be encrypted and signed by trusted group chat member (admin).
     @objc public func addEpoch(message: GroupSessionMessage) throws {
         let proxyResult = vscf_group_session_add_epoch(self.c_ctx, message.c_ctx)
 
@@ -161,7 +164,7 @@ import VSCFoundation
         return plainText
     }
 
-    /// Creates ticket with new key for adding or removing participants.
+    /// Creates ticket with new key for removing participants or proactive to rotate encryption key.
     @objc public func createGroupTicket() throws -> GroupSessionTicket {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)

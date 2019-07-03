@@ -40,8 +40,9 @@ import VSCFoundation
 @objc(VSCFRandom) public protocol Random : CContext {
 
     /// Generate random bytes.
+    /// All RNG implementations must be thread-safe.
     @objc func random(dataLen: Int) throws -> Data
 
-    /// Retreive new seed data from the entropy sources.
+    /// Retrieve new seed data from the entropy sources.
     @objc func reseed() throws
 }

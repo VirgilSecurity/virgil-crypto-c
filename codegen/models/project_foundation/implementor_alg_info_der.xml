@@ -15,7 +15,7 @@
         <require impl="simple alg info"/>
         <require impl="salted kdf alg info"/>
         <require impl="pbe alg info"/>
-        <require impl="ec alg info"/>
+        <require impl="ecc alg info"/>
         <require module="buffer defs" project="common"/>
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
@@ -161,7 +161,7 @@
             <return type="size"/>
         </method>
 
-        <method name="serialized ec alg info len">
+        <method name="serialized ecc alg info len">
             Return buffer size enough to hold ASN.1 structure
             "AlgorithmIdentifier" with "ECParameters" from the RFC 5480.
 
@@ -170,8 +170,8 @@
             <return type="size"/>
         </method>
 
-        <method name="serialize ec alg info">
-            Serialize class "ec alg info" to the ASN.1 structure
+        <method name="serialize ecc alg info">
+            Serialize class "ecc alg info" to the ASN.1 structure
             "AlgorithmIdentifier" with "ECParameters" from the RFC 5480.
 
             <argument name="alg info" interface="alg info"/>
@@ -203,7 +203,7 @@
         <require impl="simple alg info"/>
         <require impl="salted kdf alg info"/>
         <require impl="pbe alg info"/>
-        <require impl="ec alg info"/>
+        <require impl="ecc alg info"/>
         <require interface="alg info"/>
 
         <dependency name="asn1 reader" interface="asn1 reader"/>
@@ -280,7 +280,7 @@
             <return interface="alg info" access="disown"/>
         </method>
 
-        <method name="deserialize ec alg info">
+        <method name="deserialize ecc alg info">
             Parse ASN.1 structure "AlgorithmIdentifier" with ECParameters
             parameters defined in the RFC 5480.
 

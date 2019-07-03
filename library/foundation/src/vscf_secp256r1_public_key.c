@@ -58,7 +58,7 @@
 #include "vscf_mbedtls_bignum_asn1_reader.h"
 #include "vscf_mbedtls_bignum_asn1_writer.h"
 #include "vscf_mbedtls_md.h"
-#include "vscf_ec_alg_info.h"
+#include "vscf_ecc_alg_info.h"
 #include "vscf_asn1_tag.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_secp256r1_private_key.h"
@@ -181,10 +181,10 @@ vscf_secp256r1_public_key_produce_alg_info(const vscf_secp256r1_public_key_t *se
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_ec_alg_info_t *ec_alg_info = vscf_ec_alg_info_new_with_members(
+    vscf_ecc_alg_info_t *ec_alg_info = vscf_ecc_alg_info_new_with_members(
             vscf_alg_id_SECP256R1, vscf_oid_id_EC_GENERIC_KEY, vscf_oid_id_EC_DOMAIN_SECP256R1);
 
-    return vscf_ec_alg_info_impl(ec_alg_info);
+    return vscf_ecc_alg_info_impl(ec_alg_info);
 }
 
 //
@@ -195,15 +195,15 @@ vscf_secp256r1_public_key_restore_alg_info(vscf_secp256r1_public_key_t *self, co
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
-    VSCF_ASSERT(vscf_impl_tag(alg_info) == vscf_impl_tag_EC_ALG_INFO);
+    VSCF_ASSERT(vscf_impl_tag(alg_info) == vscf_impl_tag_ECC_ALG_INFO);
 
-    const vscf_ec_alg_info_t *ec_alg_info = (const vscf_ec_alg_info_t *)alg_info;
+    const vscf_ecc_alg_info_t *ec_alg_info = (const vscf_ecc_alg_info_t *)alg_info;
 
-    if (vscf_ec_alg_info_key_id(ec_alg_info) != vscf_oid_id_EC_GENERIC_KEY) {
+    if (vscf_ecc_alg_info_key_id(ec_alg_info) != vscf_oid_id_EC_GENERIC_KEY) {
         return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
     }
 
-    if (vscf_ec_alg_info_domain_id(ec_alg_info) != vscf_oid_id_EC_DOMAIN_SECP256R1) {
+    if (vscf_ecc_alg_info_domain_id(ec_alg_info) != vscf_oid_id_EC_DOMAIN_SECP256R1) {
         return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
     }
 

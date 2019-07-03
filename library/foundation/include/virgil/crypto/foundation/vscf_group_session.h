@@ -44,6 +44,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Group chat encryption session.
+// --------------------------------------------------------------------------
+
 #ifndef VSCF_GROUP_SESSION_H_INCLUDED
 #define VSCF_GROUP_SESSION_H_INCLUDED
 
@@ -192,6 +198,10 @@ vscf_group_session_setup_defaults(vscf_group_session_t *self) VSCF_NODISCARD;
 VSCF_PUBLIC vsc_data_t
 vscf_group_session_get_session_id(const vscf_group_session_t *self);
 
+//
+//  Adds epoch. New epoch should be generated for member removal or proactive to rotate encryption key.
+//  Epoch message should be encrypted and signed by trusted group chat member (admin).
+//
 VSCF_PUBLIC vscf_status_t
 vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_session_message_t *message) VSCF_NODISCARD;
 
@@ -216,7 +226,7 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
         vsc_data_t public_key, vsc_data_t sender_id, vsc_buffer_t *plain_text) VSCF_NODISCARD;
 
 //
-//  Creates ticket with new key for adding or removing participants.
+//  Creates ticket with new key for removing participants or proactive to rotate encryption key.
 //
 VSCF_PUBLIC vscf_group_session_ticket_t *
 vscf_group_session_create_group_ticket(const vscf_group_session_t *self, vscf_error_t *error);

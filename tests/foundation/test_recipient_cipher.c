@@ -39,14 +39,11 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE                                                                                    \
-    (VSCF_RECIPIENT_CIPHER && VSCF_ALG_FACTORY && VSCF_KEY_ASN1_DESERIALIZER && VSCF_ED25519_PUBLIC_KEY &&             \
-            VSCF_ED25519_PRIVATE_KEY)
+#define TEST_DEPENDENCIES_AVAILABLE (VSCF_RECIPIENT_CIPHER && VSCF_ALG_FACTORY && VSCF_KEY_PROVIDER && VSCF_ED25519)
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include "vscf_key_asn1_deserializer.h"
-#include "vscf_alg_factory.h"
 #include "vscf_recipient_cipher.h"
+#include "vscf_key_provider.h"
 
 #include "test_data_recipient_cipher.h"
 
@@ -57,30 +54,29 @@ test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
     //
     //  Prepare recipients.
     //
-    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
-    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
-
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    vscf_raw_key_t *raw_public_key = vscf_key_asn1_deserializer_deserialize_public_key(
-            key_deserializer, test_data_recipient_cipher_ED25519_PUBLIC_KEY, NULL);
-    vscf_impl_t *public_key = vscf_alg_factory_create_public_key_from_raw_key(raw_public_key, &error);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error.status);
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
 
-    vscf_raw_key_t *raw_private_key = vscf_key_asn1_deserializer_deserialize_private_key(
-            key_deserializer, test_data_recipient_cipher_ED25519_PRIVATE_KEY, NULL);
-    vscf_impl_t *private_key = vscf_alg_factory_create_private_key_from_raw_key(raw_private_key, &error);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error.status);
+    vscf_impl_t *public_key =
+            vscf_key_provider_import_public_key(key_provider, test_data_recipient_cipher_ED25519_PUBLIC_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_impl_t *private_key =
+            vscf_key_provider_import_private_key(key_provider, test_data_recipient_cipher_ED25519_PRIVATE_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
 
     vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+
+    vscf_recipient_cipher_add_key_recipient(
+            recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, public_key);
 
     //
     //  Encrypt.
     //
-    vscf_recipient_cipher_add_key_recipient(
-            recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, public_key);
-
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_start_encryption(recipient_cipher));
 
     size_t message_info_len = vscf_recipient_cipher_message_info_len(recipient_cipher);
@@ -126,10 +122,8 @@ test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
     vsc_buffer_destroy(&enc_msg);
     vscf_recipient_cipher_destroy(&recipient_cipher);
     vscf_impl_destroy(&private_key);
-    vscf_raw_key_destroy(&raw_private_key);
     vscf_impl_destroy(&public_key);
-    vscf_raw_key_destroy(&raw_public_key);
-    vscf_key_asn1_deserializer_destroy(&key_deserializer);
+    vscf_key_provider_destroy(&key_provider);
 }
 
 void
@@ -137,23 +131,21 @@ test__decrypt__with_ed25519_private_key__success(void) {
     //
     //  Prepare decryption key.
     //
-    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
-    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
-
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    vscf_raw_key_t *raw_private_key = vscf_key_asn1_deserializer_deserialize_private_key(
-            key_deserializer, test_data_recipient_cipher_ED25519_PRIVATE_KEY, NULL);
-    vscf_impl_t *private_key = vscf_alg_factory_create_private_key_from_raw_key(raw_private_key, &error);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error.status);
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
 
-    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
-
+    vscf_impl_t *private_key =
+            vscf_key_provider_import_private_key(key_provider, test_data_recipient_cipher_ED25519_PRIVATE_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
 
     //
     //  Decrypt.
     //
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+
     vsc_buffer_t *dec_msg = vsc_buffer_new_with_capacity(vscf_recipient_cipher_decryption_out_len(recipient_cipher,
                                                                  test_data_recipient_cipher_ENCRYPTED_MESSAGE.len) +
                                                          vscf_recipient_cipher_decryption_out_len(recipient_cipher, 0));
@@ -177,26 +169,24 @@ test__decrypt__with_ed25519_private_key__success(void) {
     vsc_buffer_destroy(&dec_msg);
     vscf_recipient_cipher_destroy(&recipient_cipher);
     vscf_impl_destroy(&private_key);
-    vscf_raw_key_destroy(&raw_private_key);
-    vscf_key_asn1_deserializer_destroy(&key_deserializer);
+    vscf_key_provider_destroy(&key_provider);
 }
 
 void
-test__encrypt_decrypt_chunk__with_ed25519_key_recipient__success(void) {
+test__decrypt__chunks_with_ed25519_key_recipient__success(void) {
 
     //
     //  Prepare decryption key.
     //
-    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
-    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
-
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    vscf_raw_key_t *raw_private_key = vscf_key_asn1_deserializer_deserialize_private_key(
-            key_deserializer, test_data_recipient_cipher_ED25519_PRIVATE_KEY, NULL);
-    vscf_impl_t *private_key = vscf_alg_factory_create_private_key_from_raw_key(raw_private_key, &error);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error.status);
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_impl_t *private_key =
+            vscf_key_provider_import_private_key(key_provider, test_data_recipient_cipher_ED25519_PRIVATE_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
 
     //
     //  Decrypt.
@@ -255,8 +245,7 @@ test__encrypt_decrypt_chunk__with_ed25519_key_recipient__success(void) {
     vsc_buffer_destroy(&dec_msg);
     vscf_recipient_cipher_destroy(&recipient_cipher);
     vscf_impl_destroy(&private_key);
-    vscf_raw_key_destroy(&raw_private_key);
-    vscf_key_asn1_deserializer_destroy(&key_deserializer);
+    vscf_key_provider_destroy(&key_provider);
 }
 
 
@@ -273,7 +262,7 @@ main(void) {
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__encrypt_decrypt__with_ed25519_key_recipient__success);
     RUN_TEST(test__decrypt__with_ed25519_private_key__success);
-    RUN_TEST(test__encrypt_decrypt_chunk__with_ed25519_key_recipient__success);
+    RUN_TEST(test__decrypt__chunks_with_ed25519_key_recipient__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

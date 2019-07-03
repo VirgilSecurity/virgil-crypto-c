@@ -54,7 +54,7 @@
 #define VSCF_ECIES_ENVELOPE_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_atomic.h"
+#include "vscf_raw_public_key.h"
 #include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -84,24 +84,15 @@ extern "C" {
 //  Handle 'ecies envelope' context.
 //
 struct vscf_ecies_envelope_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscf_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    VSCF_ATOMIC size_t refcnt;
+    vscf_raw_public_key_t *ephemeral_public_key;
 
-    vscf_impl_t *ephemeral_public_key;
+    vscf_impl_t *cipher;
 
     vscf_impl_t *kdf;
 
     vscf_impl_t *mac;
 
     vsc_buffer_t *mac_digest;
-
-    vscf_impl_t *cipher;
 
     vsc_buffer_t *encrypted_content;
 };

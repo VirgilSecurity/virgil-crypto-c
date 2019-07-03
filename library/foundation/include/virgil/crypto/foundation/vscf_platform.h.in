@@ -142,6 +142,10 @@ extern "C" {
 #cmakedefine01 VSCF_KEY
 #endif
 
+#ifndef VSCF_KEY_ALG
+#cmakedefine01 VSCF_KEY_ALG
+#endif
+
 #ifndef VSCF_PUBLIC_KEY
 #cmakedefine01 VSCF_PUBLIC_KEY
 #endif
@@ -150,20 +154,12 @@ extern "C" {
 #cmakedefine01 VSCF_PRIVATE_KEY
 #endif
 
-#ifndef VSCF_SIGN_HASH
-#cmakedefine01 VSCF_SIGN_HASH
+#ifndef VSCF_KEY_CIPHER
+#cmakedefine01 VSCF_KEY_CIPHER
 #endif
 
-#ifndef VSCF_VERIFY_HASH
-#cmakedefine01 VSCF_VERIFY_HASH
-#endif
-
-#ifndef VSCF_GENERATE_KEY
-#cmakedefine01 VSCF_GENERATE_KEY
-#endif
-
-#ifndef VSCF_GENERATE_EPHEMERAL_KEY
-#cmakedefine01 VSCF_GENERATE_EPHEMERAL_KEY
+#ifndef VSCF_KEY_SIGNER
+#cmakedefine01 VSCF_KEY_SIGNER
 #endif
 
 #ifndef VSCF_COMPUTE_SHARED_KEY
@@ -246,12 +242,20 @@ extern "C" {
 #cmakedefine01 VSCF_RSA_PRIVATE_KEY
 #endif
 
-#ifndef VSCF_SECP256R1_PUBLIC_KEY
-#cmakedefine01 VSCF_SECP256R1_PUBLIC_KEY
+#ifndef VSCF_RSA
+#cmakedefine01 VSCF_RSA
 #endif
 
-#ifndef VSCF_SECP256R1_PRIVATE_KEY
-#cmakedefine01 VSCF_SECP256R1_PRIVATE_KEY
+#ifndef VSCF_ECC_PUBLIC_KEY
+#cmakedefine01 VSCF_ECC_PUBLIC_KEY
+#endif
+
+#ifndef VSCF_ECC_PRIVATE_KEY
+#cmakedefine01 VSCF_ECC_PRIVATE_KEY
+#endif
+
+#ifndef VSCF_ECC
+#cmakedefine01 VSCF_ECC
 #endif
 
 #ifndef VSCF_ENTROPY_ACCUMULATOR
@@ -298,6 +302,14 @@ extern "C" {
 #cmakedefine01 VSCF_KEY_MATERIAL_RNG
 #endif
 
+#ifndef VSCF_RAW_PUBLIC_KEY
+#cmakedefine01 VSCF_RAW_PUBLIC_KEY
+#endif
+
+#ifndef VSCF_RAW_PRIVATE_KEY
+#cmakedefine01 VSCF_RAW_PRIVATE_KEY
+#endif
+
 #ifndef VSCF_PKCS8_SERIALIZER
 #cmakedefine01 VSCF_PKCS8_SERIALIZER
 #endif
@@ -314,24 +326,12 @@ extern "C" {
 #cmakedefine01 VSCF_KEY_ASN1_DESERIALIZER
 #endif
 
-#ifndef VSCF_ED25519_PUBLIC_KEY
-#cmakedefine01 VSCF_ED25519_PUBLIC_KEY
+#ifndef VSCF_ED25519
+#cmakedefine01 VSCF_ED25519
 #endif
 
-#ifndef VSCF_ED25519_PRIVATE_KEY
-#cmakedefine01 VSCF_ED25519_PRIVATE_KEY
-#endif
-
-#ifndef VSCF_CURVE25519_PUBLIC_KEY
-#cmakedefine01 VSCF_CURVE25519_PUBLIC_KEY
-#endif
-
-#ifndef VSCF_CURVE25519_PRIVATE_KEY
-#cmakedefine01 VSCF_CURVE25519_PRIVATE_KEY
-#endif
-
-#ifndef VSCF_ECIES
-#cmakedefine01 VSCF_ECIES
+#ifndef VSCF_CURVE25519
+#cmakedefine01 VSCF_CURVE25519
 #endif
 
 #ifndef VSCF_SIMPLE_ALG_INFO
@@ -354,8 +354,8 @@ extern "C" {
 #cmakedefine01 VSCF_PBE_ALG_INFO
 #endif
 
-#ifndef VSCF_EC_ALG_INFO
-#cmakedefine01 VSCF_EC_ALG_INFO
+#ifndef VSCF_ECC_ALG_INFO
+#cmakedefine01 VSCF_ECC_ALG_INFO
 #endif
 
 #ifndef VSCF_ALG_INFO_DER_SERIALIZER
@@ -386,8 +386,8 @@ extern "C" {
 #cmakedefine01 VSCF_MBEDTLS_MD
 #endif
 
-#ifndef VSCF_RAW_KEY
-#cmakedefine01 VSCF_RAW_KEY
+#ifndef VSCF_MBEDTLS_ECP
+#cmakedefine01 VSCF_MBEDTLS_ECP
 #endif
 
 #ifndef VSCF_OID
@@ -428,6 +428,14 @@ extern "C" {
 
 #ifndef VSCF_ALG_FACTORY
 #cmakedefine01 VSCF_ALG_FACTORY
+#endif
+
+#ifndef VSCF_KEY_ALG_FACTORY
+#cmakedefine01 VSCF_KEY_ALG_FACTORY
+#endif
+
+#ifndef VSCF_ECIES
+#cmakedefine01 VSCF_ECIES
 #endif
 
 #ifndef VSCF_ECIES_ENVELOPE

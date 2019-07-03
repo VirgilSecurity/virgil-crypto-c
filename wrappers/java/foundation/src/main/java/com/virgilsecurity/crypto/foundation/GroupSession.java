@@ -36,6 +36,9 @@
 
 package com.virgilsecurity.crypto.foundation;
 
+/*
+* Group chat encryption session.
+*/
 public class GroupSession implements AutoCloseable {
 
     public long cCtx;
@@ -118,6 +121,10 @@ public class GroupSession implements AutoCloseable {
         return FoundationJNI.INSTANCE.groupSession_getSessionId(this.cCtx);
     }
 
+    /*
+    * Adds epoch. New epoch should be generated for member removal or proactive to rotate encryption key.
+    * Epoch message should be encrypted and signed by trusted group chat member (admin).
+    */
     public void addEpoch(GroupSessionMessage message) throws FoundationException {
         FoundationJNI.INSTANCE.groupSession_addEpoch(this.cCtx, message);
     }
@@ -144,7 +151,7 @@ public class GroupSession implements AutoCloseable {
     }
 
     /*
-    * Creates ticket with new key for adding or removing participants.
+    * Creates ticket with new key for removing participants or proactive to rotate encryption key.
     */
     public GroupSessionTicket createGroupTicket() throws FoundationException {
         return FoundationJNI.INSTANCE.groupSession_createGroupTicket(this.cCtx);

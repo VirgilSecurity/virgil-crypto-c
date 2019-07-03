@@ -41,7 +41,14 @@ package com.virgilsecurity.crypto.foundation;
 */
 public enum GroupMsgType {
 
+    /*
+    * Group info type with encryption key.
+    * This type of message should be encrypted before transferring.
+    */
     GROUP_INFO(1),
+    /*
+    * Regular group message with encrypted text.
+    */
     REGULAR(2);
 
     private final int code;

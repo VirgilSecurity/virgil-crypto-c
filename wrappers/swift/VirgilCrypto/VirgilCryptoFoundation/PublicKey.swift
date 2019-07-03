@@ -38,25 +38,4 @@ import VSCFoundation
 
 /// Contains public part of the key.
 @objc(VSCFPublicKey) public protocol PublicKey : Key {
-    /// Define whether a public key can be exported or not.
-    @objc var canExportPublicKey: Bool { get }
-    /// Defines whether a public key can be imported or not.
-    @objc var canImportPublicKey: Bool { get }
-
-    /// Export public key in the binary format.
-    ///
-    /// Binary format must be defined in the key specification.
-    /// For instance, RSA public key must be exported in format defined in
-    /// RFC 3447 Appendix A.1.1.
-    @objc func exportPublicKey() throws -> Data
-
-    /// Return length in bytes required to hold exported public key.
-    @objc func exportedPublicKeyLen() -> Int
-
-    /// Import public key from the binary format.
-    ///
-    /// Binary format must be defined in the key specification.
-    /// For instance, RSA public key must be imported from the format defined in
-    /// RFC 3447 Appendix A.1.1.
-    @objc func importPublicKey(data: Data) throws
 }

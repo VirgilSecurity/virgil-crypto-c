@@ -56,6 +56,8 @@
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
+#include "vscf_raw_public_key.h"
+#include "vscf_raw_private_key.h"
 #include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -99,6 +101,12 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_sec1_serializer_impl(vscf_sec1_serializer_t *self);
 
 //
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_sec1_serializer_impl_const(const vscf_sec1_serializer_t *self);
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -135,7 +143,6 @@ vscf_sec1_serializer_destroy(vscf_sec1_serializer_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_sec1_serializer_t *
 vscf_sec1_serializer_shallow_copy(vscf_sec1_serializer_t *self);
@@ -171,7 +178,7 @@ vscf_sec1_serializer_setup_defaults(vscf_sec1_serializer_t *self);
 //  an output buffer.
 //
 VSCF_PUBLIC size_t
-vscf_sec1_serializer_serialize_public_key_inplace(vscf_sec1_serializer_t *self, const vscf_impl_t *public_key,
+vscf_sec1_serializer_serialize_public_key_inplace(vscf_sec1_serializer_t *self, const vscf_raw_public_key_t *public_key,
         vscf_error_t *error);
 
 //
@@ -180,8 +187,8 @@ vscf_sec1_serializer_serialize_public_key_inplace(vscf_sec1_serializer_t *self, 
 //  an output buffer.
 //
 VSCF_PUBLIC size_t
-vscf_sec1_serializer_serialize_private_key_inplace(vscf_sec1_serializer_t *self, const vscf_impl_t *private_key,
-        vscf_error_t *error);
+vscf_sec1_serializer_serialize_private_key_inplace(vscf_sec1_serializer_t *self,
+        const vscf_raw_private_key_t *private_key, vscf_error_t *error);
 
 //
 //  Calculate buffer size enough to hold serialized public key.
@@ -189,7 +196,7 @@ vscf_sec1_serializer_serialize_private_key_inplace(vscf_sec1_serializer_t *self,
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_sec1_serializer_serialized_public_key_len(vscf_sec1_serializer_t *self, const vscf_impl_t *public_key);
+vscf_sec1_serializer_serialized_public_key_len(vscf_sec1_serializer_t *self, const vscf_raw_public_key_t *public_key);
 
 //
 //  Serialize given public key to an interchangeable format.
@@ -197,7 +204,7 @@ vscf_sec1_serializer_serialized_public_key_len(vscf_sec1_serializer_t *self, con
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_sec1_serializer_serialize_public_key(vscf_sec1_serializer_t *self, const vscf_impl_t *public_key,
+vscf_sec1_serializer_serialize_public_key(vscf_sec1_serializer_t *self, const vscf_raw_public_key_t *public_key,
         vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
@@ -206,7 +213,8 @@ vscf_sec1_serializer_serialize_public_key(vscf_sec1_serializer_t *self, const vs
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_sec1_serializer_serialized_private_key_len(vscf_sec1_serializer_t *self, const vscf_impl_t *private_key);
+vscf_sec1_serializer_serialized_private_key_len(vscf_sec1_serializer_t *self,
+        const vscf_raw_private_key_t *private_key);
 
 //
 //  Serialize given private key to an interchangeable format.
@@ -214,7 +222,7 @@ vscf_sec1_serializer_serialized_private_key_len(vscf_sec1_serializer_t *self, co
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_sec1_serializer_serialize_private_key(vscf_sec1_serializer_t *self, const vscf_impl_t *private_key,
+vscf_sec1_serializer_serialize_private_key(vscf_sec1_serializer_t *self, const vscf_raw_private_key_t *private_key,
         vsc_buffer_t *out) VSCF_NODISCARD;
 
 

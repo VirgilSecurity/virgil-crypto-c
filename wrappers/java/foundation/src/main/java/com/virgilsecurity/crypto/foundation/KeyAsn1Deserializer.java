@@ -65,7 +65,7 @@ public class KeyAsn1Deserializer implements AutoCloseable, KeyDeserializer {
     * Note, that caller code is responsible to reset ASN.1 reader with
     * an input buffer.
     */
-    public RawKey deserializePublicKeyInplace() throws FoundationException {
+    public RawPublicKey deserializePublicKeyInplace() throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePublicKeyInplace(this.cCtx);
     }
 
@@ -74,7 +74,7 @@ public class KeyAsn1Deserializer implements AutoCloseable, KeyDeserializer {
     * Note, that caller code is responsible to reset ASN.1 reader with
     * an input buffer.
     */
-    public RawKey deserializePrivateKeyInplace() throws FoundationException {
+    public RawPrivateKey deserializePrivateKeyInplace() throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePrivateKeyInplace(this.cCtx);
     }
 
@@ -96,14 +96,14 @@ public class KeyAsn1Deserializer implements AutoCloseable, KeyDeserializer {
     /*
     * Deserialize given public key as an interchangeable format to the object.
     */
-    public RawKey deserializePublicKey(byte[] publicKeyData) throws FoundationException {
+    public RawPublicKey deserializePublicKey(byte[] publicKeyData) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePublicKey(this.cCtx, publicKeyData);
     }
 
     /*
     * Deserialize given private key as an interchangeable format to the object.
     */
-    public RawKey deserializePrivateKey(byte[] privateKeyData) throws FoundationException {
+    public RawPrivateKey deserializePrivateKey(byte[] privateKeyData) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePrivateKey(this.cCtx, privateKeyData);
     }
 }

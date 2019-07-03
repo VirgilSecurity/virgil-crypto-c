@@ -688,7 +688,6 @@ function _X13_add_method_shallow_copy (class, destination, meta)
     new method to my.destination
         .name = my.names.method_shallow_copy
         .is_const = "0"
-        .is_static = "0"
 
         . = "
         Copy given class context by increasing reference counter.

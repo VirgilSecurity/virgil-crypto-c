@@ -42,20 +42,20 @@ import VSCFoundation
     /// Calculate buffer size enough to hold serialized public key.
     ///
     /// Precondition: public key must be exportable.
-    @objc func serializedPublicKeyLen(publicKey: PublicKey) -> Int
+    @objc func serializedPublicKeyLen(publicKey: RawPublicKey) -> Int
 
     /// Serialize given public key to an interchangeable format.
     ///
     /// Precondition: public key must be exportable.
-    @objc func serializePublicKey(publicKey: PublicKey) throws -> Data
+    @objc func serializePublicKey(publicKey: RawPublicKey) throws -> Data
 
     /// Calculate buffer size enough to hold serialized private key.
     ///
     /// Precondition: private key must be exportable.
-    @objc func serializedPrivateKeyLen(privateKey: PrivateKey) -> Int
+    @objc func serializedPrivateKeyLen(privateKey: RawPrivateKey) -> Int
 
     /// Serialize given private key to an interchangeable format.
     ///
     /// Precondition: private key must be exportable.
-    @objc func serializePrivateKey(privateKey: PrivateKey) throws -> Data
+    @objc func serializePrivateKey(privateKey: RawPrivateKey) throws -> Data
 }

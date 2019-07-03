@@ -47,7 +47,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Group ticket used to start group session or change participants.
+//  Group ticket used to start group session, remove participants or proactive to rotate encryption key.
 // --------------------------------------------------------------------------
 
 #ifndef VSCF_GROUP_SESSION_TICKET_H_INCLUDED

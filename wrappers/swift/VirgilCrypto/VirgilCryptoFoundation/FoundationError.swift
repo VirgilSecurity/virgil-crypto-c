@@ -128,6 +128,12 @@ import VSCFoundation
     /// ASN.1 representation of a private key is corrupted.
     case errorBadDerPrivateKey = -224
 
+    /// Key algorithm does not accept given type of public key.
+    case errorMismatchPublicKeyAndAlgorithm = -225
+
+    /// Key algorithm does not accept given type of private key.
+    case errorMismatchPrivateKeyAndAlgorithm = -226
+
     /// Decryption failed, because message info was not given explicitly,
     /// and was not part of an encrypted message.
     case errorNoMessageInfo = -301

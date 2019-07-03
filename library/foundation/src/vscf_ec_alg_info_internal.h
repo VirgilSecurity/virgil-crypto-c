@@ -55,7 +55,7 @@
 #define VSCF_EC_ALG_INFO_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_ec_alg_info.h"
+#include "vscf_ecc_alg_info.h"
 #include "vscf_alg_id.h"
 #include "vscf_oid_id.h"
 
@@ -76,11 +76,11 @@ extern "C" {
 
 //
 //  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_ec_alg_info_init() is called.
+//  Note, this method is called automatically when method vscf_ecc_alg_info_init() is called.
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_ec_alg_info_init_ctx(vscf_ec_alg_info_t *self);
+vscf_ecc_alg_info_init_ctx(vscf_ecc_alg_info_t *self);
 
 //
 //  Release resources of the implementation specific context.
@@ -88,13 +88,13 @@ vscf_ec_alg_info_init_ctx(vscf_ec_alg_info_t *self);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_ec_alg_info_cleanup_ctx(vscf_ec_alg_info_t *self);
+vscf_ecc_alg_info_cleanup_ctx(vscf_ecc_alg_info_t *self);
 
 //
 //  Create algorithm info with EC generic key identificator, EC domain group identificator.
 //
 VSCF_PUBLIC void
-vscf_ec_alg_info_init_ctx_with_members(vscf_ec_alg_info_t *self, vscf_alg_id_t alg_id, vscf_oid_id_t key_id,
+vscf_ecc_alg_info_init_ctx_with_members(vscf_ecc_alg_info_t *self, vscf_alg_id_t alg_id, vscf_oid_id_t key_id,
         vscf_oid_id_t domain_id);
 
 

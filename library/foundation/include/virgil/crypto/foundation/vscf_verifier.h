@@ -140,7 +140,7 @@ vscf_verifier_reset(vscf_verifier_t *self, vsc_data_t signature) VSCF_NODISCARD;
 //  Add given data to the signed data.
 //
 VSCF_PUBLIC void
-vscf_verifier_update(vscf_verifier_t *self, vsc_data_t data);
+vscf_verifier_append_data(vscf_verifier_t *self, vsc_data_t data);
 
 //
 //  Verify accumulated data.

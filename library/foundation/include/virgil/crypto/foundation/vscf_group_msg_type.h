@@ -72,7 +72,14 @@ extern "C" {
 //  Represents group message type
 //
 enum vscf_group_msg_type_t {
+    //
+    //  Group info type with encryption key.
+    //  This type of message should be encrypted before transferring.
+    //
     vscf_group_msg_type_GROUP_INFO = 1,
+    //
+    //  Regular group message with encrypted text.
+    //
     vscf_group_msg_type_REGULAR = 2
 };
 typedef enum vscf_group_msg_type_t vscf_group_msg_type_t;

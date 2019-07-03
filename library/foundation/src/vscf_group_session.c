@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Group chat encryption session.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -397,6 +403,10 @@ vscf_group_session_get_session_id(const vscf_group_session_t *self) {
     }
 }
 
+//
+//  Adds epoch. New epoch should be generated for member removal or proactive to rotate encryption key.
+//  Epoch message should be encrypted and signed by trusted group chat member (admin).
+//
 VSCF_PUBLIC vscf_status_t
 vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_session_message_t *message) {
 
@@ -493,7 +503,7 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
     vscf_error_t asn1_error;
     vscf_error_reset(&asn1_error);
 
-    vscf_raw_key_t *raw_key =
+    vscf_raw_private_key_t *raw_key =
             vscf_key_asn1_deserializer_deserialize_private_key(deserializer, private_key, &asn1_error);
 
     if (asn1_error.status != vscf_status_SUCCESS) {
@@ -501,7 +511,7 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
         goto err;
     }
 
-    if (vscf_raw_key_alg_id(raw_key) != vscf_alg_id_ED25519) {
+    if (vscf_raw_private_key_alg_id(raw_key) != vscf_alg_id_ED25519) {
         status = vscf_status_ERROR_WRONG_KEY_TYPE;
         goto err;
     }
@@ -550,7 +560,7 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
         goto err1;
     }
 
-    int ed_status = ed25519_sign(msg->message_pb.regular_message.signature, vscf_raw_key_data(raw_key).bytes,
+    int ed_status = ed25519_sign(msg->message_pb.regular_message.signature, vscf_raw_private_key_data(raw_key).bytes,
             vsc_buffer_bytes(&cipher_text), vsc_buffer_len(&cipher_text));
 
     if (ed_status != 0) {
@@ -565,7 +575,7 @@ err1:
     vsc_buffer_destroy(&salt);
 
 err:
-    vscf_raw_key_destroy(&raw_key);
+    vscf_raw_private_key_destroy(&raw_key);
     vscf_key_asn1_deserializer_destroy(&deserializer);
 
     if (status != vscf_status_SUCCESS) {
@@ -630,20 +640,21 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    vscf_raw_key_t *raw_key = vscf_key_asn1_deserializer_deserialize_public_key(deserializer, public_key, &error);
+    vscf_raw_public_key_t *raw_key =
+            vscf_key_asn1_deserializer_deserialize_public_key(deserializer, public_key, &error);
 
     if (error.status != vscf_status_SUCCESS) {
         status = error.status;
         goto err;
     }
 
-    if (vscf_raw_key_alg_id(raw_key) != vscf_alg_id_ED25519) {
+    if (vscf_raw_public_key_alg_id(raw_key) != vscf_alg_id_ED25519) {
         status = vscf_status_ERROR_WRONG_KEY_TYPE;
         goto err;
     }
 
-    int ed_status = ed25519_verify(message->message_pb.regular_message.signature, vscf_raw_key_data(raw_key).bytes,
-            message->message_pb.regular_message.cipher_text->bytes,
+    int ed_status = ed25519_verify(message->message_pb.regular_message.signature,
+            vscf_raw_public_key_data(raw_key).bytes, message->message_pb.regular_message.cipher_text->bytes,
             message->message_pb.regular_message.cipher_text->size);
 
     if (ed_status != 0) {
@@ -659,14 +670,14 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
             plain_text);
 
 err:
-    vscf_raw_key_destroy(&raw_key);
+    vscf_raw_public_key_destroy(&raw_key);
     vscf_key_asn1_deserializer_destroy(&deserializer);
 
     return status;
 }
 
 //
-//  Creates ticket with new key for adding or removing participants.
+//  Creates ticket with new key for removing participants or proactive to rotate encryption key.
 //
 VSCF_PUBLIC vscf_group_session_ticket_t *
 vscf_group_session_create_group_ticket(const vscf_group_session_t *self, vscf_error_t *error) {
