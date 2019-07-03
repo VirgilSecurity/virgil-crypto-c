@@ -40,9 +40,9 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCF_GROUP_SESSION
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include "vscf_ed25519_private_key.h"
-#include "vscf_ed25519_public_key.h"
-#include "vscf_pkcs8_der_serializer.h"
+#include "vscf_private_key.h"
+#include "vscf_ed25519.h"
+#include "vscf_pkcs8_serializer.h"
 #include "vscf_memory.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_group_session.h"
@@ -53,30 +53,40 @@ generate_PKCS8_ed_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_
     vscf_pkcs8_serializer_t *pkcs8 = vscf_pkcs8_serializer_new();
     vscf_pkcs8_serializer_setup_defaults(pkcs8);
 
-    vscf_ed25519_private_key_t *ed25519_private_key = vscf_ed25519_private_key_new();
-    vscf_impl_t *private_key = vscf_ed25519_private_key_impl(ed25519_private_key);
-    vscf_ed25519_private_key_use_random(ed25519_private_key, vscf_ctr_drbg_impl(rng));
+    vscf_ed25519_t *ed25519 = vscf_ed25519_new();
+    vscf_ed25519_use_random(ed25519, vscf_ctr_drbg_impl(rng));
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ed25519_private_key_generate_key(ed25519_private_key));
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
-    size_t len_private = vscf_pkcs8_serializer_serialized_private_key_len(pkcs8, private_key);
+    vscf_impl_t *private_key = vscf_ed25519_generate_key(ed25519, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
 
+    vscf_raw_private_key_t *raw_private_key = vscf_ed25519_export_private_key(ed25519, private_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_raw_public_key_t *raw_public_key = vscf_ed25519_export_public_key(ed25519, public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    size_t len_private = vscf_pkcs8_serializer_serialized_private_key_len(pkcs8, raw_private_key);
     *priv = vsc_buffer_new_with_capacity(len_private);
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_private_key(pkcs8, private_key, *priv));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_private_key(pkcs8, raw_private_key, *priv));
 
-    vscf_impl_t *public_key = vscf_ed25519_private_key_extract_public_key(ed25519_private_key);
 
-    size_t len_public = vscf_pkcs8_serializer_serialized_public_key_len(pkcs8, public_key);
-
+    size_t len_public = vscf_pkcs8_serializer_serialized_public_key_len(pkcs8, raw_public_key);
     *pub = vsc_buffer_new_with_capacity(len_public);
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_public_key(pkcs8, public_key, *pub));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_public_key(pkcs8, raw_public_key, *pub));
 
     vscf_pkcs8_serializer_destroy(&pkcs8);
 
-    vscf_ed25519_public_key_destroy((vscf_ed25519_public_key_t **)&public_key);
-    vscf_ed25519_private_key_destroy((vscf_ed25519_private_key_t **)&private_key);
+    vscf_impl_destroy(&private_key);
+    vscf_impl_destroy(&public_key);
+    vscf_raw_private_key_destroy(&raw_private_key);
+    vscf_raw_public_key_destroy(&raw_public_key);
+    vscf_ed25519_destroy((&ed25519));
 }
 
 size_t
