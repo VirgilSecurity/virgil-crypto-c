@@ -97,11 +97,11 @@ struct vscf_verifier_t {
 
     vscf_impl_t *hash;
 
+    vsc_buffer_t *raw_signature;
+
     vscf_asn1rd_t *asn1rd;
 
     vscf_alg_info_der_deserializer_t *alg_info_der_deserializer;
-
-    vsc_buffer_t *raw_signature;
 };
 
 

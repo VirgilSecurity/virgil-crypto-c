@@ -67,9 +67,7 @@ import VSCFoundation
         let proxyResult = recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafeRawBufferPointer) -> OpaquePointer? in
             encryptedKey.withUnsafeBytes({ (encryptedKeyPointer: UnsafeRawBufferPointer) -> OpaquePointer? in
 
-                var keyEncryptionAlgorithmCopy = vscf_impl_shallow_copy(keyEncryptionAlgorithm.c_ctx)
-
-                return vscf_key_recipient_info_new_with_members(vsc_data(recipientIdPointer.bindMemory(to: byte.self).baseAddress, recipientId.count), &keyEncryptionAlgorithmCopy, vsc_data(encryptedKeyPointer.bindMemory(to: byte.self).baseAddress, encryptedKey.count))
+                return vscf_key_recipient_info_new_with_data(vsc_data(recipientIdPointer.bindMemory(to: byte.self).baseAddress, recipientId.count), keyEncryptionAlgorithm.c_ctx, vsc_data(encryptedKeyPointer.bindMemory(to: byte.self).baseAddress, encryptedKey.count))
             })
         })
 

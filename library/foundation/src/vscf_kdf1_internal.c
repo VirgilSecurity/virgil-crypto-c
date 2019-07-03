@@ -243,7 +243,6 @@ vscf_kdf1_destroy(vscf_kdf1_t **self_ref) {
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_kdf1_t *
 vscf_kdf1_shallow_copy(vscf_kdf1_t *self) {
@@ -269,6 +268,16 @@ vscf_kdf1_impl(vscf_kdf1_t *self) {
 
     VSCF_ASSERT_PTR(self);
     return (vscf_impl_t *)(self);
+}
+
+//
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_kdf1_impl_const(const vscf_kdf1_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    return (const vscf_impl_t *)(self);
 }
 
 //

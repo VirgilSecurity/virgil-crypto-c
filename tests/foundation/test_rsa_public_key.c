@@ -39,17 +39,18 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE                                                                                    \
-    (VSCF_RSA_PUBLIC_KEY && VSCF_ASN1RD && VSCF_ASN1WR && VSCF_FAKE_RANDOM && VSCF_SHA512)
+#define TEST_DEPENDENCIES_AVAILABLE (VSCF_RSA_PUBLIC_KEY && VSCF_ASN1RD && VSCF_ASN1WR && VSCF_FAKE_RANDOM)
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_assert.h"
 
-#include "vscf_rsa_public_key.h"
-#include "vscf_asn1rd.h"
-#include "vscf_asn1wr.h"
 #include "vscf_fake_random.h"
-#include "vscf_sha512.h"
+#include "vscf_key_material_rng.h"
+#include "vscf_public_key.h"
+#include "vscf_raw_public_key.h"
+#include "vscf_rsa.h"
+#include "vscf_rsa_public_key.h"
+#include "vscf_simple_alg_info.h"
 
 #include "test_data_rsa.h"
 
@@ -59,105 +60,137 @@
 // --------------------------------------------------------------------------
 void
 test__rsa_public_key_key_len__imported_2048_PUBLIC_KEY_PKCS1__returns_256(void) {
-    vscf_rsa_public_key_t *public_key = vscf_rsa_public_key_new();
 
-    vscf_rsa_public_key_take_asn1rd(public_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
+    vscf_impl_t *alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_RSA));
+    vscf_raw_public_key_t *raw_public_key =
+            vscf_raw_public_key_new_with_data(test_rsa_2048_PUBLIC_KEY_PKCS1, &alg_info);
 
-    vscf_status_t result = vscf_rsa_public_key_import_public_key(public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
-    VSCF_ASSERT(result == vscf_status_SUCCESS);
+    vscf_rsa_t *rsa = vscf_rsa_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_rsa_setup_defaults(rsa));
 
-    TEST_ASSERT_EQUAL(256, vscf_rsa_public_key_key_len(public_key));
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
-    vscf_rsa_public_key_destroy(&public_key);
+    vscf_impl_t *rsa_public_key = vscf_rsa_import_public_key(rsa, raw_public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(rsa_public_key);
+
+    TEST_ASSERT_EQUAL(256, vscf_key_len(rsa_public_key));
+
+    vscf_rsa_destroy(&rsa);
+    vscf_raw_public_key_destroy(&raw_public_key);
+    vscf_impl_destroy(&rsa_public_key);
 }
 
 void
 test__rsa_public_key_export_public_key__from_imported_2048_PUBLIC_KEY_PKCS1__expected_equal(void) {
-    vscf_rsa_public_key_t *public_key = vscf_rsa_public_key_new();
 
-    vscf_rsa_public_key_take_asn1rd(public_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
-    vscf_rsa_public_key_take_asn1wr(public_key, vscf_asn1wr_impl(vscf_asn1wr_new()));
+    //  Create raw public key
+    vscf_impl_t *alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_RSA));
+    vscf_raw_public_key_t *raw_public_key =
+            vscf_raw_public_key_new_with_data(test_rsa_2048_PUBLIC_KEY_PKCS1, &alg_info);
 
-    vscf_status_t result = vscf_rsa_public_key_import_public_key(public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
-    VSCF_ASSERT(result == vscf_status_SUCCESS);
+    //  Configure key algorithm
+    vscf_rsa_t *rsa = vscf_rsa_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_rsa_setup_defaults(rsa));
 
-    vsc_buffer_t *exported_key_buf =
-            vsc_buffer_new_with_capacity(vscf_rsa_public_key_exported_public_key_len(public_key));
+    //  Import public key
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
-    result = vscf_rsa_public_key_export_public_key(public_key, exported_key_buf);
+    vscf_impl_t *rsa_public_key = vscf_rsa_import_public_key(rsa, raw_public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(rsa_public_key);
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, result);
-    TEST_ASSERT_EQUAL(test_rsa_2048_PUBLIC_KEY_PKCS1.len, vsc_buffer_len(exported_key_buf));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(
-            test_rsa_2048_PUBLIC_KEY_PKCS1.bytes, vsc_buffer_bytes(exported_key_buf), vsc_buffer_len(exported_key_buf));
+    //  Export public key
+    vscf_raw_public_key_t *exported_raw_public_key = vscf_rsa_export_public_key(rsa, rsa_public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(exported_raw_public_key);
 
-    vsc_buffer_destroy(&exported_key_buf);
-    vscf_rsa_public_key_destroy(&public_key);
+    //   Check
+    TEST_ASSERT_EQUAL_DATA(test_rsa_2048_PUBLIC_KEY_PKCS1, vscf_raw_public_key_data(exported_raw_public_key));
+
+    //  Cleanup
+    vscf_rsa_destroy(&rsa);
+    vscf_raw_public_key_destroy(&raw_public_key);
+    vscf_impl_destroy(&rsa_public_key);
+    vscf_raw_public_key_destroy(&exported_raw_public_key);
 }
 
 void
-test__rsa_public_key_encrypt__with_imported_2048_PUBLIC_KEY_PKCS1_and_DATA_1_and_random_AB_and_hash_sha512__returns_2048_ENCRYPTED_DATA_1(
+test__rsa_public_key_encrypt__with_imported_2048_PUBLIC_KEY_PKCS1_and_2048_ENCRYPTED_DATA_1_and_random_AB__returns_DATA_1(
         void) {
 
-    //  Setup dependencies
-    vscf_rsa_public_key_t *public_key = vscf_rsa_public_key_new();
+    //  Create raw public key
+    vscf_impl_t *alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_RSA));
+    vscf_raw_public_key_t *raw_public_key =
+            vscf_raw_public_key_new_with_data(test_rsa_2048_PUBLIC_KEY_PKCS1, &alg_info);
 
-    vscf_rsa_public_key_take_asn1rd(public_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
+    //  Configure key algorithm
+    vscf_rsa_t *rsa = vscf_rsa_new();
 
     vscf_fake_random_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_byte(fake_random, 0xAB);
-    vscf_rsa_public_key_take_random(public_key, vscf_fake_random_impl(fake_random));
-
+    vscf_rsa_take_random(rsa, vscf_fake_random_impl(fake_random));
 
     //  Import public key
-    vscf_status_t result = vscf_rsa_public_key_import_public_key(public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
-    VSCF_ASSERT(result == vscf_status_SUCCESS);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
+    vscf_impl_t *public_key = vscf_rsa_import_public_key(rsa, raw_public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(public_key);
 
-    //  Encrypt
-    vsc_buffer_t *out =
-            vsc_buffer_new_with_capacity(vscf_rsa_public_key_encrypted_len(public_key, test_rsa_DATA_1.len));
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_rsa_public_key_encrypt(public_key, test_rsa_DATA_1, out));
+    //  Decrypt
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_rsa_encrypted_len(rsa, public_key, test_rsa_DATA_1.len));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_rsa_encrypt(rsa, public_key, test_rsa_DATA_1, out));
 
     //  Check
-    TEST_ASSERT_EQUAL(test_rsa_2048_ENCRYPTED_DATA_1.len, vsc_buffer_len(out));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_rsa_2048_ENCRYPTED_DATA_1.bytes, vsc_buffer_bytes(out), vsc_buffer_len(out));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_rsa_2048_ENCRYPTED_DATA_1, out);
 
     //  Cleanup
+    vscf_rsa_destroy(&rsa);
+    vscf_impl_destroy(&public_key);
     vsc_buffer_destroy(&out);
-    vscf_rsa_public_key_destroy(&public_key);
+    vscf_raw_public_key_destroy(&raw_public_key);
 }
 
-
 void
-test__rsa_public_key_verify_hash__with_imported_2048_PUBLIC_KEY_PKCS1_and_random_AB_and_hash_sha512_and_DATA_1_and_2048_DATA_1_SIGNATURE__success(
+test__rsa_public_key_verify_hash__with_imported_2048_PUBLIC_KEY_PKCS1_and_random_AB_and_hash_sha512_and_DATA_1__equals_2048_DATA_1_SIGNATURE(
         void) {
 
-    //  Setup dependencies
-    vscf_rsa_public_key_t *public_key = vscf_rsa_public_key_new();
+    //  Create raw public key
+    vscf_impl_t *alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_RSA));
+    vscf_raw_public_key_t *raw_public_key =
+            vscf_raw_public_key_new_with_data(test_rsa_2048_PUBLIC_KEY_PKCS1, &alg_info);
 
-    vscf_rsa_public_key_take_asn1rd(public_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
+    //  Configure key algorithm
+    vscf_rsa_t *rsa = vscf_rsa_new();
 
     vscf_fake_random_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_byte(fake_random, 0xAB);
-    vscf_rsa_public_key_take_random(public_key, vscf_fake_random_impl(fake_random));
-
+    vscf_rsa_take_random(rsa, vscf_fake_random_impl(fake_random));
 
     //  Import public key
-    vscf_status_t result = vscf_rsa_public_key_import_public_key(public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
-    VSCF_ASSERT(result == vscf_status_SUCCESS);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
-    //  Sign
-    bool verify_result = vscf_rsa_public_key_verify_hash(
-            public_key, test_rsa_DATA_1_SHA512_DIGEST, vscf_alg_id_SHA512, test_rsa_2048_DATA_1_SHA512_SIGNATURE);
+    vscf_impl_t *public_key = vscf_rsa_import_public_key(rsa, raw_public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(public_key);
+
+    //  Verify
+    bool verify_result = vscf_rsa_verify_hash(
+            rsa, public_key, vscf_alg_id_SHA512, test_rsa_DATA_1_SHA512_DIGEST, test_rsa_2048_DATA_1_SHA512_SIGNATURE);
 
     //  Check
-    TEST_ASSERT_EQUAL(true, verify_result);
+    TEST_ASSERT_TRUE(verify_result);
 
     //  Cleanup
-    vscf_rsa_public_key_destroy(&public_key);
+    vscf_rsa_destroy(&rsa);
+    vscf_impl_destroy(&public_key);
+    vscf_raw_public_key_destroy(&raw_public_key);
 }
-
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
@@ -173,8 +206,8 @@ main(void) {
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__rsa_public_key_key_len__imported_2048_PUBLIC_KEY_PKCS1__returns_256);
     RUN_TEST(test__rsa_public_key_export_public_key__from_imported_2048_PUBLIC_KEY_PKCS1__expected_equal);
-    RUN_TEST(test__rsa_public_key_encrypt__with_imported_2048_PUBLIC_KEY_PKCS1_and_DATA_1_and_random_AB_and_hash_sha512__returns_2048_ENCRYPTED_DATA_1);
-    RUN_TEST(test__rsa_public_key_verify_hash__with_imported_2048_PUBLIC_KEY_PKCS1_and_random_AB_and_hash_sha512_and_DATA_1_and_2048_DATA_1_SIGNATURE__success);
+    RUN_TEST(test__rsa_public_key_encrypt__with_imported_2048_PUBLIC_KEY_PKCS1_and_2048_ENCRYPTED_DATA_1_and_random_AB__returns_DATA_1);
+    RUN_TEST(test__rsa_public_key_verify_hash__with_imported_2048_PUBLIC_KEY_PKCS1_and_random_AB_and_hash_sha512_and_DATA_1__equals_2048_DATA_1_SIGNATURE);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

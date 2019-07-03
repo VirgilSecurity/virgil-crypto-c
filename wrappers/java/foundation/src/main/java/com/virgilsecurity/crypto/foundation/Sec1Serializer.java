@@ -66,7 +66,7 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
     * Note, that caller code is responsible to reset ASN.1 writer with
     * an output buffer.
     */
-    public int serializePublicKeyInplace(PublicKey publicKey) throws FoundationException {
+    public int serializePublicKeyInplace(RawPublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.sec1Serializer_serializePublicKeyInplace(this.cCtx, publicKey);
     }
 
@@ -75,7 +75,7 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
     * Note, that caller code is responsible to reset ASN.1 writer with
     * an output buffer.
     */
-    public int serializePrivateKeyInplace(PrivateKey privateKey) throws FoundationException {
+    public int serializePrivateKeyInplace(RawPrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.sec1Serializer_serializePrivateKeyInplace(this.cCtx, privateKey);
     }
 
@@ -99,7 +99,7 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
     *
     * Precondition: public key must be exportable.
     */
-    public int serializedPublicKeyLen(PublicKey publicKey) {
+    public int serializedPublicKeyLen(RawPublicKey publicKey) {
         return FoundationJNI.INSTANCE.sec1Serializer_serializedPublicKeyLen(this.cCtx, publicKey);
     }
 
@@ -108,7 +108,7 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
     *
     * Precondition: public key must be exportable.
     */
-    public byte[] serializePublicKey(PublicKey publicKey) throws FoundationException {
+    public byte[] serializePublicKey(RawPublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.sec1Serializer_serializePublicKey(this.cCtx, publicKey);
     }
 
@@ -117,7 +117,7 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
     *
     * Precondition: private key must be exportable.
     */
-    public int serializedPrivateKeyLen(PrivateKey privateKey) {
+    public int serializedPrivateKeyLen(RawPrivateKey privateKey) {
         return FoundationJNI.INSTANCE.sec1Serializer_serializedPrivateKeyLen(this.cCtx, privateKey);
     }
 
@@ -126,7 +126,7 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
     *
     * Precondition: private key must be exportable.
     */
-    public byte[] serializePrivateKey(PrivateKey privateKey) throws FoundationException {
+    public byte[] serializePrivateKey(RawPrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.sec1Serializer_serializePrivateKey(this.cCtx, privateKey);
     }
 }

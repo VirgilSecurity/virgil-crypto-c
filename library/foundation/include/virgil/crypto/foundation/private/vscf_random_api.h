@@ -83,11 +83,12 @@ extern "C" {
 
 //
 //  Callback. Generate random bytes.
+//          All RNG implementations must be thread-safe.
 //
-typedef vscf_status_t (*vscf_random_api_random_fn)(vscf_impl_t *impl, size_t data_len, vsc_buffer_t *data);
+typedef vscf_status_t (*vscf_random_api_random_fn)(const vscf_impl_t *impl, size_t data_len, vsc_buffer_t *data);
 
 //
-//  Callback. Retreive new seed data from the entropy sources.
+//  Callback. Retrieve new seed data from the entropy sources.
 //
 typedef vscf_status_t (*vscf_random_api_reseed_fn)(vscf_impl_t *impl);
 
@@ -106,10 +107,11 @@ struct vscf_random_api_t {
     vscf_impl_tag_t impl_tag;
     //
     //  Generate random bytes.
+    //  All RNG implementations must be thread-safe.
     //
     vscf_random_api_random_fn random_cb;
     //
-    //  Retreive new seed data from the entropy sources.
+    //  Retrieve new seed data from the entropy sources.
     //
     vscf_random_api_reseed_fn reseed_cb;
 };

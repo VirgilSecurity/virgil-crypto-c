@@ -3,58 +3,9 @@
 
     <inherit interface="key"/>
 
-
-    <!-- Public key -->
     <method name="extract public key" is_const="1">
-        Extract public part of the key.
+        Extract public key from the private key.
 
         <return interface="public key" access="disown"/>
-    </method>
-
-
-    <!-- Export -->
-    <constant name="can export private key" type="boolean" is_const="1">
-        Define whether a private key can be exported or not.
-    </constant>
-
-
-    <method name="export private key" is_const="1">
-        Export private key in the binary format.
-
-        Binary format must be defined in the key specification.
-        For instance, RSA private key must be exported in format defined in
-        RFC 3447 Appendix A.1.2.
-
-        <argument name="out" class="buffer">
-            <length method="exported private key len"/>
-        </argument>
-
-        <return enum="status"/>
-    </method>
-
-
-    <method name="exported private key len" is_const="1">
-        Return length in bytes required to hold exported private key.
-
-        <return type="size"/>
-    </method>
-
-
-    <!-- Import -->
-    <constant name="can import private key" type="boolean">
-        Define whether a private key can be imported or not.
-    </constant>
-
-
-    <method name="import private key">
-        Import private key from the binary format.
-
-        Binary format must be defined in the key specification.
-        For instance, RSA private key must be imported from the format defined in
-        RFC 3447 Appendix A.1.2.
-
-        <argument name="data" class="data"/>
-
-        <return enum="status"/>
     </method>
 </interface>

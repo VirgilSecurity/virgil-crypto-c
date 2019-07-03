@@ -13,6 +13,5 @@
 
         <argument name="asn1rd" interface="asn1 reader" access="readwrite"/>
         <argument name="bignum" class="mbedtls_mpi" library="mbedtls" access="readwrite"/>
-        <argument name="error" class="error" access="readwrite"/>
     </method>
 </class>

@@ -98,6 +98,12 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_alg_info_der_deserializer_impl(vscf_alg_info_der_deserializer_t *self);
 
 //
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_alg_info_der_deserializer_impl_const(const vscf_alg_info_der_deserializer_t *self);
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -134,7 +140,6 @@ vscf_alg_info_der_deserializer_destroy(vscf_alg_info_der_deserializer_t **self_r
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_alg_info_der_deserializer_t *
 vscf_alg_info_der_deserializer_shallow_copy(vscf_alg_info_der_deserializer_t *self);

@@ -95,7 +95,7 @@ struct vscf_key_recipient_info_t {
 
     vsc_buffer_t *recipient_id;
 
-    vscf_impl_t *key_encryption_algorithm;
+    const vscf_impl_t *key_encryption_algorithm;
 
     vsc_buffer_t *encrypted_key;
 };

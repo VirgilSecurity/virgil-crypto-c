@@ -104,7 +104,6 @@
 #include "vscf_ecies_envelope.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_ecies_envelope_defs.h"
 #include "vscf_alg.h"
 #include "vscf_hmac.h"
 #include "vscf_asn1rd.h"
@@ -127,151 +126,12 @@
 // --------------------------------------------------------------------------
 
 //
-//  Perform context specific initialization.
-//  Note, this method is called automatically when method vscf_ecies_envelope_init() is called.
-//  Note, that context is already zeroed.
-//
-static void
-vscf_ecies_envelope_init_ctx(vscf_ecies_envelope_t *self);
-
-//
-//  Release all inner resources.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-static void
-vscf_ecies_envelope_cleanup_ctx(vscf_ecies_envelope_t *self);
-
-//
 //  Return size of 'vscf_ecies_envelope_t'.
 //
 VSCF_PUBLIC size_t
 vscf_ecies_envelope_ctx_size(void) {
 
     return sizeof(vscf_ecies_envelope_t);
-}
-
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_init(vscf_ecies_envelope_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_zeroize(self, sizeof(vscf_ecies_envelope_t));
-
-    self->refcnt = 1;
-
-    vscf_ecies_envelope_init_ctx(self);
-}
-
-//
-//  Release all inner resources including class dependencies.
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_cleanup(vscf_ecies_envelope_t *self) {
-
-    if (self == NULL) {
-        return;
-    }
-
-    vscf_ecies_envelope_cleanup_ctx(self);
-
-    vscf_zeroize(self, sizeof(vscf_ecies_envelope_t));
-}
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCF_PUBLIC vscf_ecies_envelope_t *
-vscf_ecies_envelope_new(void) {
-
-    vscf_ecies_envelope_t *self = (vscf_ecies_envelope_t *) vscf_alloc(sizeof (vscf_ecies_envelope_t));
-    VSCF_ASSERT_ALLOC(self);
-
-    vscf_ecies_envelope_init(self);
-
-    self->self_dealloc_cb = vscf_dealloc;
-
-    return self;
-}
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if the context was statically allocated.
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_delete(vscf_ecies_envelope_t *self) {
-
-    if (self == NULL) {
-        return;
-    }
-
-    size_t old_counter = self->refcnt;
-    VSCF_ASSERT(old_counter != 0);
-    size_t new_counter = old_counter - 1;
-
-    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
-    //  CAS loop
-    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
-        old_counter = self->refcnt;
-        VSCF_ASSERT(old_counter != 0);
-        new_counter = old_counter - 1;
-    }
-    #else
-    self->refcnt = new_counter;
-    #endif
-
-    if (new_counter > 0) {
-        return;
-    }
-
-    vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
-
-    vscf_ecies_envelope_cleanup(self);
-
-    if (self_dealloc_cb != NULL) {
-        self_dealloc_cb(self);
-    }
-}
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscf_ecies_envelope_new ()'.
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_destroy(vscf_ecies_envelope_t **self_ref) {
-
-    VSCF_ASSERT_PTR(self_ref);
-
-    vscf_ecies_envelope_t *self = *self_ref;
-    *self_ref = NULL;
-
-    vscf_ecies_envelope_delete(self);
-}
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCF_PUBLIC vscf_ecies_envelope_t *
-vscf_ecies_envelope_shallow_copy(vscf_ecies_envelope_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
-    //  CAS loop
-    size_t old_counter;
-    size_t new_counter;
-    do {
-        old_counter = self->refcnt;
-        new_counter = old_counter + 1;
-    } while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
-    #else
-    ++self->refcnt;
-    #endif
-
-    return self;
 }
 
 
@@ -281,115 +141,6 @@ vscf_ecies_envelope_shallow_copy(vscf_ecies_envelope_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
-//
-//  Perform context specific initialization.
-//  Note, this method is called automatically when method vscf_ecies_envelope_init() is called.
-//  Note, that context is already zeroed.
-//
-static void
-vscf_ecies_envelope_init_ctx(vscf_ecies_envelope_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    //  Nothing to be done.
-}
-
-//
-//  Release all inner resources.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-static void
-vscf_ecies_envelope_cleanup_ctx(vscf_ecies_envelope_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_ecies_envelope_cleanup_properties(self);
-}
-
-//
-//  Set "ephemeral public ke".
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_set_ephemeral_public_key(vscf_ecies_envelope_t *self, vscf_impl_t **ephemeral_public_key_ref) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(ephemeral_public_key_ref);
-    VSCF_ASSERT_PTR(*ephemeral_public_key_ref);
-
-    self->ephemeral_public_key = *ephemeral_public_key_ref;
-    *ephemeral_public_key_ref = NULL;
-}
-
-//
-//  Set "kdf" algorithm information.
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_set_kdf(vscf_ecies_envelope_t *self, vscf_impl_t **kdf_ref) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(kdf_ref);
-    VSCF_ASSERT_PTR(*kdf_ref);
-
-    self->kdf = *kdf_ref;
-    *kdf_ref = NULL;
-}
-
-//
-//  Set "mac" algorithm information.
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_set_mac(vscf_ecies_envelope_t *self, vscf_impl_t **mac_ref) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(mac_ref);
-    VSCF_ASSERT_PTR(*mac_ref);
-
-    self->mac = *mac_ref;
-    *mac_ref = NULL;
-}
-
-//
-//  Set "mac" digest.
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_set_mac_digest(vscf_ecies_envelope_t *self, vsc_buffer_t **mac_digest_ref) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(mac_digest_ref);
-    VSCF_ASSERT_PTR(*mac_digest_ref);
-
-    self->mac_digest = *mac_digest_ref;
-    *mac_digest_ref = NULL;
-}
-
-//
-//  Set "cipher" algorithm information.
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_set_cipher(vscf_ecies_envelope_t *self, vscf_impl_t **cipher_ref) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(cipher_ref);
-    VSCF_ASSERT_PTR(*cipher_ref);
-
-    self->cipher = *cipher_ref;
-    *cipher_ref = NULL;
-}
-
-//
-//  Set "encrypted content".
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_set_encrypted_content(vscf_ecies_envelope_t *self, vsc_buffer_t **encrypted_content_ref) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(encrypted_content_ref);
-    VSCF_ASSERT_PTR(*encrypted_content_ref);
-
-    self->encrypted_content = *encrypted_content_ref;
-    *encrypted_content_ref = NULL;
-}
 
 //
 //  Return buffer length required to hold packed ECIES-Envelope.
@@ -549,7 +300,7 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
     //
     //  Remove previous data.
     //
-    vscf_ecies_envelope_cleanup_ctx(self);
+    vscf_ecies_envelope_cleanup_properties(self);
 
     vscf_asn1rd_t *asn1rd = vscf_asn1rd_new();
     vscf_asn1rd_reset(asn1rd, data);
@@ -570,12 +321,8 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
     //
     // Read: originator.
     //
-    vscf_raw_key_t *originator_raw_key =
+    self->ephemeral_public_key =
             vscf_key_asn1_deserializer_deserialize_public_key_inplace(key_asn1_deserializer, &error);
-    if (originator_raw_key) {
-        self->ephemeral_public_key = vscf_alg_factory_create_public_key_from_raw_key(originator_raw_key, &error);
-        vscf_raw_key_destroy(&originator_raw_key);
-    }
 
     //
     // Read: kdf.
@@ -633,7 +380,7 @@ vscf_ecies_envelope_unpack(vscf_ecies_envelope_t *self, vsc_data_t data) {
     vscf_asn1rd_destroy(&asn1rd);
 
     if (vscf_error_has_error(&error)) {
-        vscf_ecies_envelope_cleanup_ctx(self);
+        vscf_ecies_envelope_cleanup_properties(self);
     }
 
     return vscf_error_status(&error);
@@ -647,7 +394,7 @@ vscf_ecies_envelope_cleanup_properties(vscf_ecies_envelope_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&self->ephemeral_public_key);
+    vscf_raw_public_key_destroy(&self->ephemeral_public_key);
     vscf_impl_destroy(&self->kdf);
     vscf_impl_destroy(&self->mac);
     vscf_impl_destroy(&self->cipher);

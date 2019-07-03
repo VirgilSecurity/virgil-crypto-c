@@ -151,6 +151,25 @@ VSCF_PUBLIC void
 vscf_signer_release_hash(vscf_signer_t *self);
 
 //
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_signer_use_random(vscf_signer_t *self, vscf_impl_t *random);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_signer_take_random(vscf_signer_t *self, vscf_impl_t *random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_signer_release_random(vscf_signer_t *self);
+
+//
 //  Start a processing a new signature.
 //
 VSCF_PUBLIC void
@@ -160,19 +179,19 @@ vscf_signer_reset(vscf_signer_t *self);
 //  Add given data to the signed data.
 //
 VSCF_PUBLIC void
-vscf_signer_update(vscf_signer_t *self, vsc_data_t data);
+vscf_signer_append_data(vscf_signer_t *self, vsc_data_t data);
 
 //
 //  Return length of the signature.
 //
 VSCF_PUBLIC size_t
-vscf_signer_signature_len(vscf_signer_t *self, const vscf_impl_t *private_key);
+vscf_signer_signature_len(const vscf_signer_t *self, const vscf_impl_t *private_key);
 
 //
 //  Accomplish signing and return signature.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_signer_sign(vscf_signer_t *self, vscf_impl_t *private_key, vsc_buffer_t *signature) VSCF_NODISCARD;
+vscf_signer_sign(const vscf_signer_t *self, const vscf_impl_t *private_key, vsc_buffer_t *signature) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

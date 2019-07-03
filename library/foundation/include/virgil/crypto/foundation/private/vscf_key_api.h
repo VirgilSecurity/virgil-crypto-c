@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_alg.h"
+#include "vscf_alg_id.h"
 
 // clang-format on
 //  @end
@@ -74,14 +74,35 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Callback. Algorithm identifier the key belongs to.
+//
+typedef vscf_alg_id_t (*vscf_key_api_alg_id_fn)(const vscf_impl_t *impl);
+
+//
+//  Callback. Return algorithm information that can be used for serialization.
+//
+typedef const vscf_impl_t * (*vscf_key_api_alg_info_fn)(const vscf_impl_t *impl);
+
+//
 //  Callback. Length of the key in bytes.
 //
-typedef size_t (*vscf_key_api_key_len_fn)(const vscf_impl_t *impl);
+typedef size_t (*vscf_key_api_len_fn)(const vscf_impl_t *impl);
 
 //
 //  Callback. Length of the key in bits.
 //
-typedef size_t (*vscf_key_api_key_bitlen_fn)(const vscf_impl_t *impl);
+typedef size_t (*vscf_key_api_bitlen_fn)(const vscf_impl_t *impl);
+
+//
+//  Callback. Return tag of an associated algorithm that can handle this key.
+//
+typedef vscf_impl_tag_t (*vscf_key_api_impl_tag_fn)(const vscf_impl_t *impl);
+
+//
+//  Callback. Check that key is valid.
+//          Note, this operation can be slow.
+//
+typedef bool (*vscf_key_api_is_valid_fn)(const vscf_impl_t *impl);
 
 //
 //  Contains API requirements of the interface 'key'.
@@ -97,17 +118,30 @@ struct vscf_key_api_t {
     //
     vscf_impl_tag_t impl_tag;
     //
-    //  Link to the inherited interface API 'alg'.
+    //  Algorithm identifier the key belongs to.
     //
-    const vscf_alg_api_t *alg_api;
+    vscf_key_api_alg_id_fn alg_id_cb;
+    //
+    //  Return algorithm information that can be used for serialization.
+    //
+    vscf_key_api_alg_info_fn alg_info_cb;
     //
     //  Length of the key in bytes.
     //
-    vscf_key_api_key_len_fn key_len_cb;
+    vscf_key_api_len_fn len_cb;
     //
     //  Length of the key in bits.
     //
-    vscf_key_api_key_bitlen_fn key_bitlen_cb;
+    vscf_key_api_bitlen_fn bitlen_cb;
+    //
+    //  Return tag of an associated algorithm that can handle this key.
+    //
+    vscf_key_api_impl_tag_fn impl_tag_cb;
+    //
+    //  Check that key is valid.
+    //  Note, this operation can be slow.
+    //
+    vscf_key_api_is_valid_fn is_valid_cb;
 };
 
 

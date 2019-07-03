@@ -48,6 +48,7 @@ macro(_add_test test)
     target_link_libraries(${test} test_utils test_data_foundation vsc::foundation)
     set_target_properties(${test} PROPERTIES C_STANDARD "99")
     add_test (NAME ${test} COMMAND ${test})
+    enable_target_pedantic(${test})
 
     if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
         add_clangformat(${test})

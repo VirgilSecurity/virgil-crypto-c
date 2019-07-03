@@ -39,14 +39,15 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE (VSCF_SECP256R1_PUBLIC_KEY && VSCF_FAKE_RANDOM && VSCF_RANDOM)
+#define TEST_DEPENDENCIES_AVAILABLE (VSCF_ECC && VSCF_FAKE_RANDOM && VSCF_RANDOM)
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_assert.h"
 
-#include "vscf_secp256r1_public_key.h"
+#include "vscf_ecc.h"
 #include "vscf_random.h"
 #include "vscf_fake_random.h"
+#include "vscf_simple_alg_info.h"
 
 #include "test_data_secp256r1.h"
 
@@ -56,65 +57,128 @@
 // --------------------------------------------------------------------------
 void
 test__key_len__imported_public_key__returns_32(void) {
-    vscf_secp256r1_public_key_t *public_key = vscf_secp256r1_public_key_new();
 
-    vscf_status_t result = vscf_secp256r1_public_key_import_public_key(public_key, test_secp256r1_PUBLIC_KEY);
-    VSCF_ASSERT(result == vscf_status_SUCCESS);
+    vscf_impl_t *alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SECP256R1));
+    vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_data(test_secp256r1_PUBLIC_KEY, &alg_info);
 
-    TEST_ASSERT_EQUAL(32, vscf_secp256r1_public_key_key_len(public_key));
+    vscf_ecc_t *ecc = vscf_ecc_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ecc_setup_defaults(ecc));
 
-    vscf_secp256r1_public_key_destroy(&public_key);
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *secp256r1_public_key = vscf_ecc_import_public_key(ecc, raw_public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(secp256r1_public_key);
+
+    TEST_ASSERT_EQUAL(32, vscf_key_len(secp256r1_public_key));
+
+    vscf_ecc_destroy(&ecc);
+    vscf_raw_public_key_destroy(&raw_public_key);
+    vscf_impl_destroy(&secp256r1_public_key);
 }
 
 void
 test__export_public_key__from_imported_public_key__are_equal(void) {
-    vscf_secp256r1_public_key_t *public_key = vscf_secp256r1_public_key_new();
 
-    vscf_status_t result = vscf_secp256r1_public_key_import_public_key(public_key, test_secp256r1_PUBLIC_KEY);
-    VSCF_ASSERT(result == vscf_status_SUCCESS);
+    //  Create raw public key
+    vscf_impl_t *alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SECP256R1));
+    vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_data(test_secp256r1_PUBLIC_KEY, &alg_info);
 
-    vsc_buffer_t *exported_key_buf =
-            vsc_buffer_new_with_capacity(vscf_secp256r1_public_key_exported_public_key_len(public_key));
-    result = vscf_secp256r1_public_key_export_public_key(public_key, exported_key_buf);
+    //  Configure key algorithm
+    vscf_ecc_t *ecc = vscf_ecc_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ecc_setup_defaults(ecc));
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, result);
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_secp256r1_PUBLIC_KEY, exported_key_buf);
+    //  Import public key
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
-    vsc_buffer_destroy(&exported_key_buf);
-    vscf_secp256r1_public_key_destroy(&public_key);
+    vscf_impl_t *secp256r1_public_key = vscf_ecc_import_public_key(ecc, raw_public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(secp256r1_public_key);
+
+    //  Export public key
+    vscf_raw_public_key_t *exported_raw_public_key = vscf_ecc_export_public_key(ecc, secp256r1_public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(exported_raw_public_key);
+
+    //   Check
+    TEST_ASSERT_EQUAL_DATA(test_secp256r1_PUBLIC_KEY, vscf_raw_public_key_data(exported_raw_public_key));
+
+    //  Cleanup
+    vscf_ecc_destroy(&ecc);
+    vscf_raw_public_key_destroy(&raw_public_key);
+    vscf_impl_destroy(&secp256r1_public_key);
+    vscf_raw_public_key_destroy(&exported_raw_public_key);
 }
 
 void
 test__verify__with_imported_public_key_and_data_signature__valid_signature(void) {
-    vscf_secp256r1_public_key_t *public_key = vscf_secp256r1_public_key_new();
 
-    vscf_status_t result = vscf_secp256r1_public_key_import_public_key(public_key, test_secp256r1_PUBLIC_KEY);
-    VSCF_ASSERT(result == vscf_status_SUCCESS);
+    //  Create raw public key
+    vscf_impl_t *alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SECP256R1));
+    vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_data(test_secp256r1_PUBLIC_KEY, &alg_info);
 
-    bool verify_result = vscf_secp256r1_public_key_verify_hash(
-            public_key, test_secp256r1_MESSAGE_SHA256_DIGEST, vscf_alg_id_SHA256, test_secp256r1_SHA256_SIGNATURE);
-    TEST_ASSERT_EQUAL(true, verify_result);
+    //  Configure key algorithm
+    vscf_ecc_t *ecc = vscf_ecc_new();
 
-    vscf_secp256r1_public_key_destroy(&public_key);
+    //  Import public key
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *public_key = vscf_ecc_import_public_key(ecc, raw_public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(public_key);
+
+    //  Verify
+    bool verify_result = vscf_ecc_verify_hash(
+            ecc, public_key, vscf_alg_id_SHA256, test_secp256r1_MESSAGE_SHA256_DIGEST, test_secp256r1_SHA256_SIGNATURE);
+
+    //  Check
+    TEST_ASSERT_TRUE(verify_result);
+
+    //  Cleanup
+    vscf_ecc_destroy(&ecc);
+    vscf_impl_destroy(&public_key);
+    vscf_raw_public_key_destroy(&raw_public_key);
 }
 
 void
 test__encrypt__message_with_imported_key__success(void) {
 
-    vscf_secp256r1_public_key_t *public_key = vscf_secp256r1_public_key_new();
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_secp256r1_public_key_setup_defaults(public_key));
+    //  Create raw public key
+    vscf_impl_t *alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SECP256R1));
+    vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_data(test_secp256r1_PUBLIC_KEY, &alg_info);
 
-    vscf_status_t result = vscf_secp256r1_public_key_import_public_key(public_key, test_secp256r1_PUBLIC_KEY);
-    VSCF_ASSERT(result == vscf_status_SUCCESS);
+    //  Configure key algorithm
+    vscf_ecc_t *ecc = vscf_ecc_new();
 
-    vsc_buffer_t *enc_msg = vsc_buffer_new_with_capacity(
-            vscf_secp256r1_public_key_encrypted_len(public_key, test_secp256r1_MESSAGE.len));
-    vscf_status_t status = vscf_secp256r1_public_key_encrypt(public_key, test_secp256r1_MESSAGE, enc_msg);
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
+    vscf_ecc_take_random(ecc, vscf_fake_random_impl(fake_random));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ecc_setup_defaults(ecc));
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+    //  Import public key
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
-    vsc_buffer_destroy(&enc_msg);
-    vscf_secp256r1_public_key_destroy(&public_key);
+    vscf_impl_t *public_key = vscf_ecc_import_public_key(ecc, raw_public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(public_key);
+
+    //  Encrypt
+    vsc_buffer_t *out =
+            vsc_buffer_new_with_capacity(vscf_ecc_encrypted_len(ecc, public_key, test_secp256r1_MESSAGE.len));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ecc_encrypt(ecc, public_key, test_secp256r1_MESSAGE, out));
+
+    //  Check
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_secp256r1_ENCRYPTED_MESSAGE_WITH_AB_RANDOM, out);
+
+    //  Cleanup
+    vscf_ecc_destroy(&ecc);
+    vscf_impl_destroy(&public_key);
+    vsc_buffer_destroy(&out);
+    vscf_raw_public_key_destroy(&raw_public_key);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

@@ -40,8 +40,8 @@ import VSCFoundation
 @objc(VSCFKeyDeserializer) public protocol KeyDeserializer : CContext {
 
     /// Deserialize given public key as an interchangeable format to the object.
-    @objc func deserializePublicKey(publicKeyData: Data) throws -> RawKey
+    @objc func deserializePublicKey(publicKeyData: Data) throws -> RawPublicKey
 
     /// Deserialize given private key as an interchangeable format to the object.
-    @objc func deserializePrivateKey(privateKeyData: Data) throws -> RawKey
+    @objc func deserializePrivateKey(privateKeyData: Data) throws -> RawPrivateKey
 }

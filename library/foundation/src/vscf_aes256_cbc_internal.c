@@ -377,7 +377,6 @@ vscf_aes256_cbc_destroy(vscf_aes256_cbc_t **self_ref) {
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_aes256_cbc_t *
 vscf_aes256_cbc_shallow_copy(vscf_aes256_cbc_t *self) {
@@ -412,6 +411,16 @@ vscf_aes256_cbc_impl(vscf_aes256_cbc_t *self) {
 
     VSCF_ASSERT_PTR(self);
     return (vscf_impl_t *)(self);
+}
+
+//
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_aes256_cbc_impl_const(const vscf_aes256_cbc_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    return (const vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *

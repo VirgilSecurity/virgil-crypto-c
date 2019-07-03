@@ -101,6 +101,10 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_BAD_DER_PRIVATE_KEY = -224;
 
+    public static final int ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM = -225;
+
+    public static final int ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM = -226;
+
     public static final int ERROR_NO_MESSAGE_INFO = -301;
 
     public static final int ERROR_BAD_MESSAGE_INFO = -302;
@@ -211,6 +215,10 @@ public class FoundationException extends RuntimeException {
             return "ASN.1 representation of a public key is corrupted.";
         case ERROR_BAD_DER_PRIVATE_KEY:
             return "ASN.1 representation of a private key is corrupted.";
+        case ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM:
+            return "Key algorithm does not accept given type of public key.";
+        case ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM:
+            return "Key algorithm does not accept given type of private key.";
         case ERROR_NO_MESSAGE_INFO:
             return "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.";
         case ERROR_BAD_MESSAGE_INFO:

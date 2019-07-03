@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'ecies' implementation.
+//  Virgil implementation of the ECIES algorithm.
 // --------------------------------------------------------------------------
 
 
@@ -51,29 +51,26 @@
 // --------------------------------------------------------------------------
 
 #include "vscf_ecies.h"
-#include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_alg_factory.h"
-#include "vscf_generate_ephemeral_key.h"
-#include "vscf_compute_shared_key.h"
-#include "vscf_encrypt.h"
-#include "vscf_decrypt.h"
+#include "vscf_assert.h"
+#include "vscf_random.h"
+#include "vscf_cipher.h"
+#include "vscf_mac.h"
+#include "vscf_kdf.h"
 #include "vscf_private_key.h"
+#include "vscf_ecies_defs.h"
+#include "vscf_compute_shared_key.h"
+#include "vscf_public_key.h"
+#include "vscf_private_key.h"
+#include "vscf_key_alg.h"
+#include "vscf_key_cipher.h"
 #include "vscf_kdf2.h"
 #include "vscf_sha384.h"
 #include "vscf_hmac.h"
 #include "vscf_aes256_cbc.h"
 #include "vscf_ctr_drbg.h"
-#include "vscf_ecies_envelope_defs.h"
-#include "vscf_random.h"
-#include "vscf_cipher.h"
-#include "vscf_mac.h"
-#include "vscf_kdf.h"
-#include "vscf_public_key.h"
-#include "vscf_private_key.h"
-#include "vscf_private_key.h"
-#include "vscf_ecies_defs.h"
-#include "vscf_ecies_internal.h"
+#include "vscf_key_alg_factory.h"
+#include "vscf_ecies_envelope.h"
 
 // clang-format on
 //  @end
@@ -86,10 +83,376 @@
 // --------------------------------------------------------------------------
 
 //
-//  Configure ECIES with default algorithms.
+//  Perform context specific initialization.
+//  Note, this method is called automatically when method vscf_ecies_init() is called.
+//  Note, that context is already zeroed.
 //
 static void
-vscf_ecies_configure_defaults(vscf_ecies_t *self);
+vscf_ecies_init_ctx(vscf_ecies_t *self);
+
+//
+//  Release all inner resources.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+static void
+vscf_ecies_cleanup_ctx(vscf_ecies_t *self);
+
+//
+//  Return size of 'vscf_ecies_t'.
+//
+VSCF_PUBLIC size_t
+vscf_ecies_ctx_size(void) {
+
+    return sizeof(vscf_ecies_t);
+}
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCF_PUBLIC void
+vscf_ecies_init(vscf_ecies_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_zeroize(self, sizeof(vscf_ecies_t));
+
+    self->refcnt = 1;
+
+    vscf_ecies_init_ctx(self);
+}
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCF_PUBLIC void
+vscf_ecies_cleanup(vscf_ecies_t *self) {
+
+    if (self == NULL) {
+        return;
+    }
+
+    vscf_ecies_cleanup_ctx(self);
+
+    vscf_ecies_release_random(self);
+    vscf_ecies_release_cipher(self);
+    vscf_ecies_release_mac(self);
+    vscf_ecies_release_kdf(self);
+    vscf_ecies_release_ephemeral_key(self);
+
+    vscf_zeroize(self, sizeof(vscf_ecies_t));
+}
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCF_PUBLIC vscf_ecies_t *
+vscf_ecies_new(void) {
+
+    vscf_ecies_t *self = (vscf_ecies_t *) vscf_alloc(sizeof (vscf_ecies_t));
+    VSCF_ASSERT_ALLOC(self);
+
+    vscf_ecies_init(self);
+
+    self->self_dealloc_cb = vscf_dealloc;
+
+    return self;
+}
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if the context was statically allocated.
+//
+VSCF_PUBLIC void
+vscf_ecies_delete(vscf_ecies_t *self) {
+
+    if (self == NULL) {
+        return;
+    }
+
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
+    vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
+
+    vscf_ecies_cleanup(self);
+
+    if (self_dealloc_cb != NULL) {
+        self_dealloc_cb(self);
+    }
+}
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscf_ecies_new ()'.
+//
+VSCF_PUBLIC void
+vscf_ecies_destroy(vscf_ecies_t **self_ref) {
+
+    VSCF_ASSERT_PTR(self_ref);
+
+    vscf_ecies_t *self = *self_ref;
+    *self_ref = NULL;
+
+    vscf_ecies_delete(self);
+}
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCF_PUBLIC vscf_ecies_t *
+vscf_ecies_shallow_copy(vscf_ecies_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
+    ++self->refcnt;
+    #endif
+
+    return self;
+}
+
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ecies_use_random(vscf_ecies_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = vscf_impl_shallow_copy(random);
+}
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ecies_take_random(vscf_ecies_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = random;
+}
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_ecies_release_random(vscf_ecies_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->random);
+}
+
+//
+//  Setup dependency to the interface 'cipher' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ecies_use_cipher(vscf_ecies_t *self, vscf_impl_t *cipher) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(cipher);
+    VSCF_ASSERT(self->cipher == NULL);
+
+    VSCF_ASSERT(vscf_cipher_is_implemented(cipher));
+
+    self->cipher = vscf_impl_shallow_copy(cipher);
+}
+
+//
+//  Setup dependency to the interface 'cipher' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ecies_take_cipher(vscf_ecies_t *self, vscf_impl_t *cipher) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(cipher);
+    VSCF_ASSERT(self->cipher == NULL);
+
+    VSCF_ASSERT(vscf_cipher_is_implemented(cipher));
+
+    self->cipher = cipher;
+}
+
+//
+//  Release dependency to the interface 'cipher'.
+//
+VSCF_PUBLIC void
+vscf_ecies_release_cipher(vscf_ecies_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->cipher);
+}
+
+//
+//  Setup dependency to the interface 'mac' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ecies_use_mac(vscf_ecies_t *self, vscf_impl_t *mac) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(mac);
+    VSCF_ASSERT(self->mac == NULL);
+
+    VSCF_ASSERT(vscf_mac_is_implemented(mac));
+
+    self->mac = vscf_impl_shallow_copy(mac);
+}
+
+//
+//  Setup dependency to the interface 'mac' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ecies_take_mac(vscf_ecies_t *self, vscf_impl_t *mac) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(mac);
+    VSCF_ASSERT(self->mac == NULL);
+
+    VSCF_ASSERT(vscf_mac_is_implemented(mac));
+
+    self->mac = mac;
+}
+
+//
+//  Release dependency to the interface 'mac'.
+//
+VSCF_PUBLIC void
+vscf_ecies_release_mac(vscf_ecies_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->mac);
+}
+
+//
+//  Setup dependency to the interface 'kdf' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ecies_use_kdf(vscf_ecies_t *self, vscf_impl_t *kdf) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(kdf);
+    VSCF_ASSERT(self->kdf == NULL);
+
+    VSCF_ASSERT(vscf_kdf_is_implemented(kdf));
+
+    self->kdf = vscf_impl_shallow_copy(kdf);
+}
+
+//
+//  Setup dependency to the interface 'kdf' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ecies_take_kdf(vscf_ecies_t *self, vscf_impl_t *kdf) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(kdf);
+    VSCF_ASSERT(self->kdf == NULL);
+
+    VSCF_ASSERT(vscf_kdf_is_implemented(kdf));
+
+    self->kdf = kdf;
+}
+
+//
+//  Release dependency to the interface 'kdf'.
+//
+VSCF_PUBLIC void
+vscf_ecies_release_kdf(vscf_ecies_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->kdf);
+}
+
+//
+//  Set ephemeral key that used for data encryption.
+//  Public and ephemeral keys should belong to the same curve.
+//  This dependency is optional.
+//
+//  Note, ownership is shared.
+//
+VSCF_PUBLIC void
+vscf_ecies_use_ephemeral_key(vscf_ecies_t *self, vscf_impl_t *ephemeral_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(ephemeral_key);
+    VSCF_ASSERT(self->ephemeral_key == NULL);
+
+    VSCF_ASSERT(vscf_private_key_is_implemented(ephemeral_key));
+
+    self->ephemeral_key = vscf_impl_shallow_copy(ephemeral_key);
+}
+
+//
+//  Set ephemeral key that used for data encryption.
+//  Public and ephemeral keys should belong to the same curve.
+//  This dependency is optional.
+//
+//  Note, ownership is transfered.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ecies_take_ephemeral_key(vscf_ecies_t *self, vscf_impl_t *ephemeral_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(ephemeral_key);
+    VSCF_ASSERT(self->ephemeral_key == NULL);
+
+    VSCF_ASSERT(vscf_private_key_is_implemented(ephemeral_key));
+
+    self->ephemeral_key = ephemeral_key;
+}
+
+//
+//  Release dependency to the interface 'private key'.
+//
+VSCF_PUBLIC void
+vscf_ecies_release_ephemeral_key(vscf_ecies_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->ephemeral_key);
+}
 
 
 // --------------------------------------------------------------------------
@@ -100,28 +463,51 @@ vscf_ecies_configure_defaults(vscf_ecies_t *self);
 
 
 //
-//  Provides initialization of the implementation specific context.
+//  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_ecies_init() is called.
 //  Note, that context is already zeroed.
 //
-VSCF_PRIVATE void
+static void
 vscf_ecies_init_ctx(vscf_ecies_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    self->envelope = vscf_ecies_envelope_new();
 }
 
 //
-//  Release resources of the implementation specific context.
+//  Release all inner resources.
 //  Note, this method is called automatically once when class is completely cleaning up.
 //  Note, that context will be zeroed automatically next this method.
 //
-VSCF_PRIVATE void
+static void
 vscf_ecies_cleanup_ctx(vscf_ecies_t *self) {
 
     VSCF_ASSERT_PTR(self);
+}
 
-    vscf_ecies_envelope_destroy(&self->envelope);
+//
+//  Set weak reference to the key algorithm.
+//  Key algorithm MUST support shared key computation as well.
+//
+VSCF_PUBLIC void
+vscf_ecies_set_key_alg(vscf_ecies_t *self, const vscf_impl_t *key_alg) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(key_alg);
+    VSCF_ASSERT(vscf_key_alg_is_implemented(key_alg));
+    VSCF_ASSERT(vscf_compute_shared_key_is_implemented(key_alg));
+
+    self->key_alg = key_alg;
+}
+
+//
+//  Release weak reference to the key algorithm.
+//
+VSCF_PUBLIC void
+vscf_ecies_release_key_alg(vscf_ecies_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    self->key_alg = NULL;
 }
 
 //
@@ -142,17 +528,6 @@ vscf_ecies_setup_defaults(vscf_ecies_t *self) {
         }
     }
 
-    return status;
-}
-
-//
-//  Configure ECIES with default algorithms.
-//
-static void
-vscf_ecies_configure_defaults(vscf_ecies_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
     if (NULL == self->cipher) {
         self->cipher = vscf_aes256_cbc_impl(vscf_aes256_cbc_new());
     }
@@ -168,55 +543,72 @@ vscf_ecies_configure_defaults(vscf_ecies_t *self) {
         vscf_kdf2_take_hash(kdf, vscf_sha384_impl(vscf_sha384_new()));
         self->kdf = vscf_kdf2_impl(kdf);
     }
+
+    return status;
 }
 
 //
-//  Encrypt given data.
+//  Calculate required buffer length to hold the encrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_ecies_encrypted_len(const vscf_ecies_t *self, const vscf_impl_t *public_key, size_t data_len) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+
+    //  TODO: Make precise calculation.
+    size_t len = 256 + data_len + 48;
+
+    return len;
+}
+
+//
+//  Encrypt data with a given public key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
+vscf_ecies_encrypt(const vscf_ecies_t *self, const vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
-    VSCF_ASSERT_PTR(self->encryption_key);
+    VSCF_ASSERT_PTR(self->key_alg);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_ecies_encrypted_len(self, data.len));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_ecies_encrypted_len(self, public_key, data.len));
 
     vscf_error_t error;
     vscf_error_reset(&error);
 
     //
-    // Configure ECIES with default algorithms.
-    //
-    vscf_ecies_configure_defaults(self);
-
-    //
     // Generate ephemeral keypair, if not defined.
     //
-    if (NULL == self->ephemeral_key) {
-        VSCF_ASSERT(vscf_generate_ephemeral_key_is_implemented(self->encryption_key));
-        self->ephemeral_key = vscf_generate_ephemeral_key(self->encryption_key, &error);
+    const vscf_impl_t *ephemeral_key = self->ephemeral_key;
+
+    if (ephemeral_key) {
+        ephemeral_key = vscf_impl_shallow_copy_const(self->ephemeral_key);
+    } else {
+        ephemeral_key = vscf_key_alg_generate_ephemeral_key(self->key_alg, public_key, &error);
         if (vscf_error_has_error(&error)) {
             return vscf_error_status(&error);
         }
-        VSCF_ASSERT(vscf_compute_shared_key_is_implemented(self->ephemeral_key));
     }
-
-    vscf_impl_t *ephemeral_public_key = vscf_private_key_extract_public_key(self->ephemeral_key);
-    vscf_ecies_envelope_set_ephemeral_public_key(self->envelope, &ephemeral_public_key);
 
     vsc_buffer_t *shared_key = NULL;
     vsc_buffer_t *derived_key = NULL;
     vsc_buffer_t *nonce = NULL;
+    vsc_buffer_t *encrypted_data = NULL;
+    vsc_buffer_t *mac_digest = NULL;
+    vscf_ecies_envelope_t envelope = {NULL, NULL, NULL, NULL, NULL, NULL};
 
     //
     // Compute shared secret key.
     //
-    shared_key = vsc_buffer_new_with_capacity(vscf_compute_shared_key_shared_key_len(self->ephemeral_key));
+    shared_key = vsc_buffer_new_with_capacity(vscf_compute_shared_key_shared_key_len(self->key_alg, ephemeral_key));
     vsc_buffer_make_secure(shared_key);
-    vscf_error_update(&error, vscf_compute_shared_key(self->ephemeral_key, self->encryption_key, shared_key));
+    vscf_error_update(&error, vscf_compute_shared_key(self->key_alg, public_key, ephemeral_key, shared_key));
 
     if (vscf_error_has_error(&error)) {
         goto compute_shared_failed;
@@ -248,7 +640,7 @@ vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
     const size_t encrypted_data_len =
             vscf_cipher_encrypted_out_len(self->cipher, data.len) + vscf_cipher_encrypted_out_len(self->cipher, 0);
-    vsc_buffer_t *encrypted_data = vsc_buffer_new_with_capacity(encrypted_data_len);
+    encrypted_data = vsc_buffer_new_with_capacity(encrypted_data_len);
     vscf_cipher_set_nonce(self->cipher, vsc_buffer_data(nonce));
     vscf_cipher_set_key(self->cipher, cipher_key);
     vscf_cipher_start_encryption(self->cipher);
@@ -256,74 +648,82 @@ vscf_ecies_encrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     vscf_error_update(&error, vscf_cipher_finish(self->cipher, encrypted_data));
 
     if (vscf_error_has_error(&error)) {
-        vsc_buffer_destroy(&encrypted_data);
         goto encrypt_failed;
     }
 
     //
     // Get HMAC for encrypted message.
     //
-    vsc_buffer_t *mac_digest = vsc_buffer_new_with_capacity(vscf_mac_digest_len(self->mac));
+    mac_digest = vsc_buffer_new_with_capacity(vscf_mac_digest_len(self->mac));
     vscf_mac_start(self->mac, mac_key);
     vscf_mac_update(self->mac, vsc_buffer_data(encrypted_data));
     vscf_mac_finish(self->mac, mac_digest);
 
-    vscf_ecies_envelope_set_encrypted_content(self->envelope, &encrypted_data);
-    vscf_ecies_envelope_set_mac_digest(self->envelope, &mac_digest);
-
     //
     //  Configure and write envelope.
     //
-    vscf_impl_t *cipher = vscf_impl_shallow_copy(self->cipher);
-    vscf_ecies_envelope_set_cipher(self->envelope, &cipher);
+    vscf_impl_t *ephemeral_public_key = vscf_private_key_extract_public_key(ephemeral_key);
+    vscf_raw_public_key_t *raw_ephemeral_public_key =
+            vscf_key_alg_export_public_key(self->key_alg, ephemeral_public_key, &error);
+    vscf_impl_destroy(&ephemeral_public_key);
 
-    vscf_impl_t *kdf = vscf_impl_shallow_copy(self->kdf);
-    vscf_ecies_envelope_set_kdf(self->envelope, &kdf);
+    if (vscf_error_has_error(&error)) {
+        goto pack_envelope_failed;
+    }
 
-    vscf_impl_t *mac = vscf_impl_shallow_copy(self->mac);
-    vscf_ecies_envelope_set_mac(self->envelope, &mac);
+    envelope.cipher = (vscf_impl_t *)self->cipher;
+    envelope.kdf = (vscf_impl_t *)self->kdf;
+    envelope.mac = (vscf_impl_t *)self->mac;
+    envelope.ephemeral_public_key = raw_ephemeral_public_key;
+    envelope.encrypted_content = encrypted_data;
+    envelope.mac_digest = mac_digest;
 
-    vscf_error_update(&error, vscf_ecies_envelope_pack(self->envelope, out));
+    vscf_error_update(&error, vscf_ecies_envelope_pack(&envelope, out));
 
+    vscf_raw_public_key_destroy(&raw_ephemeral_public_key);
+
+pack_envelope_failed:
 encrypt_failed:
+    vsc_buffer_destroy(&encrypted_data);
+    vsc_buffer_destroy(&mac_digest);
+
 random_failed:
     vsc_buffer_destroy(&nonce);
     vsc_buffer_destroy(&derived_key);
 
 compute_shared_failed:
+    vscf_impl_destroy((vscf_impl_t **)&ephemeral_key);
     vsc_buffer_destroy(&shared_key);
-    vscf_ecies_envelope_cleanup_properties(self->envelope);
-    vscf_ecies_release_ephemeral_key(self);
 
     return vscf_error_status(&error);
 }
 
 //
-//  Calculate required buffer length to hold the encrypted data.
+//  Calculate required buffer length to hold the decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_ecies_encrypted_len(vscf_ecies_t *self, size_t data_len) {
+vscf_ecies_decrypted_len(const vscf_ecies_t *self, const vscf_impl_t *private_key, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
 
-    //  TODO: Make precise calculation.
-    size_t len = 256 + data_len + 48;
-
-    return len;
+    return data_len;
 }
 
 //
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ecies_decrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
+vscf_ecies_decrypt(const vscf_ecies_t *self, const vscf_impl_t *private_key, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->decryption_key);
+    VSCF_ASSERT_PTR(self->key_alg);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_ecies_decrypted_len(self, data.len));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_ecies_decrypted_len(self, private_key, data.len));
 
     vscf_error_t error;
     vscf_error_reset(&error);
@@ -331,11 +731,18 @@ vscf_ecies_decrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     vsc_buffer_t *shared_key = NULL;
     vsc_buffer_t *derived_key = NULL;
     vsc_buffer_t *mac_digest = NULL;
+    vscf_ecies_envelope_t envelope = {NULL, NULL, NULL, NULL, NULL, NULL};
+    vscf_impl_t *ephemeral_public_key = NULL;
 
     //
     //  Unpack envelope.
     //
-    vscf_error_update(&error, vscf_ecies_envelope_unpack(self->envelope, data));
+    vscf_error_update(&error, vscf_ecies_envelope_unpack(&envelope, data));
+    if (vscf_error_has_error(&error)) {
+        goto unpack_envelope_failed;
+    }
+
+    ephemeral_public_key = vscf_key_alg_import_public_key(self->key_alg, envelope.ephemeral_public_key, &error);
     if (vscf_error_has_error(&error)) {
         goto unpack_envelope_failed;
     }
@@ -343,10 +750,9 @@ vscf_ecies_decrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     //
     //  Compute shared secret key.
     //
-    shared_key = vsc_buffer_new_with_capacity(vscf_compute_shared_key_shared_key_len(self->decryption_key));
+    shared_key = vsc_buffer_new_with_capacity(vscf_compute_shared_key_shared_key_len(self->key_alg, private_key));
     vsc_buffer_make_secure(shared_key);
-    vscf_error_update(
-            &error, vscf_compute_shared_key(self->decryption_key, self->envelope->ephemeral_public_key, shared_key));
+    vscf_error_update(&error, vscf_compute_shared_key(self->key_alg, ephemeral_public_key, private_key, shared_key));
 
     if (vscf_error_has_error(&error)) {
         goto compute_shared_failed;
@@ -355,13 +761,13 @@ vscf_ecies_decrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     //
     //  Derive keys (decryption key and hmac key).
     //
-    const size_t mac_key_len = vscf_mac_digest_len(self->envelope->mac);
+    const size_t mac_key_len = vscf_mac_digest_len(envelope.mac);
     const size_t cipher_key_len =
-            vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->envelope->cipher)));
+            vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(envelope.cipher)));
     const size_t derived_key_len = cipher_key_len + mac_key_len;
     derived_key = vsc_buffer_new_with_capacity(derived_key_len);
     vsc_buffer_make_secure(derived_key);
-    vscf_kdf_derive(self->envelope->kdf, vsc_buffer_data(shared_key), derived_key_len, derived_key);
+    vscf_kdf_derive(envelope.kdf, vsc_buffer_data(shared_key), derived_key_len, derived_key);
 
     vsc_data_t cipher_key = vsc_data_slice_beg(vsc_buffer_data(derived_key), 0, cipher_key_len);
     vsc_data_t mac_key = vsc_data_slice_beg(vsc_buffer_data(derived_key), cipher_key_len, mac_key_len);
@@ -369,12 +775,12 @@ vscf_ecies_decrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     //
     //  Get HMAC for encrypted message and compare it.
     //
-    mac_digest = vsc_buffer_new_with_capacity(vscf_mac_digest_len(self->envelope->mac));
-    vscf_mac_start(self->envelope->mac, mac_key);
-    vscf_mac_update(self->envelope->mac, vsc_buffer_data(self->envelope->encrypted_content));
-    vscf_mac_finish(self->envelope->mac, mac_digest);
+    mac_digest = vsc_buffer_new_with_capacity(vscf_mac_digest_len(envelope.mac));
+    vscf_mac_start(envelope.mac, mac_key);
+    vscf_mac_update(envelope.mac, vsc_buffer_data(envelope.encrypted_content));
+    vscf_mac_finish(envelope.mac, mac_digest);
 
-    if (!vsc_buffer_secure_equal(self->envelope->mac_digest, mac_digest)) {
+    if (!vsc_buffer_secure_equal(envelope.mac_digest, mac_digest)) {
         vscf_error_update(&error, vscf_status_ERROR_BAD_ENCRYPTED_DATA);
         goto mac_validation_failed;
     }
@@ -382,10 +788,10 @@ vscf_ecies_decrypt(vscf_ecies_t *self, vsc_data_t data, vsc_buffer_t *out) {
     //
     //  Decrypt given message.
     //
-    vscf_cipher_set_key(self->envelope->cipher, cipher_key);
-    vscf_cipher_start_decryption(self->envelope->cipher);
-    vscf_cipher_update(self->envelope->cipher, vsc_buffer_data(self->envelope->encrypted_content), out);
-    vscf_error_update(&error, vscf_cipher_finish(self->envelope->cipher, out));
+    vscf_cipher_set_key(envelope.cipher, cipher_key);
+    vscf_cipher_start_decryption(envelope.cipher);
+    vscf_cipher_update(envelope.cipher, vsc_buffer_data(envelope.encrypted_content), out);
+    vscf_error_update(&error, vscf_cipher_finish(envelope.cipher, out));
 
 //
 //  Cleanup.
@@ -398,18 +804,8 @@ compute_shared_failed:
     vsc_buffer_destroy(&shared_key);
 
 unpack_envelope_failed:
-    vscf_ecies_envelope_cleanup_properties(self->envelope);
+    vscf_impl_destroy(&ephemeral_public_key);
+    vscf_ecies_envelope_cleanup_properties(&envelope);
 
     return vscf_error_status(&error);
-}
-
-//
-//  Calculate required buffer length to hold the decrypted data.
-//
-VSCF_PUBLIC size_t
-vscf_ecies_decrypted_len(vscf_ecies_t *self, size_t data_len) {
-
-    VSCF_ASSERT_PTR(self);
-
-    return data_len;
 }
