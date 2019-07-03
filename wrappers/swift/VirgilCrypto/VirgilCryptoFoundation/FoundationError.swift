@@ -209,6 +209,9 @@ import VSCFoundation
     /// Duplicate epoch.
     case errorDuplicateEpoch = -706
 
+    /// Plain text too long.
+    case errorPlainTextTooLong = -707
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscf_status_t) {
         self.init(rawValue: Int(status.rawValue))!

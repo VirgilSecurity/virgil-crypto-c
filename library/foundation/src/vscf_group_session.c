@@ -404,29 +404,31 @@ vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_sessio
     VSCF_ASSERT_PTR(message);
     VSCF_ASSERT(message->message_pb.has_group_info);
 
-    //  TODO: Add checks
-    //  TODO: Add max number of epochs limit
+    if (self->last_epoch &&
+            memcmp(self->session_id, message->message_pb.group_info.session_id, sizeof(self->session_id)) != 0) {
+        return vscf_status_ERROR_SESSION_ID_DOESNT_MATCH;
+    }
 
     vscf_status_t status = vscf_status_SUCCESS;
 
     uint32_t msg_epoch = message->message_pb.group_info.epoch;
 
-    vscf_group_session_epoch_node_t *left = NULL, *right = NULL;
-
     if (self->last_epoch == NULL) {
         memcpy(self->session_id, message->message_pb.group_info.session_id, sizeof(self->session_id));
-    } else {
-        left = self->last_epoch;
+    }
 
-        while (left != NULL && left->value->epoch_number >= msg_epoch) {
-            if (left->value->epoch_number == msg_epoch) {
-                status = vscf_status_ERROR_DUPLICATE_EPOCH;
-                goto err;
-            }
+    vscf_group_session_epoch_node_t *left = NULL, *right = NULL;
 
-            right = left;
-            left = left->prev;
+    left = self->last_epoch;
+
+    while (left != NULL && left->value->epoch_number >= msg_epoch) {
+        if (left->value->epoch_number == msg_epoch) {
+            status = vscf_status_ERROR_DUPLICATE_EPOCH;
+            goto err;
         }
+
+        right = left;
+        left = left->prev;
     }
 
     vscf_group_session_epoch_t *value = vscf_group_session_epoch_new();
@@ -441,10 +443,24 @@ vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_sessio
 
     if (right == NULL) {
         self->last_epoch = new_node;
+    } else {
+        right->prev = new_node;
     }
 
     if (left == NULL) {
         self->first_epoch = new_node;
+    } else {
+        left->next = new_node;
+    }
+
+    self->epochs_count++;
+
+    if (self->epochs_count > vscf_group_session_MAX_EPOCHS_COUNT) {
+        VSCF_ASSERT_PTR(self->first_epoch);
+        vscf_group_session_epoch_node_t *first = self->first_epoch;
+        self->first_epoch = first->next;
+        self->first_epoch->prev = NULL;
+        vscf_group_session_epoch_node_destroy(&first);
     }
 
 err:
@@ -464,7 +480,10 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
     VSCF_ASSERT(vsc_data_is_valid(private_key));
     VSCF_ASSERT(vsc_data_is_valid(plain_text));
 
-    // TODO: Check plain_text len
+    if (plain_text.len > vscf_group_session_MAX_PLAIN_TEXT_LEN) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_PLAIN_TEXT_TOO_LONG);
+        return NULL;
+    }
 
     vscf_status_t status;
 
@@ -631,8 +650,6 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
         status = ed_status == 1 ? vscf_status_ERROR_INVALID_SIGNATURE : vscf_status_ERROR_ED25519;
         goto err;
     }
-
-    // TODO: Check length
 
     status = vscf_message_cipher_decrypt_then_remove_pad(self->cipher,
             vsc_data(message->message_pb.regular_message.cipher_text->bytes,

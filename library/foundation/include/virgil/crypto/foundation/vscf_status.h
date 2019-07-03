@@ -300,7 +300,11 @@ enum vscf_status_t {
     //
     //  Duplicate epoch.
     //
-    vscf_status_ERROR_DUPLICATE_EPOCH = -706
+    vscf_status_ERROR_DUPLICATE_EPOCH = -706,
+    //
+    //  Plain text too long.
+    //
+    vscf_status_ERROR_PLAIN_TEXT_TOO_LONG = -707
 };
 typedef enum vscf_status_t vscf_status_t;
 

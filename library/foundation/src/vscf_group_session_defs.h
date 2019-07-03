@@ -102,6 +102,8 @@ struct vscf_group_session_t {
     vscf_group_session_epoch_node_t *last_epoch;
 
     vscf_group_session_epoch_node_t *first_epoch;
+
+    size_t epochs_count;
 };
 
 

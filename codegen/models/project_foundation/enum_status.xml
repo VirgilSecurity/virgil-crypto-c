@@ -230,4 +230,8 @@
         Duplicate epoch.
     </constant>
 
+    <constant name="error plain text too long" value="-707">
+        Plain text too long.
+    </constant>
+
 </enum>

@@ -153,6 +153,8 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_DUPLICATE_EPOCH = -706;
 
+    public static final int ERROR_PLAIN_TEXT_TOO_LONG = -707;
+
     private int statusCode;
 
     /* Create new instance. */
@@ -279,6 +281,8 @@ public class FoundationException extends RuntimeException {
             return "Ed25519 error.";
         case ERROR_DUPLICATE_EPOCH:
             return "Duplicate epoch.";
+        case ERROR_PLAIN_TEXT_TOO_LONG:
+            return "Plain text too long.";
         default:
             return "Unknown error";
         }

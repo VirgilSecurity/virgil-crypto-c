@@ -142,15 +142,19 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, vscf_group_session_t **sessions, vsc_buffe
         TEST_ASSERT(msg != NULL);
         TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error.status);
 
-        for (size_t j = 0; j < (not_sync ? group_size / 2 : group_size); j++) {
+        for (size_t j = 0; j < group_size; j++) {
             size_t len = vscf_group_session_decrypt_len(sessions[j], msg);
             vsc_buffer_t *decrypted = vsc_buffer_new_with_capacity(len);
 
-            TEST_ASSERT_EQUAL(
-                    vscf_status_SUCCESS, vscf_group_session_decrypt(sessions[j], msg, vsc_buffer_data(pub[sender]),
-                                                 vsc_buffer_data(ids[sender]), decrypted));
+            vscf_status_t status = vscf_group_session_decrypt(
+                    sessions[j], msg, vsc_buffer_data(pub[sender]), vsc_buffer_data(ids[sender]), decrypted);
 
-            TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(plain_text), decrypted);
+            if (not_sync && sender < group_size / 2 && j >= group_size / 2) {
+                TEST_ASSERT_EQUAL(vscf_status_ERROR_EPOCH_NOT_FOUND, status);
+            } else {
+                TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+                TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(plain_text), decrypted);
+            }
 
             vsc_buffer_destroy(&decrypted);
         }
@@ -211,7 +215,7 @@ test__encrypt_decrypt__random_group__should_match(void) {
 
     initialize_random_group_session(rng, &sessions, &priv, &pub, &ids, group_size);
 
-    encrypt_decrypt(rng, sessions, priv, pub, ids, group_size, 1000, false);
+    encrypt_decrypt(rng, sessions, priv, pub, ids, group_size, 100, false);
 
     for (size_t i = 0; i < group_size; i++) {
         vscf_group_session_destroy(&sessions[i]);
@@ -229,7 +233,7 @@ test__encrypt_decrypt__random_group__should_match(void) {
 }
 
 void
-add_epoch_to_half(vscf_group_session_t **sessions, size_t group_size) {
+add_epoch(vscf_group_session_t **sessions, size_t group_size, bool to_half) {
 
     vscf_error_t error;
     vscf_error_reset(&error);
@@ -239,7 +243,7 @@ add_epoch_to_half(vscf_group_session_t **sessions, size_t group_size) {
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error.status);
 
-    for (size_t i = 0; i < group_size / 2; i++) {
+    for (size_t i = 0; i < (to_half ? group_size / 2 : group_size); i++) {
         TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_group_session_add_epoch(sessions[i], msg));
     }
 
@@ -247,7 +251,7 @@ add_epoch_to_half(vscf_group_session_t **sessions, size_t group_size) {
 }
 
 void
-test__encrypt_decrypt__new_epoch__should_decrypt(void) {
+test__encrypt_decrypt__new_epoch_not_synced__should_decrypt(void) {
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
@@ -260,11 +264,48 @@ test__encrypt_decrypt__new_epoch__should_decrypt(void) {
 
     initialize_random_group_session(rng, &sessions, &priv, &pub, &ids, group_size);
 
-    encrypt_decrypt(rng, sessions, priv, pub, ids, group_size, 1000, false);
+    encrypt_decrypt(rng, sessions, priv, pub, ids, group_size, 100, false);
 
-    add_epoch_to_half(sessions, group_size);
+    add_epoch(sessions, group_size, true);
 
-    encrypt_decrypt(rng, sessions, priv, pub, ids, group_size, 1000, true);
+    encrypt_decrypt(rng, sessions, priv, pub, ids, group_size, 100, true);
+
+    for (size_t i = 0; i < group_size; i++) {
+        vscf_group_session_destroy(&sessions[i]);
+        vsc_buffer_destroy(&priv[i]);
+        vsc_buffer_destroy(&pub[i]);
+        vsc_buffer_destroy(&ids[i]);
+    }
+
+    vscf_dealloc(sessions);
+    vscf_dealloc(priv);
+    vscf_dealloc(pub);
+    vscf_dealloc(ids);
+
+    vscf_ctr_drbg_destroy(&rng);
+}
+
+void
+test__encrypt_decrypt__new_epochs__should_decrypt(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
+    vscf_group_session_t **sessions;
+    vsc_buffer_t **priv;
+    vsc_buffer_t **pub;
+    vsc_buffer_t **ids;
+
+    size_t group_size = 10;
+
+    initialize_random_group_session(rng, &sessions, &priv, &pub, &ids, group_size);
+
+    encrypt_decrypt(rng, sessions, priv, pub, ids, group_size, 10, false);
+
+    for (size_t i = 0; i < vscf_group_session_MAX_EPOCHS_COUNT + 10; i++) {
+        add_epoch(sessions, group_size, false);
+
+        encrypt_decrypt(rng, sessions, priv, pub, ids, group_size, 10, false);
+    }
 
     for (size_t i = 0; i < group_size; i++) {
         vscf_group_session_destroy(&sessions[i]);
@@ -293,7 +334,8 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__encrypt_decrypt__random_group__should_match);
-    RUN_TEST(test__encrypt_decrypt__new_epoch__should_decrypt);
+    RUN_TEST(test__encrypt_decrypt__new_epoch_not_synced__should_decrypt);
+    RUN_TEST(test__encrypt_decrypt__new_epochs__should_decrypt);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

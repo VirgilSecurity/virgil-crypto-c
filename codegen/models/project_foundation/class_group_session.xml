@@ -42,6 +42,7 @@
     <property name="session id" class="vscf_group_session_id_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="last epoch" class="group session epoch node" access="readwrite"/>
     <property name="first epoch" class="group session epoch node" access="readwrite"/>
+    <property name="epochs count" type="size"/>
 
     <method name="get current epoch" is_const="1">
         Returns current epoch.
