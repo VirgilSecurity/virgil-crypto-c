@@ -72,6 +72,11 @@ if(CMAKE_CROSSCOMPILING AND APPLE)
 endif()
 
 #
+# Library with protobuf models
+#
+add_subdirectory(protobuf)
+
+#
 # Define sources
 #
 add_library(foundation "")
@@ -81,7 +86,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 #
 # Link to dependencies
 #
-target_link_libraries(foundation PUBLIC vsc::common mbed::crypto ed25519)
+target_link_libraries(foundation PUBLIC vsc::foundation_pb vsc::common mbed::crypto ed25519)
 
 #
 # Define specific compilation and linkage flags.

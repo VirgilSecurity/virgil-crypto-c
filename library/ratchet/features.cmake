@@ -54,7 +54,6 @@ option(VSCR_RATCHET_KEY_ID "Enable class 'ratchet key id'." ON)
 option(VSCR_ERROR "Enable class 'error'." ON)
 option(VSCR_RATCHET_X3DH "Enable class 'ratchet x3dh'." ON)
 option(VSCR_RATCHET_MESSAGE "Enable class 'ratchet message'." ON)
-option(VSCR_RATCHET_PADDING "Enable class 'ratchet padding'." ON)
 option(VSCR_RATCHET_CIPHER "Enable class 'ratchet cipher'." ON)
 option(VSCR_RATCHET_CHAIN_KEY "Enable class 'ratchet chain key'." ON)
 option(VSCR_RATCHET_MESSAGE_KEY "Enable class 'ratchet message key'." ON)
@@ -84,7 +83,6 @@ mark_as_advanced(
         VSCR_ERROR
         VSCR_RATCHET_X3DH
         VSCR_RATCHET_MESSAGE
-        VSCR_RATCHET_PADDING
         VSCR_RATCHET_CIPHER
         VSCR_RATCHET_CHAIN_KEY
         VSCR_RATCHET_MESSAGE_KEY
@@ -246,15 +244,6 @@ if(VSCR_RATCHET_MESSAGE AND NOT VSCF_SHA512)
     message("--")
     message("Feature VSCR_RATCHET_MESSAGE depends on the feature:")
     message("     VSCF_SHA512 - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCR_RATCHET_PADDING AND NOT VSCR_RATCHET_COMMON_HIDDEN)
-    message("-- error --")
-    message("--")
-    message("Feature VSCR_RATCHET_PADDING depends on the feature:")
-    message("     VSCR_RATCHET_COMMON_HIDDEN - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

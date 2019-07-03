@@ -27,23 +27,4 @@
     <require header="pb_encode.h" scope="public"/>
 
     <require class="buffer" project="common" scope="private"/>
-
-    <method name="buffer decode callback" is_static="1">
-        <argument name="stream" class="pb_istream_t" library="nanopb" access="readwrite"/>
-        <argument name="field" class="pb_field_t" library="nanopb"/>
-        <argument name="arg" class="void*" library="nanopb" access="readwrite"/>
-        <argument name="max size" type="size"/>
-
-        <return type="boolean"/>
-    </method>
-
-    <method name="buffer encode callback" is_static="1">
-        <argument name="stream" class="pb_ostream_t" library="nanopb" access="readwrite"/>
-        <argument name="field" class="pb_field_t" library="nanopb"/>
-        <argument name="arg" class="any" access="readwrite">
-            <array length="given" access="readonly"/>
-        </argument>
-
-        <return type="boolean"/>
-    </method>
 </class>

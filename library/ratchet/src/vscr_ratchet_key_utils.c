@@ -408,7 +408,6 @@ vscr_ratchet_key_utils_derive_participant_key(
     vsc_buffer_use(&buffer, chain_key->key, vscr_ratchet_common_hidden_SHARED_KEY_LEN);
 
     vscf_hkdf_set_info(hkdf, vsc_data(participant_id, vscr_ratchet_common_PARTICIPANT_ID_LEN));
-    // FIXME
     vscf_hkdf_derive(hkdf, vsc_data(root_key, vscr_ratchet_common_hidden_SHARED_KEY_LEN),
             vscr_ratchet_common_hidden_SHARED_KEY_LEN, &buffer);
 

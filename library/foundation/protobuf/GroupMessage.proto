@@ -1,0 +1,26 @@
+syntax = "proto2";
+
+message MessageGroupInfo {
+    required bytes session_id = 1;
+    required uint32 epoch = 2;
+    required bytes key = 3;
+}
+
+message RegularGroupMessageHeader {
+    required bytes session_id = 1;
+    required uint32 epoch = 2;
+    required bytes sender_id = 3;
+    required bytes salt = 4;
+}
+
+message RegularGroupMessage {
+    required bytes header = 1;
+    required bytes signature = 2;
+    required bytes cipher_text = 3;
+}
+
+message GroupMessage {
+    required uint32 version = 1;
+    optional MessageGroupInfo group_info = 2;
+    optional RegularGroupMessage regular_message = 3;
+}

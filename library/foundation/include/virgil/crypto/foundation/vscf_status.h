@@ -276,7 +276,43 @@ enum vscf_status_t {
     //
     //  Brainkey identity secret is invalid.
     //
-    vscf_status_ERROR_INVALID_IDENTITY_SECRET = -410
+    vscf_status_ERROR_INVALID_IDENTITY_SECRET = -410,
+    //
+    //  Invalid padding.
+    //
+    vscf_status_ERROR_INVALID_PADDING = -501,
+    //
+    //  Protobuf error.
+    //
+    vscf_status_ERROR_PROTOBUF = -601,
+    //
+    //  Session id doesnt match.
+    //
+    vscf_status_ERROR_SESSION_ID_DOESNT_MATCH = -701,
+    //
+    //  Epoch not found.
+    //
+    vscf_status_ERROR_EPOCH_NOT_FOUND = -702,
+    //
+    //  Wrong key type.
+    //
+    vscf_status_ERROR_WRONG_KEY_TYPE = -703,
+    //
+    //  Invalid signature.
+    //
+    vscf_status_ERROR_INVALID_SIGNATURE = -704,
+    //
+    //  Ed25519 error.
+    //
+    vscf_status_ERROR_ED25519 = -705,
+    //
+    //  Duplicate epoch.
+    //
+    vscf_status_ERROR_DUPLICATE_EPOCH = -706,
+    //
+    //  Plain text too long.
+    //
+    vscf_status_ERROR_PLAIN_TEXT_TOO_LONG = -707
 };
 typedef enum vscf_status_t vscf_status_t;
 

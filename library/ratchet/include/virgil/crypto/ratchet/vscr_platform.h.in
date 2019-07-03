@@ -110,10 +110,6 @@ extern "C" {
 #cmakedefine01 VSCR_RATCHET_MESSAGE
 #endif
 
-#ifndef VSCR_RATCHET_PADDING
-#cmakedefine01 VSCR_RATCHET_PADDING
-#endif
-
 #ifndef VSCR_RATCHET_CIPHER
 #cmakedefine01 VSCR_RATCHET_CIPHER
 #endif

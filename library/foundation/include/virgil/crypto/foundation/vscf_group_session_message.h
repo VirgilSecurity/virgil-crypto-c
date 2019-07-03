@@ -44,32 +44,29 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_PADDING_H_INCLUDED
-#define VSCR_RATCHET_PADDING_H_INCLUDED
 
-#include "vscr_library.h"
-#include "vscr_status.h"
+//  @description
+// --------------------------------------------------------------------------
+//  Class represents group session message
+// --------------------------------------------------------------------------
 
-#include <RatchetMessage.pb.h>
-#include <pb_decode.h>
-#include <pb_encode.h>
+#ifndef VSCF_GROUP_SESSION_MESSAGE_H_INCLUDED
+#define VSCF_GROUP_SESSION_MESSAGE_H_INCLUDED
 
-#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#include "vscf_library.h"
+#include "vscf_error.h"
+#include "vscf_group_session_message.h"
+#include "vscf_group_msg_type.h"
+
+#include <virgil/crypto/common/vsc_buffer.h>
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
-#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
-#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
-#endif
-
-#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
-#endif
-
-#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -91,86 +88,108 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
-    vscr_ratchet_padding_PADDING_SIZE_LEN = 4,
-    vscr_ratchet_padding_PADDING_FACTOR = 160
+    //
+    //  Max message len
+    //
+    vscf_group_session_message_MAX_MESSAGE_LEN = 30222,
+    //
+    //  Message version
+    //
+    vscf_group_session_message_MESSAGE_VERSION = 1
 };
 
 //
-//  Handle 'ratchet padding' context.
+//  Handle 'group session message' context.
 //
-typedef struct vscr_ratchet_padding_t vscr_ratchet_padding_t;
+typedef struct vscf_group_session_message_t vscf_group_session_message_t;
 
 //
-//  Return size of 'vscr_ratchet_padding_t'.
+//  Return size of 'vscf_group_session_message_t'.
 //
-VSCR_PUBLIC size_t
-vscr_ratchet_padding_ctx_size(void);
+VSCF_PUBLIC size_t
+vscf_group_session_message_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
-VSCR_PUBLIC void
-vscr_ratchet_padding_init(vscr_ratchet_padding_t *self);
+VSCF_PUBLIC void
+vscf_group_session_message_init(vscf_group_session_message_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
-VSCR_PUBLIC void
-vscr_ratchet_padding_cleanup(vscr_ratchet_padding_t *self);
+VSCF_PUBLIC void
+vscf_group_session_message_cleanup(vscf_group_session_message_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_padding_t *
-vscr_ratchet_padding_new(void);
+VSCF_PUBLIC vscf_group_session_message_t *
+vscf_group_session_message_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //
-VSCR_PUBLIC void
-vscr_ratchet_padding_delete(vscr_ratchet_padding_t *self);
+VSCF_PUBLIC void
+vscf_group_session_message_delete(vscf_group_session_message_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_padding_new ()'.
+//  This is a reverse action of the function 'vscf_group_session_message_new ()'.
 //
-VSCR_PUBLIC void
-vscr_ratchet_padding_destroy(vscr_ratchet_padding_t **self_ref);
+VSCF_PUBLIC void
+vscf_group_session_message_destroy(vscf_group_session_message_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_padding_t *
-vscr_ratchet_padding_shallow_copy(vscr_ratchet_padding_t *self);
+VSCF_PUBLIC vscf_group_session_message_t *
+vscf_group_session_message_shallow_copy(vscf_group_session_message_t *self);
 
 //
-//  Setup dependency to the interface 'random' with shared ownership.
+//  Returns message type.
 //
-VSCR_PUBLIC void
-vscr_ratchet_padding_use_rng(vscr_ratchet_padding_t *self, vscf_impl_t *rng);
+VSCF_PUBLIC vscf_group_msg_type_t
+vscf_group_session_message_get_type(const vscf_group_session_message_t *self);
 
 //
-//  Setup dependency to the interface 'random' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//  Returns session id.
+//  This method should be called only for group info type.
 //
-VSCR_PUBLIC void
-vscr_ratchet_padding_take_rng(vscr_ratchet_padding_t *self, vscf_impl_t *rng);
+VSCF_PUBLIC vsc_data_t
+vscf_group_session_message_get_session_id(const vscf_group_session_message_t *self);
 
 //
-//  Release dependency to the interface 'random'.
+//  Returns message sender id.
+//  This method should be called only for regular message type.
 //
-VSCR_PUBLIC void
-vscr_ratchet_padding_release_rng(vscr_ratchet_padding_t *self);
+VSCF_PUBLIC vsc_data_t
+vscf_group_session_message_get_sender_id(const vscf_group_session_message_t *self);
 
-VSCR_PUBLIC size_t
-vscr_ratchet_padding_padded_len(size_t plain_text_len);
+//
+//  Returns message epoch.
+//
+VSCF_PUBLIC uint32_t
+vscf_group_session_message_get_epoch(const vscf_group_session_message_t *self);
 
-VSCR_PUBLIC vscr_status_t
-vscr_ratchet_padding_add_padding(vscr_ratchet_padding_t *self, vsc_buffer_t *plain_text) VSCR_NODISCARD;
+//
+//  Buffer len to serialize this class.
+//
+VSCF_PUBLIC size_t
+vscf_group_session_message_serialize_len(const vscf_group_session_message_t *self);
 
-VSCR_PUBLIC vscr_status_t
-vscr_ratchet_padding_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buffer) VSCR_NODISCARD;
+//
+//  Serializes instance.
+//
+VSCF_PUBLIC void
+vscf_group_session_message_serialize(const vscf_group_session_message_t *self, vsc_buffer_t *output);
+
+//
+//  Deserializes instance.
+//
+VSCF_PUBLIC vscf_group_session_message_t *
+vscf_group_session_message_deserialize(vsc_data_t input, vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------
@@ -186,5 +205,5 @@ vscr_ratchet_padding_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buf
 
 
 //  @footer
-#endif // VSCR_RATCHET_PADDING_H_INCLUDED
+#endif // VSCF_GROUP_SESSION_MESSAGE_H_INCLUDED
 //  @end

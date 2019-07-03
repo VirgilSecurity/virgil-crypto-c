@@ -37,6 +37,9 @@
 
 #include "vsc_data.h"
 
+extern const vsc_data_t test_simple_swu_hash_data;
+extern const char test_simple_swu_x_DEC[];
+extern const char test_simple_swu_y_DEC[];
 extern const vsc_data_t test_simple_swu_hash1;
 extern const vsc_data_t test_simple_swu_x1;
 extern const vsc_data_t test_simple_swu_y1;

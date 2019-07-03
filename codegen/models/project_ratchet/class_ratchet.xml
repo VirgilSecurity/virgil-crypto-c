@@ -22,7 +22,7 @@
 
     <dependency name="rng" interface="random" project="foundation" has_observers="1"/>
     <property name="cipher" class="ratchet cipher" access="readwrite"/>
-    <property name="padding" class="ratchet padding" access="readwrite"/>
+    <property name="padding" class="message padding" project="foundation" access="readwrite"/>
     <property name="sender chain" class="ratchet sender chain" access="readwrite"/>
     <property name="prev sender chain count" type="unsigned" size="4" access="readwrite"/>
     <property name="receiver chain" class="ratchet receiver chain" access="readwrite"/>

@@ -87,15 +87,4 @@
         </return>
     </method>
 
-    <method name="buffer decode callback" declaration="private" is_static="1">
-        <argument name="stream" class="pb_istream_t" library="nanopb" access="readwrite"/>
-        <argument name="field" class="pb_field_t" library="nanopb"/>
-        <argument name="arg" class="void*" library="nanopb" access="readwrite"/>
-
-        <return type="boolean"/>
-    </method>
-
-    <method name="set pb encode callback" declaration="private"/>
-    <method name="set pb decode callback" declaration="private"/>
-
 </class>

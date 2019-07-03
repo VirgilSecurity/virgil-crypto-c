@@ -61,11 +61,14 @@
     <module name="memory" from="shared"/>
     <module name="atomic" from="shared"/>
 
+    <module name="group session typedefs"/>
+
     <enum name="status"/>
     <enum name="asn1 tag"/>
     <enum name="alg id"/>
     <enum name="oid id"/>
     <enum name="recipient cipher decryption state"/>
+    <enum name="group msg type"/>
 
     <interface name="cipher"/>
     <interface name="auth encrypt"/>
@@ -129,6 +132,13 @@
     <class name="simple swu"/>
     <class name="brainkey client"/>
     <class name="brainkey server"/>
+    <class name="message padding"/>
+    <class name="message cipher"/>
+    <class name="group session message"/>
+    <class name="group session ticket"/>
+    <class name="group session"/>
+    <class name="group session epoch"/>
+    <class name="group session epoch node"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>

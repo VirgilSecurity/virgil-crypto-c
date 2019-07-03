@@ -338,7 +338,7 @@ vscr_ratchet_group_session_init_ctx(vscr_ratchet_group_session_t *self) {
 
     self->key_utils = vscr_ratchet_key_utils_new();
     self->cipher = vscr_ratchet_cipher_new();
-    self->padding = vscr_ratchet_padding_new();
+    self->padding = vscf_message_padding_new();
     self->is_initialized = false;
     self->is_private_key_set = false;
     self->is_my_id_set = false;
@@ -365,7 +365,7 @@ vscr_ratchet_group_session_cleanup_ctx(vscr_ratchet_group_session_t *self) {
     vscr_ratchet_chain_key_destroy(&self->my_chain_key);
     vscr_ratchet_key_utils_destroy(&self->key_utils);
     vscr_ratchet_cipher_destroy(&self->cipher);
-    vscr_ratchet_padding_destroy(&self->padding);
+    vscf_message_padding_destroy(&self->padding);
 }
 
 //
@@ -377,7 +377,7 @@ vscr_ratchet_group_session_did_setup_rng(vscr_ratchet_group_session_t *self) {
     VSCR_ASSERT_PTR(self);
 
     if (self->rng) {
-        vscr_ratchet_padding_use_rng(self->padding, self->rng);
+        vscf_message_padding_use_rng(self->padding, self->rng);
     }
 }
 
@@ -833,24 +833,30 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     }
     vscr_ratchet_keys_advance_chain_key(self->my_chain_key);
 
-    regular_message->cipher_text.arg = vsc_buffer_new_with_capacity(
-            vscr_ratchet_cipher_encrypt_len(self->cipher, vscr_ratchet_padding_padded_len(plain_text.len)));
+    size_t len = vscr_ratchet_cipher_encrypt_len(self->cipher, vscf_message_padding_padded_len(plain_text.len));
+    regular_message->cipher_text = vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(len));
 
     pb_ostream_t ostream = pb_ostream_from_buffer(regular_message->header.bytes, sizeof(regular_message->header.bytes));
 
     VSCR_ASSERT(pb_encode(&ostream, RegularGroupMessageHeader_fields, msg->header_pb));
     regular_message->header.size = ostream.bytes_written;
 
+    vsc_buffer_t buffer;
+    vsc_buffer_init(&buffer);
+    vsc_buffer_use(&buffer, regular_message->cipher_text->bytes, len);
+
     status = vscr_ratchet_cipher_pad_then_encrypt(self->cipher, self->padding, plain_text, message_key,
-            vsc_data(regular_message->header.bytes, regular_message->header.size), regular_message->cipher_text.arg);
+            vsc_data(regular_message->header.bytes, regular_message->header.size), &buffer);
+
+    regular_message->cipher_text->size = vsc_buffer_len(&buffer);
 
     if (status != vscr_status_SUCCESS) {
         status = vscr_status_ERROR_SESSION_IS_NOT_INITIALIZED;
         goto err;
     }
 
-    int ed_status = ed25519_sign(regular_message->signature, self->my_private_key,
-            vsc_buffer_bytes(regular_message->cipher_text.arg), vsc_buffer_len(regular_message->cipher_text.arg));
+    int ed_status = ed25519_sign(regular_message->signature, self->my_private_key, regular_message->cipher_text->bytes,
+            regular_message->cipher_text->size);
 
     if (ed_status != 0) {
         status = vscr_status_ERROR_ED25519;
@@ -880,8 +886,7 @@ vscr_ratchet_group_session_decrypt_len(
     VSCR_ASSERT_PTR(message);
     VSCR_ASSERT(message->message_pb.has_regular_message);
 
-    return vscr_ratchet_cipher_decrypt_len(
-            self->cipher, vsc_buffer_len(message->message_pb.regular_message.cipher_text.arg));
+    return vscr_ratchet_cipher_decrypt_len(self->cipher, message->message_pb.regular_message.cipher_text->size);
 }
 
 //
@@ -922,7 +927,7 @@ vscr_ratchet_group_session_decrypt(
     VSCR_ASSERT_PTR(participant);
 
     int ed_status = ed25519_verify(group_message->signature, participant->info.pub_key,
-            vsc_buffer_bytes(group_message->cipher_text.arg), vsc_buffer_len(group_message->cipher_text.arg));
+            group_message->cipher_text->bytes, group_message->cipher_text->size);
 
     if (ed_status != 0) {
         return ed_status == 1 ? vscr_status_ERROR_ED25519 : vscr_status_ERROR_INVALID_SIGNATURE;
@@ -963,7 +968,7 @@ vscr_ratchet_group_session_decrypt(
         vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(new_chain_key);
 
         vscr_status_t result = vscr_ratchet_cipher_decrypt_then_remove_pad(self->cipher,
-                vsc_buffer_data(group_message->cipher_text.arg), message_key,
+                vsc_data(group_message->cipher_text->bytes, group_message->cipher_text->size), message_key,
                 vsc_data(group_message->header.bytes, group_message->header.size), plain_text);
 
         vscr_ratchet_message_key_destroy(&message_key);
@@ -1015,7 +1020,7 @@ vscr_ratchet_group_session_decrypt(
             return vscr_status_ERROR_SKIPPED_MESSAGE_MISSING;
         } else {
             vscr_status_t result = vscr_ratchet_cipher_decrypt_then_remove_pad(self->cipher,
-                    vsc_buffer_data(group_message->cipher_text.arg), message_key,
+                    vsc_data(group_message->cipher_text->bytes, group_message->cipher_text->size), message_key,
                     vsc_data(group_message->header.bytes, group_message->header.size), plain_text);
 
             if (result != vscr_status_SUCCESS) {
