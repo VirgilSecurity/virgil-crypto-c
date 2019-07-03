@@ -119,8 +119,7 @@ generate_random_data(vscf_ctr_drbg_t *rng, vsc_buffer_t **buffer) {
 
 void
 generate_random_participant_id(vscf_ctr_drbg_t *rng, vsc_buffer_t **id) {
-    // FIXME
-    *id = vsc_buffer_new_with_capacity(32);
+    *id = vsc_buffer_new_with_capacity(vscf_group_session_SENDER_ID_LEN);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, 32, *id));
 }

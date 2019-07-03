@@ -50,6 +50,20 @@ public class GroupSessionMessage implements AutoCloseable {
     }
 
     /*
+    * Max message len
+    */
+    public int getMaxMessageLen() {
+        return 30222;
+    }
+
+    /*
+    * Message version
+    */
+    public int getMessageVersion() {
+        return 1;
+    }
+
+    /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
@@ -92,6 +106,27 @@ public class GroupSessionMessage implements AutoCloseable {
     */
     public long getEpoch() {
         return FoundationJNI.INSTANCE.groupSessionMessage_getEpoch(this.cCtx);
+    }
+
+    /*
+    * Buffer len to serialize this class.
+    */
+    public int serializeLen() {
+        return FoundationJNI.INSTANCE.groupSessionMessage_serializeLen(this.cCtx);
+    }
+
+    /*
+    * Serializes instance.
+    */
+    public byte[] serialize() {
+        return FoundationJNI.INSTANCE.groupSessionMessage_serialize(this.cCtx);
+    }
+
+    /*
+    * Deserializes instance.
+    */
+    public static GroupSessionMessage deserialize(byte[] input) throws FoundationException {
+        return FoundationJNI.INSTANCE.groupSessionMessage_deserialize(input);
     }
 }
 

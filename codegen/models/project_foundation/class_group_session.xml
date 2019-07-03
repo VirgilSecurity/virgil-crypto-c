@@ -8,6 +8,14 @@
         Max plain text len
     </constant>
 
+    <constant name="max epochs count" value="50">
+        Max epochs count
+    </constant>
+
+    <constant name="salt size" value="32">
+        Salt size
+    </constant>
+
     <require module="buffer defs" scope="private" project="common"/>
 
     <require module="group session typedefs" scope="context"/>

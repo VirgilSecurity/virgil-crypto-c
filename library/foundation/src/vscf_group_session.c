@@ -420,8 +420,7 @@ vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_sessio
 
         while (left != NULL && left->value->epoch_number >= msg_epoch) {
             if (left->value->epoch_number == msg_epoch) {
-                // FIXME
-                status = vscf_status_ERROR_RANDOM_FAILED;
+                status = vscf_status_ERROR_DUPLICATE_EPOCH;
                 goto err;
             }
 
@@ -484,15 +483,13 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
     }
 
     if (vscf_raw_key_alg_id(raw_key) != vscf_alg_id_ED25519) {
-        // FIXME
-        status = vscf_status_ERROR_RANDOM_FAILED;
+        status = vscf_status_ERROR_WRONG_KEY_TYPE;
         goto err;
     }
 
-    // FIXME
-    vsc_buffer_t *salt = vsc_buffer_new_with_capacity(32);
+    vsc_buffer_t *salt = vsc_buffer_new_with_capacity(vscf_group_session_SALT_SIZE);
 
-    status = vscf_random(self->rng, 32, salt);
+    status = vscf_random(self->rng, vscf_group_session_SALT_SIZE, salt);
 
     if (status != vscf_status_SUCCESS) {
         goto err1;
@@ -538,8 +535,7 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
             vsc_buffer_bytes(&cipher_text), vsc_buffer_len(&cipher_text));
 
     if (ed_status != 0) {
-        // FIXME
-        status = ed_status == 1 ? vscf_status_ERROR_RANDOM_FAILED : vscf_status_ERROR_RANDOM_FAILED;
+        status = vscf_status_ERROR_ED25519;
         goto err2;
     }
 
@@ -593,8 +589,7 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
     VSCF_ASSERT_PTR(self->last_epoch);
 
     if (memcmp(self->session_id, message->header_pb->session_id, sizeof(self->session_id)) != 0) {
-        // FIXME
-        return vscf_status_ERROR_RANDOM_FAILED;
+        return vscf_status_ERROR_SESSION_ID_DOESNT_MATCH;
     }
 
     uint32_t msg_epoch = message->header_pb->epoch;
@@ -605,8 +600,7 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
     }
 
     if (epoch == NULL || epoch->value->epoch_number != msg_epoch) {
-        // FIXME
-        return vscf_status_ERROR_RANDOM_FAILED;
+        return vscf_status_ERROR_EPOCH_NOT_FOUND;
     }
 
     vscf_status_t status = vscf_status_SUCCESS;
@@ -625,8 +619,7 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
     }
 
     if (vscf_raw_key_alg_id(raw_key) != vscf_alg_id_ED25519) {
-        // FIXME
-        status = vscf_status_ERROR_RANDOM_FAILED;
+        status = vscf_status_ERROR_WRONG_KEY_TYPE;
         goto err;
     }
 
@@ -635,8 +628,7 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
             message->message_pb.regular_message.cipher_text->size);
 
     if (ed_status != 0) {
-        // FIXME
-        status = ed_status == 1 ? vscf_status_ERROR_RANDOM_FAILED : vscf_status_ERROR_RANDOM_FAILED;
+        status = ed_status == 1 ? vscf_status_ERROR_INVALID_SIGNATURE : vscf_status_ERROR_ED25519;
         goto err;
     }
 

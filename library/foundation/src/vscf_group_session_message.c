@@ -238,8 +238,7 @@ vscf_group_session_message_init_ctx(vscf_group_session_message_t *self) {
     GroupMessage msg = GroupMessage_init_zero;
 
     self->message_pb = msg;
-    // FIXME
-    self->message_pb.version = 1;
+    self->message_pb.version = vscf_group_session_message_MESSAGE_VERSION;
 }
 
 //
@@ -299,7 +298,6 @@ vscf_group_session_message_get_sender_id(const vscf_group_session_message_t *sel
     VSCF_ASSERT_PTR(self);
 
     if (!self->message_pb.has_regular_message) {
-        // FIXME
         return vsc_data_empty();
     }
 

@@ -274,9 +274,33 @@ enum vscf_status_t {
     //
     vscf_status_ERROR_INVALID_PADDING = -501,
     //
-    //  Invalid padding.
+    //  Protobuf error.
     //
-    vscf_status_ERROR_PROTOBUF = -601
+    vscf_status_ERROR_PROTOBUF = -601,
+    //
+    //  Session id doesnt match.
+    //
+    vscf_status_ERROR_SESSION_ID_DOESNT_MATCH = -701,
+    //
+    //  Epoch not found.
+    //
+    vscf_status_ERROR_EPOCH_NOT_FOUND = -702,
+    //
+    //  Wrong key type.
+    //
+    vscf_status_ERROR_WRONG_KEY_TYPE = -703,
+    //
+    //  Invalid signature.
+    //
+    vscf_status_ERROR_INVALID_SIGNATURE = -704,
+    //
+    //  Ed25519 error.
+    //
+    vscf_status_ERROR_ED25519 = -705,
+    //
+    //  Duplicate epoch.
+    //
+    vscf_status_ERROR_DUPLICATE_EPOCH = -706
 };
 typedef enum vscf_status_t vscf_status_t;
 

@@ -188,6 +188,27 @@ import VSCFoundation
     /// Invalid padding.
     case errorInvalidPadding = -501
 
+    /// Protobuf error.
+    case errorProtobuf = -601
+
+    /// Session id doesnt match.
+    case errorSessionIdDoesntMatch = -701
+
+    /// Epoch not found.
+    case errorEpochNotFound = -702
+
+    /// Wrong key type.
+    case errorWrongKeyType = -703
+
+    /// Invalid signature.
+    case errorInvalidSignature = -704
+
+    /// Ed25519 error.
+    case errorEd25519 = -705
+
+    /// Duplicate epoch.
+    case errorDuplicateEpoch = -706
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscf_status_t) {
         self.init(rawValue: Int(status.rawValue))!

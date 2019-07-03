@@ -40,6 +40,12 @@ import VSCFoundation
 
     /// Sender id len
     @objc public static let senderIdLen: Int = 32
+    /// Max plain text len
+    @objc public static let maxPlainTextLen: Int = 30000
+    /// Max epochs count
+    @objc public static let maxEpochsCount: Int = 50
+    /// Salt size
+    @objc public static let saltSize: Int = 32
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer

@@ -5,6 +5,10 @@
         Max message len
     </constant>
 
+    <constant name="message version" value="1">
+        Message version
+    </constant>
+
     <require header="GroupMessage.pb.h" scope="context"/>
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>

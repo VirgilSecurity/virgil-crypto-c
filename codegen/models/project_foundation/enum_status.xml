@@ -203,7 +203,31 @@
     </constant>
 
     <constant name="error protobuf" value="-601">
-        Invalid protobuf.
+        Protobuf error.
+    </constant>
+
+    <constant name="error session id doesnt match" value="-701">
+        Session id doesnt match.
+    </constant>
+
+    <constant name="error epoch not found" value="-702">
+        Epoch not found.
+    </constant>
+
+    <constant name="error wrong key type" value="-703">
+        Wrong key type.
+    </constant>
+
+    <constant name="error invalid signature" value="-704">
+        Invalid signature.
+    </constant>
+
+    <constant name="error ed25519" value="-705">
+        Ed25519 error.
+    </constant>
+
+    <constant name="error duplicate epoch" value="-706">
+        Duplicate epoch.
     </constant>
 
 </enum>

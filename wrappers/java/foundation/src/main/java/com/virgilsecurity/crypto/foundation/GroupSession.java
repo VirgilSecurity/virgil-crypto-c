@@ -54,6 +54,27 @@ public class GroupSession implements AutoCloseable {
     }
 
     /*
+    * Max plain text len
+    */
+    public int getMaxPlainTextLen() {
+        return 30000;
+    }
+
+    /*
+    * Max epochs count
+    */
+    public int getMaxEpochsCount() {
+        return 50;
+    }
+
+    /*
+    * Salt size
+    */
+    public int getSaltSize() {
+        return 32;
+    }
+
+    /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */

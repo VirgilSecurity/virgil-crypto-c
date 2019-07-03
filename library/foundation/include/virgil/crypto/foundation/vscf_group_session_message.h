@@ -91,7 +91,11 @@ enum {
     //
     //  Max message len
     //
-    vscf_group_session_message_MAX_MESSAGE_LEN = 30222
+    vscf_group_session_message_MAX_MESSAGE_LEN = 30222,
+    //
+    //  Message version
+    //
+    vscf_group_session_message_MESSAGE_VERSION = 1
 };
 
 //

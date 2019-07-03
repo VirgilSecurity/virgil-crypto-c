@@ -39,6 +39,11 @@ import VSCFoundation
 /// Class represents group session message
 @objc(VSCFGroupSessionMessage) public class GroupSessionMessage: NSObject {
 
+    /// Max message len
+    @objc public static let maxMessageLen: Int = 30222
+    /// Message version
+    @objc public static let messageVersion: Int = 1
+
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
@@ -95,5 +100,47 @@ import VSCFoundation
         let proxyResult = vscf_group_session_message_get_epoch(self.c_ctx)
 
         return proxyResult
+    }
+
+    /// Buffer len to serialize this class.
+    @objc public func serializeLen() -> Int {
+        let proxyResult = vscf_group_session_message_serialize_len(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Serializes instance.
+    @objc public func serialize() -> Data {
+        let outputCount = self.serializeLen()
+        var output = Data(count: outputCount)
+        var outputBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(outputBuf)
+        }
+
+        output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutableRawBufferPointer) -> Void in
+            vsc_buffer_init(outputBuf)
+            vsc_buffer_use(outputBuf, outputPointer.bindMemory(to: byte.self).baseAddress, outputCount)
+
+            vscf_group_session_message_serialize(self.c_ctx, outputBuf)
+        })
+        output.count = vsc_buffer_len(outputBuf)
+
+        return output
+    }
+
+    /// Deserializes instance.
+    @objc public static func deserialize(input: Data) throws -> GroupSessionMessage {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = input.withUnsafeBytes({ (inputPointer: UnsafeRawBufferPointer) in
+
+            return vscf_group_session_message_deserialize(vsc_data(inputPointer.bindMemory(to: byte.self).baseAddress, input.count), &error)
+        })
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return GroupSessionMessage.init(take: proxyResult!)
     }
 }

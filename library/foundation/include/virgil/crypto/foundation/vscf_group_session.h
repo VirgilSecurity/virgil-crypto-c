@@ -90,7 +90,15 @@ enum {
     //
     //  Max plain text len
     //
-    vscf_group_session_MAX_PLAIN_TEXT_LEN = 30000
+    vscf_group_session_MAX_PLAIN_TEXT_LEN = 30000,
+    //
+    //  Max epochs count
+    //
+    vscf_group_session_MAX_EPOCHS_COUNT = 50,
+    //
+    //  Salt size
+    //
+    vscf_group_session_SALT_SIZE = 32
 };
 
 //

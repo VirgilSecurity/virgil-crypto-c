@@ -663,6 +663,21 @@ public class FoundationJNI {
     */
     public native long groupSessionMessage_getEpoch(long cCtx);
 
+    /*
+    * Buffer len to serialize this class.
+    */
+    public native int groupSessionMessage_serializeLen(long cCtx);
+
+    /*
+    * Serializes instance.
+    */
+    public native byte[] groupSessionMessage_serialize(long cCtx);
+
+    /*
+    * Deserializes instance.
+    */
+    public native GroupSessionMessage groupSessionMessage_deserialize(byte[] input) throws FoundationException;
+
     public native long groupSessionTicket_new();
 
     public native void groupSessionTicket_close(long cCtx);
