@@ -1,11 +1,11 @@
-# virgil-crypto-c ChangeLog (Sorted per date)
+# virgil-crypto-c ChangeLog (Sorted by date)
 
 
 ## Version 0.7.1 released 2019-06-03
 
 ### Bugfix
 
-- Lib/Foundation: Fix asn1 key deserializer - return status code when pass invalid key instead of fail on assertion
+- Lib/Foundation: Fix asn1 key deserializer - return status code when passing an invalid key instead of failing on assertion
 - Lib/Foundation: Fix chunk encryption/decryption for AES256-GCM
 
 
@@ -35,14 +35,14 @@
 
 ### Features
 
-- All: Add constant-time memory, data and buffer comparison
-- Foundation: Add ability to export keys to the PKCS#8 format with a class "Key Provider"
+- All: Add constant-time memory, data and buffer comparisons
+- Foundation: Add the ability to export keys to the PKCS#8 format with the class "Key Provider"
 - Foundation: Add umbrella headers
 - Ratchet: Add group chats
 
 ### Changes
 
-- Foundation: Remove ability to specify RSA public exponent for key generation
+- Foundation: Remove the ability to specify the RSA public exponent for key generation
 
 
 ## Version 0.5.0 released 2019-03-20
@@ -69,10 +69,10 @@
 
 ### Features
 
-- PHE: Added class "PHE Cipher"
+- PHE: Added the class "PHE Cipher"
 
 
 ## Version 0.1.0 released 2018-12-20
 
-This is initial unstable pre-release version of the library.
-API can be changed without any backward compatibilities.
+This is an initial unstable pre-release version of the library.
+The API can be changed without any backward compatibilities.
