@@ -11,13 +11,13 @@
 ## Introduction
 
 This library is designed to be a small, flexible and convenient wrapper for a variety of crypto algorithms.
-So it can be used in a small microcontroller as well as in a high load server application. Also, it provides a bunch of custom hybrid algorithms that combine different crypto algorithms to solve common complex cryptographic problems in an easy way. That eliminates requirement for developers to have a strong cryptographic skills.
+So it can be used in a small microcontroller as well as in a high load server application. Also, it provides several custom hybrid algorithms that combine different crypto algorithms to solve common complex cryptographic problems in an easy way. This eliminates the requirement for developers to have strong cryptographic skills.
 
 The library is available for different platforms and contains wrappers for other languages.
 
 ## Features
 
-Virgil Security Crypto C library is decomposed to small libraries with specific purposes, so a developer can freely choose a subset of them.
+The Virgil Security Crypto C library is decomposed into small libraries with specific purposes. A developer can freely choose a subset of libraries.
 
 ### Library: Foundation
 
@@ -38,11 +38,11 @@ This library contains basic cryptographic algorithms and can be used as building
 
 ### Library: PHE
 
-Cryptographic background for the [Password-Hardened Encryption (PHE) protocol](https://virgilsecurity.com/wp-content/uploads/2018/11/PHE-Whitepaper-2018.pdf) that provides developers with a technology to protect users passwords from offline attacks and make stolen passwords useless even if your database has been compromised. Service implementation can be found [here](https://github.com/passw0rd/phe-go).
+The cryptographic background for the [Password-Hardened Encryption (PHE) protocol](https://virgilsecurity.com/wp-content/uploads/2018/11/PHE-Whitepaper-2018.pdf) that provides developers the technology to protect user passwords from offline attacks and render stolen passwords useless even if your database has been compromised. The service implementation can be found [here](https://github.com/passw0rd/phe-go).
 
 ### Library: Pythia
 
-Cryptographic background for the  [Pythia PRF Service](http://pages.cs.wisc.edu/~ace/papers/pythia-full.pdf).
+The cryptographic background for the  [Pythia PRF Service](http://pages.cs.wisc.edu/~ace/papers/pythia-full.pdf).
 
 ### Library: Ratchet
 
@@ -89,7 +89,7 @@ cmake --build build --target install
 
 Our developer support team is here to help you.
 
-You can find us on [Twitter](https://twitter.com/VirgilSecurity) or send us email support@VirgilSecurity.com.
+You can find us on [Twitter](https://twitter.com/VirgilSecurity) or send us an email support@VirgilSecurity.com.
 
 Also, get extra help from our support team on [Slack](https://virgilsecurity.com/join-community).
 
