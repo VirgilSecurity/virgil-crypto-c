@@ -1,5 +1,5 @@
 <class name="group session ticket" context="private">
-    Group ticket used to start group session or change participants.
+    Group ticket used to start group session, remove participants or proactive to rotate encryption key.
 
     <require module="group session typedefs" scope="context"/>
 
@@ -57,7 +57,7 @@
         Returns message that should be sent to all participants using secure channel.
 
         <return class="group session message" access="readonly">
-            Ratchet group message.
+            Group message.
         </return>
     </method>
 </class>
