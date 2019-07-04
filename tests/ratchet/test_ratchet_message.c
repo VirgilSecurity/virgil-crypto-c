@@ -51,7 +51,7 @@
 // --------------------------------------------------------------------------
 
 static bool
-reg_msg_cmp(RegularMessage *msg1, RegularMessage *msg2) {
+reg_msg_cmp(vscr_RegularMessage *msg1, vscr_RegularMessage *msg2) {
 
     return msg1->header.size == msg2->header.size &&
            memcmp(msg1->header.bytes, msg2->header.bytes, msg1->header.size) == 0 &&
@@ -60,7 +60,7 @@ reg_msg_cmp(RegularMessage *msg1, RegularMessage *msg2) {
 }
 
 static bool
-prekey_msg_cmp(PrekeyMessage *msg1, PrekeyMessage *msg2) {
+prekey_msg_cmp(vscr_PrekeyMessage *msg1, vscr_PrekeyMessage *msg2) {
 
     return memcmp(msg1->sender_identity_key, msg2->sender_identity_key, sizeof(msg1->sender_identity_key)) == 0 &&
            memcmp(msg1->sender_ephemeral_key, msg2->sender_ephemeral_key, sizeof(msg1->sender_ephemeral_key)) == 0 &&
@@ -97,7 +97,7 @@ test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
             msg1->message_pb.regular_message.header.bytes, sizeof(msg1->message_pb.regular_message.header.bytes));
-    TEST_ASSERT(pb_encode(&ostream, RegularMessageHeader_fields, msg1->header_pb));
+    TEST_ASSERT(pb_encode(&ostream, vscr_RegularMessageHeader_fields, msg1->header_pb));
     msg1->message_pb.regular_message.header.size = ostream.bytes_written;
 
     msg1->message_pb.regular_message.cipher_text =
@@ -150,7 +150,7 @@ test__serialize_deserialize__fixed_prekey_msg__should_be_equal(void) {
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
             msg1->message_pb.regular_message.header.bytes, sizeof(msg1->message_pb.regular_message.header.bytes));
-    TEST_ASSERT(pb_encode(&ostream, RegularMessageHeader_fields, msg1->header_pb));
+    TEST_ASSERT(pb_encode(&ostream, vscr_RegularMessageHeader_fields, msg1->header_pb));
     msg1->message_pb.regular_message.header.size = ostream.bytes_written;
 
     msg1->message_pb.regular_message.cipher_text =
@@ -201,7 +201,7 @@ test__serialize_deserialize__fixed_prekey_msg_no_one_time__should_be_equal(void)
     msg1->header_pb->counter = 17;
     pb_ostream_t ostream = pb_ostream_from_buffer(
             msg1->message_pb.regular_message.header.bytes, sizeof(msg1->message_pb.regular_message.header.bytes));
-    TEST_ASSERT(pb_encode(&ostream, RegularMessageHeader_fields, msg1->header_pb));
+    TEST_ASSERT(pb_encode(&ostream, vscr_RegularMessageHeader_fields, msg1->header_pb));
     msg1->message_pb.regular_message.header.size = ostream.bytes_written;
 
     msg1->message_pb.regular_message.cipher_text =
@@ -344,7 +344,7 @@ test__serialize_deserialize__prekey_msg_overflow__should_be_equal(void) {
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
             msg1->message_pb.regular_message.header.bytes, sizeof(msg1->message_pb.regular_message.header.bytes));
-    TEST_ASSERT(pb_encode(&ostream, RegularMessageHeader_fields, msg1->header_pb));
+    TEST_ASSERT(pb_encode(&ostream, vscr_RegularMessageHeader_fields, msg1->header_pb));
     msg1->message_pb.regular_message.header.size = ostream.bytes_written;
 
     size_t len = vscr_ratchet_message_serialize_len(msg1);
@@ -378,7 +378,7 @@ test__serialize_deserialize__regular_msg_overflow__should_be_equal(void) {
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
             msg1->message_pb.regular_message.header.bytes, sizeof(msg1->message_pb.regular_message.header.bytes));
-    TEST_ASSERT(pb_encode(&ostream, RegularMessageHeader_fields, msg1->header_pb));
+    TEST_ASSERT(pb_encode(&ostream, vscr_RegularMessageHeader_fields, msg1->header_pb));
     msg1->message_pb.regular_message.header.size = ostream.bytes_written;
 
     size_t len = vscr_ratchet_message_serialize_len(msg1);
