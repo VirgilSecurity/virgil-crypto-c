@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_atomic.h"
 
-#include <GroupMessage.pb.h>
+#include <vscf_GroupMessage.pb.h>
 
 // clang-format on
 //  @end
@@ -86,9 +86,9 @@ struct vscf_group_session_message_t {
     //
     VSCF_ATOMIC size_t refcnt;
 
-    GroupMessage message_pb;
+    vscf_GroupMessage message_pb;
 
-    RegularGroupMessageHeader *header_pb;
+    vscf_RegularGroupMessageHeader *header_pb;
 };
 
 

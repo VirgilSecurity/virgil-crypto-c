@@ -72,7 +72,7 @@ set_target_properties(foundation_pb PROPERTIES
         )
 
 target_protobuf_sources(foundation_pb
-        "${CMAKE_CURRENT_SOURCE_DIR}/GroupMessage.proto"
+        "${CMAKE_CURRENT_SOURCE_DIR}/vscf_GroupMessage.proto"
         )
 
 target_link_libraries(foundation_pb nanopb::protobuf-nanopb)

@@ -67,7 +67,7 @@
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
-#include <RatchetGroupMessage.pb.h>
+#include <vscr_RatchetGroupMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
@@ -553,7 +553,7 @@ vscr_ratchet_group_session_check_session_consistency(vscr_ratchet_group_session_
     VSCR_ASSERT(self->is_my_id_set);
     VSCR_ASSERT(self->is_private_key_set);
 
-    const MessageGroupInfo *group_info = &message->message_pb.group_info;
+    const vscr_MessageGroupInfo *group_info = &message->message_pb.group_info;
 
     if (participants->count + 1 > vscr_ratchet_common_MAX_PARTICIPANTS_COUNT) {
         return vscr_status_ERROR_TOO_MANY_PARTICIPANTS;
@@ -618,7 +618,7 @@ vscr_ratchet_group_session_setup_session_state(vscr_ratchet_group_session_t *sel
         return status;
     }
 
-    const MessageGroupInfo *group_info = &message->message_pb.group_info;
+    const vscr_MessageGroupInfo *group_info = &message->message_pb.group_info;
 
     // Set session id
     memcpy(self->session_id, group_info->session_id, sizeof(self->session_id));
@@ -813,7 +813,7 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
     vscr_ratchet_group_message_t *msg = vscr_ratchet_group_message_new();
     vscr_ratchet_group_message_set_type(msg, vscr_group_msg_type_REGULAR);
 
-    RegularGroupMessage *regular_message = &msg->message_pb.regular_message;
+    vscr_RegularGroupMessage *regular_message = &msg->message_pb.regular_message;
 
     msg->header_pb->epoch = self->my_epoch;
     msg->header_pb->counter = self->my_chain_key->index;
@@ -838,7 +838,7 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
 
     pb_ostream_t ostream = pb_ostream_from_buffer(regular_message->header.bytes, sizeof(regular_message->header.bytes));
 
-    VSCR_ASSERT(pb_encode(&ostream, RegularGroupMessageHeader_fields, msg->header_pb));
+    VSCR_ASSERT(pb_encode(&ostream, vscr_RegularGroupMessageHeader_fields, msg->header_pb));
     regular_message->header.size = ostream.bytes_written;
 
     vsc_buffer_t buffer;
@@ -905,8 +905,8 @@ vscr_ratchet_group_session_decrypt(
     VSCR_ASSERT(self->is_my_id_set);
     VSCR_ASSERT(self->is_private_key_set);
 
-    const RegularGroupMessage *group_message = &message->message_pb.regular_message;
-    const RegularGroupMessageHeader *header = message->header_pb;
+    const vscr_RegularGroupMessage *group_message = &message->message_pb.regular_message;
+    const vscr_RegularGroupMessageHeader *header = message->header_pb;
 
     if (memcmp(header->session_id, self->session_id, sizeof(self->session_id)) != 0) {
         return vscr_status_ERROR_SESSION_ID_MISMATCH;
@@ -1063,7 +1063,7 @@ vscr_ratchet_group_session_serialize(const vscr_ratchet_group_session_t *self) {
     VSCR_ASSERT(self->is_initialized);
     VSCR_ASSERT(self->is_my_id_set);
 
-    GroupSession *session_pb = vscr_alloc(sizeof(GroupSession));
+    vscr_GroupSession *session_pb = vscr_alloc(sizeof(vscr_GroupSession));
 
     session_pb->version = vscr_ratchet_common_hidden_GROUP_SESSION_VERSION;
     session_pb->participants_count = self->participants_count;
@@ -1077,21 +1077,21 @@ vscr_ratchet_group_session_serialize(const vscr_ratchet_group_session_t *self) {
     }
 
     if (self->participants_count) {
-        session_pb->participants = vscr_alloc(self->participants_count * sizeof(ParticipantData));
+        session_pb->participants = vscr_alloc(self->participants_count * sizeof(vscr_ParticipantData));
     }
     for (size_t i = 0; i < self->participants_count; i++) {
         vscr_ratchet_group_participant_serialize(self->participants[i], &session_pb->participants[i]);
     }
 
     size_t len = 0;
-    pb_get_encoded_size(&len, GroupSession_fields, session_pb);
+    pb_get_encoded_size(&len, vscr_GroupSession_fields, session_pb);
 
     vsc_buffer_t *output = vsc_buffer_new_with_capacity(len);
     vsc_buffer_make_secure(output);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
 
-    VSCR_ASSERT(pb_encode(&ostream, GroupSession_fields, session_pb));
+    VSCR_ASSERT(pb_encode(&ostream, vscr_GroupSession_fields, session_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);
 
     for (size_t i = 0; i < self->participants_count; i++) {
@@ -1102,7 +1102,7 @@ vscr_ratchet_group_session_serialize(const vscr_ratchet_group_session_t *self) {
 
     vscr_dealloc(session_pb->participants);
 
-    vscr_zeroize(session_pb, sizeof(GroupSession));
+    vscr_zeroize(session_pb, sizeof(vscr_GroupSession));
     vscr_dealloc(session_pb);
 
     return output;
@@ -1127,11 +1127,11 @@ vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     }
 
     vscr_ratchet_group_session_t *session = NULL;
-    GroupSession *session_pb = vscr_alloc(sizeof(GroupSession));
+    vscr_GroupSession *session_pb = vscr_alloc(sizeof(vscr_GroupSession));
 
     pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
-    bool status = pb_decode(&istream, GroupSession_fields, session_pb);
+    bool status = pb_decode(&istream, vscr_GroupSession_fields, session_pb);
 
     if (!status) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
@@ -1166,10 +1166,10 @@ vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error) {
 
 err:
     if (status) {
-        pb_release(GroupSession_fields, session_pb);
+        pb_release(vscr_GroupSession_fields, session_pb);
     }
 
-    vscr_zeroize(session_pb, sizeof(GroupSession));
+    vscr_zeroize(session_pb, sizeof(vscr_GroupSession));
     vscr_dealloc(session_pb);
 
     return session;

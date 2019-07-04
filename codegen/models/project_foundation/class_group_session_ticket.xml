@@ -9,7 +9,7 @@
     <require module="group session message defs" scope="private"/>
     <require module="group session message internal" scope="private"/>
 
-    <require header="GroupMessage.pb.h" scope="private"/>
+    <require header="vscf_GroupMessage.pb.h" scope="private"/>
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 

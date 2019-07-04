@@ -235,7 +235,7 @@ vscf_group_session_message_init_ctx(vscf_group_session_message_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    GroupMessage msg = GroupMessage_init_zero;
+    vscf_GroupMessage msg = vscf_GroupMessage_init_zero;
 
     self->message_pb = msg;
     self->message_pb.version = vscf_group_session_message_MESSAGE_VERSION;
@@ -251,7 +251,7 @@ vscf_group_session_message_cleanup_ctx(vscf_group_session_message_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    pb_release(GroupMessage_fields, &self->message_pb);
+    pb_release(vscf_GroupMessage_fields, &self->message_pb);
     vscf_dealloc(self->header_pb);
 }
 
@@ -327,15 +327,15 @@ vscf_group_session_message_set_type(vscf_group_session_message_t *self, vscf_gro
 
     VSCF_ASSERT_PTR(self);
 
-    GroupMessage msg = GroupMessage_init_zero;
+    vscf_GroupMessage msg = vscf_GroupMessage_init_zero;
     self->message_pb = msg;
 
     switch (type) {
     case vscf_group_msg_type_REGULAR:
         self->message_pb.has_regular_message = true;
         self->message_pb.has_group_info = false;
-        self->header_pb = vscf_alloc(sizeof(RegularGroupMessageHeader));
-        RegularGroupMessageHeader hdr = RegularGroupMessageHeader_init_zero;
+        self->header_pb = vscf_alloc(sizeof(vscf_RegularGroupMessageHeader));
+        vscf_RegularGroupMessageHeader hdr = vscf_RegularGroupMessageHeader_init_zero;
         *self->header_pb = hdr;
         break;
 
@@ -356,7 +356,7 @@ vscf_group_session_message_serialize_len(const vscf_group_session_message_t *sel
     VSCF_ASSERT(self->message_pb.has_group_info != self->message_pb.has_regular_message);
 
     size_t len = 0;
-    VSCF_ASSERT(pb_get_encoded_size(&len, GroupMessage_fields, &self->message_pb));
+    VSCF_ASSERT(pb_get_encoded_size(&len, vscf_GroupMessage_fields, &self->message_pb));
 
     return len;
 }
@@ -377,7 +377,7 @@ vscf_group_session_message_serialize(const vscf_group_session_message_t *self, v
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_unused_len(output));
 
-    VSCF_ASSERT(pb_encode(&ostream, GroupMessage_fields, &self->message_pb));
+    VSCF_ASSERT(pb_encode(&ostream, vscf_GroupMessage_fields, &self->message_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);
 }
 
@@ -401,7 +401,7 @@ vscf_group_session_message_deserialize(vsc_data_t input, vscf_error_t *error) {
 
     vscf_status_t status = vscf_status_SUCCESS;
 
-    bool pb_status = pb_decode(&istream, GroupMessage_fields, &message->message_pb);
+    bool pb_status = pb_decode(&istream, vscf_GroupMessage_fields, &message->message_pb);
 
     if (!pb_status || message->message_pb.has_group_info == message->message_pb.has_regular_message) {
         status = vscf_status_ERROR_PROTOBUF;
@@ -412,8 +412,8 @@ vscf_group_session_message_deserialize(vsc_data_t input, vscf_error_t *error) {
         pb_istream_t sub_istream = pb_istream_from_buffer(
                 message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
 
-        message->header_pb = vscf_alloc(sizeof(RegularGroupMessageHeader));
-        pb_status = pb_decode(&sub_istream, RegularGroupMessageHeader_fields, message->header_pb);
+        message->header_pb = vscf_alloc(sizeof(vscf_RegularGroupMessageHeader));
+        pb_status = pb_decode(&sub_istream, vscf_RegularGroupMessageHeader_fields, message->header_pb);
 
         if (!pb_status) {
             status = vscf_status_ERROR_PROTOBUF;

@@ -61,7 +61,7 @@
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
-#include <RatchetGroupMessage.pb.h>
+#include <vscr_RatchetGroupMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include <ed25519/ed25519.h>

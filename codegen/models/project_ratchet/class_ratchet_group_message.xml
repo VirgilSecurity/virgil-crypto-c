@@ -4,13 +4,13 @@
     <require class="ratchet common hidden" scope="private"/>
     <require class="ratchet common" scope="private"/>
 
-    <require header="RatchetGroupMessage.pb.h" scope="context"/>
+    <require header="vscr_RatchetGroupMessage.pb.h" scope="context"/>
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
     <property name="key id" impl="ratchet key id"/>
-    <property name="message pb" class="GroupMessage" library="nanopb" access="readwrite" is_reference="0"/>
-    <property name="header pb" class="RegularGroupMessageHeader" library="nanopb" access="readwrite"/>
+    <property name="message pb" class="vscr_GroupMessage" library="nanopb" access="readwrite" is_reference="0"/>
+    <property name="header pb" class="vscr_RegularGroupMessageHeader" library="nanopb" access="readwrite"/>
 
     <method name="get type" is_const="1">
         Returns message type.

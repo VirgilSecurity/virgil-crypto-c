@@ -1,26 +1,26 @@
 syntax = "proto2";
 
-message MessageGroupInfo {
+message vscf_MessageGroupInfo {
     required bytes session_id = 1;
     required uint32 epoch = 2;
     required bytes key = 3;
 }
 
-message RegularGroupMessageHeader {
+message vscf_RegularGroupMessageHeader {
     required bytes session_id = 1;
     required uint32 epoch = 2;
     required bytes sender_id = 3;
     required bytes salt = 4;
 }
 
-message RegularGroupMessage {
+message vscf_RegularGroupMessage {
     required bytes header = 1;
     required bytes signature = 2;
     required bytes cipher_text = 3;
 }
 
-message GroupMessage {
+message vscf_GroupMessage {
     required uint32 version = 1;
-    optional MessageGroupInfo group_info = 2;
-    optional RegularGroupMessage regular_message = 3;
+    optional vscf_MessageGroupInfo group_info = 2;
+    optional vscf_RegularGroupMessage regular_message = 3;
 }

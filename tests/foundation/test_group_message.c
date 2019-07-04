@@ -56,14 +56,14 @@
 // --------------------------------------------------------------------------
 
 static bool
-reg_msg_hdr_cmp(RegularGroupMessageHeader *msg1, RegularGroupMessageHeader *msg2) {
+reg_msg_hdr_cmp(vscf_RegularGroupMessageHeader *msg1, vscf_RegularGroupMessageHeader *msg2) {
     return memcmp(msg1->session_id, msg2->session_id, sizeof(msg1->session_id)) == 0 &&
            memcmp(msg1->sender_id, msg2->sender_id, sizeof(msg1->sender_id)) == 0 &&
            memcmp(msg1->salt, msg2->salt, sizeof(msg1->salt)) == 0 && msg1->epoch == msg2->epoch;
 }
 
 static bool
-reg_msg_cmp(RegularGroupMessage *msg1, RegularGroupMessage *msg2) {
+reg_msg_cmp(vscf_RegularGroupMessage *msg1, vscf_RegularGroupMessage *msg2) {
 
     return msg1->cipher_text->size == msg2->cipher_text->size &&
            memcmp(&msg1->header, &msg2->header, sizeof(msg1->header)) == 0 &&
@@ -72,7 +72,7 @@ reg_msg_cmp(RegularGroupMessage *msg1, RegularGroupMessage *msg2) {
 }
 
 static bool
-grp_info_msg_cmp(MessageGroupInfo *msg1, MessageGroupInfo *msg2) {
+grp_info_msg_cmp(vscf_MessageGroupInfo *msg1, vscf_MessageGroupInfo *msg2) {
 
     if (memcmp(msg1->key, msg2->key, sizeof(msg1->key)) != 0)
         return false;
@@ -130,7 +130,7 @@ test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
             msg1->message_pb.regular_message.header.bytes, sizeof(msg1->message_pb.regular_message.header.bytes));
-    TEST_ASSERT(pb_encode(&ostream, RegularGroupMessageHeader_fields, msg1->header_pb));
+    TEST_ASSERT(pb_encode(&ostream, vscf_RegularGroupMessageHeader_fields, msg1->header_pb));
     msg1->message_pb.regular_message.header.size = ostream.bytes_written;
 
     size_t len = vscf_group_session_message_serialize_len(msg1);
@@ -239,7 +239,7 @@ test__serialize_deserialize__regular_overflow__should_be_equal(void) {
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
             msg1->message_pb.regular_message.header.bytes, sizeof(msg1->message_pb.regular_message.header.bytes));
-    TEST_ASSERT(pb_encode(&ostream, RegularGroupMessageHeader_fields, msg1->header_pb));
+    TEST_ASSERT(pb_encode(&ostream, vscf_RegularGroupMessageHeader_fields, msg1->header_pb));
     msg1->message_pb.regular_message.header.size = ostream.bytes_written;
 
     size_t len = vscf_group_session_message_serialize_len(msg1);
@@ -268,7 +268,7 @@ test__methods__fixed_regular_msg__should_return_correct_values(void) {
     msg1->message_pb.has_regular_message = true;
     msg1->message_pb.has_group_info = false;
 
-    msg1->header_pb = vscf_alloc(sizeof(RegularGroupMessageHeader));
+    msg1->header_pb = vscf_alloc(sizeof(vscf_RegularGroupMessageHeader));
     msg1->header_pb->epoch = 18;
     memcpy(msg1->header_pb->salt, test_data_group_session_session_salt.bytes, sizeof(msg1->header_pb->session_id));
     memcpy(msg1->header_pb->session_id, test_data_group_session_session_id.bytes, sizeof(msg1->header_pb->session_id));

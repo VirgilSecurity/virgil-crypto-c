@@ -1,44 +1,44 @@
 syntax = "proto2";
 
-message ChainKey {
+message vscr_ChainKey {
 	required uint32 index = 1;
 	required bytes key = 2;
 }
 
-message MessageKey {
+message vscr_MessageKey {
 	required uint32 index = 1;
 	required bytes key = 2;
 }
 
-message SenderChain {
+message vscr_SenderChain {
 	required bytes private_key = 1;
 	required bytes public_key = 2;
-	required ChainKey chain_key = 3;
+	required vscr_ChainKey chain_key = 3;
 }
 
-message ReceiverChain {
+message vscr_ReceiverChain {
 	required bytes public_key = 1;
-	required ChainKey chain_key = 2;
+	required vscr_ChainKey chain_key = 2;
 }
 
-message SkippedMessageKey {
+message vscr_SkippedMessageKey {
 	required bytes public_key = 1;
-	repeated MessageKey message_keys = 2;
+	repeated vscr_MessageKey message_keys = 2;
 }
 
-message SkippedMessages {
-	repeated SkippedMessageKey keys = 1;
+message vscr_SkippedMessages {
+	repeated vscr_SkippedMessageKey keys = 1;
 }
 
-message Ratchet {
-	optional SenderChain sender_chain = 1;
+message vscr_Ratchet {
+	optional vscr_SenderChain sender_chain = 1;
 	required uint32 prev_sender_chain_count = 2;
-	optional ReceiverChain receiver_chain = 3;
+	optional vscr_ReceiverChain receiver_chain = 3;
 	required bytes root_key = 4;
-	required SkippedMessages skipped_messages = 5;
+	required vscr_SkippedMessages skipped_messages = 5;
 }
 
-message Session {
+message vscr_Session {
 	required uint32 version = 1;
 	required bool received_first_response = 2;
 	required bool is_initiator = 3;
@@ -46,28 +46,28 @@ message Session {
 	required bytes sender_ephemeral_key = 5;
 	required bytes receiver_long_term_key = 6;
 	optional bytes receiver_one_time_key = 7;
-	required Ratchet ratchet = 8;
+	required vscr_Ratchet ratchet = 8;
 }
 
-message ParticipantEpoch {
+message vscr_ParticipantEpoch {
 	required uint32 epoch = 1;
 	required bool is_empty = 2;
-	optional ChainKey chain_key = 3;
-	repeated MessageKey message_keys = 4;
+	optional vscr_ChainKey chain_key = 3;
+	repeated vscr_MessageKey message_keys = 4;
 }
 
-message ParticipantData {
+message vscr_ParticipantData {
 	required bytes id = 1;
 	required bytes pub_key = 2;
-	repeated ParticipantEpoch epochs = 3;
+	repeated vscr_ParticipantEpoch epochs = 3;
 }
 
-message GroupSession {
+message vscr_GroupSession {
 	required uint32 version = 1;
 	required uint32 my_epoch = 2;
-	required ChainKey my_chain_key = 3;
+	required vscr_ChainKey my_chain_key = 3;
 	repeated uint32 messages_count = 4;
 	required bytes session_id = 5;
 	required bytes my_id = 6;
-	repeated ParticipantData participants = 7;
+	repeated vscr_ParticipantData participants = 7;
 }

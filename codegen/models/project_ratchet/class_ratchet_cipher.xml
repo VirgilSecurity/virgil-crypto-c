@@ -7,7 +7,7 @@
     <require class="ratchet common hidden" scope="context"/>
     <require module="ratchet typedefs" scope="public"/>
 
-    <require header="RatchetMessage.pb.h" scope="public"/>
+    <require header="vscr_RatchetMessage.pb.h" scope="public"/>
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 

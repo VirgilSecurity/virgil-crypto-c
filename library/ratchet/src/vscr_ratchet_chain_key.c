@@ -247,7 +247,7 @@ vscr_ratchet_chain_key_clone(const vscr_ratchet_chain_key_t *self, vscr_ratchet_
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_chain_key_serialize(const vscr_ratchet_chain_key_t *self, ChainKey *chain_key_pb) {
+vscr_ratchet_chain_key_serialize(const vscr_ratchet_chain_key_t *self, vscr_ChainKey *chain_key_pb) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(chain_key_pb);
@@ -257,7 +257,7 @@ vscr_ratchet_chain_key_serialize(const vscr_ratchet_chain_key_t *self, ChainKey 
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_chain_key_deserialize(const ChainKey *chain_key_pb, vscr_ratchet_chain_key_t *chain_key) {
+vscr_ratchet_chain_key_deserialize(const vscr_ChainKey *chain_key_pb, vscr_ratchet_chain_key_t *chain_key) {
 
     VSCR_ASSERT_PTR(chain_key);
     VSCR_ASSERT_PTR(chain_key_pb);

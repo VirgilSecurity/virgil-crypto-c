@@ -62,7 +62,7 @@
 #include "vscf_key_asn1_deserializer.h"
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
-#include <GroupMessage.pb.h>
+#include <vscf_GroupMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include <ed25519/ed25519.h>
@@ -463,14 +463,16 @@ vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_sessio
         left->next = new_node;
     }
 
-    self->epochs_count++;
-
-    if (self->epochs_count > vscf_group_session_MAX_EPOCHS_COUNT) {
+    if (self->epochs_count == vscf_group_session_MAX_EPOCHS_COUNT) {
         VSCF_ASSERT_PTR(self->first_epoch);
         vscf_group_session_epoch_node_t *first = self->first_epoch;
         self->first_epoch = first->next;
         self->first_epoch->prev = NULL;
         vscf_group_session_epoch_node_destroy(&first);
+    } else if (self->epochs_count < vscf_group_session_MAX_EPOCHS_COUNT) {
+        self->epochs_count++;
+    } else {
+        VSCF_ASSERT(false);
     }
 
 err:
@@ -537,7 +539,7 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
     pb_ostream_t header_stream = pb_ostream_from_buffer(
             msg->message_pb.regular_message.header.bytes, sizeof(msg->message_pb.regular_message.header));
 
-    VSCF_ASSERT(pb_encode(&header_stream, RegularGroupMessageHeader_fields, msg->header_pb));
+    VSCF_ASSERT(pb_encode(&header_stream, vscf_RegularGroupMessageHeader_fields, msg->header_pb));
 
     msg->message_pb.regular_message.header.size = header_stream.bytes_written;
 

@@ -1,0 +1,31 @@
+vscr_ChainKey.key max_size:32 fixed_length:true
+
+vscr_MessageKey.key max_size:32 fixed_length:true
+
+vscr_SenderChain.private_key max_size:32 fixed_length:true
+vscr_SenderChain.public_key max_size:32 fixed_length:true
+
+vscr_ReceiverChain.public_key max_size:32 fixed_length:true
+
+vscr_SkippedMessageKey.public_key max_size:32 fixed_length:true
+
+vscr_Ratchet.root_key max_size:32 fixed_length:true
+vscr_SkippedMessages.keys max_count:5 fixed_count:false
+vscr_SkippedMessageKey.message_keys max_count:200 fixed_count:false type:FT_POINTER
+
+vscr_Session.sender_identity_key max_size:32 fixed_length:true
+vscr_Session.sender_ephemeral_key max_size:32 fixed_length:true
+vscr_Session.receiver_long_term_key max_size:32 fixed_length:true
+vscr_Session.receiver_one_time_key max_size:32 fixed_length:true
+vscr_Session.ratchet max_size:32 fixed_length:true
+
+vscr_ParticipantData.id max_size:32 fixed_length:true
+vscr_ParticipantData.pub_key max_size:32 fixed_length:true
+vscr_ParticipantData.epochs max_count:5 fixed_count:true
+
+vscr_ParticipantEpoch.message_keys max_count:200 fixed_length:false type:FT_POINTER
+
+vscr_GroupSession.session_id max_size:32 fixed_length:true
+vscr_GroupSession.my_id max_size:32 fixed_length:true
+vscr_GroupSession.participants max_count:100 fixed_count:false type:FT_POINTER
+vscr_GroupSession.messages_count max_count:4 fixed_count:true
