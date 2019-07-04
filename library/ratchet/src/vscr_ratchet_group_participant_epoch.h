@@ -138,10 +138,10 @@ vscr_ratchet_group_participant_epoch_shallow_copy(vscr_ratchet_group_participant
 
 VSCR_PUBLIC void
 vscr_ratchet_group_participant_epoch_serialize(const vscr_ratchet_group_participant_epoch_t *self,
-        ParticipantEpoch *data_pb);
+        vscr_ParticipantEpoch *data_pb);
 
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_epoch_deserialize(const ParticipantEpoch *data_pb,
+vscr_ratchet_group_participant_epoch_deserialize(const vscr_ParticipantEpoch *data_pb,
         vscr_ratchet_group_participant_epoch_t *data);
 
 

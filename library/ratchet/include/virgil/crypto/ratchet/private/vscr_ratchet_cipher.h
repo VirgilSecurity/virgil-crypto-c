@@ -52,7 +52,7 @@
 #include "vscr_ratchet_message_key.h"
 #include "vscr_status.h"
 
-#include <RatchetMessage.pb.h>
+#include <vscr_RatchetMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include <virgil/crypto/foundation/private/vscf_message_padding.h>

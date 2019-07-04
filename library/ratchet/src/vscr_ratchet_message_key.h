@@ -53,7 +53,7 @@
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_message_key.h"
 
-#include <RatchetSession.pb.h>
+#include <vscr_RatchetSession.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 
@@ -136,10 +136,10 @@ VSCR_PUBLIC vscr_ratchet_message_key_t *
 vscr_ratchet_message_key_shallow_copy(vscr_ratchet_message_key_t *self);
 
 VSCR_PUBLIC void
-vscr_ratchet_message_key_serialize(const vscr_ratchet_message_key_t *self, MessageKey *message_key_pb);
+vscr_ratchet_message_key_serialize(const vscr_ratchet_message_key_t *self, vscr_MessageKey *message_key_pb);
 
 VSCR_PUBLIC void
-vscr_ratchet_message_key_deserialize(const MessageKey *message_key_pb, vscr_ratchet_message_key_t *message_key);
+vscr_ratchet_message_key_deserialize(const vscr_MessageKey *message_key_pb, vscr_ratchet_message_key_t *message_key);
 
 
 // --------------------------------------------------------------------------

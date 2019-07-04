@@ -24,7 +24,7 @@
 
     <require impl="ctr drbg" scope="private"/>
 
-    <require header="GroupMessage.pb.h" scope="private"/>
+    <require header="vscf_GroupMessage.pb.h" scope="private"/>
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 

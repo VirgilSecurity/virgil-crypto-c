@@ -100,12 +100,12 @@ vscr_ratchet_did_release_rng(vscr_ratchet_t *self);
 
 static vscr_status_t
 vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet_chain_key_t *chain_key,
-        const RegularMessage *message, const RegularMessageHeader *regular_message_header,
+        const vscr_RegularMessage *message, const vscr_RegularMessageHeader *regular_message_header,
         vsc_buffer_t *buffer) VSCR_NODISCARD;
 
 static vscr_status_t
-vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const RegularMessage *message,
-        const RegularMessageHeader *regular_message_header, vsc_buffer_t *buffer) VSCR_NODISCARD;
+vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const vscr_RegularMessage *message,
+        const vscr_RegularMessageHeader *regular_message_header, vsc_buffer_t *buffer) VSCR_NODISCARD;
 
 static vscr_status_t
 vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self,
@@ -361,7 +361,8 @@ vscr_ratchet_did_release_rng(vscr_ratchet_t *self) {
 
 static vscr_status_t
 vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet_chain_key_t *chain_key,
-        const RegularMessage *message, const RegularMessageHeader *regular_message_header, vsc_buffer_t *buffer) {
+        const vscr_RegularMessage *message, const vscr_RegularMessageHeader *regular_message_header,
+        vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(chain_key);
@@ -403,8 +404,8 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet
 }
 
 static vscr_status_t
-vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const RegularMessage *message,
-        const RegularMessageHeader *regular_message_header, vsc_buffer_t *buffer) {
+vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const vscr_RegularMessage *message,
+        const vscr_RegularMessageHeader *regular_message_header, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(message);
@@ -441,8 +442,8 @@ err:
 
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_respond(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key,
-        const vscr_ratchet_private_key_t receiver_long_term_private_key, const RegularMessage *message,
-        const RegularMessageHeader *regular_message_header) {
+        const vscr_ratchet_private_key_t receiver_long_term_private_key, const vscr_RegularMessage *message,
+        const vscr_RegularMessageHeader *regular_message_header) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(message);
@@ -518,8 +519,8 @@ vscr_ratchet_encrypt_len(vscr_ratchet_t *self, size_t plain_text_len) {
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage *regular_message,
-        RegularMessageHeader *regular_message_header) {
+vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, vscr_RegularMessage *regular_message,
+        vscr_RegularMessageHeader *regular_message_header) {
 
     VSCR_ASSERT_PTR(self);
 
@@ -559,7 +560,7 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, RegularMessage
 
     pb_ostream_t ostream = pb_ostream_from_buffer(regular_message->header.bytes, sizeof(regular_message->header.bytes));
 
-    VSCR_ASSERT(pb_encode(&ostream, RegularMessageHeader_fields, regular_message_header));
+    VSCR_ASSERT(pb_encode(&ostream, vscr_RegularMessageHeader_fields, regular_message_header));
 
     regular_message->header.size = ostream.bytes_written;
 
@@ -589,8 +590,8 @@ vscr_ratchet_decrypt_len(vscr_ratchet_t *self, size_t cipher_text_len) {
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message,
-        const RegularMessageHeader *regular_message_header, vsc_buffer_t *plain_text) {
+vscr_ratchet_decrypt(vscr_ratchet_t *self, const vscr_RegularMessage *regular_message,
+        const vscr_RegularMessageHeader *regular_message_header, vsc_buffer_t *plain_text) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(plain_text);
@@ -745,7 +746,7 @@ vscr_ratchet_generate_skipped_keys(
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_serialize(const vscr_ratchet_t *self, Ratchet *ratchet_pb) {
+vscr_ratchet_serialize(const vscr_ratchet_t *self, vscr_Ratchet *ratchet_pb) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(ratchet_pb);
@@ -772,7 +773,7 @@ vscr_ratchet_serialize(const vscr_ratchet_t *self, Ratchet *ratchet_pb) {
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_deserialize(const Ratchet *ratchet_pb, vscr_ratchet_t *ratchet) {
+vscr_ratchet_deserialize(const vscr_Ratchet *ratchet_pb, vscr_ratchet_t *ratchet) {
 
     VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(ratchet_pb);

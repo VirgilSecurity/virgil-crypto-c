@@ -62,8 +62,8 @@
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
-#include <RatchetSession.pb.h>
-#include <RatchetMessage.pb.h>
+#include <vscr_RatchetSession.pb.h>
+#include <vscr_RatchetMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include <ed25519/ed25519.h>
@@ -685,13 +685,13 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *self, vsc_data_t plain_text
 
     ratchet_message = vscr_ratchet_message_new();
 
-    RegularMessage *regular_message = &ratchet_message->message_pb.regular_message;
+    vscr_RegularMessage *regular_message = &ratchet_message->message_pb.regular_message;
 
     if (self->received_first_response || !self->is_initiator) {
         ratchet_message->message_pb.has_prekey_message = false;
     } else {
         ratchet_message->message_pb.has_prekey_message = true;
-        PrekeyMessage *prekey_message = &ratchet_message->message_pb.prekey_message;
+        vscr_PrekeyMessage *prekey_message = &ratchet_message->message_pb.prekey_message;
 
         memcpy(prekey_message->sender_identity_key, self->sender_identity_public_key,
                 sizeof(self->sender_identity_public_key));
@@ -760,7 +760,7 @@ vscr_ratchet_session_decrypt(
     VSCR_ASSERT_PTR(message);
     VSCR_ASSERT_PTR(plain_text);
 
-    const RegularMessage *regular_message = &message->message_pb.regular_message;
+    const vscr_RegularMessage *regular_message = &message->message_pb.regular_message;
 
     if (message->message_pb.has_prekey_message && self->is_initiator) {
         return vscr_status_ERROR_BAD_MESSAGE_TYPE;
@@ -784,7 +784,7 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    Session *session_pb = vscr_alloc(sizeof(Session));
+    vscr_Session *session_pb = vscr_alloc(sizeof(vscr_Session));
 
     session_pb->version = vscr_ratchet_common_hidden_SESSION_VERSION;
     session_pb->received_first_response = self->received_first_response;
@@ -807,21 +807,21 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *self) {
     vscr_ratchet_serialize(self->ratchet, &session_pb->ratchet);
 
     size_t len = 0;
-    pb_get_encoded_size(&len, Session_fields, session_pb);
+    pb_get_encoded_size(&len, vscr_Session_fields, session_pb);
 
     vsc_buffer_t *output = vsc_buffer_new_with_capacity(len);
     vsc_buffer_make_secure(output);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_unused_len(output));
 
-    VSCR_ASSERT(pb_encode(&ostream, Session_fields, session_pb));
+    VSCR_ASSERT(pb_encode(&ostream, vscr_Session_fields, session_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);
 
     for (size_t j = 0; j < session_pb->ratchet.skipped_messages.keys_count; j++) {
         vscr_dealloc(session_pb->ratchet.skipped_messages.keys[j].message_keys);
     }
 
-    vscr_zeroize(session_pb, sizeof(Session));
+    vscr_zeroize(session_pb, sizeof(vscr_Session));
     vscr_dealloc(session_pb);
 
     return output;
@@ -843,11 +843,11 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     }
 
     vscr_ratchet_session_t *session = NULL;
-    Session *session_pb = vscr_alloc(sizeof(Session));
+    vscr_Session *session_pb = vscr_alloc(sizeof(vscr_Session));
 
     pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
-    bool status = pb_decode(&istream, Session_fields, session_pb);
+    bool status = pb_decode(&istream, vscr_Session_fields, session_pb);
 
     if (!status) {
         VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
@@ -879,10 +879,10 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
 
 err:
     if (status) {
-        pb_release(Session_fields, session_pb);
+        pb_release(vscr_Session_fields, session_pb);
     }
 
-    vscr_zeroize(session_pb, sizeof(Session));
+    vscr_zeroize(session_pb, sizeof(vscr_Session));
     vscr_dealloc(session_pb);
 
     return session;

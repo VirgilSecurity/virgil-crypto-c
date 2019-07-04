@@ -11,7 +11,7 @@
     <require module="ratchet group message defs" scope="private"/>
     <require module="ratchet group message internal" scope="private"/>
 
-    <require header="RatchetGroupMessage.pb.h" scope="private"/>
+    <require header="vscr_RatchetGroupMessage.pb.h" scope="private"/>
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 

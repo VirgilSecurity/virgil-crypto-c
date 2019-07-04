@@ -54,7 +54,7 @@
 #include "vscr_ratchet_sender_chain.h"
 #include "vscr_ratchet_chain_key.h"
 
-#include <RatchetSession.pb.h>
+#include <vscr_RatchetSession.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 
@@ -139,10 +139,11 @@ VSCR_PUBLIC vscr_ratchet_sender_chain_t *
 vscr_ratchet_sender_chain_shallow_copy(vscr_ratchet_sender_chain_t *self);
 
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_serialize(const vscr_ratchet_sender_chain_t *self, SenderChain *sender_chain_pb);
+vscr_ratchet_sender_chain_serialize(const vscr_ratchet_sender_chain_t *self, vscr_SenderChain *sender_chain_pb);
 
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_deserialize(const SenderChain *sender_chain_pb, vscr_ratchet_sender_chain_t *sender_chain);
+vscr_ratchet_sender_chain_deserialize(const vscr_SenderChain *sender_chain_pb,
+        vscr_ratchet_sender_chain_t *sender_chain);
 
 
 // --------------------------------------------------------------------------

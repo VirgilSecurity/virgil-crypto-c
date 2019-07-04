@@ -62,7 +62,7 @@
 #include "vscf_key_asn1_deserializer.h"
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
-#include <GroupMessage.pb.h>
+#include <vscf_GroupMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include <ed25519/ed25519.h>
@@ -537,7 +537,7 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
     pb_ostream_t header_stream = pb_ostream_from_buffer(
             msg->message_pb.regular_message.header.bytes, sizeof(msg->message_pb.regular_message.header));
 
-    VSCF_ASSERT(pb_encode(&header_stream, RegularGroupMessageHeader_fields, msg->header_pb));
+    VSCF_ASSERT(pb_encode(&header_stream, vscf_RegularGroupMessageHeader_fields, msg->header_pb));
 
     msg->message_pb.regular_message.header.size = header_stream.bytes_written;
 

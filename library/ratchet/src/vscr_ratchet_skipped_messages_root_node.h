@@ -149,10 +149,10 @@ vscr_ratchet_skipped_messages_root_node_add_key(vscr_ratchet_skipped_messages_ro
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_messages_root_node_serialize(const vscr_ratchet_skipped_messages_root_node_t *self,
-        MessageKey **skipped_messages_pb, pb_size_t *count);
+        vscr_MessageKey **skipped_messages_pb, pb_size_t *count);
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_root_node_deserialize(const MessageKey *skipped_messages_pb, pb_size_t count,
+vscr_ratchet_skipped_messages_root_node_deserialize(const vscr_MessageKey *skipped_messages_pb, pb_size_t count,
         vscr_ratchet_skipped_messages_root_node_t *skipped_messages);
 
 

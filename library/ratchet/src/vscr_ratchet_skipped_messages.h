@@ -51,7 +51,7 @@
 #include "vscr_ratchet_message_key.h"
 #include "vscr_ratchet_skipped_messages.h"
 
-#include <RatchetSession.pb.h>
+#include <vscr_RatchetSession.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 
@@ -141,10 +141,10 @@ vscr_ratchet_skipped_messages_add_key(vscr_ratchet_skipped_messages_t *self, con
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_messages_serialize(const vscr_ratchet_skipped_messages_t *self,
-        SkippedMessages *skipped_messages_pb);
+        vscr_SkippedMessages *skipped_messages_pb);
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_deserialize(const SkippedMessages *skipped_messages_pb,
+vscr_ratchet_skipped_messages_deserialize(const vscr_SkippedMessages *skipped_messages_pb,
         vscr_ratchet_skipped_messages_t *skipped_messages);
 
 

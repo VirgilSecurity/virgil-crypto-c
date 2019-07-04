@@ -237,7 +237,7 @@ vscr_ratchet_message_key_cleanup_ctx(vscr_ratchet_message_key_t *self) {
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_message_key_serialize(const vscr_ratchet_message_key_t *self, MessageKey *message_key_pb) {
+vscr_ratchet_message_key_serialize(const vscr_ratchet_message_key_t *self, vscr_MessageKey *message_key_pb) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(message_key_pb);
@@ -247,7 +247,7 @@ vscr_ratchet_message_key_serialize(const vscr_ratchet_message_key_t *self, Messa
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_message_key_deserialize(const MessageKey *message_key_pb, vscr_ratchet_message_key_t *message_key) {
+vscr_ratchet_message_key_deserialize(const vscr_MessageKey *message_key_pb, vscr_ratchet_message_key_t *message_key) {
 
     VSCR_ASSERT_PTR(message_key);
     VSCR_ASSERT_PTR(message_key_pb);

@@ -237,7 +237,7 @@ vscr_ratchet_group_message_init_ctx(vscr_ratchet_group_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    GroupMessage msg = GroupMessage_init_zero;
+    vscr_GroupMessage msg = vscr_GroupMessage_init_zero;
 
     self->message_pb = msg;
     self->message_pb.version = vscr_ratchet_common_hidden_GROUP_MESSAGE_VERSION;
@@ -255,7 +255,7 @@ vscr_ratchet_group_message_cleanup_ctx(vscr_ratchet_group_message_t *self) {
     VSCR_ASSERT_PTR(self);
 
     vscr_dealloc(self->header_pb);
-    pb_release(GroupMessage_fields, &self->message_pb);
+    pb_release(vscr_GroupMessage_fields, &self->message_pb);
 
     vscr_ratchet_key_id_destroy(&self->key_id);
 }
@@ -349,15 +349,15 @@ vscr_ratchet_group_message_set_type(vscr_ratchet_group_message_t *self, vscr_gro
 
     VSCR_ASSERT_PTR(self);
 
-    GroupMessage msg = GroupMessage_init_zero;
+    vscr_GroupMessage msg = vscr_GroupMessage_init_zero;
     self->message_pb = msg;
 
     switch (type) {
     case vscr_group_msg_type_REGULAR:
         self->message_pb.has_regular_message = true;
         self->message_pb.has_group_info = false;
-        self->header_pb = vscr_alloc(sizeof(RegularGroupMessageHeader));
-        RegularGroupMessageHeader hdr = RegularGroupMessageHeader_init_zero;
+        self->header_pb = vscr_alloc(sizeof(vscr_RegularGroupMessageHeader));
+        vscr_RegularGroupMessageHeader hdr = vscr_RegularGroupMessageHeader_init_zero;
         *self->header_pb = hdr;
         break;
 
@@ -378,7 +378,7 @@ vscr_ratchet_group_message_serialize_len(const vscr_ratchet_group_message_t *sel
     VSCR_ASSERT(self->message_pb.has_group_info != self->message_pb.has_regular_message);
 
     size_t len = 0;
-    VSCR_ASSERT(pb_get_encoded_size(&len, GroupMessage_fields, &self->message_pb));
+    VSCR_ASSERT(pb_get_encoded_size(&len, vscr_GroupMessage_fields, &self->message_pb));
 
     return len;
 }
@@ -400,7 +400,7 @@ vscr_ratchet_group_message_serialize(const vscr_ratchet_group_message_t *self, v
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_unused_len(output));
 
-    VSCR_ASSERT(pb_encode(&ostream, GroupMessage_fields, &self->message_pb));
+    VSCR_ASSERT(pb_encode(&ostream, vscr_GroupMessage_fields, &self->message_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);
 }
 
@@ -424,7 +424,7 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
-    bool pb_status = pb_decode(&istream, GroupMessage_fields, &message->message_pb);
+    bool pb_status = pb_decode(&istream, vscr_GroupMessage_fields, &message->message_pb);
 
     if (!pb_status || message->message_pb.has_group_info == message->message_pb.has_regular_message) {
         status = vscr_status_ERROR_PROTOBUF_DECODE;
@@ -435,8 +435,8 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
         pb_istream_t sub_istream = pb_istream_from_buffer(
                 message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
 
-        message->header_pb = vscr_alloc(sizeof(RegularGroupMessageHeader));
-        pb_status = pb_decode(&sub_istream, RegularGroupMessageHeader_fields, message->header_pb);
+        message->header_pb = vscr_alloc(sizeof(vscr_RegularGroupMessageHeader));
+        pb_status = pb_decode(&sub_istream, vscr_RegularGroupMessageHeader_fields, message->header_pb);
 
         if (!pb_status) {
             status = vscr_status_ERROR_PROTOBUF_DECODE;

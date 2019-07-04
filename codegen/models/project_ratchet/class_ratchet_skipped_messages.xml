@@ -5,7 +5,7 @@
 
     <require module="ratchet typedefs" scope="context"/>
 
-    <require header="RatchetSession.pb.h" scope="public"/>
+    <require header="vscr_RatchetSession.pb.h" scope="public"/>
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 
@@ -45,11 +45,11 @@
     </method>
 
     <method name="serialize" is_const="1">
-        <argument name="skipped messages pb" class="SkippedMessages" library="nanopb" access="readwrite"/>
+        <argument name="skipped messages pb" class="vscr_SkippedMessages" library="nanopb" access="readwrite"/>
     </method>
 
     <method name="deserialize" is_static="1">
-        <argument name="skipped messages pb" class="SkippedMessages" library="nanopb"/>
+        <argument name="skipped messages pb" class="vscr_SkippedMessages" library="nanopb"/>
         <argument name="skipped messages" class="self" access="readwrite"/>
     </method>
 

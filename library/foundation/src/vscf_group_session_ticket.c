@@ -61,7 +61,7 @@
 #include "vscf_ctr_drbg.h"
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
-#include <GroupMessage.pb.h>
+#include <vscf_GroupMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 

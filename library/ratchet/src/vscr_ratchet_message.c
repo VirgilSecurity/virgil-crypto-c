@@ -238,12 +238,12 @@ vscr_ratchet_message_init_ctx(vscr_ratchet_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    Message msg = Message_init_zero;
-    RegularMessageHeader hdr = RegularMessageHeader_init_zero;
+    vscr_Message msg = vscr_Message_init_zero;
+    vscr_RegularMessageHeader hdr = vscr_RegularMessageHeader_init_zero;
 
     self->message_pb = msg;
     self->message_pb.version = vscr_ratchet_common_hidden_MESSAGE_VERSION;
-    self->header_pb = vscr_alloc(sizeof(RegularMessageHeader));
+    self->header_pb = vscr_alloc(sizeof(vscr_RegularMessageHeader));
     *self->header_pb = hdr;
 }
 
@@ -257,7 +257,7 @@ vscr_ratchet_message_cleanup_ctx(vscr_ratchet_message_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    pb_release(Message_fields, &self->message_pb);
+    pb_release(vscr_Message_fields, &self->message_pb);
     vscr_dealloc(self->header_pb);
 }
 
@@ -331,7 +331,7 @@ vscr_ratchet_message_serialize_len(const vscr_ratchet_message_t *self) {
     VSCR_ASSERT_PTR(self);
 
     size_t len = 0;
-    VSCR_ASSERT(pb_get_encoded_size(&len, Message_fields, &self->message_pb));
+    VSCR_ASSERT(pb_get_encoded_size(&len, vscr_Message_fields, &self->message_pb));
 
     return len;
 }
@@ -349,7 +349,7 @@ vscr_ratchet_message_serialize(const vscr_ratchet_message_t *self, vsc_buffer_t 
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_unused_len(output));
 
-    VSCR_ASSERT(pb_encode(&ostream, Message_fields, &self->message_pb));
+    VSCR_ASSERT(pb_encode(&ostream, vscr_Message_fields, &self->message_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);
 }
 
@@ -373,7 +373,7 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     vscr_status_t status = vscr_status_SUCCESS;
 
-    bool pb_status = pb_decode(&istream, Message_fields, &message->message_pb);
+    bool pb_status = pb_decode(&istream, vscr_Message_fields, &message->message_pb);
 
     if (!pb_status) {
         status = vscr_status_ERROR_PROTOBUF_DECODE;
@@ -383,7 +383,7 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_t *error) {
     pb_istream_t sub_istream = pb_istream_from_buffer(
             message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
 
-    pb_status = pb_decode(&sub_istream, RegularMessageHeader_fields, message->header_pb);
+    pb_status = pb_decode(&sub_istream, vscr_RegularMessageHeader_fields, message->header_pb);
 
     if (!pb_status) {
         status = vscr_status_ERROR_PROTOBUF_DECODE;

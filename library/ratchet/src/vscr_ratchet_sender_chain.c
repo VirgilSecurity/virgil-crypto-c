@@ -243,7 +243,7 @@ vscr_ratchet_sender_chain_cleanup_ctx(vscr_ratchet_sender_chain_t *self) {
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_serialize(const vscr_ratchet_sender_chain_t *self, SenderChain *sender_chain_pb) {
+vscr_ratchet_sender_chain_serialize(const vscr_ratchet_sender_chain_t *self, vscr_SenderChain *sender_chain_pb) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(sender_chain_pb);
@@ -254,7 +254,8 @@ vscr_ratchet_sender_chain_serialize(const vscr_ratchet_sender_chain_t *self, Sen
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_deserialize(const SenderChain *sender_chain_pb, vscr_ratchet_sender_chain_t *sender_chain) {
+vscr_ratchet_sender_chain_deserialize(
+        const vscr_SenderChain *sender_chain_pb, vscr_ratchet_sender_chain_t *sender_chain) {
 
     VSCR_ASSERT_PTR(sender_chain);
     VSCR_ASSERT_PTR(sender_chain_pb);

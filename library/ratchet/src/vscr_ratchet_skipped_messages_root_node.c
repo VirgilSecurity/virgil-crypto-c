@@ -334,8 +334,8 @@ vscr_ratchet_skipped_messages_root_node_add_key(
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_root_node_serialize(
-        const vscr_ratchet_skipped_messages_root_node_t *self, MessageKey **skipped_messages_pb, pb_size_t *count) {
+vscr_ratchet_skipped_messages_root_node_serialize(const vscr_ratchet_skipped_messages_root_node_t *self,
+        vscr_MessageKey **skipped_messages_pb, pb_size_t *count) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(skipped_messages_pb);
@@ -344,7 +344,7 @@ vscr_ratchet_skipped_messages_root_node_serialize(
     *count = self->count;
 
     if (self->count) {
-        *skipped_messages_pb = vscr_alloc(self->count * sizeof(MessageKey));
+        *skipped_messages_pb = vscr_alloc(self->count * sizeof(vscr_MessageKey));
     }
 
     vscr_ratchet_message_key_node_t *node = self->first;
@@ -355,7 +355,7 @@ vscr_ratchet_skipped_messages_root_node_serialize(
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_root_node_deserialize(const MessageKey *skipped_messages_pb, pb_size_t count,
+vscr_ratchet_skipped_messages_root_node_deserialize(const vscr_MessageKey *skipped_messages_pb, pb_size_t count,
         vscr_ratchet_skipped_messages_root_node_t *skipped_messages) {
 
     if (count != 0) {
