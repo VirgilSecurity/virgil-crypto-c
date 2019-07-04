@@ -91,8 +91,10 @@ target_link_libraries(foundation PUBLIC vsc::foundation_pb vsc::common mbed::cry
 #
 # Define specific compilation and linkage flags.
 #
+target_compile_features(foundation
+        PUBLIC $<IF:$<AND:$<BOOL:${VSCF_HAVE_STDATOMIC_H}>,$<BOOL:${VSCF_MULTI_THREADING}>>,c_std_11,c_std_99>)
+
 set_target_properties(foundation PROPERTIES
-        C_STANDARD "99"
         DEBUG_POSTFIX "_d"
         OUTPUT_NAME vsc_foundation
         )
