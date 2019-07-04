@@ -463,14 +463,16 @@ vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_sessio
         left->next = new_node;
     }
 
-    self->epochs_count++;
-
-    if (self->epochs_count > vscf_group_session_MAX_EPOCHS_COUNT) {
+    if (self->epochs_count == vscf_group_session_MAX_EPOCHS_COUNT) {
         VSCF_ASSERT_PTR(self->first_epoch);
         vscf_group_session_epoch_node_t *first = self->first_epoch;
         self->first_epoch = first->next;
         self->first_epoch->prev = NULL;
         vscf_group_session_epoch_node_destroy(&first);
+    } else if (self->epochs_count < vscf_group_session_MAX_EPOCHS_COUNT) {
+        self->epochs_count++;
+    } else {
+        VSCF_ASSERT(false);
     }
 
 err:

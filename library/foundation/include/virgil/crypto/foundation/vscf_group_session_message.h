@@ -58,10 +58,9 @@
 #include "vscf_group_session_message.h"
 #include "vscf_group_msg_type.h"
 
-#include <virgil/crypto/common/vsc_buffer.h>
-
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK

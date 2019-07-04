@@ -13,8 +13,6 @@
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
-    <require class="buffer" project="common" scope="private"/>
-
     <property name="message pb" class="vscf_GroupMessage" library="nanopb" access="readwrite" is_reference="0"/>
     <property name="header pb" class="vscf_RegularGroupMessageHeader" library="nanopb" access="readwrite"/>
 
