@@ -1,6 +1,17 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.8.0 released 2019-07-04
+
+### Bugfix
+
+- Lib/Foundation: Fix crashes in a multi-thread environment
+
+### Changes
+
+- Lib/Foundation: Split asymmetric keys and their algorithms to different entities
+
+
 ## Version 0.7.1 released 2019-06-03
 
 ### Bugfix
