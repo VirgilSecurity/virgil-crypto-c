@@ -9,7 +9,7 @@
         wrappers="swift,java"
         >
 
-    <version major="0" minor="7" patch="1"/>
+    <version major="0" minor="8" patch="0"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.
@@ -50,7 +50,7 @@
     <require project="common" feature="library"/>
     <require library="mbedtls" feature="library"/>
 
-    <feature name="multi thread" default="on">
+    <feature name="multi threading" default="on">
         Enable multi-threading safety for foundation library.
 
         <require feature="THREADING C" library="mbedtls"/>
@@ -59,12 +59,16 @@
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
+    <module name="atomic" from="shared"/>
+
+    <module name="group session typedefs"/>
 
     <enum name="status"/>
     <enum name="asn1 tag"/>
     <enum name="alg id"/>
     <enum name="oid id"/>
     <enum name="recipient cipher decryption state"/>
+    <enum name="group msg type"/>
 
     <interface name="cipher"/>
     <interface name="auth encrypt"/>
@@ -82,12 +86,11 @@
     <interface name="entropy source"/>
 
     <interface name="key"/>
+    <interface name="key alg"/>
     <interface name="public key"/>
     <interface name="private key"/>
-    <interface name="sign hash"/>
-    <interface name="verify hash"/>
-    <interface name="generate key"/>
-    <interface name="generate ephemeral key"/>
+    <interface name="key cipher"/>
+    <interface name="key signer"/>
     <interface name="compute shared key"/>
     <interface name="key serializer"/>
     <interface name="key deserializer"/>
@@ -105,7 +108,7 @@
     <class name="mbedtls bignum asn1 writer"/>
     <class name="mbedtls bignum asn1 reader"/>
     <class name="mbedtls md"/>
-    <class name="raw key"/>
+    <class name="mbedtls ecp"/>
     <class name="oid"/>
     <class name="base64"/>
     <class name="pem"/>
@@ -116,6 +119,8 @@
     <class name="password recipient info"/>
     <class name="password recipient info list"/>
     <class name="alg factory"/>
+    <class name="key alg factory"/>
+    <class name="ecies"/>
     <class name="ecies envelope"/>
     <class name="recipient cipher"/>
     <class name="key recipient list"/>
@@ -124,6 +129,16 @@
     <class name="key provider"/>
     <class name="signer"/>
     <class name="verifier"/>
+    <class name="simple swu"/>
+    <class name="brainkey client"/>
+    <class name="brainkey server"/>
+    <class name="message padding"/>
+    <class name="message cipher"/>
+    <class name="group session message"/>
+    <class name="group session ticket"/>
+    <class name="group session"/>
+    <class name="group session epoch"/>
+    <class name="group session epoch node"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>
@@ -131,7 +146,6 @@
     <implementor name="virgil"/>
     <implementor name="virgil key serializer"/>
     <implementor name="ed25519"/>
-    <implementor name="virgil ecies"/>
 
     <implementor name="alg info"/>
     <implementor name="alg info der"/>

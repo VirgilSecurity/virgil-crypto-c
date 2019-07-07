@@ -58,14 +58,10 @@ import VSCFoundation
             return Aes256Gcm(take: c_ctx)
         case vscf_impl_tag_AES256_CBC:
             return Aes256Cbc(take: c_ctx)
-        case vscf_impl_tag_RSA_PUBLIC_KEY:
-            return RsaPublicKey(take: c_ctx)
-        case vscf_impl_tag_RSA_PRIVATE_KEY:
-            return RsaPrivateKey(take: c_ctx)
-        case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
-            return Secp256r1PublicKey(take: c_ctx)
-        case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
-            return Secp256r1PrivateKey(take: c_ctx)
+        case vscf_impl_tag_RSA:
+            return Rsa(take: c_ctx)
+        case vscf_impl_tag_ECC:
+            return Ecc(take: c_ctx)
         case vscf_impl_tag_HMAC:
             return Hmac(take: c_ctx)
         case vscf_impl_tag_HKDF:
@@ -78,14 +74,10 @@ import VSCFoundation
             return Pkcs5Pbkdf2(take: c_ctx)
         case vscf_impl_tag_PKCS5_PBES2:
             return Pkcs5Pbes2(take: c_ctx)
-        case vscf_impl_tag_ED25519_PUBLIC_KEY:
-            return Ed25519PublicKey(take: c_ctx)
-        case vscf_impl_tag_ED25519_PRIVATE_KEY:
-            return Ed25519PrivateKey(take: c_ctx)
-        case vscf_impl_tag_CURVE25519_PUBLIC_KEY:
-            return Curve25519PublicKey(take: c_ctx)
-        case vscf_impl_tag_CURVE25519_PRIVATE_KEY:
-            return Curve25519PrivateKey(take: c_ctx)
+        case vscf_impl_tag_ED25519:
+            return Ed25519(take: c_ctx)
+        case vscf_impl_tag_CURVE25519:
+            return Curve25519(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -124,18 +116,8 @@ import VSCFoundation
             return Aes256Gcm(take: c_ctx)
         case vscf_impl_tag_AES256_CBC:
             return Aes256Cbc(take: c_ctx)
-        case vscf_impl_tag_RSA_PUBLIC_KEY:
-            return RsaPublicKey(take: c_ctx)
-        case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
-            return Secp256r1PublicKey(take: c_ctx)
         case vscf_impl_tag_PKCS5_PBES2:
             return Pkcs5Pbes2(take: c_ctx)
-        case vscf_impl_tag_ED25519_PUBLIC_KEY:
-            return Ed25519PublicKey(take: c_ctx)
-        case vscf_impl_tag_CURVE25519_PUBLIC_KEY:
-            return Curve25519PublicKey(take: c_ctx)
-        case vscf_impl_tag_ECIES:
-            return Ecies(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -153,18 +135,8 @@ import VSCFoundation
             return Aes256Gcm(take: c_ctx)
         case vscf_impl_tag_AES256_CBC:
             return Aes256Cbc(take: c_ctx)
-        case vscf_impl_tag_RSA_PRIVATE_KEY:
-            return RsaPrivateKey(take: c_ctx)
-        case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
-            return Secp256r1PrivateKey(take: c_ctx)
         case vscf_impl_tag_PKCS5_PBES2:
             return Pkcs5Pbes2(take: c_ctx)
-        case vscf_impl_tag_ED25519_PRIVATE_KEY:
-            return Ed25519PrivateKey(take: c_ctx)
-        case vscf_impl_tag_CURVE25519_PRIVATE_KEY:
-            return Curve25519PrivateKey(take: c_ctx)
-        case vscf_impl_tag_ECIES:
-            return Ecies(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -306,37 +278,14 @@ import VSCFoundation
             return RsaPublicKey(take: c_ctx)
         case vscf_impl_tag_RSA_PRIVATE_KEY:
             return RsaPrivateKey(take: c_ctx)
-        case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
-            return Secp256r1PublicKey(take: c_ctx)
-        case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
-            return Secp256r1PrivateKey(take: c_ctx)
-        case vscf_impl_tag_ED25519_PUBLIC_KEY:
-            return Ed25519PublicKey(take: c_ctx)
-        case vscf_impl_tag_ED25519_PRIVATE_KEY:
-            return Ed25519PrivateKey(take: c_ctx)
-        case vscf_impl_tag_CURVE25519_PUBLIC_KEY:
-            return Curve25519PublicKey(take: c_ctx)
-        case vscf_impl_tag_CURVE25519_PRIVATE_KEY:
-            return Curve25519PrivateKey(take: c_ctx)
-        default:
-            fatalError("Unexpected C implementation cast to the Swift implementation.")
-        }
-    }
-
-    /// Wrap C implementation object to the Swift object that implements protocol VerifyHash.
-    @objc static func wrapVerifyHash(take c_ctx: OpaquePointer) -> VerifyHash {
-        if (!vscf_verify_hash_is_implemented(c_ctx)) {
-            fatalError("Given C implementation does not implement interface VerifyHash.")
-        }
-
-        let implTag = vscf_impl_tag(c_ctx)
-        switch(implTag) {
-        case vscf_impl_tag_RSA_PUBLIC_KEY:
-            return RsaPublicKey(take: c_ctx)
-        case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
-            return Secp256r1PublicKey(take: c_ctx)
-        case vscf_impl_tag_ED25519_PUBLIC_KEY:
-            return Ed25519PublicKey(take: c_ctx)
+        case vscf_impl_tag_ECC_PUBLIC_KEY:
+            return EccPublicKey(take: c_ctx)
+        case vscf_impl_tag_ECC_PRIVATE_KEY:
+            return EccPrivateKey(take: c_ctx)
+        case vscf_impl_tag_RAW_PUBLIC_KEY:
+            return RawPublicKey(take: c_ctx)
+        case vscf_impl_tag_RAW_PRIVATE_KEY:
+            return RawPrivateKey(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -352,73 +301,10 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_RSA_PUBLIC_KEY:
             return RsaPublicKey(take: c_ctx)
-        case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
-            return Secp256r1PublicKey(take: c_ctx)
-        case vscf_impl_tag_ED25519_PUBLIC_KEY:
-            return Ed25519PublicKey(take: c_ctx)
-        case vscf_impl_tag_CURVE25519_PUBLIC_KEY:
-            return Curve25519PublicKey(take: c_ctx)
-        default:
-            fatalError("Unexpected C implementation cast to the Swift implementation.")
-        }
-    }
-
-    /// Wrap C implementation object to the Swift object that implements protocol GenerateEphemeralKey.
-    @objc static func wrapGenerateEphemeralKey(take c_ctx: OpaquePointer) -> GenerateEphemeralKey {
-        if (!vscf_generate_ephemeral_key_is_implemented(c_ctx)) {
-            fatalError("Given C implementation does not implement interface GenerateEphemeralKey.")
-        }
-
-        let implTag = vscf_impl_tag(c_ctx)
-        switch(implTag) {
-        case vscf_impl_tag_RSA_PUBLIC_KEY:
-            return RsaPublicKey(take: c_ctx)
-        case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
-            return Secp256r1PublicKey(take: c_ctx)
-        case vscf_impl_tag_ED25519_PUBLIC_KEY:
-            return Ed25519PublicKey(take: c_ctx)
-        case vscf_impl_tag_CURVE25519_PUBLIC_KEY:
-            return Curve25519PublicKey(take: c_ctx)
-        default:
-            fatalError("Unexpected C implementation cast to the Swift implementation.")
-        }
-    }
-
-    /// Wrap C implementation object to the Swift object that implements protocol GenerateKey.
-    @objc static func wrapGenerateKey(take c_ctx: OpaquePointer) -> GenerateKey {
-        if (!vscf_generate_key_is_implemented(c_ctx)) {
-            fatalError("Given C implementation does not implement interface GenerateKey.")
-        }
-
-        let implTag = vscf_impl_tag(c_ctx)
-        switch(implTag) {
-        case vscf_impl_tag_RSA_PRIVATE_KEY:
-            return RsaPrivateKey(take: c_ctx)
-        case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
-            return Secp256r1PrivateKey(take: c_ctx)
-        case vscf_impl_tag_ED25519_PRIVATE_KEY:
-            return Ed25519PrivateKey(take: c_ctx)
-        case vscf_impl_tag_CURVE25519_PRIVATE_KEY:
-            return Curve25519PrivateKey(take: c_ctx)
-        default:
-            fatalError("Unexpected C implementation cast to the Swift implementation.")
-        }
-    }
-
-    /// Wrap C implementation object to the Swift object that implements protocol SignHash.
-    @objc static func wrapSignHash(take c_ctx: OpaquePointer) -> SignHash {
-        if (!vscf_sign_hash_is_implemented(c_ctx)) {
-            fatalError("Given C implementation does not implement interface SignHash.")
-        }
-
-        let implTag = vscf_impl_tag(c_ctx)
-        switch(implTag) {
-        case vscf_impl_tag_RSA_PRIVATE_KEY:
-            return RsaPrivateKey(take: c_ctx)
-        case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
-            return Secp256r1PrivateKey(take: c_ctx)
-        case vscf_impl_tag_ED25519_PRIVATE_KEY:
-            return Ed25519PrivateKey(take: c_ctx)
+        case vscf_impl_tag_ECC_PUBLIC_KEY:
+            return EccPublicKey(take: c_ctx)
+        case vscf_impl_tag_RAW_PUBLIC_KEY:
+            return RawPublicKey(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -434,12 +320,71 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_RSA_PRIVATE_KEY:
             return RsaPrivateKey(take: c_ctx)
-        case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
-            return Secp256r1PrivateKey(take: c_ctx)
-        case vscf_impl_tag_ED25519_PRIVATE_KEY:
-            return Ed25519PrivateKey(take: c_ctx)
-        case vscf_impl_tag_CURVE25519_PRIVATE_KEY:
-            return Curve25519PrivateKey(take: c_ctx)
+        case vscf_impl_tag_ECC_PRIVATE_KEY:
+            return EccPrivateKey(take: c_ctx)
+        case vscf_impl_tag_RAW_PRIVATE_KEY:
+            return RawPrivateKey(take: c_ctx)
+        default:
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
+        }
+    }
+
+    /// Wrap C implementation object to the Swift object that implements protocol KeyAlg.
+    @objc static func wrapKeyAlg(take c_ctx: OpaquePointer) -> KeyAlg {
+        if (!vscf_key_alg_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface KeyAlg.")
+        }
+
+        let implTag = vscf_impl_tag(c_ctx)
+        switch(implTag) {
+        case vscf_impl_tag_RSA:
+            return Rsa(take: c_ctx)
+        case vscf_impl_tag_ECC:
+            return Ecc(take: c_ctx)
+        case vscf_impl_tag_ED25519:
+            return Ed25519(take: c_ctx)
+        case vscf_impl_tag_CURVE25519:
+            return Curve25519(take: c_ctx)
+        default:
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
+        }
+    }
+
+    /// Wrap C implementation object to the Swift object that implements protocol KeyCipher.
+    @objc static func wrapKeyCipher(take c_ctx: OpaquePointer) -> KeyCipher {
+        if (!vscf_key_cipher_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface KeyCipher.")
+        }
+
+        let implTag = vscf_impl_tag(c_ctx)
+        switch(implTag) {
+        case vscf_impl_tag_RSA:
+            return Rsa(take: c_ctx)
+        case vscf_impl_tag_ECC:
+            return Ecc(take: c_ctx)
+        case vscf_impl_tag_ED25519:
+            return Ed25519(take: c_ctx)
+        case vscf_impl_tag_CURVE25519:
+            return Curve25519(take: c_ctx)
+        default:
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
+        }
+    }
+
+    /// Wrap C implementation object to the Swift object that implements protocol KeySigner.
+    @objc static func wrapKeySigner(take c_ctx: OpaquePointer) -> KeySigner {
+        if (!vscf_key_signer_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface KeySigner.")
+        }
+
+        let implTag = vscf_impl_tag(c_ctx)
+        switch(implTag) {
+        case vscf_impl_tag_RSA:
+            return Rsa(take: c_ctx)
+        case vscf_impl_tag_ECC:
+            return Ecc(take: c_ctx)
+        case vscf_impl_tag_ED25519:
+            return Ed25519(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -453,12 +398,12 @@ import VSCFoundation
 
         let implTag = vscf_impl_tag(c_ctx)
         switch(implTag) {
-        case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
-            return Secp256r1PrivateKey(take: c_ctx)
-        case vscf_impl_tag_ED25519_PRIVATE_KEY:
-            return Ed25519PrivateKey(take: c_ctx)
-        case vscf_impl_tag_CURVE25519_PRIVATE_KEY:
-            return Curve25519PrivateKey(take: c_ctx)
+        case vscf_impl_tag_ECC:
+            return Ecc(take: c_ctx)
+        case vscf_impl_tag_ED25519:
+            return Ed25519(take: c_ctx)
+        case vscf_impl_tag_CURVE25519:
+            return Curve25519(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -607,8 +552,8 @@ import VSCFoundation
             return SaltedKdfAlgInfo(take: c_ctx)
         case vscf_impl_tag_PBE_ALG_INFO:
             return PbeAlgInfo(take: c_ctx)
-        case vscf_impl_tag_EC_ALG_INFO:
-            return EcAlgInfo(take: c_ctx)
+        case vscf_impl_tag_ECC_ALG_INFO:
+            return EccAlgInfo(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }

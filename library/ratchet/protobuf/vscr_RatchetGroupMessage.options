@@ -1,0 +1,11 @@
+vscr_MessageGroupInfo.session_id max_size:32 fixed_length:true
+vscr_MessageGroupInfo.key max_size:32 fixed_length:true
+
+vscr_RegularGroupMessage.header max_size:104 fixed_length:false
+vscr_RegularGroupMessage.signature max_size:64 fixed_length:true
+
+vscr_RegularGroupMessageHeader.session_id max_size:32 fixed_length:true
+vscr_RegularGroupMessageHeader.sender_id max_size:32 fixed_length:true
+vscr_RegularGroupMessageHeader.prev_epochs_msgs max_count:4 fixed_count:true
+
+vscr_RegularGroupMessage.cipher_text max_size:32952 type:FT_POINTER

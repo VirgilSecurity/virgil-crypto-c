@@ -1,0 +1,61 @@
+<interface name="key signer">
+    Provide an interface for signing and verifying data digest
+    with asymmetric keys.
+
+    <inherit interface="key alg"/>
+
+    <method name="can sign" is_const="1">
+        Check if algorithm can sign data digest with a given key.
+
+        <argument name="private key" interface="private key"/>
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="signature len" is_const="1">
+        Return length in bytes required to hold signature.
+        Return zero if a given private key can not produce signatures.
+
+        <argument name="key" interface="key"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="sign hash" is_const="1">
+        Sign data digest with a given private key.
+
+        <argument name="private key" interface="private key"/>
+        <argument name="hash id" enum="alg id"/>
+        <argument name="digest" class="data"/>
+        <argument name="signature" class="buffer">
+            <length method="signature len">
+                <proxy argument="private key" to="key"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="can verify" is_const="1">
+        Check if algorithm can verify data digest with a given key.
+
+        <argument name="public key" interface="public key"/>
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="verify hash" is_const="1">
+        Verify data digest with a given public key and signature.
+
+        <argument name="public key" interface="public key"/>
+        <argument name="hash id" enum="alg id"/>
+        <argument name="digest" class="data"/>
+        <argument name="signature" class="data"/>
+
+        <return type="boolean"/>
+    </method>
+</interface>

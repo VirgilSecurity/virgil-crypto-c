@@ -55,9 +55,10 @@ public class RecipientCipher implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public RecipientCipher(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static RecipientCipher getInstance(long cCtx) {
+        RecipientCipher newInstance = new RecipientCipher();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

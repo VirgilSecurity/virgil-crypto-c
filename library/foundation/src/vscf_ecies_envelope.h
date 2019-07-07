@@ -105,6 +105,7 @@
 #define VSCF_ECIES_ENVELOPE_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_raw_public_key.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
 
@@ -137,86 +138,25 @@ extern "C" {
 //  Handle 'ecies envelope' context.
 //
 typedef struct vscf_ecies_envelope_t vscf_ecies_envelope_t;
+struct vscf_ecies_envelope_t {
+    vscf_raw_public_key_t *ephemeral_public_key;
+
+    vscf_impl_t *cipher;
+
+    vscf_impl_t *kdf;
+
+    vscf_impl_t *mac;
+
+    vsc_buffer_t *mac_digest;
+
+    vsc_buffer_t *encrypted_content;
+};
 
 //
 //  Return size of 'vscf_ecies_envelope_t'.
 //
 VSCF_PUBLIC size_t
 vscf_ecies_envelope_ctx_size(void);
-
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_init(vscf_ecies_envelope_t *self);
-
-//
-//  Release all inner resources including class dependencies.
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_cleanup(vscf_ecies_envelope_t *self);
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCF_PUBLIC vscf_ecies_envelope_t *
-vscf_ecies_envelope_new(void);
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_delete(vscf_ecies_envelope_t *self);
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscf_ecies_envelope_new ()'.
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_destroy(vscf_ecies_envelope_t **self_ref);
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCF_PUBLIC vscf_ecies_envelope_t *
-vscf_ecies_envelope_shallow_copy(vscf_ecies_envelope_t *self);
-
-//
-//  Set "ephemeral public ke".
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_set_ephemeral_public_key(vscf_ecies_envelope_t *self, vscf_impl_t **ephemeral_public_key_ref);
-
-//
-//  Set "kdf" algorithm information.
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_set_kdf(vscf_ecies_envelope_t *self, vscf_impl_t **kdf_ref);
-
-//
-//  Set "mac" algorithm information.
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_set_mac(vscf_ecies_envelope_t *self, vscf_impl_t **mac_ref);
-
-//
-//  Set "mac" digest.
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_set_mac_digest(vscf_ecies_envelope_t *self, vsc_buffer_t **mac_digest_ref);
-
-//
-//  Set "cipher" algorithm information.
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_set_cipher(vscf_ecies_envelope_t *self, vscf_impl_t **cipher_ref);
-
-//
-//  Set "encrypted content".
-//
-VSCF_PUBLIC void
-vscf_ecies_envelope_set_encrypted_content(vscf_ecies_envelope_t *self, vsc_buffer_t **encrypted_content_ref);
 
 //
 //  Return buffer length required to hold packed ECIES-Envelope.

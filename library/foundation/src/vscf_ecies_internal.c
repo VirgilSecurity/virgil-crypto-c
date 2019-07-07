@@ -174,15 +174,7 @@ vscf_ecies_init(vscf_ecies_t *self) {
 VSCF_PUBLIC void
 vscf_ecies_cleanup(vscf_ecies_t *self) {
 
-    if (self == NULL || self->info == NULL) {
-        return;
-    }
-
-    if (self->refcnt == 0) {
-        return;
-    }
-
-    if (--self->refcnt > 0) {
+    if (self == NULL) {
         return;
     }
 
@@ -221,11 +213,32 @@ vscf_ecies_new(void) {
 VSCF_PUBLIC void
 vscf_ecies_delete(vscf_ecies_t *self) {
 
+    if (self == NULL) {
+        return;
+    }
+
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscf_ecies_cleanup(self);
 
-    if (self && (self->refcnt == 0)) {
-        vscf_dealloc(self);
-    }
+    vscf_dealloc(self);
 }
 
 //
@@ -298,7 +311,7 @@ vscf_ecies_take_random(vscf_ecies_t *self, vscf_impl_t *random) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(self->random == NULL);
+    VSCF_ASSERT(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
@@ -340,7 +353,7 @@ vscf_ecies_take_cipher(vscf_ecies_t *self, vscf_impl_t *cipher) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(cipher);
-    VSCF_ASSERT_PTR(self->cipher == NULL);
+    VSCF_ASSERT(self->cipher == NULL);
 
     VSCF_ASSERT(vscf_cipher_is_implemented(cipher));
 
@@ -382,7 +395,7 @@ vscf_ecies_take_mac(vscf_ecies_t *self, vscf_impl_t *mac) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(mac);
-    VSCF_ASSERT_PTR(self->mac == NULL);
+    VSCF_ASSERT(self->mac == NULL);
 
     VSCF_ASSERT(vscf_mac_is_implemented(mac));
 
@@ -424,7 +437,7 @@ vscf_ecies_take_kdf(vscf_ecies_t *self, vscf_impl_t *kdf) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(kdf);
-    VSCF_ASSERT_PTR(self->kdf == NULL);
+    VSCF_ASSERT(self->kdf == NULL);
 
     VSCF_ASSERT(vscf_kdf_is_implemented(kdf));
 
@@ -482,7 +495,7 @@ vscf_ecies_take_encryption_key(vscf_ecies_t *self, vscf_impl_t *encryption_key) 
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(encryption_key);
-    VSCF_ASSERT_PTR(self->encryption_key == NULL);
+    VSCF_ASSERT(self->encryption_key == NULL);
 
     VSCF_ASSERT(vscf_public_key_is_implemented(encryption_key));
 
@@ -532,7 +545,7 @@ vscf_ecies_take_decryption_key(vscf_ecies_t *self, vscf_impl_t *decryption_key) 
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(decryption_key);
-    VSCF_ASSERT_PTR(self->decryption_key == NULL);
+    VSCF_ASSERT(self->decryption_key == NULL);
 
     VSCF_ASSERT(vscf_private_key_is_implemented(decryption_key));
 
@@ -582,7 +595,7 @@ vscf_ecies_take_ephemeral_key(vscf_ecies_t *self, vscf_impl_t *ephemeral_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(ephemeral_key);
-    VSCF_ASSERT_PTR(self->ephemeral_key == NULL);
+    VSCF_ASSERT(self->ephemeral_key == NULL);
 
     VSCF_ASSERT(vscf_private_key_is_implemented(ephemeral_key));
 

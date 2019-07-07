@@ -83,6 +83,7 @@ import VSCFoundation
     }
 
     /// Generate random bytes.
+    /// All RNG implementations must be thread-safe.
     @objc public func random(dataLen: Int) throws -> Data {
         let dataCount = dataLen
         var data = Data(count: dataCount)
@@ -104,7 +105,7 @@ import VSCFoundation
         return data
     }
 
-    /// Retreive new seed data from the entropy sources.
+    /// Retrieve new seed data from the entropy sources.
     @objc public func reseed() throws {
         let proxyResult = vscf_key_material_rng_reseed(self.c_ctx)
 

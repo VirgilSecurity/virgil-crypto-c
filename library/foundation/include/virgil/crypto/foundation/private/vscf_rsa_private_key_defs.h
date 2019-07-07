@@ -59,6 +59,7 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_rsa_private_key.h"
+#include "vscf_atomic.h"
 #include "vscf_impl.h"
 
 #include <mbedtls/rsa.h>
@@ -89,19 +90,11 @@ struct vscf_rsa_private_key_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
     //
-    //  Dependency to the interface 'random'.
+    //  Implementation specific context.
     //
-    vscf_impl_t *random;
-    //
-    //  Dependency to the interface 'asn1 reader'.
-    //
-    vscf_impl_t *asn1rd;
-    //
-    //  Dependency to the interface 'asn1 writer'.
-    //
-    vscf_impl_t *asn1wr;
+    vscf_impl_t *alg_info;
     //
     //  Implementation specific context.
     //
@@ -109,11 +102,7 @@ struct vscf_rsa_private_key_t {
     //
     //  Implementation specific context.
     //
-    size_t gen_bitlen;
-    //
-    //  Implementation specific context.
-    //
-    size_t gen_exponent;
+    vscf_impl_tag_t impl_tag;
 };
 
 

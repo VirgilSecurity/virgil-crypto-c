@@ -53,6 +53,8 @@
 #ifndef VSCP_PYTHIA_PRIVATE_H_INCLUDED
 #define VSCP_PYTHIA_PRIVATE_H_INCLUDED
 
+#include "vscp_atomic.h"
+
 // clang-format on
 //  @end
 

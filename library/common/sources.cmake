@@ -49,6 +49,10 @@ if(NOT TARGET common)
     message(FATAL_ERROR "Expected target 'common' to be defined first.")
 endif()
 
+include(CheckIncludeFiles)
+check_include_files(assert.h VSC_HAVE_ASSERT_H)
+check_include_files(stdatomic.h VSC_HAVE_STDATOMIC_H)
+
 configure_file(
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_platform.h.in"
         "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/common/vsc_platform.h"
@@ -94,6 +98,7 @@ target_sources(common
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_assert.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_library.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_memory.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/private/vsc_atomic.h"
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/common/vsc_platform.h"
             "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_buffer.h>"
             "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/private/vsc_buffer_defs.h>"

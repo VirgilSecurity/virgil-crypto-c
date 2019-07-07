@@ -4,7 +4,7 @@
 
     <require module="ratchet typedefs" scope="context"/>
 
-    <require header="RatchetSession.pb.h" scope="public"/>
+    <require header="vscr_RatchetSession.pb.h" scope="public"/>
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 
@@ -12,11 +12,11 @@
     <property name="key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>
 
     <method name="serialize" is_const="1">
-        <argument name="message key pb" class="MessageKey" library="nanopb" access="readwrite"/>
+        <argument name="message key pb" class="vscr_MessageKey" library="nanopb" access="readwrite"/>
     </method>
 
     <method name="deserialize" is_static="1">
-        <argument name="message key pb" class="MessageKey" library="nanopb"/>
+        <argument name="message key pb" class="vscr_MessageKey" library="nanopb"/>
         <argument name="message key" class="self" access="readwrite"/>
     </method>
 

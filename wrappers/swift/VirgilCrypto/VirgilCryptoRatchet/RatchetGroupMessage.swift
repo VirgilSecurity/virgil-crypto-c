@@ -83,40 +83,26 @@ import VirgilCryptoFoundation
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
-    /// Returns number of public keys.
-    /// This method should be called only for group info message type.
-    @objc public func getPubKeyCount() -> Int {
-        let proxyResult = vscr_ratchet_group_message_get_pub_key_count(self.c_ctx)
-
-        return proxyResult
-    }
-
-    /// Returns public key id for some participant id.
-    /// This method should be called only for group info message type.
-    @objc public func getPubKeyId(participantId: Data) throws -> Data {
-        var error: vscr_error_t = vscr_error_t()
-        vscr_error_reset(&error)
-
-        let proxyResult = participantId.withUnsafeBytes({ (participantIdPointer: UnsafeRawBufferPointer) in
-
-            return vscr_ratchet_group_message_get_pub_key_id(self.c_ctx, vsc_data(participantIdPointer.bindMemory(to: byte.self).baseAddress, participantId.count), &error)
-        })
-
-        defer {
-            vsc_buffer_delete(proxyResult)
-        }
-
-        try RatchetError.handleStatus(fromC: error.status)
-
-        return Data.init(bytes: vsc_buffer_bytes(proxyResult), count: vsc_buffer_len(proxyResult))
-    }
-
     /// Returns message sender id.
     /// This method should be called only for regular message type.
     @objc public func getSenderId() -> Data {
         let proxyResult = vscr_ratchet_group_message_get_sender_id(self.c_ctx)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
+    /// Returns message counter in current epoch.
+    @objc public func getCounter() -> UInt32 {
+        let proxyResult = vscr_ratchet_group_message_get_counter(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Returns message epoch.
+    @objc public func getEpoch() -> UInt32 {
+        let proxyResult = vscr_ratchet_group_message_get_epoch(self.c_ctx)
+
+        return proxyResult
     }
 
     /// Buffer len to serialize this class.

@@ -40,7 +40,7 @@ import com.virgilsecurity.crypto.foundation.*;
 
 /*
 * Class for server-side PHE crypto operations.
-* This class is thread-safe in case if VSCE_MULTI_THREAD defined
+* This class is thread-safe in case if VSCE_MULTI_THREADING defined.
 */
 public class PheServer implements AutoCloseable {
 
@@ -56,9 +56,10 @@ public class PheServer implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public PheServer(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static PheServer getInstance(long cCtx) {
+        PheServer newInstance = new PheServer();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

@@ -1,0 +1,35 @@
+<class name="ratchet group participant" context="public" scope="internal">
+
+    <require class="ratchet common hidden" scope="public"/>
+    <require class="ratchet common" scope="public"/>
+    <require class="ratchet common" scope="public"/>
+
+    <require module="ratchet typedefs" scope="context"/>
+
+    <property name="info" class="ratchet group participant info" is_reference="0" access="readwrite"/>
+
+    <property name="epochs" class="ratchet group participant epoch" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_max_epochs_count)"/>
+    </property>
+
+    <method name="add epoch">
+        <argument name="epoch" type="unsigned" size="4"/>
+        <argument name="chain key" class="ratchet chain key" access="disown"/>
+    </method>
+
+    <method name="find epoch" is_const="1">
+        <argument name="epoch" type="unsigned" size="4"/>
+
+        <return class="ratchet group participant epoch" access="readwrite"/>
+    </method>
+
+    <method name="serialize" is_const="1">
+        <argument name="data pb" class="vscr_ParticipantData" library="nanopb" access="readwrite"/>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        <argument name="data pb" class="vscr_ParticipantData" library="nanopb"/>
+        <argument name="data" class="self" access="readwrite"/>
+    </method>
+
+</class>

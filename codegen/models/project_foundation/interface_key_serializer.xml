@@ -7,7 +7,7 @@
 
         Precondition: public key must be exportable.
 
-        <argument name="public key" interface="public key"/>
+        <argument name="public key" impl="raw public key"/>
 
         <return type="size"/>
     </method>
@@ -18,7 +18,7 @@
 
         Precondition: public key must be exportable.
 
-        <argument name="public key" interface="public key" access="readonly"/>
+        <argument name="public key" impl="raw public key"/>
 
         <argument name="out" class="buffer">
             <length method="serialized public key len">
@@ -35,7 +35,7 @@
 
         Precondition: private key must be exportable.
 
-        <argument name="private key" interface="private key"/>
+        <argument name="private key" impl="raw private key"/>
 
         <return type="size"/>
     </method>
@@ -46,7 +46,7 @@
 
         Precondition: private key must be exportable.
 
-        <argument name="private key" interface="private key" access="readonly"/>
+        <argument name="private key" impl="raw private key"/>
 
         <argument name="out" class="buffer">
             <length method="serialized private key len">

@@ -1,0 +1,13 @@
+<enum name="group msg type" definition="public">
+    Represents group message type
+
+    <constant name="group info" value="1">
+        Group info type with encryption key.
+        This type of message should be encrypted before transferring.
+    </constant>
+
+    <constant name="regular" value="2">
+        Regular group message with encrypted text.
+    </constant>
+
+</enum>

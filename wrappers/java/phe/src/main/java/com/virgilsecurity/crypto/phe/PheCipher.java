@@ -52,15 +52,6 @@ public class PheCipher implements AutoCloseable {
         this.cCtx = PheJNI.INSTANCE.pheCipher_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public PheCipher(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
     public int getSaltLen() {
         return 32;
     }
@@ -71,6 +62,16 @@ public class PheCipher implements AutoCloseable {
 
     public int getNonceLen() {
         return 12;
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static PheCipher getInstance(long cCtx) {
+        PheCipher newInstance = new PheCipher();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

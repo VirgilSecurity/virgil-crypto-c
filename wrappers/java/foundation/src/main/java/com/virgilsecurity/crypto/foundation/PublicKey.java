@@ -40,38 +40,5 @@ package com.virgilsecurity.crypto.foundation;
 * Contains public part of the key.
 */
 public interface PublicKey extends Key {
-
-    /*
-    * Define whether a public key can be exported or not.
-    */
-    boolean getCanExportPublicKey();
-
-    /*
-    * Defines whether a public key can be imported or not.
-    */
-    boolean getCanImportPublicKey();
-
-    /*
-    * Export public key in the binary format.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    byte[] exportPublicKey() throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported public key.
-    */
-    int exportedPublicKeyLen();
-
-    /*
-    * Import public key from the binary format.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be imported from the format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    void importPublicKey(byte[] data) throws FoundationException;
 }
 

@@ -40,7 +40,7 @@ import com.virgilsecurity.crypto.foundation.*;
 
 /*
 * Class for client-side PHE crypto operations.
-* This class is thread-safe in case if VSCE_MULTI_THREAD defined
+* This class is thread-safe in case if VSCE_MULTI_THREADING defined.
 */
 public class PheClient implements AutoCloseable {
 
@@ -56,9 +56,10 @@ public class PheClient implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public PheClient(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static PheClient getInstance(long cCtx) {
+        PheClient newInstance = new PheClient();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

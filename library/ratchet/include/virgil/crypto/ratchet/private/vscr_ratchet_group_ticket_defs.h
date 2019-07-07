@@ -54,6 +54,7 @@
 #define VSCR_RATCHET_GROUP_TICKET_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_atomic.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_key_utils.h"
@@ -93,7 +94,7 @@ struct vscr_ratchet_group_ticket_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCR_ATOMIC size_t refcnt;
     //
     //  Dependency to the interface 'random'.
     //
@@ -102,8 +103,6 @@ struct vscr_ratchet_group_ticket_t {
     vscr_ratchet_key_utils_t *key_utils;
 
     vscr_ratchet_group_message_t *msg;
-
-    bool epoch_change;
 };
 
 

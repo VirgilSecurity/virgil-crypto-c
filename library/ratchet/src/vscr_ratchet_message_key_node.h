@@ -48,6 +48,7 @@
 #define VSCR_RATCHET_MESSAGE_KEY_NODE_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_atomic.h"
 #include "vscr_ratchet_message_key.h"
 #include "vscr_ratchet_message_key_node.h"
 
@@ -78,7 +79,7 @@ struct vscr_ratchet_message_key_node_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCR_ATOMIC size_t refcnt;
 
     vscr_ratchet_message_key_t *value;
 
@@ -113,7 +114,7 @@ vscr_ratchet_message_key_node_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
 vscr_ratchet_message_key_node_delete(vscr_ratchet_message_key_node_t *self);

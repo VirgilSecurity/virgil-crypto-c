@@ -128,6 +128,12 @@ import VSCFoundation
     /// ASN.1 representation of a private key is corrupted.
     case errorBadDerPrivateKey = -224
 
+    /// Key algorithm does not accept given type of public key.
+    case errorMismatchPublicKeyAndAlgorithm = -225
+
+    /// Key algorithm does not accept given type of private key.
+    case errorMismatchPrivateKeyAndAlgorithm = -226
+
     /// Decryption failed, because message info was not given explicitly,
     /// and was not part of an encrypted message.
     case errorNoMessageInfo = -301
@@ -154,6 +160,63 @@ import VSCFoundation
 
     /// Signature format is corrupted.
     case errorBadSignature = -308
+
+    /// Brainkey password length is out of range.
+    case errorInvalidBrainkeyPasswordLen = -401
+
+    /// Brainkey number length should be 32 byte.
+    case errorInvalidBrainkeyFactorLen = -402
+
+    /// Brainkey point length should be 65 bytes.
+    case errorInvalidBrainkeyPointLen = -403
+
+    /// Brainkey name is out of range.
+    case errorInvalidBrainkeyKeyNameLen = -404
+
+    /// Brainkey internal error.
+    case errorBrainkeyInternal = -405
+
+    /// Brainkey point is invalid.
+    case errorBrainkeyInvalidPoint = -406
+
+    /// Brainkey number buffer length capacity should be >= 32 byte.
+    case errorInvalidBrainkeyFactorBufferLen = -407
+
+    /// Brainkey point buffer length capacity should be >= 32 byte.
+    case errorInvalidBrainkeyPointBufferLen = -408
+
+    /// Brainkey seed buffer length capacity should be >= 32 byte.
+    case errorInvalidBrainkeySeedBufferLen = -409
+
+    /// Brainkey identity secret is invalid.
+    case errorInvalidIdentitySecret = -410
+
+    /// Invalid padding.
+    case errorInvalidPadding = -501
+
+    /// Protobuf error.
+    case errorProtobuf = -601
+
+    /// Session id doesnt match.
+    case errorSessionIdDoesntMatch = -701
+
+    /// Epoch not found.
+    case errorEpochNotFound = -702
+
+    /// Wrong key type.
+    case errorWrongKeyType = -703
+
+    /// Invalid signature.
+    case errorInvalidSignature = -704
+
+    /// Ed25519 error.
+    case errorEd25519 = -705
+
+    /// Duplicate epoch.
+    case errorDuplicateEpoch = -706
+
+    /// Plain text too long.
+    case errorPlainTextTooLong = -707
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscf_status_t) {

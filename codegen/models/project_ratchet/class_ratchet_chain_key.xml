@@ -4,7 +4,7 @@
 
     <require module="ratchet typedefs" scope="context"/>
 
-    <require header="RatchetSession.pb.h" scope="public"/>
+    <require header="vscr_RatchetSession.pb.h" scope="public"/>
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 
@@ -16,11 +16,11 @@
     </method>
 
     <method name="serialize" is_const="1">
-        <argument name="chain key pb" class="ChainKey" library="nanopb" access="readwrite"/>
+        <argument name="chain key pb" class="vscr_ChainKey" library="nanopb" access="readwrite"/>
     </method>
 
     <method name="deserialize" is_static="1">
-        <argument name="chain key pb" class="ChainKey" library="nanopb"/>
+        <argument name="chain key pb" class="vscr_ChainKey" library="nanopb"/>
         <argument name="chain key" class="self" access="readwrite"/>
     </method>
 

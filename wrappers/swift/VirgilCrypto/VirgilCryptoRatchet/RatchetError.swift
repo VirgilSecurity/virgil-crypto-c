@@ -105,26 +105,26 @@ import VSCRatchet
     /// Cannot decrypt own messages.
     case errorCannotDecryptOwnMessages = -22
 
-    /// Duplicate id.
-    case errorDuplicateId = -23
-
     /// Invalid signature.
-    case errorInvalidSignature = -24
+    case errorInvalidSignature = -23
 
-    /// User is not present in group message.
-    case errorUserIsNotPresentInGroupMessage = -25
+    /// Cannot remove myself.
+    case errorCannotRemoveMyself = -24
 
     /// Epoch mismatch.
-    case errorEpochMismatch = -26
-
-    /// Participant not found.
-    case errorParticipantNotFound = -27
+    case errorEpochMismatch = -25
 
     /// Epoch not found.
-    case errorEpochNotFound = -28
+    case errorEpochNotFound = -26
 
     /// Session id mismatch.
-    case errorSessionIdMismatch = -29
+    case errorSessionIdMismatch = -27
+
+    /// Simultaneous group user operation.
+    case errorSimultaneousGroupUserOperation = -28
+
+    /// Myself is included in info.
+    case errorMyselfIsIncludedInInfo = -29
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscr_status_t) {

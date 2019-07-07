@@ -37,13 +37,13 @@ import Foundation
 import VSCFoundation
 
 /// Provide interface to compute shared key for 2 asymmetric keys.
-/// Assume that this interface is implemented on the private key.
-@objc(VSCFComputeSharedKey) public protocol ComputeSharedKey : CContext {
+@objc(VSCFComputeSharedKey) public protocol ComputeSharedKey : KeyAlg {
 
     /// Compute shared key for 2 asymmetric keys.
-    /// Note, shared key can be used only for symmetric cryptography.
-    @objc func computeSharedKey(publicKey: PublicKey) throws -> Data
+    /// Note, computed shared key can be used only within symmetric cryptography.
+    @objc func computeSharedKey(publicKey: PublicKey, privateKey: PrivateKey) throws -> Data
 
     /// Return number of bytes required to hold shared key.
-    @objc func sharedKeyLen() -> Int
+    /// Expect Public Key or Private Key.
+    @objc func sharedKeyLen(key: Key) -> Int
 }

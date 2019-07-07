@@ -8,11 +8,13 @@
     <require interface="private key"/>
     <require interface="encrypt"/>
     <require interface="decrypt"/>
+    <require interface="key cipher"/>
     <require class="message info der serializer"/>
     <require class="key recipient list"/>
     <require class="aes256 gcm"/>
     <require class="ctr drbg"/>
     <require class="alg factory"/>
+    <require class="key alg factory"/>
 
     <dependency name="random" interface="random"/>
     <dependency name="encryption cipher" interface="cipher"/>

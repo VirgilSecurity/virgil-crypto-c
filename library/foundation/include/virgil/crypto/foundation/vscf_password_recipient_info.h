@@ -125,7 +125,7 @@ vscf_password_recipient_info_new_with_members(vscf_impl_t **key_encryption_algor
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
 vscf_password_recipient_info_delete(vscf_password_recipient_info_t *self);

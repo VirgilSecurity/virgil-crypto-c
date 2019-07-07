@@ -39,7 +39,7 @@ package com.virgilsecurity.crypto.foundation;
 /*
 * Implementation of the RNG using deterministic random bit generators
 * based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
-* This class is thread-safe if the build option VSCF_MULTI_THREAD was enabled.
+* This class is thread-safe if the build option VSCF_MULTI_THREADING was enabled.
 */
 public class CtrDrbg implements AutoCloseable, Random {
 
@@ -49,15 +49,6 @@ public class CtrDrbg implements AutoCloseable, Random {
     public CtrDrbg() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.ctrDrbg_new();
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public CtrDrbg(long cCtx) {
-        super();
-        this.cCtx = cCtx;
     }
 
     /*
@@ -110,6 +101,16 @@ public class CtrDrbg implements AutoCloseable, Random {
         FoundationJNI.INSTANCE.ctrDrbg_setEntropyLen(this.cCtx, len);
     }
 
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static CtrDrbg getInstance(long cCtx) {
+        CtrDrbg newInstance = new CtrDrbg();
+        newInstance.cCtx = cCtx;
+        return newInstance;
+    }
+
     /* Close resource. */
     public void close() {
         FoundationJNI.INSTANCE.ctrDrbg_close(this.cCtx);
@@ -117,13 +118,14 @@ public class CtrDrbg implements AutoCloseable, Random {
 
     /*
     * Generate random bytes.
+    * All RNG implementations must be thread-safe.
     */
     public byte[] random(int dataLen) throws FoundationException {
         return FoundationJNI.INSTANCE.ctrDrbg_random(this.cCtx, dataLen);
     }
 
     /*
-    * Retreive new seed data from the entropy sources.
+    * Retrieve new seed data from the entropy sources.
     */
     public void reseed() throws FoundationException {
         FoundationJNI.INSTANCE.ctrDrbg_reseed(this.cCtx);

@@ -53,9 +53,10 @@ public class Sha512 implements AutoCloseable, Alg, Hash {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Sha512(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static Sha512 getInstance(long cCtx) {
+        Sha512 newInstance = new Sha512();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

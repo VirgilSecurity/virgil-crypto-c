@@ -36,12 +36,22 @@
 import Foundation
 import VSCFoundation
 
-/// Common information about asymmetric key.
-@objc(VSCFKey) public protocol Key : Alg {
+/// Basic key type.
+@objc(VSCFKey) public protocol Key : CContext {
+
+    /// Algorithm identifier the key belongs to.
+    @objc func algId() -> AlgId
+
+    /// Return algorithm information that can be used for serialization.
+    @objc func algInfo() -> AlgInfo
 
     /// Length of the key in bytes.
-    @objc func keyLen() -> Int
+    @objc func len() -> Int
 
     /// Length of the key in bits.
-    @objc func keyBitlen() -> Int
+    @objc func bitlen() -> Int
+
+    /// Check that key is valid.
+    /// Note, this operation can be slow.
+    @objc func isValid() -> Bool
 }

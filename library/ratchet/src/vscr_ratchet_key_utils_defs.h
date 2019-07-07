@@ -54,6 +54,7 @@
 #define VSCR_RATCHET_KEY_UTILS_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_atomic.h"
 #include "vscr_ratchet_common_hidden.h"
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -90,7 +91,7 @@ struct vscr_ratchet_key_utils_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCR_ATOMIC size_t refcnt;
 
     vscf_key_asn1_deserializer_t *key_asn1_deserializer;
 };

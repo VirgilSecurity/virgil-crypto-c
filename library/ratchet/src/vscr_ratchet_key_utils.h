@@ -56,6 +56,7 @@
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_error.h"
+#include "vscr_ratchet_chain_key.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -113,7 +114,7 @@ vscr_ratchet_key_utils_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
 vscr_ratchet_key_utils_delete(vscr_ratchet_key_utils_t *self);
@@ -138,6 +139,10 @@ vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self
 VSCR_PUBLIC vsc_buffer_t *
 vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519,
         bool curve25519, bool convert_to_curve25519, vscr_error_t *error);
+
+VSCR_PUBLIC vscr_ratchet_chain_key_t *
+vscr_ratchet_key_utils_derive_participant_key(const vscr_ratchet_symmetric_key_t root_key,
+        const vscr_ratchet_participant_id_t participant_id);
 
 
 // --------------------------------------------------------------------------

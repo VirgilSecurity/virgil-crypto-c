@@ -72,6 +72,11 @@ if(CMAKE_CROSSCOMPILING AND APPLE)
 endif()
 
 #
+# Library with protobuf models
+#
+add_subdirectory(protobuf)
+
+#
 # Define sources
 #
 add_library(foundation "")
@@ -81,13 +86,15 @@ include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 #
 # Link to dependencies
 #
-target_link_libraries(foundation PUBLIC vsc::common mbed::crypto ed25519)
+target_link_libraries(foundation PUBLIC vsc::foundation_pb vsc::common mbed::crypto ed25519)
 
 #
 # Define specific compilation and linkage flags.
 #
+target_compile_features(foundation
+        PUBLIC $<IF:$<AND:$<BOOL:${VSCF_HAVE_STDATOMIC_H}>,$<BOOL:${VSCF_MULTI_THREADING}>>,c_std_11,c_std_99>)
+
 set_target_properties(foundation PROPERTIES
-        C_STANDARD "99"
         DEBUG_POSTFIX "_d"
         OUTPUT_NAME vsc_foundation
         )
@@ -168,6 +175,7 @@ if(VIRGIL_INSTALL_LIBS)
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             FRAMEWORK DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
             )
 endif()
 
