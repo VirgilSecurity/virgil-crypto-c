@@ -1,6 +1,13 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.8.1 released 2019-07-08
+
+### Changes
+
+- Lib/Foundation: Fixed group session API
+
+
 ## Version 0.8.0 released 2019-07-04
 
 ### Features
