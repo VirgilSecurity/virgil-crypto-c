@@ -3865,24 +3865,31 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_g
     }
 }
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1encrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jplainText, jbyteArray jprivateKey, jbyteArray jsenderId) {
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1encrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jplainText, jobject jprivateKey, jbyteArray jsenderId) {
     // Wrap errors
     struct vscf_error_t /*4*/ error;
     vscf_error_reset(&error);
     // Cast class context
     vscf_group_session_t /*2*/* group_session_ctx = (vscf_group_session_t /*2*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass private_key_cls = (*jenv)->GetObjectClass(jenv, jprivateKey);
+    if (NULL == private_key_cls) {
+        VSCF_ASSERT("Class PrivateKey not found.");
+    }
+    jfieldID private_key_fidCtx = (*jenv)->GetFieldID(jenv, private_key_cls, "cCtx", "J");
+    if (NULL == private_key_fidCtx) {
+        VSCF_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ private_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
 
     // Wrap input data
     byte* plain_text_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jplainText, NULL);
     vsc_data_t plain_text = vsc_data(plain_text_arr, (*jenv)->GetArrayLength(jenv, jplainText));
 
-    byte* private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jprivateKey, NULL);
-    vsc_data_t private_key = vsc_data(private_key_arr, (*jenv)->GetArrayLength(jenv, jprivateKey));
-
     byte* sender_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jsenderId, NULL);
     vsc_data_t sender_id = vsc_data(sender_id_arr, (*jenv)->GetArrayLength(jenv, jsenderId));
 
-    const vscf_group_session_message_t */*5*/ proxyResult = vscf_group_session_encrypt(group_session_ctx /*a1*/, plain_text /*a3*/, private_key /*a3*/, sender_id /*a3*/, &error /*a4*/);
+    const vscf_group_session_message_t */*5*/ proxyResult = vscf_group_session_encrypt(group_session_ctx /*a1*/, plain_text /*a3*/, private_key /*a6*/, sender_id /*a3*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -3900,8 +3907,6 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jplainText, (jbyte*) plain_text_arr, 0);
-
-    (*jenv)->ReleaseByteArrayElements(jenv, jprivateKey, (jbyte*) private_key_arr, 0);
 
     (*jenv)->ReleaseByteArrayElements(jenv, jsenderId, (jbyte*) sender_id_arr, 0);
 
@@ -3926,9 +3931,19 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_g
     return ret;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1decrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessage, jbyteArray jpublicKey, jbyteArray jsenderId) {
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1decrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessage, jobject jpublicKey, jbyteArray jsenderId) {
     // Cast class context
     vscf_group_session_t /*2*/* group_session_ctx = (vscf_group_session_t /*2*/*) c_ctx;
+    // Wrap Java interfaces
+    jclass public_key_cls = (*jenv)->GetObjectClass(jenv, jpublicKey);
+    if (NULL == public_key_cls) {
+        VSCF_ASSERT("Class PublicKey not found.");
+    }
+    jfieldID public_key_fidCtx = (*jenv)->GetFieldID(jenv, public_key_cls, "cCtx", "J");
+    if (NULL == public_key_fidCtx) {
+        VSCF_ASSERT("Class 'PublicKey' has no field 'cCtx'.");
+    }
+    vscf_impl_t */*6*/ public_key = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
     // Wrap Java classes
     jclass message_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/GroupSessionMessage");
     if (NULL == message_cls) {
@@ -3941,15 +3956,12 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     vscf_group_session_message_t */*5*/ message = (vscf_group_session_message_t */*5*/) (*jenv)->GetLongField(jenv, jmessage, message_fidCtx);
 
     // Wrap input data
-    byte* public_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpublicKey, NULL);
-    vsc_data_t public_key = vsc_data(public_key_arr, (*jenv)->GetArrayLength(jenv, jpublicKey));
-
     byte* sender_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jsenderId, NULL);
     vsc_data_t sender_id = vsc_data(sender_id_arr, (*jenv)->GetArrayLength(jenv, jsenderId));
 
     vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(vscf_group_session_decrypt_len((vscf_group_session_t /*2*/ *) c_ctx /*3*/, message/*a*/));
 
-    vscf_status_t status = vscf_group_session_decrypt(group_session_ctx /*a1*/, message /*a6*/, public_key /*a3*/, sender_id /*a3*/, plain_text /*a3*/);
+    vscf_status_t status = vscf_group_session_decrypt(group_session_ctx /*a1*/, message /*a6*/, public_key /*a6*/, sender_id /*a3*/, plain_text /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
         return NULL;
@@ -3957,8 +3969,6 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(plain_text));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(plain_text), (jbyte*) vsc_buffer_bytes(plain_text));
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jpublicKey, (jbyte*) public_key_arr, 0);
-
     (*jenv)->ReleaseByteArrayElements(jenv, jsenderId, (jbyte*) sender_id_arr, 0);
 
     vsc_buffer_delete(plain_text);

@@ -56,16 +56,17 @@
 #include "vscf_random.h"
 #include "vscf_group_session_defs.h"
 #include "vscf_ctr_drbg.h"
+#include "vscf_ed25519.h"
+#include "vscf_private_key.h"
+#include "vscf_public_key.h"
 #include "vscf_group_session_message_defs.h"
 #include "vscf_group_session_message_internal.h"
 #include "vscf_group_session_ticket_internal.h"
-#include "vscf_key_asn1_deserializer.h"
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <vscf_GroupMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
-#include <ed25519/ed25519.h>
 
 // clang-format on
 //  @end
@@ -483,14 +484,21 @@ err:
 //  Encrypts data
 //
 VSCF_PUBLIC vscf_group_session_message_t *
-vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vsc_data_t private_key,
+vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, const vscf_impl_t *private_key,
         vsc_data_t sender_id, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->last_epoch);
     VSCF_ASSERT(vsc_data_is_valid(sender_id));
-    VSCF_ASSERT(vsc_data_is_valid(private_key));
+    VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vsc_data_is_valid(plain_text));
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+
+    // TODO: Support other key types?
+    if (vscf_key_alg_id(private_key) != vscf_alg_id_ED25519) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_WRONG_KEY_TYPE);
+        return NULL;
+    }
 
     if (plain_text.len > vscf_group_session_MAX_PLAIN_TEXT_LEN) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_PLAIN_TEXT_TOO_LONG);
@@ -498,25 +506,6 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
     }
 
     vscf_status_t status;
-
-    vscf_key_asn1_deserializer_t *deserializer = vscf_key_asn1_deserializer_new();
-    vscf_key_asn1_deserializer_setup_defaults(deserializer);
-
-    vscf_error_t asn1_error;
-    vscf_error_reset(&asn1_error);
-
-    vscf_raw_private_key_t *raw_key =
-            vscf_key_asn1_deserializer_deserialize_private_key(deserializer, private_key, &asn1_error);
-
-    if (asn1_error.status != vscf_status_SUCCESS) {
-        status = asn1_error.status;
-        goto err;
-    }
-
-    if (vscf_raw_private_key_alg_id(raw_key) != vscf_alg_id_ED25519) {
-        status = vscf_status_ERROR_WRONG_KEY_TYPE;
-        goto err;
-    }
 
     vsc_buffer_t *salt = vsc_buffer_new_with_capacity(vscf_group_session_SALT_SIZE);
 
@@ -562,23 +551,30 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vs
         goto err1;
     }
 
-    int ed_status = ed25519_sign(msg->message_pb.regular_message.signature, vscf_raw_private_key_data(raw_key).bytes,
-            vsc_buffer_bytes(&cipher_text), vsc_buffer_len(&cipher_text));
+    vscf_ed25519_t *ed25519 = vscf_ed25519_new();
 
-    if (ed_status != 0) {
-        status = vscf_status_ERROR_ED25519;
+    size_t signature_len = vscf_ed25519_signature_len(ed25519, private_key);
+
+    VSCF_ASSERT(sizeof(msg->message_pb.regular_message.signature) == signature_len);
+
+    vsc_buffer_t signature;
+    vsc_buffer_init(&signature);
+    vsc_buffer_use(&signature, msg->message_pb.regular_message.signature, signature_len);
+
+    status = vscf_ed25519_sign_hash(
+            ed25519, private_key, vscf_alg_id_SHA512 /* FIXME */, vsc_buffer_data(&cipher_text), &signature);
+
+    if (status != vscf_status_SUCCESS) {
         goto err2;
     }
 
 err2:
+    vsc_buffer_delete(&signature);
+    vscf_ed25519_destroy(&ed25519);
     vsc_buffer_delete(&cipher_text);
 
 err1:
     vsc_buffer_destroy(&salt);
-
-err:
-    vscf_raw_private_key_destroy(&raw_key);
-    vscf_key_asn1_deserializer_destroy(&deserializer);
 
     if (status != vscf_status_SUCCESS) {
         VSCF_ERROR_SAFE_UPDATE(error, status);
@@ -608,16 +604,22 @@ vscf_group_session_decrypt_len(vscf_group_session_t *self, const vscf_group_sess
 //
 VSCF_PUBLIC vscf_status_t
 vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_message_t *message,
-        vsc_data_t public_key, vsc_data_t sender_id, vsc_buffer_t *plain_text) {
+        const vscf_impl_t *public_key, vsc_data_t sender_id, vsc_buffer_t *plain_text) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(vsc_data_is_valid(public_key));
+    VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vsc_data_is_valid(sender_id));
     VSCF_ASSERT_PTR(message);
     VSCF_ASSERT(message->message_pb.has_regular_message);
     VSCF_ASSERT_PTR(message->header_pb);
     VSCF_ASSERT_PTR(plain_text);
     VSCF_ASSERT_PTR(self->last_epoch);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+
+    // TODO: Support other key types?
+    if (vscf_key_alg_id(public_key) != vscf_alg_id_ED25519) {
+        return vscf_status_ERROR_WRONG_KEY_TYPE;
+    }
 
     if (memcmp(self->session_id, message->header_pb->session_id, sizeof(self->session_id)) != 0) {
         return vscf_status_ERROR_SESSION_ID_DOESNT_MATCH;
@@ -636,31 +638,20 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
 
     vscf_status_t status = vscf_status_SUCCESS;
 
-    vscf_key_asn1_deserializer_t *deserializer = vscf_key_asn1_deserializer_new();
-    vscf_key_asn1_deserializer_setup_defaults(deserializer);
+    vscf_ed25519_t *ed25519 = vscf_ed25519_new();
 
-    vscf_error_t error;
-    vscf_error_reset(&error);
+    size_t signature_len = vscf_ed25519_signature_len(ed25519, public_key);
 
-    vscf_raw_public_key_t *raw_key =
-            vscf_key_asn1_deserializer_deserialize_public_key(deserializer, public_key, &error);
+    VSCF_ASSERT(sizeof(message->message_pb.regular_message.signature) == signature_len);
 
-    if (error.status != vscf_status_SUCCESS) {
-        status = error.status;
-        goto err;
-    }
-
-    if (vscf_raw_public_key_alg_id(raw_key) != vscf_alg_id_ED25519) {
-        status = vscf_status_ERROR_WRONG_KEY_TYPE;
-        goto err;
-    }
-
-    int ed_status = ed25519_verify(message->message_pb.regular_message.signature,
-            vscf_raw_public_key_data(raw_key).bytes, message->message_pb.regular_message.cipher_text->bytes,
+    vsc_data_t signature = vsc_data(message->message_pb.regular_message.signature, signature_len);
+    vsc_data_t digest = vsc_data(message->message_pb.regular_message.cipher_text->bytes,
             message->message_pb.regular_message.cipher_text->size);
 
-    if (ed_status != 0) {
-        status = ed_status == 1 ? vscf_status_ERROR_INVALID_SIGNATURE : vscf_status_ERROR_ED25519;
+    bool verified = vscf_ed25519_verify_hash(ed25519, public_key, vscf_alg_id_SHA512 /* FIXME */, digest, signature);
+
+    if (!verified) {
+        status = vscf_status_ERROR_INVALID_SIGNATURE;
         goto err;
     }
 
@@ -672,8 +663,7 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
             plain_text);
 
 err:
-    vscf_raw_public_key_destroy(&raw_key);
-    vscf_key_asn1_deserializer_destroy(&deserializer);
+    vscf_ed25519_destroy(&ed25519);
 
     return status;
 }

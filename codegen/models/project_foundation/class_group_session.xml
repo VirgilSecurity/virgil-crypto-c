@@ -23,6 +23,9 @@
     <require module="group session typedefs" scope="context"/>
 
     <require impl="ctr drbg" scope="private"/>
+    <require impl="ed25519" scope="private"/>
+    <require interface="private key" scope="private"/>
+    <require interface="public key" scope="private"/>
 
     <require header="vscf_GroupMessage.pb.h" scope="private"/>
     <require header="pb_decode.h" scope="private"/>
@@ -31,9 +34,6 @@
     <require module="group session message defs" scope="private"/>
     <require module="group session message internal" scope="private"/>
     <require module="group session ticket internal" scope="private"/>
-
-    <require impl="key asn1 deserializer" scope="private"/>
-    <require header="ed25519/ed25519.h" scope="private"/>
 
     <dependency name="rng" interface="random" has_observers="1">
         Random
@@ -91,8 +91,8 @@
             Data to encrypt. Should be less than maximum allowed value.
         </argument>
 
-        <argument name="private key" class="data">
-            Ed25519 PKCS8 identity private key used for signatures.
+        <argument name="private key" interface="private key">
+            Identity private key used for signatures.
         </argument>
 
         <argument name="sender id" class="data">
@@ -128,8 +128,8 @@
             Message to decrypt. Use deserialize to obtain message from data
         </argument>
 
-        <argument name="public key" class="data">
-            Ed25519 PKCS8 identity public key of sender used to verify signature
+        <argument name="public key" interface="public key">
+            Identity public key of sender used to verify signature
         </argument>
 
         <argument name="sender id" class="data">
