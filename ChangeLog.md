@@ -1,6 +1,22 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.8.0 released 2019-07-04
+
+### Features
+
+- Lib/Foundation: Added group session encryption based on symmetric key sharing
+- Lib/Ratchet: Small improvements
+
+### Changes
+
+- Lib/Foundation: Split asymmetric keys and their algorithms to different entities
+
+### Bugfix
+
+- Lib/Foundation: Fix crashes in a multi-thread environment
+
+
 ## Version 0.7.1 released 2019-06-03
 
 ### Bugfix
