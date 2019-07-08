@@ -116,7 +116,7 @@ extern "C" {
 
 #define VSCP_VERSION_MINOR 8
 
-#define VSCP_VERSION_PATCH 0
+#define VSCP_VERSION_PATCH 1
 
 #define VSCP_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
 

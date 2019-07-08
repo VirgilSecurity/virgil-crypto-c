@@ -49,7 +49,7 @@
 #include "vscf_group_session_typedefs.h"
 
 void
-generate_PKCS8_ed_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub) {
+generate_ed_keypair(vscf_ctr_drbg_t *rng, vscf_impl_t **priv, vscf_impl_t **pub) {
     vscf_pkcs8_serializer_t *pkcs8 = vscf_pkcs8_serializer_new();
     vscf_pkcs8_serializer_setup_defaults(pkcs8);
 
@@ -59,33 +59,12 @@ generate_PKCS8_ed_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    vscf_impl_t *private_key = vscf_ed25519_generate_key(ed25519, &error);
+    *priv = vscf_ed25519_generate_key(ed25519, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
-    vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
-
-    vscf_raw_private_key_t *raw_private_key = vscf_ed25519_export_private_key(ed25519, private_key, &error);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
-
-    vscf_raw_public_key_t *raw_public_key = vscf_ed25519_export_public_key(ed25519, public_key, &error);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
-
-    size_t len_private = vscf_pkcs8_serializer_serialized_private_key_len(pkcs8, raw_private_key);
-    *priv = vsc_buffer_new_with_capacity(len_private);
-
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_private_key(pkcs8, raw_private_key, *priv));
-
-
-    size_t len_public = vscf_pkcs8_serializer_serialized_public_key_len(pkcs8, raw_public_key);
-    *pub = vsc_buffer_new_with_capacity(len_public);
-
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_public_key(pkcs8, raw_public_key, *pub));
+    *pub = vscf_private_key_extract_public_key(*priv);
 
     vscf_pkcs8_serializer_destroy(&pkcs8);
 
-    vscf_impl_destroy(&private_key);
-    vscf_impl_destroy(&public_key);
-    vscf_raw_private_key_destroy(&raw_private_key);
-    vscf_raw_public_key_destroy(&raw_public_key);
     vscf_ed25519_destroy((&ed25519));
 }
 
@@ -135,7 +114,7 @@ generate_random_participant_id(vscf_ctr_drbg_t *rng, vsc_buffer_t **id) {
 }
 
 void
-encrypt_decrypt(vscf_ctr_drbg_t *rng, vscf_group_session_t **sessions, vsc_buffer_t **priv, vsc_buffer_t **pub,
+encrypt_decrypt(vscf_ctr_drbg_t *rng, vscf_group_session_t **sessions, vscf_impl_t **priv, vscf_impl_t **pub,
         vsc_buffer_t **ids, size_t group_size, size_t iterations, bool not_sync) {
     for (size_t i = 0; i < iterations; i++) {
         size_t sender = generate_number(rng, 0, group_size - 1);
@@ -146,8 +125,8 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, vscf_group_session_t **sessions, vsc_buffe
         vscf_error_t error;
         vscf_error_reset(&error);
 
-        vscf_group_session_message_t *msg = vscf_group_session_encrypt(sessions[sender], vsc_buffer_data(plain_text),
-                vsc_buffer_data(priv[sender]), vsc_buffer_data(ids[sender]), &error);
+        vscf_group_session_message_t *msg = vscf_group_session_encrypt(
+                sessions[sender], vsc_buffer_data(plain_text), priv[sender], vsc_buffer_data(ids[sender]), &error);
 
         TEST_ASSERT(msg != NULL);
         TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error.status);
@@ -156,8 +135,8 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, vscf_group_session_t **sessions, vsc_buffe
             size_t len = vscf_group_session_decrypt_len(sessions[j], msg);
             vsc_buffer_t *decrypted = vsc_buffer_new_with_capacity(len);
 
-            vscf_status_t status = vscf_group_session_decrypt(
-                    sessions[j], msg, vsc_buffer_data(pub[sender]), vsc_buffer_data(ids[sender]), decrypted);
+            vscf_status_t status =
+                    vscf_group_session_decrypt(sessions[j], msg, pub[sender], vsc_buffer_data(ids[sender]), decrypted);
 
             if (not_sync && sender < group_size / 2 && j >= group_size / 2) {
                 TEST_ASSERT_EQUAL(vscf_status_ERROR_EPOCH_NOT_FOUND, status);
@@ -175,8 +154,8 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, vscf_group_session_t **sessions, vsc_buffe
 }
 
 void
-initialize_random_group_session(vscf_ctr_drbg_t *rng, vscf_group_session_t ***sessions, vsc_buffer_t ***priv,
-        vsc_buffer_t ***pub, vsc_buffer_t ***ids, size_t group_size) {
+initialize_random_group_session(vscf_ctr_drbg_t *rng, vscf_group_session_t ***sessions, vscf_impl_t ***priv,
+        vscf_impl_t ***pub, vsc_buffer_t ***ids, size_t group_size) {
     *sessions = vscf_alloc(group_size * sizeof(vscf_group_session_t *));
     *priv = vscf_alloc(group_size * sizeof(vsc_buffer_t *));
     *pub = vscf_alloc(group_size * sizeof(vsc_buffer_t *));
@@ -203,7 +182,7 @@ initialize_random_group_session(vscf_ctr_drbg_t *rng, vscf_group_session_t ***se
 
         (*sessions)[i] = session;
 
-        generate_PKCS8_ed_keypair(rng, &(*priv)[i], &(*pub)[i]);
+        generate_ed_keypair(rng, &(*priv)[i], &(*pub)[i]);
         generate_random_participant_id(rng, &(*ids)[i]);
     }
 
@@ -217,8 +196,8 @@ test__encrypt_decrypt__random_group__should_match(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
     vscf_group_session_t **sessions;
-    vsc_buffer_t **priv;
-    vsc_buffer_t **pub;
+    vscf_impl_t **priv;
+    vscf_impl_t **pub;
     vsc_buffer_t **ids;
 
     size_t group_size = 10;
@@ -229,8 +208,8 @@ test__encrypt_decrypt__random_group__should_match(void) {
 
     for (size_t i = 0; i < group_size; i++) {
         vscf_group_session_destroy(&sessions[i]);
-        vsc_buffer_destroy(&priv[i]);
-        vsc_buffer_destroy(&pub[i]);
+        vscf_impl_destroy(&priv[i]);
+        vscf_impl_destroy(&pub[i]);
         vsc_buffer_destroy(&ids[i]);
     }
 
@@ -266,8 +245,8 @@ test__encrypt_decrypt__new_epoch_not_synced__should_decrypt(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
     vscf_group_session_t **sessions;
-    vsc_buffer_t **priv;
-    vsc_buffer_t **pub;
+    vscf_impl_t **priv;
+    vscf_impl_t **pub;
     vsc_buffer_t **ids;
 
     size_t group_size = 10;
@@ -282,8 +261,8 @@ test__encrypt_decrypt__new_epoch_not_synced__should_decrypt(void) {
 
     for (size_t i = 0; i < group_size; i++) {
         vscf_group_session_destroy(&sessions[i]);
-        vsc_buffer_destroy(&priv[i]);
-        vsc_buffer_destroy(&pub[i]);
+        vscf_impl_destroy(&priv[i]);
+        vscf_impl_destroy(&pub[i]);
         vsc_buffer_destroy(&ids[i]);
     }
 
@@ -301,8 +280,8 @@ test__encrypt_decrypt__new_epochs__should_decrypt(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
     vscf_group_session_t **sessions;
-    vsc_buffer_t **priv;
-    vsc_buffer_t **pub;
+    vscf_impl_t **priv;
+    vscf_impl_t **pub;
     vsc_buffer_t **ids;
 
     size_t group_size = 10;
@@ -319,8 +298,8 @@ test__encrypt_decrypt__new_epochs__should_decrypt(void) {
 
     for (size_t i = 0; i < group_size; i++) {
         vscf_group_session_destroy(&sessions[i]);
-        vsc_buffer_destroy(&priv[i]);
-        vsc_buffer_destroy(&pub[i]);
+        vscf_impl_destroy(&priv[i]);
+        vscf_impl_destroy(&pub[i]);
         vsc_buffer_destroy(&ids[i]);
     }
 

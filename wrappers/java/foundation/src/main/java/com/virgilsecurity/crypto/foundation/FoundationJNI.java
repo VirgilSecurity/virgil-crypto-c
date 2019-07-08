@@ -788,7 +788,7 @@ public class FoundationJNI {
     /*
     * Encrypts data
     */
-    public native GroupSessionMessage groupSession_encrypt(long cCtx, byte[] plainText, byte[] privateKey, byte[] senderId) throws FoundationException;
+    public native GroupSessionMessage groupSession_encrypt(long cCtx, byte[] plainText, PrivateKey privateKey, byte[] senderId) throws FoundationException;
 
     /*
     * Calculates size of buffer sufficient to store decrypted message
@@ -798,7 +798,7 @@ public class FoundationJNI {
     /*
     * Decrypts message
     */
-    public native byte[] groupSession_decrypt(long cCtx, GroupSessionMessage message, byte[] publicKey, byte[] senderId) throws FoundationException;
+    public native byte[] groupSession_decrypt(long cCtx, GroupSessionMessage message, PublicKey publicKey, byte[] senderId) throws FoundationException;
 
     /*
     * Creates ticket with new key for removing participants or proactive to rotate encryption key.

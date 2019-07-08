@@ -132,7 +132,7 @@ public class GroupSession implements AutoCloseable {
     /*
     * Encrypts data
     */
-    public GroupSessionMessage encrypt(byte[] plainText, byte[] privateKey, byte[] senderId) throws FoundationException {
+    public GroupSessionMessage encrypt(byte[] plainText, PrivateKey privateKey, byte[] senderId) throws FoundationException {
         return FoundationJNI.INSTANCE.groupSession_encrypt(this.cCtx, plainText, privateKey, senderId);
     }
 
@@ -146,7 +146,7 @@ public class GroupSession implements AutoCloseable {
     /*
     * Decrypts message
     */
-    public byte[] decrypt(GroupSessionMessage message, byte[] publicKey, byte[] senderId) throws FoundationException {
+    public byte[] decrypt(GroupSessionMessage message, PublicKey publicKey, byte[] senderId) throws FoundationException {
         return FoundationJNI.INSTANCE.groupSession_decrypt(this.cCtx, message, publicKey, senderId);
     }
 
