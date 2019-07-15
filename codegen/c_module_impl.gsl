@@ -258,24 +258,68 @@ function _L24_add_method_shallow_copy (meta, destination)
     check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
 
     new method to my.destination
+        .name = my.names.method_shallow_copy
+        .is_const = "0"
+
         . = "
         Copy implementation object by increasing reference counter.
         "
 
-        .name = my.names.method_shallow_copy
+        component_create_argument_impl (method, my.meta)
+        component_create_return_impl (method, my.meta)
+
+        new code
+            my.counter = ".(_argument_impl)->$(my.names.c_property_ref_counter:)"
+
+            . = "\
+            .(c_class_assert_macros_ptr) (.(_argument_impl));
+
+            #if defined(.(c_class_atomic_macros_compare_exchange_weak))
+            //  CAS loop
+            size_t old_counter;
+            size_t new_counter;
+            do {
+                old_counter = $(my.counter:);
+                new_counter = old_counter + 1;
+            } while (!.(c_class_atomic_macros_compare_exchange_weak)(&$(my.counter:), &old_counter, new_counter));
+            #else
+            ++$(my.counter:);
+            #endif
+
+            return .(_argument_impl);
+            "
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add function that 'copy' implementation object by increasing ref counter
+#   with const semantic.
+# ---------------------------------------------------------------------------
+function _L24_add_method_shallow_copy_const (meta, destination)
+    check_arguments (my, "meta, destination", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        .name = my.names.method_shallow_copy_const
+        .is_const = "1"
+
+        . = "
+        Copy implementation object by increasing reference counter.
+        Reference counter is internally synchronized, so constness is presumed.
+        "
 
         component_create_argument_impl (method, my.meta)
         component_create_return_impl (method, my.meta)
 
         new code
             . = "\
-            .(c_class_assert_macros_ptr) (.(_argument_impl));
-
-            ++.(_argument_impl)->$(my.names.c_property_ref_counter:);
-
-            return .(_argument_impl);
+                return .(c_class_impl_method_shallow_copy)((.(c_class_impl_struct_impl) *).(_argument_impl));
             "
         endnew
     endnew
@@ -322,6 +366,11 @@ function c_module_impl_create (meta, destination)
             .scope = "private"
         endnew
 
+        new require
+            .module = my.names.module_atomic
+            .scope = "private"
+        endnew
+
         _L24_add_type_self (my.meta, module)
         _L24_add_enum_tag (my.meta, module)
         _L24_add_method_get_api (my.meta, module)
@@ -330,6 +379,7 @@ function c_module_impl_create (meta, destination)
         _L24_add_method_delete (my.meta, module)
         _L24_add_method_destroy (my.meta, module)
         _L24_add_method_shallow_copy (my.meta, module)
+        _L24_add_method_shallow_copy_const (my.meta, module)
     endnew
 endfunction
 

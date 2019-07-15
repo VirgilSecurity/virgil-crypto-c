@@ -54,9 +54,10 @@
 #define VSCR_RATCHET_GROUP_MESSAGE_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_atomic.h"
 #include "vscr_ratchet_key_id.h"
 
-#include <RatchetGroupMessage.pb.h>
+#include <vscr_RatchetGroupMessage.pb.h>
 
 // clang-format on
 //  @end
@@ -84,13 +85,13 @@ struct vscr_ratchet_group_message_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCR_ATOMIC size_t refcnt;
 
     vscr_ratchet_key_id_t *key_id;
 
-    GroupMessage message_pb;
+    vscr_GroupMessage message_pb;
 
-    RegularGroupMessageHeader *header_pb;
+    vscr_RegularGroupMessageHeader *header_pb;
 };
 
 

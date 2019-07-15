@@ -55,6 +55,7 @@
 #include "vscf_api_private.h"
 #include "vscf_impl_private.h"
 #include "vscf_assert.h"
+#include "vscf_atomic.h"
 
 // clang-format on
 //  @end
@@ -144,9 +145,29 @@ vscf_impl_shallow_copy(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = impl->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&impl->refcnt, &old_counter, new_counter));
+    #else
     ++impl->refcnt;
+    #endif
 
     return impl;
+}
+
+//
+//  Copy implementation object by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_impl_shallow_copy_const(const vscf_impl_t *impl) {
+
+    return vscf_impl_shallow_copy((vscf_impl_t *)impl);
 }
 
 

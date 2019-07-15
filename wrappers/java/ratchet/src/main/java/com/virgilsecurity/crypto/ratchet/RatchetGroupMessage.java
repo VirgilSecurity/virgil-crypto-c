@@ -55,9 +55,10 @@ public class RatchetGroupMessage implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public RatchetGroupMessage(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static RatchetGroupMessage getInstance(long cCtx) {
+        RatchetGroupMessage newInstance = new RatchetGroupMessage();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */
@@ -81,27 +82,25 @@ public class RatchetGroupMessage implements AutoCloseable {
     }
 
     /*
-    * Returns number of public keys.
-    * This method should be called only for group info message type.
-    */
-    public int getPubKeyCount() {
-        return RatchetJNI.INSTANCE.ratchetGroupMessage_getPubKeyCount(this.cCtx);
-    }
-
-    /*
-    * Returns public key id for some participant id.
-    * This method should be called only for group info message type.
-    */
-    public byte[] getPubKeyId(byte[] participantId) throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetGroupMessage_getPubKeyId(this.cCtx, participantId);
-    }
-
-    /*
     * Returns message sender id.
     * This method should be called only for regular message type.
     */
     public byte[] getSenderId() {
         return RatchetJNI.INSTANCE.ratchetGroupMessage_getSenderId(this.cCtx);
+    }
+
+    /*
+    * Returns message counter in current epoch.
+    */
+    public long getCounter() {
+        return RatchetJNI.INSTANCE.ratchetGroupMessage_getCounter(this.cCtx);
+    }
+
+    /*
+    * Returns message epoch.
+    */
+    public long getEpoch() {
+        return RatchetJNI.INSTANCE.ratchetGroupMessage_getEpoch(this.cCtx);
     }
 
     /*

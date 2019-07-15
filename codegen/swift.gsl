@@ -143,11 +143,13 @@ endfunction
 function insatnce_derive_c_method_shallow_copy (instance)
     check_arguments (my, "instance", my)
 
+    my.project_uid = component_derive_project_uid (my.instance)
+
     if has_one_of_attribute(my.instance, "interface")
-        return make_ref_c (make_id ("class", "impl", "method", "shallow copy"))
+        return make_ref_c (make_id (my.project_uid, "class", "impl", "method", "shallow copy"))
 
     elsif has_one_of_attribute(my.instance, "class, impl")
-        return make_ref_c (make_id ("class", my.instance.class ? my.instance.impl, "method", "shallow copy"))
+        return make_ref_c (make_id (my.project_uid, "class", my.instance.class ? my.instance.impl, "method", "shallow copy"))
     endif
 endfunction
 
@@ -1661,7 +1663,7 @@ function swift_create_interface_implementation (implementation, swift_class, swi
             swift_create_property_from_constant (constant, my.swift_class, my.swift_project, my.meta)
         endfor
 
-        for interface.method
+        for interface.method where method.declaration = "public" & method.visibility = "public"
             swift_create_class_method (my.implementation, method, my.swift_class, my.swift_project, my.meta)
         endfor
     endfor
@@ -2213,7 +2215,7 @@ function swift_create_interface_module (interface, swift_project, meta)
                 swift_create_property_from_constant (constant, swift_protocol, my.swift_project, my.meta)
             endfor
 
-            for my.interface.method
+            for my.interface.method where method.declaration = "public" & method.visibility = "public"
                 my.swift_method = \
                         swift_create_interface_method (my.interface, method, swift_protocol, my.swift_project, my.meta)
 

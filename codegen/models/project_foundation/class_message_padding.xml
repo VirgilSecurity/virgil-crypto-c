@@ -1,0 +1,32 @@
+<class name="message padding" context="internal" scope="private">
+
+    <require module="buffer defs" scope="private" project="common"/>
+
+    <constant name="padding size len" value="4" declararion="internal"/>
+    <constant name="padding factor" value="160" declararion="internal"/>
+
+    <require header="pb_decode.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
+
+    <dependency name="rng" interface="random"/>
+
+    <method name="padded len" is_static="1">
+        <argument name="plain text len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="add padding">
+        <argument name="plain text" class="buffer" access="readwrite"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="remove padding" is_static="1">
+        <argument name="decrypted text" class="data"/>
+        <argument name="buffer" class="buffer"/>
+
+        <return enum="status"/>
+    </method>
+
+</class>

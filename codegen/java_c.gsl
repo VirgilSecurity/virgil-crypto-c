@@ -840,10 +840,10 @@ function java_wrap_c_method_arguments (method, java_project, meta)
     endfor
 
     # Wrap Java classes
-    for my.method.argument where defined (0.class) & ! string_in (0.class, "data, buffer, error")
+    for my.method.argument where is_instance_of_generic_class(argument)
         my.init_classes ?= "// Wrap Java classes"
         my.class_path = my.java_project.package_dir
-        my.class_name = java_derive_class_name_str(argument.class)
+        my.class_name = java_derive_class_name_str(argument.class ? argument.impl)
         my.class_type = java_derive_c_type (argument)
 
         my.init_classes += format_left("\
@@ -1105,17 +1105,18 @@ function java_create_c_class_method_call (class, method, java_class, java_method
                 endif
 
                 if is_true (my.java_method->java_return.is_class)
+                    my.class_full_name = "$(my.java_return_class_path:)/$(my.java_return_class_name:)"
                     my.prepare_result = format_left("\
-                        jclass result_cls = (*jenv)->FindClass(jenv, \"$(my.java_return_class_path:)/$(my.java_return_class_name:)\");
+                        jclass result_cls = (*jenv)->FindClass(jenv, \"$(my.class_full_name:)\");
                         if (NULL == result_cls) {
                             .(c_class_assert_macros_assert)(\"Class $(my.java_return_class_name:) not found.\");
                         }
-                        jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, \"<init>\", \"(J)V\");
+                        jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, \"getInstance\", \"(J)L$(my.class_full_name:);\");
                         if (NULL == result_methodID) {
-                            .(c_class_assert_macros_assert)(\"Class $(my.java_return_class_name:) has no constructor with C context parameter.\");
+                            .(c_class_assert_macros_assert)(\"Class $(my.java_return_class_name:) has no 'getInstance' method.\");
                         }
                         $(my.proxy_shallow_copy_call?:)
-                        jobject ret = (*jenv)->NewObject(jenv, result_cls, result_methodID, (jlong) proxyResult);
+                        jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
                     ")
                 elsif is_true (my.java_method->java_return.is_interface)
                     my.prepare_result = format_left("\
@@ -1539,15 +1540,22 @@ function java_get_c_implementation_helper_interface_method (interface, java_proj
             . = format_left("\
                 char *classFullName = $(my.class_name_getter:)(jenv, jobj, c_ctx);
                 jclass cls = (*jenv)->FindClass(jenv, classFullName);
-                free(classFullName);
                 if (NULL == cls) {
+                    free(classFullName);
                     .(c_class_assert_macros_assert)(\"Class not found.\");
                 }
-                jmethodID methodID = (*jenv)->GetMethodID(jenv, cls, \"<init>\", \"(J)V\");
+
+                char *methodSig = malloc(200);
+                strcpy (methodSig, \"(J)L\");
+                strcat (methodSig, classFullName);
+                strcat (methodSig, \";\");
+                jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, \"getInstance\", methodSig);
+                free(classFullName);
+                free (methodSig);
                 if (NULL == methodID) {
-                    .(c_class_assert_macros_assert)(\"Class has no constructor with C context parameter.\");
+                    .(c_class_assert_macros_assert)(\"Class has no 'getInstance' method.\");
                 }
-                return (*jenv)->NewObject(jenv, cls, methodID, (jlong) c_ctx);
+                return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
             ")
         endnew
 

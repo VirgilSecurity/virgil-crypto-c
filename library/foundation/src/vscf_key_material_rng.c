@@ -128,9 +128,10 @@ vscf_key_material_rng_reset_key_material(vscf_key_material_rng_t *self, vsc_data
 
 //
 //  Generate random bytes.
+//  All RNG implementations must be thread-safe.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_material_rng_random(vscf_key_material_rng_t *self, size_t data_len, vsc_buffer_t *data) {
+vscf_key_material_rng_random(const vscf_key_material_rng_t *self, size_t data_len, vsc_buffer_t *data) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->ctr_drbg);
@@ -143,7 +144,7 @@ vscf_key_material_rng_random(vscf_key_material_rng_t *self, size_t data_len, vsc
 }
 
 //
-//  Retreive new seed data from the entropy sources.
+//  Retrieve new seed data from the entropy sources.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_key_material_rng_reseed(vscf_key_material_rng_t *self) {

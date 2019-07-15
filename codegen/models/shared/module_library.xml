@@ -7,7 +7,6 @@
 
     <c_include file="stdint.h" is_system="1" />
     <c_include file="stddef.h" is_system="1" />
-    <c_include file="assert.h" is_system="1" />
     <c_include file="string.h" is_system="1" />
     <c_include file="stdlib.h" is_system="1" />
     <c_include file="stdbool.h" is_system="1" />
@@ -65,7 +64,7 @@
             #       else
             #           define .(c_global_macros_public) __declspec(dllexport)
             #       endif
-            #   elsif !defined(c_global_macros_internal_build)
+            #   elif !defined(.(c_global_macros_internal_build))
             #       ifdef __GNUC__
             #           define .(c_global_macros_public) __attribute__ ((dllimport))
             #       else

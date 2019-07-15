@@ -38,28 +38,7 @@ import VSCFoundation
 
 /// Contains private part of the key.
 @objc(VSCFPrivateKey) public protocol PrivateKey : Key {
-    /// Define whether a private key can be exported or not.
-    @objc var canExportPrivateKey: Bool { get }
-    /// Define whether a private key can be imported or not.
-    @objc var canImportPrivateKey: Bool { get }
 
-    /// Extract public part of the key.
+    /// Extract public key from the private key.
     @objc func extractPublicKey() -> PublicKey
-
-    /// Export private key in the binary format.
-    ///
-    /// Binary format must be defined in the key specification.
-    /// For instance, RSA private key must be exported in format defined in
-    /// RFC 3447 Appendix A.1.2.
-    @objc func exportPrivateKey() throws -> Data
-
-    /// Return length in bytes required to hold exported private key.
-    @objc func exportedPrivateKeyLen() -> Int
-
-    /// Import private key from the binary format.
-    ///
-    /// Binary format must be defined in the key specification.
-    /// For instance, RSA private key must be imported from the format defined in
-    /// RFC 3447 Appendix A.1.2.
-    @objc func importPrivateKey(data: Data) throws
 }

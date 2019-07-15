@@ -575,6 +575,10 @@ function c_component_map_instance_attr_type (c_instance, instance)
     else
         echo_fatal ("Unreacheable code, component_resolve_instance() must handle this.", my)
     endif
+
+    if is_true(my.instance.is_atomic)
+        my.c_instance.type = ".(c_class_atomic_macros_atomic) $(my.c_instance.type:)"
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------

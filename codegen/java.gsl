@@ -1049,7 +1049,7 @@ function java_create_interface_implementation (implementation, java_class, java_
             java_create_class_method_from_constant (constant, my.java_class, my.java_project, my.meta)
         endfor
 
-        for interface.method where 0.scope = "public"
+        for interface.method where 0.declaration = "public" & 0.visibility = "public"
             java_create_class_method (my.implementation, method, my.java_class, my.java_project, my.meta)
         endfor
     endfor
@@ -1072,31 +1072,6 @@ function java_create_class_field_context (destination, class)
     endnew
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Create <java_constructor/> that takes underlying C context.
-# ---------------------------------------------------------------------------
-function java_create_class_constructor_context (destination, java_project, meta)
-    check_arguments (my, "destination, java_project, meta", my)
-
-    new java_constructor to my.destination
-        . = "/* Take C context that implements this interface */"
-        .visibility = "public"
-
-        new java_argument to java_constructor
-            .name = "cCtx"
-            .type = "long"
-        endnew
-
-        new java_code
-            . = "
-                super();
-                this.cCtx = cCtx;
-            "
-        endnew
-
-        return java_constructor
-    endnew
-endfunction
 
 # ---------------------------------------------------------------------------
 #   Create enumeration <java_constant/> from the entity <constant/>
@@ -1151,24 +1126,31 @@ function java_create_class_default_constructor (java_class, class, java_project,
         endnew
     endnew
 
-    new java_constructor to my.java_class
+    new java_method to my.java_class
         . = "
             /*
             * Acquire C context.
             * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
             */
         "
+        .name = "getInstance"
         .visibility = "public"
+        .static = "static"
 
-        new java_argument to java_constructor
+        new java_argument to java_method
             .name = "cCtx"
             .type = java_derive_class_context_type (my.class)
         endnew
 
-        new java_code to java_constructor
+        new java_return to java_method
+            .type = my.java_class.name
+        endnew
+
+        new java_code to java_method
             . = "\
-                super();
-                this.cCtx = cCtx;
+                $(my.java_class.name:) newInstance = new $(my.java_class.name:)();
+                newInstance.cCtx = cCtx;
+                return newInstance;
             "
         endnew
     endnew
@@ -1658,7 +1640,7 @@ function java_create_interface_module (interface, java_project, meta)
                 java_create_class_method_from_constant (constant, java_interface, my.java_project, my.meta)
             endfor
 
-            for my.interface.method
+            for my.interface.method where method.declaration = "public" & method.visibility = "public"
                 java_create_interface_method (my.interface, method, java_interface, my.java_project, my.meta)
             endfor
 

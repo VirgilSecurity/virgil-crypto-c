@@ -38,19 +38,19 @@ package com.virgilsecurity.crypto.foundation;
 
 /*
 * Provide interface to compute shared key for 2 asymmetric keys.
-* Assume that this interface is implemented on the private key.
 */
-public interface ComputeSharedKey {
+public interface ComputeSharedKey extends KeyAlg {
 
     /*
     * Compute shared key for 2 asymmetric keys.
-    * Note, shared key can be used only for symmetric cryptography.
+    * Note, computed shared key can be used only within symmetric cryptography.
     */
-    byte[] computeSharedKey(PublicKey publicKey) throws FoundationException;
+    byte[] computeSharedKey(PublicKey publicKey, PrivateKey privateKey) throws FoundationException;
 
     /*
     * Return number of bytes required to hold shared key.
+    * Expect Public Key or Private Key.
     */
-    int sharedKeyLen();
+    int sharedKeyLen(Key key);
 }
 

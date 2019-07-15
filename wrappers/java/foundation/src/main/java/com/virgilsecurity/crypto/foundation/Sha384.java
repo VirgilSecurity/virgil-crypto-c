@@ -53,9 +53,10 @@ public class Sha384 implements AutoCloseable, Alg, Hash {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Sha384(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static Sha384 getInstance(long cCtx) {
+        Sha384 newInstance = new Sha384();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

@@ -36,6 +36,10 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(virgil_crypto_c_tests VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
+if (VIRGIL_C_MT_TESTING)
+    find_package(Threads)
+endif()
+
 add_subdirectory(unity)
 add_subdirectory(test_utils)
 

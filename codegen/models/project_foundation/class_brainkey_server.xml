@@ -1,0 +1,60 @@
+<class name="brainkey server" context="internal">
+
+    <require impl="ctr drbg" scope="private"/>
+
+    <require module="mbedtls bridge random" scope="private"/>
+
+    <require header="mbedtls/ecp.h" scope="context"/>
+    <require header="mbedtls/bignum.h" scope="context"/>
+
+    <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
+
+    <constant name="point len" value="65"/>
+    <constant name="mpi len" value="32"/>
+
+    <dependency name="random" interface="random">
+        Random used for key generation, proofs, etc.
+    </dependency>
+    <dependency name="operation random" interface="random">
+        Random used for crypto operations to make them const-time
+    </dependency>
+
+    <method name="setup defaults">
+        <return enum="status"/>
+    </method>
+
+    <method name="generate identity secret">
+        <argument name="identity secret" class="buffer" access="writeonly">
+            <length constant="mpi len" class="self"/>
+        </argument>
+
+        <return enum="status">
+
+        </return>
+    </method>
+
+    <method name="harden">
+        <argument name="identity secret" class="data">
+        </argument>
+
+        <argument name="blinded point" class="data">
+        </argument>
+
+        <argument name="hardened point" class="buffer" access="writeonly">
+            <length constant="point len" class="self"/>
+        </argument>
+
+        <return enum="status">
+
+        </return>
+    </method>
+
+    <method name="get op group" declaration="private">
+        <return class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
+    </method>
+
+    <method name="free op group" declaration="private" is_static="1">
+        <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
+    </method>
+
+</class>

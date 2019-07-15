@@ -1630,7 +1630,6 @@ endfunction
 
 # ---------------------------------------------------------------------------
 #   Add 'impl' argument to the method.
-#
 #   If method 'is_const', then 'impl' access will be 'readonly'.
 # ---------------------------------------------------------------------------
 function component_create_argument_impl (method, meta)
@@ -1648,16 +1647,19 @@ function component_create_argument_impl (method, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Add 'impl' return to the destination with 'disown' access.
+#   Add 'impl' return to the method with "take" ownership.
+#   If method 'is_const', then 'impl' returned with 'readonly' access,
+#   otherwise - with 'readwrite' access.
 # ---------------------------------------------------------------------------
-function component_create_return_impl (destination, meta)
-    check_arguments (my, "destination, meta", my)
+function component_create_return_impl (method, meta)
+    check_arguments (my, "method, meta", my)
 
     my.names = meta_names (my.meta)
 
-    new [return] to my.destination
+    new [return] to my.method
         .class = my.names.type_impl
-        .access = "disown"
+        .access = is_true(my.method.is_const) ?? "readonly" ? "readwrite"
+        .ownership = "take"
         return [return]
     endnew
 endfunction

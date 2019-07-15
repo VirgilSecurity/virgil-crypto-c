@@ -55,9 +55,10 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Aes256Gcm(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static Aes256Gcm getInstance(long cCtx) {
+        Aes256Gcm newInstance = new Aes256Gcm();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

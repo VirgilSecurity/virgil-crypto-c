@@ -52,11 +52,11 @@
 #include "vscr_status.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 // clang-format on
@@ -79,14 +79,19 @@ vscr_ratchet_x3dh_compute_initiator_x3dh_secret(const vscr_ratchet_private_key_t
         const vscr_ratchet_private_key_t sender_ephemeral_private_key,
         const vscr_ratchet_public_key_t receiver_identity_public_key,
         const vscr_ratchet_public_key_t receiver_long_term_public_key, bool receiver_has_one_time_key,
-        const vscr_ratchet_public_key_t receiver_one_time_public_key, vsc_buffer_t *shared_secret) VSCR_NODISCARD;
+        const vscr_ratchet_public_key_t receiver_one_time_public_key,
+        vscr_ratchet_symmetric_key_t shared_key) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_x3dh_compute_responder_x3dh_secret(const vscr_ratchet_public_key_t sender_identity_public_key,
         const vscr_ratchet_public_key_t sender_ephemeral_public_key,
         const vscr_ratchet_private_key_t receiver_identity_private_key,
         const vscr_ratchet_private_key_t receiver_long_term_private_key, bool receiver_has_one_time_key,
-        const vscr_ratchet_private_key_t receiver_one_time_private_key, vsc_buffer_t *shared_secret) VSCR_NODISCARD;
+        const vscr_ratchet_private_key_t receiver_one_time_private_key,
+        vscr_ratchet_symmetric_key_t shared_key) VSCR_NODISCARD;
+
+VSCR_PUBLIC void
+vscr_ratchet_x3dh_derive_key(vsc_data_t shared_secret, vscr_ratchet_symmetric_key_t shared_key);
 
 
 // --------------------------------------------------------------------------

@@ -54,6 +54,7 @@
 #define VSCF_MESSAGE_INFO_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_atomic.h"
 #include "vscf_key_recipient_info_list.h"
 #include "vscf_password_recipient_info_list.h"
 #include "vscf_message_info_custom_params.h"
@@ -85,7 +86,7 @@ struct vscf_message_info_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
 
     vscf_key_recipient_info_list_t *key_recipients;
 

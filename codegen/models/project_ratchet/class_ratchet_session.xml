@@ -4,15 +4,18 @@
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
     <require class="ratchet x3dh" scope="private"/>
-    <require module="ratchet message defs" scope="private"/>
+
     <require module="buffer defs" scope="private" project="common"/>
 
+    <require module="ratchet defs" scope="private"/>
+    <require module="ratchet message defs" scope="private"/>
     <require module="ratchet typedefs" scope="context"/>
+    <require module="ratchet skipped messages defs" scope="private"/>
 
     <require impl="ctr drbg" project="foundation" scope="private"/>
 
-    <require header="RatchetSession.pb.h" scope="private"/>
-    <require header="RatchetMessage.pb.h" scope="private"/>
+    <require header="vscr_RatchetSession.pb.h" scope="private"/>
+    <require header="vscr_RatchetMessage.pb.h" scope="private"/>
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
@@ -159,22 +162,12 @@
         </return>
     </method>
 
-    <method name="serialize len">
-        Calculates size of buffer sufficient to store session
-
-        <return type="size">
-            Size of buffer sufficient to store session
-        </return>
-    </method>
-
     <method name="serialize">
         Serializes session to buffer
 
-        <argument name="output" class="buffer">
-            Buffer to store session
-
-            <length method="serialize len"/>
-        </argument>
+        <return class="buffer" access="disown">
+            Serialized session
+        </return>
     </method>
 
     <method name="deserialize" is_static="1">

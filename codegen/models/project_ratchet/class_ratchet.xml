@@ -5,7 +5,7 @@
     <require impl="hkdf" project="foundation" scope="private"/>
     <require module="buffer defs" scope="private" project="common"/>
 
-    <require module="ratchet typedefs" scope="context"/>
+    <require module="ratchet typedefs" scope="public"/>
 
     <require class="ratchet common hidden" scope="context"/>
     <require class="ratchet chain key" scope="private"/>
@@ -13,8 +13,8 @@
     <require module="ratchet message defs" scope="private"/>
     <require class="ratchet keys" scope="context"/>
 
-    <require header="RatchetSession.pb.h" scope="public"/>
-    <require header="RatchetMessage.pb.h" scope="public"/>
+    <require header="vscr_RatchetSession.pb.h" scope="public"/>
+    <require header="vscr_RatchetMessage.pb.h" scope="public"/>
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 
@@ -22,7 +22,7 @@
 
     <dependency name="rng" interface="random" project="foundation" has_observers="1"/>
     <property name="cipher" class="ratchet cipher" access="readwrite"/>
-    <property name="padding" class="ratchet padding" access="readwrite"/>
+    <property name="padding" class="message padding" project="foundation" access="readwrite"/>
     <property name="sender chain" class="ratchet sender chain" access="readwrite"/>
     <property name="prev sender chain count" type="unsigned" size="4" access="readwrite"/>
     <property name="receiver chain" class="ratchet receiver chain" access="readwrite"/>
@@ -31,31 +31,33 @@
 
     <method name="decrypt for existing chain" declaration="private">
         <argument name="chain key" class="ratchet chain key"/>
-        <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
-        <argument name="regular message header" class="RegularMessageHeader" library="nanopb" access="readonly"/>
+        <argument name="message" class="vscr_RegularMessage" library="nanopb" access="readonly"/>
+        <argument name="regular message header" class="vscr_RegularMessageHeader" library="nanopb" access="readonly"/>
         <argument name="buffer" class="buffer"/>
 
         <return enum="status"/>
     </method>
 
     <method name="decrypt for new chain" declaration="private">
-        <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
-        <argument name="regular message header" class="RegularMessageHeader" library="nanopb" access="readonly"/>
+        <argument name="message" class="vscr_RegularMessage" library="nanopb" access="readonly"/>
+        <argument name="regular message header" class="vscr_RegularMessageHeader" library="nanopb" access="readonly"/>
         <argument name="buffer" class="buffer"/>
 
         <return enum="status"/>
     </method>
 
     <method name="respond">
-        <argument name="shared secret" class="data"/>
-        <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
-        <argument name="regular message header" class="RegularMessageHeader" library="nanopb" access="readonly"/>
+        <argument name="shared key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal"/>
+        <argument name="receiver long term private key" class="const vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="message" class="vscr_RegularMessage" library="nanopb" access="readonly"/>
+        <argument name="regular message header" class="vscr_RegularMessageHeader" library="nanopb" access="readonly"/>
 
         <return enum="status"/>
     </method>
 
     <method name="initiate">
-        <argument name="shared secret" class="data"/>
+        <argument name="shared key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal"/>
+        <argument name="receiver long term public key" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
 
         <return enum="status"/>
     </method>
@@ -68,8 +70,8 @@
 
     <method name="encrypt">
         <argument name="plain text" class="data"/>
-        <argument name="regular message" class="RegularMessage" library="nanopb" access="readwrite"/>
-        <argument name="regular message header" class="RegularMessageHeader" library="nanopb" access="readwrite"/>
+        <argument name="regular message" class="vscr_RegularMessage" library="nanopb" access="readwrite"/>
+        <argument name="regular message header" class="vscr_RegularMessageHeader" library="nanopb" access="readwrite"/>
 
         <return enum="status"/>
     </method>
@@ -81,8 +83,8 @@
     </method>
 
     <method name="decrypt">
-        <argument name="regular message" class="RegularMessage" library="nanopb" access="readonly"/>
-        <argument name="regular message header" class="RegularMessageHeader" library="nanopb" access="readonly"/>
+        <argument name="regular message" class="vscr_RegularMessage" library="nanopb" access="readonly"/>
+        <argument name="regular message header" class="vscr_RegularMessageHeader" library="nanopb" access="readonly"/>
         <argument name="plain text" class="buffer">
             <length method="decrypt len">
                 <proxy argument="cipher text" to="cipher text len" cast="data_length"/>
@@ -100,17 +102,17 @@
 
     <method name="generate skipped keys" declaration="private">
         <argument name="receiver chain" class="ratchet receiver chain" access="readwrite"/>
-        <argument name="counter" type="size"/>
+        <argument name="counter" type="unsigned" size="4"/>
 
         <return enum="status"/>
     </method>
 
     <method name="serialize" is_const="1">
-        <argument name="ratchet pb" class="Ratchet" library="nanopb" access="readwrite"/>
+        <argument name="ratchet pb" class="vscr_Ratchet" library="nanopb" access="readwrite"/>
     </method>
 
     <method name="deserialize" is_static="1">
-        <argument name="ratchet pb" class="Ratchet" library="nanopb"/>
+        <argument name="ratchet pb" class="vscr_Ratchet" library="nanopb"/>
         <argument name="ratchet" class="self" access="readwrite"/>
     </method>
 

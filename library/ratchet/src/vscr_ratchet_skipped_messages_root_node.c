@@ -108,15 +108,9 @@ vscr_ratchet_skipped_messages_root_node_cleanup(vscr_ratchet_skipped_messages_ro
         return;
     }
 
-    if (self->refcnt == 0) {
-        return;
-    }
+    vscr_ratchet_skipped_messages_root_node_cleanup_ctx(self);
 
-    if (--self->refcnt == 0) {
-        vscr_ratchet_skipped_messages_root_node_cleanup_ctx(self);
-
-        vscr_zeroize(self, sizeof(vscr_ratchet_skipped_messages_root_node_t));
-    }
+    vscr_zeroize(self, sizeof(vscr_ratchet_skipped_messages_root_node_t));
 }
 
 //
@@ -137,7 +131,7 @@ vscr_ratchet_skipped_messages_root_node_new(void) {
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
 vscr_ratchet_skipped_messages_root_node_delete(vscr_ratchet_skipped_messages_root_node_t *self) {
@@ -146,11 +140,30 @@ vscr_ratchet_skipped_messages_root_node_delete(vscr_ratchet_skipped_messages_roo
         return;
     }
 
+    size_t old_counter = self->refcnt;
+    VSCR_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCR_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
     vscr_ratchet_skipped_messages_root_node_cleanup(self);
 
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+    if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
     }
 }
@@ -178,7 +191,17 @@ vscr_ratchet_skipped_messages_root_node_shallow_copy(vscr_ratchet_skipped_messag
 
     VSCR_ASSERT_PTR(self);
 
+    #if defined(VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
     ++self->refcnt;
+    #endif
 
     return self;
 }
@@ -217,7 +240,7 @@ vscr_ratchet_skipped_messages_root_node_cleanup_ctx(vscr_ratchet_skipped_message
 
 VSCR_PUBLIC vscr_ratchet_message_key_t *
 vscr_ratchet_skipped_messages_root_node_find_key(
-        const vscr_ratchet_skipped_messages_root_node_t *self, size_t counter) {
+        const vscr_ratchet_skipped_messages_root_node_t *self, uint32_t counter) {
 
     VSCR_ASSERT_PTR(self);
 
@@ -311,8 +334,8 @@ vscr_ratchet_skipped_messages_root_node_add_key(
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_root_node_serialize(
-        const vscr_ratchet_skipped_messages_root_node_t *self, MessageKey *skipped_messages_pb, pb_size_t *count) {
+vscr_ratchet_skipped_messages_root_node_serialize(const vscr_ratchet_skipped_messages_root_node_t *self,
+        vscr_MessageKey **skipped_messages_pb, pb_size_t *count) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(skipped_messages_pb);
@@ -320,18 +343,24 @@ vscr_ratchet_skipped_messages_root_node_serialize(
 
     *count = self->count;
 
+    if (self->count) {
+        *skipped_messages_pb = vscr_alloc(self->count * sizeof(vscr_MessageKey));
+    }
+
     vscr_ratchet_message_key_node_t *node = self->first;
 
     for (size_t i = 0; i < self->count; i++, node = node->next) {
-        vscr_ratchet_message_key_serialize(node->value, &skipped_messages_pb[i]);
+        vscr_ratchet_message_key_serialize(node->value, &(*skipped_messages_pb)[i]);
     }
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_root_node_deserialize(const MessageKey *skipped_messages_pb, pb_size_t count,
+vscr_ratchet_skipped_messages_root_node_deserialize(const vscr_MessageKey *skipped_messages_pb, pb_size_t count,
         vscr_ratchet_skipped_messages_root_node_t *skipped_messages) {
 
-    VSCR_ASSERT_PTR(skipped_messages_pb);
+    if (count != 0) {
+        VSCR_ASSERT_PTR(skipped_messages_pb);
+    }
     VSCR_ASSERT_PTR(skipped_messages);
 
     vscr_ratchet_message_key_node_t *prev = NULL;

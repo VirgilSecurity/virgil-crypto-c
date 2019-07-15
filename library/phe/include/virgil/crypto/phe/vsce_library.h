@@ -61,7 +61,6 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <assert.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -94,7 +93,7 @@ extern "C" {
 #       else
 #           define VSCE_PUBLIC __declspec(dllexport)
 #       endif
-#   elsif !defined(c_global_macros_internal_build)
+#   elif !defined(VSCE_INTERNAL_BUILD)
 #       ifdef __GNUC__
 #           define VSCE_PUBLIC __attribute__ ((dllimport))
 #       else
@@ -117,7 +116,7 @@ extern "C" {
 
 #define VSCE_VERSION_MINOR 8
 
-#define VSCE_VERSION_PATCH 0
+#define VSCE_VERSION_PATCH 1
 
 #define VSCE_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
 

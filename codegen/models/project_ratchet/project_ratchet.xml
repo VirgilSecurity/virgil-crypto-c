@@ -9,7 +9,7 @@
         wrappers="java,swift,wasm"
         >
 
-    <version major="0" minor="8" patch="0"/>
+    <version major="0" minor="8" patch="1"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.
@@ -55,9 +55,15 @@
         <require impl="sha512"/>
     </require>
 
+    <feature name="multi threading" default="on">
+        Enable multi-threading safety for ratchet library.
+    </feature>
+
+
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
+    <module name="atomic" from="shared"/>
 
     <module name="ratchet typedefs"/>
 
@@ -72,7 +78,6 @@
     <class name="error"/>
     <class name="ratchet x3dh"/>
     <class name="ratchet message"/>
-    <class name="ratchet padding"/>
     <class name="ratchet cipher"/>
     <class name="ratchet chain key"/>
     <class name="ratchet message key"/>
@@ -85,8 +90,11 @@
     <class name="ratchet"/>
     <class name="ratchet session"/>
     <class name="ratchet group participant epoch"/>
-    <class name="ratchet group participant data"/>
+    <class name="ratchet group participant info"/>
+    <class name="ratchet group participants info"/>
+    <class name="ratchet group participant"/>
     <class name="ratchet group message"/>
     <class name="ratchet group ticket"/>
+    <class name="ratchet group participants ids"/>
     <class name="ratchet group session"/>
 </project>

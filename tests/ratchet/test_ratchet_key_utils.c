@@ -43,8 +43,7 @@
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/common/vsc_buffer.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
-#include <virgil/crypto/foundation/vscf_ed25519_private_key.h>
-#include <virgil/crypto/foundation/vscf_ed25519_public_key.h>
+#include <virgil/crypto/foundation/vscf_ed25519.h>
 #include "vscr_error.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_key_utils.h"

@@ -195,6 +195,14 @@ enum vscf_status_t {
     //
     vscf_status_ERROR_BAD_DER_PRIVATE_KEY = -224,
     //
+    //  Key algorithm does not accept given type of public key.
+    //
+    vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM = -225,
+    //
+    //  Key algorithm does not accept given type of private key.
+    //
+    vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM = -226,
+    //
     //  Decryption failed, because message info was not given explicitly,
     //  and was not part of an encrypted message.
     //
@@ -228,7 +236,83 @@ enum vscf_status_t {
     //
     //  Signature format is corrupted.
     //
-    vscf_status_ERROR_BAD_SIGNATURE = -308
+    vscf_status_ERROR_BAD_SIGNATURE = -308,
+    //
+    //  Brainkey password length is out of range.
+    //
+    vscf_status_ERROR_INVALID_BRAINKEY_PASSWORD_LEN = -401,
+    //
+    //  Brainkey number length should be 32 byte.
+    //
+    vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_LEN = -402,
+    //
+    //  Brainkey point length should be 65 bytes.
+    //
+    vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN = -403,
+    //
+    //  Brainkey name is out of range.
+    //
+    vscf_status_ERROR_INVALID_BRAINKEY_KEY_NAME_LEN = -404,
+    //
+    //  Brainkey internal error.
+    //
+    vscf_status_ERROR_BRAINKEY_INTERNAL = -405,
+    //
+    //  Brainkey point is invalid.
+    //
+    vscf_status_ERROR_BRAINKEY_INVALID_POINT = -406,
+    //
+    //  Brainkey number buffer length capacity should be >= 32 byte.
+    //
+    vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN = -407,
+    //
+    //  Brainkey point buffer length capacity should be >= 32 byte.
+    //
+    vscf_status_ERROR_INVALID_BRAINKEY_POINT_BUFFER_LEN = -408,
+    //
+    //  Brainkey seed buffer length capacity should be >= 32 byte.
+    //
+    vscf_status_ERROR_INVALID_BRAINKEY_SEED_BUFFER_LEN = -409,
+    //
+    //  Brainkey identity secret is invalid.
+    //
+    vscf_status_ERROR_INVALID_IDENTITY_SECRET = -410,
+    //
+    //  Invalid padding.
+    //
+    vscf_status_ERROR_INVALID_PADDING = -501,
+    //
+    //  Protobuf error.
+    //
+    vscf_status_ERROR_PROTOBUF = -601,
+    //
+    //  Session id doesnt match.
+    //
+    vscf_status_ERROR_SESSION_ID_DOESNT_MATCH = -701,
+    //
+    //  Epoch not found.
+    //
+    vscf_status_ERROR_EPOCH_NOT_FOUND = -702,
+    //
+    //  Wrong key type.
+    //
+    vscf_status_ERROR_WRONG_KEY_TYPE = -703,
+    //
+    //  Invalid signature.
+    //
+    vscf_status_ERROR_INVALID_SIGNATURE = -704,
+    //
+    //  Ed25519 error.
+    //
+    vscf_status_ERROR_ED25519 = -705,
+    //
+    //  Duplicate epoch.
+    //
+    vscf_status_ERROR_DUPLICATE_EPOCH = -706,
+    //
+    //  Plain text too long.
+    //
+    vscf_status_ERROR_PLAIN_TEXT_TOO_LONG = -707
 };
 typedef enum vscf_status_t vscf_status_t;
 

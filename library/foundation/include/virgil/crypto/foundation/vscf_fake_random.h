@@ -100,6 +100,12 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_fake_random_impl(vscf_fake_random_t *self);
 
 //
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_fake_random_impl_const(const vscf_fake_random_t *self);
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -136,7 +142,6 @@ vscf_fake_random_destroy(vscf_fake_random_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_fake_random_t *
 vscf_fake_random_shallow_copy(vscf_fake_random_t *self);
@@ -156,12 +161,13 @@ vscf_fake_random_setup_source_data(vscf_fake_random_t *self, vsc_data_t data_sou
 
 //
 //  Generate random bytes.
+//  All RNG implementations must be thread-safe.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_fake_random_random(vscf_fake_random_t *self, size_t data_len, vsc_buffer_t *data) VSCF_NODISCARD;
+vscf_fake_random_random(const vscf_fake_random_t *self, size_t data_len, vsc_buffer_t *data) VSCF_NODISCARD;
 
 //
-//  Retreive new seed data from the entropy sources.
+//  Retrieve new seed data from the entropy sources.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_fake_random_reseed(vscf_fake_random_t *self) VSCF_NODISCARD;

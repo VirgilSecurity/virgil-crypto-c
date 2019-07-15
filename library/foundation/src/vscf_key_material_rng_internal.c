@@ -88,10 +88,11 @@ static const vscf_random_api_t random_api = {
     vscf_impl_tag_KEY_MATERIAL_RNG,
     //
     //  Generate random bytes.
+    //  All RNG implementations must be thread-safe.
     //
     (vscf_random_api_random_fn)vscf_key_material_rng_random,
     //
-    //  Retreive new seed data from the entropy sources.
+    //  Retrieve new seed data from the entropy sources.
     //
     (vscf_random_api_reseed_fn)vscf_key_material_rng_reseed
 };
@@ -142,15 +143,7 @@ vscf_key_material_rng_init(vscf_key_material_rng_t *self) {
 VSCF_PUBLIC void
 vscf_key_material_rng_cleanup(vscf_key_material_rng_t *self) {
 
-    if (self == NULL || self->info == NULL) {
-        return;
-    }
-
-    if (self->refcnt == 0) {
-        return;
-    }
-
-    if (--self->refcnt > 0) {
+    if (self == NULL) {
         return;
     }
 
@@ -181,11 +174,32 @@ vscf_key_material_rng_new(void) {
 VSCF_PUBLIC void
 vscf_key_material_rng_delete(vscf_key_material_rng_t *self) {
 
+    if (self == NULL) {
+        return;
+    }
+
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscf_key_material_rng_cleanup(self);
 
-    if (self && (self->refcnt == 0)) {
-        vscf_dealloc(self);
-    }
+    vscf_dealloc(self);
 }
 
 //
@@ -206,7 +220,6 @@ vscf_key_material_rng_destroy(vscf_key_material_rng_t **self_ref) {
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_key_material_rng_t *
 vscf_key_material_rng_shallow_copy(vscf_key_material_rng_t *self) {
@@ -232,6 +245,16 @@ vscf_key_material_rng_impl(vscf_key_material_rng_t *self) {
 
     VSCF_ASSERT_PTR(self);
     return (vscf_impl_t *)(self);
+}
+
+//
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_key_material_rng_impl_const(const vscf_key_material_rng_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    return (const vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *

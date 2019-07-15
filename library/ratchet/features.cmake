@@ -46,6 +46,7 @@
 include_guard()
 
 option(VSCR_LIBRARY "Enable build of the 'ratchet' library" ON)
+option(VSCR_MULTI_THREADING "Enable multi-threading safety for ratchet library." ON)
 option(VSCR_RATCHET_COMMON "Enable class 'ratchet common'." ON)
 option(VSCR_RATCHET_COMMON_HIDDEN "Enable class 'ratchet common hidden'." ON)
 option(VSCR_RATCHET_KEY_UTILS "Enable class 'ratchet key utils'." ON)
@@ -53,7 +54,6 @@ option(VSCR_RATCHET_KEY_ID "Enable class 'ratchet key id'." ON)
 option(VSCR_ERROR "Enable class 'error'." ON)
 option(VSCR_RATCHET_X3DH "Enable class 'ratchet x3dh'." ON)
 option(VSCR_RATCHET_MESSAGE "Enable class 'ratchet message'." ON)
-option(VSCR_RATCHET_PADDING "Enable class 'ratchet padding'." ON)
 option(VSCR_RATCHET_CIPHER "Enable class 'ratchet cipher'." ON)
 option(VSCR_RATCHET_CHAIN_KEY "Enable class 'ratchet chain key'." ON)
 option(VSCR_RATCHET_MESSAGE_KEY "Enable class 'ratchet message key'." ON)
@@ -66,12 +66,16 @@ option(VSCR_RATCHET_KEYS "Enable class 'ratchet keys'." ON)
 option(VSCR_RATCHET "Enable class 'ratchet'." ON)
 option(VSCR_RATCHET_SESSION "Enable class 'ratchet session'." ON)
 option(VSCR_RATCHET_GROUP_PARTICIPANT_EPOCH "Enable class 'ratchet group participant epoch'." ON)
-option(VSCR_RATCHET_GROUP_PARTICIPANT_DATA "Enable class 'ratchet group participant data'." ON)
+option(VSCR_RATCHET_GROUP_PARTICIPANT_INFO "Enable class 'ratchet group participant info'." ON)
+option(VSCR_RATCHET_GROUP_PARTICIPANTS_INFO "Enable class 'ratchet group participants info'." ON)
+option(VSCR_RATCHET_GROUP_PARTICIPANT "Enable class 'ratchet group participant'." ON)
 option(VSCR_RATCHET_GROUP_MESSAGE "Enable class 'ratchet group message'." ON)
 option(VSCR_RATCHET_GROUP_TICKET "Enable class 'ratchet group ticket'." ON)
+option(VSCR_RATCHET_GROUP_PARTICIPANTS_IDS "Enable class 'ratchet group participants ids'." ON)
 option(VSCR_RATCHET_GROUP_SESSION "Enable class 'ratchet group session'." ON)
 mark_as_advanced(
         VSCR_LIBRARY
+        VSCR_MULTI_THREADING
         VSCR_RATCHET_COMMON
         VSCR_RATCHET_COMMON_HIDDEN
         VSCR_RATCHET_KEY_UTILS
@@ -79,7 +83,6 @@ mark_as_advanced(
         VSCR_ERROR
         VSCR_RATCHET_X3DH
         VSCR_RATCHET_MESSAGE
-        VSCR_RATCHET_PADDING
         VSCR_RATCHET_CIPHER
         VSCR_RATCHET_CHAIN_KEY
         VSCR_RATCHET_MESSAGE_KEY
@@ -92,9 +95,12 @@ mark_as_advanced(
         VSCR_RATCHET
         VSCR_RATCHET_SESSION
         VSCR_RATCHET_GROUP_PARTICIPANT_EPOCH
-        VSCR_RATCHET_GROUP_PARTICIPANT_DATA
+        VSCR_RATCHET_GROUP_PARTICIPANT_INFO
+        VSCR_RATCHET_GROUP_PARTICIPANTS_INFO
+        VSCR_RATCHET_GROUP_PARTICIPANT
         VSCR_RATCHET_GROUP_MESSAGE
         VSCR_RATCHET_GROUP_TICKET
+        VSCR_RATCHET_GROUP_PARTICIPANTS_IDS
         VSCR_RATCHET_GROUP_SESSION
         )
 
@@ -134,6 +140,24 @@ if(VSCR_RATCHET_KEY_UTILS AND NOT VSCF_KEY_ASN1_DESERIALIZER)
     message(FATAL_ERROR)
 endif()
 
+if(VSCR_RATCHET_KEY_UTILS AND NOT VSCF_SHA512)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_KEY_UTILS depends on the feature:")
+    message("     VSCF_SHA512 - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_KEY_UTILS AND NOT VSCF_HKDF)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_KEY_UTILS depends on the feature:")
+    message("     VSCF_HKDF - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCR_RATCHET_KEY_ID AND NOT VSCR_RATCHET_COMMON)
     message("-- error --")
     message("--")
@@ -161,6 +185,42 @@ if(VSCR_RATCHET_KEY_ID AND NOT VSCF_SHA512)
     message(FATAL_ERROR)
 endif()
 
+if(VSCR_RATCHET_X3DH AND NOT VSC_BUFFER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_X3DH depends on the feature:")
+    message("     VSC_BUFFER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_X3DH AND NOT VSCF_SHA512)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_X3DH depends on the feature:")
+    message("     VSCF_SHA512 - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_X3DH AND NOT VSCF_HKDF)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_X3DH depends on the feature:")
+    message("     VSCF_HKDF - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_X3DH AND NOT VSCR_RATCHET_COMMON_HIDDEN)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_X3DH depends on the feature:")
+    message("     VSCR_RATCHET_COMMON_HIDDEN - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCR_RATCHET_MESSAGE AND NOT VSCR_RATCHET_COMMON_HIDDEN)
     message("-- error --")
     message("--")
@@ -184,15 +244,6 @@ if(VSCR_RATCHET_MESSAGE AND NOT VSCF_SHA512)
     message("--")
     message("Feature VSCR_RATCHET_MESSAGE depends on the feature:")
     message("     VSCF_SHA512 - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCR_RATCHET_PADDING AND NOT VSCR_RATCHET_COMMON_HIDDEN)
-    message("-- error --")
-    message("--")
-    message("Feature VSCR_RATCHET_PADDING depends on the feature:")
-    message("     VSCR_RATCHET_COMMON_HIDDEN - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -458,28 +509,37 @@ if(VSCR_RATCHET_GROUP_PARTICIPANT_EPOCH AND NOT VSCR_RATCHET_COMMON)
     message(FATAL_ERROR)
 endif()
 
-if(VSCR_RATCHET_GROUP_PARTICIPANT_DATA AND NOT VSCR_RATCHET_COMMON_HIDDEN)
+if(VSCR_RATCHET_GROUP_PARTICIPANT_INFO AND NOT VSCR_RATCHET_COMMON)
     message("-- error --")
     message("--")
-    message("Feature VSCR_RATCHET_GROUP_PARTICIPANT_DATA depends on the feature:")
-    message("     VSCR_RATCHET_COMMON_HIDDEN - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCR_RATCHET_GROUP_PARTICIPANT_DATA AND NOT VSCR_RATCHET_COMMON)
-    message("-- error --")
-    message("--")
-    message("Feature VSCR_RATCHET_GROUP_PARTICIPANT_DATA depends on the feature:")
+    message("Feature VSCR_RATCHET_GROUP_PARTICIPANT_INFO depends on the feature:")
     message("     VSCR_RATCHET_COMMON - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
 
-if(VSCR_RATCHET_GROUP_PARTICIPANT_DATA AND NOT VSCR_RATCHET_COMMON)
+if(VSCR_RATCHET_GROUP_PARTICIPANT AND NOT VSCR_RATCHET_COMMON_HIDDEN)
     message("-- error --")
     message("--")
-    message("Feature VSCR_RATCHET_GROUP_PARTICIPANT_DATA depends on the feature:")
+    message("Feature VSCR_RATCHET_GROUP_PARTICIPANT depends on the feature:")
+    message("     VSCR_RATCHET_COMMON_HIDDEN - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_GROUP_PARTICIPANT AND NOT VSCR_RATCHET_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_GROUP_PARTICIPANT depends on the feature:")
+    message("     VSCR_RATCHET_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_GROUP_PARTICIPANT AND NOT VSCR_RATCHET_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_GROUP_PARTICIPANT depends on the feature:")
     message("     VSCR_RATCHET_COMMON - which is disabled.")
     message("--")
     message(FATAL_ERROR)
@@ -535,6 +595,15 @@ if(VSCR_RATCHET_GROUP_TICKET AND NOT VSCF_CTR_DRBG)
     message("--")
     message("Feature VSCR_RATCHET_GROUP_TICKET depends on the feature:")
     message("     VSCF_CTR_DRBG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_GROUP_PARTICIPANTS_IDS AND NOT VSCR_RATCHET_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_GROUP_PARTICIPANTS_IDS depends on the feature:")
+    message("     VSCR_RATCHET_COMMON - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

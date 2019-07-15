@@ -51,15 +51,6 @@ public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
         this.cCtx = FoundationJNI.INSTANCE.keyAsn1Serializer_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public KeyAsn1Serializer(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
     public void setAsn1Writer(Asn1Writer asn1Writer) {
         FoundationJNI.INSTANCE.keyAsn1Serializer_setAsn1Writer(this.cCtx, asn1Writer);
     }
@@ -76,7 +67,7 @@ public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
     * Note, that caller code is responsible to reset ASN.1 writer with
     * an output buffer.
     */
-    public int serializePublicKeyInplace(PublicKey publicKey) throws FoundationException {
+    public int serializePublicKeyInplace(RawPublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePublicKeyInplace(this.cCtx, publicKey);
     }
 
@@ -85,8 +76,18 @@ public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
     * Note, that caller code is responsible to reset ASN.1 writer with
     * an output buffer.
     */
-    public int serializePrivateKeyInplace(PrivateKey privateKey) throws FoundationException {
+    public int serializePrivateKeyInplace(RawPrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePrivateKeyInplace(this.cCtx, privateKey);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static KeyAsn1Serializer getInstance(long cCtx) {
+        KeyAsn1Serializer newInstance = new KeyAsn1Serializer();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */
@@ -99,7 +100,7 @@ public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
     *
     * Precondition: public key must be exportable.
     */
-    public int serializedPublicKeyLen(PublicKey publicKey) {
+    public int serializedPublicKeyLen(RawPublicKey publicKey) {
         return FoundationJNI.INSTANCE.keyAsn1Serializer_serializedPublicKeyLen(this.cCtx, publicKey);
     }
 
@@ -108,7 +109,7 @@ public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
     *
     * Precondition: public key must be exportable.
     */
-    public byte[] serializePublicKey(PublicKey publicKey) throws FoundationException {
+    public byte[] serializePublicKey(RawPublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePublicKey(this.cCtx, publicKey);
     }
 
@@ -117,7 +118,7 @@ public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
     *
     * Precondition: private key must be exportable.
     */
-    public int serializedPrivateKeyLen(PrivateKey privateKey) {
+    public int serializedPrivateKeyLen(RawPrivateKey privateKey) {
         return FoundationJNI.INSTANCE.keyAsn1Serializer_serializedPrivateKeyLen(this.cCtx, privateKey);
     }
 
@@ -126,7 +127,7 @@ public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
     *
     * Precondition: private key must be exportable.
     */
-    public byte[] serializePrivateKey(PrivateKey privateKey) throws FoundationException {
+    public byte[] serializePrivateKey(RawPrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePrivateKey(this.cCtx, privateKey);
     }
 }

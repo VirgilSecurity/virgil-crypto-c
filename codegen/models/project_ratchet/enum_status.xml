@@ -93,32 +93,32 @@
         Cannot decrypt own messages.
     </constant>
 
-    <constant name="error duplicate id" value="-23">
-        Duplicate id.
-    </constant>
-
-    <constant name="error invalid signature" value="-24">
+    <constant name="error invalid signature" value="-23">
         Invalid signature.
     </constant>
 
-    <constant name="error user is not present in group message" value="-25">
-        User is not present in group message.
+    <constant name="error cannot remove myself" value="-24">
+        Cannot remove myself.
     </constant>
 
-    <constant name="error epoch mismatch" value="-26">
+    <constant name="error epoch mismatch" value="-25">
         Epoch mismatch.
     </constant>
 
-    <constant name="error participant not found" value="-27">
-        Participant not found.
-    </constant>
-
-    <constant name="error epoch not found" value="-28">
+    <constant name="error epoch not found" value="-26">
         Epoch not found.
     </constant>
 
-    <constant name="error session id mismatch" value="-29">
+    <constant name="error session id mismatch" value="-27">
         Session id mismatch.
+    </constant>
+
+    <constant name="error simultaneous group user operation" value="-28">
+        Simultaneous group user operation.
+    </constant>
+
+    <constant name="error myself is included in info" value="-29">
+        Myself is included in info.
     </constant>
 
 </enum>

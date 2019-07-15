@@ -198,15 +198,7 @@ vscf_hkdf_init(vscf_hkdf_t *self) {
 VSCF_PUBLIC void
 vscf_hkdf_cleanup(vscf_hkdf_t *self) {
 
-    if (self == NULL || self->info == NULL) {
-        return;
-    }
-
-    if (self->refcnt == 0) {
-        return;
-    }
-
-    if (--self->refcnt > 0) {
+    if (self == NULL) {
         return;
     }
 
@@ -239,11 +231,32 @@ vscf_hkdf_new(void) {
 VSCF_PUBLIC void
 vscf_hkdf_delete(vscf_hkdf_t *self) {
 
+    if (self == NULL) {
+        return;
+    }
+
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscf_hkdf_cleanup(self);
 
-    if (self && (self->refcnt == 0)) {
-        vscf_dealloc(self);
-    }
+    vscf_dealloc(self);
 }
 
 //
@@ -264,7 +277,6 @@ vscf_hkdf_destroy(vscf_hkdf_t **self_ref) {
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_hkdf_t *
 vscf_hkdf_shallow_copy(vscf_hkdf_t *self) {
@@ -293,6 +305,16 @@ vscf_hkdf_impl(vscf_hkdf_t *self) {
 }
 
 //
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_hkdf_impl_const(const vscf_hkdf_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    return (const vscf_impl_t *)(self);
+}
+
+//
 //  Setup dependency to the interface 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
@@ -316,7 +338,7 @@ vscf_hkdf_take_hash(vscf_hkdf_t *self, vscf_impl_t *hash) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(self->hash == NULL);
+    VSCF_ASSERT(self->hash == NULL);
 
     VSCF_ASSERT(vscf_hash_is_implemented(hash));
 

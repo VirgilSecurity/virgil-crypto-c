@@ -80,21 +80,14 @@ enum {
     vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES = 200,
     vscr_ratchet_common_hidden_MAX_SKIPPED_DH = 5,
     vscr_ratchet_common_hidden_MAX_MESSAGE_GAP = 2000,
-    vscr_ratchet_common_hidden_MAX_EPOCHES_COUNT = 5,
-    vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHES_COUNT = 4,
+    vscr_ratchet_common_hidden_MAX_EPOCHS_COUNT = 5,
+    vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHS_COUNT = 4,
     vscr_ratchet_common_hidden_PREKEY_MESSAGE_LEN = 139,
-    vscr_ratchet_common_hidden_MAX_GROUP_REGULAR_MESSAGE_LEN = 32918,
-    vscr_ratchet_common_hidden_MAX_GROUP_INFO_MESSAGE_LEN = 11049,
-    vscr_ratchet_common_hidden_MIN_PARTICIPANT_LEN = 106,
-    vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN = 32768
+    vscr_ratchet_common_hidden_MAX_GROUP_INFO_MESSAGE_LEN = 82,
+    vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN = 32768,
+    vscr_ratchet_common_hidden_MAX_GROUP_SESSION_LEN = 4191503,
+    vscr_ratchet_common_hidden_MAX_SESSION_LEN = 42531
 };
-
-VSCR_PUBLIC bool
-vscr_ratchet_common_hidden_buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void**arg,
-        size_t max_size);
-
-VSCR_PUBLIC bool
-vscr_ratchet_common_hidden_buffer_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg);
 
 
 // --------------------------------------------------------------------------

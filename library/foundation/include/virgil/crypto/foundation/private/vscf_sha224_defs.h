@@ -59,6 +59,7 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_sha224.h"
+#include "vscf_atomic.h"
 
 #include <mbedtls/sha256.h>
 
@@ -88,7 +89,7 @@ struct vscf_sha224_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
     //
     //  Implementation specific context.
     //

@@ -80,7 +80,7 @@ import VSCFoundation
     /// Deserialize Public Key by using internal ASN.1 reader.
     /// Note, that caller code is responsible to reset ASN.1 reader with
     /// an input buffer.
-    @objc public func deserializePublicKeyInplace() throws -> RawKey {
+    @objc public func deserializePublicKeyInplace() throws -> RawPublicKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
@@ -88,13 +88,13 @@ import VSCFoundation
 
         try FoundationError.handleStatus(fromC: error.status)
 
-        return RawKey.init(take: proxyResult!)
+        return RawPublicKey.init(take: proxyResult!)
     }
 
     /// Deserialize Private Key by using internal ASN.1 reader.
     /// Note, that caller code is responsible to reset ASN.1 reader with
     /// an input buffer.
-    @objc public func deserializePrivateKeyInplace() throws -> RawKey {
+    @objc public func deserializePrivateKeyInplace() throws -> RawPrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
@@ -102,11 +102,11 @@ import VSCFoundation
 
         try FoundationError.handleStatus(fromC: error.status)
 
-        return RawKey.init(take: proxyResult!)
+        return RawPrivateKey.init(take: proxyResult!)
     }
 
     /// Deserialize given public key as an interchangeable format to the object.
-    @objc public func deserializePublicKey(publicKeyData: Data) throws -> RawKey {
+    @objc public func deserializePublicKey(publicKeyData: Data) throws -> RawPublicKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
@@ -117,11 +117,11 @@ import VSCFoundation
 
         try FoundationError.handleStatus(fromC: error.status)
 
-        return RawKey.init(take: proxyResult!)
+        return RawPublicKey.init(take: proxyResult!)
     }
 
     /// Deserialize given private key as an interchangeable format to the object.
-    @objc public func deserializePrivateKey(privateKeyData: Data) throws -> RawKey {
+    @objc public func deserializePrivateKey(privateKeyData: Data) throws -> RawPrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
@@ -132,6 +132,6 @@ import VSCFoundation
 
         try FoundationError.handleStatus(fromC: error.status)
 
-        return RawKey.init(take: proxyResult!)
+        return RawPrivateKey.init(take: proxyResult!)
     }
 }

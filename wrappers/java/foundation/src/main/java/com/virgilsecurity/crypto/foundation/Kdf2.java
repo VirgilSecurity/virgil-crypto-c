@@ -49,17 +49,18 @@ public class Kdf2 implements AutoCloseable, Alg, Kdf {
         this.cCtx = FoundationJNI.INSTANCE.kdf2_new();
     }
 
+    public void setHash(Hash hash) {
+        FoundationJNI.INSTANCE.kdf2_setHash(this.cCtx, hash);
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Kdf2(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
-    public void setHash(Hash hash) {
-        FoundationJNI.INSTANCE.kdf2_setHash(this.cCtx, hash);
+    public static Kdf2 getInstance(long cCtx) {
+        Kdf2 newInstance = new Kdf2();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

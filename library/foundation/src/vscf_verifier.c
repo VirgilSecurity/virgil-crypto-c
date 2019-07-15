@@ -55,10 +55,14 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_verifier_defs.h"
-#include "vscf_alg_factory.h"
 #include "vscf_alg.h"
 #include "vscf_hash.h"
-#include "vscf_verify_hash.h"
+#include "vscf_key_signer.h"
+#include "vscf_public_key.h"
+#include "vscf_asn1rd.h"
+#include "vscf_alg_info_der_deserializer.h"
+#include "vscf_alg_factory.h"
+#include "vscf_key_alg_factory.h"
 
 // clang-format on
 //  @end
@@ -120,15 +124,9 @@ vscf_verifier_cleanup(vscf_verifier_t *self) {
         return;
     }
 
-    if (self->refcnt == 0) {
-        return;
-    }
+    vscf_verifier_cleanup_ctx(self);
 
-    if (--self->refcnt == 0) {
-        vscf_verifier_cleanup_ctx(self);
-
-        vscf_zeroize(self, sizeof(vscf_verifier_t));
-    }
+    vscf_zeroize(self, sizeof(vscf_verifier_t));
 }
 
 //
@@ -149,7 +147,7 @@ vscf_verifier_new(void) {
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
 vscf_verifier_delete(vscf_verifier_t *self) {
@@ -158,11 +156,30 @@ vscf_verifier_delete(vscf_verifier_t *self) {
         return;
     }
 
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
     vscf_verifier_cleanup(self);
 
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+    if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
     }
 }
@@ -190,7 +207,17 @@ vscf_verifier_shallow_copy(vscf_verifier_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
     ++self->refcnt;
+    #endif
 
     return self;
 }
@@ -277,7 +304,7 @@ vscf_verifier_reset(vscf_verifier_t *self, vsc_data_t signature) {
 //  Add given data to the signed data.
 //
 VSCF_PUBLIC void
-vscf_verifier_update(vscf_verifier_t *self, vsc_data_t data) {
+vscf_verifier_append_data(vscf_verifier_t *self, vsc_data_t data) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->hash);
@@ -296,7 +323,18 @@ vscf_verifier_verify(vscf_verifier_t *self, vscf_impl_t *public_key) {
     VSCF_ASSERT_PTR(self->hash);
     VSCF_ASSERT_PTR(self->raw_signature);
     VSCF_ASSERT_PTR(public_key);
-    VSCF_ASSERT(vscf_verify_hash_is_implemented(public_key));
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_key(public_key, NULL, &error);
+    VSCF_ASSERT(!vscf_error_has_error(&error));
+
+    if (!vscf_key_signer_is_implemented(key_alg)) {
+        vscf_impl_destroy(&key_alg);
+        return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+    }
 
     //
     //  Get digest.
@@ -304,9 +342,11 @@ vscf_verifier_verify(vscf_verifier_t *self, vscf_impl_t *public_key) {
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hash_digest_len(vscf_hash_api(self->hash)));
     vscf_hash_finish(self->hash, digest);
 
-    bool is_valid = vscf_verify_hash(
-            public_key, vsc_buffer_data(digest), vscf_alg_alg_id(self->hash), vsc_buffer_data(self->raw_signature));
 
+    bool is_valid = vscf_key_signer_verify_hash(key_alg, public_key, vscf_alg_alg_id(self->hash),
+            vsc_buffer_data(digest), vsc_buffer_data(self->raw_signature));
+
+    vscf_impl_destroy(&key_alg);
     vsc_buffer_destroy(&digest);
 
     return is_valid;

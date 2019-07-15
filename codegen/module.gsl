@@ -55,6 +55,8 @@ gsl from "component.gsl"
 function _K24_resolve_dependency_to_inner_class(instance, scope, module, source)
     check_arguments (my, "instance, module, source", my)
 
+
+
     my.class = my.source->class(class.name = my.instance.class) ?
 
     if ! defined (my.class)
@@ -81,7 +83,7 @@ endfunction
 function module_resolve_inner_dependencies (module, source)
     check_arguments (my, "module, source", my)
 
-    for my.module.method
+    for my.module.method where !string_equal(method.declaration, "external")
         for method.argument where defined(0.class)
             _K24_resolve_dependency_to_inner_class(argument, method.declaration, my.module, my.source)
         endfor
@@ -91,7 +93,7 @@ function module_resolve_inner_dependencies (module, source)
         endfor
     endfor
 
-    for my.module.callback
+    for my.module.callback where !string_equal(callback.declaration, "external")
         for callback.argument where defined(0.class)
             _K24_resolve_dependency_to_inner_class(argument, callback.declaration, my.module, my.source)
         endfor

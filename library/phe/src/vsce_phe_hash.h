@@ -48,7 +48,6 @@
 #define VSCE_PHE_HASH_H_INCLUDED
 
 #include "vsce_library.h"
-#include "vsce_simple_swu.h"
 #include "vsce_phe_common.h"
 
 #include <mbedtls/ecp.h>
@@ -109,7 +108,7 @@ vsce_phe_hash_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCE_PUBLIC void
 vsce_phe_hash_delete(vsce_phe_hash_t *self);
@@ -127,30 +126,8 @@ vsce_phe_hash_destroy(vsce_phe_hash_t **self_ref);
 VSCE_PUBLIC vsce_phe_hash_t *
 vsce_phe_hash_shallow_copy(vsce_phe_hash_t *self);
 
-//
-//  Setup dependency to the class 'simple swu' with shared ownership.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_use_simple_swu(vsce_phe_hash_t *self, vsce_simple_swu_t *simple_swu);
-
-//
-//  Setup dependency to the class 'simple swu' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_take_simple_swu(vsce_phe_hash_t *self, vsce_simple_swu_t *simple_swu);
-
-//
-//  Release dependency to the class 'simple swu'.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_release_simple_swu(vsce_phe_hash_t *self);
-
 VSCE_PUBLIC void
 vsce_phe_hash_derive_account_key(vsce_phe_hash_t *self, const mbedtls_ecp_point *m, vsc_buffer_t *account_key);
-
-VSCE_PUBLIC void
-vsce_phe_hash_data_to_point(vsce_phe_hash_t *self, vsc_data_t data, mbedtls_ecp_point *p);
 
 VSCE_PUBLIC void
 vsce_phe_hash_hc0(vsce_phe_hash_t *self, vsc_data_t nc, vsc_data_t password, mbedtls_ecp_point *hc0);

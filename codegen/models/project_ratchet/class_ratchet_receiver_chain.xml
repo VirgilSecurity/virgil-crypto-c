@@ -1,6 +1,6 @@
 <class name="ratchet receiver chain" context="public" scope="internal">
 
-    <require header="RatchetSession.pb.h" scope="public"/>
+    <require header="vscr_RatchetSession.pb.h" scope="public"/>
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 
@@ -14,11 +14,11 @@
     <property name="chain key" class="ratchet chain key" access="readwrite" is_reference="0"/>
 
     <method name="serialize" is_const="1">
-        <argument name="receiver chain pb" class="ReceiverChain" library="nanopb" access="readwrite"/>
+        <argument name="receiver chain pb" class="vscr_ReceiverChain" library="nanopb" access="readwrite"/>
     </method>
 
     <method name="deserialize" is_static="1">
-        <argument name="receiver chain pb" class="ReceiverChain" library="nanopb"/>
+        <argument name="receiver chain pb" class="vscr_ReceiverChain" library="nanopb"/>
         <argument name="receiver chain" class="self" access="readwrite"/>
     </method>
 

@@ -1,0 +1,77 @@
+<interface name="key cipher">
+    Provide data encryption and decryption interface with asymmetric keys.
+
+    <inherit interface="key alg"/>
+
+    <method name="can encrypt" is_const="1">
+        Check if algorithm can encrypt data with a given key.
+
+        <argument name="public key" interface="public key"/>
+        <argument name="data len" type="size"/>
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="encrypted len" is_const="1">
+        Calculate required buffer length to hold the encrypted data.
+
+        <argument name="public key" interface="public key"/>
+        <argument name="data len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="encrypt" is_const="1">
+        Encrypt data with a given public key.
+
+        <argument name="public key" interface="public key"/>
+        <argument name="data" class="data"/>
+        <argument name="out" class="buffer">
+            <length method="encrypted len">
+                <proxy argument="public key" to="public key"/>
+                <proxy argument="data" to="data len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="can decrypt" is_const="1">
+        Check if algorithm can decrypt data with a given key.
+        However, success result of decryption is not guaranteed.
+
+        <argument name="private key" interface="private key"/>
+        <argument name="data len" type="size"/>
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="decrypted len" is_const="1">
+        Calculate required buffer length to hold the decrypted data.
+
+        <argument name="private key" interface="private key"/>
+        <argument name="data len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="decrypt" is_const="1">
+        Decrypt given data.
+
+        <argument name="private key" interface="private key"/>
+        <argument name="data" class="data"/>
+        <argument name="out" class="buffer">
+            <length method="decrypted len">
+                <proxy argument="private key" to="private key"/>
+                <proxy argument="data" to="data len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+</interface>
