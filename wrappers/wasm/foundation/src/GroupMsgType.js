@@ -35,50 +35,25 @@
  */
 
 
-const initAlgId = (Module, modules) => {
+const initGroupMsgType = (Module, modules) => {
     /**
-     * Define implemented algorithm identificator.
+     * Represents group message type
      */
-    const AlgId = Object.freeze({
+    const GroupMsgType = Object.freeze({
 
-        NONE: 0,
+        /**
+         * Group info type with encryption key.
+         * This type of message should be encrypted before transferring.
+         */
+        GROUP_INFO: 0,
 
-        SHA224: 1,
-
-        SHA256: 2,
-
-        SHA384: 3,
-
-        SHA512: 4,
-
-        KDF1: 5,
-
-        KDF2: 6,
-
-        RSA: 7,
-
-        ECC: 8,
-
-        ED25519: 9,
-
-        CURVE25519: 10,
-
-        SECP256R1: 11,
-
-        AES256_GCM: 12,
-
-        AES256_CBC: 13,
-
-        HMAC: 14,
-
-        HKDF: 15,
-
-        PKCS5_PBKDF2: 16,
-
-        PKCS5_PBES2: 17
+        /**
+         * Regular group message with encrypted text.
+         */
+        REGULAR: 1
     });
 
-    return AlgId;
+    return GroupMsgType;
 };
 
-module.exports = initAlgId;
+module.exports = initGroupMsgType;

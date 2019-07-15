@@ -37,11 +37,11 @@
 
 const precondition = require('./precondition');
 
-const initRsaPublicKey = (Module, modules) => {
+const initGroupSessionTicket = (Module, modules) => {
     /**
-     * Handles RSA public key.
+     * Group ticket used to start group session, remove participants or proactive to rotate encryption key.
      */
-    class RsaPublicKey {
+    class GroupSessionTicket {
 
         /**
          * Create object with underlying C context.
@@ -49,10 +49,10 @@ const initRsaPublicKey = (Module, modules) => {
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
         constructor(ctxPtr) {
-            this.name = 'RsaPublicKey';
+            this.name = 'GroupSessionTicket';
 
             if (typeof ctxPtr === 'undefined') {
-                this.ctxPtr = Module._vscf_rsa_public_key_new();
+                this.ctxPtr = Module._vscf_group_session_ticket_new();
             } else {
                 this.ctxPtr = ctxPtr;
             }
@@ -65,7 +65,7 @@ const initRsaPublicKey = (Module, modules) => {
          */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
-            return new RsaPublicKey(Module._vscf_rsa_public_key_shallow_copy(ctxPtr));
+            return new GroupSessionTicket(Module._vscf_group_session_ticket_shallow_copy(ctxPtr));
         }
 
         /**
@@ -75,7 +75,7 @@ const initRsaPublicKey = (Module, modules) => {
          */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
-            return new RsaPublicKey(ctxPtr);
+            return new GroupSessionTicket(ctxPtr);
         }
 
         /**
@@ -83,95 +83,74 @@ const initRsaPublicKey = (Module, modules) => {
          */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
-                Module._vscf_rsa_public_key_delete(this.ctxPtr);
+                Module._vscf_group_session_ticket_delete(this.ctxPtr);
                 this.ctxPtr = null;
             }
         }
 
         /**
-         * Algorithm identifier the key belongs to.
+         * Random used to generate keys
          */
-        algId() {
+        set rng(rng) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_alg_id(this.ctxPtr);
-            return proxyResult;
+            precondition.ensureImplementInterface('rng', rng, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
+            Module._vscf_group_session_ticket_release_rng(this.ctxPtr)
+            Module._vscf_group_session_ticket_use_rng(this.ctxPtr, rng.ctxPtr)
         }
 
         /**
-         * Return algorithm information that can be used for serialization.
+         * Setups default dependencies:
+         * - RNG: CTR DRBG
          */
-        algInfo() {
+        setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            const proxyResult = Module._vscf_group_session_ticket_setup_defaults(this.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
+
+        /**
+         * Set this ticket to start new group session.
+         */
+        setupTicketAsNew(sessionId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('sessionId', sessionId);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const sessionIdSize = sessionId.length * sessionId.BYTES_PER_ELEMENT;
+            const sessionIdPtr = Module._malloc(sessionIdSize);
+            Module.HEAP8.set(sessionId, sessionIdPtr);
+
+            //  Create C structure vsc_data_t.
+            const sessionIdCtxSize = Module._vsc_data_ctx_size();
+            const sessionIdCtxPtr = Module._malloc(sessionIdCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(sessionIdCtxPtr, sessionIdPtr, sessionIdSize);
+
+            try {
+                const proxyResult = Module._vscf_group_session_ticket_setup_ticket_as_new(this.ctxPtr, sessionIdCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            } finally {
+                Module._free(sessionIdPtr);
+                Module._free(sessionIdCtxPtr);
+            }
+        }
+
+        /**
+         * Returns message that should be sent to all participants using secure channel.
+         */
+        getTicketMessage() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_alg_info(this.ctxPtr);
+            proxyResult = Module._vscf_group_session_ticket_get_ticket_message(this.ctxPtr);
 
-            const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
+            const jsResult = modules.GroupSessionMessage.newAndUseCContext(proxyResult);
             return jsResult;
-        }
-
-        /**
-         * Length of the key in bytes.
-         */
-        len() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_len(this.ctxPtr);
-            return proxyResult;
-        }
-
-        /**
-         * Length of the key in bits.
-         */
-        bitlen() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_bitlen(this.ctxPtr);
-            return proxyResult;
-        }
-
-        /**
-         * Return tag of an associated algorithm that can handle this key.
-         */
-        implTag() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_impl_tag(this.ctxPtr);
-            return proxyResult;
-        }
-
-        /**
-         * Check that key is valid.
-         * Note, this operation can be slow.
-         */
-        isValid() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_is_valid(this.ctxPtr);
-
-            const booleanResult = !!proxyResult;
-            return booleanResult;
-        }
-
-        /**
-         * Return public key exponent.
-         */
-        keyExponent() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_key_exponent(this.ctxPtr);
-            return proxyResult;
         }
     }
 
-    return RsaPublicKey;
+    return GroupSessionTicket;
 };
 
-module.exports = initRsaPublicKey;
+module.exports = initGroupSessionTicket;

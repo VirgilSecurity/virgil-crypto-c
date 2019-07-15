@@ -70,35 +70,33 @@ const initFoundationInterfaceTag = (Module, modules) => {
 
         ENTROPY_SOURCE: 16,
 
-        GENERATE_EPHEMERAL_KEY: 17,
+        HASH: 17,
 
-        GENERATE_KEY: 18,
+        KDF: 18,
 
-        HASH: 19,
+        KEY: 19,
 
-        KDF: 20,
+        KEY_ALG: 20,
 
-        KEY: 21,
+        KEY_CIPHER: 21,
 
         KEY_DESERIALIZER: 22,
 
         KEY_SERIALIZER: 23,
 
-        MAC: 24,
+        KEY_SIGNER: 24,
 
-        MESSAGE_INFO_SERIALIZER: 25,
+        MAC: 25,
 
-        PRIVATE_KEY: 26,
+        MESSAGE_INFO_SERIALIZER: 26,
 
-        PUBLIC_KEY: 27,
+        PRIVATE_KEY: 27,
 
-        RANDOM: 28,
+        PUBLIC_KEY: 28,
 
-        SALTED_KDF: 29,
+        RANDOM: 29,
 
-        SIGN_HASH: 30,
-
-        VERIFY_HASH: 31
+        SALTED_KDF: 30
     });
 
     return FoundationInterfaceTag;

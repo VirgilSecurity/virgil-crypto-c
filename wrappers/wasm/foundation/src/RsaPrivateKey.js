@@ -38,29 +38,10 @@
 const precondition = require('./precondition');
 
 const initRsaPrivateKey = (Module, modules) => {
+    /**
+     * Handles RSA private key.
+     */
     class RsaPrivateKey {
-
-        /**
-         * Define whether a private key can be imported or not.
-         */
-        static get CAN_IMPORT_PRIVATE_KEY() {
-            return true;
-        }
-
-        get CAN_IMPORT_PRIVATE_KEY() {
-            return RsaPrivateKey.CAN_IMPORT_PRIVATE_KEY;
-        }
-
-        /**
-         * Define whether a private key can be exported or not.
-         */
-        static get CAN_EXPORT_PRIVATE_KEY() {
-            return true;
-        }
-
-        get CAN_EXPORT_PRIVATE_KEY() {
-            return RsaPrivateKey.CAN_EXPORT_PRIVATE_KEY;
-        }
 
         /**
          * Create object with underlying C context.
@@ -107,29 +88,8 @@ const initRsaPrivateKey = (Module, modules) => {
             }
         }
 
-        set random(random) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
-            Module._vscf_rsa_private_key_release_random(this.ctxPtr)
-            Module._vscf_rsa_private_key_use_random(this.ctxPtr, random.ctxPtr)
-        }
-
-        set asn1rd(asn1rd) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('asn1rd', asn1rd, 'Foundation.Asn1Reader', modules.FoundationInterfaceTag.ASN1_READER, modules.FoundationInterface);
-            Module._vscf_rsa_private_key_release_asn1rd(this.ctxPtr)
-            Module._vscf_rsa_private_key_use_asn1rd(this.ctxPtr, asn1rd.ctxPtr)
-        }
-
-        set asn1wr(asn1wr) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('asn1wr', asn1wr, 'Foundation.Asn1Writer', modules.FoundationInterfaceTag.ASN1_WRITER, modules.FoundationInterface);
-            Module._vscf_rsa_private_key_release_asn1wr(this.ctxPtr)
-            Module._vscf_rsa_private_key_use_asn1wr(this.ctxPtr, asn1wr.ctxPtr)
-        }
-
         /**
-         * Provide algorithm identificator.
+         * Algorithm identifier the key belongs to.
          */
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
@@ -140,160 +100,67 @@ const initRsaPrivateKey = (Module, modules) => {
         }
 
         /**
-         * Produce object with algorithm information and configuration parameters.
+         * Return algorithm information that can be used for serialization.
          */
-        produceAlgInfo() {
+        algInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_private_key_produce_alg_info(this.ctxPtr);
+            proxyResult = Module._vscf_rsa_private_key_alg_info(this.ctxPtr);
 
-            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
-        }
-
-        /**
-         * Restore algorithm configuration from the given object.
-         */
-        restoreAlgInfo(algInfo) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-            const proxyResult = Module._vscf_rsa_private_key_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
          * Length of the key in bytes.
          */
-        keyLen() {
+        len() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_private_key_key_len(this.ctxPtr);
+            proxyResult = Module._vscf_rsa_private_key_len(this.ctxPtr);
             return proxyResult;
         }
 
         /**
          * Length of the key in bits.
          */
-        keyBitlen() {
+        bitlen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_private_key_key_bitlen(this.ctxPtr);
+            proxyResult = Module._vscf_rsa_private_key_bitlen(this.ctxPtr);
             return proxyResult;
         }
 
         /**
-         * Generate new private or secret key.
+         * Return tag of an associated algorithm that can handle this key.
+         */
+        implTag() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_rsa_private_key_impl_tag(this.ctxPtr);
+            return proxyResult;
+        }
+
+        /**
+         * Check that key is valid.
          * Note, this operation can be slow.
          */
-        generateKey() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            const proxyResult = Module._vscf_rsa_private_key_generate_key(this.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
-        }
-
-        /**
-         * Decrypt given data.
-         */
-        decrypt(data) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureByteArray('data', data);
-
-            //  Copy bytes from JS memory to the WASM memory.
-            const dataSize = data.length * data.BYTES_PER_ELEMENT;
-            const dataPtr = Module._malloc(dataSize);
-            Module.HEAP8.set(data, dataPtr);
-
-            //  Create C structure vsc_data_t.
-            const dataCtxSize = Module._vsc_data_ctx_size();
-            const dataCtxPtr = Module._malloc(dataCtxSize);
-
-            //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
-            const outCapacity = this.decryptedLen(data.length);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
-            try {
-                const proxyResult = Module._vscf_rsa_private_key_decrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
-                modules.FoundationError.handleStatusCode(proxyResult);
-
-                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
-                return out;
-            } finally {
-                Module._free(dataPtr);
-                Module._free(dataCtxPtr);
-                Module._vsc_buffer_delete(outCtxPtr);
-            }
-        }
-
-        /**
-         * Calculate required buffer length to hold the decrypted data.
-         */
-        decryptedLen(dataLen) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureNumber('dataLen', dataLen);
-
-            let proxyResult;
-            proxyResult = Module._vscf_rsa_private_key_decrypted_len(this.ctxPtr, dataLen);
-            return proxyResult;
-        }
-
-        /**
-         * Return length in bytes required to hold signature.
-         */
-        signatureLen() {
+        isValid() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_private_key_signature_len(this.ctxPtr);
-            return proxyResult;
+            proxyResult = Module._vscf_rsa_private_key_is_valid(this.ctxPtr);
+
+            const booleanResult = !!proxyResult;
+            return booleanResult;
         }
 
         /**
-         * Sign data given private key.
-         */
-        signHash(hashDigest, hashId) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureByteArray('hashDigest', hashDigest);
-            precondition.ensureNumber('hashId', hashId);
-
-            //  Copy bytes from JS memory to the WASM memory.
-            const hashDigestSize = hashDigest.length * hashDigest.BYTES_PER_ELEMENT;
-            const hashDigestPtr = Module._malloc(hashDigestSize);
-            Module.HEAP8.set(hashDigest, hashDigestPtr);
-
-            //  Create C structure vsc_data_t.
-            const hashDigestCtxSize = Module._vsc_data_ctx_size();
-            const hashDigestCtxPtr = Module._malloc(hashDigestCtxSize);
-
-            //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(hashDigestCtxPtr, hashDigestPtr, hashDigestSize);
-
-            const signatureCapacity = this.signatureLen();
-            const signatureCtxPtr = Module._vsc_buffer_new_with_capacity(signatureCapacity);
-
-            try {
-                const proxyResult = Module._vscf_rsa_private_key_sign_hash(this.ctxPtr, hashDigestCtxPtr, hashId, signatureCtxPtr);
-                modules.FoundationError.handleStatusCode(proxyResult);
-
-                const signaturePtr = Module._vsc_buffer_bytes(signatureCtxPtr);
-                const signaturePtrLen = Module._vsc_buffer_len(signatureCtxPtr);
-                const signature = Module.HEAPU8.slice(signaturePtr, signaturePtr + signaturePtrLen);
-                return signature;
-            } finally {
-                Module._free(hashDigestPtr);
-                Module._free(hashDigestCtxPtr);
-                Module._vsc_buffer_delete(signatureCtxPtr);
-            }
-        }
-
-        /**
-         * Extract public part of the key.
+         * Extract public key from the private key.
          */
         extractPublicKey() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
@@ -303,93 +170,6 @@ const initRsaPrivateKey = (Module, modules) => {
 
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
-        }
-
-        /**
-         * Export private key in the binary format.
-         *
-         * Binary format must be defined in the key specification.
-         * For instance, RSA private key must be exported in format defined in
-         * RFC 3447 Appendix A.1.2.
-         */
-        exportPrivateKey() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            const outCapacity = this.exportedPrivateKeyLen();
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
-            try {
-                const proxyResult = Module._vscf_rsa_private_key_export_private_key(this.ctxPtr, outCtxPtr);
-                modules.FoundationError.handleStatusCode(proxyResult);
-
-                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
-                return out;
-            } finally {
-                Module._vsc_buffer_delete(outCtxPtr);
-            }
-        }
-
-        /**
-         * Return length in bytes required to hold exported private key.
-         */
-        exportedPrivateKeyLen() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_rsa_private_key_exported_private_key_len(this.ctxPtr);
-            return proxyResult;
-        }
-
-        /**
-         * Import private key from the binary format.
-         *
-         * Binary format must be defined in the key specification.
-         * For instance, RSA private key must be imported from the format defined in
-         * RFC 3447 Appendix A.1.2.
-         */
-        importPrivateKey(data) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureByteArray('data', data);
-
-            //  Copy bytes from JS memory to the WASM memory.
-            const dataSize = data.length * data.BYTES_PER_ELEMENT;
-            const dataPtr = Module._malloc(dataSize);
-            Module.HEAP8.set(data, dataPtr);
-
-            //  Create C structure vsc_data_t.
-            const dataCtxSize = Module._vsc_data_ctx_size();
-            const dataCtxPtr = Module._malloc(dataCtxSize);
-
-            //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
-            try {
-                const proxyResult = Module._vscf_rsa_private_key_import_private_key(this.ctxPtr, dataCtxPtr);
-                modules.FoundationError.handleStatusCode(proxyResult);
-            } finally {
-                Module._free(dataPtr);
-                Module._free(dataCtxPtr);
-            }
-        }
-
-        /**
-         * Setup predefined values to the uninitialized class dependencies.
-         */
-        setupDefaults() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            const proxyResult = Module._vscf_rsa_private_key_setup_defaults(this.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
-        }
-
-        /**
-         * Setup key length in bits that is used for key generation.
-         */
-        setKeygenParams(bitlen) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureNumber('bitlen', bitlen);
-            Module._vscf_rsa_private_key_set_keygen_params(this.ctxPtr, bitlen);
         }
     }
 

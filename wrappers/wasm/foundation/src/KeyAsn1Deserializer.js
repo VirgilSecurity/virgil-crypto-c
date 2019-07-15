@@ -126,7 +126,7 @@ const initKeyAsn1Deserializer = (Module, modules) => {
                 const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = modules.RawKey.newAndTakeCContext(proxyResult);
+                const jsResult = modules.RawPublicKey.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(publicKeyDataPtr);
@@ -166,7 +166,7 @@ const initKeyAsn1Deserializer = (Module, modules) => {
                 const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = modules.RawKey.newAndTakeCContext(proxyResult);
+                const jsResult = modules.RawPrivateKey.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(privateKeyDataPtr);
@@ -203,7 +203,7 @@ const initKeyAsn1Deserializer = (Module, modules) => {
                 const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = modules.RawKey.newAndTakeCContext(proxyResult);
+                const jsResult = modules.RawPublicKey.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(errorCtxPtr);
@@ -230,7 +230,7 @@ const initKeyAsn1Deserializer = (Module, modules) => {
                 const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = modules.RawKey.newAndTakeCContext(proxyResult);
+                const jsResult = modules.RawPrivateKey.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(errorCtxPtr);

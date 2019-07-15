@@ -95,6 +95,13 @@ const initSigner = (Module, modules) => {
             Module._vscf_signer_use_hash(this.ctxPtr, hash.ctxPtr)
         }
 
+        set random(random) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
+            Module._vscf_signer_release_random(this.ctxPtr)
+            Module._vscf_signer_use_random(this.ctxPtr, random.ctxPtr)
+        }
+
         /**
          * Start a processing a new signature.
          */
@@ -106,7 +113,7 @@ const initSigner = (Module, modules) => {
         /**
          * Add given data to the signed data.
          */
-        update(data) {
+        appendData(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
@@ -123,7 +130,7 @@ const initSigner = (Module, modules) => {
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             try {
-                Module._vscf_signer_update(this.ctxPtr, dataCtxPtr);
+                Module._vscf_signer_append_data(this.ctxPtr, dataCtxPtr);
             } finally {
                 Module._free(dataPtr);
                 Module._free(dataCtxPtr);
@@ -135,7 +142,7 @@ const initSigner = (Module, modules) => {
          */
         signatureLen(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.SignHash', modules.FoundationInterfaceTag.SIGN_HASH, modules.FoundationInterface);
+            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
 
             let proxyResult;
             proxyResult = Module._vscf_signer_signature_len(this.ctxPtr, privateKey.ctxPtr);
@@ -147,7 +154,7 @@ const initSigner = (Module, modules) => {
          */
         sign(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.SignHash', modules.FoundationInterfaceTag.SIGN_HASH, modules.FoundationInterface);
+            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
 
             const signatureCapacity = this.signatureLen(privateKey);
             const signatureCtxPtr = Module._vsc_buffer_new_with_capacity(signatureCapacity);

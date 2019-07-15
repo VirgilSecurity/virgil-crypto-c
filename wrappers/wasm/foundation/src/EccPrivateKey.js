@@ -37,11 +37,11 @@
 
 const precondition = require('./precondition');
 
-const initRawKey = (Module, modules) => {
+const initEccPrivateKey = (Module, modules) => {
     /**
-     * Provide implementation agnostic representation of the asymmetric key.
+     * Handles ECC private key.
      */
-    class RawKey {
+    class EccPrivateKey {
 
         /**
          * Create object with underlying C context.
@@ -49,10 +49,10 @@ const initRawKey = (Module, modules) => {
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
         constructor(ctxPtr) {
-            this.name = 'RawKey';
+            this.name = 'EccPrivateKey';
 
             if (typeof ctxPtr === 'undefined') {
-                this.ctxPtr = Module._vscf_raw_key_new();
+                this.ctxPtr = Module._vscf_ecc_private_key_new();
             } else {
                 this.ctxPtr = ctxPtr;
             }
@@ -65,7 +65,7 @@ const initRawKey = (Module, modules) => {
          */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
-            return new RawKey(Module._vscf_raw_key_shallow_copy(ctxPtr));
+            return new EccPrivateKey(Module._vscf_ecc_private_key_shallow_copy(ctxPtr));
         }
 
         /**
@@ -75,7 +75,7 @@ const initRawKey = (Module, modules) => {
          */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
-            return new RawKey(ctxPtr);
+            return new EccPrivateKey(ctxPtr);
         }
 
         /**
@@ -83,79 +83,97 @@ const initRawKey = (Module, modules) => {
          */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
-                Module._vscf_raw_key_delete(this.ctxPtr);
+                Module._vscf_ecc_private_key_delete(this.ctxPtr);
                 this.ctxPtr = null;
             }
         }
 
         /**
-         * Creates raw key defined with algorithm and data.
-         * Note, data is copied.
-         */
-        static newWithData(algId, rawKeyData) {
-            precondition.ensureNumber('algId', algId);
-            precondition.ensureByteArray('rawKeyData', rawKeyData);
-
-            //  Copy bytes from JS memory to the WASM memory.
-            const rawKeyDataSize = rawKeyData.length * rawKeyData.BYTES_PER_ELEMENT;
-            const rawKeyDataPtr = Module._malloc(rawKeyDataSize);
-            Module.HEAP8.set(rawKeyData, rawKeyDataPtr);
-
-            //  Create C structure vsc_data_t.
-            const rawKeyDataCtxSize = Module._vsc_data_ctx_size();
-            const rawKeyDataCtxPtr = Module._malloc(rawKeyDataCtxSize);
-
-            //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(rawKeyDataCtxPtr, rawKeyDataPtr, rawKeyDataSize);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_raw_key_new_with_data(algId, rawKeyDataCtxPtr);
-
-                const jsResult = RawKey.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(rawKeyDataPtr);
-                Module._free(rawKeyDataCtxPtr);
-            }
-        }
-
-        /**
-         * Returns asymmetric algorithm type that raw key belongs to.
+         * Algorithm identifier the key belongs to.
          */
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_raw_key_alg_id(this.ctxPtr);
+            proxyResult = Module._vscf_ecc_private_key_alg_id(this.ctxPtr);
             return proxyResult;
         }
 
         /**
-         * Return raw key data.
+         * Return algorithm information that can be used for serialization.
          */
-        data() {
+        algInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
-            //  Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
+            let proxyResult;
+            proxyResult = Module._vscf_ecc_private_key_alg_info(this.ctxPtr);
 
-            try {
-                Module._vscf_raw_key_data(dataResultCtxPtr, this.ctxPtr);
+            const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
+            return jsResult;
+        }
 
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
+        /**
+         * Length of the key in bytes.
+         */
+        len() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_ecc_private_key_len(this.ctxPtr);
+            return proxyResult;
+        }
+
+        /**
+         * Length of the key in bits.
+         */
+        bitlen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_ecc_private_key_bitlen(this.ctxPtr);
+            return proxyResult;
+        }
+
+        /**
+         * Return tag of an associated algorithm that can handle this key.
+         */
+        implTag() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_ecc_private_key_impl_tag(this.ctxPtr);
+            return proxyResult;
+        }
+
+        /**
+         * Check that key is valid.
+         * Note, this operation can be slow.
+         */
+        isValid() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_ecc_private_key_is_valid(this.ctxPtr);
+
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
+
+        /**
+         * Extract public key from the private key.
+         */
+        extractPublicKey() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_ecc_private_key_extract_public_key(this.ctxPtr);
+
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+            return jsResult;
         }
     }
 
-    return RawKey;
+    return EccPrivateKey;
 };
 
-module.exports = initRawKey;
+module.exports = initEccPrivateKey;

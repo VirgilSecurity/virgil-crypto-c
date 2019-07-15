@@ -37,11 +37,11 @@
 
 const precondition = require('./precondition');
 
-const initRsaPublicKey = (Module, modules) => {
+const initRawPublicKey = (Module, modules) => {
     /**
-     * Handles RSA public key.
+     * Handles interchangeable public key representation.
      */
-    class RsaPublicKey {
+    class RawPublicKey {
 
         /**
          * Create object with underlying C context.
@@ -49,10 +49,10 @@ const initRsaPublicKey = (Module, modules) => {
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
         constructor(ctxPtr) {
-            this.name = 'RsaPublicKey';
+            this.name = 'RawPublicKey';
 
             if (typeof ctxPtr === 'undefined') {
-                this.ctxPtr = Module._vscf_rsa_public_key_new();
+                this.ctxPtr = Module._vscf_raw_public_key_new();
             } else {
                 this.ctxPtr = ctxPtr;
             }
@@ -65,7 +65,7 @@ const initRsaPublicKey = (Module, modules) => {
          */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
-            return new RsaPublicKey(Module._vscf_rsa_public_key_shallow_copy(ctxPtr));
+            return new RawPublicKey(Module._vscf_raw_public_key_shallow_copy(ctxPtr));
         }
 
         /**
@@ -75,7 +75,7 @@ const initRsaPublicKey = (Module, modules) => {
          */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
-            return new RsaPublicKey(ctxPtr);
+            return new RawPublicKey(ctxPtr);
         }
 
         /**
@@ -83,7 +83,7 @@ const initRsaPublicKey = (Module, modules) => {
          */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
-                Module._vscf_rsa_public_key_delete(this.ctxPtr);
+                Module._vscf_raw_public_key_delete(this.ctxPtr);
                 this.ctxPtr = null;
             }
         }
@@ -95,7 +95,7 @@ const initRsaPublicKey = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_alg_id(this.ctxPtr);
+            proxyResult = Module._vscf_raw_public_key_alg_id(this.ctxPtr);
             return proxyResult;
         }
 
@@ -106,7 +106,7 @@ const initRsaPublicKey = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_alg_info(this.ctxPtr);
+            proxyResult = Module._vscf_raw_public_key_alg_info(this.ctxPtr);
 
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
@@ -119,7 +119,7 @@ const initRsaPublicKey = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_len(this.ctxPtr);
+            proxyResult = Module._vscf_raw_public_key_len(this.ctxPtr);
             return proxyResult;
         }
 
@@ -130,7 +130,7 @@ const initRsaPublicKey = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_bitlen(this.ctxPtr);
+            proxyResult = Module._vscf_raw_public_key_bitlen(this.ctxPtr);
             return proxyResult;
         }
 
@@ -141,7 +141,7 @@ const initRsaPublicKey = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_impl_tag(this.ctxPtr);
+            proxyResult = Module._vscf_raw_public_key_impl_tag(this.ctxPtr);
             return proxyResult;
         }
 
@@ -153,25 +153,36 @@ const initRsaPublicKey = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_is_valid(this.ctxPtr);
+            proxyResult = Module._vscf_raw_public_key_is_valid(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         /**
-         * Return public key exponent.
+         * Return key data.
          */
-        keyExponent() {
+        data() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
-            let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_key_exponent(this.ctxPtr);
-            return proxyResult;
+            //  Create C structure vsc_data_t.
+            const dataResultCtxSize = Module._vsc_data_ctx_size();
+            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
+
+            try {
+                Module._vscf_raw_public_key_data(dataResultCtxPtr, this.ctxPtr);
+
+                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
+                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
+                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
+                return dataResult;
+            } finally {
+                Module._free(dataResultCtxPtr);
+            }
         }
     }
 
-    return RsaPublicKey;
+    return RawPublicKey;
 };
 
-module.exports = initRsaPublicKey;
+module.exports = initRawPublicKey;

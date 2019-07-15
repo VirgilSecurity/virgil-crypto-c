@@ -37,11 +37,33 @@
 
 const precondition = require('./precondition');
 
-const initRatchetMessage = (Module, modules) => {
+const initGroupSessionMessage = (Module, modules) => {
     /**
-     * Class represents ratchet message
+     * Class represents group session message
      */
-    class RatchetMessage {
+    class GroupSessionMessage {
+
+        /**
+         * Max message len
+         */
+        static get MAX_MESSAGE_LEN() {
+            return 30222;
+        }
+
+        get MAX_MESSAGE_LEN() {
+            return GroupSessionMessage.MAX_MESSAGE_LEN;
+        }
+
+        /**
+         * Message version
+         */
+        static get MESSAGE_VERSION() {
+            return 1;
+        }
+
+        get MESSAGE_VERSION() {
+            return GroupSessionMessage.MESSAGE_VERSION;
+        }
 
         /**
          * Create object with underlying C context.
@@ -49,10 +71,10 @@ const initRatchetMessage = (Module, modules) => {
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
         constructor(ctxPtr) {
-            this.name = 'RatchetMessage';
+            this.name = 'GroupSessionMessage';
 
             if (typeof ctxPtr === 'undefined') {
-                this.ctxPtr = Module._vscr_ratchet_message_new();
+                this.ctxPtr = Module._vscf_group_session_message_new();
             } else {
                 this.ctxPtr = ctxPtr;
             }
@@ -65,7 +87,7 @@ const initRatchetMessage = (Module, modules) => {
          */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
-            return new RatchetMessage(Module._vscr_ratchet_message_shallow_copy(ctxPtr));
+            return new GroupSessionMessage(Module._vscf_group_session_message_shallow_copy(ctxPtr));
         }
 
         /**
@@ -75,7 +97,7 @@ const initRatchetMessage = (Module, modules) => {
          */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
-            return new RatchetMessage(ctxPtr);
+            return new GroupSessionMessage(ctxPtr);
         }
 
         /**
@@ -83,7 +105,7 @@ const initRatchetMessage = (Module, modules) => {
          */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
-                Module._vscr_ratchet_message_delete(this.ctxPtr);
+                Module._vscf_group_session_message_delete(this.ctxPtr);
                 this.ctxPtr = null;
             }
         }
@@ -95,63 +117,65 @@ const initRatchetMessage = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscr_ratchet_message_get_type(this.ctxPtr);
+            proxyResult = Module._vscf_group_session_message_get_type(this.ctxPtr);
             return proxyResult;
         }
 
         /**
-         * Returns message counter in current asymmetric ratchet round.
+         * Returns session id.
+         * This method should be called only for group info type.
          */
-        getCounter() {
+        getSessionId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            //  Create C structure vsc_data_t.
+            const dataResultCtxSize = Module._vsc_data_ctx_size();
+            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
+
+            try {
+                Module._vscf_group_session_message_get_session_id(dataResultCtxPtr, this.ctxPtr);
+
+                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
+                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
+                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
+                return dataResult;
+            } finally {
+                Module._free(dataResultCtxPtr);
+            }
+        }
+
+        /**
+         * Returns message sender id.
+         * This method should be called only for regular message type.
+         */
+        getSenderId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            //  Create C structure vsc_data_t.
+            const dataResultCtxSize = Module._vsc_data_ctx_size();
+            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
+
+            try {
+                Module._vscf_group_session_message_get_sender_id(dataResultCtxPtr, this.ctxPtr);
+
+                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
+                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
+                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
+                return dataResult;
+            } finally {
+                Module._free(dataResultCtxPtr);
+            }
+        }
+
+        /**
+         * Returns message epoch.
+         */
+        getEpoch() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscr_ratchet_message_get_counter(this.ctxPtr);
+            proxyResult = Module._vscf_group_session_message_get_epoch(this.ctxPtr);
             return proxyResult;
-        }
-
-        /**
-         * Returns long-term public key, if message is prekey message.
-         */
-        getLongTermPublicKey() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            //  Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscr_ratchet_message_get_long_term_public_key(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
-        }
-
-        /**
-         * Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
-         */
-        getOneTimePublicKey() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            //  Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscr_ratchet_message_get_one_time_public_key(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
         }
 
         /**
@@ -161,7 +185,7 @@ const initRatchetMessage = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscr_ratchet_message_serialize_len(this.ctxPtr);
+            proxyResult = Module._vscf_group_session_message_serialize_len(this.ctxPtr);
             return proxyResult;
         }
 
@@ -175,7 +199,7 @@ const initRatchetMessage = (Module, modules) => {
             const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputCapacity);
 
             try {
-                Module._vscr_ratchet_message_serialize(this.ctxPtr, outputCtxPtr);
+                Module._vscf_group_session_message_serialize(this.ctxPtr, outputCtxPtr);
 
                 const outputPtr = Module._vsc_buffer_bytes(outputCtxPtr);
                 const outputPtrLen = Module._vsc_buffer_len(outputCtxPtr);
@@ -204,19 +228,19 @@ const initRatchetMessage = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(inputCtxPtr, inputPtr, inputSize);
 
-            const errorCtxSize = Module._vscr_error_ctx_size();
+            const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscr_error_reset(errorCtxPtr);
+            Module._vscf_error_reset(errorCtxPtr);
 
             let proxyResult;
 
             try {
-                proxyResult = Module._vscr_ratchet_message_deserialize(inputCtxPtr, errorCtxPtr);
+                proxyResult = Module._vscf_group_session_message_deserialize(inputCtxPtr, errorCtxPtr);
 
-                const errorStatus = Module._vscr_error_status(errorCtxPtr);
-                modules.RatchetError.handleStatusCode(errorStatus);
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
 
-                const jsResult = RatchetMessage.newAndTakeCContext(proxyResult);
+                const jsResult = GroupSessionMessage.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(inputPtr);
@@ -226,7 +250,7 @@ const initRatchetMessage = (Module, modules) => {
         }
     }
 
-    return RatchetMessage;
+    return GroupSessionMessage;
 };
 
-module.exports = initRatchetMessage;
+module.exports = initGroupSessionMessage;

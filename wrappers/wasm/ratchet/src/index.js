@@ -49,8 +49,10 @@ const initRatchetCommon = require('./RatchetCommon');
 const initRatchetKeyId = require('./RatchetKeyId');
 const initRatchetMessage = require('./RatchetMessage');
 const initRatchetSession = require('./RatchetSession');
+const initRatchetGroupParticipantsInfo = require('./RatchetGroupParticipantsInfo');
 const initRatchetGroupMessage = require('./RatchetGroupMessage');
 const initRatchetGroupTicket = require('./RatchetGroupTicket');
+const initRatchetGroupParticipantsIds = require('./RatchetGroupParticipantsIds');
 const initRatchetGroupSession = require('./RatchetGroupSession');
 
 const initProject = () => {
@@ -71,8 +73,10 @@ const initProject = () => {
             modules.RatchetKeyId = initRatchetKeyId(ratchetModule, modules);
             modules.RatchetMessage = initRatchetMessage(ratchetModule, modules);
             modules.RatchetSession = initRatchetSession(ratchetModule, modules);
+            modules.RatchetGroupParticipantsInfo = initRatchetGroupParticipantsInfo(ratchetModule, modules);
             modules.RatchetGroupMessage = initRatchetGroupMessage(ratchetModule, modules);
             modules.RatchetGroupTicket = initRatchetGroupTicket(ratchetModule, modules);
+            modules.RatchetGroupParticipantsIds = initRatchetGroupParticipantsIds(ratchetModule, modules);
             modules.RatchetGroupSession = initRatchetGroupSession(ratchetModule, modules);
             resolve(modules);
         };

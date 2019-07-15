@@ -91,7 +91,7 @@ const initKeyRecipientInfo = (Module, modules) => {
         /**
          * Create object and define all properties.
          */
-        static newWithMembers(recipientId, keyEncryptionAlgorithm, encryptedKey) {
+        static newWithData(recipientId, keyEncryptionAlgorithm, encryptedKey) {
             precondition.ensureByteArray('recipientId', recipientId);
             precondition.ensureImplementInterface('keyEncryptionAlgorithm', keyEncryptionAlgorithm, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
             precondition.ensureByteArray('encryptedKey', encryptedKey);
@@ -123,7 +123,7 @@ const initKeyRecipientInfo = (Module, modules) => {
             let proxyResult;
 
             try {
-                proxyResult = Module._vscf_key_recipient_info_new_with_members(recipientIdCtxPtr, keyEncryptionAlgorithm.ctxPtr, encryptedKeyCtxPtr);
+                proxyResult = Module._vscf_key_recipient_info_new_with_data(recipientIdCtxPtr, keyEncryptionAlgorithm.ctxPtr, encryptedKeyCtxPtr);
 
                 const jsResult = KeyRecipientInfo.newAndTakeCContext(proxyResult);
                 return jsResult;

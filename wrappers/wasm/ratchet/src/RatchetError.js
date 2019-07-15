@@ -144,31 +144,31 @@ const initRatchetError = (Module, modules) => {
             }
 
             if (statusCode == -23) {
-                throw new RatchetError("Duplicate id.");
-            }
-
-            if (statusCode == -24) {
                 throw new RatchetError("Invalid signature.");
             }
 
-            if (statusCode == -25) {
-                throw new RatchetError("User is not present in group message.");
+            if (statusCode == -24) {
+                throw new RatchetError("Cannot remove myself.");
             }
 
-            if (statusCode == -26) {
+            if (statusCode == -25) {
                 throw new RatchetError("Epoch mismatch.");
             }
 
-            if (statusCode == -27) {
-                throw new RatchetError("Participant not found.");
-            }
-
-            if (statusCode == -28) {
+            if (statusCode == -26) {
                 throw new RatchetError("Epoch not found.");
             }
 
-            if (statusCode == -29) {
+            if (statusCode == -27) {
                 throw new RatchetError("Session id mismatch.");
+            }
+
+            if (statusCode == -28) {
+                throw new RatchetError("Simultaneous group user operation.");
+            }
+
+            if (statusCode == -29) {
+                throw new RatchetError("Myself is included in info.");
             }
 
             throw new RatchetError("Unexpected status code:" + statusCode);

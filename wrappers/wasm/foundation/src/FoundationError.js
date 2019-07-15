@@ -171,6 +171,14 @@ const initFoundationError = (Module, modules) => {
                 throw new FoundationError("ASN.1 representation of a private key is corrupted.");
             }
 
+            if (statusCode == -225) {
+                throw new FoundationError("Key algorithm does not accept given type of public key.");
+            }
+
+            if (statusCode == -226) {
+                throw new FoundationError("Key algorithm does not accept given type of private key.");
+            }
+
             if (statusCode == -301) {
                 throw new FoundationError("Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.");
             }
@@ -201,6 +209,82 @@ const initFoundationError = (Module, modules) => {
 
             if (statusCode == -308) {
                 throw new FoundationError("Signature format is corrupted.");
+            }
+
+            if (statusCode == -401) {
+                throw new FoundationError("Brainkey password length is out of range.");
+            }
+
+            if (statusCode == -402) {
+                throw new FoundationError("Brainkey number length should be 32 byte.");
+            }
+
+            if (statusCode == -403) {
+                throw new FoundationError("Brainkey point length should be 65 bytes.");
+            }
+
+            if (statusCode == -404) {
+                throw new FoundationError("Brainkey name is out of range.");
+            }
+
+            if (statusCode == -405) {
+                throw new FoundationError("Brainkey internal error.");
+            }
+
+            if (statusCode == -406) {
+                throw new FoundationError("Brainkey point is invalid.");
+            }
+
+            if (statusCode == -407) {
+                throw new FoundationError("Brainkey number buffer length capacity should be >= 32 byte.");
+            }
+
+            if (statusCode == -408) {
+                throw new FoundationError("Brainkey point buffer length capacity should be >= 32 byte.");
+            }
+
+            if (statusCode == -409) {
+                throw new FoundationError("Brainkey seed buffer length capacity should be >= 32 byte.");
+            }
+
+            if (statusCode == -410) {
+                throw new FoundationError("Brainkey identity secret is invalid.");
+            }
+
+            if (statusCode == -501) {
+                throw new FoundationError("Invalid padding.");
+            }
+
+            if (statusCode == -601) {
+                throw new FoundationError("Protobuf error.");
+            }
+
+            if (statusCode == -701) {
+                throw new FoundationError("Session id doesnt match.");
+            }
+
+            if (statusCode == -702) {
+                throw new FoundationError("Epoch not found.");
+            }
+
+            if (statusCode == -703) {
+                throw new FoundationError("Wrong key type.");
+            }
+
+            if (statusCode == -704) {
+                throw new FoundationError("Invalid signature.");
+            }
+
+            if (statusCode == -705) {
+                throw new FoundationError("Ed25519 error.");
+            }
+
+            if (statusCode == -706) {
+                throw new FoundationError("Duplicate epoch.");
+            }
+
+            if (statusCode == -707) {
+                throw new FoundationError("Plain text too long.");
             }
 
             throw new FoundationError("Unexpected status code:" + statusCode);

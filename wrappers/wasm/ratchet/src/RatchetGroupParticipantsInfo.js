@@ -37,11 +37,11 @@
 
 const precondition = require('./precondition');
 
-const initRsaPublicKey = (Module, modules) => {
+const initRatchetGroupParticipantsInfo = (Module, modules) => {
     /**
-     * Handles RSA public key.
+     * Container for array of participants' info
      */
-    class RsaPublicKey {
+    class RatchetGroupParticipantsInfo {
 
         /**
          * Create object with underlying C context.
@@ -49,10 +49,10 @@ const initRsaPublicKey = (Module, modules) => {
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
         constructor(ctxPtr) {
-            this.name = 'RsaPublicKey';
+            this.name = 'RatchetGroupParticipantsInfo';
 
             if (typeof ctxPtr === 'undefined') {
-                this.ctxPtr = Module._vscf_rsa_public_key_new();
+                this.ctxPtr = Module._vscr_ratchet_group_participants_info_new();
             } else {
                 this.ctxPtr = ctxPtr;
             }
@@ -65,7 +65,7 @@ const initRsaPublicKey = (Module, modules) => {
          */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
-            return new RsaPublicKey(Module._vscf_rsa_public_key_shallow_copy(ctxPtr));
+            return new RatchetGroupParticipantsInfo(Module._vscr_ratchet_group_participants_info_shallow_copy(ctxPtr));
         }
 
         /**
@@ -75,7 +75,7 @@ const initRsaPublicKey = (Module, modules) => {
          */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
-            return new RsaPublicKey(ctxPtr);
+            return new RatchetGroupParticipantsInfo(ctxPtr);
         }
 
         /**
@@ -83,95 +83,69 @@ const initRsaPublicKey = (Module, modules) => {
          */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
-                Module._vscf_rsa_public_key_delete(this.ctxPtr);
+                Module._vscr_ratchet_group_participants_info_delete(this.ctxPtr);
                 this.ctxPtr = null;
             }
         }
 
         /**
-         * Algorithm identifier the key belongs to.
+         * Creates new array for size elements
          */
-        algId() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+        static newSize(size) {
+            precondition.ensureNumber('size', size);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_alg_id(this.ctxPtr);
-            return proxyResult;
-        }
+            proxyResult = Module._vscr_ratchet_group_participants_info_new_size(size);
 
-        /**
-         * Return algorithm information that can be used for serialization.
-         */
-        algInfo() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_alg_info(this.ctxPtr);
-
-            const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
+            const jsResult = RatchetGroupParticipantsInfo.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
         /**
-         * Length of the key in bytes.
+         * Add participant info
          */
-        len() {
+        addParticipant(id, pubKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('id', id);
+            precondition.ensureByteArray('pubKey', pubKey);
 
-            let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_len(this.ctxPtr);
-            return proxyResult;
-        }
+            //  Copy bytes from JS memory to the WASM memory.
+            const idSize = id.length * id.BYTES_PER_ELEMENT;
+            const idPtr = Module._malloc(idSize);
+            Module.HEAP8.set(id, idPtr);
 
-        /**
-         * Length of the key in bits.
-         */
-        bitlen() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            //  Create C structure vsc_data_t.
+            const idCtxSize = Module._vsc_data_ctx_size();
+            const idCtxPtr = Module._malloc(idCtxSize);
 
-            let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_bitlen(this.ctxPtr);
-            return proxyResult;
-        }
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(idCtxPtr, idPtr, idSize);
 
-        /**
-         * Return tag of an associated algorithm that can handle this key.
-         */
-        implTag() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            //  Copy bytes from JS memory to the WASM memory.
+            const pubKeySize = pubKey.length * pubKey.BYTES_PER_ELEMENT;
+            const pubKeyPtr = Module._malloc(pubKeySize);
+            Module.HEAP8.set(pubKey, pubKeyPtr);
 
-            let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_impl_tag(this.ctxPtr);
-            return proxyResult;
-        }
+            //  Create C structure vsc_data_t.
+            const pubKeyCtxSize = Module._vsc_data_ctx_size();
+            const pubKeyCtxPtr = Module._malloc(pubKeyCtxSize);
 
-        /**
-         * Check that key is valid.
-         * Note, this operation can be slow.
-         */
-        isValid() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(pubKeyCtxPtr, pubKeyPtr, pubKeySize);
 
-            let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_is_valid(this.ctxPtr);
-
-            const booleanResult = !!proxyResult;
-            return booleanResult;
-        }
-
-        /**
-         * Return public key exponent.
-         */
-        keyExponent() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_key_exponent(this.ctxPtr);
-            return proxyResult;
+            try {
+                const proxyResult = Module._vscr_ratchet_group_participants_info_add_participant(this.ctxPtr, idCtxPtr, pubKeyCtxPtr);
+                modules.RatchetError.handleStatusCode(proxyResult);
+            } finally {
+                Module._free(idPtr);
+                Module._free(idCtxPtr);
+                Module._free(pubKeyPtr);
+                Module._free(pubKeyCtxPtr);
+            }
         }
     }
 
-    return RsaPublicKey;
+    return RatchetGroupParticipantsInfo;
 };
 
-module.exports = initRsaPublicKey;
+module.exports = initRatchetGroupParticipantsInfo;

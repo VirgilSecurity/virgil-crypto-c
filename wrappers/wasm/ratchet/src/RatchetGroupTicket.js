@@ -111,85 +111,33 @@ const initRatchetGroupTicket = (Module, modules) => {
         /**
          * Set this ticket to start new group session.
          */
-        setupTicketAsNew() {
+        setupTicketAsNew(sessionId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            const proxyResult = Module._vscr_ratchet_group_ticket_setup_ticket_as_new(this.ctxPtr);
-            modules.RatchetError.handleStatusCode(proxyResult);
-        }
-
-        /**
-         * Add new participant to chat.
-         */
-        addNewParticipant(participantId, publicKey) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureByteArray('participantId', participantId);
-            precondition.ensureByteArray('publicKey', publicKey);
+            precondition.ensureByteArray('sessionId', sessionId);
 
             //  Copy bytes from JS memory to the WASM memory.
-            const participantIdSize = participantId.length * participantId.BYTES_PER_ELEMENT;
-            const participantIdPtr = Module._malloc(participantIdSize);
-            Module.HEAP8.set(participantId, participantIdPtr);
+            const sessionIdSize = sessionId.length * sessionId.BYTES_PER_ELEMENT;
+            const sessionIdPtr = Module._malloc(sessionIdSize);
+            Module.HEAP8.set(sessionId, sessionIdPtr);
 
             //  Create C structure vsc_data_t.
-            const participantIdCtxSize = Module._vsc_data_ctx_size();
-            const participantIdCtxPtr = Module._malloc(participantIdCtxSize);
+            const sessionIdCtxSize = Module._vsc_data_ctx_size();
+            const sessionIdCtxPtr = Module._malloc(sessionIdCtxSize);
 
             //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(participantIdCtxPtr, participantIdPtr, participantIdSize);
-
-            //  Copy bytes from JS memory to the WASM memory.
-            const publicKeySize = publicKey.length * publicKey.BYTES_PER_ELEMENT;
-            const publicKeyPtr = Module._malloc(publicKeySize);
-            Module.HEAP8.set(publicKey, publicKeyPtr);
-
-            //  Create C structure vsc_data_t.
-            const publicKeyCtxSize = Module._vsc_data_ctx_size();
-            const publicKeyCtxPtr = Module._malloc(publicKeyCtxSize);
-
-            //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(publicKeyCtxPtr, publicKeyPtr, publicKeySize);
+            Module._vsc_data(sessionIdCtxPtr, sessionIdPtr, sessionIdSize);
 
             try {
-                const proxyResult = Module._vscr_ratchet_group_ticket_add_new_participant(this.ctxPtr, participantIdCtxPtr, publicKeyCtxPtr);
+                const proxyResult = Module._vscr_ratchet_group_ticket_setup_ticket_as_new(this.ctxPtr, sessionIdCtxPtr);
                 modules.RatchetError.handleStatusCode(proxyResult);
             } finally {
-                Module._free(participantIdPtr);
-                Module._free(participantIdCtxPtr);
-                Module._free(publicKeyPtr);
-                Module._free(publicKeyCtxPtr);
+                Module._free(sessionIdPtr);
+                Module._free(sessionIdCtxPtr);
             }
         }
 
         /**
-         * Remove participant from chat.
-         */
-        removeParticipant(participantId) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureByteArray('participantId', participantId);
-
-            //  Copy bytes from JS memory to the WASM memory.
-            const participantIdSize = participantId.length * participantId.BYTES_PER_ELEMENT;
-            const participantIdPtr = Module._malloc(participantIdSize);
-            Module.HEAP8.set(participantId, participantIdPtr);
-
-            //  Create C structure vsc_data_t.
-            const participantIdCtxSize = Module._vsc_data_ctx_size();
-            const participantIdCtxPtr = Module._malloc(participantIdCtxSize);
-
-            //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(participantIdCtxPtr, participantIdPtr, participantIdSize);
-
-            try {
-                const proxyResult = Module._vscr_ratchet_group_ticket_remove_participant(this.ctxPtr, participantIdCtxPtr);
-                modules.RatchetError.handleStatusCode(proxyResult);
-            } finally {
-                Module._free(participantIdPtr);
-                Module._free(participantIdCtxPtr);
-            }
-        }
-
-        /**
-         * Generates message that should be sent to all participants using secure channel.
+         * Returns message that should be sent to all participants using secure channel.
          */
         getTicketMessage() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);

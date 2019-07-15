@@ -370,34 +370,22 @@ const initRatchetSession = (Module, modules) => {
         }
 
         /**
-         * Calculates size of buffer sufficient to store session
-         */
-        serializeLen() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscr_ratchet_session_serialize_len(this.ctxPtr);
-            return proxyResult;
-        }
-
-        /**
          * Serializes session to buffer
          */
         serialize() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
-            const outputCapacity = this.serializeLen();
-            const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputCapacity);
+            let proxyResult;
 
             try {
-                Module._vscr_ratchet_session_serialize(this.ctxPtr, outputCtxPtr);
+                proxyResult = Module._vscr_ratchet_session_serialize(this.ctxPtr);
 
-                const outputPtr = Module._vsc_buffer_bytes(outputCtxPtr);
-                const outputPtrLen = Module._vsc_buffer_len(outputCtxPtr);
-                const output = Module.HEAPU8.slice(outputPtr, outputPtr + outputPtrLen);
-                return output;
+                const bufferResultLen = Module._vsc_buffer_len(proxyResult);
+                const bufferResultPtr = Module._vsc_buffer_bytes(proxyResult);
+                const bufferResult = Module.HEAPU8.slice(bufferResultPtr, bufferResultPtr + bufferResultLen);
+                return bufferResult;
             } finally {
-                Module._vsc_buffer_delete(outputCtxPtr);
+                Module._vsc_buffer_delete(proxyResult);
             }
         }
 

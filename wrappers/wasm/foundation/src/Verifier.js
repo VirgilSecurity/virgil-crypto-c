@@ -120,7 +120,7 @@ const initVerifier = (Module, modules) => {
         /**
          * Add given data to the signed data.
          */
-        update(data) {
+        appendData(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
@@ -137,7 +137,7 @@ const initVerifier = (Module, modules) => {
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             try {
-                Module._vscf_verifier_update(this.ctxPtr, dataCtxPtr);
+                Module._vscf_verifier_append_data(this.ctxPtr, dataCtxPtr);
             } finally {
                 Module._free(dataPtr);
                 Module._free(dataCtxPtr);
@@ -149,7 +149,7 @@ const initVerifier = (Module, modules) => {
          */
         verify(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.VerifyHash', modules.FoundationInterfaceTag.VERIFY_HASH, modules.FoundationInterface);
+            precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
 
             let proxyResult;
             proxyResult = Module._vscf_verifier_verify(this.ctxPtr, publicKey.ctxPtr);

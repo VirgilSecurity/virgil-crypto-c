@@ -123,62 +123,6 @@ const initRatchetGroupMessage = (Module, modules) => {
         }
 
         /**
-         * Returns number of public keys.
-         * This method should be called only for group info message type.
-         */
-        getPubKeyCount() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscr_ratchet_group_message_get_pub_key_count(this.ctxPtr);
-            return proxyResult;
-        }
-
-        /**
-         * Returns public key id for some participant id.
-         * This method should be called only for group info message type.
-         */
-        getPubKeyId(participantId) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureByteArray('participantId', participantId);
-
-            //  Copy bytes from JS memory to the WASM memory.
-            const participantIdSize = participantId.length * participantId.BYTES_PER_ELEMENT;
-            const participantIdPtr = Module._malloc(participantIdSize);
-            Module.HEAP8.set(participantId, participantIdPtr);
-
-            //  Create C structure vsc_data_t.
-            const participantIdCtxSize = Module._vsc_data_ctx_size();
-            const participantIdCtxPtr = Module._malloc(participantIdCtxSize);
-
-            //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(participantIdCtxPtr, participantIdPtr, participantIdSize);
-
-            const errorCtxSize = Module._vscr_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscr_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscr_ratchet_group_message_get_pub_key_id(this.ctxPtr, participantIdCtxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscr_error_status(errorCtxPtr);
-                modules.RatchetError.handleStatusCode(errorStatus);
-
-                const bufferResultLen = Module._vsc_buffer_len(proxyResult);
-                const bufferResultPtr = Module._vsc_buffer_bytes(proxyResult);
-                const bufferResult = Module.HEAPU8.slice(bufferResultPtr, bufferResultPtr + bufferResultLen);
-                return bufferResult;
-            } finally {
-                Module._free(participantIdPtr);
-                Module._free(participantIdCtxPtr);
-                Module._free(errorCtxPtr);
-                Module._vsc_buffer_delete(proxyResult);
-            }
-        }
-
-        /**
          * Returns message sender id.
          * This method should be called only for regular message type.
          */
@@ -199,6 +143,28 @@ const initRatchetGroupMessage = (Module, modules) => {
             } finally {
                 Module._free(dataResultCtxPtr);
             }
+        }
+
+        /**
+         * Returns message counter in current epoch.
+         */
+        getCounter() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscr_ratchet_group_message_get_counter(this.ctxPtr);
+            return proxyResult;
+        }
+
+        /**
+         * Returns message epoch.
+         */
+        getEpoch() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscr_ratchet_group_message_get_epoch(this.ctxPtr);
+            return proxyResult;
         }
 
         /**

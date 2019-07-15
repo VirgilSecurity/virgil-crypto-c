@@ -37,11 +37,11 @@
 
 const precondition = require('./precondition');
 
-const initEcAlgInfo = (Module, modules) => {
+const initEccAlgInfo = (Module, modules) => {
     /**
      * Handle algorithm information about ECP.
      */
-    class EcAlgInfo {
+    class EccAlgInfo {
 
         /**
          * Create object with underlying C context.
@@ -49,10 +49,10 @@ const initEcAlgInfo = (Module, modules) => {
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
         constructor(ctxPtr) {
-            this.name = 'EcAlgInfo';
+            this.name = 'EccAlgInfo';
 
             if (typeof ctxPtr === 'undefined') {
-                this.ctxPtr = Module._vscf_ec_alg_info_new();
+                this.ctxPtr = Module._vscf_ecc_alg_info_new();
             } else {
                 this.ctxPtr = ctxPtr;
             }
@@ -65,7 +65,7 @@ const initEcAlgInfo = (Module, modules) => {
          */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
-            return new EcAlgInfo(Module._vscf_ec_alg_info_shallow_copy(ctxPtr));
+            return new EccAlgInfo(Module._vscf_ecc_alg_info_shallow_copy(ctxPtr));
         }
 
         /**
@@ -75,7 +75,7 @@ const initEcAlgInfo = (Module, modules) => {
          */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
-            return new EcAlgInfo(ctxPtr);
+            return new EccAlgInfo(ctxPtr);
         }
 
         /**
@@ -83,7 +83,7 @@ const initEcAlgInfo = (Module, modules) => {
          */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
-                Module._vscf_ec_alg_info_delete(this.ctxPtr);
+                Module._vscf_ecc_alg_info_delete(this.ctxPtr);
                 this.ctxPtr = null;
             }
         }
@@ -97,9 +97,9 @@ const initEcAlgInfo = (Module, modules) => {
             precondition.ensureNumber('domainId', domainId);
 
             let proxyResult;
-            proxyResult = Module._vscf_ec_alg_info_new_with_members(algId, keyId, domainId);
+            proxyResult = Module._vscf_ecc_alg_info_new_with_members(algId, keyId, domainId);
 
-            const jsResult = EcAlgInfo.newAndTakeCContext(proxyResult);
+            const jsResult = EccAlgInfo.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
@@ -110,7 +110,7 @@ const initEcAlgInfo = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_ec_alg_info_alg_id(this.ctxPtr);
+            proxyResult = Module._vscf_ecc_alg_info_alg_id(this.ctxPtr);
             return proxyResult;
         }
 
@@ -121,7 +121,7 @@ const initEcAlgInfo = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_ec_alg_info_key_id(this.ctxPtr);
+            proxyResult = Module._vscf_ecc_alg_info_key_id(this.ctxPtr);
             return proxyResult;
         }
 
@@ -132,12 +132,12 @@ const initEcAlgInfo = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_ec_alg_info_domain_id(this.ctxPtr);
+            proxyResult = Module._vscf_ecc_alg_info_domain_id(this.ctxPtr);
             return proxyResult;
         }
     }
 
-    return EcAlgInfo;
+    return EccAlgInfo;
 };
 
-module.exports = initEcAlgInfo;
+module.exports = initEccAlgInfo;

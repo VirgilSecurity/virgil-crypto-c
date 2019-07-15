@@ -104,7 +104,7 @@ const initKeyAsn1Serializer = (Module, modules) => {
          */
         serializedPublicKeyLen(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
+            precondition.ensureClass('publicKey', publicKey, modules.RawPublicKey);
 
             let proxyResult;
             proxyResult = Module._vscf_key_asn1_serializer_serialized_public_key_len(this.ctxPtr, publicKey.ctxPtr);
@@ -118,7 +118,7 @@ const initKeyAsn1Serializer = (Module, modules) => {
          */
         serializePublicKey(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
+            precondition.ensureClass('publicKey', publicKey, modules.RawPublicKey);
 
             const outCapacity = this.serializedPublicKeyLen(publicKey);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
@@ -143,7 +143,7 @@ const initKeyAsn1Serializer = (Module, modules) => {
          */
         serializedPrivateKeyLen(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureClass('privateKey', privateKey, modules.RawPrivateKey);
 
             let proxyResult;
             proxyResult = Module._vscf_key_asn1_serializer_serialized_private_key_len(this.ctxPtr, privateKey.ctxPtr);
@@ -157,7 +157,7 @@ const initKeyAsn1Serializer = (Module, modules) => {
          */
         serializePrivateKey(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureClass('privateKey', privateKey, modules.RawPrivateKey);
 
             const outCapacity = this.serializedPrivateKeyLen(privateKey);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
@@ -190,7 +190,7 @@ const initKeyAsn1Serializer = (Module, modules) => {
          */
         serializePublicKeyInplace(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
+            precondition.ensureClass('publicKey', publicKey, modules.RawPublicKey);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
@@ -216,7 +216,7 @@ const initKeyAsn1Serializer = (Module, modules) => {
          */
         serializePrivateKeyInplace(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureClass('privateKey', privateKey, modules.RawPrivateKey);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);

@@ -54,17 +54,17 @@ const initFoundationImplTag = (Module, modules) => {
 
         CTR_DRBG: 8,
 
-        CURVE25519_PRIVATE_KEY: 9,
+        CURVE25519: 9,
 
-        CURVE25519_PUBLIC_KEY: 10,
+        ECC: 10,
 
-        EC_ALG_INFO: 11,
+        ECC_ALG_INFO: 11,
 
-        ECIES: 12,
+        ECC_PRIVATE_KEY: 12,
 
-        ED25519_PRIVATE_KEY: 13,
+        ECC_PUBLIC_KEY: 13,
 
-        ED25519_PUBLIC_KEY: 14,
+        ED25519: 14,
 
         ENTROPY_ACCUMULATOR: 15,
 
@@ -96,29 +96,31 @@ const initFoundationImplTag = (Module, modules) => {
 
         PKCS8_SERIALIZER: 29,
 
-        RSA_PRIVATE_KEY: 30,
+        RAW_PRIVATE_KEY: 30,
 
-        RSA_PUBLIC_KEY: 31,
+        RAW_PUBLIC_KEY: 31,
 
-        SALTED_KDF_ALG_INFO: 32,
+        RSA: 32,
 
-        SEC1_SERIALIZER: 33,
+        RSA_PRIVATE_KEY: 33,
 
-        SECP256R1_PRIVATE_KEY: 34,
+        RSA_PUBLIC_KEY: 34,
 
-        SECP256R1_PUBLIC_KEY: 35,
+        SALTED_KDF_ALG_INFO: 35,
 
-        SEED_ENTROPY_SOURCE: 36,
+        SEC1_SERIALIZER: 36,
 
-        SHA224: 37,
+        SEED_ENTROPY_SOURCE: 37,
 
-        SHA256: 38,
+        SHA224: 38,
 
-        SHA384: 39,
+        SHA256: 39,
 
-        SHA512: 40,
+        SHA384: 40,
 
-        SIMPLE_ALG_INFO: 41
+        SHA512: 41,
+
+        SIMPLE_ALG_INFO: 42
     });
 
     return FoundationImplTag;

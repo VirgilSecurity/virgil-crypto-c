@@ -41,7 +41,7 @@ const initCtrDrbg = (Module, modules) => {
     /**
      * Implementation of the RNG using deterministic random bit generators
      * based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
-     * This class is thread-safe if the build option VSCF_MULTI_THREAD was enabled.
+     * This class is thread-safe if the build option VSCF_MULTI_THREADING was enabled.
      */
     class CtrDrbg {
 
@@ -122,6 +122,7 @@ const initCtrDrbg = (Module, modules) => {
 
         /**
          * Generate random bytes.
+         * All RNG implementations must be thread-safe.
          */
         random(dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
@@ -144,7 +145,7 @@ const initCtrDrbg = (Module, modules) => {
         }
 
         /**
-         * Retreive new seed data from the entropy sources.
+         * Retrieve new seed data from the entropy sources.
          */
         reseed() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);

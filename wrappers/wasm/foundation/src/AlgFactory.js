@@ -107,56 +107,6 @@ const initAlgFactory = (Module, modules) => {
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
-
-        /**
-         * Create algorithm that implements "public key" interface.
-         */
-        static createPublicKeyFromRawKey(rawKey) {
-            precondition.ensureClass('rawKey', rawKey, modules.RawKey);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_alg_factory_create_public_key_from_raw_key(rawKey.ctxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
-        }
-
-        /**
-         * Create algorithm that implements "private key" interface.
-         */
-        static createPrivateKeyFromRawKey(rawKey) {
-            precondition.ensureClass('rawKey', rawKey, modules.RawKey);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_alg_factory_create_private_key_from_raw_key(rawKey.ctxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
-        }
     }
 
     return AlgFactory;

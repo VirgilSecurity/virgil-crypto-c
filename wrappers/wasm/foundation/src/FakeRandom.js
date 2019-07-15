@@ -90,6 +90,7 @@ const initFakeRandom = (Module, modules) => {
 
         /**
          * Generate random bytes.
+         * All RNG implementations must be thread-safe.
          */
         random(dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
@@ -112,7 +113,7 @@ const initFakeRandom = (Module, modules) => {
         }
 
         /**
-         * Retreive new seed data from the entropy sources.
+         * Retrieve new seed data from the entropy sources.
          */
         reseed() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);

@@ -37,11 +37,11 @@
 
 const precondition = require('./precondition');
 
-const initRsaPublicKey = (Module, modules) => {
+const initEccPublicKey = (Module, modules) => {
     /**
-     * Handles RSA public key.
+     * Handles ECC public key.
      */
-    class RsaPublicKey {
+    class EccPublicKey {
 
         /**
          * Create object with underlying C context.
@@ -49,10 +49,10 @@ const initRsaPublicKey = (Module, modules) => {
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
         constructor(ctxPtr) {
-            this.name = 'RsaPublicKey';
+            this.name = 'EccPublicKey';
 
             if (typeof ctxPtr === 'undefined') {
-                this.ctxPtr = Module._vscf_rsa_public_key_new();
+                this.ctxPtr = Module._vscf_ecc_public_key_new();
             } else {
                 this.ctxPtr = ctxPtr;
             }
@@ -65,7 +65,7 @@ const initRsaPublicKey = (Module, modules) => {
          */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
-            return new RsaPublicKey(Module._vscf_rsa_public_key_shallow_copy(ctxPtr));
+            return new EccPublicKey(Module._vscf_ecc_public_key_shallow_copy(ctxPtr));
         }
 
         /**
@@ -75,7 +75,7 @@ const initRsaPublicKey = (Module, modules) => {
          */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
-            return new RsaPublicKey(ctxPtr);
+            return new EccPublicKey(ctxPtr);
         }
 
         /**
@@ -83,7 +83,7 @@ const initRsaPublicKey = (Module, modules) => {
          */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
-                Module._vscf_rsa_public_key_delete(this.ctxPtr);
+                Module._vscf_ecc_public_key_delete(this.ctxPtr);
                 this.ctxPtr = null;
             }
         }
@@ -95,7 +95,7 @@ const initRsaPublicKey = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_alg_id(this.ctxPtr);
+            proxyResult = Module._vscf_ecc_public_key_alg_id(this.ctxPtr);
             return proxyResult;
         }
 
@@ -106,7 +106,7 @@ const initRsaPublicKey = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_alg_info(this.ctxPtr);
+            proxyResult = Module._vscf_ecc_public_key_alg_info(this.ctxPtr);
 
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
@@ -119,7 +119,7 @@ const initRsaPublicKey = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_len(this.ctxPtr);
+            proxyResult = Module._vscf_ecc_public_key_len(this.ctxPtr);
             return proxyResult;
         }
 
@@ -130,7 +130,7 @@ const initRsaPublicKey = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_bitlen(this.ctxPtr);
+            proxyResult = Module._vscf_ecc_public_key_bitlen(this.ctxPtr);
             return proxyResult;
         }
 
@@ -141,7 +141,7 @@ const initRsaPublicKey = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_impl_tag(this.ctxPtr);
+            proxyResult = Module._vscf_ecc_public_key_impl_tag(this.ctxPtr);
             return proxyResult;
         }
 
@@ -153,25 +153,14 @@ const initRsaPublicKey = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_is_valid(this.ctxPtr);
+            proxyResult = Module._vscf_ecc_public_key_is_valid(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
-
-        /**
-         * Return public key exponent.
-         */
-        keyExponent() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_rsa_public_key_key_exponent(this.ctxPtr);
-            return proxyResult;
-        }
     }
 
-    return RsaPublicKey;
+    return EccPublicKey;
 };
 
-module.exports = initRsaPublicKey;
+module.exports = initEccPublicKey;

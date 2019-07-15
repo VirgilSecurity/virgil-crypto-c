@@ -77,11 +77,17 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.RSA_PRIVATE_KEY:
                     return modules.RsaPrivateKey.newAndTakeCContext(ctxPtr);
 
-                case modules.FoundationImplTag.SECP256R1_PUBLIC_KEY:
-                    return modules.Secp256r1PublicKey.newAndTakeCContext(ctxPtr);
+                case modules.FoundationImplTag.RSA:
+                    return modules.Rsa.newAndTakeCContext(ctxPtr);
 
-                case modules.FoundationImplTag.SECP256R1_PRIVATE_KEY:
-                    return modules.Secp256r1PrivateKey.newAndTakeCContext(ctxPtr);
+                case modules.FoundationImplTag.ECC_PUBLIC_KEY:
+                    return modules.EccPublicKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.ECC_PRIVATE_KEY:
+                    return modules.EccPrivateKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.ECC:
+                    return modules.Ecc.newAndTakeCContext(ctxPtr);
 
                 case modules.FoundationImplTag.ENTROPY_ACCUMULATOR:
                     return modules.EntropyAccumulator.newAndTakeCContext(ctxPtr);
@@ -116,6 +122,12 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.KEY_MATERIAL_RNG:
                     return modules.KeyMaterialRng.newAndTakeCContext(ctxPtr);
 
+                case modules.FoundationImplTag.RAW_PUBLIC_KEY:
+                    return modules.RawPublicKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.RAW_PRIVATE_KEY:
+                    return modules.RawPrivateKey.newAndTakeCContext(ctxPtr);
+
                 case modules.FoundationImplTag.PKCS8_SERIALIZER:
                     return modules.Pkcs8Serializer.newAndTakeCContext(ctxPtr);
 
@@ -128,20 +140,11 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.KEY_ASN1_DESERIALIZER:
                     return modules.KeyAsn1Deserializer.newAndTakeCContext(ctxPtr);
 
-                case modules.FoundationImplTag.ED25519_PUBLIC_KEY:
-                    return modules.Ed25519PublicKey.newAndTakeCContext(ctxPtr);
+                case modules.FoundationImplTag.ED25519:
+                    return modules.Ed25519.newAndTakeCContext(ctxPtr);
 
-                case modules.FoundationImplTag.ED25519_PRIVATE_KEY:
-                    return modules.Ed25519PrivateKey.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.CURVE25519_PUBLIC_KEY:
-                    return modules.Curve25519PublicKey.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.CURVE25519_PRIVATE_KEY:
-                    return modules.Curve25519PrivateKey.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.ECIES:
-                    return modules.Ecies.newAndTakeCContext(ctxPtr);
+                case modules.FoundationImplTag.CURVE25519:
+                    return modules.Curve25519.newAndTakeCContext(ctxPtr);
 
                 case modules.FoundationImplTag.SIMPLE_ALG_INFO:
                     return modules.SimpleAlgInfo.newAndTakeCContext(ctxPtr);
@@ -158,8 +161,8 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.PBE_ALG_INFO:
                     return modules.PbeAlgInfo.newAndTakeCContext(ctxPtr);
 
-                case modules.FoundationImplTag.EC_ALG_INFO:
-                    return modules.EcAlgInfo.newAndTakeCContext(ctxPtr);
+                case modules.FoundationImplTag.ECC_ALG_INFO:
+                    return modules.EccAlgInfo.newAndTakeCContext(ctxPtr);
 
                 case modules.FoundationImplTag.ALG_INFO_DER_SERIALIZER:
                     return modules.AlgInfoDerSerializer.newAndTakeCContext(ctxPtr);
