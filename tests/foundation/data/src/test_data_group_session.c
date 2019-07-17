@@ -56,13 +56,6 @@ const byte test_data_group_session_session_signature_BYTES[] = {
         0x18, 0x48, 0x60, 0xe8, 0x07, 0xeb, 0xf1, 0xa2,
 };
 
-const byte test_data_group_session_session_sender_id_BYTES[] = {
-        0xbc, 0x5e, 0xcf, 0x14, 0x3e, 0x0b, 0xa6, 0x0a,
-        0x9e, 0xb1, 0xc9, 0xa7, 0x42, 0xf2, 0x73, 0xf3,
-        0x18, 0x24, 0x3b, 0x89, 0xb0, 0xce, 0x2d, 0x74,
-        0xb0, 0xee, 0x4d, 0xcb, 0x7b, 0x08, 0x91, 0xe9,
-};
-
 const byte test_data_group_session_session_cipher_text_BYTES[] = {
         0x44, 0x7c, 0x8e, 0x99, 0x50, 0x88, 0x94, 0x41,
         0x38, 0x71, 0xe2, 0xd8, 0xb0, 0x5a, 0x5b, 0x04,
@@ -99,10 +92,6 @@ const vsc_data_t test_data_group_session_session_salt = {
 
 const vsc_data_t test_data_group_session_session_signature = {
         test_data_group_session_session_signature_BYTES, sizeof(test_data_group_session_session_signature_BYTES)
-};
-
-const vsc_data_t test_data_group_session_session_sender_id = {
-        test_data_group_session_session_sender_id_BYTES, sizeof(test_data_group_session_session_sender_id_BYTES)
 };
 
 const vsc_data_t test_data_group_session_session_cipher_text = {

@@ -27,13 +27,6 @@
         <return class="data" access="readwrite"/>
     </method>
 
-    <method name="get sender id" is_const="1">
-        Returns message sender id.
-        This method should be called only for regular message type.
-
-        <return class="data" access="readwrite"/>
-    </method>
-
     <method name="get counter" is_const="1">
         Returns message counter in current epoch.
 
