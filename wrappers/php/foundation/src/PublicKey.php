@@ -35,7 +35,7 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-interface PublicKey
+interface PublicKey extends Foundation
 {
 
 }

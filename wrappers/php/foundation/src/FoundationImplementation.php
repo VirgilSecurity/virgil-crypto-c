@@ -35,61 +35,26 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-require 'FoundationImplementation.php';
-
-/**
- * Class KeyProvider
- * Provide functionality for private key generation and importing that relies on the software default implementations.
- */
-class KeyProvider
+class FoundationImplementation
 {
-    /**
-     * @var
-     */
-    private $c_ctx;
-
-    /**
-     * Allocate context and perform it's initialization.
-     * KeyProvider constructor.
-     */
-    public function __construct()
-    {
-        $this->c_ctx = vscf_key_provider_new_php();
-    }
-
-    public function __destruct()
-    {
-        vscf_key_provider_delete_php($this->c_ctx);
-    }
-
-    /**
-     * Setup predefined values to the uninitialized class dependencies.
-     * @throws Exception
-     * @return void
-     */
-    public function setupDefaults(): void
-    {
-        vscf_key_provider_setup_defaults_php($this->c_ctx);
-    }
-
-    /**
-     * Setup parameters that is used during RSA key generation.
-     * @param int $bitlen
-     * @return void
-     */
-    public function setRsaParams(int $bitlen): void
-    {
-        vscf_key_provider_set_rsa_params_php($this->c_ctx, $bitlen);
-    }
-
-    /**
-     * @param string $keyData
-     * @return PublicKey
-     * @throws Exception
-     */
-    public function importPublicKey(string $keyData): PublicKey
-    {
-        $c_ctx = vscf_key_provider_import_public_key_php($this->c_ctx, $keyData);
-        return FoundationImplementation::wrapPublicKey($c_ctx);
+    public static function wrapPublicKey($c_ctx): PublicKey {
+        $implTag = vscf_impl_tag_php($c_ctx);
+        switch ($implTag) {
+            case "RsaPublicKey":
+                return (new RsaPublicKey($c_ctx));
+                break;
+            case "Secp256r1PublicKey":
+                return (new Secp256r1PublicKey($c_ctx));
+                break;
+            case "Ed25519PublicKey":
+                return (new Ed25519PublicKey($c_ctx));
+                break;
+            case "Curve25519PublicKey":
+                return (new Curve25519PublicKey($c_ctx));
+                break;
+            default:
+                throw new Exception("Unexpected C implementation cast to the PHP implementation.");
+                break;
+        }
     }
 }

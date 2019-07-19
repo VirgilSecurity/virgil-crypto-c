@@ -57,4 +57,14 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
     {
         $this->assertEquals(true, $this->keyProvider instanceof KeyProvider);
     }
+
+    public function test_KeyProvider_importPublicKey_shouldReturnString()
+    {
+        $file = __DIR__ . DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'public_key.pem';
+        $keyData = file_get_contents($file);
+
+        $publicKeyImported = $this->keyProvider->importPublicKey($keyData);
+
+        $this->assertEquals(true, true);
+    }
 }

@@ -65,14 +65,18 @@ const char VSCF_IMPL_PHP_RES_NAME[] = "vscf_php";
 const char VSCF_BASE64_PHP_RES_NAME[] = "vscf_php_base64";
 const char VSCF_KEY_ASN1_DESERIALIZER_PHP_RES_NAME[] = "vscf_php_key_asn1_deserializer";
 const char VSCF_KEY_PROVIDER_PHP_RES_NAME[] = "vscf_php_key_provider";
+const char VSCF_IMPL_TAG_PHP_RES_NAME[] = "vscf_php_impl_tag";
+const char VSCF_IMPL_T_PHP_RES_NAME[] = "vscf_php_impl_t";
 
 // --------------------------------------------------------------------------
 //  Registered resources
 // --------------------------------------------------------------------------
 int le_vscf_impl;
+int le_vscf_impl_t;
 int le_vscf_base64;
 int le_vscf_key_asn1_deserializer;
 int le_vscf_key_provider;
+int le_vscf_impl_tag;
 
 // --------------------------------------------------------------------------
 //  Extension init functions declaration
@@ -85,6 +89,13 @@ do { \
     if(status != vscf_status_SUCCESS) {  \
     vscf_handle_throw_exception(status); \
         goto fail;\
+    } \
+} while (false)
+
+#define VSCF_HANDLE_STATUS_NO_FAIL(status) \
+do { \
+    if(status != vscf_status_SUCCESS) {  \
+    vscf_handle_throw_exception(status); \
     } \
 } while (false)
 
@@ -1081,7 +1092,7 @@ PHP_FUNCTION(vscf_key_provider_setup_defaults_php) {
     RETURN_TRUE;
 
 fail:
-    RETURN_TRUE;
+    RETURN_FALSE;
 }
 
 //
@@ -1125,6 +1136,137 @@ PHP_FUNCTION(vscf_key_provider_set_rsa_params_php) {
     RETURN_TRUE;
 }
 
+//
+//  Wrap method: vscf_key_provider_import_public_key
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_key_provider_import_public_key_php /*name*/,
+        0 /*return_reference*/,
+        2 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+
+    ZEND_ARG_INFO(0, c_ctx)
+    ZEND_ARG_TYPE_INFO(0, key_data, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vscf_key_provider_import_public_key_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+    char *in_key_data = NULL;
+    size_t in_key_data_len = 0;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+        Z_PARAM_STRING_EX(in_key_data, in_key_data_len, 1 /*check_null*/, 0 /*deref and separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Proxy call
+    //
+    vscf_key_provider_t *key_provider = zend_fetch_resource_ex(in_cctx, VSCF_KEY_PROVIDER_PHP_RES_NAME, le_vscf_key_provider);
+    VSCF_ASSERT_PTR(key_provider);
+
+    vsc_data_t key_data = vsc_data((const byte*)in_key_data, in_key_data_len);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *public_key = vscf_key_provider_import_public_key(key_provider, key_data, &error);
+
+    vscf_status_t status = vscf_error_status(&error);
+
+    //
+    //  Handle error
+    //
+    VSCF_HANDLE_STATUS_NO_FAIL(status);
+
+    zend_resource *public_key_res = zend_register_resource(public_key, le_vscf_key_provider);
+    RETVAL_RES(public_key_res);
+// fail:
+//     RETURN_FALSE;
+}
+
+
+//
+//  Wrap method: vscf_impl_tag
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_impl_tag_php /*name*/,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_STRING /*type*/,
+        0 /*allow_null*/)
+
+    ZEND_ARG_INFO(0, c_ctx)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vscf_impl_tag_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Proxy call
+    //
+    vscf_impl_t *c_ctx = zend_fetch_resource_ex(in_cctx, VSCF_IMPL_TAG_PHP_RES_NAME, le_vscf_impl_tag);
+    // VSCE_ASSERT_PTR(impl_tag);
+
+    char *classFullName = malloc(200);
+    strcpy (classFullName, "com/virgilsecurity/crypto/foundation/");
+    vscf_impl_tag_t implTag = vscf_impl_tag((vscf_impl_t*) c_ctx);
+    switch(implTag) {
+    case vscf_impl_tag_RSA_PUBLIC_KEY:
+        strcat (classFullName, "RsaPublicKey");
+        break;
+    case vscf_impl_tag_RSA_PRIVATE_KEY:
+        strcat (classFullName, "RsaPrivateKey");
+        break;
+    case vscf_impl_tag_SECP256R1_PUBLIC_KEY:
+        strcat (classFullName, "Secp256r1PublicKey");
+        break;
+    case vscf_impl_tag_SECP256R1_PRIVATE_KEY:
+        strcat (classFullName, "Secp256r1PrivateKey");
+        break;
+    case vscf_impl_tag_ED25519_PUBLIC_KEY:
+        strcat (classFullName, "Ed25519PublicKey");
+        break;
+    case vscf_impl_tag_ED25519_PRIVATE_KEY:
+        strcat (classFullName, "Ed25519PrivateKey");
+        break;
+    case vscf_impl_tag_CURVE25519_PUBLIC_KEY:
+        strcat (classFullName, "Curve25519PublicKey");
+        break;
+    case vscf_impl_tag_CURVE25519_PRIVATE_KEY:
+        strcat (classFullName, "Curve25519PrivateKey");
+        break;
+    default:
+        strcat (classFullName, "Error");
+        break;
+        // free(classFullName);
+        // VSCF_ASSERT("Unexpected C implementation cast to the Java implementation.");
+    }
+    return classFullName;
+
+    RETURN_STRING(classFullName);
+}
+
+
 // --------------------------------------------------------------------------
 //  Define all function entries
 // --------------------------------------------------------------------------
@@ -1155,6 +1297,9 @@ static zend_function_entry vscf_php_functions[] = {
     PHP_FE(vscf_key_provider_delete_php, arginfo_vscf_key_provider_delete_php)
     PHP_FE(vscf_key_provider_setup_defaults_php, arginfo_vscf_key_provider_setup_defaults_php)
     PHP_FE(vscf_key_provider_set_rsa_params_php, arginfo_vscf_key_provider_set_rsa_params_php)
+    PHP_FE(vscf_key_provider_import_public_key_php, arginfo_vscf_key_provider_import_public_key_php)
+    // IMPL_TAG
+    PHP_FE(vscf_impl_tag_php, arginfo_vscf_impl_tag_php)
     PHP_FE_END
 };
 
@@ -1185,6 +1330,7 @@ ZEND_GET_MODULE(vscf_php)
 // --------------------------------------------------------------------------
 //  Extension init functions definition
 // --------------------------------------------------------------------------
+
 static void vscf_dtor_php(zend_resource *rsrc) {
     vscf_impl_delete((vscf_impl_t *)rsrc->ptr);
 }
