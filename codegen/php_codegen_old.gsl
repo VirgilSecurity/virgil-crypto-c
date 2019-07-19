@@ -41,12 +41,5 @@
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"
-gsl from "php.gsl"
-
-function php_generate_project (source, wrapper)
-endfunction
-
-function php_generate_sources (source, wrapper)
-endfunction
 
 .endtemplate
