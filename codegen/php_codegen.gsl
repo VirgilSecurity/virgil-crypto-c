@@ -46,14 +46,14 @@ gsl from "common.gsl"
 #   Generate project files.
 # ---------------------------------------------------------------------------
 function php_generate_project (wrapper_project)
-	check_arguments (my, "wrapper_project", my)
+    check_arguments (my, "wrapper_project", my)
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Generate source files from <php_module/> entities.
 # ---------------------------------------------------------------------------
 function php_generate_sources (wrapper_project)
-	check_arguments (my, "wrapper_project", my)
+    check_arguments (my, "wrapper_project", my)
 
     assert_attribute (my.wrapper_project, "source_dir", my)
 
@@ -120,7 +120,7 @@ function php_insert_prologue (php_module)
 
     assert_item (my.php_module, "php_license", my)
 
-	php_insert_description (my.php_module->php_license)
+    php_insert_description (my.php_module->php_license)
 endfunction
 
 # ---------------------------------------------------------------------------
