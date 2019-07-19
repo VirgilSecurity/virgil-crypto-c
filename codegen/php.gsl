@@ -55,7 +55,43 @@ endfunction
 function php_resolve_project (project, wrapper, projects_api)
 endfunction
 
-function php_create_project_module (project, destination, wrapper)
+function php_create_project_module (project, wrapper)
+    check_arguments (my, "project, wrapper", my)
+
+    assert_attribute (my.wrapper, "lang", my)
+    assert_attributes (my.project, "name, prefix, framework", my)
+    assert_item (my.project, "license", my)
+
+    echo_info ("Create PHP project for project: '$(my.project.name:)'", my)
+
+    new php_project to my.wrapper
+        . = my.project. ?
+        .name = my.project.name
+        .prefix = my.project.prefix
+        .framework = my.project.framework
+        .namespace = "$(my.project.namespace:c)"
+        .namespace_dir = my.project.name
+        #.root_project = my.wrapper.root_project
+        .source_dir = cat_path ("$(my.wrapper.main_package_dir:)", php_project.namespace_dir)
+
+        copy my.project->license to php_project
+
+        new php_import to php_project
+            .framework = "ctypes"
+            .import_all = "1"
+        endnew
+
+        new php_uid to php_project
+            .name = php_project.namespace
+            .uid = "php_framework_name"
+        endnew
+
+        if directory.create (php_project.source_dir) = -1
+            echo_fatal ("Can not create directory: $(.source_dir:). ", my)
+        endif
+
+        return php_project
+    endnew
 endfunction
 
 function php_create_custom_modules (source, destination, wrapper, meta) #[optional]

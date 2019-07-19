@@ -41,12 +41,114 @@
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"
-gsl from "php.gsl"
 
-function php_generate_project (source, wrapper)
+# ---------------------------------------------------------------------------
+#   Generate project files.
+# ---------------------------------------------------------------------------
+function php_generate_project (wrapper_project)
+	check_arguments (my, "wrapper_project", my)
 endfunction
 
-function php_generate_sources (source, wrapper)
+# ---------------------------------------------------------------------------
+#   Generate source files from <php_module/> entities.
+# ---------------------------------------------------------------------------
+function php_generate_sources (wrapper_project)
+	check_arguments (my, "wrapper_project", my)
+
+    assert_attribute (my.wrapper_project, "source_dir", my)
+
+    if -1 = directory.create (my.wrapper_project.source_dir)
+        echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
+    endif
+
+    for my.wrapper_project.php_module
+        echo_trace ("Generate PHP files from <$(name (php_module)) name = \"$(c_module.name:)\"/>", my)
+
+        if defined (php_module.source_dir)
+            if -1 = directory.create (php_module.source_dir)
+                echo_fatal ("Can not create directory: $(php_module.source_dir:)")
+            endif
+        endif
+
+        output php_module.source_file_path
+
+        php_insert_prologue (php_module)
+        newline ()
+
+#        for php_module.php_import
+#            newline_if (first ())
+#            php_insert_import (php_import)
+#        endfor
+
+#        for php_module.php_code
+#            newline_if (first ())
+#            php_insert_code (php_code)
+#        endfor
+
+#        for php_module.php_enum
+#            newline ()
+#            php_insert_enum (php_enum)
+#        endfor
+
+#        for php_module.php_abstract_class
+#            newline ()
+#            php_insert_abstract_class (php_abstract_class)
+#        endfor
+
+#        for php_module.php_class
+#            newline ()
+#            php_insert_class (php_class)
+#        endfor
+
+#        for php_module.php_struct
+#            newline ()
+#            php_insert_struct (php_struct)
+#        endfor
+
+#        for php_module.php_extension
+#            newline ()
+#            php_insert_extension (php_extension)
+#        endfor
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert: license + caution + description
+# ---------------------------------------------------------------------------
+function php_insert_prologue (php_module)
+    check_arguments (my, "php_module", my)
+
+    assert_item (my.php_module, "php_license", my)
+
+	php_insert_description (my.php_module->php_license)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert description of the given object.
+# ---------------------------------------------------------------------------
+function php_insert_description (obj, tab_count)
+    my.desciption = my.obj. ?
+    my.tab_count ?= 0
+    if string_empty (my.desciption)
+        return
+    endif
+    php_insert_code (my.desciption, my.tab_count)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert given multiline code.
+# ---------------------------------------------------------------------------
+function php_insert_code (code, tab_count)
+    check_argument (my, "code", my)
+
+    my.code = "$(my.code:left,no)"
+    my.code = string_trim (my.code)
+    my.code = code_collapse_spaces (my.code)
+
+    my.code = string_indent (my.code, my.tab_count)
+    my.code = string_multi_rtrim (my.code)
+
+    out (my.code)
 endfunction
 
 .endtemplate
