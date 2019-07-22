@@ -72,6 +72,8 @@ function php_generate_sources (wrapper_project)
 
         output php_module.source_file_path
 
+        php_insert_php_open_tag()
+
         php_insert_prologue (php_module)
         newline ()
 
@@ -95,10 +97,10 @@ function php_generate_sources (wrapper_project)
 #            php_insert_abstract_class (php_abstract_class)
 #        endfor
 
-#        for php_module.php_class
-#            newline ()
-#            php_insert_class (php_class)
-#        endfor
+        for php_module.php_class
+            newline_if (first ())
+            php_insert_class (php_class)
+        endfor
 
 #        for php_module.php_struct
 #            newline ()
@@ -113,9 +115,60 @@ function php_generate_sources (wrapper_project)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Insert statement: class
+# ---------------------------------------------------------------------------
+function php_insert_class (php_class)
+    check_arguments (my, "php_class", my)
+
+    echo_trace ("Generate PHP class: " + my.php_class.name, my)
+
+    assert_attributes (my.php_class, "name, visibility", my)
+
+    newline ()
+    php_insert_description(my.php_class, 0)
+    php_insert_code ("class $(my.php_class.name:)")
+
+#    if is_true (python_class.is_abstract)
+#        python_insert_code(terminator + format_left("__metaclass__ = ABCMeta"), 1)
+#    endif
+
+#    for my.python_class.python_constant
+#       newline_if (first ())
+#       python_insert_class_constant (python_constant)
+#    endfor
+
+#    for my.python_class.python_constructor
+#        newline ()
+#        python_insert_constructor (python_constructor)
+#    endfor
+
+#    for my.python_class.python_destructor
+#        newline ()
+#        python_insert_destructor (python_destructor)
+#   endfor
+
+#    for my.python_class.python_method by is_false (python_method.is_specific_method)
+#        newline ()
+#        python_insert_class_method (python_method)
+#    endfor
+
+#    for my.python_class.python_property
+#        newline ()
+#        python_insert_class_property (python_property)
+#    endfor
+
+#    for my.python_class.python_code
+#        if is_true(python_code.leadeing_new_line)
+#            newline ()
+#        endif
+#        python_insert_code(python_code., 1)
+#    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Insert: license + caution + description
 # ---------------------------------------------------------------------------
-function php_insert_prologue (php_module)
+function php_insert_prologue(php_module)
     check_arguments (my, "php_module", my)
 
     assert_item (my.php_module, "php_license", my)
@@ -149,6 +202,56 @@ function php_insert_code (code, tab_count)
     my.code = string_multi_rtrim (my.code)
 
     out (my.code)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return multiline formatted string with license.
+# ---------------------------------------------------------------------------
+function php_format_license(license)
+    return php_format_comment(my.license) ?
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted multiline commented string.
+# ---------------------------------------------------------------------------
+function php_format_comment(comment)
+    if ! defined (my.comment.)
+        return
+    endif
+
+    my.str = my.comment.
+    my.str = string_indent (my.str)
+    my.str = "* $(my.str:left, block, no)$(terminator)"
+    my.str = string_multi_rtrim (my.str)
+    my.str = "/**$(terminator)$(my.str:)$(terminator)*/"
+
+    return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return multiline formatted string with description.
+# ---------------------------------------------------------------------------
+function php_format_description(description)
+    return php_format_comment(my.description) ?
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_insert_php_open_tag ()
+    php_insert_code("<?php")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_insert_brace(type)
+    check_argument (my, "type", my)
+    if string_in (my.type, "open, close")
+        return php_insert_code("$(my.type)")
+    else
+        return 
+    endif
 endfunction
 
 .endtemplate

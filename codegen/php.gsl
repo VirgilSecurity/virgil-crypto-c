@@ -46,13 +46,18 @@ gsl from "component.gsl"
 gsl from "c_component.gsl"
 gsl from "php_codegen.gsl"
 
-function php_create_toplevel_modules(destination, wrapper, projects_api) #[optional]
+# ---------------------------------------------------------------------------
+#   Create module with low level shared object loader that handles C context.
+# ---------------------------------------------------------------------------
+function php_create_toplevel_modules(wrapper) #[optional]
+    ### TODO
 endfunction
 
 function php_resolve_toplevel (wrapper, license) #[optional]
 endfunction
 
 function php_resolve_project (project, wrapper, projects_api)
+    ### ?
 endfunction
 
 function php_create_project_module (project, wrapper)
@@ -71,15 +76,9 @@ function php_create_project_module (project, wrapper)
         .framework = my.project.framework
         .namespace = "$(my.project.namespace:c)"
         .namespace_dir = my.project.name
-        #.root_project = my.wrapper.root_project
         .source_dir = cat_path ("$(my.wrapper.main_package_dir:)", php_project.namespace_dir)
 
         copy my.project->license to php_project
-
-        new php_import to php_project
-            .framework = "ctypes"
-            .import_all = "1"
-        endnew
 
         new php_uid to php_project
             .name = php_project.namespace
@@ -103,7 +102,96 @@ endfunction
 function php_create_implementation_module (source, destination, wrapper, meta)
 endfunction
 
-function php_create_class_module (source, destination, wrapper, meta)
+# ---------------------------------------------------------------------------
+#   Create module with PHP class from the abstract 'class' notion.
+# ---------------------------------------------------------------------------
+function php_create_class_module (class, php_project, meta)
+    check_arguments (my, "class, php_project, meta", my)
+
+    echo_info ("Create <php_module/> from class: '$(my.class.name:)'", my)
+    
+    assert_attribute (my.class, "name", my)
+
+    # Skipping all classes with not public scope
+    if my.class.scope <> "public"
+        return
+    endif
+
+    if string_in (my.class.name, "data, buffer")
+        if string_in (my.class.name, "data")
+            echo_info ("Generating custom Data module")
+            #
+        else
+            echo_info ("Generating custom Buffer module")
+            #
+        endif
+        return
+    endif
+
+    # High level modules 
+    new php_module to my.php_project
+        .name = php_derive_module_name (my.class, my.php_project)
+        if ! string_in (my.class.name, "data, buffer")
+            .source_file_name = 0.name + ".php"
+            .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
+        else
+            .source_file_name = "_" + 0.name + ".php2"
+            .source_dir = cat_path (my.php_project.source_dir, "_c_bridge")
+            .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+        endif
+
+        new php_license to php_module
+            . = php_format_license (my.php_project->license) ?
+        endnew
+
+        for my.php_project.php_import
+            copy php_import to php_module
+        endfor
+
+        new php_class to php_module
+            . = php_format_description (my.class) ?
+            .name = php_derive_class_name (my.class, my.php_project)
+            #.low_level_name = python_derive_class_low_level_name (my.class, my.python_project)
+            #.low_level_name_c_format = python_derive_class_low_level_name_c_formated (my.class, my.python_project)
+
+            php_map_attr_visibility (php_class, my.class)
+
+            #for my.class.constant where constant.scope ?= "public"
+            #    python_create_class_constant (constant, python_class, my.python_project, my.meta)
+            #endfor
+
+            
+            #if count(my.class.method) > 0
+            #    python_create_class_default_constructor (python_class, my.class, my.python_project, my.meta)
+            #endif
+
+            #if my.class.context ?<> "none" & my.class.lifecycle ?<> "none"
+            #    if ! string_in (my.class.name, "data")
+            #        python_create_class_default_destructor (python_class, my.class, my.python_project, my.meta)
+            #    endif
+            #endif
+
+            #for my.class.dependency
+            #    python_create_method_from_dependency (dependency, my.class, python_class, my.python_project, my.meta)
+            #endfor
+
+            #for my.class.method where method.declaration = "public" & method.visibility = "public" & method.scope ?= "public"
+            #    python_create_class_method (my.class, method, python_class, my.python_project, my.meta)
+            #endfor
+
+            #if my.class.context ?<> "none" & my.class.lifecycle ?<> "none"
+            #    if ! string_in (my.class.name, "data,buffer")
+            #        python_create_class_additional_constructors (python_class, my.class, my.python_project, my.meta)
+            #    endif
+            #endif
+
+            #if count (python_class.python_inherit) = 0
+            #    python_create_custom_inherit ("object", python_class, my.python_project)
+            #endif
+        endnew
+        
+    endnew
+    echo_debug ("Done", my)
 endfunction
 
 function php_create_enum_module (source, destination, wrapper, meta)
@@ -112,7 +200,92 @@ endfunction
 function php_finalize_custom_modules (source, destination, wrapper, meta) #[optional]
 endfunction
 
-function php_module_resolve(source, wrapper)
+# ===========================================================================
+#   Component resolution.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Resolve UIDs for given component and all inner components.
+# ---------------------------------------------------------------------------
+function php_module_resolve_uids (php_component, parent_uid)
+    check_arguments (my, "php_component", my)
+
+    if defined (my.parent_uid) & string.prefixed (my.parent_uid, "php_module")
+        my.parent_uid = # Undefined
+    endif
+
+    my.component_name = name (my.php_component)
+    if  defined (my.parent_uid) & string.prefixed (my.component_name, "php_")
+        regexp.match ("php_(.+)", my.component_name, my.component_name)
+    endif
+
+    my.php_component.uid = make_id (my.parent_uid, my.component_name, my.php_component.name)
+
+    for my.php_component. as inner_component where is_item (inner_component) & defined (inner_component.name)
+        php_module_resolve_uids (inner_component, my.php_component.uid)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add auto-resolving attributes:
+#       - uid.
+# ---------------------------------------------------------------------------
+function php_module_resolve (php_module, php_project)
+    check_arguments (my, "php_module, php_project", my)
+
+    echo_trace ("Resolving <$(name (my.php_module)) name=\"$(my.php_module.name:)\"/>", my)
+
+    assert_attribute (my.php_module, "name", my)
+
+    #   Resolve UIDs
+    php_module_resolve_uids (my.php_module)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted module name.
+# ---------------------------------------------------------------------------
+function php_derive_module_name (type, php_project)
+    check_arguments (my, "type, php_project", my)
+
+    assert_attribute (my.type, "name", my)
+
+    return "$(my.type.name:Pascal)"
+    # python: return string.search_replace ("$(my.type.name:c)", "$(my.php_project.name)_", "")
+    # swift : return "$(my.type.name:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the PHP class.
+# ---------------------------------------------------------------------------
+function php_derive_class_name (class, php_project)
+    check_arguments (my, "class, php_project", my)
+
+    assert_attribute_one_of (my.class, "name", my)
+
+    return php_derive_class_name_str (my.class.name, my.php_project)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the PHP class.
+# ---------------------------------------------------------------------------
+function php_derive_class_name_str (name, php_project)
+    check_arguments (my, "name, php_project", my)
+
+    if string_equal ("$(my.name:Pascal)", "$(my.php_project.name:Pascal)")
+        return "$(my.name:Pascal)"
+    else
+        return string.search_replace ("$(my.name:Pascal)", "$(my.php_project.name:Pascal)", "")
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Map attribute 'visibility' of <component/> to <php_component/>.
+# ---------------------------------------------------------------------------
+function php_map_attr_visibility (php_component, component)
+    check_arguments (my, "php_component, component", my)
+
+    #   TODO: make mapping more accurate.
+    my.php_component.visibility = my.component.visibility ? "public"
 endfunction
 
 .endtemplate
