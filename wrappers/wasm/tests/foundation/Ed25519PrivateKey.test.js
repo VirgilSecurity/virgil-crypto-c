@@ -3,73 +3,77 @@ const { hexToUint8Array } = require('../utils');
 
 describe('Ed25519PrivateKey', () => {
   let foundation;
-  let ed25519PrivateKey;
+  let ed25519;
+  let keyProvider;
 
   beforeEach(async () => {
     foundation = await initFoundation();
-    ed25519PrivateKey = new foundation.Ed25519PrivateKey();
-    ed25519PrivateKey.setupDefaults();
+    ed25519 = new foundation.Ed25519();
+    keyProvider = new foundation.KeyProvider();
+    ed25519.setupDefaults();
+    keyProvider.setupDefaults();
   });
 
-  describe('importPrivateKey', () => {
-    it('should work', () => {
-      const privateKey = hexToUint8Array('4d43344341514177425159444b32567742434945494573434c484e506358502b');
-      ed25519PrivateKey.importPrivateKey(privateKey);
-      const keyLen = ed25519PrivateKey.keyLen();
-      expect(keyLen).toBe(32);
-    });
+  test('import private key', () => {
+    const privateKeyData = hexToUint8Array('302e020100300506032b657004220420f04dd792bc2965f9ecf0b9d0c78190b1224b77680c7ab22b301e7825fa7bab5e');
+    const privateKey = keyProvider.importPrivateKey(privateKeyData);
+    const len = privateKey.len();
+    expect(len).toBe(32);
   });
 
-  describe('exportPrivateKey', () => {
-    it('should work', () => {
-      const privateKey = hexToUint8Array('4d43344341514177425159444b32567742434945494573434c484e506358502b');
-      ed25519PrivateKey.importPrivateKey(privateKey);
-      const exportedKey = ed25519PrivateKey.exportPrivateKey();
-      expect(exportedKey.toString()).toBe(privateKey.toString());
-    });
+  test('export private key', () => {
+    const privateKeyData = hexToUint8Array('302e020100300506032b657004220420f04dd792bc2965f9ecf0b9d0c78190b1224b77680c7ab22b301e7825fa7bab5e');
+    const privateKey = keyProvider.importPrivateKey(privateKeyData);
+    const exportedKey = keyProvider.exportPrivateKey(privateKey);
+    expect(exportedKey.toString()).toBe(privateKeyData.toString());
   });
 
-  describe('extractPublicKey', () => {
-    it('should work', () => {
-      const privateKey = hexToUint8Array('4d43344341514177425159444b32567742434945494573434c484e506358502b');
-      ed25519PrivateKey.importPrivateKey(privateKey);
-      const publicKey = ed25519PrivateKey.extractPublicKey();
-      expect(publicKey).toBeInstanceOf(foundation.Ed25519PublicKey);
-    });
+  test('extract public key', () => {
+    const privateKeyData = hexToUint8Array('302e020100300506032b657004220420f04dd792bc2965f9ecf0b9d0c78190b1224b77680c7ab22b301e7825fa7bab5e');
+    const publicKeyData = hexToUint8Array('302a300506032b6570032100d2f4f7c2dc70cf17e0fcc1d23afaec6bd5cc0de9fba179f78896bb2c65abc967');
+    const privateKey = keyProvider.importPrivateKey(privateKeyData);
+    const publicKey = privateKey.getPublicKey();
+    const exportedPublicKey = keyProvider.exportPublicKey(publicKey);
+    expect(exportedPublicKey.toString()).toBe(publicKeyData.toString());
   });
 
-  describe('signHash', () => {
-    it('should work', () => {
-      const privateKey = hexToUint8Array('4d43344341514177425159444b32567742434945494573434c484e506358502b');
-      ed25519PrivateKey.importPrivateKey(privateKey);
-      const digest = hexToUint8Array('3684a316a74ab39bd2c29a2e862f05795be949b212c920c43d21d4ce9d41016a');
-      const signature = ed25519PrivateKey.signHash(digest, foundation.AlgId.SHA256);
-      const expectedSignature = hexToUint8Array('f22bd5b9648c906b1951deed256ce295114b0b699a068fc52c156b4ff3efa5ae035e48f447e9e21f6d6339e5508f6b273271f76fc90df95c0e965436482e1402');
-      expect(signature.toString()).toBe(expectedSignature.toString());
-    });
+  test('sign hash', () => {
+    const privateKeyData = hexToUint8Array('302e020100300506032b657004220420f04dd792bc2965f9ecf0b9d0c78190b1224b77680c7ab22b301e7825fa7bab5e');
+    const publicKeyData = hexToUint8Array('302a300506032b6570032100d2f4f7c2dc70cf17e0fcc1d23afaec6bd5cc0de9fba179f78896bb2c65abc967');
+    const privateKey = keyProvider.importPrivateKey(privateKeyData);
+    const publicKey = keyProvider.importPublicKey(publicKeyData);
+    const digest = hexToUint8Array('3a6eb0790f39ac87c94f3856b2dd2c5d110e6811602261a9a923d3bb23adc8b7');
+    const signer = new foundation.Signer();
+    const hash = new foundation.Sha512();
+    const fakeRandom = new foundation.FakeRandom();
+    fakeRandom.setupSourceByte(0xab);
+    signer.hash = hash;
+    signer.random = fakeRandom;
+    signer.reset();
+    signer.appendData(digest);
+    const signature = signer.sign(privateKey);
+    const expectedSignature = hexToUint8Array('3051300d06096086480165030402030500044042b24411d9615ea71d7613068dc9e94151b1e723fc04eb420e2f848bd7074f3af5344472a2d6aefd7868969f0780ab8d0f4ae2c1d120c204e9d073e3ad4be00e');
+    expect(signature.toString()).toBe(expectedSignature.toString());
   });
 
-  describe('generateKey', () => {
-    it('should work', () => {
-      const fakeRandom = new foundation.FakeRandom();
-      const sourceData = hexToUint8Array('4d43344341514177425159444b32567742434945494573434c484e506358502b');
-      fakeRandom.setupSourceData(sourceData);
-      ed25519PrivateKey.random = fakeRandom;
-      ed25519PrivateKey.generateKey();
-      const exportedKey = ed25519PrivateKey.exportPrivateKey();
-      const expectedKey = hexToUint8Array('4d43344341514177425159444b32567742434945494573434c484e506358502b');
-      expect(exportedKey.toString()).toBe(expectedKey.toString());
-    });
+  test('generate key', () => {
+    const fakeRandom = new foundation.FakeRandom();
+    const sourceData = hexToUint8Array('4d43344341514177425159444b32567742434945494573434c484e506358502b');
+    fakeRandom.setupSourceData(sourceData);
+    ed25519.random = fakeRandom;
+    const privateKey = ed25519.generateKey();
+    const exportedKey = keyProvider.exportPrivateKey(privateKey);
+    const expectedKey = hexToUint8Array('302e020100300506032b6570042204204d43344341514177425159444b32567742434945494573434c484e506358502b');
+    expect(exportedKey.toString()).toBe(expectedKey.toString());
   });
 
-  describe('decrypt', () => {
-    it('should work', () => {
-      const privateKey = hexToUint8Array('4d43344341514177425159444b32567742434945494573434c484e506358502b');
-      ed25519PrivateKey.importPrivateKey(privateKey);
-      const encryptedData = hexToUint8Array('3081db020100302a300506032b6570032100854f7797283006ae5e474dfb612c41cbdbd17cd3d31b2160211e6b66d88712a43016060728818c71020502300b0609608648016503040202303f300b06096086480165030402020430a7a6b8ef584c2b419d7a43a88abaa6565ef633b280e8ef3ba61975f536164650965426f4c7cc8b3e842175e1ea1319533051301d060960864801650304012a041028c8a5d13a37ef6c9a0a35ab9427fb0f04306440c128087ed091ef380ee3d4b832c66293700ea965dddd254d18830268548e09d24cfa08f4015864e2eee1cf0b3477');
-      const decrypedData = ed25519PrivateKey.decrypt(encryptedData);
-      const expectedData = hexToUint8Array('3237643230393430656630363034643232396332346535613565623230623136');
-      expect(decrypedData.toString()).toBe(expectedData.toString());
-    });
+  test('encrypt / decrypt', () => {
+    const key = hexToUint8Array('302e020100300506032b657004220420cc266dad3d3cd7f8de961f18f351590cdf2313281fd2026f348c97e51ad74a56');
+    const privateKey = keyProvider.importPrivateKey(key);
+    const publicKey = privateKey.getPublicKey();
+    const data = hexToUint8Array('64617461');
+    const encrypted = ed25519.encrypt(publicKey, data);
+    const decrypted = ed25519.decrypt(privateKey, encrypted);
+    expect(decrypted.toString()).toBe(data.toString());
   });
 });

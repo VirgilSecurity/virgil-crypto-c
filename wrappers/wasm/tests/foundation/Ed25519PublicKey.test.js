@@ -3,50 +3,51 @@ const { hexToUint8Array } = require('../utils');
 
 describe('Ed25519PublicKey', () => {
   let foundation;
-  let ed25519PublicKey;
+  let ed25519;
+  let keyProvider;
 
   beforeEach(async () => {
     foundation = await initFoundation();
-    ed25519PublicKey = new foundation.Ed25519PublicKey();
-    ed25519PublicKey.setupDefaults();
+    ed25519 = new foundation.Ed25519();
+    keyProvider = new foundation.KeyProvider();
+    ed25519.setupDefaults();
+    keyProvider.setupDefaults();
   });
 
-  describe('keyLen', () => {
-    it('should work', () => {
-      const key = hexToUint8Array('e7349dd5eb23233766f3192e2d9d4d26d8a2671d71e8aed48053b47f55f47032');
-      ed25519PublicKey.importPublicKey(key);
-      const len = ed25519PublicKey.keyLen();
-      expect(len).toBe(32);
-    });
+  test('key len', () => {
+    const privateKey = ed25519.generateKey();
+    const publicKey = privateKey.getPublicKey();
+    const len = publicKey.len();
+    expect(len).toBe(32);
   });
 
-  describe('exportPublicKey', () => {
-    it('should work', () => {
-      const key = hexToUint8Array('e7349dd5eb23233766f3192e2d9d4d26d8a2671d71e8aed48053b47f55f47032');
-      ed25519PublicKey.importPublicKey(key);
-      const result = ed25519PublicKey.exportPublicKey();
-      expect(result.toString()).toBe(key.toString());
-    });
+  test('export public key', () => {
+    const publicKeyData = hexToUint8Array('302a300506032b6570032100d2f4f7c2dc70cf17e0fcc1d23afaec6bd5cc0de9fba179f78896bb2c65abc967');
+    const publicKey = keyProvider.importPublicKey(publicKeyData);
+    const exported = keyProvider.exportPublicKey(publicKey);
+    expect(exported.toString()).toBe(publicKeyData.toString());
   });
 
-  describe('verifyHash', () => {
-    it('should work', () => {
-      const key = hexToUint8Array('e7349dd5eb23233766f3192e2d9d4d26d8a2671d71e8aed48053b47f55f47032');
-      ed25519PublicKey.importPublicKey(key);
-      const digest = hexToUint8Array('3684a316a74ab39bd2c29a2e862f05795be949b212c920c43d21d4ce9d41016a');
-      const signature = hexToUint8Array('f22bd5b9648c906b1951deed256ce295114b0b699a068fc52c156b4ff3efa5ae035e48f447e9e21f6d6339e5508f6b273271f76fc90df95c0e965436482e1402');
-      const result = ed25519PublicKey.verifyHash(digest, foundation.AlgId.SHA256, signature);
-      expect(result).toBeTruthy();
-    });
+  test('verify hash', () => {
+    const publicKeyData = hexToUint8Array('302a300506032b6570032100d2f4f7c2dc70cf17e0fcc1d23afaec6bd5cc0de9fba179f78896bb2c65abc967');
+    const digest = hexToUint8Array('3a6eb0790f39ac87c94f3856b2dd2c5d110e6811602261a9a923d3bb23adc8b7');
+    const signature = hexToUint8Array('3051300d06096086480165030402030500044042b24411d9615ea71d7613068dc9e94151b1e723fc04eb420e2f848bd7074f3af5344472a2d6aefd7868969f0780ab8d0f4ae2c1d120c204e9d073e3ad4be00e');
+    const publicKey = keyProvider.importPublicKey(publicKeyData);
+    const verifier = new foundation.Verifier();
+    verifier.reset(signature);
+    verifier.appendData(digest);
+    const result = verifier.verify(publicKey);
+    expect(result).toBeTruthy();
   });
 
-  describe('encrypt', () => {
-    it('should work', () => {
-      const key = hexToUint8Array('e7349dd5eb23233766f3192e2d9d4d26d8a2671d71e8aed48053b47f55f47032');
-      ed25519PublicKey.importPublicKey(key);
-      const data = hexToUint8Array('3237643230393430656630363034643232396332346535613565623230623136');
-      const result = ed25519PublicKey.encrypt(data);
-      expect(result).toBeInstanceOf(Uint8Array);
-    });
+  test('encrypt', () => {
+    const privateKeyData = hexToUint8Array('302e020100300506032b657004220420f04dd792bc2965f9ecf0b9d0c78190b1224b77680c7ab22b301e7825fa7bab5e');
+    const publicKeyData = hexToUint8Array('302a300506032b6570032100d2f4f7c2dc70cf17e0fcc1d23afaec6bd5cc0de9fba179f78896bb2c65abc967');
+    const data = hexToUint8Array('64617461');
+    const privateKey = keyProvider.importPrivateKey(privateKeyData);
+    const publicKey = keyProvider.importPublicKey(publicKeyData);
+    const encrypted = ed25519.encrypt(publicKey, data);
+    const decrypted = ed25519.decrypt(privateKey, encrypted);
+    expect(decrypted.toString()).toBe(data.toString());
   });
 });
