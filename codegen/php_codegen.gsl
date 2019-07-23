@@ -126,7 +126,8 @@ function php_insert_class (php_class)
 
     newline ()
     php_insert_description(my.php_class, 0)
-    php_insert_code ("class $(my.php_class.name:)")
+    php_insert_code("class $(my.php_class.name:)")
+    php_insert_code("{",0)
 
 #    if is_true (python_class.is_abstract)
 #        python_insert_code(terminator + format_left("__metaclass__ = ABCMeta"), 1)
@@ -137,10 +138,9 @@ function php_insert_class (php_class)
 #       python_insert_class_constant (python_constant)
 #    endfor
 
-#    for my.python_class.python_constructor
-#        newline ()
-#        python_insert_constructor (python_constructor)
-#    endfor
+    for my.php_class.php_constructor
+        php_insert_constructor(php_constructor)
+    endfor
 
 #    for my.python_class.python_destructor
 #        newline ()
@@ -163,6 +163,29 @@ function php_insert_class (php_class)
 #        endif
 #        python_insert_code(python_code., 1)
 #    endfor
+
+    php_insert_code("}",0)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: constructor / init
+# ---------------------------------------------------------------------------
+function php_insert_constructor (php_constructor)
+    check_arguments (my, "php_constructor", my)
+
+    assert_attributes (my.php_constructor, "visibility", my)
+    assert_item (my.php_constructor, "php_code", my)
+
+    my.method_args = php_format_argument_list(my.php_constructor) ?
+    my.method_args = string.search_replace (my.method_args, "self, ", "") ?
+    my.override = is_true (my.php_constructor.override) ?? "override" ?
+    
+    php_insert_description (my.php_constructor, 1)
+    php_insert_code("public function __construct($(' ,'+my.method_args?:))", 1)
+    php_insert_code("{",1)
+    php_insert_code("}",1)
+
+    php_insert_code("$(my.php_constructor->php_code.:)", 1)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -180,12 +203,12 @@ endfunction
 #   Insert description of the given object.
 # ---------------------------------------------------------------------------
 function php_insert_description (obj, tab_count)
-    my.desciption = my.obj. ?
+    my.description = my.obj. ?
     my.tab_count ?= 0
-    if string_empty (my.desciption)
+    if string_empty (my.description)
         return
     endif
-    php_insert_code (my.desciption, my.tab_count)
+    php_insert_code (my.description, my.tab_count)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -238,20 +261,29 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_insert_php_open_tag ()
+function php_insert_php_open_tag()
     php_insert_code("<?php")
 endfunction
 
 # ---------------------------------------------------------------------------
-#   
+#   Return formatted list of arguments without braces.
 # ---------------------------------------------------------------------------
-function php_insert_brace(type)
-    check_argument (my, "type", my)
-    if string_in (my.type, "open, close")
-        return php_insert_code("$(my.type)")
-    else
-        return 
-    endif
+function php_format_argument_list (php_method)
+    check_arguments (my, "php_method", my)
+
+    for my.php_method.php_argument
+        if is_true (my.php_method.is_classmethod)
+            my.arg_list ?= "cls, "
+        else
+            my.arg_list ?= "self, "
+        endif
+        my.arg_list += "$(php_argument.name:c)"
+        if ! last()
+            my.arg_list += ", "
+        endif
+    endfor
+
+    return my.arg_list
 endfunction
 
 .endtemplate

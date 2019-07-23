@@ -151,8 +151,8 @@ function php_create_class_module (class, php_project, meta)
         new php_class to php_module
             . = php_format_description (my.class) ?
             .name = php_derive_class_name (my.class, my.php_project)
-            #.low_level_name = python_derive_class_low_level_name (my.class, my.python_project)
-            #.low_level_name_c_format = python_derive_class_low_level_name_c_formated (my.class, my.python_project)
+            .low_level_name = php_derive_class_low_level_name (my.class, my.php_project)
+            .low_level_name_c_format = php_derive_class_low_level_name_c_formated (my.class, my.php_project)
 
             php_map_attr_visibility (php_class, my.class)
 
@@ -161,9 +161,9 @@ function php_create_class_module (class, php_project, meta)
             #endfor
 
             
-            #if count(my.class.method) > 0
-            #    python_create_class_default_constructor (python_class, my.class, my.python_project, my.meta)
-            #endif
+            if count(my.class.method) > 0
+                php_create_class_default_constructor (php_class, my.class, my.php_project, my.meta)
+            endif
 
             #if my.class.context ?<> "none" & my.class.lifecycle ?<> "none"
             #    if ! string_in (my.class.name, "data")
@@ -176,7 +176,7 @@ function php_create_class_module (class, php_project, meta)
             #endfor
 
             #for my.class.method where method.declaration = "public" & method.visibility = "public" & method.scope ?= "public"
-            #    python_create_class_method (my.class, method, python_class, my.python_project, my.meta)
+            #    php_create_class_method (my.class, method, php_class, my.php_project, my.meta)
             #endfor
 
             #if my.class.context ?<> "none" & my.class.lifecycle ?<> "none"
@@ -192,6 +192,41 @@ function php_create_class_module (class, php_project, meta)
         
     endnew
     echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create default <php_constructor/> that initialize underlying C context.
+# ---------------------------------------------------------------------------
+function php_create_class_default_constructor (php_class, class, php_project, meta)
+    check_arguments (my, "php_class, class, php_project, meta", my)
+
+    new php_constructor to my.php_class
+        
+        . = "Create underlying C context."
+        . = php_format_description (php_constructor)
+        .override = "1"
+        .visibility = "public"
+
+        new php_import to php_class
+            .framework = "._c_bridge"
+            .lib = "$(my.php_class.low_level_name:)"
+        endnew
+
+        new php_code to php_constructor
+            my.constructor_body = ""
+            my.constructor_body += format_left("self._lib_$(my.php_class.low_level_name_c_format:c) = $(my.php_class.low_level_name:)()")
+
+            if string_in (my.class.lifecycle, "default") & my.class.context <> "none"
+                if string_equal (php_class.name, "data")
+                    my.constructor_body += format_left ("111self.$(my.class.name:c) = self._lib_$(my.php_class.low_level_name_c_format:c).$(my.php_class.low_level_name_c_format:c)_new()")
+                else
+                    my.constructor_body += format_left ("$this->ctx = php_$(my.php_class.low_level_name_c_format:c).$(my.php_class.low_level_name_c_format:c)_new();")
+                endif
+            endif
+
+            . = my.constructor_body
+        endnew
+    endnew
 endfunction
 
 function php_create_enum_module (source, destination, wrapper, meta)
@@ -250,8 +285,6 @@ function php_derive_module_name (type, php_project)
     assert_attribute (my.type, "name", my)
 
     return "$(my.type.name:Pascal)"
-    # python: return string.search_replace ("$(my.type.name:c)", "$(my.php_project.name)_", "")
-    # swift : return "$(my.type.name:Pascal)"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -286,6 +319,37 @@ function php_map_attr_visibility (php_component, component)
 
     #   TODO: make mapping more accurate.
     my.php_component.visibility = my.component.visibility ? "public"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted low level name of the PHP class.
+# ---------------------------------------------------------------------------
+function php_derive_class_low_level_name (class, php_project)
+    check_arguments (my, "class, php_project", my)
+
+    assert_attribute_one_of (my.class, "name", my)
+
+    return "$(my.php_project.prefix:Pascal)" + php_derive_class_low_level_name_str (my.class.name, my.php_project)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted low level name of the PHP class.
+# ---------------------------------------------------------------------------
+function php_derive_class_low_level_name_str (name, php_project)
+    check_arguments (my, "name, php_project", my)
+
+    return "$(my.name:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return C formatted low level name of the PHP class.
+# ---------------------------------------------------------------------------
+function php_derive_class_low_level_name_c_formated (class, php_project)
+    check_arguments (my, "class, php_project", my)
+
+    assert_attribute_one_of (my.class, "name", my)
+
+    return "$(my.php_project.prefix:c)_$(my.class.name:c)"
 endfunction
 
 .endtemplate
