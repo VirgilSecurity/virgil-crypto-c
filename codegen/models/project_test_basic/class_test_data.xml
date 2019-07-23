@@ -1,0 +1,13 @@
+<class name="test data">
+    This class provides methods that accept and return special class "data".
+    Class "data" represents "readonly" byte array and should be wrapped to
+    a native byte array in a wrapper language.
+
+    <method name="get len" is_static="1">
+        Return length of given data.
+
+        <argument name="data" class="data"/>
+
+        <return type="size"/>
+    </method>
+</class>

@@ -75,6 +75,7 @@ option(ENABLE_TESTING "On/Off integration tests." ON)
 option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
 option(ENABLE_PROFILING "On/Off GProf compilation options." OFF)
 option(ENABLE_BENCHMARKING "On/Off execution of benchmarks." OFF)
+option(ENABLE_CODEGEN_TEST_PROJECTS "On/Off building of codegen test projects." OFF)
 
 #
 # Code formatting
@@ -214,6 +215,13 @@ endif()
 
 if(VIRGIL_C_TESTING AND NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(tests)
+endif()
+
+# ---------------------------------------------------------------------------
+#   Codegen tests
+# ---------------------------------------------------------------------------
+if(ENABLE_CODEGEN_TEST_PROJECTS)
+    add_subdirectory(codegen/test/library/test_basic)
 endif()
 
 # ---------------------------------------------------------------------------

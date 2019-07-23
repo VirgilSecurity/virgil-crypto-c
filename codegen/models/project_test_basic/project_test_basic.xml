@@ -1,0 +1,30 @@
+<project
+        name="test basic"
+        brief="Test codegen basic models"
+        prefix="codegen"
+        namespace="test basic"
+        framework="CodegenTestBasic"
+        path="test/library/test_basic"
+        work_path="generated/test_basic"
+        wrappers="none"
+        is_test="1"
+        >
+
+    <version major="0" minor="9" patch="0"/>
+
+    <license>
+        Copyright (C) 2015-2019 Virgil Security, Inc.
+
+        All rights reserved.
+
+        FreeBSD Clause-3
+    </license>
+
+    <require project="common" feature="library"/>
+
+    <module name="assert" from="shared"/>
+    <module name="library" from="shared"/>
+    <module name="memory" from="shared"/>
+
+    <class name="test data"/>
+</project>

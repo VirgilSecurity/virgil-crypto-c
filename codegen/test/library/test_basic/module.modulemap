@@ -1,0 +1,9 @@
+framework module CodegenTestBasic {
+    header "codegen_assert.h"
+    header "codegen_library.h"
+    header "codegen_memory.h"
+    header "codegen_platform.h"
+    header "codegen_test_data.h"
+    header "codegen_test_basic_public.h"
+    export *
+}
