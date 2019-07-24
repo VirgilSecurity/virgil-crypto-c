@@ -112,6 +112,14 @@ public class Ecies implements AutoCloseable {
     }
 
     /*
+    * Setup predefined values to the uninitialized class dependencies
+    * except random.
+    */
+    public void setupDefaultsNoRandom() {
+        FoundationJNI.INSTANCE.ecies_setupDefaultsNoRandom(this.cCtx);
+    }
+
+    /*
     * Calculate required buffer length to hold the encrypted data.
     */
     public int encryptedLen(PublicKey publicKey, int dataLen) {
