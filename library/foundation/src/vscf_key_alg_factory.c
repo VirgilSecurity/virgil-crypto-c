@@ -97,11 +97,7 @@ vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t 
         if (random) {
             vscf_ecies_use_random(ecies, (vscf_impl_t *)random);
         }
-        const vscf_status_t status = vscf_ecies_setup_defaults(ecies);
-        if (status != vscf_status_SUCCESS) {
-            VSCF_ERROR_SAFE_UPDATE(error, status);
-            vscf_ecies_destroy(&ecies);
-        }
+        vscf_ecies_setup_defaults_no_random(ecies);
     }
 
     switch (alg_id) {

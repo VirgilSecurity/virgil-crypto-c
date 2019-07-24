@@ -54,7 +54,7 @@ benchmark__verify__ed25519_sha384_signature(benchmark::State &state) {
 
     for (auto _ : state) {
         VSCF_UNUSED(vscf_verifier_reset(verifier, benchmark_signer_ED25519_SHA384_SIGNATURE));
-        vscf_verifier_update(verifier, benchmark_signer_DATA);
+        vscf_verifier_append_data(verifier, benchmark_signer_DATA);
         vscf_verifier_verify(verifier, public_key);
     }
 
@@ -75,7 +75,7 @@ benchmark__verify__ed25519_sha384_v2_compat_signature(benchmark::State &state) {
 
     for (auto _ : state) {
         VSCF_UNUSED(vscf_verifier_reset(verifier, benchmark_signer_ED25519_SHA384_SIGNATURE_V2_COMPAT));
-        vscf_verifier_update(verifier, benchmark_signer_DATA);
+        vscf_verifier_append_data(verifier, benchmark_signer_DATA);
         vscf_verifier_verify(verifier, public_key);
     }
 
@@ -97,7 +97,7 @@ benchmark__verify__rsa2048_sha384_signature(benchmark::State &state) {
 
     for (auto _ : state) {
         VSCF_UNUSED(vscf_verifier_reset(verifier, benchmark_signer_RSA2048_SHA384_SIGNATURE));
-        vscf_verifier_update(verifier, benchmark_signer_DATA);
+        vscf_verifier_append_data(verifier, benchmark_signer_DATA);
         vscf_verifier_verify(verifier, public_key);
     }
 
@@ -119,7 +119,7 @@ benchmark__verify__rsa2048_sha384_v2_compat_signature(benchmark::State &state) {
 
     for (auto _ : state) {
         VSCF_UNUSED(vscf_verifier_reset(verifier, benchmark_signer_RSA2048_SHA384_SIGNATURE_V2_COMPAT));
-        vscf_verifier_update(verifier, benchmark_signer_DATA);
+        vscf_verifier_append_data(verifier, benchmark_signer_DATA);
         vscf_verifier_verify(verifier, public_key);
     }
 
