@@ -254,6 +254,13 @@ VSCF_PUBLIC vscf_status_t
 vscf_ecies_setup_defaults(vscf_ecies_t *self) VSCF_NODISCARD;
 
 //
+//  Setup predefined values to the uninitialized class dependencies
+//  except random.
+//
+VSCF_PUBLIC void
+vscf_ecies_setup_defaults_no_random(vscf_ecies_t *self);
+
+//
 //  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t

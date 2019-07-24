@@ -113,6 +113,12 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: proxyResult)
     }
 
+    /// Setup predefined values to the uninitialized class dependencies
+    /// except random.
+    @objc public func setupDefaultsNoRandom() {
+        vscf_ecies_setup_defaults_no_random(self.c_ctx)
+    }
+
     /// Calculate required buffer length to hold the encrypted data.
     @objc public func encryptedLen(publicKey: PublicKey, dataLen: Int) -> Int {
         let proxyResult = vscf_ecies_encrypted_len(self.c_ctx, publicKey.c_ctx, dataLen)

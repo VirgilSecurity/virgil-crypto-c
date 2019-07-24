@@ -50,6 +50,12 @@
     </method>
 
 
+    <method name="setup defaults no random">
+        Setup predefined values to the uninitialized class dependencies
+        except random.
+    </method>
+
+
     <method name="encrypted len" is_const="1">
         Calculate required buffer length to hold the encrypted data.
 

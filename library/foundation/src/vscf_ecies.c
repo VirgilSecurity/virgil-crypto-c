@@ -518,15 +518,29 @@ vscf_ecies_setup_defaults(vscf_ecies_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_status_t status = vscf_status_SUCCESS;
+    vscf_ecies_setup_defaults_no_random(self);
 
     if (NULL == self->random) {
         vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
-        status = vscf_ctr_drbg_setup_defaults(random);
+        const vscf_status_t status = vscf_ctr_drbg_setup_defaults(random);
         if (status == vscf_status_SUCCESS) {
             vscf_ecies_take_random(self, vscf_ctr_drbg_impl(random));
+        } else {
+            return status;
         }
     }
+
+    return vscf_status_SUCCESS;
+}
+
+//
+//  Setup predefined values to the uninitialized class dependencies
+//  except random.
+//
+VSCF_PUBLIC void
+vscf_ecies_setup_defaults_no_random(vscf_ecies_t *self) {
+
+    VSCF_ASSERT_PTR(self);
 
     if (NULL == self->cipher) {
         self->cipher = vscf_aes256_cbc_impl(vscf_aes256_cbc_new());
@@ -543,8 +557,6 @@ vscf_ecies_setup_defaults(vscf_ecies_t *self) {
         vscf_kdf2_take_hash(kdf, vscf_sha384_impl(vscf_sha384_new()));
         self->kdf = vscf_kdf2_impl(kdf);
     }
-
-    return status;
 }
 
 //
