@@ -6,13 +6,13 @@
 // --------------------------------------------------------------------------
 properties([
     parameters([
-        booleanParam(name: 'DEPLOY_JAVA_ARTIFACTS', defaultValue: true,
+        booleanParam(name: 'DEPLOY_JAVA_ARTIFACTS', defaultValue: false,
             description: 'If build succeeded then Java artifacts will be deployed to the Maven repository.'),
 
         booleanParam(name: 'RUN_ANDROID_TESTS', defaultValue: true,
             description: 'Run Android instrumental tests.'),
 
-        booleanParam(name: 'DEPLOY_ANDROID_ARTIFACTS', defaultValue: true,
+        booleanParam(name: 'DEPLOY_ANDROID_ARTIFACTS', defaultValue: false,
             description: 'If build succeeded then Java Android artifacts will be deployed to the Maven repository..'),
 
         string(name: 'gpg_keyname', defaultValue: 'B2007BBB'),
