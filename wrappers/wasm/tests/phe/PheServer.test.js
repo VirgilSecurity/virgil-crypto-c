@@ -14,6 +14,11 @@ describe('PheServer', () => {
     pheClient.setupDefaults();
   });
 
+  afterEach(() => {
+    pheServer.delete();
+    pheClient.delete();
+  });
+
   describe('generateServerKeyPair', () => {
     it('should work', () => {
       const { serverPrivateKey, serverPublicKey } = pheServer.generateServerKeyPair();

@@ -17,6 +17,12 @@ describe('PheCipher', () => {
     pheServer.setupDefaults();
   });
 
+  afterEach(() => {
+    pheCipher.delete();
+    pheClient.delete();
+    pheServer.delete();
+  });
+
   describe('encrypt', () => {
     it('should work', () => {
       const serverKeyPair = pheServer.generateServerKeyPair();

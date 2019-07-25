@@ -14,11 +14,17 @@ describe('Ed25519PrivateKey', () => {
     keyProvider.setupDefaults();
   });
 
+  afterEach(() => {
+    ed25519.delete();
+    keyProvider.delete();
+  });
+
   test('import private key', () => {
     const privateKeyData = hexToUint8Array('302e020100300506032b657004220420f04dd792bc2965f9ecf0b9d0c78190b1224b77680c7ab22b301e7825fa7bab5e');
     const privateKey = keyProvider.importPrivateKey(privateKeyData);
     const len = privateKey.len();
     expect(len).toBe(32);
+    privateKey.delete();
   });
 
   test('export private key', () => {
@@ -26,6 +32,7 @@ describe('Ed25519PrivateKey', () => {
     const privateKey = keyProvider.importPrivateKey(privateKeyData);
     const exportedKey = keyProvider.exportPrivateKey(privateKey);
     expect(exportedKey.toString()).toBe(privateKeyData.toString());
+    privateKey.delete();
   });
 
   test('extract public key', () => {
@@ -35,6 +42,8 @@ describe('Ed25519PrivateKey', () => {
     const publicKey = privateKey.getPublicKey();
     const exportedPublicKey = keyProvider.exportPublicKey(publicKey);
     expect(exportedPublicKey.toString()).toBe(publicKeyData.toString());
+    privateKey.delete();
+    publicKey.delete();
   });
 
   test('sign hash', () => {
@@ -54,6 +63,11 @@ describe('Ed25519PrivateKey', () => {
     const signature = signer.sign(privateKey);
     const expectedSignature = hexToUint8Array('3051300d06096086480165030402030500044042b24411d9615ea71d7613068dc9e94151b1e723fc04eb420e2f848bd7074f3af5344472a2d6aefd7868969f0780ab8d0f4ae2c1d120c204e9d073e3ad4be00e');
     expect(signature.toString()).toBe(expectedSignature.toString());
+    signer.delete();
+    hash.delete();
+    fakeRandom.delete();
+    privateKey.delete();
+    publicKey.delete();
   });
 
   test('generate key', () => {
@@ -65,6 +79,8 @@ describe('Ed25519PrivateKey', () => {
     const exportedKey = keyProvider.exportPrivateKey(privateKey);
     const expectedKey = hexToUint8Array('302e020100300506032b6570042204204d43344341514177425159444b32567742434945494573434c484e506358502b');
     expect(exportedKey.toString()).toBe(expectedKey.toString());
+    fakeRandom.delete();
+    privateKey.delete();
   });
 
   test('encrypt / decrypt', () => {
@@ -75,5 +91,7 @@ describe('Ed25519PrivateKey', () => {
     const encrypted = ed25519.encrypt(publicKey, data);
     const decrypted = ed25519.decrypt(privateKey, encrypted);
     expect(decrypted.toString()).toBe(data.toString());
+    privateKey.delete();
+    publicKey.delete();
   });
 });

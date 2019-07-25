@@ -10,6 +10,10 @@ describe('RecipientCipher', () => {
     recipientCipher = new foundation.RecipientCipher();
   });
 
+  afterEach(() => {
+    recipientCipher.delete();
+  });
+
   test('encrypt / decrypt with ed25519 key pair', () => {
     const ed25519 = new foundation.Ed25519();
     ed25519.setupDefaults();
@@ -35,5 +39,8 @@ describe('RecipientCipher', () => {
     result.set(processDecryption);
     result.set(finishDecryption, processDecryption.length);
     expect(result.toString()).toBe(data.toString());
+    ed25519.delete();
+    privateKey.delete();
+    publicKey.delete();
   });
 });

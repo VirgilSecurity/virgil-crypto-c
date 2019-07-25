@@ -13,6 +13,11 @@ describe('PheClient', () => {
     pheServer.setupDefaults();
   });
 
+  afterEach(() => {
+    pheClient.delete();
+    pheServer.delete();
+  });
+
   describe('enrollAccount', () => {
     it('should work', () => {
       const serverKeyPair = pheServer.generateServerKeyPair();

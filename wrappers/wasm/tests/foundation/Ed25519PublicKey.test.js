@@ -14,11 +14,18 @@ describe('Ed25519PublicKey', () => {
     keyProvider.setupDefaults();
   });
 
+  afterEach(() => {
+    ed25519.delete();
+    keyProvider.delete();
+  });
+
   test('key len', () => {
     const privateKey = ed25519.generateKey();
     const publicKey = privateKey.getPublicKey();
     const len = publicKey.len();
     expect(len).toBe(32);
+    privateKey.delete();
+    publicKey.delete();
   });
 
   test('export public key', () => {
@@ -26,6 +33,7 @@ describe('Ed25519PublicKey', () => {
     const publicKey = keyProvider.importPublicKey(publicKeyData);
     const exported = keyProvider.exportPublicKey(publicKey);
     expect(exported.toString()).toBe(publicKeyData.toString());
+    publicKey.delete();
   });
 
   test('verify hash', () => {
@@ -38,6 +46,8 @@ describe('Ed25519PublicKey', () => {
     verifier.appendData(digest);
     const result = verifier.verify(publicKey);
     expect(result).toBeTruthy();
+    verifier.delete();
+    publicKey.delete();
   });
 
   test('encrypt', () => {
@@ -49,5 +59,7 @@ describe('Ed25519PublicKey', () => {
     const encrypted = ed25519.encrypt(publicKey, data);
     const decrypted = ed25519.decrypt(privateKey, encrypted);
     expect(decrypted.toString()).toBe(data.toString());
+    privateKey.delete();
+    publicKey.delete();
   });
 });

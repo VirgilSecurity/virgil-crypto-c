@@ -13,6 +13,11 @@ describe('Kdf1', () => {
     kdf1.hash = sha256;
   });
 
+  afterEach(() => {
+    kdf1.delete();
+    sha256.delete();
+  });
+
   describe('derive', () => {
     test('1', () => {
       const data = new Uint8Array();

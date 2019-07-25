@@ -10,6 +10,10 @@ describe('Sha256', () => {
     sha256 = new foundation.Sha256();
   });
 
+  afterEach(() => {
+    sha256.delete();
+  });
+
   describe('hash', () => {
     test('1', () => {
       const input = new Uint8Array();
