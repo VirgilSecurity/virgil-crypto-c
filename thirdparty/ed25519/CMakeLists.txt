@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(ed25519 VERSION 1.0.0 LANGUAGES C)
+project(ed25519 VERSION 1.0.0 LANGUAGES C ASM)
 
 # ---------------------------------------------------------------------------
 #   Check dependencies
@@ -91,12 +91,10 @@ if(ENABLE_PROFILING)
 endif()
 
 #
-# Enable pedantic mode
+# Enable pedantic mode only for reference implementation
 #
-if(COMMAND enable_target_pedantic)
+if(COMMAND enable_target_pedantic AND ED25519_REF10)
     enable_target_pedantic(ed25519)
-else()
-    message(STATUS "To enable pedantic mode create function 'enable_target_pedantic(<target>)'.")
 endif()
 
 

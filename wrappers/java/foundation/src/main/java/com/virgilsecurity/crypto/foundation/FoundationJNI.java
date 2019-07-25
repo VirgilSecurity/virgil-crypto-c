@@ -389,6 +389,12 @@ public class FoundationJNI {
     public native void ecies_setupDefaults(long cCtx) throws FoundationException;
 
     /*
+    * Setup predefined values to the uninitialized class dependencies
+    * except random.
+    */
+    public native void ecies_setupDefaultsNoRandom(long cCtx);
+
+    /*
     * Calculate required buffer length to hold the encrypted data.
     */
     public native int ecies_encryptedLen(long cCtx, PublicKey publicKey, int dataLen);

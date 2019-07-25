@@ -114,9 +114,9 @@ extern "C" {
 
 #define VSCE_VERSION_MAJOR 0
 
-#define VSCE_VERSION_MINOR 8
+#define VSCE_VERSION_MINOR 9
 
-#define VSCE_VERSION_PATCH 1
+#define VSCE_VERSION_PATCH 0
 
 #define VSCE_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
 
