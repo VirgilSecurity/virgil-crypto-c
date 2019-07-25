@@ -79,24 +79,6 @@ function java_derive_c_context_module_name (java_project)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C class constructor.
-# ---------------------------------------------------------------------------
-function class_derive_c_default_constructor (class)
-    check_arguments (my, "class", my)
-
-    return make_ref_c (make_id ("class", my.class.name, "method new"))
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C class destructor.
-# ---------------------------------------------------------------------------
-function class_derive_c_destructor (class)
-    check_arguments (my, "class", my)
-
-    return make_ref_c (make_id ("class", my.class.name, "method delete"))
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Return .(UID) that refers to the C type of the class.
 # ---------------------------------------------------------------------------
 function java_derive_c_type (instance)
@@ -666,7 +648,7 @@ function java_create_class_c_default_constructor (java_class, class, java_projec
             my.ctx_size_invocation = "$(class_derive_class_c_method_ctx_size (my.class))()"
             my.ctor_invocation = ".(c_global_method_alloc)($(my.ctx_size_invocation:))"
         else
-            my.ctor_invocation = "$(class_derive_c_default_constructor (my.class))()"
+            my.ctor_invocation = "$(class_derive_c_constructor (my.class))()"
         endif
 
         new c_method to my.c_module

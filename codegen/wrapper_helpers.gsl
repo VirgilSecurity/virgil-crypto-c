@@ -146,12 +146,36 @@ endfunction
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
+#   If attribute 'project' is defined within <instance/> then return project
+#   prefix, otherwise return empty string.
+# ---------------------------------------------------------------------------
+function component_derive_project_uid (instance)
+    check_arguments (my, "instance", my)
+
+    return defined (my.instance.project) ?? make_id ("project", my.instance.project) ? ""
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the instance C type.
+# ---------------------------------------------------------------------------
+function class_derive_c_instance_type (instance)
+    check_arguments (my, "instance", my)
+
+    my.temp_c_instance = XML.new("c_instance")
+
+    c_component_map_instance_attr_type (my.temp_c_instance, my.instance)
+
+    return my.temp_c_instance.type
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return .(UID) that refers to the C class constructor.
 # ---------------------------------------------------------------------------
 function class_derive_c_constructor(class, name)
     check_arguments(my, "class", my)
 
-    return make_ref_c(make_id("class", my.class.name, "method new", my.name))
+    my.of_class = my.class.of_class ? my.class.name
+    return make_ref_c(make_id ("class", my.of_class, "method", "new", my.name?))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -194,7 +218,8 @@ endfunction
 function class_derive_c_method_use_dependency(class, dependency)
     check_arguments(my, "class, dependency", my)
 
-    return make_ref_c(make_id("class", my.class.name, "method", "use", my.dependency.name))
+    my.of_class = my.class.of_class ? my.class.name
+    return make_ref_c(make_id("class", my.of_class, "method", "use", my.dependency.name))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -203,7 +228,41 @@ endfunction
 function class_derive_c_method_release_dependency(class, dependency)
     check_arguments(my, "class, dependency", my)
 
-    return make_ref_c(make_id("class", my.class.name, "method", "release", my.dependency.name))
+    my.of_class = my.class.of_class ? my.class.name
+    return make_ref_c(make_id("class", my.of_class, "method", "release", my.dependency.name))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C interface method that returns API.
+# ---------------------------------------------------------------------------
+function interface_derive_c_api_method_from_name (interface_name)
+    check_arguments (my, "interface_name", my)
+
+    return make_ref_c (make_id ("class", my.interface_name, "method", "api"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C interface method that returns API.
+# ---------------------------------------------------------------------------
+function interface_derive_c_api_method (interface)
+    check_arguments (my, "interface", my)
+
+    assert_attribute (my.interface, "name", my)
+
+    return interface_derive_c_api_method_from_name (my.interface.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C interface method that returns
+#   requested constant.
+# ---------------------------------------------------------------------------
+function interface_derive_c_constant_method (interface, constant)
+    check_arguments (my, "interface, constant", my)
+
+    assert_attribute (my.interface, "name", my)
+    assert_attribute (my.constant, "name", my)
+
+    return make_ref_c (make_id ("class", my.interface.name, "method", my.constant.name))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -249,6 +308,52 @@ endfunction
 # ---------------------------------------------------------------------------
 function class_error_derive_c_method_reset()
     return make_ref_c(make_id("class", "error", "method", "reset"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C type of the class.
+# ---------------------------------------------------------------------------
+function class_derive_c_type (class)
+    check_arguments(my, "class", my)
+
+    my.of_class = my.class.of_class ? my.class.name
+    return make_ref_c(make_id ("class", my.of_class, "struct", my.class.name))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C class method that returns
+#   context size.
+# ---------------------------------------------------------------------------
+function class_derive_class_c_method_ctx_size (class)
+    check_arguments(my, "class", my)
+
+    my.of_class = my.class.of_class ? my.class.name
+
+    if item_in (my.class, "class")
+        return make_ref_c(make_id("class", my.of_class, "method", "ctx size"))
+
+    elsif item_in (my.class, "implementation")
+        return make_ref_c(make_id("class", my.of_class, "method", "impl size"))
+
+    else
+        return make_ref_c(make_id("class", my.of_class, "method", "size"))
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C instance shallow copy method.
+# ---------------------------------------------------------------------------
+function insatnce_derive_c_method_shallow_copy (instance)
+    check_arguments(my, "instance", my)
+
+    my.project_uid = component_derive_project_uid (my.instance)
+
+    if has_one_of_attribute(my.instance, "interface")
+        return make_ref_c(make_id(my.project_uid, "class", "impl", "method", "shallow copy"))
+
+    elsif has_one_of_attribute(my.instance, "class, impl")
+        return make_ref_c(make_id(my.project_uid, "class", my.instance.class ? my.instance.impl, "method", "shallow copy"))
+    endif
 endfunction
 
 # ===========================================================================

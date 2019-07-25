@@ -65,6 +65,7 @@
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"
+gsl from "wrapper_helpers.gsl"
 gsl from "swift.gsl"
 gsl from "java.gsl"
 gsl from "php.gsl"
