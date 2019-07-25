@@ -36,119 +36,45 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class RsaPublicKeyTest extends SampleBasedTest {
 
+	private Rsa rsa;
 	private RsaPublicKey publicKey;
+	private int bitlen = 2048;
 
 	@Before
 	public void init() {
-		this.publicKey = new RsaPublicKey();
-		this.publicKey.setupDefaults();
+		this.rsa = new Rsa();
+		this.rsa.setupDefaults();
+
+		this.publicKey = (RsaPublicKey) this.rsa.generateKey(this.bitlen).extractPublicKey();
+	}
+
+	@After
+	public void tearDown() {
+		this.rsa.close();
+		this.publicKey.close();
 	}
 
 	@Test
-	public void alg() {
+	public void algId() {
 		assertEquals(AlgId.RSA, this.publicKey.algId());
 	}
 
 	@Test
-	public void keyLen() {
-		assertEquals(0, this.publicKey.keyLen());
+	public void len() {
+		assertEquals(this.bitlen / 8, this.publicKey.len());
 	}
 
 	@Test
-	public void keyBitlen() {
-		assertEquals(0, this.publicKey.keyBitlen());
-	}
-
-	@Test
-	public void importPublicKey() {
-		this.publicKey.importPublicKey(getBytes("rsa.public_key"));
-
-		assertEquals(getInt("rsa.key_len"), this.publicKey.keyLen());
-		assertEquals(getInt("rsa.key_bit_len"), this.publicKey.keyBitlen());
-	}
-
-	@Test
-	@Ignore
-	public void encrypt() {
-		byte[] keyData = getBytes("rsa.public_key");
-		byte[] data = getBytes("data");
-		byte[] expectedEncryptedData = getBytes("rsa.encrypted_data");
-
-		this.publicKey.importPublicKey(keyData);
-		this.publicKey.setupDefaults();
-
-		byte[] encryptedData = this.publicKey.encrypt(data);
-
-		assertNotNull(encryptedData);
-		assertArrayEquals(expectedEncryptedData, encryptedData);
-		java.util.Base64.getEncoder().encodeToString(encryptedData);
-	}
-
-	@Test
-	public void encryptedLen() {
-		int dataLen = getBytes("data").length;
-		int encryptedDataLen = getBytes("rsa.encrypted_data").length;
-
-		assertEquals(encryptedDataLen, this.publicKey.encryptedLen(dataLen));
-	}
-
-	@Test
-	@Ignore
-	public void verify() {
-		byte[] data = getBytes("data");
-		byte[] keyData = getBytes("rsa.public_key");
-		byte[] signature = getBytes("rsa.signature");
-		byte[] wrongSignature = getBytes("rsa.wrong_signature");
-
-		this.publicKey.importPublicKey(keyData);
-
-		assertTrue(this.publicKey.verifyHash(data, this.publicKey.algId(), signature));
-		assertFalse(this.publicKey.verifyHash(data, this.publicKey.algId(), wrongSignature));
-	}
-
-	@Test
-	public void export_import() {
-		try (RsaPrivateKey privateKey = new RsaPrivateKey()) {
-			privateKey.setKeygenParams(2048);
-			privateKey.setupDefaults();
-			privateKey.generateKey();
-			byte[] keyData = privateKey.extractPublicKey().exportPublicKey();
-
-			this.publicKey.importPublicKey(keyData);
-
-			// Export public key
-			byte[] exportedKey = this.publicKey.exportPublicKey();
-			assertNotNull(exportedKey);
-			assertArrayEquals(keyData, exportedKey);
-
-			// Import public key
-			try (RsaPublicKey importedPublicKey = new RsaPublicKey()) {
-				importedPublicKey.setupDefaults();
-				importedPublicKey.importPublicKey(exportedKey);
-			}
-		}
-	}
-
-	@Test
-	public void getCanExportPublicKey() {
-		assertTrue(this.publicKey.getCanExportPublicKey());
-	}
-
-	@Test
-	public void getCanImportPublicKey() {
-		assertTrue(this.publicKey.getCanImportPublicKey());
+	public void bitlen() {
+		assertEquals(this.bitlen, this.publicKey.bitlen());
 	}
 
 }

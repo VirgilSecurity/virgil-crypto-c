@@ -59,6 +59,7 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_sec1_serializer.h"
+#include "vscf_atomic.h"
 #include "vscf_impl.h"
 #include "vscf_alg_info_der_serializer.h"
 
@@ -88,7 +89,7 @@ struct vscf_sec1_serializer_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
     //
     //  Dependency to the interface 'asn1 writer'.
     //

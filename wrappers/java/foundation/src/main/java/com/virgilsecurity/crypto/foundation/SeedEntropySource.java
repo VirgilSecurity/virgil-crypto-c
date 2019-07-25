@@ -50,15 +50,6 @@ public class SeedEntropySource implements AutoCloseable, EntropySource {
     }
 
     /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public SeedEntropySource(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
-    /*
     * The maximum length of the entropy requested at once.
     */
     public int getGatherLenMax() {
@@ -70,6 +61,16 @@ public class SeedEntropySource implements AutoCloseable, EntropySource {
     */
     public void resetSeed(byte[] seed) {
         FoundationJNI.INSTANCE.seedEntropySource_resetSeed(this.cCtx, seed);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static SeedEntropySource getInstance(long cCtx) {
+        SeedEntropySource newInstance = new SeedEntropySource();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

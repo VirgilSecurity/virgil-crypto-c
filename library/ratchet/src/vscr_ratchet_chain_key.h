@@ -48,11 +48,12 @@
 #define VSCR_RATCHET_CHAIN_KEY_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_atomic.h"
 #include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_chain_key.h"
 
-#include <RatchetSession.pb.h>
+#include <vscr_RatchetSession.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 
@@ -83,7 +84,7 @@ struct vscr_ratchet_chain_key_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCR_ATOMIC size_t refcnt;
 
     uint32_t index;
 
@@ -116,7 +117,7 @@ vscr_ratchet_chain_key_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
 vscr_ratchet_chain_key_delete(vscr_ratchet_chain_key_t *self);
@@ -138,10 +139,10 @@ VSCR_PUBLIC void
 vscr_ratchet_chain_key_clone(const vscr_ratchet_chain_key_t *self, vscr_ratchet_chain_key_t *dst);
 
 VSCR_PUBLIC void
-vscr_ratchet_chain_key_serialize(const vscr_ratchet_chain_key_t *self, ChainKey *chain_key_pb);
+vscr_ratchet_chain_key_serialize(const vscr_ratchet_chain_key_t *self, vscr_ChainKey *chain_key_pb);
 
 VSCR_PUBLIC void
-vscr_ratchet_chain_key_deserialize(const ChainKey *chain_key_pb, vscr_ratchet_chain_key_t *chain_key);
+vscr_ratchet_chain_key_deserialize(const vscr_ChainKey *chain_key_pb, vscr_ratchet_chain_key_t *chain_key);
 
 
 // --------------------------------------------------------------------------

@@ -43,10 +43,10 @@
 #include <mbedtls/bignum.h>
 
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_HASH &&VSCE_SIMPLE_SWU &&VSCF_RANDOM &&VSCF_CTR_DRBG
+#define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_HASH
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include "vsce_simple_swu.h"
+#include "vscf_simple_swu.h"
 #include "vsce_phe_hash.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
@@ -55,36 +55,6 @@
 // --------------------------------------------------------------------------
 //  Test functions.
 // --------------------------------------------------------------------------
-void
-test__data2point__const_hash__should_match(void) {
-    mbedtls_ecp_group group;
-    mbedtls_ecp_group_init(&group);
-    mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
-
-    mbedtls_ecp_point p;
-    mbedtls_ecp_point_init(&p);
-
-    vsce_phe_hash_t *phe_hash = vsce_phe_hash_new();
-    vsce_phe_hash_data_to_point(phe_hash, test_phe_hash_data, &p);
-
-    mbedtls_mpi x1_exp, y1_exp;
-    mbedtls_mpi_init(&x1_exp);
-    mbedtls_mpi_init(&y1_exp);
-
-    mbedtls_mpi_read_string(&x1_exp, 10, test_phe_hash_x_DEC);
-    mbedtls_mpi_read_string(&y1_exp, 10, test_phe_hash_y_DEC);
-
-    TEST_ASSERT(mbedtls_ecp_check_pubkey(&group, &p) == 0);
-    TEST_ASSERT(mbedtls_mpi_cmp_mpi(&p.X, &x1_exp) == 0);
-    TEST_ASSERT(mbedtls_mpi_cmp_mpi(&p.Y, &y1_exp) == 0);
-    TEST_ASSERT(mbedtls_mpi_cmp_int(&p.Z, 1) == 0);
-
-    vsce_phe_hash_destroy(&phe_hash);
-    mbedtls_ecp_point_free(&p);
-    mbedtls_mpi_free(&x1_exp);
-    mbedtls_mpi_free(&y1_exp);
-    mbedtls_ecp_group_free(&group);
-}
 
 void
 test__hs0__const_hash__should_match(void) {
@@ -359,7 +329,6 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__data2point__const_hash__should_match);
     RUN_TEST(test__hc0__const_hash__should_match);
     RUN_TEST(test__hc1__const_hash__should_match);
     RUN_TEST(test__hs0__const_hash__should_match);

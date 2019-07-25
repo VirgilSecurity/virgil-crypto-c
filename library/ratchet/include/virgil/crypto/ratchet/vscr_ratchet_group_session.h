@@ -56,6 +56,8 @@
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_group_message.h"
+#include "vscr_ratchet_group_participants_info.h"
+#include "vscr_ratchet_group_participants_ids.h"
 #include "vscr_error.h"
 #include "vscr_ratchet_group_session.h"
 #include "vscr_ratchet_group_ticket.h"
@@ -125,7 +127,7 @@ vscr_ratchet_group_session_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
 vscr_ratchet_group_session_delete(vscr_ratchet_group_session_t *self);
@@ -187,7 +189,7 @@ vscr_ratchet_group_session_is_my_id_set(const vscr_ratchet_group_session_t *self
 //
 //  Returns current epoch.
 //
-VSCR_PUBLIC size_t
+VSCR_PUBLIC uint32_t
 vscr_ratchet_group_session_get_current_epoch(const vscr_ratchet_group_session_t *self);
 
 //
@@ -205,7 +207,7 @@ vscr_ratchet_group_session_set_private_key(vscr_ratchet_group_session_t *self,
         vsc_data_t my_private_key) VSCR_NODISCARD;
 
 //
-//  Sets my id.
+//  Sets my id. Should be 32 byte
 //
 VSCR_PUBLIC void
 vscr_ratchet_group_session_set_my_id(vscr_ratchet_group_session_t *self, vsc_data_t my_id);
@@ -225,16 +227,28 @@ vscr_ratchet_group_session_get_session_id(const vscr_ratchet_group_session_t *se
 //
 //  Returns number of participants.
 //
-VSCR_PUBLIC size_t
+VSCR_PUBLIC uint32_t
 vscr_ratchet_group_session_get_participants_count(const vscr_ratchet_group_session_t *self);
 
 //
 //  Sets up session.
+//  Use this method when you have newer epoch message and know all participants info.
 //  NOTE: Identity private key and my id should be set separately.
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_session_setup_session(vscr_ratchet_group_session_t *self,
-        const vscr_ratchet_group_message_t *message) VSCR_NODISCARD;
+vscr_ratchet_group_session_setup_session_state(vscr_ratchet_group_session_t *self,
+        const vscr_ratchet_group_message_t *message,
+        const vscr_ratchet_group_participants_info_t *participants) VSCR_NODISCARD;
+
+//
+//  Sets up session.
+//  Use this method when you have message with next epoch, and you know how participants set was changed.
+//  NOTE: Identity private key and my id should be set separately.
+//
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_group_session_update_session_state(vscr_ratchet_group_session_t *self,
+        const vscr_ratchet_group_message_t *message, const vscr_ratchet_group_participants_info_t *add_participants,
+        const vscr_ratchet_group_participants_ids_t *remove_participants) VSCR_NODISCARD;
 
 //
 //  Encrypts data
@@ -256,17 +270,11 @@ vscr_ratchet_group_session_decrypt(vscr_ratchet_group_session_t *self, const vsc
         vsc_buffer_t *plain_text) VSCR_NODISCARD;
 
 //
-//  Calculates size of buffer sufficient to store session
-//
-VSCR_PUBLIC size_t
-vscr_ratchet_group_session_serialize_len(const vscr_ratchet_group_session_t *self);
-
-//
 //  Serializes session to buffer
 //  NOTE: Session changes its state every encrypt/decrypt operations. Be sure to save it.
 //
-VSCR_PUBLIC void
-vscr_ratchet_group_session_serialize(const vscr_ratchet_group_session_t *self, vsc_buffer_t *output);
+VSCR_PUBLIC vsc_buffer_t *
+vscr_ratchet_group_session_serialize(const vscr_ratchet_group_session_t *self);
 
 //
 //  Deserializes session from buffer.
@@ -279,18 +287,10 @@ VSCR_PUBLIC vscr_ratchet_group_session_t *
 vscr_ratchet_group_session_deserialize(vsc_data_t input, vscr_error_t *error);
 
 //
-//  Creates ticket for adding participants to this session.
-//  NOTE: This ticket is not suitable for removing participants from this session.
+//  Creates ticket with new key for adding or removing participants.
 //
 VSCR_PUBLIC vscr_ratchet_group_ticket_t *
-vscr_ratchet_group_session_create_group_ticket_for_adding_participants(const vscr_ratchet_group_session_t *self);
-
-//
-//  Creates ticket for adding and or removing participants to/from this session.
-//
-VSCR_PUBLIC vscr_ratchet_group_ticket_t *
-vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants(
-        const vscr_ratchet_group_session_t *self, vscr_error_t *error);
+vscr_ratchet_group_session_create_group_ticket(const vscr_ratchet_group_session_t *self, vscr_error_t *error);
 
 
 // --------------------------------------------------------------------------

@@ -55,30 +55,35 @@
 // --------------------------------------------------------------------------
 
 static bool
-reg_msg_cmp(RegularGroupMessage *msg1, RegularGroupMessage *msg2) {
+reg_msg_hdr_cmp(vscr_RegularGroupMessageHeader *msg1, vscr_RegularGroupMessageHeader *msg2) {
+    return memcmp(msg1->session_id, msg2->session_id, sizeof(msg1->session_id)) == 0 &&
+           memcmp(msg1->sender_id, msg2->sender_id, sizeof(msg1->sender_id)) == 0 && msg1->counter == msg2->counter &&
+           msg1->epoch == msg2->epoch && msg1->prev_epochs_msgs[0] == msg2->prev_epochs_msgs[0] &&
+           msg1->prev_epochs_msgs[1] == msg2->prev_epochs_msgs[1] &&
+           msg1->prev_epochs_msgs[2] == msg2->prev_epochs_msgs[2] &&
+           msg1->prev_epochs_msgs[3] == msg2->prev_epochs_msgs[3] && msg1->epoch == msg2->epoch;
+}
 
-    return vsc_buffer_len(msg1->cipher_text.arg) == vsc_buffer_len(msg2->cipher_text.arg) &&
+static bool
+reg_msg_cmp(vscr_RegularGroupMessage *msg1, vscr_RegularGroupMessage *msg2) {
+
+    return msg1->cipher_text->size == msg2->cipher_text->size &&
            memcmp(&msg1->header, &msg2->header, sizeof(msg1->header)) == 0 &&
-           memcmp(vsc_buffer_bytes(msg1->cipher_text.arg), vsc_buffer_bytes(msg2->cipher_text.arg),
-                   vsc_buffer_len(msg1->cipher_text.arg)) == 0;
+           memcmp(&msg1->signature, &msg2->signature, sizeof(msg1->signature)) == 0 &&
+           memcmp(msg1->cipher_text->bytes, msg2->cipher_text->bytes, msg1->cipher_text->size) == 0;
 }
 
 static bool
-participant_cmp(MessageParticipantInfo *msg1, MessageParticipantInfo *msg2) {
-    return memcmp(msg1->key, msg2->key, sizeof(msg1->key)) == 0 &&
-           memcmp(msg1->pub_key, msg2->pub_key, sizeof(msg1->pub_key)) == 0;
-}
+grp_info_msg_cmp(vscr_MessageGroupInfo *msg1, vscr_MessageGroupInfo *msg2) {
 
-static bool
-grp_info_msg_cmp(MessageGroupInfo *msg1, MessageGroupInfo *msg2) {
-
-    if (msg1->participants_count != msg2->participants_count)
+    if (memcmp(msg1->key, msg2->key, sizeof(msg1->key)) != 0)
         return false;
 
-    for (size_t i = 0; i < msg1->participants_count; i++) {
-        if (!participant_cmp(&msg1->participants[i], &msg2->participants[i]))
-            return false;
-    }
+    if (msg1->epoch != msg2->epoch)
+        return false;
+
+    if (memcmp(msg1->session_id, msg2->session_id, sizeof(msg1->session_id)) != 0)
+        return false;
 
     return true;
 }
@@ -91,7 +96,8 @@ msg_cmp(vscr_ratchet_group_message_t *msg1, vscr_ratchet_group_message_t *msg2) 
         return false;
 
     if (msg1->message_pb.has_regular_message) {
-        return reg_msg_cmp(&msg1->message_pb.regular_message, &msg2->message_pb.regular_message);
+        return reg_msg_cmp(&msg1->message_pb.regular_message, &msg2->message_pb.regular_message) &&
+               reg_msg_hdr_cmp(msg1->header_pb, msg2->header_pb);
     } else if (msg1->message_pb.has_group_info) {
         return grp_info_msg_cmp(&msg1->message_pb.group_info, &msg2->message_pb.group_info);
     } else {
@@ -109,21 +115,28 @@ test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
 
     msg1->message_pb.version = 5;
     msg1->header_pb->counter = 17;
-    msg1->header_pb->prev_epoches_msgs[0] = 24;
-    msg1->header_pb->prev_epoches_msgs[1] = 78;
-    msg1->header_pb->prev_epoches_msgs[2] = 32;
-    msg1->header_pb->prev_epoches_msgs[3] = 22;
+    msg1->header_pb->prev_epochs_msgs[0] = 24;
+    msg1->header_pb->prev_epochs_msgs[1] = 78;
+    msg1->header_pb->prev_epochs_msgs[2] = 32;
+    msg1->header_pb->prev_epochs_msgs[3] = 22;
     msg1->header_pb->epoch = 3;
 
+    memcpy(msg1->header_pb->session_id, test_data_ratchet_group_message_session_id.bytes,
+            test_data_ratchet_group_message_session_id.len);
     memcpy(msg1->message_pb.regular_message.signature, test_data_ratchet_group_message_signature.bytes,
             test_data_ratchet_group_message_signature.len);
     memcpy(msg1->header_pb->sender_id, test_data_ratchet_group_message_sender_id.bytes,
             test_data_ratchet_group_message_sender_id.len);
-    msg1->message_pb.regular_message.cipher_text.arg = vsc_buffer_new_with_data(test_data_ratchet_group_message_data);
+
+    msg1->message_pb.regular_message.cipher_text =
+            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(test_data_ratchet_group_message_data.len));
+    msg1->message_pb.regular_message.cipher_text->size = test_data_ratchet_group_message_data.len;
+    memcpy(msg1->message_pb.regular_message.cipher_text->bytes, test_data_ratchet_group_message_data.bytes,
+            test_data_ratchet_group_message_data.len);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
             msg1->message_pb.regular_message.header.bytes, sizeof(msg1->message_pb.regular_message.header.bytes));
-    TEST_ASSERT(pb_encode(&ostream, RegularGroupMessageHeader_fields, msg1->header_pb));
+    TEST_ASSERT(pb_encode(&ostream, vscr_RegularGroupMessageHeader_fields, msg1->header_pb));
     msg1->message_pb.regular_message.header.size = ostream.bytes_written;
 
     size_t len = vscr_ratchet_group_message_serialize_len(msg1);
@@ -151,23 +164,12 @@ test__serialize_deserialize__fixed_group_info_msg__should_be_equal(void) {
     vscr_ratchet_group_message_set_type(msg1, vscr_group_msg_type_GROUP_INFO);
 
     msg1->message_pb.version = 5;
-    msg1->message_pb.group_info.participants_count = 2;
 
+    msg1->message_pb.group_info.epoch = 3;
     memcpy(msg1->message_pb.group_info.session_id, test_data_ratchet_group_message_id.bytes,
             test_data_ratchet_group_message_id.len);
-
-    memcpy(msg1->message_pb.group_info.participants[0].pub_key, test_data_ratchet_group_message_pub_key1.bytes,
-            test_data_ratchet_group_message_pub_key1.len);
-    memcpy(msg1->message_pb.group_info.participants[1].pub_key, test_data_ratchet_group_message_pub_key2.bytes,
-            test_data_ratchet_group_message_pub_key2.len);
-    memcpy(msg1->message_pb.group_info.participants[0].key, test_data_ratchet_group_message_pub_key1.bytes,
-            test_data_ratchet_group_message_pub_key1.len);
-    memcpy(msg1->message_pb.group_info.participants[1].key, test_data_ratchet_group_message_pub_key2.bytes,
-            test_data_ratchet_group_message_pub_key2.len);
-    memcpy(msg1->message_pb.group_info.participants[0].id, test_data_ratchet_group_message_id1.bytes,
-            test_data_ratchet_group_message_id1.len);
-    memcpy(msg1->message_pb.group_info.participants[1].id, test_data_ratchet_group_message_id2.bytes,
-            test_data_ratchet_group_message_id2.len);
+    memcpy(msg1->message_pb.group_info.key, test_data_ratchet_group_message_key1.bytes,
+            test_data_ratchet_group_message_key1.len);
 
     size_t len = vscr_ratchet_group_message_serialize_len(msg1);
     vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);
@@ -198,17 +200,10 @@ test__serialize_deserialize__group_info_overflow__should_be_equal(void) {
     msg1->message_pb.version = UINT32_MAX;
     msg1->message_pb.group_info.epoch = UINT32_MAX;
 
-    size_t number_of_participants = vscr_ratchet_common_MAX_PARTICIPANTS_COUNT;
-
-    msg1->message_pb.group_info.participants_count = number_of_participants;
-
-    for (size_t i = 0; i < number_of_participants; i++) {
-        vsc_buffer_t *id;
-        generate_random_participant_id(rng, &id);
-        memcpy(msg1->message_pb.group_info.participants[i].id, vsc_buffer_bytes(id), vsc_buffer_len(id));
-        msg1->message_pb.group_info.participants[i].index = UINT32_MAX;
-        vsc_buffer_destroy(&id);
-    }
+    memcpy(msg1->message_pb.group_info.session_id, test_data_ratchet_group_message_id.bytes,
+            test_data_ratchet_group_message_id.len);
+    memcpy(msg1->message_pb.group_info.key, test_data_ratchet_group_message_key1.bytes,
+            test_data_ratchet_group_message_key1.len);
 
     size_t len = vscr_ratchet_group_message_serialize_len(msg1);
     vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);
@@ -238,26 +233,27 @@ test__serialize_deserialize__regular_overflow__should_be_equal(void) {
 
     msg1->message_pb.version = UINT32_MAX;
     msg1->header_pb->counter = UINT32_MAX;
-    msg1->header_pb->prev_epoches_msgs[0] = UINT32_MAX;
-    msg1->header_pb->prev_epoches_msgs[1] = UINT32_MAX;
-    msg1->header_pb->prev_epoches_msgs[2] = UINT32_MAX;
-    msg1->header_pb->prev_epoches_msgs[3] = UINT32_MAX;
+    msg1->header_pb->prev_epochs_msgs[0] = UINT32_MAX;
+    msg1->header_pb->prev_epochs_msgs[1] = UINT32_MAX;
+    msg1->header_pb->prev_epochs_msgs[2] = UINT32_MAX;
+    msg1->header_pb->prev_epochs_msgs[3] = UINT32_MAX;
     msg1->header_pb->epoch = UINT32_MAX;
 
+    memcpy(msg1->header_pb->session_id, test_data_ratchet_group_message_session_id.bytes,
+            test_data_ratchet_group_message_session_id.len);
     memcpy(msg1->message_pb.regular_message.signature, test_data_ratchet_group_message_signature.bytes,
             test_data_ratchet_group_message_signature.len);
     memcpy(msg1->header_pb->sender_id, test_data_ratchet_group_message_sender_id.bytes,
             test_data_ratchet_group_message_sender_id.len);
 
-    vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
-    vsc_buffer_inc_used(cipher_text, vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN);
-
     pb_ostream_t ostream = pb_ostream_from_buffer(
             msg1->message_pb.regular_message.header.bytes, sizeof(msg1->message_pb.regular_message.header.bytes));
-    TEST_ASSERT(pb_encode(&ostream, RegularGroupMessageHeader_fields, msg1->header_pb));
+    TEST_ASSERT(pb_encode(&ostream, vscr_RegularGroupMessageHeader_fields, msg1->header_pb));
     msg1->message_pb.regular_message.header.size = ostream.bytes_written;
 
-    msg1->message_pb.regular_message.cipher_text.arg = cipher_text;
+    msg1->message_pb.regular_message.cipher_text =
+            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN));
+    msg1->message_pb.regular_message.cipher_text->size = vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN;
 
     size_t len = vscr_ratchet_group_message_serialize_len(msg1);
     vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);
@@ -277,6 +273,52 @@ test__serialize_deserialize__regular_overflow__should_be_equal(void) {
     vsc_buffer_destroy(&buff);
 }
 
+void
+test__methods__fixed_regular_msg__should_return_correct_values(void) {
+    vscr_ratchet_group_message_t *msg1 = vscr_ratchet_group_message_new();
+
+    msg1->message_pb.version = 5;
+    msg1->message_pb.has_regular_message = true;
+    msg1->message_pb.has_group_info = false;
+
+    msg1->header_pb = vscr_alloc(sizeof(vscr_RegularGroupMessageHeader));
+    msg1->header_pb->counter = 7;
+    msg1->header_pb->epoch = 18;
+    memcpy(msg1->header_pb->session_id, test_data_ratchet_group_message_session_id.bytes,
+            sizeof(msg1->header_pb->session_id));
+    memcpy(msg1->header_pb->sender_id, test_data_ratchet_group_message_sender_id.bytes,
+            sizeof(msg1->header_pb->sender_id));
+
+    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_group_message_session_id, vscr_ratchet_group_message_get_session_id(msg1));
+    TEST_ASSERT_EQUAL(vscr_group_msg_type_REGULAR, vscr_ratchet_group_message_get_type(msg1));
+    TEST_ASSERT_EQUAL(msg1->header_pb->counter, vscr_ratchet_group_message_get_counter(msg1));
+    TEST_ASSERT_EQUAL(msg1->header_pb->epoch, vscr_ratchet_group_message_get_epoch(msg1));
+    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_group_message_sender_id, vscr_ratchet_group_message_get_sender_id(msg1));
+
+    vscr_ratchet_group_message_destroy(&msg1);
+}
+
+void
+test__methods__fixed_group_info_msg__should_return_correct_values(void) {
+    vscr_ratchet_group_message_t *msg1 = vscr_ratchet_group_message_new();
+
+    msg1->message_pb.version = 5;
+    msg1->message_pb.has_regular_message = false;
+    msg1->message_pb.has_group_info = true;
+    memcpy(msg1->message_pb.group_info.session_id, test_data_ratchet_group_message_session_id.bytes,
+            sizeof(msg1->message_pb.group_info.session_id));
+
+    msg1->message_pb.group_info.epoch = 39;
+
+    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_group_message_session_id, vscr_ratchet_group_message_get_session_id(msg1));
+    TEST_ASSERT_EQUAL(vscr_group_msg_type_GROUP_INFO, vscr_ratchet_group_message_get_type(msg1));
+    TEST_ASSERT_EQUAL(0, vscr_ratchet_group_message_get_counter(msg1));
+    TEST_ASSERT_EQUAL(msg1->message_pb.group_info.epoch, vscr_ratchet_group_message_get_epoch(msg1));
+    TEST_ASSERT_EQUAL_DATA(vsc_data_empty(), vscr_ratchet_group_message_get_sender_id(msg1));
+
+    vscr_ratchet_group_message_destroy(&msg1);
+}
+
 #endif
 
 // --------------------------------------------------------------------------
@@ -291,6 +333,8 @@ main(void) {
     RUN_TEST(test__serialize_deserialize__fixed_group_info_msg__should_be_equal);
     RUN_TEST(test__serialize_deserialize__group_info_overflow__should_be_equal);
     RUN_TEST(test__serialize_deserialize__regular_overflow__should_be_equal);
+    RUN_TEST(test__methods__fixed_regular_msg__should_return_correct_values);
+    RUN_TEST(test__methods__fixed_group_info_msg__should_return_correct_values);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

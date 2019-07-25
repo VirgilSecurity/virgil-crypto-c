@@ -6,6 +6,8 @@ framework module VSCRatchet {
     header "vscr_error.h"
     header "vscr_ratchet_common.h"
     header "vscr_ratchet_group_message.h"
+    header "vscr_ratchet_group_participants_ids.h"
+    header "vscr_ratchet_group_participants_info.h"
     header "vscr_ratchet_group_session.h"
     header "vscr_ratchet_group_ticket.h"
     header "vscr_ratchet_key_id.h"

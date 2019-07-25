@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto VERSION 0.8.0 LANGUAGES C)
+project(virgil_crypto VERSION 0.9.0 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
@@ -74,6 +74,7 @@ option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
 option(ENABLE_TESTING "On/Off integration tests." ON)
 option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
 option(ENABLE_PROFILING "On/Off GProf compilation options." OFF)
+option(ENABLE_BENCHMARKING "On/Off execution of benchmarks." OFF)
 
 #
 # Code formatting
@@ -81,6 +82,7 @@ option(ENABLE_PROFILING "On/Off GProf compilation options." OFF)
 option(ENABLE_CLANGFORMAT "On/Off formatting source code with clangformat." ON)
 
 option(VIRGIL_C_TESTING "On/Off C library integration tests." ON)
+option(VIRGIL_C_MT_TESTING "On/Off C library multi-threading tests." OFF)
 option(VIRGIL_PHP_TESTING "On/Off PHP wrapper integration tests." ON)
 
 #
@@ -210,8 +212,16 @@ if(ENABLE_TESTING)
     include(CTest)
 endif()
 
-if(VIRGIL_C_TESTING AND NOT CMAKE_CROSSCOMPILING)
+if(ENABLE_TESTING AND VIRGIL_C_TESTING AND NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(tests)
+endif()
+
+# ---------------------------------------------------------------------------
+#   Benchmarks
+# ---------------------------------------------------------------------------
+
+if(ENABLE_BENCHMARKING AND NOT CMAKE_CROSSCOMPILING)
+    add_subdirectory("benchmarks")
 endif()
 
 # ---------------------------------------------------------------------------

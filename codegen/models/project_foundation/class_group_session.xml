@@ -1,0 +1,164 @@
+<class name="group session" context="internal">
+
+    Group chat encryption session.
+
+    <constant name="sender id len" value="32">
+        Sender id len
+    </constant>
+
+    <constant name="max plain text len" value="30000">
+        Max plain text len
+    </constant>
+
+    <constant name="max epochs count" value="50">
+        Max epochs count
+    </constant>
+
+    <constant name="salt size" value="32">
+        Salt size
+    </constant>
+
+    <require module="buffer defs" scope="private" project="common"/>
+
+    <require module="group session typedefs" scope="context"/>
+
+    <require impl="ctr drbg" scope="private"/>
+    <require impl="ed25519" scope="private"/>
+    <require interface="private key" scope="private"/>
+    <require interface="public key" scope="private"/>
+
+    <require header="vscf_GroupMessage.pb.h" scope="private"/>
+    <require header="pb_decode.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
+
+    <require module="group session message defs" scope="private"/>
+    <require module="group session message internal" scope="private"/>
+    <require module="group session ticket internal" scope="private"/>
+
+    <dependency name="rng" interface="random" has_observers="1">
+        Random
+    </dependency>
+
+    <property name="cipher" class="message cipher" access="readwrite"/>
+    <property name="padding" class="message padding" access="readwrite"/>
+    <property name="session id" class="vscf_group_session_id_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="last epoch" class="group session epoch node" access="readwrite"/>
+    <property name="first epoch" class="group session epoch node" access="readwrite"/>
+    <property name="epochs count" type="size"/>
+
+    <method name="get current epoch" is_const="1">
+        Returns current epoch.
+
+        <return type="unsigned" size="4" access="readwrite">
+            Current epoch
+        </return>
+    </method>
+
+    <method name="setup defaults">
+        Setups default dependencies:
+        - RNG: CTR DRBG
+
+        <return enum="status">
+            Error
+        </return>
+    </method>
+
+    <method name="get session id" is_const="1">
+        Returns session id.
+
+        <return class="data">
+            Session id
+        </return>
+    </method>
+
+    <method name="add epoch">
+        Adds epoch. New epoch should be generated for member removal or proactive to rotate encryption key.
+        Epoch message should be encrypted and signed by trusted group chat member (admin).
+
+        <argument name="message" class="group session message">
+            New epoch message. See "create group ticket" method
+        </argument>
+
+        <return enum="status">
+            Error
+        </return>
+    </method>
+
+    <method name="encrypt">
+        Encrypts data
+
+        <argument name="plain text" class="data">
+            Data to encrypt. Should be less than maximum allowed value.
+        </argument>
+
+        <argument name="private key" interface="private key">
+            Identity private key used for signatures.
+        </argument>
+
+        <argument name="sender id" class="data">
+            Sender identifier. 32 bytes
+        </argument>
+
+        <argument name="error" class="error" access="readwrite">
+            Error context to return error
+        </argument>
+
+        <return class="group session message" access="disown">
+            Result message. Use serialize to send this over the wire.
+            No additional encryption is required
+        </return>
+    </method>
+
+    <method name="decrypt len">
+        Calculates size of buffer sufficient to store decrypted message
+
+        <argument name="message" class="group session message">
+            Message to decrypt
+        </argument>
+
+        <return type="size">
+            Size of buffer sufficient to store decrypted message
+        </return>
+    </method>
+
+    <method name="decrypt">
+        Decrypts message
+
+        <argument name="message" class="group session message">
+            Message to decrypt. Use deserialize to obtain message from data
+        </argument>
+
+        <argument name="public key" interface="public key">
+            Identity public key of sender used to verify signature
+        </argument>
+
+        <argument name="sender id" class="data">
+            Sender identifier. 32 bytes
+        </argument>
+
+        <argument name="plain text" class="buffer">
+            Decrypted data
+
+            <length method="decrypt len">
+                <proxy argument="message" to="message"/>
+            </length>
+        </argument>
+
+        <return enum="status">
+            Error
+        </return>
+    </method>
+
+    <method name="create group ticket" is_const="1">
+        Creates ticket with new key for removing participants or proactive to rotate encryption key.
+
+        <argument name="error" class="error" access="readwrite">
+            Error context to return error
+        </argument>
+
+        <return class="group session ticket" access="disown">
+            Ticket
+        </return>
+    </method>
+
+</class>

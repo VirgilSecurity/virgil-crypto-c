@@ -55,9 +55,10 @@ public class RatchetSession implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public RatchetSession(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static RatchetSession getInstance(long cCtx) {
+        RatchetSession newInstance = new RatchetSession();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */
@@ -134,13 +135,6 @@ public class RatchetSession implements AutoCloseable {
     */
     public byte[] decrypt(RatchetMessage message) throws RatchetException {
         return RatchetJNI.INSTANCE.ratchetSession_decrypt(this.cCtx, message);
-    }
-
-    /*
-    * Calculates size of buffer sufficient to store session
-    */
-    public int serializeLen() {
-        return RatchetJNI.INSTANCE.ratchetSession_serializeLen(this.cCtx);
     }
 
     /*

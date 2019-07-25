@@ -54,8 +54,9 @@
 #define VSCR_RATCHET_MESSAGE_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_atomic.h"
 
-#include <RatchetMessage.pb.h>
+#include <vscr_RatchetMessage.pb.h>
 
 // clang-format on
 //  @end
@@ -83,11 +84,11 @@ struct vscr_ratchet_message_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCR_ATOMIC size_t refcnt;
 
-    Message message_pb;
+    vscr_Message message_pb;
 
-    RegularMessageHeader *header_pb;
+    vscr_RegularMessageHeader *header_pb;
 };
 
 

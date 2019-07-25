@@ -1,25 +1,53 @@
 <class name="raw key">
     Provide implementation agnostic representation of the asymmetric key.
 
-    <property name="alg id" enum="alg id"/>
+    <require interface="alg info"/>
+
+
     <property name="bytes" class="buffer"/>
+    <property name="alg info" interface="alg info"/>
+    <property name="is public" type="boolean"/>
 
 
-    <constructor name="with data">
+    <constructor name="public with data">
         Creates raw key defined with algorithm and data.
         Note, data is copied.
 
-        <argument name="alg id" enum="alg id"/>
         <argument name="raw key data" class="data"/>
+        <argument name="alg info" interface="alg info" access="disown"/>
     </constructor>
 
 
-    <constructor name="with buffer" visibility="private">
+    <constructor name="private with data">
+        Creates raw key defined with algorithm and data.
+        Note, data is copied.
+
+        <argument name="raw key data" class="data"/>
+        <argument name="alg info" interface="alg info" access="disown"/>
+    </constructor>
+
+
+    <constructor name="public with buffer" visibility="private">
         Creates raw key defined with algorithm and buffer.
 
-        <argument name="alg id" enum="alg id"/>
-        <argument name="buffer" class="buffer" access="retain"/>
+        <argument name="buffer" class="buffer" access="disown"/>
+        <argument name="alg info" interface="alg info" access="disown"/>
     </constructor>
+
+
+    <constructor name="private with buffer" visibility="private">
+        Creates raw key defined with algorithm and buffer.
+
+        <argument name="buffer" class="buffer" access="disown"/>
+        <argument name="alg info" interface="alg info" access="disown"/>
+    </constructor>
+
+
+    <method name="is valid" is_const="1">
+        Return true if raw key handles key data.
+
+        <return type="boolean"/>
+    </method>
 
 
     <method name="alg id" is_const="1">
@@ -33,5 +61,17 @@
         Return raw key data.
 
         <return class="data"/>
+    </method>
+
+    <method name="is public" is_const="1">
+        Return true if handle public key.
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="is private" is_const="1">
+        Return true if handle private key.
+
+        <return type="boolean"/>
     </method>
 </class>

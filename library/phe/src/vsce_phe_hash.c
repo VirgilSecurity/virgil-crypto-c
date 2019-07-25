@@ -121,17 +121,9 @@ vsce_phe_hash_cleanup(vsce_phe_hash_t *self) {
         return;
     }
 
-    if (self->refcnt == 0) {
-        return;
-    }
+    vsce_phe_hash_cleanup_ctx(self);
 
-    if (--self->refcnt == 0) {
-        vsce_phe_hash_cleanup_ctx(self);
-
-        vsce_phe_hash_release_simple_swu(self);
-
-        vsce_zeroize(self, sizeof(vsce_phe_hash_t));
-    }
+    vsce_zeroize(self, sizeof(vsce_phe_hash_t));
 }
 
 //
@@ -152,7 +144,7 @@ vsce_phe_hash_new(void) {
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCE_PUBLIC void
 vsce_phe_hash_delete(vsce_phe_hash_t *self) {
@@ -161,11 +153,30 @@ vsce_phe_hash_delete(vsce_phe_hash_t *self) {
         return;
     }
 
+    size_t old_counter = self->refcnt;
+    VSCE_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCE_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vsce_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
     vsce_phe_hash_cleanup(self);
 
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+    if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
     }
 }
@@ -193,47 +204,19 @@ vsce_phe_hash_shallow_copy(vsce_phe_hash_t *self) {
 
     VSCE_ASSERT_PTR(self);
 
+    #if defined(VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
     ++self->refcnt;
+    #endif
 
     return self;
-}
-
-//
-//  Setup dependency to the class 'simple swu' with shared ownership.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_use_simple_swu(vsce_phe_hash_t *self, vsce_simple_swu_t *simple_swu) {
-
-    VSCE_ASSERT_PTR(self);
-    VSCE_ASSERT_PTR(simple_swu);
-    VSCE_ASSERT(self->simple_swu == NULL);
-
-    self->simple_swu = vsce_simple_swu_shallow_copy(simple_swu);
-}
-
-//
-//  Setup dependency to the class 'simple swu' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_take_simple_swu(vsce_phe_hash_t *self, vsce_simple_swu_t *simple_swu) {
-
-    VSCE_ASSERT_PTR(self);
-    VSCE_ASSERT_PTR(simple_swu);
-    VSCE_ASSERT_PTR(self->simple_swu == NULL);
-
-    self->simple_swu = simple_swu;
-}
-
-//
-//  Release dependency to the class 'simple swu'.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_release_simple_swu(vsce_phe_hash_t *self) {
-
-    VSCE_ASSERT_PTR(self);
-
-    vsce_simple_swu_destroy(&self->simple_swu);
 }
 
 
@@ -254,7 +237,7 @@ vsce_phe_hash_init_ctx(vsce_phe_hash_t *self) {
 
     VSCE_ASSERT_PTR(self);
 
-    vsce_phe_hash_take_simple_swu(self, vsce_simple_swu_new());
+    self->simple_swu = vscf_simple_swu_new();
 
     mbedtls_ecp_group_init(&self->group);
 
@@ -273,6 +256,8 @@ vsce_phe_hash_cleanup_ctx(vsce_phe_hash_t *self) {
 
     VSCE_ASSERT_PTR(self);
 
+    vscf_simple_swu_destroy(&self->simple_swu);
+
     mbedtls_ecp_group_free(&self->group);
 }
 
@@ -282,7 +267,7 @@ vsce_phe_hash_derive_account_key(vsce_phe_hash_t *self, const mbedtls_ecp_point 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT_PTR(m);
     VSCE_ASSERT(vsc_buffer_len(account_key) == 0);
-    VSCE_ASSERT(vsc_buffer_capacity(account_key) >= vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
+    VSCE_ASSERT(vsc_buffer_unused_len(account_key) >= vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
 
     byte M_buffer[vsce_phe_common_PHE_POINT_LENGTH];
     vsc_buffer_t M_buf;
@@ -300,39 +285,12 @@ vsce_phe_hash_derive_account_key(vsce_phe_hash_t *self, const mbedtls_ecp_point 
 
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
     vscf_hkdf_set_info(hkdf, k_kdf_info_client_key);
-    vscf_hkdf_derive(hkdf, vsc_buffer_data(&M_buf), vsc_buffer_capacity(account_key), account_key);
+    vscf_hkdf_derive(hkdf, vsc_buffer_data(&M_buf), vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH, account_key);
 
     vsc_buffer_delete(&M_buf);
     vscf_hkdf_destroy(&hkdf);
 
     vsce_zeroize(M_buffer, sizeof(M_buffer));
-}
-
-VSCE_PUBLIC void
-vsce_phe_hash_data_to_point(vsce_phe_hash_t *self, vsc_data_t data, mbedtls_ecp_point *p) {
-
-    VSCE_ASSERT_PTR(self);
-
-    byte buffer[vscf_sha512_DIGEST_LEN];
-    vsc_buffer_t buff;
-    vsc_buffer_init(&buff);
-    vsc_buffer_use(&buff, buffer, sizeof(buffer));
-
-    vscf_sha512_hash(data, &buff);
-
-    mbedtls_mpi t;
-    mbedtls_mpi_init(&t);
-
-    vsc_data_t buff_data = vsc_data_slice_beg(vsc_buffer_data(&buff), 0, vsce_phe_common_PHE_HASH_LEN);
-    int mbedtls_status = 0;
-    mbedtls_status = mbedtls_mpi_read_binary(&t, buff_data.bytes, buff_data.len);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-
-    vsce_simple_swu_bignum_to_point(self->simple_swu, &t, p);
-
-    mbedtls_mpi_free(&t);
-    vsc_buffer_delete(&buff);
-    vsce_zeroize(buffer, sizeof(buffer));
 }
 
 VSCE_PUBLIC void
@@ -369,7 +327,7 @@ vsce_phe_hash_hc0(vsce_phe_hash_t *self, vsc_data_t nc, vsc_data_t password, mbe
 
     VSCE_ASSERT(vsc_buffer_unused_len(&buff) == 0);
 
-    vsce_phe_hash_data_to_point(self, vsc_buffer_data(&buff), hc0);
+    vscf_simple_swu_data_to_point(self->simple_swu, vsc_buffer_data(&buff), hc0);
 
     vsc_buffer_delete(&buff);
     vsce_zeroize(buffer, sizeof(buffer));
@@ -409,7 +367,7 @@ vsce_phe_hash_hc1(vsce_phe_hash_t *self, vsc_data_t nc, vsc_data_t password, mbe
 
     VSCE_ASSERT(vsc_buffer_unused_len(&buff) == 0);
 
-    vsce_phe_hash_data_to_point(self, vsc_buffer_data(&buff), hc1);
+    vscf_simple_swu_data_to_point(self->simple_swu, vsc_buffer_data(&buff), hc1);
 
     vsc_buffer_delete(&buff);
     vsce_zeroize(buffer, sizeof(buffer));
@@ -439,7 +397,7 @@ vsce_phe_hash_hs0(vsce_phe_hash_t *self, vsc_data_t ns, mbedtls_ecp_point *hs0) 
 
     VSCE_ASSERT(vsc_buffer_unused_len(&buff) == 0);
 
-    vsce_phe_hash_data_to_point(self, vsc_buffer_data(&buff), hs0);
+    vscf_simple_swu_data_to_point(self->simple_swu, vsc_buffer_data(&buff), hs0);
 
     vsc_buffer_delete(&buff);
     vsce_zeroize(buffer, sizeof(buffer));
@@ -469,7 +427,7 @@ vsce_phe_hash_hs1(vsce_phe_hash_t *self, vsc_data_t ns, mbedtls_ecp_point *hs1) 
 
     VSCE_ASSERT(vsc_buffer_unused_len(&buff) == 0);
 
-    vsce_phe_hash_data_to_point(self, vsc_buffer_data(&buff), hs1);
+    vscf_simple_swu_data_to_point(self->simple_swu, vsc_buffer_data(&buff), hs1);
 
     vsc_buffer_delete(&buff);
     vsce_zeroize(buffer, sizeof(buffer));
@@ -507,7 +465,7 @@ vsce_phe_hash_derive_z(vsce_phe_hash_t *self, vsc_data_t buffer, bool success, m
 
         vscf_hkdf_reset(hkdf, domain, 0);
         vscf_hkdf_set_info(hkdf, k_kdf_info_z);
-        vscf_hkdf_derive(hkdf, vsc_buffer_data(&key), vsc_buffer_capacity(&z_buff), &z_buff);
+        vscf_hkdf_derive(hkdf, vsc_buffer_data(&key), vsce_phe_common_PHE_HASH_LEN, &z_buff);
 
         mbedtls_status = mbedtls_mpi_read_binary(z, vsc_buffer_bytes(&z_buff), vsc_buffer_len(&z_buff));
         VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);

@@ -61,7 +61,6 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <assert.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -115,7 +114,7 @@ extern "C" {
 
 #define VSCF_VERSION_MAJOR 0
 
-#define VSCF_VERSION_MINOR 8
+#define VSCF_VERSION_MINOR 9
 
 #define VSCF_VERSION_PATCH 0
 

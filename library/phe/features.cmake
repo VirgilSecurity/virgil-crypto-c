@@ -46,43 +46,23 @@
 include_guard()
 
 option(VSCE_LIBRARY "Enable build of the 'phe' library" ON)
-option(VSCE_MULTI_THREAD "Enable multi-threading safety for PHE library." ON)
+option(VSCE_MULTI_THREADING "Enable multi-threading safety for PHE library." ON)
 option(VSCE_ERROR "Enable class 'error'." ON)
 option(VSCE_PHE_COMMON "Enable class 'phe common'." ON)
-option(VSCE_SIMPLE_SWU "Enable class 'simple swu'." ON)
 option(VSCE_PHE_HASH "Enable class 'phe hash'." ON)
 option(VSCE_PHE_SERVER "Enable class 'phe server'." ON)
 option(VSCE_PHE_CLIENT "Enable class 'phe client'." ON)
 option(VSCE_PHE_CIPHER "Enable class 'phe cipher'." ON)
 mark_as_advanced(
         VSCE_LIBRARY
-        VSCE_MULTI_THREAD
+        VSCE_MULTI_THREADING
         VSCE_ERROR
         VSCE_PHE_COMMON
-        VSCE_SIMPLE_SWU
         VSCE_PHE_HASH
         VSCE_PHE_SERVER
         VSCE_PHE_CLIENT
         VSCE_PHE_CIPHER
         )
-
-if(VSCE_SIMPLE_SWU AND NOT VSCE_PHE_COMMON)
-    message("-- error --")
-    message("--")
-    message("Feature VSCE_SIMPLE_SWU depends on the feature:")
-    message("     VSCE_PHE_COMMON - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCE_SIMPLE_SWU AND NOT VSCF_SHA512)
-    message("-- error --")
-    message("--")
-    message("Feature VSCE_SIMPLE_SWU depends on the feature:")
-    message("     VSCF_SHA512 - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
 
 if(VSCE_PHE_HASH AND NOT VSCE_PHE_COMMON)
     message("-- error --")

@@ -53,12 +53,12 @@
 #ifndef VSCR_RATCHET_PRIVATE_H_INCLUDED
 #define VSCR_RATCHET_PRIVATE_H_INCLUDED
 
+#include "vscr_atomic.h"
 #include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_group_message_defs.h"
 #include "vscr_ratchet_group_ticket_defs.h"
 #include "vscr_ratchet_message_defs.h"
-#include "vscr_ratchet_padding.h"
 
 // clang-format on
 //  @end

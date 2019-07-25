@@ -6,13 +6,13 @@
 // --------------------------------------------------------------------------
 properties([
     parameters([
-        booleanParam(name: 'DEPLOY_JAVA_ARTIFACTS', defaultValue: true,
+        booleanParam(name: 'DEPLOY_JAVA_ARTIFACTS', defaultValue: false,
             description: 'If build succeeded then Java artifacts will be deployed to the Maven repository.'),
 
         booleanParam(name: 'RUN_ANDROID_TESTS', defaultValue: true,
             description: 'Run Android instrumental tests.'),
 
-        booleanParam(name: 'DEPLOY_ANDROID_ARTIFACTS', defaultValue: true,
+        booleanParam(name: 'DEPLOY_ANDROID_ARTIFACTS', defaultValue: false,
             description: 'If build succeeded then Java Android artifacts will be deployed to the Maven repository..'),
 
         booleanParam(name: 'DEPLOY_PYTHON_ARTIFACTS', defaultValue: false,
@@ -127,6 +127,7 @@ def build_LangC_Unix(slave) {
                       -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
                       -DCPACK_OUTPUT_FILE_PREFIX=c \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -155,6 +156,7 @@ def build_LangC_Windows(slave) {
                       -DVIRGIL_LIB_PYTHIA=OFF ^
                       -DCPACK_OUTPUT_FILE_PREFIX=c ^
                       -DENABLE_CLANGFORMAT=OFF ^
+                      -DVIRGIL_C_MT_TESTING=ON ^
                       -Bbuild -H.
                 cmake --build build
                 cd build
@@ -185,6 +187,7 @@ def build_LangPHP_Linux(slave) {
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -234,6 +237,7 @@ def build_LangPHP_MacOS(slave) {
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -340,6 +344,7 @@ def build_LangJava_Linux(slave) {
                       -Cconfigs/java-config.cmake \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/linux" \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
@@ -363,6 +368,7 @@ def build_LangJava_MacOS(slave) {
                       -Cconfigs/java-config.cmake \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/macos" \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10

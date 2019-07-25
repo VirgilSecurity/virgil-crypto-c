@@ -59,6 +59,7 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_key_material_rng.h"
+#include "vscf_atomic.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_seed_entropy_source.h"
 
@@ -88,7 +89,7 @@ struct vscf_key_material_rng_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
     //
     //  Implementation specific context.
     //

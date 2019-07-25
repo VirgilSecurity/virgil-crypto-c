@@ -53,9 +53,6 @@
 #include "vscf_pkcs8_serializer.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_alg.h"
-#include "vscf_public_key.h"
-#include "vscf_private_key.h"
 #include "vscf_asn1_tag.h"
 #include "vscf_oid.h"
 #include "vscf_asn1wr.h"
@@ -101,7 +98,7 @@ vscf_pkcs8_serializer_setup_defaults(vscf_pkcs8_serializer_t *self) {
 //
 VSCF_PUBLIC size_t
 vscf_pkcs8_serializer_serialize_public_key_inplace(
-        vscf_pkcs8_serializer_t *self, const vscf_impl_t *public_key, vscf_error_t *error) {
+        vscf_pkcs8_serializer_t *self, const vscf_raw_public_key_t *public_key, vscf_error_t *error) {
 
     //  SubjectPublicKeyInfo ::= SEQUENCE {
     //          algorithm AlgorithmIdentifier,
@@ -110,8 +107,7 @@ vscf_pkcs8_serializer_serialize_public_key_inplace(
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
-    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
-    VSCF_ASSERT(vscf_public_key_can_export_public_key(vscf_public_key_api(public_key)));
+    VSCF_ASSERT(vscf_raw_public_key_is_valid(public_key));
     VSCF_ASSERT_PTR(self->asn1_writer);
     VSCF_ASSERT(vscf_asn1_writer_unwritten_len(self->asn1_writer) >=
                 vscf_pkcs8_serializer_serialized_public_key_len(self, public_key));
@@ -125,24 +121,14 @@ vscf_pkcs8_serializer_serialize_public_key_inplace(
     //
     //  Write key
     //
-    vsc_buffer_t *exportedKey = vsc_buffer_new_with_capacity(vscf_public_key_exported_public_key_len(public_key));
-    vscf_status_t status = vscf_public_key_export_public_key(public_key, exportedKey);
-
-    len += vscf_asn1_writer_write_octet_str_as_bitstring(self->asn1_writer, vsc_buffer_data(exportedKey));
-
-    vsc_buffer_destroy(&exportedKey);
-
-    if (status != vscf_status_SUCCESS) {
-        VSCF_ERROR_SAFE_UPDATE(error, status);
-        return 0;
-    }
+    len += vscf_asn1_writer_write_octet_str_as_bitstring(self->asn1_writer, vscf_raw_public_key_data(public_key));
 
     //
     //  Write algorithm
     //
     size_t algorithm_count = 0;
 
-    vscf_alg_id_t public_key_alg_id = vscf_alg_alg_id(public_key);
+    vscf_alg_id_t public_key_alg_id = vscf_raw_public_key_alg_id(public_key);
     if (vscf_alg_id_RSA == public_key_alg_id) {
         algorithm_count += vscf_asn1_writer_write_null(self->asn1_writer);
     }
@@ -171,7 +157,7 @@ vscf_pkcs8_serializer_serialize_public_key_inplace(
 //
 VSCF_PUBLIC size_t
 vscf_pkcs8_serializer_serialize_private_key_inplace(
-        vscf_pkcs8_serializer_t *self, const vscf_impl_t *private_key, vscf_error_t *error) {
+        vscf_pkcs8_serializer_t *self, const vscf_raw_private_key_t *private_key, vscf_error_t *error) {
 
     //  PrivateKeyInfo ::= SEQUENCE {
     //          version Version,
@@ -182,8 +168,7 @@ vscf_pkcs8_serializer_serialize_private_key_inplace(
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
-    VSCF_ASSERT(vscf_private_key_can_export_private_key(vscf_private_key_api(private_key)));
+    VSCF_ASSERT(vscf_raw_private_key_is_valid(private_key));
     VSCF_ASSERT_PTR(self->asn1_writer);
     VSCF_ASSERT(vscf_asn1_writer_unwritten_len(self->asn1_writer) >=
                 vscf_pkcs8_serializer_serialized_private_key_len(self, private_key));
@@ -197,19 +182,10 @@ vscf_pkcs8_serializer_serialize_private_key_inplace(
     //
     //  Write key
     //
-    vsc_buffer_t *exportedKey = vsc_buffer_new_with_capacity(vscf_private_key_exported_private_key_len(private_key));
-    vscf_status_t status = vscf_private_key_export_private_key(private_key, exportedKey);
+    size_t key_written_len =
+            vscf_asn1_writer_write_octet_str(self->asn1_writer, vscf_raw_private_key_data(private_key));
 
-    if (status != vscf_status_SUCCESS) {
-        vsc_buffer_destroy(&exportedKey);
-        VSCF_ERROR_SAFE_UPDATE(error, status);
-        return 0;
-    }
-
-    size_t key_written_len = vscf_asn1_writer_write_octet_str(self->asn1_writer, vsc_buffer_data(exportedKey));
-    vsc_buffer_destroy(&exportedKey);
-
-    vscf_alg_id_t alg_id = vscf_alg_alg_id(private_key);
+    vscf_alg_id_t alg_id = vscf_raw_private_key_alg_id(private_key);
     switch (alg_id) {
     case vscf_alg_id_ED25519:
     case vscf_alg_id_CURVE25519:
@@ -231,7 +207,7 @@ vscf_pkcs8_serializer_serialize_private_key_inplace(
     //
     size_t algorithm_count = 0;
 
-    vscf_alg_id_t private_key_alg_id = vscf_alg_alg_id(private_key);
+    vscf_alg_id_t private_key_alg_id = vscf_raw_private_key_alg_id(private_key);
     if (vscf_alg_id_RSA == private_key_alg_id) {
         algorithm_count += vscf_asn1_writer_write_null(self->asn1_writer);
     }
@@ -264,14 +240,14 @@ vscf_pkcs8_serializer_serialize_private_key_inplace(
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs8_serializer_serialized_public_key_len(vscf_pkcs8_serializer_t *self, const vscf_impl_t *public_key) {
+vscf_pkcs8_serializer_serialized_public_key_len(
+        vscf_pkcs8_serializer_t *self, const vscf_raw_public_key_t *public_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
-    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
-    VSCF_ASSERT(vscf_public_key_can_export_public_key(vscf_public_key_api(public_key)));
+    VSCF_ASSERT(vscf_raw_public_key_is_valid(public_key));
 
-    size_t wrappedKeyLen = vscf_public_key_exported_public_key_len(public_key);
+    size_t wrappedKeyLen = vscf_raw_public_key_data(public_key).len;
     size_t len = 1 + 4 +                //  SubjectPublicKeyInfo ::= SEQUENCE {
                  1 + 1 + 32 +           //          algorithm AlgorithmIdentifier,
                  1 + 4 + wrappedKeyLen; //          subjectPublicKey BIT STRING
@@ -287,12 +263,11 @@ vscf_pkcs8_serializer_serialized_public_key_len(vscf_pkcs8_serializer_t *self, c
 //
 VSCF_PUBLIC vscf_status_t
 vscf_pkcs8_serializer_serialize_public_key(
-        vscf_pkcs8_serializer_t *self, const vscf_impl_t *public_key, vsc_buffer_t *out) {
+        vscf_pkcs8_serializer_t *self, const vscf_raw_public_key_t *public_key, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
-    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
-    VSCF_ASSERT(vscf_public_key_can_export_public_key(vscf_public_key_api(public_key)));
+    VSCF_ASSERT(vscf_raw_public_key_is_valid(public_key));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_pkcs8_serializer_serialized_public_key_len(self, public_key));
@@ -320,15 +295,15 @@ vscf_pkcs8_serializer_serialize_public_key(
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs8_serializer_serialized_private_key_len(vscf_pkcs8_serializer_t *self, const vscf_impl_t *private_key) {
+vscf_pkcs8_serializer_serialized_private_key_len(
+        vscf_pkcs8_serializer_t *self, const vscf_raw_private_key_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
-    VSCF_ASSERT(vscf_private_key_can_export_private_key(vscf_private_key_api(private_key)));
+    VSCF_ASSERT(vscf_raw_private_key_is_valid(private_key));
 
 
-    size_t wrappedKeyLen = vscf_private_key_exported_private_key_len(private_key);
+    size_t wrappedKeyLen = vscf_raw_private_key_data(private_key).len;
     size_t len = 1 + 4 +                 //  PrivateKeyInfo ::= SEQUENCE {
                  1 + 1 + 1 +             //          version Version,
                  1 + 1 + 32 +            //          privateKeyAlgorithm PrivateKeyAlgorithmIdentifier,
@@ -346,12 +321,11 @@ vscf_pkcs8_serializer_serialized_private_key_len(vscf_pkcs8_serializer_t *self, 
 //
 VSCF_PUBLIC vscf_status_t
 vscf_pkcs8_serializer_serialize_private_key(
-        vscf_pkcs8_serializer_t *self, const vscf_impl_t *private_key, vsc_buffer_t *out) {
+        vscf_pkcs8_serializer_t *self, const vscf_raw_private_key_t *private_key, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
-    VSCF_ASSERT(vscf_private_key_can_export_private_key(vscf_private_key_api(private_key)));
+    VSCF_ASSERT(vscf_raw_private_key_is_valid(private_key));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_pkcs8_serializer_serialized_private_key_len(self, private_key));

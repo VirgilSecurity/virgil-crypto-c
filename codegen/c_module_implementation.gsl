@@ -394,6 +394,7 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
             . = "Reference counter."
             .name = my.names.property_ref_counter
             .type = "size"
+            .is_atomic = "1"
         endnew
 
         c_dependency_add_properties (my.impl, struct, my.meta)
@@ -412,15 +413,20 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
     endnew
 
     if my.definition <> "external"
+        new require to my.destination
+            .module = my.names.module_atomic
+            .scope = my.definition
+        endnew
+
         for my.impl.context
             for context.require
-                my.copied_require = item_copy_to(require, module)
+                my.copied_require = item_copy_to(require, my.destination)
                 my.copied_require.scope = my.definition
             endfor
         endfor
 
         for my.impl.require where 0.scope="context"
-            my.copied_require = item_copy_to(require, module)
+            my.copied_require = item_copy_to(require, my.destination)
             my.copied_require.scope = my.definition
         endfor
     endif
@@ -504,6 +510,43 @@ function _Z19_add_method_impl_type_cast (impl, declaration, definition, destinat
     endnew
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Add function that cast specific implementation context type to the
+#   common implementation context type.
+# ---------------------------------------------------------------------------
+function _Z19_add_method_impl_type_const_cast (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+
+    new method to my.destination
+        . = "\
+        Cast to the const '.(c_class_impl_struct_impl)' type.
+        "
+        .name = my.names.method_impl_const
+        .declaration = my.declaration
+        .definition = my.definition
+        .is_const = "1"
+
+        _Z19_add_argument_impl (my.impl, method, my.meta)
+
+        new return
+            .class = ".(c_class_impl_struct_impl)"
+            .access = "readonly"
+        endnew
+
+        my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
+        new code to method
+            . = "\
+            .(c_class_assert_macros_ptr)($(my.arg_impl));
+            return (const .(c_class_impl_struct_impl) *)($(my.arg_impl));
+            "
+        endnew
+
+        return method
+    endnew
+endfunction
+
 
 # ---------------------------------------------------------------------------
 function _Z19_add_method_init (impl, declaration, definition, destination, meta)
@@ -575,15 +618,7 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
             my.type_impl = my.refs.c_implementation_struct_impl
 
             my.impl_check_precondition = "\
-                if ($(my.arg_impl) == NULL || $(my.arg_impl)->$(my.names.c_property_info:) == NULL) {
-                    return;
-                }
-
-                if ($(my.arg_impl)->$(my.names.c_property_ref_counter:) == 0) {
-                    return;
-                }
-
-                if (--$(my.arg_impl)->$(my.names.c_property_ref_counter:) > 0) {
+                if ($(my.arg_impl) == NULL) {
                     return;
                 }
             "
@@ -799,13 +834,35 @@ function _Z19_add_method_delete (impl, declaration, definition, destination, met
 
         new code
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
+            my.counter = "$(my.arg_impl)->$(my.names.c_property_ref_counter:)"
 
-            . = "\
-            $(my.refs.c_implementation_method_cleanup)($(my.arg_impl));
+            . = "
+                if ($(my.arg_impl) == NULL) {
+                    return;
+                }
 
-            if ($(my.arg_impl) && ($(my.arg_impl)->$(my.names.c_property_ref_counter:) == 0)) {
+                size_t old_counter = $(my.counter:);
+                .(c_class_assert_macros_assert)(old_counter != 0);
+                size_t new_counter = old_counter - 1;
+
+                #if defined(.(c_class_atomic_macros_compare_exchange_weak))
+                //  CAS loop
+                while (!.(c_class_atomic_macros_compare_exchange_weak)(&$(my.counter:), &old_counter, new_counter)) {
+                    old_counter = $(my.counter:);
+                    .(c_class_assert_macros_assert)(old_counter != 0);
+                    new_counter = old_counter - 1;
+                }
+                #else
+                $(my.counter:) = new_counter;
+                #endif
+
+                if (new_counter > 0) {
+                    return;
+                }
+
+                $(my.refs.c_implementation_method_cleanup)($(my.arg_impl));
+
                 .(c_global_method_dealloc)($(my.arg_impl));
-            }
             "
         endnew
     endnew
@@ -849,6 +906,34 @@ function _Z19_add_method_destroy (impl, declaration, definition, destination, me
 endfunction
 
 # ---------------------------------------------------------------------------
+function _Z19_implement_method_shallow_copy(impl, method, meta)
+    check_arguments(my, "impl, method, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    scope my.method
+        _Z19_add_argument_impl (my.impl, method, my.meta)
+
+        new return to my.method
+            .class = my.refs.implementation_struct_impl
+            .access = is_true (my.method.is_const) ?? "readonly" ? "readwrite"
+            .ownership = "take"
+        endnew
+
+        new code to method
+            my.arg = my.names.c_implementation_argument_impl
+            my.type = my.refs.c_implementation_struct_impl
+
+            . = "\
+                // Proxy to the parent implementation.
+                return ($(my.type) *).(c_class_impl_method_shallow_copy)((.(c_class_impl_struct_impl) *)$(my.arg));
+            "
+        endnew
+    endscope
+endfunction
+
+# ---------------------------------------------------------------------------
 function _Z19_add_method_shallow_copy (impl, declaration, definition, destination, meta)
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
@@ -859,24 +944,13 @@ function _Z19_add_method_shallow_copy (impl, declaration, definition, destinatio
         .name = my.names.method_shallow_copy
         .declaration = my.declaration
         .definition = my.definition
+        .is_const = "0"
 
         . = "
-        Copy given implementation context by increasing reference counter.
-        If deep copy is required interface 'clonable' can be used.
+            Copy given implementation context by increasing reference counter.
         "
 
-        _Z19_add_argument_impl (my.impl, method, my.meta)
-        _Z19_add_return_impl (method, my.meta)
-
-        new code to method
-            my.arg_impl = my.names.c_implementation_argument_impl
-            my.type_impl = my.refs.c_implementation_struct_impl
-
-            . = "\
-            // Proxy to the parent implementation.
-            return ($(my.type_impl) *).(c_class_impl_method_shallow_copy)((.(c_class_impl_struct_impl) *)$(my.arg_impl));
-            "
-        endnew
+        _Z19_implement_method_shallow_copy (my.impl, method, my.meta)
     endnew
 endfunction
 
@@ -1163,6 +1237,7 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
             _Z19_add_type_impl (my.impl, "public", "external", module, my.meta)
             _Z19_add_method_impl_type_size (my.impl, "public", "external", module, my.meta)
             _Z19_add_method_impl_type_cast (my.impl, "public", "external", module, my.meta)
+            _Z19_add_method_impl_type_const_cast (my.impl, "public", "external", module, my.meta)
 
             _Z19_add_lifecycle_methods (my.impl, "public", "external", module, my.meta)
 
@@ -1283,6 +1358,7 @@ function c_module_implementation_create_module_internal (impl, source, destinati
             _Z19_add_interface_api_methods (my.impl, "external", "private", module, my.meta)
             _Z19_add_method_impl_type_size (my.impl, "external", "private", module, my.meta)
             _Z19_add_method_impl_type_cast (my.impl, "external", "private", module, my.meta)
+            _Z19_add_method_impl_type_const_cast (my.impl, "external", "private", module, my.meta)
 
             c_dependency_add_lifecycle_methods (my.impl, "external", "private", module, my.meta)
             c_dependency_add_observer_methods (my.impl, "private", "external", module, my.meta)

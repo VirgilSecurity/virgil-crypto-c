@@ -36,26 +36,31 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
-import java.util.Base64;
-
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class RsaPrivateKeyTest extends SampleBasedTest {
 
+	private Rsa rsa;
 	private RsaPrivateKey privateKey;
+	private int bitlen = 2048;
 
 	@Before
 	public void init() {
-		this.privateKey = new RsaPrivateKey();
-		this.privateKey.setupDefaults();
-		this.privateKey.setKeygenParams(2048);
+		this.rsa = new Rsa();
+		this.rsa.setupDefaults();
+		
+		this.privateKey = (RsaPrivateKey) this.rsa.generateKey(this.bitlen);
+	}
+	
+	@After
+	public void tearDown() {
+		this.rsa.close();
+		this.privateKey.close();
 	}
 
 	@Test
@@ -64,92 +69,17 @@ public class RsaPrivateKeyTest extends SampleBasedTest {
 	}
 
 	@Test
-	public void keyLen() {
-		// Key is no generated yet
-		assertEquals(0, this.privateKey.keyLen());
+	public void len() {
+		assertEquals(this.bitlen / 8, this.privateKey.len());
 	}
 
 	@Test
-	public void keyBitlen() {
-		assertEquals(0, this.privateKey.keyBitlen());
-	}
-
-	@Test
-	public void generateKey() {
-		this.privateKey.generateKey();
-		assertEquals(getInt("rsa.key_len"), this.privateKey.keyLen());
-		assertEquals(getInt("rsa.key_bit_len"), this.privateKey.keyBitlen());
-	}
-
-	@Test
-	@Ignore
-	public void decrypt() {
-		byte[] key = getBytes("rsa.private_key");
-		byte[] encryptedData = getBytes("rsa.encrypted_data");
-		byte[] expectedDecryptedData = getBytes("data");
-
-		this.privateKey.importPrivateKey(key);
-
-		byte[] decryptedData = this.privateKey.decrypt(encryptedData);
-
-		assertNotNull(decryptedData);
-		assertArrayEquals(expectedDecryptedData, decryptedData);
-	}
-
-	@Test
-	@Ignore
-	public void sign() {
-		byte[] data = getBytes("data");
-		byte[] key = getBytes("rsa.private_key");
-		byte[] expectedSignature = getBytes("rsa.signature");
-
-		this.privateKey.importPrivateKey(key);
-
-		byte[] signature = this.privateKey.signHash(data, this.privateKey.algId());
-
-		assertNotNull(signature);
-		System.out.println(Base64.getEncoder().encodeToString(signature));
-		assertArrayEquals(expectedSignature, signature);
-	}
-
-	@Test
-	public void signatureLen() {
-		assertEquals(getBytes("rsa.signature").length, this.privateKey.signatureLen());
-	}
-
-	@Test
-	public void export_import() {
-		this.privateKey.generateKey();
-
-		// Export private key
-		byte[] exportedKey = this.privateKey.exportPrivateKey();
-		assertNotNull(exportedKey);
-
-		try (RsaPrivateKey importedPrivateKey = new RsaPrivateKey()) {
-			// Import private key
-			importedPrivateKey.setupDefaults();
-			importedPrivateKey.importPrivateKey(exportedKey);
-
-			byte[] exportedKey2 = importedPrivateKey.exportPrivateKey();
-
-			assertNotNull(exportedKey2);
-			assertArrayEquals(exportedKey, exportedKey2);
-		}
-	}
-
-	@Test
-	public void getCanExportPrivateKey() {
-		assertTrue(this.privateKey.getCanExportPrivateKey());
-	}
-
-	@Test
-	public void getCanImportPrivateKey() {
-		assertTrue(this.privateKey.getCanImportPrivateKey());
+	public void bitlen() {
+		assertEquals(this.bitlen, this.privateKey.bitlen());
 	}
 
 	@Test
 	public void extractPublicKey() {
-		this.privateKey.generateKey();
 		RsaPublicKey publicKey = (RsaPublicKey) this.privateKey.extractPublicKey();
 
 		assertNotNull(publicKey);

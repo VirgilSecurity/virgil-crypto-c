@@ -75,6 +75,13 @@ import VirgilCryptoFoundation
         return MsgType.init(fromC: proxyResult)
     }
 
+    /// Returns message counter in current asymmetric ratchet round.
+    @objc public func getCounter() -> UInt32 {
+        let proxyResult = vscr_ratchet_message_get_counter(self.c_ctx)
+
+        return proxyResult
+    }
+
     /// Returns long-term public key, if message is prekey message.
     @objc public func getLongTermPublicKey() -> Data {
         let proxyResult = vscr_ratchet_message_get_long_term_public_key(self.c_ctx)

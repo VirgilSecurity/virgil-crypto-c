@@ -1432,3 +1432,18 @@ function foreach_dump (item_name, source, destination_dir)
         item_save_to_file (item, make_id (my.item_name, item.name?) + ".xml", my.destination_dir)
     endfor
 endfunction
+
+# ###########################################################################
+#   Item inspection helpers
+# ###########################################################################
+function is_instance_of_generic_class (instance)
+    check_arguments (my, "instance", my)
+
+    my.class_name = my.instance.class ? my.instance.impl ?
+
+    if defined (my.class_name)
+        return !string_in (my.class_name, "data, buffer, error")
+    else
+        return "0"
+    endif
+endfunction

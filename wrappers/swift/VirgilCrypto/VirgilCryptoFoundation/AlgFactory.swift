@@ -73,28 +73,4 @@ import VSCFoundation
 
         return FoundationImplementation.wrapCipher(take: proxyResult!)
     }
-
-    /// Create algorithm that implements "public key" interface.
-    @objc public static func createPublicKeyFromRawKey(rawKey: RawKey) throws -> PublicKey {
-        var error: vscf_error_t = vscf_error_t()
-        vscf_error_reset(&error)
-
-        let proxyResult = vscf_alg_factory_create_public_key_from_raw_key(rawKey.c_ctx, &error)
-
-        try FoundationError.handleStatus(fromC: error.status)
-
-        return FoundationImplementation.wrapPublicKey(take: proxyResult!)
-    }
-
-    /// Create algorithm that implements "private key" interface.
-    @objc public static func createPrivateKeyFromRawKey(rawKey: RawKey) throws -> PrivateKey {
-        var error: vscf_error_t = vscf_error_t()
-        vscf_error_reset(&error)
-
-        let proxyResult = vscf_alg_factory_create_private_key_from_raw_key(rawKey.c_ctx, &error)
-
-        try FoundationError.handleStatus(fromC: error.status)
-
-        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
-    }
 }

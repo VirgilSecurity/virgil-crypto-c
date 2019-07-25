@@ -42,41 +42,8 @@ package com.virgilsecurity.crypto.foundation;
 public interface PrivateKey extends Key {
 
     /*
-    * Define whether a private key can be exported or not.
-    */
-    boolean getCanExportPrivateKey();
-
-    /*
-    * Define whether a private key can be imported or not.
-    */
-    boolean getCanImportPrivateKey();
-
-    /*
-    * Extract public part of the key.
+    * Extract public key from the private key.
     */
     PublicKey extractPublicKey();
-
-    /*
-    * Export private key in the binary format.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
-    byte[] exportPrivateKey() throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported private key.
-    */
-    int exportedPrivateKeyLen();
-
-    /*
-    * Import private key from the binary format.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be imported from the format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
-    void importPrivateKey(byte[] data) throws FoundationException;
 }
 

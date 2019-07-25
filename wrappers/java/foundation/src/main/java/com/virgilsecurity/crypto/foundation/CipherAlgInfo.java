@@ -50,15 +50,6 @@ public class CipherAlgInfo implements AutoCloseable, AlgInfo {
     }
 
     /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public CipherAlgInfo(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
-    /*
     * Create symmetric cipher algorithm info with identificator and input vector.
     */
     public CipherAlgInfo(AlgId algId, byte[] nonce) {
@@ -71,6 +62,16 @@ public class CipherAlgInfo implements AutoCloseable, AlgInfo {
     */
     public byte[] nonce() {
         return FoundationJNI.INSTANCE.cipherAlgInfo_nonce(this.cCtx);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static CipherAlgInfo getInstance(long cCtx) {
+        CipherAlgInfo newInstance = new CipherAlgInfo();
+        newInstance.cCtx = cCtx;
+        return newInstance;
     }
 
     /* Close resource. */

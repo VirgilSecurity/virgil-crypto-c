@@ -9,7 +9,7 @@
         wrappers="python"
         >
 
-    <version major="0" minor="8" patch="0"/>
+    <version major="0" minor="9" patch="0"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.
@@ -50,6 +50,11 @@
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
+    <module name="atomic" from="shared"/>
+
+    <feature name="multi threading" default="on">
+        Enable multi-threading safety for foundation library.
+    </feature>
 
     <class name="data"/>
     <class name="buffer"/>

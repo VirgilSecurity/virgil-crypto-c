@@ -57,17 +57,6 @@
 #include "vscf_api.h"
 #include "vscf_impl.h"
 #include "vscf_key.h"
-#include "vscf_status.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#   include <VSCCommon/vsc_data.h>
-#endif
 
 // clang-format on
 //  @end
@@ -83,29 +72,6 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Callback. Export public key in the binary format.
-//
-//          Binary format must be defined in the key specification.
-//          For instance, RSA public key must be exported in format defined in
-//          RFC 3447 Appendix A.1.1.
-//
-typedef vscf_status_t (*vscf_public_key_api_export_public_key_fn)(const vscf_impl_t *impl, vsc_buffer_t *out);
-
-//
-//  Callback. Return length in bytes required to hold exported public key.
-//
-typedef size_t (*vscf_public_key_api_exported_public_key_len_fn)(const vscf_impl_t *impl);
-
-//
-//  Callback. Import public key from the binary format.
-//
-//          Binary format must be defined in the key specification.
-//          For instance, RSA public key must be imported from the format defined in
-//          RFC 3447 Appendix A.1.1.
-//
-typedef vscf_status_t (*vscf_public_key_api_import_public_key_fn)(vscf_impl_t *impl, vsc_data_t data);
 
 //
 //  Contains API requirements of the interface 'public key'.
@@ -124,34 +90,6 @@ struct vscf_public_key_api_t {
     //  Link to the inherited interface API 'key'.
     //
     const vscf_key_api_t *key_api;
-    //
-    //  Export public key in the binary format.
-    //
-    //  Binary format must be defined in the key specification.
-    //  For instance, RSA public key must be exported in format defined in
-    //  RFC 3447 Appendix A.1.1.
-    //
-    vscf_public_key_api_export_public_key_fn export_public_key_cb;
-    //
-    //  Return length in bytes required to hold exported public key.
-    //
-    vscf_public_key_api_exported_public_key_len_fn exported_public_key_len_cb;
-    //
-    //  Import public key from the binary format.
-    //
-    //  Binary format must be defined in the key specification.
-    //  For instance, RSA public key must be imported from the format defined in
-    //  RFC 3447 Appendix A.1.1.
-    //
-    vscf_public_key_api_import_public_key_fn import_public_key_cb;
-    //
-    //  Define whether a public key can be exported or not.
-    //
-    bool can_export_public_key;
-    //
-    //  Defines whether a public key can be imported or not.
-    //
-    bool can_import_public_key;
 };
 
 

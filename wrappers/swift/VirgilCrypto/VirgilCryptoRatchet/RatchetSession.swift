@@ -179,31 +179,15 @@ import VirgilCryptoFoundation
         return plainText
     }
 
-    /// Calculates size of buffer sufficient to store session
-    @objc public func serializeLen() -> Int {
-        let proxyResult = vscr_ratchet_session_serialize_len(self.c_ctx)
-
-        return proxyResult
-    }
-
     /// Serializes session to buffer
     @objc public func serialize() -> Data {
-        let outputCount = self.serializeLen()
-        var output = Data(count: outputCount)
-        var outputBuf = vsc_buffer_new()
+        let proxyResult = vscr_ratchet_session_serialize(self.c_ctx)
+
         defer {
-            vsc_buffer_delete(outputBuf)
+            vsc_buffer_delete(proxyResult)
         }
 
-        output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutableRawBufferPointer) -> Void in
-            vsc_buffer_init(outputBuf)
-            vsc_buffer_use(outputBuf, outputPointer.bindMemory(to: byte.self).baseAddress, outputCount)
-
-            vscr_ratchet_session_serialize(self.c_ctx, outputBuf)
-        })
-        output.count = vsc_buffer_len(outputBuf)
-
-        return output
+        return Data.init(bytes: vsc_buffer_bytes(proxyResult), count: vsc_buffer_len(proxyResult))
     }
 
     /// Deserializes session from buffer.

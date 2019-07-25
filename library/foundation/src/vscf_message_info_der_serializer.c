@@ -1100,7 +1100,9 @@ vscf_message_info_der_serializer_deserialize_key_recipient_info(
     }
 
     vscf_key_recipient_info_t *key_recipient_info =
-            vscf_key_recipient_info_new_with_members(rid, &key_encryption_alg_info, encrypted_key);
+            vscf_key_recipient_info_new_with_data(rid, key_encryption_alg_info, encrypted_key);
+
+    vscf_impl_destroy(&key_encryption_alg_info);
 
     vscf_message_info_add_key_recipient(message_info, &key_recipient_info);
 }

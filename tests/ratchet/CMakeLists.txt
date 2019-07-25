@@ -48,6 +48,8 @@ macro(_add_test test)
     if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
         add_clangformat(${test})
     endif()
+
+    enable_target_pedantic(${test})
 endmacro()
 
 _add_test (test_ratchet_message)

@@ -4,12 +4,12 @@
 
     <require module="ratchet typedefs" scope="context"/>
 
-    <property name="count" type="size" access="readwrite"/>
+    <property name="count" type="unsigned" size="4" access="readwrite"/>
     <property name="first" class="ratchet message key node" access="readwrite"/>
     <property name="last" class="ratchet message key node" access="readwrite"/>
 
     <method name="find key" is_const="1">
-        <argument name="counter" type="size"/>
+        <argument name="counter" type="unsigned" size="4"/>
 
         <return class="ratchet message key" access="readwrite"/>
     </method>
@@ -23,14 +23,14 @@
     </method>
 
     <method name="serialize" is_const="1">
-        <argument name="skipped messages pb" class="MessageKey" is_reference="0" library="nanopb" access="readwrite">
+        <argument name="skipped messages pb" class="vscr_MessageKey" is_reference="1" library="nanopb" access="readwrite">
             <array/>
         </argument>
         <argument name="count" class="pb_size_t" is_reference="1" access="readwrite" library="nanopb"/>
     </method>
 
     <method name="deserialize" is_static="1">
-        <argument name="skipped messages pb" class="MessageKey" is_reference="0" library="nanopb">
+        <argument name="skipped messages pb" class="vscr_MessageKey" is_reference="0" library="nanopb">
             <array/>
         </argument>
         <argument name="count" class="pb_size_t" is_reference="0" library="nanopb"/>

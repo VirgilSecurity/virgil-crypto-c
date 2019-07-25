@@ -54,13 +54,15 @@
 #define VSCR_RATCHET_GROUP_SESSION_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_atomic.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet_cipher.h"
-#include "vscr_ratchet_padding.h"
-#include "vscr_ratchet_group_participant_epoch.h"
-#include "vscr_ratchet_group_participant_data.h"
+#include "vscr_ratchet_chain_key.h"
+#include "vscr_ratchet_group_participant.h"
+
+#include <virgil/crypto/foundation/private/vscf_message_padding.h>
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
@@ -96,7 +98,7 @@ struct vscr_ratchet_group_session_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCR_ATOMIC size_t refcnt;
     //
     //  Dependency to the interface 'random'.
     //
@@ -106,7 +108,7 @@ struct vscr_ratchet_group_session_t {
 
     vscr_ratchet_cipher_t *cipher;
 
-    vscr_ratchet_padding_t *padding;
+    vscf_message_padding_t *padding;
 
     bool is_initialized;
 
@@ -118,17 +120,19 @@ struct vscr_ratchet_group_session_t {
 
     vscr_ratchet_participant_id_t my_id;
 
-    vscr_ratchet_group_participant_epoch_t *my_epoch;
+    uint32_t my_epoch;
+
+    vscr_ratchet_chain_key_t *my_chain_key;
 
     vscr_ratchet_public_key_t my_public_key;
 
     vscr_ratchet_private_key_t my_private_key;
 
-    size_t messages_count[vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHES_COUNT];
+    uint32_t messages_count[vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHS_COUNT];
 
-    vscr_ratchet_group_participant_data_t **participants;
+    vscr_ratchet_group_participant_t **participants;
 
-    size_t participants_count;
+    uint32_t participants_count;
 };
 
 

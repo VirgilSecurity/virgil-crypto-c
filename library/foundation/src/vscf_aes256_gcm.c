@@ -117,7 +117,7 @@ vscf_aes256_gcm_cleanup_ctx(vscf_aes256_gcm_t *self) {
 //  Process buffered encryption/decryption to ensure that data size is
 //  multiple of the block size of the cipher.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_aes256_gcm_update_internal(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
