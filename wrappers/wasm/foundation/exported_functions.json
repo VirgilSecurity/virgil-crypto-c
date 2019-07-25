@@ -105,6 +105,7 @@
     "_vscf_ecies_set_key_alg",
     "_vscf_ecies_release_key_alg",
     "_vscf_ecies_setup_defaults",
+    "_vscf_ecies_setup_defaults_no_random",
     "_vscf_ecies_encrypted_len",
     "_vscf_ecies_encrypt",
     "_vscf_ecies_decrypted_len",

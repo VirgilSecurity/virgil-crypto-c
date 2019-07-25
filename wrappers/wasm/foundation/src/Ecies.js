@@ -156,6 +156,15 @@ const initEcies = (Module, modules) => {
         }
 
         /**
+         * Setup predefined values to the uninitialized class dependencies
+         * except random.
+         */
+        setupDefaultsNoRandom() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            Module._vscf_ecies_setup_defaults_no_random(this.ctxPtr);
+        }
+
+        /**
          * Calculate required buffer length to hold the encrypted data.
          */
         encryptedLen(publicKey, dataLen) {
