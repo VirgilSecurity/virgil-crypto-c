@@ -126,10 +126,10 @@ target_link_libraries(libphe.browser.asmjs
         "$<$<CONFIG:Debug>:--emrun>"
         vsc::phe
         )
-add_executable(libphe.shell.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-target_sources(libphe.shell.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
-target_link_libraries(libphe.shell.asmjs
-        "-s ENVIRONMENT=shell"
+add_executable(libphe.worker.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+target_sources(libphe.worker.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+target_link_libraries(libphe.worker.asmjs
+        "-s ENVIRONMENT=worker"
         "-s WASM=0"
         "-s SINGLE_FILE=1"
         "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""

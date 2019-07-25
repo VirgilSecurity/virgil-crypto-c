@@ -126,10 +126,10 @@ target_link_libraries(libfoundation.browser.asmjs
         "$<$<CONFIG:Debug>:--emrun>"
         vsc::foundation
         )
-add_executable(libfoundation.shell.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-target_sources(libfoundation.shell.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
-target_link_libraries(libfoundation.shell.asmjs
-        "-s ENVIRONMENT=shell"
+add_executable(libfoundation.worker.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+target_sources(libfoundation.worker.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+target_link_libraries(libfoundation.worker.asmjs
+        "-s ENVIRONMENT=worker"
         "-s WASM=0"
         "-s SINGLE_FILE=1"
         "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""

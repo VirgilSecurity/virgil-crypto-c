@@ -1847,11 +1847,11 @@ function wasm_create_project_cmake_module(wasm_project)
                         "$<$<CONFIG:Debug>:--emrun>"
                         $(my.wasm_project.cmake_c_export_target:)
                         )
-                add_executable($(my.wasm_project.cmake_wasm_target:).shell.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-                target_sources($(my.wasm_project.cmake_wasm_target:).shell.asmjs PRIVATE \
+                add_executable($(my.wasm_project.cmake_wasm_target:).worker.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+                target_sources($(my.wasm_project.cmake_wasm_target:).worker.asmjs PRIVATE \
                         "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
-                target_link_libraries($(my.wasm_project.cmake_wasm_target:).shell.asmjs
-                        "-s ENVIRONMENT=shell"
+                target_link_libraries($(my.wasm_project.cmake_wasm_target:).worker.asmjs
+                        "-s ENVIRONMENT=worker"
                         "-s WASM=0"
                         "-s SINGLE_FILE=1"
                         "-s EXPORTED_FUNCTIONS=\\\\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\\\\""

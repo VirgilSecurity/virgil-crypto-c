@@ -126,10 +126,10 @@ target_link_libraries(libratchet.browser.asmjs
         "$<$<CONFIG:Debug>:--emrun>"
         vsc::ratchet
         )
-add_executable(libratchet.shell.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-target_sources(libratchet.shell.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
-target_link_libraries(libratchet.shell.asmjs
-        "-s ENVIRONMENT=shell"
+add_executable(libratchet.worker.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+target_sources(libratchet.worker.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+target_link_libraries(libratchet.worker.asmjs
+        "-s ENVIRONMENT=worker"
         "-s WASM=0"
         "-s SINGLE_FILE=1"
         "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""

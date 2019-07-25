@@ -126,10 +126,10 @@ target_link_libraries(libpythia.browser.asmjs
         "$<$<CONFIG:Debug>:--emrun>"
         vsc::pythia
         )
-add_executable(libpythia.shell.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-target_sources(libpythia.shell.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
-target_link_libraries(libpythia.shell.asmjs
-        "-s ENVIRONMENT=shell"
+add_executable(libpythia.worker.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+target_sources(libpythia.worker.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+target_link_libraries(libpythia.worker.asmjs
+        "-s ENVIRONMENT=worker"
         "-s WASM=0"
         "-s SINGLE_FILE=1"
         "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
