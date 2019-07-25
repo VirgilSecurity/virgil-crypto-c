@@ -122,7 +122,7 @@ function php_insert_class (php_class)
 
     echo_trace ("Generate PHP class: " + my.php_class.name, my)
 
-    assert_attributes (my.php_class, "name, visibility", my)
+    assert_attributes (my.php_class, "name", my)
 
     newline ()
     php_insert_description(my.php_class, 0)
@@ -142,15 +142,15 @@ function php_insert_class (php_class)
         php_insert_constructor(php_constructor)
     endfor
 
-#    for my.python_class.python_destructor
-#        newline ()
-#        python_insert_destructor (python_destructor)
-#   endfor
+    for my.php_class.php_destructor
+        newline ()
+        php_insert_destructor (php_destructor)
+   endfor
 
-#    for my.python_class.python_method by is_false (python_method.is_specific_method)
-#        newline ()
-#        python_insert_class_method (python_method)
-#    endfor
+    for my.php_class.php_method by is_false (php_method.is_specific_method)
+        newline ()
+        php_insert_class_method (php_method)
+    endfor
 
 #    for my.python_class.python_property
 #        newline ()
@@ -173,19 +173,17 @@ endfunction
 function php_insert_constructor (php_constructor)
     check_arguments (my, "php_constructor", my)
 
-    assert_attributes (my.php_constructor, "visibility", my)
     assert_item (my.php_constructor, "php_code", my)
 
     my.method_args = php_format_argument_list(my.php_constructor) ?
     my.method_args = string.search_replace (my.method_args, "self, ", "") ?
-    my.override = is_true (my.php_constructor.override) ?? "override" ?
     
     php_insert_description (my.php_constructor, 1)
     php_insert_code("public function __construct($(' ,'+my.method_args?:))", 1)
     php_insert_code("{",1)
-    php_insert_code("}",1)
 
-    php_insert_code("$(my.php_constructor->php_code.:)", 1)
+    php_insert_code("$(my.php_constructor->php_code.:)", 2)
+    php_insert_code("}",1)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -272,18 +270,97 @@ function php_format_argument_list (php_method)
     check_arguments (my, "php_method", my)
 
     for my.php_method.php_argument
-        if is_true (my.php_method.is_classmethod)
-            my.arg_list ?= "cls, "
-        else
-            my.arg_list ?= "self, "
-        endif
-        my.arg_list += "$(php_argument.name:c)"
+        my.arg_list = ""
+        my.arg_list = "$(php_argument.name:c)"
         if ! last()
             my.arg_list += ", "
         endif
     endfor
 
     return my.arg_list
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: destructor / deinit
+# ---------------------------------------------------------------------------
+function php_insert_destructor (php_destructor)
+    check_arguments (my, "php_destructor", my)
+
+    php_insert_description (my.php_destructor, 1)
+    php_insert_code ("public function __destruct()", 1)
+    php_insert_code ("{", 1)
+    php_insert_code ("$(my.php_destructor->php_code.:)", 2)
+    php_insert_code ("}", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: class.method
+# ---------------------------------------------------------------------------
+function php_insert_class_method (php_method)
+    check_arguments (my, "php_method", my)
+
+    assert_attributes (my.php_method, "name", my)
+
+    if is_true (my.php_method.is_classmethod)
+        my.method_args = php_format_argument_list(my.php_method) ? "cls"
+    else
+        my.method_args = php_format_argument_list(my.php_method) ? ""
+    endif
+    my.method_return = php_format_return_list(my.php_method) ?
+
+    if ! count (my.php_method.php_code)
+        php_insert_code("\
+            @abstractmethod
+        ", 1)
+    endif
+    if is_true (my.php_method.is_classmethod)
+        php_insert_code("\
+            @classmethod
+        ", 1)
+    endif
+    php_insert_description (my.php_method, 1)
+    php_insert_code("public function $(my.php_method.name:)($(my.method_args?:))", 1)
+    php_insert_code ("{", 1)
+
+    if count (my.php_method.php_code)
+        php_insert_code (my.php_method->php_code., 2)
+    else
+        php_insert_code ("throw new Exception(\"Not implemented!\")", 2)
+    endif
+    php_insert_code ("}", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted list of returned value(s).
+# ---------------------------------------------------------------------------
+function php_format_return_list (php_method)
+    check_arguments (my, "php_method", my)
+
+    my.is_tuple = count (my.php_method.php_return) > 1 ?? "1" ? "0"
+
+    for my.php_method.php_return
+        my.return_list ?= ""
+
+        if my.is_tuple
+            my.return_list += "$(php_return.name:)"
+        else
+            my.return_list += ""
+        endif
+
+        if ! last()
+            my.return_list += ", "
+        endif
+    endfor
+
+    if defined (my.return_list) & my.is_tuple
+        my.return_list = "(" + my.return_list + ")"
+    endif
+
+    if defined (my.return_list)
+        my.return_list = my.return_list
+    endif
+
+    return my.return_list
 endfunction
 
 .endtemplate
