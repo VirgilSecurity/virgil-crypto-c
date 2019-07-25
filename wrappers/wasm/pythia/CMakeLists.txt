@@ -61,85 +61,70 @@ endif()
 find_host_program(WASM2WAT wasm2wat)
 
 # ---------------------------------------------------------------------------
-#   Create WebAssembly library
+#   Common steps for all WebAssembly libraries.
 # ---------------------------------------------------------------------------
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/fake.c" "")
-add_executable(libpythia "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-target_sources(libpythia PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+
+function(wasm_add_common_options target)
+    target_sources(${target} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+    target_sources(${target} PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+    target_link_libraries(${target}
+            "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
+            "-s MODULARIZE=1"
+            "-s EXPORT_NAME=PythiaModule"
+            "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+            "$<$<CONFIG:Debug>:--emrun>"
+            vsc::pythia
+            )
+endfunction()
+
+# ---------------------------------------------------------------------------
+#   Create WebAssembly library
+# ---------------------------------------------------------------------------
+add_executable(libpythia)
+wasm_add_common_options(libpythia)
 target_link_libraries(libpythia
         "-s ENVIRONMENT=node"
         "-s WASM=1"
-        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
-        "-s MODULARIZE=1"
-        "-s EXPORT_NAME=PythiaModule"
-        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
-        "$<$<CONFIG:Debug>:--emrun>"
-        vsc::pythia
         )
-add_executable(libpythia.browser "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-target_sources(libpythia.browser PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+
+add_executable(libpythia.browser)
+wasm_add_common_options(libpythia.browser)
 target_link_libraries(libpythia.browser
         "-s ENVIRONMENT=web"
         "-s WASM=1"
-        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
-        "-s MODULARIZE=1"
-        "-s EXPORT_NAME=PythiaModule"
-        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
-        "$<$<CONFIG:Debug>:--emrun>"
-        vsc::pythia
         )
-add_executable(libpythia.worker "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-target_sources(libpythia.worker PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+
+add_executable(libpythia.worker)
+wasm_add_common_options(libpythia.worker)
 target_link_libraries(libpythia.worker
         "-s ENVIRONMENT=worker"
         "-s WASM=1"
-        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
-        "-s MODULARIZE=1"
-        "-s EXPORT_NAME=PythiaModule"
-        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
-        "$<$<CONFIG:Debug>:--emrun>"
-        vsc::pythia
         )
-add_executable(libpythia.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-target_sources(libpythia.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+
+add_executable(libpythia.asmjs)
+wasm_add_common_options(libpythia.asmjs)
 target_link_libraries(libpythia.asmjs
         "-s ENVIRONMENT=node"
         "-s WASM=0"
         "-s SINGLE_FILE=1"
-        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
-        "-s MODULARIZE=1"
-        "-s EXPORT_NAME=PythiaModule"
-        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
-        "$<$<CONFIG:Debug>:--emrun>"
-        vsc::pythia
         )
-add_executable(libpythia.browser.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-target_sources(libpythia.browser.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+
+add_executable(libpythia.browser.asmjs)
+wasm_add_common_options(libpythia.browser.asmjs)
 target_link_libraries(libpythia.browser.asmjs
         "-s ENVIRONMENT=web"
         "-s WASM=0"
         "-s SINGLE_FILE=1"
-        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
-        "-s MODULARIZE=1"
-        "-s EXPORT_NAME=PythiaModule"
-        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
-        "$<$<CONFIG:Debug>:--emrun>"
-        vsc::pythia
         )
-add_executable(libpythia.worker.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-target_sources(libpythia.worker.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+
+add_executable(libpythia.worker.asmjs)
+wasm_add_common_options(libpythia.worker.asmjs)
 target_link_libraries(libpythia.worker.asmjs
         "-s ENVIRONMENT=worker"
         "-s WASM=0"
         "-s SINGLE_FILE=1"
-        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
-        "-s MODULARIZE=1"
-        "-s EXPORT_NAME=PythiaModule"
-        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
-        "$<$<CONFIG:Debug>:--emrun>"
-        vsc::pythia
         )
-
 
 add_custom_command(TARGET libpythia POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory

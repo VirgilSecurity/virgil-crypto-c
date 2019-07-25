@@ -61,85 +61,70 @@ endif()
 find_host_program(WASM2WAT wasm2wat)
 
 # ---------------------------------------------------------------------------
-#   Create WebAssembly library
+#   Common steps for all WebAssembly libraries.
 # ---------------------------------------------------------------------------
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/fake.c" "")
-add_executable(libfoundation "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-target_sources(libfoundation PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+
+function(wasm_add_common_options target)
+    target_sources(${target} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+    target_sources(${target} PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+    target_link_libraries(${target}
+            "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
+            "-s MODULARIZE=1"
+            "-s EXPORT_NAME=FoundationModule"
+            "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+            "$<$<CONFIG:Debug>:--emrun>"
+            vsc::foundation
+            )
+endfunction()
+
+# ---------------------------------------------------------------------------
+#   Create WebAssembly library
+# ---------------------------------------------------------------------------
+add_executable(libfoundation)
+wasm_add_common_options(libfoundation)
 target_link_libraries(libfoundation
         "-s ENVIRONMENT=node"
         "-s WASM=1"
-        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
-        "-s MODULARIZE=1"
-        "-s EXPORT_NAME=FoundationModule"
-        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
-        "$<$<CONFIG:Debug>:--emrun>"
-        vsc::foundation
         )
-add_executable(libfoundation.browser "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-target_sources(libfoundation.browser PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+
+add_executable(libfoundation.browser)
+wasm_add_common_options(libfoundation.browser)
 target_link_libraries(libfoundation.browser
         "-s ENVIRONMENT=web"
         "-s WASM=1"
-        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
-        "-s MODULARIZE=1"
-        "-s EXPORT_NAME=FoundationModule"
-        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
-        "$<$<CONFIG:Debug>:--emrun>"
-        vsc::foundation
         )
-add_executable(libfoundation.worker "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-target_sources(libfoundation.worker PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+
+add_executable(libfoundation.worker)
+wasm_add_common_options(libfoundation.worker)
 target_link_libraries(libfoundation.worker
         "-s ENVIRONMENT=worker"
         "-s WASM=1"
-        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
-        "-s MODULARIZE=1"
-        "-s EXPORT_NAME=FoundationModule"
-        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
-        "$<$<CONFIG:Debug>:--emrun>"
-        vsc::foundation
         )
-add_executable(libfoundation.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-target_sources(libfoundation.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+
+add_executable(libfoundation.asmjs)
+wasm_add_common_options(libfoundation.asmjs)
 target_link_libraries(libfoundation.asmjs
         "-s ENVIRONMENT=node"
         "-s WASM=0"
         "-s SINGLE_FILE=1"
-        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
-        "-s MODULARIZE=1"
-        "-s EXPORT_NAME=FoundationModule"
-        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
-        "$<$<CONFIG:Debug>:--emrun>"
-        vsc::foundation
         )
-add_executable(libfoundation.browser.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-target_sources(libfoundation.browser.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+
+add_executable(libfoundation.browser.asmjs)
+wasm_add_common_options(libfoundation.browser.asmjs)
 target_link_libraries(libfoundation.browser.asmjs
         "-s ENVIRONMENT=web"
         "-s WASM=0"
         "-s SINGLE_FILE=1"
-        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
-        "-s MODULARIZE=1"
-        "-s EXPORT_NAME=FoundationModule"
-        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
-        "$<$<CONFIG:Debug>:--emrun>"
-        vsc::foundation
         )
-add_executable(libfoundation.worker.asmjs "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-target_sources(libfoundation.worker.asmjs PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+
+add_executable(libfoundation.worker.asmjs)
+wasm_add_common_options(libfoundation.worker.asmjs)
 target_link_libraries(libfoundation.worker.asmjs
         "-s ENVIRONMENT=worker"
         "-s WASM=0"
         "-s SINGLE_FILE=1"
-        "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
-        "-s MODULARIZE=1"
-        "-s EXPORT_NAME=FoundationModule"
-        "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
-        "$<$<CONFIG:Debug>:--emrun>"
-        vsc::foundation
         )
-
 
 add_custom_command(TARGET libfoundation POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
