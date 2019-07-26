@@ -62,7 +62,6 @@ function php_generate_sources (wrapper_project)
     endif
 
     for my.wrapper_project.php_module
-        echo_trace ("Generate PHP files from <$(name (php_module)) name = \"$(c_module.name:)\"/>", my)
 
         if defined (php_module.source_dir)
             if -1 = directory.create (php_module.source_dir)
@@ -72,10 +71,20 @@ function php_generate_sources (wrapper_project)
 
         output php_module.source_file_path
 
-        php_insert_php_open_tag()
+        if php_module.type = "composer"
+            php_insert_composer_data (php_module)
+        endif
 
-        php_insert_prologue (php_module)
-        newline ()
+        if php_module.type = "extension"
+            php_insert_extension_data (php_module)
+        endif
+
+        if php_module.type = "php"
+            echo_trace ("Generate PHP files from <$(name (php_module)) name = \"$(c_module.name:)\"/>", my)
+
+            php_insert_php_open_tag()
+            php_insert_prologue (php_module)
+            newline ()
 
 #        for php_module.php_import
 #            newline_if (first ())
@@ -111,6 +120,7 @@ function php_generate_sources (wrapper_project)
 #            newline ()
 #            php_insert_extension (php_extension)
 #        endfor
+        endif
     endfor
 endfunction
 
@@ -287,10 +297,12 @@ function php_insert_destructor (php_destructor)
     check_arguments (my, "php_destructor", my)
 
     php_insert_description (my.php_destructor, 1)
-    php_insert_code ("public function __destruct()", 1)
-    php_insert_code ("{", 1)
-    php_insert_code ("$(my.php_destructor->php_code.:)", 2)
-    php_insert_code ("}", 1)
+    php_insert_code ("\
+        public function __destruct()
+        {
+            $(my.php_destructor->php_code.:)
+        }
+    ", 1)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -361,6 +373,55 @@ function php_format_return_list (php_method)
     endif
 
     return my.return_list
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_insert_composer_data (composer_module)
+    check_arguments (my, "composer_module", my)
+
+    php_insert_code("\
+    {
+        \"name\": \"virgil/crypto-$(my.composer_module.project:)\",
+        \"description\": \"$(my.composer_module.description:)\",
+        \"keywords\": [],
+        \"homepage\": \"https://virgilsecurity.com\",
+        \"license\": \"BSD-3-Clause\",
+        \"authors\": [
+            {
+                \"name\": \"Virgil Security, Inc\",
+                \"email\": \"support@virgilsecurity.com\",
+                \"homepage\": \"https://virgilsecurity.com\"
+            }
+        ],
+        \"require\": {
+            \"php\": \"^7.2\"
+        },
+        \"autoload\": {
+            \"psr-4\": {
+                \"Virgil\\\\Crypto-$(my.composer_module.project:Pascal)\\\\\": \"sources\"
+            }
+        },
+        \"scripts\": {
+            \"setup-extension\": [
+            ]
+        }
+    }
+    ",0)
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_insert_extension_data (extension_module)
+    check_arguments (my, "extension_module", my)
+
+    php_insert_code("\
+        #include \"vsce_assert.h\"
+    ",0)
+
 endfunction
 
 .endtemplate
