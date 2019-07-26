@@ -37,7 +37,7 @@
 #   This module contains functions processing component 'project'.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
-#   language. See https://github.com/imatix/gsl for details.
+#   language. See https://github.com/zeromq/gsl for details.
 # ---------------------------------------------------------------------------
 
 
@@ -67,6 +67,10 @@ function project_resolve (project)
     my.project.install_headers_dir ?= cat_path (my.project.namespace_dir)
     my.project.install_private_headers_dir ?= cat_path (my.project.namespace_dir, "private")
     my.project.framework ?= "VSC$(my.project.name:Pascal)"
+
+    my.project.cmake_target = make_id(my.project.name)
+    my.project.cmake_export_target = "vsc::$(my.project.cmake_target:)"
+    my.project.cmake_enable_option = "VIRGIL_LIB_$(my.project.cmake_target:UPPER)"
 
     my.version = my.project->version
     my.version.major ?= 1

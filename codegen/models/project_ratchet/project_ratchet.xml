@@ -6,7 +6,7 @@
         prefix="vscr"
         path="../library/ratchet"
         work_path = "generated/ratchet/"
-        wrappers="java,swift"
+        wrappers="java,swift,wasm"
         >
 
     <version major="0" minor="9" patch="0"/>
@@ -48,7 +48,12 @@
     </license>
 
     <require project="common" feature="library"/>
-    <require project="foundation" feature="library"/>
+    <require project="foundation" feature="library">
+        <require impl="ctr drbg"/>
+        <require impl="hmac"/>
+        <require impl="hkdf"/>
+        <require impl="sha512"/>
+    </require>
 
     <feature name="multi threading" default="on">
         Enable multi-threading safety for ratchet library.
