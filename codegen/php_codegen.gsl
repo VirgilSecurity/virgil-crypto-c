@@ -61,6 +61,10 @@ function php_generate_sources (wrapper_project)
         echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
     endif
 
+    for my.wrapper_project.json_module
+        php_insert_composer_data (json_module)
+    endfor
+
     for my.wrapper_project.php_module
 
         if defined (php_module.source_dir)
@@ -79,7 +83,7 @@ function php_generate_sources (wrapper_project)
             php_insert_extension_data (php_module)
         endif
 
-        if php_module.type = "php"
+        if php_module.type = "php-file"
             echo_trace ("Generate PHP files from <$(name (php_module)) name = \"$(c_module.name:)\"/>", my)
 
             php_insert_php_open_tag()
@@ -381,35 +385,7 @@ endfunction
 function php_insert_composer_data (composer_module)
     check_arguments (my, "composer_module", my)
 
-    php_insert_code("\
-    {
-        \"name\": \"virgil/crypto-$(my.composer_module.project:)\",
-        \"description\": \"$(my.composer_module.description:)\",
-        \"keywords\": [],
-        \"homepage\": \"https://virgilsecurity.com\",
-        \"license\": \"BSD-3-Clause\",
-        \"authors\": [
-            {
-                \"name\": \"Virgil Security, Inc\",
-                \"email\": \"support@virgilsecurity.com\",
-                \"homepage\": \"https://virgilsecurity.com\"
-            }
-        ],
-        \"require\": {
-            \"php\": \"^7.2\"
-        },
-        \"autoload\": {
-            \"psr-4\": {
-                \"Virgil\\\\Crypto-$(my.composer_module.project:Pascal)\\\\\": \"sources\"
-            }
-        },
-        \"scripts\": {
-            \"setup-extension\": [
-            ]
-        }
-    }
-    ",0)
-
+    php_insert_code("$(my.composer_module->php_code.:)",0)
 endfunction
 
 # ---------------------------------------------------------------------------

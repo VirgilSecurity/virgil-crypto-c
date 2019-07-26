@@ -97,23 +97,54 @@ endfunction
 function php_create_custom_modules (source, php_project, meta)
     check_arguments (my, "source, php_project, meta", my)
 
+    if directory.create (my.php_project.source_dir) = -1
+        echo_fatal ("Can not create directory: $(.source_dir_path:). ", my)
+    endif
+
+    new json_module to my.php_project
+        .name = "qwerty"
+    endnew
+
     new php_module to my.php_project
         .name = "composer"
         .type = "composer"
         .source_file_name = 0.name + ".json"
         .source_dir = my.php_project.source_dir
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
-        .project = my.php_project.name
-        .description = my.php_project.description
-
-        if directory.create (my.php_project.source_dir) = -1
-            echo_fatal ("Can not create directory: $(.source_dir_path:). ", my)
-        endif
+        new php_code to php_module
+            .= "\
+            {
+                \"name1\": \"virgil/crypto-$(my.php_project.name:)\",
+                \"description\": \"$(my.php_project.description:)\",
+                \"keywords\": [],
+                \"homepage\": \"https://virgilsecurity.com\",
+                \"license\": \"BSD-3-Clause\",
+                \"authors\": [
+                    {
+                        \"name\": \"Virgil Security, Inc\",
+                        \"email\": \"support@virgilsecurity.com\",
+                        \"homepage\": \"https://virgilsecurity.com\"
+                    }
+                ],
+                \"require\": {
+                    \"php\": \"^7.2\"
+                },
+                \"autoload\": {
+                    \"psr-4\": {
+                        \"Virgil\\Crypto-$(my.php_project.name:Pascal)\\\": \"sources\"
+                    }
+                },
+                \"scripts\": {
+                    \"setup-extension\": [
+                    ]
+                }
+            }
+            "
+        endnew
     endnew
 
-    new php_module to my.php_project
-        .name = "extension"
-        .type = "extension"
+    new c_extension_module to my.php_project
+        .name = "vsce"
         .source_file_name = 0.name + ".c"
         .source_dir = my.php_project.source_dir
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
