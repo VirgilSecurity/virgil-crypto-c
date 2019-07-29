@@ -63,7 +63,7 @@ class Sec1Serializer(KeySerializer):
         """Calculate buffer size enough to hold serialized public key.
 
         Precondition: public key must be exportable."""
-        result = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialized_public_key_len(self.ctx, public_key.c_impl)
+        result = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialized_public_key_len(self.ctx, public_key.ctx)
         return result
 
     def serialize_public_key(self, public_key):
@@ -71,7 +71,7 @@ class Sec1Serializer(KeySerializer):
 
         Precondition: public key must be exportable."""
         out = Buffer(self.serialized_public_key_len(public_key=public_key))
-        status = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialize_public_key(self.ctx, public_key.c_impl, out.c_buffer)
+        status = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialize_public_key(self.ctx, public_key.ctx, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
 
@@ -79,7 +79,7 @@ class Sec1Serializer(KeySerializer):
         """Calculate buffer size enough to hold serialized private key.
 
         Precondition: private key must be exportable."""
-        result = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialized_private_key_len(self.ctx, private_key.c_impl)
+        result = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialized_private_key_len(self.ctx, private_key.ctx)
         return result
 
     def serialize_private_key(self, private_key):
@@ -87,7 +87,7 @@ class Sec1Serializer(KeySerializer):
 
         Precondition: private key must be exportable."""
         out = Buffer(self.serialized_private_key_len(private_key=private_key))
-        status = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialize_private_key(self.ctx, private_key.c_impl, out.c_buffer)
+        status = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialize_private_key(self.ctx, private_key.ctx, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
 
@@ -100,7 +100,7 @@ class Sec1Serializer(KeySerializer):
         Note, that caller code is responsible to reset ASN.1 writer with
         an output buffer."""
         error = vscf_error_t()
-        result = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialize_public_key_inplace(self.ctx, public_key.c_impl, error)
+        result = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialize_public_key_inplace(self.ctx, public_key.ctx, error)
         VscfStatus.handle_status(error.status)
         return result
 
@@ -109,7 +109,7 @@ class Sec1Serializer(KeySerializer):
         Note, that caller code is responsible to reset ASN.1 writer with
         an output buffer."""
         error = vscf_error_t()
-        result = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialize_private_key_inplace(self.ctx, private_key.c_impl, error)
+        result = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialize_private_key_inplace(self.ctx, private_key.ctx, error)
         VscfStatus.handle_status(error.status)
         return result
 

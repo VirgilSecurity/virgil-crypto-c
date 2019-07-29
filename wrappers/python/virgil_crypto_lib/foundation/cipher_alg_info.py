@@ -53,6 +53,15 @@ class CipherAlgInfo(AlgInfo):
         """Destroy underlying C context."""
         self._lib_vscf_cipher_alg_info.vscf_cipher_alg_info_delete(self.ctx)
 
+    @classmethod
+    def with_members(cls, alg_id, nonce):
+        """Create symmetric cipher algorithm info with identificator and input vector."""
+        d_nonce = Data(nonce)
+        inst = cls.__new__(cls)
+        inst._lib_vscf_cipher_alg_info = VscfCipherAlgInfo()
+        inst.ctx = inst._lib_vscf_cipher_alg_info.vscf_cipher_alg_info_new_with_members(alg_id, d_nonce.data)
+        return inst
+
     def alg_id(self):
         """Provide algorithm identificator."""
         result = self._lib_vscf_cipher_alg_info.vscf_cipher_alg_info_alg_id(self.ctx)

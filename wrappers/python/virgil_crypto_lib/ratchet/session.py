@@ -38,7 +38,9 @@ from ._c_bridge import VscrRatchetSession
 from ._c_bridge import VscrStatus
 from virgil_crypto_lib.common._c_bridge import Data
 from ._c_bridge._vscr_error import vscr_error_t
+from .message import Message
 from virgil_crypto_lib.common._c_bridge import Buffer
+from .session import Session
 
 
 class Session(object):
@@ -78,7 +80,7 @@ class Session(object):
         d_receiver_identity_private_key = Data(receiver_identity_private_key)
         d_receiver_long_term_private_key = Data(receiver_long_term_private_key)
         d_receiver_one_time_private_key = Data(receiver_one_time_private_key)
-        status = self._lib_vscr_ratchet_session.vscr_ratchet_session_respond(self.ctx, d_sender_identity_public_key.data, d_receiver_identity_private_key.data, d_receiver_long_term_private_key.data, d_receiver_one_time_private_key.data, message)
+        status = self._lib_vscr_ratchet_session.vscr_ratchet_session_respond(self.ctx, d_sender_identity_public_key.data, d_receiver_identity_private_key.data, d_receiver_long_term_private_key.data, d_receiver_one_time_private_key.data, message.ctx)
         VscrStatus.handle_status(status)
 
     def is_initiator(self):
@@ -102,30 +104,27 @@ class Session(object):
         error = vscr_error_t()
         result = self._lib_vscr_ratchet_session.vscr_ratchet_session_encrypt(self.ctx, d_plain_text.data, error)
         VscrStatus.handle_status(error.status)
-        return result
+        instance = Message.take_c_ctx(result)
+        return instance
 
     def decrypt_len(self, message):
         """Calculates size of buffer sufficient to store decrypted message"""
-        result = self._lib_vscr_ratchet_session.vscr_ratchet_session_decrypt_len(self.ctx, message)
+        result = self._lib_vscr_ratchet_session.vscr_ratchet_session_decrypt_len(self.ctx, message.ctx)
         return result
 
     def decrypt(self, message):
         """Decrypts message"""
         plain_text = Buffer(self.decrypt_len(message=message))
-        status = self._lib_vscr_ratchet_session.vscr_ratchet_session_decrypt(self.ctx, message, plain_text.c_buffer)
+        status = self._lib_vscr_ratchet_session.vscr_ratchet_session_decrypt(self.ctx, message.ctx, plain_text.c_buffer)
         VscrStatus.handle_status(status)
         return plain_text.get_bytes()
 
-    def serialize_len(self):
-        """Calculates size of buffer sufficient to store session"""
-        result = self._lib_vscr_ratchet_session.vscr_ratchet_session_serialize_len(self.ctx)
-        return result
-
     def serialize(self):
         """Serializes session to buffer"""
-        output = Buffer(self.serialize_len())
-        self._lib_vscr_ratchet_session.vscr_ratchet_session_serialize(self.ctx, output.c_buffer)
-        return output.get_bytes()
+        result = self._lib_vscr_ratchet_session.vscr_ratchet_session_serialize(self.ctx)
+        instance = Buffer.take_c_ctx(result)
+        cleaned_bytes = bytearray(instance)
+        return cleaned_bytes
 
     def deserialize(self, input):
         """Deserializes session from buffer.
@@ -134,7 +133,8 @@ class Session(object):
         error = vscr_error_t()
         result = self._lib_vscr_ratchet_session.vscr_ratchet_session_deserialize(d_input.data, error)
         VscrStatus.handle_status(error.status)
-        return result
+        instance = Session.take_c_ctx(result)
+        return instance
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

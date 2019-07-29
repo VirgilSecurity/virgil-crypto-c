@@ -60,12 +60,12 @@ class Asn1Writer(object):
         raise NotImplementedError()
 
     @abstractmethod
-    def bytes(self):
+    def __bytes__(self):
         """Returns pointer to the inner buffer."""
         raise NotImplementedError()
 
     @abstractmethod
-    def len(self):
+    def __len__(self):
         """Returns total inner buffer length."""
         raise NotImplementedError()
 

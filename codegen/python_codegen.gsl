@@ -317,6 +317,30 @@ function python_insert_constructor (python_constructor)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Insert statement: custom constructor
+# ---------------------------------------------------------------------------
+function python_insert_custom_constructor (python_custom_constructor)
+    check_arguments (my, "python_custom_constructor", my)
+    echo_debug ("Inserting custom constructor")
+
+    assert_attributes (my.python_custom_constructor, "name", my)
+
+    my.method_args = python_format_argument_list(my.python_custom_constructor) ? "cls"
+
+    python_insert_code("\
+        @classmethod
+    ", 1)
+
+    python_insert_code("\
+        def $(my.python_custom_constructor.name:)($(my.method_args?:)):
+    ", 1)
+    python_insert_description (my.python_custom_constructor, 2)
+
+    echo_debug ("Inserting code of custom constructor")
+    python_insert_code ("$(my.python_custom_constructor->python_code.:)", 2)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Insert statement: destructor / deinit
 # ---------------------------------------------------------------------------
 function python_insert_destructor (python_destructor)
@@ -529,6 +553,11 @@ function python_insert_class (python_class)
     for my.python_class.python_destructor
         newline ()
         python_insert_destructor (python_destructor)
+    endfor
+
+    for my.python_class.python_custom_constructor
+        newline ()
+        python_insert_custom_constructor (python_custom_constructor)
     endfor
 
     for my.python_class.python_method by is_false (python_method.is_specific_method)

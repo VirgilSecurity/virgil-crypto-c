@@ -41,35 +41,7 @@ class PrivateKey(object):
     """Contains private part of the key."""
     __metaclass__ = ABCMeta
 
-    # Define whether a private key can be exported or not.
-    CAN_EXPORT_PRIVATE_KEY = 0
-    # Define whether a private key can be imported or not.
-    CAN_IMPORT_PRIVATE_KEY = 1
-
     @abstractmethod
     def extract_public_key(self):
-        """Extract public part of the key."""
-        raise NotImplementedError()
-
-    @abstractmethod
-    def export_private_key(self):
-        """Export private key in the binary format.
-
-        Binary format must be defined in the key specification.
-        For instance, RSA private key must be exported in format defined in
-        RFC 3447 Appendix A.1.2."""
-        raise NotImplementedError()
-
-    @abstractmethod
-    def exported_private_key_len(self):
-        """Return length in bytes required to hold exported private key."""
-        raise NotImplementedError()
-
-    @abstractmethod
-    def import_private_key(self, data):
-        """Import private key from the binary format.
-
-        Binary format must be defined in the key specification.
-        For instance, RSA private key must be imported from the format defined in
-        RFC 3447 Appendix A.1.2."""
+        """Extract public key from the private key."""
         raise NotImplementedError()

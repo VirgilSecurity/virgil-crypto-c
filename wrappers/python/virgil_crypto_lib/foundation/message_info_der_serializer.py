@@ -38,6 +38,7 @@ from ._c_bridge import VscfMessageInfoDerSerializer
 from virgil_crypto_lib.common._c_bridge import Buffer
 from virgil_crypto_lib.common._c_bridge import Data
 from ._c_bridge._vscf_error import vscf_error_t
+from .message_info import MessageInfo
 from ._c_bridge import VscfStatus
 from .message_info_serializer import MessageInfoSerializer
 
@@ -66,13 +67,13 @@ class MessageInfoDerSerializer(MessageInfoSerializer):
 
     def serialized_len(self, message_info):
         """Return buffer size enough to hold serialized message info."""
-        result = self._lib_vscf_message_info_der_serializer.vscf_message_info_der_serializer_serialized_len(self.ctx, message_info)
+        result = self._lib_vscf_message_info_der_serializer.vscf_message_info_der_serializer_serialized_len(self.ctx, message_info.ctx)
         return result
 
     def serialize(self, message_info):
         """Serialize class "message info"."""
         out = Buffer(self.serialized_len(message_info=message_info))
-        self._lib_vscf_message_info_der_serializer.vscf_message_info_der_serializer_serialize(self.ctx, message_info, out.c_buffer)
+        self._lib_vscf_message_info_der_serializer.vscf_message_info_der_serializer_serialize(self.ctx, message_info.ctx, out.c_buffer)
         return out.get_bytes()
 
     def read_prefix(self, data):
@@ -91,7 +92,8 @@ class MessageInfoDerSerializer(MessageInfoSerializer):
         error = vscf_error_t()
         result = self._lib_vscf_message_info_der_serializer.vscf_message_info_der_serializer_deserialize(self.ctx, d_data.data, error)
         VscfStatus.handle_status(error.status)
-        return result
+        instance = MessageInfo.take_c_ctx(result)
+        return instance
 
     def setup_defaults(self):
         """Setup predefined values to the uninitialized class dependencies."""

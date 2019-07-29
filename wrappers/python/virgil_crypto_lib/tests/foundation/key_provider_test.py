@@ -1,6 +1,6 @@
 import unittest
 
-from virgil_crypto_lib.foundation import KeyProvider, KeyMaterialRng
+from virgil_crypto_lib.foundation import KeyProvider, KeyMaterialRng, Ed25519, Rsa
 from virgil_crypto_lib.foundation._c_bridge import VscfAlgId, VirgilCryptoFoundationError
 from virgil_crypto_lib.tests.data import TestData
 
@@ -16,9 +16,12 @@ class KeyProviderTest(unittest.TestCase):
         self.assertIsNotNone(private_key)
 
         self.assertEqual(VscfAlgId.ED25519, private_key.alg_id())
-        self.assertEqual(256, private_key.key_bitlen())
+        self.assertEqual(32, len(private_key))
 
     def test_generate_private_key_ed25519_and_then_do_encrypt_decrypt(self):
+        ed25519_alg = Ed25519()
+        ed25519_alg.setup_defaults()
+
         key_provider = KeyProvider()
         key_provider.setup_defaults()
 
@@ -27,25 +30,31 @@ class KeyProviderTest(unittest.TestCase):
         public_key = private_key.extract_public_key()
 
         plain_message = "test data"
-        encrypted_data = public_key.encrypt(plain_message)
+        encrypted_data = ed25519_alg.encrypt(public_key, plain_message)
 
-        decrypted_data = private_key.decrypt(encrypted_data)
+        decrypted_data = ed25519_alg.decrypt(private_key, encrypted_data)
 
         self.assertEqual(plain_message, decrypted_data.decode())
 
     def test_generate_private_key_ed25519_and_then_do_sign_hash_and_verify_hash(self):
+        ed25519_alg = Ed25519()
+        ed25519_alg.setup_defaults()
+
         key_provider = KeyProvider()
         key_provider.setup_defaults()
 
         private_key = key_provider.generate_private_key(VscfAlgId.ED25519)
         public_key = private_key.extract_public_key()
 
-        signature = private_key.sign_hash(TestData.KEY_PROVIDER_MESSAGE_SHA512_DIGEST, VscfAlgId.SHA512)
+        signature = ed25519_alg.sign_hash(private_key, VscfAlgId.SHA512, TestData.KEY_PROVIDER_MESSAGE_SHA512_DIGEST)
 
-        verified = public_key.verify_hash(TestData.KEY_PROVIDER_MESSAGE_SHA512_DIGEST, VscfAlgId.SHA512, signature)
+        verified = ed25519_alg.verify_hash(public_key, VscfAlgId.SHA512, TestData.KEY_PROVIDER_MESSAGE_SHA512_DIGEST,  signature)
         self.assertTrue(verified)
 
     def test_generate_private_key_ed25519_with_key_material_rng(self):
+        ed25519_alg = Ed25519()
+        ed25519_alg.setup_defaults()
+
         key_material_rng = KeyMaterialRng()
         key_material_rng.reset_key_material(TestData.DETERMINISTIC_KEY_KEY_MATERIAL)
 
@@ -56,10 +65,10 @@ class KeyProviderTest(unittest.TestCase):
         private_key = key_provider.generate_private_key(VscfAlgId.ED25519)
         self.assertIsNotNone(private_key)
 
-        exported_private_key = private_key.export_private_key()
+        exported_private_key = ed25519_alg.export_private_key(private_key)
 
         self.assertIsNotNone(exported_private_key)
-        self.assertEqual(TestData.DETERMINISTIC_KEY_ED25519_PRIVATE_KEY, exported_private_key)
+        self.assertEqual(TestData.DETERMINISTIC_KEY_ED25519_PRIVATE_KEY, exported_private_key.data())
 
     def test_generate_private_key_rsa_2048(self):
         key_provider = KeyProvider()
@@ -70,9 +79,12 @@ class KeyProviderTest(unittest.TestCase):
 
         self.assertIsNotNone(private_key)
         self.assertEqual(VscfAlgId.RSA, private_key.alg_id())
-        self.assertEqual(2048, private_key.key_bitlen())
+        self.assertEqual(2048, private_key.bitlen())
 
     def test_generate_private_key_rsa_2048_and_then_do_encrypt_decrypt(self):
+        rsa_alg = Rsa()
+        rsa_alg.setup_defaults()
+
         key_provider = KeyProvider()
         key_provider.set_rsa_params(2048)
         key_provider.setup_defaults()
@@ -85,12 +97,15 @@ class KeyProviderTest(unittest.TestCase):
 
         plain_message = "test data"
 
-        encrypted_data = public_key.encrypt(plain_message)
-        decrypted_data = private_key.decrypt(encrypted_data)
+        encrypted_data = rsa_alg.encrypt(public_key, plain_message)
+        decrypted_data = rsa_alg.decrypt(private_key, encrypted_data)
 
         self.assertEqual(plain_message, decrypted_data.decode())
 
     def test_generate_private_key_rsa_2048_and_then_do_sign_hash_and_verify_hash(self):
+        rsa_alg = Rsa()
+        rsa_alg.setup_defaults()
+
         key_provider = KeyProvider()
         key_provider.set_rsa_params(2048)
         key_provider.setup_defaults()
@@ -101,12 +116,15 @@ class KeyProviderTest(unittest.TestCase):
         public_key = private_key.extract_public_key()
         self.assertIsNotNone(public_key)
 
-        signature = private_key.sign_hash(TestData.KEY_PROVIDER_MESSAGE_SHA512_DIGEST, VscfAlgId.SHA512)
+        signature = rsa_alg.sign_hash(private_key, VscfAlgId.SHA512, TestData.KEY_PROVIDER_MESSAGE_SHA512_DIGEST)
 
-        verified = public_key.verify_hash(TestData.KEY_PROVIDER_MESSAGE_SHA512_DIGEST, VscfAlgId.SHA512, signature)
+        verified = rsa_alg.verify_hash(public_key, VscfAlgId.SHA512, TestData.KEY_PROVIDER_MESSAGE_SHA512_DIGEST, signature)
         self.assertTrue(verified)
 
     def test_generate_private_key_rsa_4096_with_key_material_rng(self):
+        rsa_alg = Rsa()
+        rsa_alg.setup_defaults()
+
         key_material_rng = KeyMaterialRng()
         key_material_rng.reset_key_material(TestData.DETERMINISTIC_KEY_KEY_MATERIAL)
 
@@ -118,10 +136,10 @@ class KeyProviderTest(unittest.TestCase):
         private_key = key_provider.generate_private_key(VscfAlgId.RSA)
         self.assertIsNotNone(private_key)
 
-        exported_private_key = private_key.export_private_key()
+        exported_private_key = rsa_alg.export_private_key(private_key)
         self.assertIsNotNone(exported_private_key)
 
-        self.assertEqual(TestData.DETERMINISTIC_KEY_RSA4096_PRIVATE_KEY, exported_private_key)
+        self.assertEqual(TestData.DETERMINISTIC_KEY_RSA4096_PRIVATE_KEY, exported_private_key.data())
 
     def test_import_public_key_ed25519_and_then_export(self):
         key_provider = KeyProvider()

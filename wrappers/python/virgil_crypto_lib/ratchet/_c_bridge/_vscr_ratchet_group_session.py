@@ -38,6 +38,8 @@ from ctypes import *
 from virgil_crypto_lib.foundation._c_bridge._vscf_impl import vscf_impl_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from ._vscr_ratchet_group_message import vscr_ratchet_group_message_t
+from ._vscr_ratchet_group_participants_info import vscr_ratchet_group_participants_info_t
+from ._vscr_ratchet_group_participants_ids import vscr_ratchet_group_participants_ids_t
 from ._vscr_error import vscr_error_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 from ._vscr_ratchet_group_ticket import vscr_ratchet_group_ticket_t
@@ -99,7 +101,7 @@ class VscrRatchetGroupSession(object):
         """Returns current epoch."""
         vscr_ratchet_group_session_get_current_epoch = self._lib.vscr_ratchet_group_session_get_current_epoch
         vscr_ratchet_group_session_get_current_epoch.argtypes = [POINTER(vscr_ratchet_group_session_t)]
-        vscr_ratchet_group_session_get_current_epoch.restype = c_size_t
+        vscr_ratchet_group_session_get_current_epoch.restype = c_uint
         return vscr_ratchet_group_session_get_current_epoch(ctx)
 
     def vscr_ratchet_group_session_setup_defaults(self, ctx):
@@ -118,7 +120,7 @@ class VscrRatchetGroupSession(object):
         return vscr_ratchet_group_session_set_private_key(ctx, my_private_key)
 
     def vscr_ratchet_group_session_set_my_id(self, ctx, my_id):
-        """Sets my id."""
+        """Sets my id. Should be 32 byte"""
         vscr_ratchet_group_session_set_my_id = self._lib.vscr_ratchet_group_session_set_my_id
         vscr_ratchet_group_session_set_my_id.argtypes = [POINTER(vscr_ratchet_group_session_t), vsc_data_t]
         vscr_ratchet_group_session_set_my_id.restype = None
@@ -142,16 +144,26 @@ class VscrRatchetGroupSession(object):
         """Returns number of participants."""
         vscr_ratchet_group_session_get_participants_count = self._lib.vscr_ratchet_group_session_get_participants_count
         vscr_ratchet_group_session_get_participants_count.argtypes = [POINTER(vscr_ratchet_group_session_t)]
-        vscr_ratchet_group_session_get_participants_count.restype = c_size_t
+        vscr_ratchet_group_session_get_participants_count.restype = c_uint
         return vscr_ratchet_group_session_get_participants_count(ctx)
 
-    def vscr_ratchet_group_session_setup_session(self, ctx, message):
+    def vscr_ratchet_group_session_setup_session_state(self, ctx, message, participants):
         """Sets up session.
+        Use this method when you have newer epoch message and know all participants info.
         NOTE: Identity private key and my id should be set separately."""
-        vscr_ratchet_group_session_setup_session = self._lib.vscr_ratchet_group_session_setup_session
-        vscr_ratchet_group_session_setup_session.argtypes = [POINTER(vscr_ratchet_group_session_t), POINTER(vscr_ratchet_group_message_t)]
-        vscr_ratchet_group_session_setup_session.restype = c_int
-        return vscr_ratchet_group_session_setup_session(ctx, message)
+        vscr_ratchet_group_session_setup_session_state = self._lib.vscr_ratchet_group_session_setup_session_state
+        vscr_ratchet_group_session_setup_session_state.argtypes = [POINTER(vscr_ratchet_group_session_t), POINTER(vscr_ratchet_group_message_t), POINTER(vscr_ratchet_group_participants_info_t)]
+        vscr_ratchet_group_session_setup_session_state.restype = c_int
+        return vscr_ratchet_group_session_setup_session_state(ctx, message, participants)
+
+    def vscr_ratchet_group_session_update_session_state(self, ctx, message, add_participants, remove_participants):
+        """Sets up session.
+        Use this method when you have message with next epoch, and you know how participants set was changed.
+        NOTE: Identity private key and my id should be set separately."""
+        vscr_ratchet_group_session_update_session_state = self._lib.vscr_ratchet_group_session_update_session_state
+        vscr_ratchet_group_session_update_session_state.argtypes = [POINTER(vscr_ratchet_group_session_t), POINTER(vscr_ratchet_group_message_t), POINTER(vscr_ratchet_group_participants_info_t), POINTER(vscr_ratchet_group_participants_ids_t)]
+        vscr_ratchet_group_session_update_session_state.restype = c_int
+        return vscr_ratchet_group_session_update_session_state(ctx, message, add_participants, remove_participants)
 
     def vscr_ratchet_group_session_encrypt(self, ctx, plain_text, error):
         """Encrypts data"""
@@ -174,20 +186,13 @@ class VscrRatchetGroupSession(object):
         vscr_ratchet_group_session_decrypt.restype = c_int
         return vscr_ratchet_group_session_decrypt(ctx, message, plain_text)
 
-    def vscr_ratchet_group_session_serialize_len(self, ctx):
-        """Calculates size of buffer sufficient to store session"""
-        vscr_ratchet_group_session_serialize_len = self._lib.vscr_ratchet_group_session_serialize_len
-        vscr_ratchet_group_session_serialize_len.argtypes = [POINTER(vscr_ratchet_group_session_t)]
-        vscr_ratchet_group_session_serialize_len.restype = c_size_t
-        return vscr_ratchet_group_session_serialize_len(ctx)
-
-    def vscr_ratchet_group_session_serialize(self, ctx, output):
+    def vscr_ratchet_group_session_serialize(self, ctx):
         """Serializes session to buffer
         NOTE: Session changes its state every encrypt/decrypt operations. Be sure to save it."""
         vscr_ratchet_group_session_serialize = self._lib.vscr_ratchet_group_session_serialize
-        vscr_ratchet_group_session_serialize.argtypes = [POINTER(vscr_ratchet_group_session_t), POINTER(vsc_buffer_t)]
-        vscr_ratchet_group_session_serialize.restype = None
-        return vscr_ratchet_group_session_serialize(ctx, output)
+        vscr_ratchet_group_session_serialize.argtypes = [POINTER(vscr_ratchet_group_session_t)]
+        vscr_ratchet_group_session_serialize.restype = POINTER(vsc_buffer_t)
+        return vscr_ratchet_group_session_serialize(ctx)
 
     def vscr_ratchet_group_session_deserialize(self, input, error):
         """Deserializes session from buffer.
@@ -200,20 +205,12 @@ class VscrRatchetGroupSession(object):
         vscr_ratchet_group_session_deserialize.restype = POINTER(vscr_ratchet_group_session_t)
         return vscr_ratchet_group_session_deserialize(input, error)
 
-    def vscr_ratchet_group_session_create_group_ticket_for_adding_participants(self, ctx):
-        """Creates ticket for adding participants to this session.
-        NOTE: This ticket is not suitable for removing participants from this session."""
-        vscr_ratchet_group_session_create_group_ticket_for_adding_participants = self._lib.vscr_ratchet_group_session_create_group_ticket_for_adding_participants
-        vscr_ratchet_group_session_create_group_ticket_for_adding_participants.argtypes = [POINTER(vscr_ratchet_group_session_t)]
-        vscr_ratchet_group_session_create_group_ticket_for_adding_participants.restype = POINTER(vscr_ratchet_group_ticket_t)
-        return vscr_ratchet_group_session_create_group_ticket_for_adding_participants(ctx)
-
-    def vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants(self, ctx, error):
-        """Creates ticket for adding and or removing participants to/from this session."""
-        vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants = self._lib.vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants
-        vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants.argtypes = [POINTER(vscr_ratchet_group_session_t), POINTER(vscr_error_t)]
-        vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants.restype = POINTER(vscr_ratchet_group_ticket_t)
-        return vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants(ctx, error)
+    def vscr_ratchet_group_session_create_group_ticket(self, ctx, error):
+        """Creates ticket with new key for adding or removing participants."""
+        vscr_ratchet_group_session_create_group_ticket = self._lib.vscr_ratchet_group_session_create_group_ticket
+        vscr_ratchet_group_session_create_group_ticket.argtypes = [POINTER(vscr_ratchet_group_session_t), POINTER(vscr_error_t)]
+        vscr_ratchet_group_session_create_group_ticket.restype = POINTER(vscr_ratchet_group_ticket_t)
+        return vscr_ratchet_group_session_create_group_ticket(ctx, error)
 
     def vscr_ratchet_group_session_shallow_copy(self, ctx):
         vscr_ratchet_group_session_shallow_copy = self._lib.vscr_ratchet_group_session_shallow_copy

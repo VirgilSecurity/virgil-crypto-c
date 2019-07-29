@@ -52,6 +52,14 @@ class SimpleAlgInfo(AlgInfo):
         """Destroy underlying C context."""
         self._lib_vscf_simple_alg_info.vscf_simple_alg_info_delete(self.ctx)
 
+    @classmethod
+    def with_alg_id(cls, alg_id):
+        """Create algorithm info with identificator."""
+        inst = cls.__new__(cls)
+        inst._lib_vscf_simple_alg_info = VscfSimpleAlgInfo()
+        inst.ctx = inst._lib_vscf_simple_alg_info.vscf_simple_alg_info_new_with_alg_id(alg_id)
+        return inst
+
     def alg_id(self):
         """Provide algorithm identificator."""
         result = self._lib_vscf_simple_alg_info.vscf_simple_alg_info_alg_id(self.ctx)

@@ -56,11 +56,11 @@ class MessageInfo(object):
 
     def add_key_recipient(self, key_recipient):
         """Add recipient that is defined by Public Key."""
-        self._lib_vscf_message_info.vscf_message_info_add_key_recipient(self.ctx, key_recipient)
+        self._lib_vscf_message_info.vscf_message_info_add_key_recipient(self.ctx, key_recipient.ctx)
 
     def add_password_recipient(self, password_recipient):
         """Add recipient that is defined by password."""
-        self._lib_vscf_message_info.vscf_message_info_add_password_recipient(self.ctx, password_recipient)
+        self._lib_vscf_message_info.vscf_message_info_add_password_recipient(self.ctx, password_recipient.ctx)
 
     def set_data_encryption_alg_info(self, data_encryption_alg_info):
         """Set information about algorithm that was used for data encryption."""
@@ -69,7 +69,7 @@ class MessageInfo(object):
     def data_encryption_alg_info(self):
         """Return information about algorithm that was used for the data encryption."""
         result = self._lib_vscf_message_info.vscf_message_info_data_encryption_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     def key_recipient_info_list(self):
@@ -86,7 +86,7 @@ class MessageInfo(object):
 
     def set_custom_params(self, custom_params):
         """Setup custom params."""
-        self._lib_vscf_message_info.vscf_message_info_set_custom_params(self.ctx, custom_params)
+        self._lib_vscf_message_info.vscf_message_info_set_custom_params(self.ctx, custom_params.ctx)
 
     def custom_params(self):
         """Provide access to the custom params object.

@@ -34,15 +34,13 @@
 
 
 from ctypes import *
-from abc import *
 
 
-class GenerateKey(object):
-    """Interface for private or secret key generation."""
-    __metaclass__ = ABCMeta
+class VscfGroupMsgType(object):
+    """Represents group message type"""
 
-    @abstractmethod
-    def generate_key(self):
-        """Generate new private or secret key.
-        Note, this operation can be slow."""
-        raise NotImplementedError()
+    # Group info type with encryption key.
+    # This type of message should be encrypted before transferring.
+    GROUP_INFO = 1
+    # Regular group message with encrypted text.
+    REGULAR = 2

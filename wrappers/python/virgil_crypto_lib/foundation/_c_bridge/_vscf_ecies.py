@@ -88,64 +88,29 @@ class VscfEcies(object):
         vscf_ecies_use_kdf.restype = None
         return vscf_ecies_use_kdf(ctx, kdf)
 
-    def vscf_ecies_use_encryption_key(self, ctx, encryption_key):
-        """Set public key that is used for data encryption.
-
-        If ephemeral key is not defined, then Public Key, must be conformed
-        to the interface "generate ephemeral key".
-
-        In turn, Ephemeral Key must be conformed to the interface
-        "compute shared key"."""
-        vscf_ecies_use_encryption_key = self._lib.vscf_ecies_use_encryption_key
-        vscf_ecies_use_encryption_key.argtypes = [POINTER(vscf_ecies_t), POINTER(vscf_impl_t)]
-        vscf_ecies_use_encryption_key.restype = None
-        return vscf_ecies_use_encryption_key(ctx, encryption_key)
-
-    def vscf_ecies_use_decryption_key(self, ctx, decryption_key):
-        """Set private key that used for data decryption.
-
-        Private Key must be conformed to the interface "compute shared key"."""
-        vscf_ecies_use_decryption_key = self._lib.vscf_ecies_use_decryption_key
-        vscf_ecies_use_decryption_key.argtypes = [POINTER(vscf_ecies_t), POINTER(vscf_impl_t)]
-        vscf_ecies_use_decryption_key.restype = None
-        return vscf_ecies_use_decryption_key(ctx, decryption_key)
-
     def vscf_ecies_use_ephemeral_key(self, ctx, ephemeral_key):
-        """Set private key that used for data decryption.
-
-        Ephemeral Key must be conformed to the interface "compute shared key"."""
+        """Set ephemeral key that used for data encryption.
+        Public and ephemeral keys should belong to the same curve.
+        This dependency is optional."""
         vscf_ecies_use_ephemeral_key = self._lib.vscf_ecies_use_ephemeral_key
         vscf_ecies_use_ephemeral_key.argtypes = [POINTER(vscf_ecies_t), POINTER(vscf_impl_t)]
         vscf_ecies_use_ephemeral_key.restype = None
         return vscf_ecies_use_ephemeral_key(ctx, ephemeral_key)
 
-    def vscf_ecies_encrypt(self, ctx, data, out):
-        """Encrypt given data."""
-        vscf_ecies_encrypt = self._lib.vscf_ecies_encrypt
-        vscf_ecies_encrypt.argtypes = [POINTER(vscf_ecies_t), vsc_data_t, POINTER(vsc_buffer_t)]
-        vscf_ecies_encrypt.restype = c_int
-        return vscf_ecies_encrypt(ctx, data, out)
+    def vscf_ecies_set_key_alg(self, ctx, key_alg):
+        """Set weak reference to the key algorithm.
+        Key algorithm MUST support shared key computation as well."""
+        vscf_ecies_set_key_alg = self._lib.vscf_ecies_set_key_alg
+        vscf_ecies_set_key_alg.argtypes = [POINTER(vscf_ecies_t), POINTER(vscf_impl_t)]
+        vscf_ecies_set_key_alg.restype = None
+        return vscf_ecies_set_key_alg(ctx, key_alg)
 
-    def vscf_ecies_encrypted_len(self, ctx, data_len):
-        """Calculate required buffer length to hold the encrypted data."""
-        vscf_ecies_encrypted_len = self._lib.vscf_ecies_encrypted_len
-        vscf_ecies_encrypted_len.argtypes = [POINTER(vscf_ecies_t), c_size_t]
-        vscf_ecies_encrypted_len.restype = c_size_t
-        return vscf_ecies_encrypted_len(ctx, data_len)
-
-    def vscf_ecies_decrypt(self, ctx, data, out):
-        """Decrypt given data."""
-        vscf_ecies_decrypt = self._lib.vscf_ecies_decrypt
-        vscf_ecies_decrypt.argtypes = [POINTER(vscf_ecies_t), vsc_data_t, POINTER(vsc_buffer_t)]
-        vscf_ecies_decrypt.restype = c_int
-        return vscf_ecies_decrypt(ctx, data, out)
-
-    def vscf_ecies_decrypted_len(self, ctx, data_len):
-        """Calculate required buffer length to hold the decrypted data."""
-        vscf_ecies_decrypted_len = self._lib.vscf_ecies_decrypted_len
-        vscf_ecies_decrypted_len.argtypes = [POINTER(vscf_ecies_t), c_size_t]
-        vscf_ecies_decrypted_len.restype = c_size_t
-        return vscf_ecies_decrypted_len(ctx, data_len)
+    def vscf_ecies_release_key_alg(self, ctx):
+        """Release weak reference to the key algorithm."""
+        vscf_ecies_release_key_alg = self._lib.vscf_ecies_release_key_alg
+        vscf_ecies_release_key_alg.argtypes = [POINTER(vscf_ecies_t)]
+        vscf_ecies_release_key_alg.restype = None
+        return vscf_ecies_release_key_alg(ctx)
 
     def vscf_ecies_setup_defaults(self, ctx):
         """Setup predefined values to the uninitialized class dependencies."""
@@ -154,14 +119,44 @@ class VscfEcies(object):
         vscf_ecies_setup_defaults.restype = c_int
         return vscf_ecies_setup_defaults(ctx)
 
+    def vscf_ecies_setup_defaults_no_random(self, ctx):
+        """Setup predefined values to the uninitialized class dependencies
+        except random."""
+        vscf_ecies_setup_defaults_no_random = self._lib.vscf_ecies_setup_defaults_no_random
+        vscf_ecies_setup_defaults_no_random.argtypes = [POINTER(vscf_ecies_t)]
+        vscf_ecies_setup_defaults_no_random.restype = None
+        return vscf_ecies_setup_defaults_no_random(ctx)
+
+    def vscf_ecies_encrypted_len(self, ctx, public_key, data_len):
+        """Calculate required buffer length to hold the encrypted data."""
+        vscf_ecies_encrypted_len = self._lib.vscf_ecies_encrypted_len
+        vscf_ecies_encrypted_len.argtypes = [POINTER(vscf_ecies_t), POINTER(vscf_impl_t), c_size_t]
+        vscf_ecies_encrypted_len.restype = c_size_t
+        return vscf_ecies_encrypted_len(ctx, public_key, data_len)
+
+    def vscf_ecies_encrypt(self, ctx, public_key, data, out):
+        """Encrypt data with a given public key."""
+        vscf_ecies_encrypt = self._lib.vscf_ecies_encrypt
+        vscf_ecies_encrypt.argtypes = [POINTER(vscf_ecies_t), POINTER(vscf_impl_t), vsc_data_t, POINTER(vsc_buffer_t)]
+        vscf_ecies_encrypt.restype = c_int
+        return vscf_ecies_encrypt(ctx, public_key, data, out)
+
+    def vscf_ecies_decrypted_len(self, ctx, private_key, data_len):
+        """Calculate required buffer length to hold the decrypted data."""
+        vscf_ecies_decrypted_len = self._lib.vscf_ecies_decrypted_len
+        vscf_ecies_decrypted_len.argtypes = [POINTER(vscf_ecies_t), POINTER(vscf_impl_t), c_size_t]
+        vscf_ecies_decrypted_len.restype = c_size_t
+        return vscf_ecies_decrypted_len(ctx, private_key, data_len)
+
+    def vscf_ecies_decrypt(self, ctx, private_key, data, out):
+        """Decrypt given data."""
+        vscf_ecies_decrypt = self._lib.vscf_ecies_decrypt
+        vscf_ecies_decrypt.argtypes = [POINTER(vscf_ecies_t), POINTER(vscf_impl_t), vsc_data_t, POINTER(vsc_buffer_t)]
+        vscf_ecies_decrypt.restype = c_int
+        return vscf_ecies_decrypt(ctx, private_key, data, out)
+
     def vscf_ecies_shallow_copy(self, ctx):
         vscf_ecies_shallow_copy = self._lib.vscf_ecies_shallow_copy
         vscf_ecies_shallow_copy.argtypes = [POINTER(vscf_ecies_t)]
         vscf_ecies_shallow_copy.restype = POINTER(vscf_ecies_t)
         return vscf_ecies_shallow_copy(ctx)
-
-    def vscf_ecies_impl(self, ctx):
-        vscf_ecies_impl = self._lib.vscf_ecies_impl
-        vscf_ecies_impl.argtypes = [POINTER(vscf_ecies_t)]
-        vscf_ecies_impl.restype = POINTER(vscf_impl_t)
-        return vscf_ecies_impl(ctx)

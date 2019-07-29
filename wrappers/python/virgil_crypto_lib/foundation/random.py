@@ -43,10 +43,11 @@ class Random(object):
 
     @abstractmethod
     def random(self, data_len):
-        """Generate random bytes."""
+        """Generate random bytes.
+        All RNG implementations must be thread-safe."""
         raise NotImplementedError()
 
     @abstractmethod
     def reseed(self):
-        """Retreive new seed data from the entropy sources."""
+        """Retrieve new seed data from the entropy sources."""
         raise NotImplementedError()

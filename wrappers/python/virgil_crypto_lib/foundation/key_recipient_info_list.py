@@ -53,7 +53,7 @@ class KeyRecipientInfoList(object):
     def add(self, key_recipient_info):
         """Add new item to the list.
         Note, ownership is transfered."""
-        self._lib_vscf_key_recipient_info_list.vscf_key_recipient_info_list_add(self.ctx, key_recipient_info)
+        self._lib_vscf_key_recipient_info_list.vscf_key_recipient_info_list_add(self.ctx, key_recipient_info.ctx)
 
     def has_item(self):
         """Return true if given list has item."""
@@ -74,7 +74,8 @@ class KeyRecipientInfoList(object):
     def next(self):
         """Return next list node if exists, or NULL otherwise."""
         result = self._lib_vscf_key_recipient_info_list.vscf_key_recipient_info_list_next(self.ctx)
-        return result
+        instance = KeyRecipientInfoList.take_c_ctx(result)
+        return instance
 
     def has_prev(self):
         """Return true if list has previous item."""
@@ -84,7 +85,8 @@ class KeyRecipientInfoList(object):
     def prev(self):
         """Return previous list node if exists, or NULL otherwise."""
         result = self._lib_vscf_key_recipient_info_list.vscf_key_recipient_info_list_prev(self.ctx)
-        return result
+        instance = KeyRecipientInfoList.take_c_ctx(result)
+        return instance
 
     def clear(self):
         """Remove all items."""

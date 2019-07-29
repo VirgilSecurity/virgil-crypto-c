@@ -35,8 +35,8 @@
 
 from ctypes import *
 from ._c_bridge import VscfSaltedKdfAlgInfo
-from ._c_bridge import VscfImplTag
 from virgil_crypto_lib.common._c_bridge import Data
+from ._c_bridge import VscfImplTag
 from .alg_info import AlgInfo
 
 
@@ -54,6 +54,16 @@ class SaltedKdfAlgInfo(AlgInfo):
         """Destroy underlying C context."""
         self._lib_vscf_salted_kdf_alg_info.vscf_salted_kdf_alg_info_delete(self.ctx)
 
+    @classmethod
+    def with_members(cls, alg_id, hash_alg_info, salt, iteration_count):
+        """Create algorithm info with identificator, HASH algorithm info,
+        salt and iteration count."""
+        d_salt = Data(salt)
+        inst = cls.__new__(cls)
+        inst._lib_vscf_salted_kdf_alg_info = VscfSaltedKdfAlgInfo()
+        inst.ctx = inst._lib_vscf_salted_kdf_alg_info.vscf_salted_kdf_alg_info_new_with_members(alg_id, hash_alg_info.c_impl, d_salt.data, iteration_count)
+        return inst
+
     def alg_id(self):
         """Provide algorithm identificator."""
         result = self._lib_vscf_salted_kdf_alg_info.vscf_salted_kdf_alg_info_alg_id(self.ctx)
@@ -62,7 +72,7 @@ class SaltedKdfAlgInfo(AlgInfo):
     def hash_alg_info(self):
         """Return hash algorithm information."""
         result = self._lib_vscf_salted_kdf_alg_info.vscf_salted_kdf_alg_info_hash_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     def salt(self):

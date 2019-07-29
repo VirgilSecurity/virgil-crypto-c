@@ -79,29 +79,15 @@ class VscrRatchetGroupTicket(object):
         vscr_ratchet_group_ticket_setup_defaults.restype = c_int
         return vscr_ratchet_group_ticket_setup_defaults(ctx)
 
-    def vscr_ratchet_group_ticket_setup_ticket_as_new(self, ctx):
+    def vscr_ratchet_group_ticket_setup_ticket_as_new(self, ctx, session_id):
         """Set this ticket to start new group session."""
         vscr_ratchet_group_ticket_setup_ticket_as_new = self._lib.vscr_ratchet_group_ticket_setup_ticket_as_new
-        vscr_ratchet_group_ticket_setup_ticket_as_new.argtypes = [POINTER(vscr_ratchet_group_ticket_t)]
+        vscr_ratchet_group_ticket_setup_ticket_as_new.argtypes = [POINTER(vscr_ratchet_group_ticket_t), vsc_data_t]
         vscr_ratchet_group_ticket_setup_ticket_as_new.restype = c_int
-        return vscr_ratchet_group_ticket_setup_ticket_as_new(ctx)
-
-    def vscr_ratchet_group_ticket_add_new_participant(self, ctx, participant_id, public_key):
-        """Add new participant to chat."""
-        vscr_ratchet_group_ticket_add_new_participant = self._lib.vscr_ratchet_group_ticket_add_new_participant
-        vscr_ratchet_group_ticket_add_new_participant.argtypes = [POINTER(vscr_ratchet_group_ticket_t), vsc_data_t, vsc_data_t]
-        vscr_ratchet_group_ticket_add_new_participant.restype = c_int
-        return vscr_ratchet_group_ticket_add_new_participant(ctx, participant_id, public_key)
-
-    def vscr_ratchet_group_ticket_remove_participant(self, ctx, participant_id):
-        """Remove participant from chat."""
-        vscr_ratchet_group_ticket_remove_participant = self._lib.vscr_ratchet_group_ticket_remove_participant
-        vscr_ratchet_group_ticket_remove_participant.argtypes = [POINTER(vscr_ratchet_group_ticket_t), vsc_data_t]
-        vscr_ratchet_group_ticket_remove_participant.restype = c_int
-        return vscr_ratchet_group_ticket_remove_participant(ctx, participant_id)
+        return vscr_ratchet_group_ticket_setup_ticket_as_new(ctx, session_id)
 
     def vscr_ratchet_group_ticket_get_ticket_message(self, ctx):
-        """Generates message that should be sent to all participants using secure channel."""
+        """Returns message that should be sent to all participants using secure channel."""
         vscr_ratchet_group_ticket_get_ticket_message = self._lib.vscr_ratchet_group_ticket_get_ticket_message
         vscr_ratchet_group_ticket_get_ticket_message.argtypes = [POINTER(vscr_ratchet_group_ticket_t)]
         vscr_ratchet_group_ticket_get_ticket_message.restype = POINTER(vscr_ratchet_group_message_t)

@@ -137,19 +137,12 @@ class VscrRatchetSession(object):
         vscr_ratchet_session_decrypt.restype = c_int
         return vscr_ratchet_session_decrypt(ctx, message, plain_text)
 
-    def vscr_ratchet_session_serialize_len(self, ctx):
-        """Calculates size of buffer sufficient to store session"""
-        vscr_ratchet_session_serialize_len = self._lib.vscr_ratchet_session_serialize_len
-        vscr_ratchet_session_serialize_len.argtypes = [POINTER(vscr_ratchet_session_t)]
-        vscr_ratchet_session_serialize_len.restype = c_size_t
-        return vscr_ratchet_session_serialize_len(ctx)
-
-    def vscr_ratchet_session_serialize(self, ctx, output):
+    def vscr_ratchet_session_serialize(self, ctx):
         """Serializes session to buffer"""
         vscr_ratchet_session_serialize = self._lib.vscr_ratchet_session_serialize
-        vscr_ratchet_session_serialize.argtypes = [POINTER(vscr_ratchet_session_t), POINTER(vsc_buffer_t)]
-        vscr_ratchet_session_serialize.restype = None
-        return vscr_ratchet_session_serialize(ctx, output)
+        vscr_ratchet_session_serialize.argtypes = [POINTER(vscr_ratchet_session_t)]
+        vscr_ratchet_session_serialize.restype = POINTER(vsc_buffer_t)
+        return vscr_ratchet_session_serialize(ctx)
 
     def vscr_ratchet_session_deserialize(self, input, error):
         """Deserializes session from buffer.

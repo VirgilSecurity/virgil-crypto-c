@@ -42,12 +42,12 @@ from virgil_crypto_lib.foundation._c_bridge import vscf_asn1rd_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_asn1wr_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_cipher_alg_info_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_ctr_drbg_t
-from virgil_crypto_lib.foundation._c_bridge import vscf_curve25519_private_key_t
-from virgil_crypto_lib.foundation._c_bridge import vscf_curve25519_public_key_t
-from virgil_crypto_lib.foundation._c_bridge import vscf_ec_alg_info_t
-from virgil_crypto_lib.foundation._c_bridge import vscf_ecies_t
-from virgil_crypto_lib.foundation._c_bridge import vscf_ed25519_private_key_t
-from virgil_crypto_lib.foundation._c_bridge import vscf_ed25519_public_key_t
+from virgil_crypto_lib.foundation._c_bridge import vscf_curve25519_t
+from virgil_crypto_lib.foundation._c_bridge import vscf_ecc_t
+from virgil_crypto_lib.foundation._c_bridge import vscf_ecc_alg_info_t
+from virgil_crypto_lib.foundation._c_bridge import vscf_ecc_private_key_t
+from virgil_crypto_lib.foundation._c_bridge import vscf_ecc_public_key_t
+from virgil_crypto_lib.foundation._c_bridge import vscf_ed25519_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_entropy_accumulator_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_fake_random_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_hash_based_alg_info_t
@@ -63,12 +63,13 @@ from virgil_crypto_lib.foundation._c_bridge import vscf_pbe_alg_info_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_pkcs5_pbes2_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_pkcs5_pbkdf2_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_pkcs8_serializer_t
+from virgil_crypto_lib.foundation._c_bridge import vscf_raw_private_key_t
+from virgil_crypto_lib.foundation._c_bridge import vscf_raw_public_key_t
+from virgil_crypto_lib.foundation._c_bridge import vscf_rsa_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_rsa_private_key_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_rsa_public_key_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_salted_kdf_alg_info_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_sec1_serializer_t
-from virgil_crypto_lib.foundation._c_bridge import vscf_secp256r1_private_key_t
-from virgil_crypto_lib.foundation._c_bridge import vscf_secp256r1_public_key_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_seed_entropy_source_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_sha224_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_sha256_t
@@ -94,12 +95,12 @@ class VscfImplTag(object):
             6: ["Asn1wr", vscf_asn1wr_t],
             7: ["CipherAlgInfo", vscf_cipher_alg_info_t],
             8: ["CtrDrbg", vscf_ctr_drbg_t],
-            9: ["Curve25519PrivateKey", vscf_curve25519_private_key_t],
-            10: ["Curve25519PublicKey", vscf_curve25519_public_key_t],
-            11: ["EcAlgInfo", vscf_ec_alg_info_t],
-            12: ["Ecies", vscf_ecies_t],
-            13: ["Ed25519PrivateKey", vscf_ed25519_private_key_t],
-            14: ["Ed25519PublicKey", vscf_ed25519_public_key_t],
+            9: ["Curve25519", vscf_curve25519_t],
+            10: ["Ecc", vscf_ecc_t],
+            11: ["EccAlgInfo", vscf_ecc_alg_info_t],
+            12: ["EccPrivateKey", vscf_ecc_private_key_t],
+            13: ["EccPublicKey", vscf_ecc_public_key_t],
+            14: ["Ed25519", vscf_ed25519_t],
             15: ["EntropyAccumulator", vscf_entropy_accumulator_t],
             16: ["FakeRandom", vscf_fake_random_t],
             17: ["HashBasedAlgInfo", vscf_hash_based_alg_info_t],
@@ -115,18 +116,19 @@ class VscfImplTag(object):
             27: ["Pkcs5Pbes2", vscf_pkcs5_pbes2_t],
             28: ["Pkcs5Pbkdf2", vscf_pkcs5_pbkdf2_t],
             29: ["Pkcs8Serializer", vscf_pkcs8_serializer_t],
-            30: ["RsaPrivateKey", vscf_rsa_private_key_t],
-            31: ["RsaPublicKey", vscf_rsa_public_key_t],
-            32: ["SaltedKdfAlgInfo", vscf_salted_kdf_alg_info_t],
-            33: ["Sec1Serializer", vscf_sec1_serializer_t],
-            34: ["Secp256r1PrivateKey", vscf_secp256r1_private_key_t],
-            35: ["Secp256r1PublicKey", vscf_secp256r1_public_key_t],
-            36: ["SeedEntropySource", vscf_seed_entropy_source_t],
-            37: ["Sha224", vscf_sha224_t],
-            38: ["Sha256", vscf_sha256_t],
-            39: ["Sha384", vscf_sha384_t],
-            40: ["Sha512", vscf_sha512_t],
-            41: ["SimpleAlgInfo", vscf_simple_alg_info_t]
+            30: ["RawPrivateKey", vscf_raw_private_key_t],
+            31: ["RawPublicKey", vscf_raw_public_key_t],
+            32: ["Rsa", vscf_rsa_t],
+            33: ["RsaPrivateKey", vscf_rsa_private_key_t],
+            34: ["RsaPublicKey", vscf_rsa_public_key_t],
+            35: ["SaltedKdfAlgInfo", vscf_salted_kdf_alg_info_t],
+            36: ["Sec1Serializer", vscf_sec1_serializer_t],
+            37: ["SeedEntropySource", vscf_seed_entropy_source_t],
+            38: ["Sha224", vscf_sha224_t],
+            39: ["Sha256", vscf_sha256_t],
+            40: ["Sha384", vscf_sha384_t],
+            41: ["Sha512", vscf_sha512_t],
+            42: ["SimpleAlgInfo", vscf_simple_alg_info_t]
         }
         tag = cls.vscf_impl_tag(impl)
 

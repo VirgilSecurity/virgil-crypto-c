@@ -55,14 +55,17 @@ class Signer(object):
     def set_hash(self, hash):
         self._lib_vscf_signer.vscf_signer_use_hash(self.ctx, hash.c_impl)
 
+    def set_random(self, random):
+        self._lib_vscf_signer.vscf_signer_use_random(self.ctx, random.c_impl)
+
     def reset(self):
         """Start a processing a new signature."""
         self._lib_vscf_signer.vscf_signer_reset(self.ctx)
 
-    def update(self, data):
+    def append_data(self, data):
         """Add given data to the signed data."""
         d_data = Data(data)
-        self._lib_vscf_signer.vscf_signer_update(self.ctx, d_data.data)
+        self._lib_vscf_signer.vscf_signer_append_data(self.ctx, d_data.data)
 
     def signature_len(self, private_key):
         """Return length of the signature."""

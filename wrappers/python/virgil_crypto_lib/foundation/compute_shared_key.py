@@ -38,17 +38,17 @@ from abc import *
 
 
 class ComputeSharedKey(object):
-    """Provide interface to compute shared key for 2 asymmetric keys.
-    Assume that this interface is implemented on the private key."""
+    """Provide interface to compute shared key for 2 asymmetric keys."""
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def compute_shared_key(self, public_key):
+    def compute_shared_key(self, public_key, private_key):
         """Compute shared key for 2 asymmetric keys.
-        Note, shared key can be used only for symmetric cryptography."""
+        Note, computed shared key can be used only within symmetric cryptography."""
         raise NotImplementedError()
 
     @abstractmethod
-    def shared_key_len(self):
-        """Return number of bytes required to hold shared key."""
+    def shared_key_len(self, key):
+        """Return number of bytes required to hold shared key.
+        Expect Public Key or Private Key."""
         raise NotImplementedError()

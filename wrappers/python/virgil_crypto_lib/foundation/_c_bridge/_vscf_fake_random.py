@@ -65,14 +65,15 @@ class VscfFakeRandom(object):
         return vscf_fake_random_delete(ctx)
 
     def vscf_fake_random_random(self, ctx, data_len, data):
-        """Generate random bytes."""
+        """Generate random bytes.
+        All RNG implementations must be thread-safe."""
         vscf_fake_random_random = self._lib.vscf_fake_random_random
         vscf_fake_random_random.argtypes = [POINTER(vscf_fake_random_t), c_size_t, POINTER(vsc_buffer_t)]
         vscf_fake_random_random.restype = c_int
         return vscf_fake_random_random(ctx, data_len, data)
 
     def vscf_fake_random_reseed(self, ctx):
-        """Retreive new seed data from the entropy sources."""
+        """Retrieve new seed data from the entropy sources."""
         vscf_fake_random_reseed = self._lib.vscf_fake_random_reseed
         vscf_fake_random_reseed.argtypes = [POINTER(vscf_fake_random_t)]
         vscf_fake_random_reseed.restype = c_int

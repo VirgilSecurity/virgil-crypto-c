@@ -71,12 +71,12 @@ class VscfVerifier(object):
         vscf_verifier_reset.restype = c_int
         return vscf_verifier_reset(ctx, signature)
 
-    def vscf_verifier_update(self, ctx, data):
+    def vscf_verifier_append_data(self, ctx, data):
         """Add given data to the signed data."""
-        vscf_verifier_update = self._lib.vscf_verifier_update
-        vscf_verifier_update.argtypes = [POINTER(vscf_verifier_t), vsc_data_t]
-        vscf_verifier_update.restype = None
-        return vscf_verifier_update(ctx, data)
+        vscf_verifier_append_data = self._lib.vscf_verifier_append_data
+        vscf_verifier_append_data.argtypes = [POINTER(vscf_verifier_t), vsc_data_t]
+        vscf_verifier_append_data.restype = None
+        return vscf_verifier_append_data(ctx, data)
 
     def vscf_verifier_verify(self, ctx, public_key):
         """Verify accumulated data."""

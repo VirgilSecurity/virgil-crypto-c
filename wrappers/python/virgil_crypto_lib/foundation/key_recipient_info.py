@@ -51,6 +51,16 @@ class KeyRecipientInfo(object):
         """Destroy underlying C context."""
         self._lib_vscf_key_recipient_info.vscf_key_recipient_info_delete(self.ctx)
 
+    @classmethod
+    def with_data(cls, recipient_id, key_encryption_algorithm, encrypted_key):
+        """Create object and define all properties."""
+        d_recipient_id = Data(recipient_id)
+        d_encrypted_key = Data(encrypted_key)
+        inst = cls.__new__(cls)
+        inst._lib_vscf_key_recipient_info = VscfKeyRecipientInfo()
+        inst.ctx = inst._lib_vscf_key_recipient_info.vscf_key_recipient_info_new_with_data(d_recipient_id.data, key_encryption_algorithm.c_impl, d_encrypted_key.data)
+        return inst
+
     def recipient_id(self):
         """Return recipient identifier."""
         result = self._lib_vscf_key_recipient_info.vscf_key_recipient_info_recipient_id(self.ctx)
@@ -62,7 +72,7 @@ class KeyRecipientInfo(object):
         """Return algorithm information that was used for encryption
         a data encryption key."""
         result = self._lib_vscf_key_recipient_info.vscf_key_recipient_info_key_encryption_algorithm(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     def encrypted_key(self):

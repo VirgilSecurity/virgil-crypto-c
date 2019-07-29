@@ -105,6 +105,10 @@ class VscfStatus(object):
     ERROR_BAD_DER_PUBLIC_KEY = -223
     # ASN.1 representation of a private key is corrupted.
     ERROR_BAD_DER_PRIVATE_KEY = -224
+    # Key algorithm does not accept given type of public key.
+    ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM = -225
+    # Key algorithm does not accept given type of private key.
+    ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM = -226
     # Decryption failed, because message info was not given explicitly,
     # and was not part of an encrypted message.
     ERROR_NO_MESSAGE_INFO = -301
@@ -124,6 +128,44 @@ class VscfStatus(object):
     ERROR_MESSAGE_INFO_CUSTOM_PARAM_TYPE_MISMATCH = -307
     # Signature format is corrupted.
     ERROR_BAD_SIGNATURE = -308
+    # Brainkey password length is out of range.
+    ERROR_INVALID_BRAINKEY_PASSWORD_LEN = -401
+    # Brainkey number length should be 32 byte.
+    ERROR_INVALID_BRAINKEY_FACTOR_LEN = -402
+    # Brainkey point length should be 65 bytes.
+    ERROR_INVALID_BRAINKEY_POINT_LEN = -403
+    # Brainkey name is out of range.
+    ERROR_INVALID_BRAINKEY_KEY_NAME_LEN = -404
+    # Brainkey internal error.
+    ERROR_BRAINKEY_INTERNAL = -405
+    # Brainkey point is invalid.
+    ERROR_BRAINKEY_INVALID_POINT = -406
+    # Brainkey number buffer length capacity should be >= 32 byte.
+    ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN = -407
+    # Brainkey point buffer length capacity should be >= 32 byte.
+    ERROR_INVALID_BRAINKEY_POINT_BUFFER_LEN = -408
+    # Brainkey seed buffer length capacity should be >= 32 byte.
+    ERROR_INVALID_BRAINKEY_SEED_BUFFER_LEN = -409
+    # Brainkey identity secret is invalid.
+    ERROR_INVALID_IDENTITY_SECRET = -410
+    # Invalid padding.
+    ERROR_INVALID_PADDING = -501
+    # Protobuf error.
+    ERROR_PROTOBUF = -601
+    # Session id doesnt match.
+    ERROR_SESSION_ID_DOESNT_MATCH = -701
+    # Epoch not found.
+    ERROR_EPOCH_NOT_FOUND = -702
+    # Wrong key type.
+    ERROR_WRONG_KEY_TYPE = -703
+    # Invalid signature.
+    ERROR_INVALID_SIGNATURE = -704
+    # Ed25519 error.
+    ERROR_ED25519 = -705
+    # Duplicate epoch.
+    ERROR_DUPLICATE_EPOCH = -706
+    # Plain text too long.
+    ERROR_PLAIN_TEXT_TOO_LONG = -707
 
     STATUS_DICT = {
         0: "No errors was occurred.",
@@ -156,6 +198,8 @@ class VscfStatus(object):
         -222: "Elliptic curve public key format is corrupted see RFC 5915.",
         -223: "ASN.1 representation of a public key is corrupted.",
         -224: "ASN.1 representation of a private key is corrupted.",
+        -225: "Key algorithm does not accept given type of public key.",
+        -226: "Key algorithm does not accept given type of private key.",
         -301: "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.",
         -302: "Message info is corrupted.",
         -303: "Recipient defined with id is not found within message info during data decryption.",
@@ -163,7 +207,26 @@ class VscfStatus(object):
         -305: "Content encryption key can not be decrypted with a given password.",
         -306: "Custom parameter with a given key is not found within message info.",
         -307: "A custom parameter with a given key is found, but the requested value type does not correspond to the actual type.",
-        -308: "Signature format is corrupted."
+        -308: "Signature format is corrupted.",
+        -401: "Brainkey password length is out of range.",
+        -402: "Brainkey number length should be 32 byte.",
+        -403: "Brainkey point length should be 65 bytes.",
+        -404: "Brainkey name is out of range.",
+        -405: "Brainkey internal error.",
+        -406: "Brainkey point is invalid.",
+        -407: "Brainkey number buffer length capacity should be >= 32 byte.",
+        -408: "Brainkey point buffer length capacity should be >= 32 byte.",
+        -409: "Brainkey seed buffer length capacity should be >= 32 byte.",
+        -410: "Brainkey identity secret is invalid.",
+        -501: "Invalid padding.",
+        -601: "Protobuf error.",
+        -701: "Session id doesnt match.",
+        -702: "Epoch not found.",
+        -703: "Wrong key type.",
+        -704: "Invalid signature.",
+        -705: "Ed25519 error.",
+        -706: "Duplicate epoch.",
+        -707: "Plain text too long."
     }
 
     @classmethod

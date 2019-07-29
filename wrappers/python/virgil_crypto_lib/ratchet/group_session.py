@@ -38,7 +38,10 @@ from ._c_bridge import VscrRatchetGroupSession
 from ._c_bridge import VscrStatus
 from virgil_crypto_lib.common._c_bridge import Data
 from ._c_bridge._vscr_error import vscr_error_t
+from .group_message import GroupMessage
 from virgil_crypto_lib.common._c_bridge import Buffer
+from .group_session import GroupSession
+from .group_ticket import GroupTicket
 
 
 class GroupSession(object):
@@ -90,7 +93,7 @@ class GroupSession(object):
         VscrStatus.handle_status(status)
 
     def set_my_id(self, my_id):
-        """Sets my id."""
+        """Sets my id. Should be 32 byte"""
         d_my_id = Data(my_id)
         self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_set_my_id(self.ctx, d_my_id.data)
 
@@ -113,10 +116,18 @@ class GroupSession(object):
         result = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_get_participants_count(self.ctx)
         return result
 
-    def setup_session(self, message):
+    def setup_session_state(self, message, participants):
         """Sets up session.
+        Use this method when you have newer epoch message and know all participants info.
         NOTE: Identity private key and my id should be set separately."""
-        status = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_setup_session(self.ctx, message)
+        status = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_setup_session_state(self.ctx, message.ctx, participants.ctx)
+        VscrStatus.handle_status(status)
+
+    def update_session_state(self, message, add_participants, remove_participants):
+        """Sets up session.
+        Use this method when you have message with next epoch, and you know how participants set was changed.
+        NOTE: Identity private key and my id should be set separately."""
+        status = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_update_session_state(self.ctx, message.ctx, add_participants.ctx, remove_participants.ctx)
         VscrStatus.handle_status(status)
 
     def encrypt(self, plain_text):
@@ -125,31 +136,28 @@ class GroupSession(object):
         error = vscr_error_t()
         result = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_encrypt(self.ctx, d_plain_text.data, error)
         VscrStatus.handle_status(error.status)
-        return result
+        instance = GroupMessage.take_c_ctx(result)
+        return instance
 
     def decrypt_len(self, message):
         """Calculates size of buffer sufficient to store decrypted message"""
-        result = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_decrypt_len(self.ctx, message)
+        result = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_decrypt_len(self.ctx, message.ctx)
         return result
 
     def decrypt(self, message):
         """Decrypts message"""
         plain_text = Buffer(self.decrypt_len(message=message))
-        status = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_decrypt(self.ctx, message, plain_text.c_buffer)
+        status = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_decrypt(self.ctx, message.ctx, plain_text.c_buffer)
         VscrStatus.handle_status(status)
         return plain_text.get_bytes()
-
-    def serialize_len(self):
-        """Calculates size of buffer sufficient to store session"""
-        result = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_serialize_len(self.ctx)
-        return result
 
     def serialize(self):
         """Serializes session to buffer
         NOTE: Session changes its state every encrypt/decrypt operations. Be sure to save it."""
-        output = Buffer(self.serialize_len())
-        self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_serialize(self.ctx, output.c_buffer)
-        return output.get_bytes()
+        result = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_serialize(self.ctx)
+        instance = Buffer.take_c_ctx(result)
+        cleaned_bytes = bytearray(instance)
+        return cleaned_bytes
 
     def deserialize(self, input):
         """Deserializes session from buffer.
@@ -161,20 +169,16 @@ class GroupSession(object):
         error = vscr_error_t()
         result = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_deserialize(d_input.data, error)
         VscrStatus.handle_status(error.status)
-        return result
+        instance = GroupSession.take_c_ctx(result)
+        return instance
 
-    def create_group_ticket_for_adding_participants(self):
-        """Creates ticket for adding participants to this session.
-        NOTE: This ticket is not suitable for removing participants from this session."""
-        result = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_create_group_ticket_for_adding_participants(self.ctx)
-        return result
-
-    def create_group_ticket_for_adding_or_removing_participants(self):
-        """Creates ticket for adding and or removing participants to/from this session."""
+    def create_group_ticket(self):
+        """Creates ticket with new key for adding or removing participants."""
         error = vscr_error_t()
-        result = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants(self.ctx, error)
+        result = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_create_group_ticket(self.ctx, error)
         VscrStatus.handle_status(error.status)
-        return result
+        instance = GroupTicket.take_c_ctx(result)
+        return instance
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

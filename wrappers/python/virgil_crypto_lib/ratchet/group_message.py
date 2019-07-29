@@ -36,8 +36,9 @@
 from ctypes import *
 from ._c_bridge import VscrRatchetGroupMessage
 from virgil_crypto_lib.common._c_bridge import Data
-from ._c_bridge._vscr_error import vscr_error_t
 from virgil_crypto_lib.common._c_bridge import Buffer
+from ._c_bridge._vscr_error import vscr_error_t
+from .group_message import GroupMessage
 from ._c_bridge import VscrStatus
 
 
@@ -66,23 +67,6 @@ class GroupMessage(object):
         cleaned_bytes = bytearray(instance)
         return cleaned_bytes
 
-    def get_pub_key_count(self):
-        """Returns number of public keys.
-        This method should be called only for group info message type."""
-        result = self._lib_vscr_ratchet_group_message.vscr_ratchet_group_message_get_pub_key_count(self.ctx)
-        return result
-
-    def get_pub_key_id(self, participant_id):
-        """Returns public key id for some participant id.
-        This method should be called only for group info message type."""
-        d_participant_id = Data(participant_id)
-        error = vscr_error_t()
-        result = self._lib_vscr_ratchet_group_message.vscr_ratchet_group_message_get_pub_key_id(self.ctx, d_participant_id.data, error)
-        VscrStatus.handle_status(error.status)
-        instance = Buffer.take_c_ctx(result)
-        cleaned_bytes = bytearray(instance)
-        return cleaned_bytes
-
     def get_sender_id(self):
         """Returns message sender id.
         This method should be called only for regular message type."""
@@ -90,6 +74,16 @@ class GroupMessage(object):
         instance = Data.take_c_ctx(result)
         cleaned_bytes = bytearray(instance)
         return cleaned_bytes
+
+    def get_counter(self):
+        """Returns message counter in current epoch."""
+        result = self._lib_vscr_ratchet_group_message.vscr_ratchet_group_message_get_counter(self.ctx)
+        return result
+
+    def get_epoch(self):
+        """Returns message epoch."""
+        result = self._lib_vscr_ratchet_group_message.vscr_ratchet_group_message_get_epoch(self.ctx)
+        return result
 
     def serialize_len(self):
         """Buffer len to serialize this class."""
@@ -108,7 +102,8 @@ class GroupMessage(object):
         error = vscr_error_t()
         result = self._lib_vscr_ratchet_group_message.vscr_ratchet_group_message_deserialize(d_input.data, error)
         VscrStatus.handle_status(error.status)
-        return result
+        instance = GroupMessage.take_c_ctx(result)
+        return instance
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

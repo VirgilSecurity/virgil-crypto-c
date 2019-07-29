@@ -35,21 +35,17 @@
 
 from ctypes import *
 from ._c_bridge import VscfEcies
+from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Data
 from virgil_crypto_lib.common._c_bridge import Buffer
-from ._c_bridge import VscfStatus
-from .encrypt import Encrypt
-from .decrypt import Decrypt
 
 
-class Ecies(Encrypt, Decrypt):
+class Ecies(object):
     """Virgil implementation of the ECIES algorithm."""
 
     def __init__(self):
         """Create underlying C context."""
         self._lib_vscf_ecies = VscfEcies()
-        self._c_impl = None
-        self._ctx = None
         self.ctx = self._lib_vscf_ecies.vscf_ecies_new()
 
     def __delete__(self, instance):
@@ -68,58 +64,56 @@ class Ecies(Encrypt, Decrypt):
     def set_kdf(self, kdf):
         self._lib_vscf_ecies.vscf_ecies_use_kdf(self.ctx, kdf.c_impl)
 
-    def set_encryption_key(self, encryption_key):
-        """Set public key that is used for data encryption.
-
-        If ephemeral key is not defined, then Public Key, must be conformed
-        to the interface "generate ephemeral key".
-
-        In turn, Ephemeral Key must be conformed to the interface
-        "compute shared key"."""
-        self._lib_vscf_ecies.vscf_ecies_use_encryption_key(self.ctx, encryption_key.c_impl)
-
-    def set_decryption_key(self, decryption_key):
-        """Set private key that used for data decryption.
-
-        Private Key must be conformed to the interface "compute shared key"."""
-        self._lib_vscf_ecies.vscf_ecies_use_decryption_key(self.ctx, decryption_key.c_impl)
-
     def set_ephemeral_key(self, ephemeral_key):
-        """Set private key that used for data decryption.
-
-        Ephemeral Key must be conformed to the interface "compute shared key"."""
+        """Set ephemeral key that used for data encryption.
+        Public and ephemeral keys should belong to the same curve.
+        This dependency is optional."""
         self._lib_vscf_ecies.vscf_ecies_use_ephemeral_key(self.ctx, ephemeral_key.c_impl)
 
-    def encrypt(self, data):
-        """Encrypt given data."""
-        d_data = Data(data)
-        out = Buffer(self.encrypted_len(data_len=len(data)))
-        status = self._lib_vscf_ecies.vscf_ecies_encrypt(self.ctx, d_data.data, out.c_buffer)
-        VscfStatus.handle_status(status)
-        return out.get_bytes()
+    def set_key_alg(self, key_alg):
+        """Set weak reference to the key algorithm.
+        Key algorithm MUST support shared key computation as well."""
+        self._lib_vscf_ecies.vscf_ecies_set_key_alg(self.ctx, key_alg.c_impl)
 
-    def encrypted_len(self, data_len):
-        """Calculate required buffer length to hold the encrypted data."""
-        result = self._lib_vscf_ecies.vscf_ecies_encrypted_len(self.ctx, data_len)
-        return result
-
-    def decrypt(self, data):
-        """Decrypt given data."""
-        d_data = Data(data)
-        out = Buffer(self.decrypted_len(data_len=len(data)))
-        status = self._lib_vscf_ecies.vscf_ecies_decrypt(self.ctx, d_data.data, out.c_buffer)
-        VscfStatus.handle_status(status)
-        return out.get_bytes()
-
-    def decrypted_len(self, data_len):
-        """Calculate required buffer length to hold the decrypted data."""
-        result = self._lib_vscf_ecies.vscf_ecies_decrypted_len(self.ctx, data_len)
-        return result
+    def release_key_alg(self):
+        """Release weak reference to the key algorithm."""
+        self._lib_vscf_ecies.vscf_ecies_release_key_alg(self.ctx)
 
     def setup_defaults(self):
         """Setup predefined values to the uninitialized class dependencies."""
         status = self._lib_vscf_ecies.vscf_ecies_setup_defaults(self.ctx)
         VscfStatus.handle_status(status)
+
+    def setup_defaults_no_random(self):
+        """Setup predefined values to the uninitialized class dependencies
+        except random."""
+        self._lib_vscf_ecies.vscf_ecies_setup_defaults_no_random(self.ctx)
+
+    def encrypted_len(self, public_key, data_len):
+        """Calculate required buffer length to hold the encrypted data."""
+        result = self._lib_vscf_ecies.vscf_ecies_encrypted_len(self.ctx, public_key.c_impl, data_len)
+        return result
+
+    def encrypt(self, public_key, data):
+        """Encrypt data with a given public key."""
+        d_data = Data(data)
+        out = Buffer(self.encrypted_len(public_key=public_key, data_len=len(data)))
+        status = self._lib_vscf_ecies.vscf_ecies_encrypt(self.ctx, public_key.c_impl, d_data.data, out.c_buffer)
+        VscfStatus.handle_status(status)
+        return out.get_bytes()
+
+    def decrypted_len(self, private_key, data_len):
+        """Calculate required buffer length to hold the decrypted data."""
+        result = self._lib_vscf_ecies.vscf_ecies_decrypted_len(self.ctx, private_key.c_impl, data_len)
+        return result
+
+    def decrypt(self, private_key, data):
+        """Decrypt given data."""
+        d_data = Data(data)
+        out = Buffer(self.decrypted_len(private_key=private_key, data_len=len(data)))
+        status = self._lib_vscf_ecies.vscf_ecies_decrypt(self.ctx, private_key.c_impl, d_data.data, out.c_buffer)
+        VscfStatus.handle_status(status)
+        return out.get_bytes()
 
     @classmethod
     def take_c_ctx(cls, c_ctx):
@@ -134,16 +128,3 @@ class Ecies(Encrypt, Decrypt):
         inst._lib_vscf_ecies = VscfEcies()
         inst.ctx = inst._lib_vscf_ecies.vscf_ecies_shallow_copy(c_ctx)
         return inst
-
-    @property
-    def c_impl(self):
-        return self._c_impl
-
-    @property
-    def ctx(self):
-        return self._ctx
-
-    @ctx.setter
-    def ctx(self, value):
-        self._ctx = self._lib_vscf_ecies.vscf_ecies_shallow_copy(value)
-        self._c_impl = self._lib_vscf_ecies.vscf_ecies_impl(self.ctx)

@@ -89,20 +89,20 @@ class VscrStatus(object):
     ERROR_SENDER_NOT_FOUND = -21
     # Cannot decrypt own messages.
     ERROR_CANNOT_DECRYPT_OWN_MESSAGES = -22
-    # Duplicate id.
-    ERROR_DUPLICATE_ID = -23
     # Invalid signature.
-    ERROR_INVALID_SIGNATURE = -24
-    # User is not present in group message.
-    ERROR_USER_IS_NOT_PRESENT_IN_GROUP_MESSAGE = -25
+    ERROR_INVALID_SIGNATURE = -23
+    # Cannot remove myself.
+    ERROR_CANNOT_REMOVE_MYSELF = -24
     # Epoch mismatch.
-    ERROR_EPOCH_MISMATCH = -26
-    # Participant not found.
-    ERROR_PARTICIPANT_NOT_FOUND = -27
+    ERROR_EPOCH_MISMATCH = -25
     # Epoch not found.
-    ERROR_EPOCH_NOT_FOUND = -28
+    ERROR_EPOCH_NOT_FOUND = -26
     # Session id mismatch.
-    ERROR_SESSION_ID_MISMATCH = -29
+    ERROR_SESSION_ID_MISMATCH = -27
+    # Simultaneous group user operation.
+    ERROR_SIMULTANEOUS_GROUP_USER_OPERATION = -28
+    # Myself is included in info.
+    ERROR_MYSELF_IS_INCLUDED_IN_INFO = -29
 
     STATUS_DICT = {
         0: "No errors was occurred.",
@@ -128,13 +128,13 @@ class VscrStatus(object):
         -20: "Too few participants.",
         -21: "Sender not found.",
         -22: "Cannot decrypt own messages.",
-        -23: "Duplicate id.",
-        -24: "Invalid signature.",
-        -25: "User is not present in group message.",
-        -26: "Epoch mismatch.",
-        -27: "Participant not found.",
-        -28: "Epoch not found.",
-        -29: "Session id mismatch."
+        -23: "Invalid signature.",
+        -24: "Cannot remove myself.",
+        -25: "Epoch mismatch.",
+        -26: "Epoch not found.",
+        -27: "Session id mismatch.",
+        -28: "Simultaneous group user operation.",
+        -29: "Myself is included in info."
     }
 
     @classmethod

@@ -34,44 +34,62 @@
 
 
 from ctypes import *
-from ._c_bridge import VscfRawKey
+from ._c_bridge import VscfBrainkeyServer
+from ._c_bridge import VscfStatus
+from virgil_crypto_lib.common._c_bridge import Buffer
 from virgil_crypto_lib.common._c_bridge import Data
 
 
-class RawKey(object):
-    """Provide implementation agnostic representation of the asymmetric key."""
+class BrainkeyServer(object):
+
+    POINT_LEN = 65
+    MPI_LEN = 32
 
     def __init__(self):
         """Create underlying C context."""
-        self._lib_vscf_raw_key = VscfRawKey()
-        self.ctx = self._lib_vscf_raw_key.vscf_raw_key_new()
+        self._lib_vscf_brainkey_server = VscfBrainkeyServer()
+        self.ctx = self._lib_vscf_brainkey_server.vscf_brainkey_server_new()
 
     def __delete__(self, instance):
         """Destroy underlying C context."""
-        self._lib_vscf_raw_key.vscf_raw_key_delete(self.ctx)
+        self._lib_vscf_brainkey_server.vscf_brainkey_server_delete(self.ctx)
 
-    def alg_id(self):
-        """Returns asymmetric algorithm type that raw key belongs to."""
-        result = self._lib_vscf_raw_key.vscf_raw_key_alg_id(self.ctx)
-        return result
+    def set_random(self, random):
+        """Random used for key generation, proofs, etc."""
+        self._lib_vscf_brainkey_server.vscf_brainkey_server_use_random(self.ctx, random.c_impl)
 
-    def data(self):
-        """Return raw key data."""
-        result = self._lib_vscf_raw_key.vscf_raw_key_data(self.ctx)
-        instance = Data.take_c_ctx(result)
-        cleaned_bytes = bytearray(instance)
-        return cleaned_bytes
+    def set_operation_random(self, operation_random):
+        """Random used for crypto operations to make them const-time"""
+        self._lib_vscf_brainkey_server.vscf_brainkey_server_use_operation_random(self.ctx, operation_random.c_impl)
+
+    def setup_defaults(self):
+        status = self._lib_vscf_brainkey_server.vscf_brainkey_server_setup_defaults(self.ctx)
+        VscfStatus.handle_status(status)
+
+    def generate_identity_secret(self):
+        identity_secret = Buffer(self.MPI_LEN)
+        status = self._lib_vscf_brainkey_server.vscf_brainkey_server_generate_identity_secret(self.ctx, identity_secret.c_buffer)
+        VscfStatus.handle_status(status)
+        return identity_secret.get_bytes()
+
+    def harden(self, identity_secret, blinded_point):
+        d_identity_secret = Data(identity_secret)
+        d_blinded_point = Data(blinded_point)
+        hardened_point = Buffer(self.POINT_LEN)
+        status = self._lib_vscf_brainkey_server.vscf_brainkey_server_harden(self.ctx, d_identity_secret.data, d_blinded_point.data, hardened_point.c_buffer)
+        VscfStatus.handle_status(status)
+        return hardened_point.get_bytes()
 
     @classmethod
     def take_c_ctx(cls, c_ctx):
         inst = cls.__new__(cls)
-        inst._lib_vscf_raw_key = VscfRawKey()
+        inst._lib_vscf_brainkey_server = VscfBrainkeyServer()
         inst.ctx = c_ctx
         return inst
 
     @classmethod
     def use_c_ctx(cls, c_ctx):
         inst = cls.__new__(cls)
-        inst._lib_vscf_raw_key = VscfRawKey()
-        inst.ctx = inst._lib_vscf_raw_key.vscf_raw_key_shallow_copy(c_ctx)
+        inst._lib_vscf_brainkey_server = VscfBrainkeyServer()
+        inst.ctx = inst._lib_vscf_brainkey_server.vscf_brainkey_server_shallow_copy(c_ctx)
         return inst

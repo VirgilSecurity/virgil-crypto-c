@@ -1,21 +1,19 @@
 import unittest
 
-from virgil_crypto_lib.common._c_bridge import Data
-from virgil_crypto_lib.foundation import AlgFactory, RecipientCipher, KeyAsn1Deserializer
+from virgil_crypto_lib.foundation import RecipientCipher, KeyAsn1Deserializer, KeyProvider
 from virgil_crypto_lib.tests.data import TestData
 
 
 class RecipientCipherTest(unittest.TestCase):
 
     def test_encrypt_decrypt_with_ed25519_key_recipient(self):
+        key_provider = KeyProvider()
+        key_provider.setup_defaults()
+
         key_deserializer = KeyAsn1Deserializer()
         key_deserializer.setup_defaults()
-
-        raw_public_key = key_deserializer.deserialize_public_key(TestData.RECIPIENT_CIPHER_ED25519_PUBLIC_KEY)
-        public_key = AlgFactory().create_public_key_from_raw_key(raw_public_key)
-
-        raw_private_key = key_deserializer.deserialize_private_key(TestData.RECIPIENT_CIPHER_ED25519_PRIVATE_KEY)
-        private_key = AlgFactory().create_private_key_from_raw_key(raw_private_key)
+        public_key = key_provider.import_public_key(TestData.RECIPIENT_CIPHER_ED25519_PUBLIC_KEY)
+        private_key = key_provider.import_private_key(TestData.RECIPIENT_CIPHER_ED25519_PRIVATE_KEY)
 
         recipient_cipher = RecipientCipher()
 
@@ -35,11 +33,13 @@ class RecipientCipherTest(unittest.TestCase):
         self.assertEqual(TestData.RECIPIENT_CIPHER_MESSAGE, decrypted_message)
 
     def test_decrypt_with_ed25519_public_key(self):
+        key_provider = KeyProvider()
+        key_provider.setup_defaults()
+
         key_deserializer = KeyAsn1Deserializer()
         key_deserializer.setup_defaults()
 
-        raw_private_key = key_deserializer.deserialize_private_key(TestData.RECIPIENT_CIPHER_ED25519_PRIVATE_KEY)
-        private_key = AlgFactory().create_private_key_from_raw_key(raw_private_key)
+        private_key = key_provider.import_private_key(TestData.RECIPIENT_CIPHER_ED25519_PRIVATE_KEY)
 
         recipient_cipher = RecipientCipher()
 

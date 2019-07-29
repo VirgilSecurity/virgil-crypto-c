@@ -33,51 +33,46 @@
 # Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-from virgil_crypto_lib._libs import *
 from ctypes import *
-from virgil_crypto_lib.common._c_bridge import vsc_data_t
+from ._c_bridge import VscrRatchetGroupParticipantsIds
+from virgil_crypto_lib.common._c_bridge import Data
 
 
-class vscf_raw_key_t(Structure):
-    pass
-
-
-class VscfRawKey(object):
-    """Provide implementation agnostic representation of the asymmetric key."""
+class GroupParticipantsIds(object):
+    """Container for array of participants ids"""
 
     def __init__(self):
         """Create underlying C context."""
-        self._ll = LowLevelLibs()
-        self._lib = self._ll.foundation
+        self._lib_vscr_ratchet_group_participants_ids = VscrRatchetGroupParticipantsIds()
+        self.ctx = self._lib_vscr_ratchet_group_participants_ids.vscr_ratchet_group_participants_ids_new()
 
-    def vscf_raw_key_new(self):
-        vscf_raw_key_new = self._lib.vscf_raw_key_new
-        vscf_raw_key_new.argtypes = []
-        vscf_raw_key_new.restype = POINTER(vscf_raw_key_t)
-        return vscf_raw_key_new()
+    def __delete__(self, instance):
+        """Destroy underlying C context."""
+        self._lib_vscr_ratchet_group_participants_ids.vscr_ratchet_group_participants_ids_delete(self.ctx)
 
-    def vscf_raw_key_delete(self, ctx):
-        vscf_raw_key_delete = self._lib.vscf_raw_key_delete
-        vscf_raw_key_delete.argtypes = [POINTER(vscf_raw_key_t)]
-        vscf_raw_key_delete.restype = None
-        return vscf_raw_key_delete(ctx)
+    @classmethod
+    def size(cls, size):
+        """Creates new array for size elements"""
+        inst = cls.__new__(cls)
+        inst._lib_vscr_ratchet_group_participants_ids = VscrRatchetGroupParticipantsIds()
+        inst.ctx = inst._lib_vscr_ratchet_group_participants_ids.vscr_ratchet_group_participants_ids_new_size(size)
+        return inst
 
-    def vscf_raw_key_alg_id(self, ctx):
-        """Returns asymmetric algorithm type that raw key belongs to."""
-        vscf_raw_key_alg_id = self._lib.vscf_raw_key_alg_id
-        vscf_raw_key_alg_id.argtypes = [POINTER(vscf_raw_key_t)]
-        vscf_raw_key_alg_id.restype = c_int
-        return vscf_raw_key_alg_id(ctx)
+    def add_id(self, id):
+        """Add participant id to array"""
+        d_id = Data(id)
+        self._lib_vscr_ratchet_group_participants_ids.vscr_ratchet_group_participants_ids_add_id(self.ctx, d_id.data)
 
-    def vscf_raw_key_data(self, ctx):
-        """Return raw key data."""
-        vscf_raw_key_data = self._lib.vscf_raw_key_data
-        vscf_raw_key_data.argtypes = [POINTER(vscf_raw_key_t)]
-        vscf_raw_key_data.restype = vsc_data_t
-        return vscf_raw_key_data(ctx)
+    @classmethod
+    def take_c_ctx(cls, c_ctx):
+        inst = cls.__new__(cls)
+        inst._lib_vscr_ratchet_group_participants_ids = VscrRatchetGroupParticipantsIds()
+        inst.ctx = c_ctx
+        return inst
 
-    def vscf_raw_key_shallow_copy(self, ctx):
-        vscf_raw_key_shallow_copy = self._lib.vscf_raw_key_shallow_copy
-        vscf_raw_key_shallow_copy.argtypes = [POINTER(vscf_raw_key_t)]
-        vscf_raw_key_shallow_copy.restype = POINTER(vscf_raw_key_t)
-        return vscf_raw_key_shallow_copy(ctx)
+    @classmethod
+    def use_c_ctx(cls, c_ctx):
+        inst = cls.__new__(cls)
+        inst._lib_vscr_ratchet_group_participants_ids = VscrRatchetGroupParticipantsIds()
+        inst.ctx = inst._lib_vscr_ratchet_group_participants_ids.vscr_ratchet_group_participants_ids_shallow_copy(c_ctx)
+        return inst

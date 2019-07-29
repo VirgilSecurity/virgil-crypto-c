@@ -54,4 +54,4 @@ class Common(object):
     # Min number of group chat participants
     MIN_PARTICIPANTS_COUNT = 2
     # Max group message length
-    MAX_GROUP_MESSAGE_LEN = 32918
+    MAX_GROUP_MESSAGE_LEN = 32952

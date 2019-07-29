@@ -34,62 +34,56 @@
 
 
 from ctypes import *
-from ._c_bridge import VscfEcAlgInfo
-from .alg_info import AlgInfo
+from ._c_bridge import VscfGroupSessionTicket
+from ._c_bridge import VscfStatus
+from virgil_crypto_lib.common._c_bridge import Data
+from .group_session_message import GroupSessionMessage
 
 
-class EcAlgInfo(AlgInfo):
-    """Handle algorithm information about ECP."""
+class GroupSessionTicket(object):
+    """Group ticket used to start group session, remove participants or proactive to rotate encryption key."""
 
     def __init__(self):
         """Create underlying C context."""
-        self._lib_vscf_ec_alg_info = VscfEcAlgInfo()
-        self._c_impl = None
-        self._ctx = None
-        self.ctx = self._lib_vscf_ec_alg_info.vscf_ec_alg_info_new()
+        self._lib_vscf_group_session_ticket = VscfGroupSessionTicket()
+        self.ctx = self._lib_vscf_group_session_ticket.vscf_group_session_ticket_new()
 
     def __delete__(self, instance):
         """Destroy underlying C context."""
-        self._lib_vscf_ec_alg_info.vscf_ec_alg_info_delete(self.ctx)
+        self._lib_vscf_group_session_ticket.vscf_group_session_ticket_delete(self.ctx)
 
-    def alg_id(self):
-        """Provide algorithm identificator."""
-        result = self._lib_vscf_ec_alg_info.vscf_ec_alg_info_alg_id(self.ctx)
-        return result
+    def set_rng(self, rng):
+        """Random used to generate keys"""
+        self._lib_vscf_group_session_ticket.vscf_group_session_ticket_use_rng(self.ctx, rng.c_impl)
 
-    def key_id(self):
-        """Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}."""
-        result = self._lib_vscf_ec_alg_info.vscf_ec_alg_info_key_id(self.ctx)
-        return result
+    def setup_defaults(self):
+        """Setups default dependencies:
+        - RNG: CTR DRBG"""
+        status = self._lib_vscf_group_session_ticket.vscf_group_session_ticket_setup_defaults(self.ctx)
+        VscfStatus.handle_status(status)
 
-    def domain_id(self):
-        """Return EC domain group identificator."""
-        result = self._lib_vscf_ec_alg_info.vscf_ec_alg_info_domain_id(self.ctx)
-        return result
+    def setup_ticket_as_new(self, session_id):
+        """Set this ticket to start new group session."""
+        d_session_id = Data(session_id)
+        status = self._lib_vscf_group_session_ticket.vscf_group_session_ticket_setup_ticket_as_new(self.ctx, d_session_id.data)
+        VscfStatus.handle_status(status)
+
+    def get_ticket_message(self):
+        """Returns message that should be sent to all participants using secure channel."""
+        result = self._lib_vscf_group_session_ticket.vscf_group_session_ticket_get_ticket_message(self.ctx)
+        instance = GroupSessionMessage.use_c_ctx(result)
+        return instance
 
     @classmethod
     def take_c_ctx(cls, c_ctx):
         inst = cls.__new__(cls)
-        inst._lib_vscf_ec_alg_info = VscfEcAlgInfo()
+        inst._lib_vscf_group_session_ticket = VscfGroupSessionTicket()
         inst.ctx = c_ctx
         return inst
 
     @classmethod
     def use_c_ctx(cls, c_ctx):
         inst = cls.__new__(cls)
-        inst._lib_vscf_ec_alg_info = VscfEcAlgInfo()
-        inst.ctx = inst._lib_vscf_ec_alg_info.vscf_ec_alg_info_shallow_copy(c_ctx)
+        inst._lib_vscf_group_session_ticket = VscfGroupSessionTicket()
+        inst.ctx = inst._lib_vscf_group_session_ticket.vscf_group_session_ticket_shallow_copy(c_ctx)
         return inst
-
-    @property
-    def c_impl(self):
-        return self._c_impl
-
-    @property
-    def ctx(self):
-        return self._ctx
-
-    @ctx.setter
-    def ctx(self, value):
-        self._ctx = self._lib_vscf_ec_alg_info.vscf_ec_alg_info_shallow_copy(value)
-        self._c_impl = self._lib_vscf_ec_alg_info.vscf_ec_alg_info_impl(self.ctx)

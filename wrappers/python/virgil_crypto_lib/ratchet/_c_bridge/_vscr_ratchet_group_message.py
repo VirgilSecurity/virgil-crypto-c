@@ -36,8 +36,8 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
-from ._vscr_error import vscr_error_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
+from ._vscr_error import vscr_error_t
 
 
 class vscr_ratchet_group_message_t(Structure):
@@ -79,22 +79,6 @@ class VscrRatchetGroupMessage(object):
         vscr_ratchet_group_message_get_session_id.restype = vsc_data_t
         return vscr_ratchet_group_message_get_session_id(ctx)
 
-    def vscr_ratchet_group_message_get_pub_key_count(self, ctx):
-        """Returns number of public keys.
-        This method should be called only for group info message type."""
-        vscr_ratchet_group_message_get_pub_key_count = self._lib.vscr_ratchet_group_message_get_pub_key_count
-        vscr_ratchet_group_message_get_pub_key_count.argtypes = [POINTER(vscr_ratchet_group_message_t)]
-        vscr_ratchet_group_message_get_pub_key_count.restype = c_size_t
-        return vscr_ratchet_group_message_get_pub_key_count(ctx)
-
-    def vscr_ratchet_group_message_get_pub_key_id(self, ctx, participant_id, error):
-        """Returns public key id for some participant id.
-        This method should be called only for group info message type."""
-        vscr_ratchet_group_message_get_pub_key_id = self._lib.vscr_ratchet_group_message_get_pub_key_id
-        vscr_ratchet_group_message_get_pub_key_id.argtypes = [POINTER(vscr_ratchet_group_message_t), vsc_data_t, POINTER(vscr_error_t)]
-        vscr_ratchet_group_message_get_pub_key_id.restype = POINTER(vsc_buffer_t)
-        return vscr_ratchet_group_message_get_pub_key_id(ctx, participant_id, error)
-
     def vscr_ratchet_group_message_get_sender_id(self, ctx):
         """Returns message sender id.
         This method should be called only for regular message type."""
@@ -102,6 +86,20 @@ class VscrRatchetGroupMessage(object):
         vscr_ratchet_group_message_get_sender_id.argtypes = [POINTER(vscr_ratchet_group_message_t)]
         vscr_ratchet_group_message_get_sender_id.restype = vsc_data_t
         return vscr_ratchet_group_message_get_sender_id(ctx)
+
+    def vscr_ratchet_group_message_get_counter(self, ctx):
+        """Returns message counter in current epoch."""
+        vscr_ratchet_group_message_get_counter = self._lib.vscr_ratchet_group_message_get_counter
+        vscr_ratchet_group_message_get_counter.argtypes = [POINTER(vscr_ratchet_group_message_t)]
+        vscr_ratchet_group_message_get_counter.restype = c_uint
+        return vscr_ratchet_group_message_get_counter(ctx)
+
+    def vscr_ratchet_group_message_get_epoch(self, ctx):
+        """Returns message epoch."""
+        vscr_ratchet_group_message_get_epoch = self._lib.vscr_ratchet_group_message_get_epoch
+        vscr_ratchet_group_message_get_epoch.argtypes = [POINTER(vscr_ratchet_group_message_t)]
+        vscr_ratchet_group_message_get_epoch.restype = c_uint
+        return vscr_ratchet_group_message_get_epoch(ctx)
 
     def vscr_ratchet_group_message_serialize_len(self, ctx):
         """Buffer len to serialize this class."""

@@ -53,6 +53,15 @@ class PbeAlgInfo(AlgInfo):
         """Destroy underlying C context."""
         self._lib_vscf_pbe_alg_info.vscf_pbe_alg_info_delete(self.ctx)
 
+    @classmethod
+    def with_members(cls, alg_id, kdf_alg_info, cipher_alg_info):
+        """Create algorithm info with identificator, KDF algorithm info and
+        cipher alg info."""
+        inst = cls.__new__(cls)
+        inst._lib_vscf_pbe_alg_info = VscfPbeAlgInfo()
+        inst.ctx = inst._lib_vscf_pbe_alg_info.vscf_pbe_alg_info_new_with_members(alg_id, kdf_alg_info.c_impl, cipher_alg_info.c_impl)
+        return inst
+
     def alg_id(self):
         """Provide algorithm identificator."""
         result = self._lib_vscf_pbe_alg_info.vscf_pbe_alg_info_alg_id(self.ctx)
@@ -61,13 +70,13 @@ class PbeAlgInfo(AlgInfo):
     def kdf_alg_info(self):
         """Return KDF algorithm information."""
         result = self._lib_vscf_pbe_alg_info.vscf_pbe_alg_info_kdf_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     def cipher_alg_info(self):
         """Return cipher algorithm information."""
         result = self._lib_vscf_pbe_alg_info.vscf_pbe_alg_info_cipher_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     @classmethod

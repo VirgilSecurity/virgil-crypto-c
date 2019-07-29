@@ -43,7 +43,7 @@ from .random import Random
 class CtrDrbg(Random):
     """Implementation of the RNG using deterministic random bit generators
     based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
-    This class is thread-safe if the build option VSCF_MULTI_THREAD was enabled."""
+    This class is thread-safe if the build option VSCF_MULTI_THREADING was enabled."""
 
     # The interval before reseed is performed by default.
     RESEED_INTERVAL = 10000
@@ -65,14 +65,15 @@ class CtrDrbg(Random):
         self._lib_vscf_ctr_drbg.vscf_ctr_drbg_use_entropy_source(self.ctx, entropy_source.c_impl)
 
     def random(self, data_len):
-        """Generate random bytes."""
+        """Generate random bytes.
+        All RNG implementations must be thread-safe."""
         data = Buffer(data_len)
         status = self._lib_vscf_ctr_drbg.vscf_ctr_drbg_random(self.ctx, data_len, data.c_buffer)
         VscfStatus.handle_status(status)
         return data.get_bytes()
 
     def reseed(self):
-        """Retreive new seed data from the entropy sources."""
+        """Retrieve new seed data from the entropy sources."""
         status = self._lib_vscf_ctr_drbg.vscf_ctr_drbg_reseed(self.ctx)
         VscfStatus.handle_status(status)
 

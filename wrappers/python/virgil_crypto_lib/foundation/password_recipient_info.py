@@ -35,8 +35,8 @@
 
 from ctypes import *
 from ._c_bridge import VscfPasswordRecipientInfo
-from ._c_bridge import VscfImplTag
 from virgil_crypto_lib.common._c_bridge import Data
+from ._c_bridge import VscfImplTag
 
 
 class PasswordRecipientInfo(object):
@@ -51,11 +51,20 @@ class PasswordRecipientInfo(object):
         """Destroy underlying C context."""
         self._lib_vscf_password_recipient_info.vscf_password_recipient_info_delete(self.ctx)
 
+    @classmethod
+    def with_members(cls, key_encryption_algorithm, encrypted_key):
+        """Create object and define all properties."""
+        d_encrypted_key = Data(encrypted_key)
+        inst = cls.__new__(cls)
+        inst._lib_vscf_password_recipient_info = VscfPasswordRecipientInfo()
+        inst.ctx = inst._lib_vscf_password_recipient_info.vscf_password_recipient_info_new_with_members(key_encryption_algorithm.c_impl, d_encrypted_key.data)
+        return inst
+
     def key_encryption_algorithm(self):
         """Return algorithm information that was used for encryption
         a data encryption key."""
         result = self._lib_vscf_password_recipient_info.vscf_password_recipient_info_key_encryption_algorithm(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     def encrypted_key(self):

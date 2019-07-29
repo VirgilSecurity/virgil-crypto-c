@@ -63,14 +63,15 @@ class KeyMaterialRng(Random):
         self._lib_vscf_key_material_rng.vscf_key_material_rng_delete(self.ctx)
 
     def random(self, data_len):
-        """Generate random bytes."""
+        """Generate random bytes.
+        All RNG implementations must be thread-safe."""
         data = Buffer(data_len)
         status = self._lib_vscf_key_material_rng.vscf_key_material_rng_random(self.ctx, data_len, data.c_buffer)
         VscfStatus.handle_status(status)
         return data.get_bytes()
 
     def reseed(self):
-        """Retreive new seed data from the entropy sources."""
+        """Retrieve new seed data from the entropy sources."""
         status = self._lib_vscf_key_material_rng.vscf_key_material_rng_reseed(self.ctx)
         VscfStatus.handle_status(status)
 

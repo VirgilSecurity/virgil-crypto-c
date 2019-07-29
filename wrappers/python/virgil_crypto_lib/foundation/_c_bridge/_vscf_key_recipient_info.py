@@ -63,6 +63,13 @@ class VscfKeyRecipientInfo(object):
         vscf_key_recipient_info_delete.restype = None
         return vscf_key_recipient_info_delete(ctx)
 
+    def vscf_key_recipient_info_new_with_data(self, recipient_id, key_encryption_algorithm, encrypted_key):
+        """Create object and define all properties."""
+        vscf_key_recipient_info_new_with_data = self._lib.vscf_key_recipient_info_new_with_data
+        vscf_key_recipient_info_new_with_data.argtypes = [vsc_data_t, POINTER(vscf_impl_t), vsc_data_t]
+        vscf_key_recipient_info_new_with_data.restype = POINTER(vscf_key_recipient_info_t)
+        return vscf_key_recipient_info_new_with_data(recipient_id, key_encryption_algorithm, encrypted_key)
+
     def vscf_key_recipient_info_recipient_id(self, ctx):
         """Return recipient identifier."""
         vscf_key_recipient_info_recipient_id = self._lib.vscf_key_recipient_info_recipient_id

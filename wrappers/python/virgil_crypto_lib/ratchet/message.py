@@ -38,6 +38,7 @@ from ._c_bridge import VscrRatchetMessage
 from virgil_crypto_lib.common._c_bridge import Data
 from virgil_crypto_lib.common._c_bridge import Buffer
 from ._c_bridge._vscr_error import vscr_error_t
+from .message import Message
 from ._c_bridge import VscrStatus
 
 
@@ -56,6 +57,11 @@ class Message(object):
     def get_type(self):
         """Returns message type."""
         result = self._lib_vscr_ratchet_message.vscr_ratchet_message_get_type(self.ctx)
+        return result
+
+    def get_counter(self):
+        """Returns message counter in current asymmetric ratchet round."""
+        result = self._lib_vscr_ratchet_message.vscr_ratchet_message_get_counter(self.ctx)
         return result
 
     def get_long_term_public_key(self):
@@ -89,7 +95,8 @@ class Message(object):
         error = vscr_error_t()
         result = self._lib_vscr_ratchet_message.vscr_ratchet_message_deserialize(d_input.data, error)
         VscrStatus.handle_status(error.status)
-        return result
+        instance = Message.take_c_ctx(result)
+        return instance
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

@@ -34,14 +34,13 @@
 
 
 from ctypes import *
-from abc import *
 
 
-class VerifyHash(object):
-    """Provide interface for verifying data with public key."""
-    __metaclass__ = ABCMeta
+class GroupMsgType(object):
+    """Represents group message type"""
 
-    @abstractmethod
-    def verify_hash(self, hash_digest, hash_id, signature):
-        """Verify data with given public key and signature."""
-        raise NotImplementedError()
+    # Group info type with encryption key.
+    # This type of message should be encrypted before transferring.
+    GROUP_INFO = 1
+    # Regular group message with encrypted text.
+    REGULAR = 2

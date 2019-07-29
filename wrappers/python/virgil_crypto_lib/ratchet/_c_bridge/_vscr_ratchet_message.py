@@ -71,6 +71,13 @@ class VscrRatchetMessage(object):
         vscr_ratchet_message_get_type.restype = c_int
         return vscr_ratchet_message_get_type(ctx)
 
+    def vscr_ratchet_message_get_counter(self, ctx):
+        """Returns message counter in current asymmetric ratchet round."""
+        vscr_ratchet_message_get_counter = self._lib.vscr_ratchet_message_get_counter
+        vscr_ratchet_message_get_counter.argtypes = [POINTER(vscr_ratchet_message_t)]
+        vscr_ratchet_message_get_counter.restype = c_uint
+        return vscr_ratchet_message_get_counter(ctx)
+
     def vscr_ratchet_message_get_long_term_public_key(self, ctx):
         """Returns long-term public key, if message is prekey message."""
         vscr_ratchet_message_get_long_term_public_key = self._lib.vscr_ratchet_message_get_long_term_public_key

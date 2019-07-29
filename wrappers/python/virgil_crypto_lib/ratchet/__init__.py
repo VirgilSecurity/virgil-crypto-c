@@ -41,6 +41,8 @@ from .common import Common
 from .key_id import KeyId
 from .message import Message
 from .session import Session
+from .group_participants_info import GroupParticipantsInfo
 from .group_message import GroupMessage
 from .group_ticket import GroupTicket
+from .group_participants_ids import GroupParticipantsIds
 from .group_session import GroupSession

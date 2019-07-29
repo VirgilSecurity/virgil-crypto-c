@@ -36,8 +36,6 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
-from ._vscf_raw_key import vscf_raw_key_t
-from ._vscf_error import vscf_error_t
 
 
 class VscfAlgFactory(object):
@@ -82,17 +80,3 @@ class VscfAlgFactory(object):
         vscf_alg_factory_create_cipher_from_info.argtypes = [POINTER(vscf_impl_t)]
         vscf_alg_factory_create_cipher_from_info.restype = POINTER(vscf_impl_t)
         return vscf_alg_factory_create_cipher_from_info(alg_info)
-
-    def vscf_alg_factory_create_public_key_from_raw_key(self, raw_key, error):
-        """Create algorithm that implements "public key" interface."""
-        vscf_alg_factory_create_public_key_from_raw_key = self._lib.vscf_alg_factory_create_public_key_from_raw_key
-        vscf_alg_factory_create_public_key_from_raw_key.argtypes = [POINTER(vscf_raw_key_t), POINTER(vscf_error_t)]
-        vscf_alg_factory_create_public_key_from_raw_key.restype = POINTER(vscf_impl_t)
-        return vscf_alg_factory_create_public_key_from_raw_key(raw_key, error)
-
-    def vscf_alg_factory_create_private_key_from_raw_key(self, raw_key, error):
-        """Create algorithm that implements "private key" interface."""
-        vscf_alg_factory_create_private_key_from_raw_key = self._lib.vscf_alg_factory_create_private_key_from_raw_key
-        vscf_alg_factory_create_private_key_from_raw_key.argtypes = [POINTER(vscf_raw_key_t), POINTER(vscf_error_t)]
-        vscf_alg_factory_create_private_key_from_raw_key.restype = POINTER(vscf_impl_t)
-        return vscf_alg_factory_create_private_key_from_raw_key(raw_key, error)

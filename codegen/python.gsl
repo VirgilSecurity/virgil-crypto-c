@@ -740,6 +740,64 @@ function python_create_class_additional_constructors (python_class, class, pytho
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Create custom <python_constructor/> that initialize underlying C context.
+# ---------------------------------------------------------------------------
+function python_create_class_custom_constructor (python_class, class, constructor, python_project, meta)
+    echo_debug ("Constructor: $(my.constructor.name:) for class: $(my.python_class.name:)")
+
+    new python_custom_constructor to my.python_class
+        . = python_format_description (my.constructor) ?
+        .name = python_derive_method_name (my.constructor, my.python_project)
+        .low_level_name = class_derive_c_constructor (my.class, my.constructor)
+        .is_classmethod = "1"
+
+        python_map_attr_visibility (python_custom_constructor, my.constructor)
+
+        for my.constructor.argument
+            if argument.access <> "writeonly"
+                python_create_argument (argument, python_custom_constructor, my.python_project, my.meta)
+            endif
+        endfor
+
+        new python_code to python_custom_constructor
+            my.method_body = ""
+            my.low_level_arguments = ""
+
+            for python_custom_constructor.python_argument
+                if python_argument.type = "vsc_data_t"
+                    new python_import to my.python_class
+                        .framework = "$(my.python_project.root_project:).common._c_bridge"
+                        .lib = "Data"
+                    endnew
+                    my.method_body += format_left ("d_$(python_argument.name:) = Data($(python_argument.name:))")
+                    my.low_level_arguments += "d_$(python_argument.name:).data"
+                elsif is_true (python_argument.is_interface)
+                    my.low_level_arguments += "$(python_argument.name:).c_impl"
+                else
+                    my.low_level_arguments += "$(python_argument.name:)"
+                endif
+
+                if ! last()
+                    my.low_level_arguments += ", "
+                endif
+            endfor
+
+            my.low_level_call = "inst._lib_$(my.python_class.low_level_name_c_format:).$(python_custom_constructor.low_level_name:)($(my.low_level_arguments:))"
+
+            my.method_body += format_left ("\
+                inst = cls.__new__(cls)
+                inst._lib_$(my.python_class.low_level_name_c_format:) = $(my.python_class.low_level_name:)()
+                inst.ctx = inst._lib_$(my.python_class.low_level_name_c_format:).$(python_custom_constructor.low_level_name:)($(my.low_level_arguments:))
+                return inst
+            ")
+            . = my.method_body
+        endnew
+
+        return python_custom_constructor
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 # Create C constructor mapping
 # ---------------------------------------------------------------------------
 
@@ -768,6 +826,52 @@ function python_create_c_constructor_mapping (destination)
     endnew
 
 endfunction
+
+# ---------------------------------------------------------------------------
+# Create custom C constructor mapping
+# ---------------------------------------------------------------------------
+
+function python_create_custom_c_constructor_mapping (class, constructor, destination, python_project, meta)
+    check_arguments (my, "class, constructor, destination, python_project, meta", my)
+
+    if defined (my.destination.low_level_name_c_format)
+        my.class_name = "$(my.destination.low_level_name_c_format:)"
+    else
+        my.class_name = "$(my.destination.name_c_format:)"
+    endif
+
+    new python_method to my.destination
+        . = python_format_description (my.constructor) ?
+        .name = class_derive_c_constructor (my.class, my.constructor)
+
+        python_map_attr_visibility (python_method, my.constructor)
+
+        for my.constructor.argument
+            python_create_argument (argument, python_method, my.python_project, my.meta)
+            python_derive_low_level_import_from_instance(argument, my.destination, my.python_project)
+        endfor
+
+        my.proxy_args = python_format_c_proxy_args (python_method)
+        my.proxy_arg_types = python_format_c_proxy_arg_types (python_method)
+
+        my.proxy_invocation = format_left ("\
+                        $(python_method.name:) = self._lib.$(python_method.name:)
+                        $(python_method.name:).argtypes = [$(my.proxy_arg_types:)]
+                        $(python_method.name:).restype = POINTER($(my.class_name:)_t)
+                        return $(python_method.name:)($(my.proxy_args:))
+                        ")
+
+        new python_code to python_method
+            my.method_body = ""
+            my.method_body += my.proxy_invocation ? ""
+
+            . = my.method_body
+        endnew
+
+        return python_method
+    endnew
+endfunction
+
 
 # ---------------------------------------------------------------------------
 # Create C destructor mapping
@@ -1012,6 +1116,10 @@ function python_create_method_declaration (class, method, destination, python_pr
                 python_create_argument (argument, python_method, my.python_project, my.meta)
             endif
 
+            if argument.access ?= "disown"
+                echo_warning ("For this abbility is not alredy implemented and must be implemented in next iterattions")
+            endif
+
             if string_in (argument.class, "buffer") & string_in (argument.access, "readwrite, writeonly")
                 python_create_return_from_argument (my.class, my.method, argument, python_method, my.destination, my.python_project, my.meta)
             endif
@@ -1125,7 +1233,15 @@ function python_create_abstract_method_declaration (interface, method, destinati
 
     new python_method to my.destination
         . = python_format_description (my.method) ?
-        .name = python_derive_method_name (my.method, my.python_project)
+        if string_equal (my.method.name, "len") | string_equal (my.method.name, "equal") | string_equal (my.method.name, "bytes")
+            if string_equal (my.method.name, "equal")
+                .name = "__eq__"
+            else
+                .name = "__$(my.method.name:)__"
+            endif
+        else
+            .name = python_derive_method_name (my.method, my.python_project)
+        endif
 
         python_map_attr_visibility (python_method, my.method)
 
@@ -1197,6 +1313,8 @@ function python_create_class_method (class, method, destination, python_project,
                     delete python_argument
                 elsif is_true (python_argument.is_interface)
                     my.low_level_arguments += "$(python_argument.name:).c_impl"
+                elsif is_true (python_argument.is_implementation) | is_true (python_argument.is_class)
+                    my.low_level_arguments += "$(python_argument.name:).ctx"
                 else
                     my.low_level_arguments += "$(python_argument.name:)"
                 endif
@@ -1255,9 +1373,15 @@ function python_create_class_method (class, method, destination, python_project,
 
                         delete handling_python_return
                     elsif is_true (handling_python_return.is_interface)
-                        my.cast_from_implementation = "\
-                            instance = $(my.python_project.prefix:Pascal)ImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER($(my.python_project.prefix:Pascal)ImplTag.get_type(result)[1])))
-                        "
+                        if handling_python_return.access = "readonly" | handling_python_return.access = "readwrite" 
+                            my.cast_from_implementation = "\
+                                instance = $(my.python_project.prefix:Pascal)ImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER($(my.python_project.prefix:Pascal)ImplTag.get_type(result)[1])))
+                            "
+                        else
+                            my.cast_from_implementation = "\
+                                instance = $(my.python_project.prefix:Pascal)ImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER($(my.python_project.prefix:Pascal)ImplTag.get_type(result)[1])))
+                            "
+                        endif
 
                         new python_import to my.destination
                             .framework = "._c_bridge"
@@ -1272,21 +1396,24 @@ function python_create_class_method (class, method, destination, python_project,
                         endnew
 
                         delete handling_python_return
-                    elsif is_true (handling_python_return.is_reference) & (handling_python_return.access = "readonly" | handling_python_return.access = "readwrite") & defined (handling_python_return.high_level_type)
-                        my.cast_from_implementation = "\
-                            instance = $(handling_python_return.high_level_type:).use_c_ctx(result)
-                        "
+                    elsif is_true (handling_python_return.is_reference) & defined (handling_python_return.high_level_type)
 
+                        if handling_python_return.access = "readonly" | handling_python_return.access = "readwrite" 
+                            my.cast_from_implementation = "\
+                                instance = $(handling_python_return.high_level_type:).use_c_ctx(result)
+                            "
+                        else
+                            my.cast_from_implementation = "\
+                                instance = $(handling_python_return.high_level_type:).take_c_ctx(result)
+                            "
+                        endif
 
-                        new python_import to my.destination
-                            if handling_python_return.high_level_type <> "Data" & handling_python_return.high_level_type <> "Buffer"
+                        if "$(handling_python_return.high_level_type:)" ?<> "$(my.class.name:Pascal)"
+                            new python_import to my.destination
                                 .framework = ".$(handling_python_return.class_module_name:)"
-                            else
-                                .framework = "$(my.python_project.root_project:).common._c_bridge"
-                            endif
-                            .lib = "$(handling_python_return.high_level_type:)"
-                        endnew
-                        
+                                .lib = "$(handling_python_return.high_level_type:)"
+                            endnew
+                        endif
 
                         new python_return to my.python_method
                             .name = "instance"
@@ -2756,6 +2883,10 @@ function python_create_implementation_module (implementation, python_project, me
             if my.implementation.lifecycle <> "none"
                 python_create_c_constructor_mapping (python_class)
                 python_create_c_destructor_mapping (my.implementation, python_class)
+
+                for my.implementation.constructor where constructor.visibility = "public" & constructor.scope ?= "public"
+                    python_create_custom_c_constructor_mapping (my.implementation, constructor, python_class, my.python_project, my.meta)
+                endfor
             endif
 
             for my.implementation.dependency
@@ -2823,6 +2954,10 @@ function python_create_implementation_module (implementation, python_project, me
 
             if my.implementation.lifecycle <> "none" & my.implementation.context <> "none"
                 python_create_class_default_destructor (python_class, my.implementation, my.python_project, my.meta)
+
+                for my.implementation.constructor where constructor.visibility = "public" & constructor.scope ?= "public"
+                    python_create_class_custom_constructor (python_class, my.implementation, constructor, my.python_project, my.meta)
+                endfor
             endif
 
             for my.implementation.dependency
@@ -2976,6 +3111,10 @@ function python_create_class_module (class, python_project, meta)
             if my.class.lifecycle ?<> "none" & my.class.context ?<> "none"
                 python_create_c_constructor_mapping (python_class)
                 python_create_c_destructor_mapping (my.class, python_class)
+
+                for my.class.constructor where constructor.visibility = "public" & constructor.scope ?= "public"
+                    python_create_custom_c_constructor_mapping (my.class, constructor, python_class, my.python_project, my.meta)
+                endfor
             endif
 
             for my.class.dependency
@@ -3055,6 +3194,10 @@ function python_create_class_module (class, python_project, meta)
                 if ! string_in (my.class.name, "data")
                     python_create_class_default_destructor (python_class, my.class, my.python_project, my.meta)
                 endif
+
+                for my.class.constructor where constructor.visibility = "public" & constructor.scope ?= "public"
+                    python_create_class_custom_constructor (python_class, my.class, constructor, my.python_project, my.meta)
+                endfor
             endif
 
             for my.class.dependency

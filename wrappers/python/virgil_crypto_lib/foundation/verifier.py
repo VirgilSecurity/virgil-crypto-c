@@ -58,10 +58,10 @@ class Verifier(object):
         status = self._lib_vscf_verifier.vscf_verifier_reset(self.ctx, d_signature.data)
         VscfStatus.handle_status(status)
 
-    def update(self, data):
+    def append_data(self, data):
         """Add given data to the signed data."""
         d_data = Data(data)
-        self._lib_vscf_verifier.vscf_verifier_update(self.ctx, d_data.data)
+        self._lib_vscf_verifier.vscf_verifier_append_data(self.ctx, d_data.data)
 
     def verify(self, public_key):
         """Verify accumulated data."""

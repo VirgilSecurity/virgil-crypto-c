@@ -37,16 +37,37 @@ from ctypes import *
 from abc import *
 
 
-class SignHash(object):
-    """Provide interface for signing data with private key."""
+class KeyCipher(object):
+    """Provide data encryption and decryption interface with asymmetric keys."""
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def signature_len(self):
-        """Return length in bytes required to hold signature."""
+    def can_encrypt(self, public_key, data_len):
+        """Check if algorithm can encrypt data with a given key."""
         raise NotImplementedError()
 
     @abstractmethod
-    def sign_hash(self, hash_digest, hash_id):
-        """Sign data given private key."""
+    def encrypted_len(self, public_key, data_len):
+        """Calculate required buffer length to hold the encrypted data."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def encrypt(self, public_key, data):
+        """Encrypt data with a given public key."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def can_decrypt(self, private_key, data_len):
+        """Check if algorithm can decrypt data with a given key.
+        However, success result of decryption is not guaranteed."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def decrypted_len(self, private_key, data_len):
+        """Calculate required buffer length to hold the decrypted data."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def decrypt(self, private_key, data):
+        """Decrypt given data."""
         raise NotImplementedError()

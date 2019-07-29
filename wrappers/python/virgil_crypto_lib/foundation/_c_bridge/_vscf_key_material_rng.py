@@ -72,14 +72,15 @@ class VscfKeyMaterialRng(object):
         return vscf_key_material_rng_delete(ctx)
 
     def vscf_key_material_rng_random(self, ctx, data_len, data):
-        """Generate random bytes."""
+        """Generate random bytes.
+        All RNG implementations must be thread-safe."""
         vscf_key_material_rng_random = self._lib.vscf_key_material_rng_random
         vscf_key_material_rng_random.argtypes = [POINTER(vscf_key_material_rng_t), c_size_t, POINTER(vsc_buffer_t)]
         vscf_key_material_rng_random.restype = c_int
         return vscf_key_material_rng_random(ctx, data_len, data)
 
     def vscf_key_material_rng_reseed(self, ctx):
-        """Retreive new seed data from the entropy sources."""
+        """Retrieve new seed data from the entropy sources."""
         vscf_key_material_rng_reseed = self._lib.vscf_key_material_rng_reseed
         vscf_key_material_rng_reseed.argtypes = [POINTER(vscf_key_material_rng_t)]
         vscf_key_material_rng_reseed.restype = c_int

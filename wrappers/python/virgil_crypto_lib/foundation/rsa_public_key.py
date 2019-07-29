@@ -36,24 +36,12 @@
 from ctypes import *
 from ._c_bridge import VscfRsaPublicKey
 from ._c_bridge import VscfImplTag
-from ._c_bridge import VscfStatus
-from virgil_crypto_lib.common._c_bridge import Data
-from virgil_crypto_lib.common._c_bridge import Buffer
-from ._c_bridge._vscf_error import vscf_error_t
-from .alg import Alg
 from .key import Key
-from .encrypt import Encrypt
-from .verify_hash import VerifyHash
 from .public_key import PublicKey
-from .generate_ephemeral_key import GenerateEphemeralKey
 
 
-class RsaPublicKey(Alg, Key, Encrypt, VerifyHash, PublicKey, GenerateEphemeralKey):
-
-    # Defines whether a public key can be imported or not.
-    CAN_IMPORT_PUBLIC_KEY = True
-    # Define whether a public key can be exported or not.
-    CAN_EXPORT_PUBLIC_KEY = True
+class RsaPublicKey(Key, PublicKey):
+    """Handles RSA public key."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -66,102 +54,42 @@ class RsaPublicKey(Alg, Key, Encrypt, VerifyHash, PublicKey, GenerateEphemeralKe
         """Destroy underlying C context."""
         self._lib_vscf_rsa_public_key.vscf_rsa_public_key_delete(self.ctx)
 
-    def set_hash(self, hash):
-        self._lib_vscf_rsa_public_key.vscf_rsa_public_key_use_hash(self.ctx, hash.c_impl)
+    def __len__(self):
+        """Length of the key in bytes."""
+        result = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_len(self.ctx)
+        return result
 
-    def set_random(self, random):
-        self._lib_vscf_rsa_public_key.vscf_rsa_public_key_use_random(self.ctx, random.c_impl)
-
-    def set_asn1rd(self, asn1rd):
-        self._lib_vscf_rsa_public_key.vscf_rsa_public_key_use_asn1rd(self.ctx, asn1rd.c_impl)
-
-    def set_asn1wr(self, asn1wr):
-        self._lib_vscf_rsa_public_key.vscf_rsa_public_key_use_asn1wr(self.ctx, asn1wr.c_impl)
+    def alg_info(self):
+        """Return algorithm information that can be used for serialization."""
+        result = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_alg_info(self.ctx)
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
 
     def alg_id(self):
-        """Provide algorithm identificator."""
+        """Algorithm identifier the key belongs to."""
         result = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_alg_id(self.ctx)
         return result
 
-    def produce_alg_info(self):
-        """Produce object with algorithm information and configuration parameters."""
-        result = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_produce_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
-
-    def restore_alg_info(self, alg_info):
-        """Restore algorithm configuration from the given object."""
-        status = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_restore_alg_info(self.ctx, alg_info.c_impl)
-        VscfStatus.handle_status(status)
-
-    def key_len(self):
-        """Length of the key in bytes."""
-        result = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_key_len(self.ctx)
-        return result
-
-    def key_bitlen(self):
+    def bitlen(self):
         """Length of the key in bits."""
-        result = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_key_bitlen(self.ctx)
+        result = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_bitlen(self.ctx)
         return result
 
-    def encrypt(self, data):
-        """Encrypt given data."""
-        d_data = Data(data)
-        out = Buffer(self.encrypted_len(data_len=len(data)))
-        status = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_encrypt(self.ctx, d_data.data, out.c_buffer)
-        VscfStatus.handle_status(status)
-        return out.get_bytes()
-
-    def encrypted_len(self, data_len):
-        """Calculate required buffer length to hold the encrypted data."""
-        result = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_encrypted_len(self.ctx, data_len)
+    def impl_tag(self):
+        """Return tag of an associated algorithm that can handle this key."""
+        result = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_impl_tag(self.ctx)
         return result
 
-    def verify_hash(self, hash_digest, hash_id, signature):
-        """Verify data with given public key and signature."""
-        d_hash_digest = Data(hash_digest)
-        d_signature = Data(signature)
-        result = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_verify_hash(self.ctx, d_hash_digest.data, hash_id, d_signature.data)
+    def is_valid(self):
+        """Check that key is valid.
+        Note, this operation can be slow."""
+        result = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_is_valid(self.ctx)
         return result
 
-    def export_public_key(self):
-        """Export public key in the binary format.
-
-        Binary format must be defined in the key specification.
-        For instance, RSA public key must be exported in format defined in
-        RFC 3447 Appendix A.1.1."""
-        out = Buffer(self.exported_public_key_len())
-        status = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_export_public_key(self.ctx, out.c_buffer)
-        VscfStatus.handle_status(status)
-        return out.get_bytes()
-
-    def exported_public_key_len(self):
-        """Return length in bytes required to hold exported public key."""
-        result = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_exported_public_key_len(self.ctx)
+    def key_exponent(self):
+        """Return public key exponent."""
+        result = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_key_exponent(self.ctx)
         return result
-
-    def import_public_key(self, data):
-        """Import public key from the binary format.
-
-        Binary format must be defined in the key specification.
-        For instance, RSA public key must be imported from the format defined in
-        RFC 3447 Appendix A.1.1."""
-        d_data = Data(data)
-        status = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_import_public_key(self.ctx, d_data.data)
-        VscfStatus.handle_status(status)
-
-    def generate_ephemeral_key(self):
-        """Generate ephemeral private key of the same type."""
-        error = vscf_error_t()
-        result = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_generate_ephemeral_key(self.ctx, error)
-        VscfStatus.handle_status(error.status)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
-
-    def setup_defaults(self):
-        """Setup predefined values to the uninitialized class dependencies."""
-        status = self._lib_vscf_rsa_public_key.vscf_rsa_public_key_setup_defaults(self.ctx)
-        VscfStatus.handle_status(status)
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

@@ -38,7 +38,8 @@ from ctypes import *
 from ._vscf_impl import vscf_impl_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from ._vscf_error import vscf_error_t
-from ._vscf_raw_key import vscf_raw_key_t
+from ._vscf_raw_public_key import vscf_raw_public_key_t
+from ._vscf_raw_private_key import vscf_raw_private_key_t
 
 
 class vscf_key_asn1_deserializer_t(Structure):
@@ -75,14 +76,14 @@ class VscfKeyAsn1Deserializer(object):
         """Deserialize given public key as an interchangeable format to the object."""
         vscf_key_asn1_deserializer_deserialize_public_key = self._lib.vscf_key_asn1_deserializer_deserialize_public_key
         vscf_key_asn1_deserializer_deserialize_public_key.argtypes = [POINTER(vscf_key_asn1_deserializer_t), vsc_data_t, POINTER(vscf_error_t)]
-        vscf_key_asn1_deserializer_deserialize_public_key.restype = POINTER(vscf_raw_key_t)
+        vscf_key_asn1_deserializer_deserialize_public_key.restype = POINTER(vscf_raw_public_key_t)
         return vscf_key_asn1_deserializer_deserialize_public_key(ctx, public_key_data, error)
 
     def vscf_key_asn1_deserializer_deserialize_private_key(self, ctx, private_key_data, error):
         """Deserialize given private key as an interchangeable format to the object."""
         vscf_key_asn1_deserializer_deserialize_private_key = self._lib.vscf_key_asn1_deserializer_deserialize_private_key
         vscf_key_asn1_deserializer_deserialize_private_key.argtypes = [POINTER(vscf_key_asn1_deserializer_t), vsc_data_t, POINTER(vscf_error_t)]
-        vscf_key_asn1_deserializer_deserialize_private_key.restype = POINTER(vscf_raw_key_t)
+        vscf_key_asn1_deserializer_deserialize_private_key.restype = POINTER(vscf_raw_private_key_t)
         return vscf_key_asn1_deserializer_deserialize_private_key(ctx, private_key_data, error)
 
     def vscf_key_asn1_deserializer_setup_defaults(self, ctx):
@@ -98,7 +99,7 @@ class VscfKeyAsn1Deserializer(object):
         an input buffer."""
         vscf_key_asn1_deserializer_deserialize_public_key_inplace = self._lib.vscf_key_asn1_deserializer_deserialize_public_key_inplace
         vscf_key_asn1_deserializer_deserialize_public_key_inplace.argtypes = [POINTER(vscf_key_asn1_deserializer_t), POINTER(vscf_error_t)]
-        vscf_key_asn1_deserializer_deserialize_public_key_inplace.restype = POINTER(vscf_raw_key_t)
+        vscf_key_asn1_deserializer_deserialize_public_key_inplace.restype = POINTER(vscf_raw_public_key_t)
         return vscf_key_asn1_deserializer_deserialize_public_key_inplace(ctx, error)
 
     def vscf_key_asn1_deserializer_deserialize_private_key_inplace(self, ctx, error):
@@ -107,7 +108,7 @@ class VscfKeyAsn1Deserializer(object):
         an input buffer."""
         vscf_key_asn1_deserializer_deserialize_private_key_inplace = self._lib.vscf_key_asn1_deserializer_deserialize_private_key_inplace
         vscf_key_asn1_deserializer_deserialize_private_key_inplace.argtypes = [POINTER(vscf_key_asn1_deserializer_t), POINTER(vscf_error_t)]
-        vscf_key_asn1_deserializer_deserialize_private_key_inplace.restype = POINTER(vscf_raw_key_t)
+        vscf_key_asn1_deserializer_deserialize_private_key_inplace.restype = POINTER(vscf_raw_private_key_t)
         return vscf_key_asn1_deserializer_deserialize_private_key_inplace(ctx, error)
 
     def vscf_key_asn1_deserializer_shallow_copy(self, ctx):

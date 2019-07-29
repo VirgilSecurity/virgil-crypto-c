@@ -38,15 +38,31 @@ from abc import *
 
 
 class Key(object):
-    """Common information about asymmetric key."""
+    """Basic key type."""
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def key_len(self):
+    def alg_id(self):
+        """Algorithm identifier the key belongs to."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def alg_info(self):
+        """Return algorithm information that can be used for serialization."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def __len__(self):
         """Length of the key in bytes."""
         raise NotImplementedError()
 
     @abstractmethod
-    def key_bitlen(self):
+    def bitlen(self):
         """Length of the key in bits."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def is_valid(self):
+        """Check that key is valid.
+        Note, this operation can be slow."""
         raise NotImplementedError()

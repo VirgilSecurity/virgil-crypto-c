@@ -36,9 +36,6 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
-from virgil_crypto_lib.common._c_bridge import vsc_data_t
-from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
-from ._vscf_error import vscf_error_t
 
 
 class vscf_rsa_public_key_t(Structure):
@@ -46,11 +43,7 @@ class vscf_rsa_public_key_t(Structure):
 
 
 class VscfRsaPublicKey(object):
-
-    # Defines whether a public key can be imported or not.
-    CAN_IMPORT_PUBLIC_KEY = True
-    # Define whether a public key can be exported or not.
-    CAN_EXPORT_PUBLIC_KEY = True
+    """Handles RSA public key."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -69,128 +62,55 @@ class VscfRsaPublicKey(object):
         vscf_rsa_public_key_delete.restype = None
         return vscf_rsa_public_key_delete(ctx)
 
-    def vscf_rsa_public_key_use_hash(self, ctx, hash):
-        vscf_rsa_public_key_use_hash = self._lib.vscf_rsa_public_key_use_hash
-        vscf_rsa_public_key_use_hash.argtypes = [POINTER(vscf_rsa_public_key_t), POINTER(vscf_impl_t)]
-        vscf_rsa_public_key_use_hash.restype = None
-        return vscf_rsa_public_key_use_hash(ctx, hash)
-
-    def vscf_rsa_public_key_use_random(self, ctx, random):
-        vscf_rsa_public_key_use_random = self._lib.vscf_rsa_public_key_use_random
-        vscf_rsa_public_key_use_random.argtypes = [POINTER(vscf_rsa_public_key_t), POINTER(vscf_impl_t)]
-        vscf_rsa_public_key_use_random.restype = None
-        return vscf_rsa_public_key_use_random(ctx, random)
-
-    def vscf_rsa_public_key_use_asn1rd(self, ctx, asn1rd):
-        vscf_rsa_public_key_use_asn1rd = self._lib.vscf_rsa_public_key_use_asn1rd
-        vscf_rsa_public_key_use_asn1rd.argtypes = [POINTER(vscf_rsa_public_key_t), POINTER(vscf_impl_t)]
-        vscf_rsa_public_key_use_asn1rd.restype = None
-        return vscf_rsa_public_key_use_asn1rd(ctx, asn1rd)
-
-    def vscf_rsa_public_key_use_asn1wr(self, ctx, asn1wr):
-        vscf_rsa_public_key_use_asn1wr = self._lib.vscf_rsa_public_key_use_asn1wr
-        vscf_rsa_public_key_use_asn1wr.argtypes = [POINTER(vscf_rsa_public_key_t), POINTER(vscf_impl_t)]
-        vscf_rsa_public_key_use_asn1wr.restype = None
-        return vscf_rsa_public_key_use_asn1wr(ctx, asn1wr)
-
     def vscf_rsa_public_key_alg_id(self, ctx):
-        """Provide algorithm identificator."""
+        """Algorithm identifier the key belongs to."""
         vscf_rsa_public_key_alg_id = self._lib.vscf_rsa_public_key_alg_id
         vscf_rsa_public_key_alg_id.argtypes = [POINTER(vscf_rsa_public_key_t)]
         vscf_rsa_public_key_alg_id.restype = c_int
         return vscf_rsa_public_key_alg_id(ctx)
 
-    def vscf_rsa_public_key_produce_alg_info(self, ctx):
-        """Produce object with algorithm information and configuration parameters."""
-        vscf_rsa_public_key_produce_alg_info = self._lib.vscf_rsa_public_key_produce_alg_info
-        vscf_rsa_public_key_produce_alg_info.argtypes = [POINTER(vscf_rsa_public_key_t)]
-        vscf_rsa_public_key_produce_alg_info.restype = POINTER(vscf_impl_t)
-        return vscf_rsa_public_key_produce_alg_info(ctx)
+    def vscf_rsa_public_key_alg_info(self, ctx):
+        """Return algorithm information that can be used for serialization."""
+        vscf_rsa_public_key_alg_info = self._lib.vscf_rsa_public_key_alg_info
+        vscf_rsa_public_key_alg_info.argtypes = [POINTER(vscf_rsa_public_key_t)]
+        vscf_rsa_public_key_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_rsa_public_key_alg_info(ctx)
 
-    def vscf_rsa_public_key_restore_alg_info(self, ctx, alg_info):
-        """Restore algorithm configuration from the given object."""
-        vscf_rsa_public_key_restore_alg_info = self._lib.vscf_rsa_public_key_restore_alg_info
-        vscf_rsa_public_key_restore_alg_info.argtypes = [POINTER(vscf_rsa_public_key_t), POINTER(vscf_impl_t)]
-        vscf_rsa_public_key_restore_alg_info.restype = c_int
-        return vscf_rsa_public_key_restore_alg_info(ctx, alg_info)
-
-    def vscf_rsa_public_key_key_len(self, ctx):
+    def vscf_rsa_public_key_len(self, ctx):
         """Length of the key in bytes."""
-        vscf_rsa_public_key_key_len = self._lib.vscf_rsa_public_key_key_len
-        vscf_rsa_public_key_key_len.argtypes = [POINTER(vscf_rsa_public_key_t)]
-        vscf_rsa_public_key_key_len.restype = c_size_t
-        return vscf_rsa_public_key_key_len(ctx)
+        vscf_rsa_public_key_len = self._lib.vscf_rsa_public_key_len
+        vscf_rsa_public_key_len.argtypes = [POINTER(vscf_rsa_public_key_t)]
+        vscf_rsa_public_key_len.restype = c_size_t
+        return vscf_rsa_public_key_len(ctx)
 
-    def vscf_rsa_public_key_key_bitlen(self, ctx):
+    def vscf_rsa_public_key_bitlen(self, ctx):
         """Length of the key in bits."""
-        vscf_rsa_public_key_key_bitlen = self._lib.vscf_rsa_public_key_key_bitlen
-        vscf_rsa_public_key_key_bitlen.argtypes = [POINTER(vscf_rsa_public_key_t)]
-        vscf_rsa_public_key_key_bitlen.restype = c_size_t
-        return vscf_rsa_public_key_key_bitlen(ctx)
+        vscf_rsa_public_key_bitlen = self._lib.vscf_rsa_public_key_bitlen
+        vscf_rsa_public_key_bitlen.argtypes = [POINTER(vscf_rsa_public_key_t)]
+        vscf_rsa_public_key_bitlen.restype = c_size_t
+        return vscf_rsa_public_key_bitlen(ctx)
 
-    def vscf_rsa_public_key_encrypt(self, ctx, data, out):
-        """Encrypt given data."""
-        vscf_rsa_public_key_encrypt = self._lib.vscf_rsa_public_key_encrypt
-        vscf_rsa_public_key_encrypt.argtypes = [POINTER(vscf_rsa_public_key_t), vsc_data_t, POINTER(vsc_buffer_t)]
-        vscf_rsa_public_key_encrypt.restype = c_int
-        return vscf_rsa_public_key_encrypt(ctx, data, out)
+    def vscf_rsa_public_key_impl_tag(self, ctx):
+        """Return tag of an associated algorithm that can handle this key."""
+        vscf_rsa_public_key_impl_tag = self._lib.vscf_rsa_public_key_impl_tag
+        vscf_rsa_public_key_impl_tag.argtypes = [POINTER(vscf_rsa_public_key_t)]
+        vscf_rsa_public_key_impl_tag.restype = c_int
+        return vscf_rsa_public_key_impl_tag(ctx)
 
-    def vscf_rsa_public_key_encrypted_len(self, ctx, data_len):
-        """Calculate required buffer length to hold the encrypted data."""
-        vscf_rsa_public_key_encrypted_len = self._lib.vscf_rsa_public_key_encrypted_len
-        vscf_rsa_public_key_encrypted_len.argtypes = [POINTER(vscf_rsa_public_key_t), c_size_t]
-        vscf_rsa_public_key_encrypted_len.restype = c_size_t
-        return vscf_rsa_public_key_encrypted_len(ctx, data_len)
+    def vscf_rsa_public_key_is_valid(self, ctx):
+        """Check that key is valid.
+        Note, this operation can be slow."""
+        vscf_rsa_public_key_is_valid = self._lib.vscf_rsa_public_key_is_valid
+        vscf_rsa_public_key_is_valid.argtypes = [POINTER(vscf_rsa_public_key_t)]
+        vscf_rsa_public_key_is_valid.restype = c_bool
+        return vscf_rsa_public_key_is_valid(ctx)
 
-    def vscf_rsa_public_key_verify_hash(self, ctx, hash_digest, hash_id, signature):
-        """Verify data with given public key and signature."""
-        vscf_rsa_public_key_verify_hash = self._lib.vscf_rsa_public_key_verify_hash
-        vscf_rsa_public_key_verify_hash.argtypes = [POINTER(vscf_rsa_public_key_t), vsc_data_t, c_int, vsc_data_t]
-        vscf_rsa_public_key_verify_hash.restype = c_bool
-        return vscf_rsa_public_key_verify_hash(ctx, hash_digest, hash_id, signature)
-
-    def vscf_rsa_public_key_export_public_key(self, ctx, out):
-        """Export public key in the binary format.
-
-        Binary format must be defined in the key specification.
-        For instance, RSA public key must be exported in format defined in
-        RFC 3447 Appendix A.1.1."""
-        vscf_rsa_public_key_export_public_key = self._lib.vscf_rsa_public_key_export_public_key
-        vscf_rsa_public_key_export_public_key.argtypes = [POINTER(vscf_rsa_public_key_t), POINTER(vsc_buffer_t)]
-        vscf_rsa_public_key_export_public_key.restype = c_int
-        return vscf_rsa_public_key_export_public_key(ctx, out)
-
-    def vscf_rsa_public_key_exported_public_key_len(self, ctx):
-        """Return length in bytes required to hold exported public key."""
-        vscf_rsa_public_key_exported_public_key_len = self._lib.vscf_rsa_public_key_exported_public_key_len
-        vscf_rsa_public_key_exported_public_key_len.argtypes = [POINTER(vscf_rsa_public_key_t)]
-        vscf_rsa_public_key_exported_public_key_len.restype = c_size_t
-        return vscf_rsa_public_key_exported_public_key_len(ctx)
-
-    def vscf_rsa_public_key_import_public_key(self, ctx, data):
-        """Import public key from the binary format.
-
-        Binary format must be defined in the key specification.
-        For instance, RSA public key must be imported from the format defined in
-        RFC 3447 Appendix A.1.1."""
-        vscf_rsa_public_key_import_public_key = self._lib.vscf_rsa_public_key_import_public_key
-        vscf_rsa_public_key_import_public_key.argtypes = [POINTER(vscf_rsa_public_key_t), vsc_data_t]
-        vscf_rsa_public_key_import_public_key.restype = c_int
-        return vscf_rsa_public_key_import_public_key(ctx, data)
-
-    def vscf_rsa_public_key_generate_ephemeral_key(self, ctx, error):
-        """Generate ephemeral private key of the same type."""
-        vscf_rsa_public_key_generate_ephemeral_key = self._lib.vscf_rsa_public_key_generate_ephemeral_key
-        vscf_rsa_public_key_generate_ephemeral_key.argtypes = [POINTER(vscf_rsa_public_key_t), POINTER(vscf_error_t)]
-        vscf_rsa_public_key_generate_ephemeral_key.restype = POINTER(vscf_impl_t)
-        return vscf_rsa_public_key_generate_ephemeral_key(ctx, error)
-
-    def vscf_rsa_public_key_setup_defaults(self, ctx):
-        """Setup predefined values to the uninitialized class dependencies."""
-        vscf_rsa_public_key_setup_defaults = self._lib.vscf_rsa_public_key_setup_defaults
-        vscf_rsa_public_key_setup_defaults.argtypes = [POINTER(vscf_rsa_public_key_t)]
-        vscf_rsa_public_key_setup_defaults.restype = c_int
-        return vscf_rsa_public_key_setup_defaults(ctx)
+    def vscf_rsa_public_key_key_exponent(self, ctx):
+        """Return public key exponent."""
+        vscf_rsa_public_key_key_exponent = self._lib.vscf_rsa_public_key_key_exponent
+        vscf_rsa_public_key_key_exponent.argtypes = [POINTER(vscf_rsa_public_key_t)]
+        vscf_rsa_public_key_key_exponent.restype = c_size_t
+        return vscf_rsa_public_key_key_exponent(ctx)
 
     def vscf_rsa_public_key_shallow_copy(self, ctx):
         vscf_rsa_public_key_shallow_copy = self._lib.vscf_rsa_public_key_shallow_copy

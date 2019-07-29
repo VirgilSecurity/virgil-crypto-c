@@ -62,26 +62,14 @@ class GroupTicket(object):
         status = self._lib_vscr_ratchet_group_ticket.vscr_ratchet_group_ticket_setup_defaults(self.ctx)
         VscrStatus.handle_status(status)
 
-    def setup_ticket_as_new(self):
+    def setup_ticket_as_new(self, session_id):
         """Set this ticket to start new group session."""
-        status = self._lib_vscr_ratchet_group_ticket.vscr_ratchet_group_ticket_setup_ticket_as_new(self.ctx)
-        VscrStatus.handle_status(status)
-
-    def add_new_participant(self, participant_id, public_key):
-        """Add new participant to chat."""
-        d_participant_id = Data(participant_id)
-        d_public_key = Data(public_key)
-        status = self._lib_vscr_ratchet_group_ticket.vscr_ratchet_group_ticket_add_new_participant(self.ctx, d_participant_id.data, d_public_key.data)
-        VscrStatus.handle_status(status)
-
-    def remove_participant(self, participant_id):
-        """Remove participant from chat."""
-        d_participant_id = Data(participant_id)
-        status = self._lib_vscr_ratchet_group_ticket.vscr_ratchet_group_ticket_remove_participant(self.ctx, d_participant_id.data)
+        d_session_id = Data(session_id)
+        status = self._lib_vscr_ratchet_group_ticket.vscr_ratchet_group_ticket_setup_ticket_as_new(self.ctx, d_session_id.data)
         VscrStatus.handle_status(status)
 
     def get_ticket_message(self):
-        """Generates message that should be sent to all participants using secure channel."""
+        """Returns message that should be sent to all participants using secure channel."""
         result = self._lib_vscr_ratchet_group_ticket.vscr_ratchet_group_ticket_get_ticket_message(self.ctx)
         instance = GroupMessage.use_c_ctx(result)
         return instance

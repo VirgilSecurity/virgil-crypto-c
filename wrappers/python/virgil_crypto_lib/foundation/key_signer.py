@@ -37,13 +37,33 @@ from ctypes import *
 from abc import *
 
 
-class GenerateEphemeralKey(object):
-    """Provide interface to compute shared key for 2 asymmetric keys.
-
-    Assume that this interface is implemented on the private key."""
+class KeySigner(object):
+    """Provide an interface for signing and verifying data digest
+    with asymmetric keys."""
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def generate_ephemeral_key(self):
-        """Generate ephemeral private key of the same type."""
+    def can_sign(self, private_key):
+        """Check if algorithm can sign data digest with a given key."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def signature_len(self, key):
+        """Return length in bytes required to hold signature.
+        Return zero if a given private key can not produce signatures."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def sign_hash(self, private_key, hash_id, digest):
+        """Sign data digest with a given private key."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def can_verify(self, public_key):
+        """Check if algorithm can verify data digest with a given key."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def verify_hash(self, public_key, hash_id, digest, signature):
+        """Verify data digest with a given public key and signature."""
         raise NotImplementedError()

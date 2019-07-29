@@ -63,6 +63,13 @@ class VscfCipherAlgInfo(object):
         vscf_cipher_alg_info_delete.restype = None
         return vscf_cipher_alg_info_delete(ctx)
 
+    def vscf_cipher_alg_info_new_with_members(self, alg_id, nonce):
+        """Create symmetric cipher algorithm info with identificator and input vector."""
+        vscf_cipher_alg_info_new_with_members = self._lib.vscf_cipher_alg_info_new_with_members
+        vscf_cipher_alg_info_new_with_members.argtypes = [c_int, vsc_data_t]
+        vscf_cipher_alg_info_new_with_members.restype = POINTER(vscf_cipher_alg_info_t)
+        return vscf_cipher_alg_info_new_with_members(alg_id, nonce)
+
     def vscf_cipher_alg_info_alg_id(self, ctx):
         """Provide algorithm identificator."""
         vscf_cipher_alg_info_alg_id = self._lib.vscf_cipher_alg_info_alg_id

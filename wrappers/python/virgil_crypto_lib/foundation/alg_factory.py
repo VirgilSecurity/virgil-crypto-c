@@ -36,8 +36,6 @@
 from ctypes import *
 from ._c_bridge import VscfAlgFactory
 from ._c_bridge import VscfImplTag
-from ._c_bridge._vscf_error import vscf_error_t
-from ._c_bridge import VscfStatus
 
 
 class AlgFactory(object):
@@ -74,21 +72,5 @@ class AlgFactory(object):
     def create_cipher_from_info(self, alg_info):
         """Create algorithm that implements "cipher" interface."""
         result = self._lib_vscf_alg_factory.vscf_alg_factory_create_cipher_from_info(alg_info.c_impl)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
-
-    def create_public_key_from_raw_key(self, raw_key):
-        """Create algorithm that implements "public key" interface."""
-        error = vscf_error_t()
-        result = self._lib_vscf_alg_factory.vscf_alg_factory_create_public_key_from_raw_key(raw_key, error)
-        VscfStatus.handle_status(error.status)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
-
-    def create_private_key_from_raw_key(self, raw_key):
-        """Create algorithm that implements "private key" interface."""
-        error = vscf_error_t()
-        result = self._lib_vscf_alg_factory.vscf_alg_factory_create_private_key_from_raw_key(raw_key, error)
-        VscfStatus.handle_status(error.status)
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance

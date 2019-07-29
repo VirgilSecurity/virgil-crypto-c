@@ -70,6 +70,12 @@ class VscfSigner(object):
         vscf_signer_use_hash.restype = None
         return vscf_signer_use_hash(ctx, hash)
 
+    def vscf_signer_use_random(self, ctx, random):
+        vscf_signer_use_random = self._lib.vscf_signer_use_random
+        vscf_signer_use_random.argtypes = [POINTER(vscf_signer_t), POINTER(vscf_impl_t)]
+        vscf_signer_use_random.restype = None
+        return vscf_signer_use_random(ctx, random)
+
     def vscf_signer_reset(self, ctx):
         """Start a processing a new signature."""
         vscf_signer_reset = self._lib.vscf_signer_reset
@@ -77,12 +83,12 @@ class VscfSigner(object):
         vscf_signer_reset.restype = None
         return vscf_signer_reset(ctx)
 
-    def vscf_signer_update(self, ctx, data):
+    def vscf_signer_append_data(self, ctx, data):
         """Add given data to the signed data."""
-        vscf_signer_update = self._lib.vscf_signer_update
-        vscf_signer_update.argtypes = [POINTER(vscf_signer_t), vsc_data_t]
-        vscf_signer_update.restype = None
-        return vscf_signer_update(ctx, data)
+        vscf_signer_append_data = self._lib.vscf_signer_append_data
+        vscf_signer_append_data.argtypes = [POINTER(vscf_signer_t), vsc_data_t]
+        vscf_signer_append_data.restype = None
+        return vscf_signer_append_data(ctx, data)
 
     def vscf_signer_signature_len(self, ctx, private_key):
         """Return length of the signature."""
