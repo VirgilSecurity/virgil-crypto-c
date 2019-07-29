@@ -606,7 +606,7 @@ function php_create_method_declaration (class, method, destination, php_project,
         . = php_format_description (my.method) ?
         .name = php_derive_method_name (my.method, my.php_project)
         .low_level_name = class_derive_c_method (my.class, my.method)
-        .return_type = "void"
+        php_map_method_return_info(php_method, my.method)
         .throws_exception = count (my.method.return, string_equal (return.enum, "status"))
 
         for my.method.argument
@@ -652,7 +652,7 @@ function php_create_argument (argument, destination, php_project, meta)
     assert_attributes (my.argument, "name", my)
 
     new php_argument to my.destination
-        .name = php_derive_instance_name (my.argument, "c")
+        .name = php_derive_argument_name (my.argument, "Camel")
         .type = php_derive_argument_type (my.argument)
         #php_map_instance (php_argument, my.argument, my.php_project)
         #.php_name = php_derive_instance_name (my.argument, "Camel")
@@ -663,14 +663,25 @@ function php_create_argument (argument, destination, php_project, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_argument_name (argument, pretty_print_modifier)
+    check_arguments (my, "argument, pretty_print_modifier", my)
+
+    assert_attribute (my.argument, "name", my)
+
+    return php_derive_instance_name (my.argument, my.pretty_print_modifier)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return formatted instance name.
 # ---------------------------------------------------------------------------
-function php_derive_instance_name (instance, type)
-    check_arguments (my, "instance, type", my)
+function php_derive_instance_name (instance, pretty_print_modifier)
+    check_arguments (my, "instance, pretty_print_modifier", my)
 
     assert_attribute (my.instance, "name", my)
 
-    return "$(my.instance.name:$(my.type))"
+    return "$(my.instance.name:$(my.pretty_print_modifier))"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -843,11 +854,11 @@ function php_derive_argument_type (instance)
     check_arguments (my, "instance", my)
 
     if defined (my.instance.class)
-        if my.instance.class = "data"
-            return "string"
-        else
-            return "TODO RETURN TYPE (FROM CLASS)"
-        endif
+            if my.instance.class = "data"
+                return "string"
+            else
+                return "TODO RETURN TYPE (FROM CLASS)"
+            endif
     else
         return "TODO RETURN TYPE (NOT FROM CLASS)"
     endif
@@ -869,21 +880,36 @@ function php_create_return_from_argument (class, method, argument, destination, 
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return formatted constant name from raw name.
+#   
 # ---------------------------------------------------------------------------
-function php_derive_constant_name_str (name)
-    check_arguments (my, "name", my)
+function php_map_method_return_info (instance, method)
+    check_arguments (my, "instance, method", my)
 
-    return "$(my.name:c, UPPER)"
-endfunction
+    my.c = 0
+    my.return_data = ""
 
-# ---------------------------------------------------------------------------
-#   Return formatted argument name from raw name.
-# ---------------------------------------------------------------------------
-function php_derive_argument_name_str (name, php_project)
-    check_arguments (my, "name", my)
+    for my.method.argument            
+        if string_in (argument.class, "buffer")
+            my.return_data += php_derive_argument_name(argument, "c")
+            my.c = my.c + 1
 
-    return "$(my.name:Pascal)"
+            if ! last()
+                my.return_data += ", "
+            endif
+        endif
+    endfor
+
+    if my.c = 0
+        my.instance.return_data = ""
+        my.instance.return_type = "void"
+    elsif my.c = 1
+        my.instance.return_data = "// $(my.return_data:)"
+        # TODO! NEED TO BE CHECKED WITH OTHER TYPES
+        my.instance.return_type = "string"
+    elsif my.c > 1
+        my.instance.return_data = "// [$(my.return_data:)]"
+        my.instance.return_type = "array"
+    endif
 endfunction
 
 .endtemplate
