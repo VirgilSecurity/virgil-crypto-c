@@ -61,10 +61,6 @@ function php_generate_sources (wrapper_project)
         echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
     endif
 
-    for my.wrapper_project.json_module
-        php_insert_composer_data (json_module)
-    endfor
-
     for my.wrapper_project.php_module
 
         if defined (php_module.source_dir)
@@ -75,21 +71,12 @@ function php_generate_sources (wrapper_project)
 
         output php_module.source_file_path
 
-        if php_module.type = "composer"
-            php_insert_composer_data (php_module)
-        endif
+        echo_trace ("Generate PHP files from <$(name (php_module)) name = \"$(c_module.name:)\"/>", my)
 
-        if php_module.type = "extension"
-            php_insert_extension_data (php_module)
-        endif
-
-        if php_module.type = "php-file"
-            echo_trace ("Generate PHP files from <$(name (php_module)) name = \"$(c_module.name:)\"/>", my)
-
-            php_insert_php_open_tag()
-            php_insert_prologue (php_module)
-            newline ()
-
+        php_insert_php_open_tag()
+        php_insert_prologue (php_module)
+        newline ()
+            
 #        for php_module.php_import
 #            newline_if (first ())
 #            php_insert_import (php_import)
@@ -124,7 +111,16 @@ function php_generate_sources (wrapper_project)
 #            newline ()
 #            php_insert_extension (php_extension)
 #        endfor
-        endif
+    endfor
+
+    for my.wrapper_project.json_module
+        echo_trace("Generate JSON files from <$(name(json_module)) name=\"$(json_module.name:)\"/>", my)
+
+        output json_module.source_file_path
+
+        for json_module.code
+            php_insert_code(code.)
+        endfor
     endfor
 endfunction
 
@@ -140,7 +136,7 @@ function php_insert_class (php_class)
 
     newline ()
     php_insert_description(my.php_class, 0)
-    php_insert_code("class $(my.php_class.name:)")
+    php_insert_code("class $(my.php_class.name:Pascal)")
     php_insert_code("{",0)
 
 #    if is_true (python_class.is_abstract)
@@ -324,16 +320,6 @@ function php_insert_class_method (php_method)
     endif
     my.method_return = php_format_return_list(my.php_method) ?
 
-    if ! count (my.php_method.php_code)
-        php_insert_code("\
-            @abstractmethod
-        ", 1)
-    endif
-    if is_true (my.php_method.is_classmethod)
-        php_insert_code("\
-            @classmethod
-        ", 1)
-    endif
     php_insert_description (my.php_method, 1)
     php_insert_code("public function $(my.php_method.name:)($(my.method_args?:))", 1)
     php_insert_code ("{", 1)
@@ -377,15 +363,6 @@ function php_format_return_list (php_method)
     endif
 
     return my.return_list
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_insert_composer_data (composer_module)
-    check_arguments (my, "composer_module", my)
-
-    php_insert_code("$(my.composer_module->php_code.:)",0)
 endfunction
 
 # ---------------------------------------------------------------------------

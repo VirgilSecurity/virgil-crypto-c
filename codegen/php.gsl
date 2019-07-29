@@ -102,19 +102,13 @@ function php_create_custom_modules (source, php_project, meta)
     endif
 
     new json_module to my.php_project
-        .name = "qwerty"
-    endnew
-
-    new php_module to my.php_project
         .name = "composer"
-        .type = "composer"
         .source_file_name = 0.name + ".json"
-        .source_dir = my.php_project.source_dir
-        .source_file_path = cat_path (0.source_dir, 0.source_file_name)
-        new php_code to php_module
+        .source_file_path = cat_path(my.php_project.source_dir, 0.source_file_name)
+        new code to json_module
             .= "\
             {
-                \"name1\": \"virgil/crypto-$(my.php_project.name:)\",
+                \"name\": \"virgil/crypto-$(my.php_project.name:)\",
                 \"description\": \"$(my.php_project.description:)\",
                 \"keywords\": [],
                 \"homepage\": \"https://virgilsecurity.com\",
@@ -131,7 +125,7 @@ function php_create_custom_modules (source, php_project, meta)
                 },
                 \"autoload\": {
                     \"psr-4\": {
-                        \"Virgil\\Crypto-$(my.php_project.name:Pascal)\\\": \"sources\"
+                        \"Virgil\\\\Crypto-$(my.php_project.name:Pascal)\\\\\": \"sources\"
                     }
                 },
                 \"scripts\": {
@@ -141,13 +135,6 @@ function php_create_custom_modules (source, php_project, meta)
             }
             "
         endnew
-    endnew
-
-    new c_extension_module to my.php_project
-        .name = "vsce"
-        .source_file_name = 0.name + ".c"
-        .source_dir = my.php_project.source_dir
-        .source_file_path = cat_path (0.source_dir, 0.source_file_name)
     endnew
 endfunction
 
@@ -186,7 +173,6 @@ function php_create_class_module (class, php_project, meta)
     # High level modules 
     new php_module to my.php_project
         .name = php_derive_module_name (my.class, my.php_project)
-        .type = "php-file"
         if ! string_in (my.class.name, "data, buffer")
             .source_file_name = 0.name + ".php"
             .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
@@ -363,9 +349,9 @@ function php_create_class_default_destructor (php_class, class, php_project, met
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create entity <php_method/> of from the class entity <method/>.
+#   TEMPLATE
 # ---------------------------------------------------------------------------
-function php_create_class_method (class, method, destination, php_project, meta)
+function TEMPLATE_php_create_class_method (class, method, destination, php_project, meta)
     check_arguments (my, "class, method, destination, php_project, meta", my)
 
     #   Create declaration
@@ -395,14 +381,14 @@ function php_create_class_method (class, method, destination, php_project, meta)
         else
             for my.php_method.php_argument
                 if php_argument.type = "vsc_data_t"
-                    my.method_body += format_left ("d_$(php_argument.name:) = Data($(php_argument.name:))")
-                    my.low_level_arguments += "d_$(php_argument.name:).data"
+                    #my.method_body += format_left ("d_$(php_argument.name:) = Data($(php_argument.name:))")
+                    my.low_level_arguments += "$(php_argument.name:Pascal)"
                 elsif is_true (php_argument.is_error_type)
 
                     my.method_body += format_left ("\
                         $(php_argument.name:) = $(php_argument.type:)()
                     ")
-                    my.low_level_arguments += "$(php_argument.name:)"
+                    my.low_level_arguments += "$(php_argument.name:Pascal)"
 
                     new status to my.statuses
                         .name = php_argument.name
@@ -432,7 +418,7 @@ function php_create_class_method (class, method, destination, php_project, meta)
                 my.low_level_arguments = "self.$(my.class.name:c)"
             else
                 if is_false (my.method.is_static)
-                    my.low_level_arguments = "self.ctx"
+                    my.low_level_arguments = "$this->ctx"
                 endif
             endif
         else
@@ -446,8 +432,6 @@ function php_create_class_method (class, method, destination, php_project, meta)
         endif
 
         my.low_level_call = "self._lib_$(my.destination.low_level_name_c_format:).$(my.php_method.low_level_name:)($(my.low_level_arguments:))"
-
-        
 
         my.return_result = ""
         for my.php_method.php_return
@@ -495,6 +479,124 @@ function php_create_class_method (class, method, destination, php_project, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Create entity <php_method/> of from the class entity <method/>.
+# ---------------------------------------------------------------------------
+function php_create_class_method (class, method, destination, php_project, meta)
+    check_arguments (my, "class, method, destination, php_project, meta", my)
+
+    #   Create declaration
+    my.php_method = php_create_method_declaration (my.class, my.method, my.destination, my.php_project, my.meta)
+
+    new php_code to my.php_method
+        my.method_body = ""
+        my.low_level_arguments = ""
+        my.statuses = XML.new()
+        
+        #if string_equal (my.php_method.name, "len") | string_equal (my.php_method.name, "equal") | string_equal (my.php_method.name, "bytes")
+        if string_equal (my.php_method.name, "len")
+            return
+        else
+            for my.php_method.php_argument
+                if php_argument.type = "vsc_data_t"
+                    my.php_argument_type = "string"
+                    my.low_level_arguments += "$(my.php_argument_type:) $$(php_argument.name:Camel)"
+                #elsif is_true (php_argument.is_error_type)
+                #    
+                #    my.method_body += format_left ("\
+                #        $(php_argument.name:) = $(php_argument.type:)()
+                #    ")
+                #    my.low_level_arguments += "$(php_argument.name:Pascal)"
+                #
+                #    new status to my.statuses
+                #        .name = php_argument.name
+                #    endnew
+                #    
+                #    delete php_argument
+                #elsif is_true (php_argument.is_interface)
+                #    my.low_level_arguments += "$(php_argument.name:).c_impl"
+                else
+                    my.low_level_arguments += "$$(php_argument.name:Camel)"
+                endif
+                if ! last()
+                    my.low_level_arguments += ", "
+                endif
+            endfor
+
+            for my.php_method.php_return as handling_php_return
+                if ! last()
+                    my.low_level_arguments += ", "
+                endif
+            endfor    
+        endif
+
+        if string_empty (my.low_level_arguments)
+            if string_equal (my.class.name, "data")
+                my.low_level_arguments = "zzzz$this->$(my.class.name:c)"
+            else
+                if is_false (my.method.is_static)
+                    my.low_level_arguments = "$this->ctx"
+                endif
+            endif
+        else
+            if string_equal (my.class.name, "data")
+                my.low_level_arguments = "$this->$(my.class.name:c), " + my.low_level_arguments
+            else
+                if is_false (my.method.is_static)
+                    my.low_level_arguments = "$this->ctx, " + my.low_level_arguments
+                endif
+            endif
+        endif
+
+        my.low_level_call = "$(my.php_method.low_level_name:)($(my.low_level_arguments:))"
+
+        my.return_result = ""
+        for my.php_method.php_return
+            my.return_result += "$(php_return.name:)"
+
+            if ! last()
+                my.return_result += ", "
+            endif
+        endfor
+
+        if string_in (my.return_result, "result")
+            my.method_body += format_left ("result = $(my.low_level_call:)")
+        else
+            if is_true (my.php_method.have_status_return)
+                my.method_body += format_left ("status = $(my.low_level_call)")
+            else
+                if ! string_empty (my.cast_from_implementation)
+                    my.method_body += format_left ("result = $(my.low_level_call:)")
+                else
+                    my.method_body += format_left ("$(my.low_level_call)")
+                endif
+            endif
+        endif
+
+        for my.statuses.status
+            #my.method_body += format_left ("$(my.php_project.prefix:Pascal)Status.handle_status($(status.name:).status)")
+            my.method_body += format_left ("ZZZ_HANDLE_STATUS")
+        endfor
+
+        if is_true (my.php_method.have_status_return)
+            #my.method_body += format_left ("$(my.php_project.prefix:Pascal)Status.handle_status(status)")
+            my.method_body += format_left ("AAA_HANDLE_STATUS")
+        endif
+
+        #if ! string_empty (my.cast_from_implementation)
+        #    my.method_body += format_left ("$(my.cast_from_implementation:)")
+        #endif
+
+        if ! string_empty (my.return_result)
+            my.method_body += format_left ("return $(my.return_result:)")
+        endif
+
+        . = my.method_body
+    endnew
+
+    return my.php_method
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create entity <php_method/> with <method/> declaration.
 # ---------------------------------------------------------------------------
 function php_create_method_declaration (class, method, destination, php_project, meta)
@@ -504,7 +606,6 @@ function php_create_method_declaration (class, method, destination, php_project,
         . = php_format_description (my.method) ?
         .name = php_derive_method_name (my.method, my.php_project)
         .low_level_name = class_derive_c_method (my.class, my.method)
-        #.have_status_return = count (my.method.return, string_equal (return.enum, "status"))
         .return_type = "void"
         .throws_exception = count (my.method.return, string_equal (return.enum, "status"))
 
@@ -525,6 +626,24 @@ function php_create_method_declaration (class, method, destination, php_project,
 endfunction
 
 # ---------------------------------------------------------------------------
+#   TEMPLATE_Create entity <php_argument/> from the entity <argument/>.
+# ---------------------------------------------------------------------------
+function template_php_create_argument (argument, destination, php_project, meta)
+    check_arguments (my, "argument, destination, php_project, meta", my)
+
+    assert_attributes (my.argument, "name", my)
+
+    new php_argument to my.destination
+        .name = php_derive_instance_name (my.argument, "c")
+        php_map_instance (php_argument, my.argument, my.php_project)
+        .php_name = php_derive_instance_name (my.argument, "Camel")
+        .php_type = php_derive_php_type (my.argument)
+
+        return php_argument
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create entity <php_argument/> from the entity <argument/>.
 # ---------------------------------------------------------------------------
 function php_create_argument (argument, destination, php_project, meta)
@@ -533,9 +652,11 @@ function php_create_argument (argument, destination, php_project, meta)
     assert_attributes (my.argument, "name", my)
 
     new php_argument to my.destination
-        .name = php_derive_instance_name (my.argument)
-
-        php_map_instance (php_argument, my.argument, my.php_project)
+        .name = php_derive_instance_name (my.argument, "c")
+        .type = php_derive_argument_type (my.argument)
+        #php_map_instance (php_argument, my.argument, my.php_project)
+        #.php_name = php_derive_instance_name (my.argument, "Camel")
+        #.php_type = php_derive_php_type (my.argument)
 
         return php_argument
     endnew
@@ -544,12 +665,29 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted instance name.
 # ---------------------------------------------------------------------------
-function php_derive_instance_name (instance)
-    check_arguments (my, "instance", my)
+function php_derive_instance_name (instance, type)
+    check_arguments (my, "instance, type", my)
 
     assert_attribute (my.instance, "name", my)
 
-    return "$(my.instance.name:Camel)"
+    return "$(my.instance.name:$(my.type))"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_php_type (instance)
+    check_arguments (my, "instance", my)
+
+    if defined (my.instance.class)
+        if my.instance.class = "data"
+            return "string"
+        else 
+            return ""
+        endif
+    else 
+        return ""
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -568,6 +706,7 @@ function php_map_instance_type (php_instance, instance, php_project)
     check_arguments (my, "php_instance, instance, php_project", my)
 
     my.php_instance.type = php_derive_instance_type (my.instance)
+    my.php_instance.c_type = php_derive_instance_type (my.instance)
 
     if defined (my.instance.type)
         my.php_instance.is_primitive_type = "1"
@@ -584,24 +723,6 @@ function php_map_instance_type (php_instance, instance, php_project)
 
     my.php_instance.is_array = count (my.instance.array) ?? "1" ?
     my.php_instance.is_string = count (my.instance.string) ?? "1" ?
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Derive PHP high level type from the <instance/> type attributes.
-# ---------------------------------------------------------------------------
-function php_derive_high_level_instance_type (instance, php_project)
-    check_arguments (my, "instance, php_project", my)
-
-    if defined (my.instance.class)
-        if is_ref (my.instance.class) | defined (my.instance.library)
-            return php_lang_ref (my.instance.class)
-        else
-            raw_class_name = my.instance.class
-            class_name = string.search_replace (raw_class_name, my.php_project.name, "")
-            return "$(class_name:Pascal)"
-        endif
-    endif
-    return ""
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -716,6 +837,23 @@ function php_derive_instance_type (instance)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Derive PHP ctype from the <instance/> type attributes.
+# ---------------------------------------------------------------------------
+function php_derive_argument_type (instance)
+    check_arguments (my, "instance", my)
+
+    if defined (my.instance.class)
+        if my.instance.class = "data"
+            return "string"
+        else
+            return "TODO RETURN TYPE (FROM CLASS)"
+        endif
+    else
+        return "TODO RETURN TYPE (NOT FROM CLASS)"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create entity <php_return/> from the entity <argument/>.
 # ---------------------------------------------------------------------------
 function php_create_return_from_argument (class, method, argument, destination, php_class, php_project, meta)
@@ -724,77 +862,10 @@ function php_create_return_from_argument (class, method, argument, destination, 
     assert_attributes (my.argument, "name", my)
 
     new php_return to my.destination
-        .name = php_derive_instance_name (my.argument)
+        .name = php_derive_instance_name (my.argument, "Camel")
 
         return php_return
     endnew
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return invocation of the getter function that returns buffer length.
-# ---------------------------------------------------------------------------
-function php_class_derive_buffer_length_getter (class, method, argument, php_class, php_project)
-    assert_attributes (my, "class, method, argument, php_class, php_project")
-
-    assert_item (my.argument, "length", my)
-
-    my.length = my.argument->length
-    assert_attribute_one_of (my.length, "constant, argument, method", my)
-
-    for my.length.proxy
-        if ! defined (proxy.[to])
-            echo_debug_item (my.argument, my)
-            assert_attributes (proxy, "to", my)
-        endif
-
-        my.proxy_args ?= ""
-
-        if ! first ()
-            my.proxy_args += ", "
-        endif
-
-        if defined (proxy.argument)
-            my.proxy_args += php_derive_argument_name_str (proxy.[to])
-            if string_in (proxy.cast, "data_length")
-                my.proxy_args += "=len(" + php_derive_argument_name_str (proxy.argument) + ")"
-            else
-                my.proxy_args += "=" + php_derive_argument_name_str (proxy.argument)
-            endif
-            
-        elsif defined (proxy.constant)
-
-            my.proxy_args += php_derive_argument_name_str (proxy.[to])
-            my.proxy_args += "=" + php_lang_ref (proxy.constant)
-        else
-            echo_debug_item (my.argument, my)
-            echo_fatal ("Buffer length argument can be proxied. Undefined type.", my)
-        endif
-    endfor
-
-    my.specified_proxy_object = get_one_of_attribute (my.length, "class, interface, impl") ?
-    if defined (my.specified_proxy_object)
-        if my.specified_proxy_object <> "self"
-            my.proxy_object = php_derive_class_name_str (my.specified_proxy_object, my.php_project)
-        else
-            my.proxy_object = my.specified_proxy_object
-        endif
-    else
-        my.proxy_object = "self"
-    endif
-
-    if defined (my.length.method)
-        my.proxy_method = php_derive_method_name_str (my.length.method)
-        return "$(my.proxy_object:).$(my.proxy_method:)($(my.proxy_args?:))"
-
-    elsif defined (my.length.constant)
-        my.proxy_constant = php_derive_constant_name_str (my.length.constant)
-
-        return "$(my.proxy_object:).$(my.proxy_constant:)"
-
-    elsif defined (my.length.argument)
-        my.proxy_argument = php_derive_argument_name_str (my.length.argument)
-        return my.proxy_argument
-    endif
 endfunction
 
 # ---------------------------------------------------------------------------
