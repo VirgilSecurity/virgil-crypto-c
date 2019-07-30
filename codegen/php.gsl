@@ -219,7 +219,8 @@ function php_create_class_default_constructor (php_class, class, php_project, me
 
     new php_constructor to my.php_class
         
-        . = "Create underlying C context."
+        . = "Create underlying C context.\n"
+        . += "@return void"
         . = php_format_description (php_constructor)
 
         new php_code to php_constructor
@@ -326,7 +327,8 @@ function php_create_class_default_destructor (php_class, class, php_project, met
     check_arguments (my, "php_class, class, php_project, meta", my)
 
     new php_destructor to my.php_class
-        . = "Destroy underlying C context."
+        . = "Destroy underlying C context.\n"
+        . += "@return void"
         . = php_format_description (php_destructor)
 
         new php_code to php_destructor
@@ -385,37 +387,71 @@ function php_create_method_declaration (class, method, destination, php_project,
     check_arguments (my, "class, method, destination, php_project, meta", my)
 
     new php_method to my.destination
-        . = php_format_description (my.method) ?
+
+        my.docblock_data = ""
+
+        if defined (my.method.)
+            my.docblock_data += my.method.
+        endif
+
         .name = php_derive_method_name (my.method, my.php_project)
         .low_level_name = class_derive_c_method (my.class, my.method)
-        php_map_method_return_info(php_method, my.method)
-        .throws_exception = count (my.method.return, string_equal (return.enum, "status"))
 
-        for my.method.argument
-            php_create_argument (argument, php_method, my.php_project, my.meta)
+        my.c = 0
+        my.return_data = ""
+
+        for my.method.argument            
+            if string_in (argument.class, "buffer")
+                my.return_data += php_derive_argument_name(argument, "c")
+                my.c = my.c + 1
+
+                if ! last()
+                    my.return_data += ", "
+                endif
+            endif
         endfor
+
+        my.res_type = ""
+        my.res_data = ""
+
+        if my.c = 0
+            my.res_data = ""
+            my.res_type = "void"
+        elsif my.c = 1
+            my.res_data = "// $(my.return_data:)"
+            # TODO! NEED TO BE CHECKED WITH OTHER TYPES
+            my.res_type = "string"
+        elsif my.c > 1
+            my.res_data = "// [$(my.return_data:)]"
+            my.res_type = "array"
+        endif
+
+        .return_data = my.res_data
+        .return_type = my.res_type
+
+        my.throws_exception = count (my.method.return, string_equal (return.enum, "status"))
+        .throws_exception = my.throws_exception
+
+        for my.method.argument where defined (argument.class) & ! string_in (argument.class, "buffer")
+            new php_argument to php_method
+                my.var = "$" + php_derive_argument_name (argument, "Camel")
+                my.type = php_derive_argument_type (argument)
+                .var = my.var
+                .type = my.type
+                my.docblock_data += "@param $(my.type:) $(my.var:)\n"
+            endnew
+        endfor
+
+        if my.throws_exception = 1
+            my.docblock_data += "@throws Exception\n"
+        endif
+
+        my.docblock_data += "@return $(my.res_type:)\n"
+
+        . = php_format_docblock (my.docblock_data) ?
 
         return php_method
     endnew
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Create entity <php_argument/> from the entity <argument/>.
-# ---------------------------------------------------------------------------
-function php_create_argument (argument, destination, php_project, meta)
-    check_arguments (my, "argument, destination, php_project, meta", my)
-
-    assert_attributes (my.argument, "name", my)
-
-    if defined (my.argument.class)
-        if ! string_in (my.argument.class, "buffer")
-            new php_argument to my.destination
-                .var = "$" + php_derive_argument_name (my.argument, "Camel")
-                .type = php_derive_argument_type (my.argument)
-                return php_argument
-            endnew
-        endif
-    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -469,39 +505,6 @@ function php_derive_argument_type (instance)
     else
         #TODO RETURN TYPE (FROM CLASS)
         return "_other_return_type_"
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_map_method_return_info (instance, method)
-    check_arguments (my, "instance, method", my)
-
-    my.c = 0
-    my.return_data = ""
-
-    for my.method.argument            
-        if string_in (argument.class, "buffer")
-            my.return_data += php_derive_argument_name(argument, "c")
-            my.c = my.c + 1
-
-            if ! last()
-                my.return_data += ", "
-            endif
-        endif
-    endfor
-
-    if my.c = 0
-        my.instance.return_data = ""
-        my.instance.return_type = "void"
-    elsif my.c = 1
-        my.instance.return_data = "// $(my.return_data:)"
-        # TODO! NEED TO BE CHECKED WITH OTHER TYPES
-        my.instance.return_type = "string"
-    elsif my.c > 1
-        my.instance.return_data = "// [$(my.return_data:)]"
-        my.instance.return_type = "array"
     endif
 endfunction
 

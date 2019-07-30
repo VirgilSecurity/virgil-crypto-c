@@ -75,42 +75,16 @@ function php_generate_sources (wrapper_project)
 
         php_insert_php_open_tag()
         php_insert_prologue (php_module)
-        newline ()
             
 #        for php_module.php_import
 #            newline_if (first ())
 #            php_insert_import (php_import)
 #        endfor
 
-#        for php_module.php_code
-#            newline_if (first ())
-#            php_insert_code (php_code)
-#        endfor
-
-#        for php_module.php_enum
-#            newline ()
-#            php_insert_enum (php_enum)
-#        endfor
-
-#        for php_module.php_abstract_class
-#            newline ()
-#            php_insert_abstract_class (php_abstract_class)
-#        endfor
-
         for php_module.php_class
             newline_if (first ())
             php_insert_class (php_class)
         endfor
-
-#        for php_module.php_struct
-#            newline ()
-#            php_insert_struct (php_struct)
-#        endfor
-
-#        for php_module.php_extension
-#            newline ()
-#            php_insert_extension (php_extension)
-#        endfor
     endfor
 
     for my.wrapper_project.json_module
@@ -134,21 +108,19 @@ function php_insert_class (php_class)
 
     assert_attributes (my.php_class, "name", my)
 
-    newline ()
     php_insert_description(my.php_class, 0)
-    php_insert_code("class $(my.php_class.name:Pascal)")
-    php_insert_code("{",0)
+    php_insert_code("\
+        class $(my.php_class.name:Pascal)
+        {
+            private $ctx;
+    ", 0)
 
 #    if is_true (python_class.is_abstract)
 #        python_insert_code(terminator + format_left("__metaclass__ = ABCMeta"), 1)
 #    endif
 
-#    for my.python_class.python_constant
-#       newline_if (first ())
-#       python_insert_class_constant (python_constant)
-#    endfor
-
     for my.php_class.php_constructor
+        newline ()
         php_insert_constructor(php_constructor)
     endfor
 
@@ -191,7 +163,6 @@ function php_insert_constructor (php_constructor)
     php_insert_description (my.php_constructor, 1)
     php_insert_code("public function __construct($(' ,'+my.method_args?:))", 1)
     php_insert_code("{",1)
-
     php_insert_code("$(my.php_constructor->php_code.:)", 2)
     php_insert_code("}",1)
 endfunction
@@ -233,6 +204,18 @@ function php_insert_code (code, tab_count)
     my.code = string_multi_rtrim (my.code)
 
     out (my.code)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_docblock(data)
+    my.str = my.data
+    my.str = string_indent (my.str)
+    my.str = "* $(my.str:left, block, no)$(terminator)"
+    my.str = string_multi_rtrim (my.str)
+    my.str = "/**$(terminator)$(my.str:)$(terminator)*/"
+    return my.str
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -297,12 +280,10 @@ function php_insert_destructor (php_destructor)
     check_arguments (my, "php_destructor", my)
 
     php_insert_description (my.php_destructor, 1)
-    php_insert_code ("\
-        public function __destruct()
-        {
-            $(my.php_destructor->php_code.:)
-        }
-    ", 1)
+    php_insert_code("public function __destruct()", 1)
+    php_insert_code("{",1)
+    php_insert_code("$(my.php_destructor->php_code.:)", 2)
+    php_insert_code("}",1)
 endfunction
 
 # ---------------------------------------------------------------------------
