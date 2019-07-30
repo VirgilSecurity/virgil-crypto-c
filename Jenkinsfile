@@ -577,7 +577,30 @@ def build_LangPython_Windows(slave) {
                 cd wrappers\\python
                 python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"
             '''
-            stash includes: 'wrappers/python/**', excludes: 'dist/**, build/**', name: 'python_wrapper_windows'
+            stash includes: 'wrappers/python/**', excludes: 'dist/**, build/**', name: 'python_wrapper_windows_x86_64'
+
+            clearContentWindows()
+            unstash 'src'
+            bat '''
+                set PATH=%PATH:"=%
+                call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars32.bat"
+                cmake -G"NMake Makefiles" ^
+                      -Cconfigs/python-config.cmake ^
+                      -DVIRGIL_LIB_PYTHIA=OFF ^
+                      -DCMAKE_BUILD_TYPE=Release ^
+                      -DCMAKE_INSTALL_PREFIX="wrappers\\python\\virgil_crypto_lib" ^
+                      -DCMAKE_INSTALL_LIBDIR=_libs ^
+                      -DCMAKE_INSTALL_BINDIR=_libs ^
+                      -DENABLE_CLANGFORMAT=OFF ^
+                      -Bbuild -H.
+                cmake --build build --target install
+
+                rmdir wrappers\\python\\virgil_crypto_lib\\_libs\\pythia
+
+                cd wrappers\\python
+                python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"
+            '''
+            stash includes: 'wrappers/python/**', excludes: 'dist/**, build/**', name: 'python_wrapper_windows_x86'
         }
     }}
 }
@@ -757,17 +780,13 @@ node("build-docker") {
             clearContentUnix()
         }
 
-        // Windows
-        unstash 'python_wrapper_windows'
+        // Windows x86
+        unstash 'python_wrapper_windows_x86'
         sh "rm -rf wrappers/python/virgil_crypto_lib/pythia"
 
         dir('wrappers/python') {
             docker.image("python:2.7").inside("--user root"){
                 sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name win_amd64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name win_amd64"
                 cleanPythonBuildDirectoriesLinux()
                 sh "python setup.py bdist_egg --plat-name win32"
                 cleanPythonBuildDirectoriesLinux()
@@ -777,10 +796,6 @@ node("build-docker") {
             docker.image("python:3.4").inside("--user root"){
                 sh "pip install wheel"
                 cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name win_amd64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name win_amd64"
-                cleanPythonBuildDirectoriesLinux()
                 sh "python setup.py bdist_egg --plat-name win32"
                 cleanPythonBuildDirectoriesLinux()
                 sh "python setup.py bdist_wheel --plat-name win32"
@@ -788,10 +803,6 @@ node("build-docker") {
 
             docker.image("python:3.5").inside("--user root"){
                 sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name win_amd64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name win_amd64"
                 cleanPythonBuildDirectoriesLinux()
                 sh "python setup.py bdist_egg --plat-name win32"
                 cleanPythonBuildDirectoriesLinux()
@@ -801,10 +812,6 @@ node("build-docker") {
             docker.image("python:3.6").inside("--user root"){
                 sh "pip install wheel"
                 cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name win_amd64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name win_amd64"
-                cleanPythonBuildDirectoriesLinux()
                 sh "python setup.py bdist_egg --plat-name win32"
                 cleanPythonBuildDirectoriesLinux()
                 sh "python setup.py bdist_wheel --plat-name win32"
@@ -813,13 +820,55 @@ node("build-docker") {
             docker.image("python:3.7").inside("--user root"){
                 sh "pip install wheel"
                 cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name win_amd64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name win_amd64"
-                cleanPythonBuildDirectoriesLinux()
                 sh "python setup.py bdist_egg --plat-name win32"
                 cleanPythonBuildDirectoriesLinux()
                 sh "python setup.py bdist_wheel --plat-name win32"
+            }
+        }
+
+        // Windows x86_64
+        unstash 'python_wrapper_windows_x86_64'
+        sh "rm -rf wrappers/python/virgil_crypto_lib/pythia"
+
+        dir('wrappers/python') {
+            docker.image("python:2.7").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name win_amd64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name win_amd64"
+            }
+
+            docker.image("python:3.4").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name win_amd64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name win_amd64"
+            }
+
+            docker.image("python:3.5").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name win_amd64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name win_amd64"
+            }
+
+            docker.image("python:3.6").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name win_amd64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name win_amd64"
+            }
+
+            docker.image("python:3.7").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name win_amd64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name win_amd64"
             }
         }
 
