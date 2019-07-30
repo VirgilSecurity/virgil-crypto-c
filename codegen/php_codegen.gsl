@@ -281,7 +281,7 @@ function php_format_argument_list (php_method)
 
     for my.php_method.php_argument
         my.arg_list = ""
-        my.arg_list = "$(php_argument.name:c)"
+        my.arg_list = "$(php_argument.name:Camel)"
         if ! last()
             my.arg_list += ", "
         endif

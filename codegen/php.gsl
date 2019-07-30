@@ -349,136 +349,6 @@ function php_create_class_default_destructor (php_class, class, php_project, met
 endfunction
 
 # ---------------------------------------------------------------------------
-#   TEMPLATE
-# ---------------------------------------------------------------------------
-function TEMPLATE_php_create_class_method (class, method, destination, php_project, meta)
-    check_arguments (my, "class, method, destination, php_project, meta", my)
-
-    #   Create declaration
-    my.php_method = php_create_method_declaration (my.class, my.method, my.destination, my.php_project, my.meta)
-
-    new php_code to my.php_method
-        my.method_body = ""
-        my.low_level_arguments = ""
-        my.cast_from_implementation = ""
-        my.statuses = XML.new()
-        
-        if string_equal (my.php_method.name, "len") | string_equal (my.php_method.name, "equal") | string_equal (my.php_method.name, "bytes")
-            if string_equal (my.php_method.name, "equal")
-                my.php_method.name = "__eq__"
-            else
-                my.php_method.name = "__$(my.php_method.name:)__"
-            endif
-
-            my.php_method.is_specific_method = "1"
-
-            for my.php_method.php_argument
-                my.low_level_arguments += "$(php_argument.name:Camel)"
-                if ! last()
-                    my.low_level_arguments += ", "
-                endif
-            endfor
-        else
-            for my.php_method.php_argument
-                if php_argument.type = "vsc_data_t"
-                    #my.method_body += format_left ("d_$(php_argument.name:) = Data($(php_argument.name:))")
-                    my.low_level_arguments += "$(php_argument.name:Pascal)"
-                elsif is_true (php_argument.is_error_type)
-
-                    my.method_body += format_left ("\
-                        $(php_argument.name:) = $(php_argument.type:)()
-                    ")
-                    my.low_level_arguments += "$(php_argument.name:Pascal)"
-
-                    new status to my.statuses
-                        .name = php_argument.name
-                    endnew
-                    
-                    delete php_argument
-                elsif is_true (php_argument.is_interface)
-                    my.low_level_arguments += "$(php_argument.name:).c_impl"
-                else
-                    my.low_level_arguments += "$(php_argument.name:)"
-                endif
-
-                if ! last()
-                    my.low_level_arguments += ", "
-                endif
-            endfor
-
-            for my.php_method.php_return as handling_php_return
-                if ! last()
-                    my.low_level_arguments += ", "
-                endif
-            endfor    
-        endif
-
-        if string_empty (my.low_level_arguments)
-            if string_equal (my.class.name, "data")
-                my.low_level_arguments = "self.$(my.class.name:c)"
-            else
-                if is_false (my.method.is_static)
-                    my.low_level_arguments = "$this->ctx"
-                endif
-            endif
-        else
-            if string_equal (my.class.name, "data")
-                my.low_level_arguments = "self.$(my.class.name:c), " + my.low_level_arguments
-            else
-                if is_false (my.method.is_static)
-                    my.low_level_arguments = "self.ctx, " + my.low_level_arguments
-                endif
-            endif
-        endif
-
-        my.low_level_call = "self._lib_$(my.destination.low_level_name_c_format:).$(my.php_method.low_level_name:)($(my.low_level_arguments:))"
-
-        my.return_result = ""
-        for my.php_method.php_return
-            my.return_result += "$(php_return.name:)"
-
-            if ! last()
-                my.return_result += ", "
-            endif
-        endfor
-
-        if string_in (my.return_result, "result")
-            my.method_body += format_left ("result = $(my.low_level_call:)")
-        else
-            if is_true (my.php_method.have_status_return)
-                my.method_body += format_left ("status = $(my.low_level_call)")
-            else
-                if ! string_empty (my.cast_from_implementation)
-                    my.method_body += format_left ("result = $(my.low_level_call:)")
-                else
-                    my.method_body += format_left ("$(my.low_level_call)")
-                endif
-            endif
-        endif
-
-        for my.statuses.status
-            my.method_body += format_left ("$(my.php_project.prefix:Pascal)Status.handle_status($(status.name:).status)")
-        endfor
-
-        if is_true (my.php_method.have_status_return)
-            my.method_body += format_left ("$(my.php_project.prefix:Pascal)Status.handle_status(status)")
-        endif
-
-        if ! string_empty (my.cast_from_implementation)
-            my.method_body += format_left ("$(my.cast_from_implementation:)")
-        endif
-
-        if ! string_empty (my.return_result)
-            my.method_body += format_left ("return $(my.return_result:)")
-        endif
-
-        . = my.method_body
-    endnew
-
-    return my.php_method
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Create entity <php_method/> of from the class entity <method/>.
 # ---------------------------------------------------------------------------
 function php_create_class_method (class, method, destination, php_project, meta)
@@ -489,106 +359,30 @@ function php_create_class_method (class, method, destination, php_project, meta)
 
     new php_code to my.php_method
         my.method_body = ""
-        my.low_level_arguments = ""
-        my.statuses = XML.new()
-        
-        #if string_equal (my.php_method.name, "len") | string_equal (my.php_method.name, "equal") | string_equal (my.php_method.name, "bytes")
-        if string_equal (my.php_method.name, "len")
-            return
-        else
-            for my.php_method.php_argument
-                if php_argument.type = "vsc_data_t"
-                    my.php_argument_type = "string"
-                    my.low_level_arguments += "$(my.php_argument_type:) $$(php_argument.name:Camel)"
-                #elsif is_true (php_argument.is_error_type)
-                #    
-                #    my.method_body += format_left ("\
-                #        $(php_argument.name:) = $(php_argument.type:)()
-                #    ")
-                #    my.low_level_arguments += "$(php_argument.name:Pascal)"
-                #
-                #    new status to my.statuses
-                #        .name = php_argument.name
-                #    endnew
-                #    
-                #    delete php_argument
-                #elsif is_true (php_argument.is_interface)
-                #    my.low_level_arguments += "$(php_argument.name:).c_impl"
-                else
-                    my.low_level_arguments += "$$(php_argument.name:Camel)"
-                endif
-                if ! last()
-                    my.low_level_arguments += ", "
-                endif
-            endfor
+        my.method_argument = ""
+        my.extension_function = my.php_method.low_level_name + "_php"
+        my.is_void = string_in(my.php_method.return_type, "void")
+        my.ctx = "$this->ctx"
 
-            for my.php_method.php_return as handling_php_return
-                if ! last()
-                    my.low_level_arguments += ", "
-                endif
-            endfor    
-        endif
-
-        if string_empty (my.low_level_arguments)
-            if string_equal (my.class.name, "data")
-                my.low_level_arguments = "zzzz$this->$(my.class.name:c)"
-            else
-                if is_false (my.method.is_static)
-                    my.low_level_arguments = "$this->ctx"
-                endif
+        for my.php_method.php_argument
+            if first()
+                my.method_argument += ", "
             endif
-        else
-            if string_equal (my.class.name, "data")
-                my.low_level_arguments = "$this->$(my.class.name:c), " + my.low_level_arguments
-            else
-                if is_false (my.method.is_static)
-                    my.low_level_arguments = "$this->ctx, " + my.low_level_arguments
-                endif
-            endif
-        endif
 
-        my.low_level_call = "$(my.php_method.low_level_name:)($(my.low_level_arguments:))"
-
-        my.return_result = ""
-        for my.php_method.php_return
-            my.return_result += "$(php_return.name:)"
+            my.method_argument += "$" + php_argument.name
 
             if ! last()
-                my.return_result += ", "
+                my.method_argument += ", "
             endif
         endfor
 
-        if string_in (my.return_result, "result")
-            my.method_body += format_left ("result = $(my.low_level_call:)")
-        else
-            if is_true (my.php_method.have_status_return)
-                my.method_body += format_left ("status = $(my.low_level_call)")
-            else
-                if ! string_empty (my.cast_from_implementation)
-                    my.method_body += format_left ("result = $(my.low_level_call:)")
-                else
-                    my.method_body += format_left ("$(my.low_level_call)")
-                endif
-            endif
+        my.return = ""
+
+        if is_false (my.is_void)
+            my.return = "return "
         endif
 
-        for my.statuses.status
-            #my.method_body += format_left ("$(my.php_project.prefix:Pascal)Status.handle_status($(status.name:).status)")
-            my.method_body += format_left ("ZZZ_HANDLE_STATUS")
-        endfor
-
-        if is_true (my.php_method.have_status_return)
-            #my.method_body += format_left ("$(my.php_project.prefix:Pascal)Status.handle_status(status)")
-            my.method_body += format_left ("AAA_HANDLE_STATUS")
-        endif
-
-        #if ! string_empty (my.cast_from_implementation)
-        #    my.method_body += format_left ("$(my.cast_from_implementation:)")
-        #endif
-
-        if ! string_empty (my.return_result)
-            my.method_body += format_left ("return $(my.return_result:)")
-        endif
+        my.method_body += "$(my.return:)$(my.extension_function:)($(my.ctx:)$(my.method_argument)): $(my.php_method.return_type:) $(my.php_method.return_data:)"
 
         . = my.method_body
     endnew
