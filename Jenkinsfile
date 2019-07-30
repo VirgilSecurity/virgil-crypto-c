@@ -573,10 +573,10 @@ def build_LangPython_Windows(slave) {
                 cmake --build build --target install
 
                 rmdir wrappers\\python\\virgil_crypto_lib\\_libs\\pythia
-
-                cd wrappers\\python
-                python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"
             '''
+            withEnv(["PATH=C:\\Python36_x64;${env.PATH}"]) {
+                bat 'cd wrappers\\python && python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"'
+            }
             stash includes: 'wrappers/python/**', excludes: 'dist/**, build/**', name: 'python_wrapper_windows_x86_64'
 
             clearContentWindows()
@@ -596,10 +596,10 @@ def build_LangPython_Windows(slave) {
                 cmake --build build --target install
 
                 rmdir wrappers\\python\\virgil_crypto_lib\\_libs\\pythia
-
-                cd wrappers\\python
-                python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"
             '''
+            withEnv(["PATH=C:\\Python36_x86;${env.PATH}"]) {
+                bat 'cd wrappers\\python && python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"'
+            }
             stash includes: 'wrappers/python/**', excludes: 'dist/**, build/**', name: 'python_wrapper_windows_x86'
         }
     }}
