@@ -572,7 +572,7 @@ def build_LangPython_Windows(slave) {
                       -Bbuild -H.
                 cmake --build build --target install
 
-                rmdir wrappers\\python\\virgil_crypto_lib\\pythia
+                rmdir wrappers\\python\\virgil_crypto_lib\\pythia /s /q 
             '''
             withEnv(["PATH=C:\\Python36_x64;${env.PATH}"]) {
                 bat 'cd wrappers\\python && python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"'
@@ -595,7 +595,7 @@ def build_LangPython_Windows(slave) {
                       -Bbuild -H.
                 cmake --build build --target install
 
-                rmdir wrappers\\python\\virgil_crypto_lib\\pythia
+                rmdir wrappers\\python\\virgil_crypto_lib\\pythia /s /q
             '''
             withEnv(["PATH=C:\\Python36_x86;${env.PATH}"]) {
                 bat 'cd wrappers\\python && python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"'
