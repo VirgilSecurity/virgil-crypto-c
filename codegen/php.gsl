@@ -223,17 +223,7 @@ function php_create_class_default_constructor (php_class, class, php_project, me
         . = php_format_description (php_constructor)
 
         new php_code to php_constructor
-            my.constructor_body = ""
-            my.constructor_body += format_left("2222")
-
-            if string_in (my.class.lifecycle, "default") & my.class.context <> "none"
-                if string_equal (php_class.name, "data")
-                    my.constructor_body = format_left ("11111$this->ctx = php_$(my.php_class.low_level_name_c_format:c)_new();")
-                else
-                    my.constructor_body = format_left ("$this->ctx = $(my.php_class.low_level_name_c_format:c)_new_php();")
-                endif
-            endif
-
+                my.constructor_body = format_left ("$this->ctx = $(my.php_class.low_level_name_c_format:c)_new_php();")
             . = my.constructor_body
         endnew
     endnew
@@ -340,9 +330,7 @@ function php_create_class_default_destructor (php_class, class, php_project, met
         . = php_format_description (php_destructor)
 
         new php_code to php_destructor
-            my.destructor_body = ""
-            my.destructor_body += format_left ("$(my.php_class.low_level_name_c_format:c)_delete_php($this->ctx);")
-
+            my.destructor_body = "$(my.php_class.low_level_name_c_format:c)_delete_php($this->ctx);"
             . = my.destructor_body
         endnew
     endnew
@@ -369,7 +357,7 @@ function php_create_class_method (class, method, destination, php_project, meta)
                 my.method_argument += ", "
             endif
 
-            my.method_argument += "$" + php_argument.name
+            my.method_argument += "$(php_argument.var:)"
 
             if ! last()
                 my.method_argument += ", "
@@ -382,7 +370,7 @@ function php_create_class_method (class, method, destination, php_project, meta)
             my.return = "return "
         endif
 
-        my.method_body += "$(my.return:)$(my.extension_function:)($(my.ctx:)$(my.method_argument)): $(my.php_method.return_type:) $(my.php_method.return_data:)"
+        my.method_body += "$(my.return:)$(my.extension_function:)($(my.ctx:)$(my.method_argument:));"
 
         . = my.method_body
     endnew
@@ -407,10 +395,6 @@ function php_create_method_declaration (class, method, destination, php_project,
             php_create_argument (argument, php_method, my.php_project, my.meta)
         endfor
 
-        for my.method.return where ! string_equal (return.enum, "status")
-            php_create_return (return, php_method, my.php_project, my.meta)
-        endfor
-
         return php_method
     endnew
 endfunction
@@ -426,7 +410,7 @@ function php_create_argument (argument, destination, php_project, meta)
     if defined (my.argument.class)
         if ! string_in (my.argument.class, "buffer")
             new php_argument to my.destination
-                .name = php_derive_argument_name (my.argument, "Camel")
+                .var = "$" + php_derive_argument_name (my.argument, "Camel")
                 .type = php_derive_argument_type (my.argument)
                 return php_argument
             endnew
@@ -457,41 +441,6 @@ function php_derive_instance_name (instance, pretty_print_modifier)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Map <instance/> attributes to the <php_instance/> attributes.
-# ---------------------------------------------------------------------------
-function php_map_instance (php_instance, instance, php_project)
-    check_arguments (my, "php_instance, instance, php_project", my)
-
-    php_map_instance_type (my.php_instance, my.instance, my.php_project)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Map <instance/> attributes to the <php_instance type=""/> attributes.
-# ---------------------------------------------------------------------------
-function php_map_instance_type (php_instance, instance, php_project)
-    check_arguments (my, "php_instance, instance, php_project", my)
-
-    my.php_instance.type = php_derive_instance_type (my.instance)
-    my.php_instance.c_type = php_derive_instance_type (my.instance)
-
-    if defined (my.instance.type)
-        my.php_instance.is_primitive_type = "1"
-
-    elsif defined (my.instance.interface)
-        my.php_instance.is_interface = "1"
-
-    elsif defined (my.instance.enum)
-        my.php_instance.is_enum = "1"
-
-    elsif defined (my.instance.impl)
-        my.php_instance.is_implementation = "1"
-    endif
-
-    my.php_instance.is_array = count (my.instance.array) ?? "1" ?
-    my.php_instance.is_string = count (my.instance.string) ?? "1" ?
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Return formatted method name from raw name.
 # ---------------------------------------------------------------------------
 function php_derive_method_name_str (name)
@@ -510,99 +459,6 @@ function php_derive_method_name (method, php_project)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create entity <php_return/> from the entity <return/>if it is not
-#   an error, otherwise nothing is created.
-# ---------------------------------------------------------------------------
-function php_create_return (return, destination, php_project, meta)
-    check_arguments (my, "return, destination, php_project, meta", my)
-
-    new php_return to my.destination
-        .name = "result"
-        php_map_instance (php_return, my.return, my.php_project)
-        return php_return
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Derive PHP ctype from the <instance/> type attributes.
-# ---------------------------------------------------------------------------
-function php_derive_instance_type (instance)
-    check_arguments (my, "instance", my)
-
-    if defined (my.instance.type)
-        if my.instance.type = "nothing"
-            my.primitive_type = "None"
-
-        elsif my.instance.type = "boolean"
-            my.primitive_type = "c_bool"
-
-        elsif my.instance.type = "integer"
-            my.primitive_type = "c_int"
-
-        elsif my.instance.type = "unsigned"
-            my.primitive_type = "c_uint"
-
-        elsif my.instance.type = "byte"
-            my.primitive_type = "c_byte"
-
-        elsif my.instance.type = "size"
-            my.primitive_type = "c_size_t"
-
-        elsif my.instance.type = "char"
-            if count(my.instance.string)
-                my.primitive_type = "POINTER(c_char)"
-            else
-                my.primitive_type = "c_char"
-            endif
-        else
-            echo_fatal ("Unsupported instance type '$(my.instance.type)' for PHP language.", my)
-        endif
-
-        if count (my.instance.array)
-            my.primitive_type = "POINTER($(my.primitive_type:))"
-        endif
-
-        return my.primitive_type
-
-    elsif defined (my.instance.class)
-
-        if my.instance.class = "any"
-            return "Any"
-
-        elsif my.instance.class = "data"
-            return "vsc_data_t"
-
-        elsif my.instance.class = "buffer"
-            return "vsc_buffer_t"
-
-        elsif is_ref (my.instance.class) | defined (my.instance.library)
-            return php_lang_ref (my.instance.class)
-        else
-            if my.instance.class = "error"
-                .is_error_type = "1"
-            endif
-            return class_derive_c_instance_type (my.instance)
-        endif
-
-    elsif defined (my.instance.impl)
-        return class_derive_c_instance_type (my.instance)
-
-    elsif defined (my.instance.interface)
-        return class_derive_c_instance_type (my.instance)
-
-    elsif defined (my.instance.enum)
-        return "c_int"
-
-    else
-        my.instance_dump = component_instance_dump (my.instance)
-
-        echo_warning ("Unreachable code, component_resolve_instance() must handle this. $(my.instance_dump:)", my)
-
-        return "Unknown"
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Derive PHP ctype from the <instance/> type attributes.
 # ---------------------------------------------------------------------------
 function php_derive_argument_type (instance)
@@ -611,7 +467,8 @@ function php_derive_argument_type (instance)
     if my.instance.class = "data"
         return "string"
     else
-        return "TODO RETURN TYPE (FROM CLASS)"
+        #TODO RETURN TYPE (FROM CLASS)
+        return "_other_return_type_"
     endif
 endfunction
 

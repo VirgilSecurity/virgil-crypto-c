@@ -313,16 +313,12 @@ function php_insert_class_method (php_method)
 
     assert_attributes (my.php_method, "name", my)
 
-    if is_true (my.php_method.is_classmethod)
-        my.method_args = php_format_argument_list(my.php_method) ? "cls"
-    else
-        my.method_args = php_format_argument_list(my.php_method) ? ""
-    endif
-    my.method_return = php_format_return_list(my.php_method) ?
+    my.class_method_header = php_format_class_method_header(my.php_method)
 
     php_insert_description (my.php_method, 1)
-    php_insert_code("public function $(my.php_method.name:)($(my.method_args?:))", 1)
-    php_insert_code ("{", 1)
+
+    php_insert_code("$(my.class_method_header:)", 1)
+    php_insert_code("{", 1)
 
     if count (my.php_method.php_code)
         php_insert_code (my.php_method->php_code., 2)
@@ -330,39 +326,6 @@ function php_insert_class_method (php_method)
         php_insert_code ("throw new Exception(\"Not implemented!\")", 2)
     endif
     php_insert_code ("}", 1)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return formatted list of returned value(s).
-# ---------------------------------------------------------------------------
-function php_format_return_list (php_method)
-    check_arguments (my, "php_method", my)
-
-    my.is_tuple = count (my.php_method.php_return) > 1 ?? "1" ? "0"
-
-    for my.php_method.php_return
-        my.return_list ?= ""
-
-        if my.is_tuple
-            my.return_list += "$(php_return.name:)"
-        else
-            my.return_list += ""
-        endif
-
-        if ! last()
-            my.return_list += ", "
-        endif
-    endfor
-
-    if defined (my.return_list) & my.is_tuple
-        my.return_list = "(" + my.return_list + ")"
-    endif
-
-    if defined (my.return_list)
-        my.return_list = my.return_list
-    endif
-
-    return my.return_list
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -375,6 +338,24 @@ function php_insert_extension_data (extension_module)
         #include \"vsce_assert.h\"
     ",0)
 
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_class_method_header (php_method)
+    check_arguments (my, "php_method", my)
+
+    my.arguments = ""
+
+    for my.php_method.php_argument
+        my.arguments += "$(php_argument.type:) $(php_argument.var:)"
+        if ! last()
+            my.arguments += ", "
+        endif
+    endfor
+
+    return "public function $(my.php_method.name:Camel)($(my.arguments:)): $(my.php_method.return_type:) $(my.php_method.return_data:)"
 endfunction
 
 .endtemplate
