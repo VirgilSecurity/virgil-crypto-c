@@ -611,10 +611,6 @@ function php_create_method_declaration (class, method, destination, php_project,
 
         for my.method.argument
             php_create_argument (argument, php_method, my.php_project, my.meta)
-            
-            if string_in (argument.class, "buffer")
-                php_create_return_from_argument (my.class, my.method, argument, php_method, my.destination, my.php_project, my.meta)
-            endif
         endfor
 
         for my.method.return where ! string_equal (return.enum, "status")
@@ -626,24 +622,6 @@ function php_create_method_declaration (class, method, destination, php_project,
 endfunction
 
 # ---------------------------------------------------------------------------
-#   TEMPLATE_Create entity <php_argument/> from the entity <argument/>.
-# ---------------------------------------------------------------------------
-function template_php_create_argument (argument, destination, php_project, meta)
-    check_arguments (my, "argument, destination, php_project, meta", my)
-
-    assert_attributes (my.argument, "name", my)
-
-    new php_argument to my.destination
-        .name = php_derive_instance_name (my.argument, "c")
-        php_map_instance (php_argument, my.argument, my.php_project)
-        .php_name = php_derive_instance_name (my.argument, "Camel")
-        .php_type = php_derive_php_type (my.argument)
-
-        return php_argument
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Create entity <php_argument/> from the entity <argument/>.
 # ---------------------------------------------------------------------------
 function php_create_argument (argument, destination, php_project, meta)
@@ -651,15 +629,15 @@ function php_create_argument (argument, destination, php_project, meta)
 
     assert_attributes (my.argument, "name", my)
 
-    new php_argument to my.destination
-        .name = php_derive_argument_name (my.argument, "Camel")
-        .type = php_derive_argument_type (my.argument)
-        #php_map_instance (php_argument, my.argument, my.php_project)
-        #.php_name = php_derive_instance_name (my.argument, "Camel")
-        #.php_type = php_derive_php_type (my.argument)
-
-        return php_argument
-    endnew
+    if defined (my.argument.class)
+        if ! string_in (my.argument.class, "buffer")
+            new php_argument to my.destination
+                .name = php_derive_argument_name (my.argument, "Camel")
+                .type = php_derive_argument_type (my.argument)
+                return php_argument
+            endnew
+        endif
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -682,23 +660,6 @@ function php_derive_instance_name (instance, pretty_print_modifier)
     assert_attribute (my.instance, "name", my)
 
     return "$(my.instance.name:$(my.pretty_print_modifier))"
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_derive_php_type (instance)
-    check_arguments (my, "instance", my)
-
-    if defined (my.instance.class)
-        if my.instance.class = "data"
-            return "string"
-        else 
-            return ""
-        endif
-    else 
-        return ""
-    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -853,30 +814,11 @@ endfunction
 function php_derive_argument_type (instance)
     check_arguments (my, "instance", my)
 
-    if defined (my.instance.class)
-            if my.instance.class = "data"
-                return "string"
-            else
-                return "TODO RETURN TYPE (FROM CLASS)"
-            endif
+    if my.instance.class = "data"
+        return "string"
     else
-        return "TODO RETURN TYPE (NOT FROM CLASS)"
+        return "TODO RETURN TYPE (FROM CLASS)"
     endif
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Create entity <php_return/> from the entity <argument/>.
-# ---------------------------------------------------------------------------
-function php_create_return_from_argument (class, method, argument, destination, php_class, php_project, meta)
-    check_arguments (my, "class, method, argument, destination, php_class, php_project, meta", my)
-
-    assert_attributes (my.argument, "name", my)
-
-    new php_return to my.destination
-        .name = php_derive_instance_name (my.argument, "Camel")
-
-        return php_return
-    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
