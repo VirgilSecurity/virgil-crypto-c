@@ -834,7 +834,7 @@ node("build-docker") {
 
         //Fixing Python ABI tag
         docker.image("python:2.7").inside("--user root"){
-            sh 'for file in wrappers/python/dist/*-cp27mu-*.whl; do echo $file | cp $file $(sed -r \'s/cp27mu/cp27m/g\'); done'
+            sh 'for file in wrappers/python/dist/*-cp27mu-*.whl; do echo $file | mv $file $(sed -r \'s/cp27mu/cp27m/g\'); done'
         }
         stash includes: 'wrappers/python/dist/**', name: 'python_windows'
     }
