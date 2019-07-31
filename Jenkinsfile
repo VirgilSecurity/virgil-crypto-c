@@ -630,14 +630,6 @@ node("build-docker") {
                 sh "python setup.py bdist_egg --plat-name manylinux1_i686"
                 cleanPythonBuildDirectoriesLinux()
                 sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name linux_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name linux_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name linux_i686"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name linux_i686"
             }
 
             docker.image("python:3.4").inside("--user root"){
@@ -650,14 +642,6 @@ node("build-docker") {
                 sh "python setup.py bdist_egg --plat-name manylinux1_i686"
                 cleanPythonBuildDirectoriesLinux()
                 sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name linux_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name linux_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name linux_i686"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name linux_i686"
             }
 
             docker.image("python:3.5").inside("--user root"){
@@ -670,14 +654,6 @@ node("build-docker") {
                 sh "python setup.py bdist_egg --plat-name manylinux1_i686"
                 cleanPythonBuildDirectoriesLinux()
                 sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name linux_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name linux_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name linux_i686"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name linux_i686"
             }
 
             docker.image("python:3.6").inside("--user root"){
@@ -690,14 +666,6 @@ node("build-docker") {
                 sh "python setup.py bdist_egg --plat-name manylinux1_i686"
                 cleanPythonBuildDirectoriesLinux()
                 sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name linux_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name linux_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name linux_i686"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name linux_i686"
             }
 
             docker.image("python:3.7").inside("--user root"){
@@ -710,14 +678,6 @@ node("build-docker") {
                 sh "python setup.py bdist_egg --plat-name manylinux1_i686"
                 cleanPythonBuildDirectoriesLinux()
                 sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name linux_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name linux_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name linux_i686"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name linux_i686"
             }
         }
 
