@@ -168,6 +168,18 @@ show_info "Change verion within Python wrapper files."
 
 sed_replace "__version__ = \".*\"" "__version__ = \"${VERSION_FULL}\"" "${ROOT_DIR}/wrappers/python/virgil_crypto_lib/__init__.py" 
 
+if [ ! -z "${VERSION_LABEL}" ]; then
+    if [[ $VERSION_LABEL == *"alpha"* ]]; then
+        sed_replace "\"Development Status :: .*\"" "\"Development Status :: 3 - Alpha\"" "${ROOT_DIR}/wrappers/python/setup.py"
+    elif [[ $VERSION_LABEL == *"beta"* ]] || [[ $VERSION_LABEL == *"rc"* ]]; then
+        sed_replace "\"Development Status :: .*\"" "\"Development Status :: 4 - Beta\"" "${ROOT_DIR}/wrappers/python/setup.py"
+    else
+        sed_replace "\"Development Status :: .*\"" "\"Development Status :: 2 - Pre-Alpha\"" "${ROOT_DIR}/wrappers/python/setup.py"
+    fi
+else
+    sed_replace "\"Development Status :: .*\"" "\"Development Status :: 5 - Production\/Stable\"" "${ROOT_DIR}/wrappers/python/setup.py"
+fi
+
 # ###########################################################################
 show_info "Change verion within Java project files."
 pushd ${ROOT_DIR}/wrappers/java >/dev/null
