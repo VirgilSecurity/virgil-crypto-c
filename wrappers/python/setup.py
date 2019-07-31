@@ -46,6 +46,7 @@ class BinaryDistribution(Distribution):
     def is_pure(self):
         return False
 
+
 setup(
     name="virgil-crypto-lib",
     version=__version__,
@@ -59,23 +60,35 @@ setup(
     zip_safe=False,
     author=__author__,
     author_email="support@virgilsecurity.com",
-    url="https://virgilsecurity.com/",
+    url="https://virgilsecurity.com",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: BSD License",
         "Natural Language :: English",
+        "Intended Audience :: Developers",
+        "Programming Language :: C",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Topic :: Security",
         "Topic :: Security :: Cryptography",
+        "Topic :: Software Development :: Libraries :: Application Frameworks"
+        "Topic :: Software Development :: Libraries :: Python Modules"
         ],
-    license="BSD",
+    project_urls={
+        "Documentation": "https://developer.virgilsecurity.com",
+        "Source": "https://github.com/VirgilSecurity/virgil-crypto-c",
+        "Tracker": "https://github.com/VirgilSecurity/virgil-crypto-c/issues"
+    },
+    license="BSD 3-Clause",
     description="""
-    Virgil Crypto Lib v5
+    This library is designed to be small, flexible and convenient wrapper for a variety crypto algorithms.
     """,
     long_description="""
-    Virgil Crypto Lib v5
+    This library is designed to be a small, flexible and convenient wrapper for a variety of crypto algorithms. So it can be used in a small microcontroller as well as in a high load server application. Also, it provides several custom hybrid algorithms that combine different crypto algorithms to solve common complex cryptographic problems in an easy way. This eliminates the requirement for developers to have strong cryptographic skills.
+
+    The library is available for different platforms and contains wrappers for other languages.
     """
 )
