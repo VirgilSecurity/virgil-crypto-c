@@ -1021,22 +1021,13 @@ def deployPythonArtifacts() {
                 }
 
                 echo "DEPLOY_PYTHON_ARTIFACTS = ${params.DEPLOY_PYTHON_ARTIFACTS}"
-                if (!params.DEPLOY_PYTHON_ARTIFACTS) {
-                    echo "Skipped due to the false parameter: DEPLOY_PYTHON_ARTIFACTS"
-                    return
-                }
-
-                if (env.BRANCH_NAME == "master") {
+                if (params.DEPLOY_PYTHON_ARTIFACTS) {
                     sh """
                         env
                         cd wrappers/python
-                        twine upload dist/*
+                        twine upload wrappers/python/dist/*
                     """
-                } else {
-                    echo "Skipped due to the branch: $BRANCH_NAME is not master"
-                    return
                 }
-                
             }
         }
     }

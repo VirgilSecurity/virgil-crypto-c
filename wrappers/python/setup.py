@@ -62,7 +62,7 @@ setup(
     author_email="support@virgilsecurity.com",
     url="https://virgilsecurity.com",
     classifiers=[
-        "Development Status :: 5 - Production/Stable",
+        "Development Status :: 2 - Pre-Alpha",
         "License :: OSI Approved :: BSD License",
         "Natural Language :: English",
         "Intended Audience :: Developers",
