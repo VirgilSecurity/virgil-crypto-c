@@ -1025,7 +1025,7 @@ def deployPythonArtifacts() {
                     sh """
                         env
                         cd wrappers/python
-                        twine upload wrappers/python/dist/*
+                        twine upload dist/*
                     """
                 }
             }
