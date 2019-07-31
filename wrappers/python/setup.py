@@ -74,7 +74,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Topic :: Security",
         "Topic :: Security :: Cryptography",
-        "Topic :: Software Development :: Libraries :: Application Frameworks"
+        "Topic :: Software Development :: Libraries :: Application Frameworks",
         "Topic :: Software Development :: Libraries :: Python Modules"
         ],
     project_urls={
