@@ -82,6 +82,14 @@ function sed_replace {
     fi
 }
 
+function sed_extended_replace {
+    if [ "$(uname -s)" == "Darwin" ]; then
+        sed -i "" -E -e "s/$1/$2/g" "$3"
+    else
+        sed -i"" -r "s/$1/$2/g" "$3"
+    fi
+}
+
 # ###########################################################################
 #   Variables.
 # ###########################################################################
@@ -125,10 +133,14 @@ show_info "Change verion within XML in the main.xml."
 
 main_xml_file="${ROOT_DIR}/codegen/main.xml"
 
-main_version_from="version major=\"[0-9]*\".*minor=\"[0-9]*\".*patch=\"[0-9]*\""
-main_version_to="version major=\"${VERSION_MAJOR}\" minor=\"${VERSION_MINOR}\" patch=\"${VERSION_PATCH}\""
+main_version_from="version major=\"[0-9]*\".*minor=\"[0-9]*\".*patch=\"[0-9]*\"(.*label=\".*\")?"
+if [ -z "${VERSION_LABEL}" ]; then
+    main_version_to="version major=\"${VERSION_MAJOR}\" minor=\"${VERSION_MINOR}\" patch=\"${VERSION_PATCH}\""
+else
+    main_version_to="version major=\"${VERSION_MAJOR}\" minor=\"${VERSION_MINOR}\" patch=\"${VERSION_PATCH}\" label=\"${VERSION_LABEL}\""
+fi
 
-sed_replace "${main_version_from}" "${main_version_to}" "${main_xml_file}"
+sed_extended_replace "${main_version_from}" "${main_version_to}" "${main_xml_file}"
 
 
 # ###########################################################################

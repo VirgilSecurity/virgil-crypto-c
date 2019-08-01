@@ -2490,6 +2490,11 @@ function python_create_toplevel_modules (wrapper)
 
         raw_version = my.wrapper->version 
         lib_version = "$(raw_version.major:).$(raw_version.minor:).$(raw_version.patch:)"
+        if defined(raw_version.label)
+            lib_version += "-$(raw_version.label:)"
+        endif
+        echo_debug_item(raw_version)
+        echo_debug("Lib version: $(lib_version)")
         new python_code to python_module
             . = "\
                 __author__ = \"Virgil Security\"
