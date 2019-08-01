@@ -890,7 +890,7 @@ function python_create_c_destructor_mapping (class, destination)
 
         new python_argument to python_method
             .name = "ctx"
-            .type = class_derive_c_type(my.class)
+            .type = item_derive_c_type(my.class)
             .is_reference = "1"
         endnew
 
@@ -980,7 +980,7 @@ function python_create_low_level_method_from_dependency (dependency, instance, d
         if my.instance.context <> "none"
             new python_argument to python_method
                 .name = "ctx"
-                .type = class_derive_c_type (my.instance)
+                .type = item_derive_c_type (my.instance)
                 .is_reference = "1"
             endnew
         endif
@@ -1206,7 +1206,7 @@ function python_create_low_level_method_declaration (class, method, destination,
         if my.class.context <> "none" & is_false (my.method.is_static)
             new python_argument to python_method
                 .name = "ctx"
-                .type = class_derive_c_type(my.class)
+                .type = item_derive_c_type(my.class)
                 .is_reference = "1"
             endnew
         endif
@@ -1608,7 +1608,7 @@ function python_create_cast_to_implementation_low_level_method(implementation, d
 
         new python_argument to python_method
             .name = "ctx"
-            .type = class_derive_c_type(my.implementation)
+            .type = item_derive_c_type(my.implementation)
             .is_reference = "1"
         endnew
 
@@ -1640,7 +1640,7 @@ function python_create_shallow_copy_low_level_method(implementation, destination
 
         new python_argument to python_method
             .name = "ctx"
-            .type = class_derive_c_type(my.implementation)
+            .type = item_derive_c_type(my.implementation)
             .is_reference = "1"
         endnew
 
@@ -1786,7 +1786,7 @@ function python_create_data_class (class, destination, python_project, meta)
         endfor
 
         new python_class to python_module
-            .name = class_derive_c_type (my.class)
+            .name = item_derive_c_type (my.class)
             python_create_custom_inherit ("Structure", python_class, my.python_project)
 
             python_map_attr_visibility (python_class, my.class)
@@ -1970,7 +1970,7 @@ function python_create_buffer_class (class, destination, python_project, meta)
         endfor
 
         new python_class to python_module
-            .name = class_derive_c_type (my.class)
+            .name = item_derive_c_type (my.class)
             python_create_custom_inherit ("Structure", python_class, my.python_project)
 
             python_map_attr_visibility (python_class, my.class)
@@ -2852,7 +2852,7 @@ function python_create_implementation_module (implementation, python_project, me
         if my.implementation.context <> "none" & implementation.visibility = "public"
         # Low level structure mapping
             new python_class to python_module
-                .name = class_derive_c_type (my.implementation)
+                .name = item_derive_c_type (my.implementation)
                 my.low_level_type = 0.name
                 .is_implementation_type = "1"
                 . = "\
@@ -3053,7 +3053,7 @@ function python_create_class_module (class, python_project, meta)
         if my.class.context ?<> "none" & my.class.context ?<> "public" & class.visibility ?= "public"
         # Low level structure mapping
             new python_class to python_module
-                .name = class_derive_c_type (my.class)
+                .name = item_derive_c_type (my.class)
                 . = "\
                     pass
                 "
@@ -3062,7 +3062,7 @@ function python_create_class_module (class, python_project, meta)
             endnew
         elsif my.class.context = "public"
             new python_class to python_module
-                .name = class_derive_c_type (my.class)
+                .name = item_derive_c_type (my.class)
                 class_body = format_left ("\
                     _fields_ = [
                 ")

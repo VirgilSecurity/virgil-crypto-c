@@ -33,15 +33,115 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-# ---------------------------------------------------------------------------
-#   Contains API for Python wrapper generation.
-# ---------------------------------------------------------------------------
-#   This is a code generator built using the iMatix GSL code generation
-#   language. See https://github.com/imatix/gsl for details.
-# ---------------------------------------------------------------------------
+gsl from "common.gsl"
 
 # ===========================================================================
-#   C types derivation. TODO: extract this functions to separate GSL module.
+#   Check.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Return true, if given class constant should be wrapped.
+# ---------------------------------------------------------------------------
+function wrapper_should_wrap_class_constant(constant)
+    check_arguments(my, "constant", my)
+
+    return my.constant.scope = "public" & my.constant.definition = "public"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true, if given method should be wrapped.
+# ---------------------------------------------------------------------------
+function wrapper_should_wrap_method(method)
+    check_arguments(my, "method", my)
+
+    return my.method.scope = "public" & my.method.declaration = "public" & my.method.visibility = "public"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true, if given instance refers to a status code.
+# ---------------------------------------------------------------------------
+function wrapper_instance_is_status(instance)
+    check_arguments(my, "instance", my)
+
+    return string_equal(my.instance.enum, "status")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true, if method return status code.
+# ---------------------------------------------------------------------------
+function wrapper_is_method_return_status(method)
+    check_arguments(my, "method", my)
+
+    return count(my.method.return, string_equal(return.enum, "status"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true, if given method argument should be skipped from the wrapper.
+# ---------------------------------------------------------------------------
+function wrapper_method_should_skip_argument(argument)
+    check_arguments(my, "argument", my)
+
+    return my.argument.access = "writeonly" | string_equal(my.argument.class, "error")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true, if given class instance is returned by value.
+# ---------------------------------------------------------------------------
+function wrapper_is_class_returned_by_value(return)
+    check_arguments(my, "return", my)
+
+    return has_one_of_attribute(my.return, "class, impl") & \
+            is_false(my.return.is_reference) & \
+            string_in(my.return.access, "readonly, readwrite")
+endfunction
+
+# ===========================================================================
+#   Type helpers.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Store type meta information of given instance within wrapper instance.
+# ---------------------------------------------------------------------------
+function wrapper_map_instance_type_info(instance, wrapper_instance)
+    check_arguments(my, "instance, wrapper_instance", my)
+
+    if defined(my.instance.type)
+        my.wrapper_instance.is_primitive_type = "1"
+
+    elsif defined(my.instance.class)
+        my.wrapper_instance.is_class = "1"
+
+        if my.instance.class = "any"
+            my.wrapper_instance.is_any = "1"
+
+        elsif my.instance.class = "data"
+            my.wrapper_instance.is_data = "1"
+
+        elsif my.instance.class = "buffer"
+            my.wrapper_instance.is_buffer = "1"
+
+        elsif my.instance.class = "error"
+            my.wrapper_instance.is_error = "1"
+            my.wrapper_instance.method_reset = make_ref_c(make_id("class error method reset"))
+        endif
+
+    elsif defined(my.instance.interface)
+        my.wrapper_instance.is_interface = "1"
+
+    elsif defined(my.instance.enum)
+        my.wrapper_instance.is_enum = "1"
+
+    elsif defined(my.instance.impl)
+        my.wrapper_instance.is_class = "1"
+    endif
+
+    my.wrapper_instance.is_array = count(my.instance.array) ?? "1" ?
+    my.wrapper_instance.is_string = count(my.instance.string) ?? "1" ?
+    my.wrapper_instance.is_reference = my.instance.is_reference ?
+endfunction
+
+# ===========================================================================
+#   Derive C names.
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
@@ -52,28 +152,6 @@ function component_derive_project_uid (instance)
     check_arguments (my, "instance", my)
 
     return defined (my.instance.project) ?? make_id ("project", my.instance.project) ? ""
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C type:
-#       - enum
-#       - class
-#       - interface
-#       - implementation
-# ---------------------------------------------------------------------------
-function class_derive_c_type (type)
-    check_arguments (my, "type", my)
-
-    my.item_name = name (my.type)
-
-    if my.item_name = "enum"
-        return make_ref_c (make_id ("enum", my.type.name))
-
-    elsif my.item_name = "interface"
-        return make_ref_c (make_id ("class impl struct impl"))
-    else
-        return make_ref_c (make_id ("class", my.type.name, "struct", my.type.name))
-    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -90,7 +168,28 @@ function class_derive_c_instance_type (instance)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C class constructor.
+#   Return .(UID) that refers to the C type:
+#       - enum
+#       - class
+#       - interface
+#       - implementation
+# ---------------------------------------------------------------------------
+function item_derive_c_type (item)
+    check_arguments (my, "item", my)
+
+    my.item_name = name (my.item)
+
+    if my.item_name = "enum"
+        return make_ref_c (make_id ("enum", my.item.name))
+    elsif my.item_name = "interface"
+        return make_ref_c (make_id ("class impl struct impl"))
+    else
+        return make_ref_c (make_id ("class", my.item.name, "struct", my.item.name))
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C default class constructor.
 # ---------------------------------------------------------------------------
 function class_derive_c_defalut_constructor (class)
     check_arguments (my, "class", my)
@@ -99,67 +198,67 @@ function class_derive_c_defalut_constructor (class)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C class constructor.
+# ---------------------------------------------------------------------------
+function class_derive_c_constructor(class, name)
+    check_arguments(my, "class", my)
+
+    my.of_class = my.class.of_class ? my.class.name
+    return make_ref_c(make_id ("class", my.of_class, "method", "new", my.name?))
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return .(UID) that refers to the C class destructor.
 # ---------------------------------------------------------------------------
-function class_derive_c_destructor (class)
-    check_arguments (my, "class", my)
+function class_derive_c_destructor(class)
+    check_arguments(my, "class", my)
 
-    return make_ref_c (make_id ("class", my.class.name, "method delete"))
+    return make_ref_c(make_id("class", my.class.name, "method delete"))
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Return .(UID) that refers to the C class method.
 # ---------------------------------------------------------------------------
-function class_derive_c_method (class, method)
-    check_arguments (my, "class, method", my)
+function class_derive_c_method(class, method)
+    check_arguments(my, "class, method", my)
 
-    if string_equal (my.method.of_class, "global") | string_equal (my.class.of_class, "global")
-        return make_ref_c (make_id ("global method", my.method.name))
+    if string_equal(my.method.of_class, "global") | string_equal (my.class.of_class, "global")
+        return make_ref_c(make_id("global method", my.method.name))
 
     else
         my.of_class = my.method.of_class ? my.class.of_class ? my.class.name
-        return make_ref_c (make_id ("class", my.of_class, "method", my.method.name))
+        return make_ref_c(make_id("class", my.of_class, "method", my.method.name))
     endif
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C class constructor.
+#   Return .(UID) that refers to the C class method shallow copy method.
 # ---------------------------------------------------------------------------
-function class_derive_c_constructor (class, constructor)
-    check_arguments (my, "class, constructor", my)
+function class_derive_c_method_shallow_copy(class)
+    check_arguments(my, "class", my)
 
     my.of_class = my.class.of_class ? my.class.name
-    return make_ref_c (make_id ("class", my.of_class, "method", "new", my.constructor.name ?))
+    return make_ref_c(make_id("class", my.of_class, "method", "shallow copy"))
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C class retain method.
+#   Return .(UID) that refers to the C class method that use dependency.
 # ---------------------------------------------------------------------------
-function class_derive_c_method_shallow_copy (class)
-    check_arguments (my, "class", my)
+function class_derive_c_method_use_dependency(class, dependency)
+    check_arguments(my, "class, dependency", my)
 
     my.of_class = my.class.of_class ? my.class.name
-    return make_ref_c (make_id ("class", my.of_class, "method", "shallow copy"))
+    return make_ref_c(make_id("class", my.of_class, "method", "use", my.dependency.name))
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C class method that returns
-#   context size.
+#   Return .(UID) that refers to the C class method that release dependency.
 # ---------------------------------------------------------------------------
-function class_derive_class_c_method_ctx_size (class)
-    check_arguments (my, "class", my)
+function class_derive_c_method_release_dependency(class, dependency)
+    check_arguments(my, "class, dependency", my)
 
     my.of_class = my.class.of_class ? my.class.name
-
-    if item_in (my.class, "class")
-        return make_ref_c (make_id ("class", my.of_class, "method", "ctx size"))
-
-    elsif item_in (my.class, "implementation")
-        return make_ref_c (make_id ("class", my.of_class, "method", "impl size"))
-
-    else
-        return make_ref_c (make_id ("class", my.of_class, "method", "size"))
-    endif
+    return make_ref_c(make_id("class", my.of_class, "method", "release", my.dependency.name))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -196,21 +295,128 @@ function interface_derive_c_constant_method (interface, constant)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C interface method that returns API.
+#   Return .(UID) that refers to the C interface method that makes shallow
+#   copy.
 # ---------------------------------------------------------------------------
-function class_derive_c_method_use_dependency (class, dependency)
-    check_arguments (my, "class, dependency", my)
-
-    return make_ref_c (make_id("class", my.class.name, "method", "use", my.dependency.name))
+function impl_derive_c_method_shallow_copy()
+    return make_ref_c(make_id("class", "impl", "method", "shallow copy"))
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C interface method that returns API.
+#   Return .(UID) that refers to the C implementation method that returns
+#   implementation tag.
 # ---------------------------------------------------------------------------
-function class_derive_c_method_release_dependency (class, dependency)
-    check_arguments (my, "class, dependency", my)
+function impl_derive_c_method_tag()
+    return make_ref_c(make_id("class", "impl", "method", "tag"))
+endfunction
 
-    return make_ref_c (make_id("class", my.class.name, "method", "release", my.dependency.name))
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C implementation method that returns
+#   interface api.
+# ---------------------------------------------------------------------------
+function impl_derive_c_method_api()
+    return make_ref_c(make_id("class", "impl", "method", "api"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C class "error" method "ctx size".
+# ---------------------------------------------------------------------------
+function class_error_derive_c_method_ctx_size()
+    return make_ref_c(make_id("class", "error", "method", "ctx size"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C class "error" method "status".
+# ---------------------------------------------------------------------------
+function class_error_derive_c_method_status()
+    return make_ref_c(make_id("class", "error", "method", "status"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C class "error" method "reset".
+# ---------------------------------------------------------------------------
+function class_error_derive_c_method_reset()
+    return make_ref_c(make_id("class", "error", "method", "reset"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C type of the class.
+# ---------------------------------------------------------------------------
+function class_derive_c_type (class)
+    check_arguments(my, "class", my)
+
+    my.of_class = my.class.of_class ? my.class.name
+    return make_ref_c(make_id ("class", my.of_class, "struct", my.class.name))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C class method that returns
+#   context size.
+# ---------------------------------------------------------------------------
+function class_derive_class_c_method_ctx_size (class)
+    check_arguments(my, "class", my)
+
+    my.of_class = my.class.of_class ? my.class.name
+
+    if item_in (my.class, "class")
+        return make_ref_c(make_id("class", my.of_class, "method", "ctx size"))
+
+    elsif item_in (my.class, "implementation")
+        return make_ref_c(make_id("class", my.of_class, "method", "impl size"))
+
+    else
+        return make_ref_c(make_id("class", my.of_class, "method", "size"))
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C instance shallow copy method.
+# ---------------------------------------------------------------------------
+function insatnce_derive_c_method_shallow_copy (instance)
+    check_arguments(my, "instance", my)
+
+    my.project_uid = component_derive_project_uid (my.instance)
+
+    if has_one_of_attribute(my.instance, "interface")
+        return make_ref_c(make_id(my.project_uid, "class", "impl", "method", "shallow copy"))
+
+    elsif has_one_of_attribute(my.instance, "class, impl")
+        return make_ref_c(make_id(my.project_uid, "class", my.instance.class ? my.instance.impl, "method", "shallow copy"))
+    endif
+endfunction
+
+# ===========================================================================
+#   Formatters.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Return error message that is extracted from the constant description.
+# ---------------------------------------------------------------------------
+function enum_constant_format_oneline_description(constant)
+    check_arguments(my, "constant", my)
+
+    my.message = my.constant. ? ""
+
+    return string_to_singleline(my.message)
+endfunction
+
+# ===========================================================================
+#   Finding.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Find project with a given name.
+# ---------------------------------------------------------------------------
+function wrapper_find_project(wrapper, name)
+    check_arguments(my, "wrapper, name", my)
+
+    my.lang = my.wrapper.lang
+    my.project = my.wrapper->$(my.lang:)_project(name = my.name) ?
+    if ! defined (my.project)
+        echo_fatal ("Project with name='$(my.name)' for lang='$(my.lang:)' is not found.")
+    endif
+
+    return my.project
 endfunction
 
 .endtemplate

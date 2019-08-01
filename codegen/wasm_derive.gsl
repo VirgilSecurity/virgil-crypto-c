@@ -1,0 +1,370 @@
+.template 0
+#   Copyright(C) 2015-2019 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#      (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#      (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#      (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+gsl from "common.gsl"
+gsl from "component.gsl"
+
+# ---------------------------------------------------------------------------
+#   Return formatted project name.
+# ---------------------------------------------------------------------------
+function wasm_derive_project_name_str(project_name)
+    check_arguments(my, "project_name", my)
+
+    return "$(my.project_name:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted module name.
+# ---------------------------------------------------------------------------
+function wasm_derive_module_name(type)
+    check_arguments(my, "type", my)
+
+    assert_attribute(my.type, "name", my)
+
+    return "$(my.type.name:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted module name that handle errors.
+# ---------------------------------------------------------------------------
+function wasm_derive_error_module_name(wasm_project)
+    check_arguments(my, "wasm_project", my)
+
+    assert_attribute(my.wasm_project, "name", my)
+
+    return "$(my.wasm_project.name:Pascal)Error"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted class name that handle errors.
+# ---------------------------------------------------------------------------
+function wasm_derive_error_class_name(wasm_project)
+    check_arguments(my, "wasm_project", my)
+
+    assert_attribute(my.wasm_project, "name", my)
+
+    return "$(my.wasm_project.name:Pascal)Error"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted class name that handle errors.
+# ---------------------------------------------------------------------------
+function wasm_derive_error_class_name_from_instance(instance, wasm_project)
+    check_arguments(my, "instance, wasm_project", my)
+
+    assert_attribute(my.instance, "enum", my)
+    assert_attribute(my.wasm_project, "name", my)
+
+    if my.instance.enum <> "status"
+        my.dump = component_instance_dump(my.instance)
+        echo_fatal("Expected enum=\"status\", but given: $(my.dump)", my)
+    endif
+
+    if defined(my.instance.project)
+        return "$(my.instance.project:Pascal)Error"
+    else
+        return "$(my.wasm_project.name:Pascal)Error"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the WebAssembly class.
+# ---------------------------------------------------------------------------
+function wasm_derive_class_name_str(class_name)
+    check_arguments(my, "class_name", my)
+
+    return "$(my.class_name:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the WebAssembly class.
+# ---------------------------------------------------------------------------
+function wasm_derive_class_name(class)
+    check_arguments(my, "class", my)
+
+    assert_attribute_one_of(my.class, "name", my)
+
+    return wasm_derive_class_name_str(my.class.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the WebAssembly constant.
+# ---------------------------------------------------------------------------
+function wasm_derive_constant_name_str(constant_name)
+    check_arguments(my, "constant_name", my)
+
+    return "$(my.constant_name:c,UPPER)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the WebAssembly constant.
+# ---------------------------------------------------------------------------
+function wasm_derive_constant_name(constant)
+    check_arguments(my, "constant", my)
+
+    assert_attribute_one_of(my.constant, "name", my)
+
+    return wasm_derive_constant_name_str(my.constant.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the WebAssembly enumeration.
+# ---------------------------------------------------------------------------
+function wasm_derive_enum_name_str(enum_name)
+    check_arguments(my, "enum_name", my)
+
+    return "$(my.enum_name:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the WebAssembly enumeration.
+# ---------------------------------------------------------------------------
+function wasm_derive_enum_name(enum)
+    check_arguments(my, "enum", my)
+
+    assert_attribute_one_of(my.enum, "name", my)
+
+    return wasm_derive_enum_name_str(my.enum.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the WebAssembly method.
+# ---------------------------------------------------------------------------
+function wasm_derive_method_name_str(name)
+    check_arguments(my, "name", my)
+
+    return "$(my.name:Camel)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the WebAssembly method.
+# ---------------------------------------------------------------------------
+function wasm_derive_method_name(method)
+    check_arguments(my, "method", my)
+
+    return wasm_derive_method_name_str(my.method.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the WebAssembly argument.
+# ---------------------------------------------------------------------------
+function wasm_derive_method_argument_name_str(argument_name)
+    check_arguments(my, "argument_name", my)
+
+    return "$(my.argument_name:Camel)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the WebAssembly argument.
+# ---------------------------------------------------------------------------
+function wasm_derive_method_argument_name(argument)
+    check_arguments(my, "argument", my)
+
+    assert_attribute_one_of(my.argument, "name", my)
+
+    return wasm_derive_method_argument_name_str(my.argument.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return invocation of the getter function that returns buffer length.
+# ---------------------------------------------------------------------------
+function wasm_derive_buffer_length_getter(argument, wasm_class)
+    assert_attributes(my, "argument, wasm_class", my)
+
+    assert_item(my.argument, "length", my)
+
+    my.length = my.argument->length
+    assert_attribute_one_of(my.length, "constant, argument, method", my)
+
+    for my.length.proxy
+        if ! defined(proxy.[to])
+            echo_debug_item(my.argument, my)
+            assert_attributes(proxy, "to", my)
+        endif
+
+        my.proxy_args ?= ""
+
+        if ! first()
+            my.proxy_args += ", "
+        endif
+
+        if defined(proxy.argument)
+            my.proxy_args += wasm_derive_method_argument_name_str(proxy.argument)
+
+            if string_in(proxy.cast, "data_length")
+                my.proxy_args += ".length"
+            endif
+
+        elsif defined(proxy.constant)
+            my.proxy_args += wasm_lang_ref(proxy.constant)
+        else
+            echo_debug_item(my.argument, my)
+            echo_fatal("Buffer length argument can be proxied. Undefined type.", my)
+        endif
+    endfor
+
+    my.specified_proxy_object = get_one_of_attribute(my.length, "class, impl") ?
+    if defined(my.specified_proxy_object)
+        if my.specified_proxy_object = "self"
+            my.proxy_object = my.wasm_class.name
+        else
+            my.proxy_object = "modules.$(wasm_derive_class_name_str(my.specified_proxy_object))"
+        endif
+    else
+        my.proxy_object = "this"
+    endif
+
+
+    if defined(my.length.method)
+        my.proxy_method = wasm_derive_method_name_str(my.length.method)
+        return "$(my.proxy_object:).$(my.proxy_method:)($(my.proxy_args?:))"
+
+    elsif defined(my.length.constant)
+        my.proxy_constant = wasm_derive_constant_name_str(my.length.constant)
+        return "$(my.proxy_object:).$(my.proxy_constant:)"
+
+    elsif defined(my.length.argument)
+        my.proxy_argument = wasm_derive_method_argument_name_str(my.length.argument)
+        return my.proxy_argument
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return class name that instance belongs to.
+# ---------------------------------------------------------------------------
+function wasm_derive_instance_class(instance)
+    assert_attributes(my, "instance", my)
+    assert_attribute_one_of(my.instance, "class, impl", my)
+
+    return wasm_derive_class_name_str(my.instance.class ? my.instance.impl)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return helper class name that can wrap C interface object to a scpecific
+#   JS class object.
+# ---------------------------------------------------------------------------
+function wasm_derive_interface_wrapper_class_name(return, wasm_project)
+    assert_attributes(my, "return", my)
+    assert_attributes(my.return, "interface", my)
+
+    if defined(my.return.project)
+        my.project_name = wasm_derive_project_name_str(my.return.project)
+    else
+        my.project_name = my.wasm_project.name
+    endif
+
+    return wasm_derive_class_name_str(cat(my.return.project ? my.wasm_project.name, "interface"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return invocation that validate that given context is not NULL.
+# ---------------------------------------------------------------------------
+function wasm_derive_ctx_precondition(ctx_name)
+    check_arguments(my, "ctx_name", my)
+
+    return "precondition.ensureNotNull('$(my.ctx_name:)', $(my.ctx_name:));"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return invocation that validate that given argument is a number.
+# ---------------------------------------------------------------------------
+function wasm_derive_number_precondition(arg_name)
+    check_arguments(my, "arg_name", my)
+
+    return "precondition.ensureNumber('$(my.arg_name:)', $(my.arg_name:));"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return invocation that validate instance passed to the JS method.
+# ---------------------------------------------------------------------------
+function wasm_derive_instance_precondition(instance, wasm_instance, wasm_project)
+    check_arguments(my, "instance, wasm_instance, wasm_project", my)
+
+    if defined(my.instance.type)
+        if my.instance.type = "boolean"
+            my.ensure_method = "ensureBoolean"
+        else
+            my.ensure_method = "ensureNumber"
+        endif
+
+    elsif defined(my.instance.class)
+        if my.instance.class = "data"
+            my.ensure_method = "ensureByteArray"
+
+        elsif my.instance.class = "buffer"
+            my.ensure_method = "ensureByteArray"
+        else
+            my.ensure_method = "ensureClass"
+            my.ensure_class_name = wasm_derive_instance_class(my.instance)
+        endif
+
+    elsif defined(my.instance.interface)
+        my.ensure_method = "ensureImplementInterface"
+        my.ensure_interface_checker = wasm_derive_interface_wrapper_class_name(my.instance, my.wasm_project)
+        my.ensure_interface_name = \
+                wasm_derive_project_name_str(my.instance.project ? my.wasm_project.name) + "." + \
+                wasm_derive_class_name_str(my.instance.interface)
+        my.ensure_interface_tag = \
+                "$(my.ensure_interface_checker:)Tag.$(wasm_derive_constant_name_str(my.instance.interface))"
+
+
+    elsif defined(my.instance.enum)
+        my.ensure_method = "ensureNumber"
+
+    elsif defined(my.instance.impl)
+        my.ensure_method = "ensureClass"
+        my.ensure_class_name = wasm_derive_instance_class(my.instance)
+    endif
+
+    if defined(my.ensure_method)
+        my.precondition ?= "precondition."
+        my.precondition += my.ensure_method
+        my.precondition += "("
+        my.precondition +="'$(my.wasm_instance.name:)', $(my.wasm_instance.name:)"
+        if defined(my.ensure_class_name)
+            my.precondition +=", modules.$(my.ensure_class_name:)"
+        endif
+        if defined(my.ensure_interface_checker)
+            my.precondition +=", '$(my.ensure_interface_name:)'"
+            my.precondition +=", modules.$(my.ensure_interface_tag:)"
+            my.precondition +=", modules.$(my.ensure_interface_checker:)"
+        endif
+        my.precondition += ");"
+    endif
+
+    return my.precondition ?
+endfunction
+
+.endtemplate

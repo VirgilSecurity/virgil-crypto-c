@@ -37,7 +37,7 @@
 #   Contains API for Swift wrapper generation.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
-#   language. See https://github.com/imatix/gsl for details.
+#   language. See https://github.com/zeromq/gsl for details.
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"
@@ -46,183 +46,6 @@ gsl from "component.gsl"
 gsl from "c_component.gsl"
 gsl from "swift_codegen.gsl"
 gsl from "projects_api.gsl"
-
-
-# ===========================================================================
-#   C types derivation. TODO: extract this functions to separate GSL module.
-# ===========================================================================
-
-# ---------------------------------------------------------------------------
-#   If attribute 'project' is defined within <instance/> then return project
-#   prefix, otherwise return empty string.
-# ---------------------------------------------------------------------------
-function component_derive_project_uid (instance)
-    check_arguments (my, "instance", my)
-
-    return defined (my.instance.project) ?? make_id ("project", my.instance.project) ? ""
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C type of the class.
-# ---------------------------------------------------------------------------
-function class_derive_c_type (class)
-    check_arguments (my, "class", my)
-
-    return make_ref_c (make_id ("class", my.class.name, "struct", my.class.name))
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the instance C type.
-# ---------------------------------------------------------------------------
-function class_derive_c_instance_type (instance)
-    check_arguments (my, "instance", my)
-
-    my.temp_c_instance = XML.new("c_instance")
-
-    c_component_map_instance_attr_type (my.temp_c_instance, my.instance)
-
-    return my.temp_c_instance.type
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C class constructor.
-# ---------------------------------------------------------------------------
-function class_derive_c_defalut_constructor (class)
-    check_arguments (my, "class", my)
-
-    return make_ref_c (make_id ("class", my.class.name, "method new"))
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C class destructor.
-# ---------------------------------------------------------------------------
-function class_derive_c_destructor (class)
-    check_arguments (my, "class", my)
-
-    return make_ref_c (make_id ("class", my.class.name, "method delete"))
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C class method.
-# ---------------------------------------------------------------------------
-function class_derive_c_method (class, method)
-    check_arguments (my, "class, method", my)
-
-    if string_equal (my.method.of_class, "global") | string_equal (my.class.of_class, "global")
-        return make_ref_c (make_id ("global method", my.method.name))
-
-    else
-        my.of_class = my.method.of_class ? my.class.of_class ? my.class.name
-        return make_ref_c (make_id ("class", my.of_class, "method", my.method.name))
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C class constructor.
-# ---------------------------------------------------------------------------
-function class_derive_c_constructor (class, constructor)
-    check_arguments (my, "class, constructor", my)
-
-    my.of_class = my.class.of_class ? my.class.name
-    return make_ref_c (make_id ("class", my.of_class, "method", "new", my.constructor.name ?))
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C class shallow copy method.
-# ---------------------------------------------------------------------------
-function class_derive_c_method_shallow_copy (class)
-    check_arguments (my, "class", my)
-
-    my.of_class = my.class.of_class ? my.class.name
-    return make_ref_c (make_id ("class", my.of_class, "method", "shallow copy"))
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C instance shallow copy method.
-# ---------------------------------------------------------------------------
-function insatnce_derive_c_method_shallow_copy (instance)
-    check_arguments (my, "instance", my)
-
-    my.project_uid = component_derive_project_uid (my.instance)
-
-    if has_one_of_attribute(my.instance, "interface")
-        return make_ref_c (make_id (my.project_uid, "class", "impl", "method", "shallow copy"))
-
-    elsif has_one_of_attribute(my.instance, "class, impl")
-        return make_ref_c (make_id (my.project_uid, "class", my.instance.class ? my.instance.impl, "method", "shallow copy"))
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C class method that returns
-#   context size.
-# ---------------------------------------------------------------------------
-function class_derive_class_c_method_ctx_size (class)
-    check_arguments (my, "class", my)
-
-    my.of_class = my.class.of_class ? my.class.name
-
-    if item_in (my.class, "class")
-        return make_ref_c (make_id ("class", my.of_class, "method", "ctx size"))
-
-    elsif item_in (my.class, "implementation")
-        return make_ref_c (make_id ("class", my.of_class, "method", "impl size"))
-
-    else
-        return make_ref_c (make_id ("class", my.of_class, "method", "size"))
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C interface method that returns API.
-# ---------------------------------------------------------------------------
-function interface_derive_c_api_method_from_name (interface_name)
-    check_arguments (my, "interface_name", my)
-
-    return make_ref_c (make_id ("class", my.interface_name, "method", "api"))
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C interface method that returns API.
-# ---------------------------------------------------------------------------
-function interface_derive_c_api_method (interface)
-    check_arguments (my, "interface", my)
-
-    assert_attribute (my.interface, "name", my)
-
-    return interface_derive_c_api_method_from_name (my.interface.name)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C interface method that returns
-#   requested constant.
-# ---------------------------------------------------------------------------
-function interface_derive_c_constant_method (interface, constant)
-    check_arguments (my, "interface, constant", my)
-
-    assert_attribute (my.interface, "name", my)
-    assert_attribute (my.constant, "name", my)
-
-    return make_ref_c (make_id ("class", my.interface.name, "method", my.constant.name))
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C interface method that returns API.
-# ---------------------------------------------------------------------------
-function class_derive_c_method_use_dependency (class, dependency)
-    check_arguments (my, "class, dependency", my)
-
-    return make_ref_c (make_id("class", my.class.name, "method", "use", my.dependency.name))
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C interface method that returns API.
-# ---------------------------------------------------------------------------
-function class_derive_c_method_release_dependency (class, dependency)
-    check_arguments (my, "class, dependency", my)
-
-    return make_ref_c (make_id("class", my.class.name, "method", "release", my.dependency.name))
-endfunction
 
 
 # ===========================================================================
@@ -1419,13 +1242,14 @@ function swift_create_method_declaration (class, method, destination, swift_proj
 
     new swift_method to my.destination
         . = swift_format_description (my.method) ?
-        .name = swift_derive_method_name (method, my.swift_project)
+        .name = swift_derive_method_name (my.method, my.swift_project)
         .throws = swift_derive_method_throws (my.method)
         .handle_proxy_status = swift_derive_handle_proxy_status (my.method)
-        .interface = my.method.interface ?
+        .interface = my.method.interface ? #   When method comes from an interface.
         .objc = "1"
 
         if ! defined (my.method.interface)
+            #   Method can be static only if it doesn't come from an interface.
             .modifier = is_true (my.method.is_static) ?? "static" ?
         endif
 
@@ -1785,11 +1609,15 @@ function swift_create_class_default_constructor (swift_class, class, swift_proje
     check_arguments (my, "swift_class, class, swift_project, meta", my)
 
     if string_in (my.class.context, "public") & string_in (my.class.lifecycle, "none")
+        #
+        #   This case was used for class "error" when it was mapped to the Swift class.
+        #   At this very moment class "error" transformed to exceptions.
+        #
         my.ctx_size_invocation = "$(class_derive_class_c_method_ctx_size (my.class))()"
         my.ctor_invocation = ".(c_global_method_alloc)($(my.ctx_size_invocation:))!" + \
                 ".bindMemory(to: $(class_derive_c_type(my.class)).self, capacity:1)"
     else
-        my.ctor_invocation = "$(class_derive_c_defalut_constructor (my.class))()"
+        my.ctor_invocation = "$(class_derive_c_constructor (my.class))()"
     endif
 
     new swift_constructor to my.swift_class
@@ -1866,7 +1694,7 @@ function swift_create_class_constructor (class, constructor, destination, swift_
 
         #   Wrap proxy call
         my.proxy_args = swift_format_c_proxy_args (my.class, my.constructor)
-        my.proxy_call = "$(class_derive_c_constructor (my.class, my.constructor))($(my.proxy_args:))"
+        my.proxy_call = "$(class_derive_c_constructor (my.class, my.constructor.name))($(my.proxy_args:))"
         my.proxy_return_type = swift_derive_class_context_type (my.class) + "?"
         my.proxy_invocation = swift_wrap_c_proxy_call (swift_constructor, my.proxy_call, my.proxy_return_type, my.swift_project)
 

@@ -51,4 +51,5 @@
     <wrapper lang="python" />
     <wrapper lang="swift"/>
     <wrapper lang="java"/>
+    <wrapper lang="wasm"/>
 </main>

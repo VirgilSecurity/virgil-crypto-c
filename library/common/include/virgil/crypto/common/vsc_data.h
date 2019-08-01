@@ -135,6 +135,24 @@ VSC_PUBLIC bool
 vsc_data_equal(vsc_data_t self, vsc_data_t rhs);
 
 //
+//  Return data length.
+//
+//  Note, this method can be used for wrappers where direct access
+//  to the structure fields is prohibited.
+//
+VSC_PUBLIC size_t
+vsc_data_len(vsc_data_t self);
+
+//
+//  Returns underlying data bytes.
+//
+//  Note, this method can be used for wrappers where direct access
+//  to the structure fields is prohibited.
+//
+VSC_PUBLIC const byte *
+vsc_data_bytes(vsc_data_t self);
+
+//
 //  Perform constant-time data comparison.
 //  The time depends on the given length but not on the data itself.
 //  Return true if given data are equal.
