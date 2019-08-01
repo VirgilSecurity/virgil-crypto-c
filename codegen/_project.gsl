@@ -1,0 +1,145 @@
+if !main.multithread
+    gsl from "_class.gsl"
+endif
+
+# ---------------------------------------------------------------------------
+function project_process_class(project, class)
+    check_arguments(my, "project, class", my)
+
+    if main.multithread
+        my.class_parsed_thread = create_parsed_thread("_class.gsl")
+        my.class_thread = my.class_parsed_thread.run()
+        my.class_thread.send(my.project, my.class)
+    else
+        class_process(my.project, my.class)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function project_load(project_name)
+    check_arguments(my, "project_name", my)
+
+    my.name = make_id("project", my.project_name)
+    my.models_dir = cat_path("models", my.name)
+    my.file_path = cat_path(my.models_dir, my.name + ".xml")
+
+    return item_load_from_file(my.file_path)
+endfunction
+
+# ---------------------------------------------------------------------------
+function project_load_augmented(project)
+    check_arguments(my, "project", my)
+
+    my.path = cat_path("generated", make_id(my.project.name))
+    my.filename = make_id("project", my.project.name) + ".xml"
+    my.file_path = cat_path(my.path, my.filename)
+
+    if is_true(my.project.forcegen)
+        return # undefined
+    endif
+
+    if file.exists(my.file_path)
+        my.augmented_project = item_load_from_file(my.file_path)
+        if my.augmented_project.fingerprint = fingerprint(my.project)
+            return my.augmented_project
+        endif
+    endif
+
+    return # undefined
+endfunction
+
+# ---------------------------------------------------------------------------
+function project_store_augmented(project)
+    check_arguments(my, "project", my)
+
+    my.filename = make_id("project", my.project.name) + ".xml"
+    item_save_to_file(my.project, my.filename, my.project.work_path)
+endfunction
+
+# ---------------------------------------------------------------------------
+function project_setup_fingerprint(project)
+    check_arguments(my, "project", my)
+
+    my.project.fingerprint = fingerprint(my.project)
+endfunction
+
+# ---------------------------------------------------------------------------
+function project_verify(project)
+    check_arguments(my, "project", my)
+
+    assert_attribute(my.project, "name", my)
+    assert_attribute(my.project, "prefix", my)
+    assert_attribute(my.project, "namespace", my)
+    assert_attribute(my.project, "path", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+function project_setup_defaults(project)
+    check_arguments(my, "project", my)
+
+    my.project.work_path ?= cat_path("generated", make_id(my.project.name))
+    my.project.namespace_dir = string.replace("$(string_collapse_spaces(my.project.namespace):c,lower)", "_|/")
+    my.project.framework ?= "VSC$(my.project.name:Pascal)"
+
+    #   TODO: Move this to the <c_project/> model.
+    my.project.inc_path ?= cat_path(my.project.path, "include", my.project.namespace_dir)
+    my.project.inc_private_path ?= cat_path(my.project.path, "include", my.project.namespace_dir, "private")
+    my.project.src_path ?= cat_path(my.project.path, "src")
+    my.project.install_headers_dir ?= cat_path(my.project.namespace_dir)
+    my.project.install_private_headers_dir ?= cat_path(my.project.namespace_dir, "private")
+
+
+    if !count(my.project.version)
+        new version to my.project
+        endnew
+    endif
+
+    my.project->version.major ?= 0
+    my.project->version.minor ?= 0
+    my.project->version.patch ?= 1
+
+    my.project.version_major = my.project->version.major
+    my.project.version_minor = my.project->version.minor
+    my.project.version_patch = my.project->version.patch
+
+    my.project.version_string = "$(my.project.version_major:).$(my.project.version_minor:).$(my.project.version_patch:)"
+    my.project.cmake_target ?= "$(my.project.name:c)"
+
+    my.project.wrappers ?= "all"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Entrypoint
+# ---------------------------------------------------------------------------
+function project_process(project_link)
+    check_arguments(my, "project_link", my)
+    assert_attribute(my.project_link, "name", my)
+
+    echo_info("[L1] Process project '$(my.project_link.name:)'", my)
+
+    my.project = project_load(my.project_link.name)
+    my.augmented_project = project_load_augmented(my.project) ?
+
+    if !defined(my.augmented_project)
+        echo_trace("[L1] Augment project '$(my.project.name:)'", my)
+        project_verify(my.project)
+        project_setup_fingerprint(my.project)
+        project_setup_defaults(my.project)
+        project_store_augmented(my.project)
+    else
+        echo_trace("[L1] Use cached augmented project '$(my.project.name:)'", my)
+        my.project = my.augmented_project
+    endif
+
+    for my.project.class
+        project_process_class(my.project, class)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Multithread Entrypoint
+# ---------------------------------------------------------------------------
+if main.multithread
+    thread.receive(sending_thread, _project_link)
+    project_process(_project_link)
+endif

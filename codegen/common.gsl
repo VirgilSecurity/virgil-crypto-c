@@ -175,6 +175,15 @@ function item_in (item, list)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Calculate item 'fingerprint'
+# ---------------------------------------------------------------------------
+function fingerprint(item)
+    check_arguments (my, "item", my)
+
+    return string.hash(my.item.string())
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return true if given multiline string.
 # ---------------------------------------------------------------------------
 function string_multiline (str)
@@ -1025,7 +1034,7 @@ function item_load_from_file (file_name, destination, dir_path)
     my.dir_path = directory.resolve (my.dir_path) ?
     my.file_path = "$(my.dir_path?:)$(my.file_name:)"
 
-    echo_trace ("Loading file: $(my.file_path:)", my)
+    echo_debug ("Loading file: $(my.file_path:)", my)
 
     if ! file.exists (my.file_path)
         echo_fatal ("File does not exist: $(my.file_path:).", my)
@@ -1065,7 +1074,7 @@ function item_save_to_file (model, file_name, dir_path)
     endif
 
     my.file_path = "$(my.dir_path?:)$(my.file_name:)"
-    echo_trace ("Saving <$(my.model_name)/> to the file: $(my.file_path:)", my)
+    echo_debug ("Saving <$(my.model_name)/> to the file: $(my.file_path:)", my)
 
     item_format_body (my.model)
     my.model.save (my.file_path, my.error)
@@ -1427,4 +1436,27 @@ function is_instance_of_generic_class (instance)
     else
         return "0"
     endif
+endfunction
+
+# ###########################################################################
+#   Thread helpers
+# ###########################################################################
+
+# ---------------------------------------------------------------------------
+#   Create <parsed item> from a given file.
+# ---------------------------------------------------------------------------
+function create_parsed_thread(filename)
+    check_arguments(my, "filename", my)
+
+    my.content = file.slurp(my.filename, my.error) ?
+    if defined(my.error)
+        echo_fatal("Unable to read file: '$(my.filename:)' - $(my.error:)", my)
+    endif
+
+    my.parsed_thread = thread.parse(my.content, my.error) ?
+    if defined(my.error)
+        echo_fatal("Unable to read file: '$(my.filename:)'", my)
+    endif
+
+    return my.parsed_thread
 endfunction

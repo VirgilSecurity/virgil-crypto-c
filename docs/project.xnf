@@ -61,9 +61,8 @@
             This attribute is used to resolve path to include directories.
         </attr>
 
-        <attr name="package" required="1">
-            Project package name.
-            This attribute is used to for wrappers that support package and namespace.
+        <attr name="framework" required="1">
+            Project iOS framework name.
         </attr>
 
         <attr name="path" required="1">

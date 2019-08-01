@@ -1,0 +1,34 @@
+.template 0
+
+gsl from "common.gsl"
+
+if !main.multithread
+    gsl from "_project.gsl"
+endif
+
+# ---------------------------------------------------------------------------
+function main_process_project(project)
+    check_arguments(my, "project", my)
+
+    if main.multithread
+        my.project_parsed_thread = create_parsed_thread("_project.gsl")
+        my.project_thread = my.project_parsed_thread.run()
+        my.project_thread.send(my.project)
+    else
+        project_process(my.project)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function _main()
+    for main.project
+        main_process_project(project)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Main Entrypoint
+# ---------------------------------------------------------------------------
+_main()
+
+.endtemplate
