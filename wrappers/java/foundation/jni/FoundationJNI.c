@@ -2849,14 +2849,6 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     return ret;
 }
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_listKeyValueNode_1new__ (JNIEnv *jenv, jobject jobj) {
-    return (jlong) vscf_list_key_value_node_new();
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_listKeyValueNode_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_list_key_value_node_delete((vscf_list_key_value_node_t /*2*/ *) c_ctx /*5*/);
-}
-
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1new__ (JNIEnv *jenv, jobject jobj) {
     return (jlong) vscf_message_info_custom_params_new();
 }

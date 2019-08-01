@@ -57,7 +57,6 @@ const initAlgFactory = require('./AlgFactory');
 const initKeyAlgFactory = require('./KeyAlgFactory');
 const initEcies = require('./Ecies');
 const initRecipientCipher = require('./RecipientCipher');
-const initListKeyValueNode = require('./ListKeyValueNode');
 const initMessageInfoCustomParams = require('./MessageInfoCustomParams');
 const initKeyProvider = require('./KeyProvider');
 const initSigner = require('./Signer');
@@ -134,7 +133,6 @@ const initProject = () => {
     modules.KeyAlgFactory = initKeyAlgFactory(foundationModule, modules);
     modules.Ecies = initEcies(foundationModule, modules);
     modules.RecipientCipher = initRecipientCipher(foundationModule, modules);
-    modules.ListKeyValueNode = initListKeyValueNode(foundationModule, modules);
     modules.MessageInfoCustomParams = initMessageInfoCustomParams(foundationModule, modules);
     modules.KeyProvider = initKeyProvider(foundationModule, modules);
     modules.Signer = initSigner(foundationModule, modules);

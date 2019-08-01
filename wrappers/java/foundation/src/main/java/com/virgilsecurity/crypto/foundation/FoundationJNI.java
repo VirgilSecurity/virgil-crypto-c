@@ -503,10 +503,6 @@ public class FoundationJNI {
     */
     public native byte[] recipientCipher_finishDecryption(long cCtx) throws FoundationException;
 
-    public native long listKeyValueNode_new();
-
-    public native void listKeyValueNode_close(long cCtx);
-
     public native long messageInfoCustomParams_new();
 
     public native void messageInfoCustomParams_close(long cCtx);
