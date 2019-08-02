@@ -1,0 +1,89 @@
+# ---------------------------------------------------------------------------
+function project_models_dir(project)
+    check_arguments(my, "project", my)
+
+    return cat_path("models", make_id(name(my.project), my.project.name))
+endfunction
+
+# ---------------------------------------------------------------------------
+function model_load(project, model_type, model_name)
+    check_arguments(my, "project, model_type, model_name", my)
+
+    my.model_full_name = make_id(my.model_type, my.model_name)
+    my.file_path = cat_path(project_models_dir(my.project), my.model_full_name + ".xml")
+
+    return item_load_from_file(my.file_path)
+endfunction
+
+# ---------------------------------------------------------------------------
+function model_load_from(model_type, model_name, from_subdir)
+    check_arguments(my, "model_type, model_name, from_subdir", my)
+
+    my.model_full_name = make_id(my.model_type, my.model_name)
+    my.file_path = cat_path(cat_path("models", my.from_subdir), my.model_full_name + ".xml")
+
+    return item_load_from_file(my.file_path)
+endfunction
+
+# ---------------------------------------------------------------------------
+function class_load(project, name)
+    check_arguments(my, "project, name", my)
+
+    return model_load(my.project, "class", my.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+function enum(project, name)
+    check_arguments(my, "project, name", my)
+
+    return model_load(my.project, "enum", my.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+function interface_load(project, name)
+    check_arguments(my, "project, name", my)
+
+    return model_load(my.project, "interface", my.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+function implementor_load(project, name)
+    check_arguments(my, "project, name", my)
+
+    return model_load(my.project, "implementor", my.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+function implementation_load(project, name)
+    check_arguments(my, "project, name", my)
+
+    return model_load(my.project, "implementation", my.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+function module_load(project, name)
+    check_arguments(my, "project, name", my)
+
+    return model_load(my.project, "module", my.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+function class_load_from(name, from_subdir)
+    check_arguments(my, "name, from_subdir", my)
+
+    return model_load_from("class", my.name, my.from_subdir)
+endfunction
+
+# ---------------------------------------------------------------------------
+function module_load(name)
+    check_arguments(my, "name", my)
+
+    return shared_model_load("module", my.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+function library_load(name)
+    check_arguments(my, "name", my)
+
+    return model_load_from("library", my.name, "external")
+endfunction

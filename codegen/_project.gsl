@@ -16,6 +16,13 @@ function project_process_class(project, class)
 endfunction
 
 # ---------------------------------------------------------------------------
+function project_calculate_dependencies_fingerprint(project)
+    check_arguments(my, "project", my)
+
+    return fingerprint(my.project)
+endfunction
+
+# ---------------------------------------------------------------------------
 function project_load(project_name)
     check_arguments(my, "project_name", my)
 
@@ -27,45 +34,10 @@ function project_load(project_name)
 endfunction
 
 # ---------------------------------------------------------------------------
-function project_load_augmented(project)
-    check_arguments(my, "project", my)
-
-    my.path = cat_path("generated", make_id(my.project.name))
-    my.filename = make_id("project", my.project.name) + ".xml"
-    my.file_path = cat_path(my.path, my.filename)
-
-    if is_true(my.project.forcegen)
-        return # undefined
-    endif
-
-    if file.exists(my.file_path)
-        my.augmented_project = item_load_from_file(my.file_path)
-        if my.augmented_project.fingerprint = fingerprint(my.project)
-            return my.augmented_project
-        endif
-    endif
-
-    return # undefined
-endfunction
-
-# ---------------------------------------------------------------------------
-function project_store_augmented(project)
-    check_arguments(my, "project", my)
-
-    my.filename = make_id("project", my.project.name) + ".xml"
-    item_save_to_file(my.project, my.filename, my.project.work_path)
-endfunction
-
-# ---------------------------------------------------------------------------
-function project_setup_fingerprint(project)
-    check_arguments(my, "project", my)
-
-    my.project.fingerprint = fingerprint(my.project)
-endfunction
-
-# ---------------------------------------------------------------------------
 function project_verify(project)
     check_arguments(my, "project", my)
+
+    echo_trace("[L1] Project '$(my.project.name:)' - verify", my)
 
     assert_attribute(my.project, "name", my)
     assert_attribute(my.project, "prefix", my)
@@ -76,6 +48,8 @@ endfunction
 # ---------------------------------------------------------------------------
 function project_setup_defaults(project)
     check_arguments(my, "project", my)
+
+    echo_trace("[L1] Project '$(my.project.name:)' - setup defaults", my)
 
     my.project.work_path ?= cat_path("generated", make_id(my.project.name))
     my.project.namespace_dir = string.replace("$(string_collapse_spaces(my.project.namespace):c,lower)", "_|/")
@@ -109,35 +83,40 @@ function project_setup_defaults(project)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Entrypoint
+#   Entry point
 # ---------------------------------------------------------------------------
 function project_process(project_link)
     check_arguments(my, "project_link", my)
     assert_attribute(my.project_link, "name", my)
 
-    echo_info("[L1] Process project '$(my.project_link.name:)'", my)
+    echo_info("[L1] Project '$(my.project_link.name:)' - start processing", my)
 
     my.project = project_load(my.project_link.name)
-    my.augmented_project = project_load_augmented(my.project) ?
+    my.cached_project = cache_load_or_invalidate(my.project, my.project) ?
+    my.project.fingerprint = project_calculate_dependencies_fingerprint(my.project)
 
-    if !defined(my.augmented_project)
-        echo_trace("[L1] Augment project '$(my.project.name:)'", my)
-        project_verify(my.project)
-        project_setup_fingerprint(my.project)
-        project_setup_defaults(my.project)
-        project_store_augmented(my.project)
+    if defined(my.cached_project)
+        echo_trace("[L1] Project '$(my.project.name:)' - cache detected", my)
     else
-        echo_trace("[L1] Use cached augmented project '$(my.project.name:)'", my)
-        my.project = my.augmented_project
+        echo_trace("[L1] Project '$(my.project.name:)' - full update required", my)
     endif
 
+    if !fingerprint_is_equal(my.project, my.cached_project)
+        project_verify(my.project)
+        project_setup_defaults(my.project)
+    endif
+
+    echo_trace("[L1] Project '$(my.project.name:)' - process children", my)
     for my.project.class
         project_process_class(my.project, class)
     endfor
+
+    cache_store(my.project, my.project)
+    echo_trace("[L1] Project '$(my.project.name:)' - accomplished", my)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Multithread Entrypoint
+#   Multi thread entry point
 # ---------------------------------------------------------------------------
 if main.multithread
     thread.receive(sending_thread, _project_link)

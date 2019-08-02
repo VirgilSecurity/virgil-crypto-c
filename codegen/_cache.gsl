@@ -1,0 +1,54 @@
+# ---------------------------------------------------------------------------
+function cache_root_dir()
+    return ".generated/.cache"
+endfunction
+
+# ---------------------------------------------------------------------------
+function cache_model_dir(project, model)
+    check_arguments(my, "project, model", my)
+
+    return cat_path(cache_root_dir(), make_id(name(my.project), my.project.name))
+endfunction
+
+# ---------------------------------------------------------------------------
+function cache_model_file_path(project, model)
+    check_arguments(my, "project, model", my)
+
+    my.model_name = make_id(name(my.model), my.model.name)
+    my.file_path = cat_path(cache_model_dir(my.project, my.model), my.model_name + ".xml")
+
+    return my.file_path
+endfunction
+
+# ---------------------------------------------------------------------------
+function cache_load_or_invalidate(project, model)
+    check_arguments(my, "project, model", my)
+    assert_attributes(my.model, "name", my)
+
+    my.file_path = cache_model_file_path(my.project, my.model)
+
+    if file.exists(my.file_path)
+        my.cached_model = item_load_from_file(my.file_path)
+
+        if is_true(my.model.forcegen) | !defined(my.cached_model.fingerprint)
+            file.delete(my.file_path)
+            delete my.cached_model
+            return # undefined
+        endif
+
+        return my.cached_model
+    endif
+
+    return # undefined
+endfunction
+
+# ---------------------------------------------------------------------------
+function cache_store(project, model)
+    check_arguments(my, "project, model", my)
+    assert_attributes(my.model, "name", my)
+
+    my.model_name = make_id(name(my.model), my.model.name)
+    my.file_name = my.model_name + ".xml"
+
+    item_save_to_file(my.model, my.file_name, cache_model_dir(my.project, my.model))
+endfunction

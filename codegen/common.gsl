@@ -175,15 +175,6 @@ function item_in (item, list)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Calculate item 'fingerprint'
-# ---------------------------------------------------------------------------
-function fingerprint(item)
-    check_arguments (my, "item", my)
-
-    return string.hash(my.item.string())
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Return true if given multiline string.
 # ---------------------------------------------------------------------------
 function string_multiline (str)

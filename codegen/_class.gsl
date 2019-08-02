@@ -1,78 +1,54 @@
 # ---------------------------------------------------------------------------
-function class_load(project, class_name)
-    check_arguments(my, "project, class_name", my)
+function class_calculate_dependencies_fingerprint(project, class)
+    check_arguments(my, "project, class")
 
-    my.models_dir = cat_path("models", make_id("project", my.project.name))
-    my.file_path = cat_path(my.models_dir, make_id("class", my.class_name) + ".xml")
-
-    return item_load_from_file(my.file_path)
-endfunction
-
-# ---------------------------------------------------------------------------
-function class_load_augmented(project, class)
-    check_arguments(my, "project, class", my)
-
-    if is_true(my.class.forcegen)
-        return # undefined
-    endif
-
-    my.filename = make_id("class", my.class.name) + ".xml"
-    my.file_path = cat_path(my.project.work_path, my.filename)
-
-    if file.exists(my.file_path)
-        my.augmented_class = item_load_from_file(my.file_path)
-        if my.augmented_class.fingerprint = fingerprint(my.class)
-            return my.augmented_class
+    new dependencies
+        .project_prefix = my.project.prefix
+        .initial_class_fingerprint = fingerprint(my.class)
+        .license_fingerprint = fingerprint(my.project->license)
+        if is_true(my.class.forcegen)
+            time.now(.date, .time)
         endif
-    endif
 
-    return # undefined
+        my.fingerprint = fingerprint(dependencies)
+        delete dependencies
+        return my.fingerprint
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
-function class_store_augmented(project, class)
-    check_arguments(my, "project, class", my)
-
-    my.filename = make_id("class", my.class.name) + ".xml"
-    item_save_to_file(my.class, my.filename, my.project.work_path)
-endfunction
-
-# ---------------------------------------------------------------------------
-function class_setup_fingerprint(class)
-    check_arguments(my, "class", my)
-
-    my.class.fingerprint = fingerprint(my.class)
-    echo_debug_item(my.class)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Entrypoint
+#   Entry point
 # ---------------------------------------------------------------------------
 function class_process(project, class_link)
     check_arguments(my, "project, class_link", my)
     assert_attribute(my.class_link, "name", my)
 
-    echo_info("[L1] Process class '$(my.class_link.name:)'", my)
+    echo_info("[L1] Class '$(my.class_link.name:)' - start processing", my)
 
     my.class = class_load(my.project, my.class_link.name)
-    my.augmented_class = class_load_augmented(my.project, my.class) ?
+    my.cached_class = cache_load_or_invalidate(my.project, my.class) ?
+    my.class.fingerprint = class_calculate_dependencies_fingerprint(my.project, my.class)
 
-    echo_warning("[L1] Augment class '$(my.class.name:)'", my)
-
-    if !defined(my.augmented_class)
-        echo_trace("[L1] Augment class '$(my.class.name:)'", my)
-        #class_verify(my.class)
-        class_setup_fingerprint(my.class)
-        #class_setup_defaults(my.project, my.class)
-        class_store_augmented(my.project, my.class)
-    else#
-        echo_trace("[L1] Use cached augmented class '$(my.class.name:)'", my)
-        my.class = my.augmented_class
+    if defined(my.cached_class)
+        echo_trace("[L1] Class '$(my.class.name:)' - cache detected", my)
+    else
+        echo_trace("[L1] Class '$(my.class.name:)' - full update required", my)
     endif
+
+
+    if !fingerprint_is_equal(my.class, my.cached_class)
+        #class_verify(my.class)
+        #class_setup_defaults(my.project, my.class)
+    endif
+
+    echo_trace("[L1] Class '$(my.class.name:)' - process children", my)
+
+    cache_store(my.project, my.class)
+    echo_info("[L1] Class '$(my.class_link.name:)' - accomplished", my)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Multithread Entrypoint
+#   Multi-thread entry point
 # ---------------------------------------------------------------------------
 if main.multithread
     thread.receive(sending_thread, _project, _class_link)

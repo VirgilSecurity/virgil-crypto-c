@@ -1,3 +1,3 @@
-<main script="_main.gsl" work_path="new_generated/main" multithread="1" echo_level="trace">
+<main script="_main.gsl" work_path="new_generated/main" multithread="0" echo_level="trace">
     <project name="test basic" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
 </main>
