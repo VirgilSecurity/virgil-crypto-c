@@ -295,7 +295,7 @@ function php_insert_class_method (php_method)
     php_insert_code("$(my.class_method_header:)", 1)
     php_insert_code("{", 1)
 
-    if count (my.php_method.php_code)
+    if count (my.php_method->high_level.php_code)
         php_insert_code (my.php_method->high_level->php_code., 2)
     else
         php_insert_code ("throw new Exception(\"Not implemented!\")", 2)

@@ -428,7 +428,7 @@ function php_create_class_method (class, method, destination, php_project, meta)
             .function_name = php_derive_function_name (my.function_name, "-l")
 
             for my.method.argument where defined (argument.class)
-                new php_argument to php_method
+                new php_argument to low_level
                     .name = php_derive_argument_name (argument, "-l")
                     .type = php_derive_argument_type (argument, "-l")
                 endnew
