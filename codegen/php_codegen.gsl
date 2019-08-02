@@ -61,7 +61,7 @@ function php_generate_sources (wrapper_project)
         echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
     endif
 
-    for my.wrapper_project.php_module
+    for my.wrapper_project.php_module where php_module.name <> "php_extension"
 
         if defined (php_module.source_dir)
             if -1 = directory.create (php_module.source_dir)
@@ -96,6 +96,16 @@ function php_generate_sources (wrapper_project)
             php_insert_code(code.)
         endfor
     endfor
+
+    for my.wrapper_project.php_module where php_module.name = "php_extension"
+        echo_trace("Generate PHP Extension file from <$(name(php_module)) name=\"$(php_module.name:)\"/>", my)
+
+        output php_module.source_file_path
+
+        for php_module.code
+            php_insert_code(code.)
+        endfor
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -110,14 +120,10 @@ function php_insert_class (php_class)
 
     php_insert_description(my.php_class, 0)
     php_insert_code("\
-        class $(my.php_class.name:Pascal)
+        class $(my.php_class.name:)
         {
             private $ctx;
     ", 0)
-
-#    if is_true (python_class.is_abstract)
-#        python_insert_code(terminator + format_left("__metaclass__ = ABCMeta"), 1)
-#    endif
 
     for my.php_class.php_constructor
         newline ()
@@ -129,22 +135,10 @@ function php_insert_class (php_class)
         php_insert_destructor (php_destructor)
    endfor
 
-    for my.php_class.php_method by is_false (php_method.is_specific_method)
+   for my.php_class.php_method by is_false (php_method.is_specific_method)
         newline ()
         php_insert_class_method (php_method)
     endfor
-
-#    for my.python_class.python_property
-#        newline ()
-#        python_insert_class_property (python_property)
-#    endfor
-
-#    for my.python_class.python_code
-#        if is_true(python_code.leadeing_new_line)
-#            newline ()
-#        endif
-#        python_insert_code(python_code., 1)
-#    endfor
 
     php_insert_code("}",0)
 endfunction
@@ -292,17 +286,17 @@ endfunction
 function php_insert_class_method (php_method)
     check_arguments (my, "php_method", my)
 
-    assert_attributes (my.php_method, "name", my)
+    assert_attributes (my.php_method->high_level, "name", my)
 
-    my.class_method_header = php_format_class_method_header(my.php_method)
+    my.class_method_header = php_format_class_method_header(my.php_method->high_level)
 
-    php_insert_description (my.php_method, 1)
+    php_insert_description (my.php_method->high_level->docblock, 1)
 
     php_insert_code("$(my.class_method_header:)", 1)
     php_insert_code("{", 1)
 
     if count (my.php_method.php_code)
-        php_insert_code (my.php_method->php_code., 2)
+        php_insert_code (my.php_method->high_level->php_code., 2)
     else
         php_insert_code ("throw new Exception(\"Not implemented!\")", 2)
     endif
@@ -329,14 +323,14 @@ function php_format_class_method_header (php_method)
 
     my.arguments = ""
 
-    for my.php_method.php_argument
-        my.arguments += "$(php_argument.type:) $(php_argument.var:)"
+    for my.php_method.php_argument where defined (php_argument.type) & defined (php_argument.name)
+        my.arguments += "$(php_argument.type:) $(php_argument.name:)"
         if ! last()
             my.arguments += ", "
         endif
     endfor
 
-    return "public function $(my.php_method.name:Camel)($(my.arguments:)): $(my.php_method.return_type:) $(my.php_method.return_data:)"
+    return "public function $(my.php_method.name:)($(my.arguments:)): $(my.php_method.return_type:) $(my.php_method.return_data:)"
 endfunction
 
 .endtemplate
