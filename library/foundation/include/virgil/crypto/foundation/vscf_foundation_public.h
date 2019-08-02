@@ -121,7 +121,6 @@
 #include "vscf_key_serializer.h"
 #include "vscf_key_signer.h"
 #include "vscf_library.h"
-#include "vscf_list_key_value_node.h"
 #include "vscf_mac.h"
 #include "vscf_memory.h"
 #include "vscf_message_info.h"

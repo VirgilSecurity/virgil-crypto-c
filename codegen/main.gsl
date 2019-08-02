@@ -356,6 +356,7 @@ function run_main ()
         my.loaded_wrapper = load_lang_wrapper (wrapper)
         my.loaded_wrapper.source_dir ?= cat_path ("../wrappers", wrapper.lang)
         copy main->license to my.loaded_wrapper
+        copy main->version to my.loaded_wrapper
         wrappers_update_wrapper (my.wrappers, my.loaded_wrapper)
     endfor
 

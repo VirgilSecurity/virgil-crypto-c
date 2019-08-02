@@ -33,7 +33,6 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-
 gsl from "common.gsl"
 
 # ===========================================================================
@@ -166,6 +165,36 @@ function class_derive_c_instance_type (instance)
     c_component_map_instance_attr_type (my.temp_c_instance, my.instance)
 
     return my.temp_c_instance.type
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C type:
+#       - enum
+#       - class
+#       - interface
+#       - implementation
+# ---------------------------------------------------------------------------
+function item_derive_c_type (item)
+    check_arguments (my, "item", my)
+
+    my.item_name = name (my.item)
+
+    if my.item_name = "enum"
+        return make_ref_c (make_id ("enum", my.item.name))
+    elsif my.item_name = "interface"
+        return make_ref_c (make_id ("class impl struct impl"))
+    else
+        return make_ref_c (make_id ("class", my.item.name, "struct", my.item.name))
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C default class constructor.
+# ---------------------------------------------------------------------------
+function class_derive_c_defalut_constructor (class)
+    check_arguments (my, "class", my)
+
+    return make_ref_c (make_id ("class", my.class.name, "method new"))
 endfunction
 
 # ---------------------------------------------------------------------------

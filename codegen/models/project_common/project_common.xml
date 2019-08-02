@@ -6,7 +6,7 @@
         prefix="vsc"
         path="../library/common/"
         work_path="generated/common/"
-        wrappers="none"
+        wrappers="python"
         >
 
     <version major="0" minor="9" patch="0"/>

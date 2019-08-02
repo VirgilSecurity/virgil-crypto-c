@@ -514,11 +514,6 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_list_key_value_node.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_message_info.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -824,8 +819,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_recipient_info_list_defs.h>"
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_list.h>"
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_list_defs.h>"
-            "$<$<BOOL:${VSCF_LIST_KEY_VALUE_NODE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_list_key_value_node.h>"
-            "$<$<BOOL:${VSCF_LIST_KEY_VALUE_NODE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_list_key_value_node_defs.h>"
+            "$<$<BOOL:${VSCF_LIST_KEY_VALUE_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_list_key_value_node.h>"
+            "$<$<BOOL:${VSCF_LIST_KEY_VALUE_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_list_key_value_node_defs.h>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_READER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_reader.h>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_WRITER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_writer.h>"
             "$<$<BOOL:${VSCF_MBEDTLS_ECP}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_ecp.h>"

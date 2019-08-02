@@ -70,6 +70,7 @@ gsl from "swift.gsl"
 gsl from "java.gsl"
 gsl from "php.gsl"
 gsl from "wasm.gsl"
+gsl from "python.gsl"
 
 # ---------------------------------------------------------------------------
 #   Create project root module, for instance:

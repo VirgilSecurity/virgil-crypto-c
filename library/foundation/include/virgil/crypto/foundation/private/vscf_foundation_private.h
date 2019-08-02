@@ -111,7 +111,6 @@
 #include "vscf_key_recipient_info_list_defs.h"
 #include "vscf_key_serializer_api.h"
 #include "vscf_key_signer_api.h"
-#include "vscf_list_key_value_node_defs.h"
 #include "vscf_mac_api.h"
 #include "vscf_mbedtls_bridge_entropy.h"
 #include "vscf_mbedtls_bridge_random.h"
