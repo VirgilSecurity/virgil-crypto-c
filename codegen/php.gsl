@@ -322,6 +322,43 @@ function php_create_class_method (class, method, destination, php_project, meta)
 
     new php_method to my.destination
 
+        #COMMON
+
+        my.count_in = 1 # ctx
+        my.count_out = 0
+        my.return_data = ""
+
+        for my.method.argument            
+            if string_in (argument.class, "buffer")
+                my.return_data += php_derive_argument_name(argument, "-l")
+                my.count_out = my.count_out + 1
+
+                if ! last()
+                    my.return_data += ", "
+                endif
+            else 
+                my.count_in = my.count_in + 1
+            endif
+        endfor
+
+        my.res_type = ""
+        my.res_data = ""
+
+        if my.count_out = 0
+            my.res_data = ""
+            my.res_type = "void"
+        elsif my.count_out = 1
+            my.res_data = "// $(my.return_data:)"
+            # TODO! NEED TO BE CHECKED WITH OTHER TYPES
+            my.res_type = "string"
+        elsif my.count_out > 1
+            my.res_data = "// [$(my.return_data:)]"
+            my.res_type = "array"
+        endif
+
+        my.return_enum_status = count (my.method.return, string_equal (return.enum, "status"))
+        my.extension_return_type = php_derive_extension_return_type(my.res_type) 
+
         # HIGH_LEVEL
         new high_level to php_method
             my.docblock_data = ""
@@ -334,41 +371,10 @@ function php_create_class_method (class, method, destination, php_project, meta)
 
             .name = php_derive_method_name (my.method, "-h")
             .function_name = php_derive_function_name(my.function_name, "-h")
-
-            my.c = 0
-            my.return_data = ""
-
-            for my.method.argument            
-                if string_in (argument.class, "buffer")
-                    my.return_data += php_derive_argument_name(argument, "-l")
-                    my.c = my.c + 1
-
-                    if ! last()
-                        my.return_data += ", "
-                    endif
-                endif
-            endfor
-
-            my.res_type = ""
-            my.res_data = ""
-
-            if my.c = 0
-                my.res_data = ""
-                my.res_type = "void"
-            elsif my.c = 1
-                my.res_data = "// $(my.return_data:)"
-                # TODO! NEED TO BE CHECKED WITH OTHER TYPES
-                my.res_type = "string"
-            elsif my.c > 1
-                my.res_data = "// [$(my.return_data:)]"
-                my.res_type = "array"
-            endif
-
             .return_data = my.res_data
             .return_type = my.res_type
 
-            my.throws_exception = count (my.method.return, string_equal (return.enum, "status"))
-            .throws_exception = my.throws_exception
+            .throws_exception = my.return_enum_status
 
             for my.method.argument where defined (argument.class) & argument.class <> "buffer"
                 new php_argument to high_level
@@ -378,7 +384,7 @@ function php_create_class_method (class, method, destination, php_project, meta)
                 endnew
             endfor
 
-            if my.throws_exception = 1
+            if my.return_enum_status = 1
                 my.docblock_data += "@throws Exception\n"
             endif
 
@@ -426,11 +432,15 @@ function php_create_class_method (class, method, destination, php_project, meta)
 
             .name = php_derive_method_name (my.method, "-l")
             .function_name = php_derive_function_name (my.function_name, "-l")
+            .required_num_args = my.count_in
+            .throws_exception = my.return_enum_status
+            .return_type = my.extension_return_type
 
             for my.method.argument where defined (argument.class)
                 new php_argument to low_level
                     .name = php_derive_argument_name (argument, "-l")
                     .type = php_derive_argument_type (argument, "-l")
+                    .len = "temp_len"
                 endnew
             endfor
 
@@ -455,11 +465,27 @@ function php_derive_argument_type (argument, type)
         if my.argument.class = "data"
             my.res = "string"
         else
-            #TODO RETURN TYPE (FROM CLASS)
-            my.res = "_other_return_type_"
+            echo_fatal("Undefined argument type for the class: $(my.argument.class)")
         endif
     elsif my.type = "-l"
         my.res = php_derive_extension_argument_type(my.argument)
+    endif
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_extension_argument_len (argument)
+    check_arguments (my, "argument", my)
+
+    if my.argument.class = "data"
+        my.res = "vsc_data_t"
+    elsif my.argument.class = "buffer"
+        my.res = "vsc_buffer_t"
+    else
+        echo_fatal("Undefined argument class type: $(my.argument.class)", my)
     endif
 
     return my.res
@@ -477,7 +503,30 @@ function php_derive_extension_argument_type (argument)
     elsif my.argument.class = "buffer"
         my.res = "vsc_buffer_t"
     else
-        echo_fatal("php_derive_extension_argument_type | Undefined argument class type: $(my.argument.class)", my)
+        echo_fatal("Undefined argument class type: $(my.argument.class)", my)
+    endif
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_extension_return_type (type)
+    check_arguments (my, "type", my)
+
+    my.res = ""
+
+    if my.type = "void"
+        my.res = "IS_VOID"
+    elsif my.type = "string"
+        my.res = "IS_STRING"
+    elsif my.type = "array"
+        my.res = "IS_ARRAY"
+    elsif my.type = "res"
+        my.res = "IS_RESOURCE"
+    else
+        echo_fatal("Undefined type: $(my.type)", my)
     endif
 
     return my.res
@@ -542,7 +591,7 @@ function php_type_checker (type)
     check_arguments (my, "type", my)
 
     if ! string_in(my.type, "-h, -l")
-        echo_fatal("php_type_checker | Invalid type: $(my.type:)", my)
+        echo_fatal("Invalid type: $(my.type:)", my)
     endif
 
     return
