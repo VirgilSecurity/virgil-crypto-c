@@ -372,7 +372,7 @@ function python_format_c_proxy_arg_types (python_method)
         else
             my.c_proxy_arg_type_list += "$(python_argument.type:)"
         endif
-        
+
         if ! last ()
             my.c_proxy_arg_type_list += ", "
         endif
@@ -410,7 +410,7 @@ function python_class_derive_buffer_length_getter (class, method, argument, pyth
             else
                 my.proxy_args += "=" + python_derive_argument_name_str (proxy.argument)
             endif
-            
+
         elsif defined (proxy.constant)
 
             my.proxy_args += python_derive_argument_name_str (proxy.[to])
@@ -464,7 +464,7 @@ endfunction
 # ---------------------------------------------------------------------------
 function python_derive_proxy_return_type (python_method)
     check_arguments (my, "python_method", my)
-    
+
     my.c_proxy_return_type_list = ""
     for my.python_method.python_return
         if is_true (python_return.is_reference)
@@ -472,7 +472,7 @@ function python_derive_proxy_return_type (python_method)
         else
             my.c_proxy_return_type_list += "$(python_return.type:)"
         endif
-        
+
         if ! last ()
             my.c_proxy_return_type_list += ", "
         endif
@@ -520,7 +520,7 @@ function python_map_instance_type (python_instance, instance, python_project)
     check_arguments (my, "python_instance, instance, python_project", my)
 
     my.python_instance.type = python_derive_instance_type (my.instance)
-    
+
     high_level_type = python_derive_high_level_instance_type (my.instance, my.python_project)
     if ! string_empty (high_level_type)
         my.python_instance.high_level_type = high_level_type
@@ -658,7 +658,7 @@ function python_create_low_level_class_default_constructor (python_class, class,
     check_arguments (my, "python_class, class, python_project, meta", my)
 
     new python_constructor to my.python_class
-        
+
         . = "Create underlying C context."
         . = python_format_description (python_constructor)
         .override = "1"
@@ -680,7 +680,7 @@ function python_create_class_default_constructor (python_class, class, python_pr
     check_arguments (my, "python_class, class, python_project, meta", my)
 
     new python_constructor to my.python_class
-        
+
         . = "Create underlying C context."
         . = python_format_description (python_constructor)
         .override = "1"
@@ -809,10 +809,10 @@ function python_create_c_constructor_mapping (destination)
     else
         class_name = "$(my.destination.name_c_format:)"
     endif
-    
+
     new python_method to my.destination
         .name = "$(class_name:)_new"
-        
+
         new python_code to python_method
             my.method_body = format_left("\
             $(python_method.name) = self._lib.$(python_method.name)
@@ -947,9 +947,9 @@ function python_create_method_from_dependency (dependency, instance, destination
         my.arg_ctx = ""
         new python_argument to python_method
             .name = my.arg_name
-            
+
             my.arg_ctx += "$(my.arg_name:)"
-            
+
             if defined (my.dependency.interface)
                 my.arg_ctx += ".c_impl"
             else
@@ -1023,7 +1023,7 @@ function python_create_class_constant (constant, python_class, python_project, m
         . = python_format_comment (my.constant) ?
         .name = python_derive_constant_name (my.constant, my.python_project)
         if defined (my.constant.value)
-            if constant.type = "boolean" 
+            if constant.type = "boolean"
                 .value = "$(my.constant.value:Pascal)"
             else
                 .value = my.constant.value
@@ -1269,7 +1269,7 @@ function python_create_class_method (class, method, destination, python_project,
         my.low_level_arguments = ""
         my.cast_from_implementation = ""
         my.statuses = XML.new()
-        
+
         if string_equal (my.python_method.name, "len") | string_equal (my.python_method.name, "equal") | string_equal (my.python_method.name, "bytes")
             if string_equal (my.python_method.name, "equal")
                 my.python_method.name = "__eq__"
@@ -1309,7 +1309,7 @@ function python_create_class_method (class, method, destination, python_project,
                     new status to my.statuses
                         .name = python_argument.name
                     endnew
-                    
+
                     delete python_argument
                 elsif is_true (python_argument.is_interface)
                     my.low_level_arguments += "$(python_argument.name:).c_impl"
@@ -1373,7 +1373,7 @@ function python_create_class_method (class, method, destination, python_project,
 
                         delete handling_python_return
                     elsif is_true (handling_python_return.is_interface)
-                        if handling_python_return.access = "readonly" | handling_python_return.access = "readwrite" 
+                        if handling_python_return.access = "readonly" | handling_python_return.access = "readwrite"
                             my.cast_from_implementation = "\
                                 instance = $(my.python_project.prefix:Pascal)ImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER($(my.python_project.prefix:Pascal)ImplTag.get_type(result)[1])))
                             "
@@ -1398,7 +1398,7 @@ function python_create_class_method (class, method, destination, python_project,
                         delete handling_python_return
                     elsif is_true (handling_python_return.is_reference) & defined (handling_python_return.high_level_type)
 
-                        if handling_python_return.access = "readonly" | handling_python_return.access = "readwrite" 
+                        if handling_python_return.access = "readonly" | handling_python_return.access = "readwrite"
                             my.cast_from_implementation = "\
                                 instance = $(handling_python_return.high_level_type:).use_c_ctx(result)
                             "
@@ -1422,10 +1422,10 @@ function python_create_class_method (class, method, destination, python_project,
                             .access = handling_python_return.access ?
                         endnew
 
-                        delete handling_python_return                        
+                        delete handling_python_return
                     endif
                 endif
-            endfor    
+            endfor
         endif
 
         if string_empty (my.low_level_arguments)
@@ -1448,7 +1448,7 @@ function python_create_class_method (class, method, destination, python_project,
 
         my.low_level_call = "self._lib_$(my.destination.low_level_name_c_format:).$(my.python_method.low_level_name:)($(my.low_level_arguments:))"
 
-        
+
 
         my.return_result = ""
         for my.python_method.python_return
@@ -1602,7 +1602,7 @@ endfunction
 function python_create_cast_to_implementation_low_level_method(implementation, destination, python_project, meta)
     check_arguments (my, "implementation, destination, python_project, meta", my)
 
-    
+
     new python_method to my.destination
         .name = "$(my.destination.low_level_name_c_format:)_impl"
 
@@ -1634,7 +1634,7 @@ endfunction
 function python_create_shallow_copy_low_level_method(implementation, destination, python_project, meta)
     check_arguments (my, "implementation, destination, python_project, meta", my)
 
-    
+
     new python_method to my.destination
         .name = "$(my.destination.low_level_name_c_format)_shallow_copy"
 
@@ -1685,7 +1685,7 @@ endfunction
 # ---------------------------------------------------------------------------
 function python_append_import_to_custom_module (python_module, python_class, destination)
     check_arguments (my, "python_module, python_class, destination", my)
-    
+
     if ! string_in (python_class.name, "data, buffer")
         my.module_name = my.python_module.name
     else
@@ -1704,7 +1704,7 @@ endfunction
 # ---------------------------------------------------------------------------
 function python_insert_at_begin_import_to_custom_module (python_module, python_class, destination)
     check_arguments (my, "python_module, python_class, destination", my)
-    
+
     if ! string_in (python_class.name, "data, buffer")
         my.module_name = my.python_module.name
     else
@@ -1916,7 +1916,7 @@ function python_create_data_class (class, destination, python_project, meta)
 
                         def __iter__(self):
                             return iter(bytearray((c_byte * len(self))(*self.data.bytes[:len(self)])))
-                        
+
                         @classmethod
                         def take_c_ctx(cls, c_ctx):
                             inst = cls.__new__(cls)
@@ -2012,7 +2012,7 @@ function python_create_buffer_class (class, destination, python_project, meta)
                         vsc_buffer_destroy = self._lib.vsc_buffer_destroy
                         vsc_buffer_destroy.argtypes = [POINTER(POINTER(vsc_buffer_t))]
                         return vsc_buffer_destroy(buffer)
-                    
+
                     def vsc_buffer_equal(self, buffer, rhs):
                         vsc_buffer_equal = self._lib.vsc_buffer_equal
                         vsc_buffer_equal.argtypes = [POINTER(vsc_buffer_t), POINTER(vsc_buffer_t)]
@@ -2028,7 +2028,7 @@ function python_create_buffer_class (class, destination, python_project, meta)
                             c_size_t
                         ]
                         return vsc_buffer_use(buffer, bytes_, bytes_len)
-                    
+
                     def vsc_buffer_len(self, buffer):
                         vsc_buffer_len = self._lib.vsc_buffer_len
                         vsc_buffer_len.argtypes = [POINTER(vsc_buffer_t)]
@@ -2110,7 +2110,7 @@ function python_create_buffer_class (class, destination, python_project, meta)
 
                             def __delete__(self, instance):
                                 self._lib_vsc_buffer.vsc_buffer_destroy(self.c_buffer)
-                            
+
                             @classmethod
                             def take_c_ctx(cls, c_ctx):
                                 inst = cls.__new__(cls)
@@ -2160,7 +2160,7 @@ function python_create_impl_tag_class(source, python_project, meta)
             . = python_format_license (my.python_project->license) ?
         endnew
 
-        for my.python_project.python_import 
+        for my.python_project.python_import
             copy python_import to python_module # TODO add implementation of impl_tag dict
         endfor
 
@@ -2319,7 +2319,7 @@ function python_create_project_module (project, wrapper)
 
         return python_project
     endnew
-    
+
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -2359,8 +2359,8 @@ endfunction
 # ---------------------------------------------------------------------------
 function python_finalize_custom_modules (source, python_project, meta)
     check_arguments (my, "source, python_project, meta", my)
-    
-    if my.python_project.name = "common"   
+
+    if my.python_project.name = "common"
         return
     endif
 
@@ -2384,7 +2384,7 @@ function python_finalize_custom_modules (source, python_project, meta)
                 .name = "$(my.python_project.prefix)_impl_t"
                 python_create_custom_inherit ("Structure", python_class, my.python_project)
                 .visibility = "public"
-                
+
                 new python_code to python_class
                     . = format_left ("pass")
                 endnew
@@ -2415,6 +2415,18 @@ function python_create_toplevel_modules (wrapper)
         endnew
 
         new python_code to python_module
+            my.version_label = my.wrapper->version.label ?
+            if defined(my.version_label)
+                if regexp.match("^(rc|beta)[0-9]*", my.version_label)
+                    my.development_status = "Development Status :: 4 - Beta"
+                elsif regexp.match("^(alpha)[0-9]*", my.version_label)
+                    my.development_status = "Development Status :: 3 - Alpha"
+                else
+                    my.development_status = "Development Status :: 2 - Pre-Alpha"
+                endif
+            else
+                my.development_status = "Development Status :: 5 - Production/Stable"
+            endif
             . = "\
                 from setuptools import setup, find_packages
                 from virgil_crypto_lib import __version__, __author__
@@ -2445,7 +2457,7 @@ function python_create_toplevel_modules (wrapper)
                     author_email=\"support@virgilsecurity.com\",
                     url=\"https://virgilsecurity.com\",
                     classifiers=[
-                        \"Development Status :: 5 - Production/Stable\",
+                        \"$(my.development_status:)\",
                         \"License :: OSI Approved :: BSD License\",
                         \"Natural Language :: English\",
                         \"Intended Audience :: Developers\",
@@ -2488,7 +2500,7 @@ function python_create_toplevel_modules (wrapper)
             . = python_format_license (my.wrapper->license) ?
         endnew
 
-        raw_version = my.wrapper->version 
+        raw_version = my.wrapper->version
         lib_version = "$(raw_version.major:).$(raw_version.minor:).$(raw_version.patch:)"
         if defined(raw_version.label)
             lib_version += "-$(raw_version.label:)"
@@ -2755,7 +2767,7 @@ function python_create_toplevel_modules (wrapper)
                     def check_unicode(source):
                         \"\"\"Check string for Python2 specific string format.\"\"\"
                         return check_unicode(source)
-                    
+
                     @classmethod
                     def convert_byte_to_c_byte(cls, python_bytearray):
                         \"\"\"Converting python byte to C compatible byte.\"\"\"
@@ -2779,10 +2791,10 @@ function python_create_interface_module (interface, python_project, meta)
     check_arguments (my, "interface, python_project, meta", my)
 
     echo_info ("Create <python_module/> from class: '$(my.interface.name:)'", my)
-    
+
     assert_attribute (my.interface, "name", my)
 
-    # High level modules 
+    # High level modules
     new python_module to my.python_project
         .name = python_derive_module_name (my.interface, my.python_project)
         .source_file_name = 0.name + ".py"
@@ -2828,7 +2840,7 @@ function python_create_interface_module (interface, python_project, meta)
 
             # handle inner python_module imports
             python_imports_move_from_class_to_module(python_class, python_module)
-        endfor 
+        endfor
     endnew
     echo_debug ("Done", my)
 endfunction
@@ -2840,7 +2852,7 @@ function python_create_implementation_module (implementation, python_project, me
     check_arguments (my, "implementation, python_project, meta", my)
 
     echo_info ("Create <python_module/> from implementation: '$(my.implementation.name:)'", my)
-    
+
     assert_attribute (my.implementation, "name", my)
 
     # Low level modules
@@ -2880,7 +2892,7 @@ function python_create_implementation_module (implementation, python_project, me
                 python_map_attr_visibility (python_class, my.implementation)
             endnew
         endif
-        
+
 
         # Low level class mapping
         new python_class to python_module
@@ -2888,14 +2900,14 @@ function python_create_implementation_module (implementation, python_project, me
             .name = python_derive_class_low_level_name (my.implementation, my.python_project)
             .low_level_name = python_derive_class_low_level_name (my.implementation, my.python_project)
             .low_level_name_c_format = python_derive_class_low_level_name_c_formated (my.implementation, my.python_project)
-            .is_implementation = "1" 
+            .is_implementation = "1"
 
             python_map_attr_visibility (python_class, my.implementation)
 
             for my.implementation.constant where constant.scope ?= "public"
                 python_create_class_constant (constant, python_class, my.python_project, my.meta)
             endfor
-            
+
             python_create_low_level_class_default_constructor (python_class, my.implementation, my.python_project, my.meta)
 
             if my.implementation.lifecycle <> "none"
@@ -2939,7 +2951,7 @@ function python_create_implementation_module (implementation, python_project, me
         endnew
     endnew
 
-    # High level modules 
+    # High level modules
     new python_module to my.python_project
         .name = python_derive_module_name (my.implementation, my.python_project)
         .source_file_name = 0.name + ".py"
@@ -3027,7 +3039,7 @@ function python_create_class_module (class, python_project, meta)
     check_arguments (my, "class, python_project, meta", my)
 
     echo_info ("Create <python_module/> from class: '$(my.class.name:)'", my)
-    
+
     assert_attribute (my.class, "name", my)
 
     # Skipping all classes with not public scope
@@ -3084,7 +3096,7 @@ function python_create_class_module (class, python_project, meta)
                 class_body = format_left ("\
                     _fields_ = [
                 ")
-                for my.class.property 
+                for my.class.property
                     if defined (property.type)
                         prop_body = "$(property.type)"
                     elsif defined (property.enum)
@@ -3106,7 +3118,7 @@ function python_create_class_module (class, python_project, meta)
                 python_map_attr_visibility (python_class, my.class)
             endnew
         endif
-        
+
 
         # Low level class mapping
         new python_class to python_module
@@ -3170,8 +3182,8 @@ function python_create_class_module (class, python_project, meta)
     if string_in (my.class.name, "error")
         return
     endif
-    
-    # High level modules 
+
+    # High level modules
     new python_module to my.python_project
         .name = python_derive_module_name (my.class, my.python_project)
         if ! string_in (my.class.name, "data, buffer")
@@ -3203,7 +3215,7 @@ function python_create_class_module (class, python_project, meta)
                 python_create_class_constant (constant, python_class, my.python_project, my.meta)
             endfor
 
-            
+
             if count(my.class.method) > 0
                 python_create_class_default_constructor (python_class, my.class, my.python_project, my.meta)
             endif
@@ -3248,7 +3260,7 @@ function python_create_class_module (class, python_project, meta)
             # handle inner python_module imports
             python_imports_move_from_class_to_module(python_class, python_module)
         endfor
-        
+
     endnew
     echo_debug ("Done", my)
 endfunction
@@ -3260,7 +3272,7 @@ function python_create_enum_module (enum, python_project, meta)
     check_arguments (my, "enum, python_project, meta", my)
 
     echo_info ("Create <python_module/> from enum: '$(my.enum.name:)'", my)
-    
+
     assert_attribute (my.enum, "name", my)
 
     # Skipping all enum with not public scope
@@ -3284,14 +3296,14 @@ function python_create_enum_module (enum, python_project, meta)
         for my.python_project.python_import
             copy python_import to python_module
         endfor
-        
+
         if string_in (my.enum.name, "status")
-            new python_class to python_module   
+            new python_class to python_module
                 .name = "VirgilCrypto$(my.python_project.name:Pascal)Error"
                 .visibility = "public"
 
                 python_create_custom_inherit ("Exception", python_class, my.python_project)
-                
+
                 new python_code to python_class
                     . = format_left ("pass")
                 endnew
@@ -3340,14 +3352,14 @@ function python_create_enum_module (enum, python_project, meta)
         for my.python_project.python_import
             copy python_import to python_module
         endfor
-        
+
         if string_in (my.enum.name, "status")
-            new python_class to python_module   
+            new python_class to python_module
                 .name = "VirgilCrypto$(my.python_project.name:Pascal)Error"
                 .visibility = "public"
 
                 python_create_custom_inherit ("Exception", python_class, my.python_project)
-                
+
                 new python_code to python_class
                     . = format_left ("pass")
                 endnew
