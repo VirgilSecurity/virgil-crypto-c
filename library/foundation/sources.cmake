@@ -830,6 +830,7 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_MESSAGE_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_message_info.h>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_message_info_defs.h>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_CUSTOM_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_message_info_custom_params.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_custom_params_internal.h"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_CUSTOM_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_message_info_custom_params_defs.h>"
             "$<$<BOOL:${VSCF_MESSAGE_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_message_padding.h>"
             "$<$<BOOL:${VSCF_MESSAGE_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_padding_defs.h>"

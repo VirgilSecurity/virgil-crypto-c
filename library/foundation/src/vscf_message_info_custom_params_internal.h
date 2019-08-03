@@ -44,10 +44,11 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_MESSAGE_INFO_CUSTOM_PARAMS_H_INCLUDED
-#define VSCF_MESSAGE_INFO_CUSTOM_PARAMS_H_INCLUDED
+#ifndef VSCF_MESSAGE_INFO_CUSTOM_PARAMS_INTERNAL_H_INCLUDED
+#define VSCF_MESSAGE_INFO_CUSTOM_PARAMS_INTERNAL_H_INCLUDED
 
-#include "vscf_library.h"
+#include "vscf_message_info_custom_params.h"
+#include "vscf_list_key_value_node.h"
 #include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -74,96 +75,72 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'message info custom params' context.
-//
-typedef struct vscf_message_info_custom_params_t vscf_message_info_custom_params_t;
-
-//
-//  Return size of 'vscf_message_info_custom_params_t'.
-//
-VSCF_PUBLIC size_t
-vscf_message_info_custom_params_ctx_size(void);
-
-//
-//  Perform initialization of pre-allocated context.
+//  Add given node to the list ending.
 //
 VSCF_PUBLIC void
-vscf_message_info_custom_params_init(vscf_message_info_custom_params_t *self);
+vscf_message_info_custom_params_add_node(vscf_message_info_custom_params_t *self,
+        vscf_list_key_value_node_t **node_ref);
 
 //
-//  Release all inner resources including class dependencies.
+//  Add given node to the list ending.
 //
-VSCF_PUBLIC void
-vscf_message_info_custom_params_cleanup(vscf_message_info_custom_params_t *self);
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCF_PUBLIC vscf_message_info_custom_params_t *
-vscf_message_info_custom_params_new(void);
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if the context was statically allocated.
-//
-VSCF_PUBLIC void
-vscf_message_info_custom_params_delete(vscf_message_info_custom_params_t *self);
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscf_message_info_custom_params_new ()'.
-//
-VSCF_PUBLIC void
-vscf_message_info_custom_params_destroy(vscf_message_info_custom_params_t **self_ref);
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCF_PUBLIC vscf_message_info_custom_params_t *
-vscf_message_info_custom_params_shallow_copy(vscf_message_info_custom_params_t *self);
-
-//
-//  Add custom parameter with integer value.
-//
-VSCF_PUBLIC void
-vscf_message_info_custom_params_add_int(vscf_message_info_custom_params_t *self, vsc_data_t key, int value);
-
-//
-//  Add custom parameter with UTF8 string value.
-//
-VSCF_PUBLIC void
-vscf_message_info_custom_params_add_string(vscf_message_info_custom_params_t *self, vsc_data_t key, vsc_data_t value);
-
-//
-//  Add custom parameter with octet string value.
-//
-VSCF_PUBLIC void
-vscf_message_info_custom_params_add_data(vscf_message_info_custom_params_t *self, vsc_data_t key, vsc_data_t value);
-
-//
-//  Remove all parameters.
-//
-VSCF_PUBLIC void
-vscf_message_info_custom_params_clear(vscf_message_info_custom_params_t *self);
-
-//
-//  Return custom parameter with integer value.
-//
-VSCF_PUBLIC int
-vscf_message_info_custom_params_find_int(vscf_message_info_custom_params_t *self, vsc_data_t key, vscf_error_t *error);
-
-//
-//  Return custom parameter with UTF8 string value.
-//
-VSCF_PUBLIC vsc_data_t
-vscf_message_info_custom_params_find_string(vscf_message_info_custom_params_t *self, vsc_data_t key,
+VSCF_PUBLIC const vscf_list_key_value_node_t *
+vscf_message_info_custom_params_find_node(vscf_message_info_custom_params_t *self, vsc_data_t key, int value_tag,
         vscf_error_t *error);
 
 //
-//  Return custom parameter with octet string value.
+//  Return first param, or NULL if does not exist.
+//
+VSCF_PUBLIC const vscf_list_key_value_node_t *
+vscf_message_info_custom_params_first_param(const vscf_message_info_custom_params_t *self);
+
+//
+//  Return next param, or NULL if does not exist.
+//
+VSCF_PUBLIC const vscf_list_key_value_node_t *
+vscf_message_info_custom_params_next_param(const vscf_list_key_value_node_t *param);
+
+//
+//  Return parameter's key.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_message_info_custom_params_find_data(vscf_message_info_custom_params_t *self, vsc_data_t key, vscf_error_t *error);
+vscf_message_info_custom_params_param_key(const vscf_list_key_value_node_t *param);
+
+//
+//  Return true if given parameter holds an integer value.
+//
+VSCF_PUBLIC bool
+vscf_message_info_custom_params_is_int_param(const vscf_list_key_value_node_t *param);
+
+//
+//  Return parameter as an integer value.
+//
+VSCF_PUBLIC int
+vscf_message_info_custom_params_as_int_value(const vscf_list_key_value_node_t *param);
+
+//
+//  Return true if given parameter holds a string value.
+//
+VSCF_PUBLIC bool
+vscf_message_info_custom_params_is_string_param(const vscf_list_key_value_node_t *param);
+
+//
+//  Return parameter as a string value.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_message_info_custom_params_as_string_value(const vscf_list_key_value_node_t *param);
+
+//
+//  Return true if given parameter holds a data value.
+//
+VSCF_PUBLIC bool
+vscf_message_info_custom_params_is_data_param(const vscf_list_key_value_node_t *param);
+
+//
+//  Return parameter as a data value.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_message_info_custom_params_as_data_value(const vscf_list_key_value_node_t *param);
 
 
 // --------------------------------------------------------------------------
@@ -179,5 +156,5 @@ vscf_message_info_custom_params_find_data(vscf_message_info_custom_params_t *sel
 
 
 //  @footer
-#endif // VSCF_MESSAGE_INFO_CUSTOM_PARAMS_H_INCLUDED
+#endif // VSCF_MESSAGE_INFO_CUSTOM_PARAMS_INTERNAL_H_INCLUDED
 //  @end

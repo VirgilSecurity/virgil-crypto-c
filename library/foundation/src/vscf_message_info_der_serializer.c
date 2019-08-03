@@ -59,6 +59,7 @@
 #include "vscf_alg_info_der_serializer.h"
 #include "vscf_alg_info_der_deserializer.h"
 #include "vscf_oid.h"
+#include "vscf_message_info_custom_params_internal.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_message_info_der_serializer_defs.h"
