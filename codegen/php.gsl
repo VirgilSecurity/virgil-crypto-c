@@ -323,7 +323,6 @@ function php_create_class_method (class, method, destination, php_project, meta)
     new php_method to my.destination
 
         #COMMON
-
         my.count_in = 1 # ctx
         my.count_out = 0
         my.return_data = ""
@@ -379,7 +378,7 @@ function php_create_class_method (class, method, destination, php_project, meta)
             for my.method.argument where defined (argument.class) & argument.class <> "buffer"
                 new php_argument to high_level
                     .name = php_derive_argument_name (argument, "-h")
-                    .type = php_derive_argument_type (argument, "-h")
+                    php_map_argument_type (argument, "-h", php_argument)
                     my.docblock_data += "@param $(0.type:) $(0.name:)\n"
                 endnew
             endfor
@@ -430,7 +429,6 @@ function php_create_class_method (class, method, destination, php_project, meta)
 
             my.function_name = class_derive_c_method (my.class, my.method)
 
-            .name = php_derive_method_name (my.method, "-l")
             .function_name = php_derive_function_name (my.function_name, "-l")
             .required_num_args = my.count_in
             .throws_exception = my.return_enum_status
@@ -439,8 +437,11 @@ function php_create_class_method (class, method, destination, php_project, meta)
             for my.method.argument where defined (argument.class)
                 new php_argument to low_level
                     .name = php_derive_argument_name (argument, "-l")
-                    .type = php_derive_argument_type (argument, "-l")
-                    .len = "temp_len"
+                    php_map_argument_type (argument, "-l", php_argument)
+
+                    if defined (argument->length)
+                        php_map_extension_argument_len(argument, php_argument)
+                    endif
                 endnew
             endfor
 
@@ -455,58 +456,50 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_derive_argument_type (argument, type)
-    check_arguments (my, "argument, type", my)
+function php_map_argument_type (argument, type, destination)
+    check_arguments (my, "argument, type, destination", my)
     assert_attribute (my.argument, "class", my)
 
     php_type_checker(my.type)
 
     if my.type = "-h"
         if my.argument.class = "data"
-            my.res = "string"
+            my.destination.type = "string"
         else
             echo_fatal("Undefined argument type for the class: $(my.argument.class)")
         endif
     elsif my.type = "-l"
-        my.res = php_derive_extension_argument_type(my.argument)
+        if my.argument.class = "data"
+            my.destination.type = "vsc_data_t"
+            my.destination.zend_type = "IS_STRING"
+        elsif my.argument.class = "buffer"
+            my.destination.type = "vsc_buffer_t"
+        else
+            echo_fatal("Undefined argument class type: $(my.argument.class)", my)
+        endif
     endif
 
-    return my.res
 endfunction
 
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_derive_extension_argument_len (argument)
-    check_arguments (my, "argument", my)
+function php_map_extension_argument_len (argument, destination)
+    check_arguments (my, "argument, destination", my)
 
-    if my.argument.class = "data"
-        my.res = "vsc_data_t"
-    elsif my.argument.class = "buffer"
-        my.res = "vsc_buffer_t"
-    else
-        echo_fatal("Undefined argument class type: $(my.argument.class)", my)
+    if ! defined (my.argument->length)
+        echo_fatal("Undefined argument length for argument: $(my.argument.name)", my)
     endif
 
-    return my.res
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_derive_extension_argument_type (argument)
-    check_arguments (my, "argument", my)
-    assert_attribute (my.argument, "class", my)
-
-    if my.argument.class = "data"
-        my.res = "vsc_data_t"
-    elsif my.argument.class = "buffer"
-        my.res = "vsc_buffer_t"
-    else
-        echo_fatal("Undefined argument class type: $(my.argument.class)", my)
+    if defined (my.argument->length.method)
+        my.destination.len_type = "method"
+        my.destination.len_data = "$(my.argument->length.method:c)"
+    elsif defined (my.argument->length.constant)
+        my.destination.len_type = "constant"
+        my.destination.len_data = php_derive_constant_formatted_string("$(my.argument->length.constant:)")
+    else 
+        echo_fatal("Undefined method argument length type for the argument: $(my.argument.name)", my)
     endif
-
-    return my.res
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -595,6 +588,18 @@ function php_type_checker (type)
     endif
 
     return
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_constant_formatted_string (string)
+    check_arguments (my, "string", my)
+
+    my.res = "$(my.string:c)"
+    my.res = "$(my.res:UPPER)"
+
+    return my.res
 endfunction
 
 .endtemplate
