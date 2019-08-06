@@ -6,10 +6,10 @@
         prefix="vscf"
         path="../library/foundation/"
         work_path="generated/foundation/"
-        wrappers="swift,java"
+        wrappers="swift,java,python,wasm"
         >
 
-    <version major="0" minor="8" patch="1"/>
+    <version major="0" minor="9" patch="0"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.

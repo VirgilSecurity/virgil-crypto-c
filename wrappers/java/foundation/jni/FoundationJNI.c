@@ -2477,6 +2477,13 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_e
     }
 }
 
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setupDefaultsNoRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_ecies_t /*2*/* ecies_ctx = (vscf_ecies_t /*2*/*) c_ctx;
+
+    vscf_ecies_setup_defaults_no_random(ecies_ctx /*a1*/);
+}
+
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1encryptedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpublicKey, jint jdataLen) {
     // Cast class context
     vscf_ecies_t /*2*/* ecies_ctx = (vscf_ecies_t /*2*/*) c_ctx;
@@ -2840,14 +2847,6 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     vsc_buffer_delete(out);
 
     return ret;
-}
-
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_listKeyValueNode_1new__ (JNIEnv *jenv, jobject jobj) {
-    return (jlong) vscf_list_key_value_node_new();
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_listKeyValueNode_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_list_key_value_node_delete((vscf_list_key_value_node_t /*2*/ *) c_ctx /*5*/);
 }
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1new__ (JNIEnv *jenv, jobject jobj) {

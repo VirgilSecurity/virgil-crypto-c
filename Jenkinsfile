@@ -6,14 +6,17 @@
 // --------------------------------------------------------------------------
 properties([
     parameters([
-        booleanParam(name: 'DEPLOY_JAVA_ARTIFACTS', defaultValue: true,
-            description: 'If build succeeded then Java artifacts will be deployed to the Maven repository.'),
-
         booleanParam(name: 'RUN_ANDROID_TESTS', defaultValue: true,
             description: 'Run Android instrumental tests.'),
 
-        booleanParam(name: 'DEPLOY_ANDROID_ARTIFACTS', defaultValue: true,
-            description: 'If build succeeded then Java Android artifacts will be deployed to the Maven repository..'),
+        booleanParam(name: 'DEPLOY_JAVA_ARTIFACTS', defaultValue: false,
+            description: 'If build succeeded then Java artifacts will be deployed to the Maven repository.'),
+
+        booleanParam(name: 'DEPLOY_ANDROID_ARTIFACTS', defaultValue: false,
+            description: 'If build succeeded then Java Android artifacts will be deployed to the Maven repository.'),
+
+        booleanParam(name: 'DEPLOY_PYTHON_ARTIFACTS', defaultValue: false,
+            description: 'If build succeeded then Python artifacts will be deployed to the Pip repository.'),
 
         string(name: 'gpg_keyname', defaultValue: 'B2007BBB'),
     ])
@@ -27,9 +30,10 @@ properties([
 node('master') {
     stage('Grab SCM') {
         env
-        echo "DEPLOY_JAVA_ARTIFACTS = ${params.DEPLOY_JAVA_ARTIFACTS}"
         echo "RUN_ANDROID_TESTS = ${params.RUN_ANDROID_TESTS}"
+        echo "DEPLOY_JAVA_ARTIFACTS = ${params.DEPLOY_JAVA_ARTIFACTS}"
         echo "DEPLOY_ANDROID_ARTIFACTS = ${params.DEPLOY_ANDROID_ARTIFACTS}"
+        echo "DEPLOY_PYTHON_ARTIFACTS = ${params.DEPLOY_PYTHON_ARTIFACTS}"
         clearContentUnix()
         checkout scm
         stash includes: '**', name: 'src'
@@ -72,6 +76,13 @@ nodes['lang-java-platform-android-x86_64'] = build_LangJava_Android_x86_64('buil
 nodes['lang-java-platform-android-armeabi-v7a'] = build_LangJava_Android_armeabi_v7a('build-os-x')
 nodes['lang-java-platform-android-arm64-v8a'] = build_LangJava_Android_arm64_v8a('build-os-x')
 
+//
+// Language: Python
+//
+nodes['lang-python-platform-linux'] = build_LangPython_Linux('build-centos7')
+nodes['lang-python-platform-macos'] = build_LangPython_MacOS('build-os-x')
+nodes['lang-python-platform-windows'] = build_LangPython_Windows('build-win8')
+
 stage('Build') {
     parallel(nodes)
 }
@@ -96,6 +107,12 @@ def pathFromJobName(jobName) {
     return jobName.replace('/','-').replace('%2f', '-').replace('%2F', '-')
 }
 
+def cleanPythonBuildDirectoriesLinux(){
+    sh "find virgil_crypto_lib/ -name '*.pyc' -delete"
+    sh "rm -rf build/"
+    sh "rm -rf *.egg-info"
+}
+
 // --------------------------------------------------------------------------
 //  Build nodes for language: C
 // --------------------------------------------------------------------------
@@ -110,6 +127,7 @@ def build_LangC_Unix(slave) {
                       -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
                       -DCPACK_OUTPUT_FILE_PREFIX=c \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -169,6 +187,7 @@ def build_LangPHP_Linux(slave) {
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -218,6 +237,7 @@ def build_LangPHP_MacOS(slave) {
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -324,6 +344,7 @@ def build_LangJava_Linux(slave) {
                       -Cconfigs/java-config.cmake \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/linux" \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
@@ -347,6 +368,7 @@ def build_LangJava_MacOS(slave) {
                       -Cconfigs/java-config.cmake \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/macos" \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
@@ -481,6 +503,343 @@ def build_LangJava_Android_arm64_v8a(slave) {
     }}
 }
 
+// --------------------------------------------------------------------------
+//  Build nodes for language: Python
+// --------------------------------------------------------------------------
+def build_LangPython_Linux(slave) {
+    return { node(slave) {
+        def jobPath = pathFromJobName(env.JOB_NAME)
+        ws("workspace/${jobPath}") {
+            clearContentUnix()
+            unstash 'src'
+            sh '''
+                cmake -DCMAKE_BUILD_TYPE=Release \
+                      -Cconfigs/python-config.cmake \
+                      -DCMAKE_INSTALL_PREFIX="wrappers/python/virgil_crypto_lib" \
+                      -DCMAKE_INSTALL_LIBDIR=_libs \
+                      -DENABLE_CLANGFORMAT=OFF \
+                      -Bbuild -H.
+                cmake --build build --target install -- -j8
+
+                cd wrappers/python
+                python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"
+            '''
+            stash includes: 'wrappers/python/**', excludes: 'dist/**, build/**', name: 'python_wrapper_linux'
+        }
+    }}
+}
+
+def build_LangPython_MacOS(slave) {
+    return { node(slave) {
+        def jobPath = pathFromJobName(env.JOB_NAME)
+        ws("workspace/${jobPath}") {
+            clearContentUnix()
+            unstash 'src'
+            sh '''
+                cmake -DCMAKE_BUILD_TYPE=Release \
+                      -Cconfigs/python-config.cmake \
+                      -DCMAKE_INSTALL_PREFIX="wrappers/python/virgil_crypto_lib" \
+                      -DCMAKE_INSTALL_LIBDIR=_libs \
+                      -DENABLE_CLANGFORMAT=OFF \
+                      -Bbuild -H.
+                cmake --build build --target install -- -j8
+
+                cd wrappers/python
+                python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"
+            '''
+            stash includes: 'wrappers/python/**', excludes: 'dist/**, build/**', name: 'python_wrapper_macos'
+        }
+    }}
+}
+
+def build_LangPython_Windows(slave) {
+    return { node(slave) {
+        def jobPath = pathFromJobName(env.JOB_NAME)
+        ws("workspace\\${jobPath}") {
+            clearContentWindows()
+            unstash 'src'
+            bat '''
+                set PATH=%PATH:"=%
+                call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
+                cmake -G"NMake Makefiles" ^
+                      -Cconfigs/python-config.cmake ^
+                      -DVIRGIL_LIB_PYTHIA=OFF ^
+                      -DCMAKE_BUILD_TYPE=Release ^
+                      -DCMAKE_INSTALL_PREFIX="wrappers\\python\\virgil_crypto_lib" ^
+                      -DCMAKE_INSTALL_LIBDIR=_libs ^
+                      -DCMAKE_INSTALL_BINDIR=_libs ^
+                      -DENABLE_CLANGFORMAT=OFF ^
+                      -Bbuild -H.
+                cmake --build build --target install
+
+                rmdir wrappers\\python\\virgil_crypto_lib\\pythia /s /q
+            '''
+            withEnv(["PATH=C:\\Python36_x64;${env.PATH}"]) {
+                bat 'cd wrappers\\python && python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"'
+            }
+            stash includes: 'wrappers/python/**', excludes: 'dist/**, build/**', name: 'python_wrapper_windows_x86_64'
+
+            clearContentWindows()
+            unstash 'src'
+            bat '''
+                set PATH=%PATH:"=%
+                call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars32.bat"
+                cmake -G"NMake Makefiles" ^
+                      -Cconfigs/python-config.cmake ^
+                      -DVIRGIL_LIB_PYTHIA=OFF ^
+                      -DCMAKE_BUILD_TYPE=Release ^
+                      -DCMAKE_INSTALL_PREFIX="wrappers\\python\\virgil_crypto_lib" ^
+                      -DCMAKE_INSTALL_LIBDIR=_libs ^
+                      -DCMAKE_INSTALL_BINDIR=_libs ^
+                      -DENABLE_CLANGFORMAT=OFF ^
+                      -Bbuild -H.
+                cmake --build build --target install
+
+                rmdir wrappers\\python\\virgil_crypto_lib\\pythia /s /q
+            '''
+            withEnv(["PATH=C:\\Python36_x86;${env.PATH}"]) {
+                bat 'cd wrappers\\python && python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"'
+            }
+            stash includes: 'wrappers/python/**', excludes: 'dist/**, build/**', name: 'python_wrapper_windows_x86'
+        }
+    }}
+}
+
+
+// --------------------------------------------------------------------------
+//  Python packaging
+// --------------------------------------------------------------------------
+node("build-docker") {
+    stage('Build Python packages') {
+        // Clean workspace
+        docker.image('python:2.7').inside("--user root"){
+            clearContentUnix()
+        }
+
+        // Linux
+        unstash 'python_wrapper_linux'
+
+        dir('wrappers/python') {
+            docker.image("python:2.7").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
+            }
+
+            docker.image("python:3.4").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
+            }
+
+            docker.image("python:3.5").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
+            }
+
+            docker.image("python:3.6").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
+            }
+
+            docker.image("python:3.7").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
+            }
+        }
+
+        stash includes: 'wrappers/python/dist/**', name: 'python_linux'
+
+        // Clean workspace
+        docker.image('python:2.7').inside("--user root"){
+            clearContentUnix()
+        }
+
+        // MacOs
+        unstash 'python_wrapper_macos'
+
+        dir('wrappers/python') {
+            docker.image("python:2.7").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
+            }
+
+            docker.image("python:3.4").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
+            }
+
+            docker.image("python:3.5").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
+            }
+
+            docker.image("python:3.6").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
+            }
+
+            docker.image("python:3.7").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
+            }
+        }
+
+        stash includes: 'wrappers/python/dist/**', name: 'python_macos'
+
+        // Clean workspace
+        docker.image('python:2.7').inside("--user root"){
+            clearContentUnix()
+        }
+
+        // Windows x86
+        unstash 'python_wrapper_windows_x86'
+        sh "rm -rf wrappers/python/virgil_crypto_lib/pythia"
+
+        dir('wrappers/python') {
+            docker.image("python:2.7").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name win32"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name win32"
+            }
+
+            docker.image("python:3.4").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name win32"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name win32"
+            }
+
+            docker.image("python:3.5").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name win32"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name win32"
+            }
+
+            docker.image("python:3.6").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name win32"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name win32"
+            }
+
+            docker.image("python:3.7").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name win32"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name win32"
+            }
+        }
+
+        // Windows x86_64
+        unstash 'python_wrapper_windows_x86_64'
+        sh "rm -rf wrappers/python/virgil_crypto_lib/pythia"
+
+        dir('wrappers/python') {
+            docker.image("python:2.7").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name win_amd64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name win_amd64"
+            }
+
+            docker.image("python:3.4").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name win_amd64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name win_amd64"
+            }
+
+            docker.image("python:3.5").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name win_amd64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name win_amd64"
+            }
+
+            docker.image("python:3.6").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name win_amd64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name win_amd64"
+            }
+
+            docker.image("python:3.7").inside("--user root"){
+                sh "pip install wheel"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_egg --plat-name win_amd64"
+                cleanPythonBuildDirectoriesLinux()
+                sh "python setup.py bdist_wheel --plat-name win_amd64"
+            }
+        }
+
+        //Fixing Python ABI tag
+        docker.image("python:2.7").inside("--user root"){
+            sh 'for file in wrappers/python/dist/*-cp27mu-*.whl; do echo $file | mv $file $(sed -r \'s/cp27mu/cp27m/g\'); done'
+        }
+        stash includes: 'wrappers/python/dist/**', name: 'python_windows'
+    }
+}
+
 
 // --------------------------------------------------------------------------
 //  Android tests
@@ -605,9 +964,39 @@ def deployAndroidArtifacts() {
     }
 }
 
+def deployPythonArtifacts() {
+    return {
+        node('master') {
+            stage('Deploy Python artifacts') {
+
+                clearContentUnix()
+                unstash "python_linux"
+                unstash "python_macos"
+                unstash "python_windows"
+
+                sh "cp -r wrappers/python/dist wrappers/python/python"
+
+                dir('wrappers/python'){
+                    archiveArtifacts('python/**')
+                }
+
+                echo "DEPLOY_PYTHON_ARTIFACTS = ${params.DEPLOY_PYTHON_ARTIFACTS}"
+                if (params.DEPLOY_PYTHON_ARTIFACTS) {
+                    sh """
+                        env
+                        cd wrappers/python
+                        twine upload dist/*
+                    """
+                }
+            }
+        }
+    }
+}
+
 
 def deploy_nodes = [:]
 deploy_nodes['calculate-artifacts-checksum'] = calculateArtifactsChecksum()
 deploy_nodes['deploy-java-artifacts'] = deployJavaArtifacts()
 deploy_nodes['deploy-android-artifacts'] = deployAndroidArtifacts()
+deploy_nodes['deploy-python-artifacts'] = deployPythonArtifacts()
 parallel(deploy_nodes)

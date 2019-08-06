@@ -60,13 +60,13 @@
         <return class="data"/>
     </method>
 
-    <method name="add node" declaration="private">
+    <method name="add node" scope="internal">
         Add given node to the list ending.
 
         <argument name="node" class="list key value node" access="disown"/>
     </method>
 
-    <method name="find node" declaration="private">
+    <method name="find node" scope="internal">
         Add given node to the list ending.
 
         <argument name="key" class="data"/>
@@ -76,13 +76,13 @@
         <return class="list key value node"/>
     </method>
 
-    <method name="first param" visibility="private" is_const="1">
+    <method name="first param" scope="internal" is_const="1">
         Return first param, or NULL if does not exist.
 
         <return class="list key value node"/>
     </method>
 
-    <method name="next param" visibility="private" is_static="1">
+    <method name="next param" scope="internal" is_static="1">
         Return next param, or NULL if does not exist.
 
         <argument name="param" class="list key value node"/>
@@ -90,7 +90,7 @@
         <return class="list key value node"/>
     </method>
 
-    <method name="param key" visibility="private" is_static="1">
+    <method name="param key" scope="internal" is_static="1">
         Return parameter's key.
 
         <argument name="param" class="list key value node"/>
@@ -98,7 +98,7 @@
         <return class="data"/>
     </method>
 
-    <method name="is int param" visibility="private" is_static="1">
+    <method name="is int param" scope="internal" is_static="1">
         Return true if given parameter holds an integer value.
 
         <argument name="param" class="list key value node"/>
@@ -106,7 +106,7 @@
         <return type="boolean"/>
     </method>
 
-    <method name="as int value" visibility="private" is_static="1">
+    <method name="as int value" scope="internal" is_static="1">
         Return parameter as an integer value.
 
         <argument name="param" class="list key value node"/>
@@ -114,7 +114,7 @@
         <return type="integer"/>
     </method>
 
-    <method name="is string param" visibility="private" is_static="1">
+    <method name="is string param" scope="internal" is_static="1">
         Return true if given parameter holds a string value.
 
         <argument name="param" class="list key value node"/>
@@ -122,7 +122,7 @@
         <return type="boolean"/>
     </method>
 
-    <method name="as string value" visibility="private" is_static="1">
+    <method name="as string value" scope="internal" is_static="1">
         Return parameter as a string value.
 
         <argument name="param" class="list key value node"/>
@@ -130,7 +130,7 @@
         <return class="data"/>
     </method>
 
-    <method name="is data param" visibility="private" is_static="1">
+    <method name="is data param" scope="internal" is_static="1">
         Return true if given parameter holds a data value.
 
         <argument name="param" class="list key value node"/>
@@ -138,7 +138,7 @@
         <return type="boolean"/>
     </method>
 
-    <method name="as data value" visibility="private" is_static="1">
+    <method name="as data value" scope="internal" is_static="1">
         Return parameter as a data value.
 
         <argument name="param" class="list key value node"/>

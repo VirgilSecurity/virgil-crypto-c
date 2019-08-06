@@ -6,10 +6,10 @@
         prefix="vsce"
         path="../library/phe"
         work_path = "generated/phe/"
-        wrappers="java"
+        wrappers="java,python,wasm"
         >
 
-    <version major="0" minor="8" patch="1"/>
+    <version major="0" minor="9" patch="0"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.
@@ -48,7 +48,14 @@
     </license>
 
     <require project="common" feature="library"/>
-    <require project="foundation" feature="library"/>
+
+    <require project="foundation" feature="library">
+        <require impl="ctr drbg"/>
+        <require impl="hmac"/>
+        <require impl="hkdf"/>
+        <require impl="sha512"/>
+    </require>
+
     <require library="mbedtls" feature="library"/>
 
     <feature name="multi threading" default="on">

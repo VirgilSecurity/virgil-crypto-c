@@ -14,6 +14,7 @@
         <require class="alg info der serializer"/>
         <require class="alg info der deserializer"/>
         <require class="oid"/>
+        <require module="message info custom params internal"/>
 
         <require module="buffer defs" project="common"/>
         <require header="mbedtls/asn1.h"/>

@@ -376,6 +376,8 @@ vscf_ecc_import_public_key(const vscf_ecc_t *self, const vscf_raw_public_key_t *
     VSCF_ASSERT_SAFE(vscf_raw_public_key_is_valid(raw_key));
 
     vscf_ecc_public_key_t *ecc_public_key = vscf_ecc_public_key_new();
+    ecc_public_key->alg_info = vscf_impl_shallow_copy((vscf_impl_t *)vscf_raw_public_key_alg_info(raw_key));
+    ecc_public_key->impl_tag = self->info->impl_tag;
 
     const vscf_status_t status =
             vscf_mbedtls_ecp_group_load(vscf_raw_public_key_alg_id(raw_key), &ecc_public_key->ecc_grp);

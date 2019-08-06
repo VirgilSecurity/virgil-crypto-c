@@ -37,7 +37,7 @@
 #   Contains API for Java wrapper generation.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
-#   language. See https://github.com/imatix/gsl for details.
+#   language. See https://github.com/zeromq/gsl for details.
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"
@@ -53,26 +53,6 @@ gsl from "java_codegen.gsl"
 # ===========================================================================
 #   Name and type derivation.
 # ===========================================================================
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C class method that returns
-#   context size.
-# ---------------------------------------------------------------------------
-function class_derive_class_c_method_ctx_size (class)
-    check_arguments (my, "class", my)
-
-    my.of_class = my.class.of_class ? my.class.name
-
-    if item_in (my.class, "class")
-        return make_ref_c (make_id ("class", my.of_class, "method", "ctx size"))
-
-    elsif item_in (my.class, "implementation")
-        return make_ref_c (make_id ("class", my.of_class, "method", "impl size"))
-
-    else
-        return make_ref_c (make_id ("class", my.of_class, "method", "size"))
-    endif
-endfunction
 
 # ---------------------------------------------------------------------------
 #   Return Java type for class context.
