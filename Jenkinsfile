@@ -13,10 +13,10 @@ properties([
             description: 'Run Android instrumental tests.'),
 
         booleanParam(name: 'DEPLOY_ANDROID_ARTIFACTS', defaultValue: false,
-            description: 'If build succeeded then Java Android artifacts will be deployed to the Maven repository..'),
+            description: 'If build succeeded then Java Android artifacts will be deployed to the Maven repository.'),
 
         booleanParam(name: 'DEPLOY_PYTHON_ARTIFACTS', defaultValue: false,
-            description: 'If build succeeded then Python artifacts will be deployed to the Pip repository..'),
+            description: 'If build succeeded then Python artifacts will be deployed to the Pip repository.'),
 
         string(name: 'gpg_keyname', defaultValue: 'B2007BBB'),
     ])
@@ -572,7 +572,7 @@ def build_LangPython_Windows(slave) {
                       -Bbuild -H.
                 cmake --build build --target install
 
-                rmdir wrappers\\python\\virgil_crypto_lib\\pythia /s /q 
+                rmdir wrappers\\python\\virgil_crypto_lib\\pythia /s /q
             '''
             withEnv(["PATH=C:\\Python36_x64;${env.PATH}"]) {
                 bat 'cd wrappers\\python && python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"'
