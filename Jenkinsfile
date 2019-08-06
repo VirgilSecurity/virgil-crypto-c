@@ -6,11 +6,11 @@
 // --------------------------------------------------------------------------
 properties([
     parameters([
-        booleanParam(name: 'DEPLOY_JAVA_ARTIFACTS', defaultValue: false,
-            description: 'If build succeeded then Java artifacts will be deployed to the Maven repository.'),
-
         booleanParam(name: 'RUN_ANDROID_TESTS', defaultValue: true,
             description: 'Run Android instrumental tests.'),
+
+        booleanParam(name: 'DEPLOY_JAVA_ARTIFACTS', defaultValue: false,
+            description: 'If build succeeded then Java artifacts will be deployed to the Maven repository.'),
 
         booleanParam(name: 'DEPLOY_ANDROID_ARTIFACTS', defaultValue: false,
             description: 'If build succeeded then Java Android artifacts will be deployed to the Maven repository.'),
@@ -30,8 +30,8 @@ properties([
 node('master') {
     stage('Grab SCM') {
         env
-        echo "DEPLOY_JAVA_ARTIFACTS = ${params.DEPLOY_JAVA_ARTIFACTS}"
         echo "RUN_ANDROID_TESTS = ${params.RUN_ANDROID_TESTS}"
+        echo "DEPLOY_JAVA_ARTIFACTS = ${params.DEPLOY_JAVA_ARTIFACTS}"
         echo "DEPLOY_ANDROID_ARTIFACTS = ${params.DEPLOY_ANDROID_ARTIFACTS}"
         echo "DEPLOY_PYTHON_ARTIFACTS = ${params.DEPLOY_PYTHON_ARTIFACTS}"
         clearContentUnix()
