@@ -47,10 +47,11 @@ gsl from "c_component.gsl"
 gsl from "php_codegen.gsl"
 
 # ---------------------------------------------------------------------------
-#   Create module with low level shared object loader that handles C context.
+#   
 # ---------------------------------------------------------------------------
 function php_create_toplevel_modules(wrapper) #[optional]
-    ### TODO
+    check_arguments (my, "wrapper", my)
+    #TODO
 endfunction
 
 function php_resolve_toplevel (wrapper, license) #[optional]
@@ -678,29 +679,50 @@ function php_format_extension_zend_header (low_level)
     return my.res
 endfunction
 
+
+
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
 function php_format_extension_zend_body (low_level)
     check_arguments (my, "low_level", my)
 
-    my.input_args = "zval *in_ctx = NULL;"
+    my.input_args = "zval *in_ctx = NULL;\n"
+    my.parse_arguments = "Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)\n"
+    my.c = 1 # ctx
 
-    for my.low_level.php_argument as php_argument where php_argument.typa <> "vsc_buffer_t"
-        my.c = php_derive_extension_zend_function_input_name(php_argument, "-c")
-        my.l = php_derive_extension_zend_function_input_name(php_argument, "-l")
+    for my.low_level.php_argument as php_argument where php_argument.type <> "vsc_buffer_t"
+        my.char = php_derive_extension_zend_function_input_name(php_argument, "-c")
+        my.size = php_derive_extension_zend_function_input_name(php_argument, "-l")
         my.input_args += "\
-            char *$(my.c:) = NULL;
-            size_t $(my.l) = 0;
+            char *$(my.char:) = NULL;
+            size_t $(my.size:) = 0;
         "
+        my.c = my.c + 1
+
+        # Parse arguments
+
+        my.term = ""
+        if ! last()
+            my.term = "\n"
+        endif
+
+        my.parse_arguments += "Z_PARAM_STRING_EX($(my.char:), $(my.size:), 1, 0)$(my.term:)"
     endfor
 
-    my.res = "\
+    my.res = "\n
         PHP_FUNCTION($(my.low_level.function_name:)) {
             //
             // Declare input arguments
             //
             $(my.input_args:)
+
+            //
+            //  Parse arguments
+            //
+            ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, $(my.c:), $(my.c:))
+            $(my.parse_arguments:)
+            ZEND_PARSE_PARAMETERS_END();
     "
 
     return my.res
