@@ -35,20 +35,86 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-
-
 /**
 * Class for encryption using PHE account key
 * This class is thread-safe.
 */
-class Cipher
+class PheCipher
 {
+    private $ctx;
+
     /**
     * Create underlying C context.
+    * @return void
     */
     public function __construct()
     {
+        $this->ctx = vsce_phe_cipher_new_php();
     }
-    self._lib_vsce_phe_cipher = VscePheCipher()
-    $this->ctx = php_vsce_phe_cipher.vsce_phe_cipher_new();
+
+    /**
+    * Destroy underlying C context.
+    * @return void
+    */
+    public function __destruct()
+    {
+        vsce_phe_cipher_delete_php($this->ctx);
+    }
+
+    /**
+    * Setups dependencies with default values.
+    *
+    * @throws Exception
+    * @return void
+    */
+    public function setupDefaults(): void
+    {
+        return vsce_phe_cipher_setup_defaults_php($this->ctx);
+    }
+
+    /**
+    * Returns buffer capacity needed to fit cipher text
+    *
+    * @return void
+    */
+    public function encryptLen(): void
+    {
+        return vsce_phe_cipher_encrypt_len_php($this->ctx);
+    }
+
+    /**
+    * Returns buffer capacity needed to fit plain text
+    *
+    * @return void
+    */
+    public function decryptLen(): void
+    {
+        return vsce_phe_cipher_decrypt_len_php($this->ctx);
+    }
+
+    /**
+    * Encrypts data using account key
+    *
+    * @param string $plainText
+    * @param string $accountKey
+    * @throws Exception
+    * @return string
+    */
+    public function encrypt(string $plainText, string $accountKey): string // cipher_text
+    {
+        return vsce_phe_cipher_encrypt_php($this->ctx, $plainText, $accountKey);
+    }
+
+    /**
+    * Decrypts data using account key
+    *
+    * @param string $cipherText
+    * @param string $accountKey
+    * @throws Exception
+    * @return string
+    */
+    public function decrypt(string $cipherText, string $accountKey): string // plain_text
+    {
+        return vsce_phe_cipher_decrypt_php($this->ctx, $cipherText, $accountKey);
+    }
 }

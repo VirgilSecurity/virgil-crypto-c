@@ -35,8 +35,25 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-
-
-class Common
+class PheCommon
 {
+    private $ctx;
+
+    /**
+    * Create underlying C context.
+    * @return void
+    */
+    public function __construct()
+    {
+        $this->ctx = vsce_phe_common_new_php();
+    }
+
+    /**
+    * Destroy underlying C context.
+    * @return void
+    */
+    public function __destruct()
+    {
+        vsce_phe_common_delete_php($this->ctx);
+    }
 }

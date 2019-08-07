@@ -35,20 +35,118 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-
-
 /**
 * Class for server-side PHE crypto operations.
 * This class is thread-safe in case if VSCE_MULTI_THREAD defined
 */
-class Server
+class PheServer
 {
+    private $ctx;
+
     /**
     * Create underlying C context.
+    * @return void
     */
     public function __construct()
     {
+        $this->ctx = vsce_phe_server_new_php();
     }
-    self._lib_vsce_phe_server = VscePheServer()
-    $this->ctx = php_vsce_phe_server.vsce_phe_server_new();
+
+    /**
+    * Destroy underlying C context.
+    * @return void
+    */
+    public function __destruct()
+    {
+        vsce_phe_server_delete_php($this->ctx);
+    }
+
+    /**
+    * @throws Exception
+    * @return void
+    */
+    public function setupDefaults(): void
+    {
+        return vsce_phe_server_setup_defaults_php($this->ctx);
+    }
+
+    /**
+    * Generates new NIST P-256 server key pair for some client
+    *
+    * @throws Exception
+    * @return array
+    */
+    public function generateServerKeyPair(): array // [server_private_key, server_public_key]
+    {
+        return vsce_phe_server_generate_server_key_pair_php($this->ctx);
+    }
+
+    /**
+    * Buffer size needed to fit EnrollmentResponse
+    *
+    * @return void
+    */
+    public function enrollmentResponseLen(): void
+    {
+        return vsce_phe_server_enrollment_response_len_php($this->ctx);
+    }
+
+    /**
+    * Generates a new random enrollment and proof for a new user
+    *
+    * @param string $serverPrivateKey
+    * @param string $serverPublicKey
+    * @throws Exception
+    * @return string
+    */
+    public function getEnrollment(string $serverPrivateKey, string $serverPublicKey): string // enrollment_response
+    {
+        return vsce_phe_server_get_enrollment_php($this->ctx, $serverPrivateKey, $serverPublicKey);
+    }
+
+    /**
+    * Buffer size needed to fit VerifyPasswordResponse
+    *
+    * @return void
+    */
+    public function verifyPasswordResponseLen(): void
+    {
+        return vsce_phe_server_verify_password_response_len_php($this->ctx);
+    }
+
+    /**
+    * Verifies existing user's password and generates response with proof
+    *
+    * @param string $serverPrivateKey
+    * @param string $serverPublicKey
+    * @param string $verifyPasswordRequest
+    * @throws Exception
+    * @return string
+    */
+    public function verifyPassword(string $serverPrivateKey, string $serverPublicKey, string $verifyPasswordRequest): string // verify_password_response
+    {
+        return vsce_phe_server_verify_password_php($this->ctx, $serverPrivateKey, $serverPublicKey, $verifyPasswordRequest);
+    }
+
+    /**
+    * Buffer size needed to fit UpdateToken
+    *
+    * @return void
+    */
+    public function updateTokenLen(): void
+    {
+        return vsce_phe_server_update_token_len_php($this->ctx);
+    }
+
+    /**
+    * Updates server's private and public keys and issues an update token for use on client's side
+    *
+    * @param string $serverPrivateKey
+    * @throws Exception
+    * @return array
+    */
+    public function rotateKeys(string $serverPrivateKey): array // [new_server_private_key, new_server_public_key, update_token]
+    {
+        return vsce_phe_server_rotate_keys_php($this->ctx, $serverPrivateKey);
+    }
 }

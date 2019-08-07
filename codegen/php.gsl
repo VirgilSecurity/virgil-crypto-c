@@ -446,7 +446,9 @@ function php_create_class_method (class, method, destination, php_project, meta)
             endfor
 
             new php_code to low_level
-                . = "temp_code"
+                if defined (low_level)
+                    . = php_format_extension_wrap_method (low_level)
+                endif
             endnew
         endnew
     endnew
@@ -602,4 +604,105 @@ function php_derive_constant_formatted_string (string)
     return my.res
 endfunction
 
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_extension_zend_function_arginfo (function_name)
+    check_arguments (my, "function_name", my)
+
+    my.res = "arginfo_$(my.function_name:)_php"
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_extension_zend_function_input_name (arg, type)
+    check_arguments (my, "arg, type", my)
+
+    if ! string_in(my.type, "-c, -l")
+        echo_fatal("Invalid type: $(my.type:)", my)
+    endif
+
+    if my.type = "-c"
+        my.res = "in_$(my.arg.name:)"
+    elsif my.type = "-l"
+        my.res = "in_$(my.arg.name:)_len"
+    endif
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_wrap_method (low_level)
+    check_arguments (my, "low_level", my)
+
+    my.res = ""
+    
+    my.res += php_format_extension_zend_header (low_level)
+    my.res += php_format_extension_zend_body (low_level)
+    
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_zend_header (low_level)
+    check_arguments (my, "low_level", my)
+
+    my.arginfo = php_derive_extension_zend_function_arginfo(my.low_level.function_name)
+
+    my.arg_type_info = "ZEND_ARG_INFO(0, ctx)\n"
+
+    for my.low_level.php_argument as php_argument
+        my.term = ""
+        if ! last()
+            my.term = "\n"
+        endif
+
+        if defined (php_argument.zend_type)
+            my.arg_type_info += "ZEND_ARG_TYPE_INFO(0, $(php_argument.name:), $(php_argument.zend_type), 0)$(my.term:)"
+        endif
+    endfor
+
+    my.res = "\
+    ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX($(my.arginfo:), 0, $(my.low_level.required_num_args:), $(my.low_level.return_type:UPPER), 0)
+    $(my.arg_type_info:)
+    ZEND_END_ARG_INFO()
+    "
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_zend_body (low_level)
+    check_arguments (my, "low_level", my)
+
+    my.input_args = "zval *in_ctx = NULL;"
+
+    for my.low_level.php_argument as php_argument where php_argument.typa <> "vsc_buffer_t"
+        my.c = php_derive_extension_zend_function_input_name(php_argument, "-c")
+        my.l = php_derive_extension_zend_function_input_name(php_argument, "-l")
+        my.input_args += "\
+            char *$(my.c:) = NULL;
+            size_t $(my.l) = 0;
+        "
+    endfor
+
+    my.res = "\
+        PHP_FUNCTION($(my.low_level.function_name:)) {
+            //
+            // Declare input arguments
+            //
+            $(my.input_args:)
+    "
+
+    return my.res
+endfunction
 .endtemplate

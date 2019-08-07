@@ -35,8 +35,6 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-
-
 /**
 * Error context.
 * Can be used for sequential operations, i.e. parsers, to accumulate error.
@@ -45,11 +43,64 @@
 */
 class Error
 {
+    private $ctx;
+
     /**
     * Create underlying C context.
+    * @return void
     */
     public function __construct()
     {
+        $this->ctx = vsce_error_new_php();
     }
-    self._lib_vsce_error = VsceError()
+
+    /**
+    * Destroy underlying C context.
+    * @return void
+    */
+    public function __destruct()
+    {
+        vsce_error_delete_php($this->ctx);
+    }
+
+    /**
+    * Reset context to the "no error" state.
+    * @return void
+    */
+    public function reset(): void
+    {
+        return vsce_error_reset_php($this->ctx);
+    }
+
+    /**
+    * Update context with given status.
+    * If status is "success" then do nothing.
+    *
+    * @return void
+    */
+    public function update(): void
+    {
+        return vsce_error_update_php($this->ctx);
+    }
+
+    /**
+    * Return true if status is not "success".
+    *
+    * @return void
+    */
+    public function hasError(): void
+    {
+        return vsce_error_has_error_php($this->ctx);
+    }
+
+    /**
+    * Return error code.
+    *
+    * @throws Exception
+    * @return void
+    */
+    public function status(): void
+    {
+        return vsce_error_status_php($this->ctx);
+    }
 }
