@@ -161,7 +161,7 @@ function php_create_class_module (class, php_project, meta)
     endif
 
     new php_module to my.php_project
-        .name = php_derive_module_name (my.class, my.php_project)
+        .name = php_derive_module_name (my.class, my.php_project, "Pascal")
         .source_file_name = 0.name + ".php"
         .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
 
@@ -257,12 +257,16 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted module name.
 # ---------------------------------------------------------------------------
-function php_derive_module_name (type, php_project)
-    check_arguments (my, "type, php_project", my)
+function php_derive_module_name (type, php_project, ppm)
+    check_arguments (my, "type, php_project, ppm", my)
 
     assert_attribute (my.type, "name", my)
 
-    return "$(my.type.name:Pascal)"
+    if ! string_in(my.ppm, "c, UPPER, Pascal, Camel")
+        echo_fatal("Undefined ppm: $(my.ppm:)", my)
+    endif
+
+    return "$(my.type.name:$(my.ppm))"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -430,6 +434,7 @@ function php_create_class_method (class, method, destination, php_project, meta)
 
             my.function_name = class_derive_c_method (my.class, my.method)
 
+            .module_name = php_derive_module_name (my.class, my.php_project, "c")
             .function_name = php_derive_function_name (my.function_name, "-l")
             .required_num_args = my.count_in
             .throws_exception = my.return_enum_status
@@ -690,24 +695,30 @@ function php_format_extension_zend_body (low_level)
     my.input_args = "zval *in_ctx = NULL;\n"
     my.parse_arguments = "Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)\n"
     my.c = 1 # ctx
+    my.proxy_call = ""
 
-    for my.low_level.php_argument as php_argument where php_argument.type <> "vsc_buffer_t"
-        my.char = php_derive_extension_zend_function_input_name(php_argument, "-c")
-        my.size = php_derive_extension_zend_function_input_name(php_argument, "-l")
-        my.input_args += "\
-            char *$(my.char:) = NULL;
-            size_t $(my.size:) = 0;
-        "
-        my.c = my.c + 1
+    for my.low_level.php_argument as php_argument
 
-        # Parse arguments
+        if php_argument.type <> "vsc_buffer_t"
+            my.char = php_derive_extension_zend_function_input_name(php_argument, "-c")
+            my.size = php_derive_extension_zend_function_input_name(php_argument, "-l")
+            my.input_args += "\
+                char *$(my.char:) = NULL;
+                size_t $(my.size:) = 0;
+            "
+            my.c = my.c + 1
 
-        my.term = ""
-        if ! last()
-            my.term = "\n"
+            # Parse arguments
+
+            my.term = ""
+            if ! last()
+                my.term = "\n"
+            endif
+
+            my.parse_arguments += "Z_PARAM_STRING_EX($(my.char:), $(my.size:), 1, 0)$(my.term:)"
+
+            my.proxy_call += "$(php_argument.type:) $(php_argument.name) = vsc_data((const byte*)$(my.char:), $(my.size:));$(my.term:)"
         endif
-
-        my.parse_arguments += "Z_PARAM_STRING_EX($(my.char:), $(my.size:), 1, 0)$(my.term:)"
     endfor
 
     my.res = "\n
@@ -723,6 +734,20 @@ function php_format_extension_zend_body (low_level)
             ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, $(my.c:), $(my.c:))
             $(my.parse_arguments:)
             ZEND_PARSE_PARAMETERS_END();
+
+            //
+            // Proxy call
+            //
+            vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
+            VSCE_ASSERT_PTR($(my.low_level.module_name:));
+            $(my.proxy_call:)
+
+            //  Allocate output buffer for output 'new_enrollment_record'
+            zend_string *out_new_enrollment_record = zend_string_alloc(vsce_phe_client_enrollment_record_len(phe_client), 0);
+            vsc_buffer_t *new_enrollment_record = vsc_buffer_new();
+            vsc_buffer_use(new_enrollment_record, (byte *)ZSTR_VAL(out_new_enrollment_record), ZSTR_LEN(out_new_enrollment_record));
+
+            vsce_status_t status = vsce_phe_client_update_enrollment_record(phe_client, enrollment_record, update_token, new_enrollment_record);
     "
 
     return my.res
