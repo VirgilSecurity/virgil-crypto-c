@@ -451,9 +451,31 @@ function php_create_class_method (class, method, destination, php_project, meta)
                 endnew
             endfor
 
-            new php_code to low_level
+            new extension_code to low_level
                 if defined (low_level)
-                    . = php_format_extension_wrap_method (low_level)
+                    new zend_header to extension_code
+                        . = php_format_extension_zend_header (low_level)
+                    endnew
+
+                    new php_function to extension_code
+                        . = php_format_extension_php_function (low_level)
+                    endnew
+
+                    new declaration_input to extension_code
+                        . = php_format_extension_declare_input (low_level)
+                    endnew
+                    new parse_arguments to extension_code
+                        . = php_format_extension_parse_arguments (low_level)
+                    endnew
+                    new proxy_call to extension_code
+                        . = php_format_extension_proxy_call (low_level)
+                    endnew
+                    new allocate_output_buffer to extension_code
+                        . = php_format_extension_allocate_output_buffer (low_level)
+                    endnew
+                    new status to extension_code
+                        . = php_format_extension_status (low_level)
+                    endnew   
                 endif
             endnew
         endnew
@@ -643,12 +665,30 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
+function php_derive_extension_zend_function_output_name (arg, type)
+    check_arguments (my, "arg, type", my)
+
+    if ! string_in(my.type, "-o, -n")
+        echo_fatal("Invalid type: $(my.type:)", my)
+    endif
+
+    if my.type = "-o"
+        my.res = "out_$(my.arg.name:)"
+    elsif my.type = "-n"
+        my.res = "new_$(my.arg.name:)"
+    endif
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
 function php_format_extension_wrap_method (low_level)
     check_arguments (my, "low_level", my)
 
     my.res = ""
     
-    my.res += php_format_extension_zend_header (low_level)
     my.res += php_format_extension_zend_body (low_level)
     
     return my.res
@@ -676,39 +716,100 @@ function php_format_extension_zend_header (low_level)
     endfor
 
     my.res = "\
-    ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX($(my.arginfo:), 0, $(my.low_level.required_num_args:), $(my.low_level.return_type:UPPER), 0)
-    $(my.arg_type_info:)
-    ZEND_END_ARG_INFO()
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX($(my.arginfo:), 0, $(my.low_level.required_num_args:), $(my.low_level.return_type:UPPER), 0)
+$(my.arg_type_info:)
+ZEND_END_ARG_INFO()
     "
 
     return my.res
 endfunction
 
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_php_function (low_level)
+    check_arguments (my, "low_level", my)
 
+    my.res = "PHP_FUNCTION($(my.low_level.function_name:))"
+
+    return my.res
+endfunction
 
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_format_extension_zend_body (low_level)
+function php_format_extension_status (low_level)
     check_arguments (my, "low_level", my)
 
-    my.input_args = "zval *in_ctx = NULL;\n"
+    my.status = "vsce_status_t status = $(my.low_level.function_name:)($(my.low_level.module_name:), "
+
+    for my.low_level.php_argument as php_argument
+        my.status += "$(php_argument.name:)"
+
+        if ! last()
+            my.status += ", "
+        endif
+    endfor
+
+    my.status += ");"
+    my.string += "\
+//
+//  Handle error
+//
+
+VSCE_HANDLE_STATUS(status);
+    "
+
+
+    my.res = "\
+$(my.status:)
+    "
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_declare_input (low_level)
+    check_arguments (my, "low_level", my)
+
+    my.res = "\
+//
+// Declare input arguments
+//
+zval *in_ctx = NULL;
+    "
+
+    for my.low_level.php_argument as php_argument
+        if php_argument.type <> "vsc_buffer_t"
+            my.char = php_derive_extension_zend_function_input_name(php_argument, "-c")
+            my.size = php_derive_extension_zend_function_input_name(php_argument, "-l")
+            my.res += "\
+char *$(my.char:) = NULL;
+size_t $(my.size:) = 0;
+            "
+        endif
+    endfor
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_parse_arguments (low_level)
+check_arguments (my, "low_level", my)
+
     my.parse_arguments = "Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)\n"
     my.c = 1 # ctx
-    my.proxy_call = ""
 
     for my.low_level.php_argument as php_argument
 
         if php_argument.type <> "vsc_buffer_t"
             my.char = php_derive_extension_zend_function_input_name(php_argument, "-c")
             my.size = php_derive_extension_zend_function_input_name(php_argument, "-l")
-            my.input_args += "\
-                char *$(my.char:) = NULL;
-                size_t $(my.size:) = 0;
-            "
             my.c = my.c + 1
-
-            # Parse arguments
 
             my.term = ""
             if ! last()
@@ -716,38 +817,87 @@ function php_format_extension_zend_body (low_level)
             endif
 
             my.parse_arguments += "Z_PARAM_STRING_EX($(my.char:), $(my.size:), 1, 0)$(my.term:)"
+        endif
+    endfor
 
+    my.res = "\
+//
+//  Parse arguments
+//
+ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, $(my.c:), $(my.c:))
+$(my.parse_arguments:)
+ZEND_PARSE_PARAMETERS_END();
+    "
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_proxy_call (low_level)
+    check_arguments (my, "low_level", my)
+
+    my.proxy_call = ""
+
+    for my.low_level.php_argument as php_argument
+        if php_argument.type <> "vsc_buffer_t"
+            my.char = php_derive_extension_zend_function_input_name(php_argument, "-c")
+            my.size = php_derive_extension_zend_function_input_name(php_argument, "-l")
+            my.term = ""
+            if ! last()
+                my.term = "\n"
+            endif
             my.proxy_call += "$(php_argument.type:) $(php_argument.name) = vsc_data((const byte*)$(my.char:), $(my.size:));$(my.term:)"
         endif
     endfor
 
-    my.res = "\n
-        PHP_FUNCTION($(my.low_level.function_name:)) {
-            //
-            // Declare input arguments
-            //
-            $(my.input_args:)
+    my.res = "
+//
+// Proxy call
+//
+vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
+VSCE_ASSERT_PTR($(my.low_level.module_name:));
+$(my.proxy_call:)
+    "
 
-            //
-            //  Parse arguments
-            //
-            ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, $(my.c:), $(my.c:))
-            $(my.parse_arguments:)
-            ZEND_PARSE_PARAMETERS_END();
+    return my.res
+endfunction
 
-            //
-            // Proxy call
-            //
-            vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
-            VSCE_ASSERT_PTR($(my.low_level.module_name:));
-            $(my.proxy_call:)
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_allocate_output_buffer (low_level)
+    check_arguments (my, "low_level", my)
 
-            //  Allocate output buffer for output 'new_enrollment_record'
-            zend_string *out_new_enrollment_record = zend_string_alloc(vsce_phe_client_enrollment_record_len(phe_client), 0);
-            vsc_buffer_t *new_enrollment_record = vsc_buffer_new();
-            vsc_buffer_use(new_enrollment_record, (byte *)ZSTR_VAL(out_new_enrollment_record), ZSTR_LEN(out_new_enrollment_record));
+    my.allocate_output_buffer = ""
 
-            vsce_status_t status = vsce_phe_client_update_enrollment_record(phe_client, enrollment_record, update_token, new_enrollment_record);
+    for my.low_level.php_argument as php_argument
+
+        if php_argument.type = "vsc_buffer_t"
+            my.out = php_derive_extension_zend_function_output_name (php_argument, "-o")
+            if php_argument.len_type = "method"
+                #TODO Add prefix!
+                my.zend_string_alloc = "$(php_argument.len_data:)($(my.low_level.module_name:))"
+            elsif php_argument.len_type = "constant"
+                #TODO Add prefix!
+                my.zend_string_alloc = "$(php_argument.len_data:)"
+            else
+                #TODO
+                echo_fatal("Not implemented!", my)
+            endif
+
+            my.allocate_output_buffer += "\
+            //  Allocate output buffer for output '$(php_argument.name:)'
+            zend_string *$(my.out:) = zend_string_alloc($(my.zend_string_alloc:), 0);
+            vsc_buffer_t *$(php_argument.name:) = vsc_buffer_new();
+            vsc_buffer_use($(php_argument.name:), (byte *)ZSTR_VAL($(my.out:)), ZSTR_LEN($(my.out:)));
+            "
+        endif
+    endfor
+
+    my.res = "\
+        $(my.allocate_output_buffer:)
     "
 
     return my.res
