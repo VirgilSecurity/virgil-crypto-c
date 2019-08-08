@@ -155,8 +155,7 @@ function php_create_class_module (class, php_project, meta)
     
     assert_attribute (my.class, "name", my)
 
-    # Skipping all classes with not public scope
-    if my.class.scope <> "public"
+    if my.class.scope <> "public" | my.class.name = "error"
         return
     endif
 
@@ -324,6 +323,10 @@ endfunction
 # ---------------------------------------------------------------------------
 function php_create_class_method (class, method, destination, php_project, meta)
     check_arguments (my, "class, method, destination, php_project, meta", my)
+
+    if defined (my.method->return.type) & my.method->return.type = "size"
+        return
+    endif
 
     new php_method to my.destination
 
