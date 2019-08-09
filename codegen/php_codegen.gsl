@@ -317,12 +317,28 @@ function php_generate_source_extension_main (extension_module, php_project)
     my.code = ""
 
     for my.php_project.php_module as php_module where ! string_in (php_module.name, "extension_status, extension_main")
-        my.code +="\
-        $(php_module.name:)\n
-        "
+
+        for php_module.php_class as php_class
+            if count(php_class.php_method) > 0
+                for php_class.php_method as php_method
+                    my.extension_code = php_method->low_level->extension_code
+                    
+                    my.code += my.extension_code->zend_header + "\n"
+                    my.code += my.extension_code->php_function + "\n"
+                    my.code += "{ \n"
+                    my.code += my.extension_code->declaration_input + "\n"
+                    my.code += my.extension_code->parse_arguments + "\n"
+                    my.code += my.extension_code->proxy_call + "\n"
+                    my.code += my.extension_code->allocate_output_buffer + "\n"
+                    my.code += my.extension_code->status + "\n"
+                    my.code += my.extension_code->output + "\n"
+                    my.code += "} \n"
+                endfor
+            endif
+        endfor
     endfor
 
-    php_insert_code(my.code)
+    php_insert_raw_code(my.code)
 
 endfunction
 

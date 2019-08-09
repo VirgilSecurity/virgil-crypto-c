@@ -147,7 +147,7 @@ function php_create_custom_modules (source, php_project, meta)
         new extension to php_module
             new c_code to extension
                 .= "\
-                #include
+                qwerty
                 "
         endnew
         endnew
@@ -858,7 +858,6 @@ fail:
     zend_string_free($(my.out_arg));
 success:
     vsc_buffer_destroy(&$(my.arg));
-}
         "
     elsif my.low_level.return_type = "IS_VOID"
         my.res = "RETURN_TRUE;"
