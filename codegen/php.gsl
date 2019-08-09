@@ -206,7 +206,40 @@ function php_create_class_default_constructor (php_class, class, php_project, me
     endnew
 endfunction
 
-function php_create_enum_module (source, destination, wrapper, meta)
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_create_enum_module (enum, php_project, meta)
+    check_arguments (my, "enum, php_project, meta", my)
+
+    echo_info ("Create <php_module/> from enum: '$(my.enum.name:)'", my)
+
+    assert_attribute (my.enum, "name", my)
+
+    if my.enum.scope <> "public"
+        return
+    endif
+
+    if my.enum.name <> "status"
+        echo_fatal("Not implemented enum: $(my.enum.name:)", my)
+    endif
+
+    if my.enum.name = "status"
+        new php_module to my.php_project
+            .name = "status"
+            .source_file_name = 0.name + ".c"
+            .source_dir = cat_path (my.php_project.source_dir, "extension")
+            .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+
+            new extension to php_module
+                .prefix = my.php_project.prefix
+
+                new c_code to extension
+                    .= php_format_extension_status_exception (my.enum, my.php_project.prefix)
+                endnew
+            endnew
+        endnew
+    endif
 endfunction
 
 function php_finalize_custom_modules (source, destination, wrapper, meta) #[optional]
@@ -995,6 +1028,50 @@ function php_format_extension_allocate_output_buffer (low_level)
 
     my.res = "\
         $(my.allocate_output_buffer:)
+    "
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_status_exception (enum, prefix)
+    check_arguments (my, "enum, prefix", my)
+
+    my.macro_name = "$(my.prefix:UPPER)_HANDLE_STATUS"
+    my.func_name = "$(my.prefix:)_handle_throw_exception"
+
+    my.case = ""
+
+    for my.enum.constant as constant where constant.name <> "success"
+
+        my.const = "$(constant.name:c)"
+        my.const = "$(my.prefix:)_status_$(my.const:UPPER)"
+        my.msg = constant.
+
+        my.case += "\
+case $(my.const:):
+    zend_throw_exception(NULL, \"$(my.prefix:UPPER): $(my.msg:)\", $(constant.value:));
+    break;
+        \n"
+    endfor
+
+    my.res = "\
+#define $(my.macro_name:)(status)\
+do {\
+    if(status != $(my.prefix:)_status_SUCCESS) {\
+    $(my.func_name:)(status);\
+        goto fail;\
+    }\
+} while (false)
+
+void
+$(my.func_name:)($(my.prefix:)_status_t status) {
+    switch(status) {
+        $(my.case:)
+    }
+}
     "
 
     return my.res

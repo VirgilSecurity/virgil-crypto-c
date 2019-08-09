@@ -61,7 +61,33 @@ function php_generate_sources (wrapper_project)
         echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
     endif
 
-    for my.wrapper_project.php_module where php_module.name <> "php_extension"
+    for my.wrapper_project.php_module where php_module.name = "status"
+        if defined (php_module.source_dir)
+            if -1 = directory.create (php_module.source_dir)
+                echo_fatal ("Can not create directory: $(php_module.source_dir:)")
+            endif
+        endif
+
+        output php_module.source_file_path
+
+        echo_trace ("Generate C files from <$(name (php_module)) name = \"$(c_module.name:)\"/>", my)
+
+        for php_module->extension->c_code as code
+            php_insert_code(code.)
+        endfor
+    endfor
+
+    for my.wrapper_project.json_module
+        echo_trace("Generate JSON files from <$(name(json_module)) name=\"$(json_module.name:)\"/>", my)
+
+        output json_module.source_file_path
+
+        for json_module.code
+            php_insert_code(code.)
+        endfor
+    endfor
+
+    for my.wrapper_project.php_module where ! string_in(php_module.name, "php_extension, status")
 
         if defined (php_module.source_dir)
             if -1 = directory.create (php_module.source_dir)
@@ -84,26 +110,6 @@ function php_generate_sources (wrapper_project)
         for php_module.php_class
             newline_if (first ())
             php_insert_class (php_class)
-        endfor
-    endfor
-
-    for my.wrapper_project.json_module
-        echo_trace("Generate JSON files from <$(name(json_module)) name=\"$(json_module.name:)\"/>", my)
-
-        output json_module.source_file_path
-
-        for json_module.code
-            php_insert_code(code.)
-        endfor
-    endfor
-
-    for my.wrapper_project.php_module where php_module.name = "php_extension"
-        echo_trace("Generate PHP Extension file from <$(name(php_module)) name=\"$(php_module.name:)\"/>", my)
-
-        output php_module.source_file_path
-
-        for php_module.code
-            php_insert_code(code.)
         endfor
     endfor
 endfunction
@@ -167,9 +173,9 @@ endfunction
 function php_insert_prologue(php_module)
     check_arguments (my, "php_module", my)
 
-    assert_item (my.php_module, "php_license", my)
-
-    php_insert_description (my.php_module->php_license)
+    if defined (my.php_module.php_license)
+        php_insert_description (my.php_module->php_license)
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -301,18 +307,6 @@ function php_insert_class_method (php_method)
         php_insert_code ("throw new Exception(\"Not implemented!\")", 2)
     endif
     php_insert_code ("}", 1)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_insert_extension_data (extension_module)
-    check_arguments (my, "extension_module", my)
-
-    php_insert_code("\
-        #include \"vsce_assert.h\"
-    ",0)
-
 endfunction
 
 # ---------------------------------------------------------------------------
