@@ -52,65 +52,29 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Generate source files from <php_module/> entities.
 # ---------------------------------------------------------------------------
-function php_generate_sources (wrapper_project)
-    check_arguments (my, "wrapper_project", my)
+function php_generate_sources (php_project)
+    check_arguments (my, "php_project", my)
 
-    assert_attribute (my.wrapper_project, "source_dir", my)
+    assert_attribute (my.php_project, "source_dir", my)
 
-    if -1 = directory.create (my.wrapper_project.source_dir)
+    if -1 = directory.create (my.php_project.source_dir)
         echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
     endif
 
-    for my.wrapper_project.php_module where php_module.name = "extension_status"
-        if defined (php_module.source_dir)
-            if -1 = directory.create (php_module.source_dir)
-                echo_fatal ("Can not create directory: $(php_module.source_dir:)")
-            endif
-        endif
-
-        output php_module.source_file_path
-
-        echo_trace ("Generate C files from <$(name (php_module)) name = \"$(c_module.name:)\"/>", my)
-
-        for php_module->extension->c_code as code
-            php_insert_raw_code(code.)
-        endfor
+    for my.php_project.php_module where ! string_in(php_module.name, "extension_main, extension_status")
+        php_generate_source_php (php_module)
     endfor
 
-    for my.wrapper_project.json_module
-        echo_trace("Generate JSON files from <$(name(json_module)) name=\"$(json_module.name:)\"/>", my)
-
-        output json_module.source_file_path
-
-        for json_module.code
-            php_insert_code(code.)
-        endfor
+    for my.php_project.php_module where php_module.name = "extension_main"
+        php_generate_source_extension_main (php_module, my.php_project)
     endfor
 
-    for my.wrapper_project.php_module where ! string_in(php_module.name, "extension_main, extension_status")
+    for my.php_project.php_module where php_module.name = "extension_status"
+        php_generate_source_extension_status (php_module)
+    endfor
 
-        if defined (php_module.source_dir)
-            if -1 = directory.create (php_module.source_dir)
-                echo_fatal ("Can not create directory: $(php_module.source_dir:)")
-            endif
-        endif
-
-        output php_module.source_file_path
-
-        echo_trace ("Generate PHP files from <$(name (php_module)) name = \"$(c_module.name:)\"/>", my)
-
-        php_insert_php_open_tag()
-        php_insert_prologue (php_module)
-            
-#        for php_module.php_import
-#            newline_if (first ())
-#            php_insert_import (php_import)
-#        endfor
-
-        for php_module.php_class
-            newline_if (first ())
-            php_insert_class (php_class)
-        endfor
+    for my.php_project.json_module
+        php_generate_source_composer (json_module)
     endfor
 endfunction
 
@@ -283,7 +247,7 @@ function php_format_argument_list (php_method)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Insert statement: destructor / deinit
+#   Insert statement: destructor
 # ---------------------------------------------------------------------------
 function php_insert_destructor (php_destructor)
     check_arguments (my, "php_destructor", my)
@@ -334,6 +298,88 @@ function php_format_class_method_header (php_method)
     endfor
 
     return "public function $(my.php_method.name:)($(my.arguments:)): $(my.php_method.return_type:) $(my.php_method.return_data:)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_generate_source_extension_main (extension_module, php_project)
+    check_arguments (my, "extension_module, php_project", my)
+
+    if defined (my.extension_module.source_dir)
+        if -1 = directory.create (my.extension_module.source_dir)
+            echo_fatal ("Can not create directory: $(my.extension_module.source_dir:)")
+        endif
+    endif
+
+    output my.extension_module.source_file_path
+
+    my.code = ""
+
+    for my.php_project.php_module as php_module where ! string_in (php_module.name, "extension_status, extension_main")
+        my.code +="\
+        $(php_module.name:)\n
+        "
+    endfor
+
+    php_insert_code(my.code)
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_generate_source_extension_status (current_module)
+    check_arguments (my, "current_module", my)
+
+    if defined (my.current_module.source_dir)
+        if -1 = directory.create (my.current_module.source_dir)
+            echo_fatal ("Can not create directory: $(my.current_module.source_dir:)")
+        endif
+    endif
+
+    output my.current_module.source_file_path
+
+    for my.current_module->extension->c_code as code
+        php_insert_raw_code(code.)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_generate_source_php (current_module)
+    check_arguments (my, "current_module", my)
+
+    if defined (my.current_module.source_dir)
+        if -1 = directory.create (my.current_module.source_dir)
+            echo_fatal ("Can not create directory: $(my.current_module.source_dir:)")
+        endif
+    endif
+
+    output my.current_module.source_file_path
+
+    php_insert_php_open_tag()
+    php_insert_prologue (my.current_module)
+
+    for my.current_module.php_class
+        newline_if (first ())
+        php_insert_class (php_class)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_generate_source_composer (current_module)
+    check_arguments (my, "current_module", my)
+
+    output my.current_module.source_file_path
+
+    for my.current_module.code
+        php_insert_code(code.)
+    endfor
+
 endfunction
 
 .endtemplate

@@ -137,6 +137,21 @@ function php_create_custom_modules (source, php_project, meta)
             "
         endnew
     endnew
+
+    new php_module to my.php_project
+        .name = "extension_main"
+        .filename = "extension"
+        .source_file_name = 0.filename + ".c"
+        .source_dir = cat_path (my.php_project.source_dir, "extension")
+        .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+        new extension to php_module
+            new c_code to extension
+                .= "\
+                #include
+                "
+        endnew
+        endnew
+    endnew
 endfunction
 
 function php_create_interface_module (source, destination, wrapper, meta)
