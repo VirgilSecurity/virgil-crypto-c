@@ -61,7 +61,7 @@ function php_generate_sources (wrapper_project)
         echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
     endif
 
-    for my.wrapper_project.php_module where php_module.name = "status"
+    for my.wrapper_project.php_module where php_module.name = "extension_status"
         if defined (php_module.source_dir)
             if -1 = directory.create (php_module.source_dir)
                 echo_fatal ("Can not create directory: $(php_module.source_dir:)")
@@ -73,7 +73,7 @@ function php_generate_sources (wrapper_project)
         echo_trace ("Generate C files from <$(name (php_module)) name = \"$(c_module.name:)\"/>", my)
 
         for php_module->extension->c_code as code
-            php_insert_code(code.)
+            php_insert_raw_code(code.)
         endfor
     endfor
 
@@ -87,7 +87,7 @@ function php_generate_sources (wrapper_project)
         endfor
     endfor
 
-    for my.wrapper_project.php_module where ! string_in(php_module.name, "php_extension, status")
+    for my.wrapper_project.php_module where ! string_in(php_module.name, "extension_main, extension_status")
 
         if defined (php_module.source_dir)
             if -1 = directory.create (php_module.source_dir)
@@ -202,6 +202,15 @@ function php_insert_code (code, tab_count)
 
     my.code = string_indent (my.code, my.tab_count)
     my.code = string_multi_rtrim (my.code)
+
+    out (my.code)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_insert_raw_code (code)
+    check_argument (my, "code", my)
 
     out (my.code)
 endfunction

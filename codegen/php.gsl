@@ -226,8 +226,9 @@ function php_create_enum_module (enum, php_project, meta)
 
     if my.enum.name = "status"
         new php_module to my.php_project
-            .name = "status"
-            .source_file_name = 0.name + ".c"
+            .name = "extension_status"
+            .filename = "status"
+            .source_file_name = 0.filename + ".c"
             .source_dir = cat_path (my.php_project.source_dir, "extension")
             .source_file_path = cat_path (0.source_dir, 0.source_file_name)
 
@@ -1048,30 +1049,30 @@ function php_format_extension_status_exception (enum, prefix)
 
         my.const = "$(constant.name:c)"
         my.const = "$(my.prefix:)_status_$(my.const:UPPER)"
-        my.msg = constant.
+        my.msg = string_trim(constant.)
 
-        my.case += "\
-case $(my.const:):
-    zend_throw_exception(NULL, \"$(my.prefix:UPPER): $(my.msg:)\", $(constant.value:));
-    break;
-        \n"
+        my.case += "
+        case $(my.const:):
+            zend_throw_exception(NULL, \"$(my.prefix:UPPER): $(my.msg:)\", $(constant.value:));
+            break;
+        "
     endfor
 
-    my.res = "\
-#define $(my.macro_name:)(status)\
-do {\
-    if(status != $(my.prefix:)_status_SUCCESS) {\
-    $(my.func_name:)(status);\
-        goto fail;\
-    }\
-} while (false)
+    my.res = "
+        #define $(my.macro_name:)(status)
+        do {
+            if(status != $(my.prefix:)_status_SUCCESS) {
+            $(my.func_name:)(status);
+                goto fail;
+            }
+        } while (false)
 
-void
-$(my.func_name:)($(my.prefix:)_status_t status) {
-    switch(status) {
-        $(my.case:)
-    }
-}
+        void
+        $(my.func_name:)($(my.prefix:)_status_t status) {
+            switch(status) {
+                $(my.case:)
+            }
+        }
     "
 
     return my.res
