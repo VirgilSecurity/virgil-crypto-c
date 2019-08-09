@@ -42,7 +42,6 @@
 #include "vscf_key.h"
 #include "vscf_key_provider.h"
 #include "vscf_private_key.h"
-#include "vscf_rsa_private_key.h"
 #include "vscf_sha384.h"
 #include "vscf_signer.h"
 
@@ -59,11 +58,11 @@ benchmark__sign__with_sha384_and_ed25519_private_key(benchmark::State &state) {
     vscf_signer_take_hash(signer, vscf_sha384_impl(vscf_sha384_new()));
     vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_signer_signature_len(signer, private_key));
 
-    for (auto _ : state) {
-        vscf_signer_reset(signer);
-        vscf_signer_update(signer, benchmark_signer_DATA);
-        VSCF_UNUSED(vscf_signer_sign(signer, private_key, signature));
+    vscf_signer_reset(signer);
+    vscf_signer_append_data(signer, benchmark_signer_DATA);
 
+    for (auto _ : state) {
+        VSCF_UNUSED(vscf_signer_sign(signer, private_key, signature));
         vsc_buffer_reset(signature);
     }
     vsc_buffer_destroy(&signature);
@@ -77,22 +76,21 @@ benchmark__sign__with_sha384_and_rsa2048_private_key(benchmark::State &state) {
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
     vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
 
-    vscf_fake_random_t *fake_random = vscf_fake_random_new();
-    vscf_fake_random_setup_source_byte(fake_random, 0XAB);
-
     vscf_impl_t *private_key =
             vscf_key_provider_import_private_key(key_provider, benchmark_signer_RSA2048_PRIVATE_KEY_PKCS8, NULL);
 
-    vscf_rsa_private_key_release_random((vscf_rsa_private_key_t *)private_key);
-    vscf_rsa_private_key_take_random((vscf_rsa_private_key_t *)private_key, vscf_fake_random_impl(fake_random));
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_byte(fake_random, 0XAB);
 
     vscf_signer_t *signer = vscf_signer_new();
     vscf_signer_take_hash(signer, vscf_sha384_impl(vscf_sha384_new()));
+    vscf_signer_take_random(signer, vscf_fake_random_impl(fake_random));
     vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_signer_signature_len(signer, private_key));
 
+    vscf_signer_reset(signer);
+    vscf_signer_append_data(signer, benchmark_signer_DATA);
+
     for (auto _ : state) {
-        vscf_signer_reset(signer);
-        vscf_signer_update(signer, benchmark_signer_DATA);
         VSCF_UNUSED(vscf_signer_sign(signer, private_key, signature));
 
         vsc_buffer_reset(signature);
