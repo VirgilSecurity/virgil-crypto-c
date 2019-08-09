@@ -535,6 +535,7 @@ test__import_public_key__ed25519_and_then_export__are_equals(void) {
     vscf_impl_t *public_key =
             vscf_key_provider_import_public_key(key_provider, test_ed25519_PUBLIC_KEY_PKCS8_DER, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(vscf_key_alg_info(public_key));
 
     vsc_buffer_t *exported_public_key =
             vsc_buffer_new_with_capacity(vscf_key_provider_exported_public_key_len(key_provider, public_key));
@@ -560,6 +561,7 @@ test__import_private_key__ed25519_and_then_export__are_equals(void) {
     vscf_impl_t *private_key =
             vscf_key_provider_import_private_key(key_provider, test_ed25519_PRIVATE_KEY_PKCS8_DER, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(vscf_key_alg_info(private_key));
 
     vsc_buffer_t *exported_private_key =
             vsc_buffer_new_with_capacity(vscf_key_provider_exported_private_key_len(key_provider, private_key));
@@ -585,6 +587,7 @@ test__import_public_key__rsa2048_and_then_export__are_equals(void) {
     vscf_impl_t *public_key =
             vscf_key_provider_import_public_key(key_provider, test_rsa_2048_PUBLIC_KEY_PKCS8_DER, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(vscf_key_alg_info(public_key));
 
     vsc_buffer_t *exported_public_key =
             vsc_buffer_new_with_capacity(vscf_key_provider_exported_public_key_len(key_provider, public_key));
@@ -610,6 +613,7 @@ test__import_private_key__rsa2048_and_then_export__are_equals(void) {
     vscf_impl_t *private_key =
             vscf_key_provider_import_private_key(key_provider, test_rsa_2048_PRIVATE_KEY_PKCS8_DER, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(vscf_key_alg_info(private_key));
 
     vsc_buffer_t *exported_private_key =
             vsc_buffer_new_with_capacity(vscf_key_provider_exported_private_key_len(key_provider, private_key));
@@ -635,6 +639,7 @@ test__import_public_key__secp256r1_and_then_export__are_equals(void) {
     vscf_impl_t *public_key =
             vscf_key_provider_import_public_key(key_provider, test_secp256r1_PUBLIC_KEY_SEC1_DER, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(vscf_key_alg_info(public_key));
 
     vsc_buffer_t *exported_public_key =
             vsc_buffer_new_with_capacity(vscf_key_provider_exported_public_key_len(key_provider, public_key));
@@ -660,6 +665,7 @@ test__import_private_key__secp256r1_and_then_export__are_equals(void) {
     vscf_impl_t *private_key =
             vscf_key_provider_import_private_key(key_provider, test_secp256r1_PRIVATE_KEY_SEC1_DER, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(vscf_key_alg_info(private_key));
 
     vsc_buffer_t *exported_private_key =
             vsc_buffer_new_with_capacity(vscf_key_provider_exported_private_key_len(key_provider, private_key));

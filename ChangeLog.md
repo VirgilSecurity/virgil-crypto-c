@@ -1,6 +1,18 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.9.0 released 2019-08-06
+
+### Bugfix
+
+- Lib/Foundation: Fix crash when import secp256r1 public key
+
+### Features
+
+- Wrapper/JS: Add wrapper for JavaScript (Beta)
+- Wrapper/Python: Add wrapper for Python (Beta)
+
+
 ## Version 0.8.1 released 2019-07-08
 
 ### Changes

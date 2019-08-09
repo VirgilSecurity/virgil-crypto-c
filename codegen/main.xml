@@ -40,6 +40,8 @@
     <library name="nanopb"/>
     <library name="relic"/>
 
+    <version major="0" minor="9" patch="1" label="dev1"/>
+
     <project name="common" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
     <project name="foundation" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
     <project name="pythia" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
@@ -50,4 +52,6 @@
 
     <wrapper lang="swift"/>
     <wrapper lang="java"/>
+    <wrapper lang="wasm"/>
+    <wrapper lang="python"/>
 </main>

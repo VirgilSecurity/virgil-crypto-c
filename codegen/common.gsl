@@ -36,7 +36,7 @@
 #   GSL generation helpers.
 # ---------------------------------------------------------------------------
 #   This is a code generator helper built using the iMatix GSL code
-#   generation language. See https://github.com/imatix/gsl for details.
+#   generation language. See https://github.com/zeromq/gsl for details.
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
@@ -260,6 +260,15 @@ function string_collapse_spaces (str)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Remove spaces and new lines right to the string.
+# ---------------------------------------------------------------------------
+function string_rtrim (str)
+    check_argument (my, "str")
+
+    return string.trim (my.str)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Remove trailing white-spaces for each line of multi-line string.
 # ---------------------------------------------------------------------------
 function string_multi_rtrim (str)
@@ -284,15 +293,6 @@ function string_ltrim (str)
     endif
 
     return ""
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Remove spaces and new lines right to the string.
-# ---------------------------------------------------------------------------
-function string_rtrim (str)
-    check_argument (my, "str")
-
-    return string.trim (my.str)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -321,6 +321,20 @@ function string_trim_empty_lines (str)
     return string_rtrim (my.str)
 endfunction
 
+
+# ---------------------------------------------------------------------------
+#   Remove spaces and given symbols from the string end.
+# ---------------------------------------------------------------------------
+function string_rtrim_symbol(str, symbol)
+    check_arguments (my, "str, symbol", my)
+
+    if regexp.match ("(.*)[$(my.symbol)]+[ ]*$", my.str, my.new_str)
+        return my.new_str
+    else
+        return my.str
+    endif
+endfunction
+
 # ---------------------------------------------------------------------------
 #   Return trimmed string indented with a given tab count.
 # ---------------------------------------------------------------------------
@@ -347,13 +361,7 @@ endfunction
 function string_to_singleline (str)
     check_argument (my, "str")
 
-    while regexp.match ("^(.*$(terminator))", my.str, my.raw_line)
-        regexp.match ("^(.*)$(terminator)", my.str, my.replacement)
-        my.replacement = string_trim (my.replacement)
-        my.str = string.search_replace (my.str, my.raw_line, my.replacement)
-    endwhile
-
-    return string_trim (my.str)
+    return string_trim(string_collapse_spaces(string.replace(my.str, "$(terminator)| ")))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1279,6 +1287,15 @@ function make_ref_swift (uid)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Wraps given UID as 'Reference UID' specific for Python language.
+# ---------------------------------------------------------------------------
+function make_ref_python (uid)
+    check_argument (my, "uid", my)
+
+    return make_ref (my.uid, "python")
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Wraps given UID as 'Reference UID' specific for Java language.
 # ---------------------------------------------------------------------------
 function make_ref_java (uid)
@@ -1304,7 +1321,7 @@ function lang_ref (maybe_ref, lang)
     check_arguments (my, "maybe_ref, lang", my)
 
     my.lang = "$(my.lang:lower)"
-    my.valid_langs = "c, java, csharp, swift"
+    my.valid_langs = "c, java, csharp, swift, python, wasm"
 
     if ! string_in (my.lang, my.valid_langs)
         echo_fatal ("Attempt to resolve reference for invalid language '$(my.lang:)'." + \
@@ -1361,6 +1378,8 @@ function uid_insert_prefix (uid, prefix)
     my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "java") ?
     my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "csharp") ?
     my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "swift") ?
+    my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "python") ?
+    my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "wasm") ?
     my.new_uid ?= make_id (my.prefix, my.uid)
 
     return my.new_uid
@@ -1385,6 +1404,15 @@ function swift_lang_ref (maybe_ref)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Shortcut for lang_ref (my.maybe_ref, "python")
+# ---------------------------------------------------------------------------
+function python_lang_ref (maybe_ref)
+    check_argument (my, "maybe_ref", my)
+
+    return lang_ref (my.maybe_ref, "python")
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Shortcut for lang_ref (my.maybe_ref, "java")
 # ---------------------------------------------------------------------------
 function java_lang_ref (maybe_ref)
@@ -1400,6 +1428,15 @@ function php_lang_ref (maybe_ref)
     check_argument (my, "maybe_ref", my)
 
     return lang_ref (my.maybe_ref, "php")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Shortcut for lang_ref (my.maybe_ref, "wasm")
+# ---------------------------------------------------------------------------
+function wasm_lang_ref (maybe_ref)
+    check_argument (my, "maybe_ref", my)
+
+    return lang_ref (my.maybe_ref, "wasm")
 endfunction
 
 # ###########################################################################
