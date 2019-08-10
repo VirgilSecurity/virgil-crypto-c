@@ -210,7 +210,7 @@ vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_sessio
 //
 VSCF_PUBLIC vscf_group_session_message_t *
 vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, const vscf_impl_t *private_key,
-        vsc_data_t sender_id, vscf_error_t *error);
+        vscf_error_t *error);
 
 //
 //  Calculates size of buffer sufficient to store decrypted message
@@ -223,7 +223,7 @@ vscf_group_session_decrypt_len(vscf_group_session_t *self, const vscf_group_sess
 //
 VSCF_PUBLIC vscf_status_t
 vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_message_t *message,
-        const vscf_impl_t *public_key, vsc_data_t sender_id, vsc_buffer_t *plain_text) VSCF_NODISCARD;
+        const vscf_impl_t *public_key, vsc_buffer_t *plain_text) VSCF_NODISCARD;
 
 //
 //  Creates ticket with new key for removing participants or proactive to rotate encryption key.

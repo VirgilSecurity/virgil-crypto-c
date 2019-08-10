@@ -40,7 +40,7 @@ import VSCFoundation
 @objc(VSCFGroupSessionMessage) public class GroupSessionMessage: NSObject {
 
     /// Max message len
-    @objc public static let maxMessageLen: Int = 30222
+    @objc public static let maxMessageLen: Int = 30188
     /// Message version
     @objc public static let messageVersion: Int = 1
 
@@ -83,14 +83,6 @@ import VSCFoundation
     /// This method should be called only for group info type.
     @objc public func getSessionId() -> Data {
         let proxyResult = vscf_group_session_message_get_session_id(self.c_ctx)
-
-        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
-    }
-
-    /// Returns message sender id.
-    /// This method should be called only for regular message type.
-    @objc public func getSenderId() -> Data {
-        let proxyResult = vscf_group_session_message_get_sender_id(self.c_ctx)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }

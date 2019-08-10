@@ -1127,8 +1127,9 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterat
 
             vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(len);
 
-            TEST_ASSERT_EQUAL(
-                    vscr_status_SUCCESS, vscr_ratchet_group_session_decrypt(session, ratchet_msg, plain_text));
+            TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+                    vscr_ratchet_group_session_decrypt(session, ratchet_msg,
+                            vscr_ratchet_group_session_get_my_id(sessions[channel_msg->sender]), plain_text));
 
             TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(channel_msg->plain_text), plain_text);
 

@@ -683,7 +683,7 @@ vscr_ratchet_group_session_setup_session_state(vscr_ratchet_group_session_t *sel
     vscr_ratchet_chain_key_destroy(&self->my_chain_key);
 
     self->my_epoch = group_info->epoch;
-    ;
+
     self->my_chain_key = vscr_ratchet_key_utils_derive_participant_key(group_info->key, self->my_id);
 
     for (size_t i = 0; i < participants->count; i++) {
@@ -817,7 +817,6 @@ vscr_ratchet_group_session_encrypt(vscr_ratchet_group_session_t *self, vsc_data_
 
     msg->header_pb->epoch = self->my_epoch;
     msg->header_pb->counter = self->my_chain_key->index;
-    memcpy(msg->header_pb->sender_id, self->my_id, sizeof(self->my_id));
     memcpy(msg->header_pb->session_id, self->session_id, sizeof(self->session_id));
 
     for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_EPOCHS_COUNT; i++) {
@@ -893,8 +892,8 @@ vscr_ratchet_group_session_decrypt_len(
 //  Decrypts message
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_session_decrypt(
-        vscr_ratchet_group_session_t *self, const vscr_ratchet_group_message_t *message, vsc_buffer_t *plain_text) {
+vscr_ratchet_group_session_decrypt(vscr_ratchet_group_session_t *self, const vscr_ratchet_group_message_t *message,
+        vsc_data_t sender_id, vsc_buffer_t *plain_text) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->cipher);
@@ -904,6 +903,8 @@ vscr_ratchet_group_session_decrypt(
     VSCR_ASSERT(self->is_initialized);
     VSCR_ASSERT(self->is_my_id_set);
     VSCR_ASSERT(self->is_private_key_set);
+    VSCR_ASSERT(vsc_data_is_valid(sender_id));
+    VSCR_ASSERT(sender_id.len == vscr_ratchet_common_PARTICIPANT_ID_LEN);
 
     const vscr_RegularGroupMessage *group_message = &message->message_pb.regular_message;
     const vscr_RegularGroupMessageHeader *header = message->header_pb;
@@ -912,11 +913,11 @@ vscr_ratchet_group_session_decrypt(
         return vscr_status_ERROR_SESSION_ID_MISMATCH;
     }
 
-    if (memcmp(header->sender_id, self->my_id, sizeof(self->my_id)) == 0) {
+    if (memcmp(sender_id.bytes, self->my_id, sizeof(self->my_id)) == 0) {
         return vscr_status_ERROR_CANNOT_DECRYPT_OWN_MESSAGES;
     }
 
-    size_t sender = vscr_ratchet_group_session_find_participant(self, header->sender_id);
+    size_t sender = vscr_ratchet_group_session_find_participant(self, sender_id.bytes);
 
     if (sender == self->participants_count) {
         return vscr_status_ERROR_SENDER_NOT_FOUND;

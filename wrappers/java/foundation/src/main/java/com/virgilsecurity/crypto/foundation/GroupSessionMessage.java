@@ -53,7 +53,7 @@ public class GroupSessionMessage implements AutoCloseable {
     * Max message len
     */
     public int getMaxMessageLen() {
-        return 30222;
+        return 30188;
     }
 
     /*
@@ -91,14 +91,6 @@ public class GroupSessionMessage implements AutoCloseable {
     */
     public byte[] getSessionId() {
         return FoundationJNI.INSTANCE.groupSessionMessage_getSessionId(this.cCtx);
-    }
-
-    /*
-    * Returns message sender id.
-    * This method should be called only for regular message type.
-    */
-    public byte[] getSenderId() {
-        return FoundationJNI.INSTANCE.groupSessionMessage_getSenderId(this.cCtx);
     }
 
     /*
