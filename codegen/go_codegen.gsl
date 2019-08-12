@@ -1,0 +1,396 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Functions for Go primitives generation: interface, class, enum, etc.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the GSL/4.1 code generation
+#   language. See https://github.com/zeromq/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+
+# ===========================================================================
+#   Format.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Return formatted list of arguments without braces.
+# ---------------------------------------------------------------------------
+function go_format_argument_list (go_func)
+    check_arguments (my, "go_func", my)
+
+    for my.go_func.go_argument
+        my.arg_list ?= ""
+        my.arg_list += "$(go_argument.name:) $(go_argument.type:)"
+        if ! last()
+            my.arg_list += ", "
+        endif
+    endfor
+
+    return my.arg_list
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted multiline commented string.
+# ---------------------------------------------------------------------------
+function go_format_description (obj)
+    if ! defined (my.obj.)
+        return
+    endif
+
+    my.str = my.obj.
+    my.str = string_indent (my.str)
+    my.str = "* $(my.str:left, block, no)$(terminator)"
+    my.str = string_multi_rtrim (my.str)
+    my.str = "/*$(terminator)$(my.str:)$(terminator)*/"
+
+    return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return multiline formatted string with license.
+# ---------------------------------------------------------------------------
+function go_format_license(license)
+    if ! defined (my.license.)
+        return
+    endif
+
+    my.str = my.license.
+    my.str = string_indent (my.str)
+    my.str = "// $(my.str:left, block, no)$(terminator)"
+
+    return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted list of returned value(s).
+# ---------------------------------------------------------------------------
+function go_format_return_list (go_func)
+    check_arguments (my, "go_func", my)
+
+    my.is_pair = count (my.go_func.go_return) > 1 ?? "1" ? "0"
+
+    for my.go_func.go_return
+        my.return_list ?= ""
+        my.return_list += "$(go_return.type:)"
+
+        if ! last()
+            my.return_list += ", "
+        endif
+    endfor
+
+    if defined (my.return_list) & my.is_pair
+        my.return_list = "(" + my.return_list + ")"
+    endif
+
+    if defined (my.return_list)
+        my.return_list = my.return_list
+    else
+        my.return_list = ""
+    endif
+
+    return my.return_list
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate source files from <go_module/> entities.
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+#   Generate project files.
+# ---------------------------------------------------------------------------
+function go_generate_project (go_project)
+    check_arguments (my, "go_project", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate sources for classes, interfaces, enums etc.
+# ---------------------------------------------------------------------------
+function go_generate_sources (go_project)
+    check_arguments (my, "go_project", my)
+
+    assert_attribute (my.go_project, "source_dir", my)
+
+    if -1 = directory.create (my.go_project.source_dir)
+        echo_fatal ("Can not create directory: $(my.go_project.source_dir:)")
+    endif
+
+    for my.go_project.go_module
+        
+        echo_trace ("Generate Go files from <$(name (my.go_module)) name = \"$(my.go_module.name:)\"/>", my)
+
+        output go_module.source_file_path
+
+#TODO        go_insert_prologue (go_module)
+        newline()
+
+        go_insert_package (go_module)
+        newline()
+
+        for go_module.go_import
+#TODO            go_insert_import (go_import)
+            newline()
+        endfor
+
+        for go_module.go_struct
+            go_insert_struct (go_struct)
+            newline()
+        endfor
+
+        for go_module.go_enum
+            go_insert_enum (go_enum)
+            newline()
+        endfor
+
+        for go_module.go_interface
+            go_insert_interface (go_interface)
+            newline()
+        endfor
+
+        for go_module.go_class
+            go_insert_struct (go_class)
+            newline()
+        endfor
+
+    endfor
+
+endfunction
+
+# ===========================================================================
+#   Generate Go.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Insert given multiline code.
+# ---------------------------------------------------------------------------
+function go_insert_code (code, tab_count)
+    check_argument (my, "code", my)
+
+    my.code = "$(my.code:left,no)"
+    my.code = string_trim (my.code)
+    my.code = code_collapse_spaces (my.code)
+
+    my.code = string_indent (my.code, my.tab_count)
+    my.code = string_multi_rtrim (my.code)
+
+    out (my.code)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert constant
+# ---------------------------------------------------------------------------
+function go_insert_constant (go_constant)
+    check_arguments (my, "go_constant", my)
+
+    my.value = defined (my.go_constant.value) ?? " = $(my.go_constant.value:)" ? ""
+    go_insert_description (my.go_constant, 1)
+    go_insert_code ("\
+        $(my.go_constant.name:)$(my.value:)
+    ", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert description of the given object.
+# ---------------------------------------------------------------------------
+function go_insert_description (obj, tab_count)
+    my.description = my.obj. ?
+    my.tab_count ?= 0
+    if string_empty (my.description)
+        return
+    endif
+    go_insert_code (my.description, my.tab_count)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: enum
+# ---------------------------------------------------------------------------
+function go_insert_enum (go_enum)
+    check_arguments (my, "go_enum", my)
+
+    echo_trace ("Generate Go enum: " + my.go_enum.name, my)
+
+    assert_attributes (my.go_enum, "name, visibility", my)
+
+    go_insert_description(my.go_enum)
+    go_insert_type(my.go_enum.name, my.go_enum.type)
+    go_insert_code ("\
+        const (
+    ")
+
+    for my.go_enum.go_constant
+        go_insert_constant (go_constant)
+    endfor
+
+    go_insert_code (")")
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: field
+# ---------------------------------------------------------------------------
+function go_insert_field (go_field)
+    check_arguments (my, "go_field", my)
+
+    go_insert_code ("$(my.go_field.name:) $(my.go_field.type:)")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: func
+# ---------------------------------------------------------------------------
+function go_insert_func (go_instance, go_func)
+    assert_attributes (my.go_instance, "name", my)
+    assert_attributes (my.go_instance, "name", my)
+    
+    my.method_args = go_format_argument_list (my.go_func) ?
+    my.method_return = go_format_return_list (my.go_func) ?
+
+    go_insert_description (my.go_func)
+    go_insert_code("func ($(my.go_instance.name:)) $(my.go_func.name:) ($(my.method_args?:)) $(my.method_return?:) {")
+    go_insert_code (my.go_func->go_code., 1)
+    go_insert_code("}")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: interface
+# ---------------------------------------------------------------------------
+function go_insert_interface (go_interface)
+    check_arguments (my, "go_interface", my)
+
+    echo_trace ("Generate Go interface: " + my.go_interface.name)
+
+    assert_attributes (my.go_interface, "name, visibility", my)
+
+    #my.visibility = go_format_visibility (my.go_interface.visibility)
+
+    go_insert_description(my.go_interface)
+    go_insert_code ("type $(my.go_interface.name:) interface {")
+    
+    for my.go_interface.go_promoted
+        newline ()
+        go_insert_code ("$(go_promoted.type:)", 1)
+    endfor
+
+    for my.go_interface.go_func
+        newline ()
+        go_insert_interface_func (my.go_interface, go_func)
+    endfor
+
+    go_insert_code ("}")
+    newline ()
+    
+    for my.go_interface.go_func where is_true (go_func.is_implemented)
+        newline ()
+        go_insert_func (my.go_interface, go_func)
+    endfor
+    
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: interface func
+# ---------------------------------------------------------------------------
+function go_insert_interface_func (go_interface, go_func)
+    assert_attributes (my.go_interface, "name", my)
+    assert_attributes (my.go_func, "name", my)
+    
+    my.method_args = go_format_argument_list (my.go_func) ?
+    my.method_return = go_format_return_list (my.go_func) ?
+
+    go_insert_description (my.go_func, 1)
+    go_insert_code("$(my.go_func.name:) ($(my.method_args?:)) $(my.method_return?:)", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: package
+# ---------------------------------------------------------------------------
+function go_insert_package (go_module)
+    check_arguments (my, "go_module", my)
+
+    assert_attribute (my.go_module, "package", my)
+
+    go_insert_code ("package $(my.go_module.package:)")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert: license + caution + description
+# ---------------------------------------------------------------------------
+function go_insert_prologue (go_module)
+    check_arguments (my, "go_module", my)
+
+    assert_item (my.go_module, "go_license", my)
+
+    go_insert_description (my.go_module->go_license)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: struct
+# ---------------------------------------------------------------------------
+function go_insert_struct (go_struct)
+    check_arguments (my, "go_struct", my)
+
+    echo_trace ("Generate Go struct: " + my.go_struct.name)
+
+    assert_attributes (my.go_struct, "name", my)
+
+    #my.visibility = go_format_visibility (my.go_interface.visibility)
+
+    go_insert_description(my.go_struct)
+    go_insert_code ("type $(my.go_struct.name:) struct {")
+    
+    for my.go_struct.go_field
+        newline ()
+        go_insert_field (go_field)
+    endfor
+
+    go_insert_code ("}")
+    newline ()
+
+    for my.go_struct.go_func
+        newline ()
+        go_insert_func (my.go_struct, go_func)
+    endfor
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: type
+# ---------------------------------------------------------------------------
+function go_insert_type (name, type)
+    check_arguments (my, "name, type", my)
+
+    go_insert_code ("type $(my.name:) $(my.type:)")
+endfunction
+
+.endtemplate

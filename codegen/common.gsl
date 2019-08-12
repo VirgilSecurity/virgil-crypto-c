@@ -1297,6 +1297,15 @@ function make_ref_php (uid)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Wraps given UID as 'Reference UID' specific for Go language.
+# ---------------------------------------------------------------------------
+function make_ref_go (uid)
+    check_argument (my, "uid", my)
+
+    return make_ref (my.uid, "go")
+endfunction
+
+# ---------------------------------------------------------------------------
 #   If given first parameter contains universal ref of format .(<uid>), then
 #   return language specific ref of format .(<lang>_<uid>).
 # ---------------------------------------------------------------------------
@@ -1304,7 +1313,7 @@ function lang_ref (maybe_ref, lang)
     check_arguments (my, "maybe_ref, lang", my)
 
     my.lang = "$(my.lang:lower)"
-    my.valid_langs = "c, java, csharp, swift"
+    my.valid_langs = "c, java, csharp, swift, go"
 
     if ! string_in (my.lang, my.valid_langs)
         echo_fatal ("Attempt to resolve reference for invalid language '$(my.lang:)'." + \
@@ -1361,6 +1370,7 @@ function uid_insert_prefix (uid, prefix)
     my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "java") ?
     my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "csharp") ?
     my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "swift") ?
+    my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "go") ?
     my.new_uid ?= make_id (my.prefix, my.uid)
 
     return my.new_uid
@@ -1400,6 +1410,15 @@ function php_lang_ref (maybe_ref)
     check_argument (my, "maybe_ref", my)
 
     return lang_ref (my.maybe_ref, "php")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Shortcut for lang_ref (my.maybe_ref, "go")
+# ---------------------------------------------------------------------------
+function go_lang_ref (maybe_ref)
+    check_argument (my, "maybe_ref", my)
+
+    return lang_ref (my.maybe_ref, "go")
 endfunction
 
 # ###########################################################################

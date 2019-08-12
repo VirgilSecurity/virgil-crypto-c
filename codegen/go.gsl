@@ -1,0 +1,1180 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Contains API for Go wrapper generation.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+gsl from "interface.gsl"
+gsl from "component.gsl"
+gsl from "c_component.gsl"
+gsl from "go_codegen.gsl"
+
+# ===========================================================================
+#   C types derivation. TODO: extract this functions to separate GSL module.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C instance shallow copy method.
+# ---------------------------------------------------------------------------
+function instance_derive_c_method_shallow_copy (instance)
+    check_arguments (my, "instance", my)
+
+    my.project_uid = component_derive_project_uid (my.instance)
+
+    if has_one_of_attribute(my.instance, "interface")
+        return make_ref_c (make_id (my.project_uid, "class", "impl", "method", "shallow copy"))
+
+    elsif has_one_of_attribute(my.instance, "class, impl")
+        return make_ref_c (make_id (my.project_uid, "class", my.instance.class ? my.instance.impl, "method", "shallow copy"))
+    endif
+endfunction
+
+# ===========================================================================
+#   Name and type derivation.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Return formatted argument name.
+# ---------------------------------------------------------------------------
+function go_derive_argument_name (argument, go_project)
+    check_arguments (my, "argument", my)
+
+    return go_derive_argument_name_str (my.argument.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted argument name from raw name.
+# ---------------------------------------------------------------------------
+function go_derive_argument_name_str (name, go_project)
+    check_arguments (my, "name", my)
+
+    return "$(my.name:Camel)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) of dependency type.
+# ---------------------------------------------------------------------------
+function go_derive_dependency_type (dependency)
+    check_arguments (my, "dependency", my)
+
+    my.project_uid = component_derive_project_uid (my.dependency)
+
+    if defined (my.dependency.interface)
+        my.type_uid = make_id ("interface", "$(my.dependency.interface:Pascal)")
+
+    elsif defined (my.dependency.api)
+        my.type_uid = make_id ("interface", "$(my.dependency.api:Pascal)")
+
+    elsif defined (my.dependency.class)
+        my.type_uid = make_id ("class", "$(my.dependency.class:Pascal)")
+
+    elsif defined (my.dependency.impl)
+        my.type_uid = make_id ("class", "$(my.dependency.impl:Pascal)")
+
+    else
+        echo_debug_item (my.dependency, my)
+        echo_fatal ("Unhanded dependency type.", my)
+    endif
+
+    return make_ref_go (make_id(my.project_uid, my.type_uid))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return Go type for class context.
+# ---------------------------------------------------------------------------
+function go_derive_struct_context_type (class)
+    if defined (my.class) & string_equal (my.class.context, "public")
+        return "*$(class_derive_c_type(my.class))"
+    else
+        #TODO verify
+        return "*Any"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the Go struct.
+# ---------------------------------------------------------------------------
+function go_derive_struct_name (class, go_project)
+    check_arguments (my, "class, go_project", my)
+
+    assert_attribute_one_of (my.class, "name, class", my)
+
+    return "$(my.class.name ? my.class.class:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted constant name.
+# ---------------------------------------------------------------------------
+function go_derive_constant_name (constant, go_project)
+    check_arguments (my, "constant", my)
+
+    assert_attribute (my.constant, "name", my)
+
+    return go_derive_constant_name_str (my.constant.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted constant name from raw name.
+# ---------------------------------------------------------------------------
+function go_derive_constant_name_str (name)
+    check_arguments (my, "name", my)
+
+    return "$(my.name:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return type of the Go constant.
+# ---------------------------------------------------------------------------
+function go_derive_constant_type (constant)
+    check_arguments (my, "constant", my)
+
+    return "int"
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted module name for enum.
+# ---------------------------------------------------------------------------
+function go_derive_enum_module_name (enum, go_project)
+    check_arguments (my, "enum, go_project", my)
+
+    assert_attribute (my.enum, "name", my)
+    
+    if my.enum.name = "status"
+        return "$(my.go_project.name:C)_error"
+    else
+        return "$(my.enum.name:C)"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the Go enum.
+# ---------------------------------------------------------------------------
+function go_derive_enum_name (enum, go_project)
+    check_arguments (my, "enum, go_project", my)
+
+    assert_attribute_one_of (my.enum, "name", my)
+
+    if my.enum.name = "status"
+        return go_derive_enum_status_name (my.go_project)
+    else
+        return "$(my.enum.name:Pascal)"
+    endif
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the Go enum.
+# ---------------------------------------------------------------------------
+function go_derive_enum_status_name (go_project)
+    check_arguments (my, "go_project", my)
+
+    return "$(my.go_project.name:Pascal)Error"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return type of the Go enum.
+# ---------------------------------------------------------------------------
+function go_derive_enum_type (enum)
+    check_arguments (my, "enum", my)
+
+    return "int"
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted function name.
+# ---------------------------------------------------------------------------
+function go_derive_func_name (method, go_project)
+    check_arguments (my, "method", my)
+
+    return go_derive_func_name_str (my.method.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted function name.
+# ---------------------------------------------------------------------------
+function go_derive_func_name_str (name)
+    check_arguments (my, "name", my)
+
+    return "$(my.name:C)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted function name by constant.
+# ---------------------------------------------------------------------------
+function go_derive_func_name_by_constant (constant, go_project)
+    check_arguments (my, "constant", my)
+
+    assert_attribute (my.constant, "name", my)
+
+    return go_derive_getter_name_str (my.constant.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true if go function must throws.
+# ---------------------------------------------------------------------------
+function go_derive_func_throws (method)
+    check_arguments (my, "method", my)
+
+    if count (my.method.return, string_equal (return.enum, "status"))
+        return "1"
+    elsif count (my.method.argument, string_equal (argument.class, "error") & argument.access = "readwrite")
+        return "1"
+    else
+        return "0"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted getter name from raw name.
+# ---------------------------------------------------------------------------
+function go_derive_getter_name_str (name)
+    check_arguments (my, "name", my)
+
+    return "get$(my.name:c, Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true if go method handle status returned from the C proxy.
+# ---------------------------------------------------------------------------
+function go_derive_handle_proxy_status(method)
+    check_arguments (my, "method", my)
+
+    return count (my.method.return, string_equal (return.enum, "status"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted instance name.
+# ---------------------------------------------------------------------------
+function go_derive_instance_name (instance)
+    check_arguments (my, "instance", my)
+
+    assert_attribute (my.instance, "name", my)
+
+    return "$(my.instance.name:Camel)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive Go type from the <instance/> type attributes.
+# ---------------------------------------------------------------------------
+function go_derive_instance_type (instance)
+    check_arguments (my, "instance", my)
+
+    if defined (my.instance.type)
+        if my.instance.type = "nothing"
+            my.primitive_type = "Void"
+
+        elsif my.instance.type = "boolean"
+            my.primitive_type = "bool"
+
+        elsif my.instance.type = "integer"
+            my.primitive_type = go_derive_integer_type (my.instance.size ?)
+
+        elsif my.instance.type = "unsigned"
+            my.primitive_type = go_derive_unsigned_type (my.instance.size ?)
+
+        elsif my.instance.type = "byte"
+            my.primitive_type = "byte"
+
+        elsif my.instance.type = "size"
+            my.primitive_type = "int32"
+
+        elsif my.instance.type = "char"
+            if count(my.instance.string)
+                my.primitive_type = "string"
+            else
+                #TODO verify char type
+                my.primitive_type = "uint8"
+            endif
+        else
+            echo_fatal ("Unsupported instance type '$(my.instance.type)' for Go language.", my)
+        endif
+
+        if is_true (my.instance.is_reference)
+            if string_in (my.instance.access, "readonly")
+                my.primitive_type = "*$(my.primitive_type:)"
+            else
+                my.primitive_type = "*$(my.primitive_type:)"
+            endif
+        endif
+
+        if count (my.instance.array)
+            if string_in (my.instance.access, "readonly")
+                my.primitive_type = "[]$(my.primitive_type:)"
+            else
+                my.primitive_type = "[]$(my.primitive_type:)"
+            endif
+        endif
+
+        return my.primitive_type
+
+    elsif defined (my.instance.class)
+
+        if my.instance.class = "any"
+            return "Any"
+
+        elsif my.instance.class = "data"
+            return "Data"
+
+        elsif my.instance.class = "buffer"
+            return "Data"
+
+        elsif my.instance.class = "error"
+            return class_derive_c_instance_type (my.instance)
+
+        elsif is_ref (my.instance.class) | defined (my.instance.library)
+            return go_lang_ref (my.instance.class)
+
+        else
+            my.project_uid = component_derive_project_uid (my.instance)
+            my.type_uid = make_id ("class", "$(my.instance.class:Pascal)")
+            return make_ref_go (make_id(my.project_uid, my.type_uid))
+        endif
+
+    elsif defined (my.instance.impl)
+        my.project_uid = component_derive_project_uid (my.instance)
+        my.type_uid = make_id ("class", "$(my.instance.impl:Pascal)")
+        return make_ref_go (make_id(my.project_uid, my.type_uid))
+
+    elsif defined (my.instance.interface)
+        my.project_uid = component_derive_project_uid (my.instance)
+        my.type_uid = make_id ("interface", "$(my.instance.interface:Pascal)")
+        return make_ref_go (make_id(my.project_uid, my.type_uid))
+
+    elsif defined (my.instance.enum)
+        my.project_uid = component_derive_project_uid (my.instance)
+        my.type_uid = make_id ("enum", "$(my.instance.enum:Pascal)")
+        return make_ref_go (make_id(my.project_uid, my.type_uid))
+
+    else
+        my.instance_dump = component_instance_dump (my.instance)
+
+        echo_warning ("Unreachable code, component_resolve_instance() must handle this. $(my.instance_dump:)", my)
+
+        return "Unknown"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive Go integer type correspond to it's size.
+#   Size: {1, 2, 4, 8}.
+# ---------------------------------------------------------------------------
+function go_derive_integer_type (size)
+    if defined (my.size)
+        if my.size = "1"
+            return "int8"
+
+        elsif my.size = "2"
+            return "int16"
+
+        elsif my.size = "4"
+            return "int32"
+
+        elsif my.size = "8"
+            return "int64"
+        else
+            echo_fatal ("Unsupported size 'my.size' for Go integers", my)
+        endif
+    else
+        return "int32"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the Go interface.
+# ---------------------------------------------------------------------------
+function go_derive_interface_name (interface, go_project)
+    check_arguments (my, "interface, go_project", my)
+
+    assert_attribute_one_of (my.interface, "name, interface", my)
+
+    return "$(my.interface.name ? my.interface.interface:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted module name.
+# ---------------------------------------------------------------------------
+function go_derive_module_name (type)
+    check_arguments (my, "type", my)
+
+    assert_attribute (my.type, "name", my)
+
+    return "$(my.type.name:C)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted package name.
+# ---------------------------------------------------------------------------
+function go_derive_package_name (project, wrapper)
+    check_arguments (my, "project, wrapper", my)
+
+    assert_attribute (my.project, "name", my)
+    assert_attribute (my.wrapper, "package", my)
+
+    return string.replace ("$(my.project.name:c,lower)", "_|.")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return path to the package directory.
+# ---------------------------------------------------------------------------
+function go_derive_package_dir (project, wrapper)
+    check_arguments (my, "project, wrapper", my)
+
+    assert_attribute (my.project, "name", my)
+    assert_attribute (my.wrapper, "package", my)
+
+    my.package = go_derive_package_name (my.project, my.wrapper)
+
+    return string.replace (my.package, ".|/")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive Go unsigned integer type correspond to it's size.
+#   Size: {1, 2, 4, 8}.
+# ---------------------------------------------------------------------------
+function go_derive_unsigned_type (size)
+    if defined (my.size)
+        if my.size = "1"
+            return "uint8"
+
+        elsif my.size = "2"
+            return "uint16"
+
+        elsif my.size = "4"
+            return "uint32"
+
+        elsif my.size = "8"
+            return "uint64"
+        else
+            echo_fatal ("Unsupported size 'my.size' for Go unsigned integers", my)
+        endif
+    else
+        return "uint32"
+    endif
+endfunction
+
+# ===========================================================================
+#   Attribute mapping.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Map attribute 'access' of <component/> to <go_component/>.
+# ---------------------------------------------------------------------------
+function go_map_attr_access (go_component, component)
+    check_arguments (my, "go_component, component", my)
+
+    assert_attribute (my.component, "access", my)
+
+    my.go_component.access = my.component.access
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Map attribute 'scope' of <component/> to <go_component/>.
+# ---------------------------------------------------------------------------
+function go_map_attr_scope (go_component, component)
+    check_arguments (my, "go_component, component", my)
+
+    my.go_component.scope = my.component.scope ? "public"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Map attribute 'visibility' of <component/> to <go_component/>.
+# ---------------------------------------------------------------------------
+function go_map_attr_visibility (go_component, component)
+    check_arguments (my, "go_component, component", my)
+
+    assert_attribute (my.component, "visibility", my)
+
+    my.go_component.visibility = my.component.visibility ? "public"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add entities for regular enum (not error codes).
+# ---------------------------------------------------------------------------
+function go_map_enum_default (go_interface, enum, go_project, meta)
+    check_arguments (my, "go_interface, enum, go_project, meta")
+
+    for my.enum.constant
+        go_create_constant (constant, my.go_interface, my.go_project, my.meta)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Map <instance/> attributes to the <go_instance/> attributes.
+# ---------------------------------------------------------------------------
+function go_map_instance (go_instance, instance)
+    check_arguments (my, "go_instance, instance", my)
+
+    go_map_attr_access (my.go_instance, my.instance)
+    go_map_instance_type (my.go_instance, my.instance)
+
+    if item_in(my.instance, "argument") & my.instance.access = "disown" & \
+            has_one_of_attribute(my.instance, "interface, impl, class")
+        my.go_instance.method_shallow_copy = instance_derive_c_method_shallow_copy(my.instance)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Map <instance/> attributes to the <go_instance type=""/> attributes.
+# ---------------------------------------------------------------------------
+function go_map_instance_type (go_instance, instance)
+    check_arguments (my, "go_instance, instance", my)
+
+    my.go_instance.type = go_derive_instance_type (my.instance)
+
+    if defined (my.instance.type)
+        my.go_instance.is_primitive_type = "1"
+
+    elsif defined (my.instance.class)
+        my.go_instance.is_class = "1"
+
+        if my.instance.class = "any"
+            my.go_instance.is_any = "1"
+
+        elsif my.instance.class = "data"
+            my.go_instance.is_data = "1"
+
+        elsif my.instance.class = "buffer"
+            my.go_instance.is_buffer = "1"
+
+        elsif my.instance.class = "error"
+            my.go_instance.is_error = "1"
+            my.go_instance.method_reset = make_ref_c (make_id ("class error method reset"))
+        endif
+
+    elsif defined (my.instance.interface)
+        my.go_instance.is_interface = "1"
+
+    elsif defined (my.instance.enum)
+        my.go_instance.is_enum = "1"
+
+    elsif defined (my.instance.impl)
+        my.go_instance.is_class = "1"
+    endif
+
+    my.go_instance.is_array = count (my.instance.array) ?? "1" ?
+    my.go_instance.is_string = count (my.instance.string) ?? "1" ?
+    my.go_instance.is_reference = my.instance.is_reference ?
+endfunction
+
+# ===========================================================================
+#   Component resolution.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Resolve UIDs for given component and all inner components.
+# ---------------------------------------------------------------------------
+function go_module_resolve_uids (go_component, parent_uid)
+    check_arguments (my, "go_component", my)
+
+    if defined (my.parent_uid) & string.prefixed (my.parent_uid, "go_module")
+        my.parent_uid = # Undefined
+    endif
+
+    my.component_name = name (my.go_component)
+    if  defined (my.parent_uid) & string.prefixed (my.component_name, "go_")
+        regexp.match ("go_(.+)", my.component_name, my.component_name)
+    endif
+
+    my.go_component.uid = make_id (my.parent_uid, my.component_name, my.go_component.name)
+
+    for my.go_component. as inner_component where is_item (inner_component) & defined (inner_component.name)
+        go_module_resolve_uids (inner_component, my.go_component.uid)
+    endfor
+endfunction
+
+# ===========================================================================
+#   Module resolution.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Add auto-resoving attributes:
+#       - uid.
+# ---------------------------------------------------------------------------
+function go_module_resolve (go_module, go_project)
+    check_arguments (my, "go_module, go_project", my)
+
+    echo_trace ("Resolving <$(name (my.go_module)) name=\"$(my.go_module.name:)\"/>", my)
+
+    assert_attribute (my.go_module, "name", my)
+
+    #   Resolve UIDs
+    go_module_resolve_uids (my.go_module)
+endfunction
+
+# ===========================================================================
+#   Create functions.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Create entity <go_argument/> from the entity <argument/>.
+# ---------------------------------------------------------------------------
+function go_create_argument (argument, destination, go_project, meta)
+    check_arguments (my, "argument, destination, go_project, meta", my)
+
+    assert_attributes (my.argument, "name", my)
+
+    new go_argument to my.destination
+        .name = go_derive_instance_name (my.argument)
+
+        go_map_instance (go_argument, my.argument)
+
+        return go_argument
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create enumeration <go_constant/> from the entity <constant/>
+# ---------------------------------------------------------------------------
+function go_create_constant (constant, go_instance, go_project, meta)
+    check_arguments (my, "constant, go_instance, go_project, meta", my)
+
+    assert_attribute (my.constant, "name", my)
+
+    if defined(my.constant.value)
+        the_value = my.constant.value
+    elsif defined(my.go_instance.last_value)
+        the_value = my.go_instance.last_value + 1
+    else
+        the_value = 0
+    endif
+    my.go_instance.last_value = the_value
+
+    new go_constant to my.go_instance
+        . = go_format_description (my.constant) ?
+        .name = go_derive_constant_name (my.constant, my.go_project)
+        .value = the_value
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <go_func/> with <method/> declaration.
+# ---------------------------------------------------------------------------
+function go_create_func_declaration (class, method, destination, go_project, meta)
+    check_arguments (my, "class, method, destination, go_project, meta", my)
+
+    new go_func to my.destination
+        . = go_format_description (my.method) ?
+        .name = go_derive_func_name (my.method, my.go_project)
+        .throws = go_derive_func_throws (my.method)
+        .handle_proxy_status = go_derive_handle_proxy_status (my.method)
+        .interface = my.method.interface ?
+
+        if ! defined (my.method.interface)
+            .modifier = is_true (my.method.is_static) ?? "static" ?
+        endif
+
+        go_map_attr_visibility (go_func, my.method)
+
+        for my.method.argument
+            if argument.access <> "writeonly"
+                go_create_argument (argument, go_func, my.go_project, my.meta)
+            endif
+
+            if string_in (argument.class, "buffer") & string_in (argument.access, "readwrite, writeonly")
+                go_create_return_from_argument (my.class, my.method, argument, go_func, my.go_project, my.meta)
+            endif
+        endfor
+
+        for my.method.return where ! string_equal (return.enum, "status")
+            go_create_return (return, go_func, my.go_project, my.meta)
+        endfor
+
+        return go_func
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <go_func/> from the entity <instance/>.
+# ---------------------------------------------------------------------------
+function go_create_func_from_constant (interface, constant, destination, go_project, meta)
+    check_arguments (my, "interface, constant, destination, go_project, meta", my)
+
+    new go_func to my.destination
+        . = go_format_description (my.constant) ?
+        .name = go_derive_func_name_by_constant (my.constant, my.go_project)
+        .visibility = "public"
+        .is_implemented = "1"
+        
+        my.type = go_derive_constant_type (my.constant)
+
+        new go_return to go_func
+            .type = my.type
+            .access = "readonly"
+            .is_enum = "0"
+            .is_reference = "0"
+        endnew
+
+        if defined (my.constant.value)
+            new go_code to go_func
+                . = "\
+                    return $(my.constant.value:);
+                "
+            endnew
+        else
+            my.c_method = make_ref_c (make_id ("class", my.interface.name, "method", my.constant.name))
+            new go_code to go_func
+                . = "\
+                    return $(my.type:)(C.$(my.c_method:)())
+                "
+            endnew
+        endif
+
+        return go_func
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add <go_func/> with setter only that proxy dependency to the
+#   C context.
+# ---------------------------------------------------------------------------
+function go_create_func_from_dependency (dependency, impl, destination, go_project, meta)
+    check_arguments (my, "dependency, impl, destination, go_project, meta", my)
+
+    new go_func to my.destination
+        . = go_format_description (my.dependency) ?
+        .name = go_derive_func_name_str (cat ("set", my.dependency.name))
+        .visibility = "public"
+        .throws = my.dependency.has_observers & my.dependency.is_observers_return_status
+
+        my.arg_name = go_derive_argument_name (my.dependency)
+
+        new go_argument to go_func
+            .name = my.arg_name
+            .type = go_derive_dependency_type (my.dependency)
+        endnew
+
+        new go_code to go_func
+            #TODO
+            . = "//TODO"
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <go_func/> of from the interface entity <method/>.
+# ---------------------------------------------------------------------------
+function go_create_interface_func (interface, method, destination, go_project, meta)
+    check_arguments (my, "interface, method, destination, go_project, meta", my)
+
+    echo_debug ("Create method $(my.method.name:) for interface $(my.interface.name:)", my)
+
+    my.go_func = go_create_func_declaration (my.interface, my.method, my.destination, my.go_project, my.meta)
+    go_remove_error_arguments (my.go_func)
+    return my.go_func
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <go_promoted/> from the entity <inherit/>.
+# ---------------------------------------------------------------------------
+function go_create_promoted (inherit, destination, go_project, meta)
+    check_arguments (my, "inherit, destination, go_project, meta", my)
+
+    new go_promoted to my.destination
+        .type = go_derive_interface_name (my.inherit, my.go_project)
+
+        return go_promoted
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <go_return/> from the entity <return/> if it is not
+#   a status, otherwise nothing is created.
+# ---------------------------------------------------------------------------
+function go_create_return (return, destination, go_project, meta)
+    check_arguments (my, "return, destination, go_project, meta", my)
+
+    new go_return to my.destination
+        go_map_instance (go_return, my.return)
+        return go_return
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <go_return/> from the entity <argument/>.
+# ---------------------------------------------------------------------------
+function go_create_return_from_argument (class, method, argument, destination, go_project, meta)
+    check_arguments (my, "class, method, argument, destination, go_project, meta", my)
+
+    assert_attributes (my.argument, "name", my)
+
+    new go_return to my.destination
+        .name = go_derive_instance_name (my.argument)
+        go_map_instance (go_return, my.argument)
+        go_return.was_argument = "1"
+
+        if string_equal (my.argument.class, "buffer")
+            go_return.length_getter = class_derive_buffer_length_getter (my.class, my.method, argument)
+        endif
+
+        return go_return
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create <go_field/> that handles underlying C context.
+# ---------------------------------------------------------------------------
+function go_create_struct_field_context (destination, class)
+    check_arguments (my, "destination", my)
+
+    new go_field to my.destination
+        . = "/// Handle underlying C context."
+        .name = "c_ctx"
+        .type = go_derive_struct_context_type (my.class)
+        .access = "readonly"
+        .visibility = "public"
+
+        return go_field
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <go_func/> of from the class entity <method/>.
+# ---------------------------------------------------------------------------
+function go_create_struct_func (class, method, destination, go_project, meta)
+    check_arguments (my, "class, method, destination, go_project, meta", my)
+
+    #   Create declaration
+    my.go_func = go_create_func_declaration (my.class, my.method, my.destination, my.go_project, my.meta)
+    
+    #TODO
+    new go_code to my.go_func
+        . = "//TODO"
+    endnew
+
+    #   Cleanup
+    go_remove_error_arguments (my.go_func)
+
+    return my.go_func
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Remove temporary create go arguments that handle information about
+#   error context that is passed to the C proxy call.
+# ---------------------------------------------------------------------------
+function go_remove_error_arguments (go_func)
+    check_arguments (my, "go_func", my)
+
+    for my.go_func.go_argument where is_true (go_argument.is_error)
+        delete go_argument
+    endfor
+endfunction
+
+# ===========================================================================
+#   Create modules.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Create module with Go struct from the abstract 'class' notion.
+# ---------------------------------------------------------------------------
+function go_create_class_module (class, go_project, meta)
+    check_arguments (my, "class, go_project, meta", my)
+
+    echo_info ("Create <go_module/> from class: '$(my.class.name:)'", my)
+
+    assert_attribute (my.class, "name", my)
+
+    if string_in (my.class.name, "data, buffer, error")
+        #   Do not generate classes that can be mapped to the built-in types.
+        return
+    endif
+
+    new go_module to my.go_project
+        .name = go_derive_module_name (my.class)
+        .package = my.go_project.package
+        .package_dir = my.go_project.package_dir
+        .source_file_name = 0.name + ".go"
+        .source_file_path = cat_path (my.go_project.source_dir, 0.source_file_name)
+
+        new go_license to go_module
+            . = go_format_license (my.go_project->license) ?
+        endnew
+
+        for my.go_project.go_import
+            copy go_import to go_module
+        endfor
+
+        new go_class to go_module
+            . = go_format_description (my.class) ?
+            .name = go_derive_struct_name (my.class, my.go_project)
+
+            go_map_attr_visibility (go_class, my.class)
+
+            for my.class.constant
+                go_create_func_from_constant (my.class, constant, go_class, my.go_project, my.meta)
+            endfor
+
+            if my.class.context <> "none"
+                go_create_struct_field_context (go_class, my.class)
+                #TODO go_create_struct_default_constructor (go_class, my.class, my.go_project, my.meta)
+                #TODO go_create_struct_close (go_class, my.class, my.go_project, my.meta)
+
+                if ! string_in (my.class.lifecycle, "none")
+                    for my.class.constructor where constructor.visibility <> "private"
+                        #TODO go_create_struct_constructor (my.class, constructor, go_class, my.go_project, my.meta)
+                    endfor
+                endif
+            endif
+
+            for my.class.dependency
+                go_create_func_from_dependency (dependency, my.class, go_class, my.go_project, my.meta)
+            endfor
+
+            for my.class.method where 0.scope = "public" & method.declaration = "public" & method.visibility = "public"
+                go_create_struct_func (my.class, method, go_class, my.go_project, my.meta)
+            endfor
+        endnew
+    endnew
+
+    echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create module with Go enum from the abstract 'enum' notion.
+# ---------------------------------------------------------------------------
+function go_create_enum_module (enum, go_project, meta)
+    check_arguments (my, "enum, go_project, meta", my)
+
+    echo_info ("Create <go_module/> from enum: '$(my.enum.name:)'", my)
+
+    assert_attribute (my.enum, "name", my)
+
+    new go_module to my.go_project
+        .name = go_derive_enum_module_name (my.enum, my.go_project)
+        .package = my.go_project.package
+        .package_dir = my.go_project.package_dir
+        .source_file_name = 0.name + ".go"
+        .source_file_path = cat_path (my.go_project.source_dir, 0.source_file_name)
+
+        new go_license to go_module
+            . = go_format_license (my.go_project->license) ?
+        endnew
+
+        for my.go_project.go_import
+            copy go_import to go_module
+        endfor
+
+        new go_enum to go_module
+            . = go_format_description (my.enum) ?
+            .name = go_derive_enum_name (my.enum, my.go_project)
+            .type = go_derive_enum_type (my.enum)
+
+            go_map_attr_visibility (go_enum, my.enum)
+            go_map_attr_scope (go_enum, my.enum)
+
+            go_map_enum_default (go_enum, my.enum, my.go_project, my.meta)
+        endnew
+    endnew
+
+    echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create module with Go interface from the abstract 'interface' notion.
+# ---------------------------------------------------------------------------
+function go_create_interface_module (interface, go_project, meta)
+    check_arguments (my, "interface, go_project, meta", my)
+
+    echo_info ("Create <go_module/> from interface: '$(my.interface.name:)'", my)
+
+    new go_module to my.go_project
+        .name = go_derive_module_name (my.interface)
+        .package = my.go_project.package
+        .package_dir = my.go_project.package_dir
+        .source_file_name = 0.name + ".go"
+        .source_file_path = cat_path (my.go_project.source_dir, 0.source_file_name)
+
+        new go_license to go_module
+            . = go_format_license (my.go_project->license) ?
+        endnew
+
+        for my.go_project.go_import
+            copy go_import to go_module
+        endfor
+
+        new go_interface to go_module
+            . = go_format_description (my.interface) ?
+            .name = go_derive_interface_name (my.interface, my.go_project)
+
+            go_map_attr_visibility (go_interface, my.interface)
+
+            for my.interface.inherit
+                go_create_promoted (inherit, go_interface, my.go_project, my.meta)
+            endfor
+
+            for my.interface.constant
+                go_create_func_from_constant (my.interface, constant, go_interface, my.go_project, my.meta)
+            endfor
+
+            for my.interface.method where method.declaration = "public" & method.visibility = "public"
+                go_create_interface_func (my.interface, method, go_interface, my.go_project, my.meta)
+            endfor
+
+            for go_interface.go_method where count (0.go_return) > 1
+                #go_create_result_class (go_interface, go_field, my.go_project, my.meta)
+            endfor
+        endnew
+
+    endnew
+
+    echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create module that contains Go specific project information.
+# ---------------------------------------------------------------------------
+function go_create_project_module (project, wrapper)
+    check_arguments (my, "project, wrapper", my)
+
+    assert_attribute (my.wrapper, "lang", my)
+    assert_attributes (my.project, "name, prefix, framework", my)
+    assert_item (my.project, "license", my)
+
+    echo_info ("Create Go project for project: '$(my.project.name:)'", my)
+
+    new go_project to my.wrapper
+        . = my.project. ?
+        .name = my.project.name
+        .prefix = my.project.prefix
+        .package = go_derive_package_name(my.project, my.wrapper)
+        .package_dir = go_derive_package_dir(my.project, my.wrapper)
+        .source_dir = cat_path (my.wrapper.source_dir, my.project.name)
+        .c_umbrella_header = make_ref_c (make_id ("header", my.project.name, "public"))
+
+        copy my.project->license to go_project
+
+        new go_uid to go_project
+            .name = go_project.package
+            .uid = "go_import_name"
+        endnew
+
+        for my.project.require where defined (require.project) & string_equal (require.feature, "library")
+            my.required_go_project = my.wrapper->go_project (name = require.project) ?
+
+            if defined (my.required_go_project)
+                new go_import to go_project
+                    .import = make_ref_go (make_id ("project", require.project, "import name")) + ".*"
+                endnew
+            endif
+        endfor
+
+        return go_project
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create module with Go structure from the abstract 'implementation' notion.
+# ---------------------------------------------------------------------------
+function go_create_implementation_module (implementation, go_project, meta)
+    check_arguments (my, "implementation, go_project, meta", my)
+
+    if my.implementation.scope <> "internal"
+        echo_info ("Create <go_module/> from implementation: '$(my.implementation.name:)'", my)
+    else
+        echo_info ("Skip creating <go_module/> from internal implementation: '$(my.implementation.name:)'", my)
+    endif
+
+    new go_module to my.go_project
+        .name = go_derive_module_name (my.implementation)
+        .package = my.go_project.package
+        .package_dir = my.go_project.package_dir
+        .source_file_name = 0.name + ".go"
+        .source_file_path = cat_path (my.go_project.source_dir, 0.source_file_name)
+
+        new go_license to go_module
+            . = go_format_license (my.go_project->license) ?
+        endnew
+
+        for my.go_project.go_import
+            copy go_import to go_module
+        endfor
+
+        new go_class to go_module
+            . = go_format_description (my.implementation) ?
+            .name = go_derive_struct_name (my.implementation, my.go_project)
+
+            go_map_attr_visibility (go_class, my.implementation)
+
+            for my.implementation.constant
+                go_create_func_from_constant (my.implementation, constant, go_class, my.go_project, my.meta)
+            endfor
+
+            for my.implementation.dependency
+                go_create_func_from_dependency (dependency, my.implementation, go_class, my.go_project, my.meta)
+            endfor
+
+            for my.implementation.method where 0.scope = "public" & method.declaration = "public" & method.visibility = "public"
+                go_create_struct_func (my.implementation, method, go_class, my.go_project, my.meta)
+            endfor
+
+            if my.implementation.context <> "none"
+            
+                go_create_struct_field_context (go_class)
+
+                #TODO go_create_struct_default_constructor (go_class, my.implementation, my.go_project, my.meta)
+                #TODO go_create_struct_close (go_class, my.implementation, my.go_project, my.meta)
+
+                if my.implementation.lifecycle <> "none"
+                    for my.implementation.constructor where 0.declaration = "public" & 0.visibility = "public"
+                        #TODO go_create_struct_constructor (my.implementation, constructor, go_class, my.go_project, my.meta)
+                    endfor
+                endif
+            endif
+
+            #go_create_interface_implementation (my.implementation, go_class, my.go_project, my.meta)
+            #go_update_c_implementation_helper_module (my.implementation, my.go_project, my.meta)
+        endnew
+    endnew
+
+    echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Perform finalization for custom modules.
+# ---------------------------------------------------------------------------
+function go_finalize_custom_modules (source, go_project, meta)
+    check_arguments (my, "source, go_project, meta", my)
+
+    #TODO go_finalize_c_implementation_helper_modules (my.go_project, my.meta)
+endfunction
+
+
+.endtemplate

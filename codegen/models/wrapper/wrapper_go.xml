@@ -1,0 +1,3 @@
+<wrapper lang="go" package="com.virgilsecurity.crypto">
+    Wrapper to the Go programming language.
+</wrapper>
