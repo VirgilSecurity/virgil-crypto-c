@@ -187,13 +187,12 @@ function php_create_class_module (class, php_project, meta)
             .name = php_derive_class_name (my.class, my.php_project)
             .low_level_name_c_format = php_derive_class_low_level_name_c_formated (my.class, my.php_project)
             
-            php_create_class_default_constructor (php_class, my.class, my.php_project, my.meta)
-            
-            php_create_class_default_destructor (php_class, my.class, my.php_project, my.meta)
-            
             for my.class.method where method.declaration = "public" & method.scope ?= "public"
                 php_create_class_method (my.class, method, php_class, my.php_project, my.meta)
             endfor
+
+            php_create_class_default_constructor (php_class, my.class, my.php_project, my.meta)
+            php_create_class_default_destructor (php_class, my.class, my.php_project, my.meta)
 
         endnew
         
@@ -214,137 +213,35 @@ function php_create_class_default_constructor (php_class, class, php_project, me
         . = php_format_description (php_constructor)
 
         new php_code to php_constructor
-                my.constructor_body = format_left ("$this->ctx = $(my.php_class.low_level_name_c_format:c)_new_php();")
+            my.constructor_body = format_left ("$this->ctx = $(my.php_class.low_level_name_c_format:c)_new_php();")
             . = my.constructor_body
         endnew
     endnew
-endfunction
 
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_create_enum_module (enum, php_project, meta)
-    check_arguments (my, "enum, php_project, meta", my)
+    my.constructor = XML.new()
 
-    echo_info ("Create <php_module/> from enum: '$(my.enum.name:)'", my)
+    new php_method to my.constructor
+        new high_level to php_method
+            .name = "__constructor"
+            new docblock to high_level
+                . = "\
+                Create underlying C context.
+                @return void
+                "
+                . = php_format_description (docblock)
+            endnew
 
-    assert_attribute (my.enum, "name", my)
-
-    if my.enum.scope <> "public"
-        return
-    endif
-
-    if my.enum.name <> "status"
-        echo_fatal("Not implemented enum: $(my.enum.name:)", my)
-    endif
-
-    if my.enum.name = "status"
-        new php_module to my.php_project
-            .name = "extension_status"
-            .filename = "status"
-            .source_file_name = 0.filename + ".c"
-            .source_dir = cat_path (my.php_project.source_dir, "extension")
-            .source_file_path = cat_path (0.source_dir, 0.source_file_name)
-
-            new extension to php_module
-                .prefix = my.php_project.prefix
-
-                new c_code to extension
-                    .= php_format_extension_status_exception (my.enum, my.php_project.prefix)
-                endnew
+            new php_code to high_level
+                my.constructor_body = format_left ("$this->ctx = $(my.php_class.low_level_name_c_format:c)_new_php();")
+                . = my.constructor_body
             endnew
         endnew
-    endif
-endfunction
+    endnew
 
-function php_finalize_custom_modules (source, destination, wrapper, meta) #[optional]
-endfunction
-
-# ===========================================================================
-#   Component resolution.
-# ===========================================================================
-
-# ---------------------------------------------------------------------------
-#   Resolve UIDs for given component and all inner components.
-# ---------------------------------------------------------------------------
-function php_module_resolve_uids (php_component, parent_uid)
-    check_arguments (my, "php_component", my)
-
-    if defined (my.parent_uid) & string.prefixed (my.parent_uid, "php_module")
-        my.parent_uid = # Undefined
+    if defined (my.php_class->php_method)
+        copy my.constructor to my.php_class
     endif
 
-    my.component_name = name (my.php_component)
-    if  defined (my.parent_uid) & string.prefixed (my.component_name, "php_")
-        regexp.match ("php_(.+)", my.component_name, my.component_name)
-    endif
-
-    my.php_component.uid = make_id (my.parent_uid, my.component_name, my.php_component.name)
-
-    for my.php_component. as inner_component where is_item (inner_component) & defined (inner_component.name)
-        php_module_resolve_uids (inner_component, my.php_component.uid)
-    endfor
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Add auto-resolving attributes:
-#       - uid.
-# ---------------------------------------------------------------------------
-function php_module_resolve (php_module, php_project)
-    check_arguments (my, "php_module, php_project", my)
-
-    echo_trace ("Resolving <$(name (my.php_module)) name=\"$(my.php_module.name:)\"/>", my)
-
-    assert_attribute (my.php_module, "name", my)
-
-    #   Resolve UIDs
-    php_module_resolve_uids (my.php_module)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return formatted module name.
-# ---------------------------------------------------------------------------
-function php_derive_module_name (type, php_project, ppm)
-    check_arguments (my, "type, php_project, ppm", my)
-
-    assert_attribute (my.type, "name", my)
-
-    if ! string_in(my.ppm, "c, UPPER, Pascal, Camel")
-        echo_fatal("Undefined ppm: $(my.ppm:)", my)
-    endif
-
-    return "$(my.type.name:$(my.ppm))"
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return formatted name of the PHP class.
-# ---------------------------------------------------------------------------
-function php_derive_class_name (class, php_project)
-    check_arguments (my, "class, php_project", my)
-
-    assert_attribute_one_of (my.class, "name", my)
-
-    return php_derive_class_name_str (my.class.name, my.php_project)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return formatted name of the PHP class.
-# ---------------------------------------------------------------------------
-function php_derive_class_name_str (name, php_project)
-    check_arguments (my, "name, php_project", my)
-
-    return "$(my.name:Pascal)"
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return C formatted low level name of the PHP class.
-# ---------------------------------------------------------------------------
-function php_derive_class_low_level_name_c_formated (class, php_project)
-    check_arguments (my, "class, php_project", my)
-
-    assert_attribute_one_of (my.class, "name", my)
-
-    return "$(my.php_project.prefix:c)_$(my.class.name:c)"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -535,6 +432,133 @@ function php_create_class_method (class, method, destination, php_project, meta)
         endnew
     endnew
 
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_create_enum_module (enum, php_project, meta)
+    check_arguments (my, "enum, php_project, meta", my)
+
+    echo_info ("Create <php_module/> from enum: '$(my.enum.name:)'", my)
+
+    assert_attribute (my.enum, "name", my)
+
+    if my.enum.scope <> "public"
+        return
+    endif
+
+    if my.enum.name <> "status"
+        echo_fatal("Not implemented enum: $(my.enum.name:)", my)
+    endif
+
+    if my.enum.name = "status"
+        new php_module to my.php_project
+            .name = "extension_status"
+            .filename = "status"
+            .source_file_name = 0.filename + ".c"
+            .source_dir = cat_path (my.php_project.source_dir, "extension")
+            .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+
+            new extension to php_module
+                .prefix = my.php_project.prefix
+
+                new c_code to extension
+                    .= php_format_extension_status_exception (my.enum, my.php_project.prefix)
+                endnew
+            endnew
+        endnew
+    endif
+endfunction
+
+function php_finalize_custom_modules (source, destination, wrapper, meta) #[optional]
+endfunction
+
+# ===========================================================================
+#   Component resolution.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Resolve UIDs for given component and all inner components.
+# ---------------------------------------------------------------------------
+function php_module_resolve_uids (php_component, parent_uid)
+    check_arguments (my, "php_component", my)
+
+    if defined (my.parent_uid) & string.prefixed (my.parent_uid, "php_module")
+        my.parent_uid = # Undefined
+    endif
+
+    my.component_name = name (my.php_component)
+    if  defined (my.parent_uid) & string.prefixed (my.component_name, "php_")
+        regexp.match ("php_(.+)", my.component_name, my.component_name)
+    endif
+
+    my.php_component.uid = make_id (my.parent_uid, my.component_name, my.php_component.name)
+
+    for my.php_component. as inner_component where is_item (inner_component) & defined (inner_component.name)
+        php_module_resolve_uids (inner_component, my.php_component.uid)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add auto-resolving attributes:
+#       - uid.
+# ---------------------------------------------------------------------------
+function php_module_resolve (php_module, php_project)
+    check_arguments (my, "php_module, php_project", my)
+
+    echo_trace ("Resolving <$(name (my.php_module)) name=\"$(my.php_module.name:)\"/>", my)
+
+    assert_attribute (my.php_module, "name", my)
+
+    #   Resolve UIDs
+    php_module_resolve_uids (my.php_module)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted module name.
+# ---------------------------------------------------------------------------
+function php_derive_module_name (type, php_project, ppm)
+    check_arguments (my, "type, php_project, ppm", my)
+
+    assert_attribute (my.type, "name", my)
+
+    if ! string_in(my.ppm, "c, UPPER, Pascal, Camel")
+        echo_fatal("Undefined ppm: $(my.ppm:)", my)
+    endif
+
+    return "$(my.type.name:$(my.ppm))"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the PHP class.
+# ---------------------------------------------------------------------------
+function php_derive_class_name (class, php_project)
+    check_arguments (my, "class, php_project", my)
+
+    assert_attribute_one_of (my.class, "name", my)
+
+    return php_derive_class_name_str (my.class.name, my.php_project)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the PHP class.
+# ---------------------------------------------------------------------------
+function php_derive_class_name_str (name, php_project)
+    check_arguments (my, "name, php_project", my)
+
+    return "$(my.name:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return C formatted low level name of the PHP class.
+# ---------------------------------------------------------------------------
+function php_derive_class_low_level_name_c_formated (class, php_project)
+    check_arguments (my, "class, php_project", my)
+
+    assert_attribute_one_of (my.class, "name", my)
+
+    return "$(my.php_project.prefix:c)_$(my.class.name:c)"
 endfunction
 
 # ---------------------------------------------------------------------------
