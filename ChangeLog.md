@@ -1,6 +1,18 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.10.0 released 2019-08-12
+
+### Changes
+
+- Lib/Foundation/Ratchet: Fix group chat encryption
+
+### Bugfix
+
+- Wrapper/Python: Fix Python 2.7 package name for macOS platform
+- Wrapper/JS: Fix npm packages
+
+
 ## Version 0.9.0 released 2019-08-06
 
 ### Bugfix
