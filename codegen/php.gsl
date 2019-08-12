@@ -176,6 +176,7 @@ function php_create_class_module (class, php_project, meta)
         .name = php_derive_module_name (my.class, my.php_project, "Pascal")
         .source_file_name = 0.name + ".php"
         .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
+        .prefix = my.php_project.prefix
 
         new php_license to php_module
             . = php_format_license (my.php_project->license)
@@ -902,7 +903,6 @@ fail:
     $(my.zend_string_free:)
 success:
     $(my.vsc_buffer_destroy:)
-}
         "
     else 
         echo_fatal("Not implemented return type: $(my.low_level.return_type:)", my)

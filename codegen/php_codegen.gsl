@@ -341,13 +341,65 @@ function php_generate_source_extension_main (extension_module, php_project)
 
     output my.extension_module.source_file_path
 
-    my.func_wrap = ""
+    my.func_wrap = "\
+    // --------------------------------------------------------------------------
+    //  Functions wrapping
+    // --------------------------------------------------------------------------
+    "
+    
     my.const = "\
     // --------------------------------------------------------------------------
     //  Constants
     // --------------------------------------------------------------------------
     const char $(my.extension_module.extension_name:UPPER)_VERSION[] = \"$(my.extension_module.version:)\";
     const char $(my.extension_module.extension_name:UPPER)_EXTNAME[] = \"$(my.extension_module.extension_name:)\";
+    "
+
+    my.registered_resources = "\
+    // --------------------------------------------------------------------------
+    //  Registered resources
+    // --------------------------------------------------------------------------
+    "
+
+    my.define_function_entry = "\
+    // --------------------------------------------------------------------------
+    //  Define all function entries
+    // --------------------------------------------------------------------------
+    static zend_function_entry $(my.extension_module.extension_name:)_functions[] = {
+    "
+
+    my.module_definition = "\
+    // --------------------------------------------------------------------------
+    //  Extension module definition
+    // --------------------------------------------------------------------------
+    zend_module_entry $(my.extension_module.extension_name:)_module_entry = {
+    #if ZEND_MODULE_API_NO >= 20010901
+        STANDARD_MODULE_HEADER,
+    #endif
+        $(my.extension_module.extension_name:UPPER)_EXTNAME,
+        $(my.extension_module.extension_name:)_functions,
+        PHP_MINIT($(my.extension_module.extension_name:)),
+        PHP_MSHUTDOWN($(my.extension_module.extension_name:)),
+        NULL,
+        NULL,
+        NULL,
+    #if ZEND_MODULE_API_NO >= 20010901
+        $(my.extension_module.extension_name:UPPER)_VERSION,
+    #endif
+        STANDARD_MODULE_PROPERTIES
+    };
+
+    ZEND_GET_MODULE($(my.extension_module.extension_name:))
+    "
+
+    my.init_function_definition_p1 = "\
+    // --------------------------------------------------------------------------
+    //  Extension init functions definition
+    // --------------------------------------------------------------------------
+    "
+
+    my.init_function_definition_p2 = "\
+    PHP_MINIT_FUNCTION($(my.extension_module.extension_name:)) {
     "
 
     my.license = php_format_c_license(my.extension_module->license) + "\n"
@@ -358,9 +410,29 @@ function php_generate_source_extension_main (extension_module, php_project)
 
             my.include += php_insert_extension_include(php_class.low_level_name_c_format)
             my.const += "const char $(php_class.low_level_name_c_format:UPPER)_RES_NAME[] = \"$(php_class.low_level_name_c_format:)_t\"\n"
+            my.registered_resources += "int le_$(php_class.low_level_name_c_format:)\n"
 
             if count(php_class.php_method) > 0
+
+                    my.r = "$(php_class.low_level_name_c_format:)"
+
+                    my.init_function_definition_p1 += "\
+                    static void $(my.r:)_dtor_php(zend_resource *rsrc) {
+                        $(my.r:)_delete(($(my.r:)_t *)rsrc->ptr);
+                    }
+                    "
+
+                    my.init_function_definition_p2 += "\
+                    le_$(my.r:) = zend_register_list_destructors_ex($(my.r:)_dtor_php, NULL, $(php_class.low_level_name_c_format:UPPER)_RES_NAME, module_number);
+                    "
+
                 for php_class.php_method as php_method
+
+                    #echo_debug_item(php_class)
+                    #echo_fatal("", my)
+
+                    my.define_function_entry += "PHP_FE($(php_method->low_level.function_name:)_php, arginfo_$(php_method->low_level.function_name:)_php)\n"
+
                     my.extension_code = php_method->low_level->extension_code
                     
                     my.func_wrap += my.extension_code->zend_header + "\n"
@@ -378,7 +450,25 @@ function php_generate_source_extension_main (extension_module, php_project)
         endfor
     endfor
 
-    my.code = my.license + my.include + my.const + my.func_wrap 
+    my.define_function_entry += "\
+        PHP_FE_END
+    };
+    "
+
+    my.init_function_definition_p2 += "\
+        return SUCCESS;
+    }
+    "
+
+    my.init_function_definition_p3 = "\
+    PHP_MSHUTDOWN_FUNCTION($(my.r:)) {
+        return SUCCESS;
+    }
+    "
+
+    my.init_function_definition = my.init_function_definition_p1 + my.init_function_definition_p2 + my.init_function_definition_p3
+
+    my.code = my.license + my.include + my.const + my.registered_resources + my.func_wrap + my.define_function_entry + my.module_definition + my.init_function_definition
 
     php_insert_raw_code(my.code)
 
