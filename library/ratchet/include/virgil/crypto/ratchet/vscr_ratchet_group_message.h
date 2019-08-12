@@ -146,13 +146,6 @@ VSCR_PUBLIC vsc_data_t
 vscr_ratchet_group_message_get_session_id(const vscr_ratchet_group_message_t *self);
 
 //
-//  Returns message sender id.
-//  This method should be called only for regular message type.
-//
-VSCR_PUBLIC vsc_data_t
-vscr_ratchet_group_message_get_sender_id(const vscr_ratchet_group_message_t *self);
-
-//
 //  Returns message counter in current epoch.
 //
 VSCR_PUBLIC uint32_t

@@ -105,7 +105,7 @@ enum {
     //
     //  Max group message length
     //
-    vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN = 32952
+    vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN = 32918
 };
 
 

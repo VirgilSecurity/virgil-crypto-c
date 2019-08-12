@@ -1,7 +1,7 @@
 <class name="group session message" context="private">
     Class represents group session message
 
-    <constant name="max message len" value="30222">
+    <constant name="max message len" value="30188">
         Max message len
     </constant>
 
@@ -27,13 +27,6 @@
     <method name="get session id" is_const="1">
         Returns session id.
         This method should be called only for group info type.
-
-        <return class="data" access="readwrite"/>
-    </method>
-
-    <method name="get sender id" is_const="1">
-        Returns message sender id.
-        This method should be called only for regular message type.
 
         <return class="data" access="readwrite"/>
     </method>

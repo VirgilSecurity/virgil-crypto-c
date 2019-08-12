@@ -206,16 +206,19 @@ test__ill_be_back__random_chat__should_continue_working(void) {
     size_t len1 = vscr_ratchet_group_session_decrypt_len(session, encrypted1);
     vsc_buffer_t *plain_text1 = vsc_buffer_new_with_capacity(len1);
     TEST_ASSERT_EQUAL(
-            vscr_status_ERROR_EPOCH_NOT_FOUND, vscr_ratchet_group_session_decrypt(session, encrypted1, plain_text1));
+            vscr_status_ERROR_EPOCH_NOT_FOUND, vscr_ratchet_group_session_decrypt(session, encrypted1,
+                                                       vscr_ratchet_group_session_get_my_id(sessions[0]), plain_text1));
 
     size_t len2 = vscr_ratchet_group_session_decrypt_len(session, encrypted2);
     vsc_buffer_t *plain_text2 = vsc_buffer_new_with_capacity(len2);
     TEST_ASSERT_EQUAL(
-            vscr_status_ERROR_EPOCH_NOT_FOUND, vscr_ratchet_group_session_decrypt(session, encrypted2, plain_text2));
+            vscr_status_ERROR_EPOCH_NOT_FOUND, vscr_ratchet_group_session_decrypt(session, encrypted2,
+                                                       vscr_ratchet_group_session_get_my_id(sessions[0]), plain_text2));
 
     size_t len3 = vscr_ratchet_group_session_decrypt_len(session, encrypted3);
     vsc_buffer_t *plain_text3 = vsc_buffer_new_with_capacity(len3);
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_decrypt(session, encrypted3, plain_text3));
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_decrypt(session, encrypted3,
+                                                   vscr_ratchet_group_session_get_my_id(sessions[0]), plain_text3));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(text3), plain_text3);
 
@@ -448,13 +451,15 @@ test__remove_members__old_messages__should_continue_working(void) {
 
     size_t len1 = vscr_ratchet_group_session_decrypt_len(sessions[0], msg1);
     vsc_buffer_t *buffer1 = vsc_buffer_new_with_capacity(len1);
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_decrypt(sessions[0], msg1, buffer1));
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_decrypt(sessions[0], msg1,
+                                                   vscr_ratchet_group_session_get_my_id(sessions[1]), buffer1));
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(text1), buffer1);
 
     size_t len2 = vscr_ratchet_group_session_decrypt_len(sessions[0], msg2);
     vsc_buffer_t *buffer2 = vsc_buffer_new_with_capacity(len2);
     TEST_ASSERT_EQUAL(
-            vscr_status_ERROR_SENDER_NOT_FOUND, vscr_ratchet_group_session_decrypt(sessions[0], msg2, buffer2));
+            vscr_status_ERROR_SENDER_NOT_FOUND, vscr_ratchet_group_session_decrypt(sessions[0], msg2,
+                                                        vscr_ratchet_group_session_get_my_id(sessions[2]), buffer2));
 
     for (size_t i = 0; i < 3; i++) {
         vscr_ratchet_group_session_destroy(&sessions[i]);

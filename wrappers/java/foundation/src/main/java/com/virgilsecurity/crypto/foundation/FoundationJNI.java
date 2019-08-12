@@ -706,12 +706,6 @@ public class FoundationJNI {
     public native byte[] groupSessionMessage_getSessionId(long cCtx);
 
     /*
-    * Returns message sender id.
-    * This method should be called only for regular message type.
-    */
-    public native byte[] groupSessionMessage_getSenderId(long cCtx);
-
-    /*
     * Returns message epoch.
     */
     public native long groupSessionMessage_getEpoch(long cCtx);
@@ -790,7 +784,7 @@ public class FoundationJNI {
     /*
     * Encrypts data
     */
-    public native GroupSessionMessage groupSession_encrypt(long cCtx, byte[] plainText, PrivateKey privateKey, byte[] senderId) throws FoundationException;
+    public native GroupSessionMessage groupSession_encrypt(long cCtx, byte[] plainText, PrivateKey privateKey) throws FoundationException;
 
     /*
     * Calculates size of buffer sufficient to store decrypted message
@@ -800,7 +794,7 @@ public class FoundationJNI {
     /*
     * Decrypts message
     */
-    public native byte[] groupSession_decrypt(long cCtx, GroupSessionMessage message, PublicKey publicKey, byte[] senderId) throws FoundationException;
+    public native byte[] groupSession_decrypt(long cCtx, GroupSessionMessage message, PublicKey publicKey) throws FoundationException;
 
     /*
     * Creates ticket with new key for removing participants or proactive to rotate encryption key.
