@@ -45,7 +45,7 @@ class GroupSessionMessage(object):
     """Class represents group session message"""
 
     # Max message len
-    MAX_MESSAGE_LEN = 30222
+    MAX_MESSAGE_LEN = 30188
     # Message version
     MESSAGE_VERSION = 1
 
@@ -67,14 +67,6 @@ class GroupSessionMessage(object):
         """Returns session id.
         This method should be called only for group info type."""
         result = self._lib_vscf_group_session_message.vscf_group_session_message_get_session_id(self.ctx)
-        instance = Data.take_c_ctx(result)
-        cleaned_bytes = bytearray(instance)
-        return cleaned_bytes
-
-    def get_sender_id(self):
-        """Returns message sender id.
-        This method should be called only for regular message type."""
-        result = self._lib_vscf_group_session_message.vscf_group_session_message_get_sender_id(self.ctx)
         instance = Data.take_c_ctx(result)
         cleaned_bytes = bytearray(instance)
         return cleaned_bytes

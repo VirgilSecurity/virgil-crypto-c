@@ -179,12 +179,12 @@ class VscrRatchetGroupSession(object):
         vscr_ratchet_group_session_decrypt_len.restype = c_size_t
         return vscr_ratchet_group_session_decrypt_len(ctx, message)
 
-    def vscr_ratchet_group_session_decrypt(self, ctx, message, plain_text):
+    def vscr_ratchet_group_session_decrypt(self, ctx, message, sender_id, plain_text):
         """Decrypts message"""
         vscr_ratchet_group_session_decrypt = self._lib.vscr_ratchet_group_session_decrypt
-        vscr_ratchet_group_session_decrypt.argtypes = [POINTER(vscr_ratchet_group_session_t), POINTER(vscr_ratchet_group_message_t), POINTER(vsc_buffer_t)]
+        vscr_ratchet_group_session_decrypt.argtypes = [POINTER(vscr_ratchet_group_session_t), POINTER(vscr_ratchet_group_message_t), vsc_data_t, POINTER(vsc_buffer_t)]
         vscr_ratchet_group_session_decrypt.restype = c_int
-        return vscr_ratchet_group_session_decrypt(ctx, message, plain_text)
+        return vscr_ratchet_group_session_decrypt(ctx, message, sender_id, plain_text)
 
     def vscr_ratchet_group_session_serialize(self, ctx):
         """Serializes session to buffer

@@ -144,10 +144,11 @@ class GroupSession(object):
         result = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_decrypt_len(self.ctx, message.ctx)
         return result
 
-    def decrypt(self, message):
+    def decrypt(self, message, sender_id):
         """Decrypts message"""
+        d_sender_id = Data(sender_id)
         plain_text = Buffer(self.decrypt_len(message=message))
-        status = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_decrypt(self.ctx, message.ctx, plain_text.c_buffer)
+        status = self._lib_vscr_ratchet_group_session.vscr_ratchet_group_session_decrypt(self.ctx, message.ctx, d_sender_id.data, plain_text.c_buffer)
         VscrStatus.handle_status(status)
         return plain_text.get_bytes()
 

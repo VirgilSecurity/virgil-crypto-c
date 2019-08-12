@@ -107,7 +107,6 @@
     "_vscr_ratchet_group_message_delete",
     "_vscr_ratchet_group_message_get_type",
     "_vscr_ratchet_group_message_get_session_id",
-    "_vscr_ratchet_group_message_get_sender_id",
     "_vscr_ratchet_group_message_get_counter",
     "_vscr_ratchet_group_message_get_epoch",
     "_vscr_ratchet_group_message_serialize_len",

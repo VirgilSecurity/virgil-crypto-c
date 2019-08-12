@@ -47,7 +47,7 @@ const initGroupSessionMessage = (Module, modules) => {
          * Max message len
          */
         static get MAX_MESSAGE_LEN() {
-            return 30222;
+            return 30188;
         }
 
         get MAX_MESSAGE_LEN() {
@@ -134,29 +134,6 @@ const initGroupSessionMessage = (Module, modules) => {
 
             try {
                 Module._vscf_group_session_message_get_session_id(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
-        }
-
-        /**
-         * Returns message sender id.
-         * This method should be called only for regular message type.
-         */
-        getSenderId() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            //  Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscf_group_session_message_get_sender_id(dataResultCtxPtr, this.ctxPtr);
 
                 const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
                 const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
