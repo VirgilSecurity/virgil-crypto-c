@@ -53,10 +53,10 @@ Implementation of the [Double Ratchet Algorithm](https://en.wikipedia.org/wiki/D
 
 | Library    | Platforms    | Languages / Binaries                                         |
 | ---------- | ------------ | ------------------------------------------------------------ |
-| foundation | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), Swift, [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto) |
-| pythia     | linux, macOS | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), Swift, [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto) |
-| phe        | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [PHP](https://cdn.virgilsecurity.com/virgil-crypto-c/php), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto) |
-| ratchet    | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), Swift, [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto) |
+| foundation | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [Swift](https://github.com/VirgilSecurity/virgil-cryptowrapper-x), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto), [JS](https://github.com/VirgilSecurity/virgil-crypto-javascript), [Python](https://pypi.org/project/virgil-crypto-lib) |
+| pythia     | linux, macOS | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [Swift](https://github.com/VirgilSecurity/virgil-cryptowrapper-x), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto), [JS](https://github.com/VirgilSecurity/virgil-crypto-javascript), [Python](https://pypi.org/project/virgil-crypto-lib) |
+| phe        | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [PHP](https://cdn.virgilsecurity.com/virgil-crypto-c/php), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto), [JS](https://github.com/VirgilSecurity/virgil-crypto-javascript), [Python](https://pypi.org/project/virgil-crypto-lib) |
+| ratchet    | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [Swift](https://github.com/VirgilSecurity/virgil-cryptowrapper-x), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto), [JS](https://github.com/VirgilSecurity/virgil-crypto-javascript), [Python](https://pypi.org/project/virgil-crypto-lib) |
 
 
 
