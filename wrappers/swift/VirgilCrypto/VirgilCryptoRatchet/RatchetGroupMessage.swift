@@ -83,14 +83,6 @@ import VirgilCryptoFoundation
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
-    /// Returns message sender id.
-    /// This method should be called only for regular message type.
-    @objc public func getSenderId() -> Data {
-        let proxyResult = vscr_ratchet_group_message_get_sender_id(self.c_ctx)
-
-        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
-    }
-
     /// Returns message counter in current epoch.
     @objc public func getCounter() -> UInt32 {
         let proxyResult = vscr_ratchet_group_message_get_counter(self.c_ctx)

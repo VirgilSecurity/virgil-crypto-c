@@ -484,12 +484,11 @@ err:
 //  Encrypts data
 //
 VSCF_PUBLIC vscf_group_session_message_t *
-vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, const vscf_impl_t *private_key,
-        vsc_data_t sender_id, vscf_error_t *error) {
+vscf_group_session_encrypt(
+        vscf_group_session_t *self, vsc_data_t plain_text, const vscf_impl_t *private_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->last_epoch);
-    VSCF_ASSERT(vsc_data_is_valid(sender_id));
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vsc_data_is_valid(plain_text));
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
@@ -521,8 +520,6 @@ vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, co
 
     memcpy(msg->header_pb->salt, vsc_buffer_bytes(salt), sizeof(msg->header_pb->salt));
     memcpy(msg->header_pb->session_id, self->session_id, sizeof(msg->header_pb->session_id));
-    VSCF_ASSERT(sender_id.len == sizeof(msg->header_pb->sender_id));
-    memcpy(msg->header_pb->sender_id, sender_id.bytes, sizeof(msg->header_pb->sender_id));
     msg->header_pb->epoch = self->last_epoch->value->epoch_number;
 
     pb_ostream_t header_stream = pb_ostream_from_buffer(
@@ -604,11 +601,10 @@ vscf_group_session_decrypt_len(vscf_group_session_t *self, const vscf_group_sess
 //
 VSCF_PUBLIC vscf_status_t
 vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_message_t *message,
-        const vscf_impl_t *public_key, vsc_data_t sender_id, vsc_buffer_t *plain_text) {
+        const vscf_impl_t *public_key, vsc_buffer_t *plain_text) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
-    VSCF_ASSERT(vsc_data_is_valid(sender_id));
     VSCF_ASSERT_PTR(message);
     VSCF_ASSERT(message->message_pb.has_regular_message);
     VSCF_ASSERT_PTR(message->header_pb);

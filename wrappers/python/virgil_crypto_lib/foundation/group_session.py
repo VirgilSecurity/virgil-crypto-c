@@ -92,12 +92,11 @@ class GroupSession(object):
         status = self._lib_vscf_group_session.vscf_group_session_add_epoch(self.ctx, message.ctx)
         VscfStatus.handle_status(status)
 
-    def encrypt(self, plain_text, private_key, sender_id):
+    def encrypt(self, plain_text, private_key):
         """Encrypts data"""
         d_plain_text = Data(plain_text)
-        d_sender_id = Data(sender_id)
         error = vscf_error_t()
-        result = self._lib_vscf_group_session.vscf_group_session_encrypt(self.ctx, d_plain_text.data, private_key.c_impl, d_sender_id.data, error)
+        result = self._lib_vscf_group_session.vscf_group_session_encrypt(self.ctx, d_plain_text.data, private_key.c_impl, error)
         VscfStatus.handle_status(error.status)
         instance = GroupSessionMessage.take_c_ctx(result)
         return instance
@@ -107,11 +106,10 @@ class GroupSession(object):
         result = self._lib_vscf_group_session.vscf_group_session_decrypt_len(self.ctx, message.ctx)
         return result
 
-    def decrypt(self, message, public_key, sender_id):
+    def decrypt(self, message, public_key):
         """Decrypts message"""
-        d_sender_id = Data(sender_id)
         plain_text = Buffer(self.decrypt_len(message=message))
-        status = self._lib_vscf_group_session.vscf_group_session_decrypt(self.ctx, message.ctx, public_key.c_impl, d_sender_id.data, plain_text.c_buffer)
+        status = self._lib_vscf_group_session.vscf_group_session_decrypt(self.ctx, message.ctx, public_key.c_impl, plain_text.c_buffer)
         VscfStatus.handle_status(status)
         return plain_text.get_bytes()
 

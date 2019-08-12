@@ -198,7 +198,6 @@
     "_vscf_group_session_message_delete",
     "_vscf_group_session_message_get_type",
     "_vscf_group_session_message_get_session_id",
-    "_vscf_group_session_message_get_sender_id",
     "_vscf_group_session_message_get_epoch",
     "_vscf_group_session_message_serialize_len",
     "_vscf_group_session_message_serialize",

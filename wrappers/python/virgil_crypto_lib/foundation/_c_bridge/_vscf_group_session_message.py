@@ -48,7 +48,7 @@ class VscfGroupSessionMessage(object):
     """Class represents group session message"""
 
     # Max message len
-    MAX_MESSAGE_LEN = 30222
+    MAX_MESSAGE_LEN = 30188
     # Message version
     MESSAGE_VERSION = 1
 
@@ -83,14 +83,6 @@ class VscfGroupSessionMessage(object):
         vscf_group_session_message_get_session_id.argtypes = [POINTER(vscf_group_session_message_t)]
         vscf_group_session_message_get_session_id.restype = vsc_data_t
         return vscf_group_session_message_get_session_id(ctx)
-
-    def vscf_group_session_message_get_sender_id(self, ctx):
-        """Returns message sender id.
-        This method should be called only for regular message type."""
-        vscf_group_session_message_get_sender_id = self._lib.vscf_group_session_message_get_sender_id
-        vscf_group_session_message_get_sender_id.argtypes = [POINTER(vscf_group_session_message_t)]
-        vscf_group_session_message_get_sender_id.restype = vsc_data_t
-        return vscf_group_session_message_get_sender_id(ctx)
 
     def vscf_group_session_message_get_epoch(self, ctx):
         """Returns message epoch."""

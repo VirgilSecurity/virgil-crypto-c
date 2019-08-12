@@ -82,14 +82,6 @@ public class RatchetGroupMessage implements AutoCloseable {
     }
 
     /*
-    * Returns message sender id.
-    * This method should be called only for regular message type.
-    */
-    public byte[] getSenderId() {
-        return RatchetJNI.INSTANCE.ratchetGroupMessage_getSenderId(this.cCtx);
-    }
-
-    /*
     * Returns message counter in current epoch.
     */
     public long getCounter() {

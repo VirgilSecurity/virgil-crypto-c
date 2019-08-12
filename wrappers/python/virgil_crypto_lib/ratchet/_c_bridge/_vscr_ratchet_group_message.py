@@ -79,14 +79,6 @@ class VscrRatchetGroupMessage(object):
         vscr_ratchet_group_message_get_session_id.restype = vsc_data_t
         return vscr_ratchet_group_message_get_session_id(ctx)
 
-    def vscr_ratchet_group_message_get_sender_id(self, ctx):
-        """Returns message sender id.
-        This method should be called only for regular message type."""
-        vscr_ratchet_group_message_get_sender_id = self._lib.vscr_ratchet_group_message_get_sender_id
-        vscr_ratchet_group_message_get_sender_id.argtypes = [POINTER(vscr_ratchet_group_message_t)]
-        vscr_ratchet_group_message_get_sender_id.restype = vsc_data_t
-        return vscr_ratchet_group_message_get_sender_id(ctx)
-
     def vscr_ratchet_group_message_get_counter(self, ctx):
         """Returns message counter in current epoch."""
         vscr_ratchet_group_message_get_counter = self._lib.vscr_ratchet_group_message_get_counter

@@ -113,12 +113,12 @@ class VscfGroupSession(object):
         vscf_group_session_add_epoch.restype = c_int
         return vscf_group_session_add_epoch(ctx, message)
 
-    def vscf_group_session_encrypt(self, ctx, plain_text, private_key, sender_id, error):
+    def vscf_group_session_encrypt(self, ctx, plain_text, private_key, error):
         """Encrypts data"""
         vscf_group_session_encrypt = self._lib.vscf_group_session_encrypt
-        vscf_group_session_encrypt.argtypes = [POINTER(vscf_group_session_t), vsc_data_t, POINTER(vscf_impl_t), vsc_data_t, POINTER(vscf_error_t)]
+        vscf_group_session_encrypt.argtypes = [POINTER(vscf_group_session_t), vsc_data_t, POINTER(vscf_impl_t), POINTER(vscf_error_t)]
         vscf_group_session_encrypt.restype = POINTER(vscf_group_session_message_t)
-        return vscf_group_session_encrypt(ctx, plain_text, private_key, sender_id, error)
+        return vscf_group_session_encrypt(ctx, plain_text, private_key, error)
 
     def vscf_group_session_decrypt_len(self, ctx, message):
         """Calculates size of buffer sufficient to store decrypted message"""
@@ -127,12 +127,12 @@ class VscfGroupSession(object):
         vscf_group_session_decrypt_len.restype = c_size_t
         return vscf_group_session_decrypt_len(ctx, message)
 
-    def vscf_group_session_decrypt(self, ctx, message, public_key, sender_id, plain_text):
+    def vscf_group_session_decrypt(self, ctx, message, public_key, plain_text):
         """Decrypts message"""
         vscf_group_session_decrypt = self._lib.vscf_group_session_decrypt
-        vscf_group_session_decrypt.argtypes = [POINTER(vscf_group_session_t), POINTER(vscf_group_session_message_t), POINTER(vscf_impl_t), vsc_data_t, POINTER(vsc_buffer_t)]
+        vscf_group_session_decrypt.argtypes = [POINTER(vscf_group_session_t), POINTER(vscf_group_session_message_t), POINTER(vscf_impl_t), POINTER(vsc_buffer_t)]
         vscf_group_session_decrypt.restype = c_int
-        return vscf_group_session_decrypt(ctx, message, public_key, sender_id, plain_text)
+        return vscf_group_session_decrypt(ctx, message, public_key, plain_text)
 
     def vscf_group_session_create_group_ticket(self, ctx, error):
         """Creates ticket with new key for removing participants or proactive to rotate encryption key."""

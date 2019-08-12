@@ -179,8 +179,8 @@ public class RatchetGroupSession implements AutoCloseable {
     /*
     * Decrypts message
     */
-    public byte[] decrypt(RatchetGroupMessage message) throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetGroupSession_decrypt(this.cCtx, message);
+    public byte[] decrypt(RatchetGroupMessage message, byte[] senderId) throws RatchetException {
+        return RatchetJNI.INSTANCE.ratchetGroupSession_decrypt(this.cCtx, message, senderId);
     }
 
     /*

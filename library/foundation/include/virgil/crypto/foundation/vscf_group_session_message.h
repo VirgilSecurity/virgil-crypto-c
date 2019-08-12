@@ -90,7 +90,7 @@ enum {
     //
     //  Max message len
     //
-    vscf_group_session_message_MAX_MESSAGE_LEN = 30222,
+    vscf_group_session_message_MAX_MESSAGE_LEN = 30188,
     //
     //  Message version
     //
@@ -158,13 +158,6 @@ vscf_group_session_message_get_type(const vscf_group_session_message_t *self);
 //
 VSCF_PUBLIC vsc_data_t
 vscf_group_session_message_get_session_id(const vscf_group_session_message_t *self);
-
-//
-//  Returns message sender id.
-//  This method should be called only for regular message type.
-//
-VSCF_PUBLIC vsc_data_t
-vscf_group_session_message_get_sender_id(const vscf_group_session_message_t *self);
 
 //
 //  Returns message epoch.

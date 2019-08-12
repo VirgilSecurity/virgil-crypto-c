@@ -107,15 +107,8 @@ generate_random_data(vscf_ctr_drbg_t *rng, vsc_buffer_t **buffer) {
 }
 
 void
-generate_random_participant_id(vscf_ctr_drbg_t *rng, vsc_buffer_t **id) {
-    *id = vsc_buffer_new_with_capacity(vscf_group_session_SENDER_ID_LEN);
-
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, 32, *id));
-}
-
-void
 encrypt_decrypt(vscf_ctr_drbg_t *rng, vscf_group_session_t **sessions, vscf_impl_t **priv, vscf_impl_t **pub,
-        vsc_buffer_t **ids, size_t group_size, size_t iterations, bool not_sync) {
+        size_t group_size, size_t iterations, bool not_sync) {
     for (size_t i = 0; i < iterations; i++) {
         size_t sender = generate_number(rng, 0, group_size - 1);
 
@@ -125,8 +118,8 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, vscf_group_session_t **sessions, vscf_impl
         vscf_error_t error;
         vscf_error_reset(&error);
 
-        vscf_group_session_message_t *msg = vscf_group_session_encrypt(
-                sessions[sender], vsc_buffer_data(plain_text), priv[sender], vsc_buffer_data(ids[sender]), &error);
+        vscf_group_session_message_t *msg =
+                vscf_group_session_encrypt(sessions[sender], vsc_buffer_data(plain_text), priv[sender], &error);
 
         TEST_ASSERT(msg != NULL);
         TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error.status);
@@ -135,8 +128,7 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, vscf_group_session_t **sessions, vscf_impl
             size_t len = vscf_group_session_decrypt_len(sessions[j], msg);
             vsc_buffer_t *decrypted = vsc_buffer_new_with_capacity(len);
 
-            vscf_status_t status =
-                    vscf_group_session_decrypt(sessions[j], msg, pub[sender], vsc_buffer_data(ids[sender]), decrypted);
+            vscf_status_t status = vscf_group_session_decrypt(sessions[j], msg, pub[sender], decrypted);
 
             if (not_sync && sender < group_size / 2 && j >= group_size / 2) {
                 TEST_ASSERT_EQUAL(vscf_status_ERROR_EPOCH_NOT_FOUND, status);
@@ -155,11 +147,10 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, vscf_group_session_t **sessions, vscf_impl
 
 void
 initialize_random_group_session(vscf_ctr_drbg_t *rng, vscf_group_session_t ***sessions, vscf_impl_t ***priv,
-        vscf_impl_t ***pub, vsc_buffer_t ***ids, size_t group_size) {
+        vscf_impl_t ***pub, size_t group_size) {
     *sessions = vscf_alloc(group_size * sizeof(vscf_group_session_t *));
     *priv = vscf_alloc(group_size * sizeof(vsc_buffer_t *));
     *pub = vscf_alloc(group_size * sizeof(vsc_buffer_t *));
-    *ids = vscf_alloc(group_size * sizeof(vsc_buffer_t *));
 
     vscf_group_session_ticket_t *ticket = vscf_group_session_ticket_new();
 
@@ -183,7 +174,6 @@ initialize_random_group_session(vscf_ctr_drbg_t *rng, vscf_group_session_t ***se
         (*sessions)[i] = session;
 
         generate_ed_keypair(rng, &(*priv)[i], &(*pub)[i]);
-        generate_random_participant_id(rng, &(*ids)[i]);
     }
 
     vscf_group_session_ticket_destroy(&ticket);
@@ -198,25 +188,22 @@ test__encrypt_decrypt__random_group__should_match(void) {
     vscf_group_session_t **sessions;
     vscf_impl_t **priv;
     vscf_impl_t **pub;
-    vsc_buffer_t **ids;
 
     size_t group_size = 10;
 
-    initialize_random_group_session(rng, &sessions, &priv, &pub, &ids, group_size);
+    initialize_random_group_session(rng, &sessions, &priv, &pub, group_size);
 
-    encrypt_decrypt(rng, sessions, priv, pub, ids, group_size, 100, false);
+    encrypt_decrypt(rng, sessions, priv, pub, group_size, 100, false);
 
     for (size_t i = 0; i < group_size; i++) {
         vscf_group_session_destroy(&sessions[i]);
         vscf_impl_destroy(&priv[i]);
         vscf_impl_destroy(&pub[i]);
-        vsc_buffer_destroy(&ids[i]);
     }
 
     vscf_dealloc(sessions);
     vscf_dealloc(priv);
     vscf_dealloc(pub);
-    vscf_dealloc(ids);
 
     vscf_ctr_drbg_destroy(&rng);
 }
@@ -247,29 +234,26 @@ test__encrypt_decrypt__new_epoch_not_synced__should_decrypt(void) {
     vscf_group_session_t **sessions;
     vscf_impl_t **priv;
     vscf_impl_t **pub;
-    vsc_buffer_t **ids;
 
     size_t group_size = 10;
 
-    initialize_random_group_session(rng, &sessions, &priv, &pub, &ids, group_size);
+    initialize_random_group_session(rng, &sessions, &priv, &pub, group_size);
 
-    encrypt_decrypt(rng, sessions, priv, pub, ids, group_size, 100, false);
+    encrypt_decrypt(rng, sessions, priv, pub, group_size, 100, false);
 
     add_epoch(sessions, group_size, true);
 
-    encrypt_decrypt(rng, sessions, priv, pub, ids, group_size, 100, true);
+    encrypt_decrypt(rng, sessions, priv, pub, group_size, 100, true);
 
     for (size_t i = 0; i < group_size; i++) {
         vscf_group_session_destroy(&sessions[i]);
         vscf_impl_destroy(&priv[i]);
         vscf_impl_destroy(&pub[i]);
-        vsc_buffer_destroy(&ids[i]);
     }
 
     vscf_dealloc(sessions);
     vscf_dealloc(priv);
     vscf_dealloc(pub);
-    vscf_dealloc(ids);
 
     vscf_ctr_drbg_destroy(&rng);
 }
@@ -282,31 +266,28 @@ test__encrypt_decrypt__new_epochs__should_decrypt(void) {
     vscf_group_session_t **sessions;
     vscf_impl_t **priv;
     vscf_impl_t **pub;
-    vsc_buffer_t **ids;
 
     size_t group_size = 10;
 
-    initialize_random_group_session(rng, &sessions, &priv, &pub, &ids, group_size);
+    initialize_random_group_session(rng, &sessions, &priv, &pub, group_size);
 
-    encrypt_decrypt(rng, sessions, priv, pub, ids, group_size, 10, false);
+    encrypt_decrypt(rng, sessions, priv, pub, group_size, 10, false);
 
     for (size_t i = 0; i < vscf_group_session_MAX_EPOCHS_COUNT + 10; i++) {
         add_epoch(sessions, group_size, false);
 
-        encrypt_decrypt(rng, sessions, priv, pub, ids, group_size, 10, false);
+        encrypt_decrypt(rng, sessions, priv, pub, group_size, 10, false);
     }
 
     for (size_t i = 0; i < group_size; i++) {
         vscf_group_session_destroy(&sessions[i]);
         vscf_impl_destroy(&priv[i]);
         vscf_impl_destroy(&pub[i]);
-        vsc_buffer_destroy(&ids[i]);
     }
 
     vscf_dealloc(sessions);
     vscf_dealloc(priv);
     vscf_dealloc(pub);
-    vscf_dealloc(ids);
 
     vscf_ctr_drbg_destroy(&rng);
 }

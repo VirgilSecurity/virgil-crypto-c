@@ -58,7 +58,6 @@
 static bool
 reg_msg_hdr_cmp(vscf_RegularGroupMessageHeader *msg1, vscf_RegularGroupMessageHeader *msg2) {
     return memcmp(msg1->session_id, msg2->session_id, sizeof(msg1->session_id)) == 0 &&
-           memcmp(msg1->sender_id, msg2->sender_id, sizeof(msg1->sender_id)) == 0 &&
            memcmp(msg1->salt, msg2->salt, sizeof(msg1->salt)) == 0 && msg1->epoch == msg2->epoch;
 }
 
@@ -119,8 +118,6 @@ test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
     memcpy(msg1->header_pb->salt, test_data_group_session_session_salt.bytes, test_data_group_session_session_salt.len);
     memcpy(msg1->message_pb.regular_message.signature, test_data_group_session_session_signature.bytes,
             test_data_group_session_session_signature.len);
-    memcpy(msg1->header_pb->sender_id, test_data_group_session_session_sender_id.bytes,
-            test_data_group_session_session_sender_id.len);
 
     msg1->message_pb.regular_message.cipher_text =
             vscf_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(test_data_group_session_session_cipher_text.len));
@@ -272,11 +269,8 @@ test__methods__fixed_regular_msg__should_return_correct_values(void) {
     msg1->header_pb->epoch = 18;
     memcpy(msg1->header_pb->salt, test_data_group_session_session_salt.bytes, sizeof(msg1->header_pb->session_id));
     memcpy(msg1->header_pb->session_id, test_data_group_session_session_id.bytes, sizeof(msg1->header_pb->session_id));
-    memcpy(msg1->header_pb->sender_id, test_data_group_session_session_sender_id.bytes,
-            sizeof(msg1->header_pb->sender_id));
 
     TEST_ASSERT_EQUAL_DATA(test_data_group_session_session_id, vscf_group_session_message_get_session_id(msg1));
-    TEST_ASSERT_EQUAL_DATA(test_data_group_session_session_sender_id, vscf_group_session_message_get_sender_id(msg1));
     TEST_ASSERT_EQUAL(vscf_group_msg_type_REGULAR, vscf_group_session_message_get_type(msg1));
     TEST_ASSERT_EQUAL(msg1->header_pb->epoch, vscf_group_session_message_get_epoch(msg1));
 
@@ -296,7 +290,6 @@ test__methods__fixed_group_info_msg__should_return_correct_values(void) {
     msg1->message_pb.group_info.epoch = 39;
 
     TEST_ASSERT_EQUAL_DATA(test_data_group_session_session_id, vscf_group_session_message_get_session_id(msg1));
-    TEST_ASSERT(vscf_group_session_message_get_sender_id(msg1).len == 0);
     TEST_ASSERT_EQUAL(vscf_group_msg_type_GROUP_INFO, vscf_group_session_message_get_type(msg1));
     TEST_ASSERT_EQUAL(msg1->message_pb.group_info.epoch, vscf_group_session_message_get_epoch(msg1));
 
