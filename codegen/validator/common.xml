@@ -1,0 +1,199 @@
+<?xml version="1.0"?>
+<!--
+    Copyright (C) 2015-2019 Virgil Security, Inc.
+
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+        (1) Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+
+        (2) Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in
+        the documentation and/or other materials provided with the
+        distribution.
+
+        (3) Neither the name of the copyright holder nor the names of its
+        contributors may be used to endorse or promote products derived from
+        this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+    IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+    INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+    IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+
+    Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+-->
+
+<entity name="scope" abstract="1">
+
+    <attr name="scope" default="public">
+        Defines component visibility within scope.
+        This attribute must not be inherited.
+        Note, scope attribute can be used for components, that can not
+        be defined in terms of 'declaration' and 'definition'.
+
+        <restrict value="public">
+            Component is visible for outside world.
+        </restrict>
+
+        <restrict value="private">
+            Component is visible for outside world via private interface.
+        </restrict>
+
+        <restrict value="internal">
+            Component is visible only within library.
+        </restrict>
+    </attr>
+</entity>
+
+
+<entity name="declaration" abstract="1">
+
+    <attr name="declaration" default="public">
+        Defines where component will be declared.
+        This attribute must not be inherited.
+
+        <restrict value="public">
+            Component declaration is visible for outside world.
+        </restrict>
+
+        <restrict value="private">
+            Component declaration is hidden in a correspond source file.
+        </restrict>
+
+        <restrict value="external">
+            Component declaration is located somewhere.
+        </restrict>
+    </attr>
+</entity>
+
+
+<entity name="definition" abstract="1">
+
+    <attr name="definition" default="private">
+        Defines where component will be defined.
+        This attribute must not be inherited.
+
+        <restrict value="public">
+            Component definition is visible for outside world.
+        </restrict>
+
+        <restrict value="private">
+            Component definition is hidden in a correspond source file.
+        </restrict>
+
+        <restrict value="external">
+            Component definition is located somewhere.
+        </restrict>
+    </attr>
+</entity>
+
+
+<entity name="visibility" abstract="1">
+
+    <attr name="visibility" default="public">
+        Defines symbol binary visibility.
+        This attribute must not be inherited.
+
+        <restrict value="public">
+            Symbols of the types and methods are visible in a binary file.
+        </restrict>
+
+        <restrict value="private">
+            Symbols of the types and methods are hidden in a binary file.
+        </restrict>
+    </attr>
+</entity>
+
+
+<entity name="of_class">
+
+    <attr name="of_class">
+        Defines class name that a component belongs to.
+        This attributes is used for inner components name resolution.
+    </attr>
+</entity>
+
+
+<entity name="uid" abstract="1">
+    <attr name="uid">
+        Unique component identifier represents name that uniquely identifies
+        component within models hierarchy.
+    </attr>
+
+    <attr name="full_uid">
+        Unique component identifier represents name that uniquely identifies
+        component within projects hierarchy.
+    </attr>
+</entity>
+
+
+<entity name="lang" abstract="1">
+
+    <attr name="lang" default="c">
+        Defines target language this entity is applied to.
+
+        <restrict value="c">
+            C language.
+        </restrict>
+
+        <restrict value="java">
+            Java language.
+        </restrict>
+
+        <restrict value="csharp">
+            C# language.
+        </restrict>
+    </attr>
+</entity>
+
+
+<entity name="code">
+    Contains language specific implementation body.
+    For instance, method implementation body for C language.
+
+    <attr name="type" default="generated">
+        Defines implementation body originator.
+
+        <restrict value="stub">
+            Implementation is just a stub, so method must be implemented by
+            developer.
+        </restrict>
+
+        <restrict value="generated">
+            Implementation is fully generated, so it must no be modified
+            within source code.
+        </restrict>
+
+        <restrict value="handwritten">
+            Implementation was written by developer, so it can be extracted
+            and reused during generation phase. In this way comments and/or
+            entity signature can be changed, but implementation will be
+            untouched.
+        </restrict>
+    </attr>
+
+    <inherit entity="lang"/>
+</entity>
+
+
+<entity name="landlord" abstract="1">
+    <attr name="project">
+        Defines project name that component refers to.
+    </attr>
+
+    <attr name="library">
+        Defines library name that component refers to.
+    </attr>
+</entity>

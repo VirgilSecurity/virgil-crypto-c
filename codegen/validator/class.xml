@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<!--
+    Copyright (C) 2015-2019 Virgil Security, Inc.
+
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+        (1) Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+
+        (2) Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in
+        the documentation and/or other materials provided with the
+        distribution.
+
+        (3) Neither the name of the copyright holder nor the names of its
+        contributors may be used to endorse or promote products derived from
+        this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+    IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+    INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+    IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+
+    Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+-->
+
+<entity name="class">
+    Defines class type.
+
+    <entities filename="common.xml"/>
+    <entities filename="component.xml"/>
+
+    <attr name="name" required="1">
+        Short module name.
+    </attr>
+
+    <attr name="context" default="none">
+        Define context presence and it's visibility.
+
+        <restrict value="none">
+            Class do not require context, so it contains only static methods.
+            This value is default if class does not contain any 'property'.
+        </restrict>
+
+        <restrict value="public">
+            Context is defined in the public scope.
+        </restrict>
+
+        <restrict value="private">
+            Context is defined in the private scope.
+            This value is default if class contains at least one 'property'.
+        </restrict>
+
+        <restrict value="internal">
+            Context is defined in the internal scope.
+        </restrict>
+    </attr>
+
+
+    <attr name="lifecycle" default="default">
+        Define how to generate context lifecycle methods.
+
+        <restrict value="none">
+            Do not generate lifecycle methods.
+        </restrict>
+
+        <restrict value="default">
+            Generate default lifecycle methods.
+        </restrict>
+    </attr>
+
+
+    <attr name="is_value_type" default="0">
+        Defines that class is used as value type, as so it is passed and return by value.
+        Note, that underlying context is shallow copied.
+
+        <restrict value="0">
+            Class is a reference type.
+        </restrict>
+
+        <restrict value="1">
+            Class is a value type.
+        </restrict>
+    </attr>
+
+    <inherit entity="scope" from="common.xnf"/>
+    <inherit entity="c_prefix" from="common.xnf"/>
+    <inherit entity="uid" from="common.xnf"/>
+    <inherit entity="visibility" from="common.xnf"/>
+
+    <allow entity="require"/>
+    <allow entity="dependency"/>
+    <allow entity="constant"/>
+    <allow entity="property"/>
+    <allow entity="enum"/>
+    <allow entity="callback"/>
+    <allow entity="method"/>
+    <allow entity="macros"/>
+    <allow entity="macroses"/>
+    <allow entity="struct"/>
+    <allow entity="variable"/>
+</entity>

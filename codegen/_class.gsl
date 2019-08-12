@@ -17,6 +17,58 @@ function class_calculate_dependencies_fingerprint(project, class)
 endfunction
 
 # ---------------------------------------------------------------------------
+function class_setup_defaults(project, class)
+    check_arguments(my, "project, class", my)
+
+    my.class.scope = "public"
+    my.class.visibility = "public"
+    my.has_context = (count (my.class.property) + count (my.class.dependency)) > 0
+    my.class.context ?= my.has_context ?? "private" ? "none"
+
+
+endfunction
+
+function class_verify_attr_context(class)
+    check_arguments(my, "class", my)
+
+    if my.class.context = "private" & string_equal (my.class.scope ?, "internal")
+        my.class.context = "internal"
+    endif
+
+    my.valid_contexts = "none, public, private, internal"
+
+    if ! string_in (my.class.context, my.valid_contexts)
+        my.class_dump = class_dump (my.class)
+
+        echo_fatal ("Invalid class attribute context '$(my.class_dump:)'. " + \
+                    "Expected {$(my.valid_contexts)}", my)
+    endif
+
+    if count (my.class.property) & my.class.context = "none"
+        my.class_dump = class_dump (my.class)
+
+        echo_fatal ("Class attribute context is explicitly 'none'," + \
+                    " when context's 'property' defined as well." + \
+                    "Expected {$(my.valid_contexts)}", my)
+    endif
+
+    if count (my.class.dependency) & my.class.context = "none"
+        my.class_dump = class_dump (my.class)
+
+        echo_fatal ("Class attribute context is explicitly 'none'," + \
+                    " when context's 'dependency' defined as well." + \
+                    "Expected {$(my.valid_contexts)}", my)
+    endif
+endfunction
+
+function class_verify(class)
+    check_arguments(my, "class", my)
+
+    assert_attribute(my.class, "name", my)
+    class_verify_attr_context(my.class)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Entry point
 # ---------------------------------------------------------------------------
 function class_process(project, class_link)
@@ -37,8 +89,9 @@ function class_process(project, class_link)
 
 
     if !fingerprint_is_equal(my.class, my.cached_class)
-        #class_verify(my.class)
-        #class_setup_defaults(my.project, my.class)
+        class_setup_defaults(my.project, my.class)
+        validate_entity_class(my.class)
+        class_verify(my.class)
     endif
 
     echo_trace("[L1] Class '$(my.class.name:)' - process children", my)

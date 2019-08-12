@@ -1,0 +1,210 @@
+.template 0
+
+gsl from "../common.gsl"
+
+# ---------------------------------------------------------------------------
+function entity_tag(entity)
+    check_arguments(my, "entity", my)
+
+    return my.entity.tag ? make_id(my.entity.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+function entity_derive_name_of_function_validate(name)
+    check_arguments(my, "name", my)
+
+    return make_id("validate entity", my.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+function load_underlying_entities(entities, destination)
+    check_arguments(my, "entities, destination", my)
+    assert_attributes(my.entities, "filename", my)
+
+    if is_true(my.entities.is_loaded)
+        return
+    endif
+
+    echo_debug("Load file '$(my.entities.filename:)'")
+    my.destination.load_file(my.entities.filename, my.error)
+
+    if defined(my.error)
+        echo_fatal(my.error, my)
+    else
+        my.entities.is_loaded = "1"
+    endif
+
+    for my.destination.entity
+        for entity.entities where is_false(entities.is_loaded)
+            load_underlying_entities(entities, my.destination)
+        endfor
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+function find_referenced_entity(name, all_entities)
+    check_arguments(my, "name, all_entities", my)
+
+    my.entity = my.all_entities->entity(name = my.name) ?
+    if !defined(my.entity)
+        echo_fatal("Referenced entity '$(my.name)' is not found")
+    endif
+
+    return my.entity
+endfunction
+
+# ---------------------------------------------------------------------------
+function generate_validation_body_for_attr(attr, entity)
+    check_arguments(my, "attr, entity", my)
+
+    my.tag = entity_tag(my.entity)
+    my.my_tag = "my.$(my.tag)"
+    my.attr_access = "$(my.my_tag:).$(my.attr.name:)"
+
+    my.attr_default = " (default: $(my.attr.default:))" ? ""
+    >    echo_trace("    Validate attribute: $(my.attr.name)$(my.attr_default:)", my)
+    if is_true(my.attr.required)
+        >    if !defined($(my.attr_access:))
+        >        echo_fatal_required_attr($(my.my_tag:), "$(my.attr.name:)")
+        >    endif
+    endif
+
+    for my.attr.restrict
+        my.restrict_list ?= ""
+        my.restrict_list += restrict.value
+
+
+        if first()
+            >    if defined($(my.attr_access:))
+            >        my.$(my.attr.name:)_is_valid = "0"
+        endif
+
+        >        my.$(my.attr.name:)_is_valid = my.$(my.attr.name:)_is_valid | ($(my.attr_access:) = "$(restrict.value)")
+
+        if last()
+            >        if !my.$(my.attr.name:)_is_valid
+            >            echo_fatal_resticted_attr($(my.my_tag:), "$(my.attr.name:)", "$(my.restrict_list:)")
+            >        endif
+            >    endif
+        else
+            my.restrict_list += ", "
+        endif
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+function generate_entity_validator(entity, all_entities)
+    check_arguments(my, "entity, all_entities", my)
+
+    if is_true(my.entity.is_generated)
+        return
+    endif
+
+    #   Process leaves first
+    for my.entity.inherit
+        my.inherited_entity = find_referenced_entity(inherit.entity, my.all_entities)
+        generate_entity_validator(my.inherited_entity, my.all_entities)
+    endfor
+
+    for my.entity.allow
+        my.allowed_entity = find_referenced_entity(allow.entity, my.all_entities)
+        generate_entity_validator(my.allowed_entity, my.all_entities)
+    endfor
+
+    #
+    #   Generate validation body
+    #
+    my.tag = entity_tag(my.entity)
+    my.my_tag = "my.$(my.tag)"
+    >function $(entity_derive_name_of_function_validate(my.entity.name))($(my.tag:))
+
+    >    echo_trace("[L1] Validate entity \$\(name($(my.my_tag)\)\)", my)
+
+    #
+    #   Generate validation body for inherited entities
+    #
+    for my.entity.inherit
+        if first()
+            >    echo_trace("    Check inherited attributes and entities", my)
+        endif
+        >    $(entity_derive_name_of_function_validate(inherit.entity))($(my.my_tag))
+    endfor
+    >
+
+    #
+    #   Generate validation body for allowed entities
+    #
+    for my.entity.allow
+        if first()
+            >    echo_trace("    Check allowed entities", my)
+        endif
+        my.allowed_entity_tag = make_id(allow.tag ? allow.entity)
+        >    for $(my.my_tag).$(my.allowed_entity_tag:)
+        >        $(entity_derive_name_of_function_validate(allow.entity))($(my.allowed_entity_tag))
+        >    endfor
+        >
+    endfor
+
+    #
+    #   Generate validation body for self attributes
+    #
+    for my.entity.attr
+        generate_validation_body_for_attr(attr, my.entity)
+        if !last()
+            >
+        endif
+    endfor
+
+    >endfunction
+    >
+
+    my.entity.is_generated = "1"
+endfunction
+
+# ---------------------------------------------------------------------------
+function _main()
+    new all_entities
+        for validator.entities
+            load_underlying_entities(entities, all_entities)
+        endfor
+
+        output "../validator.gsl"
+
+        ># ---------------------------------------------------------------------------
+        >#   This file is fully generated by the script -
+        >#   'codegen/validator/validator_gen.gsl'
+        ># ---------------------------------------------------------------------------
+        >
+        >gsl from "common.gsl"
+        >
+        >function echo_fatal_required_attr(entity, attr_name)
+        >    time.now(my.date, my.time)
+        >    my.dump_dir = ".generated/dump"
+        >    my.dump_filename = "\$\(make_id(name(my.entity))\)_\$\(my.date\)_\$\(my.time\).xml"
+        >    item_save_to_file(my.entity, my.dump_filename, my.dump_dir)
+        >    echo_fatal("Required attribute '$\(name(my.entity)\).\$\(my.attr_name:\)' is not defined. " + \\
+        >               "See dump file: \$\(my.dump_dir:\)/\$\(my.dump_filename:\)", my)
+        >endfunction
+        >
+        >function echo_fatal_resticted_attr(entity, attr_name, valid_values)
+        >    time.now(my.date, my.time)
+        >    my.dump_dir = ".generated/dump"
+        >    my.dump_filename = "\$\(make_id(name(my.entity))\)_\$\(my.date\)_\$\(my.time\).xml"
+        >    item_save_to_file(my.entity, my.dump_filename, my.dump_dir)
+        >    echo_fatal("Possible values of the attribute '$\(name(my.entity)\).\$\(my.attr_name:\)' " + \\
+        >               "are '{\$\(my.valid_values:\)}', " + \\
+        >               "but found \$\(my.entity.\$\(my.attr_name\)\). " + \\
+        >               "See dump file: \$\(my.dump_dir:\)/\$\(my.dump_filename:\)", my)
+        >endfunction
+        >
+
+        for all_entities.entity
+            generate_entity_validator(entity, all_entities)
+        endfor
+        close
+    endnew
+endfunction
+
+_main()
+
+.endtemplate

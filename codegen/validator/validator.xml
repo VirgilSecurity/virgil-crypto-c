@@ -1,0 +1,3 @@
+<validator script="validator_gen.gsl">
+    <entities filename="class.xml"/>
+</validator>
