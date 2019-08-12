@@ -144,13 +144,9 @@ function php_create_custom_modules (source, php_project, meta)
         .source_file_name = 0.filename + ".c"
         .source_dir = cat_path (my.php_project.source_dir, "extension")
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
-        new extension to php_module
-            new c_code to extension
-                .= "\
-                qwerty
-                "
-        endnew
-        endnew
+
+        copy my.php_project->license to php_module
+        
     endnew
 endfunction
 
@@ -180,7 +176,7 @@ function php_create_class_module (class, php_project, meta)
         .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
 
         new php_license to php_module
-            . = php_format_license (my.php_project->license) ?
+            . = php_format_license (my.php_project->license)
         endnew
 
         new php_class to php_module
