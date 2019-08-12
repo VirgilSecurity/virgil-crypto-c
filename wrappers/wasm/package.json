@@ -8,10 +8,10 @@
   "private": true,
   "scripts": {
     "test": "jest",
-    "build:foundation": "cross-env PROJECT=foundation rollup -c",
-    "build:phe": "cross-env PROJECT=phe rollup -c",
-    "build:pythia": "cross-env PROJECT=pythia rollup -c",
-    "build:ratchet": "cross-env PROJECT=ratchet rollup -c",
+    "build:foundation": "cross-env PROJECT=foundation node --max-old-space-size=4096 node_modules/rollup/dist/bin/rollup -c",
+    "build:phe": "cross-env PROJECT=phe node --max-old-space-size=4096 node_modules/rollup/dist/bin/rollup -c",
+    "build:pythia": "cross-env PROJECT=pythia node --max-old-space-size=4096 node_modules/rollup/dist/bin/rollup -c",
+    "build:ratchet": "cross-env PROJECT=ratchet node --max-old-space-size=4096 node_modules/rollup/dist/bin/rollup -c",
     "clean": "rimraf dist",
     "prepare": "npm run clean && npm run build:foundation && npm run build:phe && npm run build:pythia && npm run build:ratchet"
   },
