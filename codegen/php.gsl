@@ -77,14 +77,14 @@ function php_create_project_module (project, wrapper)
         .prefix = my.project.prefix
         .framework = my.project.framework
         .namespace = "$(my.project.namespace:c)"
-        .namespace_dir = my.project.name
-        .source_dir = cat_path ("$(my.wrapper.main_package_dir:)", php_project.namespace_dir)
+        .project_name = my.project.name
+        .version = my.project.version_string
+        .source_dir = cat_path ("$(my.wrapper.main_package_dir:)", php_project.project_name)
 
         copy my.project->license to php_project
 
         new php_uid to php_project
             .name = php_project.namespace
-            .uid = "php_framework_name"
         endnew
 
         if directory.create (php_project.source_dir) = -1
@@ -144,6 +144,8 @@ function php_create_custom_modules (source, php_project, meta)
         .source_file_name = 0.filename + ".c"
         .source_dir = cat_path (my.php_project.source_dir, "extension")
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+        .version = my.php_project.version
+        .extension_name = php_derive_extension_name (my.php_project)
 
         copy my.php_project->license to php_module
         
@@ -1084,6 +1086,17 @@ function php_format_extension_status_exception (enum, prefix)
             }
         }
     "
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_extension_name (php_project)
+    check_arguments (my, "php_project", my)
+
+    my.res = my.php_project.prefix + "_" + my.php_project.name + "_php"
 
     return my.res
 endfunction

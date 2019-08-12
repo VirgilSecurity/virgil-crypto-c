@@ -330,6 +330,9 @@ endfunction
 function php_generate_source_extension_main (extension_module, php_project)
     check_arguments (my, "extension_module, php_project", my)
 
+    #echo_debug_item(my.extension_module)
+    #echo_fatal("", my)
+
     if defined (my.extension_module.source_dir)
         if -1 = directory.create (my.extension_module.source_dir)
             echo_fatal ("Can not create directory: $(my.extension_module.source_dir:)")
@@ -338,38 +341,44 @@ function php_generate_source_extension_main (extension_module, php_project)
 
     output my.extension_module.source_file_path
 
-    my.code = ""
+    my.func_wrap = ""
+    my.const = "\
+    // --------------------------------------------------------------------------
+    //  Constants
+    // --------------------------------------------------------------------------
+    const char $(my.extension_module.extension_name:UPPER)_VERSION[] = \"$(my.extension_module.version:)\";
+    const char $(my.extension_module.extension_name:UPPER)_EXTNAME[] = \"$(my.extension_module.extension_name:)\";
+    "
 
-    my.code += php_format_c_license(my.extension_module->license) + "\n"
-
-    my.code += php_insert_extension_include_common(my.php_project.prefix)
+    my.license = php_format_c_license(my.extension_module->license) + "\n"
+    my.include = php_insert_extension_include_common(my.php_project.prefix)
 
     for my.php_project.php_module as php_module where ! string_in (php_module.name, "extension_status, extension_main")
         for php_module.php_class as php_class
-            my.code += php_insert_extension_include(php_class.low_level_name_c_format)
-        endfor
-    endfor
 
-    for my.php_project.php_module as php_module where ! string_in (php_module.name, "extension_status, extension_main")
-        for php_module.php_class as php_class
+            my.include += php_insert_extension_include(php_class.low_level_name_c_format)
+            my.const += "const char $(php_class.low_level_name_c_format:UPPER)_RES_NAME[] = \"$(php_class.low_level_name_c_format:)_t\"\n"
+
             if count(php_class.php_method) > 0
                 for php_class.php_method as php_method
                     my.extension_code = php_method->low_level->extension_code
                     
-                    my.code += my.extension_code->zend_header + "\n"
-                    my.code += my.extension_code->php_function + "\n"
-                    my.code += "{ \n"
-                    my.code += my.extension_code->declaration_input + "\n"
-                    my.code += my.extension_code->parse_arguments + "\n"
-                    my.code += my.extension_code->proxy_call + "\n"
-                    my.code += my.extension_code->allocate_output_buffer + "\n"
-                    my.code += my.extension_code->status + "\n"
-                    my.code += my.extension_code->output + "\n"
-                    my.code += "} \n"
+                    my.func_wrap += my.extension_code->zend_header + "\n"
+                    my.func_wrap += my.extension_code->php_function + "\n"
+                    my.func_wrap += "{ \n"
+                    my.func_wrap += my.extension_code->declaration_input + "\n"
+                    my.func_wrap += my.extension_code->parse_arguments + "\n"
+                    my.func_wrap += my.extension_code->proxy_call + "\n"
+                    my.func_wrap += my.extension_code->allocate_output_buffer + "\n"
+                    my.func_wrap += my.extension_code->status + "\n"
+                    my.func_wrap += my.extension_code->output + "\n"
+                    my.func_wrap += "} \n"
                 endfor
             endif
         endfor
     endfor
+
+    my.code = my.license + my.include + my.const + my.func_wrap 
 
     php_insert_raw_code(my.code)
 
