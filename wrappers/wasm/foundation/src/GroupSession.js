@@ -199,11 +199,10 @@ const initGroupSession = (Module, modules) => {
         /**
          * Encrypts data
          */
-        encrypt(plainText, privateKey, senderId) {
+        encrypt(plainText, privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('plainText', plainText);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-            precondition.ensureByteArray('senderId', senderId);
 
             //  Copy bytes from JS memory to the WASM memory.
             const plainTextSize = plainText.length * plainText.BYTES_PER_ELEMENT;
@@ -217,18 +216,6 @@ const initGroupSession = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(plainTextCtxPtr, plainTextPtr, plainTextSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
-            const senderIdSize = senderId.length * senderId.BYTES_PER_ELEMENT;
-            const senderIdPtr = Module._malloc(senderIdSize);
-            Module.HEAP8.set(senderId, senderIdPtr);
-
-            //  Create C structure vsc_data_t.
-            const senderIdCtxSize = Module._vsc_data_ctx_size();
-            const senderIdCtxPtr = Module._malloc(senderIdCtxSize);
-
-            //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(senderIdCtxPtr, senderIdPtr, senderIdSize);
-
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
             Module._vscf_error_reset(errorCtxPtr);
@@ -236,7 +223,7 @@ const initGroupSession = (Module, modules) => {
             let proxyResult;
 
             try {
-                proxyResult = Module._vscf_group_session_encrypt(this.ctxPtr, plainTextCtxPtr, privateKey.ctxPtr, senderIdCtxPtr, errorCtxPtr);
+                proxyResult = Module._vscf_group_session_encrypt(this.ctxPtr, plainTextCtxPtr, privateKey.ctxPtr, errorCtxPtr);
 
                 const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
@@ -246,8 +233,6 @@ const initGroupSession = (Module, modules) => {
             } finally {
                 Module._free(plainTextPtr);
                 Module._free(plainTextCtxPtr);
-                Module._free(senderIdPtr);
-                Module._free(senderIdCtxPtr);
                 Module._free(errorCtxPtr);
             }
         }
@@ -267,29 +252,16 @@ const initGroupSession = (Module, modules) => {
         /**
          * Decrypts message
          */
-        decrypt(message, publicKey, senderId) {
+        decrypt(message, publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('message', message, modules.GroupSessionMessage);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
-            precondition.ensureByteArray('senderId', senderId);
-
-            //  Copy bytes from JS memory to the WASM memory.
-            const senderIdSize = senderId.length * senderId.BYTES_PER_ELEMENT;
-            const senderIdPtr = Module._malloc(senderIdSize);
-            Module.HEAP8.set(senderId, senderIdPtr);
-
-            //  Create C structure vsc_data_t.
-            const senderIdCtxSize = Module._vsc_data_ctx_size();
-            const senderIdCtxPtr = Module._malloc(senderIdCtxSize);
-
-            //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(senderIdCtxPtr, senderIdPtr, senderIdSize);
 
             const plainTextCapacity = this.decryptLen(message);
             const plainTextCtxPtr = Module._vsc_buffer_new_with_capacity(plainTextCapacity);
 
             try {
-                const proxyResult = Module._vscf_group_session_decrypt(this.ctxPtr, message.ctxPtr, publicKey.ctxPtr, senderIdCtxPtr, plainTextCtxPtr);
+                const proxyResult = Module._vscf_group_session_decrypt(this.ctxPtr, message.ctxPtr, publicKey.ctxPtr, plainTextCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const plainTextPtr = Module._vsc_buffer_bytes(plainTextCtxPtr);
@@ -297,8 +269,6 @@ const initGroupSession = (Module, modules) => {
                 const plainText = Module.HEAPU8.slice(plainTextPtr, plainTextPtr + plainTextPtrLen);
                 return plainText;
             } finally {
-                Module._free(senderIdPtr);
-                Module._free(senderIdCtxPtr);
                 Module._vsc_buffer_delete(plainTextCtxPtr);
             }
         }

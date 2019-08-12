@@ -123,29 +123,6 @@ const initRatchetGroupMessage = (Module, modules) => {
         }
 
         /**
-         * Returns message sender id.
-         * This method should be called only for regular message type.
-         */
-        getSenderId() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            //  Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscr_ratchet_group_message_get_sender_id(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
-        }
-
-        /**
          * Returns message counter in current epoch.
          */
         getCounter() {
