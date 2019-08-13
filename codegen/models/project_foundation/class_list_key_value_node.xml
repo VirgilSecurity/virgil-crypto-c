@@ -1,0 +1,9 @@
+<class name="list key value node">
+    Double linked list node with key and value.
+
+    <property name="key" class="buffer"/>
+    <property name="value" class="any"/>
+    <property name="value tag" type="integer"/>
+    <property name="next" class="self"/>
+    <property name="prev" class="self"/>
+</class>

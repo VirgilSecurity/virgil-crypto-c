@@ -35,6 +35,10 @@
     <property name="one" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
     <property name="minus one" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
 
+    <method name="setup defaults">
+        <return enum="status"/>
+    </method>
+
     <method name="set keys">
         Sets client private and server public key
         Call this method before any other methods except `update enrollment record` and `generate client private key`
@@ -48,7 +52,7 @@
             Server's public key. Get it from your phe service
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             - vsce_SUCCESS if operation succeeded
             - vsce_error_INVALID_PRIVATE_KEY if private key is invalid
             - vsce_error_INVALID_ECP if public key is invalid
@@ -65,7 +69,7 @@
             <length constant="phe private key length" class="phe common"/>
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             - vsce_error_RNG_ERROR in case rng failed
         </return>
     </method>
@@ -102,7 +106,7 @@
             <length constant="phe account key length" class="phe common"/>
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
             - vsce_error_INVALID_ECP if input points are invalid
             - vsce_error_INVALID_SUCCESS_PROOF if provided proof is not valid
@@ -134,7 +138,7 @@
             <length method="verify password request len"/>
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
             - vsce_error_INVALID_ECP if input points are invalid
         </return>
@@ -161,7 +165,7 @@
             <length constant="phe account key length" class="phe common"/>
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
             - vsce_error_INVALID_ECP if input points are invalid
             - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
@@ -177,7 +181,7 @@
         <argument name="c0" class="mbedtls_ecp_point" library="mbedtls"/>
         <argument name="c1" class="mbedtls_ecp_point" library="mbedtls"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="check fail proof" declaration="private">
@@ -187,7 +191,7 @@
         <argument name="c1" class="mbedtls_ecp_point" library="mbedtls"/>
         <argument name="hs0" class="mbedtls_ecp_point" library="mbedtls"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="rotate keys">
@@ -210,7 +214,7 @@
             <length constant="phe public key length" class="phe common"/>
         </argument>
 
-        <return enum="error">
+        <return enum="status">
 
         </return>
     </method>
@@ -231,7 +235,7 @@
             <length method="enrollment record len"/>
         </argument>
 
-        <return enum="error">
+        <return enum="status">
             - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
             - vsce_error_INVALID_ECP if input points are invalid
             - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid

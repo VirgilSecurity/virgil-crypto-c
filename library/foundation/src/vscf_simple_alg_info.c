@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -80,10 +80,10 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_simple_alg_info_init_ctx(vscf_simple_alg_info_t *simple_alg_info) {
+vscf_simple_alg_info_init_ctx(vscf_simple_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(simple_alg_info);
-    simple_alg_info->alg_id = vscf_alg_id_NONE;
+    VSCF_ASSERT_PTR(self);
+    self->alg_id = vscf_alg_id_NONE;
 }
 
 //
@@ -92,33 +92,30 @@ vscf_simple_alg_info_init_ctx(vscf_simple_alg_info_t *simple_alg_info) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_simple_alg_info_cleanup_ctx(vscf_simple_alg_info_t *simple_alg_info) {
+vscf_simple_alg_info_cleanup_ctx(vscf_simple_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(simple_alg_info);
-    simple_alg_info->alg_id = vscf_alg_id_NONE;
+    VSCF_ASSERT_PTR(self);
+    self->alg_id = vscf_alg_id_NONE;
 }
 
 //
-//  Set algorithm identificator
+//  Create algorithm info with identificator.
 //
-VSCF_PUBLIC vscf_simple_alg_info_t *
-vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_t alg_id) {
+VSCF_PUBLIC void
+vscf_simple_alg_info_init_ctx_with_alg_id(vscf_simple_alg_info_t *self, vscf_alg_id_t alg_id) {
 
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
-    vscf_simple_alg_info_t *simple_alg_info = vscf_simple_alg_info_new();
-
-    simple_alg_info->alg_id = alg_id;
-
-    return simple_alg_info;
+    self->alg_id = alg_id;
 }
 
 //
-//  Provide algorithm identificator
+//  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_simple_alg_info_alg_id(vscf_simple_alg_info_t *simple_alg_info) {
+vscf_simple_alg_info_alg_id(const vscf_simple_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(simple_alg_info);
-    return simple_alg_info->alg_id;
+    VSCF_ASSERT_PTR(self);
+    return self->alg_id;
 }

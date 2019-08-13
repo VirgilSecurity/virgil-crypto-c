@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provide algorithm deserialization
+//  Provide algorithm deserialization.
 // --------------------------------------------------------------------------
 
 
@@ -65,16 +65,16 @@
 // --------------------------------------------------------------------------
 
 //
-//  Algorithm deserialization algorithm from data
+//  Deserialize algorithm from the data.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_info_deserializer_deserialize(vscf_impl_t *impl, vsc_data_t data) {
+vscf_alg_info_deserializer_deserialize(vscf_impl_t *impl, vsc_data_t data, vscf_error_t *error) {
 
     const vscf_alg_info_deserializer_api_t *alg_info_deserializer_api = vscf_alg_info_deserializer_api(impl);
     VSCF_ASSERT_PTR (alg_info_deserializer_api);
 
     VSCF_ASSERT_PTR (alg_info_deserializer_api->deserialize_cb);
-    return alg_info_deserializer_api->deserialize_cb (impl, data);
+    return alg_info_deserializer_api->deserialize_cb (impl, data, error);
 }
 
 //

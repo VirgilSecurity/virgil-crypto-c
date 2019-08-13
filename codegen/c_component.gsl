@@ -666,28 +666,37 @@ function c_component_map_instance_attr_string (c_instance, instance)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Define 'c_instance' attributes that are responsible for constness.
+#   Define 'c_instance' attributes that are responsible for constness:
+#       - is_const_type
+#       - is_const_pointer
+#       - is_const_reference
 # ---------------------------------------------------------------------------
 function c_component_map_instance_attr_is_const (c_instance, instance)
     check_arguments (my, "c_instance, instance", my)
 
-    if my.instance.access = "readonly" & (\
-            (count (my.instance.string)) | \
-            (has_one_of_attribute (my.instance, "class, interface, api, impl") & \
-                    (!item_in(my.instance, "argument, return") | is_true(my.instance.is_reference))) | \
-            (defined (my.instance.type) & is_true(my.instance.is_reference)) | \
-            (defined (my.instance.type) & count (my.instance.array)) | \
-            (defined (my.instance.enum) & count (my.instance.array)) | \
-            item_in(my.instance, "variable"))
-        my.c_instance.is_const_type = "1"
+    my.is_array = count (my.instance.array) ?? "1" ? "0"
+    my.is_string = count (my.instance.string) ?? "1" ? "0"
+    my.is_class = has_one_of_attribute (my.instance, "class, interface, api, impl")
+    my.is_variable = item_equal (my.instance, "variable")
+    my.is_property = item_equal (my.instance, "property")
+    my.is_reference = is_true (my.instance.is_reference)
+
+    if my.is_class & my.is_reference & my.is_array & my.instance->array.access = "readonly"
+        my.c_instance.is_const_pointer = "1"
     endif
 
-    if count (my.instance.array) & my.instance->array.access = "readonly"
-        my.c_instance.is_const_array = "1"
+    if my.instance.access = "readonly"
+        if my.is_variable | my.is_property | my.is_string | my.is_array | my.is_reference
+            my.c_instance.is_const_type = "1"
+        endif
     endif
 
-    if count (my.instance.string) & my.instance->string.access = "readonly"
+    if my.is_variable & my.is_string & my.instance->string.access = "readonly"
         my.c_instance.is_const_string = "1"
+    endif
+
+    if my.is_variable & my.is_array & my.instance->array.access = "readonly"
+        my.c_instance.is_const_array = "1"
     endif
 endfunction
 
@@ -760,6 +769,20 @@ function c_component_create_modifiers (component, destination)
             .value = ".(c_global_macros_private)"
         endif
     endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create 'c_attribute' for next 'method' attribues:
+#       - nodiscard.
+# ---------------------------------------------------------------------------
+function c_component_create_method_attributes (method, c_method)
+    check_arguments (my, "method, c_method", my)
+
+    if is_true (my.method.nodiscard)
+        new c_attribute to my.c_method
+            .value = ".(c_global_macros_nodiscard)"
+        endnew
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -956,6 +979,8 @@ function c_component_create_method (method, destination)
         c_component_map_attr_definition (c_method, my.method)
         c_component_map_attr_uid (c_method, my.method)
         c_component_map_attr_feature (c_method, my.method)
+
+        c_component_create_method_attributes (my.method, c_method)
 
         for my.method.argument
             c_component_create_argument (argument, c_method)

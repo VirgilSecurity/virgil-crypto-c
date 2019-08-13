@@ -35,55 +35,15 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provides interface to the key derivation function (KDF) algorithms
 /// that use salt and teration count.
-@objc(VSCFSaltedKdf) public protocol SaltedKdf : CContext {
+@objc(VSCFSaltedKdf) public protocol SaltedKdf : Kdf {
 
-    /// Derive key of the requested length from the given data, salt and info.
-    @objc func derive(data: Data, salt: Data, info: Data, keyLen: Int) -> Data
-}
+    /// Prepare algorithm to derive new key.
+    @objc func reset(salt: Data, iterationCount: Int)
 
-/// Implement interface methods
-@objc(VSCFSaltedKdfProxy) internal class SaltedKdfProxy: NSObject, SaltedKdf {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Derive key of the requested length from the given data, salt and info.
-    @objc public func derive(data: Data, salt: Data, info: Data, keyLen: Int) -> Data {
-        let keyCount = keyLen
-        var key = Data(count: keyCount)
-        var keyBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(keyBuf)
-        }
-
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
-            salt.withUnsafeBytes({ (saltPointer: UnsafePointer<byte>) -> Void in
-                info.withUnsafeBytes({ (infoPointer: UnsafePointer<byte>) -> Void in
-                    key.withUnsafeMutableBytes({ (keyPointer: UnsafeMutablePointer<byte>) -> Void in
-                        vsc_buffer_init(keyBuf)
-                        vsc_buffer_use(keyBuf, keyPointer, keyCount)
-                        vscf_salted_kdf_derive(self.c_ctx, vsc_data(dataPointer, data.count), vsc_data(saltPointer, salt.count), vsc_data(infoPointer, info.count), keyBuf, keyLen)
-                    })
-                })
-            })
-        })
-        key.count = vsc_buffer_len(keyBuf)
-
-        return key
-    }
+    /// Setup application specific information (optional).
+    /// Can be empty.
+    @objc func setInfo(info: Data)
 }

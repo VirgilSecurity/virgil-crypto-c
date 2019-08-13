@@ -1,0 +1,75 @@
+.template 0
+
+global.js_indent_size = 2
+
+global.js_binding_target_name = "crypto"
+global.js_source_folder_name = "src"
+
+global.js_binding_property_name = "binding"
+
+global.js_js_umbrella_module = "umbrella"
+global.js_bindings_module = "bindings"
+
+global.js_library_require_type_project = "js_library_require_type_project"
+global.js_library_require_type_library = "js_library_require_type_library"
+
+global.js_project_require_type_library = "js_require_library"
+global.js_project_require_type_relative = "js_require_relative"
+
+global.js_argument_type_size = "js_argument_type_size"
+global.js_argument_type_integer = "js_argument_type_integer"
+global.js_argument_type_unsigned = "js_argument_type_unsigned"
+global.js_argument_type_boolean = "js_argument_type_boolean"
+global.js_argument_type_byte = "js_argument_type_byte"
+global.js_argument_type_char = "js_argument_type_char"
+global.js_argument_type_data = "js_argument_type_data"
+global.js_argument_type_buffer = "js_argument_type_buffer"
+global.js_argument_type_error_context = "js_argument_type_error_context"
+global.js_argument_type_enum = "js_argument_type_enum"
+global.js_argument_type_class = "js_argument_type_class"
+global.js_argument_type_interface = "js_argument_type_interface"
+
+global.js_argument_access_disown = "js_argument_access_disown"
+global.js_argument_access_retain = "js_argument_access_retain"
+global.js_argument_access_writeonly = "js_argument_access_writeonly"
+global.js_argument_access_readonly = "js_argument_access_readonly"
+global.js_argument_access_readwrite = "js_argument_access_readwrite"
+
+global.js_buffer_size_type_constant = "js_buffer_size_constant"
+global.js_buffer_size_type_method = "js_buffer_size_method"
+global.js_buffer_size_type_argument = "js_buffer_size_argument"
+
+global.js_proxy_cast_type_data_len = "js_proxy_cast_type_data_len"
+
+global.js_return_type_size = "js_return_type_size"
+global.js_return_type_integer = "js_return_type_integer"
+global.js_return_type_unsigned = "js_return_type_unsigned"
+global.js_return_type_boolean = "js_return_type_boolean"
+global.js_return_type_byte = "js_return_type_byte"
+global.js_return_type_data = "js_return_type_data"
+global.js_return_type_buffer = "js_return_type_buffer"
+global.js_return_type_error_status = "js_return_type_error_status"
+global.js_return_type_enum = "js_return_type_enum"
+global.js_return_type_class = "js_return_type_class"
+global.js_return_type_interface = "js_return_type_interface"
+
+global.js_method_return_variable_name = "methodReturn"
+
+global.js_cpp_handle_error_status_method_name = "HandleStatus"
+global.js_cpp_handle_error_status_method_parameter_name = "status"
+
+global.js_cpp_argument_type_variable = "variable"
+global.js_cpp_argument_type_constant = "constant"
+
+global.js_cpp_init_function_name = "Init"
+global.js_cpp_init_function_argument_type = "v8::Local<v8::Object>"
+global.js_cpp_init_function_argument_name = "exports"
+
+global.js_cpp_constructor_function_name = "New"
+
+global.js_cpp_callback_info_type = "const Nan::FunctionCallbackInfo<v8::Value>&"
+global.js_cpp_callback_info_name = "callback_info"
+
+global.js_cpp_persistent_constructor_name = "constructor"
+
+endtemplate

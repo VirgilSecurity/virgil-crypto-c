@@ -1,0 +1,84 @@
+syntax = "proto2";
+
+message ChainKey {
+	required uint32 index = 1;
+	required bytes key = 2;
+}
+
+message MessageKey {
+	required uint32 index = 1;
+	required bytes key = 2;
+}
+
+message SenderChain {
+	required bytes private_key = 1;
+	required bytes public_key = 2;
+	required ChainKey chain_key = 3;
+}
+
+message ReceiverChain {
+	required bytes public_key = 1;
+	required ChainKey chain_key = 2;
+}
+
+message SkippedMessageKey {
+	required bytes public_key = 1;
+	required MessageKey message_key = 2;
+}
+
+message SkippedMessages {
+	repeated SkippedMessageKey keys = 1;
+}
+
+message ReceiverChains {
+	repeated ReceiverChain chains = 1;
+}
+
+message Ratchet {
+	optional SenderChain sender_chain = 1;
+	required uint32 prev_sender_chain_count = 2;
+	required bytes root_key = 3;
+	required ReceiverChains receiver_chains = 4;
+	required SkippedMessages skipped_messages = 5;
+}
+
+message Session {
+	required uint32 version = 1;
+	required bool received_first_response = 2;
+	required bool is_initiator = 3;
+	required bytes sender_identity_key = 4;
+	required bytes sender_ephemeral_key = 5;
+	required bytes receiver_long_term_key = 6;
+	optional bytes receiver_one_time_key = 7;
+	required Ratchet ratchet = 8;
+}
+
+message ParticipantEpoch {
+	required uint32 epoch = 1;
+	required ChainKey chain_key = 2;
+}
+
+message ParticipantData {
+	required bytes id = 1;
+	required bytes pub_key = 2;
+	repeated ParticipantEpoch epochs = 3;
+}
+
+message SkippedGroupMessageKey {
+	required uint32 epoch = 1;
+	required MessageKey message_key = 2;
+}
+
+message SkippedGroupMessagesRoot {
+	required bytes id = 1;
+	repeated SkippedGroupMessageKey skipped_message_keys = 2;
+}
+
+message GroupSession {
+	required uint32 version = 1;
+	required ParticipantEpoch my_epoch = 2;
+	required bytes session_id = 3;
+	required bytes my_id = 4;
+	repeated ParticipantData participants = 5;
+	repeated SkippedGroupMessagesRoot skipped_messages = 6;
+}

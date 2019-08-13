@@ -1,10 +1,23 @@
-<class name="ratchet message key" context="public">
+<class name="ratchet message key" context="public" scope="internal">
 
-    <require class="ratchet common" scope="public"/>
+    <require class="ratchet common hidden" scope="public"/>
+
+    <require header="RatchetSession.pb.h" scope="public"/>
+    <require header="pb_decode.h" scope="public"/>
+    <require header="pb_encode.h" scope="public"/>
 
     <property name="index" type="unsigned" size="4"/>
     <property name="key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_shared_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_shared_key_len)"/>
     </property>
+
+    <method name="serialize">
+        <argument name="message key pb" class="MessageKey" library="nanopb" access="readwrite"/>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        <argument name="message key pb" class="MessageKey" library="nanopb"/>
+        <argument name="message key" class="self" access="readwrite"/>
+    </method>
 
 </class>

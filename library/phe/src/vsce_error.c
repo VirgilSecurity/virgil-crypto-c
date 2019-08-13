@@ -37,6 +37,15 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Error context.
+//  Can be used for sequential operations, i.e. parsers, to accumulate error.
+//  In this way operation is successful if all steps are successful, otherwise
+//  last occurred error code can be obtained.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -45,6 +54,8 @@
 // --------------------------------------------------------------------------
 
 #include "vsce_error.h"
+#include "vsce_memory.h"
+#include "vsce_assert.h"
 
 // clang-format on
 //  @end
@@ -56,9 +67,65 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Return size of 'vsce_error_t'.
+//
+VSCE_PUBLIC size_t
+vsce_error_ctx_size(void) {
+
+    return sizeof(vsce_error_t);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
+
+//
+//  Reset context to the "no error" state.
+//
+VSCE_PUBLIC void
+vsce_error_reset(vsce_error_t *self) {
+
+    VSCE_ASSERT_PTR(self);
+    self->status = vsce_status_SUCCESS;
+}
+
+//
+//  Update context with given status.
+//  If status is "success" then do nothing.
+//
+VSCE_PRIVATE void
+vsce_error_update(vsce_error_t *self, vsce_status_t status) {
+
+    VSCE_ASSERT_PTR(self);
+
+    if (status != vsce_status_SUCCESS) {
+        self->status = status;
+    }
+}
+
+//
+//  Return true if status is not "success".
+//
+VSCE_PUBLIC bool
+vsce_error_has_error(const vsce_error_t *self) {
+
+    VSCE_ASSERT_PTR(self);
+
+    return self->status != vsce_status_SUCCESS;
+}
+
+//
+//  Return error code.
+//
+VSCE_PUBLIC vsce_status_t
+vsce_error_status(const vsce_error_t *self) {
+
+    VSCE_ASSERT_PTR(self);
+
+    return self->status;
+}

@@ -114,37 +114,45 @@ vsc_data_empty(void);
 //  Returns true if underlying byte array is defined.
 //
 VSC_PUBLIC bool
-vsc_data_is_valid(vsc_data_t data);
+vsc_data_is_valid(vsc_data_t self);
 
 //
 //  Returns true if underlying byte array contains only zeros.
 //
 VSC_PUBLIC bool
-vsc_data_is_zero(vsc_data_t data);
+vsc_data_is_zero(vsc_data_t self);
 
 //
 //  Returns true if underlying byte array is empty.
 //
 VSC_PUBLIC bool
-vsc_data_is_empty(vsc_data_t data);
+vsc_data_is_empty(vsc_data_t self);
 
 //
-//  Return true if given datas are equal.
+//  Return true if given data are equal.
 //
 VSC_PUBLIC bool
-vsc_data_equal(vsc_data_t data, vsc_data_t rhs);
+vsc_data_equal(vsc_data_t self, vsc_data_t rhs);
+
+//
+//  Perform constant-time data comparison.
+//  The time depends on the given length but not on the data itself.
+//  Return true if given data are equal.
+//
+VSC_PUBLIC bool
+vsc_data_secure_equal(vsc_data_t self, vsc_data_t rhs);
 
 //
 //  Return underlying data slice starting from beginning.
 //
 VSC_PUBLIC vsc_data_t
-vsc_data_slice_beg(vsc_data_t data, size_t offset, size_t len);
+vsc_data_slice_beg(vsc_data_t self, size_t offset, size_t len);
 
 //
 //  Return underlying data slice starting from ending.
 //
 VSC_PUBLIC vsc_data_t
-vsc_data_slice_end(vsc_data_t data, size_t offset, size_t len);
+vsc_data_slice_end(vsc_data_t self, size_t offset, size_t len);
 
 
 // --------------------------------------------------------------------------

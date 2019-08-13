@@ -24,9 +24,10 @@ attribute names are case-sensitive and we use only lower-case names.
              </property>
           </context>
           <interface name>
-             <constant name [c_prefix] [of_class] [uid] [full_uid] [feature] [definition] [value]/>
+             <constant name [c_prefix] [of_class] [uid] [full_uid] [feature] [scope] [definition] [value]/>
           </interface>
-          <dependency name [library] [project] [interface] [api] [class] [impl] [type_name] [has_observers]/>
+          <dependency name [library] [project] [interface] [api] [class] [impl] [type_name] [has_observers]
+               [is_observers_return_status]/>
           <require .../>
        </implementation>
     </implementor>
@@ -120,7 +121,7 @@ scope:
 Value: Meaning:
 public: Component is visible for outside world.
 private: Component is visible for outside world via private interface.
-internal: Component is visible only within library or a specific source file.
+internal: Component is visible only within library.
 
 name:
     Implementation name. The name attribute is required.
@@ -399,7 +400,7 @@ require_definition:
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
-public: Instance type definition is used within private scope.
+public: Instance type definition is used within public scope.
 private: Instance type definition is used within private scope.
 
 name:
@@ -507,7 +508,9 @@ name:
 The 'constant' item
 -------------------
 
-Groups common attributes for the component. Defines integral constant.
+Groups common attributes for the component. Groups common attributes for a
+scoped component. Scoped component is a component that more precisely can
+specify the scope where it can be used. Defines integral constant.
 
     <constant
         name = "..."
@@ -516,6 +519,7 @@ Groups common attributes for the component. Defines integral constant.
       [ uid = "..." ]
       [ full_uid = "..." ]
       [ feature = "..." ]
+      [ scope = "public | private | internal | hidden"  ("public") ]
       [ definition = "public | private | external"  ("private") ]
       [ value = "..." ]
         />
@@ -552,6 +556,18 @@ feature:
     In-project feature name that is implemented. This attribute is used for
     feature-based compilation. The feature attribute is optional.
 
+scope:
+    Defines component visibility for outside world. This attribute must not
+    be inherited. This attributed can be defined only within entities: -
+    'class' - 'implementation'. The scope attribute is optional. Its default
+    value is "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library.
+hidden: Component is visible only within related source file.
+
 name:
     Constant name. The name attribute is required.
 
@@ -575,6 +591,7 @@ Defines dependency to interface or class.
       [ impl = "..." ]
       [ type_name = "..." ]
       [ has_observers = "0 | 1"  ("0") ]
+      [ is_observers_return_status = "0 | 1"  ("0") ]
         />
 
 The dependency item can have these attributes:
@@ -619,4 +636,13 @@ has_observers:
 Value: Meaning:
 0: Property is not observed.
 1: Property is observed so methods "did_setup" and "did_release" must be generated.
+
+is_observers_return_status:
+    Defines that observer can return error code. The
+    is_observers_return_status attribute is optional. Its default value is
+    "0". It can take one of the following values:
+
+Value: Meaning:
+0: Observer methods CAN NOT return status code.
+1: Observer methods CAN return status code.
 

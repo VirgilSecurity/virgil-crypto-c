@@ -35,38 +35,26 @@
 package pythia
 
 // #cgo CFLAGS:  -I${SRCDIR}/../include
-// #cgo LDFLAGS: -L${SRCDIR}/../lib -lvsc_common -lvsc_pythia -lpythia -lrelic_s -lmbedcrypto
-// #include <virgil/pythia/vscp_pythia.h>
+// #cgo LDFLAGS: -L${SRCDIR}/../lib -lvsc_common -lvsc_pythia -lrelic_s -lmbedcrypto
+// #include <virgil/crypto/pythia/vscp_pythia.h>
 import "C"
 import (
     "fmt"
 
-    "runtime"
-
     "github.com/pkg/errors"
 )
 
-type Pythia struct {
-    ctx *C.vscp_pythia_t
-}
+type Pythia struct {}
 
 // Initialize pythia C module
 func init() {
-    C.vscp_global_init()
+    C.vscp_pythia_configure()
 }
 
 // New allocates underlying C context
 func New() *Pythia {
-    p := &Pythia{
-        ctx: C.vscp_pythia_new(),
-    }
-    runtime.SetFinalizer(p, (*Pythia).Close)
+    p := &Pythia{}
     return p
-}
-
-// Close release underlying C context
-func (p *Pythia) Close() {
-    C.vscp_pythia_destroy(&p.ctx)
 }
 
 // Blind turns password into a pseudo-random string.
@@ -82,14 +70,11 @@ func (p *Pythia) Blind(password []byte) (blindedPassword, blindingSecret []byte,
         }
     }()
 
-    C.vscp_pythia_init(p.ctx)
-    defer C.vscp_pythia_cleanup(p.ctx)
-
     blindedPasswordBuf := NewBuf(C.vscp_pythia_blinded_password_buf_len())
     blindingSecretBuf := NewBuf(C.vscp_pythia_blinding_secret_buf_len())
 
-    pErr := C.vscp_pythia_blind(p.ctx, WrapData(password), blindedPasswordBuf.ctx, blindingSecretBuf.ctx)
-    if pErr != C.vscp_SUCCESS {
+    pErr := C.vscp_pythia_blind(WrapData(password), blindedPasswordBuf.ctx, blindingSecretBuf.ctx)
+    if pErr != C.vscp_status_SUCCESS {
         err = errors.New("Internal Pythia error")
         return
     }
@@ -110,13 +95,10 @@ func (p *Pythia) Deblind(transformedPassword []byte, blindingSecret []byte) (deb
         }
     }()
 
-    C.vscp_pythia_init(p.ctx)
-    defer C.vscp_pythia_cleanup(p.ctx)
-
     deblindedBuf := NewBuf(C.vscp_pythia_deblinded_password_buf_len())
 
-    pErr := C.vscp_pythia_deblind(p.ctx, WrapData(transformedPassword), WrapData(blindingSecret), deblindedBuf.ctx)
-    if pErr != C.vscp_SUCCESS {
+    pErr := C.vscp_pythia_deblind(WrapData(transformedPassword), WrapData(blindingSecret), deblindedBuf.ctx)
+    if pErr != C.vscp_status_SUCCESS {
         err = errors.New("Internal Pythia error")
         return
     }
@@ -149,14 +131,11 @@ func (p *Pythia) ComputeTransformationKeypair(transformationKeyId, pythiaSecret,
         }
     }()
 
-    C.vscp_pythia_init(p.ctx)
-    defer C.vscp_pythia_cleanup(p.ctx)
-
     privateKeyBuf := NewBuf(C.vscp_pythia_transformation_private_key_buf_len())
     publicKeyBuf := NewBuf(C.vscp_pythia_transformation_public_key_buf_len())
 
-    pErr := C.vscp_pythia_compute_transformation_key_pair(p.ctx, WrapData(transformationKeyId), WrapData(pythiaSecret), WrapData(pythiaScopeSecret), privateKeyBuf.ctx, publicKeyBuf.ctx)
-    if pErr != C.vscp_SUCCESS {
+    pErr := C.vscp_pythia_compute_transformation_key_pair(WrapData(transformationKeyId), WrapData(pythiaSecret), WrapData(pythiaScopeSecret), privateKeyBuf.ctx, publicKeyBuf.ctx)
+    if pErr != C.vscp_status_SUCCESS {
         err = errors.New("Internal Pythia error")
         return
     }
@@ -190,14 +169,11 @@ func (p *Pythia) Transform(blindedPassword, tweak, transformationPrivateKey []by
         }
     }()
 
-    C.vscp_pythia_init(p.ctx)
-    defer C.vscp_pythia_cleanup(p.ctx)
-
     transformedPasswordBuf := NewBuf(C.vscp_pythia_transformed_password_buf_len())
     transformedTweakBuf := NewBuf(C.vscp_pythia_transformed_tweak_buf_len())
 
-    pErr := C.vscp_pythia_transform(p.ctx, WrapData(blindedPassword), WrapData(tweak), WrapData(transformationPrivateKey), transformedPasswordBuf.ctx, transformedTweakBuf.ctx)
-    if pErr != C.vscp_SUCCESS {
+    pErr := C.vscp_pythia_transform(WrapData(blindedPassword), WrapData(tweak), WrapData(transformationPrivateKey), transformedPasswordBuf.ctx, transformedTweakBuf.ctx)
+    if pErr != C.vscp_status_SUCCESS {
         err = errors.New("Internal Pythia error")
         return
     }
@@ -218,14 +194,11 @@ func (p *Pythia) Prove(transformedPassword, blindedPassword, transformedTweak, t
         }
     }()
 
-    C.vscp_pythia_init(p.ctx)
-    defer C.vscp_pythia_cleanup(p.ctx)
-
     proofValueCBuf := NewBuf(C.vscp_pythia_proof_value_buf_len())
     proofValueUBuf := NewBuf(C.vscp_pythia_proof_value_buf_len())
 
-    pErr := C.vscp_pythia_prove(p.ctx, WrapData(transformedPassword), WrapData(blindedPassword), WrapData(transformedTweak), WrapData(transformationPrivateKey), WrapData(transformationPublicKey), proofValueCBuf.ctx, proofValueUBuf.ctx)
-    if pErr != C.vscp_SUCCESS {
+    pErr := C.vscp_pythia_prove(WrapData(transformedPassword), WrapData(blindedPassword), WrapData(transformedTweak), WrapData(transformationPrivateKey), WrapData(transformationPublicKey), proofValueCBuf.ctx, proofValueUBuf.ctx)
+    if pErr != C.vscp_status_SUCCESS {
         err = errors.New("Internal Pythia error")
         return
     }
@@ -251,16 +224,13 @@ func (p *Pythia) Verify(transformedPassword, blindedPassword, tweak, transformat
         }
     }()
 
-    C.vscp_pythia_init(p.ctx)
-    defer C.vscp_pythia_cleanup(p.ctx)
+    pErr := C.vscp_pythia_verify(WrapData(transformedPassword), WrapData(blindedPassword), WrapData(tweak), WrapData(transformationPublicKey), WrapData(proofValueC), WrapData(proofValueU))
 
-    pErr := C.vscp_pythia_verify(p.ctx, WrapData(transformedPassword), WrapData(blindedPassword), WrapData(tweak), WrapData(transformationPublicKey), WrapData(proofValueC), WrapData(proofValueU))
-
-    if pErr == C.vscp_error_VERIFICATION_FAIL {
+    if pErr == C.vscp_status_ERROR_VERIFICATION_FAIL {
         return errors.New("Verification failed")
     }
 
-    if pErr != C.vscp_SUCCESS {
+    if pErr != C.vscp_status_SUCCESS {
         return errors.New("Internal Pythia error")
     }
 
@@ -280,13 +250,10 @@ func (p *Pythia) GetPasswordUpdateToken(previousTransformationPrivateKey, newTra
         }
     }()
 
-    C.vscp_pythia_init(p.ctx)
-    defer C.vscp_pythia_cleanup(p.ctx)
-
     passwordUpdateTokenBuf := NewBuf(C.vscp_pythia_password_update_token_buf_len())
 
-    pErr := C.vscp_pythia_get_password_update_token(p.ctx, WrapData(previousTransformationPrivateKey), WrapData(newTransformationPrivateKey), passwordUpdateTokenBuf.ctx)
-    if pErr != C.vscp_SUCCESS {
+    pErr := C.vscp_pythia_get_password_update_token(WrapData(previousTransformationPrivateKey), WrapData(newTransformationPrivateKey), passwordUpdateTokenBuf.ctx)
+    if pErr != C.vscp_status_SUCCESS {
         err = errors.New("Internal Pythia error")
         return
     }
@@ -307,13 +274,10 @@ func (p *Pythia) UpdateDeblindedWithToken(deblindedPassword, passwordUpdateToken
         }
     }()
 
-    C.vscp_pythia_init(p.ctx)
-    defer C.vscp_pythia_cleanup(p.ctx)
-
     updatedDeblindedPasswordBuf := NewBuf(C.vscp_pythia_deblinded_password_buf_len())
 
-    pErr := C.vscp_pythia_update_deblinded_with_token(p.ctx, WrapData(deblindedPassword), WrapData(passwordUpdateToken), updatedDeblindedPasswordBuf.ctx)
-    if pErr != C.vscp_SUCCESS {
+    pErr := C.vscp_pythia_update_deblinded_with_token(WrapData(deblindedPassword), WrapData(passwordUpdateToken), updatedDeblindedPasswordBuf.ctx)
+    if pErr != C.vscp_status_SUCCESS {
         err = errors.New("Internal Pythia error")
         return
     }

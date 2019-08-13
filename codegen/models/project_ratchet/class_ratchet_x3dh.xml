@@ -1,0 +1,29 @@
+<class name="ratchet x3dh" context="none" scope="internal">
+
+    <require header="ed25519/ed25519.h" scope="private"/>
+
+    <method name="compute initiator x3dh secret" is_static="1">
+        <argument name="sender identity private key" class="data"/>
+        <argument name="sender ephemeral private key" class="data"/>
+        <argument name="receiver identity public key" class="data"/>
+        <argument name="receiver long-term public key" class="data"/>
+        <argument name="receiver one-time public key" class="data"/>
+
+        <argument name="shared secret" class="buffer" access="readwrite"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="compute responder x3dh secret" is_static="1">
+        <argument name="sender identity public key" class="data"/>
+        <argument name="sender ephemeral public key" class="data"/>
+        <argument name="receiver identity private key" class="data"/>
+        <argument name="receiver long-term private key" class="data"/>
+        <argument name="receiver one-time private key" class="data"/>
+
+        <argument name="shared secret" class="buffer" access="readwrite"/>
+
+        <return enum="status"/>
+    </method>
+
+</class>

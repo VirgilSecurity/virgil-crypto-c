@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// This is MbedTLS implementation of ASN.1 writer.
 @objc(VSCFAsn1wr) public class Asn1wr: NSObject, Asn1Writer {
@@ -73,19 +72,59 @@ import VirgilCryptoCommon
         vscf_asn1wr_reset(self.c_ctx, out, outLen)
     }
 
-    /// Move written data to the buffer beginning and forbid further operations.
-    /// Returns written size in bytes.
-    @objc public func finish() -> Int {
-        let proxyResult = vscf_asn1wr_finish(self.c_ctx)
+    /// Finalize writing and forbid further operations.
+    ///
+    /// Note, that ASN.1 structure is always written to the buffer end, and
+    /// if argument "do not adjust" is false, then data is moved to the
+    /// beginning, otherwise - data is left at the buffer end.
+    ///
+    /// Returns length of the written bytes.
+    @objc public func finish(doNotAdjust: Bool) -> Int {
+        let proxyResult = vscf_asn1wr_finish(self.c_ctx, doNotAdjust)
 
         return proxyResult
     }
 
-    /// Return last error.
-    @objc public func error() throws {
-        let proxyResult = vscf_asn1wr_error(self.c_ctx)
+    /// Returns pointer to the inner buffer.
+    @objc public func bytes() -> UnsafeMutablePointer<UInt8> {
+        let proxyResult = vscf_asn1wr_bytes(self.c_ctx)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        return proxyResult!
+    }
+
+    /// Returns total inner buffer length.
+    @objc public func len() -> Int {
+        let proxyResult = vscf_asn1wr_len(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Returns how many bytes were already written to the ASN.1 structure.
+    @objc public func writtenLen() -> Int {
+        let proxyResult = vscf_asn1wr_written_len(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Returns how many bytes are available for writing.
+    @objc public func unwrittenLen() -> Int {
+        let proxyResult = vscf_asn1wr_unwritten_len(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return true if status is not "success".
+    @objc public func hasError() -> Bool {
+        let proxyResult = vscf_asn1wr_has_error(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return error code.
+    @objc public func status() throws {
+        let proxyResult = vscf_asn1wr_status(self.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Move writing position backward for the given length.
@@ -100,6 +139,14 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeTag(tag: Int32) -> Int {
         let proxyResult = vscf_asn1wr_write_tag(self.c_ctx, tag)
+
+        return proxyResult
+    }
+
+    /// Write context-specific ASN.1 tag.
+    /// Return count of written bytes.
+    @objc public func writeContextTag(tag: Int32, len: Int) -> Int {
+        let proxyResult = vscf_asn1wr_write_context_tag(self.c_ctx, tag, len)
 
         return proxyResult
     }
@@ -210,8 +257,9 @@ import VirgilCryptoCommon
     /// Write ASN.1 type: OCTET STRING.
     /// Return count of written bytes.
     @objc public func writeOctetStr(value: Data) -> Int {
-        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
-            return vscf_asn1wr_write_octet_str(self.c_ctx, vsc_data(valuePointer, value.count))
+        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) -> Int in
+
+            return vscf_asn1wr_write_octet_str(self.c_ctx, vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
         })
 
         return proxyResult
@@ -221,8 +269,9 @@ import VirgilCryptoCommon
     ///
     /// Return count of written bytes.
     @objc public func writeOctetStrAsBitstring(value: Data) -> Int {
-        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
-            return vscf_asn1wr_write_octet_str_as_bitstring(self.c_ctx, vsc_data(valuePointer, value.count))
+        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) -> Int in
+
+            return vscf_asn1wr_write_octet_str_as_bitstring(self.c_ctx, vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
         })
 
         return proxyResult
@@ -232,8 +281,9 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     /// Note, use this method carefully.
     @objc public func writeData(data: Data) -> Int {
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Int in
-            return vscf_asn1wr_write_data(self.c_ctx, vsc_data(dataPointer, data.count))
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Int in
+
+            return vscf_asn1wr_write_data(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count))
         })
 
         return proxyResult
@@ -242,8 +292,9 @@ import VirgilCryptoCommon
     /// Write ASN.1 type: UTF8String.
     /// Return count of written bytes.
     @objc public func writeUtf8Str(value: Data) -> Int {
-        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
-            return vscf_asn1wr_write_utf8_str(self.c_ctx, vsc_data(valuePointer, value.count))
+        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) -> Int in
+
+            return vscf_asn1wr_write_utf8_str(self.c_ctx, vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
         })
 
         return proxyResult
@@ -252,8 +303,9 @@ import VirgilCryptoCommon
     /// Write ASN.1 type: OID.
     /// Return count of written bytes.
     @objc public func writeOid(value: Data) -> Int {
-        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
-            return vscf_asn1wr_write_oid(self.c_ctx, vsc_data(valuePointer, value.count))
+        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) -> Int in
+
+            return vscf_asn1wr_write_oid(self.c_ctx, vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
         })
 
         return proxyResult

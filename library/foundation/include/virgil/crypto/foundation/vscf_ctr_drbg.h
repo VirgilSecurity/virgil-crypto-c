@@ -55,7 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -109,20 +109,20 @@ vscf_ctr_drbg_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ctr_drbg_impl(vscf_ctr_drbg_t *ctr_drbg);
+vscf_ctr_drbg_impl(vscf_ctr_drbg_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_ctr_drbg_init(vscf_ctr_drbg_t *ctr_drbg);
+vscf_ctr_drbg_init(vscf_ctr_drbg_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_ctr_drbg_init()'.
 //
 VSCF_PUBLIC void
-vscf_ctr_drbg_cleanup(vscf_ctr_drbg_t *ctr_drbg);
+vscf_ctr_drbg_cleanup(vscf_ctr_drbg_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -136,7 +136,7 @@ vscf_ctr_drbg_new(void);
 //  This is a reverse action of the function 'vscf_ctr_drbg_new()'.
 //
 VSCF_PUBLIC void
-vscf_ctr_drbg_delete(vscf_ctr_drbg_t *ctr_drbg);
+vscf_ctr_drbg_delete(vscf_ctr_drbg_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -144,33 +144,39 @@ vscf_ctr_drbg_delete(vscf_ctr_drbg_t *ctr_drbg);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_ctr_drbg_destroy(vscf_ctr_drbg_t **ctr_drbg_ref);
+vscf_ctr_drbg_destroy(vscf_ctr_drbg_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_ctr_drbg_t *
-vscf_ctr_drbg_shallow_copy(vscf_ctr_drbg_t *ctr_drbg);
+vscf_ctr_drbg_shallow_copy(vscf_ctr_drbg_t *self);
 
 //
 //  Setup dependency to the interface 'entropy source' with shared ownership.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_t *ctr_drbg, vscf_impl_t *entropy_source);
+VSCF_PUBLIC vscf_status_t
+vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source) VSCF_NODISCARD;
 
 //
 //  Setup dependency to the interface 'entropy source' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_t *ctr_drbg, vscf_impl_t *entropy_source);
+VSCF_PUBLIC vscf_status_t
+vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source) VSCF_NODISCARD;
 
 //
 //  Release dependency to the interface 'entropy source'.
 //
 VSCF_PUBLIC void
-vscf_ctr_drbg_release_entropy_source(vscf_ctr_drbg_t *ctr_drbg);
+vscf_ctr_drbg_release_entropy_source(vscf_ctr_drbg_t *self);
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_ctr_drbg_setup_defaults(vscf_ctr_drbg_t *self) VSCF_NODISCARD;
 
 //
 //  Force entropy to be gathered at the beginning of every call to
@@ -178,39 +184,33 @@ vscf_ctr_drbg_release_entropy_source(vscf_ctr_drbg_t *ctr_drbg);
 //  Note, use this if your entropy source has sufficient throughput.
 //
 VSCF_PUBLIC void
-vscf_ctr_drbg_enable_prediction_resistance(vscf_ctr_drbg_t *ctr_drbg);
+vscf_ctr_drbg_enable_prediction_resistance(vscf_ctr_drbg_t *self);
 
 //
 //  Sets the reseed interval.
 //  Default value is reseed interval.
 //
 VSCF_PUBLIC void
-vscf_ctr_drbg_set_reseed_interval(vscf_ctr_drbg_t *ctr_drbg, size_t interval);
+vscf_ctr_drbg_set_reseed_interval(vscf_ctr_drbg_t *self, size_t interval);
 
 //
 //  Sets the amount of entropy grabbed on each seed or reseed.
 //  The default value is entropy len.
 //
 VSCF_PUBLIC void
-vscf_ctr_drbg_set_entropy_len(vscf_ctr_drbg_t *ctr_drbg, size_t len);
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_ctr_drbg_setup_defaults(vscf_ctr_drbg_t *ctr_drbg);
+vscf_ctr_drbg_set_entropy_len(vscf_ctr_drbg_t *self, size_t len);
 
 //
 //  Generate random bytes.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_ctr_drbg_random(vscf_ctr_drbg_t *ctr_drbg, size_t data_len, vsc_buffer_t *data);
+VSCF_PUBLIC vscf_status_t
+vscf_ctr_drbg_random(vscf_ctr_drbg_t *self, size_t data_len, vsc_buffer_t *data) VSCF_NODISCARD;
 
 //
 //  Retreive new seed data from the entropy sources.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_ctr_drbg_reseed(vscf_ctr_drbg_t *ctr_drbg);
+VSCF_PUBLIC vscf_status_t
+vscf_ctr_drbg_reseed(vscf_ctr_drbg_t *self) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

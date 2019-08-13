@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -85,7 +85,7 @@ extern "C" {
 //  Callback. Compute shared key for 2 asymmetric keys.
 //          Note, shared key can be used only for symmetric cryptography.
 //
-typedef vscf_error_t (*vscf_compute_shared_key_api_compute_shared_key_fn)(vscf_impl_t *impl,
+typedef vscf_status_t (*vscf_compute_shared_key_api_compute_shared_key_fn)(vscf_impl_t *impl,
         const vscf_impl_t *public_key, vsc_buffer_t *shared_key);
 
 //
@@ -102,6 +102,10 @@ struct vscf_compute_shared_key_api_t {
     //  For interface 'compute_shared_key' MUST be equal to the 'vscf_api_tag_COMPUTE_SHARED_KEY'.
     //
     vscf_api_tag_t api_tag;
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
     //
     //  Compute shared key for 2 asymmetric keys.
     //  Note, shared key can be used only for symmetric cryptography.

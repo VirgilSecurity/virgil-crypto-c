@@ -123,21 +123,21 @@ vsc_data_empty(void) {
 //  Returns true if underlying byte array is defined.
 //
 VSC_PUBLIC bool
-vsc_data_is_valid(vsc_data_t data) {
+vsc_data_is_valid(vsc_data_t self) {
 
-    return data.bytes != NULL;
+    return self.bytes != NULL;
 }
 
 //
 //  Returns true if underlying byte array contains only zeros.
 //
 VSC_PUBLIC bool
-vsc_data_is_zero(vsc_data_t data) {
+vsc_data_is_zero(vsc_data_t self) {
 
-    VSC_ASSERT(vsc_data_is_valid(data));
+    VSC_ASSERT(vsc_data_is_valid(self));
 
-    for (size_t pos = 0; pos < data.len; ++pos) {
-        if (data.bytes[pos] != 0) {
+    for (size_t pos = 0; pos < self.len; ++pos) {
+        if (self.bytes[pos] != 0) {
             return false;
         }
     }
@@ -149,25 +149,44 @@ vsc_data_is_zero(vsc_data_t data) {
 //  Returns true if underlying byte array is empty.
 //
 VSC_PUBLIC bool
-vsc_data_is_empty(vsc_data_t data) {
+vsc_data_is_empty(vsc_data_t self) {
 
-    return 0 == data.len;
+    return 0 == self.len;
 }
 
 //
-//  Return true if given datas are equal.
+//  Return true if given data are equal.
 //
 VSC_PUBLIC bool
-vsc_data_equal(vsc_data_t data, vsc_data_t rhs) {
+vsc_data_equal(vsc_data_t self, vsc_data_t rhs) {
 
-    VSC_ASSERT(vsc_data_is_valid(data));
+    VSC_ASSERT(vsc_data_is_valid(self));
     VSC_ASSERT(vsc_data_is_valid(rhs));
 
-    if (data.len != rhs.len) {
+    if (self.len != rhs.len) {
         return false;
     }
 
-    bool is_equal = memcmp(data.bytes, rhs.bytes, rhs.len) == 0;
+    bool is_equal = memcmp(self.bytes, rhs.bytes, rhs.len) == 0;
+    return is_equal;
+}
+
+//
+//  Perform constant-time data comparison.
+//  The time depends on the given length but not on the data itself.
+//  Return true if given data are equal.
+//
+VSC_PUBLIC bool
+vsc_data_secure_equal(vsc_data_t self, vsc_data_t rhs) {
+
+    VSC_ASSERT(vsc_data_is_valid(self));
+    VSC_ASSERT(vsc_data_is_valid(rhs));
+
+    if (self.len != rhs.len) {
+        return false;
+    }
+
+    bool is_equal = vsc_memory_secure_equal(self.bytes, rhs.bytes, rhs.len);
     return is_equal;
 }
 
@@ -175,22 +194,22 @@ vsc_data_equal(vsc_data_t data, vsc_data_t rhs) {
 //  Return underlying data slice starting from beginning.
 //
 VSC_PUBLIC vsc_data_t
-vsc_data_slice_beg(vsc_data_t data, size_t offset, size_t len) {
+vsc_data_slice_beg(vsc_data_t self, size_t offset, size_t len) {
 
-    VSC_ASSERT(vsc_data_is_valid(data));
-    VSC_ASSERT(data.len >= offset + len);
+    VSC_ASSERT(vsc_data_is_valid(self));
+    VSC_ASSERT(self.len >= offset + len);
 
-    return (vsc_data_t){data.bytes + offset, len};
+    return (vsc_data_t){self.bytes + offset, len};
 }
 
 //
 //  Return underlying data slice starting from ending.
 //
 VSC_PUBLIC vsc_data_t
-vsc_data_slice_end(vsc_data_t data, size_t offset, size_t len) {
+vsc_data_slice_end(vsc_data_t self, size_t offset, size_t len) {
 
-    VSC_ASSERT(vsc_data_is_valid(data));
-    VSC_ASSERT(data.len >= offset + len);
+    VSC_ASSERT(vsc_data_is_valid(self));
+    VSC_ASSERT(self.len >= offset + len);
 
-    return (vsc_data_t){data.bytes + data.len - offset - len, len};
+    return (vsc_data_t){self.bytes + self.len - offset - len, len};
 }

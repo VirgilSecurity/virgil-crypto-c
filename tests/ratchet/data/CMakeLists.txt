@@ -39,18 +39,20 @@ project(test_data_ratchet VERSION ${virgil_crypto_c_ratchet_tests_VERSION} LANGU
 add_library(test_data_ratchet "")
 target_sources(test_data_ratchet
         PRIVATE
-            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_regular_message.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_session.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_prekey_message.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_key_utils.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_cipher.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_message.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_x3dh.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_keys.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_group_message.h"
 
         PRIVATE
-            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_regular_message.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_session.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_prekey_message.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_key_utils.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_cipher.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_message.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_x3dh.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_keys.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_group_message.c"
         )
 
 target_include_directories(test_data_ratchet

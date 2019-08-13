@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2018 Virgil Security Inc.
+/// Copyright (C) 2015-2019 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -35,38 +35,10 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
-/// Provide algorithm deserialization
+/// Provide algorithm deserialization.
 @objc(VSCFAlgInfoDeserializer) public protocol AlgInfoDeserializer : CContext {
 
-    /// Algorithm deserialization algorithm from data
-    @objc func deserialize(data: Data) -> AlgInfo
-}
-
-/// Implement interface methods
-@objc(VSCFAlgInfoDeserializerProxy) internal class AlgInfoDeserializerProxy: NSObject, AlgInfoDeserializer {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Algorithm deserialization algorithm from data
-    @objc public func deserialize(data: Data) -> AlgInfo {
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
-            return vscf_alg_info_deserializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count))
-        })
-
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
-    }
+    /// Deserialize algorithm from the data.
+    @objc func deserialize(data: Data) throws -> AlgInfo
 }

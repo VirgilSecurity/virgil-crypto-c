@@ -1,55 +1,157 @@
 <implementor name="ed25519 pk" is_default="1">
     Provide implementation based on the library ed25519
+
     <implementation name="ed25519 public key">
-      This is implementation of ED25519 public key
-      <require library="ed25519" feature="library"/>
-      <require class="endianness"/>
+        This is implementation of ED25519 public key
 
-      <context>
-        <require header="ed25519/ed25519.h"/>
-        <property name="public_key" type="byte" library="ed25519" access="readwrite">
-          <array length="fixed" length_constant="ED25519_KEY_LEN"/>
+        <require library="ed25519" feature="library"/>
+        <require header="ed25519/ed25519.h" scope="context"/>
+        <require class="simple alg info"/>
+        <require interface="alg info"/>
+        <require class="asn1rd"/>
+        <require class="asn1wr"/>
+        <require module="asn1rd defs"/>
+        <require module="asn1wr defs"/>
+        <require impl="ed25519 private key"/>
+        <require impl="ctr drbg"/>
+
+        <property name="public key" type="byte" library="ed25519" access="readwrite">
+            <array length="fixed" length_constant="ED25519_KEY_LEN"/>
         </property>
-        <property name="signature" type="byte" library="ed25519" access="readwrite">
-          <array length="fixed" length_constant="ED25519_KEY_LEN"/>
-        </property>
-      </context>
 
-      <interface name="key"/>
-      <interface name="verify"/>
-      <interface name="public key">
-          <constant name="can import public key" value="true"/>
-          <constant name="can export public key" value="true"/>
-      </interface>
+        <dependency name="random" interface="random"/>
+        <dependency name="ecies" impl="ecies"/>
 
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
+        <interface name="alg"/>
+        <interface name="key"/>
+        <interface name="encrypt"/>
+        <interface name="verify hash"/>
+        <interface name="public key">
+            <constant name="can import public key" value="true"/>
+            <constant name="can export public key" value="true"/>
+        </interface>
+        <interface name="generate ephemeral key"/>
     </implementation>
 
     <implementation name="ed25519 private key">
-      This is implementation of ED25519 private key
-      <require library="ed25519" feature="library"/>
-      <require module="ed25519 public key defs"/>
-      <require class="endianness"/>
+        This is implementation of ED25519 private key
 
-      <context>
-        <require header="ed25519/ed25519.h"/>
-        <property name="secret_key" type="byte" library="ed25519" access="readwrite">
-          <array length="fixed" length_constant="ED25519_KEY_LEN"/>
+        <require library="ed25519" feature="library"/>
+        <require header="ed25519/ed25519.h" scope="context"/>
+        <require module="ed25519 public key defs"/>
+        <require interface="alg info"/>
+        <require class="simple alg info"/>
+        <require class="asn1rd"/>
+        <require class="asn1wr"/>
+        <require module="asn1rd defs"/>
+        <require module="asn1wr defs"/>
+        <require impl="ctr drbg"/>
+        <require module="buffer defs" project="common"/>
+
+        <property name="secret key" type="byte" library="ed25519" access="readwrite">
+            <array length="fixed" length_constant="ED25519_KEY_LEN"/>
         </property>
-        <property name="signature" type="byte" library="ed25519" access="readwrite">
-          <array length="fixed" length_constant="ED25519_SIG_LEN"/>
+
+        <dependency name="random" interface="random"/>
+        <dependency name="ecies" impl="ecies"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
+        <interface name="alg"/>
+        <interface name="key"/>
+        <interface name="generate key"/>
+        <interface name="decrypt"/>
+        <interface name="sign hash"/>
+        <interface name="private key">
+            <constant name="can import private key" value="true"/>
+            <constant name="can export private key" value="true"/>
+        </interface>
+        <interface name="compute shared key"/>
+    </implementation>
+
+    <implementation name="curve25519 public key">
+        This is implementation of CURVE25519 public key
+
+        <require library="ed25519" feature="library"/>
+        <require header="ed25519/ed25519.h" scope="context"/>
+        <require class="simple alg info"/>
+        <require interface="alg info"/>
+        <require class="asn1rd"/>
+        <require class="asn1wr"/>
+        <require module="asn1rd defs"/>
+        <require module="asn1wr defs"/>
+        <require impl="curve25519 private key"/>
+        <require impl="ctr drbg"/>
+
+        <property name="public key" type="byte" library="ed25519" access="readwrite">
+            <array length="fixed" length_constant="ED25519_KEY_LEN"/>
         </property>
-      </context>
 
-      <dependency name="random" interface="random"/>
+        <dependency name="random" interface="random"/>
+        <dependency name="ecies" impl="ecies"/>
 
-      <interface name="key"/>
-      <interface name="generate key"/>
-      <interface name="sign"/>
-      <interface name="private key">
-          <constant name="can import private key" value="true"/>
-          <constant name="can export private key" value="true"/>
-      </interface>
-      <interface name="compute shared key"/>
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
 
+            <return enum="status"/>
+        </method>
+
+        <interface name="alg"/>
+        <interface name="key"/>
+        <interface name="encrypt"/>
+        <interface name="public key">
+            <constant name="can import public key" value="true"/>
+            <constant name="can export public key" value="true"/>
+        </interface>
+        <interface name="generate ephemeral key"/>
+    </implementation>
+
+    <implementation name="curve25519 private key">
+        This is implementation of CURVE25519 private key
+
+        <require library="ed25519" feature="library"/>
+        <require header="ed25519/ed25519.h" scope="context"/>
+        <require module="curve25519 public key defs"/>
+        <require interface="alg info"/>
+        <require class="simple alg info"/>
+        <require class="asn1rd"/>
+        <require class="asn1wr"/>
+        <require module="asn1rd defs"/>
+        <require module="asn1wr defs"/>
+        <require impl="ctr drbg"/>
+        <require module="buffer defs" project="common"/>
+
+        <property name="secret key" type="byte" library="ed25519" access="readwrite">
+            <array length="fixed" length_constant="ED25519_KEY_LEN"/>
+        </property>
+
+        <dependency name="random" interface="random"/>
+        <dependency name="ecies" impl="ecies"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
+        <interface name="alg"/>
+        <interface name="key"/>
+        <interface name="generate key"/>
+        <interface name="decrypt"/>
+        <interface name="private key">
+            <constant name="can import private key" value="true"/>
+            <constant name="can export private key" value="true"/>
+        </interface>
+        <interface name="compute shared key"/>
     </implementation>
 </implementor>

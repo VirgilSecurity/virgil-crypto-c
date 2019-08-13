@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -78,7 +78,16 @@ enum vscf_alg_id_t {
     vscf_alg_id_SHA384,
     vscf_alg_id_SHA512,
     vscf_alg_id_KDF1,
-    vscf_alg_id_KDF2
+    vscf_alg_id_KDF2,
+    vscf_alg_id_RSA,
+    vscf_alg_id_ED25519,
+    vscf_alg_id_CURVE25519,
+    vscf_alg_id_AES256_GCM,
+    vscf_alg_id_AES256_CBC,
+    vscf_alg_id_HMAC,
+    vscf_alg_id_HKDF,
+    vscf_alg_id_PKCS5_PBKDF2,
+    vscf_alg_id_PKCS5_PBES2
 };
 typedef enum vscf_alg_id_t vscf_alg_id_t;
 

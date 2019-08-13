@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -81,12 +81,12 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Return buffer size enough to hold serialized algorithm
+//  Callback. Return buffer size enough to hold serialized algorithm.
 //
-typedef size_t (*vscf_alg_info_serializer_api_serialize_len_fn)(vscf_impl_t *impl, const vscf_impl_t *alg_info);
+typedef size_t (*vscf_alg_info_serializer_api_serialized_len_fn)(vscf_impl_t *impl, const vscf_impl_t *alg_info);
 
 //
-//  Callback. Serialize algorithm info to buffer class
+//  Callback. Serialize algorithm info to buffer class.
 //
 typedef void (*vscf_alg_info_serializer_api_serialize_fn)(vscf_impl_t *impl, const vscf_impl_t *alg_info,
         vsc_buffer_t *out);
@@ -101,11 +101,15 @@ struct vscf_alg_info_serializer_api_t {
     //
     vscf_api_tag_t api_tag;
     //
-    //  Return buffer size enough to hold serialized algorithm
+    //  Implementation unique identifier, MUST be second in the structure.
     //
-    vscf_alg_info_serializer_api_serialize_len_fn serialize_len_cb;
+    vscf_impl_tag_t impl_tag;
     //
-    //  Serialize algorithm info to buffer class
+    //  Return buffer size enough to hold serialized algorithm.
+    //
+    vscf_alg_info_serializer_api_serialized_len_fn serialized_len_cb;
+    //
+    //  Serialize algorithm info to buffer class.
     //
     vscf_alg_info_serializer_api_serialize_fn serialize_cb;
 };

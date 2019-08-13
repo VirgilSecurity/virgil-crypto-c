@@ -37,6 +37,7 @@ attribute names are case-sensitive and we use only lower-case names.
                [is_const_array] [is_const_string] [is_const_reference] [require_definition]
                [uid] [full_uid] [array]/>
           <c_precondition [position]/>
+          <c_attribute [value]/>
        </c_method>
        <c_callback name [uid] [full_uid] [declaration]>
           <c_return .../>
@@ -103,7 +104,7 @@ scope:
 Value: Meaning:
 public: Component is visible for outside world.
 private: Component is visible for outside world via private interface.
-internal: Component is visible only within library or a specific source file.
+internal: Component is visible only within library.
 
 id:
     Short module name. The id attribute is required.
@@ -165,7 +166,7 @@ scope:
 Value: Meaning:
 public: Component is visible for outside world.
 private: Component is visible for outside world via private interface.
-internal: Component is visible only within library or a specific source file.
+internal: Component is visible only within library.
 
 feature:
     Defines feature name. Component that holds this attribute should be
@@ -800,6 +801,7 @@ Defines feature name. Define method signature and implementation
         <c_return>, optional
         <c_argument>
         <c_precondition>
+        <c_attribute>
     </c_method>
 
 The c_method item can have these attributes:
@@ -1069,6 +1071,21 @@ The c_precondition item has this single attribute:
 position:
     Position's weight of the precondition. The position attribute is
     optional. Its default value is "0".
+
+
+The 'c_attribute' item
+----------------------
+
+Defines method attribute: __attribute__ (...).
+
+    <c_attribute
+      [ value = "..." ]
+        />
+
+The c_attribute item has this single attribute:
+
+value:
+    Attribute itself. The value attribute is optional.
 
 
 The 'c_callback' item

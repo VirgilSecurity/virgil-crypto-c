@@ -17,17 +17,59 @@
 
 
     <method name="finish">
-        Move written data to the buffer beginning and forbid further operations.
-        Returns written size in bytes.
+        Finalize writing and forbid further operations.
+
+        Note, that ASN.1 structure is always written to the buffer end, and
+        if argument "do not adjust" is false, then data is moved to the
+        beginning, otherwise - data is left at the buffer end.
+
+        Returns length of the written bytes.
+
+        <argument name="do not adjust" type="boolean"/>
 
         <return type="size"/>
     </method>
 
 
-    <method name="error">
-        Return last error.
+    <method name="bytes">
+        Returns pointer to the inner buffer.
 
-        <return enum="error"/>
+        <return type="byte" access="readwrite" is_reference="1"/>
+    </method>
+
+
+    <method name="len" is_const="1">
+        Returns total inner buffer length.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="written len" is_const="1">
+        Returns how many bytes were already written to the ASN.1 structure.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="unwritten len" is_const="1">
+        Returns how many bytes are available for writing.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="has error" is_const="1">
+        Return true if status is not "success".
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="status" is_const="1">
+        Return error code.
+
+        <return enum="status"/>
     </method>
 
 
@@ -46,6 +88,17 @@
         Return count of written bytes.
 
         <argument name="tag" type="integer"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write context tag">
+        Write context-specific ASN.1 tag.
+        Return count of written bytes.
+
+        <argument name="tag" type="integer"/>
+        <argument name="len" type="size"/>
 
         <return type="size"/>
     </method>

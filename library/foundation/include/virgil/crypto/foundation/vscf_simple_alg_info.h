@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -87,26 +87,20 @@ vscf_simple_alg_info_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_simple_alg_info_impl(vscf_simple_alg_info_t *simple_alg_info);
-
-//
-//  Set algorithm identificator
-//
-VSCF_PUBLIC vscf_simple_alg_info_t *
-vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_t alg_id);
+vscf_simple_alg_info_impl(vscf_simple_alg_info_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_simple_alg_info_init(vscf_simple_alg_info_t *simple_alg_info);
+vscf_simple_alg_info_init(vscf_simple_alg_info_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_simple_alg_info_init()'.
 //
 VSCF_PUBLIC void
-vscf_simple_alg_info_cleanup(vscf_simple_alg_info_t *simple_alg_info);
+vscf_simple_alg_info_cleanup(vscf_simple_alg_info_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -120,7 +114,7 @@ vscf_simple_alg_info_new(void);
 //  This is a reverse action of the function 'vscf_simple_alg_info_new()'.
 //
 VSCF_PUBLIC void
-vscf_simple_alg_info_delete(vscf_simple_alg_info_t *simple_alg_info);
+vscf_simple_alg_info_delete(vscf_simple_alg_info_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -128,20 +122,34 @@ vscf_simple_alg_info_delete(vscf_simple_alg_info_t *simple_alg_info);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_simple_alg_info_destroy(vscf_simple_alg_info_t **simple_alg_info_ref);
+vscf_simple_alg_info_destroy(vscf_simple_alg_info_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_simple_alg_info_t *
-vscf_simple_alg_info_shallow_copy(vscf_simple_alg_info_t *simple_alg_info);
+vscf_simple_alg_info_shallow_copy(vscf_simple_alg_info_t *self);
 
 //
-//  Provide algorithm identificator
+//  Perform initialization of pre-allocated context.
+//  Create algorithm info with identificator.
+//
+VSCF_PUBLIC void
+vscf_simple_alg_info_init_with_alg_id(vscf_simple_alg_info_t *self, vscf_alg_id_t alg_id);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Create algorithm info with identificator.
+//
+VSCF_PUBLIC vscf_simple_alg_info_t *
+vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_t alg_id);
+
+//
+//  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_simple_alg_info_alg_id(vscf_simple_alg_info_t *simple_alg_info);
+vscf_simple_alg_info_alg_id(const vscf_simple_alg_info_t *self);
 
 
 // --------------------------------------------------------------------------

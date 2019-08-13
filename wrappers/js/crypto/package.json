@@ -1,0 +1,15 @@
+{
+  "name": "@virgilsecurity/crypto",
+  "version": "0.1.0",
+  "description": "Some description here...",
+  "main": "./src/index.js",
+  "repository": "https://github.com/VirgilSecurity/virgil-crypto-c/tree/master/wrappers/js/crypto",
+  "author": "Virgil Security Inc. <support@virgilsecurity.com>",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "bindings": "^1.5.0"
+  },
+  "devDependencies": {
+    "nan": "^2.12.1"
+  }
+}

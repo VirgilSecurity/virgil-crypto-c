@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -56,6 +56,7 @@
 
 #include "vscf_library.h"
 #include "vscf_simple_alg_info.h"
+#include "vscf_alg_id.h"
 
 // clang-format on
 //  @end
@@ -78,7 +79,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_simple_alg_info_init_ctx(vscf_simple_alg_info_t *simple_alg_info);
+vscf_simple_alg_info_init_ctx(vscf_simple_alg_info_t *self);
 
 //
 //  Release resources of the implementation specific context.
@@ -86,7 +87,13 @@ vscf_simple_alg_info_init_ctx(vscf_simple_alg_info_t *simple_alg_info);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_simple_alg_info_cleanup_ctx(vscf_simple_alg_info_t *simple_alg_info);
+vscf_simple_alg_info_cleanup_ctx(vscf_simple_alg_info_t *self);
+
+//
+//  Create algorithm info with identificator.
+//
+VSCF_PUBLIC void
+vscf_simple_alg_info_init_ctx_with_alg_id(vscf_simple_alg_info_t *self, vscf_alg_id_t alg_id);
 
 
 // --------------------------------------------------------------------------

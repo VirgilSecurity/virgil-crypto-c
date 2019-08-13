@@ -44,6 +44,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class with public constants
+// --------------------------------------------------------------------------
+
 #ifndef VSCR_RATCHET_COMMON_H_INCLUDED
 #define VSCR_RATCHET_COMMON_H_INCLUDED
 
@@ -68,13 +74,38 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
-    vscr_ratchet_common_RATCHET_REGULAR_MESSAGE_VERSION = 1,
-    vscr_ratchet_common_RATCHET_PROTOCOL_VERSION = 1,
-    vscr_ratchet_common_RATCHET_MESSAGE_VERSION = 1,
-    vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH = 32,
-    vscr_ratchet_common_MAX_SKIPPED_MESSAGES = 40,
-    vscr_ratchet_common_MAX_RECEIVERS_CHAINS = 5,
-    vscr_ratchet_common_MAX_MESSAGE_GAP = 2000
+    //
+    //  Max plain text length allowed to be encrypted
+    //
+    vscr_ratchet_common_MAX_PLAIN_TEXT_LEN = 30000,
+    //
+    //  Max message length
+    //
+    vscr_ratchet_common_MAX_MESSAGE_LEN = 32975,
+    //
+    //  Key pair id length
+    //
+    vscr_ratchet_common_KEY_ID_LEN = 8,
+    //
+    //  Participant id length
+    //
+    vscr_ratchet_common_PARTICIPANT_ID_LEN = 32,
+    //
+    //  Session id length
+    //
+    vscr_ratchet_common_SESSION_ID_LEN = 32,
+    //
+    //  Max number of group chat participants
+    //
+    vscr_ratchet_common_MAX_PARTICIPANTS_COUNT = 100,
+    //
+    //  Min number of group chat participants
+    //
+    vscr_ratchet_common_MIN_PARTICIPANTS_COUNT = 2,
+    //
+    //  Max group message length
+    //
+    vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN = 32908
 };
 
 

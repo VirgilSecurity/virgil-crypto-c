@@ -55,7 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
+#include "vscf_status.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -91,8 +91,8 @@ typedef struct vscf_encrypt_api_t vscf_encrypt_api_t;
 //
 //  Encrypt given data.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_encrypt(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out);
+VSCF_PUBLIC vscf_status_t
+vscf_encrypt(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Calculate required buffer length to hold the encrypted data.

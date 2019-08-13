@@ -49,17 +49,6 @@
 
 
 // --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
-// --------------------------------------------------------------------------
 //  Test functions.
 // --------------------------------------------------------------------------
 void
@@ -73,9 +62,9 @@ test__entropy_accumulator__zero_entropy_and_len_64__returns__entropy_set_1(void)
     size_t len = 64;
     vsc_buffer_t *data = vsc_buffer_new_with_capacity(len);
 
-    vscf_error_t result = vscf_entropy_accumulator_gather(entropy_accumulator, len, data);
+    vscf_status_t result = vscf_entropy_accumulator_gather(entropy_accumulator, len, data);
 
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, result);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, result);
     TEST_ASSERT_EQUAL(len, vsc_buffer_len(data));
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_entropy_accumulator_ENTROPY_SET_1, data);
 

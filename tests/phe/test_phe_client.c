@@ -47,22 +47,13 @@
 #include <virgil/crypto/foundation/vscf_fake_random.h>
 
 
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage errors in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
-
-
 void
 test__enroll_account__mocked_rnd__should_match(void) {
     vsce_phe_client_t *client = vsce_phe_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_setup_defaults(client));
 
-    vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key);
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key));
 
     vsc_buffer_t *buffer1, *buffer2;
     buffer1 = vsc_buffer_new_with_capacity(vsce_phe_client_enrollment_record_len(client));
@@ -74,8 +65,8 @@ test__enroll_account__mocked_rnd__should_match(void) {
     vsce_phe_client_release_random(client);
     vsce_phe_client_take_random(client, vscf_fake_random_impl(fake_random));
 
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_enroll_account(client, test_phe_server_enrollment_response,
-                                            test_phe_client_password, buffer1, buffer2));
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_enroll_account(client, test_phe_server_enrollment_response,
+                                                   test_phe_client_password, buffer1, buffer2));
 
     TEST_ASSERT_EQUAL(test_phe_client_enrollment_record.len, vsc_buffer_len(buffer1));
     TEST_ASSERT_EQUAL_MEMORY(
@@ -92,8 +83,10 @@ test__enroll_account__mocked_rnd__should_match(void) {
 void
 test__verify_password__mocked_rnd__should_match(void) {
     vsce_phe_client_t *client = vsce_phe_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_setup_defaults(client));
 
-    vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key);
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key));
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vsce_phe_client_enrollment_record_len(client));
 
@@ -103,8 +96,9 @@ test__verify_password__mocked_rnd__should_match(void) {
     vsce_phe_client_release_random(client);
     vsce_phe_client_take_random(client, vscf_fake_random_impl(fake_random));
 
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_create_verify_password_request(client, test_phe_client_password,
-                                            test_phe_client_enrollment_record, buffer));
+    TEST_ASSERT_EQUAL(
+            vsce_status_SUCCESS, vsce_phe_client_create_verify_password_request(
+                                         client, test_phe_client_password, test_phe_client_enrollment_record, buffer));
 
     TEST_ASSERT_EQUAL(test_phe_client_verify_password_req.len, vsc_buffer_len(buffer));
     TEST_ASSERT_EQUAL_MEMORY(
@@ -117,8 +111,10 @@ test__verify_password__mocked_rnd__should_match(void) {
 void
 test__verify_password__mocked_rnd_invalid_pwd__should_match(void) {
     vsce_phe_client_t *client = vsce_phe_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_setup_defaults(client));
 
-    vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key);
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key));
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vsce_phe_client_enrollment_record_len(client));
 
@@ -128,8 +124,9 @@ test__verify_password__mocked_rnd_invalid_pwd__should_match(void) {
     vsce_phe_client_release_random(client);
     vsce_phe_client_take_random(client, vscf_fake_random_impl(fake_random));
 
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_create_verify_password_request(client, test_phe_client_bad_password,
-                                            test_phe_client_enrollment_record, buffer));
+    TEST_ASSERT_EQUAL(
+            vsce_status_SUCCESS, vsce_phe_client_create_verify_password_request(client, test_phe_client_bad_password,
+                                         test_phe_client_enrollment_record, buffer));
 
     TEST_ASSERT_EQUAL(test_phe_client_verify_bad_password_req.len, vsc_buffer_len(buffer));
     TEST_ASSERT_EQUAL_MEMORY(
@@ -142,14 +139,16 @@ test__verify_password__mocked_rnd_invalid_pwd__should_match(void) {
 void
 test__check_response__mocked_rnd__should_match(void) {
     vsce_phe_client_t *client = vsce_phe_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_setup_defaults(client));
 
-    vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key);
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key));
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
 
-    TEST_ASSERT_EQUAL(
-            vsce_SUCCESS, vsce_phe_client_check_response_and_decrypt(client, test_phe_client_password,
-                                  test_phe_client_enrollment_record, test_phe_server_verify_password_resp, buffer));
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_phe_client_check_response_and_decrypt(client, test_phe_client_password,
+                    test_phe_client_enrollment_record, test_phe_server_verify_password_resp, buffer));
 
     TEST_ASSERT_EQUAL(test_phe_client_record_key.len, vsc_buffer_len(buffer));
     TEST_ASSERT_EQUAL_MEMORY(test_phe_client_record_key.bytes, vsc_buffer_bytes(buffer), vsc_buffer_len(buffer));
@@ -161,14 +160,16 @@ test__check_response__mocked_rnd__should_match(void) {
 void
 test__check_response__mocked_rnd_invalid_pwd__should_match(void) {
     vsce_phe_client_t *client = vsce_phe_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_setup_defaults(client));
 
-    vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key);
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key));
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
 
-    TEST_ASSERT_EQUAL(
-            vsce_SUCCESS, vsce_phe_client_check_response_and_decrypt(client, test_phe_client_bad_password,
-                                  test_phe_client_enrollment_record, test_phe_server_verify_bad_password_resp, buffer));
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_phe_client_check_response_and_decrypt(client, test_phe_client_bad_password,
+                    test_phe_client_enrollment_record, test_phe_server_verify_bad_password_resp, buffer));
 
     TEST_ASSERT_EQUAL(0, vsc_buffer_len(buffer));
 
@@ -179,14 +180,17 @@ test__check_response__mocked_rnd_invalid_pwd__should_match(void) {
 void
 test__rotate_key__test_vector__should_match(void) {
     vsce_phe_client_t *client = vsce_phe_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_setup_defaults(client));
 
-    vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key);
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key));
 
     vsc_buffer_t *buffer1, *buffer2;
     buffer1 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     buffer2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_rotate_keys(client, test_phe_server_token, buffer1, buffer2));
+    TEST_ASSERT_EQUAL(
+            vsce_status_SUCCESS, vsce_phe_client_rotate_keys(client, test_phe_server_token, buffer1, buffer2));
 
     TEST_ASSERT_EQUAL(test_phe_client_rotated_client_sk.len, vsc_buffer_len(buffer1));
     TEST_ASSERT_EQUAL_MEMORY(
@@ -204,13 +208,15 @@ test__rotate_key__test_vector__should_match(void) {
 void
 test__update_record__test_vector__should_match(void) {
     vsce_phe_client_t *client = vsce_phe_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_setup_defaults(client));
 
-    vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key);
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key));
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vsce_phe_client_enrollment_record_len(client));
 
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_update_enrollment_record(
-                                            client, test_phe_client_enrollment_record, test_phe_server_token, buffer));
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_client_update_enrollment_record(client,
+                                                   test_phe_client_enrollment_record, test_phe_server_token, buffer));
 
     TEST_ASSERT_EQUAL(test_phe_client_updated_record.len, vsc_buffer_len(buffer));
     TEST_ASSERT_EQUAL_MEMORY(test_phe_client_updated_record.bytes, vsc_buffer_bytes(buffer), vsc_buffer_len(buffer));

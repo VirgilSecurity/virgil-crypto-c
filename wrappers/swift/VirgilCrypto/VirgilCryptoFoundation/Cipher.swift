@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Provide interface for symmetric ciphers.
 @objc(VSCFCipher) public protocol Cipher : Encrypt, Decrypt, CipherInfo {
@@ -56,183 +55,20 @@ import VirgilCryptoCommon
     @objc func update(data: Data) -> Data
 
     /// Return buffer length required to hold an output of the methods
-    /// "update" or "finish".
+    /// "update" or "finish" in an current mode.
     /// Pass zero length to define buffer length of the method "finish".
     @objc func outLen(dataLen: Int) -> Int
 
-    /// Accomplish encryption or decryption process.
-    @objc func finish() throws -> Data
-}
-
-/// Implement interface methods
-@objc(VSCFCipherProxy) internal class CipherProxy: NSObject, Cipher {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
-    @objc public var nonceLen: Int {
-        return vscf_cipher_info_nonce_len(vscf_cipher_info_api(self.c_ctx))
-    }
-
-    /// Cipher key length in bytes.
-    @objc public var keyLen: Int {
-        return vscf_cipher_info_key_len(vscf_cipher_info_api(self.c_ctx))
-    }
-
-    /// Cipher key length in bits.
-    @objc public var keyBitlen: Int {
-        return vscf_cipher_info_key_bitlen(vscf_cipher_info_api(self.c_ctx))
-    }
-
-    /// Cipher block length in bytes.
-    @objc public var blockLen: Int {
-        return vscf_cipher_info_block_len(vscf_cipher_info_api(self.c_ctx))
-    }
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Encrypt given data.
-    @objc public func encrypt(data: Data) throws -> Data {
-        let outCount = self.encryptedLen(dataLen: data.count)
-        var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(outBuf)
-        }
-
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
-                vsc_buffer_init(outBuf)
-                vsc_buffer_use(outBuf, outPointer, outCount)
-                return vscf_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
-            })
-        })
-        out.count = vsc_buffer_len(outBuf)
-
-        try FoundationError.handleError(fromC: proxyResult)
-
-        return out
-    }
-
-    /// Calculate required buffer length to hold the encrypted data.
-    @objc public func encryptedLen(dataLen: Int) -> Int {
-        let proxyResult = vscf_encrypt_encrypted_len(self.c_ctx, dataLen)
-
-        return proxyResult
-    }
-
-    /// Decrypt given data.
-    @objc public func decrypt(data: Data) throws -> Data {
-        let outCount = self.decryptedLen(dataLen: data.count)
-        var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(outBuf)
-        }
-
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
-                vsc_buffer_init(outBuf)
-                vsc_buffer_use(outBuf, outPointer, outCount)
-                return vscf_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
-            })
-        })
-        out.count = vsc_buffer_len(outBuf)
-
-        try FoundationError.handleError(fromC: proxyResult)
-
-        return out
-    }
-
-    /// Calculate required buffer length to hold the decrypted data.
-    @objc public func decryptedLen(dataLen: Int) -> Int {
-        let proxyResult = vscf_decrypt_decrypted_len(self.c_ctx, dataLen)
-
-        return proxyResult
-    }
-
-    /// Setup IV or nonce.
-    @objc public func setNonce(nonce: Data) {
-        nonce.withUnsafeBytes({ (noncePointer: UnsafePointer<byte>) -> Void in
-            vscf_cipher_set_nonce(self.c_ctx, vsc_data(noncePointer, nonce.count))
-        })
-    }
-
-    /// Set cipher encryption / decryption key.
-    @objc public func setKey(key: Data) {
-        key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Void in
-            vscf_cipher_set_key(self.c_ctx, vsc_data(keyPointer, key.count))
-        })
-    }
-
-    /// Start sequential encryption.
-    @objc public func startEncryption() {
-        vscf_cipher_start_encryption(self.c_ctx)
-    }
-
-    /// Start sequential decryption.
-    @objc public func startDecryption() {
-        vscf_cipher_start_decryption(self.c_ctx)
-    }
-
-    /// Process encryption or decryption of the given data chunk.
-    @objc public func update(data: Data) -> Data {
-        let outCount = self.outLen(dataLen: data.count)
-        var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(outBuf)
-        }
-
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> Void in
-                vsc_buffer_init(outBuf)
-                vsc_buffer_use(outBuf, outPointer, outCount)
-                vscf_cipher_update(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
-            })
-        })
-        out.count = vsc_buffer_len(outBuf)
-
-        return out
-    }
+    /// Return buffer length required to hold an output of the methods
+    /// "update" or "finish" in an encryption mode.
+    /// Pass zero length to define buffer length of the method "finish".
+    @objc func encryptedOutLen(dataLen: Int) -> Int
 
     /// Return buffer length required to hold an output of the methods
-    /// "update" or "finish".
+    /// "update" or "finish" in an decryption mode.
     /// Pass zero length to define buffer length of the method "finish".
-    @objc public func outLen(dataLen: Int) -> Int {
-        let proxyResult = vscf_cipher_out_len(self.c_ctx, dataLen)
-
-        return proxyResult
-    }
+    @objc func decryptedOutLen(dataLen: Int) -> Int
 
     /// Accomplish encryption or decryption process.
-    @objc public func finish() throws -> Data {
-        let outCount = self.outLen(dataLen: 0)
-        var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(outBuf)
-        }
-
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
-            vsc_buffer_init(outBuf)
-            vsc_buffer_use(outBuf, outPointer, outCount)
-            return vscf_cipher_finish(self.c_ctx, outBuf)
-        })
-        out.count = vsc_buffer_len(outBuf)
-
-        try FoundationError.handleError(fromC: proxyResult)
-
-        return out
-    }
+    @objc func finish() throws -> Data
 }

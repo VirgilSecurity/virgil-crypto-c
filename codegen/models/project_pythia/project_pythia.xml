@@ -6,10 +6,10 @@
         prefix="vscp"
         path="../library/pythia/"
         work_path="generated/pythia/"
-        cmake_target="pythia_wrap"
+        wrappers="java,js,swift"
         >
 
-    <version major="0" minor="3" patch="0"/>
+    <version major="0" minor="7" patch="0"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.
@@ -49,25 +49,20 @@
 
     <require project="common" feature="library"/>
     <require library="mbedtls" feature="library"/>
-
-    <feature name="multi thread" default="on">
-        Enable multi-threading safety for Pythia library.
-    </feature>
+    <require library="relic" feature="library"/>
 
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
 
-    <enum name="error"/>
+    <enum name="status"/>
 
     <class name="pythia"/>
 
     <error_message_getter success="0">
-        <require enum="error"/>
+        <require enum="status"/>
 
         char error_message[48] = {0x00};
         snprintf(error_message, sizeof(error_message), "Unhandled vsc::pythia error -0x%04x", error);
     </error_message_getter>
-
-    <wrapper lang="swift"/>
 </project>

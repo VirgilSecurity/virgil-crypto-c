@@ -32,16 +32,16 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_MESSAGE_H
-#define VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_MESSAGE_H
+#ifndef VIRGIL_CRYPTO_TEST_DATA_RATCHET_MESSAGE_H
+#define VIRGIL_CRYPTO_TEST_DATA_RATCHET_MESSAGE_H
 
 #include "vsc_data.h"
 
-extern const uint8_t test_ratchet_ratchet_message_version;
-extern const vsc_data_t test_ratchet_ratchet_message_message;
+extern const vsc_data_t test_data_ratchet_message_raw_key1;
+extern const vsc_data_t test_data_ratchet_message_raw_key2;
+extern const vsc_data_t test_data_ratchet_message_raw_key3;
+extern const vsc_data_t test_data_ratchet_message_raw_key4;
+extern const vsc_data_t test_data_ratchet_message_raw_key5;
+extern const vsc_data_t test_data_ratchet_message_data;
 
-extern const uint8_t test_ratchet_ratchet_message_version_big;
-extern const vsc_data_t test_ratchet_ratchet_message_message_big;
-
-
-#endif //VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_MESSAGE_H
+#endif //VIRGIL_CRYPTO_TEST_DATA_RATCHET_MESSAGE_H

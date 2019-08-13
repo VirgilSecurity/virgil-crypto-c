@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2018 Virgil Security Inc.
+/// Copyright (C) 2015-2019 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -35,10 +35,9 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
-/// Provide implementation of der deserializer of algorithm information
-@objc(VSCFAlgInfoDerDeserializer) public class AlgInfoDerDeserializer: NSObject, Defaults, AlgInfoDeserializer {
+/// Provide DER deserializer of algorithm information.
+@objc(VSCFAlgInfoDerDeserializer) public class AlgInfoDerDeserializer: NSObject, AlgInfoDeserializer {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -74,18 +73,36 @@ import VirgilCryptoCommon
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_alg_info_der_deserializer_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleError(fromC: proxyResult)
+    @objc public func setupDefaults() {
+        vscf_alg_info_der_deserializer_setup_defaults(self.c_ctx)
     }
 
-    /// Algorithm deserialization algorithm from data
-    @objc public func deserialize(data: Data) -> AlgInfo {
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
-            return vscf_alg_info_der_deserializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count))
+    /// Deserialize by using internal ASN.1 reader.
+    /// Note, that caller code is responsible to reset ASN.1 reader with
+    /// an input buffer.
+    @objc public func deserializeInplace() throws -> AlgInfo {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = vscf_alg_info_der_deserializer_deserialize_inplace(self.c_ctx, &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+    }
+
+    /// Deserialize algorithm from the data.
+    @objc public func deserialize(data: Data) throws -> AlgInfo {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) in
+
+            return vscf_alg_info_der_deserializer_deserialize(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), &error)
         })
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 }

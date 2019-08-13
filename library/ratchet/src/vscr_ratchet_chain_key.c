@@ -64,7 +64,7 @@
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_chain_key_init_ctx(vscr_ratchet_chain_key_t *ratchet_chain_key);
+vscr_ratchet_chain_key_init_ctx(vscr_ratchet_chain_key_t *self);
 
 //
 //  Release all inner resources.
@@ -72,7 +72,7 @@ vscr_ratchet_chain_key_init_ctx(vscr_ratchet_chain_key_t *ratchet_chain_key);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_chain_key_cleanup_ctx(vscr_ratchet_chain_key_t *ratchet_chain_key);
+vscr_ratchet_chain_key_cleanup_ctx(vscr_ratchet_chain_key_t *self);
 
 //
 //  Return size of 'vscr_ratchet_chain_key_t'.
@@ -87,35 +87,35 @@ vscr_ratchet_chain_key_ctx_size(void) {
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_chain_key_init(vscr_ratchet_chain_key_t *ratchet_chain_key) {
+vscr_ratchet_chain_key_init(vscr_ratchet_chain_key_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_chain_key);
+    VSCR_ASSERT_PTR(self);
 
-    vscr_zeroize(ratchet_chain_key, sizeof(vscr_ratchet_chain_key_t));
+    vscr_zeroize(self, sizeof(vscr_ratchet_chain_key_t));
 
-    ratchet_chain_key->refcnt = 1;
+    self->refcnt = 1;
 
-    vscr_ratchet_chain_key_init_ctx(ratchet_chain_key);
+    vscr_ratchet_chain_key_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_chain_key_cleanup(vscr_ratchet_chain_key_t *ratchet_chain_key) {
+vscr_ratchet_chain_key_cleanup(vscr_ratchet_chain_key_t *self) {
 
-    if (ratchet_chain_key == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    if (ratchet_chain_key->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--ratchet_chain_key->refcnt == 0) {
-        vscr_ratchet_chain_key_cleanup_ctx(ratchet_chain_key);
+    if (--self->refcnt == 0) {
+        vscr_ratchet_chain_key_cleanup_ctx(self);
 
-        vscr_zeroize(ratchet_chain_key, sizeof(vscr_ratchet_chain_key_t));
+        vscr_zeroize(self, sizeof(vscr_ratchet_chain_key_t));
     }
 }
 
@@ -125,14 +125,14 @@ vscr_ratchet_chain_key_cleanup(vscr_ratchet_chain_key_t *ratchet_chain_key) {
 VSCR_PUBLIC vscr_ratchet_chain_key_t *
 vscr_ratchet_chain_key_new(void) {
 
-    vscr_ratchet_chain_key_t *ratchet_chain_key = (vscr_ratchet_chain_key_t *) vscr_alloc(sizeof (vscr_ratchet_chain_key_t));
-    VSCR_ASSERT_ALLOC(ratchet_chain_key);
+    vscr_ratchet_chain_key_t *self = (vscr_ratchet_chain_key_t *) vscr_alloc(sizeof (vscr_ratchet_chain_key_t));
+    VSCR_ASSERT_ALLOC(self);
 
-    vscr_ratchet_chain_key_init(ratchet_chain_key);
+    vscr_ratchet_chain_key_init(self);
 
-    ratchet_chain_key->self_dealloc_cb = vscr_dealloc;
+    self->self_dealloc_cb = vscr_dealloc;
 
-    return ratchet_chain_key;
+    return self;
 }
 
 //
@@ -140,18 +140,18 @@ vscr_ratchet_chain_key_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_chain_key_delete(vscr_ratchet_chain_key_t *ratchet_chain_key) {
+vscr_ratchet_chain_key_delete(vscr_ratchet_chain_key_t *self) {
 
-    if (ratchet_chain_key == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    vscr_dealloc_fn self_dealloc_cb = ratchet_chain_key->self_dealloc_cb;
+    vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscr_ratchet_chain_key_cleanup(ratchet_chain_key);
+    vscr_ratchet_chain_key_cleanup(self);
 
-    if (ratchet_chain_key->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(ratchet_chain_key);
+    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(self);
     }
 }
 
@@ -160,27 +160,27 @@ vscr_ratchet_chain_key_delete(vscr_ratchet_chain_key_t *ratchet_chain_key) {
 //  This is a reverse action of the function 'vscr_ratchet_chain_key_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_chain_key_destroy(vscr_ratchet_chain_key_t **ratchet_chain_key_ref) {
+vscr_ratchet_chain_key_destroy(vscr_ratchet_chain_key_t **self_ref) {
 
-    VSCR_ASSERT_PTR(ratchet_chain_key_ref);
+    VSCR_ASSERT_PTR(self_ref);
 
-    vscr_ratchet_chain_key_t *ratchet_chain_key = *ratchet_chain_key_ref;
-    *ratchet_chain_key_ref = NULL;
+    vscr_ratchet_chain_key_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscr_ratchet_chain_key_delete(ratchet_chain_key);
+    vscr_ratchet_chain_key_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_chain_key_t *
-vscr_ratchet_chain_key_shallow_copy(vscr_ratchet_chain_key_t *ratchet_chain_key) {
+vscr_ratchet_chain_key_shallow_copy(vscr_ratchet_chain_key_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_chain_key);
+    VSCR_ASSERT_PTR(self);
 
-    ++ratchet_chain_key->refcnt;
+    ++self->refcnt;
 
-    return ratchet_chain_key;
+    return self;
 }
 
 
@@ -197,9 +197,9 @@ vscr_ratchet_chain_key_shallow_copy(vscr_ratchet_chain_key_t *ratchet_chain_key)
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_chain_key_init_ctx(vscr_ratchet_chain_key_t *ratchet_chain_key) {
+vscr_ratchet_chain_key_init_ctx(vscr_ratchet_chain_key_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_chain_key);
+    VSCR_ASSERT_PTR(self);
 }
 
 //
@@ -208,17 +208,37 @@ vscr_ratchet_chain_key_init_ctx(vscr_ratchet_chain_key_t *ratchet_chain_key) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_chain_key_cleanup_ctx(vscr_ratchet_chain_key_t *ratchet_chain_key) {
+vscr_ratchet_chain_key_cleanup_ctx(vscr_ratchet_chain_key_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_chain_key);
+    VSCR_ASSERT_PTR(self);
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_chain_key_clone(const vscr_ratchet_chain_key_t *ratchet_chain_key, vscr_ratchet_chain_key_t *dst) {
+vscr_ratchet_chain_key_clone(const vscr_ratchet_chain_key_t *self, vscr_ratchet_chain_key_t *dst) {
 
-    VSCR_ASSERT_PTR(ratchet_chain_key);
+    VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(dst);
 
-    dst->index = ratchet_chain_key->index;
-    memcpy(dst->key, ratchet_chain_key->key, vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
+    dst->index = self->index;
+    memcpy(dst->key, self->key, vscr_ratchet_common_hidden_SHARED_KEY_LEN);
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_chain_key_serialize(vscr_ratchet_chain_key_t *self, ChainKey *chain_key_pb) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(chain_key_pb);
+
+    chain_key_pb->index = self->index;
+    memcpy(chain_key_pb->key, self->key, sizeof(self->key));
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_chain_key_deserialize(const ChainKey *chain_key_pb, vscr_ratchet_chain_key_t *chain_key) {
+
+    VSCR_ASSERT_PTR(chain_key);
+    VSCR_ASSERT_PTR(chain_key_pb);
+
+    chain_key->index = chain_key_pb->index;
+    memcpy(chain_key->key, chain_key_pb->key, sizeof(chain_key_pb->key));
 }

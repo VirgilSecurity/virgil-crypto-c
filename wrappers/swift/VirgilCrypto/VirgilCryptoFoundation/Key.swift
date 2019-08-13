@@ -35,56 +35,13 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Common information about asymmetric key.
-@objc(VSCFKey) public protocol Key : CContext {
-
-    /// Return implemented asymmetric key algorithm type.
-    @objc func alg() -> KeyAlg
+@objc(VSCFKey) public protocol Key : Alg {
 
     /// Length of the key in bytes.
     @objc func keyLen() -> Int
 
     /// Length of the key in bits.
     @objc func keyBitlen() -> Int
-}
-
-/// Implement interface methods
-@objc(VSCFKeyProxy) internal class KeyProxy: NSObject, Key {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Return implemented asymmetric key algorithm type.
-    @objc public func alg() -> KeyAlg {
-        let proxyResult = vscf_key_alg(self.c_ctx)
-
-        return KeyAlg.init(fromC: proxyResult)
-    }
-
-    /// Length of the key in bytes.
-    @objc public func keyLen() -> Int {
-        let proxyResult = vscf_key_key_len(self.c_ctx)
-
-        return proxyResult
-    }
-
-    /// Length of the key in bits.
-    @objc public func keyBitlen() -> Int {
-        let proxyResult = vscf_key_key_bitlen(self.c_ctx)
-
-        return proxyResult
-    }
 }

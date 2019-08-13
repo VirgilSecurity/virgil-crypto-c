@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2018 Virgil Security Inc.
+/// Copyright (C) 2015-2019 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -35,9 +35,8 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
-/// Provide simple algorithm information (hash) implementation
+/// Handle simple algorithm information (just id).
 @objc(VSCFSimpleAlgInfo) public class SimpleAlgInfo: NSObject, AlgInfo {
 
     /// Handle underlying C context.
@@ -63,11 +62,11 @@ import VirgilCryptoCommon
         super.init()
     }
 
-    /// Set algorithm identificator
+    /// Create algorithm info with identificator.
     public init(algId: AlgId) {
         let proxyResult = vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)))
 
-        self.c_ctx = proxyResult
+        self.c_ctx = proxyResult!
     }
 
     /// Release underlying C context.
@@ -75,7 +74,7 @@ import VirgilCryptoCommon
         vscf_simple_alg_info_delete(self.c_ctx)
     }
 
-    /// Provide algorithm identificator
+    /// Provide algorithm identificator.
     @objc public func algId() -> AlgId {
         let proxyResult = vscf_simple_alg_info_alg_id(self.c_ctx)
 

@@ -73,6 +73,53 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Enumerates all possible implementations within crypto library.
+//
+enum vscf_impl_tag_t {
+    vscf_impl_tag_BEGIN = 0,
+    vscf_impl_tag_AES256_CBC,
+    vscf_impl_tag_AES256_GCM,
+    vscf_impl_tag_ALG_INFO_DER_DESERIALIZER,
+    vscf_impl_tag_ALG_INFO_DER_SERIALIZER,
+    vscf_impl_tag_ASN1RD,
+    vscf_impl_tag_ASN1WR,
+    vscf_impl_tag_CIPHER_ALG_INFO,
+    vscf_impl_tag_CTR_DRBG,
+    vscf_impl_tag_CURVE25519_PRIVATE_KEY,
+    vscf_impl_tag_CURVE25519_PUBLIC_KEY,
+    vscf_impl_tag_ECIES,
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
+    vscf_impl_tag_ED25519_PUBLIC_KEY,
+    vscf_impl_tag_ENTROPY_ACCUMULATOR,
+    vscf_impl_tag_FAKE_RANDOM,
+    vscf_impl_tag_HASH_BASED_ALG_INFO,
+    vscf_impl_tag_HKDF,
+    vscf_impl_tag_HMAC,
+    vscf_impl_tag_KDF1,
+    vscf_impl_tag_KDF2,
+    vscf_impl_tag_KEY_MATERIAL_RNG,
+    vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER,
+    vscf_impl_tag_PBE_ALG_INFO,
+    vscf_impl_tag_PKCS5_PBES2,
+    vscf_impl_tag_PKCS5_PBKDF2,
+    vscf_impl_tag_PKCS8_DER_DESERIALIZER,
+    vscf_impl_tag_PKCS8_DER_SERIALIZER,
+    vscf_impl_tag_PKCS8_DESERIALIZER,
+    vscf_impl_tag_PKCS8_SERIALIZER,
+    vscf_impl_tag_RSA_PRIVATE_KEY,
+    vscf_impl_tag_RSA_PUBLIC_KEY,
+    vscf_impl_tag_SALTED_KDF_ALG_INFO,
+    vscf_impl_tag_SEED_ENTROPY_SOURCE,
+    vscf_impl_tag_SHA224,
+    vscf_impl_tag_SHA256,
+    vscf_impl_tag_SHA384,
+    vscf_impl_tag_SHA512,
+    vscf_impl_tag_SIMPLE_ALG_INFO,
+    vscf_impl_tag_END
+};
+typedef enum vscf_impl_tag_t vscf_impl_tag_t;
+
+//
 //  Generic type for any 'implementation'.
 //
 typedef struct vscf_impl_t vscf_impl_t;
@@ -84,6 +131,12 @@ typedef struct vscf_impl_t vscf_impl_t;
 //
 VSCF_PUBLIC const vscf_api_t *
 vscf_impl_api(const vscf_impl_t *impl, vscf_api_tag_t api_tag);
+
+//
+//  Return unique 'Implementation TAG'.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_impl_tag(const vscf_impl_t *impl);
 
 //
 //  Cleanup implementation object and it's dependencies.

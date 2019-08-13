@@ -83,18 +83,47 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //
     vscf_api_tag_ASN1_WRITER,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ASN1WR,
+    //
     //  Reset all internal states and prepare to new ASN.1 writing operations.
     //
     (vscf_asn1_writer_api_reset_fn)vscf_asn1wr_reset,
     //
-    //  Move written data to the buffer beginning and forbid further operations.
-    //  Returns written size in bytes.
+    //  Finalize writing and forbid further operations.
+    //
+    //  Note, that ASN.1 structure is always written to the buffer end, and
+    //  if argument "do not adjust" is false, then data is moved to the
+    //  beginning, otherwise - data is left at the buffer end.
+    //
+    //  Returns length of the written bytes.
     //
     (vscf_asn1_writer_api_finish_fn)vscf_asn1wr_finish,
     //
-    //  Return last error.
+    //  Returns pointer to the inner buffer.
     //
-    (vscf_asn1_writer_api_error_fn)vscf_asn1wr_error,
+    (vscf_asn1_writer_api_bytes_fn)vscf_asn1wr_bytes,
+    //
+    //  Returns total inner buffer length.
+    //
+    (vscf_asn1_writer_api_len_fn)vscf_asn1wr_len,
+    //
+    //  Returns how many bytes were already written to the ASN.1 structure.
+    //
+    (vscf_asn1_writer_api_written_len_fn)vscf_asn1wr_written_len,
+    //
+    //  Returns how many bytes are available for writing.
+    //
+    (vscf_asn1_writer_api_unwritten_len_fn)vscf_asn1wr_unwritten_len,
+    //
+    //  Return true if status is not "success".
+    //
+    (vscf_asn1_writer_api_has_error_fn)vscf_asn1wr_has_error,
+    //
+    //  Return error code.
+    //
+    (vscf_asn1_writer_api_status_fn)vscf_asn1wr_status,
     //
     //  Move writing position backward for the given length.
     //  Return current writing position.
@@ -105,6 +134,11 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //  Return count of written bytes.
     //
     (vscf_asn1_writer_api_write_tag_fn)vscf_asn1wr_write_tag,
+    //
+    //  Write context-specific ASN.1 tag.
+    //  Return count of written bytes.
+    //
+    (vscf_asn1_writer_api_write_context_tag_fn)vscf_asn1wr_write_context_tag,
     //
     //  Write length of the following data.
     //  Return count of written bytes.
@@ -213,6 +247,10 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
 //
 static const vscf_impl_info_t info = {
     //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_ASN1WR,
+    //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
     //
@@ -231,16 +269,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_asn1wr_init(vscf_asn1wr_t *asn1wr) {
+vscf_asn1wr_init(vscf_asn1wr_t *self) {
 
-    VSCF_ASSERT_PTR(asn1wr);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(asn1wr, sizeof(vscf_asn1wr_t));
+    vscf_zeroize(self, sizeof(vscf_asn1wr_t));
 
-    asn1wr->info = &info;
-    asn1wr->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_asn1wr_init_ctx(asn1wr);
+    vscf_asn1wr_init_ctx(self);
 }
 
 //
@@ -248,23 +286,23 @@ vscf_asn1wr_init(vscf_asn1wr_t *asn1wr) {
 //  This is a reverse action of the function 'vscf_asn1wr_init()'.
 //
 VSCF_PUBLIC void
-vscf_asn1wr_cleanup(vscf_asn1wr_t *asn1wr) {
+vscf_asn1wr_cleanup(vscf_asn1wr_t *self) {
 
-    if (asn1wr == NULL || asn1wr->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (asn1wr->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--asn1wr->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_asn1wr_cleanup_ctx(asn1wr);
+    vscf_asn1wr_cleanup_ctx(self);
 
-    vscf_zeroize(asn1wr, sizeof(vscf_asn1wr_t));
+    vscf_zeroize(self, sizeof(vscf_asn1wr_t));
 }
 
 //
@@ -274,12 +312,12 @@ vscf_asn1wr_cleanup(vscf_asn1wr_t *asn1wr) {
 VSCF_PUBLIC vscf_asn1wr_t *
 vscf_asn1wr_new(void) {
 
-    vscf_asn1wr_t *asn1wr = (vscf_asn1wr_t *) vscf_alloc(sizeof (vscf_asn1wr_t));
-    VSCF_ASSERT_ALLOC(asn1wr);
+    vscf_asn1wr_t *self = (vscf_asn1wr_t *) vscf_alloc(sizeof (vscf_asn1wr_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_asn1wr_init(asn1wr);
+    vscf_asn1wr_init(self);
 
-    return asn1wr;
+    return self;
 }
 
 //
@@ -287,12 +325,12 @@ vscf_asn1wr_new(void) {
 //  This is a reverse action of the function 'vscf_asn1wr_new()'.
 //
 VSCF_PUBLIC void
-vscf_asn1wr_delete(vscf_asn1wr_t *asn1wr) {
+vscf_asn1wr_delete(vscf_asn1wr_t *self) {
 
-    vscf_asn1wr_cleanup(asn1wr);
+    vscf_asn1wr_cleanup(self);
 
-    if (asn1wr && (asn1wr->refcnt == 0)) {
-        vscf_dealloc(asn1wr);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -302,14 +340,14 @@ vscf_asn1wr_delete(vscf_asn1wr_t *asn1wr) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_asn1wr_destroy(vscf_asn1wr_t **asn1wr_ref) {
+vscf_asn1wr_destroy(vscf_asn1wr_t **self_ref) {
 
-    VSCF_ASSERT_PTR(asn1wr_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_asn1wr_t *asn1wr = *asn1wr_ref;
-    *asn1wr_ref = NULL;
+    vscf_asn1wr_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_asn1wr_delete(asn1wr);
+    vscf_asn1wr_delete(self);
 }
 
 //
@@ -317,10 +355,10 @@ vscf_asn1wr_destroy(vscf_asn1wr_t **asn1wr_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_asn1wr_t *
-vscf_asn1wr_shallow_copy(vscf_asn1wr_t *asn1wr) {
+vscf_asn1wr_shallow_copy(vscf_asn1wr_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_asn1wr_t *)vscf_impl_shallow_copy((vscf_impl_t *)asn1wr);
+    return (vscf_asn1wr_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -336,10 +374,10 @@ vscf_asn1wr_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_asn1wr_impl(vscf_asn1wr_t *asn1wr) {
+vscf_asn1wr_impl(vscf_asn1wr_t *self) {
 
-    VSCF_ASSERT_PTR(asn1wr);
-    return (vscf_impl_t *)(asn1wr);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *

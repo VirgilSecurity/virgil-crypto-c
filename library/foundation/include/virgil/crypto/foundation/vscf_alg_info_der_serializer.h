@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -55,7 +55,6 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -95,20 +94,20 @@ vscf_alg_info_der_serializer_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_info_der_serializer_impl(vscf_alg_info_der_serializer_t *alg_info_der_serializer);
+vscf_alg_info_der_serializer_impl(vscf_alg_info_der_serializer_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_init(vscf_alg_info_der_serializer_t *alg_info_der_serializer);
+vscf_alg_info_der_serializer_init(vscf_alg_info_der_serializer_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_alg_info_der_serializer_init()'.
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_cleanup(vscf_alg_info_der_serializer_t *alg_info_der_serializer);
+vscf_alg_info_der_serializer_cleanup(vscf_alg_info_der_serializer_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -122,7 +121,7 @@ vscf_alg_info_der_serializer_new(void);
 //  This is a reverse action of the function 'vscf_alg_info_der_serializer_new()'.
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_delete(vscf_alg_info_der_serializer_t *alg_info_der_serializer);
+vscf_alg_info_der_serializer_delete(vscf_alg_info_der_serializer_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -130,55 +129,60 @@ vscf_alg_info_der_serializer_delete(vscf_alg_info_der_serializer_t *alg_info_der
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_destroy(vscf_alg_info_der_serializer_t **alg_info_der_serializer_ref);
+vscf_alg_info_der_serializer_destroy(vscf_alg_info_der_serializer_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_alg_info_der_serializer_t *
-vscf_alg_info_der_serializer_shallow_copy(vscf_alg_info_der_serializer_t *alg_info_der_serializer);
+vscf_alg_info_der_serializer_shallow_copy(vscf_alg_info_der_serializer_t *self);
 
 //
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_use_asn1_writer(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        vscf_impl_t *asn1_writer);
+vscf_alg_info_der_serializer_use_asn1_writer(vscf_alg_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
 
 //
 //  Setup dependency to the interface 'asn1 writer' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_take_asn1_writer(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        vscf_impl_t *asn1_writer);
+vscf_alg_info_der_serializer_take_asn1_writer(vscf_alg_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
 
 //
 //  Release dependency to the interface 'asn1 writer'.
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_release_asn1_writer(vscf_alg_info_der_serializer_t *alg_info_der_serializer);
+vscf_alg_info_der_serializer_release_asn1_writer(vscf_alg_info_der_serializer_t *self);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *alg_info_der_serializer);
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *self);
 
 //
-//  Return buffer size enough to hold serialized algorithm
+//  Serialize by using internal ASN.1 writer.
+//  Note, that caller code is responsible to reset ASN.1 writer with
+//  an output buffer.
 //
 VSCF_PUBLIC size_t
-vscf_alg_info_der_serializer_serialize_len(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
-//  Serialize algorithm info to buffer class
+//  Return buffer size enough to hold serialized algorithm.
+//
+VSCF_PUBLIC size_t
+vscf_alg_info_der_serializer_serialized_len(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
+
+//
+//  Serialize algorithm info to buffer class.
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_serialize(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        const vscf_impl_t *alg_info, vsc_buffer_t *out);
+vscf_alg_info_der_serializer_serialize(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info,
+        vsc_buffer_t *out);
 
 
 // --------------------------------------------------------------------------

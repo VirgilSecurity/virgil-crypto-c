@@ -37,15 +37,23 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 project(virgil_crypto_c_pythia_tests VERSION ${virgil_crypto_c_tests_VERSION} LANGUAGES C)
 
 macro(_add_test test)
+    set (ext_libs ${ARGN})
+
     add_executable(${test} ${test}.c)
     target_add_filename_definitions(${test})
-    target_link_libraries(${test} unity test_utils vsc::pythia)
+    target_link_libraries(${test} test_utils vsc::pythia ${ext_libs})
     set_target_properties(${test} PROPERTIES C_STANDARD "99")
     add_test (NAME ${test} COMMAND ${test})
 
-    if(COMMAND add_clangformat)
+    if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
         add_clangformat(${test})
     endif()
 endmacro()
 
-_add_test (test_pythia)
+find_package(Threads REQUIRED)
+
+_add_test(test_pythia)
+_add_test(test_pythia_c)
+_add_test(test_pythia_mt ${CMAKE_THREAD_LIBS_INIT})
+_add_test(test_pythia_w)
+_add_test(benchmark_pythia_c)

@@ -275,10 +275,11 @@ function swift_insert_protocol_method (swift_method)
     my.method_args = swift_format_argument_list(my.swift_method) ?
     my.method_return = swift_format_return_list(my.swift_method) ?
     my.method_throws = my.swift_method.throws ?? "throws" ?
+    my.method_objc = my.swift_method.objc ?? "@objc" ?
 
     swift_insert_description (my.swift_method, 1)
     swift_insert_code("\
-        @objc $(my.swift_method.modifier?:) func $(my.swift_method.name:)($(my.method_args?:)) \
+        $(my.method_objc?:) $(my.swift_method.modifier?:) func $(my.swift_method.name:)($(my.method_args?:)) \
                 $(my.method_throws?:) $(my.method_return?:)
     ", 1)
 endfunction
@@ -291,7 +292,8 @@ function swift_insert_class_constant (swift_constant)
 
     swift_insert_description (my.swift_constant, 1)
     swift_insert_code ("\
-        static let $(my.swift_constant.name:) = $(my.swift_constant.value:);
+        @objc $(my.swift_constant.visibility:) static let $(my.swift_constant.name:): $(my.swift_constant.type:) = \
+             $(my.swift_constant.value:)
     ", 1)
 endfunction
 
@@ -341,10 +343,11 @@ function swift_insert_class_method (swift_method)
     my.method_return = swift_format_return_list(my.swift_method) ?
     my.method_throws = is_true (my.swift_method.throws) ?? "throws" ?
     my.override = is_true (my.swift_method.override) ?? "override" ?
+    my.method_objc = my.swift_method.objc ?? "@objc" ?
 
     swift_insert_description (my.swift_method, 1)
     swift_insert_code("\
-        @objc $(my.swift_method.visibility?:) $(my.swift_method.modifier?:) $(my.override?:) \
+        $(my.method_objc?:) $(my.swift_method.visibility?:) $(my.swift_method.modifier?:) $(my.override?:) \
                 func $(my.swift_method.name:)($(my.method_args?:)) $(my.method_throws?:) $(my.method_return?:) {
     ", 1)
 
@@ -502,24 +505,24 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Generate project files.
 # ---------------------------------------------------------------------------
-function swift_generate_project (source, wrapper)
-    check_arguments (my, "source, wrapper", my)
+function swift_generate_project (swift_project)
+    check_arguments (my, "swift_project", my)
 
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Generate source files from <swift_module/> entities.
 # ---------------------------------------------------------------------------
-function swift_generate_sources (source, wrapper)
-    check_arguments (my, "source, wrapper", my)
+function swift_generate_sources (swift_project)
+    check_arguments (my, "swift_project", my)
 
-    assert_attribute (my.wrapper, "source_dir", my)
+    assert_attribute (my.swift_project, "source_dir", my)
 
-    if -1 = directory.create (my.wrapper.source_dir)
-        echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
+    if -1 = directory.create (my.swift_project.source_dir)
+        echo_fatal ("Can not create directory: $(my.swift_project.source_dir:)")
     endif
 
-    for my.source.swift_module
+    for my.swift_project.swift_module
         echo_trace ("Generate Swift files from <$(name (swift_module)) name = \"$(c_module.name:)\"/>", my)
 
         output swift_module.source_file_path

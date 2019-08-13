@@ -35,10 +35,9 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Implements PKCS#8 key serialization to DER format.
-@objc(VSCFPkcs8DerSerializer) public class Pkcs8DerSerializer: NSObject, Defaults, KeySerializer {
+@objc(VSCFPkcs8DerSerializer) public class Pkcs8DerSerializer: NSObject, KeySerializer {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -74,10 +73,50 @@ import VirgilCryptoCommon
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_pkcs8_der_serializer_setup_defaults(self.c_ctx)
+    @objc public func setupDefaults() {
+        vscf_pkcs8_der_serializer_setup_defaults(self.c_ctx)
+    }
 
-        try FoundationError.handleError(fromC: proxyResult)
+    /// Serialize Public Key by using internal ASN.1 writer.
+    /// Note, that caller code is responsible to reset ASN.1 writer with
+    /// an output buffer.
+    public func serializePublicKeyInplace(publicKey: PublicKey) throws -> Int {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = vscf_pkcs8_der_serializer_serialize_public_key_inplace(self.c_ctx, publicKey.c_ctx, &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return proxyResult
+    }
+
+    /// Serialize Public Key by using internal ASN.1 writer.
+    /// Note, that caller code is responsible to reset ASN.1 writer with
+    /// an output buffer.
+    @objc public func serializePublicKeyInplace(publicKey: PublicKey) throws -> NSNumber {
+        return NSNumber(value: try self.serializePublicKeyInplace(publicKey: publicKey))
+    }
+
+    /// Serialize Private Key by using internal ASN.1 writer.
+    /// Note, that caller code is responsible to reset ASN.1 writer with
+    /// an output buffer.
+    public func serializePrivateKeyInplace(privateKey: PrivateKey) throws -> Int {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = vscf_pkcs8_der_serializer_serialize_private_key_inplace(self.c_ctx, privateKey.c_ctx, &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return proxyResult
+    }
+
+    /// Serialize Private Key by using internal ASN.1 writer.
+    /// Note, that caller code is responsible to reset ASN.1 writer with
+    /// an output buffer.
+    @objc public func serializePrivateKeyInplace(privateKey: PrivateKey) throws -> NSNumber {
+        return NSNumber(value: try self.serializePrivateKeyInplace(privateKey: privateKey))
     }
 
     /// Calculate buffer size enough to hold serialized public key.
@@ -100,14 +139,15 @@ import VirgilCryptoCommon
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
             vsc_buffer_init(outBuf)
-            vsc_buffer_use(outBuf, outPointer, outCount)
+            vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
+
             return vscf_pkcs8_der_serializer_serialize_public_key(self.c_ctx, publicKey.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
     }
@@ -132,14 +172,15 @@ import VirgilCryptoCommon
             vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
             vsc_buffer_init(outBuf)
-            vsc_buffer_use(outBuf, outPointer, outCount)
+            vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
+
             return vscf_pkcs8_der_serializer_serialize_private_key(self.c_ctx, privateKey.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
     }

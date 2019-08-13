@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -74,7 +74,7 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Provide algorithm identificator
+//  Callback. Provide algorithm identificator.
 //
 typedef vscf_alg_id_t (*vscf_alg_info_api_alg_id_fn)(const vscf_impl_t *impl);
 
@@ -88,7 +88,11 @@ struct vscf_alg_info_api_t {
     //
     vscf_api_tag_t api_tag;
     //
-    //  Provide algorithm identificator
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
+    //  Provide algorithm identificator.
     //
     vscf_alg_info_api_alg_id_fn alg_id_cb;
 };

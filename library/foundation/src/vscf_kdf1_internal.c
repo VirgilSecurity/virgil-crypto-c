@@ -55,11 +55,11 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_kdf1_defs.h"
+#include "vscf_alg.h"
+#include "vscf_alg_api.h"
 #include "vscf_kdf.h"
 #include "vscf_kdf_api.h"
-#include "vscf_alg_info_compatible.h"
-#include "vscf_alg_info_compatible_api.h"
-#include "vscf_hash_stream.h"
+#include "vscf_hash.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -77,6 +77,33 @@ static const vscf_api_t *
 vscf_kdf1_find_api(vscf_api_tag_t api_tag);
 
 //
+//  Configuration of the interface API 'alg api'.
+//
+static const vscf_alg_api_t alg_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
+    //
+    vscf_api_tag_ALG,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_KDF1,
+    //
+    //  Provide algorithm identificator.
+    //
+    (vscf_alg_api_alg_id_fn)vscf_kdf1_alg_id,
+    //
+    //  Produce object with algorithm information and configuration parameters.
+    //
+    (vscf_alg_api_produce_alg_info_fn)vscf_kdf1_produce_alg_info,
+    //
+    //  Restore algorithm configuration from the given object.
+    //
+    (vscf_alg_api_restore_alg_info_fn)vscf_kdf1_restore_alg_info
+};
+
+//
 //  Configuration of the interface API 'kdf api'.
 //
 static const vscf_kdf_api_t kdf_api = {
@@ -86,30 +113,23 @@ static const vscf_kdf_api_t kdf_api = {
     //
     vscf_api_tag_KDF,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_KDF1,
+    //
     //  Derive key of the requested length from the given data.
     //
     (vscf_kdf_api_derive_fn)vscf_kdf1_derive
 };
 
 //
-//  Configuration of the interface API 'alg info compatible api'.
-//
-static const vscf_alg_info_compatible_api_t alg_info_compatible_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg_info_compatible' MUST be equal to the 'vscf_api_tag_ALG_INFO_COMPATIBLE'.
-    //
-    vscf_api_tag_ALG_INFO_COMPATIBLE,
-    //
-    //  Produce algorithm information structure
-    //
-    (vscf_alg_info_compatible_api_produce_alg_info_fn)vscf_kdf1_produce_alg_info
-};
-
-//
 //  Compile-time known information about 'kdf1' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_KDF1,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
@@ -129,14 +149,14 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_kdf1_init(vscf_kdf1_t *kdf1) {
+vscf_kdf1_init(vscf_kdf1_t *self) {
 
-    VSCF_ASSERT_PTR(kdf1);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(kdf1, sizeof(vscf_kdf1_t));
+    vscf_zeroize(self, sizeof(vscf_kdf1_t));
 
-    kdf1->info = &info;
-    kdf1->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 }
 
 //
@@ -144,23 +164,23 @@ vscf_kdf1_init(vscf_kdf1_t *kdf1) {
 //  This is a reverse action of the function 'vscf_kdf1_init()'.
 //
 VSCF_PUBLIC void
-vscf_kdf1_cleanup(vscf_kdf1_t *kdf1) {
+vscf_kdf1_cleanup(vscf_kdf1_t *self) {
 
-    if (kdf1 == NULL || kdf1->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (kdf1->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--kdf1->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_kdf1_release_hash(kdf1);
+    vscf_kdf1_release_hash(self);
 
-    vscf_zeroize(kdf1, sizeof(vscf_kdf1_t));
+    vscf_zeroize(self, sizeof(vscf_kdf1_t));
 }
 
 //
@@ -170,12 +190,12 @@ vscf_kdf1_cleanup(vscf_kdf1_t *kdf1) {
 VSCF_PUBLIC vscf_kdf1_t *
 vscf_kdf1_new(void) {
 
-    vscf_kdf1_t *kdf1 = (vscf_kdf1_t *) vscf_alloc(sizeof (vscf_kdf1_t));
-    VSCF_ASSERT_ALLOC(kdf1);
+    vscf_kdf1_t *self = (vscf_kdf1_t *) vscf_alloc(sizeof (vscf_kdf1_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_kdf1_init(kdf1);
+    vscf_kdf1_init(self);
 
-    return kdf1;
+    return self;
 }
 
 //
@@ -183,12 +203,12 @@ vscf_kdf1_new(void) {
 //  This is a reverse action of the function 'vscf_kdf1_new()'.
 //
 VSCF_PUBLIC void
-vscf_kdf1_delete(vscf_kdf1_t *kdf1) {
+vscf_kdf1_delete(vscf_kdf1_t *self) {
 
-    vscf_kdf1_cleanup(kdf1);
+    vscf_kdf1_cleanup(self);
 
-    if (kdf1 && (kdf1->refcnt == 0)) {
-        vscf_dealloc(kdf1);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -198,14 +218,14 @@ vscf_kdf1_delete(vscf_kdf1_t *kdf1) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_kdf1_destroy(vscf_kdf1_t **kdf1_ref) {
+vscf_kdf1_destroy(vscf_kdf1_t **self_ref) {
 
-    VSCF_ASSERT_PTR(kdf1_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_kdf1_t *kdf1 = *kdf1_ref;
-    *kdf1_ref = NULL;
+    vscf_kdf1_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_kdf1_delete(kdf1);
+    vscf_kdf1_delete(self);
 }
 
 //
@@ -213,10 +233,10 @@ vscf_kdf1_destroy(vscf_kdf1_t **kdf1_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_kdf1_t *
-vscf_kdf1_shallow_copy(vscf_kdf1_t *kdf1) {
+vscf_kdf1_shallow_copy(vscf_kdf1_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_kdf1_t *)vscf_impl_shallow_copy((vscf_impl_t *)kdf1);
+    return (vscf_kdf1_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -232,60 +252,60 @@ vscf_kdf1_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_kdf1_impl(vscf_kdf1_t *kdf1) {
+vscf_kdf1_impl(vscf_kdf1_t *self) {
 
-    VSCF_ASSERT_PTR(kdf1);
-    return (vscf_impl_t *)(kdf1);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 //
-//  Setup dependency to the interface 'hash stream' with shared ownership.
+//  Setup dependency to the interface 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_kdf1_use_hash(vscf_kdf1_t *kdf1, vscf_impl_t *hash) {
+vscf_kdf1_use_hash(vscf_kdf1_t *self, vscf_impl_t *hash) {
 
-    VSCF_ASSERT_PTR(kdf1);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(kdf1->hash == NULL);
+    VSCF_ASSERT(self->hash == NULL);
 
-    VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
+    VSCF_ASSERT(vscf_hash_is_implemented(hash));
 
-    kdf1->hash = vscf_impl_shallow_copy(hash);
+    self->hash = vscf_impl_shallow_copy(hash);
 }
 
 //
-//  Setup dependency to the interface 'hash stream' and transfer ownership.
+//  Setup dependency to the interface 'hash' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_kdf1_take_hash(vscf_kdf1_t *kdf1, vscf_impl_t *hash) {
+vscf_kdf1_take_hash(vscf_kdf1_t *self, vscf_impl_t *hash) {
 
-    VSCF_ASSERT_PTR(kdf1);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(kdf1->hash == NULL);
+    VSCF_ASSERT_PTR(self->hash == NULL);
 
-    VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
+    VSCF_ASSERT(vscf_hash_is_implemented(hash));
 
-    kdf1->hash = hash;
+    self->hash = hash;
 }
 
 //
-//  Release dependency to the interface 'hash stream'.
+//  Release dependency to the interface 'hash'.
 //
 VSCF_PUBLIC void
-vscf_kdf1_release_hash(vscf_kdf1_t *kdf1) {
+vscf_kdf1_release_hash(vscf_kdf1_t *self) {
 
-    VSCF_ASSERT_PTR(kdf1);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&kdf1->hash);
+    vscf_impl_destroy(&self->hash);
 }
 
 static const vscf_api_t *
 vscf_kdf1_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
-        case vscf_api_tag_ALG_INFO_COMPATIBLE:
-            return (const vscf_api_t *) &alg_info_compatible_api;
+        case vscf_api_tag_ALG:
+            return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_KDF:
             return (const vscf_api_t *) &kdf_api;
         default:

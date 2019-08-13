@@ -55,7 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error_ctx.h"
+#include "vscf_error.h"
 #include "vscf_raw_key.h"
 #include "vscf_api.h"
 
@@ -91,13 +91,13 @@ typedef struct vscf_key_deserializer_api_t vscf_key_deserializer_api_t;
 //  Deserialize given public key as an interchangeable format to the object.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_key_deserializer_deserialize_public_key(vscf_impl_t *impl, vsc_data_t public_key_data, vscf_error_ctx_t *error);
+vscf_key_deserializer_deserialize_public_key(vscf_impl_t *impl, vsc_data_t public_key_data, vscf_error_t *error);
 
 //
 //  Deserialize given private key as an interchangeable format to the object.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_key_deserializer_deserialize_private_key(vscf_impl_t *impl, vsc_data_t private_key_data, vscf_error_ctx_t *error);
+vscf_key_deserializer_deserialize_private_key(vscf_impl_t *impl, vsc_data_t private_key_data, vscf_error_t *error);
 
 //
 //  Return key deserializer API, or NULL if it is not implemented.

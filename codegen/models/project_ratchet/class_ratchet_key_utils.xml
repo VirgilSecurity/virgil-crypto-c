@@ -1,0 +1,31 @@
+<class name="ratchet key utils" scope="internal" context="internal">
+    Utils class for working with keys formats.
+
+    <require class="ratchet common" scope="public"/>
+    <require class="ratchet common hidden" scope="context"/>
+    <require impl="pkcs8 der deserializer" scope="private" project="foundation"/>
+    <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
+    <require module="buffer defs" scope="private" project="common"/>
+
+    <property name="pkcs8" impl="pkcs8 der deserializer" project="foundation"/>
+
+    <method name="extract ratchet public key">
+        <argument name="data" class="data"/>
+        <argument name="ed25519" type="boolean"/>
+        <argument name="curve25519" type="boolean"/>
+        <argument name="convert to curve25519" type="boolean"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="buffer" access="disown"/>
+    </method>
+
+    <method name="extract ratchet private key">
+        <argument name="data" class="data"/>
+        <argument name="ed25519" type="boolean"/>
+        <argument name="curve25519" type="boolean"/>
+        <argument name="convert to curve25519" type="boolean"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="buffer" access="disown"/>
+    </method>
+</class>

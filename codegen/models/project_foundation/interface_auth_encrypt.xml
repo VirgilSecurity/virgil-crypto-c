@@ -5,7 +5,7 @@
 
     <method name="auth encrypt">
         Encrypt given data.
-        If 'tag' is not give, then it will written to the 'enc'.
+        If 'tag' is not given, then it will written to the 'enc'.
 
         <argument name="data" class="data"/>
         <argument name="auth data" class="data"/>
@@ -21,7 +21,7 @@
             <length constant="auth tag len"/>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
 

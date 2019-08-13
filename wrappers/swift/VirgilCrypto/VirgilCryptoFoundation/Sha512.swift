@@ -35,10 +35,9 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// This is MbedTLS implementation of SHA512.
-@objc(VSCFSha512) public class Sha512: NSObject, HashInfo, Hash, HashStream {
+@objc(VSCFSha512) public class Sha512: NSObject, Alg, Hash {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -74,11 +73,25 @@ import VirgilCryptoCommon
         vscf_sha512_delete(self.c_ctx)
     }
 
-    /// Return implemented hash algorithm type.
-    @objc public func alg() -> HashAlg {
-        let proxyResult = vscf_sha512_alg()
+    /// Provide algorithm identificator.
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_sha512_alg_id(self.c_ctx)
 
-        return HashAlg.init(fromC: proxyResult)
+        return AlgId.init(fromC: proxyResult)
+    }
+
+    /// Produce object with algorithm information and configuration parameters.
+    @objc public func produceAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_sha512_produce_alg_info(self.c_ctx)
+
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+    }
+
+    /// Restore algorithm configuration from the given object.
+    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
+        let proxyResult = vscf_sha512_restore_alg_info(self.c_ctx, algInfo.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Calculate hash over given data.
@@ -90,11 +103,12 @@ import VirgilCryptoCommon
             vsc_buffer_delete(digestBuf)
         }
 
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
-            digest.withUnsafeMutableBytes({ (digestPointer: UnsafeMutablePointer<byte>) -> Void in
+        data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
+            digest.withUnsafeMutableBytes({ (digestPointer: UnsafeMutableRawBufferPointer) -> Void in
                 vsc_buffer_init(digestBuf)
-                vsc_buffer_use(digestBuf, digestPointer, digestCount)
-                vscf_sha512_hash(vsc_data(dataPointer, data.count), digestBuf)
+                vsc_buffer_use(digestBuf, digestPointer.bindMemory(to: byte.self).baseAddress, digestCount)
+
+                vscf_sha512_hash(vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), digestBuf)
             })
         })
         digest.count = vsc_buffer_len(digestBuf)
@@ -109,8 +123,9 @@ import VirgilCryptoCommon
 
     /// Add given data to the hash.
     @objc public func update(data: Data) {
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
-            vscf_sha512_update(self.c_ctx, vsc_data(dataPointer, data.count))
+        data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
+
+            vscf_sha512_update(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count))
         })
     }
 
@@ -123,9 +138,10 @@ import VirgilCryptoCommon
             vsc_buffer_delete(digestBuf)
         }
 
-        digest.withUnsafeMutableBytes({ (digestPointer: UnsafeMutablePointer<byte>) -> Void in
+        digest.withUnsafeMutableBytes({ (digestPointer: UnsafeMutableRawBufferPointer) -> Void in
             vsc_buffer_init(digestBuf)
-            vsc_buffer_use(digestBuf, digestPointer, digestCount)
+            vsc_buffer_use(digestBuf, digestPointer.bindMemory(to: byte.self).baseAddress, digestCount)
+
             vscf_sha512_finish(self.c_ctx, digestBuf)
         })
         digest.count = vsc_buffer_len(digestBuf)

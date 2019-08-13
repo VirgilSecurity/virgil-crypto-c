@@ -45,15 +45,14 @@
 
 include_guard()
 
-if(NOT TARGET pythia_wrap)
-    message(FATAL_ERROR "Expected target 'pythia_wrap' to be defined first.")
+if(NOT TARGET pythia)
+    message(FATAL_ERROR "Expected target 'pythia' to be defined first.")
 endif()
 
-target_compile_definitions(pythia_wrap
+target_compile_definitions(pythia
         PUBLIC
             $<BUILD_INTERFACE:VSCP_INTERNAL_BUILD>
             "VSCP_LIBRARY=$<BOOL:${VSCP_LIBRARY}>"
-            "VSCP_MULTI_THREAD=$<BOOL:${VSCP_MULTI_THREAD}>"
             "VSCP_PYTHIA=$<BOOL:${VSCP_PYTHIA}>"
         PRIVATE
             $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCP_BUILD_SHARED_LIBS>

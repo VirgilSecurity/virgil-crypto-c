@@ -107,6 +107,11 @@ struct vsc_buffer_t {
     //  Defines that buffer is the owner of the underlying bytes.
     //
     bool is_owner;
+    //
+    //  Defines that buffer is in the reverse mode.
+    //  This means that written data is located from the buffer ending.
+    //
+    bool is_reverse;
 };
 
 

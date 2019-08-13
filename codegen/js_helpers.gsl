@@ -1,0 +1,66 @@
+.template 0
+
+gsl from "common.gsl"
+gsl from "js_constants.gsl"
+
+function js_out(str, indent_level, indent_size)
+  my.out = my.str
+  my.out = string_trim(my.out)
+  my.custom_indent_level = 1
+  if defined(my.indent_level)
+    my.custom_indent_level = my.indent_level
+  endif
+  my.custom_indent_size = global.js_indent_size
+  if defined(my.indent_size)
+    my.custom_indent_size = my.indent_size
+  endif
+  my.out = string_indent(my.out, my.indent_level, my.custom_indent_size)
+  out(my.out)
+endfunction
+
+function js_create_indent_levels(indent_level)
+  my.custom_indent_level = defined(my.indent_level) ?? my.indent_level ? 0
+  my.indent_levels = XML.new()
+  my.indent_levels.first = my.custom_indent_level
+  my.indent_levels.second = my.custom_indent_level + 1
+  my.indent_levels.third = my.custom_indent_level + 2
+  my.indent_levels.fourth = my.custom_indent_level + 3
+  return my.indent_levels
+endfunction
+
+function js_method_is_private(method)
+  return (defined(my.method.visibility) & my.method.visibility = "private") | (defined(my.method.declaration) & my.method.declaration = "private")
+endfunction
+
+function js_has_public_scope(component)
+  return defined(my.component.scope) & my.component.scope = "public"
+endfunction
+
+function js_get_project_uid(argument)
+  my.project_uid = ""
+  if defined(my.argument.project)
+    my.project_uid = make_id("project", my.argument.project)
+  endif
+  return my.project_uid
+endfunction
+
+function js_cpp_header_guard(name)
+  return "$(my.name:c,upper)_H"
+endfunction
+
+function js_cpp_class_instance_name(cpp_class)
+  return "$(my.cpp_class.c_name:no)"
+endfunction
+
+function count_js_method_results(js_method)
+  my.results = 0
+  for my.js_method.js_argument where js_argument.type = global.js_argument_type_buffer
+    my.results += 1
+  endfor
+  if defined(my.js_method->js_return) & my.js_method->js_return.type <> global.js_return_type_error_status
+    my.results += 1
+  endif
+  return my.results
+endfunction
+
+endtemplate

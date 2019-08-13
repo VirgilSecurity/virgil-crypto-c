@@ -87,30 +87,6 @@ extern "C" {
     typedef uint8_t byte;
 #endif // BYTE_DEFINED
 
-#define VSCF_VERSION_MAJOR 0
-
-#define VSCF_VERSION_MINOR 3
-
-#define VSCF_VERSION_PATCH 0
-
-#define VSCF_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
-
-#define VSCF_VERSION                \
-        VSCF_VERSION_MAKE (         \
-                VSCF_VERSION_MAJOR, \
-                VSCF_VERSION_MINOR, \
-                VSCF_VERSION_PATCH)
-
-//
-//  Custom implementation of the number ceil algorithm.
-//
-#define VSCF_CEIL(x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
-
-//
-//  Mark argument or function return value as "unused".
-//
-#define VSCF_UNUSED(x) (void)(x)
-
 #if defined(_WIN32) || defined(__CYGWIN__)
 #   ifdef VSCF_BUILD_SHARED_LIBS
 #       ifdef __GNUC__
@@ -136,6 +112,36 @@ extern "C" {
 #       define VSCF_PRIVATE
 #   endif
 #endif
+
+#define VSCF_VERSION_MAJOR 0
+
+#define VSCF_VERSION_MINOR 7
+
+#define VSCF_VERSION_PATCH 0
+
+#define VSCF_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
+
+#define VSCF_VERSION                \
+        VSCF_VERSION_MAKE (         \
+                VSCF_VERSION_MAJOR, \
+                VSCF_VERSION_MINOR, \
+                VSCF_VERSION_PATCH)
+
+#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
+#   define VSCF_NODISCARD __attribute__ ((warn_unused_result))
+#else
+#   define VSCF_NODISCARD
+#endif
+
+//
+//  Custom implementation of the number ceil algorithm.
+//
+#define VSCF_CEIL(x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
+
+//
+//  Mark argument or function return value as "unused".
+//
+#define VSCF_UNUSED(x) (void)(x)
 
 //
 //  Public integral constants.

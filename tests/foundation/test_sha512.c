@@ -43,20 +43,10 @@
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_sha512.h"
+#include "vscf_hash.h"
 #include "vscf_assert.h"
 
 #include "test_data_sha512.h"
-
-
-// --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
-// --------------------------------------------------------------------------
-// clang-format off
-void setUp(void) { }
-void tearDown(void) { }
-void suiteSetUp(void) { }
-int suiteTearDown(int num_failures) { return num_failures; }
-// clang-format on
 
 
 // --------------------------------------------------------------------------
@@ -86,30 +76,27 @@ test__impl__null_arg__call_assert(void) {
 
 
 // --------------------------------------------------------------------------
-// Test implementation of the interface 'hash info'.
-// --------------------------------------------------------------------------
-void
-test__hash_info_api__always__returns_not_null(void) {
-    const vscf_hash_info_api_t *hash_info_api = vscf_sha512_hash_info_api();
-
-    TEST_ASSERT_NOT_NULL(hash_info_api);
-}
-
-
-void
-test__sha512_DIGEST_LEN__always__equals_64(void) {
-    TEST_ASSERT_EQUAL(64, vscf_sha512_DIGEST_LEN);
-}
-
-
-// --------------------------------------------------------------------------
 // Test implementation of the interface 'hash'.
 // --------------------------------------------------------------------------
 void
 test__hash_api__always__returns_not_null(void) {
-    const vscf_hash_api_t *hash_api = vscf_sha512_hash_api();
+    vscf_impl_t *sha512_impl = vscf_sha512_impl(vscf_sha512_new());
+
+    const vscf_hash_api_t *hash_api = vscf_hash_api(sha512_impl);
 
     TEST_ASSERT_NOT_NULL(hash_api);
+
+    vscf_impl_destroy(&sha512_impl);
+}
+
+void
+test__digest_len__always__equals_64(void) {
+    TEST_ASSERT_EQUAL(64, vscf_sha512_DIGEST_LEN);
+}
+
+void
+test__block_len__always__equals_128(void) {
+    TEST_ASSERT_EQUAL(128, vscf_sha512_BLOCK_LEN);
 }
 
 void
@@ -219,8 +206,8 @@ main(void) {
     RUN_TEST(test__impl__valid_arg__returns_not_null);
     RUN_TEST(test__impl__null_arg__call_assert);
 
-    RUN_TEST(test__hash_info_api__always__returns_not_null);
-    RUN_TEST(test__sha512_DIGEST_LEN__always__equals_64);
+    RUN_TEST(test__digest_len__always__equals_64);
+    RUN_TEST(test__block_len__always__equals_128);
 
     RUN_TEST(test__hash_api__always__returns_not_null);
     RUN_TEST(test__hash__vector_1__success);

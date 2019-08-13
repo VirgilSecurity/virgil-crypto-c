@@ -1,89 +1,63 @@
-<class name="ratchet" context="private">
+<class name="ratchet" context="internal" scope="internal">
 
-    <require impl="sha256" project="foundation" scope="private"/>
+    <require impl="sha512" project="foundation" scope="private"/>
     <require impl="hmac" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
+    <require module="buffer defs" scope="private" project="common"/>
 
-    <require class="ratchet common" scope="public"/>
-    <require class="ratchet message key" scope="public"/>
-    <require class="ratchet chain key" scope="public"/>
+    <require class="ratchet common hidden" scope="context"/>
+    <require class="ratchet chain key" scope="private"/>
+    <require class="ratchet receiver chain" scope="private"/>
+    <require module="ratchet message defs" scope="private"/>
+    <require class="ratchet keys" scope="context"/>
 
-    <require header="Message.pb.h" scope="public"/>
+    <require header="RatchetSession.pb.h" scope="public"/>
+    <require header="RatchetMessage.pb.h" scope="public"/>
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 
     <require header="ed25519/ed25519.h" scope="private"/>
 
-    <variable name="ratchet chain key seed" type="unsigned" size="1" declaration="private" definition="private">
-        <array length="derived"/>
-        <value value="0x02"/>
-    </variable>
-
-    <variable name="ratchet message key seed" type="unsigned" size="1" declaration="private" definition="private">
-        <array length="derived"/>
-        <value value="0x01"/>
-    </variable>
-
-    <dependency name="rng" interface="ratchet rng" access="readwrite"/>
-    <dependency name="cipher" class="ratchet cipher" access="readwrite"/>
+    <dependency name="rng" interface="random" project="foundation" has_observers="1"/>
+    <property name="cipher" class="ratchet cipher" access="readwrite"/>
+    <property name="padding" class="ratchet padding" access="readwrite"/>
     <property name="sender chain" class="ratchet sender chain" access="readwrite"/>
-    <property name="receiver chains" class="ratchet receiver chain list node" access="readwrite"/>
-    <property name="skipped message keys" class="ratchet skipped message key list node" access="readwrite"/>
+    <property name="prev sender chain count" type="unsigned" size="4" access="readwrite"/>
+    <property name="receiver chains" class="ratchet receiver chains" access="readwrite"/>
+    <property name="skipped messages" class="ratchet skipped messages" access="readwrite"/>
     <property name="root key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_shared_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_shared_key_len)"/>
     </property>
-
-    <method name="create chain key" declaration="private" is_const="1">
-        <argument name="private key" class="buffer" access="readonly"/>
-        <argument name="public key" class="buffer" access="readonly"/>
-
-        <argument name="new root key" type="byte" access="readwrite">
-            <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_shared_key_length)"/>
-        </argument>
-
-        <argument name="chain key" class="ratchet chain key" access="readwrite"/>
-
-        <return enum="error"/>
-    </method>
-
-    <method name="advance chain key" declaration="private" is_static="1">
-        <argument name="chain key" class="ratchet chain key" access="readwrite"/>
-    </method>
-
-    <method name="create message key" declaration="private" is_static="1">
-        <argument name="chain key" class="ratchet chain key"/>
-
-        <return class="ratchet message key" access="readwrite"/>
-    </method>
 
     <method name="decrypt for existing chain" declaration="private">
         <argument name="chain key" class="ratchet chain key"/>
         <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
+        <argument name="regular message header" class="RegularMessageHeader" library="nanopb" access="readonly"/>
         <argument name="buffer" class="buffer"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="decrypt for new chain" declaration="private">
         <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
+        <argument name="regular message header" class="RegularMessageHeader" library="nanopb" access="readonly"/>
         <argument name="buffer" class="buffer"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="respond">
         <argument name="shared secret" class="data"/>
-        <argument name="ratchet public key" class="buffer" access="retain"/>
         <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
+        <argument name="regular message header" class="RegularMessageHeader" library="nanopb" access="readonly"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="initiate">
         <argument name="shared secret" class="data"/>
-        <argument name="ratchet private key" class="buffer" access="retain"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="encrypt len">
@@ -94,13 +68,10 @@
 
     <method name="encrypt">
         <argument name="plain text" class="data"/>
-        <argument name="regular message" class="RegularMessage" library="nanopb" access="readwrite">
-            <length method="encrypt len">
-                <proxy argument="plain text" to="plain text len" cast="data_length"/>
-            </length>
-        </argument>
+        <argument name="regular message" class="RegularMessage" library="nanopb" access="readwrite"/>
+        <argument name="regular message header" class="RegularMessageHeader" library="nanopb" access="readwrite"/>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
     <method name="decrypt len">
@@ -110,57 +81,30 @@
     </method>
 
     <method name="decrypt">
-        <argument name="regular message" class="RegularMessage" library="nanopb" access="readwrite"/>
+        <argument name="regular message" class="RegularMessage" library="nanopb" access="readonly"/>
+        <argument name="regular message header" class="RegularMessageHeader" library="nanopb" access="readonly"/>
         <argument name="plain text" class="buffer">
             <length method="decrypt len">
                 <proxy argument="cipher text" to="cipher text len" cast="data_length"/>
             </length>
         </argument>
 
-        <return enum="error"/>
+        <return enum="status"/>
     </method>
 
-    <method name="find receiver chain" declaration="private">
-        <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
+    <method name="generate sender chain keypair" declaration="private">
+        <argument name="sender chain" class="ratchet sender chain" access="readwrite"/>
 
-        <return class="ratchet receiver chain" access="readwrite"/>
-    </method>
-
-    <method name="find skipped message key" declaration="private">
-        <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
-
-        <return class="ratchet skipped message key" access="readwrite"/>
-    </method>
-
-    <method name="erase skipped message key" declaration="private">
-        <argument name="skipped message key" class="ratchet skipped message key" access="readwrite"/>
-    </method>
-
-    <method name="add receiver chain" declaration="private">
-        <argument name="receiver chain" class="ratchet receiver chain" access="readwrite"/>
-    </method>
-
-    <method name="add skipped message key" declaration="private">
-        <argument name="skipped message key" class="ratchet skipped message key" access="readwrite"/>
-    </method>
-
-    <method name="serialize len">
-        <return type="size"/>
+        <return enum="status"/>
     </method>
 
     <method name="serialize">
-        <argument name="output" class="buffer">
-            <length method="serialize len"/>
-        </argument>
-
-        <return enum="error"/>
+        <argument name="ratchet pb" class="Ratchet" library="nanopb" access="readwrite"/>
     </method>
 
     <method name="deserialize" is_static="1">
-        <argument name="input" class="data"/>
-        <argument name="err ctx" class="error ctx" access="readwrite"/>
-
-        <return class="self" access="disown"/>
+        <argument name="ratchet pb" class="Ratchet" library="nanopb" access="readwrite"/>
+        <argument name="ratchet" class="self" access="readwrite"/>
     </method>
 
 </class>

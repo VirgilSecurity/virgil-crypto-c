@@ -1,0 +1,121 @@
+<class name="key provider">
+    Provide functionality for private key generation and importing that
+    relies on the software default implementations.
+
+    <require interface="public key"/>
+    <require interface="private key"/>
+    <require interface="key serializer"/>
+    <require interface="key deserializer"/>
+    <require impl="ctr drbg"/>
+    <require impl="rsa public key"/>
+    <require impl="rsa private key"/>
+    <require impl="ed25519 public key"/>
+    <require impl="ed25519 private key"/>
+    <require impl="curve25519 public key"/>
+    <require impl="curve25519 private key"/>
+    <require impl="pkcs8 deserializer"/>
+    <require impl="pkcs8 der serializer"/>
+
+    <dependency name="random" interface="random"/>
+    <dependency name="ecies" class="ecies"/>
+
+    <property name="rsa bitlen" type="size"/>
+    <property name="pkcs8 serializer" interface="key serialzier"/>
+    <property name="pkcs8 deserializer" interface="key deserialzier"/>
+
+    <method name="setup defaults">
+        Setup predefined values to the uninitialized class dependencies.
+
+        <return enum="status"/>
+    </method>
+
+    <method name="set rsa params">
+        Setup parameters that is used during RSA key generation.
+
+        <argument name="bitlen" type="size"/>
+    </method>
+
+    <method name="generate private key">
+        Generate new private key from the given id.
+
+        <argument name="alg id" enum="alg id"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="private key" access="disown"/>
+    </method>
+
+    <method name="import private key">
+        Import private key from the PKCS#8 format.
+
+        <argument name="pkcs8 data" class="data"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="private key" access="disown"/>
+    </method>
+
+    <method name="import public key">
+        Import public key from the PKCS#8 format.
+
+        <argument name="pkcs8 data" class="data"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="public key" access="disown"/>
+    </method>
+
+
+
+    <method name="exported public key len">
+        Calculate buffer size enough to hold exported public key.
+
+        Precondition: public key must be exportable.
+
+        <argument name="public key" interface="public key"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="export public key">
+        Export given public key to the PKCS#8 DER format.
+
+        Precondition: public key must be exportable.
+
+        <argument name="public key" interface="public key" access="readonly"/>
+
+        <argument name="out" class="buffer">
+            <length method="exported public key len">
+                <proxy argument="public key" to="public key"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="exported private key len">
+        Calculate buffer size enough to hold exported private key.
+
+        Precondition: private key must be exportable.
+
+        <argument name="private key" interface="private key"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="export private key">
+        Export given private key to the PKCS#8 DER format.
+
+        Precondition: private key must be exportable.
+
+        <argument name="private key" interface="private key" access="readonly"/>
+
+        <argument name="out" class="buffer">
+            <length method="exported private key len">
+                <proxy argument="private key" to="private key"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+</class>

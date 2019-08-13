@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -47,7 +47,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provide algorithm deserialization
+//  Provide algorithm deserialization.
 // --------------------------------------------------------------------------
 
 #ifndef VSCF_ALG_INFO_DESERIALIZER_H_INCLUDED
@@ -55,6 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
+#include "vscf_error.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -86,10 +87,10 @@ extern "C" {
 typedef struct vscf_alg_info_deserializer_api_t vscf_alg_info_deserializer_api_t;
 
 //
-//  Algorithm deserialization algorithm from data
+//  Deserialize algorithm from the data.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_info_deserializer_deserialize(vscf_impl_t *impl, vsc_data_t data);
+vscf_alg_info_deserializer_deserialize(vscf_impl_t *impl, vsc_data_t data, vscf_error_t *error);
 
 //
 //  Return alg info deserializer API, or NULL if it is not implemented.

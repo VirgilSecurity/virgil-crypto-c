@@ -35,7 +35,6 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Simple PEM wrapper.
 @objc(VSCFPem) public class Pem: NSObject {
@@ -58,11 +57,12 @@ import VirgilCryptoCommon
             vsc_buffer_delete(pemBuf)
         }
 
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
-            pem.withUnsafeMutableBytes({ (pemPointer: UnsafeMutablePointer<byte>) -> Void in
+        data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
+            pem.withUnsafeMutableBytes({ (pemPointer: UnsafeMutableRawBufferPointer) -> Void in
                 vsc_buffer_init(pemBuf)
-                vsc_buffer_use(pemBuf, pemPointer, pemCount)
-                vscf_pem_wrap(title, vsc_data(dataPointer, data.count), pemBuf)
+                vsc_buffer_use(pemBuf, pemPointer.bindMemory(to: byte.self).baseAddress, pemCount)
+
+                vscf_pem_wrap(title, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), pemBuf)
             })
         })
         pem.count = vsc_buffer_len(pemBuf)
@@ -86,24 +86,26 @@ import VirgilCryptoCommon
             vsc_buffer_delete(dataBuf)
         }
 
-        let proxyResult = pem.withUnsafeBytes({ (pemPointer: UnsafePointer<byte>) -> vscf_error_t in
-            data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+        let proxyResult = pem.withUnsafeBytes({ (pemPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_init(dataBuf)
-                vsc_buffer_use(dataBuf, dataPointer, dataCount)
-                return vscf_pem_unwrap(vsc_data(pemPointer, pem.count), dataBuf)
+                vsc_buffer_use(dataBuf, dataPointer.bindMemory(to: byte.self).baseAddress, dataCount)
+
+                return vscf_pem_unwrap(vsc_data(pemPointer.bindMemory(to: byte.self).baseAddress, pem.count), dataBuf)
             })
         })
         data.count = vsc_buffer_len(dataBuf)
 
-        try FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return data
     }
 
     /// Returns PEM title if PEM data is valid, otherwise - empty data.
     @objc public static func title(pem: Data) -> Data {
-        let proxyResult = pem.withUnsafeBytes({ (pemPointer: UnsafePointer<byte>) in
-            return vscf_pem_title(vsc_data(pemPointer, pem.count))
+        let proxyResult = pem.withUnsafeBytes({ (pemPointer: UnsafeRawBufferPointer) in
+
+            return vscf_pem_title(vsc_data(pemPointer.bindMemory(to: byte.self).baseAddress, pem.count))
         })
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)

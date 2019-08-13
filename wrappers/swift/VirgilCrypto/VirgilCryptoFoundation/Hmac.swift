@@ -35,10 +35,9 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
 /// Virgil Security implementation of HMAC algorithm (RFC 2104) (FIPS PUB 198-1).
-@objc(VSCFHmac) public class Hmac: NSObject, MacInfo, Mac, MacStream {
+@objc(VSCFHmac) public class Hmac: NSObject, Alg, Mac {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -68,9 +67,30 @@ import VirgilCryptoCommon
         vscf_hmac_delete(self.c_ctx)
     }
 
-    @objc public func setHash(hash: HashStream) {
+    @objc public func setHash(hash: Hash) {
         vscf_hmac_release_hash(self.c_ctx)
         vscf_hmac_use_hash(self.c_ctx, hash.c_ctx)
+    }
+
+    /// Provide algorithm identificator.
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_hmac_alg_id(self.c_ctx)
+
+        return AlgId.init(fromC: proxyResult)
+    }
+
+    /// Produce object with algorithm information and configuration parameters.
+    @objc public func produceAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_hmac_produce_alg_info(self.c_ctx)
+
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+    }
+
+    /// Restore algorithm configuration from the given object.
+    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
+        let proxyResult = vscf_hmac_restore_alg_info(self.c_ctx, algInfo.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Size of the digest (mac output) in bytes.
@@ -89,12 +109,13 @@ import VirgilCryptoCommon
             vsc_buffer_delete(macBuf)
         }
 
-        key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Void in
-            data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
-                mac.withUnsafeMutableBytes({ (macPointer: UnsafeMutablePointer<byte>) -> Void in
+        key.withUnsafeBytes({ (keyPointer: UnsafeRawBufferPointer) -> Void in
+            data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
+                mac.withUnsafeMutableBytes({ (macPointer: UnsafeMutableRawBufferPointer) -> Void in
                     vsc_buffer_init(macBuf)
-                    vsc_buffer_use(macBuf, macPointer, macCount)
-                    vscf_hmac_mac(self.c_ctx, vsc_data(keyPointer, key.count), vsc_data(dataPointer, data.count), macBuf)
+                    vsc_buffer_use(macBuf, macPointer.bindMemory(to: byte.self).baseAddress, macCount)
+
+                    vscf_hmac_mac(self.c_ctx, vsc_data(keyPointer.bindMemory(to: byte.self).baseAddress, key.count), vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), macBuf)
                 })
             })
         })
@@ -105,15 +126,17 @@ import VirgilCryptoCommon
 
     /// Start a new MAC.
     @objc public func start(key: Data) {
-        key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Void in
-            vscf_hmac_start(self.c_ctx, vsc_data(keyPointer, key.count))
+        key.withUnsafeBytes({ (keyPointer: UnsafeRawBufferPointer) -> Void in
+
+            vscf_hmac_start(self.c_ctx, vsc_data(keyPointer.bindMemory(to: byte.self).baseAddress, key.count))
         })
     }
 
     /// Add given data to the MAC.
     @objc public func update(data: Data) {
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
-            vscf_hmac_update(self.c_ctx, vsc_data(dataPointer, data.count))
+        data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
+
+            vscf_hmac_update(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count))
         })
     }
 
@@ -126,9 +149,10 @@ import VirgilCryptoCommon
             vsc_buffer_delete(macBuf)
         }
 
-        mac.withUnsafeMutableBytes({ (macPointer: UnsafeMutablePointer<byte>) -> Void in
+        mac.withUnsafeMutableBytes({ (macPointer: UnsafeMutableRawBufferPointer) -> Void in
             vsc_buffer_init(macBuf)
-            vsc_buffer_use(macBuf, macPointer, macCount)
+            vsc_buffer_use(macBuf, macPointer.bindMemory(to: byte.self).baseAddress, macCount)
+
             vscf_hmac_finish(self.c_ctx, macBuf)
         })
         mac.count = vsc_buffer_len(macBuf)
