@@ -65,14 +65,30 @@ find_host_program(WASM2WAT wasm2wat)
 # ---------------------------------------------------------------------------
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/fake.c" "")
 
-function(wasm_add_common_options target)
+function(wasm_add_common_wasm_options target)
     target_sources(${target} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
     target_sources(${target} PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
     target_link_libraries(${target}
+            "-s WASM=1"
             "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
             "-s MODULARIZE=1"
             "-s EXPORT_NAME=PheModule"
-            "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1 -s USE_CLOSURE_COMPILER=1>"
+            "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1>"
+            "$<$<CONFIG:Debug>:--emrun>"
+            vsc::phe
+            )
+endfunction()
+
+function(wasm_add_common_asmjs_options target)
+    target_sources(${target} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
+    target_sources(${target} PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
+    target_link_libraries(${target}
+            "-s WASM=0"
+            "-s SINGLE_FILE=1"
+            "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
+            "-s MODULARIZE=1"
+            "-s EXPORT_NAME=PheModule"
+            "$<$<CONFIG:Release>:--llvm-lto 1 -O0>"
             "$<$<CONFIG:Debug>:--emrun>"
             vsc::phe
             )
@@ -82,48 +98,39 @@ endfunction()
 #   Create WebAssembly library
 # ---------------------------------------------------------------------------
 add_executable(libphe)
-wasm_add_common_options(libphe)
+wasm_add_common_wasm_options(libphe)
 target_link_libraries(libphe
         "-s ENVIRONMENT=node"
-        "-s WASM=1"
         )
 
 add_executable(libphe.browser)
-wasm_add_common_options(libphe.browser)
+wasm_add_common_wasm_options(libphe.browser)
 target_link_libraries(libphe.browser
         "-s ENVIRONMENT=web"
-        "-s WASM=1"
         )
 
 add_executable(libphe.worker)
-wasm_add_common_options(libphe.worker)
+wasm_add_common_wasm_options(libphe.worker)
 target_link_libraries(libphe.worker
         "-s ENVIRONMENT=worker"
-        "-s WASM=1"
         )
 
 add_executable(libphe.asmjs)
-wasm_add_common_options(libphe.asmjs)
+wasm_add_common_asmjs_options(libphe.asmjs)
 target_link_libraries(libphe.asmjs
         "-s ENVIRONMENT=node"
-        "-s WASM=0"
-        "-s SINGLE_FILE=1"
         )
 
 add_executable(libphe.browser.asmjs)
-wasm_add_common_options(libphe.browser.asmjs)
+wasm_add_common_asmjs_options(libphe.browser.asmjs)
 target_link_libraries(libphe.browser.asmjs
         "-s ENVIRONMENT=web"
-        "-s WASM=0"
-        "-s SINGLE_FILE=1"
         )
 
 add_executable(libphe.worker.asmjs)
-wasm_add_common_options(libphe.worker.asmjs)
+wasm_add_common_asmjs_options(libphe.worker.asmjs)
 target_link_libraries(libphe.worker.asmjs
         "-s ENVIRONMENT=worker"
-        "-s WASM=0"
-        "-s SINGLE_FILE=1"
         )
 
 add_custom_command(TARGET libphe POST_BUILD

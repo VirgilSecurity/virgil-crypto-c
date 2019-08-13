@@ -190,7 +190,7 @@ import VirgilCryptoFoundation
     }
 
     /// Decrypts message
-    @objc public func decrypt(message: RatchetGroupMessage) throws -> Data {
+    @objc public func decrypt(message: RatchetGroupMessage, senderId: Data) throws -> Data {
         let plainTextCount = self.decryptLen(message: message)
         var plainText = Data(count: plainTextCount)
         var plainTextBuf = vsc_buffer_new()
@@ -198,11 +198,13 @@ import VirgilCryptoFoundation
             vsc_buffer_delete(plainTextBuf)
         }
 
-        let proxyResult = plainText.withUnsafeMutableBytes({ (plainTextPointer: UnsafeMutableRawBufferPointer) -> vscr_status_t in
-            vsc_buffer_init(plainTextBuf)
-            vsc_buffer_use(plainTextBuf, plainTextPointer.bindMemory(to: byte.self).baseAddress, plainTextCount)
+        let proxyResult = senderId.withUnsafeBytes({ (senderIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
+            plainText.withUnsafeMutableBytes({ (plainTextPointer: UnsafeMutableRawBufferPointer) -> vscr_status_t in
+                vsc_buffer_init(plainTextBuf)
+                vsc_buffer_use(plainTextBuf, plainTextPointer.bindMemory(to: byte.self).baseAddress, plainTextCount)
 
-            return vscr_ratchet_group_session_decrypt(self.c_ctx, message.c_ctx, plainTextBuf)
+                return vscr_ratchet_group_session_decrypt(self.c_ctx, message.c_ctx, vsc_data(senderIdPointer.bindMemory(to: byte.self).baseAddress, senderId.count), plainTextBuf)
+            })
         })
         plainText.count = vsc_buffer_len(plainTextBuf)
 

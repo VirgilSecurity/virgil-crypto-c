@@ -1,11 +1,10 @@
 vscf_MessageGroupInfo.session_id max_size:32 fixed_length:true
 vscf_MessageGroupInfo.key max_size:32 fixed_length:true
 
-vscf_RegularGroupMessage.header max_size:108 fixed_length:false
+vscf_RegularGroupMessage.header max_size:74 fixed_length:false
 vscf_RegularGroupMessage.signature max_size:64 fixed_length:true
 
 vscf_RegularGroupMessageHeader.session_id max_size:32 fixed_length:true
 vscf_RegularGroupMessageHeader.salt max_size:32 fixed_length:true
-vscf_RegularGroupMessageHeader.sender_id max_size:32 fixed_length:true
 
 vscf_RegularGroupMessage.cipher_text max_size:30032 type:FT_POINTER

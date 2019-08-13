@@ -124,7 +124,7 @@ const initRatchetCommon = (Module, modules) => {
          * Max group message length
          */
         static get MAX_GROUP_MESSAGE_LEN() {
-            return 32952;
+            return 32918;
         }
 
         get MAX_GROUP_MESSAGE_LEN() {

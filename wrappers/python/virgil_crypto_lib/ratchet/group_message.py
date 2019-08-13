@@ -67,14 +67,6 @@ class GroupMessage(object):
         cleaned_bytes = bytearray(instance)
         return cleaned_bytes
 
-    def get_sender_id(self):
-        """Returns message sender id.
-        This method should be called only for regular message type."""
-        result = self._lib_vscr_ratchet_group_message.vscr_ratchet_group_message_get_sender_id(self.ctx)
-        instance = Data.take_c_ctx(result)
-        cleaned_bytes = bytearray(instance)
-        return cleaned_bytes
-
     def get_counter(self):
         """Returns message counter in current epoch."""
         result = self._lib_vscr_ratchet_group_message.vscr_ratchet_group_message_get_counter(self.ctx)

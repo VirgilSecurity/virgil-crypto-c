@@ -9,7 +9,7 @@
         wrappers="java,python,wasm"
         >
 
-    <version major="0" minor="9" patch="1"/>
+    <version major="0" minor="10" patch="1"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.

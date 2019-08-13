@@ -350,15 +350,28 @@ const initRatchetGroupSession = (Module, modules) => {
         /**
          * Decrypts message
          */
-        decrypt(message) {
+        decrypt(message, senderId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('message', message, modules.RatchetGroupMessage);
+            precondition.ensureByteArray('senderId', senderId);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const senderIdSize = senderId.length * senderId.BYTES_PER_ELEMENT;
+            const senderIdPtr = Module._malloc(senderIdSize);
+            Module.HEAP8.set(senderId, senderIdPtr);
+
+            //  Create C structure vsc_data_t.
+            const senderIdCtxSize = Module._vsc_data_ctx_size();
+            const senderIdCtxPtr = Module._malloc(senderIdCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(senderIdCtxPtr, senderIdPtr, senderIdSize);
 
             const plainTextCapacity = this.decryptLen(message);
             const plainTextCtxPtr = Module._vsc_buffer_new_with_capacity(plainTextCapacity);
 
             try {
-                const proxyResult = Module._vscr_ratchet_group_session_decrypt(this.ctxPtr, message.ctxPtr, plainTextCtxPtr);
+                const proxyResult = Module._vscr_ratchet_group_session_decrypt(this.ctxPtr, message.ctxPtr, senderIdCtxPtr, plainTextCtxPtr);
                 modules.RatchetError.handleStatusCode(proxyResult);
 
                 const plainTextPtr = Module._vsc_buffer_bytes(plainTextCtxPtr);
@@ -366,6 +379,8 @@ const initRatchetGroupSession = (Module, modules) => {
                 const plainText = Module.HEAPU8.slice(plainTextPtr, plainTextPtr + plainTextPtrLen);
                 return plainText;
             } finally {
+                Module._free(senderIdPtr);
+                Module._free(senderIdCtxPtr);
                 Module._vsc_buffer_delete(plainTextCtxPtr);
             }
         }
