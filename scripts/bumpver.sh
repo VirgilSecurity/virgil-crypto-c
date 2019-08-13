@@ -178,7 +178,7 @@ done
 # ###########################################################################
 show_info "Change verion within Python wrapper files."
 
-sed_replace "__version__ = \".*\"" "__version__ = \"${VERSION_FULL}\"" "${ROOT_DIR}/wrappers/python/virgil_crypto_lib/__init__.py" 
+sed_replace "__version__ = \".*\"" "__version__ = \"${VERSION_FULL}\"" "${ROOT_DIR}/wrappers/python/virgil_crypto_lib/__init__.py"
 
 if [ ! -z "${VERSION_LABEL}" ]; then
     if [[ $VERSION_LABEL == *"alpha"* ]]; then
@@ -215,3 +215,7 @@ fi
 show_info "Change verion within VSCCrypto.podspec file."
 sed_replace "s.version\( *= *\)\"[0-9]*\.[0-9]*\.[0-9]*\"" "s.version\1\"${VERSION}\"" "${ROOT_DIR}/VSCCrypto.podspec"
 sed_replace "\(s.source[^0-9]*\)[0-9]*\.[0-9]*\.[0-9]*" "\1${VERSION}" "${ROOT_DIR}/VSCCrypto.podspec"
+
+# ###########################################################################
+show_info "Change verion within JS package.json file."
+sed_replace "\(\"version\" *: *\)\"[0-9]*\.[0-9]*\.[0-9]*\"" "\1\"${VERSION}\"" "${ROOT_DIR}/wrappers/wasm/package.json"

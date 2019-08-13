@@ -114,7 +114,7 @@ extern "C" {
 
 #define VSC_VERSION_MAJOR 0
 
-#define VSC_VERSION_MINOR 9
+#define VSC_VERSION_MINOR 10
 
 #define VSC_VERSION_PATCH 1
 
