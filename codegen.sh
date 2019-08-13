@@ -79,7 +79,7 @@ function abspath() {
 SCRIPT_DIR=$(dirname "$(abspath "${BASH_SOURCE[0]}")")
 CURRENT_DIR=$(abspath .)
 CODEGEN_DIR="${SCRIPT_DIR}/codegen"
-CODEGEN_SCRIPT_NAME="main.xml"
+CODEGEN_SCRIPT_NAME="_main.xml"
 CODEGEN_SCRIPT_FILE="${CODEGEN_DIR}/${CODEGEN_SCRIPT_NAME}"
 
 # ###########################################################################

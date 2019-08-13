@@ -117,7 +117,7 @@
 </entity>
 
 
-<entity name="of_class">
+<entity name="of_class" abstract="1">
 
     <attr name="of_class">
         Defines class name that a component belongs to.

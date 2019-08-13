@@ -3,9 +3,15 @@
 	[
 		{
 			"name": "codegen",
-			"shell_cmd": "./codegen.sh",
+			"shell_cmd": "time ./codegen.sh",
 			"working_dir": "${project_path}",
 			"file_patterns": ["*.gsl", "*.xml"]
+		},
+		{
+			"name": "validator gen",
+			"shell_cmd": "gsl validator.xml",
+			"working_dir": "${project_path}/codegen/validator",
+			"file_patterns": ["validator_gen.gsl"]
 		},
 		{
 			"name": "docgen",

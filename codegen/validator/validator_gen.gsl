@@ -13,7 +13,7 @@ endfunction
 function entity_derive_name_of_function_validate(name)
     check_arguments(my, "name", my)
 
-    return make_id("validate entity", my.name)
+    return make_id(my.name, "validate")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -62,7 +62,7 @@ function generate_validation_body_for_attr(attr, entity)
     my.attr_access = "$(my.my_tag:).$(my.attr.name:)"
 
     my.attr_default = " (default: $(my.attr.default:))" ? ""
-    >    echo_trace("    Validate attribute: $(my.attr.name)$(my.attr_default:)", my)
+    >    echo_trace("     Validate attribute: $(my.attr.name)$(my.attr_default:)", my)
     if is_true(my.attr.required)
         >    if !defined($(my.attr_access:))
         >        echo_fatal_required_attr($(my.my_tag:), "$(my.attr.name:)")
@@ -93,6 +93,53 @@ function generate_validation_body_for_attr(attr, entity)
 endfunction
 
 # ---------------------------------------------------------------------------
+function generate_validation_body_for_oneof_attr(oneof, entity)
+    check_arguments(my, "oneof, entity", my)
+
+    my.tag = entity_tag(my.entity)
+    my.my_tag = "my.$(my.tag)"
+
+    >
+    >    my.found_attrs = ""
+    >    my.found_attrs_count = "0"
+
+    for my.oneof.attr
+        my.attr_access = "$(my.my_tag:).$(attr.name:)"
+
+        my.all_attrs ?= ""
+        my.all_attrs += attr.name
+        if !last()
+            my.all_attrs += ", "
+        endif
+        >
+        >    if defined($(my.attr_access:))
+        >        my.found_attrs_count += 1
+        >        if my.found_attrs <> ""
+        >            my.found_attrs += ", "
+        >        endif
+        >        my.found_attrs += "$(attr.name:)"
+        >    endif
+    endfor
+
+    if is_true(my.oneof.required)
+        >    if my.found_attrs_count = "0"
+        >        my.dump_filename = entity_dump_file($(my.my_tag:))
+        >        echo_fatal("Expected one of the attributes {$(my.all_attrs:)}.\n" + \\
+        >                   "But found nothing.\n" + \\
+        >                   "See dump file: \$\(my.dump_filename:\)", my)
+        >    endif
+        >
+    endif
+
+    >    if my.found_attrs_count > "1"
+    >        my.dump_filename = entity_dump_file($(my.my_tag:))
+    >        echo_fatal("Expected one of the attributes {$(my.all_attrs:)}.\n" + \\
+    >                   "But found several {\$\(my.found_attrs:\)}.\n" + \\
+    >                   "See dump file: \$\(my.dump_filename:\)", my)
+    >    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function generate_entity_validator(entity, all_entities)
     check_arguments(my, "entity, all_entities", my)
 
@@ -118,14 +165,17 @@ function generate_entity_validator(entity, all_entities)
     my.my_tag = "my.$(my.tag)"
     >function $(entity_derive_name_of_function_validate(my.entity.name))($(my.tag:))
 
-    >    echo_trace("[L1] Validate entity \$\(name($(my.my_tag)\)\)", my)
+    if is_false(my.entity.abstract)
+        >    my.$(my.tag:)_name = defined($(my.my_tag).name) ?? " name=\\"\$\($(my.my_tag).name\)\\"" ? ""
+        >    echo_trace("[L1] Validate entity: <\$\(name($(my.my_tag)\)\)\$\(my.$(my.tag:)_name\)/>", my)
+    endif
 
     #
     #   Generate validation body for inherited entities
     #
     for my.entity.inherit
         if first()
-            >    echo_trace("    Check inherited attributes and entities", my)
+            >    #    Check inherited attributes and entities"
         endif
         >    $(entity_derive_name_of_function_validate(inherit.entity))($(my.my_tag))
     endfor
@@ -136,7 +186,7 @@ function generate_entity_validator(entity, all_entities)
     #
     for my.entity.allow
         if first()
-            >    echo_trace("    Check allowed entities", my)
+            >    #    Check allowed entities"
         endif
         my.allowed_entity_tag = make_id(allow.tag ? allow.entity)
         >    for $(my.my_tag).$(my.allowed_entity_tag:)
@@ -150,6 +200,13 @@ function generate_entity_validator(entity, all_entities)
     #
     for my.entity.attr
         generate_validation_body_for_attr(attr, my.entity)
+        if !last()
+            >
+        endif
+    endfor
+
+    for my.entity.oneof
+        generate_validation_body_for_oneof_attr(oneof, my.entity)
         if !last()
             >
         endif
@@ -177,24 +234,28 @@ function _main()
         >
         >gsl from "common.gsl"
         >
-        >function echo_fatal_required_attr(entity, attr_name)
+        >function entity_dump_file(entity)
+        >    assert_attributes(my, "entity", my)
+        >
         >    time.now(my.date, my.time)
         >    my.dump_dir = ".generated/dump"
         >    my.dump_filename = "\$\(make_id(name(my.entity))\)_\$\(my.date\)_\$\(my.time\).xml"
         >    item_save_to_file(my.entity, my.dump_filename, my.dump_dir)
+        >    return cat_path(my.dump_dir, my.dump_filename)
+        >endfunction
+        >
+        >function echo_fatal_required_attr(entity, attr_name)
+        >    my.dump_filename = entity_dump_file(my.entity)
         >    echo_fatal("Required attribute '$\(name(my.entity)\).\$\(my.attr_name:\)' is not defined. " + \\
-        >               "See dump file: \$\(my.dump_dir:\)/\$\(my.dump_filename:\)", my)
+        >               "See dump file: \$\(my.dump_filename:\)", my)
         >endfunction
         >
         >function echo_fatal_resticted_attr(entity, attr_name, valid_values)
-        >    time.now(my.date, my.time)
-        >    my.dump_dir = ".generated/dump"
-        >    my.dump_filename = "\$\(make_id(name(my.entity))\)_\$\(my.date\)_\$\(my.time\).xml"
-        >    item_save_to_file(my.entity, my.dump_filename, my.dump_dir)
+        >    my.dump_filename = entity_dump_file(my.entity)
         >    echo_fatal("Possible values of the attribute '$\(name(my.entity)\).\$\(my.attr_name:\)' " + \\
         >               "are '{\$\(my.valid_values:\)}', " + \\
         >               "but found \$\(my.entity.\$\(my.attr_name\)\). " + \\
-        >               "See dump file: \$\(my.dump_dir:\)/\$\(my.dump_filename:\)", my)
+        >               "See dump file: \$\(my.dump_filename:\)", my)
         >endfunction
         >
 

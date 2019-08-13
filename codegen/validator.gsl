@@ -5,30 +5,33 @@
 
 gsl from "common.gsl"
 
-function echo_fatal_required_attr(entity, attr_name)
+function entity_dump_file(entity)
+    assert_attributes(my, "entity", my)
+
     time.now(my.date, my.time)
     my.dump_dir = ".generated/dump"
     my.dump_filename = "$(make_id(name(my.entity)))_$(my.date)_$(my.time).xml"
     item_save_to_file(my.entity, my.dump_filename, my.dump_dir)
+    return cat_path(my.dump_dir, my.dump_filename)
+endfunction
+
+function echo_fatal_required_attr(entity, attr_name)
+    my.dump_filename = entity_dump_file(my.entity)
     echo_fatal("Required attribute '$(name(my.entity)).$(my.attr_name:)' is not defined. " + \
-               "See dump file: $(my.dump_dir:)/$(my.dump_filename:)", my)
+               "See dump file: $(my.dump_filename:)", my)
 endfunction
 
 function echo_fatal_resticted_attr(entity, attr_name, valid_values)
-    time.now(my.date, my.time)
-    my.dump_dir = ".generated/dump"
-    my.dump_filename = "$(make_id(name(my.entity)))_$(my.date)_$(my.time).xml"
-    item_save_to_file(my.entity, my.dump_filename, my.dump_dir)
+    my.dump_filename = entity_dump_file(my.entity)
     echo_fatal("Possible values of the attribute '$(name(my.entity)).$(my.attr_name:)' " + \
                "are '{$(my.valid_values:)}', " + \
                "but found $(my.entity.$(my.attr_name)). " + \
-               "See dump file: $(my.dump_dir:)/$(my.dump_filename:)", my)
+               "See dump file: $(my.dump_filename:)", my)
 endfunction
 
-function validate_entity_scope(scope)
-    echo_trace("[L1] Validate entity $(name(my.scope))", my)
+function scope_validate(scope)
 
-    echo_trace("    Validate attribute: scope (default: public)", my)
+    echo_trace("     Validate attribute: scope (default: public)", my)
     if defined(my.scope.scope)
         my.scope_is_valid = "0"
         my.scope_is_valid = my.scope_is_valid | (my.scope.scope = "public")
@@ -40,24 +43,21 @@ function validate_entity_scope(scope)
     endif
 endfunction
 
-function validate_entity_c_prefix(c_prefix)
-    echo_trace("[L1] Validate entity $(name(my.c_prefix))", my)
+function c_prefix_validate(c_prefix)
 
-    echo_trace("    Validate attribute: c_prefix", my)
+    echo_trace("     Validate attribute: c_prefix", my)
 endfunction
 
-function validate_entity_uid(uid)
-    echo_trace("[L1] Validate entity $(name(my.uid))", my)
+function uid_validate(uid)
 
-    echo_trace("    Validate attribute: uid", my)
+    echo_trace("     Validate attribute: uid", my)
 
-    echo_trace("    Validate attribute: full_uid", my)
+    echo_trace("     Validate attribute: full_uid", my)
 endfunction
 
-function validate_entity_visibility(visibility)
-    echo_trace("[L1] Validate entity $(name(my.visibility))", my)
+function visibility_validate(visibility)
 
-    echo_trace("    Validate attribute: visibility (default: public)", my)
+    echo_trace("     Validate attribute: visibility (default: public)", my)
     if defined(my.visibility.visibility)
         my.visibility_is_valid = "0"
         my.visibility_is_valid = my.visibility_is_valid | (my.visibility.visibility = "public")
@@ -68,18 +68,16 @@ function validate_entity_visibility(visibility)
     endif
 endfunction
 
-function validate_entity_landlord(landlord)
-    echo_trace("[L1] Validate entity $(name(my.landlord))", my)
+function landlord_validate(landlord)
 
-    echo_trace("    Validate attribute: project", my)
+    echo_trace("     Validate attribute: project", my)
 
-    echo_trace("    Validate attribute: library", my)
+    echo_trace("     Validate attribute: library", my)
 endfunction
 
-function validate_entity_require_scope(require_scope)
-    echo_trace("[L1] Validate entity $(name(my.require_scope))", my)
+function require_scope_validate(require_scope)
 
-    echo_trace("    Validate attribute: scope (default: public)", my)
+    echo_trace("     Validate attribute: scope (default: public)", my)
     if defined(my.require_scope.scope)
         my.scope_is_valid = "0"
         my.scope_is_valid = my.scope_is_valid | (my.require_scope.scope = "public")
@@ -91,67 +89,69 @@ function validate_entity_require_scope(require_scope)
     endif
 endfunction
 
-function validate_entity_require_base(require_base)
-    echo_trace("[L1] Validate entity $(name(my.require_base))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_landlord(my.require_base)
-    validate_entity_require_scope(my.require_base)
+function require_base_validate(require_base)
+    #    Check inherited attributes and entities"
+    landlord_validate(my.require_base)
+    require_scope_validate(my.require_base)
 
-    echo_trace("    Validate attribute: module", my)
+    echo_trace("     Validate attribute: module", my)
 
-    echo_trace("    Validate attribute: header", my)
+    echo_trace("     Validate attribute: header", my)
 
-    echo_trace("    Validate attribute: feature", my)
+    echo_trace("     Validate attribute: feature", my)
 
-    echo_trace("    Validate attribute: interface", my)
+    echo_trace("     Validate attribute: interface", my)
 
-    echo_trace("    Validate attribute: class", my)
+    echo_trace("     Validate attribute: class", my)
 
-    echo_trace("    Validate attribute: impl", my)
+    echo_trace("     Validate attribute: impl", my)
 
-    echo_trace("    Validate attribute: enum", my)
+    echo_trace("     Validate attribute: enum", my)
 endfunction
 
-function validate_entity_alternative(alternative)
-    echo_trace("[L1] Validate entity $(name(my.alternative))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_require_base(my.alternative)
+function alternative_validate(alternative)
+    my.alternative_name = defined(my.alternative.name) ?? " name=\"$(my.alternative.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.alternative))$(my.alternative_name)/>", my)
+    #    Check inherited attributes and entities"
+    require_base_validate(my.alternative)
 
 endfunction
 
-function validate_entity_require(require)
-    echo_trace("[L1] Validate entity $(name(my.require))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_require_base(my.require)
+function require_validate(require)
+    my.require_name = defined(my.require.name) ?? " name=\"$(my.require.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.require))$(my.require_name)/>", my)
+    #    Check inherited attributes and entities"
+    require_base_validate(my.require)
 
-    echo_trace("    Check allowed entities", my)
+    #    Check allowed entities"
     for my.require.alternative
-        validate_entity_alternative(alternative)
+        alternative_validate(alternative)
     endfor
 
 endfunction
 
-function validate_entity_dependency(dependency)
-    echo_trace("[L1] Validate entity $(name(my.dependency))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_landlord(my.dependency)
+function dependency_validate(dependency)
+    my.dependency_name = defined(my.dependency.name) ?? " name=\"$(my.dependency.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.dependency))$(my.dependency_name)/>", my)
+    #    Check inherited attributes and entities"
+    landlord_validate(my.dependency)
 
-    echo_trace("    Validate attribute: name", my)
+    echo_trace("     Validate attribute: name", my)
     if !defined(my.dependency.name)
         echo_fatal_required_attr(my.dependency, "name")
     endif
 
-    echo_trace("    Validate attribute: interface", my)
+    echo_trace("     Validate attribute: interface", my)
 
-    echo_trace("    Validate attribute: api", my)
+    echo_trace("     Validate attribute: api", my)
 
-    echo_trace("    Validate attribute: class", my)
+    echo_trace("     Validate attribute: class", my)
 
-    echo_trace("    Validate attribute: impl", my)
+    echo_trace("     Validate attribute: impl", my)
 
-    echo_trace("    Validate attribute: type_name", my)
+    echo_trace("     Validate attribute: type_name", my)
 
-    echo_trace("    Validate attribute: has_observers (default: 0)", my)
+    echo_trace("     Validate attribute: has_observers (default: 0)", my)
     if defined(my.dependency.has_observers)
         my.has_observers_is_valid = "0"
         my.has_observers_is_valid = my.has_observers_is_valid | (my.dependency.has_observers = "0")
@@ -161,7 +161,7 @@ function validate_entity_dependency(dependency)
         endif
     endif
 
-    echo_trace("    Validate attribute: is_observers_return_status (default: 0)", my)
+    echo_trace("     Validate attribute: is_observers_return_status (default: 0)", my)
     if defined(my.dependency.is_observers_return_status)
         my.is_observers_return_status_is_valid = "0"
         my.is_observers_return_status_is_valid = my.is_observers_return_status_is_valid | (my.dependency.is_observers_return_status = "0")
@@ -172,28 +172,25 @@ function validate_entity_dependency(dependency)
     endif
 endfunction
 
-function validate_entity_of_class(of_class)
-    echo_trace("[L1] Validate entity $(name(my.of_class))", my)
+function of_class_validate(of_class)
 
-    echo_trace("    Validate attribute: of_class", my)
+    echo_trace("     Validate attribute: of_class", my)
 endfunction
 
-function validate_entity_component(component)
-    echo_trace("[L1] Validate entity $(name(my.component))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_uid(my.component)
-    validate_entity_of_class(my.component)
-    validate_entity_c_prefix(my.component)
+function component_validate(component)
+    #    Check inherited attributes and entities"
+    uid_validate(my.component)
+    of_class_validate(my.component)
+    c_prefix_validate(my.component)
 
-    echo_trace("    Validate attribute: feature", my)
+    echo_trace("     Validate attribute: feature", my)
 endfunction
 
-function validate_entity_scoped_component(scoped_component)
-    echo_trace("[L1] Validate entity $(name(my.scoped_component))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_component(my.scoped_component)
+function scoped_component_validate(scoped_component)
+    #    Check inherited attributes and entities"
+    component_validate(my.scoped_component)
 
-    echo_trace("    Validate attribute: scope (default: public)", my)
+    echo_trace("     Validate attribute: scope (default: public)", my)
     if defined(my.scoped_component.scope)
         my.scope_is_valid = "0"
         my.scope_is_valid = my.scope_is_valid | (my.scoped_component.scope = "public")
@@ -206,10 +203,9 @@ function validate_entity_scoped_component(scoped_component)
     endif
 endfunction
 
-function validate_entity_definition(definition)
-    echo_trace("[L1] Validate entity $(name(my.definition))", my)
+function definition_validate(definition)
 
-    echo_trace("    Validate attribute: definition (default: private)", my)
+    echo_trace("     Validate attribute: definition (default: private)", my)
     if defined(my.definition.definition)
         my.definition_is_valid = "0"
         my.definition_is_valid = my.definition_is_valid | (my.definition.definition = "public")
@@ -221,24 +217,24 @@ function validate_entity_definition(definition)
     endif
 endfunction
 
-function validate_entity_constant(constant)
-    echo_trace("[L1] Validate entity $(name(my.constant))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_scoped_component(my.constant)
-    validate_entity_definition(my.constant)
+function constant_validate(constant)
+    my.constant_name = defined(my.constant.name) ?? " name=\"$(my.constant.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.constant))$(my.constant_name)/>", my)
+    #    Check inherited attributes and entities"
+    scoped_component_validate(my.constant)
+    definition_validate(my.constant)
 
-    echo_trace("    Validate attribute: name", my)
+    echo_trace("     Validate attribute: name", my)
     if !defined(my.constant.name)
         echo_fatal_required_attr(my.constant, "name")
     endif
 
-    echo_trace("    Validate attribute: value", my)
+    echo_trace("     Validate attribute: value", my)
 endfunction
 
-function validate_entity_access(access)
-    echo_trace("[L1] Validate entity $(name(my.access))", my)
+function access_validate(access)
 
-    echo_trace("    Validate attribute: access", my)
+    echo_trace("     Validate attribute: access", my)
     if defined(my.access.access)
         my.access_is_valid = "0"
         my.access_is_valid = my.access_is_valid | (my.access.access = "readonly")
@@ -250,15 +246,16 @@ function validate_entity_access(access)
         endif
     endif
 
-    echo_trace("    Validate attribute: ownership", my)
+    echo_trace("     Validate attribute: ownership", my)
 endfunction
 
-function validate_entity_string(string)
-    echo_trace("[L1] Validate entity $(name(my.string))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_access(my.string)
+function string_validate(string)
+    my.string_name = defined(my.string.name) ?? " name=\"$(my.string.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.string))$(my.string_name)/>", my)
+    #    Check inherited attributes and entities"
+    access_validate(my.string)
 
-    echo_trace("    Validate attribute: length (default: null_terminated)", my)
+    echo_trace("     Validate attribute: length (default: null_terminated)", my)
     if defined(my.string.length)
         my.length_is_valid = "0"
         my.length_is_valid = my.length_is_valid | (my.string.length = "null_terminated")
@@ -270,15 +267,16 @@ function validate_entity_string(string)
         endif
     endif
 
-    echo_trace("    Validate attribute: length_constant", my)
+    echo_trace("     Validate attribute: length_constant", my)
 endfunction
 
-function validate_entity_array(array)
-    echo_trace("[L1] Validate entity $(name(my.array))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_access(my.array)
+function array_validate(array)
+    my.array_name = defined(my.array.name) ?? " name=\"$(my.array.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.array))$(my.array_name)/>", my)
+    #    Check inherited attributes and entities"
+    access_validate(my.array)
 
-    echo_trace("    Validate attribute: length", my)
+    echo_trace("     Validate attribute: length", my)
     if defined(my.array.length)
         my.length_is_valid = "0"
         my.length_is_valid = my.length_is_valid | (my.array.length = "null_terminated")
@@ -291,25 +289,24 @@ function validate_entity_array(array)
         endif
     endif
 
-    echo_trace("    Validate attribute: length_constant", my)
+    echo_trace("     Validate attribute: length_constant", my)
 endfunction
 
-function validate_entity_instance(instance)
-    echo_trace("[L1] Validate entity $(name(my.instance))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_access(my.instance)
-    validate_entity_landlord(my.instance)
+function instance_validate(instance)
+    #    Check inherited attributes and entities"
+    access_validate(my.instance)
+    landlord_validate(my.instance)
 
-    echo_trace("    Check allowed entities", my)
+    #    Check allowed entities"
     for my.instance.string
-        validate_entity_string(string)
+        string_validate(string)
     endfor
 
     for my.instance.array
-        validate_entity_array(array)
+        array_validate(array)
     endfor
 
-    echo_trace("    Validate attribute: type", my)
+    echo_trace("     Validate attribute: type", my)
     if defined(my.instance.type)
         my.type_is_valid = "0"
         my.type_is_valid = my.type_is_valid | (my.instance.type = "nothing")
@@ -326,19 +323,19 @@ function validate_entity_instance(instance)
         endif
     endif
 
-    echo_trace("    Validate attribute: class", my)
+    echo_trace("     Validate attribute: class", my)
 
-    echo_trace("    Validate attribute: enum", my)
+    echo_trace("     Validate attribute: enum", my)
 
-    echo_trace("    Validate attribute: callback", my)
+    echo_trace("     Validate attribute: callback", my)
 
-    echo_trace("    Validate attribute: interface", my)
+    echo_trace("     Validate attribute: interface", my)
 
-    echo_trace("    Validate attribute: api", my)
+    echo_trace("     Validate attribute: api", my)
 
-    echo_trace("    Validate attribute: impl", my)
+    echo_trace("     Validate attribute: impl", my)
 
-    echo_trace("    Validate attribute: size", my)
+    echo_trace("     Validate attribute: size", my)
     if defined(my.instance.size)
         my.size_is_valid = "0"
         my.size_is_valid = my.size_is_valid | (my.instance.size = "1")
@@ -350,7 +347,7 @@ function validate_entity_instance(instance)
         endif
     endif
 
-    echo_trace("    Validate attribute: is_reference", my)
+    echo_trace("     Validate attribute: is_reference", my)
     if defined(my.instance.is_reference)
         my.is_reference_is_valid = "0"
         my.is_reference_is_valid = my.is_reference_is_valid | (my.instance.is_reference = "0")
@@ -360,7 +357,7 @@ function validate_entity_instance(instance)
         endif
     endif
 
-    echo_trace("    Validate attribute: require_definition", my)
+    echo_trace("     Validate attribute: require_definition", my)
     if defined(my.instance.require_definition)
         my.require_definition_is_valid = "0"
         my.require_definition_is_valid = my.require_definition_is_valid | (my.instance.require_definition = "public")
@@ -369,26 +366,102 @@ function validate_entity_instance(instance)
             echo_fatal_resticted_attr(my.instance, "require_definition", "public, private")
         endif
     endif
+
+    my.found_attrs = ""
+    my.found_attrs_count = "0"
+
+    if defined(my.instance.type)
+        my.found_attrs_count += 1
+        if my.found_attrs <> ""
+            my.found_attrs += ", "
+        endif
+        my.found_attrs += "type"
+    endif
+
+    if defined(my.instance.class)
+        my.found_attrs_count += 1
+        if my.found_attrs <> ""
+            my.found_attrs += ", "
+        endif
+        my.found_attrs += "class"
+    endif
+
+    if defined(my.instance.enum)
+        my.found_attrs_count += 1
+        if my.found_attrs <> ""
+            my.found_attrs += ", "
+        endif
+        my.found_attrs += "enum"
+    endif
+
+    if defined(my.instance.callback)
+        my.found_attrs_count += 1
+        if my.found_attrs <> ""
+            my.found_attrs += ", "
+        endif
+        my.found_attrs += "callback"
+    endif
+
+    if defined(my.instance.interface)
+        my.found_attrs_count += 1
+        if my.found_attrs <> ""
+            my.found_attrs += ", "
+        endif
+        my.found_attrs += "interface"
+    endif
+
+    if defined(my.instance.api)
+        my.found_attrs_count += 1
+        if my.found_attrs <> ""
+            my.found_attrs += ", "
+        endif
+        my.found_attrs += "api"
+    endif
+
+    if defined(my.instance.impl)
+        my.found_attrs_count += 1
+        if my.found_attrs <> ""
+            my.found_attrs += ", "
+        endif
+        my.found_attrs += "impl"
+    endif
+    if my.found_attrs_count = "0"
+        my.dump_filename = entity_dump_file(my.instance)
+        echo_fatal("Expected one of the attributes {type, class, enum, callback, interface, api, impl}.
+" + \
+                   "But found nothing.
+" + \
+                   "See dump file: $(my.dump_filename:)", my)
+    endif
+
+    if my.found_attrs_count > "1"
+        my.dump_filename = entity_dump_file(my.instance)
+        echo_fatal("Expected one of the attributes {type, class, enum, callback, interface, api, impl}.
+" + \
+                   "But found several {$(my.found_attrs:)}.
+" + \
+                   "See dump file: $(my.dump_filename:)", my)
+    endif
 endfunction
 
-function validate_entity_property(property)
-    echo_trace("[L1] Validate entity $(name(my.property))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_instance(my.property)
-    validate_entity_uid(my.property)
+function property_validate(property)
+    my.property_name = defined(my.property.name) ?? " name=\"$(my.property.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.property))$(my.property_name)/>", my)
+    #    Check inherited attributes and entities"
+    instance_validate(my.property)
+    uid_validate(my.property)
 
-    echo_trace("    Validate attribute: name", my)
+    echo_trace("     Validate attribute: name", my)
     if !defined(my.property.name)
         echo_fatal_required_attr(my.property, "name")
     endif
 
-    echo_trace("    Validate attribute: bits", my)
+    echo_trace("     Validate attribute: bits", my)
 endfunction
 
-function validate_entity_declaration(declaration)
-    echo_trace("[L1] Validate entity $(name(my.declaration))", my)
+function declaration_validate(declaration)
 
-    echo_trace("    Validate attribute: declaration (default: public)", my)
+    echo_trace("     Validate attribute: declaration (default: public)", my)
     if defined(my.declaration.declaration)
         my.declaration_is_valid = "0"
         my.declaration_is_valid = my.declaration_is_valid | (my.declaration.declaration = "public")
@@ -400,110 +473,116 @@ function validate_entity_declaration(declaration)
     endif
 endfunction
 
-function validate_entity_enum(enum)
-    echo_trace("[L1] Validate entity $(name(my.enum))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_scoped_component(my.enum)
-    validate_entity_component(my.enum)
-    validate_entity_visibility(my.enum)
-    validate_entity_declaration(my.enum)
-    validate_entity_definition(my.enum)
+function enum_validate(enum)
+    my.enum_name = defined(my.enum.name) ?? " name=\"$(my.enum.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.enum))$(my.enum_name)/>", my)
+    #    Check inherited attributes and entities"
+    scoped_component_validate(my.enum)
+    component_validate(my.enum)
+    visibility_validate(my.enum)
+    declaration_validate(my.enum)
+    definition_validate(my.enum)
 
-    echo_trace("    Check allowed entities", my)
+    #    Check allowed entities"
     for my.enum.constant
-        validate_entity_constant(constant)
+        constant_validate(constant)
     endfor
 
-    echo_trace("    Validate attribute: name", my)
+    echo_trace("     Validate attribute: name", my)
 endfunction
 
-function validate_entity_return(return)
-    echo_trace("[L1] Validate entity $(name(my.return))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_instance(my.return)
+function return_validate(return)
+    my.return_name = defined(my.return.name) ?? " name=\"$(my.return.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.return))$(my.return_name)/>", my)
+    #    Check inherited attributes and entities"
+    instance_validate(my.return)
 
 endfunction
 
-function validate_entity_argument(argument)
-    echo_trace("[L1] Validate entity $(name(my.argument))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_instance(my.argument)
-    validate_entity_uid(my.argument)
+function argument_validate(argument)
+    my.argument_name = defined(my.argument.name) ?? " name=\"$(my.argument.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.argument))$(my.argument_name)/>", my)
+    #    Check inherited attributes and entities"
+    instance_validate(my.argument)
+    uid_validate(my.argument)
 
-    echo_trace("    Validate attribute: name", my)
+    echo_trace("     Validate attribute: name", my)
     if !defined(my.argument.name)
         echo_fatal_required_attr(my.argument, "name")
     endif
 endfunction
 
-function validate_entity_callback(callback)
-    echo_trace("[L1] Validate entity $(name(my.callback))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_scoped_component(my.callback)
-    validate_entity_declaration(my.callback)
+function callback_validate(callback)
+    my.callback_name = defined(my.callback.name) ?? " name=\"$(my.callback.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.callback))$(my.callback_name)/>", my)
+    #    Check inherited attributes and entities"
+    scoped_component_validate(my.callback)
+    declaration_validate(my.callback)
 
-    echo_trace("    Check allowed entities", my)
+    #    Check allowed entities"
     for my.callback.return
-        validate_entity_return(return)
+        return_validate(return)
     endfor
 
     for my.callback.argument
-        validate_entity_argument(argument)
+        argument_validate(argument)
     endfor
 
-    echo_trace("    Validate attribute: name", my)
+    echo_trace("     Validate attribute: name", my)
     if !defined(my.callback.name)
         echo_fatal_required_attr(my.callback, "name")
     endif
 endfunction
 
-function validate_entity_cast(cast)
-    echo_trace("[L1] Validate entity $(name(my.cast))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_instance(my.cast)
+function cast_validate(cast)
+    my.cast_name = defined(my.cast.name) ?? " name=\"$(my.cast.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.cast))$(my.cast_name)/>", my)
+    #    Check inherited attributes and entities"
+    instance_validate(my.cast)
 
 endfunction
 
-function validate_entity_value(value)
-    echo_trace("[L1] Validate entity $(name(my.value))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_instance(my.value)
+function value_validate(value)
+    my.value_name = defined(my.value.name) ?? " name=\"$(my.value.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.value))$(my.value_name)/>", my)
+    #    Check inherited attributes and entities"
+    instance_validate(my.value)
 
-    echo_trace("    Check allowed entities", my)
+    #    Check allowed entities"
     for my.value.cast
-        validate_entity_cast(cast)
+        cast_validate(cast)
     endfor
 
-    echo_trace("    Validate attribute: value", my)
+    echo_trace("     Validate attribute: value", my)
     if !defined(my.value.value)
         echo_fatal_required_attr(my.value, "value")
     endif
 endfunction
 
-function validate_entity_variable(variable)
-    echo_trace("[L1] Validate entity $(name(my.variable))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_scoped_component(my.variable)
-    validate_entity_visibility(my.variable)
-    validate_entity_declaration(my.variable)
-    validate_entity_definition(my.variable)
-    validate_entity_instance(my.variable)
+function variable_validate(variable)
+    my.variable_name = defined(my.variable.name) ?? " name=\"$(my.variable.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.variable))$(my.variable_name)/>", my)
+    #    Check inherited attributes and entities"
+    scoped_component_validate(my.variable)
+    visibility_validate(my.variable)
+    declaration_validate(my.variable)
+    definition_validate(my.variable)
+    instance_validate(my.variable)
 
-    echo_trace("    Check allowed entities", my)
+    #    Check allowed entities"
     for my.variable.value
-        validate_entity_value(value)
+        value_validate(value)
     endfor
 
-    echo_trace("    Validate attribute: name", my)
+    echo_trace("     Validate attribute: name", my)
     if !defined(my.variable.name)
         echo_fatal_required_attr(my.variable, "name")
     endif
 endfunction
 
-function validate_entity_lang(lang)
-    echo_trace("[L1] Validate entity $(name(my.lang))", my)
+function lang_validate(lang)
 
-    echo_trace("    Validate attribute: lang (default: c)", my)
+    echo_trace("     Validate attribute: lang (default: c)", my)
     if defined(my.lang.lang)
         my.lang_is_valid = "0"
         my.lang_is_valid = my.lang_is_valid | (my.lang.lang = "c")
@@ -515,12 +594,13 @@ function validate_entity_lang(lang)
     endif
 endfunction
 
-function validate_entity_code(code)
-    echo_trace("[L1] Validate entity $(name(my.code))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_lang(my.code)
+function code_validate(code)
+    my.code_name = defined(my.code.name) ?? " name=\"$(my.code.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.code))$(my.code_name)/>", my)
+    #    Check inherited attributes and entities"
+    lang_validate(my.code)
 
-    echo_trace("    Validate attribute: type (default: generated)", my)
+    echo_trace("     Validate attribute: type (default: generated)", my)
     if defined(my.code.type)
         my.type_is_valid = "0"
         my.type_is_valid = my.type_is_valid | (my.code.type = "stub")
@@ -532,37 +612,38 @@ function validate_entity_code(code)
     endif
 endfunction
 
-function validate_entity_method(method)
-    echo_trace("[L1] Validate entity $(name(my.method))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_scoped_component(my.method)
-    validate_entity_visibility(my.method)
-    validate_entity_declaration(my.method)
-    validate_entity_definition(my.method)
+function method_validate(method)
+    my.method_name = defined(my.method.name) ?? " name=\"$(my.method.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.method))$(my.method_name)/>", my)
+    #    Check inherited attributes and entities"
+    scoped_component_validate(my.method)
+    visibility_validate(my.method)
+    declaration_validate(my.method)
+    definition_validate(my.method)
 
-    echo_trace("    Check allowed entities", my)
+    #    Check allowed entities"
     for my.method.return
-        validate_entity_return(return)
+        return_validate(return)
     endfor
 
     for my.method.argument
-        validate_entity_argument(argument)
+        argument_validate(argument)
     endfor
 
     for my.method.variable
-        validate_entity_variable(variable)
+        variable_validate(variable)
     endfor
 
     for my.method.code
-        validate_entity_code(code)
+        code_validate(code)
     endfor
 
-    echo_trace("    Validate attribute: name", my)
+    echo_trace("     Validate attribute: name", my)
     if !defined(my.method.name)
         echo_fatal_required_attr(my.method, "name")
     endif
 
-    echo_trace("    Validate attribute: is_static (default: 0)", my)
+    echo_trace("     Validate attribute: is_static (default: 0)", my)
     if defined(my.method.is_static)
         my.is_static_is_valid = "0"
         my.is_static_is_valid = my.is_static_is_valid | (my.method.is_static = "0")
@@ -572,7 +653,7 @@ function validate_entity_method(method)
         endif
     endif
 
-    echo_trace("    Validate attribute: nodiscard (default: 0)", my)
+    echo_trace("     Validate attribute: nodiscard (default: 0)", my)
     if defined(my.method.nodiscard)
         my.nodiscard_is_valid = "0"
         my.nodiscard_is_valid = my.nodiscard_is_valid | (my.method.nodiscard = "0")
@@ -583,22 +664,23 @@ function validate_entity_method(method)
     endif
 endfunction
 
-function validate_entity_macros(macros)
-    echo_trace("[L1] Validate entity $(name(my.macros))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_definition(my.macros)
+function macros_validate(macros)
+    my.macros_name = defined(my.macros.name) ?? " name=\"$(my.macros.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.macros))$(my.macros_name)/>", my)
+    #    Check inherited attributes and entities"
+    definition_validate(my.macros)
 
-    echo_trace("    Check allowed entities", my)
+    #    Check allowed entities"
     for my.macros.code
-        validate_entity_code(code)
+        code_validate(code)
     endfor
 
-    echo_trace("    Validate attribute: name", my)
+    echo_trace("     Validate attribute: name", my)
     if !defined(my.macros.name)
         echo_fatal_required_attr(my.macros, "name")
     endif
 
-    echo_trace("    Validate attribute: is_method (default: 0)", my)
+    echo_trace("     Validate attribute: is_method (default: 0)", my)
     if defined(my.macros.is_method)
         my.is_method_is_valid = "0"
         my.is_method_is_valid = my.is_method_is_valid | (my.macros.is_method = "0")
@@ -609,100 +691,103 @@ function validate_entity_macros(macros)
     endif
 endfunction
 
-function validate_entity_macroses(macroses)
-    echo_trace("[L1] Validate entity $(name(my.macroses))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_definition(my.macroses)
+function macroses_validate(macroses)
+    my.macroses_name = defined(my.macroses.name) ?? " name=\"$(my.macroses.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.macroses))$(my.macroses_name)/>", my)
+    #    Check inherited attributes and entities"
+    definition_validate(my.macroses)
 
-    echo_trace("    Check allowed entities", my)
+    #    Check allowed entities"
     for my.macroses.macros
-        validate_entity_macros(macros)
+        macros_validate(macros)
     endfor
 
     for my.macroses.code
-        validate_entity_code(code)
+        code_validate(code)
     endfor
 
 endfunction
 
-function validate_entity_struct(struct)
-    echo_trace("[L1] Validate entity $(name(my.struct))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_scoped_component(my.struct)
-    validate_entity_visibility(my.struct)
-    validate_entity_declaration(my.struct)
-    validate_entity_definition(my.struct)
+function struct_validate(struct)
+    my.struct_name = defined(my.struct.name) ?? " name=\"$(my.struct.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.struct))$(my.struct_name)/>", my)
+    #    Check inherited attributes and entities"
+    scoped_component_validate(my.struct)
+    visibility_validate(my.struct)
+    declaration_validate(my.struct)
+    definition_validate(my.struct)
 
-    echo_trace("    Check allowed entities", my)
+    #    Check allowed entities"
     for my.struct.property
-        validate_entity_property(property)
+        property_validate(property)
     endfor
 
-    echo_trace("    Validate attribute: name", my)
+    echo_trace("     Validate attribute: name", my)
     if !defined(my.struct.name)
         echo_fatal_required_attr(my.struct, "name")
     endif
 endfunction
 
-function validate_entity_class(class)
-    echo_trace("[L1] Validate entity $(name(my.class))", my)
-    echo_trace("    Check inherited attributes and entities", my)
-    validate_entity_scope(my.class)
-    validate_entity_c_prefix(my.class)
-    validate_entity_uid(my.class)
-    validate_entity_visibility(my.class)
+function class_validate(class)
+    my.class_name = defined(my.class.name) ?? " name=\"$(my.class.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.class))$(my.class_name)/>", my)
+    #    Check inherited attributes and entities"
+    scope_validate(my.class)
+    c_prefix_validate(my.class)
+    uid_validate(my.class)
+    visibility_validate(my.class)
 
-    echo_trace("    Check allowed entities", my)
+    #    Check allowed entities"
     for my.class.require
-        validate_entity_require(require)
+        require_validate(require)
     endfor
 
     for my.class.dependency
-        validate_entity_dependency(dependency)
+        dependency_validate(dependency)
     endfor
 
     for my.class.constant
-        validate_entity_constant(constant)
+        constant_validate(constant)
     endfor
 
     for my.class.property
-        validate_entity_property(property)
+        property_validate(property)
     endfor
 
     for my.class.enum
-        validate_entity_enum(enum)
+        enum_validate(enum)
     endfor
 
     for my.class.callback
-        validate_entity_callback(callback)
+        callback_validate(callback)
     endfor
 
     for my.class.method
-        validate_entity_method(method)
+        method_validate(method)
     endfor
 
     for my.class.macros
-        validate_entity_macros(macros)
+        macros_validate(macros)
     endfor
 
     for my.class.macroses
-        validate_entity_macroses(macroses)
+        macroses_validate(macroses)
     endfor
 
     for my.class.struct
-        validate_entity_struct(struct)
+        struct_validate(struct)
     endfor
 
     for my.class.variable
-        validate_entity_variable(variable)
+        variable_validate(variable)
     endfor
 
-    echo_trace("    Validate attribute: name", my)
+    echo_trace("     Validate attribute: name", my)
     if !defined(my.class.name)
         echo_fatal_required_attr(my.class, "name")
     endif
 
-    echo_trace("    Validate attribute: context (default: none)", my)
+    echo_trace("     Validate attribute: context (default: none)", my)
     if defined(my.class.context)
         my.context_is_valid = "0"
         my.context_is_valid = my.context_is_valid | (my.class.context = "none")
@@ -714,7 +799,7 @@ function validate_entity_class(class)
         endif
     endif
 
-    echo_trace("    Validate attribute: lifecycle (default: default)", my)
+    echo_trace("     Validate attribute: lifecycle (default: default)", my)
     if defined(my.class.lifecycle)
         my.lifecycle_is_valid = "0"
         my.lifecycle_is_valid = my.lifecycle_is_valid | (my.class.lifecycle = "none")
@@ -724,7 +809,7 @@ function validate_entity_class(class)
         endif
     endif
 
-    echo_trace("    Validate attribute: is_value_type (default: 0)", my)
+    echo_trace("     Validate attribute: is_value_type (default: 0)", my)
     if defined(my.class.is_value_type)
         my.is_value_type_is_valid = "0"
         my.is_value_type_is_valid = my.is_value_type_is_valid | (my.class.is_value_type = "0")
@@ -735,26 +820,28 @@ function validate_entity_class(class)
     endif
 endfunction
 
-function validate_entity_ancestor(ancestor)
-    echo_trace("[L1] Validate entity $(name(my.ancestor))", my)
+function ancestor_validate(ancestor)
+    my.ancestor_name = defined(my.ancestor.name) ?? " name=\"$(my.ancestor.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.ancestor))$(my.ancestor_name)/>", my)
 
-    echo_trace("    Validate attribute: id", my)
+    echo_trace("     Validate attribute: id", my)
     if !defined(my.ancestor.id)
         echo_fatal_required_attr(my.ancestor, "id")
     endif
 
-    echo_trace("    Validate attribute: name", my)
+    echo_trace("     Validate attribute: name", my)
     if !defined(my.ancestor.name)
         echo_fatal_required_attr(my.ancestor, "name")
     endif
 endfunction
 
-function validate_entity_lineage(lineage)
-    echo_trace("[L1] Validate entity $(name(my.lineage))", my)
+function lineage_validate(lineage)
+    my.lineage_name = defined(my.lineage.name) ?? " name=\"$(my.lineage.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.lineage))$(my.lineage_name)/>", my)
 
-    echo_trace("    Check allowed entities", my)
+    #    Check allowed entities"
     for my.lineage.ancestor
-        validate_entity_ancestor(ancestor)
+        ancestor_validate(ancestor)
     endfor
 
 endfunction

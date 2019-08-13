@@ -116,6 +116,16 @@
 <entity name="instance" abstract="1">
     Defines attributes that related to the instance type.
 
+    <oneof required="1">
+        <attr name="type"/>
+        <attr name="class"/>
+        <attr name="enum"/>
+        <attr name="callback"/>
+        <attr name="interface"/>
+        <attr name="api"/>
+        <attr name="impl"/>
+    </oneof>
+
     <attr name="type">
         Defines instance primitive type.
 
@@ -268,7 +278,7 @@
 </entity>
 
 
-<entity name="access">
+<entity name="access" abstract="1">
     <attr name="access">
         Defines access rights to the instance and/or array of instances.
 
