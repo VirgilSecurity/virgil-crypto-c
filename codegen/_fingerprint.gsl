@@ -1,6 +1,6 @@
 # ---------------------------------------------------------------------------
 function fingerprint_is_equal(model1, model2)
-    return string_equal(my.model1?.fingerprint, my.model2?.fingerprint)
+    return string_equal(my.model1.fingerprint?, my.model2.fingerprint?)
 endfunction
 
 # ---------------------------------------------------------------------------
