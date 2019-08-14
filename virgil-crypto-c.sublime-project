@@ -11,7 +11,7 @@
 			"name": "validator gen",
 			"shell_cmd": "gsl validator.xml",
 			"working_dir": "${project_path}/codegen/validator",
-			"file_patterns": ["validator_gen.gsl"]
+			"file_patterns": ["validator.xml", "validator_gen.gsl"]
 		},
 		{
 			"name": "docgen",
