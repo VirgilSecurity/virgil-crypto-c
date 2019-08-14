@@ -846,7 +846,7 @@ function php_format_extension_zend_header (low_level)
     my.arg_type_info = ""
 
     if my.low_level.required_num_args > 0
-        my.arg_type_info += "ZEND_ARG_INFO(0, ctx)\n"
+        my.arg_type_info += format_left("ZEND_ARG_INFO(0, ctx)\n")
     endif
 
     for my.low_level.extension_argument as extension_argument
@@ -856,20 +856,22 @@ function php_format_extension_zend_header (low_level)
         endif
 
         if defined (extension_argument.zend_type)
-            my.arg_type_info += "ZEND_ARG_TYPE_INFO(0, $(extension_argument.name:), $(extension_argument.zend_type), 0)$(my.term:)"
+            my.arg_type_info += format_left("ZEND_ARG_TYPE_INFO(0, $(extension_argument.name:), $(extension_argument.zend_type), 0)$(my.term:)")
         endif
     endfor
 
-    my.res = "\
+    my.arg_type_info = format_left(my.arg_type_info)
+
+    my.res = format_left("\
     //
     //  Wrap method: $(my.low_level.function_name)
     //
     ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX($(my.arginfo:), 0, $(my.low_level.required_num_args:), $(my.low_level.return_type:UPPER), 0)
     $(my.arg_type_info:)
     ZEND_END_ARG_INFO()
-    "
+    ")
 
-    return format_left(my.res)
+    return my.res
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1008,21 +1010,21 @@ endfunction
 function php_format_extension_declare_input (low_level)
     check_arguments (my, "low_level", my)
 
-    my.res = "\
+    my.res = format_left("\
     //
     // Declare input arguments
     //
     zval *in_ctx = NULL;
-    "
+    ")
 
     for my.low_level.extension_argument as extension_argument
         if extension_argument.type <> "vsc_buffer_t"
             my.char = php_derive_extension_zend_function_input_name(extension_argument, "-c")
             my.size = php_derive_extension_zend_function_input_name(extension_argument, "-l")
-            my.res += "\
+            my.res += format_left("\
             char *$(my.char:) = NULL;
             size_t $(my.size:) = 0;
-            "
+            ")
         endif
     endfor
 
@@ -1202,7 +1204,7 @@ function php_format_extension_register_resource (low_level)
     zend_resource *$(my._m:)_res = zend_register_resource($(my._m:), le_$(my._p:)_$(my._m:));
     RETVAL_RES($(my._m:)_res); 
     "
-    
+
     return my.res
 endfunction
 

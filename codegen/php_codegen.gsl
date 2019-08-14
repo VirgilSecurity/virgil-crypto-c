@@ -528,7 +528,7 @@ function php_insert_extension_include (low_level_name_c_format)
 
     check_arguments (my, "low_level_name_c_format", my)
 
-    my.res = "#include \"$(my.low_level_name_c_format:).h\"\n"
+    my.res = format_left("#include \"$(my.low_level_name_c_format:).h\"\n")
 
     return my.res 
 endfunction
