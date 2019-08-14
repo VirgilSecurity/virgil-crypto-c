@@ -29,9 +29,10 @@ function echo_fatal_resticted_attr(entity, attr_name, valid_values)
                "See dump file: $(my.dump_filename:)", my)
 endfunction
 
-function scope_validate(scope)
 
-    echo_trace("     Validate attribute: scope (default: public)", my)
+# ---------------------------------------------------------------------------
+function scope_validate(scope)
+    echo_trace("     Validate attribute: scope=\"$(my.scope.scope)\"", my)
     if defined(my.scope.scope)
         my.scope_is_valid = "0"
         my.scope_is_valid = my.scope_is_valid | (my.scope.scope = "public")
@@ -43,21 +44,52 @@ function scope_validate(scope)
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+function scope_setup_defaults(scope, defaults)
+    my.default_value = my.defaults.scope ? "public"
+    if defined(my.default_value) & !defined(my.scope.scope)
+        echo_trace("       scope=\"$(my.default_value:)\"", my)
+        my.scope.scope = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function c_prefix_validate(c_prefix)
-
-    echo_trace("     Validate attribute: c_prefix", my)
+    echo_trace("     Validate attribute: c_prefix=\"$(my.c_prefix.c_prefix)\"", my)
 endfunction
 
+# ---------------------------------------------------------------------------
+function c_prefix_setup_defaults(c_prefix, defaults)
+    my.default_value = my.defaults.c_prefix ?
+    if defined(my.default_value) & !defined(my.c_prefix.c_prefix)
+        echo_trace("       c_prefix=\"$(my.default_value:)\"", my)
+        my.c_prefix.c_prefix = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function uid_validate(uid)
-
-    echo_trace("     Validate attribute: uid", my)
-
-    echo_trace("     Validate attribute: full_uid", my)
+    echo_trace("     Validate attribute: uid=\"$(my.uid.uid)\"", my)
+    echo_trace("     Validate attribute: full_uid=\"$(my.uid.full_uid)\"", my)
 endfunction
 
-function visibility_validate(visibility)
+# ---------------------------------------------------------------------------
+function uid_setup_defaults(uid, defaults)
+    my.default_value = my.defaults.uid ?
+    if defined(my.default_value) & !defined(my.uid.uid)
+        echo_trace("       uid=\"$(my.default_value:)\"", my)
+        my.uid.uid = my.default_value
+    endif
+    my.default_value = my.defaults.full_uid ?
+    if defined(my.default_value) & !defined(my.uid.full_uid)
+        echo_trace("       full_uid=\"$(my.default_value:)\"", my)
+        my.uid.full_uid = my.default_value
+    endif
+endfunction
 
-    echo_trace("     Validate attribute: visibility (default: public)", my)
+# ---------------------------------------------------------------------------
+function visibility_validate(visibility)
+    echo_trace("     Validate attribute: visibility=\"$(my.visibility.visibility)\"", my)
     if defined(my.visibility.visibility)
         my.visibility_is_valid = "0"
         my.visibility_is_valid = my.visibility_is_valid | (my.visibility.visibility = "public")
@@ -68,16 +100,38 @@ function visibility_validate(visibility)
     endif
 endfunction
 
-function landlord_validate(landlord)
-
-    echo_trace("     Validate attribute: project", my)
-
-    echo_trace("     Validate attribute: library", my)
+# ---------------------------------------------------------------------------
+function visibility_setup_defaults(visibility, defaults)
+    my.default_value = my.defaults.visibility ? "public"
+    if defined(my.default_value) & !defined(my.visibility.visibility)
+        echo_trace("       visibility=\"$(my.default_value:)\"", my)
+        my.visibility.visibility = my.default_value
+    endif
 endfunction
 
-function require_scope_validate(require_scope)
+# ---------------------------------------------------------------------------
+function landlord_validate(landlord)
+    echo_trace("     Validate attribute: project=\"$(my.landlord.project)\"", my)
+    echo_trace("     Validate attribute: library=\"$(my.landlord.library)\"", my)
+endfunction
 
-    echo_trace("     Validate attribute: scope (default: public)", my)
+# ---------------------------------------------------------------------------
+function landlord_setup_defaults(landlord, defaults)
+    my.default_value = my.defaults.project ?
+    if defined(my.default_value) & !defined(my.landlord.project)
+        echo_trace("       project=\"$(my.default_value:)\"", my)
+        my.landlord.project = my.default_value
+    endif
+    my.default_value = my.defaults.library ?
+    if defined(my.default_value) & !defined(my.landlord.library)
+        echo_trace("       library=\"$(my.default_value:)\"", my)
+        my.landlord.library = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function require_scope_validate(require_scope)
+    echo_trace("     Validate attribute: scope=\"$(my.require_scope.scope)\"", my)
     if defined(my.require_scope.scope)
         my.scope_is_valid = "0"
         my.scope_is_valid = my.scope_is_valid | (my.require_scope.scope = "public")
@@ -89,37 +143,96 @@ function require_scope_validate(require_scope)
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+function require_scope_setup_defaults(require_scope, defaults)
+    my.default_value = my.defaults.scope ? "public"
+    if defined(my.default_value) & !defined(my.require_scope.scope)
+        echo_trace("       scope=\"$(my.default_value:)\"", my)
+        my.require_scope.scope = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function require_base_validate(require_base)
+
     #    Check inherited attributes and entities"
     landlord_validate(my.require_base)
     require_scope_validate(my.require_base)
-
-    echo_trace("     Validate attribute: module", my)
-
-    echo_trace("     Validate attribute: header", my)
-
-    echo_trace("     Validate attribute: feature", my)
-
-    echo_trace("     Validate attribute: interface", my)
-
-    echo_trace("     Validate attribute: class", my)
-
-    echo_trace("     Validate attribute: impl", my)
-
-    echo_trace("     Validate attribute: enum", my)
+    echo_trace("     Validate attribute: module=\"$(my.require_base.module)\"", my)
+    echo_trace("     Validate attribute: header=\"$(my.require_base.header)\"", my)
+    echo_trace("     Validate attribute: feature=\"$(my.require_base.feature)\"", my)
+    echo_trace("     Validate attribute: interface=\"$(my.require_base.interface)\"", my)
+    echo_trace("     Validate attribute: class=\"$(my.require_base.class)\"", my)
+    echo_trace("     Validate attribute: impl=\"$(my.require_base.impl)\"", my)
+    echo_trace("     Validate attribute: enum=\"$(my.require_base.enum)\"", my)
 endfunction
 
+# ---------------------------------------------------------------------------
+function require_base_setup_defaults(require_base, defaults)
+
+    #    Setup defaults for inherited attributes and entities
+    landlord_setup_defaults(my.require_base)
+    require_scope_setup_defaults(my.require_base)
+    my.default_value = my.defaults.module ?
+    if defined(my.default_value) & !defined(my.require_base.module)
+        echo_trace("       module=\"$(my.default_value:)\"", my)
+        my.require_base.module = my.default_value
+    endif
+    my.default_value = my.defaults.header ?
+    if defined(my.default_value) & !defined(my.require_base.header)
+        echo_trace("       header=\"$(my.default_value:)\"", my)
+        my.require_base.header = my.default_value
+    endif
+    my.default_value = my.defaults.feature ?
+    if defined(my.default_value) & !defined(my.require_base.feature)
+        echo_trace("       feature=\"$(my.default_value:)\"", my)
+        my.require_base.feature = my.default_value
+    endif
+    my.default_value = my.defaults.interface ?
+    if defined(my.default_value) & !defined(my.require_base.interface)
+        echo_trace("       interface=\"$(my.default_value:)\"", my)
+        my.require_base.interface = my.default_value
+    endif
+    my.default_value = my.defaults.class ?
+    if defined(my.default_value) & !defined(my.require_base.class)
+        echo_trace("       class=\"$(my.default_value:)\"", my)
+        my.require_base.class = my.default_value
+    endif
+    my.default_value = my.defaults.impl ?
+    if defined(my.default_value) & !defined(my.require_base.impl)
+        echo_trace("       impl=\"$(my.default_value:)\"", my)
+        my.require_base.impl = my.default_value
+    endif
+    my.default_value = my.defaults.enum ?
+    if defined(my.default_value) & !defined(my.require_base.enum)
+        echo_trace("       enum=\"$(my.default_value:)\"", my)
+        my.require_base.enum = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function alternative_validate(alternative)
     my.alternative_name = defined(my.alternative.name) ?? " name=\"$(my.alternative.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.alternative))$(my.alternative_name)/>", my)
+
     #    Check inherited attributes and entities"
     require_base_validate(my.alternative)
-
 endfunction
 
+# ---------------------------------------------------------------------------
+function alternative_setup_defaults(alternative, defaults)
+    my.alternative_name = defined(my.alternative.name) ?? " name=\"$(my.alternative.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.alternative))$(my.alternative_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    require_base_setup_defaults(my.alternative)
+endfunction
+
+# ---------------------------------------------------------------------------
 function require_validate(require)
     my.require_name = defined(my.require.name) ?? " name=\"$(my.require.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.require))$(my.require_name)/>", my)
+
     #    Check inherited attributes and entities"
     require_base_validate(my.require)
 
@@ -127,31 +240,39 @@ function require_validate(require)
     for my.require.alternative
         alternative_validate(alternative)
     endfor
-
 endfunction
 
+# ---------------------------------------------------------------------------
+function require_setup_defaults(require, defaults)
+    my.require_name = defined(my.require.name) ?? " name=\"$(my.require.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.require))$(my.require_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    require_base_setup_defaults(my.require)
+
+    #    Setup defaults for allowed entities
+    for my.require.alternative
+        alternative_setup_defaults(alternative)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
 function dependency_validate(dependency)
     my.dependency_name = defined(my.dependency.name) ?? " name=\"$(my.dependency.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.dependency))$(my.dependency_name)/>", my)
+
     #    Check inherited attributes and entities"
     landlord_validate(my.dependency)
-
-    echo_trace("     Validate attribute: name", my)
+    echo_trace("     Validate attribute: name=\"$(my.dependency.name)\"", my)
     if !defined(my.dependency.name)
         echo_fatal_required_attr(my.dependency, "name")
     endif
-
-    echo_trace("     Validate attribute: interface", my)
-
-    echo_trace("     Validate attribute: api", my)
-
-    echo_trace("     Validate attribute: class", my)
-
-    echo_trace("     Validate attribute: impl", my)
-
-    echo_trace("     Validate attribute: type_name", my)
-
-    echo_trace("     Validate attribute: has_observers (default: 0)", my)
+    echo_trace("     Validate attribute: interface=\"$(my.dependency.interface)\"", my)
+    echo_trace("     Validate attribute: api=\"$(my.dependency.api)\"", my)
+    echo_trace("     Validate attribute: class=\"$(my.dependency.class)\"", my)
+    echo_trace("     Validate attribute: impl=\"$(my.dependency.impl)\"", my)
+    echo_trace("     Validate attribute: type_name=\"$(my.dependency.type_name)\"", my)
+    echo_trace("     Validate attribute: has_observers=\"$(my.dependency.has_observers)\"", my)
     if defined(my.dependency.has_observers)
         my.has_observers_is_valid = "0"
         my.has_observers_is_valid = my.has_observers_is_valid | (my.dependency.has_observers = "0")
@@ -160,8 +281,7 @@ function dependency_validate(dependency)
             echo_fatal_resticted_attr(my.dependency, "has_observers", "0, 1")
         endif
     endif
-
-    echo_trace("     Validate attribute: is_observers_return_status (default: 0)", my)
+    echo_trace("     Validate attribute: is_observers_return_status=\"$(my.dependency.is_observers_return_status)\"", my)
     if defined(my.dependency.is_observers_return_status)
         my.is_observers_return_status_is_valid = "0"
         my.is_observers_return_status_is_valid = my.is_observers_return_status_is_valid | (my.dependency.is_observers_return_status = "0")
@@ -172,25 +292,99 @@ function dependency_validate(dependency)
     endif
 endfunction
 
-function of_class_validate(of_class)
+# ---------------------------------------------------------------------------
+function dependency_setup_defaults(dependency, defaults)
+    my.dependency_name = defined(my.dependency.name) ?? " name=\"$(my.dependency.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.dependency))$(my.dependency_name)/>", my)
 
-    echo_trace("     Validate attribute: of_class", my)
+    #    Setup defaults for inherited attributes and entities
+    landlord_setup_defaults(my.dependency)
+    my.default_value = my.defaults.name ?
+    if defined(my.default_value) & !defined(my.dependency.name)
+        echo_trace("       name=\"$(my.default_value:)\"", my)
+        my.dependency.name = my.default_value
+    endif
+    my.default_value = my.defaults.interface ?
+    if defined(my.default_value) & !defined(my.dependency.interface)
+        echo_trace("       interface=\"$(my.default_value:)\"", my)
+        my.dependency.interface = my.default_value
+    endif
+    my.default_value = my.defaults.api ?
+    if defined(my.default_value) & !defined(my.dependency.api)
+        echo_trace("       api=\"$(my.default_value:)\"", my)
+        my.dependency.api = my.default_value
+    endif
+    my.default_value = my.defaults.class ?
+    if defined(my.default_value) & !defined(my.dependency.class)
+        echo_trace("       class=\"$(my.default_value:)\"", my)
+        my.dependency.class = my.default_value
+    endif
+    my.default_value = my.defaults.impl ?
+    if defined(my.default_value) & !defined(my.dependency.impl)
+        echo_trace("       impl=\"$(my.default_value:)\"", my)
+        my.dependency.impl = my.default_value
+    endif
+    my.default_value = my.defaults.type_name ?
+    if defined(my.default_value) & !defined(my.dependency.type_name)
+        echo_trace("       type_name=\"$(my.default_value:)\"", my)
+        my.dependency.type_name = my.default_value
+    endif
+    my.default_value = my.defaults.has_observers ? "0"
+    if defined(my.default_value) & !defined(my.dependency.has_observers)
+        echo_trace("       has_observers=\"$(my.default_value:)\"", my)
+        my.dependency.has_observers = my.default_value
+    endif
+    my.default_value = my.defaults.is_observers_return_status ? "0"
+    if defined(my.default_value) & !defined(my.dependency.is_observers_return_status)
+        echo_trace("       is_observers_return_status=\"$(my.default_value:)\"", my)
+        my.dependency.is_observers_return_status = my.default_value
+    endif
 endfunction
 
+# ---------------------------------------------------------------------------
+function of_class_validate(of_class)
+    echo_trace("     Validate attribute: of_class=\"$(my.of_class.of_class)\"", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+function of_class_setup_defaults(of_class, defaults)
+    my.default_value = my.defaults.of_class ?
+    if defined(my.default_value) & !defined(my.of_class.of_class)
+        echo_trace("       of_class=\"$(my.default_value:)\"", my)
+        my.of_class.of_class = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function component_validate(component)
+
     #    Check inherited attributes and entities"
     uid_validate(my.component)
     of_class_validate(my.component)
     c_prefix_validate(my.component)
-
-    echo_trace("     Validate attribute: feature", my)
+    echo_trace("     Validate attribute: feature=\"$(my.component.feature)\"", my)
 endfunction
 
+# ---------------------------------------------------------------------------
+function component_setup_defaults(component, defaults)
+
+    #    Setup defaults for inherited attributes and entities
+    uid_setup_defaults(my.component)
+    of_class_setup_defaults(my.component)
+    c_prefix_setup_defaults(my.component)
+    my.default_value = my.defaults.feature ?
+    if defined(my.default_value) & !defined(my.component.feature)
+        echo_trace("       feature=\"$(my.default_value:)\"", my)
+        my.component.feature = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function scoped_component_validate(scoped_component)
+
     #    Check inherited attributes and entities"
     component_validate(my.scoped_component)
-
-    echo_trace("     Validate attribute: scope (default: public)", my)
+    echo_trace("     Validate attribute: scope=\"$(my.scoped_component.scope)\"", my)
     if defined(my.scoped_component.scope)
         my.scope_is_valid = "0"
         my.scope_is_valid = my.scope_is_valid | (my.scoped_component.scope = "public")
@@ -203,9 +397,21 @@ function scoped_component_validate(scoped_component)
     endif
 endfunction
 
-function definition_validate(definition)
+# ---------------------------------------------------------------------------
+function scoped_component_setup_defaults(scoped_component, defaults)
 
-    echo_trace("     Validate attribute: definition (default: private)", my)
+    #    Setup defaults for inherited attributes and entities
+    component_setup_defaults(my.scoped_component)
+    my.default_value = my.defaults.scope ? "public"
+    if defined(my.default_value) & !defined(my.scoped_component.scope)
+        echo_trace("       scope=\"$(my.default_value:)\"", my)
+        my.scoped_component.scope = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function definition_validate(definition)
+    echo_trace("     Validate attribute: definition=\"$(my.definition.definition)\"", my)
     if defined(my.definition.definition)
         my.definition_is_valid = "0"
         my.definition_is_valid = my.definition_is_valid | (my.definition.definition = "public")
@@ -217,24 +423,53 @@ function definition_validate(definition)
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+function definition_setup_defaults(definition, defaults)
+    my.default_value = my.defaults.definition ? "private"
+    if defined(my.default_value) & !defined(my.definition.definition)
+        echo_trace("       definition=\"$(my.default_value:)\"", my)
+        my.definition.definition = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function constant_validate(constant)
     my.constant_name = defined(my.constant.name) ?? " name=\"$(my.constant.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.constant))$(my.constant_name)/>", my)
+
     #    Check inherited attributes and entities"
     scoped_component_validate(my.constant)
     definition_validate(my.constant)
-
-    echo_trace("     Validate attribute: name", my)
+    echo_trace("     Validate attribute: name=\"$(my.constant.name)\"", my)
     if !defined(my.constant.name)
         echo_fatal_required_attr(my.constant, "name")
     endif
-
-    echo_trace("     Validate attribute: value", my)
+    echo_trace("     Validate attribute: value=\"$(my.constant.value)\"", my)
 endfunction
 
-function access_validate(access)
+# ---------------------------------------------------------------------------
+function constant_setup_defaults(constant, defaults)
+    my.constant_name = defined(my.constant.name) ?? " name=\"$(my.constant.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.constant))$(my.constant_name)/>", my)
 
-    echo_trace("     Validate attribute: access", my)
+    #    Setup defaults for inherited attributes and entities
+    scoped_component_setup_defaults(my.constant)
+    definition_setup_defaults(my.constant)
+    my.default_value = my.defaults.name ?
+    if defined(my.default_value) & !defined(my.constant.name)
+        echo_trace("       name=\"$(my.default_value:)\"", my)
+        my.constant.name = my.default_value
+    endif
+    my.default_value = my.defaults.value ?
+    if defined(my.default_value) & !defined(my.constant.value)
+        echo_trace("       value=\"$(my.default_value:)\"", my)
+        my.constant.value = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function access_validate(access)
+    echo_trace("     Validate attribute: access=\"$(my.access.access)\"", my)
     if defined(my.access.access)
         my.access_is_valid = "0"
         my.access_is_valid = my.access_is_valid | (my.access.access = "readonly")
@@ -245,17 +480,31 @@ function access_validate(access)
             echo_fatal_resticted_attr(my.access, "access", "readonly, writeonly, readwrite, disown")
         endif
     endif
-
-    echo_trace("     Validate attribute: ownership", my)
+    echo_trace("     Validate attribute: ownership=\"$(my.access.ownership)\"", my)
 endfunction
 
+# ---------------------------------------------------------------------------
+function access_setup_defaults(access, defaults)
+    my.default_value = my.defaults.access ?
+    if defined(my.default_value) & !defined(my.access.access)
+        echo_trace("       access=\"$(my.default_value:)\"", my)
+        my.access.access = my.default_value
+    endif
+    my.default_value = my.defaults.ownership ?
+    if defined(my.default_value) & !defined(my.access.ownership)
+        echo_trace("       ownership=\"$(my.default_value:)\"", my)
+        my.access.ownership = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function string_validate(string)
     my.string_name = defined(my.string.name) ?? " name=\"$(my.string.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.string))$(my.string_name)/>", my)
+
     #    Check inherited attributes and entities"
     access_validate(my.string)
-
-    echo_trace("     Validate attribute: length (default: null_terminated)", my)
+    echo_trace("     Validate attribute: length=\"$(my.string.length)\"", my)
     if defined(my.string.length)
         my.length_is_valid = "0"
         my.length_is_valid = my.length_is_valid | (my.string.length = "null_terminated")
@@ -266,17 +515,36 @@ function string_validate(string)
             echo_fatal_resticted_attr(my.string, "length", "null_terminated, given, fixed, derived")
         endif
     endif
-
-    echo_trace("     Validate attribute: length_constant", my)
+    echo_trace("     Validate attribute: length_constant=\"$(my.string.length_constant)\"", my)
 endfunction
 
+# ---------------------------------------------------------------------------
+function string_setup_defaults(string, defaults)
+    my.string_name = defined(my.string.name) ?? " name=\"$(my.string.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.string))$(my.string_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    access_setup_defaults(my.string)
+    my.default_value = my.defaults.length ? "null_terminated"
+    if defined(my.default_value) & !defined(my.string.length)
+        echo_trace("       length=\"$(my.default_value:)\"", my)
+        my.string.length = my.default_value
+    endif
+    my.default_value = my.defaults.length_constant ?
+    if defined(my.default_value) & !defined(my.string.length_constant)
+        echo_trace("       length_constant=\"$(my.default_value:)\"", my)
+        my.string.length_constant = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function array_validate(array)
     my.array_name = defined(my.array.name) ?? " name=\"$(my.array.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.array))$(my.array_name)/>", my)
+
     #    Check inherited attributes and entities"
     access_validate(my.array)
-
-    echo_trace("     Validate attribute: length", my)
+    echo_trace("     Validate attribute: length=\"$(my.array.length)\"", my)
     if defined(my.array.length)
         my.length_is_valid = "0"
         my.length_is_valid = my.length_is_valid | (my.array.length = "null_terminated")
@@ -288,11 +556,31 @@ function array_validate(array)
             echo_fatal_resticted_attr(my.array, "length", "null_terminated, given, known, fixed, derived")
         endif
     endif
-
-    echo_trace("     Validate attribute: length_constant", my)
+    echo_trace("     Validate attribute: length_constant=\"$(my.array.length_constant)\"", my)
 endfunction
 
+# ---------------------------------------------------------------------------
+function array_setup_defaults(array, defaults)
+    my.array_name = defined(my.array.name) ?? " name=\"$(my.array.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.array))$(my.array_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    access_setup_defaults(my.array)
+    my.default_value = my.defaults.length ?
+    if defined(my.default_value) & !defined(my.array.length)
+        echo_trace("       length=\"$(my.default_value:)\"", my)
+        my.array.length = my.default_value
+    endif
+    my.default_value = my.defaults.length_constant ?
+    if defined(my.default_value) & !defined(my.array.length_constant)
+        echo_trace("       length_constant=\"$(my.default_value:)\"", my)
+        my.array.length_constant = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function instance_validate(instance)
+
     #    Check inherited attributes and entities"
     access_validate(my.instance)
     landlord_validate(my.instance)
@@ -301,12 +589,10 @@ function instance_validate(instance)
     for my.instance.string
         string_validate(string)
     endfor
-
     for my.instance.array
         array_validate(array)
     endfor
-
-    echo_trace("     Validate attribute: type", my)
+    echo_trace("     Validate attribute: type=\"$(my.instance.type)\"", my)
     if defined(my.instance.type)
         my.type_is_valid = "0"
         my.type_is_valid = my.type_is_valid | (my.instance.type = "nothing")
@@ -322,20 +608,13 @@ function instance_validate(instance)
             echo_fatal_resticted_attr(my.instance, "type", "nothing, boolean, integer, unsigned, size, byte, string, char, varargs")
         endif
     endif
-
-    echo_trace("     Validate attribute: class", my)
-
-    echo_trace("     Validate attribute: enum", my)
-
-    echo_trace("     Validate attribute: callback", my)
-
-    echo_trace("     Validate attribute: interface", my)
-
-    echo_trace("     Validate attribute: api", my)
-
-    echo_trace("     Validate attribute: impl", my)
-
-    echo_trace("     Validate attribute: size", my)
+    echo_trace("     Validate attribute: class=\"$(my.instance.class)\"", my)
+    echo_trace("     Validate attribute: enum=\"$(my.instance.enum)\"", my)
+    echo_trace("     Validate attribute: callback=\"$(my.instance.callback)\"", my)
+    echo_trace("     Validate attribute: interface=\"$(my.instance.interface)\"", my)
+    echo_trace("     Validate attribute: api=\"$(my.instance.api)\"", my)
+    echo_trace("     Validate attribute: impl=\"$(my.instance.impl)\"", my)
+    echo_trace("     Validate attribute: size=\"$(my.instance.size)\"", my)
     if defined(my.instance.size)
         my.size_is_valid = "0"
         my.size_is_valid = my.size_is_valid | (my.instance.size = "1")
@@ -346,8 +625,7 @@ function instance_validate(instance)
             echo_fatal_resticted_attr(my.instance, "size", "1, 2, 4, 8")
         endif
     endif
-
-    echo_trace("     Validate attribute: is_reference", my)
+    echo_trace("     Validate attribute: is_reference=\"$(my.instance.is_reference)\"", my)
     if defined(my.instance.is_reference)
         my.is_reference_is_valid = "0"
         my.is_reference_is_valid = my.is_reference_is_valid | (my.instance.is_reference = "0")
@@ -356,8 +634,7 @@ function instance_validate(instance)
             echo_fatal_resticted_attr(my.instance, "is_reference", "0, 1")
         endif
     endif
-
-    echo_trace("     Validate attribute: require_definition", my)
+    echo_trace("     Validate attribute: require_definition=\"$(my.instance.require_definition)\"", my)
     if defined(my.instance.require_definition)
         my.require_definition_is_valid = "0"
         my.require_definition_is_valid = my.require_definition_is_valid | (my.instance.require_definition = "public")
@@ -444,24 +721,114 @@ function instance_validate(instance)
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+function instance_setup_defaults(instance, defaults)
+
+    #    Setup defaults for inherited attributes and entities
+    access_setup_defaults(my.instance)
+    landlord_setup_defaults(my.instance)
+
+    #    Setup defaults for allowed entities
+    for my.instance.string
+        string_setup_defaults(string)
+    endfor
+    for my.instance.array
+        array_setup_defaults(array)
+    endfor
+    my.default_value = my.defaults.type ?
+    if defined(my.default_value) & !defined(my.instance.type)
+        echo_trace("       type=\"$(my.default_value:)\"", my)
+        my.instance.type = my.default_value
+    endif
+    my.default_value = my.defaults.class ?
+    if defined(my.default_value) & !defined(my.instance.class)
+        echo_trace("       class=\"$(my.default_value:)\"", my)
+        my.instance.class = my.default_value
+    endif
+    my.default_value = my.defaults.enum ?
+    if defined(my.default_value) & !defined(my.instance.enum)
+        echo_trace("       enum=\"$(my.default_value:)\"", my)
+        my.instance.enum = my.default_value
+    endif
+    my.default_value = my.defaults.callback ?
+    if defined(my.default_value) & !defined(my.instance.callback)
+        echo_trace("       callback=\"$(my.default_value:)\"", my)
+        my.instance.callback = my.default_value
+    endif
+    my.default_value = my.defaults.interface ?
+    if defined(my.default_value) & !defined(my.instance.interface)
+        echo_trace("       interface=\"$(my.default_value:)\"", my)
+        my.instance.interface = my.default_value
+    endif
+    my.default_value = my.defaults.api ?
+    if defined(my.default_value) & !defined(my.instance.api)
+        echo_trace("       api=\"$(my.default_value:)\"", my)
+        my.instance.api = my.default_value
+    endif
+    my.default_value = my.defaults.impl ?
+    if defined(my.default_value) & !defined(my.instance.impl)
+        echo_trace("       impl=\"$(my.default_value:)\"", my)
+        my.instance.impl = my.default_value
+    endif
+    my.default_value = my.defaults.size ?
+    if defined(my.default_value) & !defined(my.instance.size)
+        echo_trace("       size=\"$(my.default_value:)\"", my)
+        my.instance.size = my.default_value
+    endif
+    my.default_value = my.defaults.is_reference ?
+    if defined(my.default_value) & !defined(my.instance.is_reference)
+        echo_trace("       is_reference=\"$(my.default_value:)\"", my)
+        my.instance.is_reference = my.default_value
+    endif
+    my.default_value = my.defaults.require_definition ?
+    if defined(my.default_value) & !defined(my.instance.require_definition)
+        echo_trace("       require_definition=\"$(my.default_value:)\"", my)
+        my.instance.require_definition = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function property_validate(property)
     my.property_name = defined(my.property.name) ?? " name=\"$(my.property.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.property))$(my.property_name)/>", my)
+
     #    Check inherited attributes and entities"
     instance_validate(my.property)
     uid_validate(my.property)
-
-    echo_trace("     Validate attribute: name", my)
+    echo_trace("     Validate attribute: name=\"$(my.property.name)\"", my)
     if !defined(my.property.name)
         echo_fatal_required_attr(my.property, "name")
     endif
-
-    echo_trace("     Validate attribute: bits", my)
+    echo_trace("     Validate attribute: bits=\"$(my.property.bits)\"", my)
 endfunction
 
-function declaration_validate(declaration)
+# ---------------------------------------------------------------------------
+function property_setup_defaults(property, defaults)
+    my.property_name = defined(my.property.name) ?? " name=\"$(my.property.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.property))$(my.property_name)/>", my)
 
-    echo_trace("     Validate attribute: declaration (default: public)", my)
+    #    Setup defaults for inherited attributes and entities
+    new defaults
+        .access = "readwrite"
+        instance_setup_defaults(my.property, defaults)
+        delete defaults
+    endnew
+    uid_setup_defaults(my.property)
+    my.default_value = my.defaults.name ?
+    if defined(my.default_value) & !defined(my.property.name)
+        echo_trace("       name=\"$(my.default_value:)\"", my)
+        my.property.name = my.default_value
+    endif
+    my.default_value = my.defaults.bits ?
+    if defined(my.default_value) & !defined(my.property.bits)
+        echo_trace("       bits=\"$(my.default_value:)\"", my)
+        my.property.bits = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function declaration_validate(declaration)
+    echo_trace("     Validate attribute: declaration=\"$(my.declaration.declaration)\"", my)
     if defined(my.declaration.declaration)
         my.declaration_is_valid = "0"
         my.declaration_is_valid = my.declaration_is_valid | (my.declaration.declaration = "public")
@@ -473,9 +840,20 @@ function declaration_validate(declaration)
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+function declaration_setup_defaults(declaration, defaults)
+    my.default_value = my.defaults.declaration ? "public"
+    if defined(my.default_value) & !defined(my.declaration.declaration)
+        echo_trace("       declaration=\"$(my.default_value:)\"", my)
+        my.declaration.declaration = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function enum_validate(enum)
     my.enum_name = defined(my.enum.name) ?? " name=\"$(my.enum.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.enum))$(my.enum_name)/>", my)
+
     #    Check inherited attributes and entities"
     scoped_component_validate(my.enum)
     component_validate(my.enum)
@@ -487,34 +865,84 @@ function enum_validate(enum)
     for my.enum.constant
         constant_validate(constant)
     endfor
-
-    echo_trace("     Validate attribute: name", my)
+    echo_trace("     Validate attribute: name=\"$(my.enum.name)\"", my)
 endfunction
 
+# ---------------------------------------------------------------------------
+function enum_setup_defaults(enum, defaults)
+    my.enum_name = defined(my.enum.name) ?? " name=\"$(my.enum.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.enum))$(my.enum_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    scoped_component_setup_defaults(my.enum)
+    component_setup_defaults(my.enum)
+    visibility_setup_defaults(my.enum)
+    declaration_setup_defaults(my.enum)
+    definition_setup_defaults(my.enum)
+
+    #    Setup defaults for allowed entities
+    for my.enum.constant
+        constant_setup_defaults(constant)
+    endfor
+    my.default_value = my.defaults.name ?
+    if defined(my.default_value) & !defined(my.enum.name)
+        echo_trace("       name=\"$(my.default_value:)\"", my)
+        my.enum.name = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function return_validate(return)
     my.return_name = defined(my.return.name) ?? " name=\"$(my.return.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.return))$(my.return_name)/>", my)
+
     #    Check inherited attributes and entities"
     instance_validate(my.return)
-
 endfunction
 
+# ---------------------------------------------------------------------------
+function return_setup_defaults(return, defaults)
+    my.return_name = defined(my.return.name) ?? " name=\"$(my.return.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.return))$(my.return_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    instance_setup_defaults(my.return)
+endfunction
+
+# ---------------------------------------------------------------------------
 function argument_validate(argument)
     my.argument_name = defined(my.argument.name) ?? " name=\"$(my.argument.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.argument))$(my.argument_name)/>", my)
+
     #    Check inherited attributes and entities"
     instance_validate(my.argument)
     uid_validate(my.argument)
-
-    echo_trace("     Validate attribute: name", my)
+    echo_trace("     Validate attribute: name=\"$(my.argument.name)\"", my)
     if !defined(my.argument.name)
         echo_fatal_required_attr(my.argument, "name")
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+function argument_setup_defaults(argument, defaults)
+    my.argument_name = defined(my.argument.name) ?? " name=\"$(my.argument.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.argument))$(my.argument_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    instance_setup_defaults(my.argument)
+    uid_setup_defaults(my.argument)
+    my.default_value = my.defaults.name ?
+    if defined(my.default_value) & !defined(my.argument.name)
+        echo_trace("       name=\"$(my.default_value:)\"", my)
+        my.argument.name = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function callback_validate(callback)
     my.callback_name = defined(my.callback.name) ?? " name=\"$(my.callback.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.callback))$(my.callback_name)/>", my)
+
     #    Check inherited attributes and entities"
     scoped_component_validate(my.callback)
     declaration_validate(my.callback)
@@ -523,28 +951,61 @@ function callback_validate(callback)
     for my.callback.return
         return_validate(return)
     endfor
-
     for my.callback.argument
         argument_validate(argument)
     endfor
-
-    echo_trace("     Validate attribute: name", my)
+    echo_trace("     Validate attribute: name=\"$(my.callback.name)\"", my)
     if !defined(my.callback.name)
         echo_fatal_required_attr(my.callback, "name")
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+function callback_setup_defaults(callback, defaults)
+    my.callback_name = defined(my.callback.name) ?? " name=\"$(my.callback.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.callback))$(my.callback_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    scoped_component_setup_defaults(my.callback)
+    declaration_setup_defaults(my.callback)
+
+    #    Setup defaults for allowed entities
+    for my.callback.return
+        return_setup_defaults(return)
+    endfor
+    for my.callback.argument
+        argument_setup_defaults(argument)
+    endfor
+    my.default_value = my.defaults.name ?
+    if defined(my.default_value) & !defined(my.callback.name)
+        echo_trace("       name=\"$(my.default_value:)\"", my)
+        my.callback.name = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function cast_validate(cast)
     my.cast_name = defined(my.cast.name) ?? " name=\"$(my.cast.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.cast))$(my.cast_name)/>", my)
+
     #    Check inherited attributes and entities"
     instance_validate(my.cast)
-
 endfunction
 
+# ---------------------------------------------------------------------------
+function cast_setup_defaults(cast, defaults)
+    my.cast_name = defined(my.cast.name) ?? " name=\"$(my.cast.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.cast))$(my.cast_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    instance_setup_defaults(my.cast)
+endfunction
+
+# ---------------------------------------------------------------------------
 function value_validate(value)
     my.value_name = defined(my.value.name) ?? " name=\"$(my.value.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.value))$(my.value_name)/>", my)
+
     #    Check inherited attributes and entities"
     instance_validate(my.value)
 
@@ -552,16 +1013,36 @@ function value_validate(value)
     for my.value.cast
         cast_validate(cast)
     endfor
-
-    echo_trace("     Validate attribute: value", my)
+    echo_trace("     Validate attribute: value=\"$(my.value.value)\"", my)
     if !defined(my.value.value)
         echo_fatal_required_attr(my.value, "value")
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+function value_setup_defaults(value, defaults)
+    my.value_name = defined(my.value.name) ?? " name=\"$(my.value.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.value))$(my.value_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    instance_setup_defaults(my.value)
+
+    #    Setup defaults for allowed entities
+    for my.value.cast
+        cast_setup_defaults(cast)
+    endfor
+    my.default_value = my.defaults.value ?
+    if defined(my.default_value) & !defined(my.value.value)
+        echo_trace("       value=\"$(my.default_value:)\"", my)
+        my.value.value = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function variable_validate(variable)
     my.variable_name = defined(my.variable.name) ?? " name=\"$(my.variable.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.variable))$(my.variable_name)/>", my)
+
     #    Check inherited attributes and entities"
     scoped_component_validate(my.variable)
     visibility_validate(my.variable)
@@ -573,16 +1054,38 @@ function variable_validate(variable)
     for my.variable.value
         value_validate(value)
     endfor
-
-    echo_trace("     Validate attribute: name", my)
+    echo_trace("     Validate attribute: name=\"$(my.variable.name)\"", my)
     if !defined(my.variable.name)
         echo_fatal_required_attr(my.variable, "name")
     endif
 endfunction
 
-function lang_validate(lang)
+# ---------------------------------------------------------------------------
+function variable_setup_defaults(variable, defaults)
+    my.variable_name = defined(my.variable.name) ?? " name=\"$(my.variable.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.variable))$(my.variable_name)/>", my)
 
-    echo_trace("     Validate attribute: lang (default: c)", my)
+    #    Setup defaults for inherited attributes and entities
+    scoped_component_setup_defaults(my.variable)
+    visibility_setup_defaults(my.variable)
+    declaration_setup_defaults(my.variable)
+    definition_setup_defaults(my.variable)
+    instance_setup_defaults(my.variable)
+
+    #    Setup defaults for allowed entities
+    for my.variable.value
+        value_setup_defaults(value)
+    endfor
+    my.default_value = my.defaults.name ?
+    if defined(my.default_value) & !defined(my.variable.name)
+        echo_trace("       name=\"$(my.default_value:)\"", my)
+        my.variable.name = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function lang_validate(lang)
+    echo_trace("     Validate attribute: lang=\"$(my.lang.lang)\"", my)
     if defined(my.lang.lang)
         my.lang_is_valid = "0"
         my.lang_is_valid = my.lang_is_valid | (my.lang.lang = "c")
@@ -594,13 +1097,23 @@ function lang_validate(lang)
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+function lang_setup_defaults(lang, defaults)
+    my.default_value = my.defaults.lang ? "c"
+    if defined(my.default_value) & !defined(my.lang.lang)
+        echo_trace("       lang=\"$(my.default_value:)\"", my)
+        my.lang.lang = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function code_validate(code)
     my.code_name = defined(my.code.name) ?? " name=\"$(my.code.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.code))$(my.code_name)/>", my)
+
     #    Check inherited attributes and entities"
     lang_validate(my.code)
-
-    echo_trace("     Validate attribute: type (default: generated)", my)
+    echo_trace("     Validate attribute: type=\"$(my.code.type)\"", my)
     if defined(my.code.type)
         my.type_is_valid = "0"
         my.type_is_valid = my.type_is_valid | (my.code.type = "stub")
@@ -612,9 +1125,25 @@ function code_validate(code)
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+function code_setup_defaults(code, defaults)
+    my.code_name = defined(my.code.name) ?? " name=\"$(my.code.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.code))$(my.code_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    lang_setup_defaults(my.code)
+    my.default_value = my.defaults.type ? "generated"
+    if defined(my.default_value) & !defined(my.code.type)
+        echo_trace("       type=\"$(my.default_value:)\"", my)
+        my.code.type = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function method_validate(method)
     my.method_name = defined(my.method.name) ?? " name=\"$(my.method.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.method))$(my.method_name)/>", my)
+
     #    Check inherited attributes and entities"
     scoped_component_validate(my.method)
     visibility_validate(my.method)
@@ -625,25 +1154,20 @@ function method_validate(method)
     for my.method.return
         return_validate(return)
     endfor
-
     for my.method.argument
         argument_validate(argument)
     endfor
-
     for my.method.variable
         variable_validate(variable)
     endfor
-
     for my.method.code
         code_validate(code)
     endfor
-
-    echo_trace("     Validate attribute: name", my)
+    echo_trace("     Validate attribute: name=\"$(my.method.name)\"", my)
     if !defined(my.method.name)
         echo_fatal_required_attr(my.method, "name")
     endif
-
-    echo_trace("     Validate attribute: is_static (default: 0)", my)
+    echo_trace("     Validate attribute: is_static=\"$(my.method.is_static)\"", my)
     if defined(my.method.is_static)
         my.is_static_is_valid = "0"
         my.is_static_is_valid = my.is_static_is_valid | (my.method.is_static = "0")
@@ -652,8 +1176,7 @@ function method_validate(method)
             echo_fatal_resticted_attr(my.method, "is_static", "0, 1")
         endif
     endif
-
-    echo_trace("     Validate attribute: nodiscard (default: 0)", my)
+    echo_trace("     Validate attribute: nodiscard=\"$(my.method.nodiscard)\"", my)
     if defined(my.method.nodiscard)
         my.nodiscard_is_valid = "0"
         my.nodiscard_is_valid = my.nodiscard_is_valid | (my.method.nodiscard = "0")
@@ -664,9 +1187,52 @@ function method_validate(method)
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+function method_setup_defaults(method, defaults)
+    my.method_name = defined(my.method.name) ?? " name=\"$(my.method.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.method))$(my.method_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    scoped_component_setup_defaults(my.method)
+    visibility_setup_defaults(my.method)
+    declaration_setup_defaults(my.method)
+    definition_setup_defaults(my.method)
+
+    #    Setup defaults for allowed entities
+    for my.method.return
+        return_setup_defaults(return)
+    endfor
+    for my.method.argument
+        argument_setup_defaults(argument)
+    endfor
+    for my.method.variable
+        variable_setup_defaults(variable)
+    endfor
+    for my.method.code
+        code_setup_defaults(code)
+    endfor
+    my.default_value = my.defaults.name ?
+    if defined(my.default_value) & !defined(my.method.name)
+        echo_trace("       name=\"$(my.default_value:)\"", my)
+        my.method.name = my.default_value
+    endif
+    my.default_value = my.defaults.is_static ? "0"
+    if defined(my.default_value) & !defined(my.method.is_static)
+        echo_trace("       is_static=\"$(my.default_value:)\"", my)
+        my.method.is_static = my.default_value
+    endif
+    my.default_value = my.defaults.nodiscard ? "0"
+    if defined(my.default_value) & !defined(my.method.nodiscard)
+        echo_trace("       nodiscard=\"$(my.default_value:)\"", my)
+        my.method.nodiscard = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function macros_validate(macros)
     my.macros_name = defined(my.macros.name) ?? " name=\"$(my.macros.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.macros))$(my.macros_name)/>", my)
+
     #    Check inherited attributes and entities"
     definition_validate(my.macros)
 
@@ -674,13 +1240,11 @@ function macros_validate(macros)
     for my.macros.code
         code_validate(code)
     endfor
-
-    echo_trace("     Validate attribute: name", my)
+    echo_trace("     Validate attribute: name=\"$(my.macros.name)\"", my)
     if !defined(my.macros.name)
         echo_fatal_required_attr(my.macros, "name")
     endif
-
-    echo_trace("     Validate attribute: is_method (default: 0)", my)
+    echo_trace("     Validate attribute: is_method=\"$(my.macros.is_method)\"", my)
     if defined(my.macros.is_method)
         my.is_method_is_valid = "0"
         my.is_method_is_valid = my.is_method_is_valid | (my.macros.is_method = "0")
@@ -691,9 +1255,35 @@ function macros_validate(macros)
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+function macros_setup_defaults(macros, defaults)
+    my.macros_name = defined(my.macros.name) ?? " name=\"$(my.macros.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.macros))$(my.macros_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    definition_setup_defaults(my.macros)
+
+    #    Setup defaults for allowed entities
+    for my.macros.code
+        code_setup_defaults(code)
+    endfor
+    my.default_value = my.defaults.name ?
+    if defined(my.default_value) & !defined(my.macros.name)
+        echo_trace("       name=\"$(my.default_value:)\"", my)
+        my.macros.name = my.default_value
+    endif
+    my.default_value = my.defaults.is_method ? "0"
+    if defined(my.default_value) & !defined(my.macros.is_method)
+        echo_trace("       is_method=\"$(my.default_value:)\"", my)
+        my.macros.is_method = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function macroses_validate(macroses)
     my.macroses_name = defined(my.macroses.name) ?? " name=\"$(my.macroses.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.macroses))$(my.macroses_name)/>", my)
+
     #    Check inherited attributes and entities"
     definition_validate(my.macroses)
 
@@ -701,16 +1291,33 @@ function macroses_validate(macroses)
     for my.macroses.macros
         macros_validate(macros)
     endfor
-
     for my.macroses.code
         code_validate(code)
     endfor
-
 endfunction
 
+# ---------------------------------------------------------------------------
+function macroses_setup_defaults(macroses, defaults)
+    my.macroses_name = defined(my.macroses.name) ?? " name=\"$(my.macroses.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.macroses))$(my.macroses_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    definition_setup_defaults(my.macroses)
+
+    #    Setup defaults for allowed entities
+    for my.macroses.macros
+        macros_setup_defaults(macros)
+    endfor
+    for my.macroses.code
+        code_setup_defaults(code)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
 function struct_validate(struct)
     my.struct_name = defined(my.struct.name) ?? " name=\"$(my.struct.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.struct))$(my.struct_name)/>", my)
+
     #    Check inherited attributes and entities"
     scoped_component_validate(my.struct)
     visibility_validate(my.struct)
@@ -721,16 +1328,39 @@ function struct_validate(struct)
     for my.struct.property
         property_validate(property)
     endfor
-
-    echo_trace("     Validate attribute: name", my)
+    echo_trace("     Validate attribute: name=\"$(my.struct.name)\"", my)
     if !defined(my.struct.name)
         echo_fatal_required_attr(my.struct, "name")
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+function struct_setup_defaults(struct, defaults)
+    my.struct_name = defined(my.struct.name) ?? " name=\"$(my.struct.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.struct))$(my.struct_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    scoped_component_setup_defaults(my.struct)
+    visibility_setup_defaults(my.struct)
+    declaration_setup_defaults(my.struct)
+    definition_setup_defaults(my.struct)
+
+    #    Setup defaults for allowed entities
+    for my.struct.property
+        property_setup_defaults(property)
+    endfor
+    my.default_value = my.defaults.name ?
+    if defined(my.default_value) & !defined(my.struct.name)
+        echo_trace("       name=\"$(my.default_value:)\"", my)
+        my.struct.name = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function class_validate(class)
     my.class_name = defined(my.class.name) ?? " name=\"$(my.class.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.class))$(my.class_name)/>", my)
+
     #    Check inherited attributes and entities"
     scope_validate(my.class)
     c_prefix_validate(my.class)
@@ -741,53 +1371,41 @@ function class_validate(class)
     for my.class.require
         require_validate(require)
     endfor
-
     for my.class.dependency
         dependency_validate(dependency)
     endfor
-
     for my.class.constant
         constant_validate(constant)
     endfor
-
     for my.class.property
         property_validate(property)
     endfor
-
     for my.class.enum
         enum_validate(enum)
     endfor
-
     for my.class.callback
         callback_validate(callback)
     endfor
-
     for my.class.method
         method_validate(method)
     endfor
-
     for my.class.macros
         macros_validate(macros)
     endfor
-
     for my.class.macroses
         macroses_validate(macroses)
     endfor
-
     for my.class.struct
         struct_validate(struct)
     endfor
-
     for my.class.variable
         variable_validate(variable)
     endfor
-
-    echo_trace("     Validate attribute: name", my)
+    echo_trace("     Validate attribute: name=\"$(my.class.name)\"", my)
     if !defined(my.class.name)
         echo_fatal_required_attr(my.class, "name")
     endif
-
-    echo_trace("     Validate attribute: context (default: none)", my)
+    echo_trace("     Validate attribute: context=\"$(my.class.context)\"", my)
     if defined(my.class.context)
         my.context_is_valid = "0"
         my.context_is_valid = my.context_is_valid | (my.class.context = "none")
@@ -798,8 +1416,7 @@ function class_validate(class)
             echo_fatal_resticted_attr(my.class, "context", "none, public, private, internal")
         endif
     endif
-
-    echo_trace("     Validate attribute: lifecycle (default: default)", my)
+    echo_trace("     Validate attribute: lifecycle=\"$(my.class.lifecycle)\"", my)
     if defined(my.class.lifecycle)
         my.lifecycle_is_valid = "0"
         my.lifecycle_is_valid = my.lifecycle_is_valid | (my.class.lifecycle = "none")
@@ -808,8 +1425,7 @@ function class_validate(class)
             echo_fatal_resticted_attr(my.class, "lifecycle", "none, default")
         endif
     endif
-
-    echo_trace("     Validate attribute: is_value_type (default: 0)", my)
+    echo_trace("     Validate attribute: is_value_type=\"$(my.class.is_value_type)\"", my)
     if defined(my.class.is_value_type)
         my.is_value_type_is_valid = "0"
         my.is_value_type_is_valid = my.is_value_type_is_valid | (my.class.is_value_type = "0")
@@ -820,21 +1436,104 @@ function class_validate(class)
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+function class_setup_defaults(class, defaults)
+    my.class_name = defined(my.class.name) ?? " name=\"$(my.class.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.class))$(my.class_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    scope_setup_defaults(my.class)
+    c_prefix_setup_defaults(my.class)
+    uid_setup_defaults(my.class)
+    visibility_setup_defaults(my.class)
+
+    #    Setup defaults for allowed entities
+    for my.class.require
+        require_setup_defaults(require)
+    endfor
+    for my.class.dependency
+        dependency_setup_defaults(dependency)
+    endfor
+    for my.class.constant
+        constant_setup_defaults(constant)
+    endfor
+    for my.class.property
+        property_setup_defaults(property)
+    endfor
+    for my.class.enum
+        enum_setup_defaults(enum)
+    endfor
+    for my.class.callback
+        callback_setup_defaults(callback)
+    endfor
+    for my.class.method
+        method_setup_defaults(method)
+    endfor
+    for my.class.macros
+        macros_setup_defaults(macros)
+    endfor
+    for my.class.macroses
+        macroses_setup_defaults(macroses)
+    endfor
+    for my.class.struct
+        struct_setup_defaults(struct)
+    endfor
+    for my.class.variable
+        variable_setup_defaults(variable)
+    endfor
+    my.default_value = my.defaults.name ?
+    if defined(my.default_value) & !defined(my.class.name)
+        echo_trace("       name=\"$(my.default_value:)\"", my)
+        my.class.name = my.default_value
+    endif
+    my.default_value = my.defaults.context ? "none"
+    if defined(my.default_value) & !defined(my.class.context)
+        echo_trace("       context=\"$(my.default_value:)\"", my)
+        my.class.context = my.default_value
+    endif
+    my.default_value = my.defaults.lifecycle ? "default"
+    if defined(my.default_value) & !defined(my.class.lifecycle)
+        echo_trace("       lifecycle=\"$(my.default_value:)\"", my)
+        my.class.lifecycle = my.default_value
+    endif
+    my.default_value = my.defaults.is_value_type ? "0"
+    if defined(my.default_value) & !defined(my.class.is_value_type)
+        echo_trace("       is_value_type=\"$(my.default_value:)\"", my)
+        my.class.is_value_type = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function ancestor_validate(ancestor)
     my.ancestor_name = defined(my.ancestor.name) ?? " name=\"$(my.ancestor.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.ancestor))$(my.ancestor_name)/>", my)
-
-    echo_trace("     Validate attribute: id", my)
+    echo_trace("     Validate attribute: id=\"$(my.ancestor.id)\"", my)
     if !defined(my.ancestor.id)
         echo_fatal_required_attr(my.ancestor, "id")
     endif
-
-    echo_trace("     Validate attribute: name", my)
+    echo_trace("     Validate attribute: name=\"$(my.ancestor.name)\"", my)
     if !defined(my.ancestor.name)
         echo_fatal_required_attr(my.ancestor, "name")
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+function ancestor_setup_defaults(ancestor, defaults)
+    my.ancestor_name = defined(my.ancestor.name) ?? " name=\"$(my.ancestor.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.ancestor))$(my.ancestor_name)/>", my)
+    my.default_value = my.defaults.id ?
+    if defined(my.default_value) & !defined(my.ancestor.id)
+        echo_trace("       id=\"$(my.default_value:)\"", my)
+        my.ancestor.id = my.default_value
+    endif
+    my.default_value = my.defaults.name ?
+    if defined(my.default_value) & !defined(my.ancestor.name)
+        echo_trace("       name=\"$(my.default_value:)\"", my)
+        my.ancestor.name = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function lineage_validate(lineage)
     my.lineage_name = defined(my.lineage.name) ?? " name=\"$(my.lineage.name)\"" ? ""
     echo_trace("[L1] Validate entity: <$(name(my.lineage))$(my.lineage_name)/>", my)
@@ -843,6 +1542,255 @@ function lineage_validate(lineage)
     for my.lineage.ancestor
         ancestor_validate(ancestor)
     endfor
-
 endfunction
 
+# ---------------------------------------------------------------------------
+function lineage_setup_defaults(lineage, defaults)
+    my.lineage_name = defined(my.lineage.name) ?? " name=\"$(my.lineage.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.lineage))$(my.lineage_name)/>", my)
+
+    #    Setup defaults for allowed entities
+    for my.lineage.ancestor
+        ancestor_setup_defaults(ancestor)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+function inherit_validate(inherit)
+    my.inherit_name = defined(my.inherit.name) ?? " name=\"$(my.inherit.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.inherit))$(my.inherit_name)/>", my)
+    echo_trace("     Validate attribute: interface=\"$(my.inherit.interface)\"", my)
+    if !defined(my.inherit.interface)
+        echo_fatal_required_attr(my.inherit, "interface")
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function inherit_setup_defaults(inherit, defaults)
+    my.inherit_name = defined(my.inherit.name) ?? " name=\"$(my.inherit.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.inherit))$(my.inherit_name)/>", my)
+    my.default_value = my.defaults.interface ?
+    if defined(my.default_value) & !defined(my.inherit.interface)
+        echo_trace("       interface=\"$(my.default_value:)\"", my)
+        my.inherit.interface = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function interface_validate(interface)
+    my.interface_name = defined(my.interface.name) ?? " name=\"$(my.interface.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.interface))$(my.interface_name)/>", my)
+
+    #    Check inherited attributes and entities"
+    scope_validate(my.interface)
+    visibility_validate(my.interface)
+    uid_validate(my.interface)
+    c_prefix_validate(my.interface)
+
+    #    Check allowed entities"
+    for my.interface.constant
+        constant_validate(constant)
+    endfor
+    for my.interface.method
+        method_validate(method)
+    endfor
+    for my.interface.inherit
+        inherit_validate(inherit)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+function interface_setup_defaults(interface, defaults)
+    my.interface_name = defined(my.interface.name) ?? " name=\"$(my.interface.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.interface))$(my.interface_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    scope_setup_defaults(my.interface)
+    visibility_setup_defaults(my.interface)
+    uid_setup_defaults(my.interface)
+    c_prefix_setup_defaults(my.interface)
+
+    #    Setup defaults for allowed entities
+    for my.interface.constant
+        constant_setup_defaults(constant)
+    endfor
+    for my.interface.method
+        method_setup_defaults(method)
+    endfor
+    for my.interface.inherit
+        inherit_setup_defaults(inherit)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+function context_validate(context)
+    my.context_name = defined(my.context.name) ?? " name=\"$(my.context.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.context))$(my.context_name)/>", my)
+
+    #    Check allowed entities"
+    for my.context.require
+        require_validate(require)
+    endfor
+    for my.context.property
+        property_validate(property)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+function context_setup_defaults(context, defaults)
+    my.context_name = defined(my.context.name) ?? " name=\"$(my.context.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.context))$(my.context_name)/>", my)
+
+    #    Setup defaults for allowed entities
+    for my.context.require
+        require_setup_defaults(require)
+    endfor
+    for my.context.property
+        property_setup_defaults(property)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+function implementation_validate(implementation)
+    my.implementation_name = defined(my.implementation.name) ?? " name=\"$(my.implementation.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.implementation))$(my.implementation_name)/>", my)
+
+    #    Check inherited attributes and entities"
+    scope_validate(my.implementation)
+    visibility_validate(my.implementation)
+    uid_validate(my.implementation)
+    c_prefix_validate(my.implementation)
+
+    #    Check allowed entities"
+    for my.implementation.context
+        context_validate(context)
+    endfor
+    for my.implementation.interface
+        interface_validate(interface)
+    endfor
+    for my.implementation.dependency
+        dependency_validate(dependency)
+    endfor
+    for my.implementation.require
+        require_validate(require)
+    endfor
+    for my.implementation.method
+        method_validate(method)
+    endfor
+    echo_trace("     Validate attribute: name=\"$(my.implementation.name)\"", my)
+    if !defined(my.implementation.name)
+        echo_fatal_required_attr(my.implementation, "name")
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function implementation_setup_defaults(implementation, defaults)
+    my.implementation_name = defined(my.implementation.name) ?? " name=\"$(my.implementation.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.implementation))$(my.implementation_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    scope_setup_defaults(my.implementation)
+    visibility_setup_defaults(my.implementation)
+    uid_setup_defaults(my.implementation)
+    c_prefix_setup_defaults(my.implementation)
+
+    #    Setup defaults for allowed entities
+    for my.implementation.context
+        context_setup_defaults(context)
+    endfor
+    for my.implementation.interface
+        interface_setup_defaults(interface)
+    endfor
+    for my.implementation.dependency
+        dependency_setup_defaults(dependency)
+    endfor
+    for my.implementation.require
+        require_setup_defaults(require)
+    endfor
+    new defaults
+        .visibility = "private"
+        method_setup_defaults(method, defaults)
+        delete defaults
+    endnew
+    my.default_value = my.defaults.name ?
+    if defined(my.default_value) & !defined(my.implementation.name)
+        echo_trace("       name=\"$(my.default_value:)\"", my)
+        my.implementation.name = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function implementor_validate(implementor)
+    my.implementor_name = defined(my.implementor.name) ?? " name=\"$(my.implementor.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.implementor))$(my.implementor_name)/>", my)
+
+    #    Check allowed entities"
+    for my.implementor.implementation
+        implementation_validate(implementation)
+    endfor
+    echo_trace("     Validate attribute: name=\"$(my.implementor.name)\"", my)
+    if !defined(my.implementor.name)
+        echo_fatal_required_attr(my.implementor, "name")
+    endif
+    echo_trace("     Validate attribute: is_default=\"$(my.implementor.is_default)\"", my)
+    if defined(my.implementor.is_default)
+        my.is_default_is_valid = "0"
+        my.is_default_is_valid = my.is_default_is_valid | (my.implementor.is_default = "0")
+        my.is_default_is_valid = my.is_default_is_valid | (my.implementor.is_default = "1")
+        if !my.is_default_is_valid
+            echo_fatal_resticted_attr(my.implementor, "is_default", "0, 1")
+        endif
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function implementor_setup_defaults(implementor, defaults)
+    my.implementor_name = defined(my.implementor.name) ?? " name=\"$(my.implementor.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.implementor))$(my.implementor_name)/>", my)
+
+    #    Setup defaults for allowed entities
+    for my.implementor.implementation
+        implementation_setup_defaults(implementation)
+    endfor
+    my.default_value = my.defaults.name ?
+    if defined(my.default_value) & !defined(my.implementor.name)
+        echo_trace("       name=\"$(my.default_value:)\"", my)
+        my.implementor.name = my.default_value
+    endif
+    my.default_value = my.defaults.is_default ? "0"
+    if defined(my.default_value) & !defined(my.implementor.is_default)
+        echo_trace("       is_default=\"$(my.default_value:)\"", my)
+        my.implementor.is_default = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function interface_validate(interface)
+    my.interface_name = defined(my.interface.name) ?? " name=\"$(my.interface.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.interface))$(my.interface_name)/>", my)
+
+    #    Check allowed entities"
+    for my.interface.constant
+        constant_validate(constant)
+    endfor
+    echo_trace("     Validate attribute: name=\"$(my.interface.name)\"", my)
+    if !defined(my.interface.name)
+        echo_fatal_required_attr(my.interface, "name")
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function interface_setup_defaults(interface, defaults)
+    my.interface_name = defined(my.interface.name) ?? " name=\"$(my.interface.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.interface))$(my.interface_name)/>", my)
+
+    #    Setup defaults for allowed entities
+    for my.interface.constant
+        constant_setup_defaults(constant)
+    endfor
+    my.default_value = my.defaults.name ?
+    if defined(my.default_value) & !defined(my.interface.name)
+        echo_trace("       name=\"$(my.default_value:)\"", my)
+        my.interface.name = my.default_value
+    endif
+endfunction

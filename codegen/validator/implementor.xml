@@ -38,76 +38,67 @@
 <include filename="common.xml"/>
 <include filename="component.xml"/>
 
-<entity name="class">
-    Defines class type.
+<entity name="implementor">
+    Defines different implementations that is based on the same underlying library
 
     <attr name="name" required="1">
-        Short module name.
+        Implementor name - underlying library name that is used for implementations.
     </attr>
 
-    <attr name="context" default="none">
-        Define context presence and it's visibility.
-
-        <restrict value="none">
-            Class do not require context, so it contains only static methods.
-            This value is default if class does not contain any 'property'.
-        </restrict>
-
-        <restrict value="public">
-            Context is defined in the public scope.
-        </restrict>
-
-        <restrict value="private">
-            Context is defined in the private scope.
-            This value is default if class contains at least one 'property'.
-        </restrict>
-
-        <restrict value="internal">
-            Context is defined in the internal scope.
-        </restrict>
-    </attr>
-
-
-    <attr name="lifecycle" default="default">
-        Define how to generate context lifecycle methods.
-
-        <restrict value="none">
-            Do not generate lifecycle methods.
-        </restrict>
-
-        <restrict value="default">
-            Generate default lifecycle methods.
-        </restrict>
-    </attr>
-
-
-    <attr name="is_value_type" default="0">
-        Defines that class is used as value type, as so it is passed and return by value.
-        Note, that underlying context is shallow copied.
+    <attr name="is_default" default="0">
+        Defines whether implementor is default in the library.
 
         <restrict value="0">
-            Class is a reference type.
+            Implementor is not default, so it's name will be prefixed to types and functions.
         </restrict>
 
         <restrict value="1">
-            Class is a value type.
+            Implementor is default, so it's name will not be prefixed to types and functions.
         </restrict>
     </attr>
 
+
+    <allow entity="implementation" occurs="1+"/>
+</entity>
+
+
+<entity name="implementation">
+    Defines set of the implemented interfaces in a one module.
+
+    <attr name="name" required="1">
+        Implementation name.
+    </attr>
+
     <inherit entity="scope"/>
-    <inherit entity="c_prefix"/>
-    <inherit entity="uid"/>
     <inherit entity="visibility"/>
+    <inherit entity="uid"/>
+    <inherit entity="c_prefix"/>
+
+    <allow entity="context" occurs="0/1"/>
+    <allow entity="interface" occurs="1+"/>
+    <allow entity="dependency" occurs="0+"/>
+    <allow entity="require" occurs="0+"/>
+    <allow entity="method" occurs="0+">
+        <attr name="visibility" default="private"/>
+    </allow>
+
+</entity>
+
+
+<entity name="interface">
+    Provide information about implemented interface.
+
+    <attr name="name" required="1">
+        Name of the implemented interface.
+    </attr>
+
+    <allow entity="constant"/>
+</entity>
+
+
+<entity name="context">
+    Defines specific underlying implementation context.
 
     <allow entity="require"/>
-    <allow entity="dependency"/>
-    <allow entity="constant"/>
     <allow entity="property"/>
-    <allow entity="enum"/>
-    <allow entity="callback"/>
-    <allow entity="method"/>
-    <allow entity="macros"/>
-    <allow entity="macroses"/>
-    <allow entity="struct"/>
-    <allow entity="variable"/>
 </entity>

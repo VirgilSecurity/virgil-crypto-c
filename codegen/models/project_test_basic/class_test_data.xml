@@ -1,4 +1,4 @@
-<class name="test data" forcegen="0">
+<class name="test data" forcegen="1">
     This class provides methods that accept and return special class "data".
     Class "data" represents "readonly" byte array and should be wrapped to
     a native byte array in a wrapper language.

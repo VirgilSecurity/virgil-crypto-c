@@ -553,7 +553,9 @@
         Define number of bits occupied by the property with integral type.
     </attr>
 
-    <inherit entity="instance"/>
+    <inherit entity="instance">
+        <attr name="access" default="readwrite"/>
+    </inherit>
     <inherit entity="uid"/>
 </entity>
 

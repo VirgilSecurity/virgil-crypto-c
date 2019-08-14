@@ -42,16 +42,16 @@ function class_process(project, class_link)
     my.class.fingerprint = class_calculate_dependencies_fingerprint(my.project, my.class)
 
     if defined(my.cached_class)
-        echo_trace("[L1] Class '$(my.class.name:)' - cache detected", my)
+        echo_trace("[L1] Class '$(my.class.name:)' - cache loaded", my)
     else
         echo_trace("[L1] Class '$(my.class.name:)' - full update required", my)
     endif
 
-
     if !fingerprint_is_equal(my.class, my.cached_class)
-        #class_setup_defaults(my.class)
-        class_resolve(my.class, my.project)
+        class_setup_defaults(my.class)
         class_validate(my.class)
+        class_resolve(my.class, my.project)
+        #class_validate_resolved(my.class)
     endif
 
     echo_trace("[L1] Class '$(my.class.name:)' - process children", my)

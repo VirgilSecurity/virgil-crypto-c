@@ -1,3 +1,5 @@
 <validator script="validator_gen.gsl">
-    <entities filename="class.xml"/>
+    <include filename="class.xml"/>
+    <include filename="interface.xml"/>
+    <include filename="implementor.xml"/>
 </validator>
