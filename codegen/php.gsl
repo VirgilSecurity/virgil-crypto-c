@@ -210,7 +210,7 @@ function php_create_class_default_constructor (php_class, class, php_project, me
 
     new php_method to my.php_class
 
-        my.func_name = "$(my.php_class.low_level_name_c_format:c)_new"
+        my.func_name = "$(my.php_class.low_level_name_c_format:)_new"
         my.php_func_name = my.func_name + "_php"
         
         new high_level to php_method
@@ -221,8 +221,10 @@ function php_create_class_default_constructor (php_class, class, php_project, me
             .throws_exception = "0"
 
             new docblock to high_level
-                . = "Create underlying C context.\n"
-                . += "@return void"
+                . = "\
+                Create underlying C context.
+                @return void
+                "
                 . = php_format_description (docblock)
             endnew
 
@@ -232,7 +234,8 @@ function php_create_class_default_constructor (php_class, class, php_project, me
         endnew
 
         new low_level to php_method
-            .module_name = "$(my.class:c)"
+            .module_name = "$(my.class.name:c)"
+            .prefix = "$(my.class.c_prefix:)"
             .function_name = "$(my.func_name:)"
             .required_num_args = "0"
             .throws_exception = "0"
@@ -248,8 +251,8 @@ function php_create_class_default_constructor (php_class, class, php_project, me
                     . = php_format_extension_php_function (low_level)
                 endnew
 
-                new fetch_type to extension_code
-                    . = php_format_extension_fetch_type (low_level)
+                new register_resource to extension_code
+                    . = php_format_extension_register_resource (low_level)
                 endnew
             endnew
         endnew
@@ -263,14 +266,56 @@ endfunction
 function php_create_class_default_destructor (php_class, class, php_project, meta)
     check_arguments (my, "php_class, class, php_project, meta", my)
 
-    new php_destructor to my.php_class
-        . = "Destroy underlying C context.\n"
-        . += "@return void"
-        . = php_format_description (php_destructor)
+    new php_method to my.php_class
+        new high_level to php_method
 
-        new php_code to php_destructor
-            my.destructor_body = "$(my.php_class.low_level_name_c_format:c)_delete_php($this->ctx);"
-            . = my.destructor_body
+            my.func_name = "$(my.php_class.low_level_name_c_format:)_delete"
+            my.php_func_name = my.func_name + "_php"
+
+            .name = "__destruct"
+            .function_name = my.php_func_name
+            .return_data = ""
+            .return_type = "void"
+            .throws_exception = "0"
+
+            new docblock to high_level
+                . = "\
+                Destroy underlying C context.
+                @return void"
+                . = php_format_description (docblock)
+            endnew
+
+            new php_code to high_level
+                . = "$(my.php_func_name:)($this->ctx);"
+            endnew
+        endnew
+
+        new low_level to php_method
+            .module_name = "$(my.class.name:c)"
+            .prefix = "$(my.class.c_prefix:)"
+            .function_name = "$(my.func_name:)"
+            .required_num_args = "0"
+            .throws_exception = "0"
+            .return_type = "IS_VOID"
+            .is_destructor = "1"
+
+            new extension_code to low_level
+                new zend_header to extension_code
+                    . = php_format_extension_zend_header (low_level)
+                endnew
+                new php_function to extension_code
+                    . = php_format_extension_php_function (low_level)
+                endnew
+                new declaration_input to extension_code
+                    . = php_format_extension_declare_input (low_level)
+                endnew
+                new parse_arguments to extension_code
+                    . = php_format_extension_parse_arguments (low_level)
+                endnew
+                new fetch_type to extension_code
+                    . = php_format_extension_fetch_type (low_level)
+                endnew
+            endnew
         endnew
     endnew
 endfunction
@@ -394,11 +439,17 @@ function php_create_class_method (class, method, destination, php_project, meta)
 
             my.function_name = class_derive_c_method (my.class, my.method)
 
+            #echo_debug_item(my.class)
+            #echo_fatal("", my)
+
+            #.module_name = "$(my.class.name:c)"
+            .prefix = "$(my.class.c_prefix:)"
             .module_name = php_derive_module_name (my.class, my.php_project, "c")
             .function_name = php_derive_function_name (my.function_name, "-l")
             .required_num_args = my.count_in
             .throws_exception = my.return_enum_status
             .return_type = my.extension_return_type
+
 
             for my.method.argument where defined (argument.class)
                 new extension_argument to low_level
@@ -810,12 +861,12 @@ function php_format_extension_zend_header (low_level)
     endfor
 
     my.res = "\
-//
-//  Wrap method: $(my.low_level.function_name)
-//
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX($(my.arginfo:), 0, $(my.low_level.required_num_args:), $(my.low_level.return_type:UPPER), 0)
-$(my.arg_type_info:)
-ZEND_END_ARG_INFO()
+    //
+    //  Wrap method: $(my.low_level.function_name)
+    //
+    ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX($(my.arginfo:), 0, $(my.low_level.required_num_args:), $(my.low_level.return_type:UPPER), 0)
+    $(my.arg_type_info:)
+    ZEND_END_ARG_INFO()
     "
 
     return format_left(my.res)
@@ -850,10 +901,10 @@ function php_format_extension_status (low_level)
 
     my.status += ");"
     my.status += "\n
-//
-//  Handle error
-//
-VSCE_HANDLE_STATUS(status);
+    //
+    //  Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
     "
     my.res = my.status
 
@@ -881,22 +932,22 @@ function php_format_extension_output (low_level)
         endif
 
         my.res = "\
-//
-//  Correct string length to the actual
-//
-ZSTR_LEN($(my.out_arg:)) = vsc_buffer_len($(my.arg));
+        //
+        //  Correct string length to the actual
+        //
+        ZSTR_LEN($(my.out_arg:)) = vsc_buffer_len($(my.arg));
 
-//
-//  Write returned result
-//
-RETVAL_STR($(my.out_arg));
+        //
+        //  Write returned result
+        //
+        RETVAL_STR($(my.out_arg));
 
-goto success;
+        goto success;
 
-fail:
-    zend_string_free($(my.out_arg));
-success:
-    vsc_buffer_destroy(&$(my.arg));
+        fail:
+            zend_string_free($(my.out_arg));
+        success:
+            vsc_buffer_destroy(&$(my.arg));
         "
     elsif my.low_level.return_type = "IS_VOID"
         my.res = "RETURN_TRUE;"
@@ -958,10 +1009,10 @@ function php_format_extension_declare_input (low_level)
     check_arguments (my, "low_level", my)
 
     my.res = "\
-//
-// Declare input arguments
-//
-zval *in_ctx = NULL;
+    //
+    // Declare input arguments
+    //
+    zval *in_ctx = NULL;
     "
 
     for my.low_level.extension_argument as extension_argument
@@ -969,8 +1020,8 @@ zval *in_ctx = NULL;
             my.char = php_derive_extension_zend_function_input_name(extension_argument, "-c")
             my.size = php_derive_extension_zend_function_input_name(extension_argument, "-l")
             my.res += "\
-char *$(my.char:) = NULL;
-size_t $(my.size:) = 0;
+            char *$(my.char:) = NULL;
+            size_t $(my.size:) = 0;
             "
         endif
     endfor
@@ -1004,12 +1055,12 @@ check_arguments (my, "low_level", my)
     endfor
 
     my.res = "\
-//
-//  Parse arguments
-//
-ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, $(my.c:), $(my.c:))
-$(my.parse_arguments:)
-ZEND_PARSE_PARAMETERS_END();
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, $(my.c:), $(my.c:))
+    $(my.parse_arguments:)
+    ZEND_PARSE_PARAMETERS_END();
     "
 
     return my.res
@@ -1035,13 +1086,20 @@ function php_format_extension_proxy_call (low_level)
         endif
     endfor
 
+    #echo_debug_item(my.low_level)
+    #echo_fatal("", my)
+
+    my._m = my.low_level.module_name
+    my._p = "$(my.low_level.prefix:)"
+    my._rn = "$(my._p:UPPER)_$(my._m:UPPER)_RES_NAME"
+
     my.res = "
-//
-// Proxy call
-//
-vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
-VSCE_ASSERT_PTR($(my.low_level.module_name:));
-$(my.proxy_call:)
+    //
+    // Proxy call
+    //
+    $(my._p)_$(my._m:)_t *$(my._m:) = zend_fetch_resource_ex(in_ctx, $(my._rn), le_$(my._p:)_$(my._m:)));
+    $(my._p:UPPER)_ASSERT_PTR($(my.low_level.module_name:));
+    $(my.proxy_call:)
     "
 
     return my.res
@@ -1133,8 +1191,30 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
+function php_format_extension_register_resource (low_level)
+    check_arguments (my, "low_level", my)
+
+    my._m = my.low_level.module_name
+    my._p = "$(my.low_level.prefix:)"
+
+    my.res = "\
+    $(my._p:)_$(my._m:)_t *$(my._m:) = $(my.low_level.function_name:)();
+    zend_resource *$(my._m:)_res = zend_register_resource($(my._m:), le_$(my._p:)_$(my._m:));
+    RETVAL_RES($(my._m:)_res); 
+    "
+    
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
 function php_format_extension_fetch_type (low_level)
     check_arguments (my, "low_level", my)
+
+    my._m = my.low_level.module_name
+    my._p = "$(my.low_level.prefix:)"
+    my._rn = "$(my._p:UPPER)_$(my._m:UPPER)_RES_NAME"
 
     my.fetch_type = "\
     //
@@ -1143,15 +1223,13 @@ function php_format_extension_fetch_type (low_level)
     "
 
     my.fetch_type += "\
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
-    VSCE_ASSERT_PTR(phe_client);
-    zend_list_close(Z_RES_P(in_cctx));
+    $(my._p:)_$(my._m:)_t *$(my._m:) = zend_fetch_resource_ex(in_ctx, $(my._rn:), le_$(my._p:)_$(my._m:));
+    $(my._p:UPPER)_ASSERT_PTR($(my._m:));
+    zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
     "
 
-    my.res = "\
-        $(my.fetch_type:)
-    "
+    my.res = "$(my.fetch_type:)"
 
     return my.res
 endfunction

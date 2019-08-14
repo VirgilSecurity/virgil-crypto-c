@@ -95,40 +95,12 @@ function php_insert_class (php_class)
             private $ctx;
     ", 0)
 
-    #for my.php_class.php_constructor
-    #    newline ()
-    #    php_insert_constructor(php_constructor)
-    #endfor
-
-    #for my.php_class.php_destructor
-    #    newline ()
-    #    php_insert_destructor (php_destructor)
-    #endfor
-
     for my.php_class.php_method by is_false (php_method.is_specific_method)
         newline ()
         php_insert_class_method (php_method)
     endfor
 
     php_insert_code("}",0)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Insert statement: constructor / init
-# ---------------------------------------------------------------------------
-function php_insert_constructor (php_constructor)
-    check_arguments (my, "php_constructor", my)
-
-    assert_item (my.php_constructor, "php_code", my)
-
-    my.method_args = php_format_argument_list(my.php_constructor) ?
-    my.method_args = string.search_replace (my.method_args, "self, ", "") ?
-    
-    php_insert_description (my.php_constructor, 1)
-    php_insert_code("public function __construct($(' ,'+my.method_args?:))", 1)
-    php_insert_code("{",1)
-    php_insert_code("$(my.php_constructor->php_code.:)", 2)
-    php_insert_code("}",1)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -188,6 +160,7 @@ function php_format_docblock(data)
     my.str = "* $(my.str:left, block, no)$(terminator)"
     my.str = string_multi_rtrim (my.str)
     my.str = "/**$(terminator)$(my.str:)$(terminator)*/"
+
     return my.str
 endfunction
 
@@ -268,19 +241,6 @@ function php_format_argument_list (php_method)
     endfor
 
     return my.arg_list
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Insert statement: destructor
-# ---------------------------------------------------------------------------
-function php_insert_destructor (php_destructor)
-    check_arguments (my, "php_destructor", my)
-
-    php_insert_description (my.php_destructor, 1)
-    php_insert_code("public function __destruct()", 1)
-    php_insert_code("{",1)
-    php_insert_code("$(my.php_destructor->php_code.:)", 2)
-    php_insert_code("}",1)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -443,16 +403,19 @@ function php_generate_source_extension_main (extension_module, php_project)
                     my.func_wrap += "{ \n"
 
                     if defined (php_method->low_level.is_constructor)
-                        my.func_wrap += my.extension_code->fetch_type + "\n"
-                    elsif defined (php_method->low_level.is_destructor)
-                        my.func_wrap += ""
+                        my.func_wrap += my.extension_code->register_resource
                     else 
                         my.func_wrap += my.extension_code->declaration_input + "\n"
                         my.func_wrap += my.extension_code->parse_arguments + "\n"
-                        my.func_wrap += my.extension_code->proxy_call + "\n"
-                        my.func_wrap += my.extension_code->allocate_output_buffer + "\n"
-                        my.func_wrap += my.extension_code->status + "\n"
-                        my.func_wrap += my.extension_code->output + "\n"
+
+                        if defined (php_method->low_level.is_destructor)
+                            my.func_wrap += my.extension_code->fetch_type + "\n"
+                        else
+                            my.func_wrap += my.extension_code->proxy_call + "\n"
+                            my.func_wrap += my.extension_code->allocate_output_buffer + "\n"
+                            my.func_wrap += my.extension_code->status + "\n"
+                            my.func_wrap += my.extension_code->output + "\n"
+                        endif
                     endif
                         my.func_wrap += "} \n"
                 endfor
