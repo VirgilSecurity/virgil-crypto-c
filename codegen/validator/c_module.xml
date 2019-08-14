@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!--
+    Copyright (C) 2015-2019 Virgil Security, Inc.
+
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+        (1) Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+
+        (2) Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in
+        the documentation and/or other materials provided with the
+        distribution.
+
+        (3) Neither the name of the copyright holder nor the names of its
+        contributors may be used to endorse or promote products derived from
+        this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+    IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+    INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+    IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+
+    Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+-->
+
+<include filename="common.xml"/>
+<include filename="c_component.xml"/>
+
+<entity name = "c_module">
+    Base model for C language code generation.
+
+    <attr name="id" required="1">
+        Short module name.
+    </attr>
+
+    <attr name="name" required="1">
+        Complete module name.
+    </attr>
+
+    <attr name="header_file" required="1">
+        Name of the generated header file without path.
+    </attr>
+
+    <attr name="source_file" required="1">
+        Name of the generated source file without path.
+    </attr>
+
+    <attr name="output_header_file" required="1">
+        Path to the header file that will be generated.
+    </attr>
+
+    <attr name="output_source_file" required="1">
+        Path to the source file that will be generated.
+    </attr>
+
+    <attr name="once_guard" required="1">
+        String that is used as C header guard.
+    </attr>
+
+    <attr name="has_cmakedefine" default="0">
+        Defines that module must be configured with CMake configure_file() command.
+
+        <restrict value="0">
+            Module does not contain CMake variables and #cmakedefine instructions.
+        </restrict>
+
+        <restrict value="1">
+            Module contains CMake variables and/or #cmakedefine instructions.
+        </restrict>
+    </attr>
+
+    <inherit entity="scope"/>
+    <inherit entity="of_class"/>
+
+    <allow entity="c_include"/>
+    <allow entity="c_alias"/>
+    <allow entity="c_enum"/>
+    <allow entity="c_struct"/>
+    <allow entity="c_variable"/>
+    <allow entity="c_method"/>
+    <allow entity="c_callback"/>
+    <allow entity="c_macros"/>
+    <allow entity="c_macroses"/>
+</entity>

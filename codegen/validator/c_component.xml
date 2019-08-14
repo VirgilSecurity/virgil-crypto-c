@@ -1,0 +1,431 @@
+<?xml version="1.0"?>
+<!--
+    Copyright (C) 2015-2019 Virgil Security, Inc.
+
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+        (1) Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+
+        (2) Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in
+        the documentation and/or other materials provided with the
+        distribution.
+
+        (3) Neither the name of the copyright holder nor the names of its
+        contributors may be used to endorse or promote products derived from
+        this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+    IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+    INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+    IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+
+    Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+-->
+
+<include filename="common.xml"/>
+
+<entity name="c_instance" abstract="1">
+    Defines a type of outer component.
+
+    <attr name="type" required="1">
+        Type without any modifiers.
+    </attr>
+
+    <attr name="type_is" required="1">
+        Define type kind.
+
+        <restrict value="primitive">
+            Type is primitive.
+        </restrict>
+
+        <restrict value="class">
+            Type is class.
+        </restrict>
+
+        <restrict value="callback">
+            Type is class.
+        </restrict>
+
+        <restrict value="any">
+            Any type.
+        </restrict>
+    </attr>
+
+    <attr name="accessed_by" default="value">
+        Defines how instance is accessed.
+
+        <restrict value="value">
+            Value type, i.e. 'int'
+        </restrict>
+
+        <restrict value="pointer">
+            Pointer type, i.e. 'int *'
+        </restrict>
+
+        <restrict value="reference">
+            Pointer to pointer type, i.e. 'int **'
+        </restrict>
+    </attr>
+
+    <attr name="array">
+        Defines array length type.
+        If given, parent instance becomes an array.
+
+        <restrict value="null_terminated">
+            Null-terminated array.
+        </restrict>
+
+        <restrict value="given">
+            Array with a given length, i.e. 'int *'.
+        </restrict>
+
+        <restrict value="fixed">
+            Array with a fixed length, i.e. 'int [32]'.
+        </restrict>
+
+        <restrict value="derived">
+            Array with a derived length, i.e. 'int []'.
+        </restrict>
+    </attr>
+
+    <attr name="string">
+        Defines string length type.
+        If given, parent instance becomes a string.
+
+        <restrict value="null_terminated">
+            Null-terminated string, 'char *'
+        </restrict>
+
+        <restrict value="given">
+            String whith a given length, i.e. 'char *'.
+        </restrict>
+
+        <restrict value="fixed">
+            String with a Fixed length, i.e. 'char [32]'.
+        </restrict>
+
+        <restrict value="derived">
+            String with a derived length, i.e. 'char []'.
+        </restrict>
+    </attr>
+
+    <attr name="length">
+        Defines length constant for the fixed array or fixed string.
+        Note, this attribute is used where appropriate.
+    </attr>
+
+    <attr name="is_const_type">
+        Defines type constness.
+    </attr>
+
+    <attr name="is_const_pointer">
+        Defines pointer constness.
+        TODO: Define if this attribute is useless.
+    </attr>
+
+    <attr name="is_const_array">
+        Defines array constness.
+    </attr>
+
+    <attr name="is_const_string">
+        Defines string constness.
+    </attr>
+
+    <attr name="is_const_reference">
+        Defines reference constness.
+        TODO: Define if this attribute is useless.
+    </attr>
+
+    <attr name="require_definition">
+        Defines if instance requires type definition.
+
+        <restrict value="public">
+            Instance type definition is used within private scope.
+        </restrict>
+
+        <restrict value="private">
+            Instance type definition is used within private scope.
+        </restrict>
+    </attr>
+</entity>
+
+
+<entity name="c_feature_attr" abstract="1">
+    Defines feature name.
+
+    <attr name="feature">
+        Defines feature name.
+        Component that holds this attribute should be wrapped with #if &lt;feature&gt; #endif macros.
+    </attr>
+</entity>
+
+
+<entity name="c_include">
+    <attr name="file" required="1">
+        File name to be included.
+    </attr>
+
+    <attr name="is_system" default="0">
+        <restrict value="0">
+            Included file is enclosed in: "file"
+        </restrict>
+
+        <restrict value="1">
+            Included file is enclosed in: &amp;lt;file&amp;gt;
+        </restrict>
+    </attr>
+
+    <inherit entity="c_feature_attr"/>
+    <inherit entity="scope"/>
+</entity>
+
+
+<entity name="c_alias">
+    Define synonym for the given type.
+
+    <attr name="name" required="1">
+        Alias name.
+    </attr>
+
+    <attr name="type" required="1">
+        Alias type.
+    </attr>
+
+    <inherit entity="declaration"/>
+</entity>
+
+
+<entity name="c_enum">
+    Defines enumeration type.
+
+    <attr name="name">
+        Enumeration name. Can be omitted if it is used to define named constants.
+    </attr>
+
+    <inherit entity="visibility"/>
+    <inherit entity="declaration"/>
+    <inherit entity="definition"/>
+    <inherit entity="uid"/>
+    <inherit entity="c_feature_attr"/>
+
+    <allow entity = "c_constant" occurs = "1+"/>
+</entity>
+
+
+<entity name="c_constant">
+    Defines integral constant.
+
+    <attr name="name" required="1">
+        Constant name.
+    </attr>
+
+    <attr name="value">
+        Constant value.
+    </attr>
+
+    <inherit entity="definition"/>
+    <inherit entity="uid"/>
+    <inherit entity="c_feature_attr"/>
+</entity>
+
+
+<entity name="c_struct">
+    Define structure type.
+
+    <attr name="name" required="1">
+        Structure name.
+    </attr>
+
+    <inherit entity="uid"/>
+    <inherit entity="declaration"/>
+    <inherit entity="definition"/>
+    <inherit entity="c_feature_attr"/>
+
+    <allow entity = "c_property" occurs = "1+"/>
+</entity>
+
+
+<entity name="c_property">
+    Define property of the structure type.
+
+    <attr name="name" required="1">
+        Property name.
+    </attr>
+
+    <attr name="bits">
+        Define number of bits occupied by the property with integral type.
+    </attr>
+
+    <inherit entity="uid"/>
+    <inherit entity="c_feature_attr"/>
+    <inherit entity="c_instance"/>
+</entity>
+
+
+<entity name="c_method">
+    Define method signature and implementation (optional).
+
+    <attr name="name" required="1">
+        Method name.
+    </attr>
+
+    <inherit entity="visibility"/>
+    <inherit entity="declaration"/>
+    <inherit entity="definition"/>
+    <inherit entity="uid"/>
+    <inherit entity="c_feature_attr"/>
+
+    <allow entity="c_modifier" occurs="0+"/>
+    <allow entity="c_return" occurs="0/1"/>
+    <allow entity="c_argument" occurs="0+"/>
+    <allow entity="c_precondition" occurs="0+"/>
+    <allow entity="c_attribute" occurs="0+"/>
+</entity>
+
+
+<entity name="c_callback">
+    Define callback type.
+
+    <attr name="name" required="1">
+        Method name.
+    </attr>
+
+    <inherit entity="uid"/>
+    <inherit entity="declaration"/>
+
+    <allow entity="c_return" occurs="0/1"/>
+    <allow entity="c_argument" occurs="0+"/>
+</entity>
+
+
+<entity name="c_macros">
+    Define macros, that can represent a constant or a method.
+
+    <attr name="is_method" default="0">
+        <restrict value="0">
+            Macros is a constant.
+        </restrict>
+
+        <restrict value="1">
+            Macros is a method.
+        </restrict>
+    </attr>
+
+    <inherit entity="uid"/>
+    <inherit entity="definition"/>
+    <inherit entity="c_feature_attr"/>
+
+    <allow entity="c_code" occurs="0/1"/>
+</entity>
+
+
+<entity name="c_macroses">
+    Define set of macroses in the one implemenatation.
+
+    <inherit entity="definition"/>
+
+    <allow entity="c_macros" occurs="1+"/>
+    <allow entity="c_code" occurs="0/1"/>
+</entity>
+
+
+<entity name="c_variable">
+    Define global variable.
+
+    <attr name="name" required="1">
+        Object name.
+    </attr>
+
+    <inherit entity="uid"/>
+    <inherit entity="visibility"/>
+    <inherit entity="declaration"/>
+    <inherit entity="definition"/>
+    <inherit entity="c_feature_attr"/>
+    <inherit entity="c_instance"/>
+
+    <allow entity="c_value" occurs="1+"/>
+    <allow entity="c_modifier" occurs="0+"/>
+</entity>
+
+
+<entity name="c_value">
+    Defines specific variable value.
+
+    <attr name="value" required="1">
+        Specific value.
+    </attr>
+
+    <allow entity="c_cast" occurs="0/1"/>
+</entity>
+
+
+<entity name="c_cast">
+    Cast parent instance type to the type defined in this entity.
+
+    <inherit entity="c_instance"/>
+</entity>
+
+
+<entity name="c_return">
+    Defines return type.
+
+    <inherit entity="c_instance"/>
+</entity>
+
+
+<entity name="c_argument">
+    Defines method or callback argument.
+
+    <attr name="name" required="1">
+        Argument name.
+    </attr>
+
+    <inherit entity="uid"/>
+    <inherit entity="c_instance"/>
+</entity>
+
+
+<entity name="c_code">
+    Defines method or macros implementation.
+</entity>
+
+
+<entity name="c_modifier">
+    Defines variable or methods modifiers, i.e. visibility, static, etc.
+
+    <attr name="value">
+        Modifier itself.
+    </attr>
+</entity>
+
+
+<entity name="c_precondition">
+    Defines method precondition.
+    All preconditions are sorted by position ascending.
+
+    <attr name="position" default="0">
+        Position's weight of the precondition.
+    </attr>
+</entity>
+
+
+<entity name="c_attribute">
+    Defines method attribute: __attribute__ (...).
+
+    <attr name="value">
+        Attribute itself.
+    </attr>
+</entity>

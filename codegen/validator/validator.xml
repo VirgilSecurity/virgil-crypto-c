@@ -2,4 +2,9 @@
     <include filename="class.xml"/>
     <include filename="interface.xml"/>
     <include filename="implementor.xml"/>
+    <include filename="project.xml"/>
+    <include filename="library.xml"/>
+    <include filename="module.xml"/>
+    <include filename="c_module.xml"/>
+    <include filename="c_features.xml"/>
 </validator>
