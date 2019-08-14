@@ -3,7 +3,7 @@
 	[
 		{
 			"name": "codegen",
-			"shell_cmd": "time ./codegen.sh",
+			"shell_cmd": "./codegen.sh",
 			"working_dir": "${project_path}",
 			"file_patterns": ["*.gsl", "*.xml"]
 		},
