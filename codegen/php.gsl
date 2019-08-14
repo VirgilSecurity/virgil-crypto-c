@@ -168,7 +168,7 @@ function php_create_class_module (class, php_project, meta)
     
     assert_attribute (my.class, "name", my)
 
-    if my.class.scope <> "public" | my.class.name = "error"
+    if my.class.scope <> "public" | my.class.name = "error" | my.class.context = "none"
         return
     endif
 
@@ -186,14 +186,13 @@ function php_create_class_module (class, php_project, meta)
             . = php_format_description (my.class) ?
             .name = php_derive_class_name (my.class, my.php_project)
             .low_level_name_c_format = php_derive_class_low_level_name_c_formated (my.class, my.php_project)
+
+            php_create_class_default_constructor (php_class, my.class, my.php_project, my.meta)
+            php_create_class_default_destructor (php_class, my.class, my.php_project, my.meta)
             
             for my.class.method where method.declaration = "public" & method.scope ?= "public"
                 php_create_class_method (my.class, method, php_class, my.php_project, my.meta)
             endfor
-
-            php_create_class_default_constructor (php_class, my.class, my.php_project, my.meta)
-            php_create_class_default_destructor (php_class, my.class, my.php_project, my.meta)
-
         endnew
         
     endnew
@@ -206,42 +205,55 @@ endfunction
 function php_create_class_default_constructor (php_class, class, php_project, meta)
     check_arguments (my, "php_class, class, php_project, meta", my)
 
-    new php_constructor to my.php_class
+    #echo_debug_item(my.class)
+    #echo_fatal("", my)
+
+    new php_method to my.php_class
+
+        my.func_name = "$(my.php_class.low_level_name_c_format:c)_new"
+        my.php_func_name = my.func_name + "_php"
         
-        . = "Create underlying C context.\n"
-        . += "@return void"
-        . = php_format_description (php_constructor)
-
-        new php_code to php_constructor
-            my.constructor_body = format_left ("$this->ctx = $(my.php_class.low_level_name_c_format:c)_new_php();")
-            . = my.constructor_body
-        endnew
-    endnew
-
-    my.constructor = XML.new()
-
-    new php_method to my.constructor
         new high_level to php_method
-            .name = "__constructor"
+            .name = "__construct"
+            .function_name = my.php_func_name
+            .return_data = ""
+            .return_type = "void"
+            .throws_exception = "0"
+
             new docblock to high_level
-                . = "\
-                Create underlying C context.
-                @return void
-                "
+                . = "Create underlying C context.\n"
+                . += "@return void"
                 . = php_format_description (docblock)
             endnew
 
             new php_code to high_level
-                my.constructor_body = format_left ("$this->ctx = $(my.php_class.low_level_name_c_format:c)_new_php();")
-                . = my.constructor_body
+                . = format_left ("$this->ctx = $(my.php_func_name:)();")
+            endnew
+        endnew
+
+        new low_level to php_method
+            .module_name = "$(my.class:c)"
+            .function_name = "$(my.func_name:)"
+            .required_num_args = "0"
+            .throws_exception = "0"
+            .return_type = "IS_RESOURCE"
+            .is_constructor = "1"
+
+            new extension_code to low_level
+                new zend_header to extension_code
+                    . = php_format_extension_zend_header (low_level)
+                endnew
+
+                new php_function to extension_code
+                    . = php_format_extension_php_function (low_level)
+                endnew
+
+                new fetch_type to extension_code
+                    . = php_format_extension_fetch_type (low_level)
+                endnew
             endnew
         endnew
     endnew
-
-    if defined (my.php_class->php_method)
-        copy my.constructor to my.php_class
-    endif
-
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -780,7 +792,11 @@ function php_format_extension_zend_header (low_level)
 
     my.arginfo = php_derive_extension_zend_function_arginfo(my.low_level.function_name)
 
-    my.arg_type_info = "ZEND_ARG_INFO(0, ctx)\n"
+    my.arg_type_info = ""
+
+    if my.low_level.required_num_args > 0
+        my.arg_type_info += "ZEND_ARG_INFO(0, ctx)\n"
+    endif
 
     for my.low_level.extension_argument as extension_argument
         my.term = ""
@@ -802,7 +818,7 @@ $(my.arg_type_info:)
 ZEND_END_ARG_INFO()
     "
 
-    return my.res
+    return format_left(my.res)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1109,6 +1125,32 @@ function php_format_extension_status_exception (enum, prefix)
                 $(my.case:)
             }
         }
+    "
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_fetch_type (low_level)
+    check_arguments (my, "low_level", my)
+
+    my.fetch_type = "\
+    //
+    //  Fetch for type checking and then release
+    //
+    "
+
+    my.fetch_type += "\
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
+    VSCE_ASSERT_PTR(phe_client);
+    zend_list_close(Z_RES_P(in_cctx));
+    RETURN_TRUE;
+    "
+
+    my.res = "\
+        $(my.fetch_type:)
     "
 
     return my.res

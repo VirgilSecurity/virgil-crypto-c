@@ -95,17 +95,17 @@ function php_insert_class (php_class)
             private $ctx;
     ", 0)
 
-    for my.php_class.php_constructor
-        newline ()
-        php_insert_constructor(php_constructor)
-    endfor
+    #for my.php_class.php_constructor
+    #    newline ()
+    #    php_insert_constructor(php_constructor)
+    #endfor
 
-    for my.php_class.php_destructor
-        newline ()
-        php_insert_destructor (php_destructor)
-   endfor
+    #for my.php_class.php_destructor
+    #    newline ()
+    #    php_insert_destructor (php_destructor)
+    #endfor
 
-   for my.php_class.php_method by is_false (php_method.is_specific_method)
+    for my.php_class.php_method by is_false (php_method.is_specific_method)
         newline ()
         php_insert_class_method (php_method)
     endfor
@@ -412,6 +412,9 @@ function php_generate_source_extension_main (extension_module, php_project)
             my.const += "const char $(php_class.low_level_name_c_format:UPPER)_RES_NAME[] = \"$(php_class.low_level_name_c_format:)_t\"\n"
             my.registered_resources += "int le_$(php_class.low_level_name_c_format:)\n"
 
+            #echo_debug_item(php_class)
+            #echo_fatal("", my)
+
             if count(php_class.php_method) > 0
 
                     my.r = "$(php_class.low_level_name_c_format:)"
@@ -438,13 +441,20 @@ function php_generate_source_extension_main (extension_module, php_project)
                     my.func_wrap += my.extension_code->zend_header + "\n"
                     my.func_wrap += my.extension_code->php_function + "\n"
                     my.func_wrap += "{ \n"
-                    my.func_wrap += my.extension_code->declaration_input + "\n"
-                    my.func_wrap += my.extension_code->parse_arguments + "\n"
-                    my.func_wrap += my.extension_code->proxy_call + "\n"
-                    my.func_wrap += my.extension_code->allocate_output_buffer + "\n"
-                    my.func_wrap += my.extension_code->status + "\n"
-                    my.func_wrap += my.extension_code->output + "\n"
-                    my.func_wrap += "} \n"
+
+                    if defined (php_method->low_level.is_constructor)
+                        my.func_wrap += my.extension_code->fetch_type + "\n"
+                    elsif defined (php_method->low_level.is_destructor)
+                        my.func_wrap += ""
+                    else 
+                        my.func_wrap += my.extension_code->declaration_input + "\n"
+                        my.func_wrap += my.extension_code->parse_arguments + "\n"
+                        my.func_wrap += my.extension_code->proxy_call + "\n"
+                        my.func_wrap += my.extension_code->allocate_output_buffer + "\n"
+                        my.func_wrap += my.extension_code->status + "\n"
+                        my.func_wrap += my.extension_code->output + "\n"
+                    endif
+                        my.func_wrap += "} \n"
                 endfor
             endif
         endfor
