@@ -10,6 +10,13 @@ function entity_tag(entity)
 endfunction
 
 # ---------------------------------------------------------------------------
+function entity_derive_name_of_function_setup_defaults(name)
+    check_arguments(my, "name", my)
+
+    return make_id(my.name, "setup defaults")
+endfunction
+
+# ---------------------------------------------------------------------------
 function entity_derive_name_of_function_validate(name)
     check_arguments(my, "name", my)
 
@@ -17,10 +24,10 @@ function entity_derive_name_of_function_validate(name)
 endfunction
 
 # ---------------------------------------------------------------------------
-function entity_derive_name_of_function_setup_defaults(name)
+function entity_derive_name_of_function_validate_resolved(name)
     check_arguments(my, "name", my)
 
-    return make_id(my.name, "setup defaults")
+    return make_id(my.name, "validate resolved")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -60,148 +67,6 @@ function find_referenced_entity(name, all_entities)
     return my.entity
 endfunction
 
-# ---------------------------------------------------------------------------
-function generate_validation_body_for_attr(attr, entity)
-    check_arguments(my, "attr, entity", my)
-
-    my.tag = entity_tag(my.entity)
-    my.my_tag = "my.$(my.tag)"
-    my.attr_access = "$(my.my_tag:).$(my.attr.name:)"
-
-    my.attr_default_str = " (default: $(my.attr_default_value:))" ? ""
-    >    echo_trace("     Validate attribute: $(my.attr.name:)=\\"\$\($(my.attr_access:)\)\\"", my)
-    if is_true(my.attr.required)
-        >    if !defined($(my.attr_access:))
-        >        echo_fatal_required_attr($(my.my_tag:), "$(my.attr.name:)")
-        >    endif
-    endif
-
-    for my.attr.restrict
-        my.restrict_list ?= ""
-        my.restrict_list += restrict.value
-
-
-        if first()
-            >    if defined($(my.attr_access:))
-            >        my.$(my.attr.name:)_is_valid = "0"
-        endif
-
-        >        my.$(my.attr.name:)_is_valid = my.$(my.attr.name:)_is_valid | ($(my.attr_access:) = "$(restrict.value)")
-
-        if last()
-            >        if !my.$(my.attr.name:)_is_valid
-            >            echo_fatal_resticted_attr($(my.my_tag:), "$(my.attr.name:)", "$(my.restrict_list:)")
-            >        endif
-            >    endif
-        else
-            my.restrict_list += ", "
-        endif
-    endfor
-endfunction
-
-# ---------------------------------------------------------------------------
-function generate_validation_body_for_oneof_attr(oneof, entity)
-    check_arguments(my, "oneof, entity", my)
-
-    my.tag = entity_tag(my.entity)
-    my.my_tag = "my.$(my.tag)"
-
-    >
-    >    my.found_attrs = ""
-    >    my.found_attrs_count = "0"
-
-    for my.oneof.attr
-        my.attr_access = "$(my.my_tag:).$(attr.name:)"
-
-        my.all_attrs ?= ""
-        my.all_attrs += attr.name
-        if !last()
-            my.all_attrs += ", "
-        endif
-        >
-        >    if defined($(my.attr_access:))
-        >        my.found_attrs_count += 1
-        >        if my.found_attrs <> ""
-        >            my.found_attrs += ", "
-        >        endif
-        >        my.found_attrs += "$(attr.name:)"
-        >    endif
-    endfor
-
-    if is_true(my.oneof.required)
-        >    if my.found_attrs_count = "0"
-        >        my.dump_filename = entity_dump_file($(my.my_tag:))
-        >        echo_fatal("Expected one of the attributes {$(my.all_attrs:)}.\n" + \\
-        >                   "But found nothing.\n" + \\
-        >                   "See dump file: \$\(my.dump_filename:\)", my)
-        >    endif
-        >
-    endif
-
-    >    if my.found_attrs_count > "1"
-    >        my.dump_filename = entity_dump_file($(my.my_tag:))
-    >        echo_fatal("Expected one of the attributes {$(my.all_attrs:)}.\n" + \\
-    >                   "But found several {\$\(my.found_attrs:\)}.\n" + \\
-    >                   "See dump file: \$\(my.dump_filename:\)", my)
-    >    endif
-endfunction
-
-# ---------------------------------------------------------------------------
-function generate_function_validate(entity)
-    check_arguments(my, "entity", my)
-
-    #
-    #   Generate validation body
-    #
-    my.tag = entity_tag(my.entity)
-    my.my_tag = "my.$(my.tag)"
-    >
-    ># ---------------------------------------------------------------------------
-    >function $(entity_derive_name_of_function_validate(my.entity.name))($(my.tag:))
-
-    if is_false(my.entity.abstract)
-        >    my.$(my.tag:)_name = defined($(my.my_tag).name) ?? " name=\\"\$\($(my.my_tag).name\)\\"" ? ""
-        >    echo_trace("[L1] Validate entity: <\$\(name($(my.my_tag)\)\)\$\(my.$(my.tag:)_name\)/>", my)
-    endif
-
-    #
-    #   Generate validation body for inherited entities
-    #
-    for my.entity.inherit
-        if first()
-            >
-            >    #    Check inherited attributes and entities"
-        endif
-        >    $(entity_derive_name_of_function_validate(inherit.entity))($(my.my_tag))
-    endfor
-
-    #
-    #   Generate validation body for allowed entities
-    #
-    for my.entity.allow
-        if first()
-            >
-            >    #    Check allowed entities"
-        endif
-        my.allowed_entity_tag = make_id(allow.tag ? allow.entity)
-        >    for $(my.my_tag).$(my.allowed_entity_tag:)
-        >        $(entity_derive_name_of_function_validate(allow.entity))($(my.allowed_entity_tag))
-        >    endfor
-    endfor
-
-    #
-    #   Generate validation body for self attributes
-    #
-    for my.entity.attr
-        generate_validation_body_for_attr(attr, my.entity)
-    endfor
-
-    for my.entity.oneof
-        generate_validation_body_for_oneof_attr(oneof, my.entity)
-    endfor
-
-    >endfunction
-endfunction
 
 # ---------------------------------------------------------------------------
 function generate_setup_defaults_body_for_attr(attr, entity)
@@ -219,7 +84,6 @@ function generate_setup_defaults_body_for_attr(attr, entity)
     >        $(my.attr_access:) = my.default_value
     >    endif
 endfunction
-
 
 # ---------------------------------------------------------------------------
 function generate_function_setup_defaults(entity)
@@ -301,6 +165,247 @@ function generate_function_setup_defaults(entity)
 endfunction
 
 # ---------------------------------------------------------------------------
+function generate_validation_body_for_attr(attr, entity)
+    check_arguments(my, "attr, entity", my)
+
+    my.tag = entity_tag(my.entity)
+    my.my_tag = "my.$(my.tag)"
+    my.attr_access = "$(my.my_tag:).$(my.attr.name:)"
+
+    my.attr_default_str = " (default: $(my.attr_default_value:))" ? ""
+    >    echo_trace("     Validate attribute: $(my.attr.name:)=\\"\$\($(my.attr_access:)\)\\"", my)
+    if is_true(my.attr.required)
+        >    if !defined($(my.attr_access:))
+        >        echo_fatal_required_attr($(my.my_tag:), "$(my.attr.name:)")
+        >    endif
+    endif
+
+    for my.attr.restrict
+        my.restrict_list ?= ""
+        my.restrict_list += restrict.value
+
+
+        if first()
+            >    if defined($(my.attr_access:))
+            >        my.$(my.attr.name:)_is_valid = "0"
+        endif
+
+        >        my.$(my.attr.name:)_is_valid = my.$(my.attr.name:)_is_valid | ($(my.attr_access:) = "$(restrict.value)")
+
+        if last()
+            >        if !my.$(my.attr.name:)_is_valid
+            >            echo_fatal_resticted_attr($(my.my_tag:), "$(my.attr.name:)", "$(my.restrict_list:)")
+            >        endif
+            >    endif
+        else
+            my.restrict_list += ", "
+        endif
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+function generate_validation_body_for_oneof_attr(oneof, entity)
+    check_arguments(my, "oneof, entity", my)
+
+    my.tag = entity_tag(my.entity)
+    my.my_tag = "my.$(my.tag)"
+
+    >
+    >    my.found_attrs = ""
+    >    my.found_attrs_count = "0"
+
+    for my.oneof.attr
+        my.attr_access = "$(my.my_tag:).$(attr.name:)"
+
+        my.all_attrs ?= ""
+        my.all_attrs += attr.name
+        if !last()
+            my.all_attrs += ", "
+        endif
+        >
+        >    if defined($(my.attr_access:))
+        >        my.found_attrs_count += 1
+        >        if my.found_attrs <> ""
+        >            my.found_attrs += ", "
+        >        endif
+        >        my.found_attrs += "$(attr.name:)"
+        >    endif
+    endfor
+
+    if is_true(my.oneof.required)
+        >    if my.found_attrs_count = "0"
+        >        my.dump_filename = entity_dump_file($(my.my_tag:))
+        >        echo_fatal("Expected one of the attributes {$(my.all_attrs:)}.\\n" + \\
+        >                   "But found nothing.\\n" + \\
+        >                   "See dump file: \$\(my.dump_filename:\)", my)
+        >    endif
+        >
+    endif
+
+    >    if my.found_attrs_count > "1"
+    >        my.dump_filename = entity_dump_file($(my.my_tag:))
+    >        echo_fatal("Expected one of the attributes {$(my.all_attrs:)}.\\n" + \\
+    >                   "But found several {\$\(my.found_attrs:\)}.\\n" + \\
+    >                   "See dump file: \$\(my.dump_filename:\)", my)
+    >    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function generate_validation_body_for_allow(allow, entity, resolved)
+    check_arguments(my, "allow, entity, resolved", my)
+
+    my.tag = entity_tag(my.entity)
+    my.my_tag = "my.$(my.tag)"
+    my.allowed_entity_tag = make_id(my.allow.tag ? my.allow.entity)
+
+    my.allow.occurs ?= "0+"
+    my.allow.resolved ?= "0"
+
+    if my.allow.resolved = my.resolved
+        #   Possible values: {0+, 0/1, 1, 1+}
+        >    my.$(my.allowed_entity_tag)_count = count($(my.my_tag).$(my.allowed_entity_tag))
+        if my.allow.occurs = "1"
+            >    if my.$(my.allowed_entity_tag)_count <> 1
+            >        my.dump_filename = entity_dump_file($(my.my_tag:))
+            >        echo_fatal("Expected exectly one entity: $(my.allowed_entity_tag:).\\n" + \\
+            >                   "But found \$\(my.$(my.allowed_entity_tag)_count\).\\n" + \\
+            >                   "See dump file: \$\(my.dump_filename:\)", my)
+            >    endif
+        elsif my.allow.occurs = "1+"
+            >    if my.$(my.allowed_entity_tag)_count < 1
+            >        my.dump_filename = entity_dump_file($(my.my_tag:))
+            >        echo_fatal("Expected one or more entities: $(my.allowed_entity_tag:).\\n" + \\
+            >                   "But found \$\(my.$(my.allowed_entity_tag)_count\).\\n" + \\
+            >                   "See dump file: \$\(my.dump_filename:\)", my)
+            >    endif
+        elsif my.allow.occurs = "0/1"
+            >    if my.$(my.allowed_entity_tag)_count > 1
+            >        my.dump_filename = entity_dump_file($(my.my_tag:))
+            >        echo_fatal("Expected zero one entity: $(my.allowed_entity_tag:).\\n" + \\
+            >                   "But found \$\(my.$(my.allowed_entity_tag)_count\).\\n" + \\
+            >                   "See dump file: \$\(my.dump_filename:\)", my)
+            >    endif
+        endif
+    endif
+    >    for $(my.my_tag).$(my.allowed_entity_tag)
+    if my.resolved = "1"
+        >        $(entity_derive_name_of_function_validate_resolved(my.allow.entity))($(my.allowed_entity_tag))
+    else
+        >        $(entity_derive_name_of_function_validate(my.allow.entity))($(my.allowed_entity_tag))
+    endif
+    >    endfor
+
+endfunction
+
+# ---------------------------------------------------------------------------
+function generate_function_validate(entity)
+    check_arguments(my, "entity", my)
+
+    #
+    #   Generate validation body
+    #
+    my.tag = entity_tag(my.entity)
+    my.my_tag = "my.$(my.tag)"
+    >
+    ># ---------------------------------------------------------------------------
+    >function $(entity_derive_name_of_function_validate(my.entity.name))($(my.tag:))
+
+    if is_false(my.entity.abstract)
+        >    my.$(my.tag:)_name = defined($(my.my_tag).name) ?? " name=\\"\$\($(my.my_tag).name\)\\"" ? ""
+        >    echo_trace("[L1] Validate entity: <\$\(name($(my.my_tag)\)\)\$\(my.$(my.tag:)_name\)/>", my)
+    endif
+
+    #
+    #   Generate validation body for inherited entities
+    #
+    for my.entity.inherit
+        if first()
+            >
+            >    #    Check inherited attributes and entities
+        endif
+        >    $(entity_derive_name_of_function_validate(inherit.entity))($(my.my_tag))
+    endfor
+
+    #
+    #   Generate validation body for allowed entities
+    #
+    for my.entity.allow
+        if first()
+            >
+            >    #    Check allowed entities
+        endif
+        generate_validation_body_for_allow(allow, my.entity, "0")
+    endfor
+
+    #
+    #   Generate validation body for self attributes
+    #
+    for my.entity.attr where is_false(attr.resolved)
+        generate_validation_body_for_attr(attr, my.entity)
+    endfor
+
+    for my.entity.oneof where is_false(oneof.resolved)
+        generate_validation_body_for_oneof_attr(oneof, my.entity)
+    endfor
+
+    >endfunction
+endfunction
+
+# ---------------------------------------------------------------------------
+function generate_function_validate_resolved(entity)
+    check_arguments(my, "entity", my)
+
+    #
+    #   Generate validation body
+    #
+    my.tag = entity_tag(my.entity)
+    my.my_tag = "my.$(my.tag)"
+    >
+    ># ---------------------------------------------------------------------------
+    >function $(entity_derive_name_of_function_validate_resolved(my.entity.name))($(my.tag:))
+
+    if is_false(my.entity.abstract)
+        >    my.$(my.tag:)_name = defined($(my.my_tag).name) ?? " name=\\"\$\($(my.my_tag).name\)\\"" ? ""
+        >    echo_trace("[L1] Validate entity: <\$\(name($(my.my_tag)\)\)\$\(my.$(my.tag:)_name\)/>", my)
+    endif
+
+    #
+    #   Generate validation body for inherited entities
+    #
+    for my.entity.inherit
+        if first()
+            >
+            >    #    Check inherited attributes and entities
+        endif
+        >    $(entity_derive_name_of_function_validate_resolved(inherit.entity))($(my.my_tag))
+    endfor
+
+    #
+    #   Generate validation body for allowed entities
+    #
+    for my.entity.allow
+        if first()
+            >
+            >    #    Check allowed entities
+        endif
+        generate_validation_body_for_allow(allow, my.entity, "1")
+    endfor
+
+    #
+    #   Generate validation body for self attributes
+    #
+    for my.entity.attr where is_true(attr.resolved)
+        generate_validation_body_for_attr(attr, my.entity)
+    endfor
+
+    for my.entity.oneof where is_true(oneof.resolved)
+        generate_validation_body_for_oneof_attr(oneof, my.entity)
+    endfor
+
+    >endfunction
+endfunction
+
+# ---------------------------------------------------------------------------
 function generate_entity_validator(entity, all_entities)
     check_arguments(my, "entity, all_entities", my)
 
@@ -319,8 +424,9 @@ function generate_entity_validator(entity, all_entities)
         generate_entity_validator(my.allowed_entity, my.all_entities)
     endfor
 
-    generate_function_validate(my.entity)
     generate_function_setup_defaults(my.entity)
+    generate_function_validate(my.entity)
+    generate_function_validate_resolved(my.entity)
 
     my.entity.is_generated = "1"
 endfunction

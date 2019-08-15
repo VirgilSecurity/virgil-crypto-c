@@ -119,7 +119,7 @@
 
 <entity name="of_class" abstract="1">
 
-    <attr name="of_class">
+    <attr name="of_class" resolved="1">
         Defines class name that a component belongs to.
         This attributes is used for inner components name resolution.
     </attr>
@@ -127,12 +127,12 @@
 
 
 <entity name="uid" abstract="1">
-    <attr name="uid">
+    <attr name="uid" resolved="1">
         Unique component identifier represents name that uniquely identifies
         component within models hierarchy.
     </attr>
 
-    <attr name="full_uid">
+    <attr name="full_uid" resolved="1">
         Unique component identifier represents name that uniquely identifies
         component within projects hierarchy.
     </attr>
@@ -189,6 +189,11 @@
 
 
 <entity name="landlord" abstract="1">
+    <oneof>
+        <attr name="project"/>
+        <attr name="library"/>
+    </oneof>
+
     <attr name="project">
         Defines project name that component refers to.
     </attr>

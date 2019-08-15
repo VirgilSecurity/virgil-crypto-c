@@ -349,7 +349,7 @@
 <entity name="array">
     Turn parent instance to the array of instances.
 
-    <attr name="length">
+    <attr name="length" default="given">
         Defines array length.
 
         <restrict value="null_terminated">
@@ -468,6 +468,7 @@
 
     <inherit entity="scoped_component"/>
     <inherit entity="definition"/>
+    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
@@ -486,6 +487,7 @@
 
     <!-- Bracer initializer is used for multiple variable_value's -->
     <allow entity="value" occurs="1+" />
+    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
@@ -523,6 +525,7 @@
     <inherit entity="definition"/>
 
     <allow entity="constant" occurs="0+"/>
+    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
@@ -539,6 +542,7 @@
     <inherit entity="definition"/>
 
     <allow entity="property"/>
+    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
@@ -557,6 +561,8 @@
         <attr name="access" default="readwrite"/>
     </inherit>
     <inherit entity="uid"/>
+
+    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
@@ -600,6 +606,7 @@
     <allow entity="argument" occurs="0+"/>
     <allow entity="variable" occurs="0+"/>
     <allow entity="code" occurs="0/1"/>
+    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
@@ -615,6 +622,7 @@
 
     <allow entity="return" occurs="0/1"/>
     <allow entity="argument" occurs="0+"/>
+    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
@@ -627,6 +635,7 @@
 
     <inherit entity="instance"/>
     <inherit entity="uid"/>
+    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
@@ -634,6 +643,7 @@
     Defines return type.
 
     <inherit entity="instance"/>
+    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
@@ -659,6 +669,7 @@
     <inherit entity="definition"/>
 
     <allow entity="code" occurs="0/1"/>
+    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
