@@ -176,7 +176,7 @@ endfunction
 
 # ---------------------------------------------------------------------------
 function require_scope_setup_defaults(require_scope, defaults)
-    my.default_value = my.defaults.scope ? "public"
+    my.default_value = my.defaults.scope ? "private"
     if defined(my.default_value) & !defined(my.require_scope.scope)
         echo_trace("       scope=\"$(my.default_value:)\"", my)
         my.require_scope.scope = my.default_value

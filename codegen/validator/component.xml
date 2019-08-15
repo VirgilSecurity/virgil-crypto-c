@@ -385,7 +385,7 @@
 
 
 <entity name="require_scope" abstract="1">
-    <attr name="scope" default="public">
+    <attr name="scope" default="private">
         Defines scope for required component.
 
         <restrict value="public">
