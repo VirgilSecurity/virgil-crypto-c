@@ -116,7 +116,7 @@
 <entity name="instance" abstract="1">
     Defines attributes that related to the instance type.
 
-    <oneof required="1">
+    <oneof name="typeof" required="1">
         <attr name="type"/>
         <attr name="class"/>
         <attr name="enum"/>
@@ -486,7 +486,7 @@
     <inherit entity="instance"/>
 
     <!-- Bracer initializer is used for multiple variable_value's -->
-    <allow entity="value" occurs="1+" />
+    <allow entity="value" occurs="1+"/>
     <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
@@ -498,7 +498,9 @@
         Initialization value.
     </attr>
 
-    <inherit entity="instance"/>
+    <inherit entity="instance">
+        <oneof name="typeof" resolved="1"/>
+    </inherit>
 
     <allow entity="cast" occurs="0/1"/>
 </entity>

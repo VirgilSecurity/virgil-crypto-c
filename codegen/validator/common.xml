@@ -189,7 +189,7 @@
 
 
 <entity name="landlord" abstract="1">
-    <oneof>
+    <oneof name="landlord">
         <attr name="project"/>
         <attr name="library"/>
     </oneof>

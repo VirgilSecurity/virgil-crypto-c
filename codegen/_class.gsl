@@ -17,15 +17,112 @@ function class_calculate_dependencies_fingerprint(project, class)
 endfunction
 
 # ---------------------------------------------------------------------------
+function class_resolve_attr_context(class, project)
+    check_arguments(my, "class, project", my)
+
+    my.has_context =(count(my.class.property) + count(my.class.dependency)) > 0
+    if my.class.context = "private" & string_equal(my.class.scope ?, "internal")
+        my.class.context = "internal"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function class_resolve_attr_of_class(class, project)
+    check_arguments(my, "class, project", my)
+
+    my.class.of_class ?= my.class.name
+endfunction
+
+# ---------------------------------------------------------------------------
+function class_resolve_attr_c_prefix(class, project)
+    check_arguments(my, "class, project", my)
+
+    my.class.c_prefix ?= my.project.prefix
+endfunction
+
+# ---------------------------------------------------------------------------
+function class_resolve_attr_uid(class, project)
+    check_arguments(my, "class, project", my)
+
+    my.class.uid = make_id("class", my.class.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+function class_resolve_property(property, class)
+    check_arguments(my, "property, class", my)
+
+    if string_equal(my.property.class ?, "self")
+        my.property.class = my.class.name
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve entity: method.
+# ---------------------------------------------------------------------------
+function class_resolve_method(method, class)
+    check_arguments(my, "method, class", my)
+
+    if string_equal(my.class.context, "none")
+        my.method.is_static = "1"
+
+        for my.method.argument
+            for argument.length
+                length.class ?= "self"
+            endfor
+        endfor
+    endif
+
+    for my.method.argument where string_equal(0.class ?, "self")
+        .name ?= "ctx"
+        .access ?= "readwrite"
+        .class = my.class.name
+    endfor
+
+    for my.method.return where string_equal(0.class ?, "self")
+        .access ?= "disown"
+        .class = my.class.name
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+function class_resolve_constructor(constructor, class)
+    check_arguments(my, "constructor, class", my)
+
+    my.constructor.is_static = "1"
+    component_resolve_method(my.constructor, my.class)
+endfunction
+
+
+# ---------------------------------------------------------------------------
 function class_resolve(class, project)
     check_arguments(my, "class, project", my)
 
-    my.has_context = (count (my.class.property) + count (my.class.dependency)) > 0
-    my.class.context ?= my.has_context ?? "private" ? "none"
+    echo_trace("Resolving class: $(my.class.name:)", my)
 
-    if my.class.context = "private" & string_equal (my.class.scope ?, "internal")
-        my.class.context = "internal"
-    endif
+    class_resolve_attr_context(my.class, my.project)
+    class_resolve_attr_c_prefix(my.class, my.project)
+    class_resolve_attr_uid(my.class, my.project)
+
+    component_add_lineage(my.class, my.project)
+
+    for my.class.constructor
+        class_resolve_constructor(constructor, my.class)
+    endfor
+
+    for my.class.method
+        class_resolve_method(method, my.class)
+    endfor
+
+    for my.class.property
+        class_resolve_property(property, my.class)
+        component_resolve_property(property, my.class)
+    endfor
+
+    for my.class.require
+        class_resolve_require(require, my.class)
+    endfor
+
+    foreach_component_resolve(my.class)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -51,7 +148,7 @@ function class_process(project, class_link)
         class_setup_defaults(my.class)
         class_validate(my.class)
         class_resolve(my.class, my.project)
-        #class_validate_resolved(my.class)
+        class_validate_resolved(my.class)
     endif
 
     echo_trace("[L1] Class '$(my.class.name:)' - process children", my)

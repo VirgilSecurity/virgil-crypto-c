@@ -7,6 +7,7 @@ gsl from "_model.gsl"
 gsl from "_fingerprint.gsl"
 
 gsl from "validator.gsl"
+gsl from "component.gsl"
 
 if !main.multithread
     gsl from "_project.gsl"
