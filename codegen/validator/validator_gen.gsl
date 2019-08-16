@@ -115,7 +115,9 @@ function generate_function_setup_defaults(entity)
             if first()
                 >    new defaults
             endif
-                >        .$(attr.name:) = "$(attr.default?:)"
+                if defined(attr.default)
+                    >        .$(attr.name:) = "$(attr.default:)"
+                endif
             if last()
                 >        $(entity_derive_name_of_function_setup_defaults(inherit.entity))($(my.my_tag), defaults)
                 >        delete defaults
@@ -141,7 +143,9 @@ function generate_function_setup_defaults(entity)
             if first()
                 >    new defaults
             endif
-                >        .$(attr.name:) = "$(attr.default?:)"
+            if defined(attr.default)
+                >        .$(attr.name:) = "$(attr.default:)"
+            endif
             if last()
                 >        $(entity_derive_name_of_function_setup_defaults(allow.entity))($(my.allowed_entity_tag), defaults)
                 >        delete defaults
